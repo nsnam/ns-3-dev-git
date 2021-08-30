@@ -59,6 +59,9 @@ template <typename T>
 typename NixVectorRouting<T>::IpAddressToNodeMap NixVectorRouting<T>::g_ipAddressToNodeMap;
 
 template <typename T>
+typename NixVectorRouting<T>::NetDeviceToIpInterfaceMap NixVectorRouting<T>::g_netdeviceToIpInterfaceMap;
+
+template <typename T>
 TypeId 
 NixVectorRouting<T>::GetTypeId (void)
 {
@@ -386,21 +389,14 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
 {
   NS_LOG_FUNCTION (this << netDevice << channel);
 
-  Ptr<Ip> netDeviceIp = netDevice->GetNode ()->GetObject<Ip> ();
-  if (!netDeviceIp)
+  Ptr<IpInterface> netDeviceInterface = GetInterfaceByNetDevice (netDevice);
+  if (netDeviceInterface == 0 || !netDeviceInterface->IsUp ())
     {
+      NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
       return;
     }
-  int32_t netDeviceInterface = netDeviceIp->GetInterfaceForDevice (netDevice);
-  if (netDeviceInterface == -1)
-    {
-      return;
-    }
-  if (!netDeviceIp->IsUp (netDeviceInterface))
-    {
-      return;
-    }
-  uint32_t netDeviceAddresses = netDeviceIp->GetNAddresses (netDeviceInterface);
+
+  uint32_t netDeviceAddresses = netDeviceInterface->GetNAddresses ();
 
   for (std::size_t i = 0; i < channel->GetNDevices (); i++)
     {
@@ -408,27 +404,19 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
       if (remoteDevice != netDevice)
         {
           // Compare if the remoteDevice shares a common subnet with remoteDevice
-          Ptr<Ip> remoteDeviceIp = remoteDevice->GetNode ()->GetObject<Ip> ();
-          if (!remoteDeviceIp)
+          Ptr<IpInterface> remoteDeviceInterface = GetInterfaceByNetDevice (remoteDevice);
+          if (remoteDeviceInterface == 0 || !remoteDeviceInterface->IsUp ())
             {
-              continue;
-            }
-          int32_t remoteDeviceInterface = remoteDeviceIp->GetInterfaceForDevice (remoteDevice);
-          if (remoteDeviceInterface == -1)
-            {
-              continue;
-            }
-          if (!remoteDeviceIp->IsUp (remoteDeviceInterface))
-            {
+              NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
               continue;
             }
 
-          uint32_t remoteDeviceAddresses = remoteDeviceIp->GetNAddresses (remoteDeviceInterface);
+          uint32_t remoteDeviceAddresses = remoteDeviceInterface->GetNAddresses ();
           bool commonSubnetFound = false;
 
           for (uint32_t j = 0; j < netDeviceAddresses; ++j)
             {
-              IpInterfaceAddress netDeviceIfAddr = netDeviceIp->GetAddress (netDeviceInterface, j);
+              IpInterfaceAddress netDeviceIfAddr = netDeviceInterface->GetAddress (j);
               bool isNetDeviceAddrLinkLocal = false;
               RunIf (std::is_same<Ipv6RoutingProtocol,T>{}, [&](Ipv6InterfaceAddress IfAddr, bool &isNetDeviceAddrLinkLocal)
                 {
@@ -445,7 +433,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
                 }
               for (uint32_t k = 0; k < remoteDeviceAddresses; ++k)
                 {
-                  IpInterfaceAddress remoteDeviceIfAddr = remoteDeviceIp->GetAddress (remoteDeviceInterface, k);
+                  IpInterfaceAddress remoteDeviceIfAddr = remoteDeviceInterface->GetAddress (k);
                   if (netDeviceIfAddr.IsInSameSubnet (remoteDeviceIfAddr.GetAddress ()))
                     {
                       commonSubnetFound = true;
@@ -503,7 +491,7 @@ NixVectorRouting<T>::BuildIpAddressToNodeMap (void) const
   for (NodeList::Iterator it = NodeList::Begin (); it != NodeList::End (); ++it)
     {
       Ptr<Node> node = *it;
-      Ptr<Ip> ip = node->GetObject<Ip> ();
+      Ptr<IpL3Protocol> ip = node->GetObject<IpL3Protocol> ();
 
       if(ip)
         {
@@ -519,6 +507,8 @@ NixVectorRouting<T>::BuildIpAddressToNodeMap (void) const
                   int32_t interfaceIndex = (ip)->GetInterfaceForDevice (node->GetDevice (deviceId));
                   if (interfaceIndex != -1)
                     {
+                      g_netdeviceToIpInterfaceMap[device] = (ip)->GetInterface (interfaceIndex);
+
                       uint32_t numberOfAddresses = ip->GetNAddresses (interfaceIndex);
                       for (uint32_t addressIndex = 0; addressIndex < numberOfAddresses; addressIndex++)
                         {
@@ -565,6 +555,33 @@ NixVectorRouting<T>::GetNodeByIp (IpAddress dest) const
     }
 
   return destNode;
+}
+
+template <typename T>
+Ptr<typename NixVectorRouting<T>::IpInterface>
+NixVectorRouting<T>::GetInterfaceByNetDevice (Ptr<NetDevice> netDevice) const
+{
+  // Populate lookup table if is empty.
+  if ( g_netdeviceToIpInterfaceMap.empty () )
+    {
+      BuildIpAddressToNodeMap ();
+    }
+
+  Ptr<IpInterface> ipInterface;
+
+  typename NetDeviceToIpInterfaceMap::iterator iter = g_netdeviceToIpInterfaceMap.find(netDevice);
+
+  if(iter == g_netdeviceToIpInterfaceMap.end ())
+    {
+      NS_LOG_ERROR ("Couldn't find IpInterface node given the NetDevice" << netDevice);
+      ipInterface = 0;
+    }
+  else
+    {
+      ipInterface = iter -> second;
+    }
+
+  return ipInterface;
 }
 
 template <typename T>
@@ -677,11 +694,8 @@ NixVectorRouting<T>::FindNetDeviceForNixIndex (Ptr<Node> node, uint32_t nodeInde
           // found the proper net device
           index = i;
           Ptr<NetDevice> gatewayDevice = netDeviceContainer.Get (nodeIndex-totalNeighbors);
-          Ptr<Node> gatewayNode = gatewayDevice->GetNode ();
-          Ptr<Ip> ip = gatewayNode->GetObject<Ip> ();
-
-          uint32_t interfaceIndex = (ip)->GetInterfaceForDevice (gatewayDevice);
-          IpInterfaceAddress ifAddr = ip->GetAddress (interfaceIndex, 0);
+          Ptr<IpInterface> gatewayInterface = GetInterfaceByNetDevice (gatewayDevice);
+          IpInterfaceAddress ifAddr = gatewayInterface->GetAddress (0);
           gatewayIp = ifAddr.GetAddress ();
           break;
         }
@@ -1276,7 +1290,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
   while (greyNodeList.size () != 0)
     {
       Ptr<Node> currNode = greyNodeList.front ();
-      Ptr<Ip> ip = currNode->GetObject<Ip> ();
+      Ptr<IpL3Protocol> ip = currNode->GetObject<IpL3Protocol> ();
  
       if (currNode == dest) 
         {
@@ -1322,19 +1336,10 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
           for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++)
             {
               Ptr<Node> remoteNode = (*iter)->GetNode ();
-              Ptr<Ip> remoteIp = remoteNode->GetObject<Ip> ();
-              if (remoteIp)
+              Ptr<IpInterface> remoteIpInterface = GetInterfaceByNetDevice(*iter);
+              if (remoteIpInterface == 0 || !(remoteIpInterface->IsUp ()))
                 {
-                  uint32_t interfaceIndex = remoteIp->GetInterfaceForDevice (*iter);
-                  if (!(remoteIp->IsUp (interfaceIndex)))
-                    {
-                      NS_LOG_LOGIC ("IpInterface is down");
-                      continue;
-                    }
-                }
-              if (!((*iter)->IsLinkUp ()))
-                {
-                  NS_LOG_LOGIC ("Link is down.");
+                  NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
                   continue;
                 }
 
@@ -1393,19 +1398,10 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
               for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++)
                 {
                   Ptr<Node> remoteNode = (*iter)->GetNode ();
-                  Ptr<Ip> remoteIp = remoteNode->GetObject<Ip> ();
-                  if (remoteIp)
+                  Ptr<IpInterface> remoteIpInterface = GetInterfaceByNetDevice(*iter);
+                  if (remoteIpInterface == 0 || !(remoteIpInterface->IsUp ()))
                     {
-                      uint32_t interfaceIndex = remoteIp->GetInterfaceForDevice (*iter);
-                      if (!(remoteIp->IsUp (interfaceIndex)))
-                        {
-                          NS_LOG_LOGIC ("IpInterface is down");
-                          continue;
-                        }
-                    }
-                  if (!((*iter)->IsLinkUp ()))
-                    {
-                      NS_LOG_LOGIC ("Link is down.");
+                      NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
                       continue;
                     }
 
@@ -1518,12 +1514,12 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
           // node on channel found from nixIndex
           IpAddress gatewayIp;
           // Get the Net Device index from the nixIndex
-          uint32_t NetDeviceIndex = FindNetDeviceForNixIndex (curr, nixIndex, gatewayIp);
-          // Get the interfaceIndex with the help of NetDeviceIndex.
+          uint32_t netDeviceIndex = FindNetDeviceForNixIndex (curr, nixIndex, gatewayIp);
+          // Get the interfaceIndex with the help of netDeviceIndex.
           // It will be used to get the IP address on interfaceIndex
           // interface of 'curr' node.
-          Ptr<Ip> ip = curr->GetObject<Ip> ();
-          Ptr<NetDevice> outDevice = curr->GetDevice (NetDeviceIndex);
+          Ptr<IpL3Protocol> ip = curr->GetObject<IpL3Protocol> ();
+          Ptr<NetDevice> outDevice = curr->GetDevice (netDeviceIndex);
           uint32_t interfaceIndex = ip->GetInterfaceForDevice (outDevice);
           IpAddress sourceIPAddr;
           if (curr == source)

@@ -37,6 +37,10 @@
 #include "ns3/nix-vector.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/nstime.h"
+#include "ns3/ipv4-interface.h"
+#include "ns3/ipv6-interface.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
 
 #include <map>
 #include <unordered_map>
@@ -80,8 +84,14 @@ class NixVectorRouting : public std::enable_if<std::is_same<Ipv4RoutingProtocol,
   /// Alias for Ipv4Header and Ipv6Header classes
   using IpHeader = typename std::conditional<IsIpv4::value, Ipv4Header, Ipv6Header>::type;
 
-  /// Alias for Ipv4InterfaceAddress and Ipv6InterfaceAddress
+  /// Alias for Ipv4InterfaceAddress and Ipv6InterfaceAddress classes
   using IpInterfaceAddress = typename std::conditional<IsIpv4::value, Ipv4InterfaceAddress, Ipv6InterfaceAddress>::type;
+
+  /// Alias for Ipv4Interface and Ipv6Interface classes
+  using IpInterface = typename std::conditional<IsIpv4::value, Ipv4Interface, Ipv6Interface>::type;
+
+  /// Alias for Ipv4L3Protocol and Ipv4L3Protocol classes
+  using IpL3Protocol = typename std::conditional<IsIpv4::value, Ipv4L3Protocol, Ipv6L3Protocol>::type;
 
 public:
   NixVectorRouting ();
@@ -189,6 +199,14 @@ private:
    * \return The node with the specified IP.
    */
   Ptr<Node> GetNodeByIp (IpAddress dest) const;
+
+  /**
+   * Iterates through the node list and finds the one
+   * corresponding to the given IpAddress
+   * \param netDevice NetDevice pointer
+   * \return The node with the specified IP.
+   */
+  Ptr<IpInterface> GetInterfaceByNetDevice (Ptr<NetDevice> netDevice) const;
 
   /**
    * Recurses the T vector, created by BFS and actually builds the nixvector
@@ -459,6 +477,10 @@ private:
    **/
   typedef std::unordered_map<IpAddress, ns3::Ptr<ns3::Node>, IpAddressHash > IpAddressToNodeMap;
   static IpAddressToNodeMap g_ipAddressToNodeMap; //!< Address to node map.
+
+  /// Mapping of Ptr<NetDevice> to Ptr<IpInterface>.
+  typedef std::unordered_map<Ptr<NetDevice>, Ptr<IpInterface>> NetDeviceToIpInterfaceMap;
+  static NetDeviceToIpInterfaceMap g_netdeviceToIpInterfaceMap; //!< NetDevice pointer to IpInterface pointer map
 };
 
 
