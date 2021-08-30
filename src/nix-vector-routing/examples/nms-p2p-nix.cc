@@ -367,7 +367,7 @@ main (int argc, char *argv[])
           if (!useIpv6)
             {
               oss << 10 + z << ".5." << 10 + i << ".0";
-              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.255");
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
             }
           else
             {

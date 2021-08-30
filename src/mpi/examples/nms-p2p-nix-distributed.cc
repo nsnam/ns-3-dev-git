@@ -283,7 +283,7 @@ main (int argc, char *argv[])
         {
           oss.str ("");
           oss << 10 + z << ".5." << 10 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.255");
+          address.SetBase (oss.str ().c_str (), "255.255.255.0");
           for (uint32_t j = 0; j < nLANClients; ++j)
             {
               Ptr<Node> node = CreateObject<Node> (z % systemCount);
