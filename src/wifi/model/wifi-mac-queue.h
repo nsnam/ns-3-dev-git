@@ -277,10 +277,6 @@ public:
    */
   uint32_t GetNBytes (void);
 
-  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
-
-
-private:
   /**
    * Remove the item pointed to by the iterator <i>it</i> if it has been in the
    * queue for too long. If the item is removed, the iterator is updated to
@@ -291,6 +287,11 @@ private:
    * \return true if the item is removed, false otherwise
    */
   inline bool TtlExceeded (ConstIterator &it, const Time& now);
+
+  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
+
+
+private:
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
@@ -333,6 +334,25 @@ private:
 
   NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
 };
+
+
+/**
+ * Implementation of inline functions
+ */
+
+bool
+WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
+{
+  if (now > (*it)->GetTimeStamp () + m_maxDelay)
+    {
+      NS_LOG_DEBUG ("Removing packet that stayed in the queue for too long (" <<
+                    now - (*it)->GetTimeStamp () << ")");
+      auto curr = it++;
+      m_traceExpired (DoRemove (curr));
+      return true;
+    }
+  return false;
+}
 
 } //namespace ns3
 

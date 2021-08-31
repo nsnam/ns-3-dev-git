@@ -92,21 +92,6 @@ WifiMacQueue::GetMaxDelay (void) const
 }
 
 bool
-WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
-{
-  if (now > (*it)->GetTimeStamp () + m_maxDelay)
-    {
-      NS_LOG_DEBUG ("Removing packet that stayed in the queue for too long (" <<
-                    now - (*it)->GetTimeStamp () << ")");
-      m_traceExpired (*it);
-      auto curr = it++;
-      DoRemove (curr);
-      return true;
-    }
-  return false;
-}
-
-bool
 WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
 {
   NS_LOG_FUNCTION (this << *item);
