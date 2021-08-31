@@ -805,6 +805,15 @@ HtFrameExchangeManager::SendPsdu (void)
   if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
       Simulator::Schedule (txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
+
+      std::set<uint8_t> tids = m_psdu->GetTids ();
+      NS_ASSERT_MSG (tids.size () <= 1, "Multi-TID A-MPDUs are not supported");
+
+      if (tids.size () == 0 || m_psdu->GetAckPolicyForTid (*tids.begin ()) == WifiMacHeader::NO_ACK)
+        {
+          // No acknowledgment, hence dequeue the PSDU if it is stored in a queue
+          DequeuePsdu (m_psdu);
+        }
     }
   else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
@@ -921,15 +930,6 @@ HtFrameExchangeManager::ForwardPsduDown (Ptr<const WifiPsdu> psdu, WifiTxVector&
   if (psdu->IsAggregate ())
     {
       txVector.SetAggregation (true);
-    }
-
-  // The PSDU is about to be transmitted, we can now dequeue the MPDUs
-  // For the moment, MPDUs are kept in the queue only if a BA agreement
-  // has not been established
-  if (psdu->GetHeader (0).IsQosData ()
-      && m_edca->GetBaAgreementEstablished (psdu->GetAddr1 (), *psdu->GetTids ().begin ()))
-    {
-      DequeuePsdu (psdu);
     }
 
   m_phy->Send (psdu, txVector);
@@ -1202,21 +1202,9 @@ HtFrameExchangeManager::MissedBlockAck (Ptr<WifiPsdu> psdu, const WifiTxVector& 
           if (GetBaManager (tid)->ExistsAgreementInState (recipient, tid,
                                                           OriginatorBlockAckAgreement::ESTABLISHED))
             {
-              // If there is any (expired) outstanding MPDU, request the BA manager to discard
-              // it, which involves the scheduling of a BAR to advance the recipient's window
-              if (GetBaManager (tid)->GetNBufferedPackets (recipient, tid) > 0)
-                {
-                  GetBaManager (tid)->DiscardOutstandingMpdus (recipient, tid);
-                }
-              // otherwise, it means that we have not received a Block Ack in response to a
-              // BlockAckRequest sent while no frame was outstanding, whose purpose was therefore
-              // to advance the recipient's window. Schedule a BlockAckRequest with
-              // skipIfNoDataQueued set to true, so that the BlockAckRequest is only sent
-              // if there are data frames queued for this recipient.
-              else
-                {
-                  edca->ScheduleBar (edca->PrepareBlockAckRequest (recipient, tid), true);
-                }
+              // schedule a BlockAckRequest with skipIfNoDataQueued set to true, so that the
+              // BlockAckRequest is only sent if there are data frames queued for this recipient.
+              edca->ScheduleBar (edca->PrepareBlockAckRequest (recipient, tid), true);
             }
           resetCw = true;
         }
@@ -1230,9 +1218,9 @@ HtFrameExchangeManager::MissedBlockAck (Ptr<WifiPsdu> psdu, const WifiTxVector& 
           m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (*psdu->begin ());
           for (const auto& mpdu : *PeekPointer (psdu))
             {
-              FrameExchangeManager::NotifyPacketDiscarded (mpdu);
+              NotifyPacketDiscarded (mpdu);
+              DequeueMpdu (mpdu);
             }
-          GetBaManager (tid)->DiscardOutstandingMpdus (recipient, tid);
           resetCw = true;
         }
       else

@@ -78,6 +78,15 @@ private:
    */
   BlockAckManager& operator= (const BlockAckManager& block);
 
+  /**
+   * Enumeration for the statuses of a buffered MPDU
+   */
+  enum MpduStatus : uint8_t
+  {
+    STAY_INFLIGHT = 0,
+    TO_RETRANSMIT,
+    ACKNOWLEDGED
+  };
 
 public:
   /**
@@ -474,6 +483,23 @@ private:
    */
   typedef std::map<std::pair<Mac48Address, uint8_t>,
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
+
+  /**
+   * Handle the given in flight MPDU based on its given status. If the status is
+   * ACKNOWLEDGED, the MPDU is removed from both the EDCA queue and the queue of
+   * in flight MPDUs. If the status is TO_RETRANSMIT, the MPDU is only removed
+   * from the queue of in flight MPDUs. Note that the MPDU is removed from both
+   * queues (independently of the status) if the MPDU is not stored in the EDCA
+   * queue, is an old packet or its lifetime expired.
+   *
+   * \param mpduIt an iterator pointing to the MPDU in the queue of in flight MPDUs
+   * \param status the status of the in flight MPDU
+   * \param it iterator pointing to the Block Ack agreement
+   * \param now the current time
+   * \return an iterator pointing to the next MPDU in the queue of in flight MPDUs
+   */
+  PacketQueueI HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
+                                    const AgreementsI& it, const Time& now);
 
   /**
    * \param mpdu the packet to insert in the retransmission queue

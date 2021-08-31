@@ -277,11 +277,13 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
     }
   agreementIt->second.second.insert (it, mpdu);
   agreementIt->second.first.NotifyTransmittedMpdu (mpdu);
+  mpdu->SetInFlight ();
 }
 
 Ptr<const WifiMacQueueItem>
 BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
 {
+  Time now = Simulator::Now ();
   Ptr<const WifiMacQueueItem> bar;
   // remove all expired MPDUs in the retransmission queue, so that Block Ack Requests
   // (if needed) are scheduled
@@ -321,15 +323,31 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
           // remove expired outstanding MPDUs and update the starting sequence number
           for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
             {
-              if ((*mpduIt)->GetTimeStamp () + m_queue->GetMaxDelay () <= Simulator::Now ())
+              if (!(*mpduIt)->IsQueued ())
+                {
+                  // the MPDU is no longer in the EDCA queue
+                  mpduIt = it->second.second.erase (mpduIt);
+                  continue;
+                }
+
+              WifiMacQueue::ConstIterator queueIt = (*mpduIt)->GetQueueIteratorPair ().it;
+              WifiMacQueue* queue = (*mpduIt)->GetQueueIteratorPair ().queue;
+
+              if ((*mpduIt)->GetTimeStamp () + queue->GetMaxDelay () <= now)
                 {
                   // MPDU expired
                   it->second.first.NotifyDiscardedMpdu (*mpduIt);
+                  // Remove from the EDCA queue and fire the Expired trace source, but the
+                  // consequent call to NotifyDiscardedMpdu does nothing (in particular,
+                  // does not schedule a BAR) because we have advanced the transmit window
+                  // and hence this MPDU became an old packet
+                  queue->TtlExceeded (queueIt, now);
                   mpduIt = it->second.second.erase (mpduIt);
                 }
               else
                 {
-                  mpduIt++;
+                  // MPDUs are typically in increasing order of remaining lifetime
+                  break;
                 }
             }
           // update BAR if the starting sequence number changed
@@ -392,6 +410,65 @@ BlockAckManager::SetBlockAckThreshold (uint8_t nPackets)
   m_blockAckThreshold = nPackets;
 }
 
+BlockAckManager::PacketQueueI
+BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
+                                     const AgreementsI& it, const Time& now)
+{
+  NS_LOG_FUNCTION (this << **mpduIt << +static_cast<uint8_t> (status));
+
+  if (!(*mpduIt)->IsQueued ())
+    {
+      // MPDU is not in the EDCA queue (e.g., its lifetime expired and it was
+      // removed by another method), remove from the queue of in flight MPDUs
+      NS_LOG_DEBUG ("MPDU is not stored in the EDCA queue, drop MPDU");
+      return it->second.second.erase (mpduIt);
+    }
+
+  if (status == ACKNOWLEDGED)
+    {
+      // the MPDU has to be dequeued from the EDCA queue
+      m_queue->DequeueIfQueued (*mpduIt);
+      return it->second.second.erase (mpduIt);
+    }
+
+  WifiMacHeader& hdr = (*mpduIt)->GetHeader ();
+  WifiMacQueue::ConstIterator queueIt = (*mpduIt)->GetQueueIteratorPair ().it;
+  WifiMacQueue* queue = (*mpduIt)->GetQueueIteratorPair ().queue;
+
+  NS_ASSERT (hdr.GetAddr1 () == it->first.first);
+  NS_ASSERT (hdr.IsQosData () && hdr.GetQosTid () == it->first.second);
+
+  if (it->second.first.GetDistance (hdr.GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
+    {
+      NS_LOG_DEBUG ("Old packet. Remove from the EDCA queue, too");
+      queue->Remove (queueIt);
+      return it->second.second.erase (mpduIt);
+    }
+
+  auto nextIt = std::next (mpduIt);
+
+  if (queue->TtlExceeded (queueIt, now))
+    {
+      // WifiMacQueue::TtlExceeded() has removed the MPDU from the EDCA queue
+      // and fired the Expired trace source, which called NotifyDiscardedMpdu,
+      // which removed this MPDU from the in flight queue as well
+      NS_LOG_DEBUG ("MSDU lifetime expired, drop MPDU");
+      return nextIt;
+    }
+
+  if (status == STAY_INFLIGHT)
+    {
+      // the MPDU has to stay in flight, do nothing
+      return ++mpduIt;
+    }
+
+  NS_ASSERT (status == TO_RETRANSMIT);
+  (*mpduIt)->GetHeader ().SetRetry ();
+  (*mpduIt)->ResetInFlight ();  // no longer in flight; will be if retransmitted
+
+  return it->second.second.erase (mpduIt);
+}
+
 void
 BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
 {
@@ -406,17 +483,13 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
   NS_ASSERT (it != m_agreements.end ());
 
   // remove the acknowledged frame from the queue of outstanding packets
-  PacketQueueI queueIt = it->second.second.begin ();
-  while (queueIt != it->second.second.end ())
+  for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); ++queueIt)
     {
       if ((*queueIt)->GetHeader ().GetSequenceNumber () == mpdu->GetHeader ().GetSequenceNumber ())
         {
-          queueIt = it->second.second.erase (queueIt);
+          HandleInFlightMpdu (queueIt, ACKNOWLEDGED, it, Simulator::Now ());
+          break;
         }
-      else
-      {
-        queueIt++;
-      }
     }
 
   it->second.first.NotifyAckedMpdu (mpdu);
@@ -437,21 +510,14 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
 
   // remove the frame from the queue of outstanding packets (it will be re-inserted
   // if retransmitted)
-  PacketQueueI queueIt = it->second.second.begin ();
-  while (queueIt != it->second.second.end ())
+  for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); ++queueIt)
     {
       if ((*queueIt)->GetHeader ().GetSequenceNumber () == mpdu->GetHeader ().GetSequenceNumber ())
         {
-          queueIt = it->second.second.erase (queueIt);
+          HandleInFlightMpdu (queueIt, TO_RETRANSMIT, it, Simulator::Now ());
+          break;
         }
-      else
-      {
-        queueIt++;
-      }
     }
-
-  // insert in the retransmission queue
-  InsertInRetryQueue (mpdu);
 }
 
 std::pair<uint16_t,uint16_t>
@@ -525,6 +591,8 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
             }
           else if (blockAck.IsCompressed () || blockAck.IsExtendedCompressed () || blockAck.IsMultiSta ())
             {
+              Time now = Simulator::Now ();
+
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
                   currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
@@ -536,18 +604,17 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
                         {
                           m_txOkCallback (*queueIt);
                         }
+                      queueIt = HandleInFlightMpdu (queueIt, ACKNOWLEDGED, it, now);
                     }
-                  else if (!QosUtilsIsOldPacket (currentStartingSeq, currentSeq))
+                  else
                     {
                       nFailedMpdus++;
                       if (!m_txFailedCallback.IsNull ())
                         {
                           m_txFailedCallback (*queueIt);
                         }
-                      InsertInRetryQueue (*queueIt);
+                      queueIt = HandleInFlightMpdu (queueIt, TO_RETRANSMIT, it, now);
                     }
-                  // in any case, this packet is no longer outstanding
-                  queueIt = it->second.second.erase (queueIt);
                 }
             }
         }
@@ -567,14 +634,14 @@ BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
   if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
     {
       AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-      for (auto& item : it->second.second)
-        {
-          // Queue previously transmitted packets that do not already exist in the retry queue.
-          InsertInRetryQueue (item);
-        }
+      Time now = Simulator::Now ();
+
       // remove all packets from the queue of outstanding packets (they will be
       // re-inserted if retransmitted)
-      it->second.second.clear ();
+      for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
+        {
+          mpduIt = HandleInFlightMpdu (mpduIt, TO_RETRANSMIT, it, now);
+        }
     }
 }
 
@@ -612,6 +679,12 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
       return;
     }
 
+  if (!mpdu->GetHeader ().IsRetry () && !mpdu->IsInFlight ())
+    {
+      NS_LOG_DEBUG ("This frame has never been transmitted");
+      return;
+    }
+
   Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
   uint8_t tid = mpdu->GetHeader ().GetQosTid ();
   if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
@@ -628,11 +701,23 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
       return;
     }
 
-  // remove outstanding frames and frames in the retransmit queue with a sequence
-  // number less than or equal to the discarded MPDU
-  RemoveOldPackets (recipient, tid, (mpdu->GetHeader ().GetSequenceNumber () + 1) % SEQNO_SPACE_SIZE);
   // actually advance the transmit window
   it->second.first.NotifyDiscardedMpdu (mpdu);
+
+  // remove old MPDUs from the EDCA queue and from the in flight queue
+  // (including the given MPDU which became old after advancing the transmit window)
+  for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
+    {
+      if (it->second.first.GetDistance ((*mpduIt)->GetHeader ().GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
+        {
+          m_queue->DequeueIfQueued (*mpduIt);
+          mpduIt = it->second.second.erase (mpduIt);
+        }
+      else
+        {
+          break; // MPDUs are in increasing order of sequence number in the in flight queue
+        }
+    }
 
   // schedule a BlockAckRequest
   NS_LOG_DEBUG ("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid << ")");
@@ -808,11 +893,17 @@ bool BlockAckManager::NeedBarRetransmission (uint8_t tid, Mac48Address recipient
       AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
       NS_ASSERT (it != m_agreements.end ());
 
-      // A BAR needs to be retransmitted if there is at least a non-expired outstanding MPDU
-      for (auto& mpdu : it->second.second)
+      Time now = Simulator::Now ();
+
+      // A BAR needs to be retransmitted if there is at least a non-expired in flight MPDU
+      for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
         {
-          if (mpdu->GetTimeStamp () + m_queue->GetMaxDelay () > Simulator::Now ())
+          // remove MPDU if old or with expired lifetime
+          mpduIt = HandleInFlightMpdu (mpduIt, STAY_INFLIGHT, it, now);
+
+          if (mpduIt != it->second.second.begin ())
             {
+              // the MPDU has not been removed
               return true;
             }
         }

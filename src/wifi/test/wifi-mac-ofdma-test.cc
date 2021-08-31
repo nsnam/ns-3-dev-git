@@ -480,8 +480,16 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
     {
       auto dev = DynamicCast<WifiNetDevice> (m_apDevice);
       Ptr<WifiMacQueue> queue = DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE)->GetWifiMacQueue ();
-      m_flushed = queue->GetNPackets ();
-      queue->Flush ();
+      m_flushed = 0;
+      for (auto it = queue->begin (); it != queue->end (); )
+        {
+          auto tmp = it++;
+          if (!(*tmp)->IsInFlight ())
+            {
+              queue->Remove (tmp);
+              m_flushed++;
+            }
+        }
     }
   else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
            && psduMap.begin ()->second->GetHeader (0).HasData ())
@@ -1313,7 +1321,7 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite ()
 {
   using MuEdcaParams = std::initializer_list<OfdmaAckSequenceTest::MuEdcaParameterSet>;
 
-  for (auto& muEdcaParameterSet : MuEdcaParams {{0, 0, 0, 0,}        /* no MU EDCA */,
+  for (auto& muEdcaParameterSet : MuEdcaParams {{0, 0, 0, 0}         /* no MU EDCA */,
                                                 {0, 127, 2047, 100}  /* EDCA disabled */,
                                                 {10, 127, 2047, 100} /* worse parameters */})
     {

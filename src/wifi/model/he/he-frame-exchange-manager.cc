@@ -593,9 +593,6 @@ HeFrameExchangeManager::ForwardPsduMapDown (WifiConstPsduMap psduMap, WifiTxVect
   for (const auto& psdu : psduMap)
     {
       NotifyTxToEdca (psdu.second);
-
-      // the PSDU is about to be transmitted, we can now dequeue the MPDUs
-      DequeuePsdu (psdu.second);
     }
   if (psduMap.size () > 1 || psduMap.begin ()->second->IsAggregate () || psduMap.begin ()->second->IsSingle ())
     {
