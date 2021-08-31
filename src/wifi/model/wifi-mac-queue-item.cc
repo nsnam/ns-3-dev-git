@@ -48,6 +48,7 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
       m_msduList = MsduAggregator::Deaggregate (p->Copy ());
     }
   m_queueIt.queue = nullptr;
+  m_inFlight = false;
 }
 
 WifiMacQueueItem::~WifiMacQueueItem ()
@@ -213,6 +214,24 @@ WifiMacQueueItem::GetQueueIteratorPair (void) const
   return m_queueIt;
 }
 
+void
+WifiMacQueueItem::SetInFlight (void)
+{
+  m_inFlight = true;
+}
+
+void
+WifiMacQueueItem::ResetInFlight (void)
+{
+  m_inFlight = false;
+}
+
+bool
+WifiMacQueueItem::IsInFlight (void) const
+{
+  return m_inFlight;
+}
+
 WifiMacQueueItem::DeaggregatedMsdusCI
 WifiMacQueueItem::begin (void)
 {
@@ -250,7 +269,9 @@ WifiMacQueueItem::Print (std::ostream& os) const
           os << ", ack=BlockAck";
         }
     }
-  os << ", packet=" << m_packet;
+  os << ", packet=" << m_packet
+     << ", queued=" << IsQueued ()
+     << ", inflight=" << IsInFlight ();
 }
 
 std::ostream & operator << (std::ostream &os, const WifiMacQueueItem &item)

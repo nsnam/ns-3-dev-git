@@ -175,6 +175,21 @@ public:
   Ptr<Packet> GetProtocolDataUnit (void) const;
 
   /**
+   * Mark this MPDU as being in flight (only used if Block Ack agreement established).
+   */
+  void SetInFlight (void);
+  /**
+   * Mark this MPDU as not being in flight (only used if Block Ack agreement established).
+   */
+  void ResetInFlight (void);
+  /**
+   * Return true if this MPDU is in flight, false otherwise.
+   *
+   * \return true if this MPDU is in flight, false otherwise
+   */
+  bool IsInFlight (void) const;
+
+  /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */
@@ -196,6 +211,7 @@ private:
   Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
   QueueIteratorPair m_queueIt;                  //!< Queue iterator pointing to this MPDU, if queued
+  bool m_inFlight;                              //!< whether the MPDU is in flight
 };
 
 /**
