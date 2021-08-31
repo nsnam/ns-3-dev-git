@@ -540,6 +540,7 @@ MeshWifiInterfaceMac::ResetStats ()
 void
 MeshWifiInterfaceMac::ConfigureStandard (enum WifiStandard standard)
 {
+  SetQosSupported (true);  // a mesh station is a QoS station
   RegularWifiMac::ConfigureStandard (standard);
   m_standard = standard;
 
