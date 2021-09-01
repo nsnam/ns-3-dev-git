@@ -403,7 +403,7 @@ protected:
    *
    * \param mpdu the given MPDU
    */
-  virtual void DequeueMpdu (Ptr<WifiMacQueueItem> mpdu);
+  virtual void DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu);
 
   /**
    * Compute how to set the Duration/ID field of a frame being transmitted with

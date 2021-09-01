@@ -447,7 +447,7 @@ FrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector&
 }
 
 void
-FrameExchangeManager::DequeueMpdu (Ptr<WifiMacQueueItem> mpdu)
+FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
 {
   NS_LOG_DEBUG (this << *mpdu);
 
@@ -867,47 +867,9 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
         {
           NS_LOG_DEBUG ("reset DCF");
           m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
+          DequeueMpdu (mpdu);
           NotifyPacketDiscarded (mpdu);
           txop->ResetCw ();
-          // We have to discard mpdu, but first we have to determine whether mpdu
-          // is stored in the Block Ack Manager retransmit queue or in the AC queue
-          Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
-          WifiMacQueue::ConstIterator testIt;
-          bool found = false;
-
-          if (mpdu->GetHeader ().IsQosData () && qosTxop != nullptr
-              && qosTxop->GetBaAgreementEstablished (receiver, mpdu->GetHeader ().GetQosTid ()))
-            {
-              uint8_t tid = mpdu->GetHeader ().GetQosTid ();
-              testIt = qosTxop->GetBaManager ()->GetRetransmitQueue ()->PeekByTidAndAddress (tid, receiver);
-
-              if (testIt != qosTxop->GetBaManager ()->GetRetransmitQueue ()->end ())
-                {
-                  found = true;
-                  // if not null, the test packet must equal the peeked packet
-                  NS_ASSERT ((*testIt)->GetPacket () == mpdu->GetPacket ());
-                  qosTxop->GetBaManager ()->GetRetransmitQueue ()->Remove (testIt);
-                }
-            }
-
-          if (!found)
-            {
-              if (mpdu->GetHeader ().IsQosData ())
-                {
-                  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
-                  testIt = txop->GetWifiMacQueue ()->PeekByTidAndAddress (tid, receiver);
-                  NS_ASSERT (testIt != txop->GetWifiMacQueue ()->end () && (*testIt)->GetPacket () == mpdu->GetPacket ());
-                  txop->GetWifiMacQueue ()->Remove (testIt);
-                }
-              else
-                {
-                  // the peeked packet is a non-QoS Data frame (e.g., a DELBA Request), hence
-                  // it was not peeked by TID, hence it must be the head of the queue
-                  Ptr<WifiMacQueueItem> item;
-                  item = txop->GetWifiMacQueue ()->Dequeue ();
-                  NS_ASSERT (item != 0 && item->GetPacket () == mpdu->GetPacket ());
-                }
-            }
         }
       else
         {
