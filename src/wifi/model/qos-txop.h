@@ -86,7 +86,6 @@ public:
   bool IsQosTxop (void) const override;
   AcIndex GetAccessCategory (void) const override;
   bool HasFramesToTransmit (void) override;
-  void NotifyInternalCollision (void) override;
   void NotifyChannelAccessed (Time txopDuration) override;
   void NotifyChannelReleased (void) override;
   void SetDroppedMpduCallback (DroppedMpdu callback) override;

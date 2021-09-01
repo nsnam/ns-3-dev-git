@@ -374,7 +374,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
             {
               for (auto& collidingTxop : internalCollisionTxops)
                 {
-                  collidingTxop->NotifyInternalCollision ();
+                  m_feManager->NotifyInternalCollision (collidingTxop);
                 }
               break;
             }

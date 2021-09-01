@@ -841,6 +841,83 @@ FrameExchangeManager::RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) 
 }
 
 void
+FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
+{
+  NS_LOG_FUNCTION (this);
+
+  // For internal collisions occurring with the EDCA access method, the appropriate
+  // retry counters (short retry counter for MSDU, A-MSDU, or MMPDU and QSRC[AC] or
+  // long retry counter for MSDU, A-MSDU, or MMPDU and QLRC[AC]) are incremented
+  // (Sec. 10.22.2.11.1 of 802.11-2016).
+  // We do not prepare the PSDU that the AC losing the internal collision would have
+  // sent. As an approximation, we consider the frame peeked from the queues of the AC.
+  Ptr<QosTxop> qosTxop = (txop->IsQosTxop () ? StaticCast<QosTxop> (txop) : nullptr);
+
+  Ptr<const WifiMacQueueItem> mpdu = (qosTxop != nullptr ? qosTxop->PeekNextMpdu ()
+                                                         : txop->GetWifiMacQueue ()->Peek ());
+
+  if (mpdu != nullptr)
+    {
+      m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
+
+      if (!mpdu->GetHeader ().GetAddr1 ().IsGroup ()
+          && !m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
+        {
+          NS_LOG_DEBUG ("reset DCF");
+          m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
+          NotifyPacketDiscarded (mpdu);
+          txop->ResetCw ();
+          // We have to discard mpdu, but first we have to determine whether mpdu
+          // is stored in the Block Ack Manager retransmit queue or in the AC queue
+          Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
+          WifiMacQueue::ConstIterator testIt;
+          bool found = false;
+
+          if (mpdu->GetHeader ().IsQosData () && qosTxop != nullptr
+              && qosTxop->GetBaAgreementEstablished (receiver, mpdu->GetHeader ().GetQosTid ()))
+            {
+              uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+              testIt = qosTxop->GetBaManager ()->GetRetransmitQueue ()->PeekByTidAndAddress (tid, receiver);
+
+              if (testIt != qosTxop->GetBaManager ()->GetRetransmitQueue ()->end ())
+                {
+                  found = true;
+                  // if not null, the test packet must equal the peeked packet
+                  NS_ASSERT ((*testIt)->GetPacket () == mpdu->GetPacket ());
+                  qosTxop->GetBaManager ()->GetRetransmitQueue ()->Remove (testIt);
+                }
+            }
+
+          if (!found)
+            {
+              if (mpdu->GetHeader ().IsQosData ())
+                {
+                  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+                  testIt = txop->GetWifiMacQueue ()->PeekByTidAndAddress (tid, receiver);
+                  NS_ASSERT (testIt != txop->GetWifiMacQueue ()->end () && (*testIt)->GetPacket () == mpdu->GetPacket ());
+                  txop->GetWifiMacQueue ()->Remove (testIt);
+                }
+              else
+                {
+                  // the peeked packet is a non-QoS Data frame (e.g., a DELBA Request), hence
+                  // it was not peeked by TID, hence it must be the head of the queue
+                  Ptr<WifiMacQueueItem> item;
+                  item = txop->GetWifiMacQueue ()->Dequeue ();
+                  NS_ASSERT (item != 0 && item->GetPacket () == mpdu->GetPacket ());
+                }
+            }
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Update CW");
+          txop->UpdateFailedCw ();
+        }
+    }
+
+  txop->Txop::NotifyChannelReleased ();
+}
+
+void
 FrameExchangeManager::NotifySwitchingStartNow (Time duration)
 {
   NS_LOG_DEBUG ("Switching channel. Cancelling MAC pending events");

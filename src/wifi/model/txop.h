@@ -280,10 +280,6 @@ protected:
    * Notify that access request has been received.
    */
   virtual void NotifyAccessRequested (void);
-  /**
-   * Notify the Txop that internal collision has occurred.
-   */
-  virtual void NotifyInternalCollision (void);
 
   /**
    * Check if the Txop has frames to transmit.

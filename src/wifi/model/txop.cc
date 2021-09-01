@@ -376,14 +376,6 @@ Txop::GenerateBackoff (void)
 }
 
 void
-Txop::NotifyInternalCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  GenerateBackoff ();
-  StartAccessIfNeeded ();
-}
-
-void
 Txop::NotifyChannelSwitching (void)
 {
   NS_LOG_FUNCTION (this);

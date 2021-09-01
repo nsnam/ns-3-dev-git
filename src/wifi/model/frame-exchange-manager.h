@@ -213,6 +213,13 @@ public:
   virtual void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const;
 
   /**
+   * Notify that an internal collision has occurred for the given Txop
+   *
+   * \param txop the Txop for which an internal collision has occurred
+   */
+  virtual void NotifyInternalCollision (Ptr<Txop> txop);
+
+  /**
    * \param duration switching delay duration.
    *
    * This method is typically invoked by the PhyMacLowListener to notify

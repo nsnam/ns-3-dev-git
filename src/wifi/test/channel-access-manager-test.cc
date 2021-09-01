@@ -62,8 +62,6 @@ private:
   void DoDispose (void) override;
   /// \copydoc ns3::Txop::NotifyChannelAccessed
   void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
-  /// \copydoc ns3::Txop::NotifyInternalCollision
-  void NotifyInternalCollision (void) override;
   /// \copydoc ns3::Txop::HasFramesToTransmit
   bool HasFramesToTransmit (void) override;
   /// \copydoc ns3::Txop::NotifyChannelSwitching
@@ -165,10 +163,17 @@ private:
  *
  * \brief Frame Exchange Manager Stub
  */
+template <typename TxopType>
 class FrameExchangeManagerStub : public FrameExchangeManager
 {
 public:
-  FrameExchangeManagerStub ()
+  /**
+   * Constructor
+   *
+   * \param test the test channel access manager
+   */
+  FrameExchangeManagerStub (ChannelAccessManagerTest<TxopType> *test)
+    : m_test (test)
   {
   }
   /**
@@ -183,6 +188,14 @@ public:
     dcf->NotifyChannelAccessed ();
     return true;
   }
+  /// \copydoc ns3::FrameExchangeManager::NotifyInternalCollision
+  void NotifyInternalCollision (Ptr<Txop> txop) override
+  {
+    m_test->NotifyInternalCollision (DynamicCast<TxopTest<TxopType>> (txop));
+  }
+
+private:
+  ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
 };
 
 /**
@@ -205,9 +218,9 @@ public:
   void NotifyAccessGranted (uint32_t i);
   /**
    * Notify internal collision function
-   * \param i the index of the Txop
+   * \param state the Txop
    */
-  void NotifyInternalCollision (uint32_t i);
+  void NotifyInternalCollision (Ptr<TxopTest<TxopType>> state);
   /**
    * Generate backoff function
    * \param i the index of the Txop
@@ -365,7 +378,7 @@ private:
 
   typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
-  Ptr<FrameExchangeManagerStub> m_feManager; //!< the Frame Exchange Manager stubbed
+  Ptr<FrameExchangeManagerStub<TxopType>> m_feManager; //!< the Frame Exchange Manager stubbed
   Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
   TxopTests m_txop; //!< the vector of Txop test instances
   uint32_t m_ackTimeoutValue; //!< the Ack timeout value
@@ -399,13 +412,6 @@ TxopTest<TxopType>::NotifyChannelAccessed (Time txopDuration)
 {
   Txop::m_access = Txop::NOT_REQUESTED;
   m_test->NotifyAccessGranted (m_i);
-}
-
-template <typename TxopType>
-void
-TxopTest<TxopType>::NotifyInternalCollision (void)
-{
-  m_test->NotifyInternalCollision (m_i);
 }
 
 template <typename TxopType>
@@ -474,9 +480,8 @@ ChannelAccessManagerTest<TxopType>::AddTxEvt (uint64_t at, uint64_t duration)
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::NotifyInternalCollision (uint32_t i)
+ChannelAccessManagerTest<TxopType>::NotifyInternalCollision (Ptr<TxopTest<TxopType>> state)
 {
-  Ptr<TxopTest<TxopType>> state = m_txop[i];
   NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), false, "Have expected internal collisions");
   if (!state->m_expectedInternalCollision.empty ())
     {
@@ -558,7 +563,7 @@ void
 ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
   m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub> ();
-  m_feManager = CreateObject<FrameExchangeManagerStub> ();
+  m_feManager = CreateObject<FrameExchangeManagerStub<TxopType>> (this);
   m_ChannelAccessManager->SetupFrameExchangeManager (m_feManager);
   m_ChannelAccessManager->SetSlot (MicroSeconds (slotTime));
   m_ChannelAccessManager->SetSifs (MicroSeconds (sifs));
