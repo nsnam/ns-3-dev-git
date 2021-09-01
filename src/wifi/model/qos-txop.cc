@@ -149,6 +149,7 @@ QosTxop::SetDroppedMpduCallback (DroppedMpdu callback)
 {
   NS_LOG_FUNCTION (this << &callback);
   Txop::SetDroppedMpduCallback (callback);
+  m_baManager->SetDroppedOldMpduCallback (callback.Bind (WIFI_MAC_DROP_QOS_OLD_PACKET));
 }
 
 void
@@ -390,6 +391,10 @@ QosTxop::PeekNextMpdu (WifiMacQueueItem::QueueIteratorPair queueIt, uint8_t tid,
           && IsQosOldPacket (*queueIt.it))
         {
           NS_LOG_DEBUG ("Removing an old packet from EDCA queue: " << **queueIt.it);
+          if (!m_droppedMpduCallback.IsNull ())
+            {
+              m_droppedMpduCallback (WIFI_MAC_DROP_QOS_OLD_PACKET, *queueIt.it);
+            }
           queueIt.it = m_queue->Remove (queueIt.it);
           queueIt.it = peek ();
         }

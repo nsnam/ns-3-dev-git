@@ -401,6 +401,10 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
   if (it->second.first.GetDistance (hdr.GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
     {
       NS_LOG_DEBUG ("Old packet. Remove from the EDCA queue, too");
+      if (!m_droppedOldMpduCallback.IsNull ())
+        {
+          m_droppedOldMpduCallback (*queueIt);
+        }
       queue->Remove (queueIt);
       return it->second.second.erase (mpduIt);
     }
@@ -607,6 +611,10 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
       if (it->second.first.GetDistance ((*mpduIt)->GetHeader ().GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
         {
           m_queue->DequeueIfQueued (*mpduIt);
+          if (!m_droppedOldMpduCallback.IsNull ())
+            {
+              m_droppedOldMpduCallback (*mpduIt);
+            }
           mpduIt = it->second.second.erase (mpduIt);
         }
       else
@@ -841,6 +849,12 @@ void
 BlockAckManager::SetTxFailedCallback (TxFailed callback)
 {
   m_txFailedCallback = callback;
+}
+
+void
+BlockAckManager::SetDroppedOldMpduCallback (DroppedOldMpdu callback)
+{
+  m_droppedOldMpduCallback = callback;
 }
 
 uint16_t

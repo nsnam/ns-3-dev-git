@@ -357,6 +357,11 @@ public:
    */
   typedef Callback <void, Ptr<const WifiMacQueueItem>> TxFailed;
   /**
+   * typedef for a callback to invoke when an MPDU is dropped.
+   */
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> DroppedOldMpdu;
+
+  /**
    * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
    */
@@ -366,6 +371,10 @@ public:
    * packet transmission was completed unsuccessfully.
    */
   void SetTxFailedCallback (TxFailed callback);
+  /**
+   * \param callback the callback to invoke when an old MPDU is dropped
+   */
+  void SetDroppedOldMpduCallback (DroppedOldMpdu callback);
 
   /**
    * TracedCallback signature for state changes.
@@ -483,6 +492,7 @@ private:
   Callback<void, Mac48Address, uint8_t> m_unblockPackets; ///< unblock packets callback
   TxOk m_txOkCallback;                                    ///< transmit OK callback
   TxFailed m_txFailedCallback;                            ///< transmit failed callback
+  DroppedOldMpdu m_droppedOldMpduCallback;                ///< the dropped MPDU callback
 
   /**
    * The trace source fired when a state transition occurred.
