@@ -89,6 +89,11 @@ public:
    * \param [in] args The arguments to the functor
    */
   void operator() (Ts... args) const;
+  /**
+   * \brief Checks if the Callbacks list is empty.
+   * \return true if the Callbacks list is empty.
+   */
+  bool IsEmpty () const;
 
   /**
    *  TracedCallback signature for POD.
@@ -186,6 +191,13 @@ TracedCallback<Ts...>::operator() (Ts... args) const
     {
       (*i)(args...);
     }
+}
+
+template <typename... Ts>
+bool
+TracedCallback<Ts...>::IsEmpty () const
+{
+  return m_callbackList.empty ();
 }
 
 } // namespace ns3

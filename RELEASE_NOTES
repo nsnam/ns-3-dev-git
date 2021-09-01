@@ -35,6 +35,7 @@ New user-visible features
 - (nix-vector-routing) Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.
 - (config-store) OBSOLETE Attributes are not anymore saved.
 - (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
+- (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
 
 Bugs fixed
 ----------
