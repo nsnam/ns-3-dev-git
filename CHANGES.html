@@ -77,6 +77,12 @@ us a note on ns-developers mailing list.</p>
 <li>Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.</li>
 <li>ConfigStore does not save anymore OBSOLETE Attributes.</li>
 <li>The <b>Ipv4L3Protocol</b> Duplicate detection now accounts for transmitted packets, so a transmitting multicast node will not forward its own packets.</li>
+<li>Wi-Fi: A-MSDU aggregation now implies that constituent MSDUs are immediately dequeued
+from the EDCA queue and replaced by an MPDU containing the A-MSDU. Thus, aggregating N
+MSDUs triggers N dequeue operations and 1 enqueue operation on the EDCA queue.</li>
+<li>Wi-Fi: MPDUs being passed to the PHY layer for transmission are not dequeued, but
+are kept in the EDCA queue until they are acknowledged or discarded. Consequently, the
+BlockAckManager retransmit queue has been removed.</li>
 </ul>
 
 <hr>
