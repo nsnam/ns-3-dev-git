@@ -49,8 +49,10 @@ public:
    */
   virtual ~UniformPlanarArray (void);
 
-
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 
@@ -119,6 +121,29 @@ private:
    */
   uint32_t GetNumRows (void) const;
 
+  /**
+   * \brief Set the bearing angle
+   * This method sets the bearing angle and
+   * computes its cosine and sine
+   * \param alpha the bearing angle in radians
+   */
+  void SetAlpha (double alpha);
+
+  /**
+   * \brief Set the downtilt angle
+   * This method sets the downtilt angle and
+   * computes its cosine and sine
+   * \param beta the downtilt angle in radians
+   */
+  void SetBeta (double beta);
+
+  /**
+   * \brief Set the polarization slant angle
+   * This method sets the polarization slant angle and
+   * computes its cosine and sine
+   * \param polSlant the polarization slant angle in radians
+   */
+  void SetPolSlant (double polSlant);
 
   /**
    * Set the horizontal spacing for the antenna elements of the phased array
@@ -151,14 +176,19 @@ private:
    */
   double GetAntennaVerticalSpacing (void) const;
 
-
-  uint32_t m_numColumns; //!< number of columns
-  uint32_t m_numRows; //!< number of rows
-  double m_disV; //!< antenna spacing in the vertical direction in multiples of wave length
-  double m_disH; //!< antenna spacing in the horizontal direction in multiples of wave length
-  double m_alpha; //!< the bearing angle in radians
-  double m_beta; //!< the downtilt angle in radians
-  double m_polSlant; //!< the polarization slant angle in radians
+  uint32_t m_numColumns {1}; //!< number of columns
+  uint32_t m_numRows {1}; //!< number of rows
+  double m_disV {0.5}; //!< antenna spacing in the vertical direction in multiples of wave length
+  double m_disH {0.5}; //!< antenna spacing in the horizontal direction in multiples of wave length
+  double m_alpha {0.0}; //!< the bearing angle in radians
+  double m_cosAlpha {1.0}; //!< the cosine of alpha
+  double m_sinAlpha {0.0}; //!< the sine of alpha
+  double m_beta {0.0}; //!< the downtilt angle in radians
+  double m_cosBeta {1.0}; //!< the cosine of Beta
+  double m_sinBeta {0.0}; //!< the sine of Beta
+  double m_polSlant {0.0}; //!< the polarization slant angle in radians
+  double m_cosPolSlant {1.0}; //!< the cosine of polarization slant angle
+  double m_sinPolSlant {0.0}; //!< the sine polarization slant angle
 };
 
 } /* namespace ns3 */

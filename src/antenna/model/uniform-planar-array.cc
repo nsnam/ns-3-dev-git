@@ -32,14 +32,7 @@ NS_OBJECT_ENSURE_REGISTERED (UniformPlanarArray);
 
 
 UniformPlanarArray::UniformPlanarArray ()
-  : PhasedArrayModel (),
-    m_numColumns {1},
-    m_numRows {1},
-    m_disV {0.5},
-    m_disH {0.5},
-    m_alpha {0},
-    m_beta {0},
-    m_polSlant {0.0}
+  : PhasedArrayModel ()
 {}
 
 UniformPlanarArray::~UniformPlanarArray ()
@@ -79,17 +72,17 @@ UniformPlanarArray::GetTypeId (void)
     .AddAttribute ("BearingAngle",
                    "The bearing angle in radians",
                    DoubleValue (0.0),
-                   MakeDoubleAccessor (&UniformPlanarArray::m_alpha),
+                   MakeDoubleAccessor (&UniformPlanarArray::SetAlpha),
                    MakeDoubleChecker<double> (-M_PI, M_PI))
     .AddAttribute ("DowntiltAngle",
                    "The downtilt angle in radians",
                    DoubleValue (0.0),
-                   MakeDoubleAccessor (&UniformPlanarArray::m_beta),
+                   MakeDoubleAccessor (&UniformPlanarArray::SetBeta),
                    MakeDoubleChecker<double> (-M_PI, M_PI))
     .AddAttribute ("PolSlantAngle",
                    "The polarization slant angle in radians",
                    DoubleValue (0.0),
-                   MakeDoubleAccessor (&UniformPlanarArray::m_polSlant),
+                   MakeDoubleAccessor (&UniformPlanarArray::SetPolSlant),
                    MakeDoubleChecker<double> (-M_PI, M_PI))
   ;
   return tid;
@@ -133,6 +126,29 @@ UniformPlanarArray::GetNumRows (void) const
   return m_numRows;
 }
 
+void
+UniformPlanarArray::SetAlpha (double alpha)
+{
+  m_alpha = alpha;
+  m_cosAlpha = cos (m_alpha);
+  m_sinAlpha = sin (m_alpha);
+}
+
+void
+UniformPlanarArray::SetBeta (double beta)
+{
+  m_beta = beta;
+  m_cosBeta = cos (m_beta);
+  m_sinBeta = sin (m_beta);
+}
+
+void
+UniformPlanarArray::SetPolSlant (double polSlant)
+{
+  m_polSlant = polSlant;
+  m_cosPolSlant = cos (m_polSlant);
+  m_sinPolSlant = sin (m_polSlant);
+}
 
 void
 UniformPlanarArray::SetAntennaHorizontalSpacing (double s)
@@ -183,8 +199,12 @@ UniformPlanarArray::GetElementFieldPattern (Angles a) const
 
   // convert the theta and phi angles from GCS to LCS using eq. 7.1-7 and 7.1-8 in 3GPP TR 38.901
   // NOTE we assume a fixed slant angle of 0 degrees
-  double thetaPrime = std::acos (cos (m_beta) * cos (a.GetInclination ()) + sin (m_beta) * cos (a.GetAzimuth () - m_alpha) * sin (a.GetInclination ()));
-  double phiPrime = std::arg (std::complex<double> (cos (m_beta) * sin (a.GetInclination ()) * cos (a.GetAzimuth () - m_alpha) - sin (m_beta) * cos (a.GetInclination ()), sin (a.GetAzimuth () - m_alpha) * sin (a.GetInclination ())));
+  double cosIncl = cos (a.GetInclination ());
+  double sinIncl = sin (a.GetInclination ());
+  double cosAzim = cos (a.GetAzimuth () - m_alpha);
+  double sinAzim = sin (a.GetAzimuth () - m_alpha);
+  double thetaPrime = std::acos (m_cosBeta * cosIncl + m_sinBeta * cosAzim * sinIncl);
+  double phiPrime = std::arg (std::complex<double> (m_cosBeta * sinIncl * cosAzim - m_sinBeta * cosIncl, sinAzim * sinIncl));
   Angles aPrime (phiPrime, thetaPrime);
   NS_LOG_DEBUG (a << " -> " << aPrime);
 
@@ -193,12 +213,12 @@ UniformPlanarArray::GetElementFieldPattern (Angles a) const
   // NOTE: the slant angle (assumed to be 0) differs from the polarization slant angle
   // (m_polSlant, given by the attribute), in 3GPP TR 38.901
   double aPrimeDb = m_antennaElement->GetGainDb (aPrime);
-  double fieldThetaPrime = pow (10, aPrimeDb / 20) * cos (m_polSlant); // convert to linear magnitude
-  double fieldPhiPrime = pow (10, aPrimeDb / 20) * sin (m_polSlant); // convert to linear magnitude
+  double fieldThetaPrime = pow (10, aPrimeDb / 20) * m_cosPolSlant; // convert to linear magnitude
+  double fieldPhiPrime = pow (10, aPrimeDb / 20) * m_sinPolSlant; // convert to linear magnitude
 
   // compute psi using eq. 7.1-15 in 3GPP TR 38.901, assuming that the slant
   // angle (gamma) is 0
-  double psi = std::arg (std::complex<double> (cos (m_beta) * sin (a.GetInclination ()) - sin (m_beta) * cos (a.GetInclination ()) * cos (a.GetAzimuth () - m_alpha), sin (m_beta) * sin (a.GetAzimuth () - m_alpha)));
+  double psi = std::arg (std::complex<double> (m_cosBeta * sinIncl - m_sinBeta * cosIncl * cosAzim, m_sinBeta * sinAzim));
   NS_LOG_DEBUG ("psi " << psi);
 
   // convert the antenna element field pattern to GCS using eq. 7.1-11
@@ -225,9 +245,9 @@ UniformPlanarArray::GetElementLocation (uint64_t index) const
   // convert the coordinates to the GCS using the rotation matrix 7.1-4 in 3GPP
   // TR 38.901
   Vector loc;
-  loc.x = cos (m_alpha) * cos (m_beta) * xPrime - sin (m_alpha) * yPrime + cos (m_alpha) * sin (m_beta) * zPrime;
-  loc.y = sin (m_alpha) * cos (m_beta) * xPrime + cos (m_alpha) * yPrime + sin (m_alpha) * sin (m_beta) * zPrime;
-  loc.z = -sin (m_beta) * xPrime + cos (m_beta) * zPrime;
+  loc.x = m_cosAlpha * m_cosBeta * xPrime - m_sinAlpha * yPrime + m_cosAlpha * m_sinBeta * zPrime;
+  loc.y = m_sinAlpha * m_cosBeta * xPrime + m_cosAlpha * yPrime + m_sinAlpha * m_sinBeta * zPrime;
+  loc.z = -m_sinBeta * xPrime + m_cosBeta * zPrime;
   return loc;
 }
 
