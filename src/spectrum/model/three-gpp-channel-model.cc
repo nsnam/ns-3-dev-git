@@ -1227,7 +1227,7 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
 
   //Step 7: Generate arrival and departure angles for both azimuth and elevation.
 
-  double C_NLOS, C_phi;
+  double C_NLOS;
   //According to table 7.5-6, only cluster number equals to 8, 10, 11, 12, 19 and 20 is valid.
   //Not sure why the other cases are in Table 7.5-2.
   switch (numOfCluster) // Table 7.5-2
@@ -1269,16 +1269,12 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
         NS_FATAL_ERROR ("Invalid cluster number");
     }
 
+  double C_phi = C_NLOS;
   if (los)
     {
-      C_phi = C_NLOS * (1.1035 - 0.028 * K_factor - 2e-3 * pow (K_factor,2) + 1e-4 * pow (K_factor,3));         //(7.5-10))
-    }
-  else
-    {
-      C_phi = C_NLOS;  //(7.5-10)
+      C_phi *= (1.1035 - 0.028 * K_factor - 2e-3 * pow (K_factor,2) + 1e-4 * pow (K_factor,3));         //(7.5-10))
     }
 
-  double C_theta;
   switch (numOfCluster) //Table 7.5-4
     {
       case 8:
@@ -1306,15 +1302,11 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
         NS_FATAL_ERROR ("Invalid cluster number");
     }
 
+  double C_theta = C_NLOS;
   if (los)
     {
-      C_theta = C_NLOS * (1.3086 + 0.0339 * K_factor - 0.0077 * pow (K_factor,2) + 2e-4 * pow (K_factor,3));         //(7.5-15)
+      C_theta *= (1.3086 + 0.0339 * K_factor - 0.0077 * pow (K_factor,2) + 2e-4 * pow (K_factor,3));         //(7.5-15)
     }
-  else
-    {
-      C_theta = C_NLOS;
-    }
-
 
   DoubleVector clusterAoa, clusterAod, clusterZoa, clusterZod;
   double angle;
@@ -1612,6 +1604,13 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
                       std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (rayAoa_radian[nIndex][mIndex], rayZoa_radian[nIndex][mIndex]));
                       std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (rayAod_radian[nIndex][mIndex], rayZod_radian[nIndex][mIndex]));
 
+                      std::complex<double> raySub = (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
+                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
+                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
+
                       switch (mIndex)
                         {
                           case 9:
@@ -1620,31 +1619,16 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
                           case 12:
                           case 17:
                           case 18:
-                            raysSub2 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
-                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
+                            raysSub2 += raySub;
                             break;
                           case 13:
                           case 14:
                           case 15:
                           case 16:
-                            raysSub3 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
-                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
+                            raysSub3 += raySub;
                             break;
                           default:                      //case 1,2,3,4,5,6,7,8,19,20
-                            raysSub1 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
-                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
+                            raysSub1 += raySub;
                             break;
                         }
                     }

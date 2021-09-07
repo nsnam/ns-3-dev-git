@@ -171,6 +171,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
   // NOTE the update of Doppler is simplified by only taking the center angle of
   // each cluster in to consideration.
   double slotTime = Simulator::Now ().GetSeconds ();
+  double factor = 2 * M_PI * slotTime * GetFrequency () / 3e8;
   PhasedArrayModel::ComplexVector doppler;
   for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
@@ -187,19 +188,21 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
       double alpha = 0; 
       double D = 0; 
       if (cIndex != 0)
-      {
-        alpha = m_uniformRv->GetValue (-1, 1);
-        D = m_uniformRv->GetValue (-m_vScatt, m_vScatt);
-      }
+        {
+          alpha = m_uniformRv->GetValue (-1, 1);
+          if (m_vScatt != 0.0)
+            {
+              D = m_uniformRv->GetValue (-m_vScatt, m_vScatt);
+            }
+        }
       
       //cluster angle angle[direction][n],where, direction = 0(aoa), 1(zoa).
-      double temp_doppler = 2 * M_PI * ((sin (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * cos (params->m_angle[MatrixBasedChannelModel::AOA_INDEX][cIndex] * M_PI / 180) * uSpeed.x
+      double temp_doppler = factor * ((sin (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * cos (params->m_angle[MatrixBasedChannelModel::AOA_INDEX][cIndex] * M_PI / 180) * uSpeed.x
                                          + sin (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * sin (params->m_angle[MatrixBasedChannelModel::AOA_INDEX][cIndex] * M_PI / 180) * uSpeed.y
                                          + cos (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * uSpeed.z)
                                          + (sin (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * cos (params->m_angle[MatrixBasedChannelModel::AOD_INDEX][cIndex] * M_PI / 180) * sSpeed.x
                                          + sin (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sin (params->m_angle[MatrixBasedChannelModel::AOD_INDEX][cIndex] * M_PI / 180) * sSpeed.y
-                                         + cos (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sSpeed.z) + 2 * alpha * D)
-                           * slotTime * GetFrequency () / 3e8;
+                                         + cos (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sSpeed.z) + 2 * alpha * D);
       doppler.push_back (std::complex<double> (cos (temp_doppler), sin (temp_doppler)));
     }
 
@@ -209,9 +212,9 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
   auto sbit = tempPsd->ConstBandsBegin(); // band iterator
   while (vit != tempPsd->ValuesEnd ())
     {
-      std::complex<double> subsbandGain (0.0,0.0);
       if ((*vit) != 0.00)
         {
+          std::complex<double> subsbandGain (0.0, 0.0);
           double fsb = (*sbit).fc; // center frequency of the sub-band
           for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
             {
