@@ -200,7 +200,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
                                          + sin (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sin (params->m_angle[MatrixBasedChannelModel::AOD_INDEX][cIndex] * M_PI / 180) * sSpeed.y
                                          + cos (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sSpeed.z) + 2 * alpha * D)
                            * slotTime * GetFrequency () / 3e8;
-      doppler.push_back (exp (std::complex<double> (0, temp_doppler)));
+      doppler.push_back (std::complex<double> (cos (temp_doppler), sin (temp_doppler)));
     }
 
   // apply the doppler term and the propagation delay to the long term component
@@ -216,7 +216,7 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
           for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
             {
               double delay = -2 * M_PI * fsb * (params->m_delay[cIndex]);
-              subsbandGain = subsbandGain + longTerm[cIndex] * doppler[cIndex] * exp (std::complex<double> (0, delay));
+              subsbandGain = subsbandGain + longTerm[cIndex] * doppler[cIndex] * std::complex<double> (cos (delay), sin (delay));
             }
           *vit = (*vit) * (norm (subsbandGain));
         }

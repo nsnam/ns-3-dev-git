@@ -1578,12 +1578,12 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
                       std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (rayAoa_radian[nIndex][mIndex], rayZoa_radian[nIndex][mIndex]));
                       std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (rayAod_radian[nIndex][mIndex], rayZod_radian[nIndex][mIndex]));
 
-                      rays += (exp (std::complex<double> (0, initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                               +exp (std::complex<double> (0, initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                               +exp (std::complex<double> (0, initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                               +exp (std::complex<double> (0, initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                        * exp (std::complex<double> (0, rxPhaseDiff))
-                        * exp (std::complex<double> (0, txPhaseDiff));
+                      rays += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
+                               std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
+                               std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
+                               std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
+                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
                     }
                   rays *= sqrt (clusterPower[nIndex] / raysPerCluster);
                   H_usn[uIndex][sIndex][nIndex] = rays;
@@ -1620,31 +1620,31 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
                           case 12:
                           case 17:
                           case 18:
-                            raysSub2 += (exp (std::complex<double> (0, initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                         +exp (std::complex<double> (0, initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                              * exp (std::complex<double> (0, rxPhaseDiff))
-                              * exp (std::complex<double> (0, txPhaseDiff));
+                            raysSub2 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
+                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
+                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
                             break;
                           case 13:
                           case 14:
                           case 15:
                           case 16:
-                            raysSub3 += (exp (std::complex<double> (0, initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                         +exp (std::complex<double> (0, initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                              * exp (std::complex<double> (0, rxPhaseDiff))
-                              * exp (std::complex<double> (0, txPhaseDiff));
+                            raysSub3 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
+                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
+                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
                             break;
                           default:                      //case 1,2,3,4,5,6,7,8,19,20
-                            raysSub1 += (exp (std::complex<double> (0, initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                                         +exp (std::complex<double> (0, initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                                         +exp (std::complex<double> (0, initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
-                              * exp (std::complex<double> (0, rxPhaseDiff))
-                              * exp (std::complex<double> (0, txPhaseDiff));
+                            raysSub1 += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
+                                                     std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +
+                                                     std::complex<double> (cos (initialPhase[3]), sin (initialPhase[3])) * rxFieldPatternPhi * txFieldPatternPhi)
+                        * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                        * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
                             break;
                         }
                     }
@@ -1674,9 +1674,9 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
               double lambda = 3e8 / m_frequency; // the wavelength of the carrier frequency
 
               ray = (rxFieldPatternTheta * txFieldPatternTheta - rxFieldPatternPhi * txFieldPatternPhi)
-                * exp (std::complex<double> (0, -2 * M_PI * dis3D / lambda))
-                * exp (std::complex<double> (0, rxPhaseDiff))
-                * exp (std::complex<double> (0, txPhaseDiff));
+                * std::complex<double> (cos (-2 * M_PI * dis3D / lambda), sin (-2 * M_PI * dis3D / lambda))
+                * std::complex<double> (cos (rxPhaseDiff), sin (rxPhaseDiff))
+                * std::complex<double> (cos (txPhaseDiff), sin (txPhaseDiff));
 
               double K_linear = pow (10,K_factor / 10);
               // the LOS path should be attenuated if blockage is enabled.
