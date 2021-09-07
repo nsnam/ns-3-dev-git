@@ -52,6 +52,18 @@ public:
    */
   Vector GetPosition (void) const;
   /**
+   * This method may be used if the position returned may depend on some
+   * reference position provided.  For example, in a hierarchical mobility
+   * model that is buildings-aware, the child mobility model may not be able
+   * to determine if it is inside or outside of a building unless it knows
+   * the parent position.
+   *
+   * \param referencePosition reference position to consider
+   * \return the current position based on the provided referencePosition
+   * \sa ns3::MobilityModel::DoGetPositionWithReference
+   */
+  Vector GetPositionWithReference (const Vector &referencePosition) const;
+  /**
    * \param position the position to set.
    */
   void SetPosition (const Vector &position);
@@ -100,6 +112,14 @@ private:
    * implement this method.
    */
   virtual Vector DoGetPosition (void) const = 0;
+  /**
+   * \param referencePosition the reference position to consider
+   * \return the current position.
+   *
+   * Unless subclasses override, this method will disregard the reference
+   * position and return "DoGetPosition (void)".
+   */
+  virtual Vector DoGetPositionWithReference (const Vector& referencePosition) const;
   /**
    * \param position the position to set.
    *

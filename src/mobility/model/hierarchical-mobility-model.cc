@@ -117,7 +117,7 @@ HierarchicalMobilityModel::DoGetPosition (void) const
       return m_child->GetPosition ();
     }
   Vector parentPosition = m_parent->GetPosition ();
-  Vector childPosition = m_child->GetPosition ();
+  Vector childPosition = m_child->GetPositionWithReference (parentPosition);
   return Vector (parentPosition.x + childPosition.x,
                  parentPosition.y + childPosition.y,
                  parentPosition.z + childPosition.z);
