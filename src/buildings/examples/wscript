@@ -7,3 +7,6 @@ def build(bld):
     obj = bld.create_ns3_program('outdoor-random-walk-example',
                                  ['buildings'])
     obj.source = 'outdoor-random-walk-example.cc'
+    obj = bld.create_ns3_program('outdoor-group-mobility-example',
+                                 ['mobility', 'network', 'buildings'])
+    obj.source = 'outdoor-group-mobility-example.cc'
