@@ -60,7 +60,7 @@
 // attributes, global values, and default values typically available:
 //
 //    --simulationTime:  Simulation time in seconds [10]
-//    --distance:        meters separation between nodes [50]
+//    --distance:        meters separation between nodes [1]
 //    --index:           restrict index to single value between 0 and 31 [256]
 //    --wifiType:        select ns3::SpectrumWifiPhy or ns3::YansWifiPhy [ns3::SpectrumWifiPhy]
 //    --errorModelType:  select ns3::NistErrorRateModel or ns3::YansErrorRateModel [ns3::NistErrorRateModel]
