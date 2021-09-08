@@ -1312,14 +1312,13 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
   double angle;
   for (uint8_t cIndex = 0; cIndex < numReducedCluster; cIndex++)
     {
-      angle = 2 * ASA * sqrt (-1 * log (clusterPowerForAngles[cIndex] / powerMax)) / 1.4 / C_phi;        //(7.5-9)
-      clusterAoa.push_back (angle);
-      angle = 2 * ASD * sqrt (-1 * log (clusterPowerForAngles[cIndex] / powerMax)) / 1.4 / C_phi;        //(7.5-9)
-      clusterAod.push_back (angle);
-      angle = -1 * ZSA * log (clusterPowerForAngles[cIndex] / powerMax) / C_theta;         //(7.5-14)
-      clusterZoa.push_back (angle);
-      angle = -1 * ZSD * log (clusterPowerForAngles[cIndex] / powerMax) / C_theta;
-      clusterZod.push_back (angle);
+      double logCalc = -1 * log (clusterPowerForAngles[cIndex] / powerMax);
+      angle = 2 * sqrt (logCalc) / 1.4 / C_phi;        //(7.5-9)
+      clusterAoa.push_back (ASA * angle);
+      clusterAod.push_back (ASD * angle);
+      angle = logCalc / C_theta;         //(7.5-14)
+      clusterZoa.push_back (ZSA * angle);
+      clusterZod.push_back (ZSD * angle);
     }
 
   for (uint8_t cIndex = 0; cIndex < numReducedCluster; cIndex++)
