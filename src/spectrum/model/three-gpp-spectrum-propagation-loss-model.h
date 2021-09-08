@@ -61,7 +61,7 @@ public:
    * Destructor
    */
   ~ThreeGppSpectrumPropagationLossModel ();
-  
+
   void DoDispose () override;
 
   /**
@@ -80,7 +80,7 @@ public:
    * Get the channel model object
    * \return a pointer to the object implementing the MatrixBasedChannelModel interface
    */
-  Ptr<MatrixBasedChannelModel> GetChannelModel() const;
+  Ptr<MatrixBasedChannelModel> GetChannelModel () const;
 
   /**
    * Add a device-antenna pair
@@ -88,7 +88,6 @@ public:
    * \param a a pointer to the associated PhasedArrayModel
    */
   void AddDevice (Ptr<NetDevice> n, Ptr<const PhasedArrayModel> a);
-
 
   /**
    * Sets the value of an attribute belonging to the associated
@@ -102,7 +101,7 @@ public:
    * Returns the value of an attribute belonging to the associated
    * MatrixBasedChannelModel instance
    * \param name name of the attribute
-   * \param where the result should be stored
+   * \param value where the result should be stored
    */
   void GetChannelModelAttribute (const std::string &name, AttributeValue &value) const;
 
@@ -127,8 +126,8 @@ public:
    * \return the received PSD
    */
   Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
-                                                           Ptr<const MobilityModel> a,
-                                                           Ptr<const MobilityModel> b) const override;
+                                                   Ptr<const MobilityModel> a,
+                                                   Ptr<const MobilityModel> b) const override;
 
 private:
   /**
@@ -160,9 +159,10 @@ private:
    * \return vector containing the long term compoenent for each cluster
    */
   PhasedArrayModel::ComplexVector GetLongTerm (uint32_t aId, uint32_t bId,
-                                                        Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
-                                                        const PhasedArrayModel::ComplexVector &aW,
-                                                        const PhasedArrayModel::ComplexVector &bW) const;
+                                               Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
+                                               const PhasedArrayModel::ComplexVector &aW,
+                                               const PhasedArrayModel::ComplexVector &bW) const;
+
   /**
    * Computes the long term component
    * \param channelMatrix the channel matrix H
@@ -171,8 +171,8 @@ private:
    * \return the long term component
    */
   PhasedArrayModel::ComplexVector CalcLongTerm (Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
-                                                         const PhasedArrayModel::ComplexVector &sW,
-                                                         const PhasedArrayModel::ComplexVector &uW) const;
+                                                const PhasedArrayModel::ComplexVector &sW,
+                                                const PhasedArrayModel::ComplexVector &uW) const;
 
   /**
    * Computes the beamforming gain and applies it to the tx PSD
@@ -191,10 +191,10 @@ private:
   std::unordered_map <uint32_t, Ptr<const PhasedArrayModel> > m_deviceAntennaMap; //!< map containig the <node, antenna> associations
   mutable std::unordered_map < uint32_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
   Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
-  
-  // Variable used to compute the additional Doppler contribution for the delayed 
+
+  // Variable used to compute the additional Doppler contribution for the delayed
   // (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
-  double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed paths 
+  double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed paths
   Ptr<UniformRandomVariable> m_uniformRv; //!< uniform random variable, used to compute the additional Doppler contribution
 };
 } // namespace ns3
