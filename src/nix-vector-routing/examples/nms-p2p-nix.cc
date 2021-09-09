@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2021 NITK Surathkal
+ * Copyright (c) 2009, GTech Systems, Inc.
+ * Copyright (c) 2021 NITK Surathkal: Extended to handle IPv6
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,8 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * (c) 2009, GTech Systems, Inc. - Alfred Park <park@gtech-systems.com>
- *
+ * Author: Alfred Park <park@gtech-systems.com>
+ * Modified By: Josh Pelkey <jpelkey@gatech.edu> (ported to ns-3)
+ * Modified By: Ameya Deshpande <ameyanrd@outlook.com> (IPv6 extensions)
+ *              Tommaso Pecorella <tommaso.pecorella@unifi.it> (IPv6 extensions)
+ */
+/*
  * DARPA NMS Campus Network Model
  *
  * This topology replicates the original NMS Campus Network model
@@ -31,9 +36,6 @@
  * The number of hosts (default 42) is variable.  Finally, an arbitrary
  * number of these campus networks can be connected together (default 2)
  * to make very large simulations.
- *
- * Modified By: Ameya Deshpande <ameyanrd@outlook.com>
- *              Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
 // for timing functions
