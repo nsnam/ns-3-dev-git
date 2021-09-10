@@ -176,7 +176,8 @@ private:
   Ptr<Socket>     m_socket;       //!< Listening socket
   std::list<Ptr<Socket> > m_socketList; //!< the accepted sockets
 
-  Address         m_local;        //!< Local address to bind to
+  Address         m_local;        //!< Local address to bind to (address and port)
+  uint16_t        m_localPort;    //!< Local port to bind to
   uint64_t        m_totalRx;      //!< Total bytes received
   TypeId          m_tid;          //!< Protocol TypeId
 
