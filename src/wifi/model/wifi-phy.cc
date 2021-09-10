@@ -1636,11 +1636,14 @@ WifiPhy::GetMaxPsduSize (WifiModulationClass modulation)
 void
 WifiPhy::NotifyTxBegin (WifiConstPsduMap psdus, double txPowerW)
 {
-  for (auto const& psdu : psdus)
+  if (!m_phyTxBeginTrace.IsEmpty ())
     {
-      for (auto& mpdu : *PeekPointer (psdu.second))
+      for (auto const& psdu : psdus)
         {
-          m_phyTxBeginTrace (mpdu->GetProtocolDataUnit (), txPowerW);
+          for (auto& mpdu : *PeekPointer (psdu.second))
+            {
+              m_phyTxBeginTrace (mpdu->GetProtocolDataUnit (), txPowerW);
+            }
         }
     }
 }
@@ -1648,11 +1651,14 @@ WifiPhy::NotifyTxBegin (WifiConstPsduMap psdus, double txPowerW)
 void
 WifiPhy::NotifyTxEnd (WifiConstPsduMap psdus)
 {
-  for (auto const& psdu : psdus)
+  if (!m_phyTxEndTrace.IsEmpty ())
     {
-      for (auto& mpdu : *PeekPointer (psdu.second))
+      for (auto const& psdu : psdus)
         {
-          m_phyTxEndTrace (mpdu->GetProtocolDataUnit ());
+          for (auto& mpdu : *PeekPointer (psdu.second))
+            {
+              m_phyTxEndTrace (mpdu->GetProtocolDataUnit ());
+            }
         }
     }
 }
@@ -1660,16 +1666,19 @@ WifiPhy::NotifyTxEnd (WifiConstPsduMap psdus)
 void
 WifiPhy::NotifyTxDrop (Ptr<const WifiPsdu> psdu)
 {
-  for (auto& mpdu : *PeekPointer (psdu))
+  if (!m_phyTxDropTrace.IsEmpty ())
     {
-      m_phyTxDropTrace (mpdu->GetProtocolDataUnit ());
+      for (auto& mpdu : *PeekPointer (psdu))
+        {
+          m_phyTxDropTrace (mpdu->GetProtocolDataUnit ());
+        }
     }
 }
 
 void
 WifiPhy::NotifyRxBegin (Ptr<const WifiPsdu> psdu, const RxPowerWattPerChannelBand& rxPowersW)
 {
-  if (psdu)
+  if (psdu && !m_phyRxBeginTrace.IsEmpty ())
     {
       for (auto& mpdu : *PeekPointer (psdu))
         {
@@ -1681,7 +1690,7 @@ WifiPhy::NotifyRxBegin (Ptr<const WifiPsdu> psdu, const RxPowerWattPerChannelBan
 void
 WifiPhy::NotifyRxEnd (Ptr<const WifiPsdu> psdu)
 {
-  if (psdu)
+  if (psdu && !m_phyRxEndTrace.IsEmpty ())
     {
       for (auto& mpdu : *PeekPointer (psdu))
         {
@@ -1693,7 +1702,7 @@ WifiPhy::NotifyRxEnd (Ptr<const WifiPsdu> psdu)
 void
 WifiPhy::NotifyRxDrop (Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason)
 {
-  if (psdu)
+  if (psdu && !m_phyRxDropTrace.IsEmpty ())
     {
       for (auto& mpdu : *PeekPointer (psdu))
         {
@@ -1714,22 +1723,28 @@ WifiPhy::NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
       aMpdu.mpduRefNumber = ++m_rxMpduReferenceNumber;
       size_t nMpdus = psdu->GetNMpdus ();
       NS_ASSERT_MSG (statusPerMpdu.size () == nMpdus, "Should have one reception status per MPDU");
-      aMpdu.type = (psdu->IsSingle ()) ? SINGLE_MPDU : FIRST_MPDU_IN_AGGREGATE;
-      for (size_t i = 0; i < nMpdus;)
+      if (!m_phyMonitorSniffRxTrace.IsEmpty ())
         {
-          if (statusPerMpdu.at (i)) //packet received without error, hand over to sniffer
+          aMpdu.type = (psdu->IsSingle ()) ? SINGLE_MPDU : FIRST_MPDU_IN_AGGREGATE;
+          for (size_t i = 0; i < nMpdus;)
             {
-              m_phyMonitorSniffRxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
+              if (statusPerMpdu.at (i)) //packet received without error, hand over to sniffer
+                {
+                  m_phyMonitorSniffRxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
+                }
+              ++i;
+              aMpdu.type = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
             }
-          ++i;
-          aMpdu.type = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
         }
     }
   else
     {
-      aMpdu.type = NORMAL_MPDU;
       NS_ASSERT_MSG (statusPerMpdu.size () == 1, "Should have one reception status for normal MPDU");
-      m_phyMonitorSniffRxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
+      if (!m_phyMonitorSniffRxTrace.IsEmpty ())
+        {
+          aMpdu.type = NORMAL_MPDU;
+          m_phyMonitorSniffRxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
+        }
     }
 }
 
@@ -1742,19 +1757,25 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
       //Expand A-MPDU
       NS_ASSERT_MSG (txVector.IsAggregation (), "TxVector with aggregate flag expected here according to PSDU");
       aMpdu.mpduRefNumber = ++m_rxMpduReferenceNumber;
-      size_t nMpdus = psdu->GetNMpdus ();
-      aMpdu.type = (psdu->IsSingle ()) ? SINGLE_MPDU: FIRST_MPDU_IN_AGGREGATE;
-      for (size_t i = 0; i < nMpdus;)
+      if (!m_phyMonitorSniffTxTrace.IsEmpty ())
         {
-          m_phyMonitorSniffTxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, staId);
+          size_t nMpdus = psdu->GetNMpdus ();
+          aMpdu.type = (psdu->IsSingle ()) ? SINGLE_MPDU: FIRST_MPDU_IN_AGGREGATE;
+          for (size_t i = 0; i < nMpdus;)
+            {
+              m_phyMonitorSniffTxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, staId);
+            }
           ++i;
           aMpdu.type = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
         }
     }
   else
     {
-      aMpdu.type = NORMAL_MPDU;
-      m_phyMonitorSniffTxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, staId);
+      if (!m_phyMonitorSniffTxTrace.IsEmpty ())
+        {
+          aMpdu.type = NORMAL_MPDU;
+          m_phyMonitorSniffTxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, staId);
+        }
     }
 }
 
@@ -1850,7 +1871,10 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
 
   double txPowerW = DbmToW (GetTxPowerForTransmission (ppdu) + GetTxGain ());
   NotifyTxBegin (psdus, txPowerW);
-  m_phyTxPsduBeginTrace (psdus, txVector, txPowerW);
+  if (!m_phyTxPsduBeginTrace.IsEmpty ())
+    {
+      m_phyTxPsduBeginTrace (psdus, txVector, txPowerW);
+    }
   for (auto const& psdu : psdus)
     {
       NotifyMonitorSniffTx (psdu.second, GetFrequency (), txVector, psdu.first);

@@ -358,9 +358,13 @@ void
 WifiPhyStateHelper::SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, WifiTxVector txVector)
 {
   NS_LOG_FUNCTION (this << txDuration << psdus << txPowerDbm << txVector);
-  for (auto const& psdu : psdus)
+  if (!m_txTrace.IsEmpty ())
     {
-      m_txTrace (psdu.second->GetPacket (), txVector.GetMode (psdu.first), txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
+      for (auto const& psdu : psdus)
+        {
+          m_txTrace (psdu.second->GetPacket (), txVector.GetMode (psdu.first),
+                     txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
+        }
     }
   Time now = Simulator::Now ();
   switch (GetState ())
@@ -483,7 +487,11 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignal
   NS_ASSERT (statusPerMpdu.size () != 0);
   NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
   //TODO: a better fix would be to call the function once all HE TB PPDUs are received
-  m_rxOkTrace (psdu->GetPacket (), rxSignalInfo.snr, txVector.GetMode (staId), txVector.GetPreambleType ());
+  if (!m_rxOkTrace.IsEmpty ())
+    {
+      m_rxOkTrace (psdu->GetPacket (), rxSignalInfo.snr, txVector.GetMode (staId),
+                   txVector.GetPreambleType ());
+    }
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())
@@ -498,7 +506,10 @@ WifiPhyStateHelper::SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr)
   NS_LOG_FUNCTION (this << *psdu << snr);
   NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
   //TODO: a better fix would be to call the function once all HE TB PPDUs are received
-  m_rxErrorTrace (psdu->GetPacket (), snr);
+  if (!m_rxErrorTrace.IsEmpty ())
+    {
+      m_rxErrorTrace (psdu->GetPacket (), snr);
+    }
   NotifyRxEndError ();
   DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
