@@ -679,6 +679,14 @@ public:
                                             uint16_t staId);
 
   /**
+   * TracedCallback signature for Phy transmit events.
+   *
+   * \param packet the packet being transmitted
+   * \param txPowerW the transmit power in Watts
+   */
+  typedef void (* PhyTxBeginTracedCallback)(Ptr<const Packet> packet, double txPowerW);
+
+  /**
    * TracedCallback signature for PSDU transmit events.
    *
    * \param psduMap the PSDU map being transmitted
@@ -686,6 +694,14 @@ public:
    * \param txPowerW the transmit power in Watts
    */
   typedef void (* PsduTxBeginCallback)(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
+
+  /**
+   * TracedCallback signature for PhyRxBegin trace source.
+   *
+   * \param packet the packet being received
+   * \param rxPowersW the receive power per channel band in Watts
+   */
+  typedef void (* PhyRxBeginTracedCallback) (Ptr<const Packet> packet, RxPowerWattPerChannelBand rxPowersW);
 
   /**
    * TracedCallback signature for start of PSDU reception events.

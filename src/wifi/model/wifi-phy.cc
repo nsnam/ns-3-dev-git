@@ -505,7 +505,7 @@ WifiPhy::GetTypeId (void)
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace),
-                     "ns3::Packet::TracedCallback")
+                     "ns3::WifiPhy::PhyTxBeginTracedCallback")
     .AddTraceSource ("PhyTxPsduBegin",
                      "Trace source indicating a PSDU "
                      "has begun transmitting over the channel medium",
@@ -526,7 +526,7 @@ WifiPhy::GetTypeId (void)
                      "has begun being received from the channel medium "
                      "by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace),
-                     "ns3::Packet::TracedCallback")
+                     "ns3::WifiPhy::PhyRxBeginTracedCallback")
     .AddTraceSource ("PhyRxPayloadBegin",
                      "Trace source indicating the reception of the "
                      "payload of a PPDU has begun",
