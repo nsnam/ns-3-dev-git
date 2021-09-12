@@ -8,7 +8,7 @@ except ImportError:
 
 def parse_time_ns(tm):
     if tm.endswith('ns'):
-        return long(tm[:-4])
+        return float(tm[:-2])
     raise ValueError(tm)
 
 
@@ -26,11 +26,11 @@ class FiveTuple(object):
     #  source port
     ## @var destinationPort 
     #  destination port
-    ## @var __slots__ 
+    ## @var __slots_ 
     #  class variable list
-    __slots__ = ['sourceAddress', 'destinationAddress', 'protocol', 'sourcePort', 'destinationPort']
+    __slots_ = ['sourceAddress', 'destinationAddress', 'protocol', 'sourcePort', 'destinationPort']
     def __init__(self, el):
-        '''The initializer.
+        '''! The initializer.
         @param self The object pointer.
         @param el The element.
         '''
@@ -49,11 +49,11 @@ class Histogram(object):
     #  number of bins
     ## @var number_of_flows
     #  number of flows
-    ## @var __slots__
+    ## @var __slots_
     #  class variable list
-    __slots__ = 'bins', 'nbins', 'number_of_flows'
+    __slots_ = 'bins', 'nbins', 'number_of_flows'
     def __init__(self, el=None):
-        ''' The initializer.
+        '''! The initializer.
         @param self The object pointer.
         @param el The element.
         '''
@@ -88,21 +88,22 @@ class Flow(object):
     #  flow histogram
     ## @var rx_duration
     #  receive duration
-    ## @var __slots__
+    ## @var __slots_
     #  class variable list
-    __slots__ = ['flowId', 'delayMean', 'packetLossRatio', 'rxBitrate', 'txBitrate',
-                 'fiveTuple', 'packetSizeMean', 'probe_stats_unsorted',
-                 'hopCount', 'flowInterruptionsHistogram', 'rx_duration']
+    __slots_ = ['flowId', 'delayMean', 'packetLossRatio', 'rxBitrate', 'txBitrate',
+                'fiveTuple', 'packetSizeMean', 'probe_stats_unsorted',
+                'hopCount', 'flowInterruptionsHistogram', 'rx_duration']
     def __init__(self, flow_el):
-        ''' The initializer.
+        '''! The initializer.
         @param self The object pointer.
         @param flow_el The element.
         '''
         self.flowId = int(flow_el.get('flowId'))
-        rxPackets = long(flow_el.get('rxPackets'))
-        txPackets = long(flow_el.get('txPackets'))
-        tx_duration = float(long(flow_el.get('timeLastTxPacket')[:-4]) - long(flow_el.get('timeFirstTxPacket')[:-4]))*1e-9
-        rx_duration = float(long(flow_el.get('timeLastRxPacket')[:-4]) - long(flow_el.get('timeFirstRxPacket')[:-4]))*1e-9
+        rxPackets = float(flow_el.get('rxPackets'))
+        txPackets = float(flow_el.get('txPackets'))
+
+        tx_duration = (parse_time_ns (flow_el.get('timeLastTxPacket')) - parse_time_ns(flow_el.get('timeFirstTxPacket')))*1e-9
+        rx_duration = (parse_time_ns (flow_el.get('timeLastRxPacket')) - parse_time_ns(flow_el.get('timeFirstRxPacket')))*1e-9
         self.rx_duration = rx_duration
         self.probe_stats_unsorted = []
         if rxPackets:
@@ -110,17 +111,17 @@ class Flow(object):
         else:
             self.hopCount = -1000
         if rxPackets:
-            self.delayMean = float(flow_el.get('delaySum')[:-4]) / rxPackets * 1e-9
+            self.delayMean = float(flow_el.get('delaySum')[:-2]) / rxPackets * 1e-9
             self.packetSizeMean = float(flow_el.get('rxBytes')) / rxPackets
         else:
             self.delayMean = None
             self.packetSizeMean = None
         if rx_duration > 0:
-            self.rxBitrate = long(flow_el.get('rxBytes'))*8 / rx_duration
+            self.rxBitrate = float(flow_el.get('rxBytes'))*8 / rx_duration
         else:
             self.rxBitrate = None
         if tx_duration > 0:
-            self.txBitrate = long(flow_el.get('txBytes'))*8 / tx_duration
+            self.txBitrate = float(flow_el.get('txBytes'))*8 / tx_duration
         else:
             self.txBitrate = None
         lost = float(flow_el.get('lostPackets'))
@@ -147,9 +148,9 @@ class ProbeFlowStats(object):
     #  bytes
     ## @var delayFromFirstProbe
     #  delay from first probe
-    ## @var __slots__
+    ## @var __slots_
     #  class variable list
-    __slots__ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']
+    __slots_ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']
 
 ## Simulation
 class Simulation(object):
@@ -157,7 +158,7 @@ class Simulation(object):
     ## @var flows
     #  list of flows
     def __init__(self, simulation_el):
-        ''' The initializer.
+        '''! The initializer.
         @param self The object pointer.
         @param simulation_el The element.
         '''
@@ -178,7 +179,7 @@ class Simulation(object):
                 flowId = int(stats.get('flowId'))
                 s = ProbeFlowStats()
                 s.packets = int(stats.get('packets'))
-                s.bytes = long(stats.get('bytes'))
+                s.bytes = float(stats.get('bytes'))
                 s.probeId = probeId
                 if s.packets > 0:
                     s.delayFromFirstProbe =  parse_time_ns(stats.get('delayFromFirstProbeSum')) / float(s.packets)
@@ -189,7 +190,7 @@ class Simulation(object):
 
 def main(argv):
     file_obj = open(argv[1])
-    print "Reading XML file ",
+    print("Reading XML file ", end=" ")
  
     sys.stdout.flush()        
     level = 0
@@ -205,31 +206,31 @@ def main(argv):
                 elem.clear() # won't need this any more
                 sys.stdout.write(".")
                 sys.stdout.flush()
-    print " done."
+    print(" done.")
 
 
     for sim in sim_list:
         for flow in sim.flows:
             t = flow.fiveTuple
             proto = {6: 'TCP', 17: 'UDP'} [t.protocol]
-            print "FlowID: %i (%s %s/%s --> %s/%i)" % \
-                (flow.flowId, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort)
+            print("FlowID: %i (%s %s/%s --> %s/%i)" % \
+                (flow.flowId, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort))
             if flow.txBitrate is None:
-                print "\tTX bitrate: None"
+                print("\tTX bitrate: None")
             else:
-                print "\tTX bitrate: %.2f kbit/s" % (flow.txBitrate*1e-3,)
+                print("\tTX bitrate: %.2f kbit/s" % (flow.txBitrate*1e-3,))
             if flow.rxBitrate is None:
-                print "\tRX bitrate: None"
+                print("\tRX bitrate: None")
             else:
-                print "\tRX bitrate: %.2f kbit/s" % (flow.rxBitrate*1e-3,)
+                print("\tRX bitrate: %.2f kbit/s" % (flow.rxBitrate*1e-3,))
             if flow.delayMean is None:
-                print "\tMean Delay: None"
+                print("\tMean Delay: None")
             else:
-                print "\tMean Delay: %.2f ms" % (flow.delayMean*1e3,)
+                print("\tMean Delay: %.2f ms" % (flow.delayMean*1e3,))
             if flow.packetLossRatio is None:
-                print "\tPacket Loss Ratio: None"
+                print("\tPacket Loss Ratio: None")
             else:
-                print "\tPacket Loss Ratio: %.2f %%" % (flow.packetLossRatio*100)
+                print("\tPacket Loss Ratio: %.2f %%" % (flow.packetLossRatio*100))
 
 
 if __name__ == '__main__':
