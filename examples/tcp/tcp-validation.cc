@@ -181,18 +181,22 @@ TraceFirstCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
       double cwnd = static_cast<double> (newCwnd) / 1448;
       if ((now > 5.43) && (now < 5.465) && (cwnd < 500))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 500)");
           g_validationFailed = true;
         }
       else if ((now > 5.795) && (now < 6) && (cwnd > 190))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected <= 190)");
           g_validationFailed = true;
         }
       else if ((now > 14) && (now < 14.197) && (cwnd < 224))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 224)");
           g_validationFailed = true;
         }
       else if ((now > 17) && (now < 18.026) && (cwnd < 212))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 212)");
           g_validationFailed = true;
         }
     }
@@ -211,14 +215,17 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 7.5) && (alpha < 0.1))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected >= 0.1)");
           g_validationFailed = true;
         }
       else if ((now > 11) && (now < 30) && (alpha > 0.01))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected <= 0.01)");
           g_validationFailed = true;
         }
       else if ((now > 34) && (alpha < 0.015) && (alpha > 0.025))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected 0.015 <= alpha <= 0.025)");
           g_validationFailed = true;
         }
     }
@@ -227,10 +234,12 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && (alpha > 0.1))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected <= 0.1)");
           g_validationFailed = true;
         }
       if ((now > 7) && ((alpha > 0.09) || (alpha < 0.055)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected 0.09 <= alpha <= 0.055)");
           g_validationFailed = true;
         }
     }
@@ -351,14 +360,17 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 14) && (throughput > 20))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected <= 20)");
           g_validationFailed = true;
         }
       if ((now < 30) && (throughput > 48))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected <= 48)");
           g_validationFailed = true;
         }
       if ((now > 32) && ((throughput < 47.5) || (throughput > 48.5)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected 47.5 <= throughput <= 48.5)");
           g_validationFailed = true;
         }
     }
@@ -367,6 +379,7 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && ((throughput < 48) || (throughput > 49)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected 48 <= throughput <= 49)");
           g_validationFailed = true;
         }
     }
