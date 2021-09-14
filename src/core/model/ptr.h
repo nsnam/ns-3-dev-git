@@ -50,10 +50,11 @@ namespace ns3 {
  * \brief Smart pointer class similar to \c boost::intrusive_ptr.
  *
  * This smart-pointer class assumes that the underlying
- * type provides a pair of \c Ref and \c Unref methods which are
+ * type provides a pair of \c Ref() and \c Unref() methods which are
  * expected to increment and decrement the internal reference count
- * of the object instance.  You can add \c Ref and \c Unref
- * to a class simply by inheriting from ns3::SimpleRefCount.
+ * of the object instance.  You can add \c Ref() and \c Unref()
+ * to a class simply by inheriting from ns3::SimpleRefCount<>
+ * using the CRTP (`class Foo : public SimpleRefCount<Foo>`)
  *
  * This implementation allows you to manipulate the smart pointer
  * as if it was a normal pointer: you can test if it is non-null,
@@ -62,12 +63,13 @@ namespace ns3 {
  * It is possible to extract the raw pointer from this
  * smart pointer with the GetPointer() and PeekPointer() methods.
  *
- * If you want to store a \c new object into a smart pointer,
- * we recommend you to use the Create() template functions
- * to create the object and store it in a smart pointer to avoid
+ * If you want to store a `new Object()` into a smart pointer,
+ * we recommend you to use the CreateObject<>() template function
+ * to create the Object and store it in a smart pointer to avoid
  * memory leaks. These functions are really small convenience
  * functions and their goal is just is save you a small
- * bit of typing.
+ * bit of typing.  If the Object does not inherit from Object
+ * (or ObjectBase) there is also a convenience wrapper Create<>()
  *
  * \tparam T \explicit The type of the underlying object.
  */
@@ -79,14 +81,14 @@ private:
   /** The pointer. */
   T *m_ptr;
 
-  /** 
-   * Helper to test for null pointer. 
-   * 
+  /**
+   * Helper to test for null pointer.
+   *
    * \note This has been deprecated; \see operator bool() instead.
    *
    * This supports the "safe-bool" idiom, see `operator Tester * ()`
    */
-  // Don't deprecate the class because the warning fires 
+  // Don't deprecate the class because the warning fires
   // every time ptr.h is merely included, masking the real uses of Tester
   // Leave the macro here so we can find this later to actually remove it.
   class /* NS_DEPRECATED_3_37 ("see operator bool") */ Tester
