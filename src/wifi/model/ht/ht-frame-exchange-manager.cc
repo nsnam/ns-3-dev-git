@@ -28,6 +28,7 @@
 #include "ns3/snr-tag.h"
 #include "ns3/ctrl-headers.h"
 #include <array>
+#include <optional>
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -864,9 +865,7 @@ HtFrameExchangeManager::NotifyTxToEdca (Ptr<const WifiPsdu> psdu) const
   NS_LOG_FUNCTION (this << psdu);
 
   // use an array to avoid computing the queue size for every MPDU in the PSDU
-  // TODO use std::optional when C++17 is supported
-  std::array<std::pair<bool, uint8_t>, 8> queueSizeForTid;
-  queueSizeForTid.fill ({false, 0});
+  std::array<std::optional<uint8_t>, 8> queueSizeForTid;
 
   for (const auto& mpdu : *PeekPointer (psdu))
     {
@@ -881,13 +880,13 @@ HtFrameExchangeManager::NotifyTxToEdca (Ptr<const WifiPsdu> psdu) const
               && (m_setQosQueueSize || hdr.IsQosEosp ()))
             {
               // set the Queue Size subfield of the QoS Control field
-              if (!queueSizeForTid[tid].first)
+              if (!queueSizeForTid[tid].has_value ())
                 {
-                  queueSizeForTid[tid] = {true, edca->GetQosQueueSize (tid, hdr.GetAddr1 ())};
+                  queueSizeForTid[tid] = edca->GetQosQueueSize (tid, hdr.GetAddr1 ());
                 }
 
               hdr.SetQosEosp ();
-              hdr.SetQosQueueSize (queueSizeForTid[tid].second);
+              hdr.SetQosQueueSize (queueSizeForTid[tid].value ());
             }
 
           if (hdr.HasData ())
