@@ -326,15 +326,28 @@ class OfdmaAckSequenceTest : public TestCase
 {
 public:
   /**
+   * MU EDCA Parameter Set
+   */
+  struct MuEdcaParameterSet
+  {
+    uint8_t muAifsn;   //!< MU AIFS (0 to disable EDCA)
+    uint16_t muCwMin;  //!< MU CW min
+    uint16_t muCwMax;  //!< MU CW max
+    uint8_t muTimer;   //!< MU EDCA Timer in units of 8192 microseconds (0 not to use MU EDCA)
+  };
+
+  /**
    * Constructor
    * \param width the PHY channel bandwidth in MHz
    * \param dlType the DL MU ack sequence type
    * \param maxAmpduSize the maximum A-MPDU size in bytes
    * \param txopLimit the TXOP limit in microseconds
    * \param nPktsPerSta number of packets to send to/receive from each station
+   * \param muEdcaParameterSet the MU EDCA Parameter Set
    */
   OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::Method dlType, uint32_t maxAmpduSize,
-                        uint16_t txopLimit, uint16_t nPktsPerSta);
+                        uint16_t txopLimit, uint16_t nPktsPerSta,
+                        MuEdcaParameterSet muEdcaParameterSet);
   virtual ~OfdmaAckSequenceTest ();
 
   /**
@@ -344,6 +357,13 @@ public:
    * \param addr the address
    */
   void L7Receive (std::string context, Ptr<const Packet> p, const Address &addr);
+  /**
+   * Function to trace CW value used by the given station after the MU exchange
+   * \param staIndex the index of the given station
+   * \param oldCw the previous Contention Window value
+   * \param cw the current Contention Window value
+   */
+  void TraceCw (uint32_t staIndex, uint32_t oldCw, uint32_t cw);
   /**
    * Callback invoked when FrameExchangeManager passes PSDUs to the PHY
    * \param context the context
@@ -374,18 +394,24 @@ private:
 
   uint16_t m_nStations;                      ///< number of stations
   NetDeviceContainer m_staDevices;           ///< stations' devices
+  Ptr<NetDevice> m_apDevice;                 ///< AP's device
   uint16_t m_channelWidth;                   ///< PHY channel bandwidth in MHz
   std::vector<FrameInfo> m_txPsdus;          ///< transmitted PSDUs
   WifiAcknowledgment::Method m_dlMuAckType;  ///< DL MU ack sequence type
   uint32_t m_maxAmpduSize;                   ///< maximum A-MPDU size in bytes
   uint16_t m_txopLimit;                      ///< TXOP limit in microseconds
   uint16_t m_nPktsPerSta;                    ///< number of packets to send to each station
+  MuEdcaParameterSet m_muEdcaParameterSet;   ///< MU EDCA Parameter Set
   uint16_t m_received;                       ///< number of packets received by the stations
+  uint16_t m_flushed;                        ///< number of DL packets flushed after DL MU PPDU
+  Time m_edcaDisabledStartTime;              ///< time when disabling EDCA started
+  std::vector<uint32_t> m_cwValues;          ///< CW used by stations after MU exchange
 };
 
 OfdmaAckSequenceTest::OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::Method dlType,
                                             uint32_t maxAmpduSize, uint16_t txopLimit,
-                                            uint16_t nPktsPerSta)
+                                            uint16_t nPktsPerSta,
+                                            MuEdcaParameterSet muEdcaParameterSet)
   : TestCase ("Check correct operation of DL OFDMA acknowledgment sequences"),
     m_nStations (4),
     m_channelWidth (width),
@@ -393,7 +419,11 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::
     m_maxAmpduSize (maxAmpduSize),
     m_txopLimit (txopLimit),
     m_nPktsPerSta (nPktsPerSta),
-    m_received (0)
+    m_muEdcaParameterSet (muEdcaParameterSet),
+    m_received (0),
+    m_flushed (0),
+    m_edcaDisabledStartTime (Seconds (0)),
+    m_cwValues (std::vector<uint32_t> (m_nStations, 2))  // 2 is an invalid CW value
 {
 }
 
@@ -411,6 +441,17 @@ OfdmaAckSequenceTest::L7Receive (std::string context, Ptr<const Packet> p, const
 }
 
 void
+OfdmaAckSequenceTest::TraceCw (uint32_t staIndex, uint32_t oldCw, uint32_t cw)
+{
+  if (m_cwValues.at (staIndex) == 2)
+    {
+      // store the first CW used after MU exchange (the last one may be used after
+      // the MU EDCA timer expired)
+      m_cwValues[staIndex] = cw;
+    }
+}
+
+void
 OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
   // skip beacon frames and frames transmitted before 1.5s (association
@@ -423,18 +464,27 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
                             Simulator::Now () + txDuration,
                             psduMap, txVector});
 
-      NS_LOG_INFO ("Sending " << psduMap.begin ()->second->GetHeader (0).GetTypeString ()
-                    << " #MPDUs " << psduMap.begin ()->second->GetNMpdus ()
-                    << " txDuration " << txDuration
-                    << " duration/ID " << psduMap.begin ()->second->GetHeader (0).GetDuration ()
-                    << " #TX PSDUs = " << m_txPsdus.size ());
+      for (const auto& psduPair : psduMap)
+        {
+          NS_LOG_INFO ("Sending " << psduPair.second->GetHeader (0).GetTypeString ()
+                        << " #MPDUs " << psduPair.second->GetNMpdus ()
+                        << " txDuration " << txDuration
+                        << " duration/ID " << psduPair.second->GetHeader (0).GetDuration ()
+                        << " #TX PSDUs = " << m_txPsdus.size ());
+        }
     }
 
-  // Flush the MAC queues of the stations after sending an HE TB PPDU containing QoS data
-  // frames, so that stations do not attempt to access the channel and the UL MU transmission
-  // is followed by a DL MU transmission
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
-      && psduMap.begin ()->second->GetHeader (0).HasData ())
+  // Flush the MAC queue of the AP after sending a DL MU PPDU (no need for
+  // further transmissions)
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      auto dev = DynamicCast<WifiNetDevice> (m_apDevice);
+      Ptr<WifiMacQueue> queue = DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE)->GetWifiMacQueue ();
+      m_flushed = queue->GetNPackets ();
+      queue->Flush ();
+    }
+  else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
+           && psduMap.begin ()->second->GetHeader (0).HasData ())
     {
       Mac48Address sender = psduMap.begin ()->second->GetAddr2 ();
 
@@ -444,9 +494,40 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
 
           if (dev->GetAddress () == sender)
             {
-              DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE)->GetWifiMacQueue ()->Flush ();
+              Ptr<QosTxop> qosTxop = DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE);
+
+              if (m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn > 0)
+                {
+                  // stations use worse access parameters, trace CW. MU AIFSN must be large
+                  // enough to avoid collisions between stations trying to transmit using EDCA
+                  // right after the UL MU transmission and the AP trying to send a DL MU PPDU
+                  qosTxop->TraceConnectWithoutContext ("CwTrace",
+                                                       MakeCallback (&OfdmaAckSequenceTest::TraceCw,
+                                                                     this).Bind (i));
+                }
+              else
+                {
+                  // there is no "protection" against collisions from stations, hence flush
+                  // their MAC queues after sending an HE TB PPDU containing QoS data frames,
+                  // so that the AP can send a DL MU PPDU
+                  qosTxop->GetWifiMacQueue ()->Flush ();
+                }
               break;
             }
+        }
+    }
+  else if (!txVector.IsMu () && psduMap.begin ()->second->GetHeader (0).IsBlockAck ()
+           && psduMap.begin ()->second->GetHeader (0).GetAddr2 () == m_apDevice->GetAddress ()
+           && m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn == 0)
+    {
+      CtrlBAckResponseHeader blockAck;
+      psduMap.begin ()->second->GetPayload (0)->PeekHeader (blockAck);
+
+      if (blockAck.IsMultiSta ())
+        {
+          // AP is transmitting a multi-STA BlockAck and stations have to disable EDCA,
+          // record the starting time
+          m_edcaDisabledStartTime = Simulator::Now () + m_txPsdus.back ().endTx - m_txPsdus.back ().startTx;
         }
     }
 }
@@ -706,6 +787,8 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
     }
   NS_TEST_EXPECT_MSG_GT (navEnd, m_txPsdus[11].endTx, "Duration/ID of the DL MU PPDU cannot be zero");
 
+  std::size_t nTxPsdus = 0;
+
   if (m_dlMuAckType == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
     {
       /*
@@ -804,6 +887,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
           navEnd = m_txPsdus[17].endTx + m_txPsdus[17].psduMap[SU_STA_ID]->GetDuration ();
           NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[18].endTx, "Duration/ID in the 3rd BlockAckReq is too short");
         }
+      nTxPsdus = 19;
     }
   else if (m_dlMuAckType == WifiAcknowledgment::DL_MU_TF_MU_BAR)
     {
@@ -886,6 +970,8 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[14].endTx, "Duration/ID in the MU-BAR Trigger Frame is too short");
       NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[15].endTx, "Duration/ID in the MU-BAR Trigger Frame is too short");
       NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[16].endTx, "Duration/ID in the MU-BAR Trigger Frame is too short");
+
+      nTxPsdus = 17;
     }
   else if (m_dlMuAckType == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
@@ -955,9 +1041,42 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "Block Ack in HE TB PPDU sent too early");
       NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "Block Ack in HE TB PPDU sent too late");
       NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[15].endTx, "Duration/ID in the DL MU PPDU is too short");
+
+      nTxPsdus = 16;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (m_received, m_nPktsPerSta * m_nStations, "Not all packets have been received");
+  NS_TEST_EXPECT_MSG_EQ (m_received, m_nPktsPerSta * m_nStations - m_flushed,
+                         "Not all DL packets have been received");
+
+  if (m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn == 0)
+    {
+      // EDCA disabled, find the first PSDU transmitted by a station not in an
+      // HE TB PPDU and check that it was not transmitted before the MU EDCA
+      // timer expired
+      for (std::size_t i = nTxPsdus; i < m_txPsdus.size (); ++i)
+        {
+          if (m_txPsdus[i].psduMap.size () == 1
+              && m_txPsdus[i].psduMap.begin ()->second->GetHeader (0).GetAddr2 () != m_apDevice->GetAddress ()
+              && !m_txPsdus[i].txVector.IsUlMu ())
+            {
+              NS_TEST_EXPECT_MSG_GT_OR_EQ (m_txPsdus[i].startTx.GetMicroSeconds (),
+                                           m_edcaDisabledStartTime.GetMicroSeconds ()
+                                           + m_muEdcaParameterSet.muTimer * 8192,
+                                           "A station transmitted before the MU EDCA timer expired");
+              break;
+            }
+        }
+    }
+  else if (m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn > 0)
+    {
+      // stations used worse access parameters after successful UL MU transmission
+      for (const auto& cwValue : m_cwValues)
+        {
+          NS_TEST_EXPECT_MSG_EQ ((cwValue == 2 || cwValue >= m_muEdcaParameterSet.muCwMin),
+                                 true, "A station did not set the correct MU CW min");
+        }
+    }
+
   m_txPsdus.clear ();
 }
 
@@ -1003,6 +1122,25 @@ OfdmaAckSequenceTest::DoRun (void)
     }
   phy.Set ("ChannelWidth", UintegerValue (m_channelWidth));
 
+  Config::SetDefault ("ns3::HeConfiguration::MuBeAifsn",
+                      UintegerValue (m_muEdcaParameterSet.muAifsn));
+  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMin",
+                      UintegerValue (m_muEdcaParameterSet.muCwMin));
+  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMax",
+                      UintegerValue (m_muEdcaParameterSet.muCwMax));
+  Config::SetDefault ("ns3::HeConfiguration::BeMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+  // MU EDCA timers must be either all null or all non-null
+  Config::SetDefault ("ns3::HeConfiguration::BkMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+  Config::SetDefault ("ns3::HeConfiguration::ViMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+  Config::SetDefault ("ns3::HeConfiguration::VoMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+
+  // increase MSDU lifetime so that it does not expire before the MU EDCA timer ends
+  Config::SetDefault ("ns3::WifiMacQueue::MaxDelay", TimeValue (Seconds (2)));
+
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
@@ -1027,11 +1165,10 @@ OfdmaAckSequenceTest::DoRun (void)
   mac.SetMultiUserScheduler ("ns3::TestMultiUserScheduler");
   mac.SetAckManager ("ns3::WifiDefaultAckManager", "DlMuAckSequenceType", EnumValue (m_dlMuAckType));
 
-  NetDeviceContainer apDevices;
-  apDevices = wifi.Install (phy, mac, wifiApNode);
+  m_apDevice = wifi.Install (phy, mac, wifiApNode).Get (0);
 
   // Assign fixed streams to random variables in use
-  streamNumber += wifi.AssignStreams (apDevices, streamNumber);
+  streamNumber += wifi.AssignStreams (NetDeviceContainer (m_apDevice), streamNumber);
   streamNumber += wifi.AssignStreams (m_staDevices, streamNumber);
 
   MobilityHelper mobility;
@@ -1056,7 +1193,7 @@ OfdmaAckSequenceTest::DoRun (void)
       dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
       dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (m_maxAmpduSize));
     }
-  dev = DynamicCast<WifiNetDevice> (apDevices.Get (0));
+  dev = DynamicCast<WifiNetDevice> (m_apDevice);
   dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (m_maxAmpduSize));
 
   PointerValue ptr;
@@ -1073,7 +1210,7 @@ OfdmaAckSequenceTest::DoRun (void)
   for (uint16_t i = 0; i < m_nStations; i++)
     {
       PacketSocketAddress socket;
-      socket.SetSingleDevice (apDevices.Get (0)->GetIfIndex ());
+      socket.SetSingleDevice (m_apDevice->GetIfIndex ());
       socket.SetPhysicalAddress (m_staDevices.Get (i)->GetAddress ());
       socket.SetProtocol (1);
 
@@ -1111,7 +1248,7 @@ OfdmaAckSequenceTest::DoRun (void)
     {
       PacketSocketAddress socket;
       socket.SetSingleDevice (m_staDevices.Get (i)->GetIfIndex ());
-      socket.SetPhysicalAddress (apDevices.Get (0)->GetAddress ());
+      socket.SetPhysicalAddress (m_apDevice->GetAddress ());
       socket.SetProtocol (1);
 
       // the first client application generates two packets in order
@@ -1174,12 +1311,19 @@ public:
 WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite ()
   : TestSuite ("wifi-mac-ofdma", UNIT)
 {
-  AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE, 10000, 5440, 15), TestCase::QUICK);
-  AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_AGGREGATE_TF, 10000, 5440, 15), TestCase::QUICK);
-  AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_TF_MU_BAR, 10000, 5440, 15), TestCase::QUICK);
-  AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE, 10000, 0, 15), TestCase::QUICK);
-  AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_AGGREGATE_TF, 10000, 0, 15), TestCase::QUICK);
-  AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_TF_MU_BAR, 10000, 0, 15), TestCase::QUICK);
+  using MuEdcaParams = std::initializer_list<OfdmaAckSequenceTest::MuEdcaParameterSet>;
+
+  for (auto& muEdcaParameterSet : MuEdcaParams {{0, 0, 0, 0,}        /* no MU EDCA */,
+                                                {0, 127, 2047, 100}  /* EDCA disabled */,
+                                                {10, 127, 2047, 100} /* worse parameters */})
+    {
+      AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE, 10000, 5440, 15, muEdcaParameterSet), TestCase::QUICK);
+      AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_AGGREGATE_TF, 10000, 5440, 15, muEdcaParameterSet), TestCase::QUICK);
+      AddTestCase (new OfdmaAckSequenceTest (20, WifiAcknowledgment::DL_MU_TF_MU_BAR, 10000, 5440, 15, muEdcaParameterSet), TestCase::QUICK);
+      AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE, 10000, 0, 15, muEdcaParameterSet), TestCase::QUICK);
+      AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_AGGREGATE_TF, 10000, 0, 15, muEdcaParameterSet), TestCase::QUICK);
+      AddTestCase (new OfdmaAckSequenceTest (40, WifiAcknowledgment::DL_MU_TF_MU_BAR, 10000, 0, 15, muEdcaParameterSet), TestCase::QUICK);
+    }
 }
 
 static WifiMacOfdmaTestSuite g_wifiMacOfdmaTestSuite; ///< the test suite
