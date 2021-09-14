@@ -32,8 +32,8 @@ modules_enabled  = ['all_modules']
 examples_enabled = False
 tests_enabled    = False
 
-# GCC minimum version requirements for C++11 support
-gcc_min_version = (4, 9, 2)
+# GCC minimum version requirements for C++17 support
+gcc_min_version = (7, 0, 0)
 
 # Bug 2181:  clang warnings about unused local typedefs and potentially
 # evaluated expressions affecting darwin clang/LLVM version 7.0.0 (Xcode 7)
@@ -735,7 +735,7 @@ def configure(conf):
         cxx_standard = Options.options.cxx_standard
         # No need to change CXXFLAGS
     elif not cxx_standard and not Options.options.cxx_standard:
-        cxx_standard = "-std=c++11"
+        cxx_standard = "-std=c++17"
         env.append_value('CXXFLAGS', cxx_standard)
 
     if not conf.check_compilation_flag(cxx_standard):
