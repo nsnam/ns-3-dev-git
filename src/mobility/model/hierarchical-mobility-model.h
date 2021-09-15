@@ -68,31 +68,33 @@ public:
   /**
    * \return the child mobility model.
    *
-   * This allows you to get access to the position of the child
-   * relative to its parent.
+   * Calling GetPosition() on the model returned by this method allows
+   * one to access the position of the child relative to its parent.
    */
   Ptr<MobilityModel> GetChild (void) const;
   /**
    * \return the parent mobility model.
    *
-   * This allows you to get access to the position of the 
-   * parent mobility model which is used as the reference 
-   * position by the child mobility model.
+   * Calling GetPosition() on the model returned by this method allows
+   * one to access the position of the parent alone, which is used
+   * as the reference position to which the child position is added.
    */
   Ptr<MobilityModel> GetParent (void) const;
   /**
-   * Sets the child mobility model to a new one.  If before there
-   * already existed a child model, then the child mobility model
-   * current position is also modified to ensure that the composite
-   * position is preserved.
+   * Sets the child mobility model to a new one, possibly replacing
+   * an existing one.  If the child model is being replaced,
+   * then the new child mobility model's current position is also set to
+   * the previous position to ensure that the composite
+   * position is preserved by this operation.
    * \param model new mobility model child
    */
   void SetChild (Ptr<MobilityModel> model);
   /**
-   * Sets the parent mobility model to a new one.  If before there
-   * already existed a child model, then the child mobility model
-   * current position is also modified to ensure that the composite
-   * position is preserved.
+   * Sets the parent mobility model to a new one, possibly replacing
+   * an existing one.  If the parent model is being replaced,
+   * then the new position is set to the position that was set before
+   * replacement, to ensure that the composite position is preserved
+   * across changes to the parent model.
    * \param model new mobility model parent
    */
   void SetParent (Ptr<MobilityModel> model);
@@ -102,6 +104,7 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   virtual void DoInitialize (void);
+  virtual int64_t DoAssignStreams (int64_t);
 
   /**
    * Callback for when parent mobility model course change occurs
