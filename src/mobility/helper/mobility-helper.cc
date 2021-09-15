@@ -209,14 +209,13 @@ void
 MobilityHelper::CourseChanged (Ptr<OutputStreamWrapper> stream, Ptr<const MobilityModel> mobility)
 {
   std::ostream* os = stream->GetStream ();
-  Ptr<Node> node = mobility->GetObject<Node> ();
-  *os << "now=" << Simulator::Now ()
-      << " node=" << node->GetId ();
   Vector pos = mobility->GetPosition ();
+  Vector vel = mobility->GetVelocity ();
+  *os << "now=" << Simulator::Now ()
+      << " node=" << mobility->GetObject<Node> ()->GetId ();
   pos.x = DoRound (pos.x);
   pos.y = DoRound (pos.y);
   pos.z = DoRound (pos.z);
-  Vector vel = mobility->GetVelocity ();
   vel.x = DoRound (vel.x);
   vel.y = DoRound (vel.y);
   vel.z = DoRound (vel.z);
