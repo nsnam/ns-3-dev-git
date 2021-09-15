@@ -39,6 +39,7 @@ New user-visible features
 - (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
 - (wifi) Add support for 11ax MU EDCA Parameter Set.
 - (mobility) Add GroupMobilityHelper and demonstrate its use with a new program that configures the Reference Point Group Mobility model for a number of nodes.
+- (buildings) Add example program demonstrating group mobility with the buildings-aware random walk mobility model, and a script to animate the group motion.
 
 Bugs fixed
 ----------
