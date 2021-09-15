@@ -28,7 +28,7 @@ Design
 The design includes mobility models, position allocators, and helper
 functions.  
 
-In |ns3|, special ``MobilityModel`` objects track the evolution of position
+In |ns3|, `MobilityModel`` objects track the evolution of position
 with respect to a (cartesian) coordinate system.  The mobility model
 is typically aggregated to an ``ns3::Node`` object and queried using
 ``GetObject<MobilityModel> ()``. The base class ``ns3::MobilityModel``
@@ -42,8 +42,8 @@ mobility models.
 
 Most users interact with the mobility system using mobility helper
 classes.  The MobilityHelper combines a mobility model and position
-allocator, and can be used with a node container to install mobility
-capability on a set of nodes.
+allocator, and can be used with a node container to install a similar
+mobility capability on a set of nodes.
 
 We first describe the coordinate system and issues 
 surrounding multiple coordinate systems.
@@ -58,7 +58,7 @@ The question has arisen as to how to use the mobility models (supporting
 Cartesian coordinates) with different coordinate systems.  This is possible
 if the user performs conversion between the |ns3| Cartesian and the
 other coordinate system.  One possible library to assist is
-the proj4 http://trac.osgeo.org/proj/ library for projections and reverse 
+the `proj4 <https://proj.org>`_ library for projections and reverse 
 projections.
 
 If we support converting between coordinate systems, we must adopt a
@@ -136,13 +136,23 @@ at the helper API level).  The MobilityHelper class encapsulates
 a MobilityModel factory object and a PositionAllocator used for
 initial node layout.  
 
+Group mobility is also configurable via a GroupMobilityHelper object.
+Group mobility reuses the HierarchicalMobilityModel allowing one to
+define a reference (parent) mobility model and child (member) mobility
+models, with the position being the vector sum of the two mobility
+model positions (i.e., the child position is defined as an offset to
+the parent position).  In the GroupMobilityHelper, the parent mobility
+model is not associated with any node, and is used as the parent mobility
+model for all (distinct) child mobility models.  The reference point group
+mobility model [Camp2002]_ is the basis for this |ns3| model.
+
 ns-2 MobilityHelper
 ###################
 
 The |ns2| mobility format is a widely used mobility trace format.  The
 documentation is available at: http://www.isi.edu/nsnam/ns/doc/node172.html
 
-Valid trace files use the following ns2 statements:
+Valid trace files use the following |ns2| statements:
 
 .. sourcecode:: bash
 
@@ -172,10 +182,10 @@ Some examples of external tools that can export in this format include:
 
 - `BonnMotion <http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/>`_
 
-  - `Installation instructions <http://www.nsnam.org/wiki/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool>`_ and
-  - `Documentation <http://www.ida.liu.se/~rikno/files/mobility_generation.pdf>`_ for using BonnMotion with |ns3|
+  - `Installation instructions <https://www.nsnam.org/wiki/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool>`_ and
+  - `Documentation <https://sys.cs.uos.de/bonnmotion/doc/README.pdf>`_ for using BonnMotion with |ns3|
 
-- `SUMO <http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page>`_
+- `SUMO <https://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page>`_
 - `TraNS <http://trans.epfl.ch/>`_
 - |ns2| `setdest <http://www.winlab.rutgers.edu/~zhibinwu/html/ns2_wireless_scene.htm>`_ utility
 
@@ -193,7 +203,8 @@ Scope and Limitations
 References
 ==========
 
-TBD
+.. [Camp2002] T. Camp, J. Boleng, V. Davies.  "A survey of mobility models for ad hoc network research",
+   in Wireless Communications and Mobile Computing, 2002: vol. 2, pp. 2483-2502.
 
 Usage
 *****
@@ -429,6 +440,27 @@ Examples
 - main-grid-topology.cc
 - ns2-mobility-trace.cc
 - ns2-bonnmotion.cc
+
+reference-point-group-mobility-example.cc
+#########################################
+
+The reference point group mobility model ([Camp2002]_) is demonstrated
+in the example program `reference-point-group-mobility-example.cc`.
+This example runs a short simulation that illustrates a parent
+WaypointMobilityModel traversing a rectangular course within a bounding
+box, and three member nodes independently execute a two-dimensional
+random walk around the parent position, within a small bounding box.
+The example illustrates configuration using the GroupMobilityHelper
+and manual configuration without a helper; the configuration option
+is selectable by command-line argument.
+
+The example outputs two mobility trace files, a course change trace and
+a time-series trace of node position.  The latter trace file can be
+parsed by a Bash script (`reference-point-group-mobility-animate.sh`)
+to create PNG images at one-second intervals, which can then be combined
+using an image processing program such as ImageMagick to form a
+basic animated gif of the mobility.  The example and animation program
+files have further instructions on how to run them.
 
 Validation
 **********

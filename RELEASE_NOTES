@@ -38,6 +38,7 @@ New user-visible features
 - (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
 - (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
 - (wifi) Add support for 11ax MU EDCA Parameter Set.
+- (mobility) Add GroupMobilityHelper and demonstrate its use with a new program that configures the Reference Point Group Mobility model for a number of nodes.
 
 Bugs fixed
 ----------
