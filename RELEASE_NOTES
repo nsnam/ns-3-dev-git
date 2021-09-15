@@ -36,6 +36,7 @@ New user-visible features
 - (config-store) OBSOLETE Attributes are not anymore saved.
 - (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
 - (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
+- (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
 
 Bugs fixed
 ----------

@@ -60,6 +60,7 @@ us a note on ns-developers mailing list.</p>
 <li>In class <b>Ipv4InterfaceAddress</b>, a new function IsInSameSubnet () is added to check if both the IPv4 addresses are in the same subnet. Also, it is consistent with <b>Ipv6InterfaceAddress::IsInSameSubnet ()</b>.</li>
 <li>In class <b>ConfigStore</b>, a new Attribue <b>SaveDeprecated</b> allows to not save DEPRECATED Attributes. The default value is <b>false</b> (save DEPRECATED Attributes).</li>
 <li>In class <b>TracedCallback</b>, a new function <b>IsEmpty</b> allows to know if the TracedCallback will call any callback.</li>
+<li>A new specialization of std::hash for Ptr allows to use seamlessly Ptrs as keys in unordered_map and unordered_set.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
