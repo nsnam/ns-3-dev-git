@@ -251,14 +251,20 @@ public:
   static void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by the mobility models (including any position allocators assigned
-   * specifically to the model) on these nodes. Return the number of 
+   * used by the mobility models on these nodes. Return the number of 
    * streams (possibly zero) that have been assigned. The Install() 
    * method should have previously been called by the user.
    *
-   * \param stream first stream index to use
+   * \note If the PositionAllocator used contains random variables, they
+   * will not be affected by this call to AssignStreams because they are
+   * used earlier during Install() time.  If the user needs to assign a fixed
+   * stream number to a PositionAllocator used with this helper, the user
+   * should instantiate it outside of the helper, call AssignStreams() on
+   * it, and then pass the pointer of it to this helper.
+   *
    * \param c NodeContainer of the set of nodes for which the MobilityModels
    * should be modified to use a fixed stream
+   * \param stream first stream index to use
    * \return the number of stream indices assigned by this helper
    */
   int64_t AssignStreams (NodeContainer c, int64_t stream);
