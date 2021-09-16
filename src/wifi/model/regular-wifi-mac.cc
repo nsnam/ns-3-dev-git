@@ -358,17 +358,14 @@ RegularWifiMac::GetHeCapabilities (void) const
         }
       capabilities.SetChannelWidthSet (channelWidthSet);
       capabilities.SetLdpcCodingInPayload (htConfiguration->GetLdpcSupported ());
-      uint8_t gi = 0;
-      if (heConfiguration->GetGuardInterval () <= NanoSeconds (1600))
-        {
-          //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
-          gi |= 0x01;
-        }
       if (heConfiguration->GetGuardInterval () == NanoSeconds (800))
         {
-          gi |= 0x02;
+          //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
+          //todo: Assuming reception support for both 1x HE LTF and 4x HE LTF 800 ns
+          capabilities.SetHeSuPpdu1xHeLtf800nsGi (true);
+          capabilities.SetHePpdu4xHeLtf800nsGi (true);
         }
-      capabilities.SetHeLtfAndGiForHePpdus (gi);
+
       uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
                                            m_beMaxAmpduSize, m_bkMaxAmpduSize});
       // round to the next power of two minus one

@@ -60,14 +60,15 @@ public:
    * \param ctrl1 the HE MAC Capabilities Info field 1 in the HE Capabilities information element
    * \param ctrl2 the HE MAC Capabilities Info field 2 in the HE Capabilities information element
    */
-  void SetHeMacCapabilitiesInfo (uint32_t ctrl1, uint8_t ctrl2);
+  void SetHeMacCapabilitiesInfo (uint32_t ctrl1, uint16_t ctrl2);
   /**
    * Set the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
    * \param ctrl1 the HE PHY Capabilities Info field 1 in the HE Capabilities information element
    * \param ctrl2 the HE PHY Capabilities Info field 2 in the HE Capabilities information element
+   * \param ctrl3 the HE PHY Capabilities Info field 3 in the HE Capabilities information element
    */
-  void SetHePhyCapabilitiesInfo (uint64_t ctrl1, uint8_t ctrl2);
+  void SetHePhyCapabilitiesInfo (uint64_t ctrl1, uint16_t ctrl2, uint8_t ctrl3);
   /**
    * Set the MCS and NSS field in the HE Capabilities information element.
    *
@@ -82,11 +83,11 @@ public:
    */
   uint32_t GetHeMacCapabilitiesInfo1 () const;
   /**
-   * Return the last octet of the HE MAC Capabilities Info field in the HE Capabilities information element.
+   * Return the last 2 octets of the HE MAC Capabilities Info field in the HE Capabilities information element.
    *
-   * \return the last octet of the HE MAC Capabilities Info field in the HE Capabilities information element
+   * \return the last 2 octets of the HE MAC Capabilities Info field in the HE Capabilities information element
    */
-  uint8_t GetHeMacCapabilitiesInfo2 () const;
+  uint16_t GetHeMacCapabilitiesInfo2 () const;
   /**
    * Return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
@@ -94,11 +95,17 @@ public:
    */
   uint64_t GetHePhyCapabilitiesInfo1 () const;
   /**
+   * Return the octets 9-10 of the HE PHY Capabilities Info field in the HE Capabilities information element.
+   *
+   * \return the octets 9-10 of the HE PHY Capabilities Info field in the HE Capabilities information element
+   */
+  uint16_t GetHePhyCapabilitiesInfo2 () const;
+  /**
    * Return the last octet of the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
    * \return the last octet of the HE PHY Capabilities Info field in the HE Capabilities information element
    */
-  uint8_t GetHePhyCapabilitiesInfo2 () const;
+  uint8_t GetHePhyCapabilitiesInfo3 () const;
   /**
    * Return the MCS and NSS field in the HE Capabilities information element.
    *
@@ -120,11 +127,17 @@ public:
    */
   void SetLdpcCodingInPayload (uint8_t ldpcCodingInPayload);
   /**
-   * Set HE LTF and GI for HE PDPUs.
+   * Set 1xHE-LTF and 800ns GI in HE SU PPDU reception support
    *
-   * \param heLtfAndGiForHePpdus the HE LTF and GI
+   * \param heSuPpdu1xHeLtf800nsGi 1xHE-LTF and 800ns GI in HE SU PPDU reception support
    */
-  void SetHeLtfAndGiForHePpdus (uint8_t heLtfAndGiForHePpdus);
+  void SetHeSuPpdu1xHeLtf800nsGi (bool heSuPpdu1xHeLtf800nsGi);
+  /**
+   * Set 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
+   *
+   * \param heSuPpdu4xHeLtf800nsGi 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
+   */
+  void SetHePpdu4xHeLtf800nsGi (bool heSuPpdu4xHeLtf800nsGi);
   /**
    * Get channel width set.
    *
@@ -138,11 +151,18 @@ public:
    */
   uint8_t GetLdpcCodingInPayload (void) const;
   /**
-   * Get HE LTF and GI for HE PDPUs.
+   * Get 1xHE-LTF and 800ns GI in HE SU PPDU reception support
    *
-   * \returns the HE LTF and GI
+   * \returns true if 1xHE-LTF and 800ns GI in HE SU PPDU reception is supported, false otherwise
    */
-  uint8_t GetHeLtfAndGiForHePpdus (void) const;
+  bool GetHeSuPpdu1xHeLtf800nsGi (void) const;
+  /**
+   * Get 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception support
+   *
+   * \returns true if 4xHE-LTF and 800ns GI in HE SU PPDU and HE MU PPDU reception is supported,
+   *          false otherwise
+   */
+  bool GetHePpdu4xHeLtf800nsGi (void) const;
   /**
    * Get highest MCS supported.
    *
@@ -202,7 +222,8 @@ public:
 
 
 private:
-  //MAC Capabilities Info fields
+  // MAC Capabilities Info fields
+  // IEEE 802.11ax-2021 9.4.2.248.2 HE MAC Capabilities Information field
   uint8_t m_plusHtcHeSupport;                            //!< HTC HE support
   uint8_t m_twtRequesterSupport;                         //!< TWT requester support
   uint8_t m_twtResponderSupport;                         //!< TWT responder support
@@ -210,60 +231,94 @@ private:
   uint8_t m_maximumNumberOfFragmentedMsdus;              //!< maximum number of fragmentation MSDUs
   uint8_t m_minimumFragmentSize;                         //!< minimum fragment size
   uint8_t m_triggerFrameMacPaddingDuration;              //!< trigger frame MAC padding duration
-  uint8_t m_multiTidAggregationSupport;                  //!< multi-TID aggregation support
+  uint8_t m_multiTidAggregationRxSupport;                //!< multi-TID aggregation Rx support
   uint8_t m_heLinkAdaptation;                            //!< HE link adaptation
   uint8_t m_allAckSupport;                               //!< all Ack support
-  uint8_t m_ulMuResponseSchedulingSupport;               //!< UL MU response scheduling support
-  uint8_t m_aBsrSupport;                                 //!< BSR support
+  uint8_t m_trsSupport;                                  //!< TRS support
+  uint8_t m_bsrSupport;                                  //!< BSR support
   uint8_t m_broadcastTwtSupport;                         //!< broadcast TXT support
   uint8_t m_32bitBaBitmapSupport;                        //!< 32-bit BA bitmap support
   uint8_t m_muCascadeSupport;                            //!< MU cascade support
-  uint8_t m_ackEnabledMultiTidAggregationSupport;        //!< ack enabled multi-TID aggregation support
-  uint8_t m_groupAddressedMultiStaBlockAckInDlMuSupport; //!< group addressed multi-STA BlockAck in DL support
+  uint8_t m_ackEnabledAggregationSupport;                //!< ack enabled aggregation support
   uint8_t m_omControlSupport;                            //!< operation mode control support
   uint8_t m_ofdmaRaSupport;                              //!< OFDMA RA support
-  uint8_t m_maxAmpduLengthExponent;                      //!< maximum A-MPDU length exponent
+  uint8_t m_maxAmpduLengthExponent;                      //!< maximum A-MPDU length exponent extension
   uint8_t m_amsduFragmentationSupport;                   //!< A-MSDU fragmentation support
   uint8_t m_flexibleTwtScheduleSupport;                  //!< flexible TWT schedule support
   uint8_t m_rxControlFrameToMultiBss;                    //!< receive control frame to multi-BSS
-  uint8_t m_bsrpAmpduAggregation;                        //!< BSRP A-MPDU aggregation
+  uint8_t m_bsrpBqrpAmpduAggregation;                    //!< BSRP BQRP A-MPDU aggregation
   uint8_t m_qtpSupport;                                  //!< QTP support
-  uint8_t m_aBqrSupport;                                 //!< ABQR support
+  uint8_t m_bqrSupport;                                  //!< BQR support
+  uint8_t m_psrResponder;                                //!< PSR responder
+  uint8_t m_ndpFeedbackReportSupport;                    //!< NDP feedback report support
+  uint8_t m_opsSupport;                                  //!< OPS support
+  uint8_t m_amsduNotUnderBaInAmpduSupport;               //!< AMSDU not under BA in Ack enabled A-MPDU support
+  uint8_t m_multiTidAggregationTxSupport;                //!< Multi-TID aggregation TX support
+  uint8_t m_heSubchannelSelectiveTxSupport;              //!< HE subchannel selective transmission support
+  uint8_t m_ul2x996ToneRuSupport;                        //!< UL 2x996 tone RU support
+  uint8_t m_omControlUlMuDataDisableRxSupport;           //!< OM control UL MU data disable RX support
+  uint8_t m_heDynamicSmPowerSave;                        //!< HE dynamic SM power save
+  uint8_t m_puncturedSoundingSupport;                    //!< punctured sounding support
+  uint8_t m_heVhtTriggerFrameRxSupport;                  //!< HE and VHT trigger frame RX support
 
-  //PHY Capabilities Info fields
-  uint8_t m_dualBandSupport;                         //!< dual band support
+  // PHY Capabilities Info fields
+  // IEEE 802.11ax-2021 9.4.2.248.3 HE PHY Capabilities Information field
   uint8_t m_channelWidthSet;                         //!< channel width set
-  uint8_t m_preamblePuncturingRx;                    //!< preamble puncturing receive
+  uint8_t m_puncturedPreambleRx;                     //!< Punctured preamble Rx
   uint8_t m_deviceClass;                             //!< device class
   uint8_t m_ldpcCodingInPayload;                     //!< LDPC coding in payload
-  uint8_t m_heLtfAndGiForHePpdus;                    //!< HE-LTF and GI for HE-PPDUs
-  uint8_t m_heLtfAndGiForNdp;                        //!< HE-LTF and GI for NDP
-  uint8_t m_stbcTxAndRx;                             //!< STBC transmit and receive
-  uint8_t m_doppler;                                 //!< Doppler
-  uint8_t m_ulMu;                                    //!< UL MU
-  uint8_t m_dcmEncodingTx;                           //!< DCM encoding transmit
-  uint8_t m_dcmEncodingRx;                           //!< DCM encoding receive
-  uint8_t m_ulHeMuPpduPayloadSupport;                //!< UL HE-MU-PDPU payload support
+  uint8_t m_heSuPpdu1xHeLtf800nsGi;                  //!< HE SU PPDU with 1x HE LTF and 0.8us GI
+  uint8_t m_midambleRxMaxNsts;                       //!< Midamble TX/RX max NSTS
+  uint8_t m_ndp4xHeLtfAnd32msGi;                     //!< NDP with 4x HE-LTF and 3.2us GI
+  uint8_t m_stbcTxLeq80MHz;                          //!< STBC TX <= 80MHz
+  uint8_t m_stbcRxLeq80MHz;                          //!< STBC RX <= 80Mhz
+  uint8_t m_dopplerTx;                               //!< Doppler Tx
+  uint8_t m_dopplerRx;                               //!< Doppler Rx
+  uint8_t m_fullBwUlMuMimo;                          //!< Full Bandwidth UL MU-MIMO
+  uint8_t m_partialBwUlMuMimo;                       //!< Partial Bandwidth UL MU-MIMO
+  uint8_t m_dcmMaxConstellationTx;                   //!< DCM Max Constellation Tx
+  uint8_t m_dcmMaxNssTx;                             //!< DCM Max NSS Tx
+  uint8_t m_dcmMaxConstellationRx;                   //!< DCM Max Constellation Rx
+  uint8_t m_dcmMaxNssRx;                             //!< DCM Max NSS Rx
+  uint8_t m_rxPartialBwSuInHeMu;                     //!< Rx Partial BW SU in 20 MHz HE MU PPDU
   uint8_t m_suBeamformer;                            //!< SU beamformer
   uint8_t m_suBeamformee;                            //!< SU beamformee
   uint8_t m_muBeamformer;                            //!< MU beamformer
   uint8_t m_beamformeeStsForSmallerOrEqualThan80Mhz; //!< beam formee STS for < 80 MHz
-  uint8_t m_nstsTotalForSmallerOrEqualThan80Mhz;     //!< STS total for < 80 MHz
   uint8_t m_beamformeeStsForLargerThan80Mhz;         //!< beamformee STS for > 80MHz
-  uint8_t m_nstsTotalForLargerThan80Mhz;             //!< STS total for > 80 MHz
   uint8_t m_numberOfSoundingDimensionsForSmallerOrEqualThan80Mhz; //!< # of sounding dimensions for < 80 MHz
   uint8_t m_numberOfSoundingDimensionsForLargerThan80Mhz;         //!< # of sounding dimensions for > 80 MHz
   uint8_t m_ngEqual16ForSuFeedbackSupport;          //!< equal 16 for SU feedback
   uint8_t m_ngEqual16ForMuFeedbackSupport;          //!< equal 16 for MU feedback
-  uint8_t m_codebookSize42ForSuSupport;             //!< codebook size 42 for SU
-  uint8_t m_codebookSize75ForSuSupport;             //!< codebook size 75 for SU
-  uint8_t m_beamformingFeedbackWithTriggerFrame;    //!< beamforming feedback with trigger frame
-  uint8_t m_heErSuPpduPayload;                      //!< HE-ER-SU-PPDU payload
+  uint8_t m_codebookSize42SuFeedback;               //!< Codebook Size = {4, 2} SU feedback
+  uint8_t m_codebookSize75MuFeedback;               //!< Codebook Size = {7, 5} MU feedback
+  uint8_t m_triggeredSuBfFeedback;                  //!< Triggered SU beamforming feedback
+  uint8_t m_triggeredMuBfFeedback;                  //!< Triggered MU beamforming feedback
+  uint8_t m_triggeredCqiFeedback;                   //!< Triggered CQI feedback
+  uint8_t m_erPartialBandwidth;                     //!< Extended range partial bandwidth
   uint8_t m_dlMuMimoOnPartialBandwidth;             //!< DL MU-MIMO on partial bandwidth
   uint8_t m_ppeThresholdPresent;                    //!< PPE threshold present
-  uint8_t m_srpBasedSrSupport;                      //!< SRP based SR support
+  uint8_t m_psrBasedSrSupport;                      //!< PSR based SR support
   uint8_t m_powerBoostFactorAlphaSupport;           //!< power boost factor alpha support
-  uint8_t m_4TimesHeLtfAnd800NsGiSupportForHePpdus; //!< 4 times HE-LFT and 800ns GI support for HE-PPDUs
+  uint8_t m_hePpdu4xHeLtf800nsGi;                   //!< 4 times HE-LFT and 800ns GI support for HE-PPDUs
+  uint8_t m_maxNc;                                  //!< Max Nc for HE compressed beamforming/CQI report
+  uint8_t m_stbcTxGt80MHz;                          //!< STBC Tx > 80MHz
+  uint8_t m_stbcRxGt80MHz;                          //!< STBC RX > 80MHz
+  uint8_t m_heErSuPpdu4xHeLtf08sGi;                 //!< HE ER SU PPDU with 4x HE LTF and 0.8us GI
+  uint8_t m_hePpdu20MHzIn40MHz24GHz;                //!< 20MHz in 40MHz HE PPDU in 2.4GHz band
+  uint8_t m_hePpdu20MHzIn160MHz;                    //!< 20MHz in 160/80+80MHz HE PPDU
+  uint8_t m_hePpdu80MHzIn160MHz;                    //!< 80MHz in 160/80+80MHz HE PPDU
+  uint8_t m_heErSuPpdu1xHeLtf08Gi;                  //!< HE ER SU PPDU with 1x HE LTF and 0.8us GI
+  uint8_t m_midamble2xAnd1xHeLtf;                   //!< Midamble TX/RX 2x and 1x HE-LTF
+  uint8_t m_dcmMaxRu;                               //!< DCM Max RU
+  uint8_t m_longerThan16HeSigbOfdm;                 //!< Longer than 16 HE SIG-=B OFDM symbols support
+  uint8_t m_nonTriggeredCqiFeedback;                //!< Non-Triggered CQI feedback
+  uint8_t m_tx1024QamLt242Ru;                       //!< TX 1024 QAM < 242 =-tone RU support
+  uint8_t m_rx1024QamLt242Ru;                       //!< TX 1024 QAM < 242 =-tone RU support
+  uint8_t m_rxFullBwSuInHeMuCompressedSigB;         //!< RX full BW SU using HE MU PPDU with compressed SIGB
+  uint8_t m_rxFullBwSuInHeMuNonCompressedSigB;      //!< RX full BW SU using HE MU PPDU with non-compressed SIGB
+  uint8_t m_nominalPacketPadding;                   //!< Nominal packet padding
+  uint8_t m_maxHeLtfRxInHeMuMoreThanOneRu;          ///< max HE-LTF symbols STA can Rx in HE MU PPDU with more than one RU
 
   //MCS and NSS field information
   uint8_t m_highestNssSupportedM1; //!< highest NSS support M1

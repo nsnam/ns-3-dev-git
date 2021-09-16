@@ -1387,16 +1387,13 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
           state->m_channelWidth = 20;
         }
     }
-  if (heCapabilities.GetHeLtfAndGiForHePpdus () >= 2)
+  if (heCapabilities.GetHeSuPpdu1xHeLtf800nsGi () == 1)
     {
       state->m_guardInterval = 800;
     }
-  else if (heCapabilities.GetHeLtfAndGiForHePpdus () == 1)
-    {
-      state->m_guardInterval = 1600;
-    }
   else
     {
+      //todo: Using 3200ns, default value for HeConfiguration::GuardInterval
       state->m_guardInterval = 3200;
     }
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
