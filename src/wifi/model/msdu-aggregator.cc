@@ -127,10 +127,20 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
   while ((it = queue->PeekByTidAndAddress (tid, recipient, it)) != queue->end ()
          && m_htFem->TryAggregateMsdu (*it, txParams, availableTime))
     {
-      // Aggregate() dequeues the MSDU being aggregated, so we have to save an iterator
-      // pointing to the next item
-      auto msduIt = it++;
-      queue->Aggregate (amsdu->GetQueueIteratorPair ().it, msduIt);
+      // dequeue the MSDU being aggregated and advance the current iterator
+      // before it is invalidated
+      Ptr<WifiMacQueueItem> msdu = *it++;
+      queue->DequeueIfQueued (msdu);
+
+      auto pos = std::next (amsdu->GetQueueIteratorPair ().it);
+      queue->DequeueIfQueued (amsdu);
+
+      amsdu->Aggregate (msdu);
+      bool ret = queue->Insert (pos, amsdu);
+      // The size of a WifiMacQueue is measured as number of packets. We dequeued
+      // two packets, so there is certainly room for inserting one packet
+      NS_ABORT_IF (!ret);
+
       nMsdu++;
     }
 

@@ -63,8 +63,7 @@ WifiMacQueue::GetTypeId (void)
 }
 
 WifiMacQueue::WifiMacQueue ()
-  : m_expiredPacketsPresent (false),
-    NS_LOG_TEMPLATE_DEFINE ("WifiMacQueue")
+  : NS_LOG_TEMPLATE_DEFINE ("WifiMacQueue")
 {
 }
 
@@ -187,96 +186,18 @@ WifiMacQueue::Dequeue (void)
   return 0;
 }
 
-Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueByAddress (Mac48Address dest)
+void
+WifiMacQueue::DequeueIfQueued (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << dest);
-  ConstIterator it = PeekByAddress (dest);
+  NS_LOG_FUNCTION (this << *mpdu);
 
-  if (it == end ())
+  if (mpdu->IsQueued ())
     {
-      return 0;
+      NS_ASSERT (mpdu->m_queueIt.queue == this);
+      NS_ASSERT (*mpdu->m_queueIt.it == mpdu);
+
+      DoDequeue (mpdu->m_queueIt.it);
     }
-  return Dequeue (it);
-}
-
-Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueByTid (uint8_t tid)
-{
-  NS_LOG_FUNCTION (this << +tid);
-  ConstIterator it = PeekByTid (tid);
-
-  if (it == end ())
-    {
-      return 0;
-    }
-  return Dequeue (it);
-}
-
-Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueByTidAndAddress (uint8_t tid, Mac48Address dest)
-{
-  NS_LOG_FUNCTION (this << +tid << dest);
-  ConstIterator it = PeekByTidAndAddress (tid, dest);
-
-  if (it == end ())
-    {
-      return 0;
-    }
-  return Dequeue (it);
-}
-
-Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets)
-{
-  NS_LOG_FUNCTION (this);
-  ConstIterator it = PeekFirstAvailable (blockedPackets);
-
-  if (it == end ())
-    {
-      return 0;
-    }
-  return Dequeue (it);
-}
-
-Ptr<WifiMacQueueItem>
-WifiMacQueue::Dequeue (ConstIterator pos)
-{
-  NS_LOG_FUNCTION (this);
-
-  const Time now = Simulator::Now ();
-  if (!m_expiredPacketsPresent)
-    {
-      if (TtlExceeded (pos, now))
-        {
-          NS_LOG_DEBUG ("Packet lifetime expired");
-          return 0;
-        }
-      return DoDequeue (pos);
-    }
-
-  // remove stale items queued before the given position
-  ConstIterator it = begin ();
-  while (it != end ())
-    {
-      if (it == pos)
-        {
-          // reset the flag signaling the presence of expired packets before returning
-          m_expiredPacketsPresent = false;
-
-          if (TtlExceeded (it, now))
-            {
-              return 0;
-            }
-          return DoDequeue (it);
-        }
-      else if (!TtlExceeded (it, now))
-        {
-          it++;
-        }
-    }
-  NS_LOG_DEBUG ("Invalid iterator");
-  return 0;
 }
 
 Ptr<const WifiMacQueueItem>
@@ -292,8 +213,6 @@ WifiMacQueue::Peek (void) const
         {
           return DoPeek (it);
         }
-      // signal the presence of expired packets
-      m_expiredPacketsPresent = true;
     }
   NS_LOG_DEBUG ("The queue is empty");
   return 0;
@@ -317,11 +236,6 @@ WifiMacQueue::PeekByAddress (Mac48Address dest, ConstIterator pos) const
               return it;
             }
         }
-      else
-        {
-          // signal the presence of expired packets
-          m_expiredPacketsPresent = true;
-        }
       it++;
     }
   NS_LOG_DEBUG ("The queue is empty");
@@ -344,11 +258,6 @@ WifiMacQueue::PeekByTid (uint8_t tid, ConstIterator pos) const
             {
               return it;
             }
-        }
-      else
-        {
-          // signal the presence of expired packets
-          m_expiredPacketsPresent = true;
         }
       it++;
     }
@@ -374,11 +283,6 @@ WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest, ConstIterator
               return it;
             }
         }
-      else
-        {
-          // signal the presence of expired packets
-          m_expiredPacketsPresent = true;
-        }
       it++;
     }
   NS_LOG_DEBUG ("The queue is empty");
@@ -402,11 +306,6 @@ WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPacke
             {
               return it;
             }
-        }
-      else
-        {
-          // signal the presence of expired packets
-          m_expiredPacketsPresent = true;
         }
       it++;
     }
@@ -474,9 +373,6 @@ WifiMacQueue::Remove (ConstIterator pos, bool removeExpired)
     {
       if (it == pos)
         {
-          // reset the flag signaling the presence of expired packets before returning
-          m_expiredPacketsPresent = false;
-
           ConstIterator curr = pos++;
           DoRemove (curr);
           return pos;
@@ -643,6 +539,14 @@ WifiMacQueue::DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item)
 Ptr<WifiMacQueueItem>
 WifiMacQueue::DoDequeue (ConstIterator pos)
 {
+  NS_LOG_FUNCTION (this);
+
+  if (TtlExceeded (pos, Simulator::Now ()))
+    {
+      NS_LOG_DEBUG ("Packet lifetime expired");
+      return nullptr;
+    }
+
   Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoDequeue (pos);
 
   if (item != 0 && item->GetHeader ().IsQosData ())
@@ -688,24 +592,6 @@ WifiMacQueue::DoRemove (ConstIterator pos)
     }
 
   return item;
-}
-
-void
-WifiMacQueue::Aggregate (ConstIterator amsduIt, ConstIterator msduIt)
-{
-  NS_LOG_FUNCTION (this << **amsduIt << **msduIt);
-  NS_ASSERT (amsduIt != msduIt);
-
-  Ptr<WifiMacQueueItem> msdu = DoDequeue (msduIt);
-
-  ConstIterator pos = std::next (amsduIt);
-  Ptr<WifiMacQueueItem> amsdu = DoDequeue (amsduIt);
-  amsdu->Aggregate (msdu);
-
-  bool ret = DoEnqueue (pos, amsdu);
-  // The size of a WifiMacQueue is measured as number of packets. We dequeued
-  // two packets, so there is certainly room for inserting one packet
-  NS_ABORT_IF (!ret);
 }
 
 } //namespace ns3
