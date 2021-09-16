@@ -286,7 +286,6 @@ const std::set<FrequencyChannelInfo> WifiPhy::m_frequencyChannels =
   { std::make_tuple (207, 6975, 160, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ) }
 };
 
-std::map<WifiModulationClass, Ptr<PhyEntity> > WifiPhy::m_staticPhyEntities; //will be filled by g_constructor_XXX
 
 TypeId
 WifiPhy::GetTypeId (void)
@@ -620,6 +619,13 @@ WifiPhy::DoDispose (void)
   m_phyEntities.clear ();
 }
 
+std::map<WifiModulationClass, Ptr<PhyEntity> > &
+WifiPhy::GetStaticPhyEntities (void)
+{
+    static std::map<WifiModulationClass, Ptr<PhyEntity> > g_staticPhyEntities;
+    return g_staticPhyEntities;
+}
+
 Ptr<WifiPhyStateHelper>
 WifiPhy::GetState (void) const
 {
@@ -864,8 +870,8 @@ WifiPhy::CalculateSnr (const WifiTxVector& txVector, double ber) const
 const Ptr<const PhyEntity>
 WifiPhy::GetStaticPhyEntity (WifiModulationClass modulation)
 {
-  const auto it = m_staticPhyEntities.find (modulation);
-  NS_ABORT_MSG_IF (it == m_staticPhyEntities.end (), "Unimplemented Wi-Fi modulation class");
+  const auto it = GetStaticPhyEntities ().find (modulation);
+  NS_ABORT_MSG_IF (it == GetStaticPhyEntities ().end (), "Unimplemented Wi-Fi modulation class");
   return it->second;
 }
 
@@ -881,15 +887,15 @@ void
 WifiPhy::AddStaticPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
   NS_LOG_FUNCTION (modulation);
-  NS_ASSERT_MSG (m_staticPhyEntities.find (modulation) == m_staticPhyEntities.end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
-  m_staticPhyEntities[modulation] = phyEntity;
+  NS_ASSERT_MSG (GetStaticPhyEntities ().find (modulation) == GetStaticPhyEntities ().end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
+    GetStaticPhyEntities ()[modulation] = phyEntity;
 }
 
 void
 WifiPhy::AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
   NS_LOG_FUNCTION (this << modulation);
-  NS_ABORT_MSG_IF (m_staticPhyEntities.find (modulation) == m_staticPhyEntities.end (), "Cannot add an unimplemented PHY to supported list. Update the former first.");
+  NS_ABORT_MSG_IF (GetStaticPhyEntities ().find (modulation) == GetStaticPhyEntities ().end (), "Cannot add an unimplemented PHY to supported list. Update the former first.");
   NS_ASSERT_MSG (m_phyEntities.find (modulation) == m_phyEntities.end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
   phyEntity->SetOwner (this);
   m_phyEntities[modulation] = phyEntity;

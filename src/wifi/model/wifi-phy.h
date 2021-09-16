@@ -1167,7 +1167,7 @@ protected:
    * Add the PHY entity to the map of supported PHY entities for the
    * given modulation class for the WifiPhy instance.
    * This is a wrapper method used to check that the PHY entity is
-   * in the static map of implemented PHY entities (\see m_staticPhyEntities).
+   * in the static map of implemented PHY entities (\see GetStaticPhyEntities).
    * In addition, child classes can add their own PHY entities.
    *
    * \param modulation the modulation class
@@ -1376,12 +1376,13 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, uint16_t /* STA-ID*/> m_phyMonitorSniffTxTrace;
 
   /**
-   * Map of __implemented__ PHY entities. This is used to compute the different
+   * \return the map of __implemented__ PHY entities.
+   * This is used to compute the different
    * amendment-specific parameters in a static manner.
    * For PHY entities supported by a given WifiPhy instance,
    * \see m_phyEntities.
    */
-  static std::map<WifiModulationClass, Ptr<PhyEntity> > m_staticPhyEntities;
+  static std::map<WifiModulationClass, Ptr<PhyEntity> > & GetStaticPhyEntities (void);
 
   WifiPhyStandard m_standard;               //!< WifiPhyStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand
