@@ -77,7 +77,11 @@ private:
   /** The pointer. */
   T *m_ptr;
 
-  /** Helper to test for null pointer. */
+  /** 
+   * Helper to test for null pointer. 
+   *
+   * This supports the "safe-bool" idiom, see `operator Tester * ()`
+   */
   class Tester
   {
   public:
@@ -196,7 +200,7 @@ public:
    */
   bool operator! ();
   /**
-   * Test for non-NULL pointer.
+   * Test for non-NULL Ptr.
    *
    * This enables simple pointer checks like
    * \code
@@ -204,6 +208,8 @@ public:
    *   if (p) ...
    * \endcode
    * This also disables deleting a Ptr
+   *
+   * This supports the "safe-bool" idiom; see [More C++ Idioms/Safe bool](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool)
    */
   operator Tester * () const;
 };
