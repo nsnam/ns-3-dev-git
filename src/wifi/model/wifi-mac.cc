@@ -174,6 +174,9 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       dcf->SetAifsn (2);
       dcf->SetTxopLimit (MicroSeconds (0));
       break;
+    case AC_BEACON:
+      // done by ApWifiMac
+      break;
     case AC_UNDEF:
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;

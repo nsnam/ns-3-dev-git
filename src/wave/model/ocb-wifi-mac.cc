@@ -365,6 +365,9 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
       dcf->SetMaxCw (cwmax);
       dcf->SetAifsn (aifsn);
       break;
+    case AC_BEACON:
+      // done by ApWifiMac
+      break;
     case AC_UNDEF:
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;

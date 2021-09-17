@@ -53,7 +53,7 @@ WifiMacQueueDropOldestTest::WifiMacQueueDropOldestTest()
 void
 WifiMacQueueDropOldestTest::DoRun ()
 {
-  auto wifiMacQueue = CreateObject<WifiMacQueue> ();
+  auto wifiMacQueue = CreateObject<WifiMacQueue> (AC_BE);
   wifiMacQueue->SetMaxSize (QueueSize ("5p"));
   wifiMacQueue->SetAttribute ("DropPolicy", EnumValue (WifiMacQueue::DROP_OLDEST));
 

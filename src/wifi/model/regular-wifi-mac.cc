@@ -463,7 +463,7 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   //already configured.
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
-  Ptr<QosTxop> edca = CreateObject<QosTxop> ();
+  Ptr<QosTxop> edca = CreateObject<QosTxop> (ac);
   edca->SetChannelAccessManager (m_channelAccessManager);
   edca->SetWifiMac (this);
   edca->SetTxMiddle (m_txMiddle);
@@ -473,7 +473,6 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
                                                             &m_nackedMpduCallback));
   edca->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
                                               &m_droppedMpduCallback));
-  edca->SetAccessCategory (ac);
 
   m_edca.insert (std::make_pair (ac, edca));
 }

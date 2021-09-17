@@ -62,8 +62,9 @@ WifiMacQueue::GetTypeId (void)
   return tid;
 }
 
-WifiMacQueue::WifiMacQueue ()
-  : NS_LOG_TEMPLATE_DEFINE ("WifiMacQueue")
+WifiMacQueue::WifiMacQueue (AcIndex ac)
+  : m_ac (ac),
+    NS_LOG_TEMPLATE_DEFINE ("WifiMacQueue")
 {
 }
 

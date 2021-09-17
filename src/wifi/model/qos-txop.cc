@@ -90,8 +90,10 @@ QosTxop::GetTypeId (void)
   return tid;
 }
 
-QosTxop::QosTxop ()
-  : m_startTxop (Seconds (0)),
+QosTxop::QosTxop (AcIndex ac)
+  : Txop (CreateObject<WifiMacQueue> (ac)),
+    m_ac (ac),
+    m_startTxop (Seconds (0)),
     m_txopDuration (Seconds (0)),
     m_muCwMin (0),
     m_muCwMax (0),
@@ -582,13 +584,6 @@ QosTxop::GetRemainingTxop (void) const
     }
   NS_LOG_FUNCTION (this << remainingTxop);
   return remainingTxop;
-}
-
-void
-QosTxop::SetAccessCategory (AcIndex ac)
-{
-  NS_LOG_FUNCTION (this << +ac);
-  m_ac = ac;
 }
 
 void

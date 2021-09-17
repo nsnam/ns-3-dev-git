@@ -64,7 +64,14 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  WifiMacQueue ();
+
+  /**
+   * Constructor
+   *
+   * \param ac the Access Category of the packets stored in this queue
+   */
+  WifiMacQueue (AcIndex ac = AC_UNDEF);
+
   ~WifiMacQueue ();
 
   /// drop policy
@@ -323,6 +330,7 @@ private:
 
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
+  AcIndex m_ac;                             //!< the access category
 
   /// Per (MAC address, TID) pair queued packets
   std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedPackets;

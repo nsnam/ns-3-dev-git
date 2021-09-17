@@ -83,7 +83,13 @@ Txop::GetTypeId (void)
 }
 
 Txop::Txop ()
+  : Txop (CreateObject<WifiMacQueue> (AC_BE_NQOS))
+{
+}
+
+Txop::Txop (Ptr<WifiMacQueue> queue)
   : m_channelAccessManager (0),
+    m_queue (queue),
     m_cwMin (0),
     m_cwMax (0),
     m_cw (0),
@@ -93,7 +99,6 @@ Txop::Txop ()
     m_backoffStart (Seconds (0.0))
 {
   NS_LOG_FUNCTION (this);
-  m_queue = CreateObject<WifiMacQueue> ();
   m_rng = CreateObject<UniformRandomVariable> ();
 }
 
@@ -414,12 +419,6 @@ bool
 Txop::IsQosTxop () const
 {
   return false;
-}
-
-AcIndex
-Txop::GetAccessCategory (void) const
-{
-  return AC_BE_NQOS;
 }
 
 } //namespace ns3

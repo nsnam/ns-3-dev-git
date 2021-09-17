@@ -80,11 +80,16 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  QosTxop ();
+  /**
+   * Constructor
+   *
+   * \param ac the Access Category
+   */
+  QosTxop (AcIndex ac = AC_UNDEF);
+
   virtual ~QosTxop ();
 
   bool IsQosTxop (void) const override;
-  AcIndex GetAccessCategory (void) const override;
   bool HasFramesToTransmit (void) override;
   void NotifyChannelAccessed (Time txopDuration) override;
   void NotifyChannelReleased (void) override;
@@ -96,6 +101,13 @@ public:
    * \param qosFem the associated QoS Frame Exchange Manager.
    */
   void SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem);
+
+  /**
+   * Get the access category of this object.
+   *
+   * \return the access category.
+   */
+  AcIndex GetAccessCategory (void) const;
 
   /**
    * Return true if an explicit BlockAckRequest is sent after a missed BlockAck
@@ -208,13 +220,6 @@ public:
    * \param tid traffic ID
    */
   void ResetBa (Mac48Address recipient, uint8_t tid);
-
-  /**
-   * Set the access category of this EDCAF.
-   *
-   * \param ac access category.
-   */
-  void SetAccessCategory (AcIndex ac);
 
   /**
    * \param packet packet to send.

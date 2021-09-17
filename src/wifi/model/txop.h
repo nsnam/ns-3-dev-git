@@ -36,7 +36,6 @@ class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class RegularWifiMac;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
-enum AcIndex : uint8_t;
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -69,6 +68,14 @@ public:
   friend class MacLowTransmissionListener;
 
   Txop ();
+
+  /**
+   * Constructor
+   *
+   * \param queue the wifi MAC queue
+   */
+  Txop (Ptr<WifiMacQueue> queue);
+
   virtual ~Txop ();
 
   /**
@@ -98,12 +105,6 @@ public:
    * \returns true if QoS TXOP.
    */
   virtual bool IsQosTxop () const;
-  /**
-   * Get the access category.
-   *
-   * \return the access category.
-   */
-  virtual AcIndex GetAccessCategory (void) const;
 
   /**
    * Set ChannelAccessManager this Txop is associated to.

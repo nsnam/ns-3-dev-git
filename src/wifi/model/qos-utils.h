@@ -77,8 +77,11 @@ enum AcIndex : uint8_t
   AC_VI = 2,
   /** Voice */
   AC_VO = 3,
-  /** Total number of ACs */
+  /** Non-QoS */
   AC_BE_NQOS = 4,
+  /** Beacon queue */
+  AC_BEACON = 5,
+  /** Total number of ACs */
   AC_UNDEF
 };
 
