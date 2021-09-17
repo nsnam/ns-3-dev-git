@@ -54,8 +54,8 @@ namespace ns3 {
  * to a class simply by inheriting from ns3::SimpleRefCount.
  *
  * This implementation allows you to manipulate the smart pointer
- * as if it was a normal pointer: you can compare it with zero,
- * compare it against other pointers, assign zero to it, etc.
+ * as if it was a normal pointer: you can test if it is non-null,
+ * compare it to other pointers of the same type, etc.
  *
  * It is possible to extract the raw pointer from this
  * smart pointer with the GetPointer() and PeekPointer() methods.
@@ -77,8 +77,8 @@ private:
   /** The pointer. */
   T *m_ptr;
 
-  /** 
-   * Helper to test for null pointer. 
+  /**
+   * Helper to test for null pointer.
    *
    * This supports the "safe-bool" idiom, see `operator Tester * ()`
    */
@@ -188,17 +188,7 @@ public:
    * \returns A pointer to the underlying object.
    */
   T &operator * ();
-  /**
-   * Test for NULL pointer.
-   *
-   * This enables simple NULL pointer checks like
-   * \code
-   *   Ptr<..> p = ...;
-   *   if (!p) ...
-   * \endcode
-   * \returns \c true if the underlying pointer is NULL.
-   */
-  bool operator! ();
+
   /**
    * Test for non-NULL Ptr.
    *
@@ -212,6 +202,54 @@ public:
    * This supports the "safe-bool" idiom; see [More C++ Idioms/Safe bool](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool)
    */
   operator Tester * () const;
+  /**
+   * Test for non-NULL pointer.
+   *
+   * This enables simple pointer checks like
+   * \code
+   *   Ptr<...> p = ...;
+   *   if (p) ...
+   *   if (!p) ...
+   * \endcode
+   *
+   * The same construct works in the NS_ASSERT... and NS_ABORT... macros.
+   *
+   * \note Explicit tests against `0`, `NULL` or `nullptr` are not supported.
+   * All these cases will fail to compile:
+   * \code
+   *   if (p != 0)      {...}    // Should be `if (p)`
+   *   if (p != NULL)   {...}
+   *   if (p != nullptr {...}
+   *
+   *   if (p == 0)      {...}    // Should be `if (!p)`
+   *   if (p == NULL)   {...}
+   *   if (p == nullptr {...}
+   * \endcode
+   * Just use `if (p)` or `if (!p)` as indicated.
+   *
+   * \note NS_TEST... invocations should be written as follows:
+   * \code
+   * // p should be non-NULL
+   * NS_TEST...NE... (p, nullptr, ...);
+   * // p should be NULL
+   * NS_TEST...EQ... (p, nullptr, ...);
+   * \endcode
+   *
+   * \note Unfortunately return values are not
+   * "contextual conversion expression" contexts,
+   * so you need to explicitly cast return values to bool:
+   * \code
+   * bool f (...)
+   * {
+   *   Ptr<...> P = ...;
+   *   return (bool)(p);
+   * }
+   * \endcode
+   *
+   * \returns \c true if the underlying pointer is non-NULL.
+   */
+  explicit operator bool() const;
+
 };
 
 /**
@@ -276,6 +314,11 @@ bool operator == (T1 const *lhs, Ptr<T2> &rhs);
 
 template <typename T1, typename T2>
 bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+/** Specialization for comparison to nullptr */
+template <typename T1, typename T2>
+typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+operator == (Ptr<T1> const &lhs, T2 nullPtr);
 /**@}*/
 
 /**
@@ -307,6 +350,11 @@ bool operator != (T1 const *lhs, Ptr<T2> &rhs);
 
 template <typename T1, typename T2>
 bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+/** Specialization for comparison to nullptr */
+template <typename T1, typename T2>
+typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+operator != (Ptr<T1> const &lhs, T2 nullPtr);
 /**@}*/
 
 
@@ -477,6 +525,20 @@ bool
 operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 {
   return PeekPointer (lhs) != PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+operator == (Ptr<T1> const &lhs, T2 nullPtr)
+{
+  return PeekPointer (lhs) == nullptr;
+}
+
+template <typename T1, typename T2>
+typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+operator != (Ptr<T1> const &lhs, T2 nullPtr)
+{
+  return PeekPointer (lhs) != nullptr;
 }
 
 template <typename T>
@@ -681,13 +743,6 @@ Ptr<T>::operator * ()
 }
 
 template <typename T>
-bool
-Ptr<T>::operator! ()
-{
-  return m_ptr == 0;
-}
-
-template <typename T>
 Ptr<T>::operator Tester * () const
 {
   if (m_ptr == 0)
@@ -696,6 +751,12 @@ Ptr<T>::operator Tester * () const
     }
   static Tester test;
   return &test;
+}
+
+template <typename T>
+Ptr<T>::operator bool() const
+{
+  return m_ptr != 0;
 }
 
 
