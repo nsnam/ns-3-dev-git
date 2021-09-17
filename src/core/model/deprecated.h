@@ -40,44 +40,45 @@
  * For example,
  * \snippet src/core/doc/deprecated-example.h doxygen snippet
  *
- * To ease future maintenance please use the versioned forms:
- * `NS_DEPRECATED_3_XX`, not the generic `NS_DEPRECATED`
+ * Please follow these two guidelines to ease future maintenance
+ * (primarily the eventual removal of the deprecated code):
+ *
+ * 1.  Please use the versioned form `NS_DEPRECATED_3_XX`, 
+ *     not the generic `NS_DEPRECATED`.
+ *
+ * 2.  Typically only the declaration needs to be deprecated, 
+ *
+ *     \code
+ *     NS_DEPRECATED_3_XX ("see TheNewWay") void SomethingUseful ();
+ *     \endcode
+ *
+ *     but it's helpful to put the same macro as a comment 
+ *     at the site of the definition, to make it easier to find
+ *     all the bits which eventually have to be removed:
+ *
+ *     \code
+ *     \/\* NS_DEPRECATED_3_XX ("see TheNewWay") *\\/
+ *     void SomethingUseful () { ... }
+ *     \endcode.
+ *
+ * \param msg Optional message to add to the compiler warning.
+ *
  */
-#if defined(__GNUC__)
-/* Test for GCC >= 4.1 */
-#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100)
-#if (GCC_VERSION >= 40100)
-#define NS_DEPRECATED  __attribute__ ((deprecated))
-#endif
-#undef GCC_VERSION
+#define NS_DEPRECATED(msg) [[deprecated (msg)]]
 
-
-#elif defined(__clang__) || defined(__llvm__)
-#define NS_DEPRECATED  __attribute__ ((deprecated))
-
-#elif defined(_MSC_VER)
-#define NS_DEPRECATED __declspec(deprecated)
-
-#else
-#define NS_DEPRECATED
-#endif
 
 /**
  * \ingroup core
  * \def NS_DEPRECATED_3_35
  * Tag for things deprecated in version ns-3.35.
  */
-#ifdef NS_DEPRECATED
-#define NS_DEPRECATED_3_35 NS_DEPRECATED
-#endif
+#define NS_DEPRECATED_3_35 NS_DEPRECATED("")
 
 /**
  * \ingroup core
  * \def NS_DEPRECATED_3_34
  * Tag for things deprecated in version ns-3.34.
  */
-#ifdef NS_DEPRECATED
-#define NS_DEPRECATED_3_34 NS_DEPRECATED
-#endif
+#define NS_DEPRECATED_3_34 NS_DEPRECATED("")
 
 #endif /* NS3_DEPRECATED_H */
