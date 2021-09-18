@@ -151,7 +151,7 @@ public:
 
    /**
    * \brief Postfix decrement operator
-   * \returns incremented sequence number
+   * \returns decremented sequence number
    */ 
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator-- (int)
   {
