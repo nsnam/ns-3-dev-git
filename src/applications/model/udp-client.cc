@@ -166,6 +166,14 @@ UdpClient::StartApplication (void)
     {
       peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
     }
+  else if (InetSocketAddress::IsMatchingType (m_peerAddress))
+    {
+      peerAddressStringStream << InetSocketAddress::ConvertFrom (m_peerAddress).GetIpv4 ();
+    }
+  else if (Inet6SocketAddress::IsMatchingType (m_peerAddress))
+    {
+      peerAddressStringStream << Inet6SocketAddress::ConvertFrom (m_peerAddress).GetIpv6 ();
+    }
   m_peerAddressString = peerAddressStringStream.str();
 #endif // NS3_LOG_ENABLE
 
