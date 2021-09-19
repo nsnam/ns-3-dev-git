@@ -143,6 +143,16 @@ ApWifiMac::SetAddress (Mac48Address address)
   RegularWifiMac::SetBssid (address);
 }
 
+Ptr<WifiMacQueue>
+ApWifiMac::GetTxopQueue (AcIndex ac) const
+{
+  if (ac == AC_BEACON)
+    {
+      return m_beaconTxop->GetWifiMacQueue ();
+    }
+  return RegularWifiMac::GetTxopQueue (ac);
+}
+
 void
 ApWifiMac::SetBeaconGeneration (bool enable)
 {

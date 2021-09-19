@@ -35,6 +35,7 @@ class ChannelAccessManager;
 class ExtendedCapabilities;
 class FrameExchangeManager;
 class WifiPsdu;
+class WifiMacQueue;
 enum WifiTxTimerReason : uint8_t;
 
 typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
@@ -123,6 +124,13 @@ public:
    * \return a smart pointer to a QosTxop
    */
   Ptr<QosTxop> GetQosTxop (uint8_t tid) const;
+  /**
+   * Get the wifi MAC queue of the (Qos)Txop associated with the given AC.
+   *
+   * \param ac the given Access Category
+   * \return the wifi MAC queue of the (Qos)Txop associated with the given AC
+   */
+  virtual Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const;
 
   /**
    * Return whether the device supports QoS.

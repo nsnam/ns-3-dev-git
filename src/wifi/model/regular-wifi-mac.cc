@@ -37,6 +37,7 @@
 #include <cmath>
 #include "ns3/he-frame-exchange-manager.h"
 #include "channel-access-manager.h"
+#include "wifi-mac-queue.h"
 
 namespace ns3 {
 
@@ -530,6 +531,17 @@ Ptr<QosTxop>
 RegularWifiMac::GetBKQueue () const
 {
   return m_edca.find (AC_BK)->second;
+}
+
+Ptr<WifiMacQueue>
+RegularWifiMac::GetTxopQueue (AcIndex ac) const
+{
+  if (ac == AC_BE_NQOS)
+    {
+      return m_txop->GetWifiMacQueue ();
+    }
+  NS_ASSERT (ac == AC_BE || ac == AC_BK || ac == AC_VI || ac == AC_VO);
+  return m_edca.find (ac)->second->GetWifiMacQueue ();
 }
 
 void
