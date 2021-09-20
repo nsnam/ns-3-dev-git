@@ -179,10 +179,10 @@ WifiMacQueue::DequeueIfQueued (Ptr<const WifiMacQueueItem> mpdu)
 
   if (mpdu->IsQueued ())
     {
-      NS_ASSERT (mpdu->m_queueIt.queue == this);
-      NS_ASSERT (*mpdu->m_queueIt.it == mpdu);
+      NS_ASSERT (mpdu->m_queueAc == m_ac);
+      NS_ASSERT (*mpdu->m_queueIt == mpdu);
 
-      DoDequeue (mpdu->m_queueIt.it);
+      DoDequeue (mpdu->m_queueIt);
     }
 }
 
@@ -516,7 +516,8 @@ WifiMacQueue::DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item)
           m_nQueuedBytes[addressTidPair] += item->GetSize ();
         }
       // set item's information about its position in the queue
-      item->m_queueIt = {this, ret};
+      item->m_queueAc = m_ac;
+      item->m_queueIt = ret;
       return true;
     }
   return false;
@@ -549,7 +550,7 @@ WifiMacQueue::DoDequeue (ConstIterator pos)
   if (item != 0)
     {
       NS_ASSERT (item->IsQueued ());
-      item->m_queueIt.queue = nullptr;
+      item->m_queueAc = AC_UNDEF;
     }
 
   return item;
@@ -574,7 +575,7 @@ WifiMacQueue::DoRemove (ConstIterator pos)
   if (item != 0)
     {
       NS_ASSERT (item->IsQueued ());
-      item->m_queueIt.queue = nullptr;
+      item->m_queueAc = AC_UNDEF;
     }
 
   return item;

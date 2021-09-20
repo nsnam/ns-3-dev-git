@@ -41,13 +41,13 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
 WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp)
   : m_packet (p),
     m_header (header),
-    m_tstamp (tstamp)
+    m_tstamp (tstamp),
+    m_queueAc (AC_UNDEF)
 {
   if (header.IsQosData () && header.IsQosAmsdu ())
     {
       m_msduList = MsduAggregator::Deaggregate (p->Copy ());
     }
-  m_queueIt.queue = nullptr;
   m_inFlight = false;
 }
 
@@ -204,11 +204,18 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
 bool
 WifiMacQueueItem::IsQueued (void) const
 {
-  return m_queueIt.queue != nullptr;
+  return m_queueAc != AC_UNDEF;
 }
 
-const WifiMacQueueItem::QueueIteratorPair&
-WifiMacQueueItem::GetQueueIteratorPair (void) const
+AcIndex
+WifiMacQueueItem::GetQueueAc (void) const
+{
+  NS_ASSERT (IsQueued ());
+  return m_queueAc;
+}
+
+WifiMacQueueItem::ConstIterator
+WifiMacQueueItem::GetQueueIterator (void) const
 {
   NS_ASSERT (IsQueued ());
   return m_queueIt;

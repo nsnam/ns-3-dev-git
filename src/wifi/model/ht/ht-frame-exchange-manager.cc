@@ -447,7 +447,7 @@ HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
   Ptr<QosTxop> edca = m_mac->GetQosTxop (peekedItem->GetHeader ().GetQosTid ());
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peekedItem->GetHeader ());
-  WifiMacQueueItem::QueueIteratorPair queueIt;
+  WifiMacQueueItem::ConstIterator queueIt;
   Ptr<WifiMacQueueItem> mpdu = edca->GetNextMpdu (peekedItem, txParams, availableTime, initialFrame, queueIt);
 
   if (mpdu == nullptr)

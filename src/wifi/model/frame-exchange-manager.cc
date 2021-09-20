@@ -281,7 +281,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
     }
 
   m_dcf->NotifyChannelAccessed ();
-  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPair ().it;
+  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIterator ();
   NS_ASSERT (mpdu != 0);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 
@@ -327,15 +327,15 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
     {
       NS_LOG_DEBUG ("Fragmenting the MSDU");
       m_fragmentedPacket = mpdu->GetPacket ()->Copy ();
+      AcIndex ac = mpdu->GetQueueAc ();
       // dequeue the MSDU
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPair ();
-      queueIt.queue->DequeueIfQueued (*queueIt.it);
+      DequeueMpdu (mpdu);
       // create the first fragment
       mpdu->GetHeader ().SetMoreFragments ();
       Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, m_mac->GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
       // enqueue the first fragment
       Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (fragment, mpdu->GetHeader (), mpdu->GetTimeStamp ());
-      queueIt.queue->PushFront (item);
+      m_mac->GetTxopQueue (ac)->PushFront (item);
       return item;
     }
   return mpdu;
@@ -453,8 +453,7 @@ FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
 
   if (mpdu->IsQueued ())
     {
-      const WifiMacQueueItem::QueueIteratorPair& queueIt = mpdu->GetQueueIteratorPair ();
-      queueIt.queue->DequeueIfQueued (*queueIt.it);
+      m_mac->GetTxopQueue (mpdu->GetQueueAc ())->DequeueIfQueued (mpdu);
     }
 }
 

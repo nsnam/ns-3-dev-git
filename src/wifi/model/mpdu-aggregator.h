@@ -125,7 +125,7 @@ public:
   std::vector<Ptr<WifiMacQueueItem>> GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu,
                                                    WifiTxParameters& txParams,
                                                    Time availableTime,
-                                                   WifiMacQueueItem::QueueIteratorPair queueIt) const;
+                                                   WifiMacQueueItem::ConstIterator queueIt) const;
 
   /**
    * Set the MAC layer to use.

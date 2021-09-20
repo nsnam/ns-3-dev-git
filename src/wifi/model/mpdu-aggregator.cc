@@ -192,7 +192,7 @@ MpduAggregator::GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle)
 
 std::vector<Ptr<WifiMacQueueItem>>
 MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txParams,
-                              Time availableTime, WifiMacQueueItem::QueueIteratorPair queueIt) const
+                              Time availableTime, WifiMacQueueItem::ConstIterator queueIt) const
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams << availableTime);
 

@@ -205,7 +205,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
               return SU_TX;
             }
 
-          WifiMacQueueItem::QueueIteratorPair queueIt;
+          WifiMacQueueItem::ConstIterator queueIt;
           Ptr<WifiMacQueueItem> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
                                                                                  m_availableTime,
                                                                                  m_initialFrame, queueIt);

@@ -277,7 +277,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader ());
 
-  WifiMacQueueItem::QueueIteratorPair queueIt;
+  WifiMacQueueItem::ConstIterator queueIt;
   Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame, queueIt);
 
   if (item == nullptr)

@@ -27,13 +27,13 @@
 #include "ns3/nstime.h"
 #include "wifi-mac-header.h"
 #include "amsdu-subframe-header.h"
+#include "qos-utils.h"
 #include <list>
 
 namespace ns3 {
 
 class QosBlockedDestinations;
 class Packet;
-class WifiMacQueue;
 
 /**
  * \ingroup wifi
@@ -142,12 +142,6 @@ public:
 
   /// Const iterator typedef
   typedef std::list<Ptr<WifiMacQueueItem>>::const_iterator ConstIterator;
-  /// Information needed to remove an MSDU from the queue
-  struct QueueIteratorPair
-  {
-    WifiMacQueue* queue;  //!< pointer to the queue where the MSDU is enqueued
-    ConstIterator it;     //!< iterator pointing to the MSDU in the queue
-  };
 
   /**
    * Return true if this item is stored in some queue, false otherwise.
@@ -155,16 +149,20 @@ public:
    * \return true if this item is stored in some queue, false otherwise
    */
   bool IsQueued (void) const;
-
   /**
-   * Get a const reference to the QueueIteratorPair struct variable containing
-   * a pointer to the queue where the MPDU is stored and an iterator pointing to
-   * the position of the MPDU in the queue. This method should not be called if
-   * the MPDU is not stored in a queue.
+   * Get the AC of the queue this item is stored into. Abort if this item
+   * is not stored in a queue.
+   *
+   * \return the AC of the queue this item is stored into
+   */
+  AcIndex GetQueueAc (void) const;
+  /**
+   * Get a const iterator pointing to the position of the MPDU in the queue. This
+   * method should not be called if the MPDU is not stored in a queue.
    *
    * \return an iterator pointing to the position of the MPDU in the queue
    */
-  const QueueIteratorPair& GetQueueIteratorPair (void) const;
+  ConstIterator GetQueueIterator (void) const;
 
   /**
    * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
@@ -204,13 +202,14 @@ private:
    */
   void DoAggregate (Ptr<const WifiMacQueueItem> msdu);
 
-  friend class WifiMacQueue;  // to set QueueIteratorPair information
+  friend class WifiMacQueue;  // to set queue AC and iterator information
 
   Ptr<const Packet> m_packet;                   //!< The packet (MSDU or A-MSDU) contained in this queue item
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
   Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
-  QueueIteratorPair m_queueIt;                  //!< Queue iterator pointing to this MPDU, if queued
+  ConstIterator m_queueIt;                      //!< Queue iterator pointing to this MPDU, if queued
+  AcIndex m_queueAc;                            //!< AC associated with the queue this MPDU is stored into
   bool m_inFlight;                              //!< whether the MPDU is in flight
 };
 

@@ -96,13 +96,13 @@ public:
    * \param peekedItem the MSDU which we attempt to aggregate other MSDUs to
    * \param txParams the TX parameters for the current frame
    * \param availableTime the time available for the frame exchange
-   * \param[out] queueIt a QueueIteratorPair pointing to the queue item following the
+   * \param[out] queueIt a queue iterator pointing to the queue item following the
    *                     last item used to prepare the returned A-MSDU, if any; otherwise,
    *                     its value is unchanged
    * \return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
    */
   Ptr<WifiMacQueueItem> GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                                      Time availableTime, WifiMacQueueItem::QueueIteratorPair& queueIt) const;
+                                      Time availableTime, WifiMacQueueItem::ConstIterator& queueIt) const;
 
   /**
    * Determine the maximum size for an A-MSDU of the given TID that can be sent
