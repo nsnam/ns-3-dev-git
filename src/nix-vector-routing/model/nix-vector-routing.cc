@@ -34,17 +34,6 @@
 
 #include "nix-vector-routing.h"
 
-/* RunIf code is a candidate for ns-3 core module */
-template <class F, class...Ts>
-void RunIf (std::true_type, F&& f, Ts&&... ts )
-{
-  f (std::forward<Ts>(ts)...);
-}
-template <class...Xs>
-void RunIf (std::false_type, Xs&&...)
-{
-}
-
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NixVectorRouting");
@@ -417,19 +406,12 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
           for (uint32_t j = 0; j < netDeviceAddresses; ++j)
             {
               IpInterfaceAddress netDeviceIfAddr = netDeviceInterface->GetAddress (j);
-              bool isNetDeviceAddrLinkLocal = false;
-              RunIf (std::is_same<Ipv6RoutingProtocol,T>{}, [&](Ipv6InterfaceAddress IfAddr, bool &isNetDeviceAddrLinkLocal)
+              if constexpr (!IsIpv4::value)
                 {
-                  if (IfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+                  if (netDeviceIfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
                     {
-                      isNetDeviceAddrLinkLocal = true;
+                      continue;
                     }
-                },
-              netDeviceIfAddr, isNetDeviceAddrLinkLocal);
-
-              if (isNetDeviceAddrLinkLocal)
-                {
-                  continue;
                 }
               for (uint32_t k = 0; k < remoteDeviceAddresses; ++k)
                 {
