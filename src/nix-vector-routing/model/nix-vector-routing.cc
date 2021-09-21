@@ -416,6 +416,13 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
               for (uint32_t k = 0; k < remoteDeviceAddresses; ++k)
                 {
                   IpInterfaceAddress remoteDeviceIfAddr = remoteDeviceInterface->GetAddress (k);
+                  if constexpr (!IsIpv4::value)
+                    {
+                      if (remoteDeviceIfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+                        {
+                          continue;
+                        }
+                    }
                   if (netDeviceIfAddr.IsInSameSubnet (remoteDeviceIfAddr.GetAddress ()))
                     {
                       commonSubnetFound = true;
