@@ -710,6 +710,20 @@ NixVectorRouting<T>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<Net
 
   NS_LOG_DEBUG ("Dest IP from header: " << destAddress);
 
+  if constexpr (!IsIpv4::value)
+    {
+      /* when sending on link-local multicast, there have to be interface specified */
+      if (destAddress.IsLinkLocalMulticast ())
+        {
+          NS_ASSERT_MSG (oif, "Try to send on link-local multicast address, and no interface index is given!");
+          rtentry = Create<IpRoute> ();
+          rtentry->SetSource (m_ip->SourceAddressSelection (m_ip->GetInterfaceForDevice (oif), destAddress));
+          rtentry->SetDestination (destAddress);
+          rtentry->SetGateway (Ipv6Address::GetZero ());
+          rtentry->SetOutputDevice (oif);
+          return rtentry;
+        }
+    }
   // Check the Nix cache
   bool foundInCache = false;
   nixVectorInCache = GetNixVectorInCache (destAddress, foundInCache);
@@ -821,154 +835,6 @@ NixVectorRouting<T>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<Net
 
   return rtentry;
 }
-
-/* Doxygen should skip the documentation for specialized function */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-Ptr<typename NixVectorRouting<Ipv6RoutingProtocol>::IpRoute>
-NixVectorRouting<Ipv6RoutingProtocol>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
-{
-  NS_LOG_FUNCTION (this << header << oif);
-
-  Ptr<IpRoute> rtentry;
-  Ptr<NixVector> nixVectorInCache;
-  Ptr<NixVector> nixVectorForPacket;
-
-  CheckCacheStateAndFlush ();
-
-  IpAddress destAddress = header.GetDestination ();
-
-  NS_LOG_DEBUG ("Dest IP from header: " << destAddress);
-
-  /* when sending on link-local multicast, there have to be interface specified */
-  if (destAddress.IsLinkLocalMulticast ())
-    {
-      NS_ASSERT_MSG (oif, "Try to send on link-local multicast address, and no interface index is given!");
-      rtentry = Create<IpRoute> ();
-      rtentry->SetSource (m_ip->SourceAddressSelection (m_ip->GetInterfaceForDevice (oif), destAddress));
-      rtentry->SetDestination (destAddress);
-      rtentry->SetGateway (Ipv6Address::GetZero ());
-      rtentry->SetOutputDevice (oif);
-      return rtentry;
-    }
-
-  // The following part of the code is common with the
-  // templatized RouteOutput function. It is not segregated
-  // into a separate function and kept here for better code
-  // readability.
-
-  // Check the Nix cache
-  bool foundInCache = false;
-  nixVectorInCache = GetNixVectorInCache (destAddress, foundInCache);
-
-  // not in cache
-  if (!foundInCache)
-    {
-      NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
-      // Build the nix-vector, given this node and the
-      // dest IP address
-      nixVectorInCache = GetNixVector (m_node, destAddress, oif);
-
-      // cache it
-      m_nixCache.insert (typename NixMap_t::value_type (destAddress, nixVectorInCache));
-    }
-
-  // path exists
-  if (nixVectorInCache)
-    {
-      NS_LOG_LOGIC ("Nix-vector contents: " << *nixVectorInCache);
-
-      // create a new nix vector to be used,
-      // we want to keep the cached version clean
-      nixVectorForPacket = nixVectorInCache->Copy ();
-
-      // Get the interface number that we go out of, by extracting
-      // from the nix-vector
-      if (m_totalNeighbors == 0)
-        {
-          m_totalNeighbors = FindTotalNeighbors (m_node);
-        }
-
-      // Get the interface number that we go out of, by extracting
-      // from the nix-vector
-      uint32_t numberOfBits = nixVectorForPacket->BitCount (m_totalNeighbors);
-      uint32_t nodeIndex = nixVectorForPacket->ExtractNeighborIndex (numberOfBits);
-
-      // Search here in a cache for this node index
-      // and look for a IpRoute
-      rtentry = GetIpRouteInCache (destAddress);
-
-      if (!rtentry || !(rtentry->GetOutputDevice () == oif))
-        {
-          // not in cache or a different specified output
-          // device is to be used
-
-          // first, make sure we erase existing (incorrect)
-          // rtentry from the map
-          if (rtentry)
-            {
-              m_ipRouteCache.erase (destAddress);
-            }
-
-          NS_LOG_LOGIC ("IpRoute not in cache, build: ");
-          IpAddress gatewayIp;
-          uint32_t index = FindNetDeviceForNixIndex (m_node, nodeIndex, gatewayIp);
-          int32_t interfaceIndex = 0;
-
-          if (!oif)
-            {
-              interfaceIndex = (m_ip)->GetInterfaceForDevice (m_node->GetDevice (index));
-            }
-          else
-            {
-              interfaceIndex = (m_ip)->GetInterfaceForDevice (oif);
-            }
-
-          NS_ASSERT_MSG (interfaceIndex != -1, "Interface index not found for device");
-
-          IpAddress sourceIPAddr = m_ip->SourceAddressSelection (interfaceIndex, destAddress);
-
-          // start filling in the IpRoute info
-          rtentry = Create<IpRoute> ();
-          rtentry->SetSource (sourceIPAddr);
-
-          rtentry->SetGateway (gatewayIp);
-          rtentry->SetDestination (destAddress);
-
-          if (!oif)
-            {
-              rtentry->SetOutputDevice (m_ip->GetNetDevice (interfaceIndex));
-            }
-          else
-            {
-              rtentry->SetOutputDevice (oif);
-            }
-
-          sockerr = Socket::ERROR_NOTERROR;
-
-          // add rtentry to cache
-          m_ipRouteCache.insert (typename IpRouteMap_t::value_type (destAddress, rtentry));
-        }
-
-      NS_LOG_LOGIC ("Nix-vector contents: " << *nixVectorInCache << " : Remaining bits: " << nixVectorForPacket->GetRemainingBits ());
-
-      // Add  nix-vector in the packet class
-      // make sure the packet exists first
-      if (p)
-        {
-          NS_LOG_LOGIC ("Adding Nix-vector to packet: " << *nixVectorForPacket);
-          p->SetNixVector (nixVectorForPacket);
-        }
-    }
-  else // path doesn't exist
-    {
-      NS_LOG_ERROR ("No path to the dest: " << destAddress);
-      sockerr = Socket::ERROR_NOROUTETOHOST;
-    }
-
-  return rtentry;
-}
-#endif
 
 template <typename T>
 bool
@@ -984,119 +850,52 @@ NixVectorRouting<T>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Pt
   // Check if input device supports IP
   NS_ASSERT (m_ip->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ip->GetInterfaceForDevice (idev);
-  IpAddress destAddress = header.GetDestination ();
-
-  // Local delivery
-  if (m_ip->IsDestinationAddress (destAddress, iif))
-    {
-      if (!lcb.IsNull ())
-        {
-          NS_LOG_LOGIC ("Local delivery to " << destAddress);
-          lcb (p, header, iif);
-          return true;
-        }
-      else
-        {
-          // The local delivery callback is null.  This may be a multicast
-          // or broadcast packet, so return false so that another
-          // multicast routing protocol can handle it.  It should be possible
-          // to extend this to explicitly check whether it is a unicast
-          // packet, and invoke the error callback if so
-          return false;
-        }
-    }
-
-  Ptr<IpRoute> rtentry;
-
-  // Get the nix-vector from the packet
-  Ptr<NixVector> nixVector = p->GetNixVector ();
-
-  // If nixVector isn't in packet, something went wrong
-  NS_ASSERT (nixVector);
-
-  // Get the interface number that we go out of, by extracting
-  // from the nix-vector
-  if (m_totalNeighbors == 0)
-    {
-      m_totalNeighbors = FindTotalNeighbors (m_node);
-    }
-  uint32_t numberOfBits = nixVector->BitCount (m_totalNeighbors);
-  uint32_t nodeIndex = nixVector->ExtractNeighborIndex (numberOfBits);
-
-  rtentry = GetIpRouteInCache (destAddress);
-  // not in cache
-  if (!rtentry)
-    {
-      NS_LOG_LOGIC ("IpRoute not in cache, build: ");
-      IpAddress gatewayIp;
-      uint32_t index = FindNetDeviceForNixIndex (m_node, nodeIndex, gatewayIp);
-      uint32_t interfaceIndex = (m_ip)->GetInterfaceForDevice (m_node->GetDevice (index));
-      IpInterfaceAddress ifAddr = m_ip->GetAddress (interfaceIndex, 0);
-
-      // start filling in the IpRoute info
-      rtentry = Create<IpRoute> ();
-      rtentry->SetSource (ifAddr.GetAddress ());
-
-      rtentry->SetGateway (gatewayIp);
-      rtentry->SetDestination (destAddress);
-      rtentry->SetOutputDevice (m_ip->GetNetDevice (interfaceIndex));
-
-      // add rtentry to cache
-      m_ipRouteCache.insert (typename IpRouteMap_t::value_type (destAddress, rtentry));
-    }
-
-  NS_LOG_LOGIC ("At Node " << m_node->GetId () << ", Extracting " << numberOfBits <<
-                " bits from Nix-vector: " << nixVector << " : " << *nixVector);
-
-  // call the unicast callback
-  // local deliver is handled by Ipv4StaticRoutingImpl
-  // so this code is never even called if the packet is
-  // destined for this node.
-  ucb (rtentry, p, header);
-
-  return true;
-}
-
-/* Doxygen should skip the documentation for specialized function */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-bool
-NixVectorRouting<Ipv6RoutingProtocol>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Ptr<const NetDevice> idev,
-                                                   UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                                                   LocalDeliverCallback lcb, ErrorCallback ecb)
-{
-  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
-
-  CheckCacheStateAndFlush ();
-
-  NS_ASSERT (m_ip != 0);
-
-  uint32_t iif = m_ip->GetInterfaceForDevice (idev);
-  IpAddress destAddress = header.GetDestination ();
   // Check if input device supports IP
   NS_ASSERT (iif >= 0);
 
-  if (destAddress.IsMulticast ())
-    {
-      NS_LOG_LOGIC ("Multicast route not supported by Nix-Vector routing " << destAddress);
-      return false; // Let other routing protocols try to handle this
-    }
+  IpAddress destAddress = header.GetDestination ();
 
-  // Check if input device supports IP forwarding
-  if (m_ip->IsForwarding (iif) == false)
+  if constexpr (IsIpv4::value)
     {
-      NS_LOG_LOGIC ("Forwarding disabled for this interface");
-      if (!ecb.IsNull ())
+      // Local delivery
+      if (m_ip->IsDestinationAddress (destAddress, iif))
         {
-          ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+          if (!lcb.IsNull ())
+            {
+              NS_LOG_LOGIC ("Local delivery to " << destAddress);
+              lcb (p, header, iif);
+              return true;
+            }
+          else
+            {
+              // The local delivery callback is null.  This may be a multicast
+              // or broadcast packet, so return false so that another
+              // multicast routing protocol can handle it.  It should be possible
+              // to extend this to explicitly check whether it is a unicast
+              // packet, and invoke the error callback if so
+              return false;
+            }
         }
-      return true;
     }
+  else
+    {
+      if (destAddress.IsMulticast ())
+        {
+          NS_LOG_LOGIC ("Multicast route not supported by Nix-Vector routing " << destAddress);
+          return false; // Let other routing protocols try to handle this
+        }
 
-  // The following part of the code is common with the
-  // templatized RouteOutput function. It is not segregated
-  // into a separate function and kept here for better code
-  // readability.
+      // Check if input device supports IP forwarding
+      if (m_ip->IsForwarding (iif) == false)
+        {
+          NS_LOG_LOGIC ("Forwarding disabled for this interface");
+          if (!ecb.IsNull ())
+            {
+              ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+            }
+          return true;
+        }
+    }
 
   Ptr<IpRoute> rtentry;
 
@@ -1144,11 +943,17 @@ NixVectorRouting<Ipv6RoutingProtocol>::RouteInput (Ptr<const Packet> p, const Ip
   // local deliver is handled by Ipv4StaticRoutingImpl
   // so this code is never even called if the packet is
   // destined for this node.
-  ucb (idev, rtentry, p, header);
+  if constexpr (IsIpv4::value)
+    {
+      ucb (rtentry, p, header);
+    }
+  else
+    {
+      ucb (idev, rtentry, p, header);
+    }
 
   return true;
 }
-#endif
 
 template <typename T>
 void
