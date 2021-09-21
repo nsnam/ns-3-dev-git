@@ -62,71 +62,23 @@ public:
   void SetPositionAllocator (Ptr<PositionAllocator> allocator);
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param type the type of mobility model to use.
-   * \param n1 the name of the attribute to set in the mobility model.
-   * \param v1 the value of the attribute to set in the mobility model.
-   * \param n2 the name of the attribute to set in the mobility model.
-   * \param v2 the value of the attribute to set in the mobility model.
-   * \param n3 the name of the attribute to set in the mobility model.
-   * \param v3 the value of the attribute to set in the mobility model.
-   * \param n4 the name of the attribute to set in the mobility model.
-   * \param v4 the value of the attribute to set in the mobility model.
-   * \param n5 the name of the attribute to set in the mobility model.
-   * \param v5 the value of the attribute to set in the mobility model.
-   * \param n6 the name of the attribute to set in the mobility model.
-   * \param v6 the value of the attribute to set in the mobility model.
-   * \param n7 the name of the attribute to set in the mobility model.
-   * \param v7 the value of the attribute to set in the mobility model.
-   * \param n8 the name of the attribute to set in the mobility model.
-   * \param v8 the value of the attribute to set in the mobility model.
-   * \param n9 the name of the attribute to set in the mobility model.
-   * \param v9 the value of the attribute to set in the mobility model.
+   * \param [in] args Name and AttributeValue pairs to set.
    */
-  void SetPositionAllocator (std::string type,
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
-                             std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
-                             std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetPositionAllocator (std::string type, Ts&&... args);
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param type the type of mobility model to use.
-   * \param n1 the name of the attribute to set in the mobility model.
-   * \param v1 the value of the attribute to set in the mobility model.
-   * \param n2 the name of the attribute to set in the mobility model.
-   * \param v2 the value of the attribute to set in the mobility model.
-   * \param n3 the name of the attribute to set in the mobility model.
-   * \param v3 the value of the attribute to set in the mobility model.
-   * \param n4 the name of the attribute to set in the mobility model.
-   * \param v4 the value of the attribute to set in the mobility model.
-   * \param n5 the name of the attribute to set in the mobility model.
-   * \param v5 the value of the attribute to set in the mobility model.
-   * \param n6 the name of the attribute to set in the mobility model.
-   * \param v6 the value of the attribute to set in the mobility model.
-   * \param n7 the name of the attribute to set in the mobility model.
-   * \param v7 the value of the attribute to set in the mobility model.
-   * \param n8 the name of the attribute to set in the mobility model.
-   * \param v8 the value of the attribute to set in the mobility model.
-   * \param n9 the name of the attribute to set in the mobility model.
-   * \param v9 the value of the attribute to set in the mobility model.
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Calls to MobilityHelper::Install will create an instance of a matching
    * mobility model for each node.
    */
-  void SetMobilityModel (std::string type,
-                         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                         std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                         std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                         std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                         std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                         std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                         std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
-                         std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
-                         std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetMobilityModel (std::string type, Ts&&... args);
 
   /**
    * \param reference item to push.
@@ -288,6 +240,25 @@ private:
   ObjectFactory m_mobility; //!< Object factory to create mobility objects
   Ptr<PositionAllocator> m_position; //!< Position allocator for use in hierarchical mobility model
 };
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void MobilityHelper::SetPositionAllocator (std::string type, Ts&&... args)
+{
+  ObjectFactory pos(type, std::forward<Ts> (args)...);
+  m_position = pos.Create ()->GetObject<PositionAllocator> ();
+}
+
+template <typename... Ts>
+void MobilityHelper::SetMobilityModel (std::string type, Ts&&... args)
+{
+  m_mobility.SetTypeId (type);
+  m_mobility.Set (std::forward<Ts> (args)...);
+}
 
 } // namespace ns3
 

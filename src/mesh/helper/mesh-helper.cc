@@ -49,33 +49,6 @@ MeshHelper::SetSpreadInterfaceChannels (enum ChannelPolicy policy)
 {
   m_spreadChannelPolicy = policy;
 }
-void
-MeshHelper::SetStackInstaller (std::string type,
-                               std::string n0, const AttributeValue &v0,
-                               std::string n1, const AttributeValue &v1,
-                               std::string n2, const AttributeValue &v2,
-                               std::string n3, const AttributeValue &v3,
-                               std::string n4, const AttributeValue &v4,
-                               std::string n5, const AttributeValue &v5,
-                               std::string n6, const AttributeValue &v6,
-                               std::string n7, const AttributeValue &v7)
-{
-  m_stackFactory.SetTypeId (type);
-  m_stackFactory.Set (n0, v0);
-  m_stackFactory.Set (n1, v1);
-  m_stackFactory.Set (n2, v2);
-  m_stackFactory.Set (n3, v3);
-  m_stackFactory.Set (n4, v4);
-  m_stackFactory.Set (n5, v5);
-  m_stackFactory.Set (n6, v6);
-  m_stackFactory.Set (n7, v7);
-
-  m_stack = m_stackFactory.Create<MeshStack> ();
-  if (!m_stack)
-    {
-      NS_FATAL_ERROR ("Stack has not been created: " << type);
-    }
-}
 
 void
 MeshHelper::SetNumberOfInterfaces (uint32_t nInterfaces)
@@ -126,48 +99,6 @@ MeshHelper::Default (void)
   return helper;
 }
 
-void
-MeshHelper::SetMacType (std::string n0, const AttributeValue &v0,
-                        std::string n1, const AttributeValue &v1,
-                        std::string n2, const AttributeValue &v2,
-                        std::string n3, const AttributeValue &v3,
-                        std::string n4, const AttributeValue &v4,
-                        std::string n5, const AttributeValue &v5,
-                        std::string n6, const AttributeValue &v6,
-                        std::string n7, const AttributeValue &v7)
-{
-  m_mac.SetTypeId ("ns3::MeshWifiInterfaceMac");
-  m_mac.Set (n0, v0);
-  m_mac.Set (n1, v1);
-  m_mac.Set (n2, v2);
-  m_mac.Set (n3, v3);
-  m_mac.Set (n4, v4);
-  m_mac.Set (n5, v5);
-  m_mac.Set (n6, v6);
-  m_mac.Set (n7, v7);
-}
-void
-MeshHelper::SetRemoteStationManager (std::string type,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_stationManager = ObjectFactory ();
-  m_stationManager.SetTypeId (type);
-  m_stationManager.Set (n0, v0);
-  m_stationManager.Set (n1, v1);
-  m_stationManager.Set (n2, v2);
-  m_stationManager.Set (n3, v3);
-  m_stationManager.Set (n4, v4);
-  m_stationManager.Set (n5, v5);
-  m_stationManager.Set (n6, v6);
-  m_stationManager.Set (n7, v7);
-}
 void
 MeshHelper::SetStandard (enum WifiStandard standard)
 {

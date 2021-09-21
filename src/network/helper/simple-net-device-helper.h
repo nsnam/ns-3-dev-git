@@ -26,6 +26,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
+#include "ns3/queue.h"
 #include "ns3/simple-channel.h"
 
 namespace ns3 {
@@ -47,48 +48,30 @@ public:
    * This method allows one to set the type of the queue that is automatically
    * created when the device is created and attached to a node.
    *
+   * \tparam Ts \deduced Argument types
    * \param type the type of queue
-   * \param n1 the name of the attribute to set on the queue
-   * \param v1 the value of the attribute to set on the queue
-   * \param n2 the name of the attribute to set on the queue
-   * \param v2 the value of the attribute to set on the queue
-   * \param n3 the name of the attribute to set on the queue
-   * \param v3 the value of the attribute to set on the queue
-   * \param n4 the name of the attribute to set on the queue
-   * \param v4 the value of the attribute to set on the queue
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Set the type of queue to create and associated to each
    * SimpleNetDevice created through SimpleNetDeviceHelper::Install.
    */
-  void SetQueue (std::string type,
-                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetQueue (std::string type, Ts&&... args);
 
   /**
    * Each net device must have a channel to pass packets through.
    * This method allows one to set the type of the channel that is automatically
    * created when the device is created and attached to a node.
    *
-   * \param type the type of queue
-   * \param n1 the name of the attribute to set on the queue
-   * \param v1 the value of the attribute to set on the queue
-   * \param n2 the name of the attribute to set on the queue
-   * \param v2 the value of the attribute to set on the queue
-   * \param n3 the name of the attribute to set on the queue
-   * \param v3 the value of the attribute to set on the queue
-   * \param n4 the name of the attribute to set on the queue
-   * \param v4 the value of the attribute to set on the queue
+   * \tparam Ts \deduced Argument types
+   * \param type the type of channel
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Set the type of channel to create and associated to each
    * SimpleNetDevice created through SimpleNetDeviceHelper::Install.
    */
-  void SetChannel (std::string type,
-                   std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                   std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                   std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                   std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetChannel (std::string type, Ts&&... args);
 
 
   /**
@@ -194,6 +177,27 @@ private:
   bool m_pointToPointMode; //!< Install PointToPoint SimpleNetDevice or Broadcast ones
   bool m_enableFlowControl; //!< whether to enable flow control
 };
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void SimpleNetDeviceHelper::SetQueue (std::string type, Ts&&... args)
+{
+  QueueBase::AppendItemTypeIfNotPresent (type, "Packet");
+
+  m_queueFactory.SetTypeId (type);
+  m_queueFactory.Set (std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void SimpleNetDeviceHelper::SetChannel (std::string type, Ts&&... args)
+{
+  m_channelFactory.SetTypeId (type);
+  m_channelFactory.Set (std::forward<Ts> (args)...);
+}
 
 } // namespace ns3
 

@@ -22,7 +22,6 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
-#include "ns3/queue.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/csma-channel.h"
@@ -45,22 +44,6 @@ CsmaHelper::CsmaHelper ()
   m_deviceFactory.SetTypeId ("ns3::CsmaNetDevice");
   m_channelFactory.SetTypeId ("ns3::CsmaChannel");
   m_enableFlowControl = true;
-}
-
-void
-CsmaHelper::SetQueue (std::string type,
-                      std::string n1, const AttributeValue &v1,
-                      std::string n2, const AttributeValue &v2,
-                      std::string n3, const AttributeValue &v3,
-                      std::string n4, const AttributeValue &v4)
-{
-  QueueBase::AppendItemTypeIfNotPresent (type, "Packet");
-
-  m_queueFactory.SetTypeId (type);
-  m_queueFactory.Set (n1, v1);
-  m_queueFactory.Set (n2, v2);
-  m_queueFactory.Set (n3, v3);
-  m_queueFactory.Set (n4, v4);
 }
 
 void

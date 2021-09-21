@@ -22,7 +22,6 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
-#include "ns3/queue.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simple-channel.h"
@@ -47,36 +46,6 @@ SimpleNetDeviceHelper::SimpleNetDeviceHelper ()
   m_channelFactory.SetTypeId ("ns3::SimpleChannel");
   m_pointToPointMode = false;
   m_enableFlowControl = true;
-}
-
-void
-SimpleNetDeviceHelper::SetQueue (std::string type,
-                                 std::string n1, const AttributeValue &v1,
-                                 std::string n2, const AttributeValue &v2,
-                                 std::string n3, const AttributeValue &v3,
-                                 std::string n4, const AttributeValue &v4)
-{
-  QueueBase::AppendItemTypeIfNotPresent (type, "Packet");
-
-  m_queueFactory.SetTypeId (type);
-  m_queueFactory.Set (n1, v1);
-  m_queueFactory.Set (n2, v2);
-  m_queueFactory.Set (n3, v3);
-  m_queueFactory.Set (n4, v4);
-}
-
-void
-SimpleNetDeviceHelper::SetChannel (std::string type,
-                                   std::string n1, const AttributeValue &v1,
-                                   std::string n2, const AttributeValue &v2,
-                                   std::string n3, const AttributeValue &v3,
-                                   std::string n4, const AttributeValue &v4)
-{
-  m_channelFactory.SetTypeId (type);
-  m_channelFactory.Set (n1, v1);
-  m_channelFactory.Set (n2, v2);
-  m_channelFactory.Set (n3, v3);
-  m_channelFactory.Set (n4, v4);
 }
 
 void

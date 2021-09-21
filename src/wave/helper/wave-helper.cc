@@ -311,52 +311,6 @@ WaveHelper::CreatePhys (uint32_t phys)
   m_physNumber = phys;
 }
 
-void
-WaveHelper::SetRemoteStationManager (std::string type,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_stationManager = ObjectFactory ();
-  m_stationManager.SetTypeId (type);
-  m_stationManager.Set (n0, v0);
-  m_stationManager.Set (n1, v1);
-  m_stationManager.Set (n2, v2);
-  m_stationManager.Set (n3, v3);
-  m_stationManager.Set (n4, v4);
-  m_stationManager.Set (n5, v5);
-  m_stationManager.Set (n6, v6);
-  m_stationManager.Set (n7, v7);
-}
-
-void
-WaveHelper::SetChannelScheduler (std::string type,
-                                 std::string n0, const AttributeValue &v0,
-                                 std::string n1, const AttributeValue &v1,
-                                 std::string n2, const AttributeValue &v2,
-                                 std::string n3, const AttributeValue &v3,
-                                 std::string n4, const AttributeValue &v4,
-                                 std::string n5, const AttributeValue &v5,
-                                 std::string n6, const AttributeValue &v6,
-                                 std::string n7, const AttributeValue &v7)
-{
-  m_channelScheduler = ObjectFactory ();
-  m_channelScheduler.SetTypeId (type);
-  m_channelScheduler.Set (n0, v0);
-  m_channelScheduler.Set (n1, v1);
-  m_channelScheduler.Set (n2, v2);
-  m_channelScheduler.Set (n3, v3);
-  m_channelScheduler.Set (n4, v4);
-  m_channelScheduler.Set (n5, v5);
-  m_channelScheduler.Set (n6, v6);
-  m_channelScheduler.Set (n7, v7);
-}
-
 NetDeviceContainer
 WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHelper, NodeContainer c) const
 {

@@ -52,23 +52,9 @@ public:
   static YansWifiChannelHelper Default (void);
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the name of the model to add
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Add a propagation loss model to the set of currently-configured loss models.
    * This method is additive to allow you to construct complex propagation loss models
@@ -79,45 +65,17 @@ public:
    * are therefore not commutative. The final receive power (excluding receiver
    * gains) are calculated in the order the models are added.
    */
-  void AddPropagationLoss (std::string name,
-                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void AddPropagationLoss (std::string name, Ts&&... args);
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the name of the model to set
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Configure a propagation delay for this channel.
    */
-  void SetPropagationDelay (std::string name,
-                            std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                            std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                            std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                            std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                            std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                            std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                            std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                            std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetPropagationDelay (std::string name, Ts&&... args);
 
   /**
    * \returns a new channel
@@ -191,6 +149,24 @@ private:
 
   Ptr<YansWifiChannel> m_channel; ///< YANS wifi channel
 };
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void YansWifiChannelHelper::AddPropagationLoss (std::string name, Ts&&... args)
+{
+  m_propagationLoss.push_back (ObjectFactory (name, std::forward<Ts> (args)...));
+}
+
+template <typename... Ts>
+void YansWifiChannelHelper::SetPropagationDelay (std::string name, Ts&&... args)
+{
+  m_propagationDelay = ObjectFactory (name, std::forward<Ts> (args)...); 
+}
+  
 
 } //namespace ns3
 

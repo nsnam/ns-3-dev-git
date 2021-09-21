@@ -50,56 +50,6 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 }
 
 void
-MobilityHelper::SetPositionAllocator (std::string type,
-                                      std::string n1, const AttributeValue &v1,
-                                      std::string n2, const AttributeValue &v2,
-                                      std::string n3, const AttributeValue &v3,
-                                      std::string n4, const AttributeValue &v4,
-                                      std::string n5, const AttributeValue &v5,
-                                      std::string n6, const AttributeValue &v6,
-                                      std::string n7, const AttributeValue &v7,
-                                      std::string n8, const AttributeValue &v8,
-                                      std::string n9, const AttributeValue &v9)
-{
-  ObjectFactory pos;
-  pos.SetTypeId (type);
-  pos.Set (n1, v1);
-  pos.Set (n2, v2);
-  pos.Set (n3, v3);
-  pos.Set (n4, v4);
-  pos.Set (n5, v5);
-  pos.Set (n6, v6);
-  pos.Set (n7, v7);
-  pos.Set (n8, v8);
-  pos.Set (n9, v9);
-  m_position = pos.Create ()->GetObject<PositionAllocator> ();
-}
-
-void
-MobilityHelper::SetMobilityModel (std::string type,
-                                  std::string n1, const AttributeValue &v1,
-                                  std::string n2, const AttributeValue &v2,
-                                  std::string n3, const AttributeValue &v3,
-                                  std::string n4, const AttributeValue &v4,
-                                  std::string n5, const AttributeValue &v5,
-                                  std::string n6, const AttributeValue &v6,
-                                  std::string n7, const AttributeValue &v7,
-                                  std::string n8, const AttributeValue &v8,
-                                  std::string n9, const AttributeValue &v9)
-{
-  m_mobility.SetTypeId (type);
-  m_mobility.Set (n1, v1);
-  m_mobility.Set (n2, v2);
-  m_mobility.Set (n3, v3);
-  m_mobility.Set (n4, v4);
-  m_mobility.Set (n5, v5);
-  m_mobility.Set (n6, v6);
-  m_mobility.Set (n7, v7);
-  m_mobility.Set (n8, v8);
-  m_mobility.Set (n9, v9);
-}
-
-void
 MobilityHelper::PushReferenceMobilityModel (Ptr<Object> reference)
 {
   Ptr<MobilityModel> mobility = reference->GetObject<MobilityModel> ();

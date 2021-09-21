@@ -115,30 +115,6 @@ SpectrumAnalyzerHelper::SetDeviceAttribute (std::string name, const AttributeVal
   m_device.Set (name, v);
 }
 
-void
-SpectrumAnalyzerHelper::SetAntenna (std::string type,
-                                    std::string n0, const AttributeValue &v0,
-                                    std::string n1, const AttributeValue &v1,
-                                    std::string n2, const AttributeValue &v2,
-                                    std::string n3, const AttributeValue &v3,
-                                    std::string n4, const AttributeValue &v4,
-                                    std::string n5, const AttributeValue &v5,
-                                    std::string n6, const AttributeValue &v6,
-                                    std::string n7, const AttributeValue &v7)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (type);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_antenna = factory;
-}
-
 
 void
 SpectrumAnalyzerHelper::SetRxSpectrumModel (Ptr<SpectrumModel> m)

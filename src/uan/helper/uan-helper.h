@@ -46,106 +46,42 @@ public:
   /**
    * Set MAC attributes.
    *
+   * \tparam Ts \deduced Argument types
    * \param type The type of ns3::UanMac to create.
-   * \param n0 The name of the attribute to set.
-   * \param v0 The value of the attribute to set.
-   * \param n1 The name of the attribute to set.
-   * \param v1 The value of the attribute to set.
-   * \param n2 The name of the attribute to set.
-   * \param v2 The value of the attribute to set.
-   * \param n3 The name of the attribute to set.
-   * \param v3 The value of the attribute to set.
-   * \param n4 The name of the attribute to set.
-   * \param v4 The value of the attribute to set.
-   * \param n5 The name of the attribute to set.
-   * \param v5 The value of the attribute to set.
-   * \param n6 The name of the attribute to set.
-   * \param v6 The value of the attribute to set.
-   * \param n7 The name of the attribute to set.
-   * \param v7 The value of the attribute to set.
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * All the attributes specified in this method should exist
    * in the requested mac.
    */
-  void SetMac (std::string type,
-               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
-
+  template <typename... Ts>
+  void SetMac (std::string type, Ts&&... args);
 
   /**
    * Set PHY attributes.
    *
+   * \tparam Ts \deduced Argument types
    * \param phyType The type of ns3::UanPhy to create.
-   * \param n0 The name of the attribute to set.
-   * \param v0 The value of the attribute to set.
-   * \param n1 The name of the attribute to set.
-   * \param v1 The value of the attribute to set.
-   * \param n2 The name of the attribute to set.
-   * \param v2 The value of the attribute to set.
-   * \param n3 The name of the attribute to set.
-   * \param v3 The value of the attribute to set.
-   * \param n4 The name of the attribute to set.
-   * \param v4 The value of the attribute to set.
-   * \param n5 The name of the attribute to set.
-   * \param v5 The value of the attribute to set.
-   * \param n6 The name of the attribute to set.
-   * \param v6 The value of the attribute to set.
-   * \param n7 The name of the attribute to set.
-   * \param v7 The value of the attribute to set.
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * All the attributes specified in this method should exist
    * in the requested Phy.
    */
-  void SetPhy (std::string phyType,
-               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetPhy (std::string phyType, Ts&&... args);
 
 
   /**
    * Set the transducer attributes.
    *
+   * \tparam Ts \deduced Argument types
    * \param type The type of ns3::Transducer to create.
-   * \param n0 The name of the attribute to set.
-   * \param v0 The value of the attribute to set.
-   * \param n1 The name of the attribute to set.
-   * \param v1 The value of the attribute to set.
-   * \param n2 The name of the attribute to set.
-   * \param v2 The value of the attribute to set.
-   * \param n3 The name of the attribute to set.
-   * \param v3 The value of the attribute to set.
-   * \param n4 The name of the attribute to set.
-   * \param v4 The value of the attribute to set.
-   * \param n5 The name of the attribute to set.
-   * \param v5 The value of the attribute to set.
-   * \param n6 The name of the attribute to set.
-   * \param v6 The value of the attribute to set.
-   * \param n7 The name of the attribute to set.
-   * \param v7 The value of the attribute to set.
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * All the attributes specified in this method should exist
    * in the requested transducer.
    */
-  void SetTransducer (std::string type,
-                      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                      std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                      std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                      std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetTransducer (std::string type, Ts&&... args);
   /**
    * Enable ascii output on the specified deviceid within the
    * specified nodeid if it is of type ns3::UanNetDevice and dump
@@ -253,6 +189,28 @@ private:
 
 };
 
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void UanHelper::SetMac (std::string type, Ts&&... args)
+{
+  m_mac = ObjectFactory (type, std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void UanHelper::SetPhy (std::string phyType, Ts&&... args)
+{
+  m_phy = ObjectFactory (phyType, std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void UanHelper::SetTransducer (std::string type, Ts&&... args)
+{
+  m_transducer = ObjectFactory (type, std::forward<Ts> (args)...);
+}
 
 } // end namespace ns3
 

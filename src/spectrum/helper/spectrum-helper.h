@@ -55,63 +55,21 @@ public:
   static SpectrumChannelHelper Default ();
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param type the type of the SpectrumChannel to use
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    */
-  void SetChannel (std::string type,
-                   std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                   std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                   std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                   std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                   std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                   std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                   std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                   std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetChannel (std::string type, Ts&&... args);
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the name of the model to set
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Add a new single-frequency propagation loss model to this channel helper.
    */
-  void AddPropagationLoss (std::string name,
-                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void AddPropagationLoss (std::string name, Ts&&... args);
 
 
   /**
@@ -122,35 +80,14 @@ public:
   void AddPropagationLoss (Ptr<PropagationLossModel> m);
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the name of the model to set
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Add a new frequency-dependent propagation loss model to this channel helper.
    */
-  void AddSpectrumPropagationLoss (std::string name,
-                                   std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                                   std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                                   std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                                   std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                                   std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                                   std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                                   std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                                   std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void AddSpectrumPropagationLoss (std::string name, Ts&&... args);
 
   /**
    * Add a new frequency-dependent propagation loss model instance to this channel helper.
@@ -160,35 +97,14 @@ public:
   void AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossModel> m);
 
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the name of the model to set
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    *
    * Configure a propagation delay for this channel.
    */
-  void SetPropagationDelay (std::string name,
-                            std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                            std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                            std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                            std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                            std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                            std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                            std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                            std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetPropagationDelay (std::string name, Ts&&... args);
 
   /**
    * \returns a new channel
@@ -215,33 +131,12 @@ class SpectrumPhyHelper
 {
 public:
   /**
+   * \tparam Ts \deduced Argument types
    * \param name the type of SpectrumPhy to use
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * \param [in] args Name and AttributeValue pairs to set.
    */
-  void SetPhy (std::string name,
-               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Ts>
+  void SetPhy (std::string name, Ts&&... args);
 
   /**
    * set the channel that will be used by SpectrumPhy instances created by this helper
@@ -281,6 +176,46 @@ private:
   Ptr<SpectrumChannel> m_channel; //!< Channel
 };
 
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void SpectrumChannelHelper::SetChannel (std::string type, Ts&&... args)
+{
+  m_channel.SetTypeId (type);
+  m_channel.Set (std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void SpectrumChannelHelper::AddPropagationLoss (std::string name, Ts&&... args)
+{
+  ObjectFactory factory (name, std::forward<Ts> (args)...);
+  Ptr<PropagationLossModel> m = factory.Create<PropagationLossModel> ();
+  AddPropagationLoss (m);
+}
+
+template <typename... Ts>
+void SpectrumChannelHelper::AddSpectrumPropagationLoss (std::string name, Ts&&... args)
+{
+  ObjectFactory factory (name, std::forward<Ts> (args)...);
+  Ptr<SpectrumPropagationLossModel> m = factory.Create<SpectrumPropagationLossModel> ();
+  AddSpectrumPropagationLoss (m);
+}
+
+template <typename... Ts>
+void SpectrumChannelHelper::SetPropagationDelay (std::string name, Ts&&... args)
+{
+  m_propagationDelay = ObjectFactory (name, std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void SpectrumPhyHelper::SetPhy (std::string name, Ts&&... args)
+{
+  m_phy.SetTypeId (name);
+  m_phy.Set (std::forward<Ts> (args)...);
+}
 
 } // namespace ns3
 
