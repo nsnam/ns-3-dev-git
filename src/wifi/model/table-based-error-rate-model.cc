@@ -150,13 +150,13 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
   bool ldpc = txVector.IsLdpc ();
   NS_LOG_FUNCTION (this << +mcs << roundedSnr << size << ldpc);
 
-  // HT: for mcs greater than 7, use 0 - 7 curves for data rate
+  // HT: for MCS greater than 7, use 0 - 7 curves for data rate
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       mcs = mcs % 8;
     }
 
-  if (mcs > (ldpc ? ERROR_TABLE_LDPC_MAX_NUM_MCS : ERROR_TABLE_BCC_MAX_NUM_MCS))
+  if (mcs >= (ldpc ? ERROR_TABLE_LDPC_MAX_NUM_MCS : ERROR_TABLE_BCC_MAX_NUM_MCS))
     {
       NS_LOG_WARN ("Table missing for MCS: " << +mcs << " in TableBasedErrorRateModel: use fallback error rate model");
       return m_fallbackErrorModel->GetChunkSuccessRate (mode, txVector, snr, nbits, staId);

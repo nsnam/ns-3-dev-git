@@ -31,14 +31,14 @@ namespace ns3 {
 const uint16_t ERROR_TABLE_BCC_SMALL_FRAME_SIZE = 32;   //!< reference size (bytes) of small frames for BCC
 const uint16_t ERROR_TABLE_BCC_LARGE_FRAME_SIZE = 1458; //!< reference size (bytes) of large frames for BCC
 const uint16_t ERROR_TABLE_LDPC_FRAME_SIZE = 1458;      //!< reference size (bytes) for LDPC
-const uint8_t ERROR_TABLE_BCC_MAX_NUM_MCS = 9;          //!< maximum number of MCSs for BCC
-const uint8_t ERROR_TABLE_LDPC_MAX_NUM_MCS = 11;        //!< maximum number of MCSs for LDPC
+const uint8_t ERROR_TABLE_BCC_MAX_NUM_MCS = 10;         //!< maximum number of MCSs for BCC
+const uint8_t ERROR_TABLE_LDPC_MAX_NUM_MCS = 12;        //!< maximum number of MCSs for LDPC
 
 /// Table of SNR (dB) and PER pairs
 typedef std::vector<std::pair<double /* SNR (dB) */, double /* PER */> > SnrPerTable;
 
 /// AWGN error table for BCC with reference size of 32 bytes
-static const SnrPerTable AwgnErrorTableBcc32 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] = {
+static const SnrPerTable AwgnErrorTableBcc32 [ERROR_TABLE_BCC_MAX_NUM_MCS] = {
   // MCS-0
   {
     {-3.50000, 1.00000}, {-3.00000, 0.99500}, {-2.50000, 0.94080}, {-2.00000, 0.82590},
@@ -116,7 +116,7 @@ static const SnrPerTable AwgnErrorTableBcc32 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] =
 };
 
 /// AWGN error table for BCC with reference size of 1458 bytes
-static const SnrPerTable AwgnErrorTableBcc1458 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] = {
+static const SnrPerTable AwgnErrorTableBcc1458 [ERROR_TABLE_BCC_MAX_NUM_MCS] = {
   // MCS-0
   {
     {-1.00000, 1.00000}, {-0.50000, 0.99400}, {0.00000, 0.81850}, {0.50000, 0.29080},
@@ -183,7 +183,7 @@ static const SnrPerTable AwgnErrorTableBcc1458 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1]
 };
 
 /// AWGN error table for LDPC with reference size of 1458 bytes
-static const SnrPerTable AwgnErrorTableLdpc1458 [ERROR_TABLE_LDPC_MAX_NUM_MCS + 1] = {
+static const SnrPerTable AwgnErrorTableLdpc1458 [ERROR_TABLE_LDPC_MAX_NUM_MCS] = {
   // MCS-0
   {
     {-1.50000, 1.00000}, {-1.25000, 0.97950}, {-1.00000, 0.60480}, {-0.75000, 0.17050},
