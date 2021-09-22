@@ -61,13 +61,13 @@ SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   phy->SetErrorRateModel (error);
   if (m_frameCaptureModel.IsTypeIdSet ())
     {
-      Ptr<FrameCaptureModel> capture = m_frameCaptureModel.Create<FrameCaptureModel> ();
-      phy->SetFrameCaptureModel (capture);
+      auto frameCapture = m_frameCaptureModel.Create<FrameCaptureModel> ();
+      phy->SetFrameCaptureModel (frameCapture);
     }
   if (m_preambleDetectionModel.IsTypeIdSet ())
     {
-      Ptr<PreambleDetectionModel> capture = m_preambleDetectionModel.Create<PreambleDetectionModel> ();
-      phy->SetPreambleDetectionModel (capture);
+      auto preambleDetection = m_preambleDetectionModel.Create<PreambleDetectionModel> ();
+      phy->SetPreambleDetectionModel (preambleDetection);
     }
   phy->SetChannel (m_channel);
   phy->SetDevice (device);
