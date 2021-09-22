@@ -16,6 +16,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
 .. toctree::
    :maxdepth: 2
 
+   quick-start
    introduction
    resources
    getting-started

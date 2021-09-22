@@ -1,5 +1,7 @@
 .. include:: replace.txt
 
+.. _Introduction:
+
 Introduction
 ------------
 
@@ -20,6 +22,9 @@ As the tutorial unfolds, we will introduce the full |ns3| documentation
 and provide pointers to source code for those interested in delving deeper
 into the workings of the system.
 
+We also provide a quick start guide for those who are comfortable
+diving right in without too much documentation.
+
 A few key points are worth noting at the onset:
 
 * |ns3| is open-source, and the project strives to maintain an 
@@ -28,6 +33,7 @@ A few key points are worth noting at the onset:
   <http://www.isi.edu/nsnam/ns>`_; 
   it is a new simulator.  The two simulators are both written in C++ but 
   |ns3| is a new simulator that does not support the |ns2| APIs.
+
 
 About ns-3
 **********

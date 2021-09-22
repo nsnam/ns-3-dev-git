@@ -1,6 +1,8 @@
 .. include:: replace.txt
 .. highlight:: bash
 
+.. _Getting Started:
+
 Getting Started
 ---------------
 
