@@ -20,6 +20,7 @@
  */
 
 #include "wifi-tx-vector.h"
+#include "wifi-phy-common.h"
 #include "ns3/abort.h"
 
 namespace ns3 {
@@ -116,7 +117,7 @@ WifiTxVector::GetMode (uint16_t staId) const
     }
   if (IsMu ())
     {
-      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
+      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU (" << staId << ")");
       NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
       return m_muUserInfos.at (staId).mcs;
     }
@@ -172,7 +173,7 @@ WifiTxVector::GetNss (uint16_t staId) const
 {
   if (IsMu ())
     {
-      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
+      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU (" << staId << ")");
       NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
       return m_muUserInfos.at (staId).nss;
     }
@@ -231,8 +232,8 @@ WifiTxVector::SetMode (WifiMode mode)
 void
 WifiTxVector::SetMode (WifiMode mode, uint16_t staId)
 {
-  NS_ABORT_MSG_IF (!IsMu (), "Not an HE MU transmission");
-  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  NS_ABORT_MSG_IF (!IsMu (), "Not a MU transmission");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU");
   m_muUserInfos[staId].mcs = mode;
   m_modeInitialized = true;
 }
@@ -276,8 +277,8 @@ WifiTxVector::SetNss (uint8_t nss)
 void
 WifiTxVector::SetNss (uint8_t nss, uint16_t staId)
 {
-  NS_ABORT_MSG_IF (!IsMu (), "Not an HE MU transmission");
-  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  NS_ABORT_MSG_IF (!IsMu (), "Not a MU transmission");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU");
   m_muUserInfos[staId].nss = nss;
 }
 
@@ -368,26 +369,26 @@ WifiTxVector::IsValid (void) const
 bool
 WifiTxVector::IsMu (void) const
 {
-  return (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB);
+  return ns3::IsMu (m_preamble);
 }
 
 bool
 WifiTxVector::IsDlMu (void) const
 {
-  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU));
+  return ns3::IsDlMu (m_preamble);
 }
 
 bool
 WifiTxVector::IsUlMu (void) const
 {
-  return (m_preamble == WIFI_PREAMBLE_HE_TB);
+  return ns3::IsUlMu (m_preamble);
 }
 
 HeRu::RuSpec
 WifiTxVector::GetRu (uint16_t staId) const
 {
   NS_ABORT_MSG_IF (!IsMu (), "RU only available for MU");
-  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU");
   return m_muUserInfos.at (staId).ru;
 }
 
@@ -395,7 +396,7 @@ void
 WifiTxVector::SetRu (HeRu::RuSpec ru, uint16_t staId)
 {
   NS_ABORT_MSG_IF (!IsMu (), "RU only available for MU");
-  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU");
   m_muUserInfos[staId].ru = ru;
 }
 
@@ -410,8 +411,8 @@ void
 WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
 {
   NS_ABORT_MSG_IF (!IsMu (), "HE MU user info only available for MU");
-  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
-  NS_ABORT_MSG_IF (userInfo.mcs.GetModulationClass () != WIFI_MOD_CLASS_HE, "Only HE modes authorized for HE MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for MU");
+  NS_ABORT_MSG_IF (userInfo.mcs.GetModulationClass () < WIFI_MOD_CLASS_HE, "Only HE (or newer) modes authorized for MU");
   m_muUserInfos[staId] = userInfo;
   m_modeInitialized = true;
 }
@@ -433,7 +434,6 @@ WifiTxVector::GetHeMuUserInfoMap (void)
 std::pair<std::size_t, std::size_t>
 WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE-SIG-B content channels only available for HE MU");
   //MU-MIMO is not handled for now, i.e. one station per RU
 
   if (m_channelWidth == 20)
@@ -518,7 +518,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     {
       os << " BSS color: " << +v.GetBssColor ();
     }
-  if (v.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+  if (v.IsUlMu ())
     {
       os << " Length: " << v.GetLength ();
     }

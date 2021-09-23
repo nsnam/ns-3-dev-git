@@ -382,7 +382,7 @@ PhyEntity::PhyFieldRxStatus
 HtPhy::EndReceiveHtSig (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
-  NS_ASSERT (IsHt (event->GetTxVector ().GetPreambleType ()));
+  NS_ASSERT (event->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HT_MF);
   SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_HT_SIG, event);
   NS_LOG_DEBUG ("HT-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
   PhyFieldRxStatus status (GetRandomValue () > snrPer.per);

@@ -121,22 +121,22 @@ public:
    * MU PPDU, return the transmission mode (MCS) selected for the transmission
    * to the station identified by the given STA-ID.
    *
-   * \param staId the station ID for HE MU
+   * \param staId the station ID for MU
    * \returns the selected payload transmission mode
    */
   WifiMode GetMode (uint16_t staId = SU_STA_ID) const;
   /**
-  * Sets the selected payload transmission mode
-  *
-  * \param mode the payload WifiMode
-  */
+   * Sets the selected payload transmission mode
+   *
+   * \param mode the payload WifiMode
+   */
   void SetMode (WifiMode mode);
   /**
-  * Sets the selected payload transmission mode for a given STA ID (for HE MU only)
-  *
-  * \param mode
-   * \param staId the station ID for HE MU
-  */
+   * Sets the selected payload transmission mode for a given STA ID (for MU only)
+   *
+   * \param mode
+   * \param staId the station ID for MU
+   */
   void SetMode (WifiMode mode, uint16_t staId);
 
   /**
@@ -202,12 +202,12 @@ public:
    * return the number of spatial streams for the transmission to the station
    * identified by the given STA-ID.
    *
-   * \param staId the station ID for HE MU
+   * \param staId the station ID for MU
    * \returns the number of spatial streams
    */
   uint8_t GetNss (uint16_t staId = SU_STA_ID) const;
   /**
-   * \returns the maximum number of Nss (namely if HE MU)
+   * \returns the maximum number of Nss (namely if MU)
    */
   uint8_t GetNssMax (void) const;
   /**
@@ -217,10 +217,10 @@ public:
    */
   void SetNss (uint8_t nss);
   /**
-   * Sets the number of Nss for HE MU
+   * Sets the number of Nss for MU
    *
    * \param nss the number of spatial streams
-   * \param staId the station ID for HE MU
+   * \param staId the station ID for MU
    */
   void SetNss (uint8_t nss, uint16_t staId);
   /**
@@ -319,7 +319,7 @@ public:
   bool IsUlMu (void) const;
   /**
     * Get the RU specification for the STA-ID.
-    * This is applicable only for HE MU.
+    * This is applicable only for MU.
     *
     * \param staId the station ID
     * \return the RU specification for the STA-ID
@@ -327,7 +327,7 @@ public:
    HeRu::RuSpec GetRu (uint16_t staId) const;
    /**
     * Set the RU specification for the STA-ID.
-    * This is applicable only for HE MU.
+    * This is applicable only for MU.
     *
     * \param ru the RU specification
     * \param staId the station ID
@@ -365,7 +365,7 @@ public:
    HeMuUserInfoMap& GetHeMuUserInfoMap (void);
    /**
     * Get the number of RUs per HE-SIG-B content channel.
-    * This is applicable only for HE MU. MU-MIMO (i.e. multiple stations
+    * This is applicable only for MU. MU-MIMO (i.e. multiple stations
     * per RU) is not supported yet.
     * See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0.
     *

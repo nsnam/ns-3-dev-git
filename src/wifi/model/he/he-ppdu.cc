@@ -256,7 +256,7 @@ HePpdu::CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20M
 {
   NS_LOG_FUNCTION (this << txCenterFreq << p20MinFreq << p20MaxFreq);
 
-  if (GetTxVector ().IsUlMu ())
+  if (IsUlMu ())
     {
       // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
       return true;

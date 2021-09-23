@@ -17,6 +17,7 @@ def build(bld):
         'model/non-ht/dsss-error-rate-model.cc',
         'model/table-based-error-rate-model.cc',
         'model/interference-helper.cc',
+        'model/wifi-phy-common.cc',
         'model/yans-wifi-phy.cc',
         'model/yans-wifi-channel.cc',
         'model/spectrum-wifi-phy.cc',

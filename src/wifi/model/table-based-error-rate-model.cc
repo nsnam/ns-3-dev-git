@@ -132,7 +132,7 @@ TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
             }
         }
     }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT || mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+  else if (mode.GetModulationClass () >= WIFI_MOD_CLASS_HT)
     {
       mcs = mode.GetMcsValue ();
     }
