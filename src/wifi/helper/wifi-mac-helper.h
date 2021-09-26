@@ -35,7 +35,7 @@ class NetDevice;
  * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac and ns3::AdhocWifiMac.
  * Its purpose is to allow a WifiHelper to configure and install WifiMac objects on a collection
  * of nodes. The WifiMac objects themselves are mainly composed of TxMiddle, RxMiddle, ChannelAccessManager,
- * MacLow, WifiRemoteStationManager, MpduAggregator and MsduAggregartor objects, so this helper
+ * FrameExchangeManager, WifiRemoteStationManager, MpduAggregator and MsduAggregartor objects, so this helper
  * offers the opportunity to configure attribute values away from their default values, on a
  * per-NodeContainer basis. By default, it creates an Adhoc MAC layer without QoS. Typically,
  * it is used to set type and attribute values, then hand this object over to the WifiHelper that

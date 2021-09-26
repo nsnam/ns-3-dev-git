@@ -44,9 +44,8 @@ class WifiTxParameters;
  * \ingroup wifi
  *
  * This class implements the packet fragmentation and retransmission policy for
- * QoS data frames. It uses the ns3::MacLow and ns3::ChannelAccessManager helper classes
- * to respectively send packets and decide when to send them. Packets are stored
- * in a ns3::WifiMacQueue until they can be sent.
+ * QoS data frames. It uses the ns3::ChannelAccessManager helper class to decide
+ * when to send a packet. Packets are stored in a ns3::WifiMacQueue until they can be sent.
  *
  * This queue contains packets for a particular access class.
  * Possibles access classes are:
@@ -56,8 +55,6 @@ class WifiTxParameters;
  *   - AC_BK : background, TID = 1,2
  *
  * This class also implements block ack sessions and MSDU aggregation (A-MSDU).
- * If A-MSDU is enabled for that access class, it picks several packets from the
- * queue instead of a single one and sends the aggregated packet to ns3::MacLow.
  *
  * The fragmentation policy currently implemented uses a simple
  * threshold: any packet bigger than this threshold is fragmented

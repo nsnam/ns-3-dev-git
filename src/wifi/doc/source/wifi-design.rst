@@ -243,7 +243,7 @@ and interference) whether the packet was successful or not.  This class
 also provides a number of callbacks for notifications of physical layer
 events, exposes a notion of a state machine that can be monitored for
 MAC-level processes such as carrier sense, and handles sleep/wake/off models
-and energy consumption.  The ``ns3::WifiPhy`` hooks to the ``ns3::MacLow``
+and energy consumption.  The ``ns3::WifiPhy`` hooks to the ``ns3::FrameExchangeManager``
 object in the WifiNetDevice.
 
 There are currently two implementations of the ``WifiPhy``: the
@@ -345,7 +345,7 @@ YansWifiPhy and WifiPhyStateHelper
 ##################################
 
 Class ``ns3::YansWifiPhy`` is responsible for taking packets passed to
-it from the MAC (the ``ns3::MacLow`` object) and sending them onto the
+it from the MAC (the ``ns3::FrameExchangeManager`` object) and sending them onto the
 ``ns3::YansWifiChannel`` to which it is attached.  It is also responsible
 to receive packets from that channel, and, if reception is deemed to have
 been successful, to pass them up to the MAC. 
@@ -465,9 +465,9 @@ this threshold.
 The above describes the case in which the packet is a single MPDU.  For
 more recent Wi-Fi standards using MPDU aggregation, ``StartReceivePayload``
 schedules an event for reception of each individual MPDU (``ScheduleEndOfMpdus``),
-which then forwards each MPDU as they arrive up to MacLow, if the reception
-of the MPDU has been successful. Once the A-MPDU reception is finished,
-MacLow is also notified about the amount of successfully received MPDUs.
+which then forwards each MPDU as they arrive up to FrameExchangeManager, if the
+reception of the MPDU has been successful. Once the A-MPDU reception is finished,
+FrameExchangeManager is also notified about the amount of successfully received MPDUs.
 
 InterferenceHelper
 ##################
@@ -1205,8 +1205,8 @@ Depending on your goal, the common tasks are (in no particular order):
 * Creating or modifying the default Wi-Fi frames/headers by making changes to ``wifi-mac-header.*``.
 * MAC low modification. For example, handling new/modified control frames (think RTS/CTS/ACK/Block ACK),
   making changes to two-way transaction/four-way transaction.  Users usually make changes to 
-  ``mac-low.*`` to accomplish this.  Handling of control frames is performed in
-  ``MacLow::ReceiveOk``.
+  ``frame-exchange-manager.*`` or its subclasses to accomplish this.
+  Handling of control frames is performed in ``FrameExchangeManager::ReceiveMpdu``.
 * MAC high modification. For example, handling new management frames (think beacon/probe), 
   beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
 * Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interest for this task.
@@ -1214,6 +1214,6 @@ Depending on your goal, the common tasks are (in no particular order):
   ``Txop`` and ``QosTxop``.
 * Fragmentation and RTS threholds are handled by Wi-Fi remote station manager.  Note that Wi-Fi remote
   station manager simply indicates if fragmentation and RTS are needed.  Fragmentation is handled by
-  ``Txop`` or ``QosTxop`` while RTS/CTS transaction is handled by ``MacLow``.
+  ``Txop`` or ``QosTxop`` while RTS/CTS transaction is handled by ``FrameExchangeManager``.
 * Modifying or creating new rate control algorithms can be done by creating a new child class of Wi-Fi remote
   station manager or modifying the existing ones.

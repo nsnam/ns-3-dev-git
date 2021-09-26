@@ -122,7 +122,7 @@ public:
    */
   virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
-   * Remove WifiPhy associated with this MacLow.
+   * Remove WifiPhy associated with this FrameExchangeManager.
    */
   virtual void ResetPhy (void);
   /**
@@ -222,21 +222,21 @@ public:
   /**
    * \param duration switching delay duration.
    *
-   * This method is typically invoked by the PhyMacLowListener to notify
+   * This method is typically invoked by the PhyListener to notify
    * the MAC layer that a channel switching occurred. When a channel switching
    * occurs, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
   void NotifySwitchingStartNow (Time duration);
 
   /**
-   * This method is typically invoked by the PhyMacLowListener to notify
+   * This method is typically invoked by the PhyListener to notify
    * the MAC layer that the device has been put into sleep mode. When the device is put
    * into sleep mode, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
   void NotifySleepNow (void);
 
   /**
-   * This method is typically invoked by the PhyMacLowListener to notify
+   * This method is typically invoked by the PhyListener to notify
    * the MAC layer that the device has been put into off mode. When the device is put
    * into off mode, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */

@@ -3232,7 +3232,7 @@ private:
   void RunOne (bool setupBa);
 
   /**
-   * Replace the AP's MacLow callback on its PHY's ReceiveOkCallback
+   * Replace the AP's callback on its PHY's ReceiveOkCallback
    * by the ReceiveOkCallbackAtAp method.
    */
   void ReplaceReceiveOkCallbackOfAp (void);

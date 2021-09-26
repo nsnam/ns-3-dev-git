@@ -44,9 +44,9 @@ enum WifiMacDropReason : uint8_t;  // opaque enum declaration
  *
  * This class implements the packet fragmentation and
  * retransmission policy for data and management frames.
- * It uses the ns3::MacLow and ns3::ChannelAccessManager helper
- * classes to respectively send packets and decide when
- * to send them. Packets are stored in a ns3::WifiMacQueue
+ * It uses the ns3::ChannelAccessManager helper
+ * class to decide when to send a packet.
+ * Packets are stored in a ns3::WifiMacQueue
  * until they can be sent.
  *
  * The policy currently implemented uses a simple fragmentation
@@ -64,9 +64,6 @@ enum WifiMacDropReason : uint8_t;  // opaque enum declaration
 class Txop : public Object
 {
 public:
-  /// allow MacLowTransmissionListener class access
-  friend class MacLowTransmissionListener;
-
   Txop ();
 
   /**

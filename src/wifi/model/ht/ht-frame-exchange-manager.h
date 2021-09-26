@@ -148,9 +148,9 @@ public:
    * This function is typically invoked only by ns3::RegularWifiMac
    * when the STA (which may be non-AP in ESS, or in an IBSS) has
    * received an ADDBA Request frame and is transmitting an ADDBA
-   * Response frame. At this point MacLow must allocate buffers to
-   * collect all correctly received packets belonging to the category
-   * for which block ack was negotiated.
+   * Response frame. At this point the frame exchange manager must
+   * allocate buffers to collect all correctly received packets belonging
+   * to the category for which block ack was negotiated.
    */
   void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr,
                                 Mac48Address originator, uint16_t startingSeq);
