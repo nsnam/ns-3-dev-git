@@ -19,10 +19,11 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <cmath>
 #include "ns3/log.h"
 #include "yans-error-rate-model.h"
 #include "wifi-utils.h"
-#include "wifi-phy.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 
