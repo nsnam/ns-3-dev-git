@@ -75,7 +75,7 @@ HtFrameExchangeManager::DoDispose (void)
 }
 
 void
-HtFrameExchangeManager::SetWifiMac (const Ptr<RegularWifiMac> mac)
+HtFrameExchangeManager::SetWifiMac (const Ptr<WifiMac> mac)
 {
   m_msduAggregator->SetWifiMac (mac);
   m_mpduAggregator->SetWifiMac (mac);

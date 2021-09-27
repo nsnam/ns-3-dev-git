@@ -22,7 +22,7 @@
 #include "wifi-default-protection-manager.h"
 #include "wifi-tx-parameters.h"
 #include "wifi-mac-queue-item.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 
 
 namespace ns3 {

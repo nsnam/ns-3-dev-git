@@ -33,7 +33,7 @@ namespace ns3 {
 class Packet;
 class QosTxop;
 class WifiTxVector;
-class RegularWifiMac;
+class WifiMac;
 class HtFrameExchangeManager;
 class WifiTxParameters;
 
@@ -125,7 +125,7 @@ public:
    *
    * \param mac the MAC layer to use
    */
-  void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  void SetWifiMac (const Ptr<WifiMac> mac);
 
   /**
    * Calculate how much padding must be added to the end of an A-MSDU of the
@@ -142,7 +142,7 @@ protected:
   void DoDispose () override;
 
 private:
-  Ptr<RegularWifiMac> m_mac;            //!< the MAC of this station
+  Ptr<WifiMac> m_mac;                   //!< the MAC of this station
   Ptr<HtFrameExchangeManager> m_htFem;  //!< the HT Frame Exchange Manager of this station
 };
 

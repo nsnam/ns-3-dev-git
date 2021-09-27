@@ -25,7 +25,7 @@
 #include "ns3/socket.h"
 #include "txop.h"
 #include "channel-access-manager.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
@@ -133,7 +133,7 @@ void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 }
 
 void
-Txop::SetWifiMac (const Ptr<RegularWifiMac> mac)
+Txop::SetWifiMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

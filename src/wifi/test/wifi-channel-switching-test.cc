@@ -20,6 +20,7 @@
 
 #include "ns3/test.h"
 #include "ns3/string.h"
+#include "ns3/boolean.h"
 #include "ns3/qos-utils.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-net-device.h"

@@ -25,7 +25,7 @@
 #include "qos-txop.h"
 #include "wifi-remote-station-manager.h"
 #include "ns3/ht-capabilities.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include "ns3/ht-frame-exchange-manager.h"
@@ -66,7 +66,7 @@ MsduAggregator::DoDispose ()
 }
 
 void
-MsduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
+MsduAggregator::SetWifiMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

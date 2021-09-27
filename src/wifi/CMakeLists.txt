@@ -82,7 +82,6 @@ set(source_files
     model/rate-control/rrpaa-wifi-manager.cc
     model/rate-control/thompson-sampling-wifi-manager.cc
     model/recipient-block-ack-agreement.cc
-    model/regular-wifi-mac.cc
     model/simple-frame-capture-model.cc
     model/snr-tag.cc
     model/spectrum-wifi-phy.cc
@@ -218,7 +217,6 @@ set(header_files
     model/rate-control/thompson-sampling-wifi-manager.h
     model/recipient-block-ack-agreement.h
     model/reference/error-rate-tables.h
-    model/regular-wifi-mac.h
     model/simple-frame-capture-model.h
     model/snr-tag.h
     model/spectrum-wifi-phy.h

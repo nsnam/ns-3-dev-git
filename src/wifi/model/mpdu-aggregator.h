@@ -23,7 +23,7 @@
 
 #include "ns3/object.h"
 #include "wifi-mode.h"
-#include "qos-txop.h"
+#include "wifi-mac-queue-item.h"
 #include "ns3/nstime.h"
 #include <vector>
 
@@ -31,9 +31,9 @@ namespace ns3 {
 
 class AmpduSubframeHeader;
 class WifiTxVector;
+class QosTxop;
 class Packet;
-class WifiMacQueueItem;
-class RegularWifiMac;
+class WifiMac;
 class WifiTxParameters;
 
 /**
@@ -129,7 +129,7 @@ public:
    *
    * \param mac the MAC layer to use
    */
-  void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  void SetWifiMac (const Ptr<WifiMac> mac);
 
   /**
    * \param ampduSize the size of the A-MPDU that needs to be padded in bytes
@@ -155,7 +155,7 @@ protected:
   void DoDispose () override;
 
 private:
-  Ptr<RegularWifiMac> m_mac;   //!< the MAC of this station
+  Ptr<WifiMac> m_mac;   //!< the MAC of this station
 };
 
 }  //namespace ns3

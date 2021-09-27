@@ -63,6 +63,7 @@
 #include "ns3/command-line.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
+#include "ns3/double.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/mobility-helper.h"

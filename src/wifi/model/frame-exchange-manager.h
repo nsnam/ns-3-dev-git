@@ -25,7 +25,7 @@
 #include "qos-txop.h"
 #include "wifi-tx-vector.h"
 #include "wifi-psdu.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "wifi-phy.h"
@@ -96,7 +96,7 @@ public:
    *
    * \param mac the MAC layer to use
    */
-  virtual void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  virtual void SetWifiMac (const Ptr<WifiMac> mac);
   /**
    * Set the MAC TX Middle to use.
    *
@@ -378,7 +378,7 @@ protected:
   Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
   WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
   EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
-  Ptr<RegularWifiMac> m_mac;                        //!< the MAC layer on this station
+  Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MAC TX Middle on this station
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< the MAC RX Middle on this station
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager

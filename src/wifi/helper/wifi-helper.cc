@@ -32,6 +32,7 @@
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/qos-utils.h"
+#include "ns3/qos-txop.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
@@ -835,22 +836,20 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       devices.Add (device);
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
-      // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
-      Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-      if (rmac && m_enableFlowControl)
+      if (m_enableFlowControl)
         {
           Ptr<NetDeviceQueueInterface> ndqi;
           BooleanValue qosSupported;
           Ptr<WifiMacQueue> wmq;
 
-          rmac->GetAttributeFailSafe ("QosSupported", qosSupported);
+          mac->GetAttributeFailSafe ("QosSupported", qosSupported);
           if (qosSupported.Get ())
             {
               ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> ("NTxQueues",
                                                                           UintegerValue (4));
               for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
                 {
-                  Ptr<QosTxop> qosTxop = rmac->GetQosTxop (ac);
+                  Ptr<QosTxop> qosTxop = mac->GetQosTxop (ac);
                   wmq = qosTxop->GetWifiMacQueue ();
                   ndqi->GetTxQueue (static_cast<std::size_t> (ac))->ConnectQueueTraces (wmq);
                 }
@@ -860,7 +859,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
             {
               ndqi = CreateObject<NetDeviceQueueInterface> ();
 
-              wmq = rmac->GetTxop ()->GetWifiMacQueue ();
+              wmq = mac->GetTxop ()->GetWifiMacQueue ();
               ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
             }
           device->AggregateObject (ndqi);
@@ -945,7 +944,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("PhyEntity", LOG_LEVEL_ALL);
   LogComponentEnable ("QosFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
-  LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RrMultiUserScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("RrpaaWifiManager", LOG_LEVEL_ALL);
@@ -1008,41 +1006,37 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 
           //Handle any random numbers in the MAC objects.
           Ptr<WifiMac> mac = wifi->GetMac ();
-          Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-          if (rmac)
+          PointerValue ptr;
+          if (!mac->GetQosSupported ())
             {
-              PointerValue ptr;
-              if (!rmac->GetQosSupported ())
-                {
-                  rmac->GetAttribute ("Txop", ptr);
-                  Ptr<Txop> txop = ptr.Get<Txop> ();
-                  currentStream += txop->AssignStreams (currentStream);
-                }
-              else
-                {
-                  rmac->GetAttribute ("VO_Txop", ptr);
-                  Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-                  currentStream += vo_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("Txop", ptr);
+              Ptr<Txop> txop = ptr.Get<Txop> ();
+              currentStream += txop->AssignStreams (currentStream);
+            }
+          else
+            {
+              mac->GetAttribute ("VO_Txop", ptr);
+              Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+              currentStream += vo_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("VI_Txop", ptr);
-                  Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-                  currentStream += vi_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("VI_Txop", ptr);
+              Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+              currentStream += vi_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BE_Txop", ptr);
-                  Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-                  currentStream += be_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("BE_Txop", ptr);
+              Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+              currentStream += be_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BK_Txop", ptr);
-                  Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-                  currentStream += bk_txop->AssignStreams (currentStream);
-                }
+              mac->GetAttribute ("BK_Txop", ptr);
+              Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+              currentStream += bk_txop->AssignStreams (currentStream);
+            }
 
-              //if an AP, handle any beacon jitter
-              Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
-              if (apmac)
-                {
-                  currentStream += apmac->AssignStreams (currentStream);
-                }
+          //if an AP, handle any beacon jitter
+          Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (mac);
+          if (apmac)
+            {
+              currentStream += apmac->AssignStreams (currentStream);
             }
         }
     }

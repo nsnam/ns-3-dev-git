@@ -405,7 +405,7 @@ public:
    * \param f the select queue callback
    *
    * Set the select queue callback to set on the NetDevice queue interface aggregated
-   * to the WifiNetDevice, in case RegularWifiMac with QoS enabled is used
+   * to the WifiNetDevice, in case WifiMac with QoS enabled is used
    */
   void SetSelectQueueCallback (SelectQueueCallback f);
 

@@ -60,7 +60,7 @@ public:
   virtual ~HtFrameExchangeManager ();
 
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
-  void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
+  void SetWifiMac (const Ptr<WifiMac> mac) override;
   void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
 
   /**
@@ -145,7 +145,7 @@ public:
    * \param startingSeq Sequence number of the first MPDU of all
    *        packets for which block ack was negotiated.
    *
-   * This function is typically invoked only by ns3::RegularWifiMac
+   * This function is typically invoked only by ns3::WifiMac
    * when the STA (which may be non-AP in ESS, or in an IBSS) has
    * received an ADDBA Request frame and is transmitting an ADDBA
    * Response frame. At this point the frame exchange manager must

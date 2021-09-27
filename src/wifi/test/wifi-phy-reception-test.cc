@@ -29,6 +29,7 @@
 #include "ns3/packet-socket-server.h"
 #include "ns3/test.h"
 #include "ns3/double.h"
+#include "ns3/boolean.h"
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/spectrum-wifi-helper.h"

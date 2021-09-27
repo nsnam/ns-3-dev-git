@@ -18,6 +18,8 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "ns3/boolean.h"
+#include "ns3/enum.h"
 #include "ns3/test.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/mobility-helper.h"

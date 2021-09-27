@@ -23,7 +23,7 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "mgt-headers.h"
 
 class TwoLevelAggregationTest;
@@ -103,7 +103,7 @@ struct ApInfo
  * 7. The transition from Associated to Unassociated occurs if the number
  *    of missed beacons exceeds the threshold.
  */
-class StaWifiMac : public RegularWifiMac
+class StaWifiMac : public WifiMac
 {
 public:
   /// Allow test cases to access private members

@@ -23,6 +23,8 @@
 #include "ns3/node.h"
 #include "ns3/pointer.h"
 #include "ns3/string.h"
+#include "ns3/double.h"
+#include "ns3/boolean.h"
 #include "ns3/simulator.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/constant-position-mobility-model.h"

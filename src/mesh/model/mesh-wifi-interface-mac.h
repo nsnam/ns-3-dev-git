@@ -29,7 +29,7 @@
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include "ns3/regular-wifi-mac.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
 
@@ -47,7 +47,7 @@ class UniformRandomVariable;
  *  - management and priority traffic.
  *
  */
-class MeshWifiInterfaceMac : public RegularWifiMac
+class MeshWifiInterfaceMac : public WifiMac
 {
 public:
   /**

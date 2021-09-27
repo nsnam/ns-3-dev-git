@@ -127,7 +127,7 @@ FrameExchangeManager::GetAckManager (void) const
 }
 
 void
-FrameExchangeManager::SetWifiMac (Ptr<RegularWifiMac> mac)
+FrameExchangeManager::SetWifiMac (Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

@@ -40,6 +40,7 @@
 #include "ns3/stats-module.h"     // TimeSeriesAdapter
 #include "ns3/uan-module.h"       // UanPhy
 #include "ns3/wifi-phy-state-helper.h"
+#include "ns3/wifi-mac-header.h"
 
 using namespace ns3;
 

@@ -19,6 +19,8 @@
  */
 
 #include "ns3/test.h"
+#include "ns3/double.h"
+#include "ns3/boolean.h"
 #include "ns3/string.h"
 #include "ns3/qos-utils.h"
 #include "ns3/ctrl-headers.h"
@@ -35,6 +37,9 @@
 #include "ns3/pointer.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/mac-rx-middle.h"
+#include "ns3/qos-txop.h"
+#include "ns3/originator-block-ack-agreement.h"
+#include "ns3/wifi-mac-queue-item.h"
 #include <list>
 
 using namespace ns3;
@@ -1546,9 +1551,7 @@ BlockAckAggregationDisabledTest::DoRun (void)
       ptr.Get<QosTxop> ()->TraceConnectWithoutContext ("TxopTrace", MakeCallback (&TxopDurationTracer::Trace, &txopTracer));
 
       // set the TXOP limit on BE AC
-      Ptr<RegularWifiMac> ap_mac = DynamicCast<RegularWifiMac> (ap_device->GetMac ());
-      NS_ASSERT (ap_mac);
-      ap_mac->GetAttribute ("BE_Txop", ptr);
+      ap_device->GetMac ()->GetAttribute ("BE_Txop", ptr);
       ptr.Get<QosTxop> ()->SetTxopLimit (MicroSeconds (4800));
     }
 

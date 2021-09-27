@@ -61,34 +61,30 @@ static void
 AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
 {
   int64_t currentStream = stream;
-  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-  if (rmac)
+  PointerValue ptr;
+  if (!mac->GetQosSupported ())
     {
-      PointerValue ptr;
-      if (!rmac->GetQosSupported ())
-        {
-          rmac->GetAttribute ("Txop", ptr);
-          Ptr<Txop> txop = ptr.Get<Txop> ();
-          currentStream += txop->AssignStreams (currentStream);
-        }
-      else
-        {
-          rmac->GetAttribute ("VO_Txop", ptr);
-          Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-          currentStream += vo_txop->AssignStreams (currentStream);
+      mac->GetAttribute ("Txop", ptr);
+      Ptr<Txop> txop = ptr.Get<Txop> ();
+      currentStream += txop->AssignStreams (currentStream);
+    }
+  else
+    {
+      mac->GetAttribute ("VO_Txop", ptr);
+      Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+      currentStream += vo_txop->AssignStreams (currentStream);
 
-          rmac->GetAttribute ("VI_Txop", ptr);
-          Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-          currentStream += vi_txop->AssignStreams (currentStream);
+      mac->GetAttribute ("VI_Txop", ptr);
+      Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+      currentStream += vi_txop->AssignStreams (currentStream);
 
-          rmac->GetAttribute ("BE_Txop", ptr);
-          Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-          currentStream += be_txop->AssignStreams (currentStream);
+      mac->GetAttribute ("BE_Txop", ptr);
+      Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+      currentStream += be_txop->AssignStreams (currentStream);
 
-          rmac->GetAttribute ("BK_Txop", ptr);
-          Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-          bk_txop->AssignStreams (currentStream);
-        }
+      mac->GetAttribute ("BK_Txop", ptr);
+      Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+      bk_txop->AssignStreams (currentStream);
     }
 }
 
@@ -144,7 +140,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
-  Ptr<RegularWifiMac> mac = m_mac.Create<RegularWifiMac> ();
+  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   mac->SetDevice (dev);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
@@ -320,7 +316,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
-  Ptr<RegularWifiMac> mac = m_mac.Create<RegularWifiMac> ();
+  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   mac->SetDevice (dev);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
@@ -522,7 +518,7 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
 
   Ptr<Node> txNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
-  Ptr<RegularWifiMac> txMac = m_mac.Create<RegularWifiMac> ();
+  Ptr<WifiMac> txMac = m_mac.Create<WifiMac> ();
   txMac->SetDevice (txDev);
   txMac->ConfigureStandard (WIFI_STANDARD_80211a);
   Ptr<FrameExchangeManager> fem = txMac->GetFrameExchangeManager ();
@@ -846,10 +842,8 @@ QosFragmentationTestCase::DoRun (void)
   Ptr<WifiNetDevice> sta_device = DynamicCast<WifiNetDevice> (staDevices.Get (0));
 
   // set the TXOP limit on BE AC
-  Ptr<RegularWifiMac> sta_mac = DynamicCast<RegularWifiMac> (sta_device->GetMac ());
-  NS_ASSERT (sta_mac);
   PointerValue ptr;
-  sta_mac->GetAttribute ("BE_Txop", ptr);
+  sta_device->GetMac ()->GetAttribute ("BE_Txop", ptr);
   ptr.Get<QosTxop> ()->SetTxopLimit (MicroSeconds (3008));
 
   PacketSocketAddress socket;
@@ -1738,7 +1732,7 @@ Bug2831TestCase::DoRun (void)
   mac.SetTypeId ("ns3::ApWifiMac");
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
   mac.Set ("QosSupported", BooleanValue (true));
-  Ptr<RegularWifiMac> apMac = mac.Create<RegularWifiMac> ();
+  Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
   apMac->SetDevice (apDev);
   apMac->SetAddress (Mac48Address::Allocate ());
   apMac->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -1756,7 +1750,7 @@ Bug2831TestCase::DoRun (void)
   Ptr<HtConfiguration> staHtConfiguration = CreateObject<HtConfiguration> ();
   staDev->SetHtConfiguration (staHtConfiguration);
   mac.SetTypeId ("ns3::StaWifiMac");
-  Ptr<RegularWifiMac> staMac = mac.Create<RegularWifiMac> ();
+  Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
   staMac->SetDevice (staDev);
   staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -2217,7 +2211,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx", MakeCallback (&Bug2470TestCase::RxCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&Bug2470TestCase::RxErrorCallback, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
   Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   Simulator::Schedule (Seconds (0.5) + MicroSeconds (5), &Bug2470TestCase::SendPacketBurst, this, 4, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
@@ -2448,10 +2442,8 @@ Issue40TestCase::RunOne (bool useAmpdu)
     {
       // Disable use of BAR that are sent with the lowest modulation so that we can also reproduce the problem with A-MPDU, i.e. the lack of feedback about SNR change
       Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice> (apDevice.Get (0));
-      Ptr<RegularWifiMac> ap_mac = DynamicCast<RegularWifiMac> (ap_device->GetMac ());
-      NS_ASSERT (ap_mac);
       PointerValue ptr;
-      ap_mac->GetAttribute ("BE_Txop", ptr);
+      ap_device->GetMac ()->GetAttribute ("BE_Txop", ptr);
       ptr.Get<QosTxop> ()->SetAttribute ("UseExplicitBarAfterMissedBlockAck", BooleanValue (false));
   }
 

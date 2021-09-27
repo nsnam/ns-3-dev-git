@@ -34,7 +34,7 @@ class WifiMacQueue;
 class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
-class RegularWifiMac;
+class WifiMac;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
 
 /**
@@ -114,7 +114,7 @@ public:
    *
    * \param mac associated wifi MAC
    */
-  virtual void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  virtual void SetWifiMac (const Ptr<WifiMac> mac);
   /**
    * Set MacTxMiddle this Txop is associated to.
    *
@@ -322,7 +322,7 @@ protected:
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
-  Ptr<RegularWifiMac> m_mac;                        //!< the wifi MAC
+  Ptr<WifiMac> m_mac;                               //!< the wifi MAC
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
 
   uint32_t m_cwMin;              //!< the minimum contention window

@@ -24,6 +24,7 @@
 #include "peer-management-protocol-mac.h"
 #include "peer-management-protocol.h"
 #include "peer-link-frame.h"
+#include "ns3/wifi-mac-queue-item.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-information-element-vector.h"

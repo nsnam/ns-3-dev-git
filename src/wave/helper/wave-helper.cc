@@ -23,6 +23,7 @@
 #include "ns3/names.h"
 #include "ns3/abort.h"
 #include "ns3/wave-net-device.h"
+#include "ns3/qos-txop.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/radiotap-header.h"
 #include "wave-mac-helper.h"
@@ -458,10 +459,8 @@ WaveHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
           std::map<uint32_t, Ptr<OcbWifiMac> > macs = wave->GetMacs ();
           for ( std::map<uint32_t, Ptr<OcbWifiMac> >::iterator k = macs.begin (); k != macs.end (); ++k)
             {
-              Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (k->second);
-
               // Handle any random numbers in the station managers.
-              Ptr<WifiRemoteStationManager> manager = rmac->GetWifiRemoteStationManager ();
+              Ptr<WifiRemoteStationManager> manager = k->second->GetWifiRemoteStationManager ();
               Ptr<MinstrelWifiManager> minstrel = DynamicCast<MinstrelWifiManager> (manager);
               if (minstrel)
                 {
@@ -469,23 +468,23 @@ WaveHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
                 }
 
               PointerValue ptr;
-              rmac->GetAttribute ("Txop", ptr);
+              k->second->GetAttribute ("Txop", ptr);
               Ptr<Txop> txop = ptr.Get<Txop> ();
               currentStream += txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("VO_Txop", ptr);
+              k->second->GetAttribute ("VO_Txop", ptr);
               Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
               currentStream += vo_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("VI_Txop", ptr);
+              k->second->GetAttribute ("VI_Txop", ptr);
               Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
               currentStream += vi_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BE_Txop", ptr);
+              k->second->GetAttribute ("BE_Txop", ptr);
               Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
               currentStream += be_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BK_Txop", ptr);
+              k->second->GetAttribute ("BK_Txop", ptr);
               Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
               currentStream += bk_txop->AssignStreams (currentStream);
             }

@@ -33,7 +33,8 @@
 #include "ns3/ht-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/he-capabilities.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
+#include "qos-txop.h"
 #include "ctrl-headers.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-tx-parameters.h"
@@ -71,7 +72,7 @@ MpduAggregator::DoDispose ()
 }
 
 void
-MpduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
+MpduAggregator::SetWifiMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

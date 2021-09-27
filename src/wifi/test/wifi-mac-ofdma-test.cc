@@ -476,7 +476,7 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
     {
       auto dev = DynamicCast<WifiNetDevice> (m_apDevice);
-      Ptr<WifiMacQueue> queue = DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE)->GetWifiMacQueue ();
+      Ptr<WifiMacQueue> queue = dev->GetMac ()->GetQosTxop (AC_BE)->GetWifiMacQueue ();
       m_flushed = 0;
       for (auto it = queue->begin (); it != queue->end (); )
         {
@@ -499,7 +499,7 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
 
           if (dev->GetAddress () == sender)
             {
-              Ptr<QosTxop> qosTxop = DynamicCast<RegularWifiMac> (dev->GetMac ())->GetQosTxop (AC_BE);
+              Ptr<QosTxop> qosTxop = dev->GetMac ()->GetQosTxop (AC_BE);
 
               if (m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn > 0)
                 {

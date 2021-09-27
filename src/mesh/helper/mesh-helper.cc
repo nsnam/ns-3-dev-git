@@ -191,16 +191,15 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (m_standard);
-  Ptr<RegularWifiMac> wifiMac = DynamicCast<RegularWifiMac> (mac);
-  Ptr<FrameExchangeManager> fem;
-  if (wifiMac != 0 && (fem = wifiMac->GetFrameExchangeManager ()) != 0)
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+  if (fem != nullptr)
     {
       Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
-      protectionManager->SetWifiMac (wifiMac);
+      protectionManager->SetWifiMac (mac);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
-      ackManager->SetWifiMac (wifiMac);
+      ackManager->SetWifiMac (mac);
       fem->SetAckManager (ackManager);
     }
   phy->ConfigureStandard (m_standard);
@@ -263,34 +262,28 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
                 }
               // Handle any random numbers in the mesh mac and plugins
               mac = DynamicCast<MeshWifiInterfaceMac> (wifi->GetMac ());
-              if (mac)
-                {
-                  currentStream += mac->AssignStreams (currentStream);
-                }
-              Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-              if (rmac)
-                {
-                  PointerValue ptr;
-                  rmac->GetAttribute ("Txop", ptr);
-                  Ptr<Txop> txop = ptr.Get<Txop> ();
-                  currentStream += txop->AssignStreams (currentStream);
+              currentStream += mac->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("VO_Txop", ptr);
-                  Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-                  currentStream += vo_txop->AssignStreams (currentStream);
+              PointerValue ptr;
+              mac->GetAttribute ("Txop", ptr);
+              Ptr<Txop> txop = ptr.Get<Txop> ();
+              currentStream += txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("VI_Txop", ptr);
-                  Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-                  currentStream += vi_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("VO_Txop", ptr);
+              Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+              currentStream += vo_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BE_Txop", ptr);
-                  Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-                  currentStream += be_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("VI_Txop", ptr);
+              Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+              currentStream += vi_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BK_Txop", ptr);
-                  Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-                  currentStream += bk_txop->AssignStreams (currentStream);
-               }
+              mac->GetAttribute ("BE_Txop", ptr);
+              Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+              currentStream += be_txop->AssignStreams (currentStream);
+
+              mac->GetAttribute ("BK_Txop", ptr);
+              Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+              currentStream += bk_txop->AssignStreams (currentStream);
             }
         }
     }

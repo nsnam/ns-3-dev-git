@@ -20,7 +20,7 @@
 
 #include "ns3/log.h"
 #include "wifi-protection-manager.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 
 
 namespace ns3 {
@@ -53,7 +53,7 @@ WifiProtectionManager::DoDispose (void)
 }
 
 void
-WifiProtectionManager::SetWifiMac (Ptr<RegularWifiMac> mac)
+WifiProtectionManager::SetWifiMac (Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

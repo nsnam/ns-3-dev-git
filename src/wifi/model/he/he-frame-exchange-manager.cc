@@ -74,7 +74,7 @@ HeFrameExchangeManager::GetSupportedBaBufferSize (void) const
 }
 
 void
-HeFrameExchangeManager::SetWifiMac (const Ptr<RegularWifiMac> mac)
+HeFrameExchangeManager::SetWifiMac (const Ptr<WifiMac> mac)
 {
   m_apMac = DynamicCast<ApWifiMac> (mac);
   m_staMac = DynamicCast<StaWifiMac> (mac);

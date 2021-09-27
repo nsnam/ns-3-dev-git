@@ -23,7 +23,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -38,6 +38,7 @@ class HtOperation;
 class VhtOperation;
 class HeOperation;
 class CfParameterSet;
+class UniformRandomVariable;
 
 /**
  * \brief Wi-Fi AP state machine
@@ -46,7 +47,7 @@ class CfParameterSet;
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.
  */
-class ApWifiMac : public RegularWifiMac
+class ApWifiMac : public WifiMac
 {
 public:
   /**

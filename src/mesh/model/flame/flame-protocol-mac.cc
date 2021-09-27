@@ -21,6 +21,7 @@
 #include "flame-protocol-mac.h"
 #include "flame-protocol.h"
 #include "flame-header.h"
+#include "ns3/wifi-mac-header.h"
 #include "ns3/log.h"
 
 namespace ns3 {

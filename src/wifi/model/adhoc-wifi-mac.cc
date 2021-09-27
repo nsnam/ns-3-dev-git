@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "adhoc-wifi-mac.h"
+#include "qos-txop.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/he-capabilities.h"
@@ -37,7 +38,7 @@ TypeId
 AdhocWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
-    .SetParent<RegularWifiMac> ()
+    .SetParent<WifiMac> ()
     .SetGroupName ("Wifi")
     .AddConstructor<AdhocWifiMac> ()
   ;
@@ -66,8 +67,8 @@ AdhocWifiMac::SetAddress (Mac48Address address)
   //transmitted by each STA set to that STA's address.
   //
   //This is why we're overriding this method.
-  RegularWifiMac::SetAddress (address);
-  RegularWifiMac::SetBssid (address);
+  WifiMac::SetAddress (address);
+  WifiMac::SetBssid (address);
 }
 
 bool
@@ -80,24 +81,24 @@ void
 AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  if (m_stationManager->IsBrandNew (to))
+  if (GetWifiRemoteStationManager ()->IsBrandNew (to))
     {
       //In ad hoc mode, we assume that every destination supports all the rates we support.
       if (GetHtSupported ())
         {
-          m_stationManager->AddAllSupportedMcs (to);
-          m_stationManager->AddStationHtCapabilities (to, GetHtCapabilities ());
+          GetWifiRemoteStationManager ()->AddAllSupportedMcs (to);
+          GetWifiRemoteStationManager ()->AddStationHtCapabilities (to, GetHtCapabilities ());
         }
       if (GetVhtSupported ())
         {
-          m_stationManager->AddStationVhtCapabilities (to, GetVhtCapabilities ());
+          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (to, GetVhtCapabilities ());
         }
       if (GetHeSupported ())
         {
-          m_stationManager->AddStationHeCapabilities (to, GetHeCapabilities ());
+          GetWifiRemoteStationManager ()->AddStationHeCapabilities (to, GetHeCapabilities ());
         }
-      m_stationManager->AddAllSupportedModes (to);
-      m_stationManager->RecordDisassociated (to);
+      GetWifiRemoteStationManager ()->AddAllSupportedModes (to);
+      GetWifiRemoteStationManager ()->RecordDisassociated (to);
     }
 
   WifiMacHeader hdr;
@@ -152,11 +153,11 @@ AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
     {
       //Sanity check that the TID is valid
       NS_ASSERT (tid < 8);
-      m_edca[QosUtilsMapTidToAc (tid)]->Queue (packet, hdr);
+      GetQosTxop (tid)->Queue (packet, hdr);
     }
   else
     {
-      m_txop->Queue (packet, hdr);
+      GetTxop ()->Queue (packet, hdr);
     }
 }
 
@@ -164,7 +165,7 @@ void
 AdhocWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
   NS_LOG_FUNCTION (this << &linkUp);
-  RegularWifiMac::SetLinkUpCallback (linkUp);
+  WifiMac::SetLinkUpCallback (linkUp);
 
   //The approach taken here is that, from the point of view of a STA
   //in IBSS mode, the link is always up, so we immediately invoke the
@@ -180,24 +181,24 @@ AdhocWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
   NS_ASSERT (!hdr->IsCtl ());
   Mac48Address from = hdr->GetAddr2 ();
   Mac48Address to = hdr->GetAddr1 ();
-  if (m_stationManager->IsBrandNew (from))
+  if (GetWifiRemoteStationManager ()->IsBrandNew (from))
     {
       //In ad hoc mode, we assume that every destination supports all the rates we support.
       if (GetHtSupported ())
         {
-          m_stationManager->AddAllSupportedMcs (from);
-          m_stationManager->AddStationHtCapabilities (from, GetHtCapabilities ());
+          GetWifiRemoteStationManager ()->AddAllSupportedMcs (from);
+          GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, GetHtCapabilities ());
         }
       if (GetVhtSupported ())
         {
-          m_stationManager->AddStationVhtCapabilities (from, GetVhtCapabilities ());
+          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, GetVhtCapabilities ());
         }
       if (GetHeSupported ())
         {
-          m_stationManager->AddStationHeCapabilities (from, GetHeCapabilities ());
+          GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, GetHeCapabilities ());
         }
-      m_stationManager->AddAllSupportedModes (from);
-      m_stationManager->RecordDisassociated (from);
+      GetWifiRemoteStationManager ()->AddAllSupportedModes (from);
+      GetWifiRemoteStationManager ()->RecordDisassociated (from);
     }
   if (hdr->IsData ())
     {
@@ -216,7 +217,7 @@ AdhocWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  RegularWifiMac::Receive (mpdu);
+  WifiMac::Receive (mpdu);
 }
 
 } //namespace ns3

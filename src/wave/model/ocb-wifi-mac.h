@@ -23,7 +23,7 @@
 #define OCB_WIFI_MAC_H
 
 #include "ns3/object-factory.h"
-#include "ns3/regular-wifi-mac.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 #include "vendor-specific-action.h"
 #include "wave-net-device.h"
@@ -46,7 +46,7 @@ class WaveNetDevice;
  * However in simulation nodes are supposed to have GPS synchronization ability,
  * so we will not implement this feature.
  */
-class OcbWifiMac : public RegularWifiMac
+class OcbWifiMac : public WifiMac
 {
 public:
   /**

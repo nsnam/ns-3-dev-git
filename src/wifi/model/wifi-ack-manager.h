@@ -31,7 +31,7 @@ namespace ns3 {
 class WifiTxParameters;
 class WifiMacQueueItem;
 class WifiPsdu;
-class RegularWifiMac;
+class WifiMac;
 
 /**
  * \ingroup wifi
@@ -54,7 +54,7 @@ public:
    *
    * \param mac a pointer to the MAC
    */
-  void SetWifiMac (Ptr<RegularWifiMac> mac);
+  void SetWifiMac (Ptr<WifiMac> mac);
 
   /**
    * Set the QoS Ack policy for the given MPDU, which must be a QoS data frame.
@@ -101,7 +101,7 @@ public:
 protected:
   void DoDispose (void) override;
 
-  Ptr<RegularWifiMac> m_mac;     //!< MAC which is using this Acknowledgment Manager
+  Ptr<WifiMac> m_mac; //!< MAC which is using this Acknowledgment Manager
 };
 
 

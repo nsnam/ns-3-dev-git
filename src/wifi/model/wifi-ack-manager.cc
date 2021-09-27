@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "wifi-ack-manager.h"
 #include "wifi-psdu.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 
 
 namespace ns3 {
@@ -54,7 +54,7 @@ WifiAckManager::DoDispose (void)
 }
 
 void
-WifiAckManager::SetWifiMac (Ptr<RegularWifiMac> mac)
+WifiAckManager::SetWifiMac (Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;

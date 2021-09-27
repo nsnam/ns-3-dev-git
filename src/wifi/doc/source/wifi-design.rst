@@ -75,7 +75,7 @@ MAC high models
 
 There are presently three **MAC high models** that provide for the three
 (non-mesh; the mesh equivalent, which is a sibling of these with common
-parent ``ns3::RegularWifiMac``, is not discussed here) Wi-Fi topological
+parent ``ns3::WifiMac``, is not discussed here) Wi-Fi topological
 elements - Access Point (AP) (``ns3::ApWifiMac``),
 non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS) - also commonly referred to as an ad hoc
@@ -90,7 +90,7 @@ re-association whenever too many beacons are missed. Finally,
 beacons, and that accepts every attempt to associate.
 
 These three MAC high models share a common parent in
-``ns3::RegularWifiMac``, which exposes, among other MAC
+``ns3::WifiMac``, which exposes, among other MAC
 configuration, an attribute ``QosSupported`` that allows
 configuration of 802.11e/WMM-style QoS support.
 
@@ -1209,7 +1209,7 @@ Depending on your goal, the common tasks are (in no particular order):
   ``frame-exchange-manager.*`` or its subclasses to accomplish this.
   Handling of control frames is performed in ``FrameExchangeManager::ReceiveMpdu``.
 * MAC high modification. For example, handling new management frames (think beacon/probe),
-  beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
+  beacon/probe generation.  Users usually make changes to ``wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
 * Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interest for this task.
 * Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
   ``Txop`` and ``QosTxop``.

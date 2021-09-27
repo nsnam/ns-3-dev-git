@@ -58,17 +58,16 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (standard);
 
-  Ptr<RegularWifiMac> wifiMac = DynamicCast<RegularWifiMac> (mac);
-  Ptr<FrameExchangeManager> fem;
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
 
-  if (wifiMac != 0 && (fem = wifiMac->GetFrameExchangeManager ()) != 0)
+  if (fem != nullptr)
     {
       Ptr<WifiProtectionManager> protectionManager = m_protectionManager.Create<WifiProtectionManager> ();
-      protectionManager->SetWifiMac (wifiMac);
+      protectionManager->SetWifiMac (mac);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager> ();
-      ackManager->SetWifiMac (wifiMac);
+      ackManager->SetWifiMac (mac);
       fem->SetAckManager (ackManager);
 
       // create and install the Multi User Scheduler if this is an HE AP
