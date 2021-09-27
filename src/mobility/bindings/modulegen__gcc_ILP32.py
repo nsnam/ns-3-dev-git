@@ -79,6 +79,8 @@ def register_types(module):
     module.add_class('GeographicPositions')
     ## geographic-positions.h (module 'mobility'): ns3::GeographicPositions::EarthSpheroidType [enumeration]
     module.add_enum('EarthSpheroidType', ['SPHERE', 'GRS80', 'WGS84'], outer_class=root_module['ns3::GeographicPositions'])
+    ## group-mobility-helper.h (module 'mobility'): ns3::GroupMobilityHelper [class]
+    module.add_class('GroupMobilityHelper')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
@@ -529,6 +531,7 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3GeographicPositions_methods(root_module, root_module['ns3::GeographicPositions'])
+    register_Ns3GroupMobilityHelper_methods(root_module, root_module['ns3::GroupMobilityHelper'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
     register_Ns3Ipv4AddressHash_methods(root_module, root_module['ns3::Ipv4AddressHash'])
@@ -1433,6 +1436,57 @@ def register_Ns3GeographicPositions_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3GroupMobilityHelper_methods(root_module, cls):
+    ## group-mobility-helper.h (module 'mobility'): ns3::GroupMobilityHelper::GroupMobilityHelper(ns3::GroupMobilityHelper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GroupMobilityHelper const &', 'arg0')])
+    ## group-mobility-helper.h (module 'mobility'): ns3::GroupMobilityHelper::GroupMobilityHelper() [constructor]
+    cls.add_constructor([])
+    ## group-mobility-helper.h (module 'mobility'): int64_t ns3::GroupMobilityHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::Install(std::string nodeName) [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('std::string', 'nodeName')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::Install(ns3::NodeContainer container) [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'container')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetMemberMobilityModel(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetMemberMobilityModel', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetMemberPositionAllocator(ns3::Ptr<ns3::PositionAllocator> allocator) [member function]
+    cls.add_method('SetMemberPositionAllocator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PositionAllocator >', 'allocator')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetMemberPositionAllocator(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetMemberPositionAllocator', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetReferenceMobilityModel(ns3::Ptr<ns3::MobilityModel> mobility) [member function]
+    cls.add_method('SetReferenceMobilityModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'mobility')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetReferenceMobilityModel(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetReferenceMobilityModel', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetReferencePositionAllocator(ns3::Ptr<ns3::PositionAllocator> allocator) [member function]
+    cls.add_method('SetReferencePositionAllocator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PositionAllocator >', 'allocator')])
+    ## group-mobility-helper.h (module 'mobility'): void ns3::GroupMobilityHelper::SetReferencePositionAllocator(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetReferencePositionAllocator', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    return
+
 def register_Ns3Hasher_methods(root_module, cls):
     ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Hasher const & arg0) [constructor]
     cls.add_constructor([param('ns3::Hasher const &', 'arg0')])
@@ -1530,11 +1584,6 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsEqual(ns3::Ipv4Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Address const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsInitialized() const [member function]
     cls.add_method('IsInitialized', 
                    'bool', 
@@ -1639,11 +1688,6 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
                    'ns3::Ipv4Mask', 
                    [], 
                    is_static=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsEqual(ns3::Ipv4Mask other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Mask', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsMatch(ns3::Ipv4Address a, ns3::Ipv4Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -1760,11 +1804,6 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsEqual(ns3::Ipv6Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Address const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsInitialized() const [member function]
     cls.add_method('IsInitialized', 
                    'bool', 
@@ -1957,11 +1996,6 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
                    'ns3::Ipv6Prefix', 
                    [], 
                    is_static=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsEqual(ns3::Ipv6Prefix const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Prefix const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsMatch(ns3::Ipv6Address a, ns3::Ipv6Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -3211,6 +3245,11 @@ def register_Ns3Vector2D_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## vector.h (module 'core'): double ns3::Vector2D::GetLengthSquared() const [member function]
+    cls.add_method('GetLengthSquared', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## vector.h (module 'core'): ns3::Vector2D::x [variable]
     cls.add_instance_attribute('x', 'double', is_const=False)
     ## vector.h (module 'core'): ns3::Vector2D::y [variable]
@@ -3235,6 +3274,11 @@ def register_Ns3Vector3D_methods(root_module, cls):
     cls.add_constructor([])
     ## vector.h (module 'core'): double ns3::Vector3D::GetLength() const [member function]
     cls.add_method('GetLength', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## vector.h (module 'core'): double ns3::Vector3D::GetLengthSquared() const [member function]
+    cls.add_method('GetLengthSquared', 
                    'double', 
                    [], 
                    is_const=True)
@@ -4983,6 +5027,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::GetPositionWithReference(ns3::Vector const & referencePosition) const [member function]
+    cls.add_method('GetPositionWithReference', 
+                   'ns3::Vector', 
+                   [param('ns3::Vector const &', 'referencePosition')], 
+                   is_const=True)
     ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
     cls.add_method('GetRelativeSpeed', 
                    'double', 
@@ -5017,6 +5066,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True, visibility='private')
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPositionWithReference(ns3::Vector const & referencePosition) const [member function]
+    cls.add_method('DoGetPositionWithReference', 
+                   'ns3::Vector', 
+                   [param('ns3::Vector const &', 'referencePosition')], 
+                   is_const=True, is_virtual=True, visibility='private')
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
                    'ns3::Vector', 
@@ -6361,6 +6415,11 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
     cls.add_method('SetParent', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'model')])
+    ## hierarchical-mobility-model.h (module 'mobility'): int64_t ns3::HierarchicalMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   is_virtual=True, visibility='private')
     ## hierarchical-mobility-model.h (module 'mobility'): ns3::Vector ns3::HierarchicalMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -6371,6 +6430,11 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True, visibility='private')
+    ## hierarchical-mobility-model.h (module 'mobility'): void ns3::HierarchicalMobilityModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='private')
     ## hierarchical-mobility-model.h (module 'mobility'): void ns3::HierarchicalMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 

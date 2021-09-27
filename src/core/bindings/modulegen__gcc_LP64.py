@@ -2395,6 +2395,11 @@ def register_Ns3Vector2D_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## vector.h (module 'core'): double ns3::Vector2D::GetLengthSquared() const [member function]
+    cls.add_method('GetLengthSquared', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## vector.h (module 'core'): ns3::Vector2D::x [variable]
     cls.add_instance_attribute('x', 'double', is_const=False)
     ## vector.h (module 'core'): ns3::Vector2D::y [variable]
@@ -2419,6 +2424,11 @@ def register_Ns3Vector3D_methods(root_module, cls):
     cls.add_constructor([])
     ## vector.h (module 'core'): double ns3::Vector3D::GetLength() const [member function]
     cls.add_method('GetLength', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## vector.h (module 'core'): double ns3::Vector3D::GetLengthSquared() const [member function]
+    cls.add_method('GetLengthSquared', 
                    'double', 
                    [], 
                    is_const=True)
@@ -5448,6 +5458,14 @@ def register_functions(root_module):
                         [param('ns3::Vector2D const &', 'a'), param('ns3::Vector2D const &', 'b')])
     ## vector.h (module 'core'): double ns3::CalculateDistance(ns3::Vector3D const & a, ns3::Vector3D const & b) [free function]
     module.add_function('CalculateDistance', 
+                        'double', 
+                        [param('ns3::Vector3D const &', 'a'), param('ns3::Vector3D const &', 'b')])
+    ## vector.h (module 'core'): double ns3::CalculateDistanceSquared(ns3::Vector2D const & a, ns3::Vector2D const & b) [free function]
+    module.add_function('CalculateDistanceSquared', 
+                        'double', 
+                        [param('ns3::Vector2D const &', 'a'), param('ns3::Vector2D const &', 'b')])
+    ## vector.h (module 'core'): double ns3::CalculateDistanceSquared(ns3::Vector3D const & a, ns3::Vector3D const & b) [free function]
+    module.add_function('CalculateDistanceSquared', 
                         'double', 
                         [param('ns3::Vector3D const &', 'a'), param('ns3::Vector3D const &', 'b')])
     ## length.h (module 'core'): ns3::Length ns3::CentiMeters(double value) [free function]

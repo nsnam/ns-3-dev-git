@@ -38,8 +38,6 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## file-config.h (module 'config-store'): ns3::FileConfig [class]
     module.add_class('FileConfig', allow_subclassing=True)
-    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore [class]
-    module.add_class('GtkConfigStore')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## log.h (module 'core'): ns3::LogComponent [class]
@@ -175,7 +173,6 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Hash::Implementation >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3FileConfig_methods(root_module, root_module['ns3::FileConfig'])
-    register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
@@ -324,21 +321,10 @@ def register_Ns3FileConfig_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'filename')], 
                    is_pure_virtual=True, is_virtual=True)
-    return
-
-def register_Ns3GtkConfigStore_methods(root_module, cls):
-    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [constructor]
-    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
-    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore() [constructor]
-    cls.add_constructor([])
-    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureAttributes() [member function]
-    cls.add_method('ConfigureAttributes', 
+    ## file-config.h (module 'config-store'): void ns3::FileConfig::SetSaveDeprecated(bool saveDeprecated) [member function]
+    cls.add_method('SetSaveDeprecated', 
                    'void', 
-                   [])
-    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureDefaults() [member function]
-    cls.add_method('ConfigureDefaults', 
-                   'void', 
-                   [])
+                   [param('bool', 'saveDeprecated')])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
@@ -768,6 +754,10 @@ def register_Ns3ConfigStore_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::ConfigStore::Mode', 'mode')])
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::SetSaveDeprecated(bool saveDeprecated) [member function]
+    cls.add_method('SetSaveDeprecated', 
+                   'void', 
+                   [param('bool', 'saveDeprecated')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):

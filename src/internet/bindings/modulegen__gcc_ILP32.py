@@ -3537,6 +3537,11 @@ def register_Ns3Ipv4InterfaceAddress_methods(root_module, cls):
                    'ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 
                    [], 
                    is_const=True)
+    ## ipv4-interface-address.h (module 'internet'): bool ns3::Ipv4InterfaceAddress::IsInSameSubnet(ns3::Ipv4Address const b) const [member function]
+    cls.add_method('IsInSameSubnet', 
+                   'bool', 
+                   [param('ns3::Ipv4Address const', 'b')], 
+                   is_const=True)
     ## ipv4-interface-address.h (module 'internet'): bool ns3::Ipv4InterfaceAddress::IsSecondary() const [member function]
     cls.add_method('IsSecondary', 
                    'bool', 
