@@ -308,7 +308,7 @@ QosTxop::HasFramesToTransmit (void)
   // TODO Add a WifiMacQueue method that serves this purpose; IsEmpty () can
   // then reuse such method.
   m_queue->IsEmpty ();
-  bool queueIsNotEmpty = (m_queue->PeekFirstAvailable (m_qosBlockedDestinations) != m_queue->end ());
+  bool queueIsNotEmpty = (m_queue->PeekFirstAvailable (m_qosBlockedDestinations) != nullptr);
 
   bool ret = (baManagerHasPackets || queueIsNotEmpty);
   NS_LOG_FUNCTION (this << baManagerHasPackets << queueIsNotEmpty);
@@ -354,61 +354,55 @@ QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient)
+QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQueueItem> item)
 {
-  return PeekNextMpdu (WifiMacQueue::EMPTY, tid, recipient);
-}
-
-Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextMpdu (WifiMacQueueItem::ConstIterator queueIt, uint8_t tid, Mac48Address recipient)
-{
-  NS_LOG_FUNCTION (this << +tid << recipient);
+  NS_LOG_FUNCTION (this << +tid << recipient << item);
 
   // lambda to peek the next frame
-  auto peek = [this, &tid, &recipient, &queueIt] () -> WifiMacQueue::ConstIterator
+  auto peek = [this, &tid, &recipient, &item] () -> Ptr<const WifiMacQueueItem>
     {
       if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
         {
-          return m_queue->PeekFirstAvailable (m_qosBlockedDestinations, queueIt);
+          return m_queue->PeekFirstAvailable (m_qosBlockedDestinations, item);
         }
       if (m_qosBlockedDestinations->IsBlocked (recipient, tid))
         {
-          return m_queue->end ();
+          return nullptr;
         }
-      return m_queue->PeekByTidAndAddress (tid, recipient, queueIt);
+      return m_queue->PeekByTidAndAddress (tid, recipient, item);
     };
 
-  queueIt = peek ();
+  item = peek ();
   // remove old packets (must be retransmissions or in flight, otherwise they did
   // not get a sequence number assigned)
-  while (queueIt != m_queue->end () && !(*queueIt)->IsFragment ())
+  while (item != nullptr && !item->IsFragment ())
     {
-      if (((*queueIt)->GetHeader ().IsRetry () || (*queueIt)->IsInFlight ())
-          && IsQosOldPacket (*queueIt))
+      if ((item->GetHeader ().IsRetry () || item->IsInFlight ())
+          && IsQosOldPacket (item))
         {
-          NS_LOG_DEBUG ("Removing an old packet from EDCA queue: " << **queueIt);
+          NS_LOG_DEBUG ("Removing an old packet from EDCA queue: " << *item);
           if (!m_droppedMpduCallback.IsNull ())
             {
-              m_droppedMpduCallback (WIFI_MAC_DROP_QOS_OLD_PACKET, *queueIt);
+              m_droppedMpduCallback (WIFI_MAC_DROP_QOS_OLD_PACKET, item);
             }
-          queueIt = m_queue->Remove (queueIt);
-          queueIt = peek ();
+          auto oldItem = item;
+          item = peek ();
+          m_queue->Remove (oldItem);
         }
-      else if ((*queueIt)->IsInFlight ())
+      else if (item->IsInFlight ())
         {
-          NS_LOG_DEBUG ("Skipping in flight MPDU: " << **queueIt);
-          ++queueIt;
-          queueIt = peek ();
+          NS_LOG_DEBUG ("Skipping in flight MPDU: " << *item);
+          item = peek ();
         }
       else
         {
           break;
         }
     }
-  if (queueIt != m_queue->end ())
+  if (item != nullptr)
     {
-      NS_ASSERT (!(*queueIt)->IsInFlight ());
-      WifiMacHeader& hdr = (*queueIt)->GetHeader ();
+      NS_ASSERT (!item->IsInFlight ());
+      WifiMacHeader& hdr = item->GetItem ()->GetHeader ();
 
       // peek the next sequence number and check if it is within the transmit window
       // in case of QoS data frame
@@ -423,25 +417,25 @@ QosTxop::PeekNextMpdu (WifiMacQueueItem::ConstIterator queueIt, uint8_t tid, Mac
               && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
             {
               NS_LOG_DEBUG ("Packet beyond the end of the current transmit window");
-              return 0;
+              return nullptr;
             }
         }
 
       // Assign a sequence number if this is not a fragment nor a retransmission
-      if (!(*queueIt)->IsFragment () && !hdr.IsRetry ())
+      if (!item->IsFragment () && !hdr.IsRetry ())
         {
           hdr.SetSequenceNumber (sequence);
         }
-      NS_LOG_DEBUG ("Packet peeked from EDCA queue: " << **queueIt);
-      return *queueIt;
+      NS_LOG_DEBUG ("Packet peeked from EDCA queue: " << *item);
+      return item;
     }
 
-  return 0;
+  return nullptr;
 }
 
 Ptr<WifiMacQueueItem>
 QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                      Time availableTime, bool initialFrame, WifiMacQueueItem::ConstIterator& queueIt)
+                      Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem != 0);
   NS_ASSERT (m_qosFem != 0);
@@ -461,9 +455,6 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
     }
 
   NS_ASSERT (peekedItem->IsQueued ());
-  WifiMacQueueItem::ConstIterator peekedIt = peekedItem->GetQueueIterator ();
-  NS_ASSERT ((*peekedIt)->GetPacket () == peekedItem->GetPacket ());
-  NS_ASSERT ((*peekedIt)->GetQueueAc () == m_ac);
   Ptr<WifiMacQueueItem> mpdu;
 
   // If it is a non-broadcast QoS Data frame and it is not a retransmission nor a fragment,
@@ -486,7 +477,7 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
           && !peekedItem->IsInFlight ())
         {
           Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_qosFem);
-          mpdu = htFem->GetMsduAggregator ()->GetNextAmsdu (peekedItem, txParams, availableTime, peekedIt);
+          mpdu = htFem->GetMsduAggregator ()->GetNextAmsdu (peekedItem, txParams, availableTime);
         }
 
       if (mpdu != 0)
@@ -498,14 +489,12 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
 
   if (mpdu == 0)
     {
-      mpdu = *peekedIt;
-      peekedIt++;
+      mpdu = peekedItem->GetItem ();
     }
 
   // Assign a sequence number if this is not a fragment nor a retransmission
   AssignSequenceNumber (mpdu);
   NS_LOG_DEBUG ("Got MPDU from EDCA queue: " << *mpdu);
-  queueIt = peekedIt;
 
   return mpdu;
 }
@@ -608,10 +597,10 @@ QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address r
       // Add BA Response is received. In this case, the starting sequence number
       // shall be set equal to the sequence number of such packet.
       uint16_t startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
-      WifiMacQueue::ConstIterator peekedIt = m_queue->PeekByTidAndAddress (tid, recipient);
-      if (peekedIt != m_queue->end () && (*peekedIt)->GetHeader ().IsRetry ())
+      auto peekedItem = m_queue->PeekByTidAndAddress (tid, recipient);
+      if (peekedItem != nullptr && peekedItem->GetHeader ().IsRetry ())
         {
-          startingSeq = (*peekedIt)->GetHeader ().GetSequenceNumber ();
+          startingSeq = peekedItem->GetHeader ().GetSequenceNumber ();
         }
       m_baManager->UpdateAgreement (respHdr, recipient, startingSeq);
     }

@@ -293,7 +293,7 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
               continue;
             }
           if (nextBar->skipIfNoDataQueued
-              && m_queue->PeekByTidAndAddress (nextBar->tid, recipient) == m_queue->end ())
+              && m_queue->PeekByTidAndAddress (nextBar->tid, recipient) == nullptr)
             {
               // skip this BAR as there is no data queued
               nextBar++;
@@ -309,8 +309,6 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
                   continue;
                 }
 
-              WifiMacQueue::ConstIterator queueIt = (*mpduIt)->GetQueueIterator ();
-
               if ((*mpduIt)->GetTimeStamp () + m_queue->GetMaxDelay () <= now)
                 {
                   // MPDU expired
@@ -319,7 +317,7 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
                   // consequent call to NotifyDiscardedMpdu does nothing (in particular,
                   // does not schedule a BAR) because we have advanced the transmit window
                   // and hence this MPDU became an old packet
-                  m_queue->TtlExceeded (queueIt, now);
+                  m_queue->TtlExceeded (*mpduIt, now);
                   mpduIt = it->second.second.erase (mpduIt);
                 }
               else
@@ -391,7 +389,6 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
     }
 
   WifiMacHeader& hdr = (*mpduIt)->GetHeader ();
-  WifiMacQueue::ConstIterator queueIt = (*mpduIt)->GetQueueIterator ();
 
   NS_ASSERT (hdr.GetAddr1 () == it->first.first);
   NS_ASSERT (hdr.IsQosData () && hdr.GetQosTid () == it->first.second);
@@ -401,15 +398,15 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
       NS_LOG_DEBUG ("Old packet. Remove from the EDCA queue, too");
       if (!m_droppedOldMpduCallback.IsNull ())
         {
-          m_droppedOldMpduCallback (*queueIt);
+          m_droppedOldMpduCallback (*mpduIt);
         }
-      m_queue->Remove (queueIt);
+      m_queue->Remove (*mpduIt, false);
       return it->second.second.erase (mpduIt);
     }
 
   auto nextIt = std::next (mpduIt);
 
-  if (m_queue->TtlExceeded (queueIt, now))
+  if (m_queue->TtlExceeded (*mpduIt, now))
     {
       // WifiMacQueue::TtlExceeded() has removed the MPDU from the EDCA queue
       // and fired the Expired trace source, which called NotifyDiscardedMpdu,

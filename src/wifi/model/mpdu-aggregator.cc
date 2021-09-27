@@ -192,7 +192,7 @@ MpduAggregator::GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle)
 
 std::vector<Ptr<WifiMacQueueItem>>
 MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txParams,
-                              Time availableTime, WifiMacQueueItem::ConstIterator queueIt) const
+                              Time availableTime) const
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams << availableTime);
 
@@ -222,10 +222,10 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txPa
           mpduList.push_back (nextMpdu);
 
           // If allowed by the BA agreement, get the next MPDU
+          Ptr<const WifiMacQueueItem> peekedMpdu;
+          peekedMpdu = qosTxop->PeekNextMpdu (tid, recipient, nextMpdu);
           nextMpdu = 0;
 
-          Ptr<const WifiMacQueueItem> peekedMpdu;
-          peekedMpdu = qosTxop->PeekNextMpdu (queueIt, tid, recipient);
           if (peekedMpdu != 0)
             {
               // PeekNextMpdu() does not return an MPDU that is beyond the transmit window
@@ -237,7 +237,7 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txPa
               // and duration limit are met. Note that the returned MPDU differs from
               // the peeked MPDU if A-MSDU aggregation is enabled.
               NS_LOG_DEBUG ("Trying to aggregate another MPDU");
-              nextMpdu = qosTxop->GetNextMpdu (peekedMpdu, txParams, availableTime, false, queueIt);
+              nextMpdu = qosTxop->GetNextMpdu (peekedMpdu, txParams, availableTime, false);
             }
         }
 

@@ -144,53 +144,61 @@ public:
   /**
    * Search and return, if present in the queue, the first packet (either Data
    * frame or QoS Data frame) having the receiver address equal to <i>addr</i>.
-   * If <i>pos</i> is a valid iterator, the search starts from the packet pointed
-   * to by the given iterator.
+   * If <i>item</i> is not a null pointer, the search starts from the packet following
+   * <i>item</i> in the queue; otherwise, the search starts from the head of the queue.
    * This method does not remove the packet from the queue.
    *
    * \param dest the given destination
-   * \param pos the iterator pointing to the packet the search starts from
+   * \param item the item after which the search starts from
    *
-   * \return an iterator pointing to the peeked packet
+   * \return the peeked packet or nullptr if no packet was found
    */
-  ConstIterator PeekByAddress (Mac48Address dest, ConstIterator pos = EMPTY) const;
+  Ptr<const WifiMacQueueItem> PeekByAddress (Mac48Address dest,
+                                             Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Search and return, if present in the queue, the first packet having the
-   * TID equal to <i>tid</i>. If <i>pos</i> is a valid iterator, the search starts
-   * from the packet pointed to by the given iterator.
+   * TID equal to <i>tid</i>. If <i>item</i> is not a null pointer, the search
+   * starts from the packet following <i>item</i> in the queue; otherwise, the
+   * search starts from the head of the queue.
    * This method does not remove the packet from the queue.
    *
    * \param tid the given TID
-   * \param pos the iterator pointing to the packet the search starts from
+   * \param item the item after which the search starts from
    *
-   * \return an iterator pointing to the peeked packet
+   * \return the peeked packet or nullptr if no packet was found
    */
-  ConstIterator PeekByTid (uint8_t tid, ConstIterator pos = EMPTY) const;
+  Ptr<const WifiMacQueueItem> PeekByTid (uint8_t tid,
+                                         Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Search and return, if present in the queue, the first packet having the
    * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
-   * If <i>pos</i> is a valid iterator, the search starts from the packet pointed
-   * to by the given iterator. This method does not remove the packet from the queue.
+   * If <i>item</i> is not a null pointer, the search starts from the packet
+   * following <i>item</i> in the queue; otherwise, the search starts from the
+   * head of the queue. This method does not remove the packet from the queue.
    * It is typically used by ns3::QosTxop in order to perform correct MSDU aggregation
    * (A-MSDU).
    *
    * \param tid the given TID
    * \param dest the given destination
-   * \param pos the iterator pointing to the packet the search starts from
+   * \param item the item after which the search starts from
    *
-   * \return an iterator pointing to the peeked packet
+   * \return the peeked packet or nullptr if no packet was found
    */
-  ConstIterator PeekByTidAndAddress (uint8_t tid, Mac48Address dest, ConstIterator pos = EMPTY) const;
+  Ptr<const WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid, Mac48Address dest,
+                                                   Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
-   * Return first available packet for transmission. The packet is not removed from queue.
+   * Return first available packet for transmission. If <i>item</i> is not a null
+   * pointer, the search starts from the packet following <i>item</i> in the queue;
+   * otherwise, the search starts from the head of the queue.
+   * The packet is not removed from queue.
    *
    * \param blockedPackets the destination address & TID pairs that are waiting for a BlockAck response
-   * \param pos the iterator pointing to the packet the search starts from
+   * \param item the item after which the search starts from
    *
-   * \return an iterator pointing to the peeked packet
+   * \return the peeked packet or nullptr if no packet was found
    */
-  ConstIterator PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
-                                    ConstIterator pos = EMPTY) const;
+  Ptr<const WifiMacQueueItem> PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
+                                                  Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Remove the packet in the front of the queue.
    *
@@ -198,16 +206,16 @@ public:
    */
   Ptr<WifiMacQueueItem> Remove (void) override;
   /**
-   * Remove the item at position <i>pos</i> in the queue and return an iterator
-   * pointing to the item following the removed one. If <i>removeExpired</i> is
+   * Remove the given item from the queue and return the item following the
+   * removed one, if any, or a null pointer otherwise. If <i>removeExpired</i> is
    * true, all the items in the queue from the head to the given position are
    * removed if their lifetime expired.
    *
-   * \param pos the position of the item to be removed
+   * \param item the item to be removed
    * \param removeExpired true to remove expired items
-   * \return an iterator pointing to the item following the removed one
+   * \return the item following the removed one, if any, or a null pointer, otherwise
    */
-  ConstIterator Remove (ConstIterator pos, bool removeExpired = false);
+  Ptr<const WifiMacQueueItem> Remove (Ptr<const WifiMacQueueItem> item, bool removeExpired = false);
 
   /**
    * Replace the given current item with the given new item. Actually, the current
@@ -313,6 +321,20 @@ public:
   uint32_t GetNBytes (void);
 
   /**
+   * Remove the given item if it has been in the queue for too long. Return true
+   * if the item is removed, false otherwise.
+   *
+   * \param item the item whose lifetime is checked
+   * \param now a copy of Simulator::Now()
+   * \return true if the item is removed, false otherwise
+   */
+  bool TtlExceeded (Ptr<const WifiMacQueueItem> item, const Time& now);
+
+  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
+
+
+private:
+  /**
    * Remove the item pointed to by the iterator <i>it</i> if it has been in the
    * queue for too long. If the item is removed, the iterator is updated to
    * point to the item that followed the erased one.
@@ -323,10 +345,6 @@ public:
    */
   inline bool TtlExceeded (ConstIterator &it, const Time& now);
 
-  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
-
-
-private:
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
@@ -370,25 +388,6 @@ private:
 
   NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
 };
-
-
-/**
- * Implementation of inline functions
- */
-
-bool
-WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
-{
-  if (now > (*it)->GetTimeStamp () + m_maxDelay)
-    {
-      NS_LOG_DEBUG ("Removing packet that stayed in the queue for too long (" <<
-                    now - (*it)->GetTimeStamp () << ")");
-      auto curr = it++;
-      m_traceExpired (DoRemove (curr));
-      return true;
-    }
-  return false;
-}
 
 } // namespace ns3
 

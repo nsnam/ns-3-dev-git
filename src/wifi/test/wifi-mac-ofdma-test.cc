@@ -205,10 +205,9 @@ TestMultiUserScheduler::SelectTxFormat (void)
               return SU_TX;
             }
 
-          WifiMacQueueItem::ConstIterator queueIt;
           Ptr<WifiMacQueueItem> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
                                                                                  m_availableTime,
-                                                                                 m_initialFrame, queueIt);
+                                                                                 m_initialFrame);
           if (mpdu == 0)
             {
               NS_LOG_DEBUG ("Not enough time to send frames to all the stations");
@@ -216,7 +215,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
             }
 
           std::vector<Ptr<WifiMacQueueItem>> mpduList;
-          mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (mpdu, m_txParams, m_availableTime, queueIt);
+          mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (mpdu, m_txParams, m_availableTime);
 
           if (mpduList.size () > 1)
             {
@@ -486,7 +485,7 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
           auto tmp = it++;
           if (!(*tmp)->IsInFlight ())
             {
-              queue->Remove (tmp);
+              queue->Remove (*tmp, false);
               m_flushed++;
             }
         }

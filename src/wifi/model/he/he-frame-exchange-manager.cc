@@ -1197,15 +1197,13 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
       // otherwise, check if a suitable data frame is available
       if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())) != 0)
         {
-          WifiMacQueueItem::ConstIterator queueIt;
-          Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false, queueIt);
+          Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false);
 
           if (item != 0)
             {
               // try A-MPDU aggregation
               std::vector<Ptr<WifiMacQueueItem>> mpduList = m_mpduAggregator->GetNextAmpdu (item, txParams,
-                                                                                            ppduDuration,
-                                                                                            queueIt);
+                                                                                            ppduDuration);
               psdu = (mpduList.size () > 1 ? Create<WifiPsdu> (std::move (mpduList))
                                            : Create<WifiPsdu> (item, true));
               break;

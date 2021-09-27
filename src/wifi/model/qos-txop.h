@@ -303,38 +303,22 @@ public:
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
-   * Peek the next frame to transmit to the given receiver and of the given
-   * TID from the block ack manager retransmit queue first and, if not found, from
-   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
-   * is the broadcast address, the first available frame is returned.
-   * Note that A-MSDU aggregation is never attempted (this is relevant if the
-   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
-   * queue, it is assigned a sequence number peeked from MacTxMiddle.
+   * Peek the next frame to transmit to the given receiver and of the given TID
+   * from the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
+   * is the broadcast address, the first available frame is returned. If <i>item</i>
+   * is not a null pointer, the search starts from the packet following <i>item</i>
+   * in the queue; otherwise, the search starts from the head of the queue.
+   * Note that A-MSDU aggregation is never attempted. If the frame has never been
+   * transmitted, it is assigned a sequence number peeked from MacTxMiddle.
    *
    * \param tid traffic ID.
    * \param recipient the receiver station address.
+   * \param item the item after which the search starts from
    * \returns the peeked frame.
    */
   Ptr<const WifiMacQueueItem> PeekNextMpdu (uint8_t tid = 8,
-                                            Mac48Address recipient = Mac48Address::GetBroadcast ());
-  /**
-   * Peek the next frame to transmit to the given receiver and of the given
-   * TID from the block ack manager retransmit queue first and, if not found, from
-   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
-   * is the broadcast address, the first available frame is returned.
-   * Note that A-MSDU aggregation is never attempted (this is relevant if the
-   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
-   * queue, it is assigned a sequence number peeked from MacTxMiddle.
-   *
-   * \param queueIt the QueueIteratorPair pointing to the queue item from which the
-   *                search for an MPDU starts, if the QueueIteratorPair is valid
-   * \param tid traffic ID.
-   * \param recipient the receiver station address.
-   * \returns the peeked frame.
-   */
-  Ptr<const WifiMacQueueItem> PeekNextMpdu (WifiMacQueueItem::ConstIterator queueIt,
-                                            uint8_t tid = 8,
-                                            Mac48Address recipient = Mac48Address::GetBroadcast ());
+                                            Mac48Address recipient = Mac48Address::GetBroadcast (),
+                                            Ptr<const WifiMacQueueItem> item = nullptr);
   /**
    * Prepare the frame to transmit starting from the MPDU that has been previously
    * peeked by calling PeekNextMpdu. A frame is only returned if it meets the
@@ -351,14 +335,10 @@ public:
                           (including protection and acknowledgment); a value of
    *                      Time::Min() indicates no time constraint
    * \param initialFrame true if the frame is the initial PPDU of a TXOP
-   * \param[out] queueIt a queue iterator pointing to the queue item following the
-   *                     last item used to prepare the returned MPDU, if any; if no MPDU
-   *                     is returned, its value is unchanged
    * \return the frame to transmit or a null pointer if no frame meets the time constraints
    */
   Ptr<WifiMacQueueItem> GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                                     Time availableTime, bool initialFrame,
-                                     WifiMacQueueItem::ConstIterator& queueIt);
+                                     Time availableTime, bool initialFrame);
 
   /**
    * Assign a sequence number to the given MPDU, if it is not a fragment

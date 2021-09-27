@@ -192,11 +192,9 @@ AmpduAggregationTest::DoRun (void)
   Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
-  WifiMacQueueItem::ConstIterator queueIt;
-  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (),
-                                                                  true, queueIt);
+  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
-  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min (), queueIt);
+  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
 
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet should not result in an A-MPDU");
 
@@ -225,8 +223,8 @@ AmpduAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt1, hdr1));
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt2, hdr2));
 
-  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true, queueIt);
-  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min (), queueIt);
+  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
+  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
 
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), false, "MPDU aggregation failed");
 
@@ -276,10 +274,9 @@ AmpduAggregationTest::DoRun (void)
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   txParams.Clear ();
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
-  queueIt = WifiMacQueue::EMPTY;  // reset queueIt
-  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true, queueIt);
+  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
-  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min (), queueIt);
+  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
 
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet for this destination should not result in an A-MPDU");
   // dequeue the MPDU
@@ -288,10 +285,9 @@ AmpduAggregationTest::DoRun (void)
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   txParams.Clear ();
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
-  queueIt = WifiMacQueue::EMPTY;  // reset queueIt
-  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true, queueIt);
+  item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
-  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min (), queueIt);
+  mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
 
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "no MPDU aggregation should be performed if there is no agreement");
 
@@ -424,8 +420,7 @@ TwoLevelAggregationTest::DoRun (void)
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
-  WifiMacQueueItem::ConstIterator queueIt;
-  Ptr<WifiMacQueueItem> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min (), queueIt);
+  Ptr<WifiMacQueueItem> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
   bool result = (item != 0);
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
@@ -447,11 +442,11 @@ TwoLevelAggregationTest::DoRun (void)
   txParams.Clear ();
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
-  item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min (), queueIt);
+  item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "A-MSDU aggregation did not fail");
 
-  htFem->DequeueMpdu (*peeked->GetQueueIterator ());
+  htFem->DequeueMpdu (peeked);
 
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetWifiMacQueue ()->GetNPackets (), 0, "queue should be empty");
 
@@ -502,12 +497,11 @@ TwoLevelAggregationTest::DoRun (void)
 
   // Compute the first MPDU to be aggregated in an A-MPDU. It must contain an A-MSDU
   // aggregating two MSDUs
-  queueIt = WifiMacQueue::EMPTY;  // reset queueIt
-  item = m_mac->GetVIQueue ()->GetNextMpdu (peeked, txParams, txopLimit, true, queueIt);
+  item = m_mac->GetVIQueue ()->GetNextMpdu (peeked, txParams, txopLimit, true);
 
   NS_TEST_EXPECT_MSG_EQ (std::distance (item->begin (), item->end ()), 2, "There must be 2 MSDUs in the A-MSDU");
 
-  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, txopLimit, queueIt);
+  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, txopLimit);
 
   // The maximum number of bytes that can be transmitted in a TXOP is (approximately, as we
   // do not consider that the preamble is transmitted at a different rate):
@@ -684,11 +678,9 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
-  WifiMacQueueItem::ConstIterator queueIt;
-  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (),
-                                                                  true, queueIt);
+  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
   
-  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min (), queueIt);
+  auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);
   htFem->DequeuePsdu (psdu);
 

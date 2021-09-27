@@ -118,14 +118,11 @@ public:
    * \param mpdu the given MPDU.
    * \param txParams the TX parameters used to transmit the frame
    * \param availableTime the time available for the frame exchange
-   * \param queueIt the QueueIteratorPair pointing to the queue item from which the
-   *                search for an MPDU starts, if the QueueIteratorPair is valid
    * \return the resulting A-MPDU, if aggregation is possible.
    */
   std::vector<Ptr<WifiMacQueueItem>> GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu,
                                                    WifiTxParameters& txParams,
-                                                   Time availableTime,
-                                                   WifiMacQueueItem::ConstIterator queueIt) const;
+                                                   Time availableTime) const;
 
   /**
    * Set the MAC layer to use.

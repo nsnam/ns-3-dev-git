@@ -728,26 +728,24 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       NS_ASSERT (receiver == candidate.first->address);
 
       NS_ASSERT (mpdu->IsQueued ());
-      WifiMacQueueItem::ConstIterator queueIt = mpdu->GetQueueIterator ();
-      Ptr<WifiMacQueueItem> item = *queueIt;
-      queueIt++;
+      Ptr<WifiMacQueueItem> item = mpdu->GetItem ();
 
       if (!mpdu->GetHeader ().IsRetry ())
         {
           // this MPDU must have been dequeued from the AC queue and we can try
           // A-MSDU aggregation
-          item = m_heFem->GetMsduAggregator ()->GetNextAmsdu (mpdu, dlMuInfo.txParams, m_availableTime, queueIt);
+          item = m_heFem->GetMsduAggregator ()->GetNextAmsdu (mpdu, dlMuInfo.txParams, m_availableTime);
 
           if (item == nullptr)
             {
               // A-MSDU aggregation failed or disabled
-              item = *mpdu->GetQueueIterator ();
+              item = mpdu->GetItem ();
             }
           m_apMac->GetQosTxop (QosUtilsMapTidToAc (tid))->AssignSequenceNumber (item);
         }
 
       // Now, let's try A-MPDU aggregation if possible
-      std::vector<Ptr<WifiMacQueueItem>> mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (item, dlMuInfo.txParams, m_availableTime, queueIt);
+      std::vector<Ptr<WifiMacQueueItem>> mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (item, dlMuInfo.txParams, m_availableTime);
 
       if (mpduList.size () > 1)
         {
