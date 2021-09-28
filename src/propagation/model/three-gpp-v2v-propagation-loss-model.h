@@ -65,6 +65,10 @@ private:
    */
   virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
 
+  // TODO doxygen
+  virtual double GetO2iDistance2dIn () const override;
+
+
   /**
    * \brief Computes the pathloss between a and b considering that the line of
    *        sight is obstructed by a vehicle

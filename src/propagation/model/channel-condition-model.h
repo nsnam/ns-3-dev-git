@@ -467,6 +467,7 @@ protected:
 
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
 
+
 private:
   /**
   * This method computes the channel condition based on a probabilistic model
@@ -486,6 +487,9 @@ private:
    * \return the LOS probability
    */
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const = 0;
+
+  // TODO make this purely abstract function and all child classes should implement this
+  virtual ChannelCondition::O2iConditionValue ComputeO2i (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
 
   /**
    * Compute the NLOS probability. By default returns 1 - PLOS
@@ -515,6 +519,11 @@ private:
 
   std::unordered_map<uint32_t, Item> m_channelConditionMap; //!< map to store the channel conditions
   Time m_updatePeriod; //!< the update period for the channel condition
+
+  // TODO review this description
+  double m_o2iThreshold {0}; //!< the threshold for determing what is the ration of channels with O2I
+  // TODO review this description
+  Ptr<UniformRandomVariable> m_uniformVarO2i; //!< uniform random variable that is used for the generation of the O2i conditions
 };
 
 /**

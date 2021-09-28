@@ -282,6 +282,10 @@ ThreeGppChannelConditionModel::GetTypeId (void)
                    TimeValue (MilliSeconds (0)),
                    MakeTimeAccessor (&ThreeGppChannelConditionModel::m_updatePeriod),
                    MakeTimeChecker ())
+    .AddAttribute ("O2iThreshold", "Specifies what will be the ratio of O2I channel conditions.",
+                    DoubleValue (0.8),
+                    MakeDoubleAccessor (&ThreeGppChannelConditionModel::m_o2iThreshold),
+                    MakeDoubleChecker <double> (0, 1))
   ;
   return tid;
 }
@@ -292,6 +296,9 @@ ThreeGppChannelConditionModel::ThreeGppChannelConditionModel ()
   m_uniformVar = CreateObject<UniformRandomVariable> ();
   m_uniformVar->SetAttribute ("Min", DoubleValue (0));
   m_uniformVar->SetAttribute ("Max", DoubleValue (1));
+
+  m_uniformVarO2i = CreateObject<UniformRandomVariable> ();
+
 }
 
 ThreeGppChannelConditionModel::~ThreeGppChannelConditionModel ()
@@ -351,6 +358,28 @@ ThreeGppChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   return cond;
 }
 
+ChannelCondition::O2iConditionValue
+ThreeGppChannelConditionModel::ComputeO2i (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const
+{
+  // TODO this code should be changed to determine based on a and b positions,
+  // whether they are indoor or outdoor the o2i condition
+  // currently we just parametrize it, currently hardcoded with 0.8
+  double o2iProb = m_uniformVarO2i->GetValue (0, 1);
+
+  // TODO another thing to be done is to allow more states, not only O2i and O2o
+  if (o2iProb < m_o2iThreshold) //put 0.8 as a parameter
+    {
+      NS_LOG_INFO ("Return O2i condition ....");
+      return ChannelCondition::O2iConditionValue::O2I;
+    }
+  else
+    {
+      NS_LOG_INFO ("Return O2o condition ....");
+      return ChannelCondition::O2iConditionValue::O2O;
+    }
+}
+
+
 Ptr<ChannelCondition>
 ThreeGppChannelConditionModel::ComputeChannelCondition (Ptr<const MobilityModel> a,
                                                         Ptr<const MobilityModel> b) const
@@ -383,6 +412,8 @@ ThreeGppChannelConditionModel::ComputeChannelCondition (Ptr<const MobilityModel>
       // NLOSv (added to support vehicular scenarios)
       cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOSv);
     }
+
+  cond->SetO2iCondition (ComputeO2i (a, b));
 
   return cond;
 }

@@ -74,6 +74,15 @@ ThreeGppV2vUrbanPropagationLossModel::GetLossLos (double /* distance2D */, doubl
   return loss;
 }
 
+
+
+double
+ThreeGppV2vUrbanPropagationLossModel::GetO2iDistance2dIn () const
+{
+  return 0;
+};
+
+
 double
 ThreeGppV2vUrbanPropagationLossModel::GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const
 {

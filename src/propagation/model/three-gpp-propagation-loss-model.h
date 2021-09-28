@@ -116,6 +116,12 @@ private:
    */
   virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const = 0;
 
+  // TODO doxygen
+  virtual double GetO2iDistance2dIn () const = 0;
+
+  // TODO all child classes should implement this function and this function should be purely virtual
+  virtual double GetO2iLowLoss () const;
+
   /**
    * \brief Computes the pathloss between a and b considering that the line of
    *        sight is obstructed
@@ -229,6 +235,11 @@ protected:
   };
 
   mutable std::unordered_map<uint32_t, ShadowingMapItem> m_shadowingMap; //!< map to store the shadowing values
+
+  Ptr<UniformRandomVariable> m_randomO2iVar1; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
+  Ptr<UniformRandomVariable> m_randomO2iVar2; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
+  Ptr<NormalRandomVariable> m_normalO2iVar; //!< a normal random variable for the calculation of 02i loss, see TR38.091 Table 7.4.3-2
+
 };
 
 /**
@@ -271,6 +282,10 @@ private:
    * \return pathloss value in dB
    */
   virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+
+
+  // TODO doxygen
+  virtual double GetO2iDistance2dIn () const override;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -365,6 +380,10 @@ private:
    */
   double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
 
+
+  // TODO doxygen
+  double GetO2iDistance2dIn () const override;
+
   /**
    * \brief Computes the pathloss between a and b considering that the line of
    *        sight is obstructed.
@@ -444,6 +463,9 @@ private:
    * \return pathloss value in dB
    */
   double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+
+  // TODO doxygen
+   virtual double GetO2iDistance2dIn () const override;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -530,6 +552,10 @@ private:
    * \return pathloss value in dB
    */
   double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+
+  // TODO doxygen
+   virtual double GetO2iDistance2dIn () const override;
+
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
