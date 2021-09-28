@@ -60,7 +60,7 @@ us a note on ns-developers mailing list.</p>
 <li>In class <b>Ipv4InterfaceAddress</b>, a new function IsInSameSubnet () is added to check if both the IPv4 addresses are in the same subnet. Also, it is consistent with <b>Ipv6InterfaceAddress::IsInSameSubnet ()</b>.</li>
 <li>In class <b>ConfigStore</b>, a new Attribue <b>SaveDeprecated</b> allows to not save DEPRECATED Attributes. The default value is <b>false</b> (save DEPRECATED Attributes).</li>
 <li>In class <b>TracedCallback</b>, a new function <b>IsEmpty</b> allows to know if the TracedCallback will call any callback.</li>
-<li>A new specialization of std::hash for Ptr allows to use seamlessly Ptrs as keys in unordered_map and unordered_set.</li>
+<li>A new specialization of std::hash for Ptr allows one to use Ptrs as keys in unordered_map and unordered_set containers.</li>
 <li>A new <b>GroupMobilityHelper</b> mobility helper has been added to ease the configuration of group mobility (a form of hierarchical mobility in which multiple child mobility models move with reference to an underlying parent mobility model).  New example programs and animation scripts are also added to both the buildings and mobility modules.</li>
 </ul>
 <h2>Changes to existing API:</h2>
@@ -71,11 +71,12 @@ us a note on ns-developers mailing list.</p>
 <h2>Changes to build system:</h2>
 <ul>
 <li>The default C++ standard is now C++17.</li>
+<li>The minimum compiler versions have been raised to g++-7 and clang-10 (Linux) and Xcode 11 (macOS).</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
 <li>Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.</li>
-<li>ConfigStore does not save anymore OBSOLETE Attributes.</li>
+<li>ConfigStore no longer saves OBSOLETE attributes.</li>
 <li>The <b>Ipv4L3Protocol</b> Duplicate detection now accounts for transmitted packets, so a transmitting multicast node will not forward its own packets.</li>
 <li>Wi-Fi: A-MSDU aggregation now implies that constituent MSDUs are immediately dequeued
 from the EDCA queue and replaced by an MPDU containing the A-MSDU. Thus, aggregating N

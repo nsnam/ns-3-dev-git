@@ -9,8 +9,8 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.35
+============
 
 Availability
 ------------
@@ -24,8 +24,32 @@ requirements (Note: not all ns-3 features are available on all systems):
 - Python 3.6 or later
 - (macOS only) Xcode 10.1 or later
 
+Python API scanning only works for Python versions 3.6 through 3.8, due to
+an upstream toolchain limitation.
+
+This release has been tested on the following systems:
+- Fedora 33 with g++-10.3.1 and clang++-11.0.0; Python 3.9.6
+- Ubuntu 21.04 with g++-11.1.and clang++-12.0.0; Python 3.9.5
+- Ubuntu 20.04 with g++-9.3.0 and clang++-10.0.0; Python 3.8.10
+- Ubuntu 18.04 with g++-7.5.0 and clang++-6.0.0; Python 3.6.9
+- macOS 10.15.7 (Catalina) with Xcode 12.4 (Apple clang-1200.0.32.29, Python 3.9.1)
+
+This release has discontinued support for g++-5 and g++-6 compilers, and
+for macOS Xcode 10.
+
 New user-visible features
 -------------------------
+ns-3 has switched to the C++17 standard by default, although the more
+advanced constructs (beyond C++11) are generally avoided in the header files,
+to stay compatible with the Python API scanning framework.
+
+- (antenna) Extend UniformPlanarArray to have a configurable polarization slant angle
+- (buildings) Add example program demonstrating group mobility with the buildings-aware random walk mobility model, and a script to animate the group motion.
+- (config-store) OBSOLETE Attributes are not anymore saved.
+- (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
+- (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
+- (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
+- (core) Print available values on EnumChecker::GetValue () error
 - (internet) Added getters and setters for source and destination in Ipv6Header consistent with Ipv4Header naming.
 - (internet) New functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively in Ipv4InterfaceAddress to keep consistency with Ipv6InterfaceAddress.
 - (nix-vector-routing) Support for IPv6 Nix-Vector routing. Existing nix-simple and nms-p2p-nix examples are available in IPv6 as well.
@@ -33,18 +57,23 @@ New user-visible features
 - (nix-vector-routing) ipv4-nix-vector-routing.h has been deprecated in favour of nix-vector-routing.h.
 - (internet) Added new function IsInSameSubnet () in Ipv4InterfaceAddress similar to Ipv6InterfaceAddress::IsInSameSubnet (). It checks if the two Ipv4Address are in the same subnet.
 - (nix-vector-routing) Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.
-- (config-store) OBSOLETE Attributes are not anymore saved.
-- (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
-- (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
-- (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
-- (wifi) Add support for 11ax MU EDCA Parameter Set.
 - (mobility) Add GroupMobilityHelper and demonstrate its use with a new program that configures the Reference Point Group Mobility model for a number of nodes.
-- (buildings) Add example program demonstrating group mobility with the buildings-aware random walk mobility model, and a script to animate the group motion.
+- (wifi) Add support for 11ax MU EDCA Parameter Set.
 - (wifi) MPDUs discarded because they became "old" (from the Block Ack agreement point of view) are now traced using the DroppedMpdu trace source of RegularWifiMac and with the WIFI_MAC_DROP_QOS_OLD_PACKET reason.
 
 Bugs fixed
 ----------
-- (internet) ipv4-l3-protocol.cc duplicate detection now accounts for sent packets, not just forwards.
+- (applications) #449, #453 - add correct receiving address to PacketSink traces for UDP.
+- (config-store) #443 - do not save obsolete attributes
+- (energy) #423 - SimpleDeviceEnergyModel calculation of consumed energy
+- (fd-net-device) #441 - Fix double dequeue on device stop
+- (internet) - Ipv4L3Protocol duplicate detection now accounts for sent packets, not just forwards.
+- (lte) !703 - Fix global-buffer-overflow when nprb is equal to zero
+- (mobility) - Initialize HierarchicalMobilityModel and avoid course change stream corruption
+- (nix-vector-routing) #450 - Avoid recalculation if path doesn't exist
+- (tcp) #407 - Align TcpCubic::GetSsThresh() with Linux
+- (traffic-control) #258 - Avoid overflow, divide-by-zero in TbfQueueDisc
+- (wifi) - Always track interference when not locking on PPDU
 
 Release 3.34
 =============
@@ -62,13 +91,13 @@ requirements (Note: not all ns-3 features are available on all systems):
 - Python 3.6 or later
 - (macOS only) Xcode 10.1 or later
 
-+This release has been tested on the following systems:
-+- Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.2
-+- Ubuntu 21.04 with g++-11.1.0 and Python 3.9.5
-+- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
-+- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
-+- macOS 10.15.7 (Catalina) with Xcode 12.4 (Apple clang-1200.0.32.29, Python 3.9.1)
-+- macOS 10.13.6 (High Sierra) with Xcode 10.1 (Apple clang-1000.11.45.5, Python 3.7.1)
+This release has been tested on the following systems:
+- Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.2
+- Ubuntu 21.04 with g++-11.1.0 and clang++-12.0.0; Python 3.9.5
+- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
+- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
+- macOS 10.15.7 (Catalina) with Xcode 12.4 (Apple clang-1200.0.32.29, Python 3.9.1)
+- macOS 10.13.6 (High Sierra) with Xcode 10.1 (Apple clang-1000.11.45.5, Python 3.7.1)
 
 New user-visible features
 -------------------------
