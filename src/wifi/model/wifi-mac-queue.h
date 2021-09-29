@@ -330,9 +330,6 @@ public:
    */
   bool TtlExceeded (Ptr<const WifiMacQueueItem> item, const Time& now);
 
-  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
-
-
 private:
   /**
    * Remove the item pointed to by the iterator <i>it</i> if it has been in the
