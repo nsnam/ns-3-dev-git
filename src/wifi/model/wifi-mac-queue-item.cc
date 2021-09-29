@@ -221,13 +221,6 @@ WifiMacQueueItem::GetQueueAc (void) const
   return m_queueAc;
 }
 
-WifiMacQueueItem::ConstIterator
-WifiMacQueueItem::GetQueueIterator (void) const
-{
-  NS_ASSERT (IsQueued ());
-  return m_queueIt;
-}
-
 void
 WifiMacQueueItem::SetInFlight (void)
 {

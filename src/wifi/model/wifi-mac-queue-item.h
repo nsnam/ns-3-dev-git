@@ -165,13 +165,6 @@ public:
    * \return the AC of the queue this item is stored into
    */
   AcIndex GetQueueAc (void) const;
-  /**
-   * Get a const iterator pointing to the position of the MPDU in the queue. This
-   * method should not be called if the MPDU is not stored in a queue.
-   *
-   * \return an iterator pointing to the position of the MPDU in the queue
-   */
-  ConstIterator GetQueueIterator (void) const;
 
   /**
    * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
