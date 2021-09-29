@@ -512,17 +512,17 @@ FqPieQueueDisc::InitializeParams (void)
 
   m_queueDiscFactory.SetTypeId ("ns3::PieQueueDisc");
   m_queueDiscFactory.Set ("MaxSize", QueueSizeValue (GetMaxSize ()));
-  m_queueDiscFactory.Set ("MeanPktSize", UintegerValue (1000));
-  m_queueDiscFactory.Set ("A", DoubleValue (0.125));
-  m_queueDiscFactory.Set ("B", DoubleValue (1.25));
-  m_queueDiscFactory.Set ("Tupdate", TimeValue (Seconds (0.015)));
-  m_queueDiscFactory.Set ("Supdate", TimeValue (Seconds (0)));
-  m_queueDiscFactory.Set ("DequeueThreshold", UintegerValue (16384));
-  m_queueDiscFactory.Set ("QueueDelayReference", TimeValue (Seconds (0.015)));
-  m_queueDiscFactory.Set ("MaxBurstAllowance", TimeValue (Seconds (0.15)));
-  m_queueDiscFactory.Set ("UseDequeueRateEstimator", BooleanValue (false));
-  m_queueDiscFactory.Set ("UseCapDropAdjustment", BooleanValue (true));
-  m_queueDiscFactory.Set ("UseDerandomization", BooleanValue (false));
+  m_queueDiscFactory.Set ("MeanPktSize", UintegerValue(m_meanPktSize));
+  m_queueDiscFactory.Set ("A", DoubleValue (m_a));
+  m_queueDiscFactory.Set ("B", DoubleValue (m_b));
+  m_queueDiscFactory.Set ("Tupdate", TimeValue (m_tUpdate));
+  m_queueDiscFactory.Set ("Supdate", TimeValue (m_sUpdate));
+  m_queueDiscFactory.Set ("DequeueThreshold", UintegerValue (m_dqThreshold));
+  m_queueDiscFactory.Set ("QueueDelayReference", TimeValue (m_qDelayRef));
+  m_queueDiscFactory.Set ("MaxBurstAllowance", TimeValue (m_maxBurst));
+  m_queueDiscFactory.Set ("UseDequeueRateEstimator", BooleanValue (m_useDqRateEstimator));
+  m_queueDiscFactory.Set ("UseCapDropAdjustment", BooleanValue (m_isCapDropAdjustment));
+  m_queueDiscFactory.Set ("UseDerandomization", BooleanValue (m_useDerandomization));
 }
 
 uint32_t
