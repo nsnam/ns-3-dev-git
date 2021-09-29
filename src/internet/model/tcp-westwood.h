@@ -133,6 +133,7 @@ protected:
   uint32_t               m_ackedSegments;          //!< The number of segments ACKed between RTTs
   bool                   m_IsCount;                //!< Start keeping track of m_ackedSegments for Westwood+ if TRUE
   EventId                m_bwEstimateEvent;        //!< The BW estimation event for Westwood+
+  Time                   m_lastAck;                //!< The last ACK time
 
 };
 

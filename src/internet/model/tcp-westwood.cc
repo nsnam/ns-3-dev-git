@@ -70,7 +70,8 @@ TcpWestwood::TcpWestwood (void) :
   m_lastSampleBW (0),
   m_lastBW (0),
   m_ackedSegments (0),
-  m_IsCount (false)
+  m_IsCount (false),
+  m_lastAck (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -131,8 +132,15 @@ TcpWestwood::EstimateBW (const Time &rtt, Ptr<TcpSocketState> tcb)
 
   m_currentBW = m_ackedSegments * tcb->m_segmentSize / rtt.GetSeconds ();
 
-  if (m_pType == TcpWestwood::WESTWOODPLUS)
+  if (m_pType == TcpWestwood::WESTWOOD)
     {
+      Time currentAck = Simulator::Now ();
+      m_currentBW = m_ackedSegments * tcb->m_segmentSize / (currentAck - m_lastAck).GetSeconds ();
+      m_lastAck = currentAck;
+    }
+  else if (m_pType == TcpWestwood::WESTWOODPLUS)
+    {
+      m_currentBW = m_ackedSegments * tcb->m_segmentSize / rtt.GetSeconds ();
       m_IsCount = false;
     }
 
