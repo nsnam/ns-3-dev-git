@@ -28,6 +28,7 @@ Python API scanning only works for Python versions 3.6 through 3.8, due to
 an upstream toolchain limitation.
 
 This release has been tested on the following systems:
+- Fedora 34 with g++-11.2.1 and clang++-12.0.1; Python 3.9.7
 - Fedora 33 with g++-10.3.1 and clang++-11.0.0; Python 3.9.6
 - Ubuntu 21.04 with g++-11.1.and clang++-12.0.0; Python 3.9.5
 - Ubuntu 20.04 with g++-9.3.0 and clang++-10.0.0; Python 3.8.10
@@ -72,7 +73,9 @@ Bugs fixed
 - (mobility) - Initialize HierarchicalMobilityModel and avoid course change stream corruption
 - (nix-vector-routing) #450 - Avoid recalculation if path doesn't exist
 - (tcp) #407 - Align TcpCubic::GetSsThresh() with Linux
+- (tcp) #410 - Fix TcpWestwood bandwidth estimation bug
 - (traffic-control) #258 - Avoid overflow, divide-by-zero in TbfQueueDisc
+- (traffic-control) !706 - Fix FqPIE qdisc not using attributes
 - (wifi) - Always track interference when not locking on PPDU
 
 Release 3.34
