@@ -70,7 +70,7 @@ You may want to take this opportunity to explore the |ns3| wiki
 a bit, or the main web site at https://www.nsnam.org, since there is a 
 wealth of information there. 
 
-As of the most recent |ns3| release (ns-3.34), the following tools
+As of the most recent |ns3| release (ns-3.35), the following tools
 are needed to get started with |ns3|:
 
 ============  ===========================================================
@@ -126,21 +126,21 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget https://www.nsnam.org/release/ns-allinone-3.34.tar.bz2
-  $ tar xjf ns-allinone-3.34.tar.bz2
+  $ wget https://www.nsnam.org/release/ns-allinone-3.35.tar.bz2
+  $ tar xjf ns-allinone-3.35.tar.bz2
 
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
 you can use a browser for this step.
  
 Following these steps, if you change into the directory 
-``ns-allinone-3.34``, you should see a number of files and directories
+``ns-allinone-3.35``, you should see a number of files and directories
 
 .. sourcecode:: text
 
-  $ cd ns-allinone-3.34
+  $ cd ns-allinone-3.35
   $ ls
-  bake      constants.py   ns-3.34                            README
+  bake      constants.py   ns-3.35                            README
   build.py  netanim-3.108  pybindgen-0.22.0                   util.py
 
 You are now ready to build the base |ns3| distribution and may skip ahead
@@ -191,7 +191,7 @@ release number:
 
 .. sourcecode:: bash
 
-  $ python3 download.py -n ns-3.34
+  $ python3 download.py -n ns-3.35
 
 After this step, the additional repositories of |ns3|, bake, pybindgen,
 and netanim will be downloaded to the ``ns-3-allinone`` directory.
@@ -260,12 +260,11 @@ distribution of your choice.
 
 There are a few configuration targets available:
 
-1.  ``ns-3.34``:  the module corresponding to the release; it will download
+1.  ``ns-3.35``:  the module corresponding to the release; it will download
     components similar to the release tarball.
 2.  ``ns-3-dev``:  a similar module but using the development code tree
-3.  ``ns-allinone-3.34``:  the module that includes other optional features
-    such as Click routing, Openflow for |ns3|, and the Network Simulation
-    Cradle
+3.  ``ns-allinone-3.35``:  the module that includes other optional features
+    such as bake build system, netanim animator, and pybindgen
 4.  ``ns-3-allinone``:  similar to the released version of the allinone
     module, but for development code.
 
@@ -281,7 +280,7 @@ code either by inspection of the repository list or by going to the
 `"ns-3 Releases"
 <https://www.nsnam.org/releases>`_
 web page and clicking on the latest release link.  We'll proceed in
-this tutorial example with ``ns-3.34``.
+this tutorial example with ``ns-3.35``.
 
 We are now going to use the bake tool to pull down the various pieces of 
 |ns3| you will be using.  First, we'll say a word about running bake.
@@ -309,7 +308,7 @@ Step into the workspace directory and type the following into your shell:
 
 .. sourcecode:: bash
 
-  $ ./bake.py configure -e ns-3.34
+  $ ./bake.py configure -e ns-3.35
 
 Next, we'll ask bake to check whether we have enough tools to download
 various components.  Type:
@@ -365,7 +364,7 @@ should yield something like:
   >> Searching for system dependency cmake - OK
   >> Downloading netanim-3.108 - OK
   >> Downloading pybindgen-0.22.0 (target directory:pybindgen) - OK
-  >> Downloading ns-3.34 (target directory:ns-3.34) - OK
+  >> Downloading ns-3.35 (target directory:ns-3.35) - OK
 
 The above suggests that three sources have been downloaded.  Check the
 ``source`` directory now and type ``ls``; one should see:
@@ -374,7 +373,7 @@ The above suggests that three sources have been downloaded.  Check the
 
   $ cd source
   $ ls
-  netanim-3.108  ns-3.34  pybindgen
+  netanim-3.108  ns-3.35 pybindgen
 
 You are now ready to build the |ns3| distribution.
 
@@ -405,7 +404,7 @@ native |ns3| build system, Waf, to be introduced later in this tutorial.
 
 If you downloaded
 using a tarball you should have a directory called something like 
-``ns-allinone-3.34`` under your ``~/workspace`` directory.  
+``ns-allinone-3.35`` under your ``~/workspace`` directory.  
 Type the following:
 
 .. sourcecode:: bash
@@ -424,7 +423,7 @@ script builds the various pieces you downloaded.  First, the script will
 attempt to build the netanim animator, then the pybindgen bindings generator,
 and finally |ns3|.  Eventually you should see the following::
 
-   Waf: Leaving directory '/path/to/workspace/ns-allinone-3.34/ns-3.34/build'
+   Waf: Leaving directory '/path/to/workspace/ns-allinone-3.35/ns-3.35/build'
    'build' finished successfully (6m25.032s)
   
    Modules built:
@@ -446,7 +445,7 @@ and finally |ns3|.  Eventually you should see the following::
    Modules not built (see ns-3 tutorial for explanation):
    brite                  click                     openflow                  
 
-   Leaving directory ./ns-3.34
+   Leaving directory ./ns-3.35
 
 Regarding the portion about modules not built::
 
@@ -475,7 +474,7 @@ and you should see something like:
 
   >> Building pybindgen-0.22.0 - OK
   >> Building netanim-3.108 - OK
-  >> Building ns-3.34 - OK
+  >> Building ns-3.35 - OK
 
 There may be failures to build all components, but the build will proceed
 anyway if the component is optional.  For example, a recent portability issue
@@ -675,7 +674,7 @@ for an already configured project:
 .. sourcecode:: bash
 
   $ ./waf --check-profile
-  Waf: Entering directory \`/path/to/ns-3-allinone/ns-3.34/build\'
+  Waf: Entering directory \`/path/to/ns-allinone-3.35/ns-3.35/build\'
   Build profile: debug
 
 The build.py script discussed above supports also the ``--enable-examples``
