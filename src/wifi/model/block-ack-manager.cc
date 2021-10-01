@@ -236,8 +236,8 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 
   // store the packet and keep the list sorted in increasing order of sequence number
   // with respect to the starting sequence number
-  PacketQueueI it = agreementIt->second.second.begin ();
-  while (it != agreementIt->second.second.end ())
+  auto it = agreementIt->second.second.rbegin ();
+  while (it != agreementIt->second.second.rend ())
     {
       if (mpdu->GetHeader ().GetSequenceControl () == (*it)->GetHeader ().GetSequenceControl ())
         {
@@ -247,15 +247,15 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 
       uint16_t dist = agreementIt->second.first.GetDistance ((*it)->GetHeader ().GetSequenceNumber ());
 
-      if (mpduDist < dist ||
-          (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () < (*it)->GetHeader ().GetFragmentNumber ()))
+      if (mpduDist > dist ||
+          (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () > (*it)->GetHeader ().GetFragmentNumber ()))
         {
           break;
         }
 
       it++;
     }
-  agreementIt->second.second.insert (it, mpdu);
+  agreementIt->second.second.insert (std::prev (it.base ()), mpdu);
   agreementIt->second.first.NotifyTransmittedMpdu (mpdu);
   mpdu->SetInFlight ();
 }
