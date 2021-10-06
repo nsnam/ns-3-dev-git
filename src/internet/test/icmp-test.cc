@@ -435,7 +435,7 @@ IcmpV6EchoReplyTestCase::ReceivePkt (Ptr <Socket> socket)
 {
   Address from;
   Ptr<Packet> p = socket->RecvFrom (from);
-  m_receivedPacket = p->Copy ();
+  Ptr<Packet> pkt = p->Copy ();
 
   if (Inet6SocketAddress::IsMatchingType (from))
     {
@@ -448,12 +448,9 @@ IcmpV6EchoReplyTestCase::ReceivePkt (Ptr <Socket> socket)
       Icmpv6Header icmpv6;
       p->RemoveHeader (icmpv6);
 
-      // Ignore the neighbor discovery (ICMPV6_ND) packets
-      if (!(((int)icmpv6.GetType () >= 133) && ((int)icmpv6.GetType () <= 137)))
+      if (icmpv6.GetType () == Icmpv6Header::ICMPV6_ECHO_REPLY)
         {
-          NS_TEST_EXPECT_MSG_EQ ((int) icmpv6.GetType (),
-                                 Icmpv6Header::ICMPV6_ECHO_REPLY,
-                                 "The received Packet is not a ICMPV6_ECHO_REPLY");
+          m_receivedPacket = pkt->Copy ();
         }
     }
 }
@@ -502,7 +499,7 @@ IcmpV6EchoReplyTestCase::DoRun ()
                                   &IcmpV6EchoReplyTestCase::SendData, this, socket, i.GetAddress (1,1));
   Simulator::Run ();
 
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 72, " Unexpected ICMPV6_ECHO_REPLY packet size");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 52, " Unexpected ICMPV6_ECHO_REPLY packet size");
 
   Simulator::Destroy ();
 }
@@ -579,7 +576,7 @@ IcmpV6TimeExceedTestCase::ReceivePkt (Ptr <Socket> socket)
 {
   Address from;
   Ptr<Packet> p = socket->RecvFrom (from);
-  m_receivedPacket = p->Copy ();
+  Ptr<Packet> pkt = p->Copy ();
 
   if (Inet6SocketAddress::IsMatchingType (from))
     {
@@ -594,12 +591,10 @@ IcmpV6TimeExceedTestCase::ReceivePkt (Ptr <Socket> socket)
       Icmpv6Header icmpv6;
       p->RemoveHeader (icmpv6);
 
-      // Ignore the neighbor discovery (ICMPV6_ND) packets
-      if (!(((int)icmpv6.GetType () >= 133) && ((int)icmpv6.GetType () <= 137)))
+      // Ignore any packet except ICMPV6_ERROR_TIME_EXCEEDED
+      if (icmpv6.GetType () == Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED)
         {
-          NS_TEST_EXPECT_MSG_EQ ((int) icmpv6.GetType (),
-                                 Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED,
-                                 "The received Packet is not a ICMPV6_ERROR_TIME_EXCEEDED");
+          m_receivedPacket = pkt->Copy ();
         }
     }
 }
@@ -663,7 +658,7 @@ IcmpV6TimeExceedTestCase::DoRun ()
                                   &IcmpV6TimeExceedTestCase::SendData, this, socket, interfaces2.GetAddress (1,1));
   Simulator::Run ();
 
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 72, " Unexpected ICMPV6_ECHO_REPLY packet size");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 100, " Unexpected ICMPV6_ECHO_REPLY packet size");
 
   Simulator::Destroy ();
 }
