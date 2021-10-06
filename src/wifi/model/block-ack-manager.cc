@@ -444,6 +444,8 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
 
+  it->second.first.NotifyAckedMpdu (mpdu);
+
   // remove the acknowledged frame from the queue of outstanding packets
   for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); ++queueIt)
     {
@@ -453,8 +455,6 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
           break;
         }
     }
-
-  it->second.first.NotifyAckedMpdu (mpdu);
 }
 
 void
