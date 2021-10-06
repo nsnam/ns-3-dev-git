@@ -316,29 +316,6 @@ WifiMacQueue::Remove (void)
   return 0;
 }
 
-bool
-WifiMacQueue::Remove (Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (this << packet);
-
-  const Time now = Simulator::Now ();
-  for (ConstIterator it = begin (); it != end (); )
-    {
-      if (!TtlExceeded (it, now))
-        {
-          if ((*it)->GetPacket () == packet)
-            {
-              DoRemove (it);
-              return true;
-            }
-
-          it++;
-        }
-    }
-  NS_LOG_DEBUG ("Packet " << packet << " not found in the queue");
-  return false;
-}
-
 WifiMacQueue::ConstIterator
 WifiMacQueue::Remove (ConstIterator pos, bool removeExpired)
 {
@@ -370,6 +347,23 @@ WifiMacQueue::Remove (ConstIterator pos, bool removeExpired)
     }
   NS_LOG_DEBUG ("Invalid iterator");
   return end ();
+}
+
+void
+WifiMacQueue::Replace (Ptr<const WifiMacQueueItem> currentItem, Ptr<WifiMacQueueItem> newItem)
+{
+  NS_LOG_FUNCTION (this << *currentItem << *newItem);
+  NS_ASSERT (currentItem->IsQueued ());
+  NS_ASSERT (currentItem->m_queueAc == m_ac);
+  NS_ASSERT (*currentItem->m_queueIt == currentItem);
+  NS_ASSERT (!newItem->IsQueued ());
+
+  auto pos = std::next (currentItem->m_queueIt);
+  DoDequeue (currentItem->m_queueIt);
+  bool ret = Insert (pos, newItem);
+  // The size of a WifiMacQueue is measured as number of packets. We dequeued
+  // one packet, so there is certainly room for inserting one packet
+  NS_ABORT_IF (!ret);
 }
 
 uint32_t

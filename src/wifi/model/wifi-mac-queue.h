@@ -28,6 +28,7 @@
 #include "ns3/queue.h"
 #include <unordered_map>
 #include "qos-utils.h"
+#include <functional>
 
 namespace ns3 {
 
@@ -197,16 +198,6 @@ public:
    */
   Ptr<WifiMacQueueItem> Remove (void) override;
   /**
-   * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
-   * takes no effects and return false. Deletion of the packet is
-   * performed in linear time (O(n)).
-   *
-   * \param packet the packet to be removed
-   *
-   * \return true if the packet was removed, false otherwise
-   */
-  bool Remove (Ptr<const Packet> packet);
-  /**
    * Remove the item at position <i>pos</i> in the queue and return an iterator
    * pointing to the item following the removed one. If <i>removeExpired</i> is
    * true, all the items in the queue from the head to the given position are
@@ -217,6 +208,43 @@ public:
    * \return an iterator pointing to the item following the removed one
    */
   ConstIterator Remove (ConstIterator pos, bool removeExpired = false);
+
+  /**
+   * Replace the given current item with the given new item. Actually, the current
+   * item is dequeued and the new item is enqueued in its place. In this way,
+   * statistics about queue size (in terms of bytes) are correctly updated.
+   *
+   * \param currentItem the given current item
+   * \param newItem the given new item
+   */
+  void Replace (Ptr<const WifiMacQueueItem> currentItem, Ptr<WifiMacQueueItem> newItem);
+  /**
+   * Transform the given item by invoking the given function with the given item
+   * as parameter. The given function must be an object of a callable type
+   * and must have an argument of type pointer to WifiMacQueueItem.
+   * Actually, the given item is dequeued and the transformed item is enqueued in
+   * its place. In this way, statistics about queue size (in terms of bytes) are
+   * correctly updated.
+   *
+   * \internal
+   * If this method needs to be overloaded, we can use SFINAE to help in overload
+   * resolution:
+   *
+   * \code
+   *   template <class CALLABLE,
+   *             std::invoke_result_t<CALLABLE, Ptr<WifiMacQueueItem>>* = nullptr>
+   *   void Transform (Ptr<const WifiMacQueueItem> item, CALLABLE func);
+   * \endcode
+   *
+   * Unfortunately, this will break python bindings scanning.
+   *
+   * \tparam CALLABLE \deduced The type of the given function object
+   * \param item the given item
+   * \param func the given function object
+   */
+  template <class CALLABLE>
+  void Transform (Ptr<const WifiMacQueueItem> item, CALLABLE func);
+
   /**
    * Return the number of packets having destination address specified by
    * <i>dest</i>. The complexity is linear in the size of the queue.
@@ -360,6 +388,33 @@ WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
       return true;
     }
   return false;
+}
+
+} // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
+
+template <class CALLABLE>
+void
+WifiMacQueue::Transform (Ptr<const WifiMacQueueItem> item, CALLABLE func)
+{
+  NS_ASSERT (item->IsQueued ());
+  NS_ASSERT (item->m_queueAc == m_ac);
+  NS_ASSERT (*item->m_queueIt == item);
+
+  auto pos = std::next (item->m_queueIt);
+  Ptr<WifiMacQueueItem> mpdu = DoDequeue (item->m_queueIt);
+  NS_ASSERT (mpdu != nullptr);
+  func (mpdu);     // python bindings scanning does not like std::invoke (func, mpdu);
+  bool ret = Insert (pos, mpdu);
+  // The size of a WifiMacQueue is measured as number of packets. We dequeued
+  // one packet, so there is certainly room for inserting one packet
+  NS_ABORT_IF (!ret);
 }
 
 } //namespace ns3
