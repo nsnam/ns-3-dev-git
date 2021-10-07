@@ -327,15 +327,12 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
     {
       NS_LOG_DEBUG ("Fragmenting the MSDU");
       m_fragmentedPacket = mpdu->GetPacket ()->Copy ();
-      AcIndex ac = mpdu->GetQueueAc ();
-      // dequeue the MSDU
-      DequeueMpdu (mpdu);
       // create the first fragment
-      mpdu->GetHeader ().SetMoreFragments ();
       Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, m_mac->GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
       // enqueue the first fragment
       Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (fragment, mpdu->GetHeader (), mpdu->GetTimeStamp ());
-      m_mac->GetTxopQueue (ac)->PushFront (item);
+      item->GetHeader ().SetMoreFragments ();
+      m_mac->GetTxopQueue (mpdu->GetQueueAc ())->Replace (mpdu, item);
       return item;
     }
   return mpdu;
@@ -1142,15 +1139,16 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
   // a frame containing all or part of an MSDU or MMPDU (sec. 10.3.3 of 802.11-2016)
   m_dcf->ResetCw ();
 
-  // The MPDU has been acknowledged, we can now dequeue it if it is stored in a queue
-  DequeueMpdu (mpdu);
-
   if (mpdu->GetHeader ().IsMoreFragments ())
     {
-      // enqueue the next fragment
-      Ptr<WifiMacQueueItem> next = GetNextFragment ();
-      m_dcf->GetWifiMacQueue ()->PushFront (next);
+      // replace the current fragment with the next one
+      m_dcf->GetWifiMacQueue ()->Replace (mpdu, GetNextFragment ());
       m_moreFragments = true;
+    }
+  else
+    {
+      // the MPDU has been acknowledged, we can now dequeue it if it is stored in a queue
+      DequeueMpdu (mpdu);
     }
 
   TransmissionSucceeded ();

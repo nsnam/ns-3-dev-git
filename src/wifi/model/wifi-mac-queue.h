@@ -116,14 +116,6 @@ public:
    */
   bool PushFront (Ptr<WifiMacQueueItem> item);
   /**
-   * Enqueue the given Wifi MAC queue item before the given position.
-   *
-   * \param pos the position before which the item is to be inserted
-   * \param item the Wifi MAC queue item to be enqueued
-   * \return true if success, false if the packet has been dropped
-   */
-  bool Insert (ConstIterator pos, Ptr<WifiMacQueueItem> item);
-  /**
    * Dequeue the packet in the front of the queue.
    *
    * \return the packet
@@ -342,6 +334,14 @@ private:
    */
   inline bool TtlExceeded (ConstIterator &it, const Time& now);
 
+  /**
+   * Enqueue the given Wifi MAC queue item before the given position.
+   *
+   * \param pos the position before which the item is to be inserted
+   * \param item the Wifi MAC queue item to be enqueued
+   * \return true if success, false if the packet has been dropped
+   */
+  bool Insert (ConstIterator pos, Ptr<WifiMacQueueItem> item);
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
