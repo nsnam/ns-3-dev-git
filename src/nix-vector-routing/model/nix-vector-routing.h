@@ -219,13 +219,6 @@ private:
   bool BuildNixVector (const std::vector< Ptr<Node> > & parentVector, uint32_t source, uint32_t dest, Ptr<NixVector> nixVector) const;
 
   /**
-   * Special variation of BuildNixVector for when a node is sending to itself
-   * \param [out] nixVector the NixVector to be used for routing
-   * \returns true on success, false otherwise.
-   */
-  bool BuildNixVectorLocal (Ptr<NixVector> nixVector);
-
-  /**
    * Simply iterates through the nodes net-devices and determines
    * how many neighbors the node has.
    * \param [in] node node pointer
