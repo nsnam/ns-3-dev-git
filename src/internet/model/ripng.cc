@@ -197,7 +197,7 @@ Ptr<Ipv6Route> RipNg::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<
       NS_LOG_LOGIC ("RouteOutput (): Multicast destination");
     }
 
-  rtentry = Lookup (destination, oif);
+  rtentry = Lookup (destination, true, oif);
   if (rtentry)
     {
       sockerr = Socket::ERROR_NOTERROR;
@@ -250,7 +250,7 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");
-  Ptr<Ipv6Route> rtentry = Lookup (header.GetDestination ());
+  Ptr<Ipv6Route> rtentry = Lookup (header.GetDestination (), false);
 
   if (rtentry != 0)
     {
@@ -555,8 +555,7 @@ void RipNg::DoDispose ()
   Ipv6RoutingProtocol::DoDispose ();
 }
 
-
-Ptr<Ipv6Route> RipNg::Lookup (Ipv6Address dst, Ptr<NetDevice> interface)
+Ptr<Ipv6Route> RipNg::Lookup (Ipv6Address dst, bool setSource, Ptr<NetDevice> interface)
 {
   NS_LOG_FUNCTION (this << dst << interface);
 
@@ -606,17 +605,20 @@ Ptr<Ipv6Route> RipNg::Lookup (Ipv6Address dst, Ptr<NetDevice> interface)
                   uint32_t interfaceIdx = route->GetInterface ();
                   rtentry = Create<Ipv6Route> ();
 
-                  if (route->GetGateway ().IsAny ())
+                  if (setSource)
                     {
-                      rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
-                    }
-                  else if (route->GetDest ().IsAny ()) /* default route */
-                    {
-                      rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
-                    }
-                  else
-                    {
-                      rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
+                      if (route->GetGateway ().IsAny ())
+                        {
+                          rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
+                        }
+                      else if (route->GetDest ().IsAny ()) /* default route */
+                        {
+                          rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
+                        }
+                      else
+                        {
+                          rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
+                        }
                     }
 
                   rtentry->SetDestination (route->GetDest ());
