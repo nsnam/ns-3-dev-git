@@ -305,10 +305,11 @@ private:
   /**
    * \brief Lookup in the forwarding table for destination.
    * \param dest destination address
+   * \param setSource set source address in the route
    * \param interface output interface if any (put 0 otherwise)
    * \return Ipv4Route to route the packet to reach dest address
    */
-  Ptr<Ipv4Route> Lookup (Ipv4Address dest, Ptr<NetDevice> = 0);
+  Ptr<Ipv4Route> Lookup (Ipv4Address dest, bool setSource, Ptr<NetDevice> = 0);
 
   /**
    * Receive and process unicast packet
