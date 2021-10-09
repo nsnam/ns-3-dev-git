@@ -601,6 +601,11 @@ Ipv6Address Ipv6L3Protocol::SourceAddressSelection (uint32_t interface, Ipv6Addr
   NS_LOG_FUNCTION (this << interface << dest);
   Ipv6Address ret;
 
+  if (dest.IsLocalhost ())
+    {
+      return Ipv6Address::GetLoopback ();
+    }
+  
   if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
     {
       for (uint32_t i = 0; i < GetNAddresses (interface); i++)
@@ -632,6 +637,8 @@ Ipv6Address Ipv6L3Protocol::SourceAddressSelection (uint32_t interface, Ipv6Addr
     }
 
   // no specific match found. Use a global address (any useful is fine).
+  NS_ASSERT_MSG (!ret.IsAny (),
+                 "Could not find any address for " << dest << " on interface " << interface);
   return ret;
 }
 
