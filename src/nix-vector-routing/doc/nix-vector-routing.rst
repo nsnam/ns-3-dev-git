@@ -74,6 +74,8 @@ When using the IPv6 stack, the link-local address allocation is unique by
 default over the entire topology. However, if the link-local addresses are
 assigned manually, the user must ensure uniqueness of link-local addresses.
 
+NixVectorRouting supports routes to IPv4 and IPv6 loopback addresses on localhost.
+Although it is not really intended to route to these addresses, it can do so.
 
 Usage
 *****

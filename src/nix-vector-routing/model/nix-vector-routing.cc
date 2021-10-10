@@ -681,6 +681,24 @@ NixVectorRouting<T>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<Net
 
   NS_LOG_DEBUG ("Dest IP from header: " << destAddress);
 
+  if (destAddress.IsLocalhost ())
+    {
+      rtentry = Create<IpRoute> ();
+      rtentry->SetSource (IpAddress::GetLoopback ());
+      rtentry->SetDestination (destAddress);
+      rtentry->SetGateway (IpAddress::GetZero ());
+      for (uint32_t i = 0 ; i < m_ip->GetNInterfaces (); i++)
+        {
+          Ptr<LoopbackNetDevice> loNetDevice = DynamicCast<LoopbackNetDevice> (m_ip->GetNetDevice (i));
+          if (loNetDevice)
+            {
+              rtentry->SetOutputDevice (loNetDevice);
+              break;
+            }
+        }
+      return rtentry;
+    }
+
   if constexpr (!IsIpv4::value)
     {
       /* when sending on link-local multicast, there have to be interface specified */
