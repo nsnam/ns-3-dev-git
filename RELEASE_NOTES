@@ -29,6 +29,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- (wifi) #467 - WiFi: Failed association process
 
 Release 3.35
 ============

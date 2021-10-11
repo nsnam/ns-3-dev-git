@@ -962,9 +962,9 @@ ApWifiMac::TxOk (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 void
-ApWifiMac::TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
+ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu << txVector);
+  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
@@ -1420,7 +1420,7 @@ ApWifiMac::DoInitialize (void)
         }
     }
   NS_ABORT_IF (!TraceConnectWithoutContext ("AckedMpdu", MakeCallback (&ApWifiMac::TxOk, this)));
-  NS_ABORT_IF (!TraceConnectWithoutContext ("MpduResponseTimeout", MakeCallback (&ApWifiMac::TxFailed, this)));
+  NS_ABORT_IF (!TraceConnectWithoutContext ("DroppedMpdu", MakeCallback (&ApWifiMac::TxFailed, this)));
   RegularWifiMac::DoInitialize ();
   UpdateShortSlotTimeEnabled ();
   UpdateShortPreambleEnabled ();

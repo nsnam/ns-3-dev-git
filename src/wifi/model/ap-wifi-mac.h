@@ -162,9 +162,8 @@ private:
    *
    * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
    * \param mpdu the MPDU that we failed to sent
-   * \param txVector the TX vector used to send the MPDU
    */
-  void TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
+  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu);
 
   /**
    * This method is called to de-aggregate an A-MSDU and forward the
