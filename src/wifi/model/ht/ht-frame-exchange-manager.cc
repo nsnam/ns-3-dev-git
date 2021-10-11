@@ -431,7 +431,7 @@ HtFrameExchangeManager::SendMpduFromBaManager (Ptr<QosTxop> edca, Time available
 
   // we can transmit the BlockAckReq frame
   Ptr<const WifiMacQueueItem> mpdu = edca->GetBaManager ()->GetBar ();
-  SendPsduWithProtection (Create<WifiPsdu> (mpdu, false), txParams);
+  SendPsduWithProtection (GetWifiPsdu (Copy (mpdu), txParams.m_txVector), txParams);
   return true;
 }
 
