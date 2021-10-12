@@ -119,7 +119,7 @@ AmpduAggregationTest::DoRun (void)
   /*
    * Create and configure mac layer.
    */
-  m_mac = CreateObject<StaWifiMac> ();
+  m_mac = CreateObjectWithAttributes<StaWifiMac> ("QosSupported", BooleanValue (true));
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
@@ -370,7 +370,7 @@ TwoLevelAggregationTest::DoRun (void)
   /*
    * Create and configure mac layer.
    */
-  m_mac = CreateObject<StaWifiMac> ();
+  m_mac = CreateObjectWithAttributes<StaWifiMac> ("QosSupported", BooleanValue (true));
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
@@ -605,7 +605,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   /*
    * Create and configure mac layer.
    */
-  m_mac = CreateObject<StaWifiMac> ();
+  m_mac = CreateObjectWithAttributes<StaWifiMac> ("QosSupported", BooleanValue (true));
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));

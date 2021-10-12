@@ -1115,7 +1115,7 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
     case WIFI_STANDARD_80211ax_5GHZ:
     case WIFI_STANDARD_80211ax_6GHZ:
       {
-        SetQosSupported (true);
+        NS_ABORT_IF (!m_qosSupported);
         cwmin = 15;
         cwmax = 1023;
         break;
@@ -1123,7 +1123,7 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
     case WIFI_STANDARD_80211ax_2_4GHZ:
     case WIFI_STANDARD_80211n_2_4GHZ:
       {
-        SetQosSupported (true);
+        NS_ABORT_IF (!m_qosSupported);
       }
     case WIFI_STANDARD_80211g:
       SetErpSupported (true);

@@ -1723,6 +1723,7 @@ Bug2831TestCase::DoRun (void)
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
+  mac.Set ("QosSupported", BooleanValue (true));
   Ptr<RegularWifiMac> apMac = mac.Create<RegularWifiMac> ();
   apMac->SetDevice (apDev);
   apMac->SetAddress (Mac48Address::Allocate ());

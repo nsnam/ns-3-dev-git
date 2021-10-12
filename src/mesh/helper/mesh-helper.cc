@@ -186,7 +186,10 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
       return device;
     }
 
-  Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
+  // this is a const method, but we need to force the correct QoS setting
+  ObjectFactory macObjectFactory = m_mac;
+  macObjectFactory.Set ("QosSupported", BooleanValue (true));  // a mesh station is a QoS station
+  Ptr<MeshWifiInterfaceMac> mac = macObjectFactory.Create<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
   mac->SetDevice (device);
