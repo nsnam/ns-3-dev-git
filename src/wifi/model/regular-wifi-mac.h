@@ -307,7 +307,9 @@ protected:
   virtual void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
 
   /**
-   * Enable or disable QoS support for the device.
+   * Enable or disable QoS support for the device. Construct a Txop object
+   * or QosTxop objects accordingly. This method can only be called before
+   * initialization.
    *
    * \param enable whether QoS is supported
    */

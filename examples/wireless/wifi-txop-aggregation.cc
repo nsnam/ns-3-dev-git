@@ -79,8 +79,14 @@ NS_LOG_COMPONENT_DEFINE ("TxopMpduAggregation");
  */
 struct TxopDurationTracer
 {
+  /**
+   * Callback connected to TXOP duration trace source.
+   *
+   * \param startTime TXOP start time
+   * \param duration TXOP duration
+   */
   void Trace (Time startTime, Time duration);
-  Time m_max {Seconds (0)};
+  Time m_max {Seconds (0)};     //!< maximum TXOP duration
 };
 
 void

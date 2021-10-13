@@ -589,11 +589,11 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       uint8_t tid = hdr.GetQosTid ();
       if (tid == 0)
         {
-          NS_TEST_EXPECT_MSG_GT (hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
         }
       else
         {
-          NS_TEST_EXPECT_MSG_EQ (hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
         }
     }
   tEnd = m_txPsdus[0].endTx;
@@ -615,11 +615,11 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       uint8_t tid = hdr.GetQosTid ();
       if (tid == 0)
         {
-          NS_TEST_EXPECT_MSG_GT (hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
         }
       else
         {
-          NS_TEST_EXPECT_MSG_EQ (hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
         }
     }
   tStart = m_txPsdus[2].startTx;
@@ -639,11 +639,11 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       uint8_t tid = hdr.GetQosTid ();
       if (tid == 0)
         {
-          NS_TEST_EXPECT_MSG_GT (hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
         }
       else
         {
-          NS_TEST_EXPECT_MSG_EQ (hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
         }
     }
   tStart = m_txPsdus[3].startTx;
@@ -663,11 +663,11 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       uint8_t tid = hdr.GetQosTid ();
       if (tid == 0)
         {
-          NS_TEST_EXPECT_MSG_GT (hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
         }
       else
         {
-          NS_TEST_EXPECT_MSG_EQ (hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
+          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
         }
     }
   tStart = m_txPsdus[4].startTx;
@@ -1092,8 +1092,8 @@ void
 OfdmaAckSequenceTest::DoRun (void)
 {
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (2);
-  int64_t streamNumber = 100;
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 20;
 
   NodeContainer wifiApNode;
   wifiApNode.Create (1);

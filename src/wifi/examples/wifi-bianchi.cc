@@ -877,6 +877,9 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
                  uint32_t trialNumber, uint32_t networkSize, Time duration, bool pcap, bool infra, uint16_t guardIntervalNs,
                  double distance, double apTxPowerDbm, double staTxPowerDbm, Time pktInterval)
 {
+  RngSeedManager::SetSeed (10);
+  RngSeedManager::SetRun (10);
+
   NodeContainer wifiNodes;
   if (infra)
     {

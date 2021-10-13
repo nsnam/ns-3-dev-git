@@ -84,8 +84,8 @@ Bug772ChainTest::HandleRead (Ptr<Socket> socket)
 void
 Bug772ChainTest::DoRun ()
 {
-  RngSeedManager::SetSeed (12345);
-  RngSeedManager::SetRun (7);
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (2);
 
   // Default of 3 will cause packet loss
   Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (10));
@@ -142,10 +142,10 @@ Bug772ChainTest::CreateDevices ()
   // Assign fixed stream numbers to wifi and channel random variables
   streamsUsed += wifi.AssignStreams (devices, streamsUsed);
   // Assign 6 streams per device
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 2), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
   // Assign 0 streams per channel for this configuration
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 2), "Stream assignment mismatch");
 
   // 2. Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
@@ -154,10 +154,10 @@ Bug772ChainTest::CreateDevices ()
   internetStack.Install (*m_nodes);
   streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
   // Expect to use (3*m_size) more streams for internet stack random variables
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (3 * m_size)), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 2) + (3 * m_size)), "Stream assignment mismatch");
   streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // Expect to use m_size more streams for AODV
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (3 * m_size) + m_size), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 2) + (3 * m_size) + m_size), "Stream assignment mismatch");
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);

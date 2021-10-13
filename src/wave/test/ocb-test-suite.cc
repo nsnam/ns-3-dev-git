@@ -50,25 +50,30 @@ AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
   if (rmac)
     {
       PointerValue ptr;
-      rmac->GetAttribute ("Txop", ptr);
-      Ptr<Txop> txop = ptr.Get<Txop> ();
-      currentStream += txop->AssignStreams (currentStream);
+      if (!rmac->GetQosSupported ())
+        {
+          rmac->GetAttribute ("Txop", ptr);
+          Ptr<Txop> txop = ptr.Get<Txop> ();
+          currentStream += txop->AssignStreams (currentStream);
+        }
+      else
+        {
+          rmac->GetAttribute ("VO_Txop", ptr);
+          Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+          currentStream += vo_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("VO_Txop", ptr);
-      Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-      currentStream += vo_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("VI_Txop", ptr);
+          Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+          currentStream += vi_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("VI_Txop", ptr);
-      Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-      currentStream += vi_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("BE_Txop", ptr);
+          Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+          currentStream += be_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("BE_Txop", ptr);
-      Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-      currentStream += be_txop->AssignStreams (currentStream);
-
-      rmac->GetAttribute ("BK_Txop", ptr);
-      Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-      currentStream += bk_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("BK_Txop", ptr);
+          Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+          currentStream += bk_txop->AssignStreams (currentStream);
+        }
     }
 }
 

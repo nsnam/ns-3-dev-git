@@ -544,8 +544,8 @@ void
 TestInterBssConstantObssPdAlgo::RunOne (void)
 {
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (1);
-  int64_t streamNumber = 2;
+  RngSeedManager::SetRun (3);
+  int64_t streamNumber = 100;
   
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize", UintegerValue (0));
 

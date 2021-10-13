@@ -175,11 +175,21 @@ StaWifiMac::SendProbeRequest (void)
     }
   packet->AddHeader (probe);
 
-  //The standard is not clear on the correct queue for management
-  //frames if we are a QoS AP. The approach taken here is to always
-  //use the non-QoS for these regardless of whether we have a QoS
-  //association or not.
-  m_txop->Queue (packet, hdr);
+  if (!GetQosSupported ())
+    {
+      m_txop->Queue (packet, hdr);
+    }
+  // "A QoS STA that transmits a Management frame determines access category used
+  // for medium access in transmission of the Management frame as follows
+  // (If dot11QMFActivated is false or not present)
+  // — If the Management frame is individually addressed to a non-QoS STA, category
+  //   AC_BE should be selected.
+  // — If category AC_BE was not selected by the previous step, category AC_VO
+  //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
+  else
+    {
+      GetVOQueue ()->Queue (packet, hdr);
+    }
 }
 
 void
@@ -240,11 +250,25 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       packet->AddHeader (reassoc);
     }
 
-  //The standard is not clear on the correct queue for management
-  //frames if we are a QoS AP. The approach taken here is to always
-  //use the non-QoS for these regardless of whether we have a QoS
-  //association or not.
-  m_txop->Queue (packet, hdr);
+  if (!GetQosSupported ())
+    {
+      m_txop->Queue (packet, hdr);
+    }
+  // "A QoS STA that transmits a Management frame determines access category used
+  // for medium access in transmission of the Management frame as follows
+  // (If dot11QMFActivated is false or not present)
+  // — If the Management frame is individually addressed to a non-QoS STA, category
+  //   AC_BE should be selected.
+  // — If category AC_BE was not selected by the previous step, category AC_VO
+  //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
+  else if (!m_stationManager->GetQosSupported (GetBssid ()))
+    {
+      GetBEQueue ()->Queue (packet, hdr);
+    }
+  else
+    {
+      GetVOQueue ()->Queue (packet, hdr);
+    }
 
   if (m_assocRequestEvent.IsRunning ())
     {

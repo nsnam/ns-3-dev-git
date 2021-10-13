@@ -383,17 +383,22 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   uint32_t cwmin = 15;
   uint32_t cwmax = 1023;
 
-  // The special value of AC_BE_NQOS which exists in the Access
-  // Category enumeration allows us to configure plain old DCF.
-  ConfigureEdca (cwmin, cwmax, 2, AC_BE_NQOS);
-
-  // Now we configure the EDCA functions
-  // see IEEE802.11p-2010 section 7.3.2.29
-  // Wave CCH and SCHs set default 802.11p EDCA
-  ConfigureEdca (cwmin, cwmax, 2, AC_VO);
-  ConfigureEdca (cwmin, cwmax, 3, AC_VI);
-  ConfigureEdca (cwmin, cwmax, 6, AC_BE);
-  ConfigureEdca (cwmin, cwmax, 9, AC_BK);
+  if (!GetQosSupported ())
+    {
+      // The special value of AC_BE_NQOS which exists in the Access
+      // Category enumeration allows us to configure plain old DCF.
+      ConfigureEdca (cwmin, cwmax, 2, AC_BE_NQOS);
+    }
+  else
+    {
+      // Now we configure the EDCA functions
+      // see IEEE802.11p-2010 section 7.3.2.29
+      // Wave CCH and SCHs set default 802.11p EDCA
+      ConfigureEdca (cwmin, cwmax, 2, AC_VO);
+      ConfigureEdca (cwmin, cwmax, 3, AC_VI);
+      ConfigureEdca (cwmin, cwmax, 6, AC_BE);
+      ConfigureEdca (cwmin, cwmax, 9, AC_BK);
+    }
 
   // Setup FrameExchangeManager
   m_feManager = CreateObject<WaveFrameExchangeManager> ();

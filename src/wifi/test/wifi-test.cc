@@ -65,25 +65,30 @@ AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
   if (rmac)
     {
       PointerValue ptr;
-      rmac->GetAttribute ("Txop", ptr);
-      Ptr<Txop> txop = ptr.Get<Txop> ();
-      currentStream += txop->AssignStreams (currentStream);
+      if (!rmac->GetQosSupported ())
+        {
+          rmac->GetAttribute ("Txop", ptr);
+          Ptr<Txop> txop = ptr.Get<Txop> ();
+          currentStream += txop->AssignStreams (currentStream);
+        }
+      else
+        {
+          rmac->GetAttribute ("VO_Txop", ptr);
+          Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+          currentStream += vo_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("VO_Txop", ptr);
-      Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-      currentStream += vo_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("VI_Txop", ptr);
+          Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+          currentStream += vi_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("VI_Txop", ptr);
-      Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-      currentStream += vi_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("BE_Txop", ptr);
+          Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+          currentStream += be_txop->AssignStreams (currentStream);
 
-      rmac->GetAttribute ("BE_Txop", ptr);
-      Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-      currentStream += be_txop->AssignStreams (currentStream);
-
-      rmac->GetAttribute ("BK_Txop", ptr);
-      Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-      bk_txop->AssignStreams (currentStream);
+          rmac->GetAttribute ("BK_Txop", ptr);
+          Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+          bk_txop->AssignStreams (currentStream);
+        }
     }
 }
 
@@ -1356,7 +1361,7 @@ Bug2222TestCase::DoRun (void)
   //Generate same backoff for AC_VI and AC_VO
   //The below combination will work
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (16);
+  RngSeedManager::SetRun (1);
   int64_t streamNumber = 100;
 
   NodeContainer wifiNodes;
@@ -2225,12 +2230,12 @@ Bug2470TestCase::DoRun (void)
   Ptr<ReceiveListErrorModel> staPem = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> blackList;
   // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
-  blackList.push_back (8);
   blackList.push_back (9);
   blackList.push_back (10);
   blackList.push_back (11);
   blackList.push_back (12);
   blackList.push_back (13);
+  blackList.push_back (14);
   staPem->SetList (blackList);
 
   {
@@ -2261,15 +2266,16 @@ Bug2470TestCase::DoRun (void)
 
   Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel> ();
   blackList.clear ();
-  // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
-  blackList.push_back (4);
+  // Block ADDBA request 4 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (5);
   blackList.push_back (6);
+  blackList.push_back (7);
+  blackList.push_back (9);
   apPem->SetList (blackList);
 
   {
     RunSubtest (PointerValue (apPem), PointerValue ());
-    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 3, "ADDBA response packets are not failed");
+    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 4, "ADDBA response packets are not failed");
     // Similar to subtest 1, we also expect to receive 6 normal MPDU packets and 4 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 6, "Receiving incorrect number of normal MPDU packet on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 4, "Receiving incorrect number of A-MPDU packet on subtest 2");

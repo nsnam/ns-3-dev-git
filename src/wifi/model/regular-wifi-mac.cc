@@ -57,21 +57,6 @@ RegularWifiMac::RegularWifiMac ()
   m_txMiddle = Create<MacTxMiddle> ();
 
   m_channelAccessManager = CreateObject<ChannelAccessManager> ();
-
-  m_txop = CreateObject<Txop> ();
-  m_txop->SetChannelAccessManager (m_channelAccessManager);
-  m_txop->SetWifiMac (this);
-  m_txop->SetTxMiddle (m_txMiddle);
-  m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
-                                                &m_droppedMpduCallback));
-
-  //Construct the EDCAFs. The ordering is important - highest
-  //priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
-  //first.
-  SetupEdcaQueue (AC_VO);
-  SetupEdcaQueue (AC_VI);
-  SetupEdcaQueue (AC_BE);
-  SetupEdcaQueue (AC_BK);
 }
 
 RegularWifiMac::~RegularWifiMac ()
@@ -83,7 +68,10 @@ void
 RegularWifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  m_txop->Initialize ();
+  if (m_txop != nullptr)
+    {
+      m_txop->Initialize ();
+    }
 
   for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
@@ -107,7 +95,10 @@ RegularWifiMac::DoDispose ()
     }
   m_feManager = 0;
 
-  m_txop->Dispose ();
+  if (m_txop != nullptr)
+    {
+      m_txop->Dispose ();
+    }
   m_txop = 0;
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
@@ -403,56 +394,80 @@ void
 RegularWifiMac::SetVoBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
-  GetVOQueue ()->SetBlockAckThreshold (threshold);
+  if (m_qosSupported)
+    {
+      GetVOQueue ()->SetBlockAckThreshold (threshold);
+    }
 }
 
 void
 RegularWifiMac::SetViBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
-  GetVIQueue ()->SetBlockAckThreshold (threshold);
+  if (m_qosSupported)
+    {
+      GetVIQueue ()->SetBlockAckThreshold (threshold);
+    }
 }
 
 void
 RegularWifiMac::SetBeBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
-  GetBEQueue ()->SetBlockAckThreshold (threshold);
+  if (m_qosSupported)
+    {
+      GetBEQueue ()->SetBlockAckThreshold (threshold);
+    }
 }
 
 void
 RegularWifiMac::SetBkBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
-  GetBKQueue ()->SetBlockAckThreshold (threshold);
+  if (m_qosSupported)
+    {
+      GetBKQueue ()->SetBlockAckThreshold (threshold);
+    }
 }
 
 void
 RegularWifiMac::SetVoBlockAckInactivityTimeout (uint16_t timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
-  GetVOQueue ()->SetBlockAckInactivityTimeout (timeout);
+  if (m_qosSupported)
+    {
+      GetVOQueue ()->SetBlockAckInactivityTimeout (timeout);
+    }
 }
 
 void
 RegularWifiMac::SetViBlockAckInactivityTimeout (uint16_t timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
-  GetVIQueue ()->SetBlockAckInactivityTimeout (timeout);
+  if (m_qosSupported)
+    {
+      GetVIQueue ()->SetBlockAckInactivityTimeout (timeout);
+    }
 }
 
 void
 RegularWifiMac::SetBeBlockAckInactivityTimeout (uint16_t timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
-  GetBEQueue ()->SetBlockAckInactivityTimeout (timeout);
+  if (m_qosSupported)
+    {
+      GetBEQueue ()->SetBlockAckInactivityTimeout (timeout);
+    }
 }
 
 void
 RegularWifiMac::SetBkBlockAckInactivityTimeout (uint16_t timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
-  GetBKQueue ()->SetBlockAckInactivityTimeout (timeout);
+  if (m_qosSupported)
+    {
+      GetBKQueue ()->SetBlockAckInactivityTimeout (timeout);
+    }
 }
 
 void
@@ -512,25 +527,25 @@ RegularWifiMac::GetQosTxop (uint8_t tid) const
 Ptr<QosTxop>
 RegularWifiMac::GetVOQueue () const
 {
-  return m_edca.find (AC_VO)->second;
+  return (m_qosSupported ? m_edca.find (AC_VO)->second : nullptr);
 }
 
 Ptr<QosTxop>
 RegularWifiMac::GetVIQueue () const
 {
-  return m_edca.find (AC_VI)->second;
+  return (m_qosSupported ? m_edca.find (AC_VI)->second : nullptr);
 }
 
 Ptr<QosTxop>
 RegularWifiMac::GetBEQueue () const
 {
-  return m_edca.find (AC_BE)->second;
+  return (m_qosSupported ? m_edca.find (AC_BE)->second : nullptr);
 }
 
 Ptr<QosTxop>
 RegularWifiMac::GetBKQueue () const
 {
-  return m_edca.find (AC_BK)->second;
+  return (m_qosSupported ? m_edca.find (AC_BK)->second : nullptr);
 }
 
 Ptr<WifiMacQueue>
@@ -538,6 +553,7 @@ RegularWifiMac::GetTxopQueue (AcIndex ac) const
 {
   if (ac == AC_BE_NQOS)
     {
+      NS_ASSERT (m_txop != nullptr);
       return m_txop->GetWifiMacQueue ();
     }
   NS_ASSERT (ac == AC_BE || ac == AC_BK || ac == AC_VI || ac == AC_VO);
@@ -596,7 +612,29 @@ void
 RegularWifiMac::SetQosSupported (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
+  NS_ABORT_IF (IsInitialized ());
   m_qosSupported = enable;
+
+  if (!m_qosSupported)
+    {
+      // create a non-QoS TXOP
+      m_txop = CreateObject<Txop> ();
+      m_txop->SetChannelAccessManager (m_channelAccessManager);
+      m_txop->SetWifiMac (this);
+      m_txop->SetTxMiddle (m_txMiddle);
+      m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
+                                                    &m_droppedMpduCallback));
+    }
+  else
+    {
+      //Construct the EDCAFs. The ordering is important - highest
+      //priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
+      //first.
+      SetupEdcaQueue (AC_VO);
+      SetupEdcaQueue (AC_VI);
+      SetupEdcaQueue (AC_BE);
+      SetupEdcaQueue (AC_BK);
+    }
 }
 
 bool
@@ -889,6 +927,7 @@ RegularWifiMac::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddAttribute ("QosSupported",
                    "This Boolean attribute is set to enable 802.11e/WMM-style QoS support at this STA.",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,  // prevent setting after construction
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetQosSupported,
                                         &RegularWifiMac::GetQosSupported),
@@ -1149,9 +1188,12 @@ void
 RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 {
   bool isDsssOnly = m_dsssSupported && !m_erpSupported;
-  //The special value of AC_BE_NQOS which exists in the Access
-  //Category enumeration allows us to configure plain old DCF.
-  ConfigureDcf (m_txop, cwMin, cwMax, isDsssOnly, AC_BE_NQOS);
+  if (m_txop != nullptr)
+    {
+      //The special value of AC_BE_NQOS which exists in the Access
+      //Category enumeration allows us to configure plain old DCF.
+      ConfigureDcf (m_txop, cwMin, cwMax, isDsssOnly, AC_BE_NQOS);
+    }
 
   //Now we configure the EDCA functions
   for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)

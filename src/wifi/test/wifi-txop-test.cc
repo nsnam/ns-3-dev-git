@@ -267,14 +267,14 @@ WifiTxopTest::DoRun (void)
   // The AP does not correctly receive the Ack sent in response to the QoS
   // data frame sent to the first station
   Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel> ();
-  apPem->SetList ({6});
+  apPem->SetList ({9});
   dev = DynamicCast<WifiNetDevice> (m_apDevices.Get (0));
   dev->GetMac ()->GetWifiPhy ()->SetPostReceptionErrorModel (apPem);
 
   // The second station does not correctly receive the first QoS
   // data frame sent by the AP
   Ptr<ReceiveListErrorModel> sta2Pem = CreateObject<ReceiveListErrorModel> ();
-  sta2Pem->SetList ({19});
+  sta2Pem->SetList ({24});
   dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (1));
   dev->GetMac ()->GetWifiPhy ()->SetPostReceptionErrorModel (sta2Pem);
 

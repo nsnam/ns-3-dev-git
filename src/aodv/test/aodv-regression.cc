@@ -179,10 +179,10 @@ ChainRegressionTest::CreateDevices ()
   // Assign fixed stream numbers to wifi and channel random variables
   streamsUsed += wifi.AssignStreams (devices, streamsUsed);
   // Assign 6 streams per device
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 2), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
   // Assign 0 streams per channel for this configuration
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 2), "Stream assignment mismatch");
 
   // 2. Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
@@ -191,10 +191,10 @@ ChainRegressionTest::CreateDevices ()
   internetStack.Install (*m_nodes);
   streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
   // InternetStack uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 8) + m_size, "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 4) + m_size, "Stream assignment mismatch");
   streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // AODV uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 8) + (2 * m_size)), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 4) + (2 * m_size)), "Stream assignment mismatch");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
