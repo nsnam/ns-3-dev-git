@@ -278,12 +278,14 @@ ThreeGppChannelConditionModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ThreeGppChannelConditionModel")
     .SetParent<ChannelConditionModel> ()
     .SetGroupName ("Propagation")
-    .AddAttribute ("UpdatePeriod", "Specifies the time period after which the channel condition is recomputed. If set to 0, the channel condition is never updated.",
+    .AddAttribute ("UpdatePeriod", "Specifies the time period after which the channel "
+                   "condition is recomputed. If set to 0, the channel condition is never updated.",
                    TimeValue (MilliSeconds (0)),
                    MakeTimeAccessor (&ThreeGppChannelConditionModel::m_updatePeriod),
                    MakeTimeChecker ())
-    .AddAttribute ("O2iThreshold", "Specifies what will be the ratio of O2I channel conditions.",
-                    DoubleValue (0.8),
+    .AddAttribute ("O2iThreshold", "Specifies what will be the ratio of O2I channel "
+                   "conditions. Default value is 0 that corresponds to 0 O2I losses.",
+                    DoubleValue (0.0),
                     MakeDoubleAccessor (&ThreeGppChannelConditionModel::m_o2iThreshold),
                     MakeDoubleChecker <double> (0, 1))
   ;
@@ -363,7 +365,7 @@ ThreeGppChannelConditionModel::ComputeO2i (Ptr<const MobilityModel> a, Ptr<const
 {
   // TODO this code should be changed to determine based on a and b positions,
   // whether they are indoor or outdoor the o2i condition
-  // currently we just parametrize it, currently hardcoded with 0.8
+  // currently we just parametrize it
   double o2iProb = m_uniformVarO2i->GetValue (0, 1);
 
   // TODO another thing to be done is to allow more states, not only O2i and O2o

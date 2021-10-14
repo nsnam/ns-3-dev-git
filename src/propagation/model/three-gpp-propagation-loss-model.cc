@@ -617,7 +617,7 @@ ThreeGppUmaPropagationLossModel::GetBpDistance (double hUt, double hBs, double d
     }
   else
     {
-      int random = m_uniformVar->GetInteger (12, (int)(hUt - 1.5));
+      int random = m_uniformVar->GetInteger (12, std::max (12, (int)(hUt - 1.5)));
       hE = (double)floor (random / 3.0) * 3.0;
     }
 
