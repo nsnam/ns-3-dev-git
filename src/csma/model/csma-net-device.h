@@ -33,10 +33,10 @@
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
+#include "ns3/queue-fwd.h"
 
 namespace ns3 {
 
-template <typename Item> class Queue;
 class CsmaChannel;
 class ErrorModel;
 

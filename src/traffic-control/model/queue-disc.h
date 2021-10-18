@@ -25,6 +25,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/queue-item.h"
 #include "ns3/queue-size.h"
+#include "ns3/queue-fwd.h"
 #include <vector>
 #include <map>
 #include <functional>
@@ -34,7 +35,6 @@
 namespace ns3 {
 
 class QueueDisc;
-template <typename Item> class Queue;
 class NetDeviceQueueInterface;
 
 /**

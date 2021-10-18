@@ -32,6 +32,7 @@
 #include <ns3/ptr.h>
 #include <ns3/mac48-address.h>
 #include <ns3/generic-phy.h>
+#include "ns3/queue-fwd.h"
 
 namespace ns3 {
 
@@ -39,7 +40,6 @@ namespace ns3 {
 class SpectrumChannel;
 class Channel;
 class SpectrumErrorModel;
-template <typename Item> class Queue;
 
 
 

@@ -27,12 +27,11 @@
 #include "ns3/net-device.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
-
+#include "ns3/queue-fwd.h"
 #include "mac48-address.h"
 
 namespace ns3 {
 
-template <typename Item> class Queue;
 class SimpleChannel;
 class Node;
 class ErrorModel;

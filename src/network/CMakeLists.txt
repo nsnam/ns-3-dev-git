@@ -135,6 +135,7 @@ set(header_files
     utils/pcap-file-wrapper.h
     utils/pcap-file.h
     utils/pcap-test.h
+    utils/queue-fwd.h
     utils/queue-item.h
     utils/queue-limits.h
     utils/queue-size.h
