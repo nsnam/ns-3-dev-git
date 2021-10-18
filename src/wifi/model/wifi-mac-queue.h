@@ -85,8 +85,7 @@ public:
   /// allow the usage of iterators and const iterators
   using Queue<WifiMacQueueItem>::ConstIterator;
   using Queue<WifiMacQueueItem>::Iterator;
-  using Queue<WifiMacQueueItem>::begin;
-  using Queue<WifiMacQueueItem>::end;
+  using Queue<WifiMacQueueItem>::GetContainer;
 
   /**
    * Set the maximum delay before the packet is discarded.

@@ -52,8 +52,7 @@ public:
   virtual Ptr<const Item> Peek (void) const;
 
 private:
-  using Queue<Item>::begin;
-  using Queue<Item>::end;
+  using Queue<Item>::GetContainer;
   using Queue<Item>::DoEnqueue;
   using Queue<Item>::DoDequeue;
   using Queue<Item>::DoRemove;
@@ -105,7 +104,7 @@ DropTailQueue<Item>::Enqueue (Ptr<Item> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  return DoEnqueue (end (), item);
+  return DoEnqueue (GetContainer ().end (), item);
 }
 
 template <typename Item>
@@ -114,7 +113,7 @@ DropTailQueue<Item>::Dequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<Item> item = DoDequeue (begin ());
+  Ptr<Item> item = DoDequeue (GetContainer ().begin ());
 
   NS_LOG_LOGIC ("Popped " << item);
 
@@ -127,7 +126,7 @@ DropTailQueue<Item>::Remove (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<Item> item = DoRemove (begin ());
+  Ptr<Item> item = DoRemove (GetContainer ().begin ());
 
   NS_LOG_LOGIC ("Removed " << item);
 
@@ -140,7 +139,7 @@ DropTailQueue<Item>::Peek (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return DoPeek (begin ());
+  return DoPeek (GetContainer ().begin ());
 }
 
 // The following explicit template instantiation declarations prevent all the

@@ -313,68 +313,11 @@ protected:
   typedef typename Container::iterator Iterator;
 
   /**
-   * \brief Get a const iterator which refers to the first item in the queue.
+   * Get a const reference to the container of queue items.
    *
-   * Subclasses can browse the items in the queue by using a const iterator
-   *
-   * \code
-   *   for (auto i = begin (); i != end (); ++i)
-   *     {
-   *       (*i)->method ();  // some const method of the Item class
-   *     }
-   * \endcode
-   *
-   * \returns a const iterator which refers to the first item in the queue.
+   * \return a const reference to the container of queue items
    */
-  ConstIterator begin (void) const;
-
-  /**
-   * \brief Get an iterator which refers to the first item in the queue.
-   *
-   * Subclasses can browse the items in the queue by using an iterator
-   *
-   * \code
-   *   for (auto i = begin (); i != end (); ++i)
-   *     {
-   *       (*i)->method ();  // some method of the Item class
-   *     }
-   * \endcode
-   *
-   * \returns an iterator which refers to the first item in the queue.
-   */
-  Iterator begin (void);
-
-  /**
-   * \brief Get a const iterator which indicates past-the-last item in the queue.
-   *
-   * Subclasses can browse the items in the queue by using a const iterator
-   *
-   * \code
-   *   for (auto i = begin (); i != end (); ++i)
-   *     {
-   *       (*i)->method ();  // some const method of the Item class
-   *     }
-   * \endcode
-   *
-   * \returns a const iterator which indicates past-the-last item in the queue.
-   */
-  ConstIterator end (void) const;
-
-  /**
-   * \brief Get an iterator which indicates past-the-last item in the queue.
-   *
-   * Subclasses can browse the items in the queue by using an iterator
-   *
-   * \code
-   *   for (auto i = begin (); i != end (); ++i)
-   *     {
-   *       (*i)->method ();  // some method of the Item class
-   *     }
-   * \endcode
-   *
-   * \returns an iterator which indicates past-the-last item in the queue.
-   */
-  Iterator end (void);
+  const Container& GetContainer (void) const;
 
   /**
    * Push an item in the queue
@@ -498,6 +441,13 @@ Queue<Item, Container>::Queue ()
 template <typename Item, typename Container>
 Queue<Item, Container>::~Queue ()
 {
+}
+
+template <typename Item, typename Container>
+const Container&
+Queue<Item, Container>::GetContainer (void) const
+{
+  return m_packets;
 }
 
 template <typename Item, typename Container>
@@ -630,30 +580,6 @@ Queue<Item, Container>::DoPeek (ConstIterator pos) const
     }
 
   return *pos;
-}
-
-template <typename Item, typename Container>
-typename Queue<Item, Container>::ConstIterator Queue<Item, Container>::begin (void) const
-{
-  return m_packets.cbegin ();
-}
-
-template <typename Item, typename Container>
-typename Queue<Item, Container>::Iterator Queue<Item, Container>::begin (void)
-{
-  return m_packets.begin ();
-}
-
-template <typename Item, typename Container>
-typename Queue<Item, Container>::ConstIterator Queue<Item, Container>::end (void) const
-{
-  return m_packets.cend ();
-}
-
-template <typename Item, typename Container>
-typename Queue<Item, Container>::Iterator Queue<Item, Container>::end (void)
-{
-  return m_packets.end ();
 }
 
 template <typename Item, typename Container>

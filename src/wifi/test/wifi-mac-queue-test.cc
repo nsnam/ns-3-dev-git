@@ -72,7 +72,7 @@ WifiMacQueueDropOldestTest::DoRun ()
     }
 
   // Check that all elements are inserted successfully.
-  auto it = wifiMacQueue->begin ();
+  auto it = wifiMacQueue->GetContainer ().begin ();
   NS_TEST_EXPECT_MSG_EQ (wifiMacQueue->GetNPackets (), 5, "Queue has unexpected number of elements");
   for (uint32_t i = 5; i > 0; i--)
     {
@@ -94,7 +94,7 @@ WifiMacQueueDropOldestTest::DoRun ()
   packetUids.at (4) = packet->GetUid ();
 
   // Check that front packet was replaced correctly.
-  it = wifiMacQueue->begin ();
+  it = wifiMacQueue->GetContainer ().begin ();
   NS_TEST_EXPECT_MSG_EQ (wifiMacQueue->GetNPackets (), 5, "Queue has unexpected number of elements");
   for (uint32_t i = 5; i > 0; i--)
     {
