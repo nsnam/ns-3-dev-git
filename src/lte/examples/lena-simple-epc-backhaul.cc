@@ -156,6 +156,7 @@ main (int argc, char *argv[])
       for (uint16_t i = 0; i < numNodePairs; ++i)
         {
           Ptr<Node> enb = enbNodes.Get (i);
+          std::vector<uint16_t> cellIds (1, i);
 
           // Create a point to point link between the eNB and the SGW with
           // the corresponding new NetDevices on each side
@@ -175,7 +176,7 @@ main (int argc, char *argv[])
           Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (1);
 
           // Create S1 interface between the SGW and the eNB
-          epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
+          epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress, cellIds);
         }
     }
 

@@ -2662,8 +2662,13 @@ RrcAsn1Header::Print (std::ostream &os) const
                     bIterator = DeserializeRadioResourceConfigCommonSCell (&sctam.radioResourceConfigCommonSCell, bIterator);
                     if (sCellToAddMod_r10[0])
                       {
+                        sctam.haveRadioResourceConfigDedicatedSCell = true;
                         //Deserialize RadioResourceConfigDedicatedSCell
                         bIterator = DeserializeRadioResourceConfigDedicatedSCell (&sctam.radioResourceConfigDedicatedSCell, bIterator);
+                      }
+                    else
+                      {
+                        sctam.haveRadioResourceConfigDedicatedSCell = false; 
                       }
 
                     nonCriticalExtension->sCellToAddModList.push_back (sctam);
@@ -2862,7 +2867,7 @@ RrcAsn1Header::Print (std::ostream &os) const
 
                  int txmode;
                  bIterator = DeserializeEnum (8,&txmode,bIterator);
-                 pcdsc->antennaInfo.transmissionMode = txmode;
+                 pcdsc->antennaInfoUl.transmissionMode = txmode;
 
                  if (codebookSubsetRestrictionPresent[0])
                    {

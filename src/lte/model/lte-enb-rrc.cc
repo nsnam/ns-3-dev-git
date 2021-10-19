@@ -1663,7 +1663,7 @@ UeManager::BuildNonCriticalExtensionConfigurationCa ()
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.havePdschConfigDedicated = true;
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveUlConfiguration = true;
-      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveAntennaInfoDedicated = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveAntennaInfoUlDedicated = true;
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.antennaInfoUl.transmissionMode = m_rrc->m_defaultTransmissionMode;
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.pushConfigDedicatedSCell.nPuschIdentity = 0;
       component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.ulPowerControlDedicatedSCell.pSrsOffset = 0;

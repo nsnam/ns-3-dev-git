@@ -816,6 +816,7 @@ private:
 
   uint32_t m_dlEarfcn;  /**< Downlink carrier frequency. */
   uint32_t m_ulEarfcn;  /**< Uplink carrier frequency. */
+  std::list<LteRrcSap::SCellToAddMod> m_sCellToAddModList; /**< Secondary carriers. */
 
   /**
    * The `MibReceived` trace source. Fired upon reception of Master Information
