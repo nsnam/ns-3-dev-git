@@ -1061,12 +1061,6 @@ public:
   virtual TypeId GetInstanceTypeId () const;
 
   /**
-   * \brief Get the incorrect packet.
-   * \return the incorrect packet
-   */
-  Ptr<Packet> GetPacket () const;
-
-  /**
    * \brief Set the incorrect packet.
    * \param p the incorrect packet
    */
@@ -1133,12 +1127,6 @@ public:
    * \return instance type ID
    */
   virtual TypeId GetInstanceTypeId () const;
-
-  /**
-   * \brief Get the incorrect packet.
-   * \return the incorrect packet
-   */
-  Ptr<Packet> GetPacket () const;
 
   /**
    * \brief Set the incorrect packet.
@@ -1227,12 +1215,6 @@ public:
   virtual TypeId GetInstanceTypeId () const;
 
   /**
-   * \brief Get the incorrect packet.
-   * \return the incorrect packet
-   */
-  Ptr<Packet> GetPacket () const;
-
-  /**
    * \brief Set the incorrect packet.
    * \param p the incorrect packet
    */
@@ -1300,12 +1282,6 @@ public:
    * \return instance type ID
    */
   virtual TypeId GetInstanceTypeId () const;
-
-  /**
-   * \brief Get the incorrect packet.
-   * \return the incorrect packet
-   */
-  Ptr<Packet> GetPacket () const;
 
   /**
    * \brief Set the incorrect packet.
@@ -1753,12 +1729,6 @@ public:
    * \brief Destructor.
    */
   virtual ~Icmpv6OptionRedirected ();
-
-  /**
-   * \brief Get the redirected packet.
-   * \return the redirected packet
-   */
-  Ptr<Packet> GetPacket () const;
 
   /**
    * \brief Set the redirected packet.

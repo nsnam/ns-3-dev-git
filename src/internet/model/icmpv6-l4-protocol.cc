@@ -881,14 +881,13 @@ void Icmpv6L4Protocol::HandleDestinationUnreachable (Ptr<Packet> p, Ipv6Address 
 
   Icmpv6DestinationUnreachable unreach;
   pkt->RemoveHeader (unreach);
-  Ptr<Packet> origPkt = unreach.GetPacket ();
 
   Ipv6Header ipHeader;
-  if ( origPkt->GetSize () > ipHeader.GetSerializedSize () )
+  if (pkt->GetSize () > ipHeader.GetSerializedSize ())
     {
-      origPkt->RemoveHeader (ipHeader);
+      pkt->RemoveHeader (ipHeader);
       uint8_t payload[8];
-      origPkt->CopyData (payload, 8);
+      pkt->CopyData (payload, 8);
       Forward (src, unreach, unreach.GetCode (), ipHeader, payload);
     }
 }
@@ -900,13 +899,16 @@ void Icmpv6L4Protocol::HandleTimeExceeded (Ptr<Packet> p, Ipv6Address const &src
 
   Icmpv6TimeExceeded timeexceeded;
   pkt->RemoveHeader (timeexceeded);
-  Ptr<Packet> origPkt = timeexceeded.GetPacket ();
-  Ipv6Header ipHeader;
-  uint8_t payload[8];
-  origPkt->RemoveHeader (ipHeader);
-  origPkt->CopyData (payload, 8);
 
-  Forward (src, timeexceeded, timeexceeded.GetCode (), ipHeader, payload);
+  Ipv6Header ipHeader;
+  if (pkt->GetSize () > ipHeader.GetSerializedSize ())
+    {
+      Ipv6Header ipHeader;
+      pkt->RemoveHeader (ipHeader);
+      uint8_t payload[8];
+      pkt->CopyData (payload, 8);
+      Forward (src, timeexceeded, timeexceeded.GetCode (), ipHeader, payload);
+    }
 }
 
 void Icmpv6L4Protocol::HandlePacketTooBig (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -916,17 +918,19 @@ void Icmpv6L4Protocol::HandlePacketTooBig (Ptr<Packet> p, Ipv6Address const &src
 
   Icmpv6TooBig tooBig;
   pkt->RemoveHeader (tooBig);
-  Ptr<Packet> origPkt = tooBig.GetPacket ();
 
   Ipv6Header ipHeader;
-  origPkt->RemoveHeader (ipHeader);
-  uint8_t payload[8];
-  origPkt->CopyData (payload, 8);
+  if (pkt->GetSize () > ipHeader.GetSerializedSize ())
+    {
+      pkt->RemoveHeader (ipHeader);
+      uint8_t payload[8];
+      pkt->CopyData (payload, 8);
 
-  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  ipv6->SetPmtu(ipHeader.GetDestination(), tooBig.GetMtu ());
+      Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
+      ipv6->SetPmtu (ipHeader.GetDestination (), tooBig.GetMtu ());
 
-  Forward (src, tooBig, tooBig.GetMtu (), ipHeader, payload);
+      Forward (src, tooBig, tooBig.GetMtu (), ipHeader, payload);
+    }
 }
 
 void Icmpv6L4Protocol::HandleParameterError (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -936,13 +940,15 @@ void Icmpv6L4Protocol::HandleParameterError (Ptr<Packet> p, Ipv6Address const &s
 
   Icmpv6ParameterError paramErr;
   pkt->RemoveHeader (paramErr);
-  Ptr<Packet> origPkt = paramErr.GetPacket ();
 
   Ipv6Header ipHeader;
-  origPkt->RemoveHeader (ipHeader);
-  uint8_t payload[8];
-  origPkt->CopyData (payload, 8);
-  Forward (src, paramErr, paramErr.GetCode (), ipHeader, payload);
+  if (pkt->GetSize () > ipHeader.GetSerializedSize ())
+    {
+      pkt->RemoveHeader (ipHeader);
+      uint8_t payload[8];
+      pkt->CopyData (payload, 8);
+      Forward (src, paramErr, paramErr.GetCode (), ipHeader, payload);
+    }
 }
 
 void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl)
@@ -1101,9 +1107,9 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
 void Icmpv6L4Protocol::SendErrorDestinationUnreachable (Ptr<Packet> malformedPacket, Ipv6Address dst, uint8_t code)
 {
   NS_LOG_FUNCTION (this << malformedPacket << dst << (uint32_t)code);
-  Ptr<Packet> p = Create<Packet> ();
   uint32_t malformedPacketSize = malformedPacket->GetSize ();
   Icmpv6DestinationUnreachable header;
+  header.SetCode (code);
 
   NS_LOG_LOGIC ("Send Destination Unreachable ( to " << dst << " code " << (uint32_t)code << " )");
 
@@ -1111,23 +1117,23 @@ void Icmpv6L4Protocol::SendErrorDestinationUnreachable (Ptr<Packet> malformedPac
   if (malformedPacketSize <= 1280 - 48)
     {
       header.SetPacket (malformedPacket);
+      SendMessage (malformedPacket, dst, header, 255);
     }
   else
     {
       Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
       header.SetPacket (fragment);
+      SendMessage (fragment, dst, header, 255);
     }
-
-  header.SetCode (code);
-  SendMessage (p, dst, header, 255);
 }
 
 void Icmpv6L4Protocol::SendErrorTooBig (Ptr<Packet> malformedPacket, Ipv6Address dst, uint32_t mtu)
 {
   NS_LOG_FUNCTION (this << malformedPacket << dst << mtu);
-  Ptr<Packet> p = Create<Packet> ();
   uint32_t malformedPacketSize = malformedPacket->GetSize ();
   Icmpv6TooBig header;
+  header.SetCode (0);
+  header.SetMtu (mtu);
 
   NS_LOG_LOGIC ("Send Too Big ( to " << dst << " )");
 
@@ -1135,24 +1141,22 @@ void Icmpv6L4Protocol::SendErrorTooBig (Ptr<Packet> malformedPacket, Ipv6Address
   if (malformedPacketSize <= 1280 - 48)
     {
       header.SetPacket (malformedPacket);
+      SendMessage (malformedPacket, dst, header, 255);
     }
   else
     {
       Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
       header.SetPacket (fragment);
+      SendMessage (fragment, dst, header, 255);
     }
-
-  header.SetCode (0);
-  header.SetMtu (mtu);
-  SendMessage (p, dst, header, 255);
 }
 
 void Icmpv6L4Protocol::SendErrorTimeExceeded (Ptr<Packet> malformedPacket, Ipv6Address dst, uint8_t code)
 {
   NS_LOG_FUNCTION (this << malformedPacket << dst << static_cast<uint32_t> (code));
-  Ptr<Packet> p = Create<Packet> ();
   uint32_t malformedPacketSize = malformedPacket->GetSize ();
   Icmpv6TimeExceeded header;
+  header.SetCode (code);
 
   NS_LOG_LOGIC ("Send Time Exceeded ( to " << dst << " code " << (uint32_t)code << " )");
 
@@ -1160,23 +1164,23 @@ void Icmpv6L4Protocol::SendErrorTimeExceeded (Ptr<Packet> malformedPacket, Ipv6A
   if (malformedPacketSize <= 1280 - 48)
     {
       header.SetPacket (malformedPacket);
+      SendMessage (malformedPacket, dst, header, 255);
     }
   else
     {
       Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
       header.SetPacket (fragment);
+      SendMessage (fragment, dst, header, 255);
     }
-
-  header.SetCode (code);
-  SendMessage (p, dst, header, 255);
 }
 
 void Icmpv6L4Protocol::SendErrorParameterError (Ptr<Packet> malformedPacket, Ipv6Address dst, uint8_t code, uint32_t ptr)
 {
   NS_LOG_FUNCTION (this << malformedPacket << dst << static_cast<uint32_t> (code) << ptr);
-  Ptr<Packet> p = Create<Packet> ();
   uint32_t malformedPacketSize = malformedPacket->GetSize ();
   Icmpv6ParameterError header;
+  header.SetCode (code);
+  header.SetPtr (ptr);
 
   NS_LOG_LOGIC ("Send Parameter Error ( to " << dst << " code " << (uint32_t)code << " )");
 
@@ -1184,16 +1188,14 @@ void Icmpv6L4Protocol::SendErrorParameterError (Ptr<Packet> malformedPacket, Ipv
   if (malformedPacketSize <= 1280 - 48 )
     {
       header.SetPacket (malformedPacket);
+      SendMessage (malformedPacket, dst, header, 255);
     }
   else
     {
       Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
       header.SetPacket (fragment);
+      SendMessage (fragment, dst, header, 255);
     }
-
-  header.SetCode (code);
-  header.SetPtr (ptr);
-  SendMessage (p, dst, header, 255);
 }
 
 void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Address src, Ipv6Address dst, Ipv6Address redirTarget, Ipv6Address redirDestination, Address redirHardwareTarget)
