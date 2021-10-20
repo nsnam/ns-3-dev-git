@@ -464,25 +464,29 @@ template <typename Item>
 TypeId
 Queue<Item>::GetTypeId (void)
 {
-  std::string name = GetTypeParamName<Queue<Item> > ();
-  static TypeId tid = TypeId ("ns3::Queue<" + name + ">")
+  std::string name = GetTemplateClassName<Queue<Item>> ();
+  auto startPos = name.find ('<') + 1;
+  auto endPos = name.find ('>');
+  std::string tcbName = "ns3::" + name.substr (startPos, endPos - startPos) + "::TracedCallback";
+
+  static TypeId tid = TypeId (name)
     .SetParent<QueueBase> ()
     .SetGroupName ("Network")
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",
                      MakeTraceSourceAccessor (&Queue<Item>::m_traceEnqueue),
-                     "ns3::" + name + "::TracedCallback")
+                     tcbName)
     .AddTraceSource ("Dequeue", "Dequeue a packet from the queue.",
                      MakeTraceSourceAccessor (&Queue<Item>::m_traceDequeue),
-                     "ns3::" + name + "::TracedCallback")
+                     tcbName)
     .AddTraceSource ("Drop", "Drop a packet (for whatever reason).",
                      MakeTraceSourceAccessor (&Queue<Item>::m_traceDrop),
-                     "ns3::" + name + "::TracedCallback")
+                     tcbName)
     .AddTraceSource ("DropBeforeEnqueue", "Drop a packet before enqueue.",
                      MakeTraceSourceAccessor (&Queue<Item>::m_traceDropBeforeEnqueue),
-                     "ns3::" + name + "::TracedCallback")
+                     tcbName)
     .AddTraceSource ("DropAfterDequeue", "Drop a packet after dequeue.",
                      MakeTraceSourceAccessor (&Queue<Item>::m_traceDropAfterDequeue),
-                     "ns3::" + name + "::TracedCallback")
+                     tcbName)
   ;
   return tid;
 }

@@ -55,53 +55,100 @@
 
 /**
  * \ingroup object
- * \brief Explicitly instantiate a template class and register the resulting
- *        instance with the TypeId system.
+ * \brief Explicitly instantiate a template class with one template parameter
+ *        and register the resulting instance with the TypeId system.
  *
  * This macro should be invoked once for every required instance of a template
- * class which derives from the Object class and defines a new GetTypeId method.
+ * class with one template parameter which derives from the Object class and
+ * defines a new GetTypeId method.
  *
  * If the template class is in a namespace, then the macro call should also be
  * in the namespace.
+ *
+ * \note The type names used as arguments for this macro, being used to form a
+ * class name and a variable name, CANNOT contain the scope resolution
+ * operator (::)
+ *
+ * \tparam type the template class
+ * \tparam param the first template parameter
  */
-#define NS_OBJECT_TEMPLATE_CLASS_DEFINE(type,param)                    \
-  template class type<param>;                                          \
-  template <> std::string DoGetTypeParamName<type<param> > ()          \
-  {                                                                    \
-    return #param;                                                     \
-  }                                                                    \
-  static struct Object ## type ## param ## RegistrationClass           \
-  {                                                                    \
-    Object ## type ## param ## RegistrationClass () {                  \
-      ns3::TypeId tid = type<param>::GetTypeId ();                     \
-      tid.SetSize (sizeof (type<param>));                              \
-      tid.GetParent ();                                                \
-    }                                                                  \
+#define NS_OBJECT_TEMPLATE_CLASS_DEFINE(type,param)                         \
+  template class type<param>;                                               \
+  template <> std::string DoGetTemplateClassName<type<param> > ()           \
+  {                                                                         \
+    return std::string ("ns3::") + std::string (#type)                      \
+           + std::string ("<") + std::string (#param) + std::string (">");  \
+  }                                                                         \
+  static struct Object ## type ## param ## RegistrationClass                \
+  {                                                                         \
+    Object ## type ## param ## RegistrationClass () {                       \
+      ns3::TypeId tid = type<param>::GetTypeId ();                          \
+      tid.SetSize (sizeof (type<param>));                                   \
+      tid.GetParent ();                                                     \
+    }                                                                       \
   } Object ## type ## param ## RegistrationVariable
+
+
+/**
+ * \ingroup object
+ * \brief Explicitly instantiate a template class with two template parameters
+ *        and register the resulting instance with the TypeId system.
+ *
+ * This macro should be invoked once for every required instance of a template
+ * class with two template parameters which derives from the Object class and
+ * defines a new GetTypeId method.
+ *
+ * If the template class is in a namespace, then the macro call should also be
+ * in the namespace.
+ *
+ * \note The type names used as arguments for this macro, being used to form a
+ * class name and a variable name, CANNOT contain the scope resolution
+ * operator (::)
+ *
+ * \tparam type the template class
+ * \tparam param1 the first template parameter
+ * \tparam param2 the second template parameter
+ */
+#define NS_OBJECT_TEMPLATE_CLASS_TWO_DEFINE(type,param1,param2)             \
+  template class type<param1,param2>;                                       \
+  template <> std::string DoGetTemplateClassName<type<param1,param2> > ()   \
+  {                                                                         \
+    return std::string ("ns3::") + std::string (#type)                      \
+           + std::string ("<") + std::string (#param1) + std::string (",")  \
+           + std::string (#param2) + std::string (">");                     \
+  }                                                                         \
+  static struct Object ## type ## param1 ## param2 ## RegistrationClass     \
+  {                                                                         \
+    Object ## type ## param1 ## param2 ## RegistrationClass () {            \
+      ns3::TypeId tid = type<param1,param2>::GetTypeId ();                  \
+      tid.SetSize (sizeof (type<param1,param2>));                           \
+      tid.GetParent ();                                                     \
+    }                                                                       \
+  } Object ## type ## param1 ## param2 ## RegistrationVariable
 
 
 namespace ns3 {
 
 /**
- * \brief Helper function to get the name (as a string) of the type parameter
+ * \brief Helper function to get the name (as a string) of the type
  *        of a template class
- * \return the name of the type parameter as a string
+ * \return the name of the type of a template class as a string
  *
  * A specialization of this function is defined by the
  * NS_OBJECT_TEMPLATE_CLASS_DEFINE macro.
  */
 template <typename T>
-std::string DoGetTypeParamName (void);
+std::string DoGetTemplateClassName (void);
 
 /**
- * \brief Helper function to get the name (as a string) of the type parameter
+ * \brief Helper function to get the name (as a string) of the type
  *        of a template class
- * \return the name of the type parameter as a string
+ * \return the name of the type of a template class as a string
  */
 template <typename T>
-std::string GetTypeParamName (void)
+std::string GetTemplateClassName (void)
 {
-  return DoGetTypeParamName<T> ();
+  return DoGetTemplateClassName<T> ();
 }
 
 class AttributeConstructionList;

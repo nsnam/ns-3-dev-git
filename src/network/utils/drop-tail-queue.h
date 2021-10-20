@@ -71,7 +71,7 @@ template <typename Item>
 TypeId
 DropTailQueue<Item>::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::DropTailQueue<" + GetTypeParamName<DropTailQueue<Item> > () + ">")
+  static TypeId tid = TypeId (GetTemplateClassName<DropTailQueue<Item>> ())
     .SetParent<Queue<Item> > ()
     .SetGroupName ("Network")
     .template AddConstructor<DropTailQueue<Item> > ()
