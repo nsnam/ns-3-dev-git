@@ -550,12 +550,6 @@ WifiMacQueue::DoDequeue (ConstIterator pos)
 {
   NS_LOG_FUNCTION (this);
 
-  if (TtlExceeded (pos, Simulator::Now ()))
-    {
-      NS_LOG_DEBUG ("Packet lifetime expired");
-      return nullptr;
-    }
-
   Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoDequeue (pos);
 
   if (item != 0 && item->GetHeader ().IsQosData ())
