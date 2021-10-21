@@ -85,13 +85,15 @@ Since NixVectorRouting is not installed by default in the
 Internet stack, it is necessary to set it in the Internet Stack 
 helper by using ``InternetStackHelper::SetRoutingHelper``.
 
-Remember to include the header file ``ns3/nix-vector-helper.h`` to
+Remember to include the header file ``ns3/nix-vector-routing-module.h`` to
 use IPv4 or IPv6 Nix-Vector routing.
 
 .. note::
-   The previous header file ``ns3/ipv4-nix-vector-helper.h`` is
-   maintained for backward compatibility reasons. Therefore, the
-   existing IPv4 Nix-Vector routing simulations should work fine.
+   The previous header files ``ns3/ipv4-nix-vector-helper.h`` and
+   ``ns3/ipv4-nix-vector-routing.h`` are deprecated and will be removed in
+   the future. These files are replaced with more generic (having IPv6
+   capabilities) ``ns3/nix-vector-helper.h`` and ``ns3/nix-vector-routing.h``
+   respectively.
 
 *  Using IPv4 Nix-Vector Routing:
 
@@ -113,10 +115,8 @@ use IPv4 or IPv6 Nix-Vector routing.
 
 .. note::
    The NixVectorHelper helper class helps to use NixVectorRouting functionality.
-   The NixVectorRouting model can also be used directly to use Nix-Vector routing.
-   To use it directly, the header file ``ns3/nix-vector-routing.h`` should be
-   included. The previous header file ``ns3/ipv4-nix-vector-routing.h`` is maintained
-   for backwards compatibility with any existing IPv4 Nix-Vector routing simulations.
+   The NixVectorRouting model class can also be used directly to use Nix-Vector routing.
+   ``ns3/nix-vector-routing-module.h`` contains the header files for both the classes.
 
 Examples
 ========
@@ -126,110 +126,119 @@ the directory ``src/nix-vector-routing/examples``.
 
 There are examples which use both IPv4 and IPv6 networking.
 
-*  nix-simple.cc
+1.  nix-simple.cc
 
-::
+   ::
 
-  /*
-   *    ________
-   *   /        \
-   * n0 -- n1 -- n2 -- n3
-   *
-   * n0 IP: 10.1.1.1, 10.1.4.1
-   * n1 IP: 10.1.1.2, 10.1.2.1
-   * n2 IP: 10.1.2.2, 10.1.3.1, 10.1.4.2
-   * n3 IP: 10.1.3.2
-   */
+     /*
+      *    ________
+      *   /        \
+      * n0 -- n1 -- n2 -- n3
+      *
+      * n0 IP: 10.1.1.1, 10.1.4.1
+      * n1 IP: 10.1.1.2, 10.1.2.1
+      * n2 IP: 10.1.2.2, 10.1.3.1, 10.1.4.2
+      * n3 IP: 10.1.3.2
+      */
 
-In this topology, we install Nix-Vector routing between source
-n0 and destination n3. The shortest possible route will be
-n0 -> n2 -> n3.
+   In this topology, we install Nix-Vector routing between source
+   n0 and destination n3. The shortest possible route will be
+   n0 -> n2 -> n3.
 
-Let's see how the nix-vector will be generated for this path:
+   Let's see how the nix-vector will be generated for this path:
 
-n0 has 2 neighbors i.e. n1 and n3. n0 is connected to both using
-separate net-devices. But the net-device for n0 -- n1 p2p link was
-created before the netdevice for n0 -- n2 p2p link. Thus, n2 has
-neighbor-index of 1 (n1 has 0) with respect to n0.
+   n0 has 2 neighbors i.e. n1 and n3. n0 is connected to both using
+   separate net-devices. But the net-device for n0 -- n1 p2p link was
+   created before the netdevice for n0 -- n2 p2p link. Thus, n2 has
+   neighbor-index of 1 (n1 has 0) with respect to n0.
 
-n2 has 3 neighbors i.e. n1, n3 and n0. The n2 net-device for n1 -- n2
-p2p link was created before the n2 net-device for n2 -- n3 p2p link
-which was before the n2 netdevice for n0 -- n2 p2p link. This, n3
-has neighbor-index of 01 (n1 has 00 and n0 has 10) with repect to n2.
+   n2 has 3 neighbors i.e. n1, n3 and n0. The n2 net-device for n1 -- n2
+   p2p link was created before the n2 net-device for n2 -- n3 p2p link
+   which was before the n2 netdevice for n0 -- n2 p2p link. This, n3
+   has neighbor-index of 01 (n1 has 00 and n0 has 10) with repect to n2.
 
-Thus, the nix-vector for the path from n0 to n3 is 101.
+   Thus, the nix-vector for the path from n0 to n3 is 101.
 
-.. note::
-   This neighbor-index or nix-index has total number of bits equal to
-   minimum number of bits required to represent all the neighbors in
-   their binary form.
+   .. note::
+      This neighbor-index or nix-index has total number of bits equal to
+      minimum number of bits required to represent all the neighbors in
+      their binary form.
 
-.. note::
-   If there are multiple netdevices connected to the current netdevice
-   on the channel then it depends on which order netdevices were added
-   to the channel.
+   .. note::
+      If there are multiple netdevices connected to the current netdevice
+      on the channel then it depends on which order netdevices were added
+      to the channel.
 
-   #. Using IPv4:
+
+   a. Using IPv4:
+
+      .. code-block:: bash
+
+         # By default IPv4 network is selected
+         ./waf --run nix-simple
+
+   b. Using IPv6:
+
+      .. code-block:: bash
+
+         # Use the --useIPv6 flag
+         ./waf --run "nix-simple --useIPv6"
+
+
+
+2. nms-p2p-nix.cc
+
+   This example demonstrates the advantage of Nix-Vector routing as Nix
+   performs source-based routing (BFS) to have faster routing.
+
+   .. image:: figures/nms.png
+      :alt: NMS P2P Network Diagram
+
+   a. Using IPv4:
+
+      .. code-block:: bash
+
+         # By default IPv4 network is selected
+         ./waf --run nms-p2p-nix
+
+   b. Using IPv6:
+
+      .. code-block:: bash
+
+         # Use the --useIPv6 flag
+         ./waf --run "nms-p2p-nix --useIPv6"
+
+3.  nix-simple-multi-address.cc
+
+   This is an IPv4 example demonstrating multiple interface addresses. This
+   example also shows how address assignment in between the simulation causes
+   the all the route caches and Nix caches to flush.
+
    .. code-block:: bash
 
       # By default IPv4 network is selected
-      ./waf --run src/nix-vector-routing/examples/nix-simple
+      ./waf --run nix-simple-multi-address
 
-   #. Using IPv6:
-   .. code-block:: bash
+4.  nix-double-wifi.cc
 
-      # Use the --useIPv6 flag
-      ./waf --run "src/nix-vector-routing/examples/nix-simple --useIPv6"
+   This example demonstrates the working of Nix with two Wifi networks
+   operating on the same Wifi channel object. The example uses ``ns3::YansWifiChannel``
+   for both the wifi networks.
 
-* nms-p2p-nix.cc
+   a. Using IPv4:
 
-This example demonstrates the advantage of Nix-Vector routing as Nix
-performs source-based routing (BFS) to have faster routing.
+      .. code-block:: bash
 
-.. image:: figures/nms.png
-   :alt: NMS P2P Network Diagram
+         # By default IPv4 network is selected
+         ./waf --run nix-double-wifi
+         # Use the --enableNixLog to enable NixVectorRouting logging.
+         ./waf --run "nix-double-wifi --enableNixLog"
 
-   #. Using IPv4:
-   .. code-block:: bash
+   b. Using IPv6:
 
-      # By default IPv4 network is selected
-      ./waf --run src/nix-vector-routing/examples/nms-p2p-nix
+      .. code-block:: bash
 
-   #. Using IPv6:
-   .. code-block:: bash
-
-      # Use the --useIPv6 flag
-      ./waf --run "src/nix-vector-routing/examples/nms-p2p-nix --useIPv6"
-
-*  nix-simple-multi-address.cc
-
-This is an IPv4 example demonstrating multiple interface addresses. This
-example also shows how address assignment in between the simulation causes
-the all the route caches and Nix caches to flush.
-
-.. code-block:: bash
-
-   # By default IPv4 network is selected
-   ./waf --run src/nix-vector-routing/examples/nix-simple-multi-address
-
-*  nix-double-wifi.cc
-
-This example demonstrates the working of Nix with two Wifi networks
-operating on the same Wifi channel object. The example uses ``ns3::YansWifiChannel``
-for both the wifi networks.
-
-   #. Using IPv4:
-   .. code-block:: bash
-
-      # By default IPv4 network is selected
-      ./waf --run src/nix-vector-routing/examples/nix-double-wifi
-      # Use the --enableNixLog to enable NixVectorRouting logging.
-      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --enableNixLog"
-
-   #. Using IPv6:
-   .. code-block:: bash
-
-      # Use the --useIPv6 flag
-      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --useIPv6"
-      # Use the --enableNixLog to enable NixVectorRouting logging.
-      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --useIPv6 --enableNixLog"
+         # Use the --useIPv6 flag
+         ./waf --run "nix-double-wifi --useIPv6"
+         # Use the --enableNixLog to enable NixVectorRouting logging.
+         ./waf --run "nix-double-wifi --useIPv6 --enableNixLog"
