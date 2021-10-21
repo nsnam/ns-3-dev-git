@@ -8005,11 +8005,6 @@ def register_Ns3Icmpv6OptionRedirected_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## icmpv6-header.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::Icmpv6OptionRedirected::GetPacket() const [member function]
-    cls.add_method('GetPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6OptionRedirected::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -8051,11 +8046,6 @@ def register_Ns3Icmpv6ParameterError_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## icmpv6-header.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::Icmpv6ParameterError::GetPacket() const [member function]
-    cls.add_method('GetPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6ParameterError::GetPtr() const [member function]
     cls.add_method('GetPtr', 
                    'uint32_t', 
@@ -8326,11 +8316,6 @@ def register_Ns3Icmpv6TimeExceeded_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## icmpv6-header.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::Icmpv6TimeExceeded::GetPacket() const [member function]
-    cls.add_method('GetPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6TimeExceeded::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -8375,11 +8360,6 @@ def register_Ns3Icmpv6TooBig_methods(root_module, cls):
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6TooBig::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## icmpv6-header.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::Icmpv6TooBig::GetPacket() const [member function]
-    cls.add_method('GetPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
                    [], 
                    is_const=True)
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6TooBig::GetSerializedSize() const [member function]
@@ -14932,11 +14912,6 @@ def register_Ns3Icmpv6DestinationUnreachable_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## icmpv6-header.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::Icmpv6DestinationUnreachable::GetPacket() const [member function]
-    cls.add_method('GetPacket', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
     ## icmpv6-header.h (module 'internet'): uint32_t ns3::Icmpv6DestinationUnreachable::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
