@@ -385,6 +385,7 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& 
         {
           m_wifiPhy->SwitchMaybeToCcaBusy (m_wifiPhy->GetMeasurementChannelWidth (nullptr));
         }
+      DropPreambleEvent (ppdu, WifiPhyRxfailureReason::POWERED_OFF, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
       return;
     }
 
@@ -395,6 +396,7 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& 
         {
           m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
         }
+      DropPreambleEvent (ppdu, WifiPhyRxfailureReason::TRUNCATED_TX, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
       return;
     }
 

@@ -267,6 +267,8 @@ enum WifiPhyRxfailureReason
   RXING,
   TXING,
   SLEEPING,
+  POWERED_OFF,
+  TRUNCATED_TX,
   BUSY_DECODING_PREAMBLE,
   PREAMBLE_DETECT_FAILURE,
   RECEPTION_ABORTED_BY_TX,
@@ -302,6 +304,10 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
         return (os << "TXING");
       case SLEEPING:
         return (os << "SLEEPING");
+      case POWERED_OFF:
+        return (os << "OFF");
+      case TRUNCATED_TX:
+        return (os << "TRUNCATED_TX");
       case BUSY_DECODING_PREAMBLE:
         return (os << "BUSY_DECODING_PREAMBLE");
       case PREAMBLE_DETECT_FAILURE:
