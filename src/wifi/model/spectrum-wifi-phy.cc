@@ -337,7 +337,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       rxPowerW.insert ({filteredBand, rxPowerPerBandW});
       NS_LOG_DEBUG ("Signal power received after antenna gain for 20 MHz channel band " << +i << ": " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
     }
-  
+
   if (GetPhyStandard () >= WIFI_PHY_STANDARD_80211ax)
     {
       NS_ASSERT (!m_ruBands[channelWidth].empty ());
@@ -356,7 +356,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   Ptr<WifiSpectrumSignalParameters> wifiRxParams = DynamicCast<WifiSpectrumSignalParameters> (rxParams);
 
   // Log the signal arrival to the trace source
-  m_signalCb (wifiRxParams ? true : false, senderNodeId, WToDbm (totalRxPowerW), rxDuration);
+  m_signalCb (wifiRxParams, senderNodeId, WToDbm (totalRxPowerW), rxDuration);
 
   if (wifiRxParams == 0)
     {

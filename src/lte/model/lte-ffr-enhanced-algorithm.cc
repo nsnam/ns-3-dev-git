@@ -48,7 +48,7 @@ static const struct FfrEnhancedDownlinkDefaultConfiguration
   uint8_t cellId; ///< cell ID
   uint8_t dlBandwidth; ///< DL bandwidth
   uint8_t dlSubBandOffset; ///< DL subband offset
-  uint8_t dlReuse3SubBandwidth; ///< reuse 3 subbandwidth 
+  uint8_t dlReuse3SubBandwidth; ///< reuse 3 subbandwidth
   uint8_t dlReuse1SubBandwidth; ///< reuse 1 subbandwidth
 } g_ffrEnhancedDownlinkDefaultConfiguration[] = {
   { 1, 25, 0, 4, 4},
@@ -695,7 +695,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo (const struct FfMacSchedSapProvider::
             }
           NS_LOG_INFO (this << " RNTI " << rnti << " RBG  " << i << " DL-CQI: " << (int)rbgCqi);
 
-          bool rbgAvailable = (rbgCqi > m_dlCqiThreshold) ? true : false;
+          bool rbgAvailable = (rbgCqi > m_dlCqiThreshold);
 
           bool isSecondarySegmentRbg = false;
           if (i < m_dlSecondarySegmentRbgMap.size ())

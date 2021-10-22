@@ -42,21 +42,21 @@ PacketSocketAddress::SetAllDevices (void)
   m_isSingleDevice = false;
   m_device = 0;
 }
-void 
+void
 PacketSocketAddress::SetSingleDevice (uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
   m_isSingleDevice = true;
   m_device = index;
 }
-void 
+void
 PacketSocketAddress::SetPhysicalAddress (const Address address)
 {
   NS_LOG_FUNCTION (this << address);
   m_address = address;
 }
 
-uint16_t 
+uint16_t
 PacketSocketAddress::GetProtocol (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -74,7 +74,7 @@ PacketSocketAddress::GetSingleDevice (void) const
   NS_LOG_FUNCTION (this);
   return m_device;
 }
-Address 
+Address
 PacketSocketAddress::GetPhysicalAddress (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -86,7 +86,7 @@ PacketSocketAddress::operator Address () const
   return ConvertTo ();
 }
 
-Address 
+Address
 PacketSocketAddress::ConvertTo (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -102,7 +102,7 @@ PacketSocketAddress::ConvertTo (void) const
   uint32_t copied = m_address.CopyAllTo (buffer + 7, Address::MAX_SIZE - 7);
   return Address (GetType (), buffer, 7 + copied);
 }
-PacketSocketAddress 
+PacketSocketAddress
 PacketSocketAddress::ConvertFrom (const Address &address)
 {
   NS_LOG_FUNCTION (address);
@@ -118,7 +118,7 @@ PacketSocketAddress::ConvertFrom (const Address &address)
   device |= buffer[4];
   device <<= 8;
   device |= buffer[5];
-  bool isSingleDevice = (buffer[6] == 1) ? true : false;
+  bool isSingleDevice = (buffer[6] == 1);
   Address physical;
   physical.CopyAllFrom (buffer + 7, Address::MAX_SIZE - 7);
   PacketSocketAddress ad;
@@ -134,13 +134,13 @@ PacketSocketAddress::ConvertFrom (const Address &address)
   ad.SetPhysicalAddress (physical);
   return ad;
 }
-bool 
+bool
 PacketSocketAddress::IsMatchingType (const Address &address)
 {
   NS_LOG_FUNCTION (address);
   return address.IsMatchingType (GetType ());
 }
-uint8_t 
+uint8_t
 PacketSocketAddress::GetType (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

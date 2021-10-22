@@ -1011,7 +1011,7 @@ LteSpectrumPhy::EndRxData ()
             }
           TbStats_t tbStats = LteMiErrorModel::GetTbDecodificationStats (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs, harqInfoList);
           (*itTb).second.mi = tbStats.mi;
-          (*itTb).second.corrupt = m_random->GetValue () > tbStats.tbler ? false : true;
+          (*itTb).second.corrupt = !(m_random->GetValue () > tbStats.tbler);
           NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " TBLER " << tbStats.tbler << " corrupted " << (*itTb).second.corrupt);
           // fire traces on DL/UL reception PHY stats
           PhyReceptionStatParameters params;
@@ -1193,7 +1193,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
   if (m_ctrlErrorModelEnabled)
     {
       double  errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
-      error = m_random->GetValue () > errorRate ? false : true;
+      error = !(m_random->GetValue () > errorRate);
       NS_LOG_DEBUG (this << " PCFICH-PDCCH Decodification, errorRate " << errorRate << " error " << error);
     }
 

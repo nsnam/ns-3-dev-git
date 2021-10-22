@@ -370,7 +370,7 @@ WifiPrimaryChannelsTest::DoSetup (void)
 
       m_apDevices.Add (wifi.Install (phy, mac, wifiApNodes.Get (bss)));
     }
-  
+
   // Assign fixed streams to random variables in use
   streamNumber = wifi.AssignStreams (m_apDevices, streamNumber);
   for (uint8_t bss = 0; bss < m_nBss; bss++)
@@ -703,8 +703,8 @@ WifiPrimaryChannelsTest::SendDlMuPpdu (uint8_t bss, uint16_t txChannelWidth, HeR
 
   for (std::size_t i = 1; i <= nRus; i++)
     {
-      std::size_t index = (txChannelWidth == 160 && i > nRus / 2 ? i - nRus / 2 : i);
-      bool primary80 = (txChannelWidth == 160 && i > nRus / 2 ? false : true);
+      bool primary80 = !(txChannelWidth == 160 && i > nRus / 2);
+      std::size_t index = (primary80 ? i : i - nRus / 2);
 
       auto staDev = DynamicCast<WifiNetDevice> (m_staDevices[bss].Get (i - 1));
       uint16_t staId = DynamicCast<StaWifiMac> (staDev->GetMac ())->GetAssociationId ();
@@ -753,8 +753,8 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu (uint8_t bss, uint16_t txChannelWidth, H
       NS_LOG_INFO ("*** BSS " << +bss << " STA " << i - 1 << " transmits on primary "
                    << txChannelWidth << " MHz channel an HE TB PPDU (RU type: " << ruType << ")");
 
-      std::size_t index = (txChannelWidth == 160 && i > nRus / 2 ? i - nRus / 2 : i);
-      bool primary80 = (txChannelWidth == 160 && i > nRus / 2 ? false : true);
+      bool primary80 = !(txChannelWidth == 160 && i > nRus / 2);
+      std::size_t index = (primary80 ? i : i - nRus / 2);
 
       auto staDev = DynamicCast<WifiNetDevice> (m_staDevices[bss].Get (i - 1));
       uint16_t staId = DynamicCast<StaWifiMac> (staDev->GetMac ())->GetAssociationId ();

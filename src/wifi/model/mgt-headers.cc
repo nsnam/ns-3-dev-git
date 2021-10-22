@@ -1581,7 +1581,7 @@ MgtAddBaRequestHeader::GetTid (void) const
 bool
 MgtAddBaRequestHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1) ? true : false;
+  return m_policy == 1;
 }
 
 uint16_t
@@ -1599,7 +1599,7 @@ MgtAddBaRequestHeader::GetBufferSize (void) const
 bool
 MgtAddBaRequestHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1) ? true : false;
+  return m_amsduSupport == 1;
 }
 
 uint16_t
@@ -1761,7 +1761,7 @@ MgtAddBaResponseHeader::GetTid (void) const
 bool
 MgtAddBaResponseHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1) ? true : false;
+  return m_policy == 1;
 }
 
 uint16_t
@@ -1779,7 +1779,7 @@ MgtAddBaResponseHeader::GetBufferSize (void) const
 bool
 MgtAddBaResponseHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1) ? true : false;
+  return m_amsduSupport == 1;
 }
 
 uint16_t
@@ -1865,7 +1865,7 @@ MgtDelBaHeader::Deserialize (Buffer::Iterator start)
 bool
 MgtDelBaHeader::IsByOriginator (void) const
 {
-  return (m_initiator == 1) ? true : false;
+  return m_initiator == 1;
 }
 
 uint8_t

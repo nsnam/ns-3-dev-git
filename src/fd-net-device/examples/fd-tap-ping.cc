@@ -19,26 +19,26 @@
 // Allow ns-3 to ping a real host somewhere, using emulation mode and ping
 // the simulated node from the host.
 //
-//   +-------------------------------------+    
+//   +-------------------------------------+
 //   |                host                 |
-//   +-------------------------------------+    
-//   |    ns-3 simulation   |              |                       
-//   +----------------------+              |    
-//   |       ns-3 Node      |              |   
-//   |  +----------------+  |              |   
-//   |  |    ns-3 TCP    |  |              |   
-//   |  +----------------+  |              |   
-//   |  |    ns-3 IPv4   |  |              |   
-//   |  +----------------+  |              |   
-//   |  |   FdNetDevice  |  |              |  
+//   +-------------------------------------+
+//   |    ns-3 simulation   |              |
+//   +----------------------+              |
+//   |       ns-3 Node      |              |
+//   |  +----------------+  |              |
+//   |  |    ns-3 TCP    |  |              |
+//   |  +----------------+  |              |
+//   |  |    ns-3 IPv4   |  |              |
+//   |  +----------------+  |              |
+//   |  |   FdNetDevice  |  |              |
 //   |--+----------------+--+    +------+  |
-//   |       | TAP  |            | eth0 |  | 
+//   |       | TAP  |            | eth0 |  |
 //   |       +------+            +------+  |
 //   |       1.2.3.4                 |     |
-//   +-------------------------------|-----+ 
+//   +-------------------------------|-----+
 //                                   |
 //                                   |                             +-------------+
-//                                   ------------ (Internet) ----- | Remote host |                            
+//                                   ------------ (Internet) ----- | Remote host |
 //                                                                 +-------------+
 //
 // To use this example:
@@ -51,8 +51,8 @@
 //     So for Linux systems, make sure to configure:
 //     # echo 1 > /proc/sys/net/ipv4/ip_forward
 //
-//     Also enable natting so the ICMP replies from the remote host can reach 
-//     back the TAP. 
+//     Also enable natting so the ICMP replies from the remote host can reach
+//     back the TAP.
 //     - TAP-network-address is the same as 'tapNetwork'
 //     - TAP-network-mask is the same as 'tapMask'
 //     # iptables -t nat -A POSTROUTING -s <TAP-network-address>/<TAP-network-mask> -j MASQUERADE
@@ -65,8 +65,8 @@
 //     # sudo chmod 4755 build/src/fd-net-device/ns3-dev-tap-device-creator
 //
 //  4)  The example can be executed as follows using waf:
-//  
-//     ./waf --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>" 
+//
+//     ./waf --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>"
 //
 
 #include "ns3/abort.h"
@@ -117,7 +117,7 @@ main (int argc, char *argv[])
   Ipv4Address tapNetwork (network.c_str ());
   Ipv4Mask tapMask (mask.c_str ());
 
-  bool modePi = ( pi == "yes" ? true : false);
+  bool modePi = (pi == "yes");
 
   //
   // Since we are using a real piece of hardware we need to use the realtime

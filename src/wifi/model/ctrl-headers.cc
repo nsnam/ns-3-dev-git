@@ -160,7 +160,7 @@ CtrlBAckRequestHeader::GetBarControl (void) const
 void
 CtrlBAckRequestHeader::SetBarControl (uint16_t bar)
 {
-  m_barAckPolicy = ((bar & 0x01) == 1) ? true : false;
+  m_barAckPolicy = ((bar & 0x01) == 1);
   if (((bar >> 1) & 0x0f) == 0x03)
     {
       m_barType.m_variant = BlockAckReqType::MULTI_TID;
@@ -244,25 +244,25 @@ CtrlBAckRequestHeader::GetStartingSequence (void) const
 bool
 CtrlBAckRequestHeader::IsBasic (void) const
 {
-  return (m_barType.m_variant == BlockAckReqType::BASIC) ? true : false;
+  return m_barType.m_variant == BlockAckReqType::BASIC;
 }
 
 bool
 CtrlBAckRequestHeader::IsCompressed (void) const
 {
-  return (m_barType.m_variant == BlockAckReqType::COMPRESSED) ? true : false;
+  return m_barType.m_variant == BlockAckReqType::COMPRESSED;
 }
 
 bool
 CtrlBAckRequestHeader::IsExtendedCompressed (void) const
 {
-  return (m_barType.m_variant == BlockAckReqType::EXTENDED_COMPRESSED) ? true : false;
+  return m_barType.m_variant == BlockAckReqType::EXTENDED_COMPRESSED;
 }
 
 bool
 CtrlBAckRequestHeader::IsMultiTid (void) const
 {
-  return (m_barType.m_variant == BlockAckReqType::MULTI_TID) ? true : false;
+  return m_barType.m_variant == BlockAckReqType::MULTI_TID;
 }
 
 
@@ -503,7 +503,7 @@ CtrlBAckResponseHeader::SetStartingSequence (uint16_t seq, std::size_t index)
 bool
 CtrlBAckResponseHeader::MustSendHtImmediateAck (void) const
 {
-  return (m_baAckPolicy) ? true : false;
+  return m_baAckPolicy;
 }
 
 uint8_t
@@ -539,31 +539,31 @@ CtrlBAckResponseHeader::GetStartingSequence (std::size_t index) const
 bool
 CtrlBAckResponseHeader::IsBasic (void) const
 {
-  return (m_baType.m_variant == BlockAckType::BASIC) ? true : false;
+  return m_baType.m_variant == BlockAckType::BASIC;
 }
 
 bool
 CtrlBAckResponseHeader::IsCompressed (void) const
 {
-  return (m_baType.m_variant == BlockAckType::COMPRESSED) ? true : false;
+  return m_baType.m_variant == BlockAckType::COMPRESSED;
 }
 
 bool
 CtrlBAckResponseHeader::IsExtendedCompressed (void) const
 {
-  return (m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED) ? true : false;
+  return m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED;
 }
 
 bool
 CtrlBAckResponseHeader::IsMultiTid (void) const
 {
-  return (m_baType.m_variant == BlockAckType::MULTI_TID) ? true : false;
+  return m_baType.m_variant == BlockAckType::MULTI_TID;
 }
 
 bool
 CtrlBAckResponseHeader::IsMultiSta (void) const
 {
-  return (m_baType.m_variant == BlockAckType::MULTI_STA) ? true : false;
+  return m_baType.m_variant == BlockAckType::MULTI_STA;
 }
 
 void
@@ -679,7 +679,7 @@ CtrlBAckResponseHeader::GetBaControl (void) const
 void
 CtrlBAckResponseHeader::SetBaControl (uint16_t ba)
 {
-  m_baAckPolicy = ((ba & 0x01) == 1) ? true : false;
+  m_baAckPolicy = ((ba & 0x01) == 1);
   if (((ba >> 1) & 0x0f) == 0x03)
     {
       SetType (BlockAckType::MULTI_TID);
@@ -963,7 +963,7 @@ CtrlBAckResponseHeader::IsPacketReceived (uint16_t seq, std::size_t index) const
         {
           uint16_t i = IndexInBitmap (seq, index);
           uint8_t mask = uint8_t (0x01) << (i % 8);
-          return ((m_baInfo[index].m_bitmap[i / 8] & mask) != 0) ? true : false;
+          return (m_baInfo[index].m_bitmap[i / 8] & mask) != 0;
         }
       case BlockAckType::MULTI_TID:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
@@ -986,7 +986,7 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        return ((m_baInfo[0].m_bitmap[IndexInBitmap (seq) * 2 + frag / 8] & (0x01 << (frag % 8))) != 0) ? true : false;
+        return (m_baInfo[0].m_bitmap[IndexInBitmap (seq) * 2 + frag / 8] & (0x01 << (frag % 8))) != 0;
       case BlockAckType::COMPRESSED:
       case BlockAckType::EXTENDED_COMPRESSED:
       case BlockAckType::MULTI_STA:

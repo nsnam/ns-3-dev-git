@@ -99,7 +99,7 @@ bool
 HeapScheduler::IsRoot (std::size_t id) const
 {
   NS_LOG_FUNCTION (this << id);
-  return (id == Root ()) ? true : false;
+  return (id == Root ());
 }
 
 std::size_t
@@ -114,7 +114,7 @@ bool
 HeapScheduler::IsBottom (std::size_t id) const
 {
   NS_LOG_FUNCTION (this << id);
-  return (id >= m_heap.size ()) ? true : false;
+  return (id >= m_heap.size ());
 }
 
 void
@@ -146,7 +146,7 @@ bool
 HeapScheduler::IsEmpty (void) const
 {
   NS_LOG_FUNCTION (this);
-  return (m_heap.size () == 1) ? true : false;
+  return (m_heap.size () == 1);
 }
 
 void

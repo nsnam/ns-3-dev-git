@@ -72,12 +72,12 @@ LteRlcAmHeader::SetControlPdu (uint8_t controlPduType)
 bool
 LteRlcAmHeader::IsDataPdu (void) const
 {
-  return (m_dataControlBit == DATA_PDU) ? true : false;
+  return m_dataControlBit == DATA_PDU;
 }
 bool
 LteRlcAmHeader::IsControlPdu (void) const
 {
-  return (m_dataControlBit == CONTROL_PDU) ? true : false;
+  return m_dataControlBit == CONTROL_PDU;
 }
 
 void
@@ -261,7 +261,7 @@ LteRlcAmHeader::IsNackPresent (SequenceNumber10 nack)
           return true;
         }
     }
-  return false;  
+  return false;
 }
 
 int
@@ -357,7 +357,7 @@ LteRlcAmHeader::Print (std::ostream &os)  const
           it3++;
         }
 
- 
+
     }
 }
 
@@ -428,7 +428,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
       // note: second part of ackSn will be written later
 
       // serialize the NACKs
-      if ( it3 == m_nackSnList.end () ) 
+      if ( it3 == m_nackSnList.end () )
         {
           NS_LOG_LOGIC (this << " no NACKs");
            // If there are no NACKs then this line adds the rest of the ACK
@@ -569,7 +569,7 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
 
       if (m_resegmentationFlag == SEGMENT)
         {
-          m_lastOffset = m_segmentOffset + start.GetSize () - m_headerLength; 
+          m_lastOffset = m_segmentOffset + start.GetSize () - m_headerLength;
         }
     }
   else // if ( m_dataControlBit == CONTROL_PDU )

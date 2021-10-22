@@ -174,7 +174,7 @@ HtPpdu::HtSigHeader::SetAggregation (bool aggregation)
 bool
 HtPpdu::HtSigHeader::GetAggregation (void) const
 {
-  return m_aggregation ? true : false;
+  return m_aggregation;
 }
 
 void
@@ -186,7 +186,7 @@ HtPpdu::HtSigHeader::SetShortGuardInterval (bool sgi)
 bool
 HtPpdu::HtSigHeader::GetShortGuardInterval (void) const
 {
-  return m_sgi ? true : false;
+  return m_sgi;
 }
 
 void

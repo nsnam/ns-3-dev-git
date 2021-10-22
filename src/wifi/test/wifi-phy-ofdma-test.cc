@@ -499,13 +499,13 @@ TestDlOfdmaPhyTransmission::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2)
     {
       NS_ASSERT_MSG (false, "Unsupported channel width");
     }
-  
+
   HeRu::RuSpec ru1 (ruType, 1, true);
   txVector.SetRu (ru1, rxStaId1);
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector.SetNss (1, rxStaId1);
 
-  HeRu::RuSpec ru2 (ruType, (m_channelWidth == 160 ? 1 : 2), (m_channelWidth == 160 ? false : true));
+  HeRu::RuSpec ru2 (ruType, (m_channelWidth == 160 ? 1 : 2), m_channelWidth != 160);
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
@@ -650,7 +650,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   spectrumChannel->AddPropagationLossModel (lossModel);
   Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
   spectrumChannel->SetPropagationDelayModel (delayModel);
-  
+
   Ptr<Node> apNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
   m_phyAp = CreateObject<SpectrumWifiPhy> ();
@@ -2125,7 +2125,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   spectrumChannel->AddPropagationLossModel (lossModel);
   Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
   spectrumChannel->SetPropagationDelayModel (delayModel);
-  
+
   Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel = CreateObject<ThresholdPreambleDetectionModel> ();
   preambleDetectionModel->SetAttribute ("MinimumRssi", DoubleValue (-8)); //to ensure that transmission in neighboring channel is ignored (16 dBm baseline)
   preambleDetectionModel->SetAttribute ("Threshold", DoubleValue (-100)); //no limit on SNR

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
@@ -30,7 +30,7 @@
 #include "ns3/log.h"
 #include "ns3/build-profile.h"
 //
-// This file is used as part of the ns-3 test framework, so please refrain from 
+// This file is used as part of the ns-3 test framework, so please refrain from
 // adding any ns-3 specific constructs such as Packet to this file.
 //
 
@@ -53,7 +53,7 @@ PcapFile::PcapFile ()
     m_nanosecMode (false)
 {
   NS_LOG_FUNCTION (this);
-  FatalImpl::RegisterStream (&m_file); 
+  FatalImpl::RegisterStream (&m_file);
 }
 
 PcapFile::~PcapFile ()
@@ -64,19 +64,19 @@ PcapFile::~PcapFile ()
 }
 
 
-bool 
+bool
 PcapFile::Fail (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_file.fail ();
 }
-bool 
+bool
 PcapFile::Eof (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_file.eof ();
 }
-void 
+void
 PcapFile::Clear (void)
 {
   NS_LOG_FUNCTION (this);
@@ -168,7 +168,7 @@ PcapFile::Swap (uint16_t val)
   return ((val >> 8) & 0x00ff) | ((val << 8) & 0xff00);
 }
 
-uint32_t 
+uint32_t
 PcapFile::Swap (uint32_t val)
 {
   NS_LOG_FUNCTION (this << val);
@@ -207,7 +207,7 @@ PcapFile::WriteFileHeader (void)
   // at the start of the file.
   //
   m_file.seekp (0, std::ios::beg);
- 
+
   //
   // We have the ability to write out the pcap file header in a foreign endian
   // format, so we need a temp place to swap on the way out.
@@ -274,7 +274,7 @@ PcapFile::ReadAndVerifyFileHeader (void)
   // swapped versions of the standard magic number, and normal and byte swapped
   // versions of the magic number indicating nanosecond resolution timestamps.
   //
-  if (m_fileHeader.m_magicNumber != MAGIC && m_fileHeader.m_magicNumber != SWAPPED_MAGIC && 
+  if (m_fileHeader.m_magicNumber != MAGIC && m_fileHeader.m_magicNumber != SWAPPED_MAGIC &&
       m_fileHeader.m_magicNumber != NS_MAGIC && m_fileHeader.m_magicNumber != NS_SWAPPED_MAGIC)
     {
       m_file.setstate (std::ios::failbit);
@@ -284,8 +284,8 @@ PcapFile::ReadAndVerifyFileHeader (void)
   // If the magic number is swapped, then we can assume that everything else we read
   // is swapped.
   //
-  m_swapMode = (m_fileHeader.m_magicNumber == SWAPPED_MAGIC 
-                || m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC) ? true : false;
+  m_swapMode = (m_fileHeader.m_magicNumber == SWAPPED_MAGIC
+                || m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC);
 
   if (m_swapMode)
     {
@@ -296,7 +296,7 @@ PcapFile::ReadAndVerifyFileHeader (void)
   // Timestamps can either be microsecond or nanosecond
   //
   m_nanosecMode = ((m_fileHeader.m_magicNumber == NS_MAGIC) ||
-                   (m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC)) ? true : false;
+                   (m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC));
 
   //
   // We only deal with one version of the pcap file format.
@@ -307,7 +307,7 @@ PcapFile::ReadAndVerifyFileHeader (void)
     }
 
   //
-  // A quick test of reasonablness for the time zone offset corresponding to 
+  // A quick test of reasonablness for the time zone offset corresponding to
   // a real place on the planet.
   //
   if (m_fileHeader.m_zone < -12 || m_fileHeader.m_zone > 12)
@@ -439,7 +439,7 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, ui
   NS_BUILD_DEBUG(m_file.flush());
 }
 
-void 
+void
 PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << tsSec << tsUsec << p);
@@ -448,7 +448,7 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p)
   NS_BUILD_DEBUG(m_file.flush());
 }
 
-void 
+void
 PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, const Header &header, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (this << tsSec << tsUsec << &header << p);
@@ -467,11 +467,11 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, const Header &header, Ptr<cons
 
 void
 PcapFile::Read (
-  uint8_t * const data, 
+  uint8_t * const data,
   uint32_t maxBytes,
-  uint32_t &tsSec, 
-  uint32_t &tsUsec, 
-  uint32_t &inclLen, 
+  uint32_t &tsSec,
+  uint32_t &tsUsec,
+  uint32_t &inclLen,
   uint32_t &origLen,
   uint32_t &readLen)
 {
@@ -505,7 +505,7 @@ PcapFile::Read (
   origLen = header.m_origLen;
 
   //
-  // We don't always want to force the client to keep a maximum length buffer 
+  // We don't always want to force the client to keep a maximum length buffer
   // around so we allow her to specify a minimum number of bytes to read.
   // Usually 64 bytes is enough information to print all of the headers, so
   // it isn't typically necessary to read all thousand bytes of an echo packet,
@@ -525,7 +525,7 @@ PcapFile::Read (
 }
 
 bool
-PcapFile::Diff (std::string const & f1, std::string const & f2, 
+PcapFile::Diff (std::string const & f1, std::string const & f2,
                 uint32_t & sec, uint32_t & usec, uint32_t & packets,
                 uint32_t snapLen)
 {
@@ -570,7 +570,7 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
         }
 
       ++packets;
-      
+
       if (tsSec1 != tsSec2 || tsUsec1 != tsUsec2)
         {
           diff = true; // Next packet timestamps do not match

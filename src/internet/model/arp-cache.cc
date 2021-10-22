@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("ArpCache");
 
 NS_OBJECT_ENSURE_REGISTERED (ArpCache);
 
-TypeId 
+TypeId
 ArpCache::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpCache")
@@ -85,7 +85,7 @@ ArpCache::GetTypeId (void)
 }
 
 ArpCache::ArpCache ()
-  : m_device (0), 
+  : m_device (0),
     m_interface (0)
 {
   NS_LOG_FUNCTION (this);
@@ -96,7 +96,7 @@ ArpCache::~ArpCache ()
   NS_LOG_FUNCTION (this);
 }
 
-void 
+void
 ArpCache::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
@@ -132,19 +132,19 @@ ArpCache::GetInterface (void) const
   return m_interface;
 }
 
-void 
+void
 ArpCache::SetAliveTimeout (Time aliveTimeout)
 {
   NS_LOG_FUNCTION (this << aliveTimeout);
   m_aliveTimeout = aliveTimeout;
 }
-void 
+void
 ArpCache::SetDeadTimeout (Time deadTimeout)
 {
   NS_LOG_FUNCTION (this << deadTimeout);
   m_deadTimeout = deadTimeout;
 }
-void 
+void
 ArpCache::SetWaitReplyTimeout (Time waitReplyTimeout)
 {
   NS_LOG_FUNCTION (this << waitReplyTimeout);
@@ -170,7 +170,7 @@ ArpCache::GetWaitReplyTimeout (void) const
   return m_waitReplyTimeout;
 }
 
-void 
+void
 ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
                                           Ipv4Address> arpRequestCallback)
 {
@@ -178,7 +178,7 @@ ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
   m_arpRequestCallback = arpRequestCallback;
 }
 
-void 
+void
 ArpCache::StartWaitReplyTimer (void)
 {
   NS_LOG_FUNCTION (this);
@@ -186,7 +186,7 @@ ArpCache::StartWaitReplyTimer (void)
     {
       NS_LOG_LOGIC ("Starting WaitReplyTimer at " << Simulator::Now () << " for " <<
                     m_waitReplyTimeout);
-      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
+      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout,
                                               &ArpCache::HandleWaitReplyTimeout, this);
     }
 }
@@ -197,7 +197,7 @@ ArpCache::HandleWaitReplyTimeout (void)
   NS_LOG_FUNCTION (this);
   ArpCache::Entry* entry;
   bool restartWaitReplyTimer = false;
-  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
     {
       entry = (*i).second;
       if (entry != 0 && entry->IsWaitReply ())
@@ -235,16 +235,16 @@ ArpCache::HandleWaitReplyTimeout (void)
   if (restartWaitReplyTimer)
     {
       NS_LOG_LOGIC ("Restarting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
-      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
+      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout,
                                               &ArpCache::HandleWaitReplyTimeout, this);
     }
 }
 
-void 
+void
 ArpCache::Flush (void)
 {
   NS_LOG_FUNCTION (this);
-  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
     {
       delete (*i).second;
     }
@@ -342,7 +342,7 @@ void
 ArpCache::Remove (ArpCache::Entry *entry)
 {
   NS_LOG_FUNCTION (this << entry);
-  
+
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
     {
       if ((*i).second == entry)
@@ -365,34 +365,34 @@ ArpCache::Entry::Entry (ArpCache *arp)
 }
 
 
-bool 
+bool
 ArpCache::Entry::IsDead (void)
 {
   NS_LOG_FUNCTION (this);
-  return (m_state == DEAD) ? true : false;
+  return (m_state == DEAD);
 }
-bool 
+bool
 ArpCache::Entry::IsAlive (void)
 {
   NS_LOG_FUNCTION (this);
-  return (m_state == ALIVE) ? true : false;
+  return (m_state == ALIVE);
 }
 bool
 ArpCache::Entry::IsWaitReply (void)
 {
   NS_LOG_FUNCTION (this);
-  return (m_state == WAIT_REPLY) ? true : false;
+  return (m_state == WAIT_REPLY);
 }
 bool
 ArpCache::Entry::IsPermanent (void)
 {
   NS_LOG_FUNCTION (this);
-  return (m_state == PERMANENT) ? true : false;
+  return (m_state == PERMANENT);
 }
 
 
-void 
-ArpCache::Entry::MarkDead (void) 
+void
+ArpCache::Entry::MarkDead (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_state == ALIVE || m_state == WAIT_REPLY || m_state == DEAD);
@@ -401,7 +401,7 @@ ArpCache::Entry::MarkDead (void)
   UpdateSeen ();
 }
 void
-ArpCache::Entry::MarkAlive (Address macAddress) 
+ArpCache::Entry::MarkAlive (Address macAddress)
 {
   NS_LOG_FUNCTION (this << macAddress);
   NS_ASSERT (m_state == WAIT_REPLY);
@@ -436,7 +436,7 @@ ArpCache::Entry::UpdateWaitReply (Ipv4PayloadHeaderPair waiting)
   m_pending.push_back (waiting);
   return true;
 }
-void 
+void
 ArpCache::Entry::MarkWaitReply (Ipv4PayloadHeaderPair waiting)
 {
   NS_LOG_FUNCTION (this << waiting.first);
@@ -456,13 +456,13 @@ ArpCache::Entry::GetMacAddress (void) const
   NS_LOG_FUNCTION (this);
   return m_macAddress;
 }
-void 
+void
 ArpCache::Entry::SetMacAddress (Address macAddress)
 {
   NS_LOG_FUNCTION (this);
   m_macAddress = macAddress;
 }
-Ipv4Address 
+Ipv4Address
 ArpCache::Entry::GetIpv4Address (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -493,17 +493,17 @@ ArpCache::Entry::GetTimeout (void) const
       /* NOTREACHED */
     }
 }
-bool 
+bool
 ArpCache::Entry::IsExpired (void) const
 {
   NS_LOG_FUNCTION (this);
   Time timeout = GetTimeout ();
   Time delta = Simulator::Now () - m_lastSeen;
   NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
-  if (delta > timeout) 
+  if (delta > timeout)
     {
       return true;
-    } 
+    }
   return false;
 }
 ArpCache::Ipv4PayloadHeaderPair
@@ -522,13 +522,13 @@ ArpCache::Entry::DequeuePending (void)
       return p;
     }
 }
-void 
+void
 ArpCache::Entry::ClearPendingPacket (void)
 {
   NS_LOG_FUNCTION (this);
   m_pending.clear ();
 }
-void 
+void
 ArpCache::Entry::UpdateSeen (void)
 {
   NS_LOG_FUNCTION (this);

@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("ArpHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (ArpHeader);
 
-void 
+void
 ArpHeader::SetRequest (Address sourceHardwareAddress,
                        Ipv4Address sourceProtocolAddress,
                        Address destinationHardwareAddress,
@@ -42,7 +42,7 @@ ArpHeader::SetRequest (Address sourceHardwareAddress,
   m_ipv4Source = sourceProtocolAddress;
   m_ipv4Dest = destinationProtocolAddress;
 }
-void 
+void
 ArpHeader::SetReply (Address sourceHardwareAddress,
                      Ipv4Address sourceProtocolAddress,
                      Address destinationHardwareAddress,
@@ -55,37 +55,37 @@ ArpHeader::SetReply (Address sourceHardwareAddress,
   m_ipv4Source = sourceProtocolAddress;
   m_ipv4Dest = destinationProtocolAddress;
 }
-bool 
+bool
 ArpHeader::IsRequest (void) const
 {
   NS_LOG_FUNCTION (this);
-  return (m_type == ARP_TYPE_REQUEST) ? true : false;
+  return m_type == ARP_TYPE_REQUEST;
 }
-bool 
+bool
 ArpHeader::IsReply (void) const
 {
   NS_LOG_FUNCTION (this);
-  return (m_type == ARP_TYPE_REPLY) ? true : false;
+  return m_type == ARP_TYPE_REPLY;
 }
-Address 
+Address
 ArpHeader::GetSourceHardwareAddress (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_macSource;
 }
-Address 
+Address
 ArpHeader::GetDestinationHardwareAddress (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_macDest;
 }
-Ipv4Address 
+Ipv4Address
 ArpHeader::GetSourceIpv4Address (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_ipv4Source;
 }
-Ipv4Address 
+Ipv4Address
 ArpHeader::GetDestinationIpv4Address (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -93,7 +93,7 @@ ArpHeader::GetDestinationIpv4Address (void) const
 }
 
 
-TypeId 
+TypeId
 ArpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpHeader")
@@ -103,28 +103,28 @@ ArpHeader::GetTypeId (void)
   ;
   return tid;
 }
-TypeId 
+TypeId
 ArpHeader::GetInstanceTypeId (void) const
 {
   NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
-void 
+void
 ArpHeader::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
-  if (IsRequest ()) 
+  if (IsRequest ())
     {
       os << "request "
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest ipv4: " << m_ipv4Dest
       ;
-    } 
-  else 
+    }
+  else
     {
       NS_ASSERT (IsReply ());
-      os << "reply " 
+      os << "reply "
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest mac: " << m_macDest << " "
@@ -132,7 +132,7 @@ ArpHeader::Print (std::ostream &os) const
       ;
     }
 }
-uint32_t 
+uint32_t
 ArpHeader::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -178,7 +178,7 @@ ArpHeader::Deserialize (Buffer::Iterator start)
   //
   // It is implicit here that we have a protocol type of 0x800 (IP).
   // It is also implicit here that we are using Ipv4 (PLN == 4).
-  // If this isn't the case, we need to return an error since we don't want to 
+  // If this isn't the case, we need to return an error since we don't want to
   // be too fragile if we get connected to real networks.
   //
   if (protocolType != 0x800 || protocolAddressLen != 4)

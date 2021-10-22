@@ -740,19 +740,19 @@ WifiMacHeader::IsMultihopAction (void) const
 bool
 WifiMacHeader::IsBlockAckReq (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_BACKREQ) ? true : false;
+  return (GetType () == WIFI_MAC_CTL_BACKREQ);
 }
 
 bool
 WifiMacHeader::IsBlockAck (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_BACKRESP) ? true : false;
+  return (GetType () == WIFI_MAC_CTL_BACKRESP);
 }
 
 bool
 WifiMacHeader::IsTrigger (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_TRIGGER) ? true : false;
+  return (GetType () == WIFI_MAC_CTL_TRIGGER);
 }
 
 uint16_t

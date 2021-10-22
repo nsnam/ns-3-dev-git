@@ -219,7 +219,7 @@ VhtPpdu::VhtSigHeader::SetShortGuardInterval (bool sgi)
 bool
 VhtPpdu::VhtSigHeader::GetShortGuardInterval (void) const
 {
-  return m_sgi ? true : false;
+  return m_sgi;
 }
 
 void
@@ -231,7 +231,7 @@ VhtPpdu::VhtSigHeader::SetShortGuardIntervalDisambiguation (bool disambiguation)
 bool
 VhtPpdu::VhtSigHeader::GetShortGuardIntervalDisambiguation (void) const
 {
-  return m_sgi_disambiguation ? true : false;
+  return m_sgi_disambiguation;
 }
 
 void

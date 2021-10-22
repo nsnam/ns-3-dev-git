@@ -138,7 +138,7 @@ EnumChecker::Check (const AttributeValue &value) const
   auto pvalue = p->Get ();
   auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
                           [pvalue] (Value v) { return v.first == pvalue; } );
-  return (it != m_valueSet.end ()) ? true : false;
+  return (it != m_valueSet.end ());
 }
 std::string
 EnumChecker::GetValueTypeName (void) const

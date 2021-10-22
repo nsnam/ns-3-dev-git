@@ -137,13 +137,13 @@ BlockAckAgreement::GetStartingSequenceControl (void) const
 bool
 BlockAckAgreement::IsImmediateBlockAck (void) const
 {
-  return (m_blockAckPolicy == 1);
+  return m_blockAckPolicy == 1;
 }
 
 bool
 BlockAckAgreement::IsAmsduSupported (void) const
 {
-  return (m_amsduSupported == 1) ? true : false;
+  return m_amsduSupported == 1;
 }
 
 uint16_t
@@ -162,7 +162,7 @@ BlockAckAgreement::SetHtSupported (bool htSupported)
 bool
 BlockAckAgreement::IsHtSupported (void) const
 {
-  return (m_htSupported == 1) ? true : false;
+  return m_htSupported == 1;
 }
 
 BlockAckType
