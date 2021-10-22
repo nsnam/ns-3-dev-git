@@ -41,7 +41,7 @@ typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> Wifi
  * \ingroup wifi
  *
  * This class is used to handle the timer that a station starts when transmitting
- * a frame that solicits a response. The timeout can be rescheduled (only once)
+ * a frame that solicits a response. The timeout can be rescheduled (multiple times)
  * when the RXSTART.indication is received from the PHY.
  */
 class WifiTxTimer
@@ -88,8 +88,7 @@ public:
 
   /**
    * Reschedule the timer to time out the given amount of time from the moment
-   * this function is called. Note that the timer must be running and must not
-   * have been already rescheduled.
+   * this function is called. Note that nothing is done if the timer is not running.
    *
    * \param delay the time to the expiration of the timer
    */
@@ -186,6 +185,11 @@ private:
   void Timeout (MEM mem_ptr, OBJ obj, Args... args);
 
   /**
+   * Internal callback invoked when the timer expires.
+   */
+  void Expire (void);
+
+  /**
    * This method is called when the timer expires to feed the MPDU response
    * timeout callback.
    *
@@ -216,8 +220,9 @@ private:
 
   EventId m_timeoutEvent;         //!< the timeout event after a missing response
   Reason m_reason;                //!< the reason why the timer was started
-  Ptr<EventImpl> m_endRxEvent;       //!< event to schedule upon RXSTART.indication
-  bool m_rescheduled;             //!< whether the timer has been already rescheduled
+  Ptr<EventImpl> m_impl;          /**< the timer implementation, which contains the bound
+                                       callback function and arguments */
+  Time m_end;                     //!< the absolute time when the timer will expire
 
   /// the MPDU response timeout callback
   mutable MpduResponseTimeout m_mpduResponseTimeoutCallback;
@@ -242,13 +247,13 @@ WifiTxTimer::Set (Reason reason, const Time &delay, MEM mem_ptr, OBJ obj, Args..
 {
   typedef void (WifiTxTimer::*TimeoutType)(MEM, OBJ, Args...);
 
-  m_timeoutEvent = Simulator::Schedule<TimeoutType> (delay, &WifiTxTimer::Timeout, this, mem_ptr, obj, args...);
+  m_timeoutEvent = Simulator::Schedule (delay, &WifiTxTimer::Expire, this);
   m_reason = reason;
-  m_rescheduled = false;
+  m_end = Simulator::Now () + delay;
 
-  // create an event to schedule if the PHY notifies the reception of a response
-  m_endRxEvent = Ptr<EventImpl> (MakeEvent<TimeoutType> (&WifiTxTimer::Timeout, this, mem_ptr, obj,
-                                                      std::forward<Args> (args)... ), false);
+  // create an event to invoke when the timer expires
+  m_impl = Ptr<EventImpl> (MakeEvent<TimeoutType> (&WifiTxTimer::Timeout, this, mem_ptr, obj,
+                                                   std::forward<Args> (args)... ), false);
 }
 
 template<typename MEM, typename OBJ, typename... Args>

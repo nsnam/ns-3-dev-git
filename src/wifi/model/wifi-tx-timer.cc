@@ -30,15 +30,17 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiTxTimer");
 
 WifiTxTimer::WifiTxTimer ()
-  : m_reason (NOT_RUNNING),
-    m_rescheduled (false)
+  : m_timeoutEvent (),
+    m_reason (NOT_RUNNING),
+    m_impl (nullptr),
+    m_end (Seconds (0))
 {
 }
 
 WifiTxTimer::~WifiTxTimer ()
 {
   m_timeoutEvent.Cancel ();
-  m_endRxEvent = 0;
+  m_impl = 0;
 }
 
 void
@@ -46,13 +48,38 @@ WifiTxTimer::Reschedule (const Time& delay)
 {
   NS_LOG_FUNCTION (this << delay);
 
-  if (m_timeoutEvent.IsRunning () && !m_rescheduled)
+  if (m_timeoutEvent.IsRunning ())
     {
       NS_LOG_DEBUG ("Rescheduling " << GetReasonString (m_reason) << " timeout in "
                     << delay.As (Time::US));
-      m_timeoutEvent.Cancel ();
-      m_timeoutEvent = Simulator::Schedule (delay, m_endRxEvent);
-      m_rescheduled = true;
+      Time end = Simulator::Now () + delay;
+      // If timer expiration is postponed, we have to do nothing but updating
+      // the timer expiration, because Expire() will reschedule itself to be
+      // executed at the correct time. If timer expiration is moved up, we
+      // have to reschedule Expire() (which would be executed too late otherwise)
+      if (end < m_end)
+        {
+          // timer expiration is moved up
+          m_timeoutEvent.Cancel ();
+          m_timeoutEvent = Simulator::Schedule (delay, &WifiTxTimer::Expire, this);
+        }
+      m_end = end;
+    }
+}
+
+void
+WifiTxTimer::Expire (void)
+{
+  NS_LOG_FUNCTION (this);
+  Time now = Simulator::Now ();
+
+  if (m_end == now)
+    {
+      m_impl->Invoke ();
+    }
+  else
+    {
+      m_timeoutEvent = Simulator::Schedule (m_end - now, &WifiTxTimer::Expire, this);
     }
 }
 
@@ -101,7 +128,7 @@ WifiTxTimer::Cancel (void)
 {
   NS_LOG_FUNCTION (this << GetReasonString (m_reason));
   m_timeoutEvent.Cancel ();
-  m_endRxEvent = 0;
+  m_impl = 0;
 }
 
 Time
