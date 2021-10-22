@@ -763,6 +763,14 @@ protected:
   uint16_t GetCenterFrequencyForChannelWidth (const WifiTxVector& txVector) const;
 
   /**
+   * Fire the trace indicating that the PHY is starting to receive the payload of a PPDU.
+   *
+   * \param txVector the TXVECTOR used to transmit the PPDU
+   * \param payloadDuration the TX duration of the PPDU payload
+   */
+  void NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payloadDuration);
+
+  /**
    * \param currentChannelWidth channel width of the current transmission (MHz)
    * \return the width of the guard band (MHz)
    *

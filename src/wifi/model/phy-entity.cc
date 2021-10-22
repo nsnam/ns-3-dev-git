@@ -1033,6 +1033,12 @@ PhyEntity::GetCenterFrequencyForChannelWidth (const WifiTxVector& txVector) cons
 }
 
 void
+PhyEntity::NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payloadDuration)
+{
+  m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, payloadDuration);
+}
+
+void
 PhyEntity::StartTx (Ptr<WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);

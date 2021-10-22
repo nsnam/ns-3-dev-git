@@ -714,6 +714,8 @@ HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
   m_endRxPayloadEvents.push_back (Simulator::Schedule (payloadDuration, &PhyEntity::EndReceivePayload, this, event));
   m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), SignalNoiseDbm ()});
   m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), std::vector<bool> ()});
+  // Notify the MAC about the start of a new HE TB PPDU, so that it can reschedule the timeout
+  NotifyPayloadBegin (ppdu->GetTxVector (), payloadDuration);
 }
 
 std::pair<uint16_t, WifiSpectrumBand>
