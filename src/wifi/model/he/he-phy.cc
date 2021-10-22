@@ -434,23 +434,10 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowers
         {
           NS_LOG_DEBUG ("Received another HE TB PPDU for UID " << ppdu->GetUid () << " from STA-ID " << ppdu->GetStaId () << " and BSS color " << +txVector.GetBssColor ());
           event = it->second;
-          if (Simulator::Now () - event->GetStartTime () > NanoSeconds (400))
-            {
-              //Section 27.3.14.3 from 802.11ax Draft 4.0: Pre-correction accuracy requirements.
-              //A STA that transmits an HE TB PPDU, non-HT PPDU, or non-HT duplicate PPDU in response to a triggering PPDU
-              //shall ensure that the transmission start time of the HE TB PPDU, non-HT PPDU, or non-HT duplicate PPDU is
-              //within ±0.4 µs + 16 µs from the end, at the STA’s antenna connector, of the last OFDM symbol of the triggering
-              //PPDU (if it contains no PE field) or of the PE field of the triggering PPDU (if the PE field is present).
-              //As a result, if an HE TB PPDU arrives later than 0.4 µs, it is added as an interference but PPDU is dropped.
-              event = CreateInterferenceEvent (ppdu, txVector, rxDuration, rxPowersW);
-              NS_LOG_DEBUG ("Drop packet because not received within the 400ns window");
-              m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), HE_TB_PPDU_TOO_LATE);
-            }
-          else
-            {
-              //Update received power of the event associated to that UL MU transmission
-              UpdateInterferenceEvent (event, rxPowersW);
-            }
+
+          //Update received power of the event associated to that UL MU transmission
+          UpdateInterferenceEvent (event, rxPowersW);
+
           if ((GetCurrentEvent () != 0) && (GetCurrentEvent ()->GetPpdu ()->GetUid () != ppdu->GetUid ()))
             {
               NS_LOG_DEBUG ("Drop packet because already receiving another HE TB PPDU");

@@ -1608,16 +1608,14 @@ TestMultipleHeTbPreambles::DoRun (void)
 
   {
     //Verify the correct reception of a single UL MU transmission with two stations belonging to the same BSS,
-    //and the second PPDU arrives 500ns after the first PPDU, i.e. it exceeds the delay spread of 400ns
+    //and the second PPDU arrives 500ns after the first PPDU
     std::vector<uint64_t> uids {9};
     Simulator::Schedule (Seconds (6), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
     Simulator::Schedule (Seconds (6) + NanoSeconds (500), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
     //Check that we received a single UL MU transmission with the corresponding UID
     Simulator::Schedule (Seconds (6.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, uids);
-    //The first packet of 1001 bytes should be dropped because preamble is not detected after 4us (because the PPDU that arrived at 500ns is interfering):
-    //the second HE TB PPDU is acting as interference since it arrived after the maximum allowed 400ns.
-    //Obviously, that second packet of 1002 bytes is dropped as well.
-    Simulator::Schedule (Seconds (6.0) + MicroSeconds (5), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 1001 + 1002);
+    //No packet is dropped (we check after 5us to verify that PD is successful)
+    Simulator::Schedule (Seconds (6.0) + MicroSeconds (5), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 0);
     Simulator::Schedule (Seconds (6.5), &TestMultipleHeTbPreambles::Reset, this);
   }
 
