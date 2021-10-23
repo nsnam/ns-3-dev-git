@@ -68,7 +68,7 @@ with open("VERSION", "rt") as f:
     VERSION = f.read().strip()
 APPNAME = 'ns'
 
-wutils.VERSION = VERSION
+wutils.VERSION = VERSION.replace(".", "-")
 wutils.APPNAME = APPNAME
 
 # we don't use VNUM anymore (see bug #1327 for details)
