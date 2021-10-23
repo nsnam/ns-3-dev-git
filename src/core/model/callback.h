@@ -1572,7 +1572,7 @@ private:
         return false;
       }
   }
-  /** \copydoc Assign */
+  /** \copydoc Assign(const CallbackBase&). */
   bool DoAssign (Ptr<const CallbackImplBase> other)
   {
     if (!DoCheckType (other))
