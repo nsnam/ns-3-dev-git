@@ -80,6 +80,7 @@ protected:
 
   /**
    * Sets a file descriptor on the FileDescriptorNetDevice.
+   * \param device the device to install the file descriptor in
    */
   virtual void SetFileDescriptor (Ptr<FdNetDevice> device) const;
 
@@ -94,7 +95,7 @@ protected:
    * The Unix/Linux name of the underlying device (e.g., eth0)
    */
   std::string m_deviceName;
-  bool m_hostQdiscBypass;
+  bool m_hostQdiscBypass; //!< True if request host qdisc bypass
 };
 
 } // namespace ns3

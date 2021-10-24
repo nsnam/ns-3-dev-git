@@ -179,15 +179,15 @@ public:
 
   /**
    * \brief Set the netmap receiver rings info
-   * \param nTxRings the number of receiver rings
-   * \param nTxRingsSlots the number of slots for each receiver ring
+   * \param nRxRings the number of receiver rings
+   * \param nRxRingsSlots the number of slots for each receiver ring
    */
   void SetRxRingsInfo (uint32_t nRxRings, uint32_t nRxRingsSlots);
 
   /**
    * \brief The function Writes a packet into the netmap transmission ring.
    * \param buffer the pointer to packet
-   * \param lenght the packet lenght
+   * \param length the packet length
    * \return the number of written bytes
    */
   virtual ssize_t Write (uint8_t *buffer, size_t length);

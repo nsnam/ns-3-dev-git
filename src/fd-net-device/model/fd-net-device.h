@@ -59,6 +59,7 @@ public:
 
   /**
    * Set size of the read buffer.
+   * \param bufferSize the buffer size
    */
   void SetBufferSize (uint32_t bufferSize);
 
@@ -132,7 +133,7 @@ public:
 
   /**
    * Set the associated file descriptor.
-   *
+   * \param fd the file descriptor
    */
   void SetFileDescriptor (int fd);
 
@@ -211,16 +212,21 @@ protected:
 
   /**
    * Allocate packet buffer.
+   * \param len the length of the buffer
+   * \return A pointer to the newly allocated buffer.
    */
-  virtual uint8_t* AllocateBuffer(size_t len);
+  virtual uint8_t* AllocateBuffer (size_t len);
 
   /**
    * Free the given packet buffer.
+   * \param buf the buffer to free
    */
   virtual void FreeBuffer (uint8_t* buf);
 
   /**
    * Callback to invoke when a new frame is received
+   * \param buf a buffer containing the received frame
+   * \param len the length of the frame
    */
   void ReceiveCallback (uint8_t *buf, ssize_t len);
 

@@ -96,6 +96,8 @@ public:
 
   /**
    * A function to handle rx & tx operations.
+   * \param arg a pointer to the DpdkNetDevice
+   * \return zero on failure or exit.
    */
   static int LaunchCore (void *arg);
 
@@ -117,11 +119,14 @@ public:
 
   /**
    * Free the given packet buffer.
+   * \param buf the pointer to the buffer to be freed
    */
   virtual void FreeBuffer (uint8_t* buf);
 
   /**
    * Allocate packet buffer.
+   * \param len the length of the buffer
+   * \return A pointer to the newly created buffer.
    */
   virtual uint8_t* AllocateBuffer (size_t len);
 

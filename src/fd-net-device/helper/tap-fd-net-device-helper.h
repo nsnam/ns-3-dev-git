@@ -105,12 +105,14 @@ protected:
 
   /**
    * Sets a file descriptor on the FileDescriptorNetDevice.
+   * \param device the device to install the file descriptor in
    */
   virtual void SetFileDescriptor (Ptr<FdNetDevice> device) const;
 
   /**
    * Call out to a separate process running as suid root in order to create a
    * TAP device and obtain the file descriptor associated to it.
+   * \returns The file descriptor associated with the TAP device.
    */
   virtual int CreateFileDescriptor (void) const;
 
