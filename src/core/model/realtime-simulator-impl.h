@@ -112,16 +112,25 @@ public:
 
   /** \copydoc ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
   void ScheduleRealtimeWithContext (uint32_t context, const Time &delay, EventImpl *event);
-  /** \copydoc Schedule(const Time&,EventImpl*) */
+  /**
+   * Schedule a future event execution (in the same context).
+   *
+   * @param [in] delay Delay until the event expires.
+   * @param [in] event The event to schedule.
+   */
   void ScheduleRealtime (const Time &delay, EventImpl *event);
   /**
-   * \copybrief ScheduleNow(EventImpl*)
+   * Schedule an event to run at the current virtual time.
    *
    * \param [in] context Event context.
    * \param [in] event The event to schedule.
    */
   void ScheduleRealtimeNowWithContext (uint32_t context, EventImpl *event);
-  /** \copydoc ScheduleNow(EventImpl*) */
+  /**
+   * Schedule an event to run at the current virtual time.
+   *
+   * @param [in] event The event to schedule.
+   */
   void ScheduleRealtimeNow (EventImpl *event);
   /**
    * Get the current real time from the synchronizer.

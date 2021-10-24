@@ -464,7 +464,6 @@ public:
    * @param [in] delay Delay until the event expires.
    * @param [in] context Event context.
    * @param [in] event The event to schedule.
-   * @returns A unique identifier for the newly-scheduled event.
    */
   static void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event);
 
