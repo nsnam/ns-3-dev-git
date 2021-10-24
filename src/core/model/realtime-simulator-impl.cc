@@ -31,9 +31,9 @@
 #include "boolean.h"
 #include "enum.h"
 
-
 #include <cmath>
 #include <mutex>
+#include <thread>
 
 /**
  * \file
@@ -86,7 +86,7 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
   m_unscheduledEvents = 0;
   m_eventCount = 0;
 
-  m_main = SystemThread::Self ();
+  m_main = std::this_thread::get_id ();
 
   // Be very careful not to do anything that would cause a change or assignment
   // of the underlying reference counts of m_synchronizer or you will be sorry.
@@ -426,7 +426,7 @@ RealtimeSimulatorImpl::Run (void)
                  "RealtimeSimulatorImpl::Run(): Simulator already running");
 
   // Set the current threadId as the main threadId
-  m_main = SystemThread::Self ();
+  m_main = std::this_thread::get_id ();
 
   m_stop = false;
   m_running = true;
@@ -546,7 +546,7 @@ RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay,
     std::unique_lock lock {m_mutex};
     uint64_t ts;
 
-    if (SystemThread::Equals (m_main))
+    if (m_main == std::this_thread::get_id ())
       {
         ts = m_currentTs + delay.GetTimeStep ();
       }

@@ -25,7 +25,6 @@
 #include "ns3/calendar-scheduler.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
-#include "ns3/system-thread.h"
 
 #include <chrono>  // seconds, milliseconds
 #include <ctime>
@@ -36,7 +35,7 @@
 using namespace ns3;
 
 /// Maximum number of threads.
-#define MAXTHREADS 64
+constexpr int MAXTHREADS = 64;
 
 /**
  * \file
@@ -109,7 +108,7 @@ public:
   ObjectFactory m_schedulerFactory; //!< Scheduler factory.
   std::string m_simulatorType;      //!< Simulator type.
   std::string m_error;              //!< Error condition.
-  std::list<Ptr<SystemThread> > m_threadlist; //!< Thread list.
+  std::list<std::thread> m_threadlist; //!< Thread list.
 
 private:
   virtual void DoSetup (void);
@@ -131,9 +130,12 @@ void
 ThreadedSimulatorEventsTestCase::End (void)
 {
   m_stop = true;
-  for (std::list<Ptr<SystemThread> >::iterator it2 = m_threadlist.begin (); it2 != m_threadlist.end (); ++it2)
+  for (auto& thread : m_threadlist)
     {
-      (*it2)->Join ();
+      if (thread.joinable ())
+        {
+          thread.join ();
+        }
     }
 }
 void
@@ -236,14 +238,6 @@ ThreadedSimulatorEventsTestCase::DoSetup (void)
     m_b =
       m_c =
         m_d = 0;
-
-  for (unsigned int i = 0; i < m_threads; ++i)
-    {
-      m_threadlist.push_back (
-        Create<SystemThread> (MakeBoundCallback (
-                                &ThreadedSimulatorEventsTestCase::SchedulingThread,
-                                std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> (this,i) )) );
-    }
 }
 void
 ThreadedSimulatorEventsTestCase::DoTeardown (void)
@@ -261,10 +255,11 @@ ThreadedSimulatorEventsTestCase::DoRun (void)
   Simulator::Schedule (MicroSeconds (10), &ThreadedSimulatorEventsTestCase::EventA, this, 1);
   Simulator::Schedule (Seconds (1), &ThreadedSimulatorEventsTestCase::End, this);
 
-
-  for (std::list<Ptr<SystemThread> >::iterator it = m_threadlist.begin (); it != m_threadlist.end (); ++it)
+  for (unsigned int i = 0; i < m_threads; ++i)
     {
-      (*it)->Start ();
+      m_threadlist.push_back (
+        std::thread (&ThreadedSimulatorEventsTestCase::SchedulingThread,
+                     std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> (this,i) ));
     }
 
   Simulator::Run ();

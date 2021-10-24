@@ -65,7 +65,7 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
   m_unscheduledEvents = 0;
   m_eventCount = 0;
   m_eventsWithContextEmpty = true;
-  m_main = SystemThread::Self ();
+  m_mainThreadId = std::this_thread::get_id ();
 }
 
 DefaultSimulatorImpl::~DefaultSimulatorImpl ()
@@ -190,7 +190,7 @@ DefaultSimulatorImpl::Run (void)
 {
   NS_LOG_FUNCTION (this);
   // Set the current threadId as the main threadId
-  m_main = SystemThread::Self ();
+  m_mainThreadId = std::this_thread::get_id ();
   ProcessEventsWithContext ();
   m_stop = false;
 
@@ -225,7 +225,8 @@ EventId
 DefaultSimulatorImpl::Schedule (Time const &delay, EventImpl *event)
 {
   NS_LOG_FUNCTION (this << delay.GetTimeStep () << event);
-  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::Schedule Thread-unsafe invocation!");
+  NS_ASSERT_MSG (m_mainThreadId == std::this_thread::get_id (),
+                 "Simulator::Schedule Thread-unsafe invocation!");
 
   NS_ASSERT_MSG (delay.IsPositive (), "DefaultSimulatorImpl::Schedule(): Negative delay");
   Time tAbsolute = delay + TimeStep (m_currentTs);
@@ -246,7 +247,7 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay, 
 {
   NS_LOG_FUNCTION (this << context << delay.GetTimeStep () << event);
 
-  if (SystemThread::Equals (m_main))
+  if (m_mainThreadId == std::this_thread::get_id ())
     {
       Time tAbsolute = delay + TimeStep (m_currentTs);
       Scheduler::Event ev;
@@ -276,7 +277,8 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay, 
 EventId
 DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 {
-  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleNow Thread-unsafe invocation!");
+  NS_ASSERT_MSG (m_mainThreadId == std::this_thread::get_id (),
+                 "Simulator::ScheduleNow Thread-unsafe invocation!");
 
   return Schedule (Time (0), event);
 }
@@ -284,7 +286,8 @@ DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 EventId
 DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
-  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleDestroy Thread-unsafe invocation!");
+  NS_ASSERT_MSG (m_mainThreadId == std::this_thread::get_id (),
+                 "Simulator::ScheduleDestroy Thread-unsafe invocation!");
 
   EventId id (Ptr<EventImpl> (event, false), m_currentTs, 0xffffffff, 2);
   m_destroyEvents.push_back (id);

@@ -1,6 +1,7 @@
 #include "ns3module.h"
 #include "ns3/ref-count-base.h"
 #include <unistd.h>
+#include <thread>
 
 #if PY_VERSION_HEX >= 0x03000000
 # define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
@@ -362,7 +363,7 @@ private:
   volatile bool m_stopped;
   bool m_failed;
   volatile bool m_isCheckPending;
-  ns3::Ptr<ns3::SystemThread> m_thread;
+  std::thread m_thread;
   PyThreadState *m_py_thread_state;
 };
 
@@ -371,7 +372,6 @@ PythonSimulator::PythonSimulator()
     m_failed(false),
     m_isCheckPending(false)
 {
-  m_thread = ns3::Create<ns3::SystemThread>(ns3::MakeCallback(&PythonSimulator::DoRun, this));
   m_py_thread_state = NULL;
 }
 
@@ -381,7 +381,7 @@ PythonSimulator::Run(void)
   m_failed = false;
   m_stopped = false;
   m_isCheckPending = false;
-  m_thread->Start();
+  m_thread = std::thread (&PythonSimulator::DoRun, this);
 
   Py_BEGIN_ALLOW_THREADS;
   
@@ -390,7 +390,10 @@ PythonSimulator::Run(void)
   Py_END_ALLOW_THREADS;
 
   m_stopped = true;
-  m_thread->Join();
+  if (m_thread.joinable ())
+    {
+      m_thread.join ();
+    }
 }
 
 bool 

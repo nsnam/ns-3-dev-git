@@ -22,10 +22,9 @@
 #define DEFAULT_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
-#include "system-thread.h"
-
 #include <list>
 #include <mutex>
+#include <thread>
 
 /**
  * \file
@@ -134,7 +133,7 @@ private:
   int m_unscheduledEvents;
 
   /** Main execution thread. */
-  SystemThread::ThreadId m_main;
+  std::thread::id m_mainThreadId;
 };
 
 } // namespace ns3

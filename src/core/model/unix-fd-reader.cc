@@ -25,11 +25,11 @@
 #include <cstring>
 #include <unistd.h>  // close()
 #include <fcntl.h>
+#include <thread>
 
 #include "log.h"
 #include "fatal-error.h"
 #include "simple-ref-count.h"
-#include "system-thread.h"
 #include "simulator.h"
 
 #include "unix-fd-reader.h"
@@ -45,7 +45,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("FdReader");
 
 FdReader::FdReader ()
-  : m_fd (-1), m_readCallback (0), m_readThread (0), m_stop (false),
+  : m_fd (-1), m_readCallback (0), m_stop (false),
     m_destroyEvent ()
 {
   NS_LOG_FUNCTION (this);
@@ -64,7 +64,7 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
   NS_LOG_FUNCTION (this << fd << &readCallback);
   int tmp;
 
-  NS_ASSERT_MSG (m_readThread == 0, "read thread already exists");
+  NS_ASSERT_MSG (!m_readThread.joinable(), "read thread already exists");
 
   // create a pipe for inter-thread event notification
   tmp = pipe (m_evpipe);
@@ -107,8 +107,7 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
   //
   NS_LOG_LOGIC ("Spinning up read thread");
 
-  m_readThread = Create<SystemThread> (MakeCallback (&FdReader::Run, this));
-  m_readThread->Start ();
+  m_readThread = std::thread (&FdReader::Run, this);
 }
 
 void FdReader::DestroyEvent (void)
@@ -135,10 +134,9 @@ void FdReader::Stop (void)
     }
 
   // join the read thread
-  if (m_readThread != 0)
+  if (m_readThread.joinable ())
     {
-      m_readThread->Join ();
-      m_readThread = 0;
+      m_readThread.join ();
     }
 
   // close the write end of the event pipe

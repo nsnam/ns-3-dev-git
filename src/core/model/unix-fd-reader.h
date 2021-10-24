@@ -22,9 +22,9 @@
 #define UNIX_FD_READER_H
 
 #include <stdint.h>
+#include <thread>
 
 #include "callback.h"
-#include "system-thread.h"
 #include "event-id.h"
 
 /**
@@ -123,7 +123,7 @@ private:
   Callback<void, uint8_t *, ssize_t> m_readCallback;
 
   /** The thread doing the read, created and launched by Start(). */
-  Ptr<SystemThread> m_readThread;
+  std::thread m_readThread;
 
   /** Pipe used to signal events between threads. */
   int m_evpipe[2];

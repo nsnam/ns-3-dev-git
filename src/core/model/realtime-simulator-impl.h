@@ -20,7 +20,6 @@
 #define REALTIME_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
-#include "system-thread.h"
 
 #include "scheduler.h"
 #include "synchronizer.h"
@@ -32,6 +31,7 @@
 
 #include <list>
 #include <mutex>
+#include <thread>
 
 /**
  * \file
@@ -229,8 +229,8 @@ private:
   /** The maximum allowable drift from real-time in SYNC_HARD_LIMIT mode. */
   Time m_hardLimit;
 
-  /** Main SystemThread. */
-  SystemThread::ThreadId m_main;
+  /** Main thread. */
+  std::thread::id m_main;
 };
 
 } // namespace ns3
