@@ -24,6 +24,7 @@
 #include <array>
 #include <optional>
 #include <unordered_map>
+#include <memory>
 #include "ns3/traced-callback.h"
 #include "ns3/object.h"
 #include "ns3/data-rate.h"
@@ -149,7 +150,7 @@ public:
   /**
    * A map of WifiRemoteStationStates with Mac48Address as key
    */
-  using StationStates = std::unordered_map <Mac48Address, WifiRemoteStationState *, WifiAddressHash>;
+  using StationStates = std::unordered_map <Mac48Address, std::shared_ptr<WifiRemoteStationState>, WifiAddressHash>;
 
   /**
    * Set up PHY associated with this device since it is the object that
@@ -1318,7 +1319,7 @@ private:
    * \param address the address of the station
    * \return WifiRemoteStationState corresponding to the address
    */
-  WifiRemoteStationState* LookupState (Mac48Address address) const;
+  std::shared_ptr<WifiRemoteStationState> LookupState (Mac48Address address) const;
   /**
    * Return the station associated with the given address.
    *

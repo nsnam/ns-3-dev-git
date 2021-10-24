@@ -304,8 +304,7 @@ WifiRemoteStationManager::AddSupportedPhyPreamble (Mac48Address address, bool is
 {
   NS_LOG_FUNCTION (this << address << isShortPreambleSupported);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  state->m_shortPreamble = isShortPreambleSupported;
+  LookupState (address)->m_shortPreamble = isShortPreambleSupported;
 }
 
 void
@@ -313,8 +312,7 @@ WifiRemoteStationManager::AddSupportedErpSlotTime (Mac48Address address, bool is
 {
   NS_LOG_FUNCTION (this << address << isShortSlotTimeSupported);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  state->m_shortSlotTime = isShortSlotTimeSupported;
+  LookupState (address)->m_shortSlotTime = isShortSlotTimeSupported;
 }
 
 void
@@ -322,14 +320,10 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << address << mode);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  for (WifiModeListIterator i = state->m_operationalRateSet.begin (); i != state->m_operationalRateSet.end (); i++)
+  auto state = LookupState (address);
+  for (const auto& i : state->m_operationalRateSet)
     {
-      if ((*i) == mode)
-        {
-          //already in.
-          return;
-        }
+      if (i == mode) return;  // already in
     }
   if ((mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
     {
@@ -351,7 +345,7 @@ WifiRemoteStationManager::AddAllSupportedModes (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
+  auto state = LookupState (address);
   state->m_operationalRateSet.clear ();
   for (const auto & mode : m_wifiPhy->GetModeList ())
     {
@@ -368,7 +362,7 @@ WifiRemoteStationManager::AddAllSupportedMcs (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
+  auto state = LookupState (address);
   state->m_operationalMcsSet.clear ();
   for (const auto & mcs : m_wifiPhy->GetMcsList ())
     {
@@ -381,8 +375,7 @@ WifiRemoteStationManager::RemoveAllSupportedMcs (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  state->m_operationalMcsSet.clear ();
+  LookupState (address)->m_operationalMcsSet.clear ();
 }
 
 void
@@ -390,14 +383,10 @@ WifiRemoteStationManager::AddSupportedMcs (Mac48Address address, WifiMode mcs)
 {
   NS_LOG_FUNCTION (this << address << mcs);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  for (WifiModeListIterator i = state->m_operationalMcsSet.begin (); i != state->m_operationalMcsSet.end (); i++)
+  auto state = LookupState (address);
+  for (const auto& i : state->m_operationalMcsSet)
     {
-      if ((*i) == mcs)
-        {
-          //already in.
-          return;
-        }
+      if (i == mcs) return;  //already in
     }
   state->m_operationalMcsSet.push_back (mcs);
 }
@@ -481,7 +470,7 @@ WifiRemoteStationManager::RecordDisassociated (Mac48Address address)
 uint16_t
 WifiRemoteStationManager::GetAssociationId (Mac48Address remoteAddress) const
 {
-  WifiRemoteStationState* state;
+  std::shared_ptr<WifiRemoteStationState> state;
   if (!remoteAddress.IsGroup ()
       && (state = LookupState (remoteAddress))->m_state == WifiRemoteStationState::GOT_ASSOC_TX_OK)
     {
@@ -522,7 +511,7 @@ WifiRemoteStationManager::SetMldAddress (const Mac48Address& address, const Mac4
 {
   NS_LOG_FUNCTION (this << address << mldAddress);
 
-  WifiRemoteStationState *state = LookupState (address);
+  auto state = LookupState (address);
   state->m_mldAddress = mldAddress;
   // insert another entry in m_states indexed by the MLD address and pointing to the same state
   const_cast<WifiRemoteStationManager *> (this)->m_states.insert ({mldAddress, state});
@@ -1251,8 +1240,7 @@ WifiRemoteStationManager::GetDefaultTxPowerLevel (void) const
 WifiRemoteStationInfo
 WifiRemoteStationManager::GetInfo (Mac48Address address)
 {
-  WifiRemoteStationState *state = LookupState (address);
-  return state->m_info;
+  return LookupState (address)->m_info;
 }
 
 double
@@ -1267,7 +1255,7 @@ WifiRemoteStationManager::GetMostRecentRssi (Mac48Address address) const
   return rssi;
 }
 
-WifiRemoteStationState *
+std::shared_ptr<WifiRemoteStationState>
 WifiRemoteStationManager::LookupState (Mac48Address address) const
 {
   NS_LOG_FUNCTION (this << address);
@@ -1279,7 +1267,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
       return stateIt->second;
     }
 
-  WifiRemoteStationState *state = new WifiRemoteStationState ();
+  auto state = std::make_shared<WifiRemoteStationState> ();
   state->m_state = WifiRemoteStationState::BRAND_NEW;
   state->m_address = address;
   state->m_aid = 0;
@@ -1313,10 +1301,8 @@ WifiRemoteStationManager::Lookup (Mac48Address address) const
       return stationIt->second;
     }
 
-  WifiRemoteStationState *state = LookupState (address);
-
   WifiRemoteStation *station = DoCreateStation ();
-  station->m_state = state;
+  station->m_state = LookupState (address).get ();
   station->m_rssiAndUpdateTimePair = std::make_pair (0, Seconds (0));
   const_cast<WifiRemoteStationManager *> (this)->m_stations.insert ({address, station});
   return station;
@@ -1333,8 +1319,7 @@ void
 WifiRemoteStationManager::SetQosSupport (Mac48Address from, bool qosSupported)
 {
   NS_LOG_FUNCTION (this << from << qosSupported);
-  WifiRemoteStationState *state = LookupState (from);
-  state->m_qosSupported = qosSupported;
+  LookupState (from)->m_qosSupported = qosSupported;
 }
 
 void
@@ -1342,7 +1327,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
 {
   //Used by all stations to record HT capabilities of remote stations
   NS_LOG_FUNCTION (this << from << htCapabilities);
-  WifiRemoteStationState *state = LookupState (from);
+  auto state = LookupState (from);
   if (htCapabilities.GetSupportedChannelWidth () == 1)
     {
       state->m_channelWidth = 40;
@@ -1367,7 +1352,7 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
 {
   //Used by all stations to record VHT capabilities of remote stations
   NS_LOG_FUNCTION (this << from << vhtCapabilities);
-  WifiRemoteStationState *state = LookupState (from);
+  auto state = LookupState (from);
   if (vhtCapabilities.GetSupportedChannelWidthSet () == 1)
     {
       state->m_channelWidth = 160;
@@ -1394,7 +1379,7 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
 {
   //Used by all stations to record HE capabilities of remote stations
   NS_LOG_FUNCTION (this << from << heCapabilities);
-  WifiRemoteStationState *state = LookupState (from);
+  auto state = LookupState (from);
   if ((m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_6GHZ))
     {
       if (heCapabilities.GetChannelWidthSet () & 0x04)
@@ -1447,7 +1432,7 @@ WifiRemoteStationManager::AddStationEhtCapabilities (Mac48Address from, EhtCapab
 {
   //Used by all stations to record EHT capabilities of remote stations
   NS_LOG_FUNCTION (this << from << ehtCapabilities);
-  WifiRemoteStationState *state = LookupState (from);
+  auto state = LookupState (from);
   //TODO: to be completed
   state->m_ehtCapabilities = Create<const EhtCapabilities> (ehtCapabilities);
   SetQosSupport (from, true);
@@ -1540,10 +1525,6 @@ void
 WifiRemoteStationManager::Reset (void)
 {
   NS_LOG_FUNCTION (this);
-  for (auto& state : m_states)
-    {
-      delete (state.second);
-    }
   m_states.clear ();
   for (auto& state: m_stations)
     {
