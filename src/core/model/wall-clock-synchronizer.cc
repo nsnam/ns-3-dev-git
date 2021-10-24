@@ -16,15 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #include <ctime>       // clock_t
 #include <sys/time.h>  // gettimeofday
                        // clock_getres: glibc < 2.17, link with librt
 
 #include "log.h"
-#include "system-condition.h"
-
 #include "wall-clock-synchronizer.h"
+
+#include <condition_variable>
+#include <chrono>
+#include <mutex>
 
 /**
  * \file
@@ -286,15 +287,21 @@ WallClockSynchronizer::DoSignal (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_condition.SetCondition (true);
-  m_condition.Signal ();
+  std::unique_lock<std::mutex> lock (m_mutex);
+  m_condition = true;
+
+  // Manual unlocking is done before notifying, to avoid waking up
+  // the waiting thread only to block again (see notify_one for details).
+  // Reference: https://en.cppreference.com/w/cpp/thread/condition_variable
+  lock.unlock ();
+  m_conditionVariable.notify_one ();
 }
 
 void
 WallClockSynchronizer::DoSetCondition (bool cond)
 {
   NS_LOG_FUNCTION (this << cond);
-  m_condition.SetCondition (cond);
+  m_condition = cond;
 }
 
 void
@@ -323,7 +330,7 @@ WallClockSynchronizer::SpinWait (uint64_t ns)
         {
           return true;
         }
-      if (m_condition.GetCondition ())
+      if (m_condition)
         {
           return false;
         }
@@ -336,7 +343,14 @@ bool
 WallClockSynchronizer::SleepWait (uint64_t ns)
 {
   NS_LOG_FUNCTION (this << ns);
-  return m_condition.TimedWait (ns);
+
+  std::unique_lock<std::mutex> lock (m_mutex);
+  bool finishedWaiting = m_conditionVariable.wait_for (
+                            lock,
+                            std::chrono::nanoseconds (ns),    // Timeout
+                            [this](){ return m_condition; }); // Wait condition
+
+  return finishedWaiting;
 }
 
 uint64_t

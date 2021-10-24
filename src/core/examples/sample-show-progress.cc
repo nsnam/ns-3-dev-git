@@ -33,8 +33,9 @@
 
 #include "ns3/core-module.h"
 
-#include <ctime>
+#include <chrono>
 #include <iomanip>
+#include <thread>
 #include <string>
 
 
@@ -92,15 +93,12 @@ public:
     int64x64_t ratio = (Simulator::Now () / m_interval) / 10;
     bool even = (ratio.GetHigh () % 2);
     Time work = m_wait * (even ? 3 : 1);
-    m_condition.TimedWait ( work.GetNanoSeconds () );
-
+    std::this_thread::sleep_for (std::chrono::nanoseconds (work.GetNanoSeconds ()));
   }
 
 private:
   /** The random number generator for the interval between events. */
   Ptr<RandomVariableStream> m_rng;
-  /** Timer to represent workload. */
-  SystemCondition m_condition;
   /** Mean inter-event time. */
   Time m_wait;
   /** Time between switching workloads. */
@@ -145,4 +143,5 @@ main (int argc, char ** argv)
   Simulator::Run ();
   Simulator::Destroy ();
 
+  return 0;
 }
