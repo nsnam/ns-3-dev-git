@@ -305,6 +305,7 @@ WifiMode
 WifiModeFactory::CreateWifiMcs (std::string uniqueName,
                                 uint8_t mcsValue,
                                 WifiModulationClass modClass,
+                                bool isMandatory,
                                 CodeRateCallback codeRateCallback,
                                 ConstellationSizeCallback constellationSizeCallback,
                                 PhyRateCallback phyRateCallback,
@@ -321,15 +322,13 @@ WifiModeFactory::CreateWifiMcs (std::string uniqueName,
   NS_ASSERT (modClass >= WIFI_MOD_CLASS_HT);
 
   item->mcsValue = mcsValue;
+  item->isMandatory = isMandatory;
   item->GetCodeRateCallback = codeRateCallback;
   item->GetConstellationSizeCallback = constellationSizeCallback;
   item->GetPhyRateCallback = phyRateCallback;
   item->GetDataRateCallback = dataRateCallback;
   item->GetNonHtReferenceRateCallback = nonHtReferenceRateCallback;
   item->IsAllowedCallback = isAllowedCallback;
-
-  //fill unused items with dummy values
-  item->isMandatory = false;
 
   return WifiMode (uid);
 }

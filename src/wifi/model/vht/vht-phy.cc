@@ -377,6 +377,7 @@ VhtPhy::CreateVhtMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("VhtMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_VHT,
+                                         false,
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
                                          MakeCallback (&GetPhyRateFromTxVector),

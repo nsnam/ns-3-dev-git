@@ -1015,6 +1015,7 @@ HePhy::CreateHeMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("HeMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_HE,
+                                         false,
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
                                          MakeCallback (&GetPhyRateFromTxVector),

@@ -354,6 +354,7 @@ public:
    *        must be unique across _all_ instances.
    * \param mcsValue the MCS value
    * \param modClass the class of modulation
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param codeRateCallback a callback function that returns the coding rate
    *        of this WifiMode.
    * \param constellationSizeCallback a callback function that returns the size
@@ -374,6 +375,7 @@ public:
   static WifiMode CreateWifiMcs (std::string uniqueName,
                                  uint8_t mcsValue,
                                  WifiModulationClass modClass,
+                                 bool isMandatory,
                                  CodeRateCallback codeRateCallback,
                                  ConstellationSizeCallback constellationSizeCallback,
                                  PhyRateCallback phyRateCallback,

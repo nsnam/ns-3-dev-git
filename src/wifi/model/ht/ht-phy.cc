@@ -549,6 +549,7 @@ HtPhy::CreateHtMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("HtMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_HT,
+                                         false,
                                          MakeBoundCallback (&GetHtCodeRate, index),
                                          MakeBoundCallback (&GetHtConstellationSize, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
