@@ -31,6 +31,7 @@ Bugs fixed
 ----------
 - (wifi) #467 - WiFi: Failed association process
 - (wifi) #468 - WiFi: Wrong txDuration for trigger frame
+- (wifi) #475 - Wi-Fi: Assert when sending OFDMA DL to STAs with different TIDs
 
 Release 3.35
 ============

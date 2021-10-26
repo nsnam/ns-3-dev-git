@@ -289,7 +289,7 @@ HeFrameExchangeManager::SendPsduMap (void)
               uint8_t tid = *tids.begin ();
 
               NS_ASSERT (m_edca != 0);
-              m_edca->ScheduleBar (m_edca->PrepareBlockAckRequest (psdu.second->GetAddr1 (), tid));
+              m_edca->ScheduleBar (m_mac->GetQosTxop (tid)->PrepareBlockAckRequest (psdu.second->GetAddr1 (), tid));
             }
         }
 
