@@ -225,7 +225,7 @@ public:
   /**
    * TracedCallback signature for packet send, forward, or local deliver events.
    *
-   * \param [in] header The Ipv6Header.
+   * \param [in] header The Ipv4Header.
    * \param [in] packet The packet.
    * \param [in] interface
    */
@@ -235,7 +235,6 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
-   * \param [in] header The Ipv4Header.
    * \param [in] packet The packet.
    * \param [in] ipv4
    * \param [in] interface

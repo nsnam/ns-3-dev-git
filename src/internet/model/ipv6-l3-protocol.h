@@ -382,7 +382,6 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
-   * \param [in] header The Ipv6Header.
    * \param [in] packet The packet.
    * \param [in] ipv6
    * \param [in] interface
