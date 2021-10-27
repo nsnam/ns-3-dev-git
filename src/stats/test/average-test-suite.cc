@@ -61,7 +61,6 @@ OneIntegerAverageTestCase::DoRun (void)
   long count = 1;
 
   double sum = 0;
-  double sqrSum = 0;
   double min;
   double max;
   double mean;
@@ -78,7 +77,6 @@ OneIntegerAverageTestCase::DoRun (void)
       calculator.Update (value);
 
       sum    += value;
-      sqrSum += value * value;
     }
 
   // Calculate the expected values for the statistical functions.
