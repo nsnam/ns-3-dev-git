@@ -1366,6 +1366,7 @@ def _cleandocs():
     _cleandir('doc/tutorial/build')
     _cleandir('doc/models/build')
     _cleandir('doc/models/source-temp')
+    _cleandir('doc/contributing/build')
 
 # 'distclean' typically only cleans out build/ directory
 # Here we clean out any build or documentation artifacts not in build/
@@ -1662,7 +1663,7 @@ class Ns3DoxygenContext(Context.Context):
         _doxygen(bld)
 
 class Ns3SphinxContext(Context.Context):
-    """build the Sphinx documentation: manual, tutorial, models"""
+    """build the Sphinx documentation: manual, tutorial, models, contributing"""
 
     cmd = 'sphinx'
 
@@ -1677,12 +1678,12 @@ class Ns3SphinxContext(Context.Context):
 
     def execute(self):
         _getVersion()
-        for sphinxdir in ["manual", "models", "tutorial"] :
+        for sphinxdir in ["manual", "models", "tutorial", "contributing"] :
             self.sphinx_build(os.path.join("doc", sphinxdir))
 
 
 class Ns3DocContext(Context.Context):
-    """build all the documentation: doxygen, manual, tutorial, models"""
+    """build all the documentation: doxygen, manual, tutorial, models, contributing"""
 
     cmd = 'docs'
 
