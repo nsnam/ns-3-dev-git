@@ -1,4 +1,4 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+﻿/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2019 SIGNET Lab, Department of Information Engineering,
  * University of Padova
@@ -71,7 +71,7 @@ ThreeGppPropagationLossModel::ThreeGppPropagationLossModel ()
 {
   NS_LOG_FUNCTION (this);
 
-  // initialize the normal random variable
+  // initialize the normal random variables
   m_normRandomVariable = CreateObject<NormalRandomVariable> ();
   m_normRandomVariable->SetAttribute ("Mean", DoubleValue (0));
   m_normRandomVariable->SetAttribute ("Variance", DoubleValue (1));
@@ -80,11 +80,13 @@ ThreeGppPropagationLossModel::ThreeGppPropagationLossModel ()
   m_randomO2iVar1 = CreateObject <UniformRandomVariable> ();
   m_randomO2iVar2 = CreateObject <UniformRandomVariable> ();
 
-  // TODO missing also another variable for high-loss, once high loss is also implemented
-  // Variable that will be used for the standard deviation loss-loss as per Table 7.4.3-2: O2I penetration loss model
-  m_normalO2iVar = CreateObject <NormalRandomVariable> ();
-  m_normalO2iVar->SetAttribute ("Mean", DoubleValue (0));
-  m_normalO2iVar->SetAttribute ("Variance", DoubleValue (4.4));
+  m_normalO2iLowLossVar = CreateObject <NormalRandomVariable> ();
+  m_normalO2iLowLossVar->SetAttribute ("Mean", DoubleValue (0));
+  m_normalO2iLowLossVar->SetAttribute ("Variance", DoubleValue (4.4));
+
+  m_normalO2iHighLossVar = CreateObject <NormalRandomVariable> ();
+  m_normalO2iHighLossVar->SetAttribute ("Mean", DoubleValue (0));
+  m_normalO2iHighLossVar->SetAttribute ("Variance", DoubleValue (6.5));
 }
 
 ThreeGppPropagationLossModel::~ThreeGppPropagationLossModel ()
@@ -186,43 +188,81 @@ ThreeGppPropagationLossModel::GetLoss (Ptr<ChannelCondition> cond, double distan
       NS_FATAL_ERROR ("Unknown channel condition");
     }
 
-  if (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::O2I)
+  if (cond->GetO2iCondition () == ChannelCondition::O2iConditionValue::O2I)
     {
-      loss += GetO2iLowLoss ();
+      if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::LOW)
+        {
+          loss += GetO2iLowPenetrationLoss ();
+        }
+      else if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::HIGH)
+        {
+          loss += GetO2iHighPenetrationLoss ();
+        }
+      else
+      {
+        NS_ABORT_MSG ("If we have set the O2I condition, we shouldn't be here");
+      }
     }
+
   return loss;
 }
 
-
 double
-ThreeGppPropagationLossModel::GetO2iLowLoss () const
+ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss () const
 {
-   //TODO for the moment we support only LOW-LOSS model, add high-loss
-   double lossTw = 0;
+   double lowLossTw = 0;
    double lossIn = 0;
-   double lossStdDeviation = 0;
+   double lowlossStdDeviation = 0;
    double lGlass = 0;
    double lConcrete = 0;
 
-   // distance2dIn is minimum of two independently generated uniformly distributed variables between 0 and 25 m for UMa and
-   // UMi-Street Canyon, and between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
+   // distance2dIn is minimum of two independently generated uniformly distributed
+   // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
+   // 10 m for RMa. 2D−in d shall be UT-specifically generated.
    double distance2dIn = GetO2iDistance2dIn ();
 
-   // TODO add other materials
    // calculate material penetration losses, see Table 7.4.3-1
-   // lGlass
    lGlass = 2 + 0.2 * m_frequency/1e9; // m_frequency is operation frequency in Hz
    lConcrete = 5 + 4 * m_frequency/1e9;
 
-   lossTw = 5 - 10 * log10 (0.3 * std::pow (10, -lGlass/10) + 0.7 * std::pow (10, -lConcrete/10));
+   lowLossTw = 5 - 10 * log10 (0.3 * std::pow (10, -lGlass/10) + 0.7 * std::pow (10, -lConcrete/10));
 
    // calculate indoor loss
    lossIn = 0.5 * distance2dIn;
 
-   // calculate loss standard deviation
-   lossStdDeviation = m_normalO2iVar->GetValue ();
+   // calculate low loss standard deviation
+   lowlossStdDeviation = m_normalO2iLowLossVar->GetValue ();
 
-   return lossTw + lossIn + lossStdDeviation;
+   return lowLossTw + lossIn + lowlossStdDeviation;
+}
+
+double
+ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss () const
+{
+   double highLossTw = 0;
+   double lossIn = 0;
+   double highlossStdDeviation = 0;
+   double lIIRGlass = 0;
+   double lConcrete = 0;
+
+   // distance2dIn is minimum of two independently generated uniformly distributed
+   // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
+   // 10 m for RMa. 2D−in d shall be UT-specifically generated.
+   double distance2dIn = GetO2iDistance2dIn ();
+
+   // calculate material penetration losses, see Table 7.4.3-1
+   lIIRGlass = 23 + 0.3 * m_frequency/1e9;
+   lConcrete = 5 + 4 * m_frequency/1e9;
+
+   highLossTw = 5 - 10 * log10 (0.7 * std::pow (10, -lIIRGlass/10) + 0.3 * std::pow (10, -lConcrete/10));
+
+   // calculate indoor loss
+   lossIn = 0.5 * distance2dIn;
+
+   // calculate low loss standard deviation
+   highlossStdDeviation = m_normalO2iHighLossVar->GetValue ();
+
+   return highLossTw + lossIn + highlossStdDeviation;
 }
 
 double

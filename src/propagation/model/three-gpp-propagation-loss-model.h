@@ -120,7 +120,9 @@ private:
   virtual double GetO2iDistance2dIn () const = 0;
 
   // TODO all child classes should implement this function and this function should be purely virtual
-  virtual double GetO2iLowLoss () const;
+  virtual double GetO2iLowPenetrationLoss () const;
+
+  virtual double GetO2iHighPenetrationLoss () const;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -238,8 +240,8 @@ protected:
 
   Ptr<UniformRandomVariable> m_randomO2iVar1; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
   Ptr<UniformRandomVariable> m_randomO2iVar2; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
-  Ptr<NormalRandomVariable> m_normalO2iVar; //!< a normal random variable for the calculation of 02i loss, see TR38.091 Table 7.4.3-2
-
+  Ptr<NormalRandomVariable> m_normalO2iLowLossVar; //!< a normal random variable for the calculation of 02i low loss, see TR38.901 Table 7.4.3-2
+  Ptr<NormalRandomVariable> m_normalO2iHighLossVar; //!< a normal random variable for the calculation of 02i high loss, see TR38.901 Table 7.4.3-2
 };
 
 /**

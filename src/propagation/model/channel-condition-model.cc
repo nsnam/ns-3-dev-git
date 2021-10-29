@@ -44,13 +44,17 @@ ChannelCondition::GetTypeId (void)
 
 ChannelCondition::ChannelCondition ()
   : m_losCondition (LosConditionValue::LC_ND),
-    m_o2iCondition (O2iConditionValue::O2I_ND)
+    m_o2iCondition (O2iConditionValue::O2I_ND),
+    m_o2iLowHighCondition (O2iLowHighConditionValue::LH_O2I_ND)
 {}
 
-ChannelCondition::ChannelCondition (ChannelCondition::LosConditionValue losCondition, ChannelCondition::O2iConditionValue o2iCondition)
+ChannelCondition::ChannelCondition (ChannelCondition::LosConditionValue losCondition,
+                                    ChannelCondition::O2iConditionValue o2iCondition,
+                                    ChannelCondition::O2iLowHighConditionValue o2iLowHighCondition)
 {
   m_losCondition = losCondition;
   m_o2iCondition = o2iCondition;
+  m_o2iLowHighCondition = o2iLowHighCondition;
 }
 
 ChannelCondition::~ChannelCondition ()
@@ -78,6 +82,18 @@ void
 ChannelCondition::SetO2iCondition (O2iConditionValue o2iCondition)
 {
   m_o2iCondition = o2iCondition;
+}
+
+ChannelCondition::O2iLowHighConditionValue
+ChannelCondition::GetO2iLowHighCondition () const
+{
+  return m_o2iLowHighCondition;
+}
+
+void
+ChannelCondition::SetO2iLowHighCondition (O2iLowHighConditionValue o2iLowHighCondition)
+{
+  m_o2iLowHighCondition = o2iLowHighCondition;
 }
 
 bool
@@ -288,6 +304,12 @@ ThreeGppChannelConditionModel::GetTypeId (void)
                     DoubleValue (0.0),
                     MakeDoubleAccessor (&ThreeGppChannelConditionModel::m_o2iThreshold),
                     MakeDoubleChecker <double> (0, 1))
+    .AddAttribute ("O2iLowLossThreshold", "Specifies what will be the ratio of O2I "
+                   "low - high penetration losses. Default value is 1.0 meaning that"
+                   "all losses will be low",
+                   DoubleValue (1.0),
+                   MakeDoubleAccessor (&ThreeGppChannelConditionModel::m_o2iLowLossThreshold),
+                   MakeDoubleChecker <double> (0, 1))
   ;
   return tid;
 }
@@ -300,7 +322,7 @@ ThreeGppChannelConditionModel::ThreeGppChannelConditionModel ()
   m_uniformVar->SetAttribute ("Max", DoubleValue (1));
 
   m_uniformVarO2i = CreateObject<UniformRandomVariable> ();
-
+  m_uniformO2iLowHighLossVar = CreateObject <UniformRandomVariable> ();
 }
 
 ThreeGppChannelConditionModel::~ThreeGppChannelConditionModel ()
@@ -363,6 +385,9 @@ ThreeGppChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
 ChannelCondition::O2iConditionValue
 ThreeGppChannelConditionModel::ComputeO2i (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const
 {
+  NS_UNUSED (a);
+  NS_UNUSED (b);
+
   // TODO this code should be changed to determine based on a and b positions,
   // whether they are indoor or outdoor the o2i condition
   // currently we just parametrize it
@@ -416,6 +441,25 @@ ThreeGppChannelConditionModel::ComputeChannelCondition (Ptr<const MobilityModel>
     }
 
   cond->SetO2iCondition (ComputeO2i (a, b));
+
+  if (cond->GetO2iCondition () == ChannelCondition::O2iConditionValue::O2I)
+    {
+      // Since we have O2I penetration losses, we should choose based on the
+      // threshold if it will be low or high penetration losses
+      // (see TR38.901 Table 7.4.3)
+      double o2iLowHighLossProb = m_uniformO2iLowHighLossVar->GetValue (0, 1);
+      ChannelCondition::O2iLowHighConditionValue lowHighLossCondition;
+
+      if (o2iLowHighLossProb < m_o2iLowLossThreshold)
+        {
+          lowHighLossCondition = ChannelCondition::O2iLowHighConditionValue::LOW;
+        }
+      else
+        {
+          lowHighLossCondition = ChannelCondition::O2iLowHighConditionValue::HIGH;
+        }
+      cond->SetO2iLowHighCondition (lowHighLossCondition);
+    }
 
   return cond;
 }

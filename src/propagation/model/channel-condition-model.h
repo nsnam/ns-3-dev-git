@@ -65,6 +65,16 @@ public:
   };
 
   /**
+   * Possible values for Low-High Penetration Loss condition.
+   */
+  enum O2iLowHighConditionValue
+  {
+    LOW, //!< Low Penetration Losses
+    HIGH, //!< High Penetration Losses
+    LH_O2I_ND //!< Low-High Penetration Losses not defined
+  };
+
+  /**
    * Get the type ID.
    * \brief Get the type ID.
    * \return the object TypeId
@@ -80,8 +90,11 @@ public:
    * Constructor for the ChannelCondition class
    * \param losCondition the LOS condition value
    * \param o2iCondition the O2I condition value (by default is set to O2O)
+   * \param o2iLowHighCondition the O2I Low-High Penetration loss condition value (by default is set to LOW)
    */
-  ChannelCondition (LosConditionValue losCondition, O2iConditionValue o2iCondition = O2O);
+  ChannelCondition (LosConditionValue losCondition,
+                    O2iConditionValue o2iCondition = O2O,
+                    O2iLowHighConditionValue o2iLowHighCondition = LOW);
 
   /**
    * Destructor for the ChannelCondition class
@@ -120,6 +133,22 @@ public:
    */
   void SetO2iCondition (O2iConditionValue o2iCondition);
 
+  /**
+   * Get the O2iLowHighConditionValue contaning the information about the O2I
+   * penetration losses (low or high)
+   *
+   * \return the O2iLowHighConditionValue
+   */
+  O2iLowHighConditionValue GetO2iLowHighCondition () const;
+
+  /**
+   * Set the O2iLowHighConditionValue contaning the information about the O2I
+   * penetration losses (low or high)
+   *
+   * \param O2iLowHighConditionValue the O2iLowHighConditionValue
+   */
+  void SetO2iLowHighCondition (O2iLowHighConditionValue o2iLowHighCondition);
+  
   /**
    * Return true if the channel condition is LOS
    *
@@ -178,8 +207,9 @@ public:
 private:
   LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel
   O2iConditionValue m_o2iCondition; //!< contains the information about the O2I state of the channel
-
-  /**
+  O2iLowHighConditionValue m_o2iLowHighCondition; //!< contains the information about the O2I low-high penetration losses
+  
+  /** 
    * Prints a LosConditionValue to output
    * \param os the output stream
    * \param cond the LosConditionValue
@@ -522,8 +552,11 @@ private:
 
   // TODO review this description
   double m_o2iThreshold {0}; //!< the threshold for determing what is the ration of channels with O2I
+  double m_o2iLowLossThreshold {0}; //!< the threshold for determing what is the ratio of low - high O2I penetration losses
   // TODO review this description
   Ptr<UniformRandomVariable> m_uniformVarO2i; //!< uniform random variable that is used for the generation of the O2i conditions
+  Ptr<UniformRandomVariable> m_uniformO2iLowHighLossVar; //!< a uniform random variable for the calculation of the low/high losses, see TR38.901 Table 7.4.3-2
+
 };
 
 /**
