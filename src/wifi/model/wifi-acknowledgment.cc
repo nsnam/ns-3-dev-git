@@ -334,7 +334,8 @@ WifiDlMuAggregateTf::Print (std::ostream &os) const
  */
 
 WifiUlMuMultiStaBa::WifiUlMuMultiStaBa ()
-  : WifiAcknowledgment (UL_MU_MULTI_STA_BA)
+  : WifiAcknowledgment (UL_MU_MULTI_STA_BA),
+    baType (BlockAckType::MULTI_STA)
 {
 }
 

@@ -654,7 +654,6 @@ WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
     {
       // the only supported ack method for now is through a multi-STA BlockAck frame
       WifiUlMuMultiStaBa* acknowledgment = new WifiUlMuMultiStaBa;
-      acknowledgment->baType.m_variant = BlockAckType::MULTI_STA;
 
       for (const auto& userInfo : trigger)
         {
