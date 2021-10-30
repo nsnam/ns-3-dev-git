@@ -1,5 +1,5 @@
-
-		ns-3 RELEASE NOTES
+ns-3 RELEASE NOTES
+===================
 
 This file contains ns-3 release notes (most recent releases first).
 
@@ -286,16 +286,16 @@ New user-visible features
 - (build system) Added support for EditorConfig
 - (config-store) Improved the RawTextConfig output (see !93)
 - (core) Added capability to configure STL pair and containers as attributes
-- (core) The default timestamp print format for logging statements has been 
+- (core) The default timestamp print format for logging statements has been
   changed to use the As() method that prepends +/- and appends the time unit
 - (fd-net-device) Added two enhanced emulation devices based on netmap and DPDK
 - (mobility) Add CartesianToGeographic coordinate conversion capability
-- (network) Packet tags are now serialized and deserialized for distributed 
+- (network) Packet tags are now serialized and deserialized for distributed
   simulations
-- (network) Added LollipopCounter, a sequence number counter type 
+- (network) Added LollipopCounter, a sequence number counter type
 - (olsr) Some internal OLSR API has been opened up to enable cross-layer access
 - (tcp) Support for dynamic pacing in TCP.
-- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' 
+- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno'
 - (tests) test.py text output now distinguishes between TestSuites and TestCases
   congestion control).
 - (traffic-control) Added, to PIE queue disc, queue delay calculation using
@@ -315,14 +315,14 @@ Bugs fixed
 - (internet-apps) Fixes DHCP behaviour when interface goes down and back up
 - (lte) #224 - The scheduled SendMeasurementReport() event doesn't cancel after link failure detection
 - (mesh) - Enable possible use with SpectrumWifiPhy
-- (network) #264 - Rounding is more accurate for DataRate transmission times 
+- (network) #264 - Rounding is more accurate for DataRate transmission times
 - (network) !424 - Fixed instantaneous send behavior in SimpleNetDevice when queue is empty
 - (tcp) !368 - Fix assert in tx-buffer when loss rate high and w/o SACK
 - (tcp) !367 - Stop to merge items whose m_lost values are different
 - (tcp) - Fix TcpRateOps to update m_ackElapsed like Linux
 - (traffic-control) #225 - Do not ECN mark packet twice within a CoDel queue
 - (wifi) - Fix radiotap header for received 802.11ax PPDUs
-- (wifi) - Do not send VHT capabilities when operating in 2.4 GHz band 
+- (wifi) - Do not send VHT capabilities when operating in 2.4 GHz band
 - (wifi) #252 - Correctly handle multicast frames
 
 Release 3.31
@@ -375,7 +375,7 @@ New user-visible features
 
 Bugs fixed
 ----------
-If available, the numbers below make reference to a Bugzilla bug number, GitLab 
+If available, the numbers below make reference to a Bugzilla bug number, GitLab
 issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
 - (build system) #119 - Waf --lcov-report option was broken
 - (buildings) #80 - Update indoor/outdoor status of a moving node
