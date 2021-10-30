@@ -25,6 +25,7 @@
 #include "ns3/log.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/simulator.h"
+#include "ns3/system-mutex.h"
 #include "ns3/uinteger.h"
 
 #include <sys/ioctl.h>
