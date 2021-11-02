@@ -1986,9 +1986,21 @@ LteEnbRrc::GetTypeId (void)
                      "trace fired when a timer expires",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_rrcTimeoutTrace),
                      "ns3::LteEnbRrc::TimerExpiryTracedCallback")
-    .AddTraceSource ("HandoverFailure",
-                     "trace fired when handover fails",
-                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureTrace),
+    .AddTraceSource ("HandoverFailureNoPreamble",
+                     "trace fired upon handover failure due to non-allocation of non-contention based preamble at eNB for UE to handover due to max count reached",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureNoPreambleTrace),
+                     "ns3::LteEnbRrc::HandoverFailureTracedCallback")
+    .AddTraceSource ("HandoverFailureMaxRach",
+                     "trace fired upon handover failure due to max RACH attempts from UE to target eNB",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureMaxRachTrace),
+                     "ns3::LteEnbRrc::HandoverFailureTracedCallback")
+    .AddTraceSource ("HandoverFailureLeaving",
+                     "trace fired upon handover failure due to handover leaving timeout at source eNB",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureLeavingTrace),
+                     "ns3::LteEnbRrc::HandoverFailureTracedCallback")
+    .AddTraceSource ("HandoverFailureJoining",
+                     "trace fired upon handover failure due to handover joining timeout at target eNB",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureJoiningTrace),
                      "ns3::LteEnbRrc::HandoverFailureTracedCallback")
   ;
   return tid;
@@ -2527,9 +2539,8 @@ LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_JOINING,
                  "HandoverJoiningTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
-  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
-                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverJoiningTimeout");
-
+  m_handoverFailureJoiningTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                                 ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
   /**
    * When the handover joining timer expires at the target cell,
    * then notify the source cell to release the RRC connection and
@@ -2537,8 +2548,8 @@ LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
    * HandoverPreparationFailure message is reused to notify the source cell
    * through the X2 interface instead of creating a new message.
    */
-  Ptr<UeManager> ueManger = GetUeManager (rnti);
-  EpcX2Sap::HandoverPreparationFailureParams msg = ueManger->BuildHoPrepFailMsg ();
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
   m_x2SapProvider->SendHandoverPreparationFailure (msg);
   RemoveUe (rnti);
 }
@@ -2549,17 +2560,17 @@ LteEnbRrc::HandoverLeavingTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_LEAVING,
                  "HandoverLeavingTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
-  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
-                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverLeavingTimeout");
+  m_handoverFailureLeavingTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                                 ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
   /**
    * Send HO cancel msg to the target eNB and release the RRC connection
    * with the UE and also delete UE context at the source eNB and bearer
    * info at SGW and PGW.
    */
-  Ptr<UeManager> ueManger = GetUeManager (rnti);
-  EpcX2Sap::HandoverCancelParams msg = ueManger->BuildHoCancelMsg ();
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  EpcX2Sap::HandoverCancelParams msg = ueManager->BuildHoCancelMsg ();
   m_x2SapProvider->SendHandoverCancel (msg);
-  ueManger->SendRrcConnectionRelease ();
+  ueManager->SendRrcConnectionRelease ();
 }
 
 void
@@ -2639,6 +2650,8 @@ LteEnbRrc::DoRecvIdealUeContextRemoveRequest (uint16_t rnti)
 
   if (ueManager->GetState () == UeManager::HANDOVER_JOINING)
     {
+      m_handoverFailureMaxRachTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
       /**
        * During the HO, when the RACH failure due to the maximum number of
        * re-attempts is reached the UE request the target eNB to deletes its
@@ -2704,16 +2717,15 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   if (anrcrv.valid == false)
     {
       NS_LOG_INFO (this << " failed to allocate a preamble for non-contention based RA => cannot accept HO");
-      m_handoverFailureTrace (GetUeManager (rnti)->GetImsi (), rnti,
-                              ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()),
-                              "Handover failure due to max NC preambles reached");
+      m_handoverFailureNoPreambleTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                                        ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
       /**
        * When the maximum non-contention based preambles is reached, then it is considered handover has failed
        * and source cell is notified to release the RRC connection and delete the UE context
        * at eNodeB and SGW/PGW.
        */
-      Ptr<UeManager> ueManger = GetUeManager (rnti);
-      EpcX2Sap::HandoverPreparationFailureParams msg = ueManger->BuildHoPrepFailMsg ();
+      Ptr<UeManager> ueManager = GetUeManager (rnti);
+      EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
       m_x2SapProvider->SendHandoverPreparationFailure (msg);
       RemoveUe (rnti); // reomve the UE from the target eNB
       return;

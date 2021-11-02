@@ -1136,10 +1136,9 @@ public:
    * \param [in] imsi
    * \param [in] rnti
    * \param [in] cellId
-   * \param [in] cause
    */
   typedef void (*HandoverFailureTracedCallback)
-      (const uint64_t imsi, const uint16_t rnti, const uint16_t cellId, const std::string cause);
+      (const uint64_t imsi, const uint16_t rnti, const uint16_t cellId);
 
 private:
 
@@ -1728,11 +1727,29 @@ private:
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_rrcTimeoutTrace;
   /**
-   * The 'HandoverFailure' Trace source. Fired when handover fails due to max preambles
-   * reached.
+   * The 'HandoverFailureNoPreamble' Trace source. Fired upon handover failure due to non-allocation
+   * of non-contention based preamble at eNB for UE to handover due to max count reached
    *
    */
- TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_handoverFailureTrace;
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverFailureNoPreambleTrace;
+  /**
+   * The 'HandoverFailureMaxRach' Trace source. Fired upon handover failure due to max RACH attempts
+   * from UE to target eNB
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverFailureMaxRachTrace;
+  /**
+   * The 'HandoverFailureLeaving' Trace source. Fired upon handover failure due to handover leaving
+   * timeout at source eNB
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverFailureLeavingTrace;
+  /**
+   * The 'HandoverFailureJoining' Trace source. Fired upon handover failure due to handover joining
+   * timeout at target eNB
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverFailureJoiningTrace;
 
   uint16_t m_numberOfComponentCarriers; ///< number of component carriers
 
