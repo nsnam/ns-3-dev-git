@@ -255,7 +255,7 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 
       it++;
     }
-  agreementIt->second.second.insert (std::prev (it.base ()), mpdu);
+  agreementIt->second.second.insert (it.base (), mpdu);
   agreementIt->second.first.NotifyTransmittedMpdu (mpdu);
   mpdu->SetInFlight ();
 }
