@@ -27,6 +27,7 @@
 #include "wifi-mac-queue.h"
 #include "qos-utils.h"
 #include "wifi-tx-vector.h"
+#include <optional>
 
 namespace ns3 {
 
@@ -404,15 +405,19 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
       return it->second.second.erase (mpduIt);
     }
 
-  auto nextIt = std::next (mpduIt);
+  std::optional<PacketQueueI> prevIt;
+  if (mpduIt != it->second.second.begin ())
+    {
+      prevIt = std::prev (mpduIt);
+    }
 
   if (m_queue->TtlExceeded (*mpduIt, now))
     {
       // WifiMacQueue::TtlExceeded() has removed the MPDU from the EDCA queue
       // and fired the Expired trace source, which called NotifyDiscardedMpdu,
-      // which removed this MPDU from the in flight queue as well
+      // which removed this MPDU (and possibly others) from the in flight queue as well
       NS_LOG_DEBUG ("MSDU lifetime expired, drop MPDU");
-      return nextIt;
+      return (prevIt.has_value () ? std::next (prevIt.value ()) : it->second.second.begin ());
     }
 
   if (status == STAY_INFLIGHT)
@@ -605,6 +610,7 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
     {
       if (it->second.first.GetDistance ((*mpduIt)->GetHeader ().GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
         {
+          NS_LOG_DEBUG ("Dropping old MPDU: " << **mpduIt);
           m_queue->DequeueIfQueued (*mpduIt);
           if (!m_droppedOldMpduCallback.IsNull ())
             {
