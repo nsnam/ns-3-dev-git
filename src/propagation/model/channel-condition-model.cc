@@ -20,6 +20,7 @@
 #include "channel-condition-model.h"
 #include "ns3/log.h"
 #include "ns3/double.h"
+#include "ns3/boolean.h"
 #include "ns3/mobility-model.h"
 #include <cmath>
 #include "ns3/node.h"
@@ -310,6 +311,12 @@ ThreeGppChannelConditionModel::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&ThreeGppChannelConditionModel::m_o2iLowLossThreshold),
                    MakeDoubleChecker <double> (0, 1))
+    .AddAttribute ("LinkO2iConditionToAntennaHeight", "Specifies whether the O2I condition will "
+                   "be determined based on the UE height, i.e. if the UE height is 1.5 then it is O2O, "
+                   "otherwise it is O2I.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&ThreeGppChannelConditionModel::m_linkO2iConditionToAntennaHeight),
+                   MakeBooleanChecker())
   ;
   return tid;
 }
@@ -383,26 +390,38 @@ ThreeGppChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
 }
 
 ChannelCondition::O2iConditionValue
-ThreeGppChannelConditionModel::ComputeO2i (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const
+ThreeGppChannelConditionModel::ComputeO2i ([[maybe_unused]] Ptr<const MobilityModel> a,
+                                           [[maybe_unused]] Ptr<const MobilityModel> b) const
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
-
   // TODO this code should be changed to determine based on a and b positions,
   // whether they are indoor or outdoor the o2i condition
   // currently we just parametrize it
   double o2iProb = m_uniformVarO2i->GetValue (0, 1);
 
-  // TODO another thing to be done is to allow more states, not only O2i and O2o
-  if (o2iProb < m_o2iThreshold) //put 0.8 as a parameter
+  if (m_linkO2iConditionToAntennaHeight)
     {
-      NS_LOG_INFO ("Return O2i condition ....");
-      return ChannelCondition::O2iConditionValue::O2I;
+      if (std::min (a->GetPosition().z, b->GetPosition().z) == 1.5)
+        {
+          return ChannelCondition::O2iConditionValue::O2O;
+        }
+      else
+        {
+          return ChannelCondition::O2iConditionValue::O2I;
+        }
     }
   else
     {
-      NS_LOG_INFO ("Return O2o condition ....");
-      return ChannelCondition::O2iConditionValue::O2O;
+      // TODO another thing to be done is to allow more states, not only O2i and O2o
+      if (o2iProb < m_o2iThreshold)
+        {
+          NS_LOG_INFO ("Return O2i condition ....");
+          return ChannelCondition::O2iConditionValue::O2I;
+        }
+      else
+        {
+          NS_LOG_INFO ("Return O2o condition ....");
+          return ChannelCondition::O2iConditionValue::O2O;
+        }
     }
 }
 

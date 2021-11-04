@@ -254,11 +254,12 @@ ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss (Ptr<MobilityModel> a,
       // 10 m for RMa. 2D−in d shall be UT-specifically generated.
       double distance2dIn = GetO2iDistance2dIn ();
 
-      // calculate material penetration losses, see Table 7.4.3-1
-      lGlass = 2 + 0.2 * m_frequency/1e9; // m_frequency is operation frequency in Hz
-      lConcrete = 5 + 4 * m_frequency/1e9;
+      // calculate material penetration losses, see TR38.901 Table 7.4.3-1
+      lGlass = 2 + 0.2 * m_frequency / 1e9; // m_frequency is operation frequency in Hz
+      lConcrete = 5 + 4 * m_frequency / 1e9;
 
-      lowLossTw = 5 - 10 * log10 (0.3 * std::pow (10, -lGlass/10) + 0.7 * std::pow (10, -lConcrete/10));
+      lowLossTw = 5 - 10 * log10 (0.3 * std::pow (10, - lGlass / 10) +
+                                  0.7 * std::pow (10, - lConcrete / 10));
 
       // calculate indoor loss
       lossIn = 0.5 * distance2dIn;
@@ -324,11 +325,12 @@ ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss (Ptr<MobilityModel> a,
       // 10 m for RMa. 2D−in d shall be UT-specifically generated.
       double distance2dIn = GetO2iDistance2dIn ();
 
-      // calculate material penetration losses, see Table 7.4.3-1
-      lIIRGlass = 23 + 0.3 * m_frequency/1e9;
-      lConcrete = 5 + 4 * m_frequency/1e9;
+      // calculate material penetration losses, see TR38.901 Table 7.4.3-1
+      lIIRGlass = 23 + 0.3 * m_frequency / 1e9;
+      lConcrete = 5 + 4 * m_frequency / 1e9;
 
-      highLossTw = 5 - 10 * log10 (0.7 * std::pow (10, -lIIRGlass/10) + 0.3 * std::pow (10, -lConcrete/10));
+      highLossTw = 5 - 10 * log10 (0.7 * std::pow (10, - lIIRGlass / 10) +
+                                   0.3 * std::pow (10, - lConcrete / 10));
 
       // calculate indoor loss
       lossIn = 0.5 * distance2dIn;

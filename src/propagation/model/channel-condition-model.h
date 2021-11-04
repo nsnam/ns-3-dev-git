@@ -145,10 +145,10 @@ public:
    * Set the O2iLowHighConditionValue contaning the information about the O2I
    * penetration losses (low or high)
    *
-   * \param O2iLowHighConditionValue the O2iLowHighConditionValue
+   * \param o2iLowHighCondition the O2iLowHighConditionValue
    */
   void SetO2iLowHighCondition (O2iLowHighConditionValue o2iLowHighCondition);
-  
+
   /**
    * Return true if the channel condition is LOS
    *
@@ -208,8 +208,8 @@ private:
   LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel
   O2iConditionValue m_o2iCondition; //!< contains the information about the O2I state of the channel
   O2iLowHighConditionValue m_o2iLowHighCondition; //!< contains the information about the O2I low-high penetration losses
-  
-  /** 
+
+  /**
    * Prints a LosConditionValue to output
    * \param os the output stream
    * \param cond the LosConditionValue
@@ -519,6 +519,13 @@ private:
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const = 0;
 
   // TODO make this purely abstract function and all child classes should implement this
+  /**
+   * Compute the O2I Penetration Loss
+   *
+   * \param a tx mobility model
+   * \param b rx mobility model
+   * \return the O2I channelcondition
+   */
   virtual ChannelCondition::O2iConditionValue ComputeO2i (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
 
   /**
@@ -550,10 +557,9 @@ private:
   std::unordered_map<uint32_t, Item> m_channelConditionMap; //!< map to store the channel conditions
   Time m_updatePeriod; //!< the update period for the channel condition
 
-  // TODO review this description
-  double m_o2iThreshold {0}; //!< the threshold for determing what is the ration of channels with O2I
+  double m_o2iThreshold {0}; //!< the threshold for determing what is the ratio of channels with O2I
   double m_o2iLowLossThreshold {0}; //!< the threshold for determing what is the ratio of low - high O2I penetration losses
-  // TODO review this description
+  double m_linkO2iConditionToAntennaHeight {false}; //!< the indicator that determines whether the O2I/O2O condition is determined based on the UE height
   Ptr<UniformRandomVariable> m_uniformVarO2i; //!< uniform random variable that is used for the generation of the O2i conditions
   Ptr<UniformRandomVariable> m_uniformO2iLowHighLossVar; //!< a uniform random variable for the calculation of the low/high losses, see TR38.901 Table 7.4.3-2
 

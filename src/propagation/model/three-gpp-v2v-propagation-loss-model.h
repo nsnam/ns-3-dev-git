@@ -65,7 +65,17 @@ private:
    */
   virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
 
-  // TODO doxygen
+  /**
+   * \brief Returns the minimum of the two independently generated distances
+   *        according to the uniform distribution between the minimum and the maximum
+   *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+   *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and 10 m
+   *        for RMa.
+   *        According to 3GPP R38.091 this 2D−in distance shall be UT-specifically
+   *        generated. 2D−in distance is used for the low penetration losses
+   *        calculation according to 3GPP TR38.091 7.4.3.
+   * \return the distance in m
+   */
   virtual double GetO2iDistance2dIn () const override;
 
 
