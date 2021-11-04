@@ -80,7 +80,7 @@ Before creating bug reports, please check [this list](#before-submitting-a-bug-r
 #### Before Submitting A Bug Report (to be completed)
 
 * **Perform a [cursory search](https://gitlab.com/nsnam/ns-3-dev/issues)** to see if the problem has already been reported. If it has **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
-* **Check the [release notes](RELEASE_NOTES)** for a list of known bugs.
+* **Check the [release notes](RELEASE_NOTES.md)** for a list of known bugs.
 
 #### How Do I Submit A (Good) Bug Report?
 

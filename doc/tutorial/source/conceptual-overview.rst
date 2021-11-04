@@ -157,12 +157,11 @@ directory structure something like the following:
 
 .. sourcecode:: bash
 
-  AUTHORS       examples       scratch        utils      waf.bat*
-  bindings      LICENSE        src            utils.py   waf-tools
-  build         ns3            test.py*       utils.pyc  wscript
-  CHANGES.html  README         testpy-output  VERSION    wutils.py
-  doc           RELEASE_NOTES  testpy.supp    waf*       wutils.pyc
-
+  AUTHORS          doc        RELEASE_NOTES.md  utils     waf-tools
+  bindings         examples   scratch           utils.py  wscript
+  CHANGES.html     LICENSE    src               VERSION   wutils.py
+  contrib          Makefile   test.py           waf
+  CONTRIBUTING.md  README.md  testpy.supp       waf.bat
 
 Change into the ``examples/tutorial`` directory.  You should see a file named 
 ``first.cc`` located there.  This is a script that will create a simple
@@ -899,7 +898,7 @@ most of our *repositories* will look:
   -rw-r--r-- 2009-07-01 12:47 +0200 30961  CHANGES.html     file | revisions | annotate
   -rw-r--r-- 2009-07-01 12:47 +0200 17987  LICENSE          file | revisions | annotate
   -rw-r--r-- 2009-07-01 12:47 +0200 3742   README           file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 16171  RELEASE_NOTES    file | revisions | annotate
+  -rw-r--r-- 2009-07-01 12:47 +0200 16171  RELEASE_NOTES.md file | revisions | annotate
   -rw-r--r-- 2009-07-01 12:47 +0200 6      VERSION          file | revisions | annotate
   -rwxr-xr-x 2009-07-01 12:47 +0200 88110  waf              file | revisions | annotate
   -rwxr-xr-x 2009-07-01 12:47 +0200 28     waf.bat          file | revisions | annotate

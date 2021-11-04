@@ -61,7 +61,7 @@ open, add a comment to the existing issue instead of opening a new one.
 
 If you are reporting an issue against an older version of |ns3|, please
 scan the most recent
-`Release Notes <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/RELEASE_NOTES>`_ to see if it has been fixed since that release.
+`Release Notes <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/RELEASE_NOTES.md>`_ to see if it has been fixed since that release.
 
 If you then decide to list an issue, include details of your environment:
 

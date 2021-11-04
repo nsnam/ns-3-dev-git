@@ -245,7 +245,7 @@ update existing or write new documentation and example code. Consider the
 following checklist:
 
 * Doxygen should be added to header files for all public classes and methods, and should be checked for Doxygen errors
-* new features should be described in the ``RELEASE_NOTES``
+* new features should be described in the ``RELEASE_NOTES.md``
 * public API changes (if any) must be documented in ``CHANGES.html``
 * new API or changes to existing API must update the inline doxygen documentation in header files
 * consider updating or adding a new section to the manual (``doc/manual``) or

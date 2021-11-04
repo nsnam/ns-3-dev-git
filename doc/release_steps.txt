@@ -15,7 +15,7 @@ This overview covers the following release stages:
 During the software development phase, it is important for the release
 manager to try to maintain the following files with updated information:
 - AUTHORS
-- RELEASE_NOTES
+- RELEASE_NOTES.md
 - CHANGES.html
 
 otherwise, this becomes painful to edit (and things are forgotten)
@@ -32,7 +32,7 @@ and/or the buildbots have been testing
       -- ./waf --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
      are reporting 'pass' state, based on the tip of the repository
-   - revise and check in AUTHORS, RELEASE_NOTES, and CHANGES.html
+   - revise and check in AUTHORS, RELEASE_NOTES.md, and CHANGES.html
    - required versions for related libraries (netanim, pybindgen)
      are correct
    - confirm that Doxygen builds cleanly (./waf doxygen), 
@@ -193,7 +193,7 @@ Announcing
 4) maintaining the release
 --------------------------
 
-First, create skeletal sections in CHANGES.html and RELEASE_NOTES to
+First, create skeletal sections in CHANGES.html and RELEASE_NOTES.md to
 start collecting inputs for the ns-3.(x+1) release.
 
 The project may decide to make incremental, bug-fix releases from
