@@ -62,6 +62,10 @@ ThreeGppPropagationLossModel::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&ThreeGppPropagationLossModel::m_enforceRanges),
                    MakeBooleanChecker ())
+    .AddAttribute ("BuildingPenetrationLossesEnabled", "Enable/disable Building Penetration Losses.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&ThreeGppPropagationLossModel::m_buildingPenLossesEnabled),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -162,6 +166,23 @@ ThreeGppPropagationLossModel::DoCalcRxPower (double txPowerDbm,
       rxPow -= GetShadowing (a, b, cond->GetLosCondition ());
     }
 
+  //get o2i losses
+  if (cond->GetO2iCondition () == ChannelCondition::O2iConditionValue::O2I && m_buildingPenLossesEnabled)
+    {
+      if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::LOW)
+        {
+          rxPow -= GetO2iLowPenetrationLoss (a, b, cond->GetLosCondition ());
+        }
+      else if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::HIGH)
+        {
+          rxPow -= GetO2iHighPenetrationLoss (a, b, cond->GetLosCondition ());
+        }
+      else
+      {
+        NS_ABORT_MSG ("If we have set the O2I condition, we shouldn't be here");
+      }
+    }
+
   return rxPow;
 }
 
@@ -188,81 +209,145 @@ ThreeGppPropagationLossModel::GetLoss (Ptr<ChannelCondition> cond, double distan
       NS_FATAL_ERROR ("Unknown channel condition");
     }
 
-  if (cond->GetO2iCondition () == ChannelCondition::O2iConditionValue::O2I)
-    {
-      if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::LOW)
-        {
-          loss += GetO2iLowPenetrationLoss ();
-        }
-      else if (cond->GetO2iLowHighCondition () == ChannelCondition::O2iLowHighConditionValue::HIGH)
-        {
-          loss += GetO2iHighPenetrationLoss ();
-        }
-      else
-      {
-        NS_ABORT_MSG ("If we have set the O2I condition, we shouldn't be here");
-      }
-    }
-
   return loss;
 }
 
 double
-ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss () const
+ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss (Ptr<MobilityModel> a,
+                                                        Ptr<MobilityModel> b,
+                                                        ChannelCondition::LosConditionValue cond) const
 {
-   double lowLossTw = 0;
-   double lossIn = 0;
-   double lowlossStdDeviation = 0;
-   double lGlass = 0;
-   double lConcrete = 0;
+  NS_LOG_FUNCTION (this);
 
-   // distance2dIn is minimum of two independently generated uniformly distributed
-   // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
-   // 10 m for RMa. 2D−in d shall be UT-specifically generated.
-   double distance2dIn = GetO2iDistance2dIn ();
+  double o2iLossValue = 0;
+  double lowLossTw = 0;
+  double lossIn = 0;
+  double lowlossNormalVariate = 0;
+  double lGlass = 0;
+  double lConcrete = 0;
 
-   // calculate material penetration losses, see Table 7.4.3-1
-   lGlass = 2 + 0.2 * m_frequency/1e9; // m_frequency is operation frequency in Hz
-   lConcrete = 5 + 4 * m_frequency/1e9;
+  // compute the channel key
+  uint32_t key = GetKey (a, b);
 
-   lowLossTw = 5 - 10 * log10 (0.3 * std::pow (10, -lGlass/10) + 0.7 * std::pow (10, -lConcrete/10));
+  bool notFound = false; // indicates if the o2iLoss value has not been computed yet
+  bool newCondition = false; // indicates if the channel condition has changed
 
-   // calculate indoor loss
-   lossIn = 0.5 * distance2dIn;
+  auto it = m_o2iLossMap.end (); // the o2iLoss map iterator
+  if (m_o2iLossMap.find (key) != m_o2iLossMap.end ())
+    {
+      // found the o2iLoss value in the map
+      it = m_o2iLossMap.find (key);
+      newCondition = (it->second.m_condition != cond); // true if the condition changed
+    }
+  else
+    {
+      notFound = true;
+      // add a new entry in the map and update the iterator
+      O2iLossMapItem newItem;
+      it = m_o2iLossMap.insert (it, std::make_pair (key, newItem));
+    }
 
-   // calculate low loss standard deviation
-   lowlossStdDeviation = m_normalO2iLowLossVar->GetValue ();
+  if (notFound || newCondition)
+    {
+      // distance2dIn is minimum of two independently generated uniformly distributed
+      // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
+      // 10 m for RMa. 2D−in d shall be UT-specifically generated.
+      double distance2dIn = GetO2iDistance2dIn ();
 
-   return lowLossTw + lossIn + lowlossStdDeviation;
+      // calculate material penetration losses, see Table 7.4.3-1
+      lGlass = 2 + 0.2 * m_frequency/1e9; // m_frequency is operation frequency in Hz
+      lConcrete = 5 + 4 * m_frequency/1e9;
+
+      lowLossTw = 5 - 10 * log10 (0.3 * std::pow (10, -lGlass/10) + 0.7 * std::pow (10, -lConcrete/10));
+
+      // calculate indoor loss
+      lossIn = 0.5 * distance2dIn;
+
+      // calculate low loss standard deviation
+      lowlossNormalVariate = m_normalO2iLowLossVar->GetValue ();
+
+      o2iLossValue = lowLossTw + lossIn + lowlossNormalVariate;
+    }
+  else
+    {
+      o2iLossValue = it->second.m_o2iLoss;
+    }
+
+  // update the entry in the map
+  it->second.m_o2iLoss = o2iLossValue;
+  it->second.m_condition = cond;
+
+  return o2iLossValue;
 }
 
 double
-ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss () const
+ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss (Ptr<MobilityModel> a,
+                                                         Ptr<MobilityModel> b,
+                                                         ChannelCondition::LosConditionValue cond) const
 {
-   double highLossTw = 0;
-   double lossIn = 0;
-   double highlossStdDeviation = 0;
-   double lIIRGlass = 0;
-   double lConcrete = 0;
+  NS_LOG_FUNCTION (this);
 
-   // distance2dIn is minimum of two independently generated uniformly distributed
-   // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
-   // 10 m for RMa. 2D−in d shall be UT-specifically generated.
-   double distance2dIn = GetO2iDistance2dIn ();
+  double o2iLossValue = 0;
+  double highLossTw = 0;
+  double lossIn = 0;
+  double highlossNormalVariate = 0;
+  double lIIRGlass = 0;
+  double lConcrete = 0;
 
-   // calculate material penetration losses, see Table 7.4.3-1
-   lIIRGlass = 23 + 0.3 * m_frequency/1e9;
-   lConcrete = 5 + 4 * m_frequency/1e9;
+  // compute the channel key
+  uint32_t key = GetKey (a, b);
 
-   highLossTw = 5 - 10 * log10 (0.7 * std::pow (10, -lIIRGlass/10) + 0.3 * std::pow (10, -lConcrete/10));
+  bool notFound = false; // indicates if the o2iLoss value has not been computed yet
+  bool newCondition = false; // indicates if the channel condition has changed
 
-   // calculate indoor loss
-   lossIn = 0.5 * distance2dIn;
+  auto it = m_o2iLossMap.end (); // the o2iLoss map iterator
+  if (m_o2iLossMap.find (key) != m_o2iLossMap.end ())
+    {
+      // found the o2iLoss value in the map
+      it = m_o2iLossMap.find (key);
+      newCondition = (it->second.m_condition != cond); // true if the condition changed
+    }
+  else
+    {
+      notFound = true;
+      // add a new entry in the map and update the iterator
+      O2iLossMapItem newItem;
+      it = m_o2iLossMap.insert (it, std::make_pair (key, newItem));
+    }
 
-   // calculate low loss standard deviation
-   highlossStdDeviation = m_normalO2iHighLossVar->GetValue ();
+  if (notFound || newCondition)
+    {
+      // generate a new independent realization
 
-   return highLossTw + lossIn + highlossStdDeviation;
+      // distance2dIn is minimum of two independently generated uniformly distributed
+      // variables between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and
+      // 10 m for RMa. 2D−in d shall be UT-specifically generated.
+      double distance2dIn = GetO2iDistance2dIn ();
+
+      // calculate material penetration losses, see Table 7.4.3-1
+      lIIRGlass = 23 + 0.3 * m_frequency/1e9;
+      lConcrete = 5 + 4 * m_frequency/1e9;
+
+      highLossTw = 5 - 10 * log10 (0.7 * std::pow (10, -lIIRGlass/10) + 0.3 * std::pow (10, -lConcrete/10));
+
+      // calculate indoor loss
+      lossIn = 0.5 * distance2dIn;
+
+      // calculate low loss standard deviation
+      highlossNormalVariate = m_normalO2iHighLossVar->GetValue ();
+
+      o2iLossValue = highLossTw + lossIn + highlossNormalVariate;
+    }
+  else
+    {
+      o2iLossValue = it->second.m_o2iLoss;
+    }
+
+  // update the entry in the map
+  it->second.m_o2iLoss = o2iLossValue;
+  it->second.m_condition = cond;
+
+  return o2iLossValue;
 }
 
 double

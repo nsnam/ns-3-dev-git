@@ -120,9 +120,31 @@ private:
   virtual double GetO2iDistance2dIn () const = 0;
 
   // TODO all child classes should implement this function and this function should be purely virtual
-  virtual double GetO2iLowPenetrationLoss () const;
+  /**
+  * \brief Retrieves the o2i Loss value by looking at m_o2iLossMap.
+  *        If not found or if the channel condition changed it generates a new
+  *        independent realization and stores it in the map, otherwise it calculates
+  *        a new value as defined in 3GPP TR38.901 7.4.3.
+  * \param a tx mobility model (used for the key calculation)
+  * \param b rx mobility model (used for the key calculation)
+  * \param cond the LOS/NLOS channel condition
+  * \return o2iLoss
+  */
+  virtual double GetO2iLowPenetrationLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b,
+                                           ChannelCondition::LosConditionValue cond) const;
 
-  virtual double GetO2iHighPenetrationLoss () const;
+  /**
+  * \brief Retrieves the o2i Loss value by looking at m_o2iLossMap.
+  *        If not found or if the channel condition changed it generates a new
+  *        independent realization and stores it in the map, otherwise it calculates
+  *        a new value as defined in 3GPP TR38.901 7.4.3.
+  * \param a tx mobility model (used for the key calculation)
+  * \param b rx mobility model (used for the key calculation)
+  * \param cond the LOS/NLOS channel condition
+  * \return o2iLoss
+  */
+  virtual double GetO2iHighPenetrationLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b,
+                                            ChannelCondition::LosConditionValue cond) const;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -226,6 +248,7 @@ protected:
   double m_frequency; //!< operating frequency in Hz
   bool m_shadowingEnabled; //!< enable/disable shadowing
   bool m_enforceRanges; //!< strictly enforce TR 38.901 parameter ranges
+  bool m_buildingPenLossesEnabled; //!< enable/disable building penetration losses
   Ptr<NormalRandomVariable> m_normRandomVariable; //!< normal random variable
 
   /** Define a struct for the m_shadowingMap entries */
@@ -237,6 +260,16 @@ protected:
   };
 
   mutable std::unordered_map<uint32_t, ShadowingMapItem> m_shadowingMap; //!< map to store the shadowing values
+
+  /** Define a struct for the m_o2iLossMap entries */
+  struct O2iLossMapItem
+  {
+    double m_o2iLoss; //!< the o2i loss in dB
+    ChannelCondition::LosConditionValue m_condition; //!< the LOS/NLOS condition
+  };
+
+  mutable std::unordered_map<uint32_t, O2iLossMapItem> m_o2iLossMap; //!< map to store the o2i Loss values
+
 
   Ptr<UniformRandomVariable> m_randomO2iVar1; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
   Ptr<UniformRandomVariable> m_randomO2iVar2; //!< a uniform random variable for the calculation of the indoor loss, see TR38.901 Table 7.4.3-2
