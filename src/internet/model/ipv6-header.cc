@@ -194,7 +194,7 @@ uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
     }
 
   m_trafficClass = (uint8_t)((vTcFl >> 20) & 0x000000ff);
-  m_flowLabel = vTcFl & 0xfff00000;
+  m_flowLabel = vTcFl & 0xfffff;
   m_payloadLength = i.ReadNtohU16 ();
   m_nextHeader = i.ReadU8 ();
   m_hopLimit = i.ReadU8 ();
