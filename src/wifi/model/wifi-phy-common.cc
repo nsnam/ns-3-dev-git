@@ -102,6 +102,18 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     {
       return WIFI_PREAMBLE_HE_SU;
     }
+  else if (modulation == WIFI_MOD_CLASS_DMG_CTRL)
+    {
+      return WIFI_PREAMBLE_DMG_CTRL;
+    }
+  else if (modulation == WIFI_MOD_CLASS_DMG_SC)
+    {
+      return WIFI_PREAMBLE_DMG_SC;
+    }
+  else if (modulation == WIFI_MOD_CLASS_DMG_OFDM)
+    {
+      return WIFI_PREAMBLE_DMG_OFDM;
+    }
   else if (modulation == WIFI_MOD_CLASS_VHT)
     {
       return WIFI_PREAMBLE_VHT_SU;

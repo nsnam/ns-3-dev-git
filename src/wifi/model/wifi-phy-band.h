@@ -37,6 +37,8 @@ enum WifiPhyBand
   WIFI_PHY_BAND_5GHZ,
   /** The 6 GHz band */
   WIFI_PHY_BAND_6GHZ,
+  /** The 60 GHz band */
+  WIFI_PHY_BAND_60GHZ,
   /** Unspecified */
   WIFI_PHY_BAND_UNSPECIFIED
 };
@@ -58,6 +60,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyBand band)
       return (os << "5GHz");
     case WIFI_PHY_BAND_6GHZ:
       return (os << "6GHz");
+    case WIFI_PHY_BAND_60GHZ:
+      return (os << "60GHz");
     default:
       return (os << "INVALID");
     }

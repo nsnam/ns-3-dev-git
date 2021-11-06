@@ -41,6 +41,7 @@ enum WifiStandard
   WIFI_STANDARD_80211p,
   WIFI_STANDARD_80211n,
   WIFI_STANDARD_80211ac,
+  WIFI_STANDARD_80211ad,
   WIFI_STANDARD_80211ax,
   WIFI_STANDARD_80211be
 };
@@ -68,6 +69,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiStandard standard)
       return (os << "802.11n");
     case WIFI_STANDARD_80211ac:
       return (os << "802.11ac");
+    case WIFI_STANDARD_80211ad:
+      return (os << "802.11ad");
     case WIFI_STANDARD_80211ax:
       return (os << "802.11ax");
     case WIFI_STANDARD_80211be:
@@ -89,6 +92,7 @@ const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards =
   { WIFI_STANDARD_80211p, { WIFI_PHY_BAND_5GHZ } },
   { WIFI_STANDARD_80211n, { WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ } },
   { WIFI_STANDARD_80211ac, { WIFI_PHY_BAND_5GHZ } },
+  { WIFI_STANDARD_80211ad, { WIFI_PHY_BAND_60GHZ } },
   { WIFI_STANDARD_80211ax, { WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ } },
   { WIFI_STANDARD_80211be, { WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ } }
 };
@@ -146,6 +150,8 @@ inline uint16_t GetMaximumChannelWidth (WifiStandard standard)
       case WIFI_STANDARD_80211ax:
       case WIFI_STANDARD_80211be:
         return 160;
+      case WIFI_STANDARD_80211ad:
+        return 2160;
       default:
         NS_ABORT_MSG ("Unknown standard: " << standard);
         return 0;
@@ -169,6 +175,8 @@ inline uint16_t GetDefaultChannelWidth (WifiStandard standard, WifiPhyBand band)
       return 10;
     case WIFI_STANDARD_80211ac:
       return 80;
+    case WIFI_STANDARD_80211ad:
+      return 2160;
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
       return (band == WIFI_PHY_BAND_2_4GHZ ? 20 : 80);
@@ -193,6 +201,8 @@ inline WifiPhyBand GetDefaultPhyBand (WifiStandard standard)
     case WIFI_STANDARD_80211ax:
     case WIFI_STANDARD_80211be:
       return WIFI_PHY_BAND_5GHZ;
+    case WIFI_STANDARD_80211ad:
+      return WIFI_PHY_BAND_60GHZ;
     default:
       return WIFI_PHY_BAND_2_4GHZ;
     }

@@ -60,6 +60,14 @@ const uint16_t WIFI_CODE_RATE_1_2 = 1;       //!< 1/2 coding rate
 const uint16_t WIFI_CODE_RATE_2_3 = 2;       //!< 2/3 coding rate
 const uint16_t WIFI_CODE_RATE_3_4 = 3;       //!< 3/4 coding rate
 const uint16_t WIFI_CODE_RATE_5_6 = 4;       //!< 5/6 coding rate
+const uint16_t WIFI_CODE_RATE_5_8 = 5;       //!< 5/8 coding rate
+const uint16_t WIFI_CODE_RATE_13_16 = 6;     //!< 13/16 coding rate
+const uint16_t WIFI_CODE_RATE_1_4 = 7;       //!< 1/4 coding rate
+const uint16_t WIFI_CODE_RATE_13_28 = 8;     //!< 13/28 coding rate
+const uint16_t WIFI_CODE_RATE_13_21 = 9;     //!< 13/21 coding rate
+const uint16_t WIFI_CODE_RATE_52_63 = 10;    //!< 52/63 coding rate
+const uint16_t WIFI_CODE_RATE_13_14 = 11;    //!< 13/14 coding rate
+const uint16_t WIFI_CODE_RATE_7_8 = 12;      //!< 7/8 coding rate
 
 /**
  * \ingroup wifi
@@ -72,6 +80,9 @@ enum WifiPreamble
   WIFI_PREAMBLE_HT_MF,
   WIFI_PREAMBLE_VHT_SU,
   WIFI_PREAMBLE_VHT_MU,
+  WIFI_PREAMBLE_DMG_CTRL,
+  WIFI_PREAMBLE_DMG_SC,
+  WIFI_PREAMBLE_DMG_OFDM,
   WIFI_PREAMBLE_HE_SU,
   WIFI_PREAMBLE_HE_ER_SU,
   WIFI_PREAMBLE_HE_MU,
@@ -101,6 +112,12 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPreamble &preamble)
         return (os << "VHT_SU");
       case WIFI_PREAMBLE_VHT_MU:
         return (os << "VHT_MU");
+      case WIFI_PREAMBLE_DMG_CTRL:
+        return (os << "DMG_CTRL");
+      case WIFI_PREAMBLE_DMG_SC:
+        return (os << "DMG_SC");
+      case WIFI_PREAMBLE_DMG_OFDM:
+        return (os << "DMG_OFDM");
       case WIFI_PREAMBLE_HE_SU:
         return (os << "HE_SU");
       case WIFI_PREAMBLE_HE_ER_SU:
@@ -136,6 +153,10 @@ enum WifiModulationClass
   WIFI_MOD_CLASS_OFDM,     //!< OFDM (Clause 17)
   WIFI_MOD_CLASS_HT,       //!< HT (Clause 19)
   WIFI_MOD_CLASS_VHT,      //!< VHT (Clause 22)
+  WIFI_MOD_CLASS_DMG_CTRL, //!< DMG (Clause 21)
+  WIFI_MOD_CLASS_DMG_OFDM, //!< DMG (Clause 21)
+  WIFI_MOD_CLASS_DMG_SC,   //!< DMG (Clause 21)
+  WIFI_MOD_CLASS_DMG_LP_SC,//!< DMG (Clause 21)
   WIFI_MOD_CLASS_HE,       //!< HE (Clause 27)
   WIFI_MOD_CLASS_EHT       //!< EHT (Clause 36)
 };
@@ -163,6 +184,14 @@ inline std::ostream& operator<< (std::ostream &os, const WifiModulationClass &mo
         return (os << "HT");
       case WIFI_MOD_CLASS_VHT:
         return (os << "VHT");
+      case WIFI_MOD_CLASS_DMG_CTRL:
+        return (os << "DMG_CTRL");
+      case WIFI_MOD_CLASS_DMG_OFDM:
+        return (os << "DMG_OFDM");
+      case WIFI_MOD_CLASS_DMG_SC:
+        return (os << "DMG_SC");
+      case WIFI_MOD_CLASS_DMG_LP_SC:
+        return (os << "DMG_LP_SC");
       case WIFI_MOD_CLASS_HE:
         return (os << "HE");
       case WIFI_MOD_CLASS_EHT:
