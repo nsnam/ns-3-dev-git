@@ -45,6 +45,16 @@ enum WifiMacType
   WIFI_MAC_CTL_END,
   WIFI_MAC_CTL_END_ACK,
 
+  WIFI_MAC_CTL_DMG_POLL,
+  WIFI_MAC_CTL_DMG_SPR,
+  WIFI_MAC_CTL_DMG_GRANT,
+  WIFI_MAC_CTL_DMG_CTS,
+  WIFI_MAC_CTL_DMG_DTS,
+  WIFI_MAC_CTL_DMG_SSW,
+  WIFI_MAC_CTL_DMG_SSW_FBCK,
+  WIFI_MAC_CTL_DMG_SSW_ACK,
+  WIFI_MAC_CTL_DMG_GRANT_ACK,
+
   WIFI_MAC_MGT_BEACON,
   WIFI_MAC_MGT_ASSOCIATION_REQUEST,
   WIFI_MAC_MGT_ASSOCIATION_RESPONSE,
@@ -74,6 +84,8 @@ enum WifiMacType
   WIFI_MAC_QOSDATA_NULL,
   WIFI_MAC_QOSDATA_NULL_CFPOLL,
   WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL,
+
+  WIFI_MAC_EXTENSION_DMG_BEACON,
 };
 
 /**
@@ -473,6 +485,12 @@ public:
    */
   bool IsAction (void) const;
   /**
+   * Return true if the header is an Action No Ack header.
+   *
+   * \return true if the header is an Action No Ack header, false otherwise
+   */
+  bool IsActionNoAck (void) const;
+  /**
    * Check if the header is a Multihop action header.
    *
    * \return true if the header is a Multihop action header,
@@ -515,6 +533,12 @@ public:
    * \return true if the Retry bit is set, false otherwise
    */
   bool IsRetry (void) const;
+  /**
+   * Return if the More Data bit is set.
+   *
+   * \return true if the More Data bit is set, false otherwise
+   */
+  bool IsMoreData (void) const;
   /**
    * Return if the More Fragment bit is set.
    *

@@ -281,6 +281,8 @@ WifiMacHeader::SetType (WifiMacType type, bool resetToDsFromDs)
       m_ctrlType = TYPE_DATA;
       m_ctrlSubtype = 15;
       break;
+    default:
+      break;
     }
   if (resetToDsFromDs)
     {
@@ -732,6 +734,12 @@ WifiMacHeader::IsAction (void) const
 }
 
 bool
+WifiMacHeader::IsActionNoAck () const
+{
+  return (GetType () == WIFI_MAC_MGT_ACTION_NO_ACK);
+}
+
+bool
 WifiMacHeader::IsMultihopAction (void) const
 {
   return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION);
@@ -789,6 +797,12 @@ bool
 WifiMacHeader::IsRetry (void) const
 {
   return (m_ctrlRetry == 1);
+}
+
+bool
+WifiMacHeader::IsMoreData (void) const
+{
+  return (m_ctrlMoreData == 1);
 }
 
 bool
