@@ -172,9 +172,41 @@ typedef uint8_t WifiInformationElementId;
 #define IE_MIC                                  ((WifiInformationElementId)140)
 #define IE_DESTINATION_URI                      ((WifiInformationElementId)141)
 #define IE_UAPSD_COEXISTENCE                    ((WifiInformationElementId)142)
-// 143 to 173 are reserved
+#define IE_DMG_WAKEUP_SCHEDULE                  ((WifiInformationElementId)143)
+#define IE_EXTENDED_SCHEDULE                    ((WifiInformationElementId)144)
+#define IE_STA_AVAILABILITY                     ((WifiInformationElementId)145)
+#define IE_DMG_TSPEC                            ((WifiInformationElementId)146)
+#define IE_NEXT_DMG_ATI                         ((WifiInformationElementId)147)
+#define IE_DMG_CAPABILITIES                     ((WifiInformationElementId)148)
+// 149 to 150 are reserved
+#define IE_DMG_OPERATION                        ((WifiInformationElementId)151)
+#define IE_DMG_BSS_PARAMETER_CHANGE             ((WifiInformationElementId)152)
+#define IE_DMG_BEAM_REFINEMENT                  ((WifiInformationElementId)153)
+#define IE_CHANNEL_MEASUREMENT_FEEDBACK         ((WifiInformationElementId)154)
+// 155 to 156 are reserved
+#define IE_AWAKE_WINDOW                         ((WifiInformationElementId)157)
+#define IE_MULTI_BAND                           ((WifiInformationElementId)158)
+#define IE_ADDBA_EXTENSION                      ((WifiInformationElementId)159)
+#define IE_NEXT_PCP_LIST                        ((WifiInformationElementId)160)
+#define IE_PCP_HANDOVER                         ((WifiInformationElementId)161)
+#define IE_DMG_LINK_MARGIN                      ((WifiInformationElementId)162)
+#define IE_SWITCHING_STREAM                     ((WifiInformationElementId)163)
+#define IE_SESSION_TRANSITION                   ((WifiInformationElementId)164)
+#define IE_DYNAMIC_TONE_PAIRING_REPORT          ((WifiInformationElementId)165)
+#define IE_CLUSTER_REPORT                       ((WifiInformationElementId)166)
+#define IE_RELAY_CAPABILITIES                   ((WifiInformationElementId)167)
+#define IE_RELAY_TRANSFER_PARAMETER_SET         ((WifiInformationElementId)168)
+#define IE_BEAMLINK_MAINENANCE                  ((WifiInformationElementId)169)
+// 170 to 171 are reserved
+#define IE_DMG_LINK_ADAPTATION_ACKNOWLEDGMENT   ((WifiInformationElementId)172)
+// 173 is reserved
 #define IE_MCCAOP_ADVERTISEMENT_OVERVIEW        ((WifiInformationElementId)174)
-// 175 to 190 are reserved
+#define IE_QUIET_PERIOD_REQUEST                 ((WifiInformationElementId)175)
+// 176 is reserved
+#define IE_QUIET_PERIOD_RESPONSE                ((WifiInformationElementId)177)
+// 178 to 181 are reserved
+#define IE_ECPAC_POLICY                         ((WifiInformationElementId)182)
+// 183 to 190 are reserved
 #define IE_VHT_CAPABILITIES                     ((WifiInformationElementId)191)
 #define IE_VHT_OPERATION                        ((WifiInformationElementId)192)
 #define IE_EXTENDED_BSS_LOAD                    ((WifiInformationElementId)193)
