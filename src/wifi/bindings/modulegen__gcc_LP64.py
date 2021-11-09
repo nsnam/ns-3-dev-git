@@ -65,7 +65,7 @@ def register_types(module):
     ## wifi-phy-common.h (module 'wifi'): ns3::WifiPpduType [enumeration]
     module.add_enum('WifiPpduType', ['WIFI_PPDU_TYPE_SU', 'WIFI_PPDU_TYPE_DL_MU', 'WIFI_PPDU_TYPE_UL_MU'])
     ## wifi-phy-common.h (module 'wifi'): ns3::WifiPhyRxfailureReason [enumeration]
-    module.add_enum('WifiPhyRxfailureReason', ['UNKNOWN', 'UNSUPPORTED_SETTINGS', 'CHANNEL_SWITCHING', 'RXING', 'TXING', 'SLEEPING', 'BUSY_DECODING_PREAMBLE', 'PREAMBLE_DETECT_FAILURE', 'RECEPTION_ABORTED_BY_TX', 'L_SIG_FAILURE', 'HT_SIG_FAILURE', 'SIG_A_FAILURE', 'SIG_B_FAILURE', 'PREAMBLE_DETECTION_PACKET_SWITCH', 'FRAME_CAPTURE_PACKET_SWITCH', 'OBSS_PD_CCA_RESET', 'HE_TB_PPDU_TOO_LATE', 'FILTERED'])
+    module.add_enum('WifiPhyRxfailureReason', ['UNKNOWN', 'UNSUPPORTED_SETTINGS', 'CHANNEL_SWITCHING', 'RXING', 'TXING', 'SLEEPING', 'POWERED_OFF', 'TRUNCATED_TX', 'BUSY_DECODING_PREAMBLE', 'PREAMBLE_DETECT_FAILURE', 'RECEPTION_ABORTED_BY_TX', 'L_SIG_FAILURE', 'HT_SIG_FAILURE', 'SIG_A_FAILURE', 'SIG_B_FAILURE', 'PREAMBLE_DETECTION_PACKET_SWITCH', 'FRAME_CAPTURE_PACKET_SWITCH', 'OBSS_PD_CCA_RESET', 'HE_TB_PPDU_TOO_LATE', 'FILTERED'])
     ## log.h (module 'core'): ns3::LogLevel [enumeration]
     module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME', 'LOG_PREFIX_NODE', 'LOG_PREFIX_LEVEL', 'LOG_PREFIX_ALL'], import_from_module='ns.core')
     ## address.h (module 'network'): ns3::Address [class]
@@ -17522,19 +17522,14 @@ def register_Ns3HeCapabilities_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHeLtfAndGiForHePpdus() const [member function]
-    cls.add_method('GetHeLtfAndGiForHePpdus', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## he-capabilities.h (module 'wifi'): uint32_t ns3::HeCapabilities::GetHeMacCapabilitiesInfo1() const [member function]
     cls.add_method('GetHeMacCapabilitiesInfo1', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHeMacCapabilitiesInfo2() const [member function]
+    ## he-capabilities.h (module 'wifi'): uint16_t ns3::HeCapabilities::GetHeMacCapabilitiesInfo2() const [member function]
     cls.add_method('GetHeMacCapabilitiesInfo2', 
-                   'uint8_t', 
+                   'uint16_t', 
                    [], 
                    is_const=True)
     ## he-capabilities.h (module 'wifi'): uint64_t ns3::HeCapabilities::GetHePhyCapabilitiesInfo1() const [member function]
@@ -17542,9 +17537,24 @@ def register_Ns3HeCapabilities_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
-    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHePhyCapabilitiesInfo2() const [member function]
+    ## he-capabilities.h (module 'wifi'): uint16_t ns3::HeCapabilities::GetHePhyCapabilitiesInfo2() const [member function]
     cls.add_method('GetHePhyCapabilitiesInfo2', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHePhyCapabilitiesInfo3() const [member function]
+    cls.add_method('GetHePhyCapabilitiesInfo3', 
                    'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## he-capabilities.h (module 'wifi'): bool ns3::HeCapabilities::GetHePpdu4xHeLtf800nsGi() const [member function]
+    cls.add_method('GetHePpdu4xHeLtf800nsGi', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## he-capabilities.h (module 'wifi'): bool ns3::HeCapabilities::GetHeSuPpdu1xHeLtf800nsGi() const [member function]
+    cls.add_method('GetHeSuPpdu1xHeLtf800nsGi', 
+                   'bool', 
                    [], 
                    is_const=True)
     ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHighestMcsSupported() const [member function]
@@ -17606,18 +17616,22 @@ def register_Ns3HeCapabilities_methods(root_module, cls):
     cls.add_method('SetChannelWidthSet', 
                    'void', 
                    [param('uint8_t', 'channelWidthSet')])
-    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHeLtfAndGiForHePpdus(uint8_t heLtfAndGiForHePpdus) [member function]
-    cls.add_method('SetHeLtfAndGiForHePpdus', 
-                   'void', 
-                   [param('uint8_t', 'heLtfAndGiForHePpdus')])
-    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHeMacCapabilitiesInfo(uint32_t ctrl1, uint8_t ctrl2) [member function]
+    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHeMacCapabilitiesInfo(uint32_t ctrl1, uint16_t ctrl2) [member function]
     cls.add_method('SetHeMacCapabilitiesInfo', 
                    'void', 
-                   [param('uint32_t', 'ctrl1'), param('uint8_t', 'ctrl2')])
-    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHePhyCapabilitiesInfo(uint64_t ctrl1, uint8_t ctrl2) [member function]
+                   [param('uint32_t', 'ctrl1'), param('uint16_t', 'ctrl2')])
+    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHePhyCapabilitiesInfo(uint64_t ctrl1, uint16_t ctrl2, uint8_t ctrl3) [member function]
     cls.add_method('SetHePhyCapabilitiesInfo', 
                    'void', 
-                   [param('uint64_t', 'ctrl1'), param('uint8_t', 'ctrl2')])
+                   [param('uint64_t', 'ctrl1'), param('uint16_t', 'ctrl2'), param('uint8_t', 'ctrl3')])
+    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHePpdu4xHeLtf800nsGi(bool heSuPpdu4xHeLtf800nsGi) [member function]
+    cls.add_method('SetHePpdu4xHeLtf800nsGi', 
+                   'void', 
+                   [param('bool', 'heSuPpdu4xHeLtf800nsGi')])
+    ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHeSuPpdu1xHeLtf800nsGi(bool heSuPpdu1xHeLtf800nsGi) [member function]
+    cls.add_method('SetHeSuPpdu1xHeLtf800nsGi', 
+                   'void', 
+                   [param('bool', 'heSuPpdu1xHeLtf800nsGi')])
     ## he-capabilities.h (module 'wifi'): void ns3::HeCapabilities::SetHeSupported(uint8_t heSupported) [member function]
     cls.add_method('SetHeSupported', 
                    'void', 
