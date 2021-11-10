@@ -571,11 +571,15 @@ void
 LteEnbRrc::DoSendReleaseDataRadioBearer (uint64_t imsi, uint16_t rnti, uint8_t bearerId)
 {
   NS_LOG_FUNCTION (this << imsi << rnti << (uint16_t) bearerId);
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  // Bearer de-activation towards UE
-  ueManager->ReleaseDataRadioBearer (bearerId);
-  // Bearer de-activation indication towards epc-enb application
-  m_s1SapProvider->DoSendReleaseIndication (imsi,rnti,bearerId);
+
+  // check if the RNTI to be removed is not stale
+  if (HasUeManager (rnti)) {
+    Ptr<UeManager> ueManager = GetUeManager (rnti);
+    // Bearer de-activation towards UE
+    ueManager->ReleaseDataRadioBearer (bearerId);
+    // Bearer de-activation indication towards epc-enb application
+    m_s1SapProvider->DoSendReleaseIndication (imsi,rnti,bearerId);
+  }
 }
 
 void
@@ -996,7 +1000,7 @@ UeManager::RecvHandoverPreparationFailure (uint16_t cellId)
       NS_LOG_INFO ("target eNB sent HO preparation failure, aborting HO");
       SwitchToState (CONNECTED_NORMALLY);
       break;
-    case HANDOVER_LEAVING: //case added to tackle HO joining timer expiration
+    case HANDOVER_LEAVING: //case added to tackle HO leaving timer expiration
       NS_ASSERT (cellId == m_targetCellId);
       NS_LOG_INFO ("target eNB sent HO preparation failure, aborting HO");
       m_handoverLeavingTimeout.Cancel ();
@@ -1034,6 +1038,14 @@ UeManager::RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_state == HANDOVER_LEAVING, "method unexpected in state " << ToString (m_state));
   m_handoverLeavingTimeout.Cancel ();
+}
+
+void
+UeManager::RecvHandoverCancel (EpcX2SapUser::HandoverCancelParams params)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_state == HANDOVER_JOINING, "method unexpected in state " << ToString (m_state));
+  m_handoverJoiningTimeout.Cancel ();
 }
 
 void
@@ -2541,17 +2553,20 @@ LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
                  "HandoverJoiningTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
   m_handoverFailureJoiningTrace (GetUeManager (rnti)->GetImsi (), rnti,
                                  ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
-  /**
-   * When the handover joining timer expires at the target cell,
-   * then notify the source cell to release the RRC connection and
-   * delete the UE context at eNodeB and SGW/PGW. The
-   * HandoverPreparationFailure message is reused to notify the source cell
-   * through the X2 interface instead of creating a new message.
-   */
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
-  m_x2SapProvider->SendHandoverPreparationFailure (msg);
-  RemoveUe (rnti);
+  // check if the RNTI to be removed is not stale
+  if (HasUeManager (rnti)) {
+    /**
+     * When the handover joining timer expires at the target cell,
+     * then notify the source cell to release the RRC connection and
+     * delete the UE context at eNodeB and SGW/PGW. The
+     * HandoverPreparationFailure message is reused to notify the source cell
+     * through the X2 interface instead of creating a new message.
+     */
+    Ptr<UeManager> ueManager = GetUeManager (rnti);
+    EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
+    m_x2SapProvider->SendHandoverPreparationFailure (msg);
+    RemoveUe (rnti);
+  }
 }
 
 void
@@ -2562,15 +2577,18 @@ LteEnbRrc::HandoverLeavingTimeout (uint16_t rnti)
                  "HandoverLeavingTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
   m_handoverFailureLeavingTrace (GetUeManager (rnti)->GetImsi (), rnti,
                                  ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
-  /**
-   * Send HO cancel msg to the target eNB and release the RRC connection
-   * with the UE and also delete UE context at the source eNB and bearer
-   * info at SGW and PGW.
-   */
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  EpcX2Sap::HandoverCancelParams msg = ueManager->BuildHoCancelMsg ();
-  m_x2SapProvider->SendHandoverCancel (msg);
-  ueManager->SendRrcConnectionRelease ();
+  // check if the RNTI to be removed is not stale
+  if (HasUeManager (rnti)) {
+    /**
+     * Send HO cancel msg to the target eNB and release the RRC connection
+     * with the UE and also delete UE context at the source eNB and bearer
+     * info at SGW and PGW.
+     */
+    Ptr<UeManager> ueManager = GetUeManager (rnti);
+    EpcX2Sap::HandoverCancelParams msg = ueManager->BuildHoCancelMsg ();
+    m_x2SapProvider->SendHandoverCancel (msg);
+    ueManager->SendRrcConnectionRelease ();
+  }
 }
 
 void
@@ -2646,25 +2664,31 @@ void
 LteEnbRrc::DoRecvIdealUeContextRemoveRequest (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
 
-  if (ueManager->GetState () == UeManager::HANDOVER_JOINING)
+  // check if the RNTI to be removed is not stale
+  if (HasUeManager (rnti))
     {
-      m_handoverFailureMaxRachTrace (GetUeManager (rnti)->GetImsi (), rnti,
-                                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
-      /**
-       * During the HO, when the RACH failure due to the maximum number of
-       * re-attempts is reached the UE request the target eNB to deletes its
-       * context. Upon which, the target eNB sends handover preparation
-       * failure to the source eNB.
-       */
-      EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
-      m_x2SapProvider->SendHandoverPreparationFailure (msg);
+      Ptr<UeManager> ueManager = GetUeManager (rnti);
+
+      if (ueManager->GetState () == UeManager::HANDOVER_JOINING)
+        {
+          m_handoverFailureMaxRachTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                                         ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()));
+          /**
+          * During the HO, when the RACH failure due to the maximum number of
+          * re-attempts is reached the UE request the target eNB to deletes its
+          * context. Upon which, the target eNB sends handover preparation
+          * failure to the source eNB.
+          */
+          EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
+          m_x2SapProvider->SendHandoverPreparationFailure (msg);
+        }
+
+      GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
+      // delete the UE context at the eNB
+      RemoveUe (rnti);
     }
 
-  GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
-  //delete the UE context at the eNB
-  RemoveUe (rnti);
 }
 
 void
@@ -2695,7 +2719,8 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   NS_LOG_LOGIC ("targetCellId = " << req.targetCellId);
   NS_LOG_LOGIC ("mmeUeS1apId = " << req.mmeUeS1apId);
 
-  if (m_admitHandoverRequest == false)
+  // if no SRS index is available, then do not accept the handover
+  if (m_admitHandoverRequest == false || IsMaxSrsReached())
     {
       NS_LOG_INFO ("rejecting handover request from cellId " << req.sourceCellId);
       EpcX2Sap::HandoverPreparationFailureParams res;
@@ -2805,8 +2830,12 @@ LteEnbRrc::DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFa
   NS_LOG_LOGIC ("criticalityDiagnostics = " << params.criticalityDiagnostics);
 
   uint16_t rnti = params.oldEnbUeX2apId;
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  ueManager->RecvHandoverPreparationFailure (params.targetCellId);
+
+  // check if the RNTI is not stale
+  if (HasUeManager (rnti)) {
+    Ptr<UeManager> ueManager = GetUeManager (rnti);
+    ueManager->RecvHandoverPreparationFailure (params.targetCellId);
+  }
 }
 
 void
@@ -2821,8 +2850,13 @@ LteEnbRrc::DoRecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
   NS_LOG_LOGIC ("erabsSubjectToStatusTransferList size = " << params.erabsSubjectToStatusTransferList.size ());
 
   uint16_t rnti = params.newEnbUeX2apId;
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  ueManager->RecvSnStatusTransfer (params);
+
+  // check if the RNTI to receive SN transfer for is not stale
+  if (HasUeManager (rnti))
+    {
+      Ptr<UeManager> ueManager = GetUeManager (rnti);
+      ueManager->RecvSnStatusTransfer (params);
+    }
 }
 
 void
@@ -2836,8 +2870,12 @@ LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
 
   uint16_t rnti = params.oldEnbUeX2apId;
-  GetUeManager (rnti)->RecvUeContextRelease (params);
-  RemoveUe (rnti);
+
+  // check if the RNTI to be removed is not stale
+  if (HasUeManager (rnti)) {
+    GetUeManager (rnti)->RecvUeContextRelease (params);
+    RemoveUe (rnti);
+  }
 }
 
 void
@@ -2889,11 +2927,37 @@ LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
     }
 }
 
+void
+LteEnbRrc::DoRecvHandoverCancel (EpcX2SapUser::HandoverCancelParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("Recv X2 message: HANDOVER CANCEL");
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("cause = " << params.cause);
+
+  uint16_t rnti = params.newEnbUeX2apId;
+  if (HasUeManager (rnti))
+    {
+      Ptr<UeManager> ueManager = GetUeManager (rnti);
+      ueManager->RecvHandoverCancel (params);
+      GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
+    }
+}
 
 uint16_t
 LteEnbRrc::DoAllocateTemporaryCellRnti (uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this << +componentCarrierId);
+  // if no SRS index is available, then do not create a new UE context.
+  if(IsMaxSrsReached())
+    {
+      return 0; // return 0 since new RNTI was not assigned for the received preamble
+    }
   return AddUe (UeManager::INITIAL_RANDOM_ACCESS, componentCarrierId);
 }
 
@@ -3245,7 +3309,23 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
   m_ueSrsConfigurationIndexSet.erase (it);
 }
 
-uint8_t
+bool
+LteEnbRrc::IsMaxSrsReached ()
+{
+  NS_ASSERT(m_srsCurrentPeriodicityId > 0);
+  NS_ASSERT(m_srsCurrentPeriodicityId < SRS_ENTRIES);
+  NS_LOG_DEBUG(this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
+  if (m_ueSrsConfigurationIndexSet.size () >= g_srsPeriodicity[m_srsCurrentPeriodicityId])
+    {      
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+uint8_t 
 LteEnbRrc::GetLogicalChannelGroup (EpsBearer bearer)
 {
   if (bearer.IsGbr ())

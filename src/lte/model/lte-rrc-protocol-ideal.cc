@@ -299,9 +299,11 @@ LteEnbRrcProtocolIdeal::SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider*
 {
   std::map<uint16_t, LteUeRrcSapProvider*>::iterator it;
   it = m_enbRrcSapProviderMap.find (rnti);
-  NS_ASSERT_MSG (it != m_enbRrcSapProviderMap.end (), "Cell id " << m_cellId
-                                         << " could not find RNTI = " << rnti);
-  it->second = p;
+  // assign UE RRC only if the RNTI is found at eNB
+  if (it != m_enbRrcSapProviderMap.end ())
+    {
+      it->second = p;
+    }
 }
 
 void

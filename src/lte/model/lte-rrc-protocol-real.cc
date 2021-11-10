@@ -448,7 +448,6 @@ LteEnbRrcProtocolReal::SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider* 
 {
   std::map<uint16_t, LteUeRrcSapProvider*>::iterator it;
   it = m_enbRrcSapProviderMap.find (rnti);
-  // TODO: remove after merge of ho_failure branch
   // assign UE RRC only if the RNTI is found at eNB
   if (it != m_enbRrcSapProviderMap.end ())
     {

@@ -480,6 +480,13 @@ public:
    * \param params UE data parameters
    */
   virtual void RecvUeData (UeDataParams params) = 0;
+
+  /**
+   * Receive handover cancel function
+   * \param params the receive handover cancel parameters
+   * 
+   */
+  virtual void RecvHandoverCancel (HandoverCancelParams params) = 0;
 };
 
 ///////////////////////////////////////
@@ -701,6 +708,13 @@ public:
    */
   virtual void RecvUeData (UeDataParams params);
 
+  /**
+   * Receive handover cancel function
+   * \param params the receive handover cancel parameters
+   * 
+   */
+  virtual void RecvHandoverCancel (HandoverCancelParams params);
+
 private:
   EpcX2SpecificEpcX2SapUser ();
   C* m_rrc; ///< owner class
@@ -771,6 +785,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvUeData (UeDataParams params)
 {
   m_rrc->DoRecvUeData (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvHandoverCancel (HandoverCancelParams params)
+{
+  m_rrc->DoRecvHandoverCancel (params);
 }
 
 } // namespace ns3

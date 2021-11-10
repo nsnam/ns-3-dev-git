@@ -266,6 +266,12 @@ public:
    */
   void RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
 
+  /** 
+   * Take the necessary actions in response to the reception of an X2 UE CONTEXT RELEASE message
+   * 
+   * \param params the SN STATUS
+   */
+  void RecvHandoverCancel (EpcX2SapUser::HandoverCancelParams params);
 
   // METHODS FORWARDED FROM ENB RRC SAP ///////////////////////////////////////
 
@@ -1276,6 +1282,13 @@ private:
    * \param params EpcX2SapUser::UeDataParams
    */
   void DoRecvUeData (EpcX2SapUser::UeDataParams params);
+  /**
+   * Receive Handover Cancel function.
+   *
+   * \param params EpcX2SapUser::HandoverCancelParams
+   */
+  void DoRecvHandoverCancel (EpcX2SapUser::HandoverCancelParams params);
+
 
   // CMAC SAP methods
 
@@ -1474,7 +1487,10 @@ private:
    */
   void RemoveSrsConfigurationIndex (uint16_t srcCi);
 
-
+   /**
+   * \return true if all the SRS indices are assigned to UEs
+   */
+  bool IsMaxSrsReached();
 
   /**
    *
