@@ -231,37 +231,19 @@ WifiRemoteStationManager::GetShortPreambleEnabled (void) const
 bool
 WifiRemoteStationManager::GetHtSupported (void) const
 {
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-  if (htConfiguration)
-    {
-      return true;
-    }
-  return false;
+  return m_wifiPhy->GetDevice ()->GetHtConfiguration () != nullptr;
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (void) const
 {
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  Ptr<VhtConfiguration> vhtConfiguration = device->GetVhtConfiguration ();
-  if (vhtConfiguration)
-    {
-      return true;
-    }
-  return false;
+  return m_wifiPhy->GetDevice ()->GetVhtConfiguration () != nullptr;
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (void) const
 {
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
-  if (heConfiguration)
-    {
-      return true;
-    }
-  return false;
+  return m_wifiPhy->GetDevice ()->GetHeConfiguration () != nullptr;
 }
 
 bool
@@ -269,8 +251,7 @@ WifiRemoteStationManager::GetLdpcSupported (void) const
 {
   if (GetHtSupported ())
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      Ptr<HtConfiguration> htConfiguration = m_wifiPhy->GetDevice ()->GetHtConfiguration ();
       NS_ASSERT (htConfiguration); //If HT is supported, we should have a HT configuration attached
       return htConfiguration->GetLdpcSupported ();
     }
@@ -282,8 +263,7 @@ WifiRemoteStationManager::GetShortGuardIntervalSupported (void) const
 {
   if (GetHtSupported ())
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      Ptr<HtConfiguration> htConfiguration = m_wifiPhy->GetDevice ()->GetHtConfiguration ();
       NS_ASSERT (htConfiguration); //If HT is supported, we should have a HT configuration attached
       if (htConfiguration->GetShortGuardIntervalSupported ())
         {
@@ -299,8 +279,7 @@ WifiRemoteStationManager::GetGuardInterval (void) const
   uint16_t gi = 0;
   if (GetHeSupported ())
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+      Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
       NS_ASSERT (heConfiguration); //If HE is supported, we should have a HE configuration attached
       gi = static_cast<uint16_t>(heConfiguration->GetGuardInterval ().GetNanoSeconds ());
     }
@@ -544,7 +523,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()));
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
       v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
-      v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+      v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, m_wifiPhy->GetDevice ()));
       v.SetNTx (GetNumberOfAntennas ());
       v.SetNss (1);
       v.SetNess (0);
@@ -567,15 +546,14 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled ()));
       txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
-      txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+      txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, m_wifiPhy->GetDevice ()));
     }
   else
     {
       txVector = DoGetDataTxVector (Lookup (address));
       txVector.SetLdpc (txVector.GetMode ().GetModulationClass () < WIFI_MOD_CLASS_HT ? 0 : UseLdpcForDestination (address));
     }
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+  Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
   if (heConfiguration)
     {
       txVector.SetBssColor (heConfiguration->GetBssColor ());
@@ -608,7 +586,7 @@ WifiRemoteStationManager::GetCtsToSelfTxVector (void)
   return WifiTxVector (defaultMode,
                        GetDefaultTxPowerLevel (),
                        defaultPreamble,
-                       ConvertGuardIntervalToNanoSeconds (defaultMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())),
+                       ConvertGuardIntervalToNanoSeconds (defaultMode, m_wifiPhy->GetDevice ()),
                        GetNumberOfAntennas (),
                        1,
                        0,
@@ -628,7 +606,7 @@ WifiRemoteStationManager::GetRtsTxVector (Mac48Address address)
         v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()));
         v.SetTxPowerLevel (m_defaultTxPowerLevel);
         v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
-        v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+        v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, m_wifiPhy->GetDevice ()));
         v.SetNTx (GetNumberOfAntennas ());
         v.SetNss (1);
         v.SetNess (0);
@@ -647,7 +625,7 @@ WifiRemoteStationManager::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) c
   v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, m_wifiPhy->GetChannelWidth ()));
-  uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, m_wifiPhy->GetDevice ());
   v.SetGuardInterval (ctsTxGuardInterval);
   v.SetNss (1);
   return v;
@@ -663,7 +641,7 @@ WifiRemoteStationManager::GetAckTxVector (Mac48Address to, const WifiTxVector& d
   v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, m_wifiPhy->GetChannelWidth ()));
-  uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, m_wifiPhy->GetDevice ());
   v.SetGuardInterval (ackTxGuardInterval);
   v.SetNss (1);
   return v;
@@ -679,7 +657,7 @@ WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address to, const WifiTxVect
   v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, m_wifiPhy->GetChannelWidth ()));
-  uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, m_wifiPhy->GetDevice ());
   v.SetGuardInterval (blockAckTxGuardInterval);
   v.SetNss (1);
   return v;

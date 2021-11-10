@@ -488,10 +488,9 @@ uint8_t
 HePhy::GetBssColor (void) const
 {
   uint8_t bssColor = 0;
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  if (device)
+  if (m_wifiPhy->GetDevice () != nullptr)
     {
-      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+      Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
       if (heConfiguration)
         {
           bssColor = heConfiguration->GetBssColor ();
@@ -509,14 +508,10 @@ HePhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
     }
   else if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU)
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      if (device)
+      Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac> (m_wifiPhy->GetDevice ()->GetMac ());
+      if (mac && mac->IsAssociated ())
         {
-          Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac> (device->GetMac ());
-          if (mac && mac->IsAssociated ())
-            {
-              return mac->GetAssociationId ();
-            }
+          return mac->GetAssociationId ();
         }
     }
   return PhyEntity::GetStaId (ppdu);
@@ -634,8 +629,7 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
   if (txVector.IsUlMu ())
     {
       NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      bool isAp = device != 0 && (DynamicCast<ApWifiMac> (device->GetMac ()) != 0);
+      bool isAp = (DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()) != 0);
       if (!isAp)
         {
           NS_LOG_DEBUG ("Ignore HE TB PPDU payload received by STA but keep state in Rx");
