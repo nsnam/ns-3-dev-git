@@ -21,7 +21,6 @@
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
-#include "ns3/net-device.h"
 #include "wifi-standards.h"
 #include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
@@ -30,6 +29,7 @@ namespace ns3 {
 
 class Ssid;
 class Txop;
+class WifiNetDevice;
 class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
@@ -84,13 +84,13 @@ public:
    *
    * \param device the device this PHY is associated with
    */
-  void SetDevice (const Ptr<NetDevice> device);
+  void SetDevice (const Ptr<WifiNetDevice> device);
   /**
    * Return the device this PHY is associated with
    *
    * \return the device this PHY is associated with
    */
-  Ptr<NetDevice> GetDevice (void) const;
+  Ptr<WifiNetDevice> GetDevice (void) const;
 
    /**
    * This method is invoked by a subclass to specify what type of
@@ -297,7 +297,7 @@ protected:
 
 
 private:
-  Ptr<NetDevice> m_device;    ///< Pointer to the device
+  Ptr<WifiNetDevice> m_device;    ///< Pointer to the device
 
   /**
    * The trace source fired when packets come into the "top" of the device

@@ -18,7 +18,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/net-device.h"
+#include "ns3/wifi-net-device.h"
 #include "wifi-mac-helper.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-protection-manager.h"
@@ -42,7 +42,7 @@ WifiMacHelper::~WifiMacHelper ()
 }
 
 Ptr<WifiMac>
-WifiMacHelper::Create (Ptr<NetDevice> device, WifiStandard standard) const
+WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
 {
   auto standardIt = wifiStandards.find (standard);
   NS_ABORT_MSG_IF (standardIt == wifiStandards.end (), "Selected standard is not defined!");

@@ -82,12 +82,12 @@ WifiMac::DoDispose ()
 }
 
 void
-WifiMac::SetDevice (const Ptr<NetDevice> device)
+WifiMac::SetDevice (const Ptr<WifiNetDevice> device)
 {
   m_device = device;
 }
 
-Ptr<NetDevice>
+Ptr<WifiNetDevice>
 WifiMac::GetDevice (void) const
 {
   return m_device;
@@ -186,22 +186,19 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
 Ptr<HtConfiguration>
 WifiMac::GetHtConfiguration (void) const
 {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-      return device->GetHtConfiguration ();
+  return GetDevice ()->GetHtConfiguration ();
 }
 
 Ptr<VhtConfiguration>
 WifiMac::GetVhtConfiguration (void) const
 {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-      return device->GetVhtConfiguration ();
+  return GetDevice ()->GetVhtConfiguration ();
 }
 
 Ptr<HeConfiguration>
 WifiMac::GetHeConfiguration (void) const
 {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-      return device->GetHeConfiguration ();
+  return GetDevice ()->GetHeConfiguration ();
 }
 
 } //namespace ns3

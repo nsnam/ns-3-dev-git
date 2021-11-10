@@ -25,6 +25,7 @@
 #define WIFI_MAC_QUEUE_ITEM_H
 
 #include "ns3/nstime.h"
+#include "ns3/packet.h"
 #include "wifi-mac-header.h"
 #include "amsdu-subframe-header.h"
 #include "qos-utils.h"
@@ -33,7 +34,6 @@
 namespace ns3 {
 
 class QosBlockedDestinations;
-class Packet;
 
 /**
  * \ingroup wifi
