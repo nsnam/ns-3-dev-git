@@ -856,7 +856,11 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
 
   if (mpdu != nullptr)
     {
-      m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
+      if (mpdu->GetHeader ().HasData ()
+          && !mpdu->GetHeader ().GetAddr1 ().IsGroup ())
+        {
+          m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
+        }
 
       if (!mpdu->GetHeader ().GetAddr1 ().IsGroup ()
           && !m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))

@@ -32,6 +32,7 @@ Bugs fixed
 - (wifi) #467 - WiFi: Failed association process
 - (wifi) #468 - WiFi: Wrong txDuration for trigger frame
 - (wifi) #475 - Wi-Fi: Assert when sending OFDMA DL to STAs with different TIDs
+- (wifi) #480 - wifi: 2.4GHz remote station manager issue 
 
 Release 3.35
 ============
