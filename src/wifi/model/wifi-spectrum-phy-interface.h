@@ -59,7 +59,7 @@ public:
   Ptr<MobilityModel> GetMobility () const override;
   void SetChannel (const Ptr<SpectrumChannel> c) override;
   Ptr<const SpectrumModel> GetRxSpectrumModel () const override;
-  Ptr<AntennaModel> GetRxAntenna () const override;
+  Ptr<Object> GetAntenna () const override;
   void StartRx (Ptr<SpectrumSignalParameters> params) override;
 
 

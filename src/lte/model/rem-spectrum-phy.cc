@@ -114,8 +114,8 @@ RemSpectrumPhy::GetRxSpectrumModel () const
   return m_rxSpectrumModel;
 }
 
-Ptr<AntennaModel>
-RemSpectrumPhy::GetRxAntenna () const
+Ptr<Object>
+RemSpectrumPhy::GetAntenna () const
 {
   return 0;
 }

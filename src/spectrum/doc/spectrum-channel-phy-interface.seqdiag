@@ -14,14 +14,14 @@ diagram {
 
 	BSpectrumPhy <<- SpectrumChannel [label="GetMobility ()"]
 	BSpectrumPhy <<- SpectrumChannel [label="GetRxSpectrumModel ()"]
-	BSpectrumPhy <<- SpectrumChannel [label="GetRxAntenna ()"]
+	BSpectrumPhy <<- SpectrumChannel [label="GetAntenna ()"]
 	SpectrumChannel -> SpectrumChannel [label="evaluate propagation between A and B"]
 	BSpectrumPhy  <<- SpectrumChannel[label="StartRx (SpectrumSignalParameters)"]
 
 	CSpectrumPhy  <<- SpectrumChannel[label="GetMobility ()"]
 	CSpectrumPhy  <<- SpectrumChannel[label="GetRxSpectrumModel ()"]
 	CSpectrumPhy  <<- SpectrumChannel[label="GetRxSpectrumModel ()"]
-	CSpectrumPhy  <<- SpectrumChannel[label="GetRxAntenna ()"]
+	CSpectrumPhy  <<- SpectrumChannel[label="GetAntenna ()"]
 	SpectrumChannel ->> SpectrumChannel [label="evaluate propagation between A and C"]
 	CSpectrumPhy  <<- SpectrumChannel[label="StartRx (SpectrumSignalParameters)"]
 
@@ -32,7 +32,7 @@ diagram {
 	CSpectrumPhy  <<- SpectrumChannel[label="GetMobility ()"]
 	CSpectrumPhy  <<- SpectrumChannel[label="GetRxSpectrumModel ()"]
 	CSpectrumPhy  <<- SpectrumChannel[label="GetRxSpectrumModel ()"]
-	CSpectrumPhy  <<- SpectrumChannel[label="GetRxAntenna ()"]
+	CSpectrumPhy  <<- SpectrumChannel[label="GetAntenna ()"]
 	SpectrumChannel ->> SpectrumChannel [label="evaluate propagation between B and C"]
 	CSpectrumPhy  <<- SpectrumChannel[label="StartRx (SpectrumSignalParameters)"]
 

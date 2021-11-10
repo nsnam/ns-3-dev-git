@@ -104,11 +104,16 @@ public:
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const = 0;
 
   /**
-   * Get the AntennaModel used by the NetDevice for reception
+   * \brief Get the AntennaModel used by this SpectrumPhy instance for
+   * transmission and/or reception
    *
-   * @return a Ptr to the AntennaModel used by the NetDevice for reception
+   * Note that in general and depending on each module design, there can be
+   * multiple SpectrumPhy instances per NetDevice.
+   *
+   * @return a Ptr to the AntennaModel used by this SpectrumPhy instance for
+   * transmission and/or reception
    */
-  virtual Ptr<AntennaModel> GetRxAntenna () const = 0;
+  virtual Ptr<Object> GetAntenna () const = 0;
 
   /**
    * Notify the SpectrumPhy instance of an incoming signal
@@ -117,50 +122,6 @@ public:
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params) = 0;
 };
-
-/**
- * \ingroup spectrum
- *
- * Abstract base class for Spectrum-aware PHY layers that use
- * PhasedArrayModel type of antenna for TX/RX
- *
- */
-class PhasedArraySpectrumPhy  : public SpectrumPhy
-{
-
-public:
-  PhasedArraySpectrumPhy ();
-  virtual ~PhasedArraySpectrumPhy ();
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-
-  /**
-   * Get the PhasedArrayModel used by the NetDevice for TX/RX.
-   *
-   * @return a Ptr to the PhasedArrayModel used by the NetDevice for TX/RX
-   */
-  virtual Ptr<const PhasedArrayModel> GetPhasedArrayModel () const = 0;
-
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  PhasedArraySpectrumPhy (PhasedArraySpectrumPhy const &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  PhasedArraySpectrumPhy& operator= (PhasedArraySpectrumPhy const &);
-};
-
 } // namespace ns3
 
 #endif /* SPECTRUM_PHY_H */

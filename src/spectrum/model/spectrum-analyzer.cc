@@ -142,8 +142,8 @@ SpectrumAnalyzer::SetChannel (Ptr<SpectrumChannel> c)
 }
 
 
-Ptr<AntennaModel>
-SpectrumAnalyzer::GetRxAntenna () const
+Ptr<Object>
+SpectrumAnalyzer::GetAntenna () const
 {
   return m_antenna;
 }

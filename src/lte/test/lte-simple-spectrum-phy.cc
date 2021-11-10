@@ -118,8 +118,8 @@ LteSimpleSpectrumPhy::GetRxSpectrumModel () const
 }
 
 
-Ptr<AntennaModel>
-LteSimpleSpectrumPhy::GetRxAntenna () const
+Ptr<Object>
+LteSimpleSpectrumPhy::GetAntenna () const
 {
   return m_antenna;
 }

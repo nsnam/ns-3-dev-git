@@ -294,7 +294,7 @@ public:
    * \param a the antenna
    */
   void SetAntenna (Ptr<AntennaModel> a);
-  Ptr<AntennaModel> GetRxAntenna (void) const;
+  Ptr<Object> GetAntenna (void) const;
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel (void) const;
 
   /**

@@ -255,8 +255,8 @@ HalfDuplexIdealPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
   m_phyMacRxEndOkCallback = c;
 }
 
-Ptr<AntennaModel>
-HalfDuplexIdealPhy::GetRxAntenna () const
+Ptr<Object>
+HalfDuplexIdealPhy::GetAntenna () const
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;

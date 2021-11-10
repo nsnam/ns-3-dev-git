@@ -154,8 +154,8 @@ WaveformGenerator::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
   m_txPowerSpectralDensity = txPsd;
 }
 
-Ptr<AntennaModel>
-WaveformGenerator::GetRxAntenna () const
+Ptr<Object>
+WaveformGenerator::GetAntenna () const
 {
   return m_antenna;
 }

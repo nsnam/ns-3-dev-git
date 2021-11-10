@@ -100,7 +100,7 @@ public:
    *                SpectrumSignalParameters (in case any objects downstream of the
    *                SpectrumWifiPhy wish to adjust signal properties based on the
    *                transmitted antenna model.  This antenna is also used when
-   *                the underlying WifiSpectrumPhyInterface::GetRxAntenna() method
+   *                the underlying WifiSpectrumPhyInterface::GetAntenna() method
    *                is called.
    *
    * Note:  this method may be split into separate SetTx and SetRx
@@ -112,7 +112,7 @@ public:
    *
    * \return the AntennaModel used for reception
    */
-  Ptr<AntennaModel> GetRxAntenna (void) const;
+  Ptr<Object> GetAntenna (void) const;
   /**
    * \return the SpectrumModel that this SpectrumPhy expects to be used
    *         for all SpectrumValues that are passed to StartRx. If 0 is

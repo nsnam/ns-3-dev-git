@@ -51,25 +51,4 @@ SpectrumPhy::~SpectrumPhy ()
 {
   NS_LOG_FUNCTION (this);
 }
-
-TypeId
-PhasedArraySpectrumPhy::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::PhasedArraySpectrumPhy")
-    .SetParent<SpectrumPhy> ()
-    .SetGroupName ("Spectrum")
-  ;
-  return tid;
-}
-
-PhasedArraySpectrumPhy::PhasedArraySpectrumPhy ():SpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-PhasedArraySpectrumPhy::~PhasedArraySpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
 } // namespace

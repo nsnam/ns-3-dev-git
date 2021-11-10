@@ -164,8 +164,8 @@ TvSpectrumTransmitter::GetRxSpectrumModel () const
   return 0;
 }
 
-Ptr<AntennaModel>
-TvSpectrumTransmitter::GetRxAntenna () const
+Ptr<Object>
+TvSpectrumTransmitter::GetAntenna () const
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;

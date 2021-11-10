@@ -180,7 +180,7 @@ public:
   Ptr<MobilityModel> GetMobility () const;
   Ptr<NetDevice> GetDevice () const;
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<AntennaModel> GetRxAntenna () const;
+  Ptr<Object> GetAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
   /**
    * \brief Start receive data function

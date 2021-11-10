@@ -403,8 +403,8 @@ LteSpectrumPhy::SetLtePhyUlHarqFeedbackCallback (LtePhyUlHarqFeedbackCallback c)
 }
 
 
-Ptr<AntennaModel>
-LteSpectrumPhy::GetRxAntenna () const
+Ptr<Object>
+LteSpectrumPhy::GetAntenna () const
 {
   return m_antenna;
 }

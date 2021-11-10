@@ -385,8 +385,8 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   StartReceivePreamble (ppdu, rxPowerW, rxDuration);
 }
 
-Ptr<AntennaModel>
-SpectrumWifiPhy::GetRxAntenna (void) const
+Ptr<Object>
+SpectrumWifiPhy::GetAntenna (void) const
 {
   return m_antenna;
 }

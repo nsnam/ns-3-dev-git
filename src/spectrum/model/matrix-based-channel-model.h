@@ -72,8 +72,8 @@ public:
     /**
      * Returns true if the ChannelMatrix object was generated
      * considering node b as transmitter and node a as receiver.
-     * \param aAntennaModel the ID of the antenna array of the a node
-     * \param bAntennaModel the ID of the antenna array of the b node
+     * \param aAntennaId the ID of the antenna array of the a node
+     * \param bAntennaId the ID of the antenna array of the b node
      * \return true if b is the rx and a is the tx, false otherwise
      */
     bool IsReverse (uint32_t aAntennaId, uint32_t bAntennaId) const

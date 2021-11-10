@@ -96,11 +96,11 @@ WifiSpectrumPhyInterface::GetRxSpectrumModel () const
   return m_spectrumWifiPhy->GetRxSpectrumModel ();
 }
 
-Ptr<AntennaModel>
-WifiSpectrumPhyInterface::GetRxAntenna (void) const
+Ptr<Object>
+WifiSpectrumPhyInterface::GetAntenna (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_spectrumWifiPhy->GetRxAntenna ();
+  return m_spectrumWifiPhy->GetAntenna ();
 }
 
 void

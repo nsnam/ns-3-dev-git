@@ -259,8 +259,8 @@ LrWpanPhy::GetRxSpectrumModel (void) const
     }
 }
 
-Ptr<AntennaModel>
-LrWpanPhy::GetRxAntenna (void) const
+Ptr<Object>
+LrWpanPhy::GetAntenna (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;
