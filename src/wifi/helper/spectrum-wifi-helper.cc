@@ -26,6 +26,7 @@
 #include "ns3/frame-capture-model.h"
 #include "ns3/preamble-detection-model.h"
 #include "ns3/mobility-model.h"
+#include "ns3/wifi-net-device.h"
 #include "spectrum-wifi-helper.h"
 
 namespace ns3 {
@@ -53,7 +54,7 @@ SpectrumWifiPhyHelper::SetChannel (std::string channelName)
 }
 
 Ptr<WifiPhy>
-SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
+SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<SpectrumWifiPhy> phy = m_phy.Create<SpectrumWifiPhy> ();
   phy->CreateWifiSpectrumPhyInterface (device);

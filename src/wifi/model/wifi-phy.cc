@@ -26,6 +26,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/error-model.h"
+#include "wifi-net-device.h"
 #include "wifi-phy.h"
 #include "wifi-utils.h"
 #include "frame-capture-model.h"
@@ -768,12 +769,12 @@ WifiPhy::GetShortPhyPreambleSupported (void) const
 }
 
 void
-WifiPhy::SetDevice (const Ptr<NetDevice> device)
+WifiPhy::SetDevice (const Ptr<WifiNetDevice> device)
 {
   m_device = device;
 }
 
-Ptr<NetDevice>
+Ptr<WifiNetDevice>
 WifiPhy::GetDevice (void) const
 {
   return m_device;

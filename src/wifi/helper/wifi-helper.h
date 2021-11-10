@@ -58,12 +58,8 @@ public:
    *
    * Subclasses must implement this method to allow the ns3::WifiHelper class
    * to create PHY objects from ns3::WifiHelper::Install.
-   *
-   * Typically the device type will be of class WifiNetDevice but the
-   * type of the pointer is generalized so that this method may be used
-   * by other Wifi device variants such as WaveNetDevice.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const = 0;
+  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
 
   /**
    * \param name the name of the attribute to set

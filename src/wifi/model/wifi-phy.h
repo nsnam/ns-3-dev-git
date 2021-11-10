@@ -32,7 +32,7 @@
 namespace ns3 {
 
 class Channel;
-class NetDevice;
+class WifiNetDevice;
 class MobilityModel;
 class WifiPhyStateHelper;
 class FrameCaptureModel;
@@ -823,13 +823,13 @@ public:
    *
    * \param device the device this PHY is associated with
    */
-  void SetDevice (const Ptr<NetDevice> device);
+  void SetDevice (const Ptr<WifiNetDevice> device);
   /**
    * Return the device this PHY is associated with
    *
    * \return the device this PHY is associated with
    */
-  Ptr<NetDevice> GetDevice (void) const;
+  Ptr<WifiNetDevice> GetDevice (void) const;
   /**
    * \brief assign a mobility model to this device
    *
@@ -1420,7 +1420,7 @@ private:
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
 
-  Ptr<NetDevice>     m_device;   //!< Pointer to the device
+  Ptr<WifiNetDevice> m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 
   Ptr<FrameCaptureModel> m_frameCaptureModel;           //!< Frame capture model

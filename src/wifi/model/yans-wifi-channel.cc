@@ -21,7 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
-#include "ns3/net-device.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/node.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
@@ -147,7 +147,7 @@ YansWifiChannel::GetNDevices (void) const
 Ptr<NetDevice>
 YansWifiChannel::GetDevice (std::size_t i) const
 {
-  return m_phyList[i]->GetDevice ()->GetObject<NetDevice> ();
+  return m_phyList[i]->GetDevice ();
 }
 
 void

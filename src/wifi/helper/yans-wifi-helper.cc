@@ -27,6 +27,7 @@
 #include "ns3/frame-capture-model.h"
 #include "ns3/preamble-detection-model.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/wifi-net-device.h"
 #include "yans-wifi-helper.h"
 
 namespace ns3 {
@@ -144,7 +145,7 @@ YansWifiPhyHelper::SetChannel (std::string channelName)
 }
 
 Ptr<WifiPhy>
-YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
+YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
