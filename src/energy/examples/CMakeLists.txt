@@ -1,0 +1,17 @@
+set(name li-ion-energy-source)
+set(source_files ${name}.cc)
+set(header_files)
+set(libraries_to_link ${libcore} ${libenergy})
+build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+
+set(name rv-battery-model-test)
+set(source_files ${name}.cc)
+set(header_files)
+set(libraries_to_link ${libcore} ${libenergy} ${libwifi})
+build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+
+set(name basic-energy-model-test)
+set(source_files ${name}.cc)
+set(header_files)
+set(libraries_to_link ${libcore} ${libenergy} ${libwifi})
+build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")

@@ -88,7 +88,7 @@ ExampleAsTestCase::DoRun (void)
   std::stringstream ss;
 
   // Use bash as shell to allow use of PIPESTATUS
-  ss << "bash -c './waf --run-no-build " << m_program
+  ss << "bash -c './ns3 --run-no-build " << m_program
      << " --command-template=\"" << GetCommandTemplate () << "\""
 
     // redirect std::clog, std::cerr to std::cout

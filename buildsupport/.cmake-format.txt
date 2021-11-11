@@ -1,0 +1,6 @@
+format:
+  tab_size: 2
+  line_width: 120
+  dangle_parens: true
+  autosort: true
+  max_subgroups_hwrap: 3
