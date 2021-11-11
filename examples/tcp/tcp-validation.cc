@@ -498,7 +498,7 @@ main (int argc, char *argv[])
   ////////////////////////////////////////////////////////////
   // command-line argument parsing                          //
   ////////////////////////////////////////////////////////////
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("firstTcpType", "first TCP type (cubic, dctcp, or reno)", firstTcpType);
   cmd.AddValue ("secondTcpType", "second TCP type (cubic, dctcp, or reno)", secondTcpType);
   cmd.AddValue ("queueType", "bottleneck queue type (fq, codel, pie, or red)", queueType);
