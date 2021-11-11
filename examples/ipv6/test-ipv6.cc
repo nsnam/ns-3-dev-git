@@ -23,6 +23,7 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/node.h"
 #include "ns3/mac48-address.h"
+#include "ns3/simulator.h"
 
 using namespace ns3;
 

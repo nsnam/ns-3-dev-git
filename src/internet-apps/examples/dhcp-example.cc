@@ -55,6 +55,7 @@
  */
 
 #include "ns3/core-module.h"
+#include "ns3/network-module.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"

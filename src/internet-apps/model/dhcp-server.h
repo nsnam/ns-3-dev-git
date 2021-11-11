@@ -32,6 +32,7 @@
 
 namespace ns3 {
 
+class InetSocketAddress;
 class Socket;
 class Packet;
 

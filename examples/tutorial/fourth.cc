@@ -18,6 +18,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/simulator.h"
 
 #include <iostream>
 

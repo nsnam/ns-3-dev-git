@@ -20,6 +20,7 @@
 #include "ns3/tag.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/simulator.h"
 #include <iostream>
 
 using namespace ns3;
