@@ -16,8 +16,24 @@ found below.
 
 A lot of the syntactical rules described can be easily enforced with the
 help of the ``utils/check-style.py`` script which relies on a working version
-of `uncrustify <http://uncrustify.sourceforge.net/>`_ so, do not hesitate 
-to run this script over your code prior to submission.
+of `uncrustify <http://uncrustify.sourceforge.net/>`_.  We recommend to
+run this script over your newly introduced C++ files prior to submission
+as a Merge Request.
+However, we ask that you avoid introducing whitespace changes to any
+portions of existing files that do not pertain to your submission (even
+though such portions of existing files may not be currently compliant
+with the coding style).
+
+To run ``check-style.py`` on a new file, the following command is
+suggested:
+
+::
+
+  $ /path/to/utils/check-style.py -i -l 3 -f new-file.cc
+
+The ``-i`` flag tells check-style.py to make modifications in-place.  The
+``-l 3`` argument asks to apply the highest level of whitespace compliance
+changes to the code.
 
 Code layout
 ***********
@@ -237,8 +253,11 @@ is described in the `Doxygen website <https://www.doxygen.nl/index.html>`_.
      */
     int DoSomething (int firstParam);
   private:
-    void MyPrivateMethod (void);
-    int m_myPrivateMemberVariable;
+    /**
+     * Private method doxygen is also recommended
+     */
+    void MyPrivateMethod (void); 
+    int m_myPrivateMemberVariable; ///< Brief description of member variable
   };
 
   } // namespace ns3
@@ -271,11 +290,12 @@ The ``my-class.cc`` file is structured similarly:
 Language features
 *****************
 
-As of ns-3.25, ns-3 had avoided C++-11 (and C++-14) features until compiler
-support was mature. Starting with ns-3.26, we will permit the use of
-`C++-11 features <https://gcc.gnu.org/gcc-4.8/cxx0x_status.html>`_ supported
-by our minimum compiler supported (gcc-4.8, clang-3.3). Starting with ns-3.27,
-we require at least gcc-4.9 instead of gcc-4.8.
+As of ns-3.36, |ns3| permits the use of C++-17 (or earlier) features
+in the implementation files. Because the |ns3| public APIs are scanned by a
+a `Python bindings framework <https://github.com/gjcarneiro/pybindgen>`_ that
+doesn't support even all of the C++-11 features, the |ns3| project is more
+conservative in using newer C++ standards in the APIs, and may ask
+to rework some APIs to retain compatibility with pybindgen.
 
 If a developer would like to propose to raise this bar to include more
 features than this, please email the developers list. We will move this
@@ -286,10 +306,14 @@ Comments
 
 The project uses `Doxygen <https://www.doxygen.nl/index.html>`_ to document
 the interfaces, and uses comments for improving the clarity of the code
-internally. All public methods should have Doxygen comments. Doxygen comments
-should use the C comment style. For non-public methods, the ``@internal`` tag
-should be used. Please use the ``@see`` tag for cross-referencing. All
-parameters and return values should be documented.
+internally. All classes, methods, and members should have Doxygen comments. Doxygen comments
+should use the C comment (also known as Javadoc) style. For comments that
+are intended to not be exposed publicly in the Doxygen output, use the
+``@internal`` and ``@endinternal`` tags.
+Please use the ``@see`` tag for cross-referencing. All
+parameters and return values should be documented.  The |ns3| codebase uses
+both the ``@`` or ``\`` characters for tag identification; please make sure
+that usage is consistent within a file.
 
 As for comments within the code, comments should be used to describe intention
 or algorithmic overview where is it not immediately obvious from reading the
@@ -298,7 +322,8 @@ probably need no commenting at all, but it is hoped that many larger
 routines will have commenting to aid future maintainers. Please write
 complete English sentences and capitalize the first word unless a lower-case
 identifier begins the sentence. Two spaces after each sentence helps to make
-emacs sentence commands work.
+emacs sentence commands work. Sometimes ``NS_LOG_DEBUG`` statements can
+be also used in place of comments.
 
 Short one-line comments and long comments can use the C++ comment style;
 that is, ``//``, but longer comments may use C-style comments:
@@ -315,11 +340,6 @@ the purpose of the variable, unless it is a local variable whose use is
 obvious from the context. The short comment should be on the same line as the
 variable declaration, unless it is too long, in which case it should be on
 the preceding lines.
-
-Every function should be preceded by a detailed (Doxygen) comment block
-describing what the function does, what the formal parameters are, and what
-the return value is (if any). Either Doxygen style ``\`` or ``@``
-is permitted. Every class declaration should be preceded by a (Doxygen) comment block describing what the class is to be used for.
 
 Casts
 *****
