@@ -632,6 +632,7 @@ def configure(conf):
                        ('.'.join(conf.env['CC_VERSION']), '.'.join(map(str, gcc_min_version))))
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
+        env.append_value('CXXFLAGS', '-fno-semantic-interposition')
         if Options.options.build_profile == 'release':
             env.append_value('CXXFLAGS', '-fomit-frame-pointer')
         if Options.options.build_profile == 'optimized':

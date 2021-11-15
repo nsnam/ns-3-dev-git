@@ -183,6 +183,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     )
   endif()
   set(GCC TRUE)
+  add_definitions(-fno-semantic-interposition)
 endif()
 unset(below_minimum_msg)
 
