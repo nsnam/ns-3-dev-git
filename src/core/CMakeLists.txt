@@ -254,6 +254,7 @@ set(header_files
     model/traced-callback.h
     model/traced-value.h
     model/trickle-timer.h
+    model/tuple.h
     model/type-id.h
     model/type-name.h
     model/type-traits.h
@@ -291,6 +292,7 @@ set(test_sources
     test/timer-test-suite.cc
     test/traced-callback-test-suite.cc
     test/trickle-timer-test-suite.cc
+    test/tuple-value-test-suite.cc
     test/type-id-test-suite.cc
     test/type-traits-test-suite.cc
     test/watchdog-test-suite.cc

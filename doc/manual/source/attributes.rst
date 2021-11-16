@@ -258,6 +258,94 @@ canvas and see a hierarchical, organized list of parameters that are settable on
 the node and its constituent member objects, and help text and default values
 for each parameter.
 
+Available AttributeValue Types
+++++++++++++++++++++++++++++++
+
+* AddressValue
+
+* AttributeContainerValue
+
+* BooleanValue
+
+* BoxValue
+
+* CallbackValue
+
+* DataRateValue
+
+* DoubleValue
+
+* EmptyAttributeValue
+
+* EnumValue
+
+* IntegerValue
+
+* Ipv4AddressValue
+
+* Ipv4MaskValue
+
+* Ipv6AddressValue
+
+* Ipv6PrefixValue
+
+* LengthValue
+
+* Mac16AddressValue
+
+* Mac48AddressValue
+
+* Mac64AddressValue
+
+* ObjectFactoryValue
+
+* ObjectPtrContainerValue
+
+* PairValue<A, B>
+
+* PointerValue
+
+* PriomapValue
+
+* QueueSizeValue
+
+* RectangleValue
+
+* SsidValue
+
+* TimeValue
+
+* TupleValue<Args...>
+
+  A TupleValue is capable of storing values of different types, hence it is suitable for
+  structured data. A prominent example is the ChannelSettings attribute of WifiPhy, which
+  consists of channel number, channel width, PHY band and primary 20 MHz channel index.
+  In this case the values have to be mutually consistent, which makes it difficult to set them
+  as individual Attributes. Capturing them in a TupleValue simplifies this problem, see
+  ``src/wifi/model/wifi-phy.cc``.
+
+  Values stored in a TupleValue object can be set/get through a std::tuple object or
+  can be serialized to/deserialized from a string containing a comma-separated sequence of
+  the values enclosed in a pair of curly braces (e.g., "{36, 20, BAND_5GHZ, 0}").
+
+  The usage of the TupleValue attribute is illustrated in
+  ``src/core/test/tuple-value-test-suite.cc``.
+
+* TypeIdValue
+
+* UanModesListValue
+
+* UintegerValue
+
+* Vector2DValue
+
+* Vector3DValue
+
+* WaypointValue
+
+* WifiModeValue
+
+
 Defining Attributes
 +++++++++++++++++++
 
