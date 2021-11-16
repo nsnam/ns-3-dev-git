@@ -71,7 +71,6 @@ def main(argv):
     config_test_cases = [
         "--enable-gcov",
         "--enable-sudo",
-        "--enable-sudo",
         "--enable-tests",
         "--disable-tests",
         "--enable-examples",
