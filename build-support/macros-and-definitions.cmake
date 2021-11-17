@@ -688,13 +688,8 @@ macro(process_options)
 
   set(THREADS_PREFER_PTHREAD_FLAG)
   find_package(Threads QUIET)
-  if(${CMAKE_USE_PTHREADS_INIT})
-    include_directories(${THREADS_PTHREADS_INCLUDE_DIR})
-    set(HAVE_PTHREAD_H TRUE) # for core-config.h
-    set(THREADS_ENABLED TRUE)
-    set(THREADS_FOUND TRUE)
-  else()
-    message(FATAL_ERROR Pthreads are required by ns-3)
+  if(NOT ${Threads_FOUND})
+    message(FATAL_ERROR Threads are required by ns-3)
   endif()
 
   set(Python3_LIBRARIES)

@@ -6,11 +6,6 @@ option(
 
 set(module_enabled_features) # modulegen_customizations consumes this list
 
-mark_as_advanced(ENABLE_THREADING)
-set(ENABLE_THREADING
-    ${HAVE_PTHREAD_H}
-)
-
 check_include_file_cxx(
   net/ethernet.h
   HAVE_NET_ETHERNET_H

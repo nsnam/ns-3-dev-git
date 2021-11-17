@@ -25,7 +25,6 @@
 # Tap Bridge                    : enabled
 # Tap FdNetDevice               : enabled
 # Tests                         : not enabled (defaults to disabled)
-# Threading Primitives          : enabled
 # Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
 # XmlIo                         : enabled
 #

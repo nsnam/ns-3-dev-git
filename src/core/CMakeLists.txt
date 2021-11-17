@@ -120,26 +120,6 @@ elseif(
   )
 endif()
 
-set(thread_sources
-    model/system-thread.cc
-    model/unix-fd-reader.cc
-    model/unix-system-condition.cc
-    model/unix-system-mutex.cc
-)
-set(thread_headers
-    model/system-condition.h
-    model/system-mutex.h
-    model/system-thread.h
-    model/unix-fd-reader.h
-)
-set(libraries_to_link
-    ${libraries_to_link}
-    pthread
-)
-set(thread_test_sources
-    test/threaded-test-suite.cc
-)
-
 if(${ENABLE_EXAMPLES})
   set(example_as_test_sources
       model/example-as-test.cc
@@ -169,7 +149,6 @@ set(source_files
     ${rt_sources}
     ${osclock_sources}
     ${int64x64_sources}
-    ${thread_sources}
     ${example_as_test_sources}
     ${embedded_version_sources}
     helper/csv-reader.cc
@@ -234,13 +213,13 @@ set(source_files
     model/system-wall-clock-timestamp.cc
     model/length.cc
     model/trickle-timer.cc
+    model/unix-fd-reader.cc
 )
 
 # Define core lib headers
 set(header_files
     ${rt_headers}
     ${int64x64_headers}
-    ${thread_headers}
     ${example_as_test_headers}
     ${embedded_version_headers}
     helper/csv-reader.h
@@ -334,6 +313,7 @@ set(header_files
     model/type-name.h
     model/type-traits.h
     model/uinteger.h
+    model/unix-fd-reader.h
     model/unused.h
     model/valgrind.h
     model/vector.h
@@ -343,7 +323,6 @@ set(header_files
 set(test_sources
     ${example_as_test_suite}
     ${gsl_test_sources}
-    ${thread_test_sources}
     test/attribute-container-test-suite.cc
     test/attribute-test-suite.cc
     test/build-profile-test-suite.cc
@@ -363,6 +342,7 @@ set(test_sources
     test/ptr-test-suite.cc
     test/sample-test-suite.cc
     test/simulator-test-suite.cc
+    test/threaded-test-suite.cc
     test/time-test-suite.cc
     test/timer-test-suite.cc
     test/traced-callback-test-suite.cc

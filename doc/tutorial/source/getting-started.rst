@@ -563,8 +563,6 @@ output that looks similar to the following:
   -- Looking for C++ include signal.h - found
   -- Looking for C++ include netpacket/packet.h
   -- Looking for C++ include netpacket/packet.h - found
-  -- Looking for C++ include semaphore.h
-  -- Looking for C++ include semaphore.h - found
   -- Looking for getenv
   -- Looking for getenv - found
   -- Processing src/antenna
@@ -653,7 +651,6 @@ output that looks similar to the following:
   Tap Bridge                    : ON
   Tap FdNetDevice               : ON
   Tests                         : ON
-  Threading Primitives          : ON
   
   
   Modules configured to be built:

@@ -110,7 +110,10 @@ function(build_lib)
   endif()
 
   # Split ns and non-ns libraries to manage their propagation properly
-  set(non_ns_libraries_to_link)
+  set(non_ns_libraries_to_link
+      ${CMAKE_THREAD_LIBS_INIT}
+  )
+
   set(ns_libraries_to_link)
 
   foreach(library ${BLIB_LIBRARIES_TO_LINK})

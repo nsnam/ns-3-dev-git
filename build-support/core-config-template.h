@@ -15,7 +15,6 @@
 #cmakedefine01 HAVE_STDLIB_H
 #cmakedefine01 HAVE_GETENV
 #cmakedefine01 HAVE_SIGNAL_H
-#cmakedefine01 HAVE_PTHREAD_H
 #cmakedefine   HAVE_RT
 
 #endif //NS3_CORE_CONFIG_H

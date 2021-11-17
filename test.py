@@ -61,7 +61,6 @@ interesting_config_items = [
     "NS3_ENABLED_CONTRIBUTED_MODULES",
     "NS3_MODULE_PATH",
     "ENABLE_REAL_TIME",
-    "ENABLE_THREADING",
     "ENABLE_EXAMPLES",
     "ENABLE_TESTS",
     "EXAMPLE_DIRECTORIES",
@@ -77,7 +76,6 @@ interesting_config_items = [
 ]
 
 ENABLE_REAL_TIME = False
-ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
 ENABLE_TESTS = True
 NSCLICK = False
