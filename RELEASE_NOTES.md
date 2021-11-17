@@ -14,6 +14,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (core) Remove PTHREAD-dependent classes (`ns-3::SystemMutex`, `ns-3::CriticalSection`, `ns-3::SystemThread` and `ns-3::SystemCondition`) and replace them with C++ STL libraries, respectively `std::mutex`, `std::thread` and `std::condition_variable`.
+
 ### Bugs fixed
 
 Release 3.36

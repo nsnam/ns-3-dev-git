@@ -20,6 +20,12 @@ Changes from ns-3.36 to ns-3.37
 
 ### Changes to existing API
 
+* The PTHREAD-dependent classes (mutex, thread and condition variables) were removed and replaced with C++ STL libraries. The API of the STL libraries is very similar to the equivalent ns-3 classes. The main API differences are as follows:
+  * `ns-3::SystemMutex` should be refactored to `std::mutex`.
+  * `ns-3::CriticalSection cs (m_mutex)` should be refactored to `std::unique_lock lock {m_mutex}`.
+  * `ns-3::SystemThread` should be refactored to `std::thread`, which, unlike SystemThread, starts the thread immediately.
+  * `ns-3::SystemCondition` should be refactored to `std::condition_variable`, which relies on a companion `std::mutex`.
+
 ### Changes to build system
 
 ### Changed behavior
