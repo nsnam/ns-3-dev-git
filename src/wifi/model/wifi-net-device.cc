@@ -88,7 +88,8 @@ WifiNetDevice::GetTypeId (void)
 }
 
 WifiNetDevice::WifiNetDevice ()
-  : m_configComplete (false)
+  : m_standard (WIFI_STANDARD_UNSPECIFIED),
+    m_configComplete (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -174,6 +175,19 @@ WifiNetDevice::CompleteConfig (void)
   m_stationManager->SetupPhy (m_phy);
   m_stationManager->SetupMac (m_mac);
   m_configComplete = true;
+}
+
+void
+WifiNetDevice::SetStandard (WifiStandard standard)
+{
+  NS_ABORT_MSG_IF (m_standard != WIFI_STANDARD_UNSPECIFIED, "Wifi standard already set");
+  m_standard = standard;
+}
+
+WifiStandard
+WifiNetDevice::GetStandard (void) const
+{
+  return m_standard;
 }
 
 void

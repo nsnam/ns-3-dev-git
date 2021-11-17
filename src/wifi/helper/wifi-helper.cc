@@ -793,6 +793,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+      device->SetStandard (m_standard);
       auto it = wifiStandards.find (m_standard);
       if (it == wifiStandards.end ())
         {

@@ -124,6 +124,7 @@ inline std::ostream& operator<< (std::ostream& os, WifiMacStandard standard)
  */
 enum WifiStandard
 {
+  WIFI_STANDARD_UNSPECIFIED,
   WIFI_STANDARD_80211a,
   WIFI_STANDARD_80211b,
   WIFI_STANDARD_80211g,
