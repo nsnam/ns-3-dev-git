@@ -78,11 +78,11 @@ private:
    */
   OkumuraHataPropagationLossModel & operator = (const OkumuraHataPropagationLossModel &);
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
-  
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
+
   EnvironmentType m_environment;  //!< Environment Scenario
   CitySize m_citySize;  //!< Size of the city
   double m_frequency; //!< frequency in Hz

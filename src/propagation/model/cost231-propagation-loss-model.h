@@ -138,15 +138,15 @@ private:
    */
   Cost231PropagationLossModel & operator = (const Cost231PropagationLossModel &);
 
-  virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
+
   double m_BSAntennaHeight; //!< BS Antenna Height [m]
   double m_SSAntennaHeight; //!< SS Antenna Height [m]
   double m_lambda; //!< The wavelength
   double m_minDistance; //!< minimum distance [m]
   double m_frequency; //!< frequency [Hz]
   double m_shadowing; //!< Shadowing loss [dB]
-
 };
 
 }

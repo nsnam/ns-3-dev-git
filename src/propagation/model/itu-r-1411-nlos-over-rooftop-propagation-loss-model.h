@@ -86,11 +86,11 @@ private:
    */
   ItuR1411NlosOverRooftopPropagationLossModel & operator = (const ItuR1411NlosOverRooftopPropagationLossModel &);
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
-  
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
+
   double m_frequency; //!< frequency in MHz
   double m_lambda; //!< wavelength
   EnvironmentType m_environment; //!< Environment Scenario
@@ -107,4 +107,3 @@ private:
 
 
 #endif // ITU_R_1411_NLOS_OVER_ROOFTOP_PROPAGATION_LOSS_MODEL_H
-

@@ -62,7 +62,7 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
-private:
+protected:
   /**
    * Subclasses must implement this; those not using random variables
    * can return zero
@@ -89,9 +89,9 @@ public:
    */
   RandomPropagationDelayModel ();
   virtual ~RandomPropagationDelayModel ();
-  virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 private:
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
   Ptr<RandomVariableStream> m_variable; //!< random generator
 };
 
@@ -113,7 +113,7 @@ public:
    * Use the default parameters from PropagationDelayConstantSpeed.
    */
   ConstantSpeedPropagationDelayModel ();
-  virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
   /**
    * \param speed the new speed (m/s)
    */
@@ -123,7 +123,7 @@ public:
    */
   double GetSpeed (void) const;
 private:
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
   double m_speed; //!< speed
 };
 

@@ -76,11 +76,10 @@ private:
   Kun2600MhzPropagationLossModel & operator = (const Kun2600MhzPropagationLossModel &);
 
   // inherited from PropagationLossModel
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
-  
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
 };
 
 } // namespace ns3

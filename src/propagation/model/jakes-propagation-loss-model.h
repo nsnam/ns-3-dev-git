@@ -62,8 +62,9 @@ private:
   JakesPropagationLossModel & operator = (const JakesPropagationLossModel &);
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
-                        Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+                        Ptr<MobilityModel> b) const override;
+
+  int64_t DoAssignStreams (int64_t stream) override;
 
   /**
    * Get the underlying RNG stream
