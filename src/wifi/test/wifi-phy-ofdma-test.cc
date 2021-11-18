@@ -2134,6 +2134,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 
   Ptr<Node> apNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
+  apDev->SetStandard (WIFI_STANDARD_80211ax_5GHZ);
   Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac> ();
   apMac->SetAttribute ("BeaconGeneration", BooleanValue (false));
   apDev->SetMac (apMac);

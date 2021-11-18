@@ -1731,6 +1731,7 @@ Bug2831TestCase::DoRun (void)
 
   Ptr<Node> apNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
+  apDev->SetStandard (WIFI_STANDARD_80211ax_5GHZ);
   Ptr<HtConfiguration> apHtConfiguration = CreateObject<HtConfiguration> ();
   apDev->SetHtConfiguration (apHtConfiguration);
   ObjectFactory mac;
@@ -1751,6 +1752,7 @@ Bug2831TestCase::DoRun (void)
 
   Ptr<Node> staNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
+  staDev->SetStandard (WIFI_STANDARD_80211ax_5GHZ);
   Ptr<HtConfiguration> staHtConfiguration = CreateObject<HtConfiguration> ();
   staDev->SetHtConfiguration (staHtConfiguration);
   mac.SetTypeId ("ns3::StaWifiMac");

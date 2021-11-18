@@ -342,6 +342,7 @@ TwoLevelAggregationTest::DoRun (void)
    * Create device and attach HT configuration.
    */
   m_device = CreateObject<WifiNetDevice> ();
+  m_device->SetStandard (WIFI_STANDARD_80211n_5GHZ);
   Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
   m_device->SetHtConfiguration (htConfiguration);
 

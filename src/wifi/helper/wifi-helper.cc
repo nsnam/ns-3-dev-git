@@ -805,8 +805,13 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
           device->SetHtConfiguration (htConfiguration);
         }
-      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ac) && (it->second.phyBand != WIFI_PHY_BAND_2_4GHZ))
+      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211ac)
         {
+          // Create the VHT Configuration object even if the PHY band is 2.4GHz
+          // (WifiNetDevice::GetVhtConfiguration() checks the PHY band being used).
+          // This approach allows us not to worry about deleting this object when
+          // the PHY band is switched from 5GHz to 2.4GHz and creating this object
+          // when the PHY band is switched from 2.4GHz to 5GHz.
           Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
           device->SetVhtConfiguration (vhtConfiguration);
         }
