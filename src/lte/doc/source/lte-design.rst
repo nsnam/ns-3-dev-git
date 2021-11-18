@@ -4362,7 +4362,7 @@ layers of the LTE protocol stack in ns-3.
    CA impact on different layers of LTE protocol stack (from 3gpp.org)
 
 Impact on RRC layer
--------------------------------
+-------------------
 
 The main impacts on the RRC layer are related to secondary carrier configuration and 
 measurements reporting. To enable these features we have enhanced the already existing 
@@ -4414,12 +4414,17 @@ event A6 (neighbour becomes offset better than SCell) is not implemented yet.
 
    A schematic overview of the secondary carrier enabling procedure
 
-Impact on PCDCP layer
--------------------------------
+Handover is possible between different component carriers on the same
+eNB (i.e., intra-eNB handover from one frequency to another) and between
+carriers on different eNB (i.e., inter-eNB).  One constraint for inter-eNB
+handovers is that both eNB must have the same number of component carriers.
+
+Impact on PDCP layer
+--------------------
 There is no impact on PDCP layer.
 
 Impact on RLC layer
--------------------------------
+-------------------
 The impact on the RLC layer is relatively small. There is some impact on configuration of 
 the buffer and the usage of SAP interfaces between RLC and MAC. Since the capacity of the 
 lower layers increases with the carrier aggregation it is necessary to accordingly adjust 
@@ -4434,7 +4439,7 @@ carriers. Additionally, it uses the information of the UEs and the logical chann
 its own functionalities.
 
 Impact on MAC layer
--------------------------------
+-------------------
 
 The impact on the MAC layer depends on the CA scheduling scheme in use. Two different 
 scheduling schemes are proposed in R10 and are shown in 
@@ -4463,7 +4468,7 @@ The MAC layer of the eNodeB has suffered minor changes and they are mainly relat
 addition of component carrier information in message exchange between layers. 
 
 Impact on PHY layer
--------------------------------
+-------------------
 
 The impact on PHY layer is minor. There is an instance of PHY layer per each component 
 carrier and the SAP interface functions remain unchanged. As shown 
@@ -4480,7 +4485,7 @@ and the uplink traffic is transmitted only over the primary carrier.
 
 
 Code Structure Design
-+++++++++++++++++++++++++++++++
++++++++++++++++++++++
 
 This section briefly introduces the software design and implementation of the 
 carrier aggregation functionality.
@@ -4600,7 +4605,7 @@ Figure :ref:`fig-ca-setup-radio-bearer` shows how the Radio Bearer are configure
    Sequence Diagram of Data Radio Bearer Setup
  
 CA impact on data plane of UE
-------------------------------
+-----------------------------
 Figure :ref:`fig-ca-ue-data-plane` shows the relation between the different classes 
 related to the UE data plane. The UE data plane architecture is similar to the eNB data 
 plane implementation. The ``LteUeComponentCarrierManager`` is responsible to (re)map 
@@ -4636,7 +4641,7 @@ the ``LteUlCcmRrcSapProvider``.
    
 
 CA impact on control plane of UE
----------------------------------
+--------------------------------
 Figure :ref:`fig-ca-ue-ctrl-plane` shows the relation between the different classes 
 associated to the UE control plane. The control plane implementation at the UE is basically 
 the same as the eNB control plane implementation. Each component carrier control SAP 
@@ -4657,7 +4662,7 @@ in the same way as in the eNB.
 layer parameters, such as uplink and downlink,bandwidth and EARFCN of each carrier.
 
 CCM RRC MAC interfaces
------------------------
+----------------------
 
 The Component carrier manager (CCM) is also developed by using the SAP interface design. 
 The following SAP interfaces are implemented for CCM and MAC: 
@@ -4674,7 +4679,7 @@ The following SAP interfaces are implemented for CCM and MAC:
  to split the traffic and whether to use the secondary carriers.
 
 CCM RRC SAP interfaces
-----------------------------------
+----------------------
 
 The following SAP interfaces are implemented for CCM and RRC: 
 
@@ -4690,7 +4695,7 @@ be used to add and remove of UEs, setup or release of radio bearer, configuratio
 signalling bearer, etc.
 
 Component carrier managers
------------------------------------------
+--------------------------
 Currently, there are two component carrier manager implementations available. The first one 
 is the ``NoOpComponentCarrierManager``, which  is the default CCM choice. When this CCM is 
 used the carrier aggregation feature is disabled. This CCM forwards all traffic, the uplink 

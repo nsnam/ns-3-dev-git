@@ -101,7 +101,7 @@ public:
    * \param enb eNB peer of the S1 interface
    * \param enbAddress eNB IPv4 address of the S1 interface
    * \param sgwAddress SGW IPv4 address of the S1 interface
-   * \param cellId cellId of the eNB
+   * \param cellIds cellIds of the eNB
    */
   virtual void AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, std::vector<uint16_t> cellIds) = 0;
 

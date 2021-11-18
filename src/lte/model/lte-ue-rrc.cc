@@ -114,15 +114,6 @@ static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
   "CONNECTED_REESTABLISHING"
 };
 
-/**
- * \param s The UE RRC state.
- * \return The string representation of the given state.
- */
-static const std::string & ToString (LteUeRrc::State s)
-{
-  return g_ueRrcStateName[s];
-}
-
 
 /////////////////////////////
 // ue RRC methods
@@ -1086,19 +1077,19 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
               {
                 cphySapProvider->Reset ();
               }
-            m_ccmRrcSapProvider->Reset();
+            m_ccmRrcSapProvider->Reset ();
             StorePreviousCellId (m_cellId);
             m_cellId = mci.targetPhysCellId;
             NS_ASSERT (mci.haveCarrierFreq);
             NS_ASSERT (mci.haveCarrierBandwidth);
-            m_cphySapProvider.at(0)->SynchronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq);
-            m_cphySapProvider.at(0)->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
-            m_cphySapProvider.at(0)->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth);
+            m_cphySapProvider.at (0)->SynchronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq);
+            m_cphySapProvider.at (0)->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
+            m_cphySapProvider.at (0)->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth);
             m_rnti = msg.mobilityControlInfo.newUeIdentity;
             m_srb0->m_rlc->SetRnti (m_rnti);
             NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");
-            m_cmacSapProvider.at(0)->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
-            m_cphySapProvider.at(0)->SetRnti (m_rnti);
+            m_cmacSapProvider.at (0)->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
+            m_cphySapProvider.at (0)->SetRnti (m_rnti);
             m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
             NS_ASSERT (msg.haveRadioResourceConfigDedicated);
 
@@ -3335,6 +3326,11 @@ LteUeRrc::ResetRlfParams ()
   m_cphySapProvider.at (0)->ResetRlfParams ();
 }
 
+const std::string &
+LteUeRrc::ToString (LteUeRrc::State s)
+{
+  return g_ueRrcStateName[s];
+}
 
 
 } // namespace ns3

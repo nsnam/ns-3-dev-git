@@ -81,10 +81,10 @@ public:
    * Add a S1-U interface to the eNB
    *
    * \param s1uSocket the socket to be used to send/receive packets to/from the S1-U interface connected with the SGW
-   * \param enbAddress the IPv4 address of the S1-U interface of this eNB
-   * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
+   * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
+   * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
    */
-  void AddS1Interface (Ptr<Socket> s1uSocket, Ipv4Address enbAddress, Ipv4Address sgwAddress);
+  void AddS1Interface (Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress);
 
 
   /**

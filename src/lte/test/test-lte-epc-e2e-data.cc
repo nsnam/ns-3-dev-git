@@ -373,8 +373,7 @@ LteEpcE2eDataTestCase::DoRun ()
 
 
 /**
- * \ingroup lte-test
- * \ingroup tests
+ * \ingroup tests lte-test
  *
  * \brief Test that the S1-U interface implementation works correctly
  */

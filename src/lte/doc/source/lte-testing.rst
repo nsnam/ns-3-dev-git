@@ -1181,6 +1181,23 @@ time than the others to compensate for its higher risk of failure.
 The test uses the default Friis path loss model and without any channel fading
 model.
 
+Secondary cell selection
+------------------------
+
+The unit test ``lte-secondary-cell-selection``` tests that a UE can attach to
+any component carrier (not just the 0-th one) during initial cell selection.
+
+Handover with multiple component carriers
+-----------------------------------------
+The unit test suite ``lte-primary-cell-change`` tests a number of handover
+cases between different component carriers, for both the Ideal RRC and the
+Real RRC.  The following handover cases are tested:
+
+* (inter-eNB) eNB to eNB with one component carrier
+* (inter-eNB) handover between the first carrier of two eNBs
+* (inter-eNB) handover between the second carrier of one eNB to the first carrier of another eNB
+* (inter-eNB) handover between the second carrier of one eNB to the second carrier of another eNB
+* (intra-eNB) three handover cases between component carriers of the same eNB
 
 GTP-U protocol
 --------------

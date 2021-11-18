@@ -32,13 +32,12 @@
 using namespace ns3;
 
 /**
- * \ingroup lte
- *
- * <b>This test is currently excluded from test.py (see LTE module wscript).
- * It depends on the code, which is not yet merged fully.</b>
- * \sa https://www.nsnam.org/wiki/GSOC2017Lte#Project_summary
+ * \ingroup lte-test
  *
  * \brief Test suite for executing the secondary cell selection test cases.
+ *
+ * Checks that if multiple component carriers are defined for an eNB, that
+ * UEs can connect to each of these component carriers, not just the primary
  *
  * \sa ns3::LteSecondaryCellSelectionTestCase
  */
@@ -49,14 +48,8 @@ public:
 };
 
 
-
-
 /**
- * \ingroup lte
- *
- * <b>This test is currently excluded from test.py (see LTE module wscript).
- * It depends on the code, which is not yet merged fully.</b>
- * \sa https://www.nsnam.org/wiki/GSOC2017Lte#Project_summary
+ * \ingroup lte-test
  *
  * \brief Testing the initial cell selection procedure by UE at IDLE state in
  *        the beginning of simulation with multiple component carriers.

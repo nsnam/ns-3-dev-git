@@ -72,8 +72,8 @@ public:
   /**
    * Constructor
    *
-   * \param localCellId local cell IDs
-   * \param remoteCellId remote cell IDs
+   * \param localCellIds local cell IDs
+   * \param remoteCellIds remote cell IDs
    */
   X2CellInfo (std::vector<uint16_t> localCellIds, std::vector<uint16_t> remoteCellIds);
   virtual ~X2CellInfo (void);

@@ -108,7 +108,7 @@ PointToPointEpcHelper::DoDispose ()
 void
 PointToPointEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.at (0));
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.size ());
 
   NoBackhaulEpcHelper::AddEnb (enb, lteEnbNetDevice, cellIds);
 

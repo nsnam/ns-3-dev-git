@@ -53,12 +53,12 @@ NS_LOG_COMPONENT_DEFINE ("LteSecondaryCellSelectionTest");
 LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
   : TestSuite ("lte-secondary-cell-selection", SYSTEM)
 {
-  // REAL RRC PROTOCOL
+  // REAL RRC PROTOCOL, either 2 or 4 UEs connecting to 2 or 4 component carriers
 
   AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1U, 2), TestCase::QUICK);
   AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1U, 4), TestCase::QUICK);
 
-  // IDEAL RRC PROTOCOL
+  // IDEAL RRC PROTOCOL, either 2 or 4 UEs connecting to 2 or 4 component carriers
 
   AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1U, 2), TestCase::QUICK);
   AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1U, 4), TestCase::QUICK);
@@ -126,7 +126,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   std::map< uint8_t, Ptr<ComponentCarrierUe> > ueCcMap = ueDev->GetCcMap ();
   for (auto it: ueCcMap)
     {
-      std::cerr << "Assign " << it.second->GetDlEarfcn() << std::endl;
+      NS_LOG_DEBUG ("Assign DL EARFCN " << it.second->GetDlEarfcn() << " to UE " << ueDevs.Get (it.first)->GetNode ()->GetId ());
       DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first))->SetDlEarfcn (it.second->GetDlEarfcn());
     }
 
@@ -150,6 +150,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
       ueDev = DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first));
       uint16_t expectedCellId = it.second->GetCellId ();
       uint16_t actualCellId = ueDev->GetRrc ()->GetCellId ();
+      NS_LOG_DEBUG ("RNTI " << ueDev->GetRrc ()->GetRnti () << " attached to cell ID: " << actualCellId);
       NS_TEST_ASSERT_MSG_EQ (expectedCellId, actualCellId, "IMSI " << ueDev->GetImsi () << " has attached to an unexpected cell");
 
       NS_TEST_ASSERT_MSG_EQ (m_lastState.at (ueDev->GetImsi ()),
@@ -168,7 +169,7 @@ LteSecondaryCellSelectionTestCase::StateTransitionCallback (
   std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
   LteUeRrc::State oldState, LteUeRrc::State newState)
 {
-  NS_LOG_FUNCTION (this << imsi << cellId << rnti << oldState << newState);
+  NS_LOG_FUNCTION (this << imsi << cellId << rnti << LteUeRrc::ToString (oldState) << LteUeRrc::ToString (newState));
   m_lastState[imsi] = newState;
 }
 

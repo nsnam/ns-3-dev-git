@@ -309,7 +309,7 @@ NoBackhaulEpcHelper::DoDispose ()
 void
 NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.at (0));
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.size ());
   NS_ASSERT (enb == lteEnbNetDevice->GetNode ());
 
   int retval;
@@ -347,7 +347,7 @@ NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std:
   retval = enbLteSocket6->Connect (enbLteSocketConnectAddress6);
   NS_ASSERT (retval == 0);  
 
-  NS_LOG_INFO ("Create EpcEnbApplication");
+  NS_LOG_INFO ("Create EpcEnbApplication for cell ID " << cellIds.at (0));
   Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, cellIds.at (0));
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
@@ -547,7 +547,7 @@ NoBackhaulEpcHelper::GetSgwNode () const
 void
 NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << enbAddress << sgwAddress << cellIds.at (0));
+  NS_LOG_FUNCTION (this << enb << enbAddress << sgwAddress << cellIds.size ());
 
   // create S1-U socket for the ENB
   Ptr<Socket> enbS1uSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::UdpSocketFactory"));
@@ -561,6 +561,7 @@ NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4
   NS_LOG_INFO ("Connect S1-AP interface");
   for (uint16_t cellId : cellIds)
     {
+      NS_LOG_DEBUG ("Adding MME and SGW for cell ID " << cellId);
       m_mmeApp->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
       m_sgwApp->AddEnb (cellId, enbAddress, sgwAddress);
     }

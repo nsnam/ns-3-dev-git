@@ -331,6 +331,12 @@ public:
   void SetUseRlcSm (bool val);
 
   /**
+   * \param s The UE RRC state.
+   * \return The string representation of the given state.
+   */
+  static const std::string & ToString (LteUeRrc::State s);
+
+  /**
    * TracedCallback signature for imsi, cellId and rnti events.
    *
    * \param [in] imsi
@@ -1054,7 +1060,7 @@ private:
   {
     double rsrp; ///< Measured RSRP in dBm.
     double rsrq; ///< Measured RSRQ in dB.
-    uint32_t carrierFreq; //< Measurement object frequency
+    uint32_t carrierFreq; ///< Measurement object frequency
   };
 
   /**

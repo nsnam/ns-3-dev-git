@@ -650,12 +650,12 @@ RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
       measResults.haveMeasResultNeighCells = false;
     }
 
-  std::bitset<4> measResultOptional;
-  measResultOptional.set (3,  measResults.haveMeasResultServFreqList);
-  measResultOptional.set (2, false); //LocationInfo-r10
-  measResultOptional.set (1, false); // MeasResultForECID-r9
-  measResultOptional.set (0, measResults.haveMeasResultNeighCells);
-  SerializeSequence (measResultOptional, true);
+    std::bitset<4> measResultOptional;
+    measResultOptional.set (3,  measResults.haveMeasResultServFreqList);
+    measResultOptional.set (2, false); //LocationInfo-r10
+    measResultOptional.set (1, false); // MeasResultForECID-r9
+    measResultOptional.set (0, measResults.haveMeasResultNeighCells);
+    SerializeSequence (measResultOptional, true);
 
   // Serialize measId
   SerializeInteger (measResults.measId,1,MAX_MEAS_ID);
@@ -3701,54 +3701,54 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
           // ...
         }
     }
-  if (measResults->haveMeasResultServFreqList)
-    {
-      int numElems;
-      bIterator = DeserializeSequenceOf (&numElems, MAX_SCELL_REPORT, 1, bIterator);
-      for (int i = 0; i < numElems; i++)
-        {
-          LteRrcSap::MeasResultServFreq measResultServFreq;
+    if (measResults->haveMeasResultServFreqList)
+      {
+      
+        int numElems;
+        bIterator = DeserializeSequenceOf (&numElems, MAX_SCELL_REPORT, 1, bIterator);
+        for (int i = 0; i < numElems; i++)
+          {
+            LteRrcSap::MeasResultServFreq measResultServFreq;
 
-          // Deserialize MeasResultServFreq-r10
-          std::bitset<2> measResultScellPresent;
-          bIterator = DeserializeSequence (&measResultScellPresent, true, bIterator);
-          measResultServFreq.haveMeasResultSCell = measResultScellPresent[0];
-          measResultServFreq.haveMeasResultBestNeighCell = measResultScellPresent[1];
+            // Deserialize MeasResultServFreq-r10
+            std::bitset<2> measResultScellPresent;
+            bIterator = DeserializeSequence (&measResultScellPresent, true, bIterator);
+            measResultServFreq.haveMeasResultSCell = measResultScellPresent[0];
+            measResultServFreq.haveMeasResultBestNeighCell = measResultScellPresent[1];
 
-          // Deserialize servFreqId-r10
-          int servFreqId;
-          bIterator = DeserializeInteger (&servFreqId, 0, 7, bIterator);
-          measResultServFreq.servFreqId = servFreqId;
+            // Deserialize servFreqId-r10
+            int servFreqId;
+            bIterator = DeserializeInteger (&servFreqId, 0, 7, bIterator);
+            measResultServFreq.servFreqId = servFreqId;
 
-          if (measResultServFreq.haveMeasResultSCell)
-            {
-              // Deserialize rsrpResult
-              bIterator = DeserializeInteger (&n, 0, 97, bIterator);
-              measResultServFreq.measResultSCell.rsrpResult = n;
+            if (measResultServFreq.haveMeasResultSCell)
+              {
+                // Deserialize rsrpResult
+                bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+                measResultServFreq.measResultSCell.rsrpResult = n;
 
-              // Deserialize rsrqResult
-              bIterator = DeserializeInteger (&n, 0, 34, bIterator);
-              measResultServFreq.measResultSCell.rsrqResult = n;
-            }
+                // Deserialize rsrqResult
+                bIterator = DeserializeInteger (&n, 0, 34, bIterator);
+                measResultServFreq.measResultSCell.rsrqResult = n;
+              }
 
-          if (measResultServFreq.haveMeasResultBestNeighCell)
-            {
-              // Deserialize physCellId-r10
-              bIterator = DeserializeInteger (&n, 0, 503, bIterator);
-              measResultServFreq.measResultBestNeighCell.physCellId = n;
+            if (measResultServFreq.haveMeasResultBestNeighCell)
+              {
+                // Deserialize physCellId-r10
+                bIterator = DeserializeInteger (&n, 0, 503, bIterator);
+                measResultServFreq.measResultBestNeighCell.physCellId = n;
 
-              // Deserialize rsrpResultNCell-r10
-              bIterator = DeserializeInteger (&n, 0, 97, bIterator);
-              measResultServFreq.measResultBestNeighCell.rsrpResult = n;
+                // Deserialize rsrpResultNCell-r10
+                bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+                measResultServFreq.measResultBestNeighCell.rsrpResult = n;
 
-              // Deserialize rsrqResultNCell-r10
-              bIterator = DeserializeInteger (&n, 0, 34, bIterator);
-              measResultServFreq.measResultBestNeighCell.rsrqResult = n;
-            }
-
-          measResults->measResultServFreqList.push_back (measResultServFreq);
-        }
-    }
+                // Deserialize rsrqResultNCell-r10
+                bIterator = DeserializeInteger (&n, 0, 34, bIterator);
+                measResultServFreq.measResultBestNeighCell.rsrqResult = n;
+              }
+            measResults->measResultServFreqList.push_back (measResultServFreq);
+          }
+      }
   return bIterator;
 }
 

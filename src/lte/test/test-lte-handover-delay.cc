@@ -50,8 +50,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteHandoverDelayTest");
 
 /**
- * \ingroup lte-test
- * \ingroup tests
+ * \ingroup tests lte-test
  *
  * \brief Verifying that the time needed for handover is under a
  * specified threshold.

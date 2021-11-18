@@ -57,6 +57,7 @@ us a note on ns-developers mailing list.</p>
 <li>The helpers of the NetDevices supporting flow control (PointToPointHelper, CsmaHelper, SimpleNetDeviceHelper, WifiHelper) now provide a <b>DisableFlowControl</b> method to disable flow control. If flow control is disabled, the Traffic Control layer forwards packets down to the NetDevice even if there is no room for them in the NetDevice queue(s)</li>
 <li>Added a new trace source <b>TcDrop</b> in TrafficControlLayer for tracing packets that have been dropped because no queue disc is installed on the device, the device supports flow control and the device queue is full.</li>
 <li>Added a new class <b>PhasedArraySpectrumPropagationLossModel</b>, and its <b>DoCalcRxPowerSpectralDensity</b> function has two additional parameters: TX and RX antenna arrays. Should be inherited by models that need to know antenna arrays in order to calculate RX PSD.</li>
+<li>It is now possible to detach a SpectrumPhy object from a SpectrumChannel by calling SpectrumChannel::RemoveRx ().</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -82,6 +83,7 @@ us a note on ns-developers mailing list.</p>
 attributes of <b>WifiPhy</b> can now only be used to get the corresponding values. Channel settings
 can be now configured through the <b>ChannelSettings</b> attribute. See the wifi model documentation
 for information on how to set this new attribute.</li>
+<li>UE handover now works with and without enabled CA (carrier aggregation) in inter-eNB, intra-eNB, inter-frequency and intra-frequency scenarios. Previously only inter-eNB intra-frequency handover was supported and only in non-CA scenarios. </li>
 </ul>
 
 <hr>

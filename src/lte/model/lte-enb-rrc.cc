@@ -647,6 +647,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         if (m_rrc->HasCellId (cellId))
           {
             // Intra-eNB handover
+            NS_LOG_DEBUG ("Intra-eNB handover for cellId " << cellId);
             uint8_t componentCarrierId = m_rrc->CellToComponentCarrierId (cellId);
             uint16_t rnti = m_rrc->AddUe (UeManager::HANDOVER_JOINING, componentCarrierId);
             LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_rrc->m_cmacSapProvider.at (componentCarrierId)->AllocateNcRaPreamble (rnti);
@@ -695,7 +696,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         else
           {
             // Inter-eNB aka X2 handover
-
+            NS_LOG_DEBUG ("Inter-eNB handover (i.e., X2) for cellId " << cellId);
             EpcX2SapProvider::HandoverRequestParams params;
             params.oldEnbUeX2apId = m_rnti;
             params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;

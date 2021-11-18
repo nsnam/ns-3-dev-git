@@ -668,18 +668,18 @@ public:
 
   /// MeasResultServFreq structure
   struct MeasResultServFreq {
-    uint16_t servFreqId; //< serving cell index
-    bool haveMeasResultSCell; //< have measResultSCell?
-    MeasResultSCell measResultSCell; //< SCell measurement results
-    bool haveMeasResultBestNeighCell; //< have measResultBestNeighCell?
-    MeasResultBestNeighCell measResultBestNeighCell; //< best neighbor cell measurement results
+    uint16_t servFreqId; ///< serving cell index
+    bool haveMeasResultSCell; ///< have measResultSCell?
+    MeasResultSCell measResultSCell; ///< SCell measurement results
+    bool haveMeasResultBestNeighCell; ///< have measResultBestNeighCell?
+    MeasResultBestNeighCell measResultBestNeighCell; ///< best neighbor cell measurement results
   };
 
   /// MeasResults structure
   struct MeasResults
   {
     uint8_t measId; ///< measure ID
-    MeasResultPCell measResultPCell;
+    MeasResultPCell measResultPCell; ///< measurement result primary cell
     bool haveMeasResultNeighCells; ///< have measure result neighbor cells
     std::list<MeasResultEutra> measResultListEutra; ///< measure result list eutra
     bool haveMeasResultServFreqList; ///< has measResultServFreqList-r10

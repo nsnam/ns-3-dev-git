@@ -64,7 +64,7 @@ public:
    * \param targetComponentCarrier target component carrier
    *
    * If sourceComponentCarrier or targetComponentCarrier is greater than
-   * number of component carriers, it idenifies component carrier on second eNB.
+   * number of component carriers, it identifies component carrier on second eNB.
    */
   LtePrimaryCellChangeTestCase (std::string name, bool isIdealRrc, int64_t rngRun,
                                 uint8_t numberOfComponentCarriers,

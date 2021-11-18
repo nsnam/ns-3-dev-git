@@ -311,6 +311,7 @@ set(test_sources
     test/lte-test-pathloss-model.cc
     test/lte-test-pf-ff-mac-scheduler.cc
     test/lte-test-phy-error-model.cc
+    test/lte-test-primary-cell-change.cc
     test/lte-test-pss-ff-mac-scheduler.cc
     test/lte-test-radio-link-failure.cc
     test/lte-test-rlc-am-e2e.cc
@@ -318,6 +319,8 @@ set(test_sources
     test/lte-test-rlc-um-e2e.cc
     test/lte-test-rlc-um-transmitter.cc
     test/lte-test-rr-ff-mac-scheduler.cc
+    test/lte-test-secondary-cell-handover.cc
+    test/lte-test-secondary-cell-selection.cc
     test/lte-test-spectrum-value-helper.cc
     test/lte-test-tdbet-ff-mac-scheduler.cc
     test/lte-test-tdmt-ff-mac-scheduler.cc

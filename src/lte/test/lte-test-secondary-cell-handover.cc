@@ -63,6 +63,13 @@ public:
    */
   void ShutdownCell (uint32_t cellId);
 
+  /**
+   * \brief Callback method indicating start of UE handover
+   * \param imsi The IMSI
+   * \param sourceCellId The source cell ID
+   * \param rnti The RNTI
+   * \param targetCellId The target cell ID
+   */
   void UeHandoverStartCallback (uint64_t imsi,
                                 uint16_t sourceCellId, uint16_t rnti,
                                 uint16_t targetCellId);

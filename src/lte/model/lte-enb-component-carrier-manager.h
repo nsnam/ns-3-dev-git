@@ -165,6 +165,9 @@ protected:
    */
   virtual void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) = 0;
 
+  /**
+   * \brief Structure to represent UE info
+   */
   struct UeInfo {
     std::map<uint8_t, LteMacSapUser*> m_ueAttached; //!< Map from LCID to SAP of the RLC instance.
     std::map<uint8_t, LteEnbCmacSapProvider::LcInfo> m_rlcLcInstantiated; //!< Logical channel configuration per flow Id (rnti, lcid).
