@@ -28,8 +28,7 @@
 
 namespace ns3 {
 
-
-
+struct SpectrumSignalParameters;
 
 /**
  * \ingroup spectrum
@@ -63,18 +62,14 @@ public:
   /**
    * This method is to be called to calculate
    *
-   * @param txPsd the SpectrumValue representing the power spectral
-   * density of the transmission. Watt units are to be used for radio
-   * communications, and Pascal units for acoustic communications
-   * (e.g., underwater).
-   *
+   * @param params the spectrum signal parameters.
    * @param a sender mobility
    * @param b receiver mobility
    *
    * @return set of values Vs frequency representing the received
    * power in the same units used for the txPower parameter.
    */
-  Ptr<SpectrumValue> CalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+  Ptr<SpectrumValue> CalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                  Ptr<const MobilityModel> a,
                                                  Ptr<const MobilityModel> b) const;
 
@@ -85,15 +80,14 @@ protected:
 private:
   /**
    *
-   * @param txPsd set of values Vs frequency representing the
-   * transmission power. See SpectrumChannel for details.
+   * @param params the spectrum signal parameters.
    * @param a sender mobility
    * @param b receiver mobility
    *
    * @return set of values Vs frequency representing the received
    * power in the same units used for the txPower parameter.
    */
-  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                            Ptr<const MobilityModel> a,
                                                            Ptr<const MobilityModel> b) const = 0;
 

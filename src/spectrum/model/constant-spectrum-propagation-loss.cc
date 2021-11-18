@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 
 #include "ns3/constant-spectrum-propagation-loss.h"
+#include "spectrum-signal-parameters.h"
 #include "ns3/double.h"
 
 
@@ -78,13 +79,13 @@ ConstantSpectrumPropagationLossModel::GetLossDb () const
 
 
 Ptr<SpectrumValue>
-ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                                     Ptr<const MobilityModel> a,
                                                                     Ptr<const MobilityModel> b) const
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
+  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (params->psd);
   Values::iterator vit = rxPsd->ValuesBegin ();
   Bands::const_iterator fit = rxPsd->ConstBandsBegin ();
 

@@ -73,14 +73,13 @@ public:
 
 private:
   /**
-   * \param txPsd set of values vs frequency representing the
-   *              transmission power. See SpectrumChannel for details.
+   * @param params the spectrum signal parameters.
    * \param a sender mobility
    * \param b receiver mobility
    * \return set of values vs frequency representing the received
    *         power in the same units used for the txPsd parameter.
    */
-  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                    Ptr<const MobilityModel> a,
                                                    Ptr<const MobilityModel> b) const;
 

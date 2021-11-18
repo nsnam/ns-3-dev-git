@@ -21,6 +21,7 @@
 
 #include "spectrum-propagation-loss-model.h"
 #include <ns3/log.h>
+#include "spectrum-signal-parameters.h"
 
 namespace ns3 {
 
@@ -61,14 +62,14 @@ void SpectrumPropagationLossModel::SetNext (Ptr<SpectrumPropagationLossModel> ne
 
 
 Ptr<SpectrumValue>
-SpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+SpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                           Ptr<const MobilityModel> a,
                                                           Ptr<const MobilityModel> b) const
 {
-  Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (txPsd, a, b);
+  Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (params, a, b);
   if (m_next != 0)
     {
-      rxPsd = m_next->CalcRxPowerSpectralDensity (rxPsd, a, b);
+      rxPsd = m_next->CalcRxPowerSpectralDensity (params, a, b);
     }
   return rxPsd;
 }

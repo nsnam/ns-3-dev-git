@@ -110,14 +110,14 @@ public:
    * a certain channel is cached and recomputed only when the channel realization
    * is updated, or when the beamforming vectors change.
    *
-   * \param txPsd tx PSD
+   * \param params tx parameters
    * \param a first node mobility model
    * \param b second node mobility model
    * \param aPhasedArrayModel the antenna array of the first node
    * \param bPhasedArrayModel the antenna array of the second node
    * \return the received PSD
    */
-  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                    Ptr<const MobilityModel> a,
                                                    Ptr<const MobilityModel> b,
                                                    Ptr<const PhasedArrayModel> aPhasedArrayModel,

@@ -35,6 +35,7 @@
 #include "ns3/channel-condition-model.h"
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/wifi-spectrum-value-helper.h"
+#include "ns3/spectrum-signal-parameters.h"
 
 using namespace ns3;
 
@@ -358,35 +359,12 @@ ThreeGppChannelMatrixUpdateTest::DoRun (void)
 struct CheckLongTermUpdateParams
 {
   Ptr<ThreeGppSpectrumPropagationLossModel> lossModel; //!< the ThreeGppSpectrumPropagationLossModel object used to compute the rx PSD
-  Ptr<SpectrumValue> txPsd; //!< the PSD of the tx signal
+  Ptr<SpectrumSignalParameters> txParams; //!< the params of the tx signal
   Ptr<MobilityModel> txMob; //!< the mobility model of the tx device
   Ptr<MobilityModel> rxMob; //!< the mobility model of the rx device
   Ptr<SpectrumValue> rxPsdOld; //!< the previously received PSD
   Ptr<PhasedArrayModel> txAntenna; //!< the antenna array of the tx device
   Ptr<PhasedArrayModel> rxAntenna; //!< the antenna array of the rx device
-
-  /**
-   * \brief Constructor
-   * \param pLossModel the ThreeGppSpectrumPropagationLossModel object used to compute the rx PSD
-   * \param pTxPsd the PSD of the tx signal
-   * \param pTxMob the tx mobility model
-   * \param pRxMob the rx mobility model
-   * \param pRxPsdOld the previously received PSD
-   * \param pTxAntenna the tx antenna array
-   * \param pRxAntenna the rx antenna array
-   */
-  CheckLongTermUpdateParams (Ptr<ThreeGppSpectrumPropagationLossModel> pLossModel, Ptr<SpectrumValue> pTxPsd,
-                             Ptr<MobilityModel> pTxMob, Ptr<MobilityModel> pRxMob, Ptr<SpectrumValue> pRxPsdOld,
-                             Ptr<PhasedArrayModel> pTxAntenna, Ptr<PhasedArrayModel> pRxAntenna)
-  {
-    lossModel = pLossModel;
-    txPsd = pTxPsd;
-    txMob = pTxMob;
-    rxMob = pRxMob;
-    rxPsdOld = pRxPsdOld;
-    txAntenna = pTxAntenna;
-    rxAntenna = pRxAntenna;
-  }
 };
 
 /**
@@ -432,7 +410,7 @@ private:
    * matrix is recomputed
    * \param params a structure that contains the set of parameters needed by CheckLongTermUpdate in order to perform calculations
    */
-  void CheckLongTermUpdate (CheckLongTermUpdateParams &params);
+  void CheckLongTermUpdate (const CheckLongTermUpdateParams &params);
 
   /**
    * Checks if two PSDs are equal
@@ -481,9 +459,9 @@ ThreeGppSpectrumPropagationLossModelTest::ArePsdEqual (Ptr<SpectrumValue> first,
 }
 
 void
-ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate (CheckLongTermUpdateParams &params)
+ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate (const CheckLongTermUpdateParams &params)
 {
-  Ptr<SpectrumValue> rxPsdNew = params.lossModel->DoCalcRxPowerSpectralDensity (params.txPsd, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
+  Ptr<SpectrumValue> rxPsdNew = params.lossModel->DoCalcRxPowerSpectralDensity (params.txParams, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
   NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (params.rxPsdOld, rxPsdNew),  false, "The long term is not updated when the channel matrix is recomputed");
 }
 
@@ -547,13 +525,15 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
   WifiSpectrumValue5MhzFactory sf;
   double txPower = 0.1; // Watts
   uint32_t channelNumber = 1;
-  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
+  Ptr<SpectrumValue> txPsd = sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
+  Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters> ();
+  txParams->psd = txPsd->Copy ();
 
   // compute the rx psd
-  Ptr<SpectrumValue> rxPsdOld = lossModel->DoCalcRxPowerSpectralDensity (txPsd, txMob, rxMob, txAntenna, rxAntenna);
+  Ptr<SpectrumValue> rxPsdOld = lossModel->DoCalcRxPowerSpectralDensity (txParams, txMob, rxMob, txAntenna, rxAntenna);
 
   // 1) check that the rx PSD is equal for both the direct and the reverse channel
-  Ptr<SpectrumValue> rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob, rxAntenna, txAntenna);
+  Ptr<SpectrumValue> rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txParams, rxMob, txMob, rxAntenna, txAntenna);
   NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (rxPsdOld, rxPsdNew),  true, "The long term for the direct and the reverse channel are different");
 
   // 2) check if the long term is updated when changing the BF vector
@@ -563,15 +543,16 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
   txBfVector [0] = std::complex<double> (0.0, 0.0);
   txAntenna->SetBeamformingVector (txBfVector);
 
-  rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob, rxAntenna, txAntenna);
+  rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txParams, rxMob, txMob, rxAntenna, txAntenna);
   NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (rxPsdOld, rxPsdNew),  false, "Changing the BF vectors the rx PSD does not change");
 
   // update rxPsdOld
   rxPsdOld = rxPsdNew;
 
   // 3) check if the long term is updated when the channel matrix is recomputed
+  CheckLongTermUpdateParams params{lossModel, txParams, txMob, rxMob, rxPsdOld, txAntenna, rxAntenna};
   Simulator::Schedule (MilliSeconds (101), &ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate,
-                       this, CheckLongTermUpdateParams (lossModel, txPsd, txMob, rxMob, rxPsdOld, txAntenna, rxAntenna));
+                       this, params);
 
   Simulator::Run ();
   Simulator::Destroy ();

@@ -45,6 +45,7 @@
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/three-gpp-v2v-propagation-loss-model.h"
 #include "ns3/three-gpp-channel-model.h"
+#include "ns3/spectrum-signal-parameters.h"
 
 using namespace ns3;
 
@@ -63,31 +64,10 @@ struct ComputeSnrParams
 {
   Ptr<MobilityModel> txMob; //!< the tx mobility model
   Ptr<MobilityModel> rxMob; //!< the rx mobility model
-  Ptr<SpectrumValue> txPsd; //!< the PSD of the tx signal
+  Ptr<SpectrumSignalParameters> txParams; //!< the params of the tx signal
   double noiseFigure; //!< the noise figure in dB
   Ptr<PhasedArrayModel> txAntenna; //!< the tx antenna array
   Ptr<PhasedArrayModel> rxAntenna; //!< the rx antenna array
-
-  /**
-   * \brief Constructor
-   * \param pTxMob the tx mobility model
-   * \param pRxMob the rx mobility model
-   * \param pTxPsd the PSD of the tx signal
-   * \param pNoiseFigure the noise figure in dB
-   * \param pTxAntenna the tx antenna array
-   * \param pRxAntenna the rx antenna array
-   */
-  ComputeSnrParams (Ptr<MobilityModel> pTxMob, Ptr<MobilityModel> pRxMob,
-                    Ptr<SpectrumValue> pTxPsd, double pNoiseFigure,
-                    Ptr<PhasedArrayModel> pTxAntenna, Ptr<PhasedArrayModel> pRxAntenna)
-  {
-    txMob = pTxMob;
-    rxMob = pRxMob;
-    txPsd = pTxPsd;
-    noiseFigure = pNoiseFigure;
-    txAntenna = pTxAntenna;
-    rxAntenna = pRxAntenna;
-  }
 };
 
 /**
@@ -117,10 +97,8 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<PhasedArrayModel> thisAntenna, Ptr
  * \param params A structure that holds a bunch of parameters needed by ComputSnr function to calculate the average SNR
  */
 static void
-ComputeSnr (ComputeSnrParams& params)
+ComputeSnr (const ComputeSnrParams& params)
 {
-  Ptr<SpectrumValue> rxPsd = params.txPsd->Copy ();
-
   // check the channel condition
   Ptr<ChannelCondition> cond = m_condModel->GetChannelCondition (params.txMob, params.rxMob);
 
@@ -128,10 +106,10 @@ ComputeSnr (ComputeSnrParams& params)
   double propagationGainDb = m_propagationLossModel->CalcRxPower (0, params.txMob, params.rxMob);
   NS_LOG_DEBUG ("Pathloss " << -propagationGainDb << " dB");
   double propagationGainLinear = std::pow (10.0, (propagationGainDb) / 10.0);
-  *(rxPsd) *= propagationGainLinear;
+  *(params.txParams->psd) *= propagationGainLinear;
 
   // apply the fast fading and the beamforming gain
-  rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity (rxPsd, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
+  Ptr<SpectrumValue> rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity (params.txParams, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
   NS_LOG_DEBUG ("Average rx power " << 10 * log10 (Sum (*rxPsd) * 180e3) << " dB");
 
   // create the noise psd
@@ -140,7 +118,7 @@ ComputeSnr (ComputeSnrParams& params)
   double kT_W_Hz = std::pow (10.0, (kT_dBm_Hz - 30) / 10.0);
   double noiseFigureLinear = std::pow (10.0, params.noiseFigure / 10.0);
   double noisePowerSpectralDensity =  kT_W_Hz * noiseFigureLinear;
-  Ptr<SpectrumValue> noisePsd = Create <SpectrumValue> (params.txPsd->GetSpectrumModel ());
+  Ptr<SpectrumValue> noisePsd = Create <SpectrumValue> (params.txParams->psd->GetSpectrumModel ());
   (*noisePsd) = noisePowerSpectralDensity;
 
   // compute the SNR
@@ -354,14 +332,17 @@ main (int argc, char *argv[])
       rbs.push_back (rb);
     }
   Ptr<SpectrumModel> spectrumModel = Create<SpectrumModel> (rbs);
-  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (spectrumModel);
+  Ptr<SpectrumValue> txPsd = Create<SpectrumValue> (spectrumModel);
+  Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters> ();
   double txPow_w = std::pow (10., (txPow_dbm - 30) / 10);
   double txPowDens = (txPow_w / (numRb * subCarrierSpacing));
   (*txPsd) = txPowDens;
+  txParams->psd = txPsd->Copy ();
 
   for (int i = 0; i < simTime / timeRes; i++)
     {
-      Simulator::Schedule (timeRes * i, &ComputeSnr, ComputeSnrParams (txMob, rxMob, txPsd, noiseFigure, txAntenna, rxAntenna));
+      ComputeSnrParams params{txMob, rxMob, txParams, noiseFigure, txAntenna, rxAntenna};
+      Simulator::Schedule (timeRes * i, &ComputeSnr, params);
     }
 
   // initialize the output file

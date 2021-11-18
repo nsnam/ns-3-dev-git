@@ -21,6 +21,7 @@
 #include "phased-array-spectrum-propagation-loss-model.h"
 #include <ns3/log.h>
 #include <ns3/phased-array-model.h>
+#include "ns3/spectrum-signal-parameters.h"
 
 namespace ns3 {
 
@@ -60,7 +61,7 @@ void PhasedArraySpectrumPropagationLossModel::SetNext (Ptr<PhasedArraySpectrumPr
 }
 
 Ptr<SpectrumValue>
-PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                                      Ptr<const MobilityModel> a,
                                                                      Ptr<const MobilityModel> b,
                                                                      Ptr<const PhasedArrayModel> aPhasedArrayModel,
@@ -69,10 +70,10 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const S
   // Here we assume that all the models in the chain of models are of type
   // PhasedArraySpectrumPropagationLossModel that provides the implementation of
   // this function, i.e. has phased array model of TX and RX as parameters
-  Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (txPsd, a, b, aPhasedArrayModel, bPhasedArrayModel);
+  Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (params, a, b, aPhasedArrayModel, bPhasedArrayModel);
   if (m_next != 0)
     {
-      rxPsd = m_next->CalcRxPowerSpectralDensity (rxPsd, a, b, aPhasedArrayModel, bPhasedArrayModel);
+      rxPsd = m_next->CalcRxPowerSpectralDensity (params, a, b, aPhasedArrayModel, bPhasedArrayModel);
     }
   return rxPsd;
 }

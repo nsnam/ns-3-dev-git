@@ -29,6 +29,7 @@
 #include "ns3/uinteger.h"
 #include <fstream>
 #include <ns3/simulator.h>
+#include "spectrum-signal-parameters.h"
 
 namespace ns3 {
 
@@ -149,11 +150,11 @@ TraceFadingLossModel::LoadTrace ()
 
 Ptr<SpectrumValue>
 TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
-  Ptr<const SpectrumValue> txPsd,
+  Ptr<const SpectrumSignalParameters> params,
   Ptr<const MobilityModel> a,
   Ptr<const MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this << *txPsd << a << b);
+  NS_LOG_FUNCTION (this << *params->psd << a << b);
 
   std::map <ChannelRealizationId_t, int >::iterator itOff;
   ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
@@ -192,7 +193,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
     }
 
 
-  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
+  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (params->psd);
   Values::iterator vit = rxPsd->ValuesBegin ();
 
   //Vector aSpeedVector = a->GetVelocity ();

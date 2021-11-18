@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "three-gpp-channel-model.h"
 #include "three-gpp-spectrum-propagation-loss-model.h"
+#include "spectrum-signal-parameters.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/double.h"
@@ -322,7 +323,7 @@ ThreeGppSpectrumPropagationLossModel::GetLongTerm (Ptr<const MatrixBasedChannelM
 }
 
 Ptr<SpectrumValue>
-ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                                     Ptr<const MobilityModel> a,
                                                                     Ptr<const MobilityModel> b,
                                                                     Ptr<const PhasedArrayModel> aPhasedArrayModel,
@@ -335,7 +336,7 @@ ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const Sp
   NS_ASSERT (aId != bId);
   NS_ASSERT_MSG (a->GetDistanceFrom (b) > 0.0, "The position of a and b devices cannot be the same");
 
-  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
+  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (params->psd);
 
   // retrieve the antenna of device a
   NS_ASSERT_MSG (aPhasedArrayModel, "Antenna not found for node " << aId);

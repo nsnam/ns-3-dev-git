@@ -20,6 +20,7 @@
 
 #include <ns3/mobility-model.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
+#include "spectrum-signal-parameters.h"
 #include <cmath> // for M_PI
 
 
@@ -50,11 +51,11 @@ FriisSpectrumPropagationLossModel::GetTypeId (void)
 
 
 Ptr<SpectrumValue>
-FriisSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+FriisSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                                  Ptr<const MobilityModel> a,
                                                                  Ptr<const MobilityModel> b) const
 {
-  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
+  Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (params->psd);
   Values::iterator vit = rxPsd->ValuesBegin ();
   Bands::const_iterator fit = rxPsd->ConstBandsBegin ();
 

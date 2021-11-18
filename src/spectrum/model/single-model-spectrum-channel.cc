@@ -185,7 +185,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 
               if (m_spectrumPropagationLoss)
                 {
-                  rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams->psd, senderMobility, receiverMobility);
+                  rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams, senderMobility, receiverMobility);
                 }
 
               if (m_propagationDelay)
