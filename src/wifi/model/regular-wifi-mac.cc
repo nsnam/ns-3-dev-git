@@ -114,23 +114,24 @@ RegularWifiMac::DoDispose ()
 }
 
 void
-RegularWifiMac::SetupFrameExchangeManager (void)
+RegularWifiMac::SetupFrameExchangeManager (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF (standard == WIFI_STANDARD_UNSPECIFIED, "Wifi standard not set");
 
-  if (GetHeSupported ())
+  if (standard >= WIFI_STANDARD_80211ax_2_4GHZ)
     {
       m_feManager = CreateObject<HeFrameExchangeManager> ();
     }
-  else if (GetVhtSupported ())
+  else if (standard >= WIFI_STANDARD_80211ac)
     {
       m_feManager = CreateObject<VhtFrameExchangeManager> ();
     }
-  else if (GetHtSupported ())
+  else if (standard >= WIFI_STANDARD_80211n_2_4GHZ)
     {
       m_feManager = CreateObject<HtFrameExchangeManager> ();
     }
-  else if (GetQosSupported ())
+  else if (m_qosSupported)
     {
       m_feManager = CreateObject<QosFrameExchangeManager> ();
     }
@@ -1177,7 +1178,7 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
     }
 
-  SetupFrameExchangeManager ();
+  SetupFrameExchangeManager (standard);
   ConfigureContentionWindow (cwmin, cwmax);
 }
 

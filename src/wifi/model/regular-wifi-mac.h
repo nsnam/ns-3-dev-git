@@ -318,8 +318,10 @@ protected:
   /**
    * Create a Frame Exchange Manager depending on the supported version
    * of the standard.
+   *
+   * \param standard the supported version of the standard
    */
-  void SetupFrameExchangeManager (void);
+  void SetupFrameExchangeManager (WifiStandard standard);
 
   /**
    * Enable or disable ERP support for the device.
