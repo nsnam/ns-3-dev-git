@@ -337,20 +337,6 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   double pathGainLinear = std::pow (10.0, (-pathLossDb) / 10.0);
                   *(rxParams->psd) *= pathGainLinear;
 
-                  if (m_spectrumPropagationLoss)
-                    {
-                      rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams, txMobility, receiverMobility);
-                    }
-                  else if (m_phasedArraySpectrumPropagationLoss)
-                    {
-                      Ptr<const PhasedArrayModel> txPhasedArrayModel = DynamicCast<PhasedArrayModel> (txParams->txPhy->GetAntenna ());
-                      Ptr<const PhasedArrayModel> rxPhasedArrayModel = DynamicCast<PhasedArrayModel> ((*rxPhyIterator)->GetAntenna ());
-
-                      NS_ASSERT_MSG (txPhasedArrayModel && rxPhasedArrayModel, "PhasedArrayModel instances should be installed at both TX and RX SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
-
-                      rxParams->psd = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams, txMobility, receiverMobility, txPhasedArrayModel, rxPhasedArrayModel);
-                     }
-
                   if (m_propagationDelay)
                     {
                       delay = m_propagationDelay->GetDelay (txMobility, receiverMobility);
@@ -381,6 +367,19 @@ void
 MultiModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver)
 {
   NS_LOG_FUNCTION (this);
+  if (m_spectrumPropagationLoss)
+    {
+      params->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (params, params->txPhy->GetMobility (), receiver->GetMobility ());
+    }
+  else if (m_phasedArraySpectrumPropagationLoss)
+    {
+      Ptr<const PhasedArrayModel> txPhasedArrayModel = DynamicCast<PhasedArrayModel> (params->txPhy->GetAntenna ());
+      Ptr<const PhasedArrayModel> rxPhasedArrayModel = DynamicCast<PhasedArrayModel> (receiver->GetAntenna ());
+
+      NS_ASSERT_MSG (txPhasedArrayModel && rxPhasedArrayModel, "PhasedArrayModel instances should be installed at both TX and RX SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
+
+      params->psd = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity (params, params->txPhy->GetMobility (), receiver->GetMobility (), txPhasedArrayModel, rxPhasedArrayModel);
+    }
   receiver->StartRx (params);
 }
 

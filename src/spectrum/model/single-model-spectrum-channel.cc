@@ -183,11 +183,6 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
               double pathGainLinear = std::pow (10.0, (-pathLossDb) / 10.0);
               *(rxParams->psd) *= pathGainLinear;
 
-              if (m_spectrumPropagationLoss)
-                {
-                  rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams, senderMobility, receiverMobility);
-                }
-
               if (m_propagationDelay)
                 {
                   delay = m_propagationDelay->GetDelay (senderMobility, receiverMobility);
@@ -215,6 +210,10 @@ void
 SingleModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver)
 {
   NS_LOG_FUNCTION (this << params);
+  if (m_spectrumPropagationLoss)
+    {
+      params->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (params, params->txPhy->GetMobility (), receiver->GetMobility ());
+    }
   receiver->StartRx (params);
 }
 
