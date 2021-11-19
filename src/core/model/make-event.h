@@ -600,6 +600,7 @@ EventImpl * MakeEvent (void (*f)(U1), T1 a1)
   class EventFunctionImpl1 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1);
 
     EventFunctionImpl1 (F function, T1 a1)
@@ -629,6 +630,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2), T1 a1, T2 a2)
   class EventFunctionImpl2 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1, U2);
 
     EventFunctionImpl2 (F function, T1 a1, T2 a2)
@@ -661,6 +663,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3), T1 a1, T2 a2, T3 a3)
   class EventFunctionImpl3 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1, U2, U3);
 
     EventFunctionImpl3 (F function, T1 a1, T2 a2, T3 a3)
@@ -695,6 +698,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
   class EventFunctionImpl4 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1, U2, U3, U4);
 
     EventFunctionImpl4 (F function, T1 a1, T2 a2, T3 a3, T4 a4)
@@ -731,6 +735,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
   class EventFunctionImpl5 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1,U2,U3,U4,U5);
 
     EventFunctionImpl5 (F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
@@ -769,6 +774,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5,U6), T1 a1, T2 a2, T3 a3, T4 a4,
   class EventFunctionImpl6 : public EventImpl
   {
   public:
+    [[maybe_unused]]
     typedef void (*F)(U1,U2,U3,U4,U5,U6);
 
     EventFunctionImpl6 (F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
