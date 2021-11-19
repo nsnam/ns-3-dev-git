@@ -163,9 +163,6 @@ macro(write_configtable)
   string(APPEND out "Python Bindings               : ")
   check_on_or_off("${NS3_PYTHON_BINDINGS}" "${ENABLE_PYTHON_BINDINGS}")
 
-  string(APPEND out "Real Time Simulator           : ")
-  check_on_or_off("${NS3_REALTIME}" "${ENABLE_REALTIME}")
-
   string(APPEND out "SQLite support                : ")
   check_on_or_off("${NS3_SQLITE}" "${ENABLE_SQLITE}")
 

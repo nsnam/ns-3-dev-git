@@ -8,7 +8,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("realtime-udp-echo", "ENABLE_REAL_TIME == True", "True"),
+    ("realtime-udp-echo", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

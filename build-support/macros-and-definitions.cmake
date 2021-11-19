@@ -657,8 +657,6 @@ macro(process_options)
   if(${NS3_STATIC})
     # Warn users that they may be using shared libraries, which won't produce a
     # standalone static library
-    set(ENABLE_REALTIME FALSE)
-    set(HAVE_RT FALSE)
     message(
       WARNING "Statically linking 3rd party libraries have not been tested.\n"
               "Disable Brite, Click, Gtk, GSL, Mpi, Openflow and SQLite"
@@ -674,26 +672,6 @@ macro(process_options)
       message(STATUS "LibXML2 was found.")
       add_definitions(-DHAVE_LIBXML2)
       include_directories(${LIBXML2_INCLUDE_DIR})
-    endif()
-
-    # LibRT
-    mark_as_advanced(LIBRT)
-    set(ENABLE_REALTIME FALSE)
-    if(${NS3_REALTIME})
-      if(APPLE)
-        message(
-          STATUS "Lib RT is not supported on Mac OS X. Continuing without it."
-        )
-      else()
-        find_library(LIBRT rt QUIET)
-        if(NOT ${LIBRT_FOUND})
-          message(FATAL_ERROR "LibRT was not found.")
-        else()
-          message(STATUS "LibRT was found.")
-          set(ENABLE_REALTIME TRUE)
-          set(HAVE_RT TRUE) # for core-config.h
-        endif()
-      endif()
     endif()
   endif()
 

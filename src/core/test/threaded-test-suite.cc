@@ -283,9 +283,7 @@ public:
     : TestSuite ("threaded-simulator")
   {
     std::string simulatorTypes[] = {
-#ifdef HAVE_RT
       "ns3::RealtimeSimulatorImpl",
-#endif
       "ns3::DefaultSimulatorImpl"
     };
     std::string schedulerTypes[] = {
@@ -294,7 +292,7 @@ public:
       "ns3::MapScheduler",
       "ns3::CalendarScheduler"
     };
-    unsigned int threadcounts[] = {
+    unsigned int threadCounts[] = {
       0,
       2,
       10,
@@ -302,14 +300,16 @@ public:
     };
     ObjectFactory factory;
 
-    for (unsigned int i = 0; i < (sizeof(simulatorTypes) / sizeof(simulatorTypes[0])); ++i)
+    for (auto &simulatorType : simulatorTypes)
       {
-        for (unsigned int j = 0; j < (sizeof(threadcounts) / sizeof(threadcounts[0])); ++j)
+        for (auto &schedulerType : schedulerTypes)
           {
-            for (unsigned int k = 0; k < (sizeof(schedulerTypes) / sizeof(schedulerTypes[0])); ++k)
+            for (auto &threadCount : threadCounts)
               {
-                factory.SetTypeId (schedulerTypes[k]);
-                AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]), TestCase::QUICK);
+                factory.SetTypeId (schedulerType);
+                AddTestCase (
+                    new ThreadedSimulatorEventsTestCase (factory, simulatorType, threadCount),
+                    TestCase::QUICK);
               }
           }
       }

@@ -18,7 +18,6 @@
 
 #include <ctime>       // clock_t
 #include <sys/time.h>  // gettimeofday
-                       // clock_getres: glibc < 2.17, link with librt
 
 #include "log.h"
 #include "wall-clock-synchronizer.h"

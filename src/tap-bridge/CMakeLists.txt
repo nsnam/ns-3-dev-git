@@ -1,11 +1,7 @@
-if((NOT
-    ${ENABLE_REALTIME})
-   OR (NOT
-       ${ENABLE_EMU})
-)
+if(NOT ${ENABLE_EMU})
   message(
     ${HIGHLIGHTED_STATUS}
-    "tap-bridge requires emulation and realtime features"
+    "tap-bridge requires emulation feature"
   )
   message(
     ${HIGHLIGHTED_STATUS}

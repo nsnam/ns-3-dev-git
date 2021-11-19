@@ -64,27 +64,6 @@ else()
   )
 endif()
 
-set(rt_sources)
-set(rt_headers)
-if(${ENABLE_REALTIME})
-  set(rt_sources
-      model/realtime-simulator-impl.cc
-      model/wall-clock-synchronizer.cc
-  )
-  set(rt_headers
-      model/realtime-simulator-impl.h
-      model/wall-clock-synchronizer.h
-  )
-  set(libraries_to_link
-      ${libraries_to_link}
-      ${LIBRT}
-  )
-endif()
-
-set(osclock_sources
-    model/unix-system-wall-clock-ms.cc
-)
-
 set(int64x64_sources)
 set(int64x64_headers)
 
@@ -146,8 +125,6 @@ endif()
 
 # Define core lib sources
 set(source_files
-    ${rt_sources}
-    ${osclock_sources}
     ${int64x64_sources}
     ${example_as_test_sources}
     ${embedded_version_sources}
@@ -210,15 +187,17 @@ set(source_files
     model/node-printer.cc
     model/show-progress.cc
     model/time-printer.cc
+    model/system-wall-clock-ms.cc
     model/system-wall-clock-timestamp.cc
     model/length.cc
     model/trickle-timer.cc
     model/unix-fd-reader.cc
+    model/realtime-simulator-impl.cc
+    model/wall-clock-synchronizer.cc
 )
 
 # Define core lib headers
 set(header_files
-    ${rt_headers}
     ${int64x64_headers}
     ${example_as_test_headers}
     ${embedded_version_headers}
@@ -317,6 +296,8 @@ set(header_files
     model/valgrind.h
     model/vector.h
     model/watchdog.h
+    model/realtime-simulator-impl.h
+    model/wall-clock-synchronizer.h
 )
 
 set(test_sources

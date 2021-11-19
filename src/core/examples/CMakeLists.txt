@@ -42,14 +42,12 @@ if(${ENABLE_BUILD_VERSION})
   )
 endif()
 
-if(${ENABLE_REALTIME})
-  build_lib_example(
-    NAME main-test-sync
-    SOURCE_FILES main-test-sync.cc
-    LIBRARIES_TO_LINK ${libnetwork}
-                      ${CMAKE_THREAD_LIBS_INIT}
-  )
-endif()
+build_lib_example(
+  NAME main-test-sync
+  SOURCE_FILES main-test-sync.cc
+  LIBRARIES_TO_LINK ${libnetwork}
+                    ${CMAKE_THREAD_LIBS_INIT}
+)
 
 build_lib_example(
   NAME empirical-random-variable-example
