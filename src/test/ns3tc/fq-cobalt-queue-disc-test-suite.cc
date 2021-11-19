@@ -155,6 +155,11 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -224,6 +229,11 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -366,6 +376,12 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue the queue disc
+   * \param ipHdr the IPv4 header
+   * \param tcpHdr the TCP header
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr);
 };
 
@@ -452,6 +468,12 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue the queue disc
+   * \param ipHdr the IPv4 header
+   * \param udpHdr the UDP header
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr);
 };
 
@@ -551,9 +573,33 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue the given number of packets.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   * \param nPkt the number of packets
+   * \param nPktEnqueued the expected number of enqueued packets
+   * \param nQueueFlows the expected number of flow queues
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows);
+  /**
+   * Dequeue the given number of packets
+   * \param queue the queue disc
+   * \param nPkt the number of packets
+   */
   void Dequeue (Ptr<FqCobaltQueueDisc> queue, uint32_t nPkt);
+  /**
+   * Dequeue the given number of packets at different times
+   * \param queue the queue disc
+   * \param delay the time between two consecutive dequeue operations
+   * \param nPkt the number of packets
+   */
   void DequeueWithDelay (Ptr<FqCobaltQueueDisc> queue, double delay, uint32_t nPkt);
+  /**
+   * Tracer for the DropNext attribute
+   * \param oldVal old value
+   * \param newVal new value
+   */
   void DropNextTracer (int64_t oldVal, int64_t newVal);
   uint32_t m_dropNextCount;    ///< count the number of times m_dropNext is recalculated
 };
@@ -819,7 +865,7 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
   Simulator::Destroy ();
 }
 
-/*
+/**
  * This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqCodel.
  * We modified DoClassify () and CheckProtocol () so that we could control
@@ -839,8 +885,7 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
  * the hash. When a flow hash of 20 arrives, the value of outerhash
  * is 16. Since m_flowIndices[16] wasn’t previously allotted, a new flow
  * is created, and the tag corresponding to this queue is set to 20.
-*/
-
+ */
 class FqCobaltQueueDiscSetLinearProbing : public TestCase
 {
 public:
@@ -848,6 +893,11 @@ public:
   virtual ~FqCobaltQueueDiscSetLinearProbing ();
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -955,9 +1005,33 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue the given number of packets.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   * \param nPkt the number of packets
+   */
   void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+  /**
+   * Enqueue the given number of packets at different times.
+   * \param queue the queue disc
+   * \param hdr the IPv4 header
+   * \param delay the time between two consecutive enqueue operations
+   * \param nPkt the number of packets
+   */
   void AddPacketWithDelay (Ptr<FqCobaltQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt);
+  /**
+   * Dequeue the given number of packets
+   * \param queue the queue disc
+   * \param nPkt the number of packets
+   */
   void Dequeue (Ptr<FqCobaltQueueDisc> queue, uint32_t nPkt);
+  /**
+   * Dequeue the given number of packets at different times
+   * \param queue the queue disc
+   * \param delay the time between two consecutive dequeue operations
+   * \param nPkt the number of packets
+   */
   void DequeueWithDelay (Ptr<FqCobaltQueueDisc> queue, double delay, uint32_t nPkt);
 };
 
@@ -1103,6 +1177,9 @@ FqCobaltQueueDiscL4sMode::DoRun (void)
 
 }
 
+/**
+ * FQ-COBALT queue disc test suite
+ */
 class FqCobaltQueueDiscTestSuite : public TestSuite
 {
 public:

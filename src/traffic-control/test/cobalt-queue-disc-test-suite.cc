@@ -46,9 +46,9 @@ public:
    *
    * \param p packet
    * \param addr address
-   * \param protocol
+   * \param protocol protocol
+   * \param ecnCapable ECN capable
    */
-
   CobaltQueueDiscTestItem (Ptr<Packet> p, const Address & addr,uint16_t protocol, bool ecnCapable);
   virtual ~CobaltQueueDiscTestItem ();
   virtual void AddHeader (void);
@@ -244,7 +244,14 @@ public:
    * \param mode the mode
    */
   void RunDropTest (QueueSizeUnit mode);
-
+  /**
+   * Enqueue the given number of packets, each of the given size,
+   * at different times.
+   *
+   * \param queue the queue disc
+   * \param size the packet size in bytes
+   * \param nPkt the number of packets
+   */
   void EnqueueWithDelay (Ptr<CobaltQueueDisc> queue, uint32_t size, uint32_t nPkt);
 
 };
@@ -652,6 +659,11 @@ CobaltQueueDiscMarkTest::Dequeue (Ptr<CobaltQueueDisc> queue, uint32_t modeSize,
 class CobaltQueueDiscCeThresholdTest : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mode the queue size unit mode
+   */
   CobaltQueueDiscCeThresholdTest (QueueSizeUnit mode);
   virtual ~CobaltQueueDiscCeThresholdTest ();
 
@@ -817,6 +829,11 @@ CobaltQueueDiscCeThresholdTest::DoRun (void)
 class CobaltQueueDiscEnhancedBlueTest : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param mode the queue size unit mode
+   */
   CobaltQueueDiscEnhancedBlueTest (QueueSizeUnit mode);
   virtual ~CobaltQueueDiscEnhancedBlueTest ();
 
@@ -933,6 +950,9 @@ CobaltQueueDiscEnhancedBlueTest::DequeueWithDelay (Ptr<CobaltQueueDisc> queue, u
 }
 
 
+/**
+ * The COBALT queue disc test suite.
+ */
 static class CobaltQueueDiscTestSuite : public TestSuite
 {
 public:

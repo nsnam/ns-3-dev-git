@@ -370,8 +370,9 @@ public:
   virtual void DoRun (void);
   /**
    * Codel control law function
-   * \param queue the queue disc
    * \param t
+   * \param interval
+   * \param recInvSqrt
    * \returns the codel control law
    */
   uint32_t _codel_control_law (uint32_t t, uint32_t interval, uint32_t recInvSqrt);
