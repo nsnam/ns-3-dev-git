@@ -269,6 +269,17 @@ SpectrumWifiPhy::SetChannelWidth (uint16_t channelwidth)
 }
 
 void
+SpectrumWifiPhy::DoChannelSwitch (void)
+{
+  NS_LOG_FUNCTION (this);
+  WifiPhy::DoChannelSwitch ();
+  if (IsInitialized ())
+    {
+      ResetSpectrumModel ();
+    }
+}
+
+void
 SpectrumWifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
 {
   NS_LOG_FUNCTION (this << standard << band);

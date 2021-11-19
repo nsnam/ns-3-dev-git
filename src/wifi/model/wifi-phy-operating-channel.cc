@@ -309,14 +309,18 @@ WifiPhyOperatingChannel::SetDefault (uint16_t width, WifiPhyStandard standard, W
 {
   NS_LOG_FUNCTION (this << width << standard << band);
 
+  Set (GetDefaultChannelNumber (width, standard, band), 0, width, standard, band);
+}
+
+uint8_t
+WifiPhyOperatingChannel::GetDefaultChannelNumber (uint16_t width, WifiPhyStandard standard, WifiPhyBand band)
+{
   auto channelIt = FindFirst (0, 0, width, standard, band);
 
   if (channelIt != m_frequencyChannels.end ())
     {
       // a channel matches the specified criteria
-      m_channelIt = channelIt;
-      m_primary20Index = 0;
-      return;
+      return std::get<0> (*channelIt);
     }
 
   // if a default channel was not found, throw an exception (mainly for unit testing this code)

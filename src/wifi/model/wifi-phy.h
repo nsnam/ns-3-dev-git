@@ -512,6 +512,13 @@ public:
   virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
 
   /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   *
+   * \param standard the Wi-Fi standard
+   */
+  virtual void ConfigureStandard (WifiPhyStandard standard);
+
+  /**
    * Get the configured Wi-Fi standard
    *
    * \return the Wi-Fi standard that has been configured
@@ -861,6 +868,22 @@ public:
    * \param width the channel width in MHz (use 0 to leave it unspecified)
    */
   void SetOperatingChannel (uint8_t number, uint16_t frequency, uint16_t width);
+
+  using ChannelTuple = std::tuple<uint8_t /* channel number */,
+                                  uint16_t /* channel width */,
+                                  int /* WifiPhyBand */,
+                                  uint8_t /* primary20 index*/>;  //!< Tuple identifying an operating channel
+
+  /**
+   * If the standard for this object has not been set yet, store the given channel
+   * settings. Otherwise, check if a channel switch can be performed now. If not,
+   * schedule another call to this method when channel switch can be performed.
+   * Otherwise, set the operating channel based on the given channel settings and
+   * call ConfigureStandard if the PHY band has changed.
+   *
+   * \param channelTuple the given channel settings
+   */
+  void SetOperatingChannel (const ChannelTuple& channelTuple);
   /**
    * If the operating channel for this object has not been set yet, the given
    * center frequency is saved and will be used, along with the channel number and
@@ -1116,7 +1139,11 @@ protected:
    *         be performed or a negative value indicating that channel switch is
    *         currently not possible (i.e., the radio is in sleep mode)
    */
-  Time DoChannelSwitch (void);
+  Time GetDelayUntilChannelSwitch (void);
+  /**
+   * Actually switch channel based on the stored channel settings.
+   */
+  virtual void DoChannelSwitch (void);
 
   /**
    * Check if PHY state should move to CCA busy state based on current
@@ -1388,7 +1415,7 @@ private:
   uint8_t m_initialChannelNumber;           //!< Store channel number until initialization
   uint16_t m_initialChannelWidth;           //!< Store channel width (MHz) until initialization
   uint8_t m_initialPrimary20Index;          //!< Store the index of primary20 until initialization
-
+  ChannelTuple m_channelSettings;           //!< Store operating channel settings until initialization
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
   std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
 

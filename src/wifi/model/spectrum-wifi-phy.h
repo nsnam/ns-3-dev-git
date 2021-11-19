@@ -141,6 +141,7 @@ public:
   void SetFrequency (uint16_t freq) override;
   void SetChannelWidth (uint16_t channelwidth) override;
   void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band) override;
+  void DoChannelSwitch (void) override;
 
   /**
    * This function is sending the signal to the Spectrum channel

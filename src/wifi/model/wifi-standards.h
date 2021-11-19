@@ -281,6 +281,26 @@ inline uint16_t GetDefaultChannelWidth (WifiPhyStandard standard, WifiPhyBand ba
     }
 }
 
+/**
+ * Get the default PHY band for the given PHY standard.
+ *
+ * \param standard the given PHY standard
+ * \return the default PHY band for the given PHY standard
+ */
+inline WifiPhyBand GetDefaultPhyBand (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_PHY_STANDARD_80211ax:
+      return WIFI_PHY_BAND_5GHZ;
+    default:
+      return WIFI_PHY_BAND_2_4GHZ;
+    }
+}
+
 } //namespace ns3
 
 #endif /* WIFI_STANDARD_H */

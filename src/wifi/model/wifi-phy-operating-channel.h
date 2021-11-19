@@ -85,6 +85,17 @@ public:
   void SetDefault (uint16_t width, WifiPhyStandard standard, WifiPhyBand band);
 
   /**
+   * Get the default channel number of the given width and for the given PHY standard
+   * and band.
+   *
+   * \param width the channel width in MHz
+   * \param standard the PHY standard
+   * \param band the PHY band
+   * \return the default channel number
+   */
+  static uint8_t GetDefaultChannelNumber (uint16_t width, WifiPhyStandard standard, WifiPhyBand band);
+
+  /**
    * Return the channel number identifying the whole operating channel.
    *
    * \return the channel number identifying the whole operating channel
