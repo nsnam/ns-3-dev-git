@@ -58,8 +58,6 @@ public:
   WifiPhy ();
   virtual ~WifiPhy ();
 
-  static const std::set<FrequencyChannelInfo> m_frequencyChannels;  //!< Available frequency channels
-
   /**
    * Return the WifiPhyStateHelper of this PHY
    *
