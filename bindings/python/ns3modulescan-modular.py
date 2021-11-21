@@ -237,7 +237,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('-std=c++14 %s' % cflags)
+        cflags=('-std=c++17 %s' % cflags)
         )
 
     try:
