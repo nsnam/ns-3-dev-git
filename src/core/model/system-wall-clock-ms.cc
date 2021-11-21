@@ -18,11 +18,10 @@
  * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
+#include <chrono>
+
 #include "system-wall-clock-ms.h"
-#include "abort.h"
 #include "log.h"
-#include <sys/times.h>
-#include <unistd.h>
 
 /**
  * \file
@@ -53,8 +52,7 @@ public:
   int64_t GetElapsedSystem (void) const;
 
 private:
-  struct tms m_startTimes;  //!< The native time structure.
-  clock_t m_startTime;      //!< Native real time.
+  std::chrono::system_clock::time_point m_startTime; //!< The wall clock start time.
   int64_t m_elapsedReal;    //!< Elapsed real time, in ms.
   int64_t m_elapsedUser;    //!< Elapsed user time, in ms.
   int64_t m_elapsedSystem;  //!< Elapsed system time, in ms.
@@ -64,7 +62,7 @@ void
 SystemWallClockMsPrivate::Start (void)
 {
   NS_LOG_FUNCTION (this);
-  m_startTime = times (&m_startTimes);
+  m_startTime = std::chrono::system_clock::now ();
 }
 
 int64_t
@@ -77,47 +75,37 @@ SystemWallClockMsPrivate::End (void)
   // from the system configuration.
   //
   // Conceptually, we need to find the number of elapsed clock ticks and then
-  // multiply the result by the milliseconds per clock tick (or divide by clock
-  // ticks per millisecond).  Integer dividing by clock ticks per millisecond
-  // is bad since this number is fractional on most machines and would result
-  // in divide by zero errors due to integer rounding.
+  // multiply the result by the milliseconds per clock tick (or just as easily
+  // divide by clock ticks per millisecond).  Integer dividing by clock ticks
+  // per millisecond is bad since this number is fractional on most machines
+  // and would result in divide by zero errors due to integer rounding.
   //
   // Multiplying by milliseconds per clock tick works up to a clock resolution
   // of 1000 ticks per second.  If we go  past this point, we begin to get zero
   // elapsed times when millisecondsPerTick becomes fractional and another
   // rounding error appears.
   //
-  // So rounding errors using integers can bite you from both direction.  Since
+  // So rounding errors using integers can bite you from two direction.  Since
   // all of our targets have math coprocessors, why not just use doubles
   // internally?  Works fine, lasts a long time.
   //
   // If millisecondsPerTick becomes fractional, and an elapsed time greater than
-  // a milliscond is measured, the function will work as expected.  If an elapsed
+  // a millisecond is measured, the function will work as expected.  If an elapsed
   // time is measured that turns out to be less than a millisecond, we'll just
   // return zero which would, I think, also will be expected.
   //
   NS_LOG_FUNCTION (this);
-  static int64_t ticksPerSecond = sysconf (_SC_CLK_TCK);
-  static double millisecondsPerTick = 1000. / ticksPerSecond;
+
+  auto endTime = std::chrono::system_clock::now ();
+
+  std::chrono::duration<double> elapsed_seconds = endTime-m_startTime;
+  m_elapsedReal = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_seconds).count();
 
   //
-  // If sysconf () fails, we have no idea how to do the required conversion to ms.
+  // Nothing like this in MinGW, for example.
   //
-  NS_ABORT_MSG_IF (ticksPerSecond == -1, "SystemWallClockMsPrivate(): Cannot sysconf (_SC_CLK_TCK)");
-
-  struct tms endTimes;
-  clock_t endTime = times (&endTimes);
-
-  double tmp;
-
-  tmp = static_cast<double> (endTime - m_startTime) * millisecondsPerTick;
-  m_elapsedReal = static_cast<int64_t> (tmp);
-
-  tmp = static_cast<double> (endTimes.tms_utime - m_startTimes.tms_utime) * millisecondsPerTick;
-  m_elapsedUser = static_cast<int64_t> (tmp);
-
-  tmp = static_cast<double> (endTimes.tms_stime - m_startTimes.tms_stime) * millisecondsPerTick;
-  m_elapsedSystem = static_cast<int64_t> (tmp);
+  m_elapsedUser = 0;
+  m_elapsedSystem = 0;
 
   return m_elapsedReal;
 }

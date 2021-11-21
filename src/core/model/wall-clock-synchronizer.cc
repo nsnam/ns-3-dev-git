@@ -17,7 +17,7 @@
  */
 
 #include <ctime>       // clock_t
-#include <sys/time.h>  // gettimeofday
+#include <chrono>
 
 #include "log.h"
 #include "wall-clock-synchronizer.h"
@@ -78,14 +78,8 @@ WallClockSynchronizer::WallClockSynchronizer ()
 // If the underlying OS does not support posix clocks, we'll just assume a
 // one millisecond quantum and deal with this as best we can
 
-#ifdef CLOCK_REALTIME
-  struct timespec ts;
-  clock_getres (CLOCK_REALTIME, &ts);
-  m_jiffy = ts.tv_sec * NS_PER_SEC + ts.tv_nsec;
+  m_jiffy = std::chrono::system_clock::period::num*std::nano::den/std::chrono::system_clock::period::den;
   NS_LOG_INFO ("Jiffy is " << m_jiffy << " ns");
-#else
-  m_jiffy = 1000000;
-#endif
 }
 
 WallClockSynchronizer::~WallClockSynchronizer ()
@@ -387,9 +381,8 @@ uint64_t
 WallClockSynchronizer::GetRealtime (void)
 {
   NS_LOG_FUNCTION (this);
-  struct timeval tvNow;
-  gettimeofday (&tvNow, NULL);
-  return TimevalToNs (&tvNow);
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
 }
 
 uint64_t
