@@ -58,9 +58,9 @@ public:
   /** Type of value stored in the PairValue. */
   typedef std::pair<Ptr<A>, Ptr<B> > value_type;
   /** Type of abscissa (first entry of pair). */
-  typedef typename std::result_of<decltype(&A::Get)(A)>::type first_type;
+  typedef typename std::invoke_result_t<decltype(&A::Get), A> first_type;
   /** Type of ordinal (second entry of pair). */
-  typedef typename std::result_of<decltype(&B::Get)(B)>::type second_type;
+  typedef typename std::invoke_result_t<decltype(&B::Get), B> second_type;
   /** Type returned by Get or passed in Set. */
   typedef typename std::pair<first_type, second_type> result_type;
 
