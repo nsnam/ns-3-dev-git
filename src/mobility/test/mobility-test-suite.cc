@@ -79,14 +79,14 @@ void
 WaypointLazyNotifyFalse::TestXPosition (double expectedXPos)
 {
   Vector pos = m_mob->GetPosition ();
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (pos.x, expectedXPos, 0.001, "Position not equal", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (pos.x, expectedXPos, 0.001, "Position not equal");
 }
 
 void
 WaypointLazyNotifyFalse::CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
 {
   // All waypoints (at 10 second intervals) should trigger a course change
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (m_courseChanges * 10.0, Simulator::Now ().GetSeconds (), 0.001, "Course change not notified correctly", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (m_courseChanges * 10.0, Simulator::Now ().GetSeconds (), 0.001, "Course change not notified correctly");
   m_courseChanges++;
 }
 
@@ -151,7 +151,7 @@ void
 WaypointLazyNotifyTrue::TestXPosition (double expectedXPos)
 {
   Vector pos = m_mob->GetPosition ();
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (pos.x, expectedXPos, 0.001, "Position not equal", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (pos.x, expectedXPos, 0.001, "Position not equal");
 }
 
 void
@@ -159,7 +159,7 @@ WaypointLazyNotifyTrue::CourseChangeCallback (std::string path, Ptr<const Mobili
 {
   // This should trigger at time 15 only, since that is the first time that
   // position is updated due to LazyNotify
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (15, Simulator::Now ().GetSeconds (), 0.001, "Course change not notified correctly", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (15, Simulator::Now ().GetSeconds (), 0.001, "Course change not notified correctly");
 }
 
 void
@@ -227,7 +227,7 @@ void
 WaypointInitialPositionIsWaypoint::TestXPosition (Ptr<const WaypointMobilityModel> model, double expectedXPos)
 {
   Vector pos = model->GetPosition ();
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (pos.x, expectedXPos, 0.001, "Position not equal", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (pos.x, expectedXPos, 0.001, "Position not equal");
 }
 
 void
@@ -356,7 +356,7 @@ void
 WaypointMobilityModelViaHelper::TestXPosition (Ptr<const WaypointMobilityModel> mob, double expectedXPos)
 {
   Vector pos = mob->GetPosition ();
-  NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (pos.x, expectedXPos, 0.001, "Position not equal", __FILE__, __LINE__);
+  NS_TEST_EXPECT_MSG_EQ_TOL (pos.x, expectedXPos, 0.001, "Position not equal");
 }
 
 // WaypointMobilityModel tests using the helper

@@ -422,11 +422,11 @@ struct Expected
 
 // Check byte tags on a packet, checks name, start, end
 #define CHECK(p, n, ...)                                \
-  DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__)
+  DoCheck (p, n, __VA_ARGS__)
 
 // Check byte tags on a packet, checks name, start, end, data
 #define CHECK_DATA(p, n, ...)                           \
-  DoCheckData (p, __FILE__, __LINE__, n, __VA_ARGS__)
+  DoCheckData (p, n, __VA_ARGS__)
 
 /**
  * \ingroup network-test
@@ -443,21 +443,17 @@ private:
   /**
    * Checks the packet
    * \param p The packet
-   * \param file The file name
-   * \param line The line number
    * \param n The number of variable arguments
    * \param ... The variable arguments
    */
-  void DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
+  void DoCheck (Ptr<const Packet> p, uint32_t n, ...);
   /**
    * Checks the packet and its data
    * \param p The packet
-   * \param file The file name
-   * \param line The line number
    * \param n The number of variable arguments
    * \param ... The variable arguments
    */
-  void DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
+  void DoCheckData (Ptr<const Packet> p, uint32_t n, ...);
 };
 
 
@@ -466,7 +462,7 @@ PacketTest::PacketTest ()
 }
 
 void
-PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...)
+PacketTest::DoCheck (Ptr<const Packet> p, uint32_t n, ...)
 {
   std::vector<struct Expected> expected;
   va_list ap;
@@ -488,9 +484,9 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
       struct Expected e = expected[j];
       std::ostringstream oss;
       oss << "anon::ATestTag<" << e.n << ">";
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetTypeId ().GetName (), oss.str (), "trivial", file, line);
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetStart (), e.start, "trivial", file, line);
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetEnd (), e.end, "trivial", file, line);
+      NS_TEST_EXPECT_MSG_EQ (item.GetTypeId ().GetName (), oss.str (), "trivial");
+      NS_TEST_EXPECT_MSG_EQ (item.GetStart (), e.start, "trivial");
+      NS_TEST_EXPECT_MSG_EQ (item.GetEnd (), e.end, "trivial");
       ATestTagBase *tag = dynamic_cast<ATestTagBase *> (item.GetTypeId ().GetConstructor () ());
       NS_TEST_EXPECT_MSG_NE (tag, 0, "trivial");
       item.GetTag (*tag);
@@ -503,7 +499,7 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
 }
 
 void
-PacketTest::DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...)
+PacketTest::DoCheckData (Ptr<const Packet> p, uint32_t n, ...)
 {
   std::vector<struct Expected> expected;
   va_list ap;
@@ -526,9 +522,9 @@ PacketTest::DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32
       struct Expected e = expected[j];
       std::ostringstream oss;
       oss << "anon::ATestTag<" << e.n << ">";
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetTypeId ().GetName (), oss.str (), "trivial", file, line);
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetStart (), e.start, "trivial", file, line);
-      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetEnd (), e.end, "trivial", file, line);
+      NS_TEST_EXPECT_MSG_EQ (item.GetTypeId ().GetName (), oss.str (), "trivial");
+      NS_TEST_EXPECT_MSG_EQ (item.GetStart (), e.start, "trivial");
+      NS_TEST_EXPECT_MSG_EQ (item.GetEnd (), e.end, "trivial");
       ATestTagBase *tag = dynamic_cast<ATestTagBase *> (item.GetTypeId ().GetConstructor () ());
       NS_TEST_EXPECT_MSG_NE (tag, 0, "trivial");
       item.GetTag (*tag);
@@ -601,7 +597,7 @@ PacketTest::DoRun (void)
 
   CHECK (frag0, 3, E (1, 0, 10), E (2, 0, 10), E (3, 0, 10));
   frag0->AddAtEnd (frag1);
-  CHECK (frag0, 9, 
+  CHECK (frag0, 9,
          E (1, 0, 10), E (2, 0, 10), E (3, 0, 10),
          E (1, 10, 100), E (2, 10, 100), E (4, 10, 100),
          E (1, 100, 1000), E (2, 100, 1000), E (5, 100, 1000));
@@ -724,7 +720,7 @@ PacketTest::DoRun (void)
     p1->Serialize (buffer, serializedSize);
 
     Ptr<Packet> p2 = Create<Packet> (buffer, serializedSize, true);
-    
+
     delete [] buffer;
 
     ATestTag<10> a2;
@@ -758,9 +754,9 @@ PacketTest::DoRun (void)
     p1->Serialize (buffer, serializedSize);
 
     Ptr<Packet> p2 = Create<Packet> (buffer, serializedSize, true);
-    
+
     delete [] buffer;
-    
+
     CHECK_DATA (p2, 3, E_DATA (10, 0, 1000, 65), E_DATA (11, 0, 1000, 66), E_DATA (12, 0, 1000, 67));
   }
 
@@ -858,7 +854,7 @@ PacketTest::DoRun (void)
   {
     Ptr<Packet> tmp = Create<Packet> (0);
     ALargeTestTag a;
-    tmp->AddPacketTag (a); 
+    tmp->AddPacketTag (a);
   }
 }
 
@@ -953,9 +949,9 @@ PacketTagListTest::CheckRef (const PacketTagList & ref,
   ATestTag<7> t7 (1); \
   const int tagLast = 7;  /* length of ref PacketTagList */ \
   NS_UNUSED (tagLast) /* silence warnings */
- 
-  
-  
+
+
+
 void
 PacketTagListTest::CheckRefList (const PacketTagList & ptl,
                                  const char * msg,
@@ -970,7 +966,7 @@ PacketTagListTest::CheckRefList (const PacketTagList & ptl,
   CheckRef (ptl, t6, msg, miss == 6);
   CheckRef (ptl, t7, msg, miss == 7);
 }
-  
+
 int
 PacketTagListTest::RemoveTime (const PacketTagList & ref,
                                ATestTagBase & t,
@@ -1021,7 +1017,7 @@ PacketTagListTest::DoRun (void)
   std::cout << GetName () << "begin" << std::endl;
 
   MAKE_TEST_TAGS ;
-  
+
   PacketTagList ref;  // empty list
   ref.Add (t1);       // last
   ref.Add (t2);       // post merge
@@ -1030,7 +1026,7 @@ PacketTagListTest::DoRun (void)
   ref.Add (t5);       // merge precursor
   ref.Add (t6);       // pre-merge
   ref.Add (t7);       // first
-  
+
   { // Peek
     std::cout << GetName () << "check Peek (missing tag) returns false"
               << std::endl;
@@ -1049,7 +1045,7 @@ PacketTagListTest::DoRun (void)
       CheckRefList (ptl, "assignment copy");
     }
   }
-  
+
   { // Removal
 #   define RemoveCheck(n)                               \
     { PacketTagList p ## n = ref;			\
@@ -1057,7 +1053,7 @@ PacketTagListTest::DoRun (void)
       CheckRefList (ref,     "remove " #n " orig");	\
       CheckRefList (p ## n, "remove " #n " copy", n);   \
     }
-    
+
     { // Remove single tags from list
       std::cout << GetName () << "check removal of each tag" << std::endl;
       RemoveCheck (1);
@@ -1068,7 +1064,7 @@ PacketTagListTest::DoRun (void)
       RemoveCheck (6);
       RemoveCheck (7);
     }
-    
+
     { // Remove in the presence of a merge
       std::cout << GetName () << "check removal doesn't disturb merge "
                 << std::endl;
@@ -1076,7 +1072,7 @@ PacketTagListTest::DoRun (void)
       ptl.Remove (t7);
       ptl.Remove (t6);
       ptl.Remove (t5);
-      
+
       PacketTagList mrg = ptl;  // merged list
       ATestTag<8> m5 (1);
       mrg.Add (m5);             // ptl and mrg differ
@@ -1099,7 +1095,7 @@ PacketTagListTest::DoRun (void)
   { // Replace
 
     std::cout << GetName () << "check replacing each tag" << std::endl;
-      
+
 #   define ReplaceCheck(n)					\
     t ## n .m_data = 2;						\
     { PacketTagList p ## n = ref;				\
@@ -1107,7 +1103,7 @@ PacketTagListTest::DoRun (void)
       CheckRefList (ref,     "replace " #n " orig");		\
       CheckRef     (p ## n, t ## n, "replace " #n " copy");	\
     }
-    
+
     ReplaceCheck (1);
     ReplaceCheck (2);
     ReplaceCheck (3);
@@ -1116,7 +1112,7 @@ PacketTagListTest::DoRun (void)
     ReplaceCheck (6);
     ReplaceCheck (7);
   }
-  
+
   { // Timing
     std::cout << GetName () << "add+remove timing" << std::endl;
     int flm = std::numeric_limits<int>::max ();
@@ -1128,7 +1124,7 @@ PacketTagListTest::DoRun (void)
     std::cout << GetName () << "min add+remove time: "
               << std::setw (8) << flm        << " ticks"
               << std::endl;
-    
+
     std::cout << GetName () << "remove timing" << std::endl;
     // tags numbered from 1, so add one for (unused) entry at 0
     std::vector <int> rmn (tagLast + 1, std::numeric_limits<int>::max ());
@@ -1144,7 +1140,7 @@ PacketTagListTest::DoRun (void)
         case 2:  now = RemoveTime (ref, t2);  break;
         case 1:  now = RemoveTime (ref, t1);  break;
 	}  // switch
-	
+
 	if (now < rmn[j]) rmn[j] = now;
       } // for tag j
     } // for iteration i
@@ -1155,7 +1151,7 @@ PacketTagListTest::DoRun (void)
                 << std::endl;
     }
   }  // Timing
-    
+
 }
 
 /**

@@ -61,7 +61,7 @@ private:
   bool m_ok; //!< True if no error is signalled.
 };
 
-TypeId 
+TypeId
 HistoryHeaderBase::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HistoryHeaderBase")
@@ -132,25 +132,25 @@ HistoryHeader<N>::GetTypeId (void)
 }
 
 template <int N>
-TypeId 
+TypeId
 HistoryHeader<N>::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 template <int N>
-void 
+void
 HistoryHeader<N>::Print (std::ostream &os) const
 {
   NS_ASSERT (false);
 }
 template <int N>
-uint32_t 
+uint32_t
 HistoryHeader<N>::GetSerializedSize (void) const
 {
   return N;
 }
 template <int N>
-void 
+void
 HistoryHeader<N>::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (N, N);
@@ -200,7 +200,7 @@ private:
   bool m_ok; //!< True if no error is signalled.
 };
 
-TypeId 
+TypeId
 HistoryTrailerBase::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HistoryTrailerBase")
@@ -269,25 +269,25 @@ HistoryTrailer<N>::GetTypeId (void)
 }
 
 template <int N>
-TypeId 
+TypeId
 HistoryTrailer<N>::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 template <int N>
-void 
+void
 HistoryTrailer<N>::Print (std::ostream &os) const
 {
   NS_ASSERT (false);
 }
 template <int N>
-uint32_t 
+uint32_t
 HistoryTrailer<N>::GetSerializedSize (void) const
 {
   return N;
 }
 template <int N>
-void 
+void
 HistoryTrailer<N>::Serialize (Buffer::Iterator start) const
 {
   start.Prev (N);
@@ -323,12 +323,10 @@ public:
   /**
    * Checks the packet header and trailer history
    * \param p The packet
-   * \param file The file name
-   * \param line The line number
    * \param n The number of variable arguments
    * \param ... The variable arguments
    */
-  void CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
+  void CheckHistory (Ptr<Packet> p, uint32_t n, ...);
   virtual void DoRun (void);
 private:
   /**
@@ -349,7 +347,7 @@ PacketMetadataTest::~PacketMetadataTest ()
 }
 
 void
-PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
+PacketMetadataTest::CheckHistory (Ptr<Packet> p, uint32_t n, ...)
 {
   std::list<int> expected;
   va_list ap;
@@ -420,7 +418,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
 error:
   std::ostringstream failure;
   failure << "PacketMetadata error. Got:\"";
-  for (std::list<int>::iterator i = got.begin (); 
+  for (std::list<int>::iterator i = got.begin ();
        i != got.end (); i++)
     {
       failure << *i << ", ";
@@ -432,7 +430,7 @@ error:
       failure << *j << ", ";
     }
   failure << "\"";
-  NS_TEST_ASSERT_MSG_EQ_INTERNAL (false, true, failure.str (), file, line);
+  NS_TEST_ASSERT_MSG_EQ (false, true, failure.str ());
 }
 
 #define ADD_HEADER(p, n)                                           \
@@ -457,13 +455,13 @@ error:
   }
 #define CHECK_HISTORY(p, ...)                                      \
   {                                                                \
-    CheckHistory (p, __FILE__, __LINE__, __VA_ARGS__);             \
+    CheckHistory (p, __VA_ARGS__);                                 \
     uint32_t size = p->GetSerializedSize ();                       \
     uint8_t* buffer = new uint8_t[size];                           \
     p->Serialize (buffer, size);                                   \
     Ptr<Packet> otherPacket = Create<Packet> (buffer, size, true); \
     delete [] buffer;                                              \
-    CheckHistory (otherPacket, __FILE__, __LINE__, __VA_ARGS__);   \
+    CheckHistory (otherPacket, __VA_ARGS__);                       \
   }
 
 
@@ -491,13 +489,13 @@ PacketMetadataTest::DoRun (void)
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 4, 
+  CHECK_HISTORY (p, 4,
                  3, 2, 1, 10);
   ADD_HEADER (p, 5);
-  CHECK_HISTORY (p, 5, 
+  CHECK_HISTORY (p, 5,
                  5, 3, 2, 1, 10);
   ADD_HEADER (p, 6);
-  CHECK_HISTORY (p, 6, 
+  CHECK_HISTORY (p, 6,
                  6, 5, 3, 2, 1, 10);
 
   p = Create<Packet> (10);
@@ -505,7 +503,7 @@ PacketMetadataTest::DoRun (void)
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 3, 
+  CHECK_HISTORY (p, 3,
                  2, 1, 10);
 
   p = Create<Packet> (10);
@@ -514,7 +512,7 @@ PacketMetadataTest::DoRun (void)
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
   REM_HEADER (p, 2);
-  CHECK_HISTORY (p, 2, 
+  CHECK_HISTORY (p, 2,
                  1, 10);
 
   p = Create<Packet> (10);
@@ -535,46 +533,46 @@ PacketMetadataTest::DoRun (void)
   REM_HEADER (p1, 2);
   REM_HEADER (p1, 1);
   CHECK_HISTORY (p1, 1, 10);
-  CHECK_HISTORY (p, 4, 
+  CHECK_HISTORY (p, 4,
                  3, 2, 1, 10);
   ADD_HEADER (p1, 1);
   ADD_HEADER (p1, 2);
-  CHECK_HISTORY (p1, 3, 
+  CHECK_HISTORY (p1, 3,
                  2, 1, 10);
-  CHECK_HISTORY (p, 4, 
+  CHECK_HISTORY (p, 4,
                  3, 2, 1, 10);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 5, 
+  CHECK_HISTORY (p, 5,
                  3, 3, 2, 1, 10);
   ADD_TRAILER (p, 4);
-  CHECK_HISTORY (p, 6, 
+  CHECK_HISTORY (p, 6,
                  3, 3, 2, 1, 10, 4);
   ADD_TRAILER (p, 5);
-  CHECK_HISTORY (p, 7, 
+  CHECK_HISTORY (p, 7,
                  3, 3, 2, 1, 10, 4, 5);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 6, 
+  CHECK_HISTORY (p, 6,
                  3, 2, 1, 10, 4, 5);
   REM_TRAILER (p, 5);
-  CHECK_HISTORY (p, 5, 
+  CHECK_HISTORY (p, 5,
                  3, 2, 1, 10, 4);
   p1 = p->Copy ();
   REM_TRAILER (p, 4);
-  CHECK_HISTORY (p, 4, 
+  CHECK_HISTORY (p, 4,
                  3, 2, 1, 10);
-  CHECK_HISTORY (p1, 5, 
+  CHECK_HISTORY (p1, 5,
                  3, 2, 1, 10, 4);
   p1->RemoveAtStart (3);
-  CHECK_HISTORY (p1, 4, 
+  CHECK_HISTORY (p1, 4,
                  2, 1, 10, 4);
   p1->RemoveAtStart (1);
-  CHECK_HISTORY (p1, 4, 
+  CHECK_HISTORY (p1, 4,
                  1, 1, 10, 4);
   p1->RemoveAtStart (1);
-  CHECK_HISTORY (p1, 3, 
+  CHECK_HISTORY (p1, 3,
                  1, 10, 4);
   p1->RemoveAtEnd (4);
-  CHECK_HISTORY (p1, 2, 
+  CHECK_HISTORY (p1, 2,
                  1, 10);
   p1->RemoveAtStart (1);
   CHECK_HISTORY (p1, 1, 10);
