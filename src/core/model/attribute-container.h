@@ -80,7 +80,7 @@ public:
 
   /**
    * Construct from another container.
-   * @tparam CONTAINER[deduced] type of container passed for initialization.
+   * @tparam CONTAINER \deduced type of container passed for initialization.
    * \param c Instance of CONTAINER with which to initialize AttributeContainerValue.
    */
   template <class CONTAINER>
@@ -88,7 +88,7 @@ public:
 
   /**
    * Construct from iterators.
-   * @tparam ITER[deduced] type of iterator.
+   * @tparam ITER \deduced type of iterator.
    * \param[in] begin Iterator that points to first initialization item.
    * \param[in] end Iterator that points ones past last initialization item.
    */
@@ -170,7 +170,7 @@ private:
    * 
    * The internal container is cleared before values are copied
    * using the push_back method.
-   * @tparam ITER[deduced] iterator type
+   * @tparam ITER \deduced iterator type
    * \param[in] begin Points to first item to copy
    * \param[in] end Points to one after last item to copy
    * \return This object with items copied.
@@ -185,16 +185,24 @@ private:
 class AttributeContainerChecker : public AttributeChecker
 {
 public:
+  /**
+   * Set the item checker
+   * \param itemchecker The item checker
+   */
   virtual void SetItemChecker (Ptr<const AttributeChecker> itemchecker) = 0;
+  /**
+   * Get the item checker
+   * \return The item checker
+   */
   virtual Ptr<const AttributeChecker> GetItemChecker (void) const = 0;
 };
 
 /**
  * Make AttributeContainerChecker from AttributeContainerValue.
- * @tparam A[deduced] AttributeValue type in container.
- * @tparam C[deduced] Container type returned by Get.
- * \param value[in] AttributeContainerValue from which to deduce types.
- * \return AttributeContainerChecker for \ref value.
+ * @tparam A \deduced AttributeValue type in container.
+ * @tparam C \deduced Container type returned by Get.
+ * \param[in] value AttributeContainerValue from which to deduce types.
+ * \return AttributeContainerChecker for value.
  */
 template <class A, template <class...> class C>
 Ptr<AttributeChecker>
@@ -204,7 +212,7 @@ MakeAttributeContainerChecker (const AttributeContainerValue<A, C> &value);
  * Make AttributeContainerChecker using explicit types, initialize item checker.
  * @tparam A AttributeValue type in container.
  * @tparam C Container type returned by Get.
- * \param itemchecker[in] AttributeChecker used for each item in the container.
+ * \param[in] itemchecker AttributeChecker used for each item in the container.
  * \return AttributeContainerChecker.
  */
 template <class A, template <class...> class C=std::list>
@@ -220,6 +228,13 @@ MakeAttributeContainerChecker (Ptr<const AttributeChecker> itemchecker);
 template <class A, template <class...> class C=std::list>
 Ptr<AttributeChecker> MakeAttributeContainerChecker (void);
 
+/**
+ * Make AttributeContainerAccessor  using explicit types.
+ * @tparam A AttributeValue type in container.
+ * @tparam C Container type returned by Get.
+ * \param[in] a1 AttributeContainer to be used.
+ * \return AttributeContainerAccessor.
+ */
 template <typename A, template <typename...> class C=std::list, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1);
 
@@ -231,23 +246,29 @@ Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1);
 
 namespace ns3 {
 
-// This internal class defines templated AttributeContainerChecker class that is instantiated
-// in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
-// is returned from that function. This is the same pattern as ObjectPtrContainer.
-
 namespace internal {
 
+/**
+ * \internal
+ * Templated AttributeContainerChecker class that is instantiated
+ * in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
+ * is returned from that function. This is the same pattern as ObjectPtrContainer.
+ */
 template <class A, template <class...> class C>
 class AttributeContainerChecker : public ns3::AttributeContainerChecker
 {
 public:
   AttributeContainerChecker (void);
+  /**
+   * Explicit constructor
+   * \param itemchecker The AttributeChecker.
+   */
   explicit AttributeContainerChecker (Ptr<const AttributeChecker> itemchecker);
   void SetItemChecker (Ptr<const AttributeChecker> itemchecker);
   Ptr<const AttributeChecker> GetItemChecker (void) const;
 
 private:
-  Ptr<const AttributeChecker> m_itemchecker;
+  Ptr<const AttributeChecker> m_itemchecker; //!< The AttributeChecker
 };
 
 template <class A, template <class...> class C>
