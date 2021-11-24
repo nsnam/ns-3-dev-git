@@ -569,7 +569,7 @@ TestInterBssConstantObssPdAlgo::RunOne (void)
   phy.SetChannel (channel);
   phy.Set ("TxPowerStart", DoubleValue (m_txPowerDbm));
   phy.Set ("TxPowerEnd", DoubleValue (m_txPowerDbm));
-  phy.Set ("ChannelWidth", UintegerValue (20));
+  phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);

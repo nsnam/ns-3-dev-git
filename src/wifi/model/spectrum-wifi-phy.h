@@ -135,12 +135,8 @@ public:
    */
   typedef void (* SignalArrivalCallback) (bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
 
-  // The following four methods call to the base WifiPhy class method
-  // but also generate a new SpectrumModel if called during runtime
-  void SetChannelNumber (uint8_t id) override;
-  void SetFrequency (uint16_t freq) override;
-  void SetChannelWidth (uint16_t channelwidth) override;
-  void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band) override;
+  // The following method calls the base WifiPhy class method
+  // but also generates a new SpectrumModel if called during runtime
   void DoChannelSwitch (void) override;
 
   /**

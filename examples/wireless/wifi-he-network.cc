@@ -167,19 +167,23 @@ int main (int argc, char *argv[])
               NetDeviceContainer apDevice, staDevices;
               WifiMacHelper mac;
               WifiHelper wifi;
+              std::string channelStr ("{0, " + std::to_string (channelWidth) + ", ");
 
               if (frequency == 6)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
+                  channelStr += "BAND_6GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (48));
                 }
               else if (frequency == 5)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+                  channelStr += "BAND_5GHZ, 0}";
                 }
               else if (frequency == 2.4)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+                  channelStr += "BAND_2_4GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40));
                 }
               else
@@ -210,7 +214,7 @@ int main (int argc, char *argv[])
 
                   mac.SetType ("ns3::StaWifiMac",
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  phy.Set ("ChannelSettings", StringValue (channelStr));
                   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
                   if (dlAckSeqType != "NO-OFDMA")
@@ -222,7 +226,6 @@ int main (int argc, char *argv[])
                   mac.SetType ("ns3::ApWifiMac",
                               "EnableBeaconJitter", BooleanValue (false),
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
                   apDevice = wifi.Install (phy, mac, wifiApNode);
                 }
               else
@@ -234,13 +237,12 @@ int main (int argc, char *argv[])
 
                   mac.SetType ("ns3::StaWifiMac",
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  phy.Set ("ChannelSettings", StringValue (channelStr));
                   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
                   mac.SetType ("ns3::ApWifiMac",
                               "EnableBeaconJitter", BooleanValue (false),
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
                   apDevice = wifi.Install (phy, mac, wifiApNode);
                 }
 

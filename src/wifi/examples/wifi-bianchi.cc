@@ -1173,7 +1173,6 @@ int main (int argc, char *argv[])
       WifiHelper::EnableLogComponents ();
     }
 
-  Config::SetDefault ("ns3::WifiPhy::ChannelWidth", UintegerValue (channelWidth));
   std::stringstream phyModeStr;
   phyModeStr << phyMode;
   if (phyMode.find ("Mcs") != std::string::npos)
@@ -1250,6 +1249,11 @@ int main (int argc, char *argv[])
     {
       NS_FATAL_ERROR ("Unsupported standard: " << standard);
     }
+
+  std::string channelStr = "{0, " + std::to_string (channelWidth) + ", BAND_"
+                           + (frequency == 2.4 ? "2_4" : (frequency == 5 ? "5" : "6"))
+                           + "GHZ, 0}";
+  Config::SetDefault ("ns3::WifiPhy::ChannelSettings", StringValue (channelStr));
 
   YansWifiPhyHelper wifiPhy;
   wifiPhy.DisablePreambleDetectionModel ();

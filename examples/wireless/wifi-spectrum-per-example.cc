@@ -384,11 +384,11 @@ int main (int argc, char *argv[])
         {
           mac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid));
-          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
+          phy.Set ("ChannelSettings", StringValue (std::string ("{0, ") + (i <= 15 ? "20" : "40")
+                                                   + ", BAND_5GHZ, 0}"));
           staDevice = wifi.Install (phy, mac, wifiStaNode);
           mac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid));
-          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           apDevice = wifi.Install (phy, mac, wifiApNode);
 
         }
@@ -396,11 +396,11 @@ int main (int argc, char *argv[])
         {
           mac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid));
-          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
+          phy.Set ("ChannelSettings", StringValue (std::string ("{0, ") + (i <= 15 ? "20" : "40")
+                                                   + ", BAND_5GHZ, 0}"));
           staDevice = wifi.Install (spectrumPhy, mac, wifiStaNode);
           mac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid));
-          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           apDevice = wifi.Install (spectrumPhy, mac, wifiApNode);
         }
 

@@ -491,6 +491,7 @@ public:
    *
    * \param id the channel number
    */
+  NS_DEPRECATED_3_35
   virtual void SetChannelNumber (uint8_t id);
   /**
    * Return current channel number.
@@ -509,6 +510,7 @@ public:
    * \param standard the Wi-Fi standard
    * \param band the Wi-Fi band
    */
+  NS_DEPRECATED_3_35
   virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
 
   /**
@@ -899,6 +901,7 @@ public:
    *
    * \param freq the operating center frequency (MHz) on this node.
    */
+  NS_DEPRECATED_3_35
   virtual void SetFrequency (uint16_t freq);
   /**
    * \return the operating center frequency (MHz)
@@ -910,7 +913,12 @@ public:
    *
    * \param index the index of the primary 20 MHz channel
    */
+  NS_DEPRECATED_3_35
   void SetPrimary20Index (uint8_t index);
+  /**
+   * \return the index of the primary 20 MHz channel
+   */
+  uint8_t GetPrimary20Index (void) const;
   /**
    * \param antennas the number of antennas on this node.
    */
@@ -1003,6 +1011,7 @@ public:
    *
    * \param channelWidth the channel width (in MHz)
    */
+  NS_DEPRECATED_3_35
   virtual void SetChannelWidth (uint16_t channelWidth);
   /**
    * \param width the channel width (in MHz) to support

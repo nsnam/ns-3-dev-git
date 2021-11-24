@@ -74,7 +74,7 @@ WifiPhy::GetTypeId (void)
                    "Note that the channel width can be left unspecified (0) if the channel "
                    "number uniquely identify a frequency channel for the given standard and band. ",
                    StringValue ("{0, 0, BAND_UNSPECIFIED, 0}"),
-                   MakeTupleAccessor <UintegerValue, UintegerValue, EnumValue, UintegerValue> (&WifiPhy::m_channelSettings),
+                   MakeTupleAccessor <UintegerValue, UintegerValue, EnumValue, UintegerValue> ((void (WifiPhy::*) (const ChannelTuple&))(&WifiPhy::SetOperatingChannel)),
                    MakeTupleChecker<UintegerValue, UintegerValue, EnumValue, UintegerValue>
                      (MakeUintegerChecker<uint8_t> (0, 233),
                       MakeUintegerChecker<uint16_t> (0, 160),
@@ -84,63 +84,25 @@ WifiPhy::GetTypeId (void)
                                        WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED, "BAND_UNSPECIFIED"),
                       MakeUintegerChecker<uint8_t> (0, 7)))
     .AddAttribute ("Frequency",
-                   "The center frequency (MHz) of the operating channel. "
-                   "If the operating channel for this object has not been set yet, the "
-                   "value of this attribute is saved and will be used, along with the channel "
-                   "number and width configured via other attributes, to set the operating "
-                   "channel when the standard and band are configured. The default value of "
-                   "this attribute is 0, which means unspecified center frequency. Note that "
-                   "if center frequency and channel number are both 0 when the standard and "
-                   "band are configured, a default channel (of the configured width, if any, "
-                   "or the default width for the current standard and band, otherwise) is set. "
-                   "If the operating channel for this object has been already set, the "
-                   "specified center frequency must uniquely identify a channel in the "
-                   "band being used.",
+                   "The center frequency (MHz) of the current operating channel.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&WifiPhy::GetFrequency,
-                                         &WifiPhy::SetFrequency),
+                   MakeUintegerAccessor (&WifiPhy::GetFrequency),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("ChannelNumber",
-                   "The channel number of the operating channel. "
-                   "If the operating channel for this object has not been set yet, the "
-                   "value of this attribute is saved and will be used, along with the center "
-                   "frequency and width configured via other attributes, to set the operating "
-                   "channel when the standard and band are configured. The default value of "
-                   "this attribute is 0, which means unspecified channel number. Note that "
-                   "if center frequency and channel number are both 0 when the standard and "
-                   "band are configured, a default channel (of the configured width, if any, "
-                   "or the default width for the current standard and band, otherwise) is set. "
-                   "If the operating channel for this object has been already set, the "
-                   "specified channel number must uniquely identify a channel in the "
-                   "band being used.",
+                   "The channel number of the current operating channel.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
-                                         &WifiPhy::GetChannelNumber),
+                   MakeUintegerAccessor (&WifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint8_t> (0, 233))
     .AddAttribute ("ChannelWidth",
-                   "The width in MHz of the operating channel (5, 10, 20, 22, 40, 80 or 160). "
-                   "If the operating channel for this object has not been set yet, the "
-                   "value of this attribute is saved and will be used, along with the center "
-                   "frequency and channel number configured via other attributes, to set the "
-                   "operating channel when the standard and band are configured. The default value "
-                   "of this attribute is 0, which means unspecified channel width. Note that "
-                   "if center frequency and channel number are both 0 when the standard and "
-                   "band are configured, a default channel (of the configured width, if any, "
-                   "or the default width for the current standard and band, otherwise) is set. "
-                   "Do not set this attribute when the standard and band of this object have "
-                   "been already configured, because it cannot uniquely identify a channel in "
-                   "the band being used.",
+                   "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80 or 160).",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
-                                         &WifiPhy::SetChannelWidth),
+                   MakeUintegerAccessor (&WifiPhy::GetChannelWidth),
                    MakeUintegerChecker<uint16_t> (5, 160))
     .AddAttribute ("Primary20MHzIndex",
-                   "The index of the primary 20 MHz channel within the operating channel "
-                   "(0 indicates the 20 MHz subchannel with the lowest center frequency). "
-                   "This attribute is only valid if the width of the operating channel is "
-                   "a multiple of 20 MHz.",
+                   "The index of the primary 20 MHz channel within the current operating channel "
+                   "(0 indicates the 20 MHz subchannel with the lowest center frequency).",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&WifiPhy::SetPrimary20Index),
+                   MakeUintegerAccessor (&WifiPhy::GetPrimary20Index),
                    MakeUintegerChecker<uint8_t> (0, 7))
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
@@ -1089,6 +1051,12 @@ WifiPhy::SetPrimary20Index (uint8_t index)
     }
 
   m_operatingChannel.SetPrimary20Index (index);
+}
+
+uint8_t
+WifiPhy::GetPrimary20Index (void) const
+{
+  return m_operatingChannel.GetPrimaryChannelIndex (20);
 }
 
 void

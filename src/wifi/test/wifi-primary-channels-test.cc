@@ -31,6 +31,7 @@
 #include "ns3/he-phy.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ctrl-headers.h"
+#include "ns3/tuple.h"
 #include <bitset>
 #include <algorithm>
 #include <sstream>
@@ -294,7 +295,7 @@ WifiPrimaryChannelsTest::DoSetup (void)
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (40);
   int64_t streamNumber = 100;
-  uint16_t frequency;
+  uint8_t channelNum;
 
   // we create as many stations per BSS as the number of 26-tone RUs in a channel
   // of the configured width
@@ -302,19 +303,19 @@ WifiPrimaryChannelsTest::DoSetup (void)
     {
       case 20:
         m_nStationsPerBss = 9;
-        frequency = 5180;
+        channelNum = 36;
         break;
       case 40:
         m_nStationsPerBss = 18;
-        frequency = 5190;
+        channelNum = 38;
         break;
       case 80:
         m_nStationsPerBss = 37;
-        frequency = 5210;
+        channelNum = 42;
         break;
       case 160:
         m_nStationsPerBss = 74;
-        frequency = 5250;
+        channelNum= 50;
         break;
       default:
         NS_ABORT_MSG ("Channel width (" << m_channelWidth << ") not allowed");
@@ -340,7 +341,6 @@ WifiPrimaryChannelsTest::DoSetup (void)
 
   SpectrumWifiPhyHelper phy;
   phy.SetChannel (spectrumChannel);
-  phy.Set ("Frequency", UintegerValue (frequency));  // same frequency for all BSSes
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
@@ -351,17 +351,21 @@ WifiPrimaryChannelsTest::DoSetup (void)
                "Ssid", SsidValue (Ssid ("non-existent-ssid")),
                "WaitBeaconTimeout", TimeValue (MicroSeconds (102400))); // same as BeaconInterval
 
+  TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
+
   // Each BSS uses a distinct primary20 channel
   for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
-      phy.Set ("Primary20MHzIndex", UintegerValue (bss));
+      channelValue.Set (WifiPhy::ChannelTuple {channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss});
+      phy.Set ("ChannelSettings", channelValue);
 
       m_staDevices.push_back (wifi.Install (phy, mac, wifiStaNodes[bss]));
     }
 
   for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
-      phy.Set ("Primary20MHzIndex", UintegerValue (bss));
+      channelValue.Set (WifiPhy::ChannelTuple {channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss});
+      phy.Set ("ChannelSettings", channelValue);
 
       mac.SetType ("ns3::ApWifiMac",
                   "Ssid", SsidValue (Ssid ("wifi-ssid-" + std::to_string (bss))),

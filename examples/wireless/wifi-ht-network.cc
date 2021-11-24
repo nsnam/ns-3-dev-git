@@ -25,6 +25,8 @@
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/string.h"
+#include "ns3/enum.h"
+#include "ns3/tuple.h"
 #include "ns3/log.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/ssid.h"
@@ -128,6 +130,7 @@ int main (int argc, char *argv[])
 
               WifiMacHelper mac;
               WifiHelper wifi;
+
               if (frequency == 5.0)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
@@ -149,10 +152,13 @@ int main (int argc, char *argv[])
                                             "ControlMode", StringValue (oss.str ()));
 
               Ssid ssid = Ssid ("ns3-80211n");
+              TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
+              WifiPhyBand band = (frequency == 5.0 ? WIFI_PHY_BAND_5GHZ : WIFI_PHY_BAND_2_4GHZ);
+              channelValue.Set (WifiPhy::ChannelTuple {0, channelWidth, band, 0});
 
               mac.SetType ("ns3::StaWifiMac",
                            "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+              phy.Set ("ChannelSettings", channelValue);
 
               NetDeviceContainer staDevice;
               staDevice = wifi.Install (phy, mac, wifiStaNode);
@@ -160,7 +166,6 @@ int main (int argc, char *argv[])
               mac.SetType ("ns3::ApWifiMac",
                            "EnableBeaconJitter", BooleanValue (false),
                            "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);

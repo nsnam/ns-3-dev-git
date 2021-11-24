@@ -210,7 +210,7 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
       ackManager->SetWifiMac (wifiMac);
       fem->SetAckManager (ackManager);
     }
-  phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
+  phy->ConfigureStandard (it->second.phyStandard);
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);

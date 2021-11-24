@@ -120,6 +120,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiSpectrumPerInterference");
 
 Ptr<SpectrumModel> SpectrumModelWifi5180MHz, SpectrumModelWifi5190MHz;
 
+/** Initializer for a static spectrum model centered around 5180 MHz */
 class static_SpectrumModelWifi5180MHz_initializer
 {
 public:
@@ -138,6 +139,7 @@ public:
 
 } static_SpectrumModelWifi5180MHz_initializer_instance;
 
+/** Initializer for a static spectrum model centered around 5190 MHz */
 class static_SpectrumModelWifi5190MHz_initializer
 {
 public:
@@ -228,7 +230,8 @@ int main (int argc, char *argv[])
                                       "Frequency", DoubleValue (frequency * 1e6));
           channel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           phy.SetChannel (channel.Create ());
-          phy.Set ("Frequency", UintegerValue (frequency));
+          phy.Set ("ChannelSettings", StringValue (std::string ("{") + (frequency == 5180 ? "36" : "38")
+                                                   + ", 0, BAND_5GHZ, 0}"));
         }
       else if (wifiType == "ns3::SpectrumWifiPhy")
         {
@@ -245,7 +248,10 @@ int main (int argc, char *argv[])
 
           spectrumPhy.SetChannel (spectrumChannel);
           spectrumPhy.SetErrorRateModel (errorModelType);
-          spectrumPhy.Set ("Frequency", UintegerValue (frequency)); // channel 36 at 20 MHz, 38 at 40 MHz
+          // channel 36 at 20 MHz, 38 at 40 MHz
+          spectrumPhy.Set ("ChannelSettings", StringValue (std::string ("{")
+                                                           + (frequency == 5180 ? "36" : "38")
+                                                           + ", 0, BAND_5GHZ, 0}"));
         }
       else
         {

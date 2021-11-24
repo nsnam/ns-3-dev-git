@@ -384,8 +384,9 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
       for (uint32_t j = 0; j != m_physNumber; ++j)
         {
           Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-          phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211p, WIFI_PHY_BAND_5GHZ);
-          phy->SetChannelNumber (ChannelManager::GetCch ());
+          phy->ConfigureStandard (WIFI_PHY_STANDARD_80211p);
+          phy->SetOperatingChannel (WifiPhy::ChannelTuple {ChannelManager::GetCch (), 0,
+                                                           WIFI_PHY_BAND_5GHZ, 0});
           device->AddPhy (phy);
         }
 

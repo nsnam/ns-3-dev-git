@@ -128,6 +128,9 @@ int main (int argc, char *argv[])
               YansWifiPhyHelper phy;
               phy.SetChannel (channel.Create ());
 
+              phy.Set ("ChannelSettings", StringValue ("{0, " + std::to_string (channelWidth)
+                                                       + ", BAND_5GHZ, 0}"));
+
               WifiHelper wifi;
               wifi.SetStandard (WIFI_STANDARD_80211ac);
               WifiMacHelper mac;
@@ -141,7 +144,6 @@ int main (int argc, char *argv[])
 
               mac.SetType ("ns3::StaWifiMac",
                            "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
               NetDeviceContainer staDevice;
               staDevice = wifi.Install (phy, mac, wifiStaNode);
@@ -149,7 +151,6 @@ int main (int argc, char *argv[])
               mac.SetType ("ns3::ApWifiMac",
                            "EnableBeaconJitter", BooleanValue (false),
                            "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);

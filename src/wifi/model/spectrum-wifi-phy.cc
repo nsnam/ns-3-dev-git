@@ -236,54 +236,10 @@ SpectrumWifiPhy::ResetSpectrumModel (void)
 }
 
 void
-SpectrumWifiPhy::SetChannelNumber (uint8_t nch)
-{
-  NS_LOG_FUNCTION (this << +nch);
-  WifiPhy::SetChannelNumber (nch);
-  if (IsInitialized ())
-    {
-      ResetSpectrumModel ();
-    }
-}
-
-void
-SpectrumWifiPhy::SetFrequency (uint16_t freq)
-{
-  NS_LOG_FUNCTION (this << freq);
-  WifiPhy::SetFrequency (freq);
-  if (IsInitialized ())
-    {
-      ResetSpectrumModel ();
-    }
-}
-
-void
-SpectrumWifiPhy::SetChannelWidth (uint16_t channelwidth)
-{
-  NS_LOG_FUNCTION (this << channelwidth);
-  WifiPhy::SetChannelWidth (channelwidth);
-  if (IsInitialized ())
-    {
-      ResetSpectrumModel ();
-    }
-}
-
-void
 SpectrumWifiPhy::DoChannelSwitch (void)
 {
   NS_LOG_FUNCTION (this);
   WifiPhy::DoChannelSwitch ();
-  if (IsInitialized ())
-    {
-      ResetSpectrumModel ();
-    }
-}
-
-void
-SpectrumWifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
-{
-  NS_LOG_FUNCTION (this << standard << band);
-  WifiPhy::ConfigureStandardAndBand (standard, band);
   if (IsInitialized ())
     {
       ResetSpectrumModel ();

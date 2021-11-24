@@ -197,7 +197,7 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
    *
    * Now we use dirty channel switch -- just change frequency
    */
-  m_phy->SetChannelNumber (new_id);
+  m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {new_id, 0, m_phy->GetPhyBand (), 0});
   // Don't know NAV on new channel
   m_channelAccessManager->NotifyNavResetNow (Seconds (0));
 }

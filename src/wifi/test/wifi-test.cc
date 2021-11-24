@@ -162,7 +162,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
   phy->SetDevice (dev);
-  phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ);
+  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
   mobility->SetPosition (pos);
@@ -311,7 +311,7 @@ void
 InterferenceHelperSequenceTest::SwitchCh (Ptr<WifiNetDevice> dev)
 {
   Ptr<WifiPhy> p = dev->GetPhy ();
-  p->SetChannelNumber (40);
+  p->SetOperatingChannel (WifiPhy::ChannelTuple {40, 0, (int)(WIFI_PHY_BAND_5GHZ), 0});
 }
 
 Ptr<Node>
@@ -339,7 +339,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (mobility);
-  phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ);
+  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
   mobility->SetPosition (pos);
@@ -547,7 +547,7 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   txPhy->SetChannel (channel);
   txPhy->SetDevice (txDev);
   txPhy->SetMobility (txMobility);
-  txPhy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ);
+  txPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
 
   txPhy->TraceConnectWithoutContext ("PhyTxBegin", MakeCallback (&DcfImmediateAccessBroadcastTestCase::NotifyPhyTxBegin, this));
 
@@ -995,11 +995,13 @@ SetChannelFrequencyTest::DoRun ()
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11n-5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11n-5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11n-5GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 5:
@@ -1028,11 +1030,13 @@ SetChannelFrequencyTest::DoRun ()
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_2_4GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 1, "802.11ax-2.4GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11ax-2.4GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 2412, "802.11ax-2.4GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 8:
@@ -1050,98 +1054,106 @@ SetChannelFrequencyTest::DoRun ()
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_6GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 7, "802.11ax-6GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 80, "802.11ax-6GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5975, "802.11ax-6GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 10:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211p);
-    phy.Set ("ChannelWidth", UintegerValue (10));
+    phy.Set ("ChannelSettings", StringValue ("{0, 10, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 172, "802.11p 10Mhz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 10, "802.11p 10Mhz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5860, "802.11p 10Mhz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 11:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211p);
-    phy.Set ("ChannelWidth", UintegerValue (5));
+    phy.Set ("ChannelSettings", StringValue ("{0, 5, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 171, "802.11p 5Mhz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 5, "802.11p 5Mhz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5860, "802.11p 5Mhz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 12:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
-    phy.Set ("ChannelWidth", UintegerValue (20)); // reset value after previous case
-    phy.Set ("ChannelNumber", UintegerValue (44));
+    phy.Set ("ChannelSettings", StringValue ("{44, 20, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 44, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5220, "802.11 5GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 13:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    phy.Set ("ChannelNumber", UintegerValue (44));
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     // Post-install reconfiguration to channel number 40
     std::ostringstream path;
-    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelNumber";
-    Config::Set (path.str(), UintegerValue (40));
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelSettings";
+    Config::Set (path.str(), StringValue ("{40, 0, BAND_5GHZ, 0}"));
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 40, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5200, "802.11 5GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 14:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    phy.Set ("ChannelNumber", UintegerValue (44));
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     // Post-install reconfiguration to a 40 MHz channel
     std::ostringstream path;
-    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelNumber";
-    Config::Set (path.str(), UintegerValue (46));
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelSettings";
+    Config::Set (path.str(), StringValue ("{46, 0, BAND_5GHZ, 0}"));
     // Although channel 44 is configured originally for 20 MHz, we
     // allow it to be used for 40 MHz here
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 46, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 40, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5230, "802.11 5GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 15:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (44));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{3, 20, BAND_2_4GHZ, 0}"));
+    return;
     // Post-install reconfiguration to a 40 MHz channel
     std::ostringstream path;
-    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelNumber";
-    Config::Set (path.str(), UintegerValue (46));
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelSettings";
+    Config::Set (path.str(), StringValue ("{4, 40, BAND_2_4GHZ, 0}"));
     // Although channel 44 is configured originally for 20 MHz, we
     // allow it to be used for 40 MHz here
-    NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 46, "802.11 5GHz configuration");
+    NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 4, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 40, "802.11 5GHz configuration");
-    NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5230, "802.11 5GHz configuration");
+    NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 2427, "802.11 5GHz configuration");
+    phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}")); // restore default
   }
   {
     // case 16:
@@ -1149,12 +1161,13 @@ SetChannelFrequencyTest::DoRun ()
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     // Test that setting Frequency to a non-standard value will throw an exception
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     bool exceptionThrown = false;
     try
       {
-        phySta->SetAttribute ("Frequency", UintegerValue (5281));
+        phySta->SetAttribute ("ChannelSettings", StringValue ("{45, 0, BAND_5GHZ, 0}"));
       }
     catch (const std::runtime_error&)
       {
@@ -1168,12 +1181,13 @@ SetChannelFrequencyTest::DoRun ()
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
-    // Test that setting Frequency to a standard value will set the
-    // channel number correctly
-    phySta->SetAttribute ("Frequency", UintegerValue (5500));
-    // We expect channel number to be 100 due to frequency 5500
+    // Test that setting channel to a standard value will set the
+    // frequency correctly
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{100, 0, BAND_5GHZ, 0}"));
+    // We expect frequency to be 5500 due to channel number being 100
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 100, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5500, "802.11 5GHz configuration");
@@ -1184,12 +1198,13 @@ SetChannelFrequencyTest::DoRun ()
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     bool exceptionThrown = false;
     try
       {
-        phySta->SetOperatingChannel (99, 5185, 40);
+        phySta->SetOperatingChannel (WifiPhy::ChannelTuple {99, 40, WIFI_PHY_BAND_5GHZ, 0});
       }
     catch (const std::runtime_error&)
       {
@@ -1204,20 +1219,21 @@ SetChannelFrequencyTest::DoRun ()
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     // Test how channel number behaves when frequency is non-standard
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     bool exceptionThrown = false;
     try
       {
-        phySta->SetAttribute ("Frequency", UintegerValue (5181));
+        phySta->SetAttribute ("ChannelSettings", StringValue ("{45, 0, BAND_5GHZ, 0}"));
       }
     catch (const std::runtime_error&)
       {
         exceptionThrown = true;
       }
-    // We expect that an exception is thrown due to unknown center frequency 5181
+    // We expect that an exception is thrown due to unknown channel number 45
     NS_TEST_ASSERT_MSG_EQ (exceptionThrown, true, "802.11 5GHz configuration");
-    phySta->SetAttribute ("Frequency", UintegerValue (5180));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
     // We expect channel number to be 36 due to known center frequency 5180
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
@@ -1225,15 +1241,15 @@ SetChannelFrequencyTest::DoRun ()
     exceptionThrown = false;
     try
       {
-        phySta->SetAttribute ("Frequency", UintegerValue (5179));
+        phySta->SetAttribute ("ChannelSettings", StringValue ("{43, 0, BAND_5GHZ, 0}"));
       }
     catch (const std::runtime_error&)
       {
         exceptionThrown = true;
       }
-    // We expect that an exception is thrown due to unknown center frequency 5179
+    // We expect that an exception is thrown due to unknown channel number 43
     NS_TEST_ASSERT_MSG_EQ (exceptionThrown, true, "802.11 5GHz configuration");
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (36));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11 5GHz configuration");
@@ -1242,9 +1258,7 @@ SetChannelFrequencyTest::DoRun ()
     // case 20:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    // Set both channel and frequency to consistent values before initialization
-    phy.Set ("Frequency", UintegerValue (5200));
-    phy.Set ("ChannelNumber", UintegerValue (40));
+    phy.Set ("ChannelSettings", StringValue ("{40, 0, BAND_5GHZ, 0}"));
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
@@ -1255,20 +1269,17 @@ SetChannelFrequencyTest::DoRun ()
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
-    phySta->SetAttribute ("Frequency", UintegerValue (5200));
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (40));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{40, 0, BAND_5GHZ, 0}"));
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 40, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5200, "802.11 5GHz configuration");
-    // Set both channel and frequency to inconsistent values
-    phySta->SetAttribute ("Frequency", UintegerValue (5200));
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (36));
+
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
     // We expect channel number to be 36
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11 5GHz configuration");
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (36));
-    phySta->SetAttribute ("Frequency", UintegerValue (5200));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{40, 0, BAND_5GHZ, 0}"));
     // We expect channel number to be 40
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 40, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
@@ -1276,23 +1287,23 @@ SetChannelFrequencyTest::DoRun ()
     bool exceptionThrown = false;
     try
       {
-        phySta->SetAttribute ("Frequency", UintegerValue (5179));
+        phySta->SetAttribute ("ChannelSettings", StringValue ("{45, 0, BAND_5GHZ, 0}"));
       }
     catch (const std::runtime_error&)
       {
         exceptionThrown = true;
       }
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (36));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
     // We expect channel number to be 36 and an exception to be thrown
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (exceptionThrown, true, "802.11 5GHz configuration");
-    phySta->SetAttribute ("ChannelNumber", UintegerValue (36));
+    phySta->SetAttribute ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
     exceptionThrown = false;
     try
       {
-        phySta->SetAttribute ("Frequency", UintegerValue (5179));
+        phySta->SetAttribute ("ChannelSettings", StringValue ("{43, 0, BAND_5GHZ, 0}"));
       }
     catch (const std::runtime_error&)
       {
@@ -1561,8 +1572,7 @@ Bug2843TestCase::DoRun (void)
 
   spectrumPhy.SetChannel (spectrumChannel);
   spectrumPhy.SetErrorRateModel ("ns3::NistErrorRateModel");
-  spectrumPhy.Set ("Frequency", UintegerValue (5190));
-  spectrumPhy.Set ("ChannelWidth", UintegerValue (channelWidth));
+  spectrumPhy.Set ("ChannelSettings", StringValue ("{38, 40, BAND_5GHZ, 0}"));
   spectrumPhy.Set ("TxPowerStart", DoubleValue (10));
   spectrumPhy.Set ("TxPowerEnd", DoubleValue (10));
 
@@ -1674,10 +1684,8 @@ Bug2831TestCase::~Bug2831TestCase ()
 void
 Bug2831TestCase::ChangeSupportedChannelWidth ()
 {
-  m_apPhy->SetChannelNumber (38);
-  m_apPhy->SetChannelWidth (40);
-  m_staPhy->SetChannelNumber (38);
-  m_staPhy->SetChannelWidth (40);
+  m_apPhy->SetOperatingChannel (WifiPhy::ChannelTuple {38, 40, (int)(WIFI_PHY_BAND_5GHZ), 0});
+  m_staPhy->SetOperatingChannel (WifiPhy::ChannelTuple {38, 40, (int)(WIFI_PHY_BAND_5GHZ), 0});
 }
 
 void
@@ -1768,9 +1776,8 @@ Bug2831TestCase::DoRun (void)
   m_apPhy->SetChannel (channel);
   m_apPhy->SetMobility (apMobility);
   m_apPhy->SetDevice (apDev);
-  m_apPhy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-  m_apPhy->SetChannelNumber (36);
-  m_apPhy->SetChannelWidth (20);
+  m_apPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_apPhy->SetOperatingChannel (WifiPhy::ChannelTuple {36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
 
   Ptr<ConstantPositionMobilityModel> staMobility = CreateObject<ConstantPositionMobilityModel> ();
   staMobility->SetPosition (Vector (1.0, 0.0, 0.0));
@@ -1781,9 +1788,8 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannel (channel);
   m_staPhy->SetMobility (staMobility);
   m_staPhy->SetDevice (apDev);
-  m_staPhy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
-  m_staPhy->SetChannelNumber (36);
-  m_staPhy->SetChannelWidth (20);
+  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_staPhy->SetOperatingChannel (WifiPhy::ChannelTuple {36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
 
   apDev->SetMac (apMac);
   apDev->SetPhy (m_apPhy);
@@ -2184,6 +2190,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   WifiMacHelper mac;
   NetDeviceContainer apDevice;
   phy.Set ("PostReceptionErrorModel", apErrorModel);
+  phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::ApWifiMac", "EnableBeaconJitter", BooleanValue (false));
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
@@ -2673,24 +2680,8 @@ IdealRateManagerChannelWidthTest::~IdealRateManagerChannelWidthTest ()
 void
 IdealRateManagerChannelWidthTest::ChangeChannelWidth (uint16_t channelWidth)
 {
-  uint16_t frequency;
-  switch (channelWidth)
-    {
-    case 20:
-    default:
-      frequency = 5180;
-      break;
-    case 40:
-      frequency = 5190;
-      break;
-    case 80:
-      frequency = 5210;
-      break;
-    case 160:
-      frequency = 5250;
-      break;
-    }
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/Frequency", UintegerValue (frequency));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
+               StringValue ("{0, " + std::to_string (channelWidth) + ", BAND_5GHZ, 0}"));
 }
 
 void

@@ -22,6 +22,8 @@
 #include "ns3/config.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
+#include "ns3/tuple.h"
 #include "ns3/log.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/ssid.h"
@@ -123,6 +125,7 @@ int main (int argc, char *argv[])
   WifiMacHelper mac;
   WifiHelper wifi;
   Ssid ssid = Ssid ("ns3");
+  TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
 
   wifi.SetStandard (ConvertStringToStandard (staVersion));
   wifi.SetRemoteStationManager ("ns3::" + staRaa + "WifiManager");
@@ -132,11 +135,11 @@ int main (int argc, char *argv[])
                "Ssid", SsidValue (ssid));
 
   //Workaround needed as long as we do not fully support channel bonding
-  if (staVersion == "80211ac")
-    {
-      phy.Set ("ChannelWidth", UintegerValue (20));
-      phy.Set ("Frequency", UintegerValue (5180));
-    }
+  uint16_t width = (staVersion == "80211ac" ? 20 : 0);
+  auto standardIt = wifiStandards.find (ConvertStringToStandard (staVersion));
+  NS_ABORT_IF (standardIt == wifiStandards.end ());
+  channelValue.Set (WifiPhy::ChannelTuple {0, width, standardIt->second.phyBand, 0});
+  phy.Set ("ChannelSettings", channelValue);
 
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
@@ -149,11 +152,11 @@ int main (int argc, char *argv[])
                "Ssid", SsidValue (ssid));
 
   //Workaround needed as long as we do not fully support channel bonding
-  if (apVersion == "80211ac")
-    {
-      phy.Set ("ChannelWidth", UintegerValue (20));
-      phy.Set ("Frequency", UintegerValue (5180));
-    }
+  width = (apVersion == "80211ac" ? 20 : 0);
+  standardIt = wifiStandards.find (ConvertStringToStandard (apVersion));
+  NS_ABORT_IF (standardIt == wifiStandards.end ());
+  channelValue.Set (WifiPhy::ChannelTuple {0, width, standardIt->second.phyBand, 0});
+  phy.Set ("ChannelSettings", channelValue);
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);

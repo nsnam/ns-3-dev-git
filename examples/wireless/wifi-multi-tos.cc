@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
 
   WifiMacHelper mac;
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
 
   std::ostringstream oss;
   oss << "HtMcs" << mcs;
@@ -100,7 +100,8 @@ int main (int argc, char *argv[])
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
   // Set channel width
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
+               StringValue ("{0, " + std::to_string (channelWidth) + ", BAND_2_4GHZ, 0}"));
 
   // Set guard interval
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (useShortGuardInterval));

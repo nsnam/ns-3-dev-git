@@ -124,7 +124,7 @@ int main (int argc, char *argv[])
 
   //Network A
   ssid = Ssid ("network-A");
-  phy.Set ("ChannelNumber", UintegerValue (36));
+  phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
@@ -138,7 +138,7 @@ int main (int argc, char *argv[])
 
   //Network B
   ssid = Ssid ("network-B");
-  phy.Set ("ChannelNumber", UintegerValue (40));
+  phy.Set ("ChannelSettings", StringValue ("{40, 20, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
 
   //Network C
   ssid = Ssid ("network-C");
-  phy.Set ("ChannelNumber", UintegerValue (44));
+  phy.Set ("ChannelSettings", StringValue ("{44, 20, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
@@ -196,7 +196,7 @@ int main (int argc, char *argv[])
 
   //Network D
   ssid = Ssid ("network-D");
-  phy.Set ("ChannelNumber", UintegerValue (48));
+  phy.Set ("ChannelSettings", StringValue ("{48, 20, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));

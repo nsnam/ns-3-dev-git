@@ -230,11 +230,10 @@ void
 WifiPhyThresholdsTest::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
-  m_phy->SetChannelNumber (CHANNEL_NUMBER);
-  m_phy->SetFrequency (FREQUENCY);
+  m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
   m_phy->SetReceiveOkCallback (MakeCallback (&WifiPhyThresholdsTest::RxSuccess, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&WifiPhyThresholdsTest::RxFailure, this));
   m_phy->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&WifiPhyThresholdsTest::RxDropped, this));

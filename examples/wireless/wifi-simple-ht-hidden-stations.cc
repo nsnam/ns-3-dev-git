@@ -98,6 +98,7 @@ int main (int argc, char *argv[])
   YansWifiPhyHelper phy;
   phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (channel.Create ());
+  phy.Set ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);

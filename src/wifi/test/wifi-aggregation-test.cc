@@ -103,7 +103,7 @@ AmpduAggregationTest::DoRun (void)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ);
+  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211n);
   m_device->SetPhy (m_phy);
 
   /*
@@ -350,7 +350,7 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ);
+  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211n);
   m_device->SetPhy (m_phy);
 
   /*
@@ -583,7 +583,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
   m_device->SetPhy (m_phy);
 
   /*

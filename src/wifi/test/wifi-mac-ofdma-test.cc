@@ -1113,21 +1113,20 @@ OfdmaAckSequenceTest::DoRun (void)
   switch (m_channelWidth)
     {
       case 20:
-        phy.Set ("ChannelNumber", UintegerValue (36));
+        phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
         break;
       case 40:
-        phy.Set ("ChannelNumber", UintegerValue (38));
+        phy.Set ("ChannelSettings", StringValue ("{38, 40, BAND_5GHZ, 0}"));
         break;
       case 80:
-        phy.Set ("ChannelNumber", UintegerValue (42));
+        phy.Set ("ChannelSettings", StringValue ("{42, 80, BAND_5GHZ, 0}"));
         break;
       case 160:
-        phy.Set ("ChannelNumber", UintegerValue (50));
+        phy.Set ("ChannelSettings", StringValue ("{50, 160, BAND_5GHZ, 0}"));
         break;
       default:
         NS_ABORT_MSG ("Invalid channel bandwidth (must be 20, 40, 80 or 160)");
     }
-  phy.Set ("ChannelWidth", UintegerValue (m_channelWidth));
 
   Config::SetDefault ("ns3::HeConfiguration::MuBeAifsn",
                       UintegerValue (m_muEdcaParameterSet.muAifsn));

@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
 
   // Network A
   ssid = Ssid ("network-A");
-  phy.Set ("ChannelNumber", UintegerValue (36));
+  phy.Set ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
   staDeviceA = wifi.Install (phy, mac, wifiStaNodes.Get (0));
@@ -124,7 +124,7 @@ int main (int argc, char *argv[])
 
   // Network B
   ssid = Ssid ("network-B");
-  phy.Set ("ChannelNumber", UintegerValue (40));
+  phy.Set ("ChannelSettings", StringValue ("{40, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 
@@ -147,7 +147,7 @@ int main (int argc, char *argv[])
 
   // Network C
   ssid = Ssid ("network-C");
-  phy.Set ("ChannelNumber", UintegerValue (44));
+  phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 
@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
 
   // Network D
   ssid = Ssid ("network-D");
-  phy.Set ("ChannelNumber", UintegerValue (48));
+  phy.Set ("ChannelSettings", StringValue ("{48, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 
