@@ -92,7 +92,7 @@ With the command above, we added a remote repository, named nsnam, which links t
 
    $ git remote show
 
-To see to what ``origin`` is linking to::
+To see what ``origin`` is linking to::
 
    $ git remote show origin
 
@@ -351,11 +351,14 @@ When you are done, the 'git status' command should show:
 
 Make a commit of these files:
 
+::
+
   $ git commit -a -m"Update VERSION and documentation tags for ns-3.34 release"
 
 Next, make the following change to RELEASE_NOTES and commit it:
 
 ::
+  
    Availability
    ------------
   -This release is not yet available.
