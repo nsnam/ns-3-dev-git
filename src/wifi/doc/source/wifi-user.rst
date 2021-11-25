@@ -194,36 +194,48 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
-Channel, frequency, and channel width configuration
-===================================================
+Channel, frequency, channel width, and band configuration
+=========================================================
 
-There are a few ``ns3::WifiPhy`` parameters that are related, and cannot
-be set completely independently, concerning the frequency and channel width
-that the device is tuned to.  These are:
+There is a unique ``ns3::WifiPhy`` attribute, named ``ChannelSettings``, that
+enables to set channel number, channel width, frequency band and primary20 index
+all together, in order to eliminate the possibility of inconsistent settings.
+The ``ChannelSettings`` attribute can be set in a number of ways (see below) by
+providing either a StringValue object or a TupleValue object:
 
-* ``WifiPhyStandard``:  For example, 802.11b, 802.11n, etc.
-* ``Frequency``
-* ``ChannelWidth``
-* ``ChannelNumber``
+* Defining a StringValue object to set the ``ChannelSettings`` attribute
 
-It is possible to set the above to incompatible combinations (e.g. channel
-number 1 with 40 MHz channel width on frequency 4915 MHz).  In addition,
-the latter three values above are attributes; it is possible to set them
-in a number of ways:
+::
+
+  StringValue value ("{38, 40, BAND_5GHZ, 0}"));
+
+* Defining a TupleValue object to set the ``ChannelSettings`` attribute
+
+::
+
+  TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> value;
+  value.Set (WifiPhy::ChannelTuple {38, 40, WIFI_PHY_BAND_5GHZ, 0});
+
+In both cases, the operating channel will be channel 38 in the 5 GHz band, which
+has a width of 40 MHz, and the primary20 channel will be the 20 MHz subchannel
+with the lowest center frequency (index 0).
+
+The operating channel settings can then be configured in a number of ways:
 
 * by setting global configuration default; e.g.
 
 ::
 
-  Config::SetDefault ("ns3::WifiPhy::ChannelNumber", UintegerValue (3));
+  Config::SetDefault ("ns3::WifiPhy::ChannelSettings", StringValue ("{38, 40, BAND_5GHZ, 0}"));
 
 * by setting an attribute value in the helper; e.g.
 
 ::
 
+  TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> value;
+  value.Set (WifiPhy::ChannelTuple {38, 40, WIFI_PHY_BAND_5GHZ, 0});
   YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default ();
-  wifiPhyHelper.Set ("ChannelNumber", UintegerValue (3));
-
+  wifiPhyHelper.Set ("ChannelSettings", value);
 
 * by setting the WifiHelper::SetStandard (enum WifiStandard) method; and
 
@@ -232,20 +244,19 @@ in a number of ways:
 
 ::
 
-  Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/ChannelNumber",
-               UintegerValue (3));
+  Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/ChannelSettings",
+               StringValue ("{38, 40, BAND_5GHZ, 0}"));
 
-This section provides guidance on how to configure these settings in
-a coherent manner, and what happens if non-standard values are chosen.
+This section provides guidance on how to properly configure these settings.
 
 WifiHelper::SetStandard()
 +++++++++++++++++++++++++
 
-``WifiHelper::SetStandard ()`` is a method to set various parameters
-in the Mac and Phy to standard values and some reasonable defaults.
-For example, ``SetStandard (WIFI_STANDARD_80211a)`` will set the
-WifiPhy to Channel 36 in the 5 GHz band, among other settings appropriate
-for 802.11a.
+``WifiHelper::SetStandard ()`` is a method required to set various parameters
+in the Mac and Phy to standard values, but also to check that the channel
+settings as described above are allowed. For instance, a channel in the 2.4 GHz
+band cannot be configured if the standard is 802.11ac, or a channel in the 6 GHz
+band can only be configured if the standard is 802.11ax (or beyond).
 
 The following values for WifiStandard are defined in
 ``src/wifi/model/wifi-standards.h``:
@@ -267,35 +278,85 @@ By default, the WifiHelper (the typical use case for WifiPhy creation) will
 configure the WIFI_STANDARD_80211a standard by default.  Other values
 for standards should be passed explicitly to the WifiHelper object.
 
-If user has not already separately configured Frequency or ChannelNumber
-when SetStandard is called, the user obtains default values, in addition
-(e.g. channel 1 for 802.11b/g, or channel 36 for a/n), in addition to
-an appropriate ChannelWidth value for the standard (typically, 20 MHz, but
-80 MHz for 802.11ac/ax).
+If user has not already configured ChannelSettings when SetStandard is called,
+the user obtains default values, as described next.
 
-WifiPhy attribute interactions
-++++++++++++++++++++++++++++++
+Default settings for the operating channel
+++++++++++++++++++++++++++++++++++++++++++
 
-Users should keep in mind that the two attributes that matter most
-within the model code are ``WifiPhy::Frequency`` and 
-``WifiPhy::ChannelWidth``; these are the ones directly used to set
-transmission parameters.  ``WifiPhy::ChannelNumber`` and 
-``WifiHelper::SetStandard ()`` are convenience shorthands for setting
-frequency and channel width.  The ``ns3::WifiPhy`` contains code to
-keep these values aligned and to generate runtime errors in some cases
-if users set these attributes to incompatible values.
+Not all the parameters in the channel settings have to be set to a valid value,
+but they can be left unspecified, in which case default values are substituted
+as soon as the WifiStandard is set. Here are the rules (applied in the given order):
 
-The pair (WifiPhyStandard, ChannelNumber) is an alias for a pair of 
-(Frequency/ChannelWidth) items.  Valid combinations are stored in 
-a map within WifiPhy that is populated with well-known values but that
-can be dynamically extended at runtime.  
+* If the band is unspecified (i.e., it is set to WIFI_PHY_BAND_UNSPECIFIED or
+  "BAND_UNSPECIFIED"), the default band for the configured standard is set
+  (5 GHz band for 802.11{a, ac, ax, p} and 2.4 GHz band for all the others).
+
+* If both the channel width and the channel number are unspecified (i.e., they
+  are set to zero), the default channel width for the configured standard and
+  band is set (22 MHz for 802.11b, 10 MHz for 802.11p, 80 MHz for 802.11ac and
+  for 802.11ax if the band is 5 GHz, and 20 MHz for all other cases).
+
+* If the channel width is unspecified but the channel number is valid, the settings
+  are valid only if there exists a unique channel with the given number for the
+  configured standard and band, in which case the channel width is set to the width
+  of such unique channel. Otherwise, the simulation aborts.
+
+* If the channel number is unspecified (i.e., it is set to zero), the default
+  channel number for the configured standard, band and channel width is used
+  (the default channel number is the first one in the list of channels that can
+  be used with the configured standard, band and channel width)
+
+Following are a few examples to clarify these rules:
+
+::
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211ac);
+  YansWifiPhyHelper phyHelper;
+  phyHelper.Set ("ChannelSettings", StringValue ("{58, 0, WIFI_PHY_BAND_5GHZ, 0}"));
+  // channel width unspecified
+  // -> it is set to 80 MHz (width of channel 58)
+
+::
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  YansWifiPhyHelper phyHelper;
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 40, WIFI_PHY_BAND_5GHZ, 0}"));
+  // channel number unspecified
+  // -> it is set to channel 38 (first 40 MHz channel in the 5GHz band)
+
+::
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+  YansWifiPhyHelper phyHelper;
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_2_4GHZ, 0}"));
+  // both channel number and width unspecified
+  // -> width set to 20 MHz (default width for 802.11ax in the 2.4 GHZ band)
+  // -> channel number set to 1 (first 20 MHz channel in the 2.4 GHz band)
+
+::
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211a);
+  YansWifiPhyHelper phyHelper;
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_UNSPECIFIED, 0}"));
+  // band, channel number and width unspecified
+  // -> band is set to WIFI_PHY_BAND_5GHZ (default band for 802.11a)
+  // -> width set to 20 MHz (default width for 802.11a in the 5 GHZ band)
+  // -> channel number set to 36 (first 20 MHz channel in the 5 GHz band)
+
+
+The default value for the ChannelSettings attribute leaves all the parameters
+unspecified, except for the primary20 index, which is equal to zero.
 
 WifiPhy::Frequency
 ++++++++++++++++++
 
-The WifiPhy channel center frequency is set by the attribute ``Frequency``
-in the class ``WifiPhy``.  It is expressed in units of MHz.  By default,
-this attribute is set to the value 0 to indicate that no value is configured.
+The configured WifiPhy channel center frequency can be got via the attribute
+``Frequency`` in the class ``WifiPhy``.  It is expressed in units of MHz.
 
 Note that this is a change in definition from ns-3.25 and earlier releases,
 where this attribute referred to the start of the overall frequency band
@@ -304,10 +365,8 @@ on which the channel resides, not the specific channel center frequency.
 WifiPhy::ChannelWidth
 +++++++++++++++++++++
 
-The WifiPhy channel width is set by the attribute ``ChannelWidth``
-in the class ``WifiPhy``.  It is expressed in units of MHz.  By default,
-this attribute is set to the value 20.  Allowable values are 5, 10, 20,
-22, 40, 80, or 160 (MHz).
+The configured WifiPhy channel width can be got via the attribute ``ChannelWidth``
+in the class ``WifiPhy``.  It is expressed in units of MHz.
 
 WifiPhy::ChannelNumber
 ++++++++++++++++++++++
@@ -316,9 +375,8 @@ Several channel numbers are defined and well-known in practice.  However,
 valid channel numbers vary by geographical region around the world, and
 there is some overlap between the different standards.
 
-In |ns3|, the class ``WifiPhy`` contains an attribute ``ChannelNumber`` that
-is, by default, set to the value 0.  The value 0 indicates that no
-channel number has been set by the user.
+The configured WifiPhy channel number can be got via the attribute ``ChannelNumber``
+in the class ``WifiPhy``.
 
 In |ns3|, a ChannelNumber may be defined or unknown.  These terms
 are not found in the code; they are just used to describe behavior herein.
@@ -401,12 +459,11 @@ simulator will exit with an error; for instance, such as:
 ::
 
   Ptr<WifiPhy> wifiPhy = ...;
-  wifiPhy->SetAttribute ("ChannelNumber", UintegerValue (1321));
+  wifiPhy->SetAttribute ("ChannelSettings", StringValue ("{1321, 20, BAND_5GHZ, 0}"));
 
 The known channel numbers are defined in the implementation file
-``src/wifi/model/wifi-phy.cc``.  Of course, this file may be edited
-by users to extend to additional channel numbers.  Below, we describe 
-how new channel numbers may be defined dynamically at run-time.
+``src/wifi/model/wifi-phy-operating-channel.cc``. Of course, this file may be edited
+by users to extend to additional channel numbers.
 
 If a known channel number is configured against an incorrect value
 of the WifiPhyStandard, the simulator will exit with an error; for instance,
@@ -418,100 +475,29 @@ such as:
   wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
   ...
   Ptr<WifiPhy> wifiPhy = ...;
-  wifiPhy->SetAttribute ("ChannelNumber", UintegerValue (14));
+  wifiPhy->SetAttribute ("ChannelSettings", StringValue ("{14, 20, BAND_5GHZ, 0}"));
 
 In the above, while channel number 14 is well-defined in practice for 802.11b
 only, it is for 2.4 GHz band, not 5 GHz band.
 
-Defining a new channel number
-+++++++++++++++++++++++++++++
+WifiPhy::Primary20MHzIndex
+++++++++++++++++++++++++++
 
-Users may define their own channel number so that they can later refer to
-the channel by number.  
-
-The method is ``WifiPhy::DefineChannelNumber ()`` and it takes the following
-arguments:
-
-* uint16_t channelNumber
-* enum WifiPhyStandard standard
-* uint32_t frequency
-* uint32_t channelWidth
-
-The pair of (channelNumber, standard) are used as an index to a map that
-returns a Frequency and ChannelWidth.  By calling this method, one can
-dynamically add members to the map.  For instance, let's suppose that you
-previously configured WIFI_PHY_STANDARD_80211a, and wanted to define a new
-channel number '34' of width 20 MHz and at center frequency 5160 MHz.
-
-If you try to simply configure ChannelNumber to the value 34, it will fail,
-since 34 is undefined.  However, you can use DefineChannelNumber as follows:
-
-::
-
-  Ptr<WifiPhy> wifiPhy = ...;
-  wifiPhy->DefineChannelNumber (34, WIFI_PHY_STANDARD_80211a, 5160, 20);
-
-and then later you can refer to channel number 34 in your program, which
-will configure a center operating frequency of 5160 MHz and a width of
-20 MHz.
-
-The steps can be repeated to explicitly configure the same channel for
-multiple standards:
-
-::
-
-  wifiPhy->DefineChannelNumber (34, WIFI_PHY_STANDARD_80211a, 5160, 20);
-  wifiPhy->DefineChannelNumber (34, WIFI_PHY_STANDARD_80211n_5GHZ, 5160, 20);
-
-or for a wildcard, unspecified standard:
-
-::
-
-  wifiPhy->DefineChannelNumber (34, WIFI_PHY_STANDARD_UNSPECIFIED, 5160, 20);
+The configured WifiPhy primary 20MHz channel index can be got via the attribute
+``Primary20MHzIndex`` in the class ``WifiPhy``.
 
 Order of operation issues
 +++++++++++++++++++++++++
 
-Depending on the default values used and the order of operation in setting
-the values for the standard, channel width, frequency, and channel number,
-different configurations can be obtained.   Below are some common use cases.
+Channel settings can be configured either before or after the wifi standard.
+If the channel settings are configured before the wifi standard, the channel
+settings are stored and applied when the wifi standard is configured.
+Otherwise, they are applied immediately.
 
-* **(accepting the standard defaults):**  If a user has not already 
-  separately configured frequency or channel number when 
-  ``WifiHelper::SetStandard ()`` is called, the user gets default values 
-  (e.g. channel 1 for 802.11b/g/n, channel 36 for a/n with 20 MHz
-  channel widths and channel 42 for ac/ax with 80 MHz channel widths)
+The wifi standard can be configured only once, i.e., it is not possible to
+change standard during a simulation. It is instead possible to change the
+channel settings at any time.
 
-* **(overwriting the standard channel):**  If the user has previously 
-  configured (e.g. via SetDefault) either frequency or channel number when 
-  SetStandard is called, and the frequency or channel number are appropriate 
-  for the standard being configured, they are not overwritten
-
-* **(changing the standard channel after Install):**  The user may also call
-  ``WifiHelper::SetStandard ()`` after ``Install ()`` and either configure
-  the frequency to something different, or configure the channel number
-  to something different.  Note that if the channel number is undefined
-  for the standard that was previously set, an error will occur.  
-
-* **(changing to non-standard frequency):**  If the user configures a 
-  frequency outside the standardized frequency range for the current 
-  WifiPhyStandard, this is OK.  This allows users to experiment with 
-  wifi on e.g. whitespace frequencies but still use SetStandard to set 
-  all of the other configuration details.
-
-* **(interaction between channel number and frequency):**  If the user 
-  sets Frequency to a different value than the currently configured
-  ChannelNumber (or if ChannelNumber is zero), then the ChannelNumber is 
-  set to a new channel number if known, or to zero if unknown. 
-
-  * *example:*  ChannelNumber previously set to 36, user sets Frequency to 5200, then ChannelNumber gets automatically set to 40
-  * *example:*  ChannelNumber set to 36, user later sets Frequency to 5185, ChannelNumber gets reset to 0
-
-In summary, ChannelNumber and Frequency follow each other. ChannelNumber
-sets both Frequency and ChannelWidth if the channel number has been defined
-for the standard.  Setting ChannelWidth has no effect on Frequency or
-ChannelNumber. Setting Frequency will set ChannelNumber to either the
-defined value for that Wi-Fi standard, or to the value 0 if undefined.
 
 SpectrumWifiPhyHelper
 =====================
