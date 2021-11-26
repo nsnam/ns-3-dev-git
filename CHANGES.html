@@ -23,12 +23,12 @@ the impact of these changes on users by documenting these changes in a
 single place (this file), and not by providing a temporary or permanent
 backward-compatibility software layer.  </p>
 <p>
-A related file is the RELEASE_NOTES file in the top level directory.
-This file complements RELEASE_NOTES by focusing on API and behavioral
+A related file is the RELEASE_NOTES.md file in the top level directory.
+This file complements RELEASE_NOTES.md by focusing on API and behavioral
 changes that users upgrading from one release to the next may encounter.
-RELEASE_NOTES attempts to comprehensively list all of the changes
-that were made.  There is generally some overlap in the information 
-contained in RELEASE_NOTES and this file.  </p>
+RELEASE_NOTES.md attempts to comprehensively list all of the changes
+that were made.  There is generally some overlap in the information
+contained in RELEASE_NOTES.md and this file.  </p>
 <p>
 The goal is that users who encounter a problem when trying to use older
 code with newer code should be able to consult this file to find
@@ -41,7 +41,7 @@ directly out of the development tree, may find that simulation output
 changes even when the compilation doesn't break, such as when a
 simulator default value is changed.  Therefore, it is good practice for
 _anyone_ using code across multiple ns-3 releases to consult this file,
-as well as the RELEASE_NOTES, to understand what has changed over time.
+as well as the RELEASE_NOTES.md, to understand what has changed over time.
 </p>
 <p>
 This file is a best-effort approach to solving this issue; we will do
@@ -1099,7 +1099,7 @@ This section is for behavioral changes to the models that were not due to a bug 
 
 <h2>Changed behavior:</h2>
 <ul>
-<li> Behavior will be changed due to the list of bugs fixed (listed in RELEASE_NOTES); users are requested to review that list as well.
+<li> Behavior will be changed due to the list of bugs fixed (listed in RELEASE_NOTES.md); users are requested to review that list as well.
 </ul>
 
 <hr>
@@ -1310,8 +1310,8 @@ failure.  </li>
 
 <h2>Changed behavior:</h2>
 <ul>
-  <li> Wifi simulations have additional jitter on AP beaconing (see above) and some bug fixes have been applied to wifi module (see RELEASE_NOTES)
-  </li> 
+  <li> Wifi simulations have additional jitter on AP beaconing (see above) and some bug fixes have been applied to wifi module (see RELEASE_NOTES.md)
+  </li>
 </ul>
 
 <hr>
@@ -2009,12 +2009,12 @@ the usual <tt>--run</tt> option to run programs.
 
 <li><b>WaypointMobility attributes</b>
 <p>Two attributes were added to WaypointMobility model:  LazyNotify and
-InitialPositionIs Waypoint.  See RELEASE_NOTES for details.  </p> </li>
+InitialPositionIs Waypoint.  See RELEASE_NOTES.md for details.  </p> </li>
 
 <li><b>802.11g rates for ERP-OFDM added</b>
 <p>New WifiModes of the form ErpOfdmRatexxMbps, where xx is the rate
 in Mbps (6, 9, 12, 18, 24, 36, 48, 54), are available for 802.11g.  
-More details are in the RELEASE_NOTES.  </p> </li>
+More details are in the RELEASE_NOTES.md.  </p> </li>
 
 <li><b>Socket::GetSocketType ()</b>
 <p>This is analogous to getsockopt(SO_TYPE). ipv4-raw-socket, ipv6-raw-socket,
@@ -2041,7 +2041,7 @@ to an output stream. </p></li>
 <p>Derives from Ipv4RoutingProtocol and contains a DsdvHelper class. </p></li>
 
 <li><b>3GPP Long Term Evolution (LTE) models</b>
-<p>More details are in the RELEASE_NOTES. </p></li>
+<p>More details are in the RELEASE_NOTES.md. </p></li>
 
 </ul>
 
