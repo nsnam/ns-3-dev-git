@@ -102,6 +102,37 @@ per-commit-compile-optimized:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
+.cmake-build:
+  stage: build
+  script:
+    - mkdir -p $CCACHE_BASEDIR_VALUE
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - ./ns3 --verbose configure -d $MODE -GNinja --enable-examples --enable-tests
+    - ./ns3 --verbose build
+    - ./test.py --nowaf
+  cache:
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  timeout: 9h
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+    
+per-commit-compile-release-cmake:
+  extends: .cmake-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
+  image: archlinux
+  variables:
+    COMPILER: g++
+    MODE: release
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+
 # Weekly jobs for other distribution and compilers
 include:
   - 'utils/tests/gitlab-ci-ubuntu.yml'
