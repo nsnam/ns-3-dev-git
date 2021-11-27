@@ -54,7 +54,7 @@ public:
    * Constructor
    *
    * \param str test reference name
-   * \param standard selected PHY standard
+   * \param standard selected standard
    * \param band selected PHY band
    * \param bw bandwidth
    * \param maskRefsLeft vector of expected power values and corresponding indexes of generated PSD
@@ -63,7 +63,7 @@ public:
    *                      (only start and stop indexes/values given) for right guard bandwidth
    * \param tol tolerance (in dB)
    */
-  WifiOfdmMaskSlopesTestCase (const char* str, WifiPhyStandard standard, WifiPhyBand band, uint8_t bw,
+  WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
                               IndexPowerVect maskRefsLeft, IndexPowerVect maskRefsRight, double tol);
   virtual ~WifiOfdmMaskSlopesTestCase ();
 
@@ -89,7 +89,7 @@ private:
                                           double tol);
 };
 
-WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhyStandard standard, WifiPhyBand band, uint8_t bw,
+WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
                                                         IndexPowerVect maskRefsLeft, IndexPowerVect maskRefsRight, double tol)
   :   TestCase (std::string ("SpectrumValue ") + str)
 {
@@ -102,23 +102,23 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhy
 
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_STANDARD_80211p:
       NS_ASSERT ((bw == 5) || (bw == 10));
       freq = 5860;
       m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
       break;
 
     // 11g and 11a
-    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_STANDARD_80211g:
       freq = 2412;
     // no break on purpose
-    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_STANDARD_80211a:
       NS_ASSERT (bw == 20);
       m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
       break;
 
     // 11n
-    case WIFI_PHY_STANDARD_80211n:
+    case WIFI_STANDARD_80211n:
       if (band == WIFI_PHY_BAND_2_4GHZ)
         {
           freq = 2402 + (bw / 2); //so as to have 2412/2422 for 20/40
@@ -129,13 +129,13 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhy
       break;
 
     // 11ac
-    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_STANDARD_80211ac:
       NS_ASSERT (bw == 20 || bw == 40 || bw == 80 || bw == 160);
       m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
       break;
 
     // 11ax
-    case WIFI_PHY_STANDARD_80211ax:
+    case WIFI_STANDARD_80211ax:
       if (band == WIFI_PHY_BAND_2_4GHZ)
         {
           NS_ASSERT (bw != 160); // not enough space in 2.4 GHz bands
@@ -275,7 +275,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 5MHz", WIFI_PHY_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 5MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
                                                5, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -299,7 +299,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 10MHz", WIFI_PHY_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 10MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
                                                10, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -325,14 +325,14 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11a", WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11a", WIFI_STANDARD_80211a, WIFI_PHY_BAND_5GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
   // 11g
   NS_LOG_FUNCTION ("Check slopes for 11g");
   // same slppes as 11g
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11g", WIFI_PHY_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11g", WIFI_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -358,7 +358,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.531)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -45.000)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 20MHz", WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 20MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -382,7 +382,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 20MHz", WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 20MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -406,7 +406,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (321, -28.266)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (384, -45.000)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 40MHz", WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 40MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
                                                40, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -430,7 +430,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 40MHz", WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 40MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
                                                40, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -456,7 +456,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 20MHz", WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 20MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -480,7 +480,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 40MHz", WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 40MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
                                                40, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -504,7 +504,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 80MHz", WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 80MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
                                                80, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -528,7 +528,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 160MHz", WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 160MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
                                                160, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -554,7 +554,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (641, -28.133)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (768, -45.000)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 20MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 20MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -578,7 +578,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 20MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 20MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
                                                20, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -602,7 +602,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (1281, -28.066)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (1536, -45.000)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 40MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 40MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
                                                40, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -626,7 +626,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 40MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 40MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
                                                40, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -650,7 +650,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (2561, -28.033)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (3072, -45.000)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 80MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 80MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
                                                80, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -674,7 +674,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (2561, -28.023)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (3072, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 80MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 80MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
                                                80, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 
@@ -700,7 +700,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   maskSlopesRight.push_back (std::make_pair (5120, -28.000)); // Middle band right (stop)
   maskSlopesRight.push_back (std::make_pair (5121, -28.012)); // Outer band right (start)
   maskSlopesRight.push_back (std::make_pair (6144, -40.0)); // Outer band right (stop)
-  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 160MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
+  AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 160MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
                                                160, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
 

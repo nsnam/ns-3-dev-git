@@ -171,18 +171,18 @@ int main (int argc, char *argv[])
 
               if (frequency == 6)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
                   channelStr += "BAND_6GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (48));
                 }
               else if (frequency == 5)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
                   channelStr += "BAND_5GHZ, 0}";
                 }
               else if (frequency == 2.4)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
                   channelStr += "BAND_2_4GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40));
                 }

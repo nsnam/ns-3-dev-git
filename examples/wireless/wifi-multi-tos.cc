@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
 
   WifiMacHelper mac;
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
 
   std::ostringstream oss;
   oss << "HtMcs" << mcs;

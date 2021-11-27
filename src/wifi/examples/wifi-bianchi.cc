@@ -1210,11 +1210,11 @@ int main (int argc, char *argv[])
     {
       if (frequency == 2.4)
         {
-          wifiStandard = WIFI_STANDARD_80211n_2_4GHZ;
+          wifiStandard = WIFI_STANDARD_80211n;
         }
       else if (frequency == 5)
         {
-          wifiStandard = WIFI_STANDARD_80211n_5GHZ;
+          wifiStandard = WIFI_STANDARD_80211n;
         }
       else
         {
@@ -1230,15 +1230,15 @@ int main (int argc, char *argv[])
     {
       if (frequency == 2.4)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_2_4GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else if (frequency == 5)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_5GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else if (frequency == 6)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_6GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else
         {

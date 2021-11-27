@@ -343,7 +343,7 @@ WifiPrimaryChannelsTest::DoSetup (void)
   phy.SetChannel (spectrumChannel);
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager");
 
   WifiMacHelper mac;

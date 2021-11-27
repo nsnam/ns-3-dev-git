@@ -655,7 +655,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
   m_phyAp = CreateObject<SpectrumWifiPhy> ();
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
-  m_phyAp->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phyAp->SetErrorRateModel (error);
   m_phyAp->SetDevice (apDev);
@@ -670,7 +670,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
-  m_phySta1->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta1->SetErrorRateModel (error);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
@@ -686,7 +686,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
-  m_phySta2->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta2->SetErrorRateModel (error);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
@@ -702,7 +702,7 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta3Dev = CreateObject<WifiNetDevice> ();
   m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy> (3);
   m_phySta3->CreateWifiSpectrumPhyInterface (sta3Dev);
-  m_phySta3->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta3->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta3->SetErrorRateModel (error);
   m_phySta3->SetDevice (sta3Dev);
   m_phySta3->SetChannel (spectrumChannel);
@@ -750,7 +750,7 @@ TestDlOfdmaPhyTransmission::RunOne (void)
   m_phySta3->AssignStreams (streamNumber);
 
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, m_frequency, m_channelWidth,
-                                                                      WIFI_PHY_STANDARD_80211ax,
+                                                                      WIFI_STANDARD_80211ax,
                                                                       WIFI_PHY_BAND_5GHZ));
 
   m_phyAp->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, m_channelWidth,
@@ -1041,12 +1041,12 @@ TestUlOfdmaPpduUid::DoSetup (void)
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
   m_phyAp = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
-  m_phyAp->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phyAp->SetErrorRateModel (error);
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, DEFAULT_FREQUENCY,
                                                                       DEFAULT_CHANNEL_WIDTH,
-                                                                      WIFI_PHY_STANDARD_80211ax,
+                                                                      WIFI_STANDARD_80211ax,
                                                                       WIFI_PHY_BAND_5GHZ));
   m_phyAp->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
                                                        (int)(WIFI_PHY_BAND_5GHZ), 0});
@@ -1063,7 +1063,7 @@ TestUlOfdmaPpduUid::DoSetup (void)
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
-  m_phySta1->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta1->SetErrorRateModel (error);
   m_phySta1->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
                                                          (int)(WIFI_PHY_BAND_5GHZ), 0});
@@ -1080,7 +1080,7 @@ TestUlOfdmaPpduUid::DoSetup (void)
   Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
-  m_phySta2->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta2->SetErrorRateModel (error);
   m_phySta2->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
                                                          (int)(WIFI_PHY_BAND_5GHZ), 0});
@@ -1509,7 +1509,7 @@ TestMultipleHeTbPreambles::DoSetup (void)
 {
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   m_phy = CreateObject<OfdmaSpectrumWifiPhy> (0);
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   Ptr<ApWifiMac> mac = CreateObject<ApWifiMac> ();
   mac->SetAttribute ("BeaconGeneration", BooleanValue (false));
@@ -2134,13 +2134,13 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 
   Ptr<Node> apNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
-  apDev->SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  apDev->SetStandard (WIFI_STANDARD_80211ax);
   Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac> ();
   apMac->SetAttribute ("BeaconGeneration", BooleanValue (false));
   apDev->SetMac (apMac);
   m_phyAp = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
-  m_phyAp->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
   apDev->SetHeConfiguration (heConfiguration);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
@@ -2160,7 +2160,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
-  m_phySta1->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta1->SetErrorRateModel (error);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
@@ -2175,7 +2175,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
-  m_phySta2->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta2->SetErrorRateModel (error);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
@@ -2190,7 +2190,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   Ptr<WifiNetDevice> sta3Dev = CreateObject<WifiNetDevice> ();
   m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy> (3);
   m_phySta3->CreateWifiSpectrumPhyInterface (sta3Dev);
-  m_phySta3->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta3->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta3->SetErrorRateModel (error);
   m_phySta3->SetDevice (sta3Dev);
   m_phySta3->SetChannel (spectrumChannel);
@@ -2370,7 +2370,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   m_phySta3->AssignStreams (streamNumber);
 
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, m_frequency, m_channelWidth,
-                                                                      WIFI_PHY_STANDARD_80211ax,
+                                                                      WIFI_STANDARD_80211ax,
                                                                       WIFI_PHY_BAND_5GHZ));
 
   m_phyAp->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, m_channelWidth,
@@ -3058,7 +3058,7 @@ TestPhyPaddingExclusion::DoSetup (void)
   apDev->SetMac (apMac);
   m_phyAp = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
-  m_phyAp->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
   apDev->SetHeConfiguration (heConfiguration);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
@@ -3068,7 +3068,7 @@ TestPhyPaddingExclusion::DoSetup (void)
   m_phyAp->AssignStreams (streamNumber);
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, DEFAULT_FREQUENCY,
                                                                       DEFAULT_CHANNEL_WIDTH,
-                                                                      WIFI_PHY_STANDARD_80211ax,
+                                                                      WIFI_STANDARD_80211ax,
                                                                       WIFI_PHY_BAND_5GHZ));
 
   m_phyAp->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
@@ -3085,7 +3085,7 @@ TestPhyPaddingExclusion::DoSetup (void)
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
-  m_phySta1->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta1->SetErrorRateModel (error);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
@@ -3102,7 +3102,7 @@ TestPhyPaddingExclusion::DoSetup (void)
   Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
-  m_phySta2->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_phySta2->SetErrorRateModel (error);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
@@ -3453,7 +3453,7 @@ TestUlOfdmaPowerControl::DoSetup (void)
   spectrumPhy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_5GHZ, 0}"));
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("HeMcs7"),
                                 "ControlMode", StringValue ("HeMcs7"));

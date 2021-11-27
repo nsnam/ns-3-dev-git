@@ -134,8 +134,8 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   tx->SetMobility (posTx);
   rx->SetMobility (posRx);
 
-  tx->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
-  rx->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  tx->ConfigureStandard (WIFI_STANDARD_80211a);
+  rx->ConfigureStandard (WIFI_STANDARD_80211a);
 
   rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
 
@@ -300,9 +300,9 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   txB->SetMobility (posTxB);
   rx->SetMobility (posRx);
 
-  txA->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
-  txB->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
-  rx->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  txA->ConfigureStandard (WIFI_STANDARD_80211a);
+  txB->ConfigureStandard (WIFI_STANDARD_80211a);
+  rx->ConfigureStandard (WIFI_STANDARD_80211a);
 
   rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
 

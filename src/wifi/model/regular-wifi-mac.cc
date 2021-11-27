@@ -119,7 +119,7 @@ RegularWifiMac::SetupFrameExchangeManager (WifiStandard standard)
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (standard == WIFI_STANDARD_UNSPECIFIED, "Wifi standard not set");
 
-  if (standard >= WIFI_STANDARD_80211ax_2_4GHZ)
+  if (standard >= WIFI_STANDARD_80211ax)
     {
       m_feManager = CreateObject<HeFrameExchangeManager> ();
     }
@@ -127,7 +127,7 @@ RegularWifiMac::SetupFrameExchangeManager (WifiStandard standard)
     {
       m_feManager = CreateObject<VhtFrameExchangeManager> ();
     }
-  else if (standard >= WIFI_STANDARD_80211n_2_4GHZ)
+  else if (standard >= WIFI_STANDARD_80211n)
     {
       m_feManager = CreateObject<HtFrameExchangeManager> ();
     }
@@ -1147,8 +1147,7 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
 
-  NS_ABORT_IF (standard >= WIFI_STANDARD_80211n_2_4GHZ && !m_qosSupported);
-  SetDsssSupported (standard == WIFI_STANDARD_80211b);
+  NS_ABORT_IF (standard >= WIFI_STANDARD_80211n && !m_qosSupported);
 
   SetupFrameExchangeManager (standard);
 }
@@ -1176,44 +1175,25 @@ RegularWifiMac::ConfigurePhyDependentParameters (void)
 
   uint32_t cwmin = 0;
   uint32_t cwmax = 0;
-  // NOTE the distinction between wifi standard and wifi PHY standard will be removed soon...
-  NS_ASSERT (m_phy != 0);
-  WifiPhyStandard phyStandard = m_phy->GetPhyStandard ();
 
-  auto standardIt = std::find_if (wifiStandards.cbegin (), wifiStandards.cend (),
-                                  [&phyStandard, &band](auto& pair)
-                                  {
-                                    return (pair.second.phyStandard == phyStandard
-                                            && pair.second.phyBand == band);
-                                  });
-  NS_ASSERT (standardIt != wifiStandards.cend ());
-  switch (standardIt->first)
+  NS_ASSERT (m_phy != 0);
+  WifiStandard standard = m_phy->GetStandard ();
+
+  if (standard == WIFI_STANDARD_80211b)
     {
-    case WIFI_STANDARD_80211n_5GHZ:
-    case WIFI_STANDARD_80211ac:
-    case WIFI_STANDARD_80211ax_5GHZ:
-    case WIFI_STANDARD_80211ax_6GHZ:
-      {
-        cwmin = 15;
-        cwmax = 1023;
-        break;
-      }
-    case WIFI_STANDARD_80211ax_2_4GHZ:
-    case WIFI_STANDARD_80211n_2_4GHZ:
-    case WIFI_STANDARD_80211g:
-      SetErpSupported (true);
-    case WIFI_STANDARD_80211a:
-    case WIFI_STANDARD_80211p:
-      cwmin = 15;
-      cwmax = 1023;
-      break;
-    case WIFI_STANDARD_80211b:
+      SetDsssSupported (true);
       cwmin = 31;
       cwmax = 1023;
-      break;
-    default:
-      NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
+      return;
     }
+
+  if (standard >= WIFI_STANDARD_80211g && band == WIFI_PHY_BAND_2_4GHZ)
+    {
+      SetErpSupported (true);
+    }
+
+  cwmin = 15;
+  cwmax = 1023;
 
   ConfigureContentionWindow (cwmin, cwmax);
 }

@@ -310,7 +310,7 @@ WifiPhy::WifiPhy ()
     m_endTxEvent (),
     m_currentEvent (0),
     m_previouslyRxPpduUid (UINT64_MAX),
-    m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
+    m_standard (WIFI_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
     m_initialFrequency (0),
     m_initialChannelNumber (0),
@@ -819,7 +819,7 @@ WifiPhy::Configure80211ax (void)
 }
 
 void
-WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
+WifiPhy::ConfigureStandardAndBand (WifiStandard standard, WifiPhyBand band)
 {
   NS_LOG_FUNCTION (this << standard << band);
   m_standard = standard;
@@ -845,28 +845,28 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
 
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_STANDARD_80211a:
       Configure80211a ();
       break;
-    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_STANDARD_80211b:
       Configure80211b ();
       break;
-    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_STANDARD_80211g:
       Configure80211g ();
       break;
-    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_STANDARD_80211p:
       Configure80211p ();
       break;
-    case WIFI_PHY_STANDARD_80211n:
+    case WIFI_STANDARD_80211n:
       Configure80211n ();
       break;
-    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_STANDARD_80211ac:
       Configure80211ac ();
       break;
-    case WIFI_PHY_STANDARD_80211ax:
+    case WIFI_STANDARD_80211ax:
       Configure80211ax ();
       break;
-    case WIFI_PHY_STANDARD_UNSPECIFIED:
+    case WIFI_STANDARD_UNSPECIFIED:
     default:
       NS_ASSERT_MSG (false, "Unsupported standard");
       break;
@@ -874,11 +874,11 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
 }
 
 void
-WifiPhy::ConfigureStandard (WifiPhyStandard standard)
+WifiPhy::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
 
-  NS_ABORT_MSG_IF (m_standard != WIFI_PHY_STANDARD_UNSPECIFIED && standard != m_standard,
+  NS_ABORT_MSG_IF (m_standard != WIFI_STANDARD_UNSPECIFIED && standard != m_standard,
                    "Cannot change standard");
 
   m_standard = standard;
@@ -897,28 +897,28 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
 
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_STANDARD_80211a:
       Configure80211a ();
       break;
-    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_STANDARD_80211b:
       Configure80211b ();
       break;
-    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_STANDARD_80211g:
       Configure80211g ();
       break;
-    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_STANDARD_80211p:
       Configure80211p ();
       break;
-    case WIFI_PHY_STANDARD_80211n:
+    case WIFI_STANDARD_80211n:
       Configure80211n ();
       break;
-    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_STANDARD_80211ac:
       Configure80211ac ();
       break;
-    case WIFI_PHY_STANDARD_80211ax:
+    case WIFI_STANDARD_80211ax:
       Configure80211ax ();
       break;
-    case WIFI_PHY_STANDARD_UNSPECIFIED:
+    case WIFI_STANDARD_UNSPECIFIED:
     default:
       NS_ASSERT_MSG (false, "Unsupported standard");
       break;
@@ -932,8 +932,8 @@ WifiPhy::GetPhyBand (void) const
 }
 
 
-WifiPhyStandard
-WifiPhy::GetPhyStandard (void) const
+WifiStandard
+WifiPhy::GetStandard (void) const
 {
   return m_standard;
 }
@@ -1117,7 +1117,7 @@ WifiPhy::SetOperatingChannel (const ChannelTuple& channelTuple)
 
   m_channelSettings = channelTuple;
 
-  if (m_standard == WIFI_PHY_STANDARD_UNSPECIFIED)
+  if (m_standard == WIFI_STANDARD_UNSPECIFIED)
     {
       NS_LOG_DEBUG ("Channel information will be applied when a standard is configured");
       return;

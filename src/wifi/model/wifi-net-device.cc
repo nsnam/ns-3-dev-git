@@ -469,7 +469,7 @@ WifiNetDevice::SetHtConfiguration (Ptr<HtConfiguration> htConfiguration)
 Ptr<HtConfiguration>
 WifiNetDevice::GetHtConfiguration (void) const
 {
-  return (m_standard >= WIFI_STANDARD_80211n_2_4GHZ ? m_htConfiguration : nullptr);
+  return (m_standard >= WIFI_STANDARD_80211n ? m_htConfiguration : nullptr);
 }
 
 void
@@ -494,7 +494,7 @@ WifiNetDevice::SetHeConfiguration (Ptr<HeConfiguration> heConfiguration)
 Ptr<HeConfiguration>
 WifiNetDevice::GetHeConfiguration (void) const
 {
-  return (m_standard >= WIFI_STANDARD_80211ax_2_4GHZ ? m_heConfiguration : nullptr);
+  return (m_standard >= WIFI_STANDARD_80211ax ? m_heConfiguration : nullptr);
 }
 
 } //namespace ns3

@@ -203,7 +203,7 @@ void
 TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -567,7 +567,7 @@ void
 TestThresholdPreambleDetectionWithFrameCapture::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -1105,7 +1105,7 @@ void
 TestSimpleFrameCaptureModel::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -1278,7 +1278,7 @@ void
 TestPhyHeadersReception::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -1775,7 +1775,7 @@ void
 TestAmpduReception::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
@@ -2449,12 +2449,12 @@ TestUnsupportedModulationReception::DoRun (void)
   mac.SetType ("ns3::StaWifiMac", "QosSupported", BooleanValue (true), "Ssid",
                SsidValue (Ssid ("non-existent-ssid")));
 
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   m_staDevices.Add (wifi.Install (phy, mac, wifiStaNodes.Get (0)));
   wifi.SetStandard (WIFI_STANDARD_80211ac);
   m_staDevices.Add (wifi.Install (phy, mac, wifiStaNodes.Get (1)));
 
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   mac.SetType ("ns3::ApWifiMac", "QosSupported", BooleanValue (true), "Ssid",
                SsidValue (Ssid ("wifi-backoff-ssid")), "BeaconInterval",
                TimeValue (MicroSeconds (102400)), "EnableBeaconJitter", BooleanValue (false));

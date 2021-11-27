@@ -161,7 +161,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
             }
         }
     }
-  if (GetPhyStandard () >= WIFI_PHY_STANDARD_80211ax)
+  if (GetStandard () >= WIFI_STANDARD_80211ax)
     {
       // For a given RU type, some RUs over a channel occupy the same tones as
       // the corresponding RUs over a subchannel, while some others not. For instance,
@@ -305,7 +305,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_LOG_DEBUG ("Signal power received after antenna gain for 20 MHz channel band " << +i << ": " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
     }
 
-  if (GetPhyStandard () >= WIFI_PHY_STANDARD_80211ax)
+  if (GetStandard () >= WIFI_STANDARD_80211ax)
     {
       NS_ASSERT (!m_ruBands[channelWidth].empty ());
       for (const auto& bandRuPair : m_ruBands[channelWidth])
@@ -431,17 +431,17 @@ uint32_t
 SpectrumWifiPhy::GetBandBandwidth (void) const
 {
   uint32_t bandBandwidth = 0;
-  switch (GetPhyStandard ())
+  switch (GetStandard ())
     {
-    case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_80211b:
-    case WIFI_PHY_STANDARD_80211n:
-    case WIFI_PHY_STANDARD_80211ac:
+    case WIFI_STANDARD_80211a:
+    case WIFI_STANDARD_80211g:
+    case WIFI_STANDARD_80211b:
+    case WIFI_STANDARD_80211n:
+    case WIFI_STANDARD_80211ac:
       // Use OFDM subcarrier width of 312.5 KHz as band granularity
       bandBandwidth = 312500;
       break;
-    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_STANDARD_80211p:
       if (GetChannelWidth () == 5)
         {
           // Use OFDM subcarrier width of 78.125 KHz as band granularity
@@ -453,12 +453,12 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
           bandBandwidth = 156250;
         }
       break;
-    case WIFI_PHY_STANDARD_80211ax:
+    case WIFI_STANDARD_80211ax:
       // Use OFDM subcarrier width of 78.125 KHz as band granularity
       bandBandwidth = 78125;
       break;
     default:
-      NS_FATAL_ERROR ("Standard unknown: " << GetPhyStandard ());
+      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
       break;
     }
   return bandBandwidth;

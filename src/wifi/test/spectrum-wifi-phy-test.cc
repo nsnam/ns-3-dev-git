@@ -176,7 +176,7 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211n);
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211n);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetReceiveOkCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
@@ -470,7 +470,7 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
   m_txPhy = CreateObject<ExtSpectrumWifiPhy> ();
   m_txPhy->CreateWifiSpectrumPhyInterface (txDev);
-  m_txPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_txPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_txPhy->SetErrorRateModel (error);
   m_txPhy->SetDevice (txDev);
@@ -485,7 +485,7 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   Ptr<WifiNetDevice> rxDev = CreateObject<WifiNetDevice> ();
   m_rxPhy = CreateObject<ExtSpectrumWifiPhy> ();
   m_rxPhy->CreateWifiSpectrumPhyInterface (rxDev);
-  m_rxPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax);
+  m_rxPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_rxPhy->SetErrorRateModel (error);
   m_rxPhy->SetChannel (spectrumChannel);
   Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -526,7 +526,7 @@ SpectrumWifiPhyFilterTest::RunOne (void)
       break;
     }
   auto txChannelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, txFrequency, m_txChannelWidth,
-                                                                        WIFI_PHY_STANDARD_80211ax,
+                                                                        WIFI_STANDARD_80211ax,
                                                                         WIFI_PHY_BAND_5GHZ));
   m_txPhy->SetOperatingChannel (WifiPhy::ChannelTuple {txChannelNum, m_txChannelWidth,
                                                        (int)(WIFI_PHY_BAND_5GHZ), 0});
@@ -549,7 +549,7 @@ SpectrumWifiPhyFilterTest::RunOne (void)
       break;
     }
   auto rxChannelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, rxFrequency, m_rxChannelWidth,
-                                                                        WIFI_PHY_STANDARD_80211ax,
+                                                                        WIFI_STANDARD_80211ax,
                                                                         WIFI_PHY_BAND_5GHZ));
   m_rxPhy->SetOperatingChannel (WifiPhy::ChannelTuple {rxChannelNum, m_rxChannelWidth,
                                                        (int)(WIFI_PHY_BAND_5GHZ), 0});

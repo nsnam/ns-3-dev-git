@@ -99,7 +99,7 @@ Experiment::Run (Parameters params)
     {
       apTypeString = "WIFI_STANDARD_80211g";
     }
-  else if (params.apType == WIFI_STANDARD_80211n_2_4GHZ)
+  else if (params.apType == WIFI_STANDARD_80211n)
     {
       apTypeString = "WIFI_STANDARD_80211n_2_4GHZ";
     }
@@ -167,7 +167,7 @@ Experiment::Run (Parameters params)
   gStaDevice = wifi.Install (phy, mac, wifiGStaNodes);
 
   // 802.11b/g/n STA
-  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   NetDeviceContainer nStaDevice;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
@@ -187,7 +187,7 @@ Experiment::Run (Parameters params)
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
   // Set TXOP limit
-  if (params.apType == WIFI_STANDARD_80211n_2_4GHZ)
+  if (params.apType == WIFI_STANDARD_80211n)
     {
       Ptr<NetDevice> dev = wifiApNode.Get (0)->GetDevice (0);
       Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
@@ -471,7 +471,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n;
   params.nWifiB = 0;
   params.bHasTraffic = false;
   params.nWifiG = 0;
@@ -490,7 +490,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n;
   params.nWifiB = 0;
   params.bHasTraffic = false;
   params.nWifiG = 1;

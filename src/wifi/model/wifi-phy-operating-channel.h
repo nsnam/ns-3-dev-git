@@ -68,32 +68,32 @@ public:
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
    * \param width the channel width in MHz (use 0 to leave it unspecified)
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    */
   void Set (uint8_t number, uint16_t frequency, uint16_t width,
-            WifiPhyStandard standard, WifiPhyBand band);
+            WifiStandard standard, WifiPhyBand band);
   /**
-   * Set the default channel of the given width and for the given PHY standard and band.
+   * Set the default channel of the given width and for the given standard and band.
    * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel
    * is set to the 20 MHz subchannel with the lowest center frequency.
    *
    * \param width the channel width in MHz
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    */
-  void SetDefault (uint16_t width, WifiPhyStandard standard, WifiPhyBand band);
+  void SetDefault (uint16_t width, WifiStandard standard, WifiPhyBand band);
 
   /**
-   * Get the default channel number of the given width and for the given PHY standard
+   * Get the default channel number of the given width and for the given standard
    * and band.
    *
    * \param width the channel width in MHz
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    * \return the default channel number
    */
-  static uint8_t GetDefaultChannelNumber (uint16_t width, WifiPhyStandard standard, WifiPhyBand band);
+  static uint8_t GetDefaultChannelNumber (uint16_t width, WifiStandard standard, WifiPhyBand band);
 
   /**
    * Return the channel number identifying the whole operating channel.
@@ -147,14 +147,14 @@ public:
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
    * \param width the channel width in MHz (use 0 to leave it unspecified)
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    * \param start an iterator pointing to the channel to start the search with
    * \return an iterator pointing to the found channel, if any, or to past-the-end
    *         of the set of available channels
    */
   static ConstIterator FindFirst (uint8_t number, uint16_t frequency, uint16_t width,
-                                  WifiPhyStandard standard, WifiPhyBand band,
+                                  WifiStandard standard, WifiPhyBand band,
                                   ConstIterator start = m_frequencyChannels.begin ());
 
 private:

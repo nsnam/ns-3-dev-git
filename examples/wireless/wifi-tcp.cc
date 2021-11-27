@@ -109,7 +109,7 @@ main (int argc, char *argv[])
 
   WifiMacHelper wifiMac;
   WifiHelper wifiHelper;
-  wifiHelper.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifiHelper.SetStandard (WIFI_STANDARD_80211n);
 
   /* Set up Legacy Channel */
   YansWifiChannelHelper wifiChannel;

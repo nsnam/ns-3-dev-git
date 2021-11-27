@@ -102,7 +102,7 @@ PowerRateAdaptationTest::ConfigureNode ()
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (mobility);
-  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  phy->ConfigureStandard (WIFI_STANDARD_80211a);
 
   /*
    * Configure power control parameters.

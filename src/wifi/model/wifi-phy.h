@@ -511,21 +511,21 @@ public:
    * \param band the Wi-Fi band
    */
   NS_DEPRECATED_3_35
-  virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
+  virtual void ConfigureStandardAndBand (WifiStandard standard, WifiPhyBand band);
 
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
    *
    * \param standard the Wi-Fi standard
    */
-  virtual void ConfigureStandard (WifiPhyStandard standard);
+  virtual void ConfigureStandard (WifiStandard standard);
 
   /**
    * Get the configured Wi-Fi standard
    *
    * \return the Wi-Fi standard that has been configured
    */
-  WifiPhyStandard GetPhyStandard (void) const;
+  WifiStandard GetStandard (void) const;
 
   /**
    * Get the configured Wi-Fi band
@@ -1418,7 +1418,7 @@ private:
    */
   static std::map<WifiModulationClass, Ptr<PhyEntity> > & GetStaticPhyEntities (void);
 
-  WifiPhyStandard m_standard;               //!< WifiPhyStandard
+  WifiStandard m_standard;                  //!< WifiStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
   uint8_t m_initialChannelNumber;           //!< Store channel number until initialization

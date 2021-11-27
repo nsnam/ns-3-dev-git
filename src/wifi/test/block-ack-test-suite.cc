@@ -1495,7 +1495,7 @@ BlockAckAggregationDisabledTest::DoRun (void)
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   Config::SetDefault ("ns3::WifiDefaultAckManager::BaThreshold", DoubleValue (0.125));
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
 

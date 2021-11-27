@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   //TODO: add parameter to configure CCA-PD
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   if (enableObssPd)
     {
       wifi.SetObssPdAlgorithm ("ns3::ConstantObssPdAlgorithm",

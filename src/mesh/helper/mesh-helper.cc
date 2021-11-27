@@ -179,13 +179,6 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
 
-  auto it = wifiStandards.find (m_standard);
-  if (it == wifiStandards.end ())
-    {
-      NS_FATAL_ERROR ("Selected standard is not defined!");
-      return device;
-    }
-
   // this is a const method, but we need to force the correct QoS setting
   ObjectFactory macObjectFactory = m_mac;
   macObjectFactory.Set ("QosSupported", BooleanValue (true));  // a mesh station is a QoS station
@@ -210,7 +203,7 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
       ackManager->SetWifiMac (wifiMac);
       fem->SetAckManager (ackManager);
     }
-  phy->ConfigureStandard (it->second.phyStandard);
+  phy->ConfigureStandard (m_standard);
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);

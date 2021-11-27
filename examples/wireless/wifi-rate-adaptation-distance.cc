@@ -236,11 +236,11 @@ int main (int argc, char *argv[])
     {
       if (standard == "802.11n-2.4GHz")
         {
-          wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n);
         }
       else if (standard == "802.11n-5GHz")
         {
-          wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n);
         }
 
       WifiMacHelper wifiMac;

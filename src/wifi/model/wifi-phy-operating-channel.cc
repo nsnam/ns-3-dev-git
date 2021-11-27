@@ -284,7 +284,7 @@ WifiPhyOperatingChannel::IsSet (void) const
 
 void
 WifiPhyOperatingChannel::Set (uint8_t number, uint16_t frequency, uint16_t width,
-                              WifiPhyStandard standard, WifiPhyBand band)
+                              WifiStandard standard, WifiPhyBand band)
 {
   NS_LOG_FUNCTION (this << +number << frequency << width << standard << band);
 
@@ -305,7 +305,7 @@ WifiPhyOperatingChannel::Set (uint8_t number, uint16_t frequency, uint16_t width
 }
 
 void
-WifiPhyOperatingChannel::SetDefault (uint16_t width, WifiPhyStandard standard, WifiPhyBand band)
+WifiPhyOperatingChannel::SetDefault (uint16_t width, WifiStandard standard, WifiPhyBand band)
 {
   NS_LOG_FUNCTION (this << width << standard << band);
 
@@ -313,7 +313,7 @@ WifiPhyOperatingChannel::SetDefault (uint16_t width, WifiPhyStandard standard, W
 }
 
 uint8_t
-WifiPhyOperatingChannel::GetDefaultChannelNumber (uint16_t width, WifiPhyStandard standard, WifiPhyBand band)
+WifiPhyOperatingChannel::GetDefaultChannelNumber (uint16_t width, WifiStandard standard, WifiPhyBand band)
 {
   auto channelIt = FindFirst (0, 0, width, standard, band);
 
@@ -329,7 +329,7 @@ WifiPhyOperatingChannel::GetDefaultChannelNumber (uint16_t width, WifiPhyStandar
 
 WifiPhyOperatingChannel::ConstIterator
 WifiPhyOperatingChannel::FindFirst (uint8_t number, uint16_t frequency, uint16_t width,
-                                    WifiPhyStandard standard, WifiPhyBand band,
+                                    WifiStandard standard, WifiPhyBand band,
                                     ConstIterator start)
 {
   // lambda used to match channels against the specified criteria

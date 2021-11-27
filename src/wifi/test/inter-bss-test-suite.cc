@@ -572,7 +572,7 @@ TestInterBssConstantObssPdAlgo::RunOne (void)
   phy.Set ("ChannelSettings", StringValue ("{36, 20, BAND_5GHZ, 0}"));
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("HeMcs5"),
                                 "ControlMode", StringValue ("HeMcs0"));

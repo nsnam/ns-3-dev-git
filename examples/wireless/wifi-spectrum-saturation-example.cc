@@ -224,7 +224,7 @@ int main (int argc, char *argv[])
         }
 
       WifiHelper wifi;
-      wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+      wifi.SetStandard (WIFI_STANDARD_80211n);
       WifiMacHelper mac;
 
       Ssid ssid = Ssid ("ns380211n");
