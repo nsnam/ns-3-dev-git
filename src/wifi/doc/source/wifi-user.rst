@@ -194,6 +194,8 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
+.. _Channel-settings:
+
 Channel, frequency, channel width, and band configuration
 =========================================================
 

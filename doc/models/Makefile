@@ -76,6 +76,7 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-design.rst \
 	$(SRC)/wifi/doc/source/wifi-user.rst \
 	$(SRC)/wifi/doc/source/wifi-testing.rst \
+	$(SRC)/wifi/doc/source/wifi-changelog.rst \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
