@@ -923,6 +923,11 @@ PhyEntity::CancelAllEvents (void)
       endRxPayloadEvent.Cancel ();
     }
   m_endRxPayloadEvents.clear ();
+  for (auto & endMpduEvent : m_endOfMpduEvents)
+    {
+      endMpduEvent.Cancel ();
+    }
+  m_endOfMpduEvents.clear ();
 }
 
 bool
