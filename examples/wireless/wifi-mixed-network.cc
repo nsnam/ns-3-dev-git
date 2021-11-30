@@ -61,29 +61,35 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("MixedNetwork");
 
+/** Parameters */
 struct Parameters
 {
-  std::string testName;
-  bool enableErpProtection;
-  std::string erpProtectionMode;
-  bool enableShortSlotTime;
-  bool enableShortPhyPreamble;
-  WifiStandard apType;
-  uint32_t nWifiB;
-  bool bHasTraffic;
-  uint32_t nWifiG;
-  bool gHasTraffic;
-  uint32_t nWifiN;
-  bool nHasTraffic;
-  bool isUdp;
-  uint32_t payloadSize;
-  double simulationTime;
+  std::string testName;             //!< Test name
+  bool enableErpProtection;         //!< True to enable ERP protection
+  std::string erpProtectionMode;    //!< ERP protection mode
+  bool enableShortSlotTime;         //!< True to enable short slot time
+  bool enableShortPhyPreamble;      //!< True to enable short PHY preamble
+  WifiStandard apType;              //!< Wifi standard for AP
+  uint32_t nWifiB;                  //!< Number of 802.11b stations
+  bool bHasTraffic;                 //!< True if 802.11b stations generate traffic
+  uint32_t nWifiG;                  //!< Number of 802.11g stations
+  bool gHasTraffic;                 //!< True if 802.11g stations generate traffic
+  uint32_t nWifiN;                  //!< Number of 802.11n stations
+  bool nHasTraffic;                 //!< True if 802.11n stations generate traffic
+  bool isUdp;                       //!< True to generate UDP traffic
+  uint32_t payloadSize;             //!< Payload size in bytes
+  double simulationTime;            //!< Simulation time in seconds
 };
 
 class Experiment
 {
 public:
   Experiment ();
+  /**
+   * Run an experiment with the given parameters
+   * \param params the given parameters
+   * \return the throughput
+   */
   double Run (Parameters params);
 };
 

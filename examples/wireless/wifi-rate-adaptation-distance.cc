@@ -71,23 +71,51 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("RateAdaptationDistance");
 
+/** Node statistics */
 class NodeStatistics
 {
 public:
+  /**
+   * Constructor
+   * \param aps AP devices
+   * \param stas STA devices
+   */
   NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas);
 
-  void CheckStatistics (double time);
-
+  /**
+   * RX callback
+   * \param path path
+   * \param packet received packet
+   * \param from sender
+   */
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
+  /**
+   * Set node position
+   * \param node the node
+   * \param position the position
+   */
   void SetPosition (Ptr<Node> node, Vector position);
+  /**
+   * Advance node position
+   * \param node the node
+   * \param stepsSize the size of a step
+   * \param stepsTime the time interval between steps
+   */
   void AdvancePosition (Ptr<Node> node, int stepsSize, int stepsTime);
+  /**
+   * Get node position
+   * \param node the node
+   * \return the position
+   */
   Vector GetPosition (Ptr<Node> node);
-
+  /**
+   * \return the gnuplot 2d dataset
+   */
   Gnuplot2dDataset GetDatafile ();
 
 private:
-  uint32_t m_bytesTotal;
-  Gnuplot2dDataset m_output;
+  uint32_t m_bytesTotal;     //!< total bytes
+  Gnuplot2dDataset m_output; //!< gnuplot 2d dataset
 };
 
 NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
@@ -99,12 +127,6 @@ void
 NodeStatistics::RxCallback (std::string path, Ptr<const Packet> packet, const Address &from)
 {
   m_bytesTotal += packet->GetSize ();
-}
-
-void
-NodeStatistics::CheckStatistics (double time)
-{
-
 }
 
 void
