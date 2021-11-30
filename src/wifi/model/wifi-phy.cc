@@ -631,7 +631,7 @@ Ptr<PhyEntity>
 WifiPhy::GetPhyEntity (WifiModulationClass modulation) const
 {
   const auto it = m_phyEntities.find (modulation);
-  NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class");
+  NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class " << modulation);
   return it->second;
 }
 
@@ -890,6 +890,10 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
       // return because we are called back by SetOperatingChannel
       return;
     }
+
+  // this function is called when changing PHY band, hence we have to delete
+  // the previous PHY entities
+  m_phyEntities.clear ();
 
   switch (standard)
     {
