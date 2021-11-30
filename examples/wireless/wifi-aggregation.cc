@@ -56,7 +56,7 @@
 //Packets in this simulation belong to BestEffort Access Class (AC_BE).
 //
 // The user can select the distance between the stations and the APs and can enable/disable the RTS/CTS mechanism.
-// Example: ./waf --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
+// Example: ./ns3 --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
 //
 // The output prints the throughput measured for the 4 cases/networks described above. When default aggregation parameters are enabled, the
 // maximum A-MPDU size is 65 kB and the throughput is maximal. When aggregation is disabled, the throughput is about the half of the physical

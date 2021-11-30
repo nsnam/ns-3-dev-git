@@ -38,8 +38,8 @@ complete this tutorial, we recommend becoming familiar with Git and using it
 to access the source code.  GitLab.com provides resources to get started
 at: https://docs.gitlab.com/ee/gitlab-basics/.
 
-Waf
-***
+CMake
+*****
 
 Once you have source code downloaded to your local system, you will need 
 to compile that source to produce usable programs.  Just as in the case of
@@ -47,15 +47,13 @@ source code management, there are many tools available to perform this
 function.  Probably the most well known of these tools is ``make``.  Along
 with being the most well known, ``make`` is probably the most difficult to
 use in a very large and highly configurable system.  Because of this, many
-alternatives have been developed.  Recently these systems have been developed
-using the Python language.
+alternatives have been developed.
 
-The build system Waf is used on the |ns3| project.  It is one 
-of the new generation of Python-based build systems.  You will not need to 
-understand any Python to build the existing |ns3| system.
+The build system CMake is used on the |ns3| project.
 
-For those interested in the gory details of Waf, the Waf book is available
-at https://waf.io/book/ and the current code at https://gitlab.com/ita1024/waf/.
+For those interested in the details of CMake, the CMake documents are available
+at https://cmake.org/cmake/help/latest/index.html and the current code
+at https://gitlab.kitware.com/cmake/cmake.
 
 Development Environment
 ***********************
@@ -82,7 +80,7 @@ software toolchain is the set of programming tools available in the given
 environment. For a quick review of what is included in the GNU toolchain see,
 http://en.wikipedia.org/wiki/GNU_toolchain.  |ns3| uses gcc, 
 GNU binutils, and gdb.  However, we do not use the GNU build system tools, 
-neither make nor autotools.  We use Waf for these functions.
+neither make directly.  We use CMake for these functions.
 
 On macOS, the toolchain used is Xcode.  |ns3| users on a Mac are strongly
 encouraged to install Xcode and the command-line tools packages from the

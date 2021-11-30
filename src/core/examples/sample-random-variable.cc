@@ -29,8 +29,8 @@
 using namespace ns3;
 
 /**
- * This program can be run from waf such as
- * `./waf --run sample-random-variable`
+ * This program can be run from ns3 such as
+ * `./ns3 --run sample-random-variable`
  *
  * This program is about as simple as possible to display the use of ns-3
  * to generate random numbers.  By default, the uniform random variate that
@@ -46,9 +46,9 @@ using namespace ns3;
  * 1. Through explicit call of SeedManager::SetSeed () and
  *    SeedManager::SetRun () (commented out below)
  * 2. Through the passing of command line arguments such as:
- *    ./waf --command-template="%s --RngRun=<value>" --run program-name`
+ *    ./ns3 --command-template="%s --RngRun=<value>" --run program-name`
  * 3. Through the use of the NS_GLOBAL_VALUE environment variable, such as:
- *    `$ NS_GLOBAL_VALUE="RngRun=<value>" ./waf --run program-name`
+ *    `$ NS_GLOBAL_VALUE="RngRun=<value>" ./ns3 --run program-name`
  *
  * For instance, setting the run number to 3 will change the program output to
  * 0.775417

@@ -36,7 +36,7 @@ In order to run this example, do the following:
 
 .. sourcecode:: bash
 
-  $ ./waf --run src/stats/examples/gnuplot-example
+  $ ./ns3 --run src/stats/examples/gnuplot-example
 
 This should produce the following gnuplot control files:
 

@@ -143,7 +143,7 @@ Each individual helper (file descriptor type) may have platform
 limitations.  For instance, threading, real-time simulation mode, and the
 ability to create TUN/TAP devices are prerequisites to using the
 provided helpers.  Support for these modes can be found in the output
-of the ``waf configure`` step, e.g.:
+of the ``ns3 configure`` step, e.g.:
 
 .. sourcecode:: text
 
@@ -196,7 +196,7 @@ permissions. Rather than force the user to execute the entire simulation as
 root, we provide a small "creator" program that runs as root and does any
 required high-permission sockets work. The easiest way to set the right 
 privileges for the "creator" programs, is by enabling the ``--enable-sudo``
-flag when performing ``waf configure``.
+flag when performing ``ns3 configure``.
 
 We do a similar thing for both the ``Emu`` and the ``Tap`` devices.  The
 high-level view is that the ``CreateFileDescriptor`` method creates a local interprocess

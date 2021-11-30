@@ -78,7 +78,7 @@ public:
    * Customization point for more complicated patterns
    * to invoke the example program.
    *
-   * \returns The string to be given to the `waf --command-template=` argument.
+   * \returns The string to be given to the `ns3 --command-template=` argument.
    */
   virtual std::string GetCommandTemplate (void) const;
 

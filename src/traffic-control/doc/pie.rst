@@ -72,8 +72,8 @@ command-line options):
 
 .. sourcecode:: bash
 
-   $ ./waf --run "pie-example --PrintHelp"
-   $ ./waf --run "pie-example --writePcap=1" 
+   $ ./ns3 --run "pie-example --PrintHelp"
+   $ ./ns3 --run "pie-example --writePcap=1"
 
 The expected output from the previous commands are ten .pcap files.
 
@@ -103,13 +103,13 @@ The test suite can be run using the following commands:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py -s pie-queue-disc
 
 or alternatively (to see logging statements in a debug build):  
 
 .. sourcecode:: bash
 
-  $ NS_LOG="PieQueueDisc" ./waf --run "test-runner --suite=pie-queue-disc"
+  $ NS_LOG="PieQueueDisc" ./ns3 --run "test-runner --suite=pie-queue-disc"
 

@@ -27,7 +27,7 @@
 #     run by cron jobs.)
 #
 # If both a and b are true, we're building for public urls.
-# (The newer update-docs script (through waf) sets
+# (The newer update-docs script (through ns3) sets
 # NS3_WWW_URLS=public explicitly.)
 # 
 # The repo version is either a tag name or a commit (short) id.

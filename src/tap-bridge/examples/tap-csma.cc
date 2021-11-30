@@ -51,7 +51,7 @@
 //
 // 1) Ping one of the simulated nodes
 //
-//    ./waf --run tap-csma&
+//    ./ns3 --run tap-csma&
 //    ping 10.1.1.2
 //
 #include <iostream>

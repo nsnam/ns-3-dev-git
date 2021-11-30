@@ -100,7 +100,7 @@ ExampleAsTestCase::DoRun (void)
      << GetPostProcessingCommand ()
      << " > " << testFile
 
-    // Get the status of waf
+    // Get the status of ns3
      << "; exit ${PIPESTATUS[0]}'";
 
   int status = std::system (ss.str ().c_str ());

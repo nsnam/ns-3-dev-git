@@ -145,8 +145,8 @@ Example:
 
 .. sourcecode:: bash
 
-  $ ./waf -d debug configure --enable-examples
-  $ ./waf --run "dumbbell-animation"
+  $ ./ns3 -d debug configure --enable-examples
+  $ ./ns3 --run "dumbbell-animation"
 
 The above will create an XML file dumbbell-animation.xml
 

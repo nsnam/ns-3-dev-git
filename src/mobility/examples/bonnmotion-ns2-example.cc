@@ -37,7 +37,7 @@
  *
  * Finally, note that you can visualize this program using the pyviz
  * visualizer:
- *  ./waf --run bonnmotion-ns2-example --vis
+ *  ./ns3 --run bonnmotion-ns2-example --vis
  */
 
 #include "ns3/core-module.h"

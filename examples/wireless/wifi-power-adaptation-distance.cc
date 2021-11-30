@@ -66,17 +66,17 @@
  *
  * To display all the possible arguments and their defaults:
  * \code{.sh}
- *   ./waf --run "wifi-power-adaptation-distance --help"
+ *   ./ns3 --run "wifi-power-adaptation-distance --help"
  * \endcode
  *
  * Example usage (selecting Aparf rather than Parf):
  * \code{.sh}
- *   ./waf --run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager --outputFileName=aparf"
+ *   ./ns3 --run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager --outputFileName=aparf"
  * \endcode
  *
  * Another example (moving towards the AP):
  * \code{.sh}
- *   ./waf --run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager --outputFileName=aparf --stepsSize=-1 --STA1_x=200"
+ *   ./ns3 --run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager --outputFileName=aparf --stepsSize=-1 --STA1_x=200"
  * \endcode
  *
  * To enable the log of rate and power changes:

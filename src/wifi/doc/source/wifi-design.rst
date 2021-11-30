@@ -633,7 +633,7 @@ The 802.11b model was split from the OFDM model when the NIST error rate
 model was added, into a new model called DsssErrorRateModel.
 
 Furthermore, the 5.5 Mbps and 11 Mbps models for 802.11b rely on library
-methods implemented in the GNU Scientific Library (GSL).  The Waf build
+methods implemented in the GNU Scientific Library (GSL).  The ns3 build
 system tries to detect whether the host platform has GSL installed; if so,
 it compiles in the newer models from [pursley2009]_ for 5.5 Mbps and 11 Mbps;
 if not, it uses a backup model derived from MATLAB simulations.

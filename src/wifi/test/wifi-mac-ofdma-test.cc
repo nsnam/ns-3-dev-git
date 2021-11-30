@@ -314,7 +314,7 @@ TestMultiUserScheduler::ComputeUlMuInfo (void)
  *
  * Run this test with:
  *
- * NS_LOG="WifiMacOfdmaTestSuite=info|prefix_time|prefix_node" ./waf --run "test-runner --suite=wifi-mac-ofdma"
+ * NS_LOG="WifiMacOfdmaTestSuite=info|prefix_time|prefix_node" ./ns3 --run "test-runner --suite=wifi-mac-ofdma"
  *
  * to print the list of transmitted frames only, along with the TX time and the
  * node prefix. Replace 'info' with 'debug' if you want to print the debug messages

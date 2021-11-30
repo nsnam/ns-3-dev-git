@@ -19,7 +19,7 @@
  * 
  * ns-3 requires Doxygen version 1.8.3.1 or greater.
  * 
- * Type "./waf --doxygen" or "./waf --doxygen-no-build" to build the 
+ * Type "./ns3 --doxygen" or "./ns3 --doxygen-no-build" to build the
  *  documentation.  The doc/ directory contains
  * configuration for Doxygen (doxygen.conf) and main.h.  The Doxygen 
  * build process puts html files into the doc/html/ directory, and latex 
@@ -91,7 +91,7 @@
  *
  * Enable asserts at compile time.
  *
- * This is normally set by `./waf configure --build-profile=debug`.
+ * This is normally set by `./ns3 configure --build-profile=debug`.
  */
 #define NS3_ASSERT_ENABLE
 
@@ -102,7 +102,7 @@
  *
  * Enable logging at compile time.
  *
- * This is normally set by `./waf configure --build-profile=debug`.
+ * This is normally set by `./ns3 configure --build-profile=debug`.
  */
 #define NS3_LOG_ENABLE
 

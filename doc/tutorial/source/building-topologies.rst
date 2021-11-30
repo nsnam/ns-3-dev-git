@@ -335,14 +335,14 @@ the ``first.cc`` example.
   }
 
 In order to run this example, copy the ``second.cc`` example script into 
-the scratch directory and use waf to build just as you did with
+the scratch directory and use ns3 to build just as you did with
 the ``first.cc`` example.  If you are in the top-level directory of the
 repository you just type,
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/second.cc scratch/mysecond.cc
-  $ ./waf
+  $ ./ns3
 
 Warning:  We use the file ``second.cc`` as one of our regression tests to
 verify that it works exactly as we think it should in order to make your
@@ -358,7 +358,7 @@ run the program.
 .. sourcecode:: bash
 
   $ export NS_LOG=
-  $ ./waf --run scratch/mysecond
+  $ ./ns3 --run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in 
 ``first.cc``, you will see similar output when you run the script.
@@ -540,7 +540,7 @@ devices set to four:
 
 .. sourcecode:: bash
 
-  $ ./waf --run "scratch/mysecond --nCsma=4"
+  $ ./ns3 --run "scratch/mysecond --nCsma=4"
 
 You should now see,
 
@@ -615,7 +615,7 @@ If you build the new script and run the simulation setting ``nCsma`` to 100,
 
 .. sourcecode:: bash
 
-  $ ./waf --run "scratch/mysecond --nCsma=100"
+  $ ./ns3 --run "scratch/mysecond --nCsma=100"
 
 you will see the following output:
 
@@ -1180,15 +1180,14 @@ Finally, we actually run the simulation, clean up and then exit the program.
   }
 
 In order to run this example, you have to copy the ``third.cc`` example
-script into the scratch directory and use Waf to build just as you did with
+script into the scratch directory and use CMake to build just as you did with
 the ``second.cc`` example.  If you are in the top-level directory of the
 repository you would type,
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/third.cc scratch/mythird.cc
-  $ ./waf
-  $ ./waf --run scratch/mythird
+  $ ./ns3 --run scratch/mythird
 
 Again, since we have set up the UDP echo applications just as we did in the 
 ``second.cc`` script, you will see similar output.

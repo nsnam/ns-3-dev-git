@@ -184,32 +184,32 @@ Building and Running Examples
 
 If you already built |ns3| without MPI enabled, you must re-build::
 
-    $ ./waf distclean
+    $ ./ns3 distclean
 
 Configure |ns3| with the --enable-mpi option::
 
-    $ ./waf -d debug configure --enable-examples --enable-tests --enable-mpi
+    $ ./ns3 -d debug configure --enable-examples --enable-tests --enable-mpi
 
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
 
 Next, build |ns3|::
 
-    $ ./waf
+    $ ./ns3
 
 After building |ns3| with mpi enabled, the example programs are now
-ready to run with `mpiexec`.  It is advised to avoid running Waf directly
+ready to run with `mpiexec`.  It is advised to avoid running ns3 directly
 with `mpiexec`; two options that should be more robust are to either use
 the `--command-template` way of running the mpiexec program, or to use
-`./waf shell` and run the executables directly on the command line.
+`./ns3 shell` and run the executables directly on the command line.
 Here are a few examples (from the root |ns3| directory)::
 
-    $ ./waf --command-template="mpiexec -np 2 %s" --run simple-distributed
-    $ ./waf --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0" --run nms-p2p-nix-distributed
+    $ ./ns3 --command-template="mpiexec -np 2 %s" --run simple-distributed
+    $ ./ns3 --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0" --run nms-p2p-nix-distributed
             
 An example using the null message synchronization algorithm::
 
-    $ ./waf --command-template="mpiexec -np 2 %s --nullmsg" --run simple-distributed
+    $ ./ns3 --command-template="mpiexec -np 2 %s --nullmsg" --run simple-distributed
 
 The np switch is the number of logical processors to use. The machinefile switch
 is which machines to use. In order to use machinefile, the target file must
@@ -224,10 +224,10 @@ exist (in this case mpihosts). This can simply contain something like:
 
 Or if you have a cluster of machines, you can name them.
 
-The other alternative to `command-template` is to use `./waf shell`.  Here
+The other alternative to `command-template` is to use `./ns3 shell`.  Here
 are the equivalent examples to the above (assuming optimized build profile)::
 
-    $ ./waf shell
+    $ ./ns3 shell
     $ cd build/src/mpi/examples
     $ mpiexec -np 2 ns3-dev-simple-distributed-optimized
     $ mpiexec -np 2 -machinefile mpihosts ns3-dev-nms-p2p-nix-distributed-optimized --nix=0

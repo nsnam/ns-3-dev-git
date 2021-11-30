@@ -183,16 +183,16 @@ variable as follows:
 
 .. sourcecode:: bash
 
-  $ NS_GLOBAL_VALUE="RngRun=3" ./waf --run program-name
+  $ NS_GLOBAL_VALUE="RngRun=3" ./ns3 --run program-name
 
 Another way to control this is by passing a command-line argument; since this is
 an |ns3| GlobalValue instance, it is equivalently done such as follows:
 
 .. sourcecode:: bash
 
-  $ ./waf --command-template="%s --RngRun=3" --run program-name
+  $ ./ns3 --command-template="%s --RngRun=3" --run program-name
 
-or, if you are running programs directly outside of waf:
+or, if you are running programs directly outside of ns3:
 
 .. sourcecode:: bash
 

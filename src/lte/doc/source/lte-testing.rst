@@ -13,7 +13,7 @@ Overview
 To test and validate the ns-3 LTE module, several test suites are provided which are integrated with the ns-3 test framework.
 To run them, you need to have configured the build of the simulator in this way::
 
-    $ ./waf configure --enable-tests --enable-modules=lte --enable-examples
+    $ ./ns3 configure --enable-tests --enable-modules=lte --enable-examples
     $ ./test.py
 
 The above will run not only the test suites belonging to the LTE module, but also those belonging to all the other ns-3 modules on which the LTE module depends. See the ns-3 manual for generic information on the testing framework.

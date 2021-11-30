@@ -42,15 +42,15 @@
 //
 //  In general, the program can be configured at run-time by passing command-line arguments.
 //  The following command will display all of the available run-time help options:
-//    ./waf --run "wifi-spatial-reuse --help"
+//    ./ns3 --run "wifi-spatial-reuse --help"
 //
 //  By default, the script shows the benefit of the OBSS_PD spatial reuse script:
-//    ./waf --run wifi-spatial-reuse
+//    ./ns3 --run wifi-spatial-reuse
 //    Throughput for BSS 1: 6.6468 Mbit/s
 //    Throughput for BSS 2: 6.6672 Mbit/s
 //
 // If one disables the OBSS_PD feature, a lower throughput is obtained per BSS:
-//    ./waf --run "wifi-spatial-reuse --enableObssPd=0"
+//    ./ns3 --run "wifi-spatial-reuse --enableObssPd=0"
 //    Throughput for BSS 1: 5.8692 Mbit/s
 //    Throughput for BSS 2: 5.9364 Mbit/
 //

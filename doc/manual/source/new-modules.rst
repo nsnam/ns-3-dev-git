@@ -96,7 +96,7 @@ and ``.rst`` files.  The complete module with skeleton files looks like this:
 :ref:`Step-0 <Step-0>` will be created automatically during
 the build.)
 
-We next walk through how to customize this module.  Informing ``waf``
+We next walk through how to customize this module.  Informing ``ns3``
 about the files which make up your module is done by editing the two
 ``wscript`` files.  We will walk through the main steps in this chapter.
 
@@ -104,7 +104,7 @@ All |ns3| modules depend on the ``core`` module and usually on
 other modules.  This dependency is specified in the ``wscript`` file
 (at the top level of the module, not the separate ``wscript`` file
 in the ``examples`` directory!).  In the skeleton ``wscript``
-the call that will declare your new module to ``waf`` will look
+the call that will declare your new module to ``ns3`` will look
 like this (before editing):
 
 .. sourcecode:: python
@@ -192,7 +192,7 @@ also should be specified in the ``wscript`` file.
 Continuing with the ``spectrum`` model illustration,
 the public header files are specified with the following stanza.
 (Note that the argument to the ``bld`` function tells
-``waf`` to install this module's headers with the other |ns3| headers):
+``ns3`` to install this module's headers with the other |ns3| headers):
 
 .. sourcecode:: python
 
@@ -269,7 +269,7 @@ The ``spectrum`` model defines it's first example in
 Note that the second argument to the function ``create_ns3_program()``
 is the list of modules that the program being created depends on; again,
 don't forget to include ``new-module`` in the list.  It's best practice
-to list only the direct module dependencies, and let ``waf`` deduce
+to list only the direct module dependencies, and let ``ns3`` deduce
 the full dependency tree.
 
 Occasionally, for clarity, you may want to split the implementation
@@ -337,7 +337,7 @@ contains the tuple ``(example_name, do_run, do_valgrind_run)``, where
     crashes with some tests when they are run under valgrind.)
 
 Note that the two conditions are Python statements that
-can depend on ``waf`` configuration variables.  For example,
+can depend on ``ns3`` configuration variables.  For example,
 
 .. sourcecode:: python
 
@@ -350,7 +350,7 @@ Each entry in the Python list of examples to run contains the tuple
   * ``do_run`` is a condition under which to run the example.
 
 Again, the condition is a Python statement that can
-depend on ``waf`` configuration variables.  For example,
+depend on ``ns3`` configuration variables.  For example,
 
 .. sourcecode:: python
 
@@ -361,14 +361,14 @@ Step 8 - Configure and Build
 ****************************
 
 You can now configure, build and test your module as normal.
-You must reconfigure the project as a first step so that ``waf``
+You must reconfigure the project as a first step so that ``ns3``
 caches the new information in your ``wscript`` files,
 or else your new module will not be included in the build.
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py
 
 Look for your new module's test suite (and example programs,

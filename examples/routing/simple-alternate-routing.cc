@@ -71,7 +71,7 @@ main (int argc, char *argv[])
   // line argument system as well, for exemplary purposes.  This means 
   // that it can be resettable at the command-line to the program, 
   // rather than recompiling
-  // e.g. waf --run "simple-alternate-routing --AlternateCost=5"
+  // e.g. ns3 --run "simple-alternate-routing --AlternateCost=5"
   uint16_t sampleMetric = 1;
   cmd.AddValue ("AlternateCost",
                 "This metric is used in the example script between n3 and n1 ", 

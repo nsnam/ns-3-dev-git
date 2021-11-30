@@ -66,7 +66,7 @@ has an example of how to configure the realtime behavior.  Try:
 
 .. sourcecode:: bash
 
-    $ ./waf --run realtime-udp-echo
+    $ ./ns3 --run realtime-udp-echo
 
 Whether the simulator will work in a best effort or hard limit policy fashion is
 governed by the attributes explained in the previous section.

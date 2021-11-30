@@ -127,7 +127,7 @@ If not, it will report:
   Netmap emulation FdNetDevice  : not enabled (needs net/netmap_user.h)
 
 To run FdNetDevice-enabled simulations, one must pass the ``--enable-sudo``
-option to ``./waf configure``, or else run the simulations with root
+option to ``./ns3 configure``, or else run the simulations with root
 privileges.
 
 Helpers

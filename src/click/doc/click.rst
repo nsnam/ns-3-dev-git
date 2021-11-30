@@ -91,7 +91,7 @@ The --enable-wifi flag may be skipped if you don't intend on using Click with Wi
 Once Click has been built successfully, change into the ns-3 directory and 
 configure ns-3 with Click Integration support::
 
-  $ ./waf configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
+  $ ./ns3 configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
 
 Hint:  If you have click installed one directory above ns-3 (such as in the
 ns-3-allinone directory), and the name of the directory is 'click' (or
@@ -103,7 +103,7 @@ If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good t
 
 Next, try running one of the examples::
 
-  $ ./waf --run nsclick-simple-lan
+  $ ./ns3 --run nsclick-simple-lan
 
 You may then view the resulting .pcap traces, which are named nsclick-simple-lan-0-0.pcap and nsclick-simple-lan-0-1.pcap.
 

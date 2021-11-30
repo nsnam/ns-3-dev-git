@@ -31,7 +31,7 @@
 // There are a number of command-line options available to control
 // the default behavior.  The list of available command-line options
 // can be listed with the following command:
-// ./waf --run "wifi-sleep --help"
+// ./ns3 --run "wifi-sleep --help"
 //
 // Note that all ns-3 attributes (not just the ones exposed in the below
 // script) can be changed at command line; see the documentation.
@@ -39,7 +39,7 @@
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
 //
-// ./waf --run "wifi-sleep --verbose=1"
+// ./ns3 --run "wifi-sleep --verbose=1"
 //
 // When you are done, you will notice four trace files in your directory:
 // two for the remaining energy on each node and two for the state transitions

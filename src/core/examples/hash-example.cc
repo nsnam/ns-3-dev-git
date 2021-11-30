@@ -40,7 +40,7 @@
  *  Example Output:
  *  \verbatim
 
-./waf --run="hasher-example --time \
+./ns3 --run="hasher-example --time \
   --dict=/usr/share/dict/web2 \
   --dict=/usr/share/dict/web2a \
   --dict=/usr/share/dict/propernames \

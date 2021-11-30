@@ -38,7 +38,7 @@
 //
 // Example: set slot time to 20 microseconds, while keeping other values as defined in the simulation script:
 //
-//          ./waf --run "wifi-timing-attributes --slot=20"
+//          ./ns3 --run "wifi-timing-attributes --slot=20"
 //
 // Network topology:
 //

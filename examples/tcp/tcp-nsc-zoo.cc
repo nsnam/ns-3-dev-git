@@ -25,7 +25,7 @@
 //
 // - Pcap traces are saved as tcp-nsc-zoo-$n-0.pcap, where $n represents the node number
 // - TCP flows from n0 to n1, n2, n3, from n1 to n0, n2, n3, etc.
-//  Usage (e.g.): ./waf --run 'tcp-nsc-zoo --nodes=5'
+//  Usage (e.g.): ./ns3 --run 'tcp-nsc-zoo --nodes=5'
 
 #include <iostream>
 #include <string>

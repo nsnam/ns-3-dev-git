@@ -63,12 +63,12 @@ The test suite can be run using the following commands:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py -s prio-queue-disc
 
 or
 
 .. sourcecode:: bash
 
-  $ NS_LOG="PrioQueueDisc" ./waf --run "test-runner --suite=prio-queue-disc"
+  $ NS_LOG="PrioQueueDisc" ./ns3 --run "test-runner --suite=prio-queue-disc"

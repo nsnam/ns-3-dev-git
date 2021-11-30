@@ -20,7 +20,7 @@
 
 // This program can be used to benchmark packet serialization/deserialization
 // operations using Headers and Tags, for various numbers of packets 'n'
-// Sample usage:  ./waf --run 'bench-packets --n=10000'
+// Sample usage:  ./ns3 --run 'bench-packets --n=10000'
 
 #include "ns3/command-line.h"
 #include "ns3/system-wall-clock-ms.h"

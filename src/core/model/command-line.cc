@@ -385,7 +385,7 @@ CommandLine::PrintDoxygenUsage (void) const
 
   os << "/**\n \\file " << m_shortName << ".cc\n"
      << "<h3>Usage</h3>\n"
-     << "<code>$ ./waf --run \"" << m_shortName
+     << "<code>$ ./ns3 --run \"" << m_shortName
      << (m_options.size ()  ? " [Program Options]" : "")
      << (nonOptions.size () ? " [Program Arguments]" : "")
      << "\"</code>\n";

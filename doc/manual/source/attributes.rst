@@ -617,7 +617,7 @@ output corresponding to the steps we took above:
 
 .. sourcecode:: bash
 
-    $ ./waf --run main-attribute-value
+    $ ./ns3 --run main-attribute-value
     1.  dtq limit: 80p
     2.  txQueue limit: 80p
     3.  txQueue limit changed: 60p
@@ -1218,7 +1218,7 @@ To check whether it is configured or not, check the output of the step:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests
+  $ ./ns3 configure --enable-examples --enable-tests
 
   ---- Summary of optional NS-3 features:
   Python Bindings               : enabled
@@ -1231,8 +1231,8 @@ version is installed and:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3
 
 is rerun.
 

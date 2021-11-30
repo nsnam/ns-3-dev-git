@@ -78,7 +78,7 @@
 //      build netmap/dpdk separately.
 //
 // 4 - Give root suid to the raw or netmap socket creator binary.
-//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     If the --enable-sudo option was used to configure ns-3 with ns3, then the following
 //     step will not be necessary.
 //
 // both hosts: $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
@@ -96,11 +96,11 @@
 //
 // 6 - Run the server side:
 //
-// server host: $ ./waf --run="fd-emu-onoff --serverMode=1"
+// server host: $ ./ns3 --run="fd-emu-onoff --serverMode=1"
 //
 // 7 - Run the client side:
 //
-// client host: $ ./waf --run="fd-emu-onoff"
+// client host: $ ./ns3 --run="fd-emu-onoff"
 //
 
 #include <iostream>

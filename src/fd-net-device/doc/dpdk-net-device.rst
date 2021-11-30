@@ -148,7 +148,7 @@ For example:
  export RTE_SDK=/home/username/dpdk/dpdk-stable-19.11.1
  export RTE_TARGET=x86_64-native-linuxapp-gcc
 
-(Note: In case DPDK is moved, ns-3 needs to be reconfigured using ``./waf configure [options]``)
+(Note: In case DPDK is moved, ns-3 needs to be reconfigured using ``./ns3 configure [options]``)
 
 It is advisable that you export these variables in ``.bashrc`` or similar for reusability.
 
@@ -231,7 +231,7 @@ The mount point can be made permanent across reboots, by adding the following li
 Usage
 *****
 
-The status of DPDK support is shown in the output of ``./waf configure``.  If
+The status of DPDK support is shown in the output of ``./ns3 configure``.  If
 it is found, a user should see:
 
 .. sourcecode:: text

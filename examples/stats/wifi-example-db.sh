@@ -44,7 +44,7 @@ do
   for distance in $DISTANCES
   do
     echo Trial $trial, distance $distance
-    ../../waf --run "wifi-example-sim --format=db --distance=$distance --run=run-$distance-$trial"
+    ../../ns3 --run "wifi-example-sim --format=db --distance=$distance --run=run-$distance-$trial"
   done
 done
 

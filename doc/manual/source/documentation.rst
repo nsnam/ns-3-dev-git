@@ -23,7 +23,7 @@ To build all the standard documentation:
 
 .. sourcecode:: bash
 
-   $ ./waf docs
+   $ ./ns3 docs
 
 For more specialized options, read on.
 
@@ -132,7 +132,7 @@ To build all the Sphinx documentation:
 
 .. sourcecode:: bash
 
-   $ ./waf sphinx
+   $ ./ns3 sphinx
 
 To build just the Models documentation:
 
@@ -371,7 +371,7 @@ Building the Doxygen documentation is pretty simple:
 
 .. sourcecode:: bash
 
-   $ ./waf doxygen
+   $ ./ns3 doxygen
 
 This builds using the default configuration, which generates
 documentation sections for *all* items, even if they do not have

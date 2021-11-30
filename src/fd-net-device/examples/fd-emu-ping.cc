@@ -69,7 +69,7 @@
 //     on your host.  Search for "Ipv4Address gateway" and replace the string
 //     "1.2.3.4" string with the gateway IP address.
 //  6) Give root suid to the raw or netmap socket creator binary.
-//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     If the --enable-sudo option was used to configure ns-3 with ns3, then the following
 //     step will not be necessary.
 //
 //     $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator

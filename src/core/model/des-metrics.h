@@ -88,14 +88,14 @@ namespace ns3 {
  *
  * Enable DES Metrics at configure time with
  * \verbatim
-   $ waf configure ... --enable-des-metrics \endverbatim
+   $ ns3 configure ... --enable-des-metrics \endverbatim
  *
  * <b> Working with DES Metrics </b>
  *
  * Some useful shell pipelines:
  *
  * \li Run everything, retaining the results directory: <br/>
- *   \code  ./test.py --nowaf --retain \endcode
+ *   \code  ./test.py --nobuild --retain \endcode
  * \li Example traces end up in \c testpy-output/, so move there: <br/>
  *   \code cd testpy-output/$(date +"%F")*_/  \endcode
  *   (Remove the `_', which is to work around a Doxygen limitation.)

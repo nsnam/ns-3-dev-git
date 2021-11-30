@@ -55,7 +55,7 @@
 // short slot time are only observed in a g only configuration.
 //
 // The user can also select the payload size and can choose either an UDP or a TCP connection.
-// Example: ./waf --run "wifi-mixed-network --isUdp=1"
+// Example: ./ns3 --run "wifi-mixed-network --isUdp=1"
 
 using namespace ns3;
 

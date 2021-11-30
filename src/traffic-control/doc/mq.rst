@@ -70,13 +70,13 @@ The test suite can be run using the following commands:
 
 ::
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py -s ns3-wifi-ac-mapping
 
 or
 
 ::
 
-  $ NS_LOG="WifiAcMappingTest" ./waf --run "test-runner --suite=ns3-wifi-ac-mapping"
+  $ NS_LOG="WifiAcMappingTest" ./ns3 --run "test-runner --suite=ns3-wifi-ac-mapping"
 

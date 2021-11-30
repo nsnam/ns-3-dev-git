@@ -109,7 +109,7 @@ An example program named `cobalt-vs-codel.cc` is located in
 
 ::
 
-   $ ./waf --run cobalt-vs-codel
+   $ ./ns3 --run cobalt-vs-codel
 
 
 Validation
@@ -129,13 +129,13 @@ The test suite can be run using the following commands:
 
 ::
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py -s cobalt-queue-disc
 
 or
 
 ::
 
-  $ NS_LOG="CobaltQueueDisc" ./waf --run "test-runner --suite=cobalt-queue-disc"
+  $ NS_LOG="CobaltQueueDisc" ./ns3 --run "test-runner --suite=cobalt-queue-disc"
 

@@ -25,7 +25,7 @@ Options for new models
 
 |ns3| is organized into modules, each of which is compiled and linked into
 a separate library.  Users can selectively enable and disable the inclusion
-of modules (via the `--enable-modules` argument to Waf configure, or via
+of modules (via the `--enable-modules` argument to ns3 configure, or via
 the selective inclusion of contributed modules).
 
 When proposing new models to |ns3|, please keep in mind that not all models

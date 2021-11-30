@@ -134,7 +134,7 @@
 
 /**
  * Indicates the build profile that was specified by the --build-profile option
- * of "waf configure"
+ * of "ns3 configure"
  *
  * Type: string literal
  */

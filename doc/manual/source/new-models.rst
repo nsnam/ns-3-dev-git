@@ -187,16 +187,16 @@ In the case of the error model, it is very related to the packet class, so it
 makes sense to implement this in the ``src/network/`` module where |ns3|
 packets are implemented.  
 
-`waf` and `wscript`
+`cmake` and `CMakeLists.txt`
 +++++++++++++++++++
 
-|ns3| uses the `Waf <http://www.freehackers.org/~tnagy/waf.html>`_ build system.
-You will want to integrate your new |ns3| uses the Waf build system. You will
+|ns3| uses the `CMake <https://cmake.org/>`_ build system.
+You will want to integrate your new |ns3| uses the CMake build system. You will
 want to integrate your new source files into this system. This requires that you
-add your files to the ``wscript`` file found in each directory.  
+add your files to the ``CMakeLists.txt`` file found in each directory.
 
 Let's start with empty files error-model.h and error-model.cc, and add this to
-``src/network/wscript``. It is really just a matter of adding the .cc file to the
+``src/network/CMakeLists.txt``. It is really just a matter of adding the .cc file to the
 rest of the source files, and the .h file to the list of the header files. 
 
 Now, pop up to the top level directory and type "./test.py".  You

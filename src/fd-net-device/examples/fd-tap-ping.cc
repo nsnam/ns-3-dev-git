@@ -58,15 +58,15 @@
 //     # iptables -t nat -A POSTROUTING -s <TAP-network-address>/<TAP-network-mask> -j MASQUERADE
 //
 //  3) Before running the example make sure that the tap creator binary has root suid.
-//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     If the --enable-sudo option was used to configure ns-3 with ns3, then the following
 //     step will not be necessary.
 //
 //     # chown root.root build/src/fd-net-device/ns3-dev-tap-device-creator
 //     # sudo chmod 4755 build/src/fd-net-device/ns3-dev-tap-device-creator
 //
-//  4)  The example can be executed as follows using waf:
+//  4)  The example can be executed as follows using ns3:
 //
-//     ./waf --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>"
+//     ./ns3 --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>"
 //
 
 #include "ns3/abort.h"

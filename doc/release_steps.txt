@@ -29,15 +29,15 @@ This step presumes that you have a reasonably solid ns-3-dev that you
 and/or the buildbots have been testing
    - building static, optimized, and debug versions
    - try Python visualizer (not tested by buildbots)
-      -- ./waf --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
+      -- ./ns3 --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
      are reporting 'pass' state, based on the tip of the repository
    - revise and check in AUTHORS, RELEASE_NOTES.md, and CHANGES.html
    - required versions for related libraries (netanim, pybindgen)
      are correct
-   - confirm that Doxygen builds cleanly (./waf doxygen), 
+   - confirm that Doxygen builds cleanly (./ns3 doxygen),
    - confirm that the new bake configurations for the release work correctly
-   - confirm all documents build:  './waf docs' and check outputs
+   - confirm all documents build:  './ns3 docs' and check outputs
 
 2.1)  Update the tutorial "Getting Started" and "Quick Start" pages to use the new release number.
 

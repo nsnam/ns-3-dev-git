@@ -157,11 +157,11 @@ directory structure something like the following:
 
 .. sourcecode:: bash
 
-  AUTHORS          doc        RELEASE_NOTES.md  utils     waf-tools
-  bindings         examples   scratch           utils.py  wscript
-  CHANGES.html     LICENSE    src               VERSION   wutils.py
-  contrib          Makefile   test.py           waf
-  CONTRIBUTING.md  README.md  testpy.supp       waf.bat
+  AUTHORS          doc        RELEASE_NOTES.md  utils
+  bindings         examples   scratch           utils.py
+  CHANGES.html     LICENSE    src               VERSION
+  contrib          Makefile   test.py           
+  CONTRIBUTING.md  README.md  testpy.supp
 
 Change into the ``examples/tutorial`` directory.  You should see a file named 
 ``first.cc`` located there.  This is a script that will create a simple
@@ -242,10 +242,10 @@ Each of the |ns3| include files is placed in a directory called
 include file name collisions.  The ``ns3/core-module.h`` file corresponds 
 to the ns-3 module you will find in the directory ``src/core`` in your 
 downloaded release distribution.  If you list this directory you will find a
-large number of header files.  When you do a build, Waf will place public 
+large number of header files.  When you do a build, ns3 will place public
 header files in an ``ns3`` directory under the appropriate 
 ``build/debug`` or ``build/optimized`` directory depending on your 
-configuration.  Waf will also automatically generate a module include file to
+configuration.  CMake will also automatically generate a module include file to
 load all of the public header files.
 
 Since you are, of course, following this tutorial religiously, you will 
@@ -253,17 +253,17 @@ already have done a
 
 .. sourcecode:: bash
 
-  $ ./waf -d debug --enable-examples --enable-tests configure
+  $ ./ns3 configure -d debug --enable-examples --enable-tests
 
 in order to configure the project to perform debug builds that include 
 examples and tests.  You will also have done a
 
 .. sourcecode:: bash
 
-  $ ./waf
+  $ ./ns3 build
 
 to build the project.  So now if you look in the directory 
-``../../build/debug/ns3`` you will find the four module include files shown 
+``../../build/include/ns3`` you will find the four module include files shown
 above.  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
@@ -813,7 +813,7 @@ Building Your Script
 ++++++++++++++++++++
 We have made it trivial to build your simple scripts.  All you have to do is 
 to drop your script into the scratch directory and it will automatically be 
-built if you run Waf.  Let's try it.  Copy ``examples/tutorial/first.cc`` into 
+built if you run ns3.  Let's try it.  Copy ``examples/tutorial/first.cc`` into
 the ``scratch`` directory after changing back into the top level directory.
 
 .. sourcecode:: bash
@@ -821,11 +821,11 @@ the ``scratch`` directory after changing back into the top level directory.
   $ cd ../..
   $ cp examples/tutorial/first.cc scratch/myfirst.cc
 
-Now build your first example script using waf:
+Now build your first example script using ns3:
 
 .. sourcecode:: bash
 
-  $ ./waf
+  $ ./ns3
 
 You should see messages reporting that your ``myfirst`` example was built
 successfully.
@@ -843,7 +843,7 @@ directory you must run it out of the scratch directory):
 
 .. sourcecode:: bash
 
-  $ ./waf --run scratch/myfirst
+  $ ./ns3 --run scratch/myfirst
 
 You should see some output:
 
@@ -884,27 +884,37 @@ most of our *repositories* will look:
 
 .. sourcecode:: text
 
-  drwxr-xr-x                               [up]     
-  drwxr-xr-x                               bindings python  files
-  drwxr-xr-x                               doc              files
-  drwxr-xr-x                               examples         files
-  drwxr-xr-x                               ns3              files
-  drwxr-xr-x                               scratch          files
-  drwxr-xr-x                               src              files
-  drwxr-xr-x                               utils            files
-  -rw-r--r-- 2009-07-01 12:47 +0200 560    .hgignore        file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 1886   .hgtags          file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 1276   AUTHORS          file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 30961  CHANGES.html     file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 17987  LICENSE          file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 3742   README           file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 16171  RELEASE_NOTES.md file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 6      VERSION          file | revisions | annotate
-  -rwxr-xr-x 2009-07-01 12:47 +0200 88110  waf              file | revisions | annotate
-  -rwxr-xr-x 2009-07-01 12:47 +0200 28     waf.bat          file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 35395  wscript          file | revisions | annotate
-  -rw-r--r-- 2009-07-01 12:47 +0200 7673   wutils.py        file | revisions | annotate
-  
+  drwxr-xr-x                               [up]
+  -rwxrwxrwx  12507 nov 23 23:12 AUTHORS
+  drwxrwxrwx      0 dez 30  2020 bindings
+  drwxrwxrwx   4096 nov 28 11:25 buildsupport
+  -rwxrwxrwx 189870 nov 28 10:13 CHANGES.html
+  -rwxrwxrwx   1490 nov 22 10:56 .clang-format
+  -rwxrwxrwx   5079 nov 28 10:50 CMakeLists.txt
+  drwxrwxrwx      0 nov 28 00:56 contrib
+  -rwxrwxrwx  18336 nov 23 23:12 CONTRIBUTING.md
+  drwxrwxrwx   4096 nov 28 11:30 doc
+  -rwxrwxrwx    564 nov 22 10:56 .editorconfig
+  drwxrwxrwx   4096 nov 28 00:28 examples
+  drwxrwxrwx   4096 nov 28 11:15 .git
+  -rwxrwxrwx     42 nov 22 10:56 .gitattributes
+  -rwxrwxrwx    395 nov 28 11:25 .gitignore
+  drwxrwxrwx   4096 nov 28 11:37 .idea
+  -rwxrwxrwx  17987 nov 22 10:56 LICENSE
+  -rwxrwxrwx   6841 nov 22 10:56 .mailmap
+  drwxrwxrwx      0 jul 13 20:15 .nompi
+  -rwxrwxrwx  31942 nov 28 11:16 ns3
+  -rwxrwxrwx   4210 nov 28 11:25 README.md
+  -rwxrwxrwx 185874 nov 28 10:13 RELEASE_NOTES.md
+  drwxrwxrwx   4096 nov 28 00:28 scratch
+  drwxrwxrwx      0 out 21 11:42 .settings
+  drwxrwxrwx   8192 nov 28 00:56 src
+  -rwxrwxrwx  83149 nov 28 11:28 test.py
+  -rwxrwxrwx    131 nov 22 10:56 testpy.supp
+  drwxrwxrwx   4096 nov 28 11:25 utils
+  -rwxrwxrwx   4227 nov 28 11:25 utils.py
+  -rwxrwxrwx      6 nov 22 10:56 VERSION
+
 Our example scripts are in the ``examples`` directory.  If you click on ``examples``
 you will see a list of subdirectories.  One of the files in ``tutorial`` subdirectory is ``first.cc``.  If
 you click on ``first.cc`` you will find the code you just walked through.

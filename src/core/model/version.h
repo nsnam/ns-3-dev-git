@@ -94,7 +94,7 @@ namespace ns3 {
  * | TagDistance        | 1        |       |
  * | CommitHash         | g6ad7f05 | g at front of hash indicates a git hash |
  * | DirtyWorkingTree   | Variable | Depends on status of git working and stage areas |
- * | BuildProfile       | Variable | Depends on the value of --build-profile option of waf configure |
+ * | BuildProfile       | Variable | Depends on the value of --build-profile option of ns3 configure |
  */
 class Version
 {
@@ -207,7 +207,7 @@ public:
   /**
    * Indicates the type of build that was performed (debug/release/optimized).
    *
-   * This information is set by the --build-profile option of waf configure
+   * This information is set by the --build-profile option of ns3 configure
    *
    * \return String containing the type of build
    */

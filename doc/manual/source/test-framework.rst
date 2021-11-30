@@ -65,8 +65,8 @@ have been built by doing the following
 
 ::
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
 
 By default, ``test.py`` will run all available tests and report status
 back in a very concise form.  Running the command
@@ -129,7 +129,7 @@ if you run ``test.py --help`` you should see a command summary like:
     -l, --list            print the list of known tests
     -m, --multiple        report multiple failures from test suites and test
                           cases
-    -n, --nowaf           do not run waf before starting testing
+    -n, --nobuild           do not run ns3 before starting testing
     -p PYEXAMPLE, --pyexample=PYEXAMPLE
                           specify a single python example to run (with relative
                           path)
@@ -377,12 +377,12 @@ if the example has been configured or not, it will just try to run it and
 report the result of the attempt.
 
 When ``test.py`` runs, by default it will first ensure that the system has
-been completely built.  This can be defeated by selecting the ``--nowaf``
+been completely built.  This can be defeated by selecting the ``--nobuild``
 option.
 
 ::
 
-  $ ./test.py --list --nowaf
+  $ ./test.py --list --nobuild
 
 will result in a list of the currently built test suites being displayed, similar to:
 
@@ -395,7 +395,7 @@ will result in a list of the currently built test suites being displayed, simila
   object-name-service
   random-variable-stream-generators
 
-Note the absence of the ``Waf`` build messages.
+Note the absence of the ``ns3`` build messages.
 
 ``test.py`` also supports running the test suites and examples under valgrind.
 Valgrind is a flexible program for debugging and profiling Linux executables.  By
@@ -529,7 +529,7 @@ stage, and also (optionally) examples if examples are to be checked:
 
 ::
 
-   $ ./waf --configure --enable-examples --enable-tests
+   $ ./ns3 --configure --enable-examples --enable-tests
 
 Then, build |ns3|, and after it is built, just run ``test.py``.  ``test.py -h``
 will show a number of configuration options that modify the behavior
@@ -555,9 +555,9 @@ executable. Hence, if you want to see logging output from your tests, you
 have to run them using the test-runner directly.
 
 In order to execute the test-runner, you run it like any other |ns3| executable
--- using ``waf``.  To get a list of available options, you can type::
+-- using ``ns3``.  To get a list of available options, you can type::
 
-  $ ./waf --run "test-runner --help"
+  $ ./ns3 --run "test-runner --help"
 
 You should see something like the following
 
@@ -611,7 +611,7 @@ option something like,
 
 ::
 
-  $ ./waf shell
+  $ ./ns3 shell
   $ cd build/utils
   $ gdb ns3-dev-test-runner-debug
   $ run --suite=global-value --assert-on-failure
@@ -621,14 +621,14 @@ generated and the (source level) debugger would stop at the ``NS_TEST_ASSERT_MSG
 that detected the error.
 
 To run one of the tests directly from the test-runner
-using ``waf``, you will need to specify the test suite to run.
+using ``ns3``, you will need to specify the test suite to run.
 So you could use the shell and do::
 
-  $ ./waf --run "test-runner --suite=pcap-file"
+  $ ./ns3 --run "test-runner --suite=pcap-file"
 
 |ns3| logging is available when you run it this way, such as:
 
-  $ NS_LOG="Packet" ./waf --run "test-runner --suite=pcap-file"
+  $ NS_LOG="Packet" ./ns3 --run "test-runner --suite=pcap-file"
 
 Test output
 +++++++++++
@@ -676,7 +676,7 @@ Try,
 
 ::
 
-  $ ./waf --run "test-runner --suite=pcap-file --out=myfile.txt"
+  $ ./ns3 --run "test-runner --suite=pcap-file --out=myfile.txt"
 
 
 Debugging test suite failures
@@ -692,7 +692,7 @@ You can access the underlying test-runner program via gdb as follows, and
 then pass the "--basedir=`pwd`" argument to run (you can also pass other
 arguments as needed, but basedir is the minimum needed)::
 
-  $ ./waf --command-template="gdb %s" --run "test-runner"
+  $ ./ns3 --command-template="gdb %s" --run "test-runner"
   Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
   Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
   'build' finished successfully (0.380s)
@@ -714,7 +714,7 @@ such as::
 
   VALGR: TestSuite devices-mesh-dot11s-regression
 
-  $ ./waf --command-template="valgrind %s --suite=devices-mesh-dot11s-regression" --run test-runner
+  $ ./ns3 --command-template="valgrind %s --suite=devices-mesh-dot11s-regression" --run test-runner
 
 Class TestRunner
 ****************

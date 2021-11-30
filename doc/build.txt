@@ -1,107 +1,110 @@
-The Waf build system is used to build ns-3.  Waf is a Python-based
-build system (http://www.freehackers.org/~tnagy/waf.html)
+The CMake build system is used to build ns-3.  CMake is a
+meta-build system (https://cmake.org/)
 
 Note:  We've added a wiki page with more complete build instructions
 than the quick ones you find below:
 http://www.nsnam.org/wiki/Installation
 
-=== Installing Waf ===
+=== Installing CMake ===
 
-The top-level ns-3 directory should contain a current waf script, so
-there is no need to have WAF installed in the system.  We are using
-some extensions to WAF, which can be found in the 'waf-tools'
-directory. The upstream location for these WAF extensions is:
+To use CMake, you need to download it and install it. This can be done
+ via package managers available for your operating system, or directly
+ from the CMake page: https://cmake.org/download/.
 
-    https://code.launchpad.net/~gjc/waf/cmd
+CMake is a meta-build system that relies on an underlying build system.
+This build system is referred to as Generators by CMake
+(https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html),
+and include Makefiles, Ninja, XCode, Eclipse CDT4 and others.
+
+One of these must be installed for CMake to work.
 
 
-=== Building with Waf ===
+=== Building with ns3 ===
 
-To build ns-3 with waf type the commands from the top-level directory:
- 1. ./waf configure [options]
- 2. ./waf
+To build ns-3 with the ns3 CMake wrapper type the commands from the top-level directory:
+ 1. ./ns3 configure [options]
+ 2. ./ns3 build
 
-To see valid configure options, type ./waf --help.  The most important
+To see valid configure options, type ./ns3 --help.  The most important
 option is -d <debug level>.  Valid debug levels (which are listed in
-waf --help) are: "debug" or "optimized", with debug being default.  It is
+ns3 --help) are: "debug" or "optimized", with debug being default.  It is
 also possible to change the flags used for compilation with (e.g.):
-CXXFLAGS="-O3" ./waf configure.  By default, ns-3 is built as debug code, 
+CXXFLAGS="-O3" ./ns3 configure.  By default, ns-3 is built as debug code,
 with examples and tests disabled, and with python bindings enabled.  
 
 [ Note:  Unlike some other build tools, to change the build target,
 the option must be supplied during the configure stage rather than
-the build stage (i.e., "./waf -d optimized" will not work; instead, do
-"./waf -d optimized configure; ./waf" ]
+the build stage (i.e., "./ns3 build -d optimized" will not work; instead, do
+"./ns3 configure -d optimized; ./ns3 build" ]
 
 The resulting executables and libraries are placed in build/.
 
-Other waf usages include:
+Other ns3 usages include:
 
- 1. ./waf configure --enable-examples --enable-tests
+ 1. ./ns3 configure --enable-examples --enable-tests
     Turn on examples and tests.
 
- 2. ./waf configure --disable-python
+ 2. ./ns3 configure --disable-python
     Disable python bindings.
 
- 3. ./waf --doxygen
+ 3. ./ns3 --doxygen
     Run doxygen to generate documentation
 
- 4. ./waf --run "program [args]"
+ 4. ./ns3 --run "program [args]"
     Run a ns3 program, given its target name, with the given
     arguments.  This takes care of automatically modifying the
     path for finding the ns3 dynamic libraries in the environment
     before running the program.  Note: the "program [args]" string is
     parsed using POSIX shell rules.
 
- 4.1 ./waf --run programname --command-template "... %s ..."
+ 4.1 ./ns3 --run programname --command-template "... %s ..."
 
     Same as --run, but uses a command template with %s replaced by the
     actual program (whose name is given by --run).  This can be use to
     run ns-3 programs with helper tools.  For example, to run unit
     tests with valgrind, use the command:
 
-         ./waf --run run-tests --command-template "valgrind %s"
+         ./ns3 --run run-tests --command-template "valgrind %s"
 
- 5. ./waf --shell
+ 5. ./ns3 --shell
     Starts a nested system shell with modified environment to run ns3 programs.
 
- 6. ./waf distclean
+ 6. ./ns3 clean
     Cleans out the entire build/ directory
 
- 7. ./waf dist
-    The command 'waf dist' can be used to create a distribution tarball.
-    It includes all files in the source directory, except some particular
-    extensions that are blacklisted, such as back files (ending in ~).
 
 === Extending ns-3 ===
 
 To add new modules:
   1. Create the module directory under src;
   2. Add the source files to it;
-  3. Add a 'wscript' describing it;
+  3. Add a 'CMakeLists.txt' describing it;
 
 A convenience program to auto-generate the template of a new module can
 be found in src/create-module.py.
 
-A module's wscript file is basically a regular Waf script.  A ns-3
-module is created as a cpp/shlib object, like this:
+A ns-3 module is created as a cpp/shlib object, like this:
 
-def build(bld):
-    module = bld.create_ns3_module('ns3-mymodule', ['core'])
-    module.source = [
-        'model/ns3-mymodule.cc',
-        'helper/ns3-mymodule-helper.cc',
-        ]
+    set(name ns3-mymodule)
 
-    headers = bld.new_task_gen(features=['ns3header'])
-    headers.module = 'ns3-mymodule'
-    headers.source = [
-        'model/ns3-mymodule.h',
-        'helper/ns3-mymodule-helper.h',
-        ]
+    set(source_files
+        model/ns3-mymodule.cc
+        helper/ns3-mymodule-helper.cc
+        )
 
-    if bld.env.ENABLE_EXAMPLES:
-        bld.add_subdirs('examples')
+    set(header_files
+        model/ns3-mymodule.h
+        helper/ns3-mymodule-helper.h
+        )
 
-    # bld.ns3_python_bindings()
+    set(libraries_to_link
+        libcore # lib prefix + module name
+        )
+
+    set(test_sources
+        test/test-mymodule.cc
+        )
+
+    build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+
 

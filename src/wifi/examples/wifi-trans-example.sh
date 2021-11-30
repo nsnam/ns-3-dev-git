@@ -32,14 +32,14 @@ control_c()
 }
 trap control_c SIGINT
 
-#Save waf and script locations. Have to be run from where they are (otherwise won't find executables)
+#Save ns3 and script locations. Have to be run from where they are (otherwise won't find executables)
 scriptDir=`pwd`
 cd ../../../
-wafDir=`pwd`
+ns3Dir=`pwd`
 cd $scriptDir
 
 #Test where script is run from
-if test ! -f ${wafDir}/waf ; then
+if test ! -f ${ns3Dir}/ns3 ; then
   echo "Please run this script from within the directory `dirname $0`, like this:"
   echo "cd `dirname $0`"
   echo "./`basename $0`"
@@ -75,8 +75,8 @@ do
     bw=${bw_leg[${i}]}
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
-    cd $wafDir
-    ./waf --run "wifi-trans-example --standard=$std --bw=$bw"
+    cd $ns3Dir
+    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt
@@ -98,8 +98,8 @@ do
   do
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
-    cd $wafDir
-    ./waf --run "wifi-trans-example --standard=$std --bw=$bw"
+    cd $ns3Dir
+    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt
@@ -125,8 +125,8 @@ do
     #for all other combinations continue
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
-    cd $wafDir
-    ./waf --run "wifi-trans-example --standard=$std --bw=$bw"
+    cd $ns3Dir
+    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt

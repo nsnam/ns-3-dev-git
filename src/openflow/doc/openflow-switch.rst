@@ -138,7 +138,7 @@ To do this:
 
 1. Obtain the OFSID code.
    An ns-3 specific OFSID branch is provided to ensure
-   operation with ns-3. Use mercurial to download this branch and waf to build 
+   operation with ns-3. Use mercurial to download this branch and ns3 to build
    the library::
 
      $ hg clone http://code.nsnam.org/openflow
@@ -146,14 +146,14 @@ To do this:
 
    From the "openflow" directory, run::
      
-     $ ./waf configure
-     $ ./waf build
+     $ ./ns3 configure
+     $ ./ns3 build
 
 2. Your OFSID is now built into a libopenflow.a library!
    To link to an ns-3 build with this OpenFlow switch module, run from the ns-3-dev
    (or whatever you have named your distribution)::
 
-     $ ./waf configure --enable-examples --enable-tests --with-openflow=path/to/openflow
+     $ ./ns3 configure --enable-examples --enable-tests --with-openflow=path/to/openflow
 
 3. Under ``---- Summary of optional NS-3 features:`` you should see:
 
@@ -163,7 +163,7 @@ To do this:
 
    indicating the library has been linked to ns-3. Run::
 
-     $ ./waf build
+     $ ./ns3 build
 
 to build ns-3 and activate the OpenFlowSwitch module in ns-3.
 
@@ -172,11 +172,11 @@ Examples
 For an example demonstrating its use in a simple learning controller/switch, 
 run::
 
-  $ ./waf --run openflow-switch
+  $ ./ns3 --run openflow-switch
 
 To see it in detailed logging, run::
 
-  $ ./waf --run "openflow-switch -v"
+  $ ./ns3 --run "openflow-switch -v"
 
 
 Helpers

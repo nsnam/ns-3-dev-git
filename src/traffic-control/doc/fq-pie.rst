@@ -89,10 +89,10 @@ The FqPie model is tested using :cpp:class:`FqPieQueueDiscTestSuite` class defin
 The tests are similar to the ones for FqCoDel queue disc mentioned in first section of this document.
 The test suite can be run using the following commands::
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
+  $ ./ns3 configure --enable-examples --enable-tests
+  $ ./ns3 build
   $ ./test.py -s fq-pie-queue-disc
 
 or::
 
-  $ NS_LOG="FqPieQueueDisc" ./waf --run "test-runner --suite=fq-pie-queue-disc"
+  $ NS_LOG="FqPieQueueDisc" ./ns3 --run "test-runner --suite=fq-pie-queue-disc"

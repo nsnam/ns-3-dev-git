@@ -88,9 +88,9 @@ Reference software and equipment
 
 All timing tests had been run in a Intel Pentium IV 3.00 GHz machine with 512 Mb of RAM memory running Fedora Core 10 with a 2.6.27.41-170.2.117 kernel, storing the traces directly to the hard disk.
 
-Also, as a reference configuration, the build has been configured static and optimized. The exact ``waf`` command issued is:
+Also, as a reference configuration, the build has been configured static and optimized. The exact ``ns3`` command issued is:
 
-``CXXFLAGS="-O3 -w" ./waf -d optimized configure --enable-static --enable-examples --enable-modules=lte``
+``CXXFLAGS="-O3 -w" ./ns3 -d optimized configure --enable-static --enable-examples --enable-modules=lte``
 
 
 Results

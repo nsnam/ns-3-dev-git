@@ -178,7 +178,7 @@ Supposing your simulation program is called
 ``src/lte/examples/lte-sim-with-input``, you can now pass these
 settings to the simulation program in the following way::
 
-   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
+   ./ns3 --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
    --ns3::ConfigStore::Mode=Load --ns3::ConfigStore::FileFormat=RawText"
    --run src/lte/examples/lte-sim-with-input
 
@@ -186,7 +186,7 @@ settings to the simulation program in the following way::
 Furthermore, you can generate a template input file with the following
 command::
 
-   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
+   ./ns3 --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
    --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText"
    --run src/lte/examples/lte-sim-with-input
 
@@ -258,16 +258,16 @@ print a list of the attributes of a given object together with their
 description and default value passing ``--PrintAttributes=`` to a simulation
 program, like this::
 
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteHelper"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::LteHelper"
 
 
 You can try also with other LTE and EPC objects, like this::
    
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbNetDevice"
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::PointToPointEpcHelper"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbNetDevice"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
+     ./ns3 --run lena-simple --command-template="%s --PrintAttributes=ns3::PointToPointEpcHelper"
  
 
 
@@ -961,10 +961,10 @@ The attributes ``ns3::EmuEpcHelper::sgwDeviceName`` and ``ns3::EmuEpcHelper::enb
 First of all we build ns-3 appropriately::
 
   # configure
-  ./waf configure --enable-sudo --enable-modules=lte,fd-net-device --enable-examples 
+  ./ns3 configure --enable-sudo --enable-modules=lte,fd-net-device --enable-examples
 
   # build
-  ./waf
+  ./ns3
 
 
 Then we setup two virtual ethernet interfaces, and start wireshark to look at the traffic going through::
@@ -990,7 +990,7 @@ Then we setup two virtual ethernet interfaces, and start wireshark to look at th
 
 We can now run the example program with the simulated clock::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  ./ns3 --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
   --ns3::EmuEpcHelper::enbDeviceName=veth1"
 
 
@@ -999,13 +999,13 @@ packets exchanged both in uplink and downlink.
 
 The default setting of the example program is 1 eNB and 1UE. You can change this via command line parameters, e.g.::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  ./ns3 --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
   --ns3::EmuEpcHelper::enbDeviceName=veth1 --nEnbs=2 --nUesPerEnb=2"
 
 
 To get a list of the available parameters::
 
-  ./waf --run lena-simple-epc-emu --command="%s --PrintHelp"
+  ./ns3 --run lena-simple-epc-emu --command="%s --PrintHelp"
 
 
 
@@ -1016,13 +1016,13 @@ with the BestEffort mode is not a good idea: something can go wrong
 So you need a decent hardware and the optimized build with statically  
 linked modules::
 
-  ./waf configure -d optimized --enable-static --enable-modules=lte --enable-examples
+  ./ns3 configure -d optimized --enable-static --enable-modules=lte --enable-examples
   --enable-sudo
 
 
 Then run the example program like this::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  ./ns3 --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
   --ns3::EmuEpcHelper::enbDeviceName=veth1
   --SimulatorImplementationType=ns3::RealtimeSimulatorImpl
   --ns3::RealtimeSimulatorImpl::SynchronizationMode=HardLimit"
@@ -1384,7 +1384,7 @@ cases. However, users may set the eNodeB to "closed" by setting the boolean
 attribute ``LteEnbRrc::AdmitHandoverRequest`` to `false`. As an example, you can
 run the ``lena-x2-handover`` program and setting the attribute in this way::
 
-   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
+   NS_LOG=EpcX2:LteEnbRrc ./ns3 --run lena-x2-handover --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
 
 After the above three requirements are fulfilled, the handover procedure can be
 triggered manually or automatically. Each will be presented in the following
@@ -1621,13 +1621,13 @@ The example program ``src/lte/examples/lena-x2-handover.cc``
 illustrates how the all above instructions can be integrated in a
 simulation program. You can run the program like this::
 
-   ./waf --run lena-x2-handover
+   ./ns3 --run lena-x2-handover
 
 and it will output the messages printed by the custom handover trace
 hooks. In order additionally visualize some meaningful logging
 information, you can run the program like this::
 
-    NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
+    NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./ns3 --run lena-x2-handover
 
 
 Frequency Reuse Algorithms
@@ -2051,7 +2051,7 @@ be found in the literature. Here we list some of them:
    changing the corresponding global variables. To get a list of all these
    global variables, you can run this command::
 
-     ./waf --run lena-dual-stripe --command-template="%s --PrintGlobals"
+     ./ns3 --run lena-dual-stripe --command-template="%s --PrintGlobals"
      
    The following subsection presents an example of running a simulation
    campaign using this example program.
@@ -2184,11 +2184,11 @@ shown in Table :ref:`tab-handover-campaign-default-values` below.
 
 |ns3| provides many ways for passing configuration values into a simulation. In
 this example, we will use the command line arguments. It is basically done by
-appending the parameters and their values to the ``waf`` call when starting each
-individual simulation. So the ``waf`` calls for invoking our 3 simulations would
+appending the parameters and their values to the ``ns3`` call when starting each
+individual simulation. So the ``ns3`` calls for invoking our 3 simulations would
 look as below::
 
-   $ ./waf --run="lena-dual-stripe
+   $ ./ns3 --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
@@ -2198,7 +2198,7 @@ look as below::
      --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
      --RngRun=1" > no-op.txt
 
-   $ ./waf --run="lena-dual-stripe
+   $ ./ns3 --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::A3RsrpHandoverAlgorithm
@@ -2208,7 +2208,7 @@ look as below::
      --ns3::PhyStatsCalculator::UlSinrFilename=a3-rsrp-UlSinrStats.txt
      --RngRun=1" > a3-rsrp.txt
 
-   $ ./waf --run="lena-dual-stripe
+   $ ./ns3 --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::A2A4RsrqHandoverAlgorithm
@@ -2365,7 +2365,7 @@ To run ``lena-frequency-reuse`` with different Frequency Reuse algorithms, user 
 FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
 Example command to run ``lena-frequency-reuse`` with Soft FR algorithm is presented below::
 
-   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm"
+   $ ./ns3 --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm"
 
 In these examples functionality to generate REM and spectrum analyzer trace was added. 
 User can enable generation of it by setting ``generateRem`` and ``generateSpectrumTrace``
@@ -2374,7 +2374,7 @@ attributes.
 Command to generate REM for RB 1 in data channel from ``lena-frequency-reuse`` scenario 
 with Soft FR algorithm is presented below::
 
-   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm
+   $ ./ns3 --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm
      --generateRem=true --remRbId=1"
 
 Radio Environment Map for Soft FR is presented in Figure :ref:`fig-lte-soft-fr-1-rem`.
@@ -2392,7 +2392,7 @@ Command to generate spectrum trace from ``lena-frequency-reuse`` scenario
 with Soft FFR algorithm is presented below (Spectrum Analyzer position needs to be configured 
 inside script)::
 
-   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFfrSoftAlgorithm
+   $ ./ns3 --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFfrSoftAlgorithm
      --generateSpectrumTrace=true"
 
 Example spectrum analyzer trace is presented in figure :ref:`fig-lte-soft-ffr-2-spectrum-trace`.
@@ -2415,7 +2415,7 @@ along entire system bandwidth.
 User needs to specify FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
 Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented below::
 
-   $ ./waf --run="lena-dual-stripe
+   $ ./ns3 --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
@@ -2429,7 +2429,7 @@ Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented 
 Example command to generate REM for RB 1 in data channel from ``lena-dual-stripe`` scenario 
 with Hard FR algorithm is presented below::
 
-   $ ./waf --run="lena-dual-stripe
+   $ ./ns3 --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=0 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
@@ -2488,7 +2488,7 @@ to check the performance. A new column is added to PHY and MAC traces to indicat
 The test suite ``lte-carrier-aggregation`` is also a test program that can be used as an example as it can be run in a mode to write results 
 to output files by setting the ``s_writeResults`` boolean static variable to true. The test can be run by using a `test-runner`:
 
-   ./waf --run 'test-runner --suite=lte-carrier-aggregation'
+   ./ns3 --run 'test-runner --suite=lte-carrier-aggregation'
 
 To plot the test results, a file has to be created in the root folder of the ns-3 repository, and added to it with the following content :
 
@@ -2563,14 +2563,14 @@ writes it into a file for plotting purposes. For example, to simulate the "Scena
 A" with *Ideal* and *Real* RRC protocol a user can use the following commands::
 
   Ideal RRC:
-  ./waf --run "lena-radio-link-failure
+  ./ns3 --run "lena-radio-link-failure
   --numberOfEnbs=1 --useIdealRrc=1
   --interSiteDistance=1200 --n310=1 --n311=1
   --t310=1 --enableCtrlErrorModel=1
   --enableDataErrorModel=1 --simTime=25"
 
   Real RRC:
-  ./waf --run "lena-radio-link-failure
+  ./ns3 --run "lena-radio-link-failure
   --numberOfEnbs=1 --useIdealRrc=0
   --interSiteDistance=1200 --n310=1 --n311=1
   --t310=1 --enableCtrlErrorModel=1
@@ -2632,14 +2632,14 @@ Similarly, to simulate the "Scenario B" with *Ideal* and *Real* RRC protocol
 following commands can be used::
 
   Ideal RRC:
-  ./waf --run "lena-radio-link-failure
+  ./ns3 --run "lena-radio-link-failure
   --numberOfEnbs=2 --useIdealRrc=1
   --interSiteDistance=1200 --n310=1 --n311=1
   --t310=1 --enableCtrlErrorModel=1
   --enableDataErrorModel=1 --simTime=25"
 
   Real RRC:
-  ./waf --run "lena-radio-link-failure
+  ./ns3 --run "lena-radio-link-failure
   --numberOfEnbs=2 --useIdealRrc=0
   --interSiteDistance=1200 --n310=1 --n311=1
   --t310=1 --enableCtrlErrorModel=1

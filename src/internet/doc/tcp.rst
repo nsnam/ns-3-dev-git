@@ -819,7 +819,7 @@ to 20 Mb/s) to create a higher BDP link, such as
 
 ::
 
-  ./waf --run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
+  ./ns3 --run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
 
 More information (paper): http://www.hamilton.ie/net/htcp3.pdf
 
@@ -1965,7 +1965,7 @@ If we run the experiment, enabling the logging, we can see the following:
 
 .. code-block:: bash
 
-   ./waf shell
+   ./ns3 shell
    gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
    (gdb) run
 
@@ -2154,12 +2154,12 @@ To run the test, the usual way is
    PASS: TestSuite tcp-zero-window-test
    1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
-To see INFO messages, use a combination of ./waf shell and gdb (really useful):
+To see INFO messages, use a combination of ./ns3 shell and gdb (really useful):
 
 .. code-block:: bash
 
 
-    ./waf shell && gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
+    ./ns3 shell && gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
 
 and then, hit "Run".
 
@@ -2266,9 +2266,9 @@ into the |ns3| source directory and try running the following configuration:
 
 .. sourcecode:: bash
 
-  $ ./waf configure
+  $ ./ns3 configure
 
-If NSC has been previously built and found by waf, then you will see:
+If NSC has been previously built and found by ns3, then you will see:
 
 .. sourcecode:: bash
 
@@ -2285,7 +2285,7 @@ with the "--with-nsc" configure option; e.g.
 
 .. sourcecode:: bash
 
-  $ ./waf configure --with-nsc=/path/to/my/nsc/directory
+  $ ./ns3 configure --with-nsc=/path/to/my/nsc/directory
 
 For |ns3| releases prior to the ns-3.17 release, using the ``build.py`` 
 script in ns-3-allinone directory, NSC will be built by default unless the 
@@ -2294,10 +2294,10 @@ type:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests --disable-nsc
+  $ ./ns3 configure --enable-examples --enable-tests --disable-nsc
 
-If waf detects NSC, then building |ns3| with NSC is performed the same way
-with waf as without it. Once |ns3| is built, try running the following
+If ns3 detects NSC, then building |ns3| with NSC is performed the same way
+with ns3 as without it. Once |ns3| is built, try running the following
 test suite:
 
 .. sourcecode:: bash
@@ -2320,8 +2320,8 @@ There are a few example files. Try:
 
 .. sourcecode:: bash
 
-    $ ./waf --run tcp-nsc-zoo
-    $ ./waf --run tcp-nsc-lfn
+    $ ./ns3 --run tcp-nsc-zoo
+    $ ./ns3 --run tcp-nsc-lfn
 
 These examples will deposit some ``.pcap`` files in your directory,
 which can be examined by tcpdump or wireshark.

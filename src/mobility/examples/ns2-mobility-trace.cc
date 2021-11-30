@@ -36,7 +36,7 @@
  *
  * Usage of ns2-mobility-trace:
  *
- *  ./waf --run "ns2-mobility-trace \
+ *  ./ns3 --run "ns2-mobility-trace \
  *        --traceFile=src/mobility/examples/default.ns_movements
  *        --nodeNum=2  --duration=100.0 --logFile=ns2-mobility-trace.log"
  *
@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
   if (traceFile.empty () || nodeNum <= 0 || duration <= 0 || logFile.empty ())
     {
       std::cout << "Usage of " << argv[0] << " :\n\n"
-      "./waf --run \"ns2-mobility-trace"
+      "./ns3 --run \"ns2-mobility-trace"
       " --traceFile=src/mobility/examples/default.ns_movements"
       " --nodeNum=2 --duration=100.0 --logFile=ns2-mob.log\" \n\n"
       "NOTE: ns2-traces-file could be an absolute or relative path. You could use the file default.ns_movements\n"

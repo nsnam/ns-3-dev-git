@@ -155,19 +155,19 @@ namespace ns3 {
  * Here is the output from a few runs of that program:
  *
  * \verbatim
-   $ ./waf --run="command-line-example"
+   $ ./ns3 --run="command-line-example"
    intArg:   1
    boolArg:  false
    strArg:   "strArg default"
    cbArg:    "cbArg default"
 
-   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
+   $ ./ns3 --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
    intArg:   2
    boolArg:  true
    strArg:   "Hello"
    cbArg:    "World"
 
-   $ ./waf --run="command-line-example --help"
+   $ ./ns3 --run="command-line-example --help"
    ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
 
    CommandLine example program.
@@ -583,7 +583,7 @@ private:
   std::size_t m_NNonOptions;            /**< The expected number of non-option arguments */
   std::size_t m_nonOptionCount;         /**< The number of actual non-option arguments seen so far. */
   std::string m_usage;                  /**< The Usage string */
-  std::string m_shortName;              /**< The source file name (without `.cc`), as would be given to `waf --run` */
+  std::string m_shortName;              /**< The source file name (without `.cc`), as would be given to `ns3 --run` */
 
 };  // class CommandLine
 

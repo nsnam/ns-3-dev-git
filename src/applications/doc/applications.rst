@@ -211,7 +211,7 @@ Examples
 For an example demonstrating HTTP applications
 run::
 
-  $ ./waf --run 'three-gpp-http-example'
+  $ ./ns3 --run 'three-gpp-http-example'
 
 By default, the example will print out the web page requests of the client and responses of the 
 server and client receiving content packets by using LOG_INFO of ``ThreeGppHttpServer`` and ``ThreeGppHttpClient``. 

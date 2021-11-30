@@ -36,7 +36,7 @@
 // This example considers two hidden stations in an 802.11n network which supports MPDU aggregation.
 // The user can specify whether RTS/CTS is used and can set the number of aggregated MPDUs.
 //
-// Example: ./waf --run "wifi-simple-ht-hidden-stations --enableRts=1 --nMpdus=8"
+// Example: ./ns3 --run "wifi-simple-ht-hidden-stations --enableRts=1 --nMpdus=8"
 //
 // Network topology:
 //

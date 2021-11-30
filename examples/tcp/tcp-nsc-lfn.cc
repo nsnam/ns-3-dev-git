@@ -24,7 +24,7 @@
 // - a 'lossy' network with long delay
 // - TCP flow from n0 to n1 and from n1 to n0
 // - pcap traces generated as tcp-nsc-lfn-0-0.pcap and tcp-nsc-lfn-1-0.pcap
-//  Usage (e.g.): ./waf --run 'tcp-nsc-lfn --TCP_CONGESTION=hybla --runtime=30'
+//  Usage (e.g.): ./ns3 --run 'tcp-nsc-lfn --TCP_CONGESTION=hybla --runtime=30'
 
 #include <iostream>
 #include <fstream>
