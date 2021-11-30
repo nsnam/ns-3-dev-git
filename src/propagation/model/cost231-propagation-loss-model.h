@@ -58,6 +58,10 @@ public:
   static TypeId GetTypeId (void);
   Cost231PropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Cost231PropagationLossModel (const Cost231PropagationLossModel &) = delete;
+  Cost231PropagationLossModel & operator = (const Cost231PropagationLossModel &) = delete;
+
   /**
    * Get the propagation loss
    * \param a the mobility model of the source
@@ -123,21 +127,8 @@ public:
    * \param shadowing the shadowing value
    */
   void SetShadowing (double shadowing);
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  Cost231PropagationLossModel (const Cost231PropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  Cost231PropagationLossModel & operator = (const Cost231PropagationLossModel &);
 
+private:
   double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
   int64_t DoAssignStreams (int64_t stream) override;
 

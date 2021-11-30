@@ -288,6 +288,10 @@ public:
 
   virtual ~QueueDisc ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  QueueDisc (const QueueDisc &) = delete;
+  QueueDisc & operator = (const QueueDisc &) = delete;
+
   /**
    * \brief Get the number of packets stored by the queue disc
    * \return the number of packets stored by the queue disc.
@@ -564,23 +568,6 @@ protected:
   bool Mark (Ptr<QueueDiscItem> item, const char* reason);
 
 private:
-  /**
-   * \brief Copy constructor
-   * \param o object to copy
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDisc (const QueueDisc &o);
-
-  /**
-   * \brief Assignment operator
-   * \param o object to copy
-   * \returns the copied object
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDisc &operator = (const QueueDisc &o);
-
   /**
    * This function actually enqueues a packet into the queue disc.
    * \param item item to enqueue

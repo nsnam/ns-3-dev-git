@@ -72,6 +72,10 @@ public:
    */
   ~NdiscCache ();
 
+  // Delete default and copy constructor, and assignment operator to avoid misuse
+  NdiscCache (NdiscCache const &) = delete;
+  NdiscCache & operator = (NdiscCache const &) = delete;
+
   /**
    * \brief Get the NetDevice associated with this cache.
    * \return NetDevice
@@ -438,24 +442,7 @@ protected:
    */
   Cache m_ndCache;
 
-
 private:
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Not implemented to avoid misuse
-   */
-  NdiscCache (NdiscCache const &);
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Not implemented to avoid misuse
-   * \returns
-   */
-  NdiscCache& operator= (NdiscCache const &);
-
   /**
    * \brief The NetDevice.
    */

@@ -149,6 +149,10 @@ private:
   TopologyReader ();
   virtual ~TopologyReader ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  TopologyReader (const TopologyReader &) = delete;
+  TopologyReader & operator = (const TopologyReader &) = delete;
+
   /**
    * \brief Main topology reading function.
    *
@@ -205,21 +209,6 @@ private:
   void AddLink (Link link);
 
 private:
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   */
-  TopologyReader (const TopologyReader&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   * \returns
-   */
-  TopologyReader& operator= (const TopologyReader&);
-
   /**
    * The name of the input file.
    */

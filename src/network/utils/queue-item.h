@@ -54,6 +54,11 @@ public:
 
   virtual ~QueueItem ();
 
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  QueueItem () = delete;
+  QueueItem (const QueueItem &) = delete;
+  QueueItem & operator = (const QueueItem &) = delete;
+
   /**
    * \return the packet included in this item.
    */
@@ -102,26 +107,6 @@ public:
 
 private:
   /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueItem ();
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueItem (const QueueItem &);
-  /**
-   * \brief Assignment operator
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  QueueItem &operator = (const QueueItem &);
-
-  /**
    * The packet contained in the queue item.
    */
   Ptr<Packet> m_packet;
@@ -156,6 +141,11 @@ public:
   QueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
 
   virtual ~QueueDiscItem ();
+
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  QueueDiscItem () = delete;
+  QueueDiscItem (const QueueDiscItem &) = delete;
+  QueueDiscItem & operator = (const QueueDiscItem &) = delete;
 
   /**
    * \brief Get the MAC address included in this item
@@ -227,26 +217,6 @@ public:
   virtual uint32_t Hash (uint32_t perturbation = 0) const;
 
 private:
-  /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDiscItem ();
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDiscItem (const QueueDiscItem &);
-  /**
-   * \brief Assignment operator
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  QueueDiscItem &operator = (const QueueDiscItem &);
-
   Address m_address;      //!< MAC destination address
   uint16_t m_protocol;    //!< L3 Protocol number
   uint8_t m_txq;          //!< Transmission queue index

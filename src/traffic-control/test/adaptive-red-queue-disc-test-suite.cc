@@ -52,22 +52,16 @@ public:
    */
   AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~AredQueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  AredQueueDiscTestItem (const AredQueueDiscTestItem &) = delete;
+  AredQueueDiscTestItem & operator = (const AredQueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark(void);
 
 private:
   AredQueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  AredQueueDiscTestItem (const AredQueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  AredQueueDiscTestItem &operator = (const AredQueueDiscTestItem &);
 };
 
 AredQueueDiscTestItem::AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr)

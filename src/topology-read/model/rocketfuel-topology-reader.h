@@ -57,6 +57,10 @@ public:
   RocketfuelTopologyReader ();
   virtual ~RocketfuelTopologyReader ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  RocketfuelTopologyReader (const RocketfuelTopologyReader &) = delete;
+  RocketfuelTopologyReader & operator = (const RocketfuelTopologyReader &) = delete;
+
   /**
    * \brief Main topology reading function.
    *
@@ -116,22 +120,6 @@ private:
   int m_linksNumber; //!< Number of links.
   int m_nodesNumber; //!< Number of nodes.
   std::map<std::string, Ptr<Node> > m_nodeMap; //!< Map of the nodes (name, node).
-
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   */
-  RocketfuelTopologyReader (const RocketfuelTopologyReader&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   * \returns
-   */
-  RocketfuelTopologyReader& operator= (const RocketfuelTopologyReader&);
-
 
   // end class RocketfuelTopologyReader
 };

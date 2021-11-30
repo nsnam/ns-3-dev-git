@@ -89,6 +89,10 @@ public:
   TcpL4Protocol ();
   virtual ~TcpL4Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  TcpL4Protocol (const TcpL4Protocol &) = delete;
+  TcpL4Protocol & operator = (const TcpL4Protocol &) = delete;
+
   /**
    * Set node associated with this stack
    * \param node the node
@@ -323,20 +327,6 @@ private:
   std::vector<Ptr<TcpSocketBase> > m_sockets;      //!< list of sockets
   IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
   IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and not implemented to avoid misuse
-   */
-  TcpL4Protocol (const TcpL4Protocol &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and not implemented to avoid misuse
-   * \returns
-   */
-  TcpL4Protocol &operator = (const TcpL4Protocol &);
 
   /**
    * \brief Send a packet via TCP (IPv4)

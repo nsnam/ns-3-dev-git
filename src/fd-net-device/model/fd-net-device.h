@@ -116,6 +116,9 @@ public:
    */
   virtual ~FdNetDevice ();
 
+  // Delete assignment operator to avoid misuse
+  FdNetDevice (FdNetDevice const &) = delete;
+
   /**
    * Set the link layer encapsulation mode of this device.
    *
@@ -241,14 +244,6 @@ protected:
   std::queue< std::pair<uint8_t *, ssize_t> > m_pendingQueue;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse as suggested in
-   * http://www.nsnam.org/wiki/NS-3_Python_Bindings#.22invalid_use_of_incomplete_type.22
-   */
-  FdNetDevice (FdNetDevice const &);
-
   /**
    * Spin up the device
    */

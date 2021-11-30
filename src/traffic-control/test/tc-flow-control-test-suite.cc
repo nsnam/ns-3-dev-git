@@ -55,22 +55,16 @@ public:
    */
   QueueDiscTestItem (Ptr<Packet> p);
   virtual ~QueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  QueueDiscTestItem (const QueueDiscTestItem &) = delete;
+  QueueDiscTestItem & operator = (const QueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark(void);
 
 private:
   QueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  QueueDiscTestItem (const QueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  QueueDiscTestItem &operator = (const QueueDiscTestItem &);
 };
 
 QueueDiscTestItem::QueueDiscTestItem (Ptr<Packet> p)

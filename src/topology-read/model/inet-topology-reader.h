@@ -61,6 +61,10 @@ public:
   InetTopologyReader ();
   virtual ~InetTopologyReader ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  InetTopologyReader (const InetTopologyReader &) = delete;
+  InetTopologyReader & operator = (const InetTopologyReader &) = delete;
+
   /**
    * \brief Main topology reading function.
    *
@@ -74,21 +78,6 @@ public:
    * \return The container of the nodes created (or empty container if there was an error)
    */
   virtual NodeContainer Read (void);
-
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   */
-  InetTopologyReader (const InetTopologyReader&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   * \returns
-   */
-  InetTopologyReader& operator= (const InetTopologyReader&);
 
   // end class InetTopologyReader
 };

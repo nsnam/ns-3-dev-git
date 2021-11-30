@@ -50,6 +50,11 @@ public:
    */
   PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~PieQueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PieQueueDiscTestItem (const PieQueueDiscTestItem &) = delete;
+  PieQueueDiscTestItem & operator = (const PieQueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark (void);
 
@@ -73,17 +78,7 @@ public:
 
 private:
   PieQueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  PieQueueDiscTestItem (const PieQueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  PieQueueDiscTestItem &operator = (const PieQueueDiscTestItem &);
+
   bool m_ecnCapablePacket; //!< ECN capable packet?
 };
 

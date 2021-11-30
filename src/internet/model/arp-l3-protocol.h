@@ -63,6 +63,10 @@ public:
   ArpL3Protocol ();
   virtual ~ArpL3Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ArpL3Protocol (const ArpL3Protocol &) = delete;
+  ArpL3Protocol & operator = (const ArpL3Protocol &) = delete;
+
   /**
    * \brief Set the node the ARP L3 protocol is associated with
    * \param node the node
@@ -128,21 +132,6 @@ protected:
   virtual void NotifyNewAggregate ();
 private:
   typedef std::list<Ptr<ArpCache> > CacheList; //!< container of the ARP caches
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \param o
-   */
-  ArpL3Protocol (const ArpL3Protocol &o);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \param o
-   * \returns
-   */
-  ArpL3Protocol &operator = (const ArpL3Protocol &o);
 
   /**
    * \brief Finds the cache associated with a NetDevice

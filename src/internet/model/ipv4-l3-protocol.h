@@ -90,6 +90,10 @@ public:
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Ipv4L3Protocol (const Ipv4L3Protocol &) = delete;
+  Ipv4L3Protocol & operator = (const Ipv4L3Protocol &) = delete;
+
   /**
    * \enum DropReason
    * \brief Reason why a packet has been dropped.
@@ -274,21 +278,6 @@ private:
    * \relates Ipv4L3ProtocolTestCase
    */
   friend class ::Ipv4L3ProtocolTestCase;
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   */
-  Ipv4L3Protocol(const Ipv4L3Protocol &);
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   * \returns the copied object
-   */
-  Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
   // class Ipv4 attributes
   virtual void SetIpForward (bool forward);

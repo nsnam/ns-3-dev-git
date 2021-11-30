@@ -44,7 +44,13 @@ public:
    */
   ArpQueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, const ArpHeader & header);
 
+  /** Destructor. */
   virtual ~ArpQueueDiscItem ();
+
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  ArpQueueDiscItem () = delete;
+  ArpQueueDiscItem (const ArpQueueDiscItem &) = delete;
+  ArpQueueDiscItem & operator = (const ArpQueueDiscItem &) = delete;
 
   /**
    * \return the correct packet size (header plus payload).
@@ -82,28 +88,8 @@ public:
   virtual uint32_t Hash (uint32_t perturbation) const;
 
 private:
-  /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ArpQueueDiscItem ();
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ArpQueueDiscItem (const ArpQueueDiscItem &);
-  /**
-   * \brief Assignment operator
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ArpQueueDiscItem &operator = (const ArpQueueDiscItem &);
-
   ArpHeader m_header;  //!< The ARP header.
-  bool m_headerAdded;   //!< True if the header has already been added to the packet.
+  bool m_headerAdded;  //!< True if the header has already been added to the packet.
 };
 
 } // namespace ns3

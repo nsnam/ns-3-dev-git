@@ -50,21 +50,6 @@ class Ipv4Header;
  */
 class ArpCache : public Object
 {
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ArpCache (ArpCache const &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ArpCache& operator= (ArpCache const &);
-
 public:
   /**
    * \brief Get the type ID.
@@ -72,8 +57,13 @@ public:
    */
   static TypeId GetTypeId (void);
   class Entry;
+
   ArpCache ();
   ~ArpCache ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  ArpCache (ArpCache const &) = delete;
+  ArpCache & operator = (ArpCache const &) = delete;
 
   /**
    * \brief Set the NetDevice and Ipv4Interface associated with the ArpCache

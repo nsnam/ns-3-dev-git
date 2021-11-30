@@ -88,6 +88,10 @@ public:
    */
   SixLowPanNetDevice ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  SixLowPanNetDevice (SixLowPanNetDevice const &) = delete;
+  SixLowPanNetDevice & operator = (SixLowPanNetDevice const &) = delete;
+
   // inherited from NetDevice base class
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
@@ -234,19 +238,6 @@ protected:
   virtual void DoDispose (void);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   */
-  SixLowPanNetDevice (SixLowPanNetDevice const &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse.
-   * \returns
-   */
-  SixLowPanNetDevice& operator= (SixLowPanNetDevice const &);
   /**
    * \brief Receives all the packets from a NetDevice for further processing.
    * \param [in] device The NetDevice the packet ws received from.

@@ -38,13 +38,6 @@ class FlowMonitor;
 /// regarding only the packets that pass through that probe.
 class FlowProbe : public Object
 {
-private:
-  /// Defined and not implemented to avoid misuse
-  FlowProbe (FlowProbe const &);
-  /// Defined and not implemented to avoid misuse
-  /// \returns
-  FlowProbe& operator= (FlowProbe const &);
-
 protected:
   /// Constructor
   /// \param flowMonitor the FlowMonitor this probe is associated with
@@ -53,6 +46,10 @@ protected:
 
 public:
   virtual ~FlowProbe ();
+  
+  // Delete copy constructor and assignment operator to avoid misuse
+  FlowProbe (FlowProbe const &) = delete;
+  FlowProbe& operator= (FlowProbe const &) = delete;
 
   /// Register this type.
   /// \return The TypeId.

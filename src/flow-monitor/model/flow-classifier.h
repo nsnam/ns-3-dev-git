@@ -55,16 +55,14 @@ class FlowClassifier : public SimpleRefCount<FlowClassifier>
 private:
   FlowId m_lastNewFlowId; //!< Last known Flow ID
 
-  /// Defined and not implemented to avoid misuse
-  FlowClassifier (FlowClassifier const &);
-  /// Defined and not implemented to avoid misuse
-  /// \returns
-  FlowClassifier& operator= (FlowClassifier const &);
-
 public:
 
   FlowClassifier ();
   virtual ~FlowClassifier ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FlowClassifier (FlowClassifier const &) = delete;
+  FlowClassifier& operator= (FlowClassifier const &) = delete;
 
   /// Serializes the results to an std::ostream in XML format
   /// \param os the output stream

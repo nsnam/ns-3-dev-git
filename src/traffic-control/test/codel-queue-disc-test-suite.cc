@@ -71,22 +71,17 @@ public:
    */
   CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~CodelQueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  CodelQueueDiscTestItem (const CodelQueueDiscTestItem &) = delete;
+  CodelQueueDiscTestItem & operator = (const CodelQueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark(void);
 
 private:
   CodelQueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  CodelQueueDiscTestItem (const CodelQueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  CodelQueueDiscTestItem &operator = (const CodelQueueDiscTestItem &);
+  
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 

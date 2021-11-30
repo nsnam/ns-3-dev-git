@@ -51,22 +51,17 @@ public:
    */
   CobaltQueueDiscTestItem (Ptr<Packet> p, const Address & addr,uint16_t protocol, bool ecnCapable);
   virtual ~CobaltQueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  CobaltQueueDiscTestItem (const CobaltQueueDiscTestItem &) = delete;
+  CobaltQueueDiscTestItem & operator = (const CobaltQueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark (void);
 
 private:
   CobaltQueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  CobaltQueueDiscTestItem (const CobaltQueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  CobaltQueueDiscTestItem &operator = (const CobaltQueueDiscTestItem &);
+
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 

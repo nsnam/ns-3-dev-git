@@ -70,6 +70,10 @@ public:
   UdpL4Protocol ();
   virtual ~UdpL4Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  UdpL4Protocol (const UdpL4Protocol &) = delete;
+  UdpL4Protocol &operator = (const UdpL4Protocol &) = delete;
+
   /**
    * Set node associated with this stack
    * \param node the node
@@ -256,20 +260,6 @@ private:
   Ptr<Node> m_node; //!< the node this stack is associated with
   Ipv4EndPointDemux *m_endPoints; //!< A list of IPv4 end points.
   Ipv6EndPointDemux *m_endPoints6; //!< A list of IPv6 end points.
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and not implemented to avoid misuse
-   */
-  UdpL4Protocol (const UdpL4Protocol &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and not implemented to avoid misuse
-   * \returns
-   */
-  UdpL4Protocol &operator = (const UdpL4Protocol &);
 
   std::vector<Ptr<UdpSocketImpl> > m_sockets;      //!< list of sockets
   IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4

@@ -109,6 +109,10 @@ public:
 
   virtual ~TrafficControlLayer ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  TrafficControlLayer (TrafficControlLayer const &) = delete;
+  TrafficControlLayer & operator = (TrafficControlLayer const &) = delete;
+
   /**
    * \brief Register an IN handler
    *
@@ -203,17 +207,6 @@ protected:
   virtual void NotifyNewAggregate (void);
 
 private:
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  TrafficControlLayer (TrafficControlLayer const &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  TrafficControlLayer& operator= (TrafficControlLayer const &);
   /**
    * \brief Protocol handler entry.
    * This structure is used to demultiplex all the protocols.

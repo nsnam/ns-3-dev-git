@@ -62,6 +62,10 @@ public:
   WifiNetDevice ();
   virtual ~WifiNetDevice ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  WifiNetDevice (const WifiNetDevice &o) = delete;
+  WifiNetDevice &operator = (const WifiNetDevice &) = delete;
+
   /**
    * \param mac the MAC layer to use.
    */
@@ -153,23 +157,6 @@ protected:
 
 
 private:
-  /**
-   * \brief Copy constructor
-   * \param o object to copy
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiNetDevice (const WifiNetDevice &o);
-
-  /**
-   * \brief Assignment operator
-   * \param o object to copy
-   * \returns the copied object
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiNetDevice &operator = (const WifiNetDevice &o);
-
   /**
    * Set that the link is up. A link is always up in ad-hoc mode.
    * For a STA, a link is up when the STA is associated with an AP.

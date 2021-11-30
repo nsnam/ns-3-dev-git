@@ -51,6 +51,10 @@ public:
   Kun2600MhzPropagationLossModel ();
   virtual ~Kun2600MhzPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Kun2600MhzPropagationLossModel (const Kun2600MhzPropagationLossModel &) = delete;
+  Kun2600MhzPropagationLossModel & operator = (const Kun2600MhzPropagationLossModel &) = delete;
+
   /** 
    * \param a the first mobility model
    * \param b the second mobility model
@@ -61,20 +65,6 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  Kun2600MhzPropagationLossModel (const Kun2600MhzPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  Kun2600MhzPropagationLossModel & operator = (const Kun2600MhzPropagationLossModel &);
-
   // inherited from PropagationLossModel
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,

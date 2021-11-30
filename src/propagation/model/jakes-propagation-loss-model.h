@@ -43,23 +43,14 @@ public:
   static TypeId GetTypeId ();
   JakesPropagationLossModel ();
   virtual ~JakesPropagationLossModel ();
-  
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  JakesPropagationLossModel (const JakesPropagationLossModel &) = delete;
+  JakesPropagationLossModel & operator = (const JakesPropagationLossModel &) = delete;
+
 private:
   friend class JakesProcess;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  JakesPropagationLossModel (const JakesPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  JakesPropagationLossModel & operator = (const JakesPropagationLossModel &);
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;

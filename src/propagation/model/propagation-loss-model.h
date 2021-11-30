@@ -59,6 +59,10 @@ public:
   PropagationLossModel ();
   virtual ~PropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  PropagationLossModel (const PropagationLossModel &) = delete;
+  PropagationLossModel & operator = (const PropagationLossModel &) = delete;
+
   /**
    * \brief Enables a chain of loss models to act on the signal
    * \param next The next PropagationLossModel to add to the chain
@@ -129,21 +133,6 @@ protected:
   virtual int64_t DoAssignStreams (int64_t stream) = 0;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  PropagationLossModel (const PropagationLossModel &);
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  PropagationLossModel &operator = (const PropagationLossModel &);
-
   Ptr<PropagationLossModel> m_next; //!< Next propagation loss model in the list
 };
 
@@ -164,21 +153,11 @@ public:
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  RandomPropagationLossModel (const RandomPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &);
+  // Delete copy constructor and assignment operator to avoid misuse
+  RandomPropagationLossModel (const RandomPropagationLossModel &) = delete;
+  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &) = delete;
 
+private:
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -273,6 +252,11 @@ public:
    */
   static TypeId GetTypeId (void);
   FriisPropagationLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FriisPropagationLossModel (const FriisPropagationLossModel &) = delete;
+  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &) = delete;
+
   /**
    * \param frequency (Hz)
    *
@@ -310,20 +294,6 @@ public:
   double GetSystemLoss (void) const;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  FriisPropagationLossModel (const FriisPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -387,6 +357,10 @@ public:
   static TypeId GetTypeId (void);
   TwoRayGroundPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &) = delete;
+  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &) = delete;
+
   /**
    * \param frequency (Hz)
    *
@@ -430,20 +404,6 @@ public:
   void SetHeightAboveZ (double heightAboveZ);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -500,6 +460,10 @@ public:
   static TypeId GetTypeId (void);
   LogDistancePropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &) = delete;
+  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &) = delete;
+
   /**
    * \param n the path loss exponent.
    * Set the path loss exponent.
@@ -518,20 +482,6 @@ public:
   void SetReference (double referenceDistance, double referenceLoss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -599,23 +549,13 @@ public:
   static TypeId GetTypeId (void);
   ThreeLogDistancePropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel &) = delete;
+  ThreeLogDistancePropagationLossModel & operator = (const ThreeLogDistancePropagationLossModel &) = delete;
+
   // Parameters are all accessible via attributes.
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ThreeLogDistancePropagationLossModel& operator= (const ThreeLogDistancePropagationLossModel&);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -671,23 +611,13 @@ public:
 
   NakagamiPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  NakagamiPropagationLossModel (const NakagamiPropagationLossModel &) = delete;
+  NakagamiPropagationLossModel & operator = (const NakagamiPropagationLossModel &) = delete;
+
   // Parameters are all accessible via attributes.
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  NakagamiPropagationLossModel (const NakagamiPropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  NakagamiPropagationLossModel& operator= (const NakagamiPropagationLossModel&);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -729,6 +659,11 @@ public:
 
   FixedRssLossModel ();
   virtual ~FixedRssLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FixedRssLossModel (const FixedRssLossModel &) = delete;
+  FixedRssLossModel & operator = (const FixedRssLossModel &) = delete;
+
   /**
    * \param rss (dBm) the received signal strength
    *
@@ -737,20 +672,6 @@ public:
   void SetRss (double rss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  FixedRssLossModel (const FixedRssLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  FixedRssLossModel & operator = (const FixedRssLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -779,6 +700,10 @@ public:
   MatrixPropagationLossModel ();
   virtual ~MatrixPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  MatrixPropagationLossModel (const MatrixPropagationLossModel &) = delete;
+  MatrixPropagationLossModel & operator = (const MatrixPropagationLossModel &) = delete;
+
   /**
    * \brief Set loss (in dB, positive) between pair of ns-3 objects
    * (typically, nodes).
@@ -797,20 +722,6 @@ public:
   void SetDefaultLoss (double defaultLoss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  MatrixPropagationLossModel (const MatrixPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  MatrixPropagationLossModel &operator = (const MatrixPropagationLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;
@@ -844,21 +755,12 @@ public:
    */
   static TypeId GetTypeId (void);
   RangePropagationLossModel ();
-private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  RangePropagationLossModel (const RangePropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  RangePropagationLossModel& operator= (const RangePropagationLossModel&);
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  RangePropagationLossModel (const RangePropagationLossModel &) = delete;
+  RangePropagationLossModel & operator = (const RangePropagationLossModel &) = delete;
+
+private:
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;

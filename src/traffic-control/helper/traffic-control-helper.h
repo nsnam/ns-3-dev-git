@@ -48,6 +48,9 @@ public:
 
   virtual ~QueueDiscFactory () {}
 
+  // Delete default constructor to avoid misuse
+  QueueDiscFactory () = delete;
+
   /**
    * \brief Add a factory to create an internal queue
    *
@@ -87,13 +90,6 @@ public:
   Ptr<QueueDisc> CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDiscs);
 
 private:
-  /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  QueueDiscFactory ();
-
   /// Factory to create this queue disc
   ObjectFactory m_queueDiscFactory;
   /// Vector of factories to create internal queues

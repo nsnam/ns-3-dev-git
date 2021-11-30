@@ -99,6 +99,10 @@ public:
    */
   virtual ~Ipv6L3Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Ipv6L3Protocol (const Ipv6L3Protocol &) = delete;
+  Ipv6L3Protocol & operator = (const Ipv6L3Protocol &) = delete;
+
   /**
    * \brief Set node associated with this stack.
    * \param node node to set
@@ -566,21 +570,6 @@ private:
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
   /// Trace of locally delivered packets
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   */
-  Ipv6L3Protocol (const Ipv6L3Protocol&);
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   * \returns the copied object
-   */
-  Ipv6L3Protocol &operator = (const Ipv6L3Protocol&);
 
   /**
    * \brief Construct an IPv6 header.

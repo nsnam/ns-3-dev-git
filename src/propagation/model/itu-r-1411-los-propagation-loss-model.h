@@ -53,6 +53,10 @@ public:
   ItuR1411LosPropagationLossModel ();
   virtual ~ItuR1411LosPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ItuR1411LosPropagationLossModel (const ItuR1411LosPropagationLossModel &) = delete;
+  ItuR1411LosPropagationLossModel & operator = (const ItuR1411LosPropagationLossModel &) = delete;
+
   /** 
    * Set the operating frequency
    * 
@@ -72,20 +76,6 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ItuR1411LosPropagationLossModel (const ItuR1411LosPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ItuR1411LosPropagationLossModel & operator = (const ItuR1411LosPropagationLossModel &);
-
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const override;

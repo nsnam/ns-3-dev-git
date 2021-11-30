@@ -389,6 +389,9 @@ public:
   DsrRouteCache ();
   virtual ~DsrRouteCache ();
 
+  // Delete assignment operator to avoid misuse
+  DsrRouteCache & operator = (DsrRouteCache const &) = delete;
+
   /**
    * \brief Remove the aged route cache entries when the route cache is full
    * \param rtVector the route cache to scan.
@@ -742,11 +745,6 @@ public:
   }
 
 private:
-  /**
-   * \brief assignment operator - defined but not implemented to avoid misuse.
-   * \return
-   */
-  DsrRouteCache & operator= (DsrRouteCache const &);
   DsrRouteCacheEntry::IP_VECTOR m_vector;               ///< The route vector to save the ip addresses for intermediate nodes.
   uint32_t m_maxCacheLen;                               ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time     RouteCacheTimeout;                           ///< The maximum period of time that dsr is allowed to for an unused route.

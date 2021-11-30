@@ -52,22 +52,16 @@ public:
    */
   TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~TbfQueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  TbfQueueDiscTestItem (const TbfQueueDiscTestItem &) = delete;
+  TbfQueueDiscTestItem & operator = (const TbfQueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark (void);
 
 private:
   TbfQueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  TbfQueueDiscTestItem (const TbfQueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  TbfQueueDiscTestItem &operator = (const TbfQueueDiscTestItem &);
 };
 
 TbfQueueDiscTestItem::TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
