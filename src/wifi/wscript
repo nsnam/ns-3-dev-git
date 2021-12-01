@@ -156,6 +156,7 @@ def build(bld):
         'test/wifi-mac-ofdma-test.cc',
         'test/wifi-phy-ofdma-test.cc',
         'test/wifi-mac-queue-test.cc',
+        'test/wifi-channel-switching-test.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
