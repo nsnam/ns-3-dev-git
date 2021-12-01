@@ -101,7 +101,7 @@ public:
    * together, this method will also assign streams to the
    * downstream models.
    *
-   * \param stream
+   * \param stream the stream index offset start
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
@@ -123,6 +123,8 @@ protected:
   /**
    * Subclasses must implement this; those not using random variables
    * can return zero
+   * \param stream the stream index offset start
+   * \return the number of stream indices assigned by this model
    */
   virtual int64_t DoAssignStreams (int64_t stream) = 0;
 
