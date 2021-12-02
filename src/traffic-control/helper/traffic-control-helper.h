@@ -127,6 +127,7 @@ public:
   virtual ~TrafficControlHelper () {}
 
   /**
+   * \param nTxQueues the number of Tx queue disc classes
    * \returns a new TrafficControlHelper with a default configuration
    *
    * The default configuration is an FqCoDelQueueDisc, if the device has a single
@@ -288,6 +289,7 @@ private:
    * Actual implementation of the SetRootQueueDisc method.
    *
    * \param factory the factory used to create the root queue disc
+   * \returns zero on success
    */
   uint16_t DoSetRootQueueDisc (ObjectFactory factory);
 
