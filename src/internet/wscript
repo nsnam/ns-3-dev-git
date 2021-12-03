@@ -4,104 +4,6 @@ import sys
 
 from waflib import Options, Logs, Utils, Task
 
-
-# Required NSC version
-NSC_RELEASE_NAME = "nsc-0.5.3"
-
-
-def options(opt):
-    opt.add_option('--with-nsc',
-                   help=('Use Network Simulation Cradle, given by the indicated path,'
-                         ' to allow the use of real-world network stacks'),
-                   default='', dest='with_nsc')
-    opt.add_option('--disable-nsc',
-                   help=('Disable Network Simulation Cradle support'),
-                   dest='disable_nsc', default=False, action="store_true")
-
-def configure(conf):
-    conf.env['ENABLE_NSC'] = False
-
-    if Options.options.disable_nsc:
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "disabled by user request")
-        return
-
-    # checks for flex and bison, which is needed to build NSCs globaliser
-    # TODO: how to move these checks into the allinone scripts?
-    #def check_nsc_buildutils():
-    #    import flex
-    #    import bison
-    #    conf.check_tool('flex bison')
-    #    conf.check(lib='fl', mandatory=True)
-
-    # Check for the location of NSC
-    lib_to_check = 'liblinux2.6.26.so'
-    if Options.options.with_nsc:
-        if os.path.isdir(Options.options.with_nsc):
-            conf.msg("Checking for NSC location", ("%s (given)" % Options.options.with_nsc))
-            conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
-    else:
-        # bake.py uses ../../build, while ns-3-dev uses ../nsc,
-        # and ns-3 release uses ../NSC_RELEASE_NAME
-        nsc_bake_build_dir = os.path.join('..', '..', 'build')
-        nsc_bake_lib_dir = os.path.join(nsc_bake_build_dir, 'lib')
-        nsc_dir = os.path.join('..', "nsc")
-        nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
-        if os.path.exists(os.path.join(nsc_bake_lib_dir, lib_to_check)):
-            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_bake_build_dir))
-            conf.env['WITH_NSC'] = os.path.abspath(nsc_bake_build_dir)
-        elif os.path.isdir(nsc_dir):
-            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_dir))
-            conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
-        elif os.path.isdir(nsc_release_dir):
-            conf.msg("Checking for NSC location", ("%s (guessed)" % nsc_release_dir))
-            conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
-        del nsc_bake_build_dir
-        del nsc_bake_lib_dir
-        del nsc_dir
-        del nsc_release_dir
-
-    if not conf.env['WITH_NSC']:
-        conf.msg("Checking for NSC location", False)
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "NSC not found (see option --with-nsc)")
-        return
-    
-    if Utils.unversioned_sys_platform() in ['linux', 'freebsd']:
-        arch = os.uname()[4]
-    else:
-        arch = None
-    ok = False
-    if arch in ('amd64', 'x86_64', 'i686', 'i586', 'i486', 'i386'):
-        conf.env['NSC_ENABLED'] = True
-        conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
-        conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
-        ok = True
-    conf.msg('Checking for NSC supported architecture ' + (arch or ''), ok)
-    
-    if not ok:
-        conf.env['NSC_ENABLED'] = False
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "architecture %r not supported" % arch)
-        return
-
-    found = False
-    for path in ['.', 'lib', 'lib64', 'linux-2.6.26']:
-        if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
-            # append the NSC kernel dir to the module path so that this dir
-            # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
-            # module to find the necessary NSC shared libraries.
-            found = True
-            conf.env.append_value('NS3_MODULE_PATH',
-                                  os.path.abspath(os.path.join(conf.env['WITH_NSC'], path)))
-    if not found:
-        conf.env['NSC_ENABLED'] = False
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "NSC library %s is missing: NSC has not been built?" % lib_to_check)
-    else:
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
-
-
 def build(bld):
     # bridge dependency is due to global routing
     obj = bld.create_ns3_module('internet', ['bridge', 'traffic-control', 'network', 'core'])
@@ -444,15 +346,6 @@ def build(bld):
         'model/rip-header.h',
         'helper/rip-helper.h',
        ]
-
-    if bld.env['NSC_ENABLED']:
-        obj.source.append ('model/nsc-tcp-socket-impl.cc')
-        obj.source.append ('model/nsc-tcp-l4-protocol.cc')
-        obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
-        obj.source.append ('model/nsc-sysctl.cc')
-        headers.source.append('model/nsc-tcp-l4-protocol.h')
-        obj.use.append('DL')
-        internet_test.use.append('DL')
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')

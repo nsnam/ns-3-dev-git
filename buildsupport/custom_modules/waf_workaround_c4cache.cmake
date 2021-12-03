@@ -56,7 +56,6 @@ function(generate_c4che_cachepy)
     "NS3_MODULE_PATH = ['${PATH_LIST}', '${CMAKE_OUTPUT_DIRECTORY}', '${CMAKE_LIBRARY_OUTPUT_DIRECTORY}']\n"
   )
 
-  cache_cmake_flag(NS3_NSC "NSC_ENABLED" cache_contents) # missing support
   cache_cmake_flag(ENABLE_REALTIME "ENABLE_REAL_TIME" cache_contents)
   cache_cmake_flag(NS3_PTHREAD "ENABLE_THREADING" cache_contents)
   cache_cmake_flag(ENABLE_EXAMPLES "ENABLE_EXAMPLES" cache_contents)

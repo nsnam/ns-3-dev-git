@@ -10,8 +10,6 @@
 cpp_examples = [
     ("star", "True", "True"),
     ("tcp-large-transfer", "True", "True"),
-    ("tcp-nsc-lfn", "NSC_ENABLED == True", "False"),
-    ("tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
     ("tcp-star-server", "True", "True"),
     ("tcp-variants-comparison", "True", "True"),
     ("tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=dctcp-10ms", "True", "True"),

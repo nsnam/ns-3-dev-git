@@ -107,7 +107,6 @@ def dist_hook():
     import tarfile
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
-    shutil.rmtree("nsc", True)
 
 # Print the sorted list of module names in columns.
 def print_module_names(names):

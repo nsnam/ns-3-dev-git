@@ -337,7 +337,8 @@ contains the tuple ``(example_name, do_run, do_valgrind_run)``, where
     crashes with some tests when they are run under valgrind.)
 
 Note that the two conditions are Python statements that
-can depend on ``ns3`` configuration variables.  For example,
+can depend on ``ns3`` configuration variables.  For example, using the
+NSC_ENABLED variable that was defined up until ns-3.35:
 
 .. sourcecode:: python
 

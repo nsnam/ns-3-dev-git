@@ -1,18 +1,6 @@
 set(name internet)
 
-set(nsc_sources)
-set(nsc_headers)
-if(${NS3_NSC})
-  set(nsc_sources nsc-sysctl.cc nsc-tcp-l4-protocol.cc
-                  nsc-tcp-socket-factory-impl.cc nsc-tcp-socket-impl.cc
-  )
-  set(nsc_headers nsc-sysctl.h nsc-tcp-l4-protocol.h
-                  nsc-tcp-socket-factory-impl.h nsc-tcp-socket-impl.h
-  )
-endif()
-
 set(source_files
-    ${nsc_sources}
     helper/internet-stack-helper.cc
     helper/internet-trace-helper.cc
     helper/ipv4-address-helper.cc

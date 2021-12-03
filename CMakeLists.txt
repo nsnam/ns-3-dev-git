@@ -79,7 +79,6 @@ option(NS3_MONOLIB
 )
 option(NS3_MPI "Build with MPI support" ON)
 option(NS3_NATIVE_OPTIMIZATIONS "Build with -march=native -mtune=native" OFF)
-option(NS3_NSC "Build with NSC support" OFF) # currently not supported
 set(NS3_OUTPUT_DIRECTORY "" CACHE STRING "Directory to store built artifacts")
 option(NS3_PRECOMPILE_HEADERS
        "Precompile module headers to speed up compilation" ON

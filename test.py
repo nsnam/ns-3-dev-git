@@ -60,7 +60,6 @@ interesting_config_items = [
     "NS3_ENABLED_MODULES",
     "NS3_ENABLED_CONTRIBUTED_MODULES",
     "NS3_MODULE_PATH",
-    "NSC_ENABLED",
     "ENABLE_REAL_TIME",
     "ENABLE_THREADING",
     "ENABLE_EXAMPLES",
@@ -77,7 +76,6 @@ interesting_config_items = [
     "VALGRIND_FOUND",
 ]
 
-NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
@@ -106,13 +104,9 @@ test_runner_name = "test-runner"
 core_kinds = ["core", "performance", "system", "unit"]
 
 #
-# There are some special cases for test suites that kill valgrind.  This is
-# because NSC causes illegal instruction crashes when run under valgrind.
+# Exclude tests that are problematic for valgrind.
 #
 core_valgrind_skip_tests = [
-    "ns3-tcp-cwnd",
-    "nsc-tcp-loss",
-    "ns3-tcp-interoperability",
     "routing-click",
     "lte-rr-ff-mac-scheduler",
     "lte-tdmt-ff-mac-scheduler",
@@ -124,16 +118,6 @@ core_valgrind_skip_tests = [
     "lte-fdtbfq-ff-mac-scheduler",
     "lte-tdtbfq-ff-mac-scheduler",
     "lte-pss-ff-mac-scheduler",
-]
-
-#
-# There are some special cases for test suites that fail when NSC is
-# missing.
-#
-core_nsc_missing_skip_tests = [
-    "ns3-tcp-cwnd",
-    "nsc-tcp-loss",
-    "ns3-tcp-interoperability",
 ]
 
 #
@@ -165,6 +149,7 @@ def parse_examples_to_run_file(
         #
         # Note that the two conditions are Python statements that
         # can depend on waf configuration variables.  For example,
+        # when NSC was in the codebase, we could write:
         #
         #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
         #
@@ -600,8 +585,8 @@ def sigint_hook(signal, frame):
 #
 # Examples, however, are a different story.  In that case, we are just given
 # a list of examples that could be run.  Instead of just failing, for example,
-# nsc-tcp-zoo if NSC is not present, we look into the waf saved configuration
-# for relevant configuration items.
+# an example if its library support is not present, we look into the waf
+# saved configuration for relevant configuration items.
 #
 # XXX This function pokes around in the waf internal state file.  To be a
 # little less hacky, we should add a command to waf to return this info
@@ -1476,11 +1461,6 @@ def run_tests():
                 job.set_is_skip(True)
                 job.set_skip_reason("crashes valgrind")
 
-            # Skip tests that will fail if NSC is missing.
-            if not NSC_ENABLED and test in core_nsc_missing_skip_tests:
-                job.set_is_skip(True)
-                job.set_skip_reason("requires NSC")
-
             if options.verbose:
                 print("Queue %s" % test)
 
@@ -1494,14 +1474,7 @@ def run_tests():
     # the example programs it makes sense to try and run.  Each example will
     # have a condition associated with it that must evaluate to true for us
     # to try and execute it.  This is used to determine if the example has
-    # a dependency that is not satisfied.  For example, if an example depends
-    # on NSC being configured by waf, that example should have a condition
-    # that evaluates to true if NSC is enabled.  For example,
-    #
-    #      ("tcp-nsc-zoo", "NSC_ENABLED == True"),
-    #
-    # In this case, the example "tcp-nsc-zoo" will only be run if we find the
-    # waf configuration variable "NSC_ENABLED" to be True.
+    # a dependency that is not satisfied.
     #
     # We don't care at all how the trace files come out, so we just write them
     # to a single temporary directory.
