@@ -74,7 +74,7 @@ function(generate_c4che_cachepy)
 
   string(APPEND cache_contents "APPNAME = 'ns'\n")
   string(APPEND cache_contents "BUILD_PROFILE = '${build_profile}'\n")
-  string(APPEND cache_contents "VERSION = '3-dev' \n")
+  string(APPEND cache_contents "VERSION = '${NS3_VER}' \n")
   string(APPEND cache_contents "PYTHON = ['${Python3_EXECUTABLE}']\n")
 
   mark_as_advanced(VALGRIND)
