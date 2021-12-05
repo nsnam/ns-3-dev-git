@@ -290,5 +290,26 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
   return (currentStream - stream);
 }
 
+void
+MeshHelper::EnableLogComponents (void)
+{
+  WifiHelper::EnableLogComponents ();
+
+  LogComponentEnable ("MeshL2RoutingProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("MeshPointDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("MeshWifiInterfaceMac", LOG_LEVEL_ALL);
+
+  LogComponentEnable ("Dot11sPeerManagementProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpProtocolMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpRtable", LOG_LEVEL_ALL);
+  LogComponentEnable ("PeerManagementProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("PeerManagementProtocolMac", LOG_LEVEL_ALL);
+
+  LogComponentEnable ("FlameProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("FlameProtocolMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("FlameRtable", LOG_LEVEL_ALL);
+}
+
 } // namespace ns3
 

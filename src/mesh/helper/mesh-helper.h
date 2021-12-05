@@ -216,6 +216,11 @@ public:
    */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
+  /**
+   * Helper to enable all MeshPointDevice log components with one statement
+   */
+  static void EnableLogComponents (void);
+
 private:
   /**
    * \param phyHelper
