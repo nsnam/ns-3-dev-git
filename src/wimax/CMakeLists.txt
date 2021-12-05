@@ -98,7 +98,9 @@ set(header_files
     model/wimax-mac-to-mac-header.h
 )
 
-set(libraries_to_link ${libnetwork} ${libinternet} ${libpropagation} ${libmobility})
+set(libraries_to_link ${libnetwork} ${libinternet} ${libpropagation}
+                      ${libmobility}
+)
 
 set(test_sources
     test/mac-messages-test.cc
@@ -110,4 +112,6 @@ set(test_sources
     test/wimax-tlv-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

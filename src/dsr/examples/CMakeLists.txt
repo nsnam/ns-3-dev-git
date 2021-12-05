@@ -11,4 +11,6 @@ set(libraries_to_link
     ${libwifi}
     ${libdsr}
 )
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)

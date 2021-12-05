@@ -42,4 +42,6 @@ set(libraries_to_link ${libcore} ${libpropagation} ${libwifi} ${libinternet})
 
 set(test_sources test/mac-extension-test-suite.cc test/ocb-test-suite.cc)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

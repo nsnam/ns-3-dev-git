@@ -34,7 +34,9 @@ set(header_files
     model/lr-wpan-spectrum-value-helper.h
 )
 
-set(libraries_to_link ${libnetwork} ${libcore} ${libmobility} ${libspectrum} ${libpropagation})
+set(libraries_to_link ${libnetwork} ${libcore} ${libmobility} ${libspectrum}
+                      ${libpropagation}
+)
 
 set(test_sources
     test/lr-wpan-ack-test.cc
@@ -49,4 +51,6 @@ set(test_sources
     test/lr-wpan-slotted-csmaca-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

@@ -87,4 +87,6 @@ set(test_sources
     test/tv-spectrum-transmitter-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

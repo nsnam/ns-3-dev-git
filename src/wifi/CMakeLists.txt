@@ -276,7 +276,9 @@ set(header_files
     model/yans-wifi-phy.h
 )
 
-set(libraries_to_link ${libnetwork} ${libpropagation} ${libenergy} ${libspectrum} ${libantenna} ${libmobility})
+set(libraries_to_link ${libnetwork} ${libpropagation} ${libenergy}
+                      ${libspectrum} ${libantenna} ${libmobility}
+)
 
 set(test_sources
     test/block-ack-test-suite.cc
@@ -298,4 +300,6 @@ set(test_sources
     test/wifi-txop-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

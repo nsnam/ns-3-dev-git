@@ -1,8 +1,8 @@
 set(name config-store)
 
 if(${GTK3_FOUND})
-  set(gtk3_sources model/display-functions.cc model/gtk-config-store.cc model/model-node-creator.cc
-                   model/model-typeid-creator.cc
+  set(gtk3_sources model/display-functions.cc model/gtk-config-store.cc
+                   model/model-node-creator.cc model/model-typeid-creator.cc
   )
 
   set(gtk3_headers model/gtk-config-store.h)
@@ -28,8 +28,12 @@ set(source_files
 
 set(header_files ${gtk3_headers} model/file-config.h model/config-store.h)
 
-set(libraries_to_link ${libcore} ${libnetwork} ${xml2_libraries} ${gtk_libraries})
+set(libraries_to_link ${libcore} ${libnetwork} ${xml2_libraries}
+                      ${gtk_libraries}
+)
 
 set(test_sources)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

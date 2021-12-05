@@ -20,4 +20,6 @@ set(libraries_to_link
 
 set(test_sources test/netanim-test.cc)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

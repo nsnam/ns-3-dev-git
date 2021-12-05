@@ -8,7 +8,9 @@ set(gsl_test_sources)
 if(${GSL_FOUND})
   include_directories(${GSL_INCLUDE_DIRS})
   set(libraries_to_link ${libraries_to_link} ${GSL_LIBRARIES})
-  set(gsl_test_sources test/rng-test-suite.cc test/random-variable-stream-test-suite.cc)
+  set(gsl_test_sources test/rng-test-suite.cc
+                       test/random-variable-stream-test-suite.cc
+  )
 endif()
 
 # Check for dependencies and add sources accordingly
@@ -18,13 +20,17 @@ if(${HAVE_BOOST_UNITS_QUANTITY} AND ${HAVE_BOOST_UNITS_SI})
   add_definitions(-DHAVE_BOOST -DHAVE_BOOST_UNITS)
   message(STATUS "Boost Units have been found.")
 else()
-  message(STATUS "Boost Units are an optional feature of length.cc."
-                 " Ubuntu ships it within the libboost-dev package."
-                 " You may need to clean up the CMake cache after installing it to pass this check."
+  message(
+    STATUS
+      "Boost Units are an optional feature of length.cc."
+      " Ubuntu ships it within the libboost-dev package."
+      " You may need to clean up the CMake cache after installing it to pass this check."
   )
 endif()
 
-set(rt_sources model/realtime-simulator-impl.cc model/wall-clock-synchronizer.cc)
+set(rt_sources model/realtime-simulator-impl.cc
+               model/wall-clock-synchronizer.cc
+)
 set(rt_headers model/realtime-simulator-impl.h model/wall-clock-synchronizer.h)
 if(${ENABLE_REALTIME})
   set(libraries_to_link ${libraries_to_link} ${LIBRT})
@@ -54,17 +60,20 @@ if(${NS3_PTHREAD})
   if(${THREADS_FOUND})
     set(thread_sources model/unix-fd-reader.cc)
     set(thread_headers model/unix-fd-reader.h)
-    set(thread_sources ${thread_sources} model/system-thread.cc model/unix-system-mutex.cc
-                       model/unix-system-condition.cc
+    set(thread_sources
+        ${thread_sources} model/system-thread.cc model/unix-system-mutex.cc
+        model/unix-system-condition.cc
     )
 
-    set(thread_headers ${thread_headers} model/system-mutex.h model/system-thread.h model/system-condition.h)
+    set(thread_headers ${thread_headers} model/system-mutex.h
+                       model/system-thread.h model/system-condition.h
+    )
     set(libraries_to_link ${libraries_to_link} pthread)
     set(thread_test_sources test/threaded-test-suite.cc)
   endif()
 endif()
 
-if(${NS3_EXAMPLES})
+if(${EXAMPLES_ENABLED})
   set(example_as_test_sources model/example-as-test.cc)
   set(example_as_test_headers model/example-as-test.h)
   set(example_as_test_suite test/examples-as-tests-test-suite.cc)
@@ -84,7 +93,6 @@ set(source_files
     ${osclock_sources}
     ${int64x64_sources}
     ${thread_sources}
-    ${valgrind_sources}
     ${example_as_test_sources}
     ${embedded_version_sources}
     helper/csv-reader.cc
@@ -289,4 +297,6 @@ set(test_sources
 )
 
 # Build core lib
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

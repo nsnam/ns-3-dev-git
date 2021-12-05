@@ -1,5 +1,9 @@
 set(name openflow-switch)
 set(source_files ${name}.cc)
 set(header_files)
-set(libraries_to_link ${libopenflow} ${libinternet} ${libcsma} ${libapplications})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+set(libraries_to_link ${libopenflow} ${libinternet} ${libcsma}
+                      ${libapplications}
+)
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)

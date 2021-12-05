@@ -3,8 +3,12 @@ set(name internet)
 set(nsc_sources)
 set(nsc_headers)
 if(${NS3_NSC})
-  set(nsc_sources nsc-sysctl.cc nsc-tcp-l4-protocol.cc nsc-tcp-socket-factory-impl.cc nsc-tcp-socket-impl.cc)
-  set(nsc_headers nsc-sysctl.h nsc-tcp-l4-protocol.h nsc-tcp-socket-factory-impl.h nsc-tcp-socket-impl.h)
+  set(nsc_sources nsc-sysctl.cc nsc-tcp-l4-protocol.cc
+                  nsc-tcp-socket-factory-impl.cc nsc-tcp-socket-impl.cc
+  )
+  set(nsc_headers nsc-sysctl.h nsc-tcp-l4-protocol.h
+                  nsc-tcp-socket-factory-impl.h nsc-tcp-socket-impl.h
+  )
 endif()
 
 set(source_files
@@ -264,7 +268,9 @@ set(header_files
     model/windowed-filter.h
 )
 
-set(libraries_to_link ${libnetwork} ${libcore} ${libbridge} ${libtraffic-control})
+set(libraries_to_link ${libnetwork} ${libcore} ${libbridge}
+                      ${libtraffic-control}
+)
 
 set(test_sources
     test/global-route-manager-impl-test-suite.cc
@@ -341,4 +347,6 @@ set(test_sources
     test/udp-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

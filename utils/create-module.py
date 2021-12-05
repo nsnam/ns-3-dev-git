@@ -29,7 +29,7 @@ set(libraries_to_link
     ${{libcore}}
     )
 
-if(${{NS3_EXAMPLES}})
+if(${{EXAMPLES_ENABLED}})
     set(examples_as_tests_sources    
         #test/{MODULE}-examples-test-suite.cc
         )

@@ -1,12 +1,18 @@
 # Determine if the git repository is an ns-3 repository
 #
-# A repository is considered an ns-3 repository if it has at least one tag that matches the regex ns-3*
+# A repository is considered an ns-3 repository if it has at least one tag that
+# matches the regex ns-3*
 
 function(check_git_repo_has_ns3_tags HAS_TAGS GIT_VERSION_TAG)
-  execute_process(COMMAND ${GIT} describe --tags --abbrev=0 --match ns-3.[0-9]* OUTPUT_VARIABLE GIT_TAG_OUTPUT)
+  execute_process(
+    COMMAND ${GIT} describe --tags --abbrev=0 --match ns-3.[0-9]*
+    OUTPUT_VARIABLE GIT_TAG_OUTPUT
+  )
 
-  string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage return)
-  string(REPLACE "\n" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove LF (line feed)
+  string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage
+                                                           # return)
+  string(REPLACE "\n" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove LF (line
+                                                           # feed)
 
   # Check if tag exists and return values to the caller
   string(LENGTH GIT_TAG_OUTPUT GIT_TAG_OUTPUT_LEN)
@@ -19,11 +25,18 @@ function(check_git_repo_has_ns3_tags HAS_TAGS GIT_VERSION_TAG)
 endfunction()
 
 # Function to generate version fields from an ns-3 git repository
-function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE VERSION_COMMIT_HASH VERSION_DIRTY_FLAG)
-  execute_process(COMMAND ${GIT} describe --tags --dirty --long OUTPUT_VARIABLE GIT_TAG_OUTPUT)
+function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE
+         VERSION_COMMIT_HASH VERSION_DIRTY_FLAG
+)
+  execute_process(
+    COMMAND ${GIT} describe --tags --dirty --long
+    OUTPUT_VARIABLE GIT_TAG_OUTPUT
+  )
 
-  string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage return)
-  string(REPLACE "\n" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove LF (line feed)
+  string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage
+                                                           # return)
+  string(REPLACE "\n" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove LF (line
+                                                           # feed)
 
   # Split ns-3.<version>.<patch>(-RC<digit>)-distance-commit(-dirty) into a list
   # ns;3.<version>.<patch>;(RC<digit);distance;commit(;dirty)

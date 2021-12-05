@@ -37,4 +37,6 @@ set(libraries_to_link ${libinternet} ${libwifi})
 
 set(test_sources test/dsr-test-suite.cc)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

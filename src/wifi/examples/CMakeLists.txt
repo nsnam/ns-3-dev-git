@@ -2,34 +2,50 @@ set(name wifi-phy-test)
 set(source_files ${name}.cc)
 set(header_files)
 set(libraries_to_link ${libcore} ${libmobility} ${libnetwork} ${libwifi})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
 
 set(name wifi-test-interference-helper)
 set(source_files ${name}.cc)
 set(header_files)
 set(libraries_to_link ${libcore} ${libmobility} ${libnetwork} ${libwifi})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
 
 set(name wifi-manager-example)
 set(source_files ${name}.cc)
 set(header_files)
-set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats} ${libmobility} ${libpropagation})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats}
+                      ${libmobility} ${libpropagation}
+)
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
 
 set(name wifi-trans-example)
 set(source_files ${name}.cc)
 set(header_files)
-set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats} ${libmobility} ${libpropagation})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats}
+                      ${libmobility} ${libpropagation}
+)
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
 
 set(name wifi-phy-configuration)
 set(source_files ${name}.cc)
 set(header_files)
 set(libraries_to_link ${libwifi} ${libconfig-store})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
 
 set(name wifi-bianchi)
 set(source_files ${name}.cc)
 set(header_files)
 set(libraries_to_link ${libwifi} ${libapplications} ${libinternet-apps})
-build_lib_example("${name}" "${source_files}" "${header_files}" "${libraries_to_link}")
+build_lib_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)

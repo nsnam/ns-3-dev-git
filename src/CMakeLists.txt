@@ -8,14 +8,25 @@ endif()
 
 # Process subdirectories
 foreach(libname ${libs})
-  add_subdirectory(${libname})
+  if(EXISTS ${PROJECT_SOURCE_DIR}/src/${libname}/CMakeLists.txt)
+    add_subdirectory(${libname})
+  else()
+    message(
+      STATUS
+        "Skipping src/${libname} : it does not contain a CMakeLists.txt file"
+    )
+  endif()
 endforeach()
 
 # Build the lib-ns3-static (ns3.x-static-buildtype.a/.lib) with all sublibraries
 if(${NS3_STATIC})
-  add_library(${lib-ns3-static} STATIC ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc "${lib-ns3-static-objs}")
+  add_library(
+    ${lib-ns3-static} STATIC ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc
+                             "${lib-ns3-static-objs}"
+  )
 
-  # Replace shared library suffix and check if static version exists before linking
+  # Replace shared library suffix and check if static version exists before
+  # linking
   set(ns3-external-static-libs)
   foreach(sharedlib ${ns3-external-libs})
     if(NOT (${sharedlib} MATCHES ".so"))
@@ -26,7 +37,9 @@ if(${NS3_STATIC})
     if(EXISTS ${output})
       list(APPEND ns3-external-static-libs ${output})
     else()
-      message(FATAL_ERROR "Static library version of ${sharedlib} was not found")
+      message(
+        FATAL_ERROR "Static library version of ${sharedlib} was not found"
+      )
     endif()
   endforeach()
 
@@ -44,11 +57,20 @@ if(${NS3_STATIC})
   endif()
 endif()
 
-# Build the lib-ns3-static (ns3.x-monolib-buildtype.dll/.dylib/.so) with all sublibraries
+# Build the lib-ns3-static (ns3.x-monolib-buildtype.dll/.dylib/.so) with all
+# sublibraries
 if(${NS3_MONOLIB})
-  add_library(${lib-ns3-monolib} SHARED ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc "${lib-ns3-static-objs}")
-  set_target_properties(${lib-ns3-monolib} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-  target_link_libraries(${lib-ns3-monolib} ${LIB_AS_NEEDED_PRE} ${ns3-external-libs} ${LIB_AS_NEEDED_POST})
+  add_library(
+    ${lib-ns3-monolib} SHARED ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc
+                              "${lib-ns3-static-objs}"
+  )
+  set_target_properties(
+    ${lib-ns3-monolib} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE
+  )
+  target_link_libraries(
+    ${lib-ns3-monolib} ${LIB_AS_NEEDED_PRE} ${ns3-external-libs}
+    ${LIB_AS_NEEDED_POST}
+  )
   if(${NS3_CLANG_TIMETRACE})
     add_dependencies(timeTraceReport ${lib-ns3-monolib})
   endif()

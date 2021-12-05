@@ -1,27 +1,34 @@
-# Copyright (c) 2012, Intel Corporation Copyright (c) 2019 Sony Interactive Entertainment Inc.
+# Copyright (c) 2012, Intel Corporation Copyright (c) 2019 Sony Interactive
+# Entertainment Inc.
 #
-# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-# following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
-# * Redistributions of source code must retain the above copyright notice, this list of conditions and the following
-#   disclaimer.
-# * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
-#   disclaimer in the documentation and/or other materials provided with the distribution.
-# * Neither the name of Intel Corporation nor the names of its contributors may be used to endorse or promote products
-#   derived from this software without specific prior written permission.
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# * Neither the name of Intel Corporation nor the names of its contributors may
+#   be used to endorse or promote products derived from this software without
+#   specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Try to find Harfbuzz include and library directories.
 #
-# After successful discovery, this will set for inclusion where needed: HarfBuzz_INCLUDE_DIRS - containg the HarfBuzz
-# headers HarfBuzz_LIBRARIES - containg the HarfBuzz library
+# After successful discovery, this will set for inclusion where needed:
+# HarfBuzz_INCLUDE_DIRS - containg the HarfBuzz headers HarfBuzz_LIBRARIES -
+# containg the HarfBuzz library
 
 #[=======================================================================[.rst:
 FindHarfBuzz
@@ -69,20 +76,27 @@ find_path(
   PATH_SUFFIXES harfbuzz
 )
 
-find_library(HarfBuzz_LIBRARY NAMES ${HarfBuzz_NAMES} harfbuzz HINTS ${PC_HARFBUZZ_LIBDIR} ${PC_HARFBUZZ_LIBRARY_DIRS})
+find_library(
+  HarfBuzz_LIBRARY NAMES ${HarfBuzz_NAMES} harfbuzz
+  HINTS ${PC_HARFBUZZ_LIBDIR} ${PC_HARFBUZZ_LIBRARY_DIRS}
+)
 
 if(HarfBuzz_INCLUDE_DIR AND NOT HarfBuzz_VERSION)
   if(EXISTS "${HarfBuzz_INCLUDE_DIR}/hb-version.h")
     file(READ "${HarfBuzz_INCLUDE_DIR}/hb-version.h" _harfbuzz_version_content)
 
-    string(REGEX MATCH "#define +HB_VERSION_STRING +\"([0-9]+\.[0-9]+\.[0-9]+)\"" _dummy "${_harfbuzz_version_content}")
+    string(REGEX MATCH
+                 "#define +HB_VERSION_STRING +\"([0-9]+\.[0-9]+\.[0-9]+)\""
+                 _dummy "${_harfbuzz_version_content}"
+    )
     set(HarfBuzz_VERSION "${CMAKE_MATCH_1}")
   endif()
 endif()
 
 if("${HarfBuzz_FIND_VERSION}" VERSION_GREATER "${HarfBuzz_VERSION}")
-  message(FATAL_ERROR "Required version (" ${HarfBuzz_FIND_VERSION} ") is higher than found version ("
-                      ${HarfBuzz_VERSION} ")"
+  message(
+    FATAL_ERROR "Required version (" ${HarfBuzz_FIND_VERSION}
+                ") is higher than found version (" ${HarfBuzz_VERSION} ")"
   )
 endif()
 
@@ -107,8 +121,8 @@ if("ICU" IN_LIST HarfBuzz_FIND_COMPONENTS)
   )
 
   find_library(
-    HarfBuzz_ICU_LIBRARY NAMES ${HarfBuzz_ICU_NAMES} harfbuzz-icu HINTS ${PC_HARFBUZZ_ICU_LIBDIR}
-                                                                        ${PC_HARFBUZZ_ICU_LIBRARY_DIRS}
+    HarfBuzz_ICU_LIBRARY NAMES ${HarfBuzz_ICU_NAMES} harfbuzz-icu
+    HINTS ${PC_HARFBUZZ_ICU_LIBDIR} ${PC_HARFBUZZ_ICU_LIBRARY_DIRS}
   )
 
   if(HarfBuzz_ICU_LIBRARY)
@@ -146,7 +160,8 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   HarfBuzz
   FOUND_VAR HarfBuzz_FOUND
-  REQUIRED_VARS HarfBuzz_INCLUDE_DIR HarfBuzz_LIBRARY _HarfBuzz_REQUIRED_LIBS_FOUND
+  REQUIRED_VARS HarfBuzz_INCLUDE_DIR HarfBuzz_LIBRARY
+                _HarfBuzz_REQUIRED_LIBS_FOUND
   VERSION_VAR HarfBuzz_VERSION
 )
 
@@ -154,7 +169,8 @@ if(HarfBuzz_LIBRARY AND NOT TARGET HarfBuzz::HarfBuzz)
   add_library(HarfBuzz::HarfBuzz UNKNOWN IMPORTED GLOBAL)
   set_target_properties(
     HarfBuzz::HarfBuzz
-    PROPERTIES IMPORTED_LOCATION "${HarfBuzz_LIBRARY}" INTERFACE_COMPILE_OPTIONS "${HarfBuzz_COMPILE_OPTIONS}"
+    PROPERTIES IMPORTED_LOCATION "${HarfBuzz_LIBRARY}"
+               INTERFACE_COMPILE_OPTIONS "${HarfBuzz_COMPILE_OPTIONS}"
                INTERFACE_INCLUDE_DIRECTORIES "${HarfBuzz_INCLUDE_DIR}"
   )
 endif()
@@ -163,12 +179,16 @@ if(HarfBuzz_ICU_LIBRARY AND NOT TARGET HarfBuzz::ICU)
   add_library(HarfBuzz::ICU UNKNOWN IMPORTED GLOBAL)
   set_target_properties(
     HarfBuzz::ICU
-    PROPERTIES IMPORTED_LOCATION "${HarfBuzz_ICU_LIBRARY}" INTERFACE_COMPILE_OPTIONS "${HarfBuzz_ICU_COMPILE_OPTIONS}"
+    PROPERTIES IMPORTED_LOCATION "${HarfBuzz_ICU_LIBRARY}"
+               INTERFACE_COMPILE_OPTIONS "${HarfBuzz_ICU_COMPILE_OPTIONS}"
                INTERFACE_INCLUDE_DIRECTORIES "${HarfBuzz_ICU_INCLUDE_DIR}"
   )
 endif()
 
-mark_as_advanced(HarfBuzz_INCLUDE_DIR HarfBuzz_ICU_INCLUDE_DIR HarfBuzz_LIBRARY HarfBuzz_ICU_LIBRARY)
+mark_as_advanced(
+  HarfBuzz_INCLUDE_DIR HarfBuzz_ICU_INCLUDE_DIR HarfBuzz_LIBRARY
+  HarfBuzz_ICU_LIBRARY
+)
 
 if(HarfBuzz_FOUND)
   set(HarfBuzz_LIBRARIES ${HarfBuzz_LIBRARY} ${HarfBuzz_ICU_LIBRARY})

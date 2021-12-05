@@ -56,4 +56,6 @@ set(libraries_to_link ${libnetwork} ${libmobility} ${libenergy})
 
 set(test_sources test/uan-energy-model-test.cc test/uan-test.cc)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)

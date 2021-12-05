@@ -21,7 +21,10 @@ set(libraries_to_link
 
 set(test_sources)
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)
 
-# move visualizer folder to build/bindings/python, which allows us to add only PYTHONPATH=ns-3-dev/build/bindings/python
+# move visualizer folder to build/bindings/python, which allows us to add only
+# PYTHONPATH=ns-3-dev/build/bindings/python
 file(COPY visualizer DESTINATION ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/)

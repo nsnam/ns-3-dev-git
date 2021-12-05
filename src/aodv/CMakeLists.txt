@@ -25,8 +25,10 @@ set(header_files
 # link to dependencies
 set(libraries_to_link ${libinternet} ${libwifi})
 
-set(test_sources test/aodv-id-cache-test-suite.cc test/aodv-regression.cc test/aodv-test-suite.cc test/loopback.cc
-                 test/bug-772.cc
+set(test_sources test/aodv-id-cache-test-suite.cc test/aodv-regression.cc
+                 test/aodv-test-suite.cc test/loopback.cc test/bug-772.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+          "${test_sources}"
+)
