@@ -690,28 +690,29 @@ def main():
         else:
             raise Exception("You need to specify a program to run")
 
-    # Get current CMake cache folder and CMake generator (used when reconfiguring)
-    current_cmake_cache_folder, current_cmake_generator = search_cmake_cache(build_profile)
+    if not run_only:
+        # Get current CMake cache folder and CMake generator (used when reconfiguring)
+        current_cmake_cache_folder, current_cmake_generator = search_cmake_cache(build_profile)
 
-    if args.check_config:
-        check_config(current_cmake_cache_folder)
-        # We end things earlier if only checking the current project configuration
-        return
+        if args.check_config:
+            check_config(current_cmake_cache_folder)
+            # We end things earlier if only checking the current project configuration
+            return
 
-    first_run, current_cmake_cache_folder = configuration_step(current_cmake_cache_folder=current_cmake_cache_folder,
-                                                               current_cmake_generator=current_cmake_generator,
-                                                               args=args,
-                                                               run_only=run_only,
-                                                               configure_and_run=configure_and_run,
-                                                               output=output,
-                                                               dry_run=args.dry_run
-                                                               )
+        first_run, current_cmake_cache_folder = configuration_step(current_cmake_cache_folder,
+                                                                   current_cmake_generator,
+                                                                   args,
+                                                                   run_only,
+                                                                   configure_and_run,
+                                                                   output,
+                                                                   args.dry_run
+                                                                   )
 
-    # re-read contents from lock (output directory is important)
-    # re-run build profile check to get up-to-date information before loading the program shortcuts
-    if first_run:
-        exec(open(lock_file).read(), globals())
-        build_profile, ns3_version, ns3_modules = check_build_profile(out_dir)
+        # re-read contents from lock (output directory is important)
+        # re-run build profile check to get up-to-date information before loading the program shortcuts
+        if first_run:
+            exec(open(lock_file).read(), globals())
+            build_profile, ns3_version, ns3_modules = check_build_profile(out_dir)
 
     # We could also replace the "ns3-" prefix used in c4che with the "lib" prefix currently used in cmake
     ns3_modules = [module.replace("ns3-", "") for module in ns3_modules]
@@ -733,15 +734,16 @@ def main():
         args.build = complete_targets
         del complete_targets
 
-    build_step(args,
-               configure_and_run,
-               target_to_run,
-               current_cmake_cache_folder,
-               ns3_modules,
-               ns3_version,
-               build_profile,
-               output
-               )
+    if not run_only:
+        build_step(args,
+                   configure_and_run,
+                   target_to_run,
+                   current_cmake_cache_folder,
+                   ns3_modules,
+                   ns3_version,
+                   build_profile,
+                   output
+                   )
 
     # To determine if we are being called to run-no-build a waf build,
     # we can just check if the out_dir matches the base folder from the target_to_run
