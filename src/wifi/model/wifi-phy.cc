@@ -1176,6 +1176,7 @@ WifiPhy::GetDelayUntilChannelSwitch (void)
       break;
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
+      m_endPhyRxEvent.Cancel ();
       for (auto & phyEntity : m_phyEntities)
         {
           phyEntity.second->CancelAllEvents ();
