@@ -79,6 +79,8 @@ macro(
     endif()
   endif()
 
+  add_library(ns3::${lib${libname}} ALIAS ${lib${libname}})
+
   if(${NS3_CLANG_TIMETRACE})
     add_dependencies(timeTraceReport ${lib${libname}})
   endif()
