@@ -1,6 +1,6 @@
 set(name lte)
 
-if(${NS3_EMU})
+if(${ENABLE_EMU})
   set(emu_sources helper/emu-epc-helper.cc)
   set(emu_headers helper/emu-epc-helper.h)
   set(emu_libraries ${libfd-net-device})

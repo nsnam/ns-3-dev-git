@@ -21,7 +21,7 @@ set(header_files model/mpi-interface.h model/mpi-receiver.h
 set(libraries_to_link ${libcore} ${libnetwork} ${MPI_CXX_LIBRARIES})
 
 set(example_as_test_suite)
-if(${EXAMPLES_ENABLED})
+if(${ENABLE_EXAMPLES})
   set(example_as_test_suite test/mpi-test-suite.cc)
 endif()
 

@@ -108,8 +108,8 @@ per-commit-compile-optimized:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - ./ns3 --verbose configure -d $MODE -GNinja --enable-examples --enable-tests
-    - ./ns3 --verbose build
+    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests
+    - ./ns3 build
     - ./test.py --nowaf
   cache:
     paths:

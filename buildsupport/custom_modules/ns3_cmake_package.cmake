@@ -15,7 +15,18 @@
 #
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
-macro(ns3_cmake_package)
+function(ns3_cmake_package)
+  # Only create configuration to export if there is an module configured to be
+  # built
+  set(enabled_modules "${ns3-libs};${ns3-contrib-libs}")
+  if(enabled_modules STREQUAL ";")
+    message(
+      STATUS
+        "No modules were configured, so we cannot create installation artifacts"
+    )
+    return()
+  endif()
+
   install(
     EXPORT ns3ExportTargets
     NAMESPACE ns3::
@@ -30,8 +41,11 @@ macro(ns3_cmake_package)
     PATH_VARS CMAKE_INSTALL_LIBDIR
   )
 
+  # CMake does not support '-' separated versions in config packages, so replace
+  # them with dots
+  string(REPLACE "-" "." ns3_version "${NS3_VER}")
   write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/ns3ConfigVersion.cmake VERSION ${NS3_VER}
+    ${CMAKE_CURRENT_BINARY_DIR}/ns3ConfigVersion.cmake VERSION ${ns3_version}
     COMPATIBILITY ExactVersion
   )
 
@@ -39,29 +53,13 @@ macro(ns3_cmake_package)
                 "${CMAKE_CURRENT_BINARY_DIR}/ns3ConfigVersion.cmake"
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ns3
   )
-
-  install(DIRECTORY ${CMAKE_HEADER_OUTPUT_DIRECTORY}
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-
-  # Hack to get the install_manifest.txt file before finishing the installation,
-  # which we can then install along with ns3 to make uninstallation trivial
-  set(sep "/")
-  install(
-    CODE "string(REPLACE \";\" \"\\n\" MY_CMAKE_INSTALL_MANIFEST_CONTENT \"\$\{CMAKE_INSTALL_MANIFEST_FILES\}\")\n\
-            string(REPLACE \"/\" \"${sep}\" MY_CMAKE_INSTALL_MANIFEST_CONTENT_FINAL \"\$\{MY_CMAKE_INSTALL_MANIFEST_CONTENT\}\")\n\
-                file(WRITE manifest.txt \"\$\{MY_CMAKE_INSTALL_MANIFEST_CONTENT_FINAL\}\")"
-  )
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.txt
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ns3
-  )
-endmacro()
+endfunction()
 
 # You will need administrative privileges to run this
 add_custom_target(
   uninstall
   COMMAND
-    rm -R `cat ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/ns3/manifest.txt` && rm -R
+    rm `ls ${CMAKE_INSTALL_FULL_LIBDIR}/libns3*` && rm -R
     ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/ns3 && rm -R
     ${CMAKE_INSTALL_FULL_INCLUDEDIR}/ns3
 )

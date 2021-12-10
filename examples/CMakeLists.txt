@@ -1,4 +1,4 @@
-if(${EXAMPLES_ENABLED})
+if(${ENABLE_EXAMPLES})
   subdirlist(examples_to_build ${CMAKE_CURRENT_SOURCE_DIR})
 
   # Process subdirectories

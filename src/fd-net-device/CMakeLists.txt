@@ -16,12 +16,13 @@ if(PKG_CONFIG_FOUND)
 endif()
 
 mark_as_advanced(
-  ENABLE_FDNETDEV ENABLE_DPDKDEVNET ENABLE_TAP ENABLE_EMU ENABLE_NETMAP_EMU
+  ENABLE_FDNETDEV ENABLE_DPDKDEVNET ENABLE_TAPNETDEV ENABLE_EMUNETDEV
+  ENABLE_NETMAP_EMU
 )
 set(ENABLE_FDNETDEV False CACHE INTERNAL "")
 set(ENABLE_DPDKDEVNET False CACHE INTERNAL "")
-set(ENABLE_TAP False CACHE INTERNAL "")
-set(ENABLE_EMU False CACHE INTERNAL "")
+set(ENABLE_TAPNETDEV False CACHE INTERNAL "")
+set(ENABLE_EMUNETDEV False CACHE INTERNAL "")
 set(ENABLE_NETMAP_EMU False CACHE INTERNAL "")
 
 if(${THREADS_ENABLED} AND HAVE_NET_ETHERNET_H)
@@ -34,17 +35,17 @@ if(${THREADS_ENABLED} AND HAVE_NET_ETHERNET_H)
   if(HAVE_IF_NETS_H
      AND HAVE_IF_TUN_H
      AND HAVE_SYS_IOCTL_H
-     AND ${NS3_TAP}
+     AND ${ENABLE_TAP}
   )
-    set(ENABLE_TAP True CACHE INTERNAL "")
+    set(ENABLE_TAPNETDEV True CACHE INTERNAL "")
   endif()
 
   if(HAVE_IF_NETS_H
      AND HAVE_PACKET_H
      AND HAVE_SYS_IOCTL_H
-     AND ${NS3_EMU}
+     AND ${ENABLE_EMU}
   )
-    set(ENABLE_EMU True CACHE INTERNAL "")
+    set(ENABLE_EMUNETDEV True CACHE INTERNAL "")
     add_definitions(-DHAVE_PACKET_H)
   endif()
 
@@ -57,7 +58,7 @@ endif()
 if(${ENABLE_FDNETDEV})
   set(fd-net-device_creators)
 
-  if(${ENABLE_EMU})
+  if(${ENABLE_EMUNETDEV})
     set(emu_sources helper/emu-fd-net-device-helper.cc)
     set(emu_headers helper/emu-fd-net-device-helper.h)
 
@@ -75,7 +76,7 @@ if(${ENABLE_FDNETDEV})
     list(APPEND fd-net-device_creators raw-sock-creator)
   endif()
 
-  if(${ENABLE_TAP})
+  if(${ENABLE_TAPNETDEV})
     set(tap_sources helper/tap-fd-net-device-helper.cc)
     set(tap_headers helper/tap-fd-net-device-helper.h)
 
@@ -94,7 +95,7 @@ if(${ENABLE_FDNETDEV})
     list(APPEND fd-net-device_creators tap-device-creator)
   endif()
 
-  if(${ENABLE_TAP} AND ${NS3_PLANETLAB}) # todo: find planetlab libraries
+  if(${ENABLE_TAPNETDEV} AND ${NS3_PLANETLAB}) # todo: find planetlab libraries
     set(planetlab_sources helper/planetlab-fd-net-device-helper.cc)
     set(planetlab_headers helper/planetlab-fd-net-device-helper.h)
 

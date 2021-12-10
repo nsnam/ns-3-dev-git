@@ -81,6 +81,19 @@ macro(
 
   add_library(ns3::${lib${libname}} ALIAS ${lib${libname}})
 
+  # Associate public headers with library for installation purposes
+  if("${libname}" STREQUAL "core")
+    set(config_headers ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
+                       ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
+    )
+  endif()
+  set_target_properties(
+    ${lib${libname}}
+    PROPERTIES
+      PUBLIC_HEADER
+      "${header_files};${deprecated_header_files};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${libname}-module.h"
+  )
+
   if(${NS3_CLANG_TIMETRACE})
     add_dependencies(timeTraceReport ${lib${libname}})
   endif()
@@ -148,7 +161,7 @@ macro(
   endif()
 
   # Build tests if requested
-  if(${TESTS_ENABLED})
+  if(${ENABLE_TESTS})
     list(LENGTH test_sources test_source_len)
     if(${test_source_len} GREATER 0)
       # Create libname of output library test of module
@@ -188,7 +201,7 @@ macro(
   endif()
 
   # Build lib examples if requested
-  if(${EXAMPLES_ENABLED})
+  if(${ENABLE_EXAMPLES})
     if((EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples)
        AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt)
     )
@@ -376,8 +389,9 @@ macro(
   install(
     TARGETS ${lib${name}}
     EXPORT ns3ExportTargets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
+    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
   )
 endmacro()
 

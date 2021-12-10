@@ -18,11 +18,11 @@
 # Export compile time variable setting the directory to the NS3 root folder
 add_definitions(-DPROJECT_SOURCE_PATH="${PROJECT_SOURCE_DIR}")
 
-# Cache options for INT64X64
-set(INT64X64 "INT128" CACHE STRING "Int64x64 implementation")
-set(INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
-set(INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
-set_property(CACHE INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
+# Cache options for NS3_INT64X64
+set(NS3_INT64X64 "INT128" CACHE STRING "Int64x64 implementation")
+set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
+set(NS3_INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
+set_property(CACHE NS3_INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
 
 # WSLv1 doesn't support tap features
 if(EXISTS "/proc/version")
@@ -63,36 +63,42 @@ if("${NS3_OUTPUT_DIRECTORY}" STREQUAL "")
   set(CMAKE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build) # default output
                                                           # folder
 else()
-  # Check if we can create that directory
-  if(NOT (EXISTS ${NS3_OUTPUT_DIRECTORY}))
+  # Check if NS3_OUTPUT_DIRECTORY is a relative path
+  set(absolute_ns3_output_directory "${NS3_OUTPUT_DIRECTORY}")
+  if(NOT IS_ABSOLUTE ${NS3_OUTPUT_DIRECTORY})
+    set(absolute_ns3_output_directory
+        "${PROJECT_SOURCE_DIR}/${NS3_OUTPUT_DIRECTORY}"
+    )
+  endif()
+  if(NOT (EXISTS ${absolute_ns3_output_directory}))
     message(
       STATUS
         "User-defined output directory \"${NS3_OUTPUT_DIRECTORY}\" doesn't exist. Trying to create it"
     )
-    file(MAKE_DIRECTORY ${NS3_OUTPUT_DIRECTORY})
-    if(NOT (EXISTS ${NS3_OUTPUT_DIRECTORY}))
+    file(MAKE_DIRECTORY ${absolute_ns3_output_directory})
+    if(NOT (EXISTS ${absolute_ns3_output_directory}))
       message(
         FATAL_ERROR
-          "User-defined output directory \"${NS3_OUTPUT_DIRECTORY}\" could not be created. "
+          "User-defined output directory \"${absolute_ns3_output_directory}\" could not be created. "
           "Try changing the value of NS3_OUTPUT_DIRECTORY"
       )
     endif()
 
     # If this directory is not inside the ns-3-dev folder, alert users tests may
     # break
-    if(NOT ("${NS3_OUTPUT_DIRECTORY}" MATCHES "${PROJECT_SOURCE_DIR}"))
+    if(NOT ("${absolute_ns3_output_directory}" MATCHES "${PROJECT_SOURCE_DIR}"))
       message(
         WARNING
-          "User-defined output directory \"${NS3_OUTPUT_DIRECTORY}\" is outside "
+          "User-defined output directory \"${absolute_ns3_output_directory}\" is outside "
           " of the ns-3 directory ${PROJECT_SOURCE_DIR}, which will break some tests"
       )
     endif()
   endif()
   message(
     STATUS
-      "User-defined output directory \"${NS3_OUTPUT_DIRECTORY}\" will be used"
+      "User-defined output directory \"${absolute_ns3_output_directory}\" will be used"
   )
-  set(CMAKE_OUTPUT_DIRECTORY ${NS3_OUTPUT_DIRECTORY})
+  set(CMAKE_OUTPUT_DIRECTORY ${absolute_ns3_output_directory})
 endif()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/lib)
@@ -125,16 +131,40 @@ endif()
 # fPIC (position-independent code) and fPIE (position-independent executable)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Identify compiler
+# Identify compiler and check version
+set(below_minimum_msg "compiler is below the minimum required version")
 set(CLANG FALSE)
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "AppleClang")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${AppleClang_MinVersion})
+    message(
+      FATAL_ERROR
+        "Apple Clang ${CMAKE_CXX_COMPILER_VERSION} ${below_minimum_msg} ${AppleClang_MinVersion}"
+    )
+  endif()
+  set(CLANG TRUE)
+endif()
+
+if((NOT CLANG) AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${Clang_MinVersion})
+    message(
+      FATAL_ERROR
+        "Clang ${CMAKE_CXX_COMPILER_VERSION} ${below_minimum_msg} ${Clang_MinVersion}"
+    )
+  endif()
   set(CLANG TRUE)
 endif()
 
 set(GCC FALSE)
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${GNU_MinVersion})
+    message(
+      FATAL_ERROR
+        "GNU ${CMAKE_CXX_COMPILER_VERSION} ${below_minimum_msg} ${GNU_MinVersion}"
+    )
+  endif()
   set(GCC TRUE)
 endif()
+unset(below_minimum_msg)
 
 # Set compiler options and get command to force unused function linkage (useful
 # for libraries)
@@ -202,6 +232,11 @@ endmacro()
 macro(process_options)
   clear_global_cached_variables()
 
+  # make sure to default to debug if no build type is specified
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+    set(CMAKE_BUILD_TYPE debug)
+  endif()
+
   # process debug switch Used in build-profile-test-suite
   string(TOLOWER ${CMAKE_BUILD_TYPE} cmakeBuildType)
   set(build_profile "${cmakeBuildType}" CACHE INTERNAL "")
@@ -220,16 +255,16 @@ macro(process_options)
 
   # Enable examples if activated via command line (NS3_EXAMPLES) or ns3rc config
   # file
-  set(EXAMPLES_ENABLED OFF)
+  set(ENABLE_EXAMPLES OFF)
   if(${NS3_EXAMPLES} OR ${ns3rc_examples_enabled})
-    set(EXAMPLES_ENABLED ON)
+    set(ENABLE_EXAMPLES ON)
   endif()
 
   # Enable examples if activated via command line (NS3_TESTS) or ns3rc config
   # file
-  set(TESTS_ENABLED OFF)
+  set(ENABLE_TESTS OFF)
   if(${NS3_TESTS} OR ${ns3rc_tests_enabled})
-    set(TESTS_ENABLED ON)
+    set(ENABLE_TESTS ON)
   endif()
 
   set(profiles_without_suffixes release)
@@ -593,10 +628,12 @@ macro(process_options)
   endif()
 
   find_package(Python3 COMPONENTS Interpreter Development)
+  set(ENABLE_PYTHON_BINDINGS OFF)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(FATAL_ERROR "NS3_PYTHON_BINDINGS requires Python3")
     endif()
+    set(ENABLE_PYTHON_BINDINGS ON)
     link_directories(${Python3_LIBRARY_DIRS})
     include_directories(${Python3_INCLUDE_DIRS})
     set(PYTHONDIR ${Python3_SITELIB})
@@ -615,7 +652,7 @@ macro(process_options)
     add_custom_target(apiscan-all)
   endif()
 
-  if(${NS3_COVERAGE} AND (NOT ${TESTS_ENABLED} OR NOT ${EXAMPLES_ENABLED}))
+  if(${NS3_COVERAGE} AND (NOT ${ENABLE_TESTS} OR NOT ${ENABLE_EXAMPLES}))
     message(
       FATAL_ERROR
         "Code coverage requires examples and tests.\n"
@@ -623,7 +660,7 @@ macro(process_options)
     )
   endif()
 
-  if(${TESTS_ENABLED})
+  if(${ENABLE_TESTS})
     add_custom_target(all-test-targets)
 
     # Create a custom target to run test.py --nowaf Target is also used to
@@ -634,7 +671,7 @@ macro(process_options)
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets
     )
-    if(${EXAMPLES_ENABLED})
+    if(${ENABLE_EXAMPLES})
       include(buildsupport/custom_modules/ns3_coverage.cmake)
     endif()
   endif()
@@ -719,8 +756,8 @@ macro(process_options)
       COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
               ${Python3_EXECUTABLE} ./test.py --nowaf --constrain=example
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-      DEPENDS all-test-targets # all-test-targets only exists if TESTS_ENABLED
-                               # is set to ON
+      DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS is
+                               # set to ON
     )
 
     file(
@@ -801,7 +838,7 @@ CommandLine configuration in those files instead.
   endif()
 
   # Process core-config
-  if(${INT64X64} MATCHES "INT128")
+  if(${NS3_INT64X64} MATCHES "INT128")
     include(buildsupport/3rd_party/FindInt128.cmake)
     find_int128_types()
     if(UINT128_FOUND)
@@ -809,15 +846,15 @@ CommandLine configuration in those files instead.
       set(INT64X64_USE_128 TRUE)
     else()
       message(STATUS "Int128 was not found. Falling back to Cairo.")
-      set(INT64X64 "CAIRO")
+      set(NS3_INT64X64 "CAIRO")
     endif()
   endif()
 
-  if(${INT64X64} MATCHES "CAIRO")
+  if(${NS3_INT64X64} MATCHES "CAIRO")
     set(INT64X64_USE_CAIRO TRUE)
   endif()
 
-  if(${INT64X64} MATCHES "DOUBLE")
+  if(${NS3_INT64X64} MATCHES "DOUBLE")
     # WSLv1 has a long double issue that will result in a few tests failing
     # https://github.com/microsoft/WSL/issues/830
     include(CheckTypeSize)
@@ -829,7 +866,7 @@ CommandLine configuration in those files instead.
         STATUS
           "Long double has the wrong size: LD ${SIZEOF_LONG_DOUBLE} vs D ${SIZEOF_DOUBLE}. Falling back to CAIRO."
       )
-      set(INT64X64 "CAIRO")
+      set(NS3_INT64X64 "CAIRO")
     else()
       set(INT64X64_USE_DOUBLE TRUE)
     endif()
@@ -867,9 +904,19 @@ CommandLine configuration in those files instead.
   endif()
 
   # Enable examples as tests suites
-  if(${EXAMPLES_ENABLED})
+  if(${ENABLE_EXAMPLES})
     set(NS3_ENABLE_EXAMPLES "1")
     add_definitions(-DNS3_ENABLE_EXAMPLES -DCMAKE_EXAMPLE_AS_TEST)
+  endif()
+
+  set(ENABLE_TAP OFF)
+  if(${NS3_TAP})
+    set(ENABLE_TAP ON)
+  endif()
+
+  set(ENABLE_EMU OFF)
+  if(${NS3_EMU})
+    set(ENABLE_EMU ON)
   endif()
 
   set(PLATFORM_UNSUPPORTED_PRE "Platform doesn't support")
@@ -877,8 +924,8 @@ CommandLine configuration in those files instead.
   # Remove from libs_to_build all incompatible libraries or the ones that
   # dependencies couldn't be installed
   if(APPLE OR WSLv1)
-    set(NS3_TAP OFF)
-    set(NS3_EMU OFF)
+    set(ENABLE_TAP OFF)
+    set(ENABLE_EMU OFF)
     list(REMOVE_ITEM libs_to_build fd-net-device)
     message(
       STATUS
@@ -894,7 +941,7 @@ CommandLine configuration in those files instead.
     list(REMOVE_ITEM libs_to_build visualizer)
   endif()
 
-  if(NOT ${NS3_TAP})
+  if(NOT ${ENABLE_TAP})
     list(REMOVE_ITEM libs_to_build tap-bridge)
   endif()
 
@@ -1021,7 +1068,7 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
     endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
   endif()
 
-  if(${TESTS_ENABLED})
+  if(${ENABLE_TESTS})
     add_dependencies(all-test-targets ${target_prefix}${target_name})
   endif()
 
@@ -1120,7 +1167,7 @@ endmacro()
 
 function(filter_modules modules_to_filter all_modules_list filter_in)
   set(new_modules_to_build)
-  # We are receiveing variable names as arguments, so we have to "dereference"
+  # We are receiving variable names as arguments, so we have to "dereference"
   # them first That is why we have the duplicated ${${}}
   foreach(module ${${all_modules_list}})
     if(${filter_in} (${module} IN_LIST ${modules_to_filter}))
@@ -1153,6 +1200,8 @@ endfunction()
 function(filter_libraries cmakelists_contents libraries)
   string(REGEX MATCHALL "{lib[^}]*[^obj]}" matches "${cmakelists_content}")
   list(REMOVE_ITEM matches "{libraries_to_link}")
+  string(REPLACE "{lib\${name" "" matches "${matches}") # special case for
+                                                        # src/test
   string(REPLACE "{lib" "" matches "${matches}")
   string(REPLACE "}" "" matches "${matches}")
   set(${libraries} ${matches} PARENT_SCOPE)
@@ -1183,20 +1232,20 @@ function(recursive_dependency module_name)
     set(contrib_dependency_visited
         "${contrib_dependency_visited};${module_name}" CACHE INTERNAL ""
     )
-    set(examples_cmakelist ${contrib_cmakelist})
+    set(examples_cmakelists ${contrib_cmakelist})
   else()
     set(dependency_visited "${dependency_visited};${module_name}" CACHE INTERNAL
                                                                         ""
     )
-    set(examples_cmakelist ${src_cmakelist})
+    set(examples_cmakelists ${src_cmakelist})
   endif()
 
   # cmake-format: off
   # Scan dependencies required by this module examples
-  #if(${EXAMPLES_ENABLED})
-  #  string(REPLACE "${module_name}" "${module_name}/examples" examples_cmakelist ${examples_cmakelist})
-  #  if(EXISTS ${examples_cmakelist})
-  #    file(READ ${examples_cmakelist} cmakelists_content)
+  #if(${ENABLE_EXAMPLES})
+  #  string(REPLACE "${module_name}" "${module_name}/examples" examples_cmakelists ${examples_cmakelists})
+  #  if(EXISTS ${examples_cmakelists})
+  #    file(READ ${examples_cmakelists} cmakelists_content)
   #    filter_libraries(${cmakelists_content} example_matches)
   #  endif()
   #endif()
@@ -1218,16 +1267,20 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
 )
   mark_as_advanced(ns3-all-enabled-modules)
 
-  # Before filtering, we set a variable with all scanned moduled in the src
+  # Before filtering, we set a variable with all scanned modules in the src
   # directory
   set(scanned_modules ${${libs_to_build}})
+
+  # Ensure enabled and disable modules lists are using semicolons
+  string(REPLACE "," ";" ${NS3_ENABLED_MODULES} "${${NS3_ENABLED_MODULES}}")
+  string(REPLACE "," ";" ${NS3_DISABLED_MODULES} "${${NS3_DISABLED_MODULES}}")
 
   # Now that scanning modules finished, we can remove the disabled modules or
   # replace the modules list with the ones in the enabled list
   if(${NS3_ENABLED_MODULES} OR ${ns3rc_enabled_modules})
     # List of enabled modules passed by the command line overwrites list read
     # from ns3rc
-    if(NS3_ENABLED_MODULES)
+    if(${NS3_ENABLED_MODULES})
       set(ns3rc_enabled_modules ${${NS3_ENABLED_MODULES}})
     endif()
 
@@ -1235,9 +1288,9 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
     filter_modules(ns3rc_enabled_modules libs_to_build "")
     filter_modules(ns3rc_enabled_modules contrib_libs_to_build "")
 
-    # Recursively build a list of module dependendencies
+    # Use recursion to automatically determine dependencies required by the
+    # manually enabled modules
     foreach(lib ${${contrib_libs_to_build}})
-      message(WARNING "contrib ${lib}")
       resolve_dependencies(${lib} dependencies contrib_dependencies)
       list(APPEND ${contrib_libs_to_build} "${contrib_dependencies}")
       list(APPEND ${libs_to_build} "${dependencies}")
@@ -1252,15 +1305,51 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
       unset(contrib_dependencies)
     endforeach()
 
-    if(${TESTS_ENABLED})
-      list(APPEND ${libs_to_build} test) # force enable test module if
-                                         # TESTS_ENABLED is enabled
+    if(core IN_LIST ${libs_to_build})
+      list(APPEND ${libs_to_build} test) # include test module
     endif()
   endif()
 
-  if(NS3_DISABLED_MODULES)
-    filter_modules(NS3_DISABLED_MODULES libs_to_build "NOT")
-    filter_modules(NS3_DISABLED_MODULES contrib_libs_to_build "NOT")
+  if(${NS3_DISABLED_MODULES})
+    set(all_libs ${${libs_to_build}};${${contrib_libs_to_build}})
+
+    # We then use the recursive dependency finding to get all dependencies of
+    # all modules
+    foreach(lib ${all_libs})
+      resolve_dependencies(${lib} dependencies contrib_dependencies)
+      set(${lib}_dependencies "${dependencies};${contrib_dependencies}")
+      unset(dependencies)
+      unset(contrib_dependencies)
+    endforeach()
+
+    # Now we can begin removing libraries that require disabled dependencies
+    set(disabled_libs "${${NS3_DISABLED_MODULES}}")
+    foreach(libo ${all_libs})
+      foreach(lib ${all_libs})
+        foreach(disabled_lib ${disabled_libs})
+          if(${lib} STREQUAL ${disabled_lib})
+            continue()
+          endif()
+          if(${disabled_lib} IN_LIST ${lib}_dependencies)
+            list(APPEND disabled_libs ${lib})
+            break() # proceed to the next lib in all_libs
+          endif()
+        endforeach()
+      endforeach()
+    endforeach()
+
+    # Clean dependencies lists
+    foreach(lib ${all_libs})
+      unset(${lib}_dependencies)
+    endforeach()
+
+    # We can filter out disabled modules
+    filter_modules(disabled_libs libs_to_build "NOT")
+    filter_modules(disabled_libs contrib_libs_to_build "NOT")
+
+    if(core IN_LIST ${libs_to_build})
+      list(APPEND ${libs_to_build} test) # include test module
+    endif()
   endif()
 
   # Older CMake versions require this workaround for empty lists
@@ -1300,7 +1389,7 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
         set(${enabled_modules})
       else()
         # If modules are listed, remove quotes and replace commas with
-        # semicollons transforming a string into a cmake list
+        # semicolons transforming a string into a cmake list
         string(REPLACE "," ";" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE "'" "" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE "\"" "" ${enabled_modules} "${${enabled_modules}}")

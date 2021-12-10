@@ -27,8 +27,8 @@
 # Try to find Harfbuzz include and library directories.
 #
 # After successful discovery, this will set for inclusion where needed:
-# HarfBuzz_INCLUDE_DIRS - containg the HarfBuzz headers HarfBuzz_LIBRARIES -
-# containg the HarfBuzz library
+# HarfBuzz_INCLUDE_DIRS - contains the HarfBuzz headers HarfBuzz_LIBRARIES -
+# contains the HarfBuzz library
 
 #[=======================================================================[.rst:
 FindHarfBuzz

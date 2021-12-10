@@ -29,7 +29,7 @@ set(libraries_to_link
     ${{libcore}}
     )
 
-if(${{EXAMPLES_ENABLED}})
+if(${{ENABLE_EXAMPLES}})
     set(examples_as_tests_sources    
         #test/{MODULE}-examples-test-suite.cc
         )

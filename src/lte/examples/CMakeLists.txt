@@ -166,7 +166,7 @@ build_lib_example(
   "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
 )
 
-if(${NS3_EMU})
+if(${ENABLE_EMU})
   set(name lena-simple-epc-emu)
   set(source_files ${name}.cc)
   set(header_files)

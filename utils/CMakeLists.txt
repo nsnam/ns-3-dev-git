@@ -1,4 +1,4 @@
-if(${TESTS_ENABLED} AND (test IN_LIST libs_to_build))
+if(${ENABLE_TESTS} AND (test IN_LIST libs_to_build))
   add_executable(test-runner $<TARGET_OBJECTS:${libtest}> test-runner.cc)
 
   if(${NS3_MONOLIB})

@@ -1,4 +1,4 @@
-if(${NS3_TAP})
+if(${ENABLE_TAP})
   set(name tap-csma)
   set(source_files ${name}.cc)
   set(header_files)

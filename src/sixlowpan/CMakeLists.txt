@@ -11,7 +11,7 @@ set(header_files helper/sixlowpan-helper.h model/sixlowpan-header.h
 set(libraries_to_link ${libinternet} ${libinternet} ${libcore})
 
 set(example_as_test_suite)
-if(${EXAMPLES_ENABLED})
+if(${ENABLE_EXAMPLES})
   set(example_as_test_suite test/sixlowpan-examples-test-suite.cc)
 endif()
 
