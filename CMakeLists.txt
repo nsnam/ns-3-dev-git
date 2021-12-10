@@ -26,9 +26,9 @@ project(NS3 CXX C)
 file(STRINGS VERSION NS3_VER)
 
 # minimum compiler versions
-set(AppleClang_MinVersion 7.0.0)
-set(Clang_MinVersion 3.6.0)
-set(GNU_MinVersion 7.0.0)
+set(AppleClang_MinVersion 11.0.0)
+set(Clang_MinVersion 6.0.0)
+set(GNU_MinVersion 8.0.0)
 
 # common options
 option(NS3_ASSERT "Enable assert on failure" OFF)

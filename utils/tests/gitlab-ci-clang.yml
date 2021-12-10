@@ -4,7 +4,7 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG 8 - 11
+# We support CLANG 6, 8 - 11
 # The test is done under Linux.
 
 .weekly-build-clang:
@@ -25,27 +25,43 @@
   variables:
     COMPILER: clang++-$CLANG
 
+# CLANG 6
+weekly-build-clang-6-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 6.0
+    MODE: debug
+
+weekly-build-clang-6-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 6.0
+    MODE: release
+
+weekly-build-clang-6-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 6.0
+    MODE: optimized
+
 # CLANG 8
 weekly-build-clang-8-debug:
   extends: .weekly-build-clang
   variables:
     CLANG: 8
     MODE: debug
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 weekly-build-clang-8-release:
   extends: .weekly-build-clang
   variables:
     CLANG: 8
     MODE: release
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 weekly-build-clang-8-optimized:
   extends: .weekly-build-clang
   variables:
     CLANG: 8
     MODE: optimized
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 # CLANG 9
 weekly-build-clang-9-debug:
@@ -53,21 +69,18 @@ weekly-build-clang-9-debug:
   variables:
     CLANG: 9
     MODE: debug
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 weekly-build-clang-9-release:
   extends: .weekly-build-clang
   variables:
     CLANG: 9
     MODE: release
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 weekly-build-clang-9-optimized:
   extends: .weekly-build-clang
   variables:
     CLANG: 9
     MODE: optimized
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python-clang-$CLANG
 
 # CLANG 10
 weekly-build-clang-10-debug:
@@ -75,21 +88,18 @@ weekly-build-clang-10-debug:
   variables:
     CLANG: 10
     MODE: debug
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
 
 weekly-build-clang-10-release:
   extends: .weekly-build-clang
   variables:
     CLANG: 10
     MODE: release
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
 
 weekly-build-clang-10-optimized:
   extends: .weekly-build-clang
   variables:
     CLANG: 10
     MODE: optimized
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
 
 # CLANG 11
 weekly-build-clang-11-debug:
@@ -97,19 +107,16 @@ weekly-build-clang-11-debug:
   variables:
     CLANG: 11
     MODE: debug
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
 
 weekly-build-clang-11-release:
   extends: .weekly-build-clang
   variables:
     CLANG: 11
     MODE: release
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
 
 weekly-build-clang-11-optimized:
   extends: .weekly-build-clang
   variables:
     CLANG: 11
     MODE: optimized
-    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev python3-clang-$CLANG
     

@@ -20,7 +20,7 @@ This release is not yet available.
 
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
-- g++-7 or later, or LLVM/clang++-8 or later
+- g++-8 or later, or LLVM/clang++-6 or later
 - Python 3.6 or later
 - (macOS only) Xcode 11 or later
 

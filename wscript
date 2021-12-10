@@ -33,7 +33,7 @@ examples_enabled = False
 tests_enabled    = False
 
 # GCC minimum version requirements for C++17 support
-gcc_min_version = (7, 0, 0)
+gcc_min_version = (8, 0, 0)
 
 # Bug 2181:  clang warnings about unused local typedefs and potentially
 # evaluated expressions affecting darwin clang/LLVM version 7.0.0 (Xcode 7)
