@@ -233,8 +233,9 @@ macro(process_options)
   clear_global_cached_variables()
 
   # make sure to default to debug if no build type is specified
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-    set(CMAKE_BUILD_TYPE debug)
+  if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE
+            STRING "Choose the type of build." FORCE)
   endif()
 
   # process debug switch Used in build-profile-test-suite
