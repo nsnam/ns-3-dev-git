@@ -508,16 +508,7 @@ EventId
 DistributedSimulatorImpl::ScheduleNow (EventImpl *event)
 {
   NS_LOG_FUNCTION (this << event);
-
-  Scheduler::Event ev;
-  ev.impl = event;
-  ev.key.m_ts = m_currentTs;
-  ev.key.m_context = GetContext ();
-  ev.key.m_uid = m_uid;
-  m_uid++;
-  m_unscheduledEvents++;
-  m_events->Insert (ev);
-  return EventId (event, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
+  return Schedule (Time (0), event);
 }
 
 EventId

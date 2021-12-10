@@ -579,21 +579,7 @@ EventId
 RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 {
   NS_LOG_FUNCTION (this << impl);
-  Scheduler::Event ev;
-  {
-    CriticalSection cs (m_mutex);
-
-    ev.impl = impl;
-    ev.key.m_ts = m_currentTs;
-    ev.key.m_context = GetContext ();
-    ev.key.m_uid = m_uid;
-    m_uid++;
-    m_unscheduledEvents++;
-    m_events->Insert (ev);
-    m_synchronizer->Signal ();
-  }
-
-  return EventId (impl, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
+  return Schedule (Time (0), impl);
 }
 
 Time
