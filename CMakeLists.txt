@@ -39,7 +39,6 @@ option(NS3_TESTS "Enable tests to be built" OFF)
 
 # fd-net-device options
 option(NS3_EMU "Build with emulation support" ON)
-option(NS3_PLANETLAB "Build with Planetlab support" OFF)
 option(NS3_TAP "Build with Tap support" ON)
 
 # maintenance and documentation

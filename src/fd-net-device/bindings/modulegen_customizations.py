@@ -11,10 +11,6 @@ def post_register_types(root_module):
         if 'ns3::TapFdNetDeviceHelper'in root_module:
             root_module.classes.remove(root_module['ns3::TapFdNetDeviceHelper'])
 
-    if 'PlanetLabFdNetDevice' not in enabled_features:
-        if 'ns3::PlanetLabFdNetDeviceHelper'in root_module:
-            root_module.classes.remove(root_module['ns3::PlanetLabFdNetDeviceHelper'])
-
     if 'FdNetDevice' not in enabled_features:
         for clsname in ['FdNetDevice', 'FdNetDeviceHelper', 'FdNetDeviceFdReader']: 
             if 'ns3::%s' % clsname in root_module:

@@ -18,7 +18,6 @@
 # NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
 # NS-3 OpenFlow Integration     : not enabled (OpenFlow not enabled (see option --with-openflow))
 # Netmap emulation FdNetDevice  : not enabled (needs net/netmap_user.h)
-# PlanetLab FdNetDevice         : not enabled (PlanetLab operating system not detected (see option --force-planetlab))
 # PyViz visualizer              : not enabled (Missing python modules: pygraphviz, gi.repository.GooCanvas)
 # Python API Scanning Support   : not enabled (castxml too old)
 # Python Bindings               : enabled
@@ -146,11 +145,6 @@ macro(write_fakewaf_config)
   string(APPEND out "Netmap emulation FdNetDevice  : ")
   check_on_or_off("${ENABLE_EMU}" "${ENABLE_NETMAP_EMU}")
 
-  string(
-    APPEND
-    out
-    "PlanetLab FdNetDevice         : flag is set to ${NS3_PLANETLAB}, but currently not supported\n"
-  )
   string(APPEND out "PyViz visualizer              : ")
   check_on_or_off("${NS3_VISUALIZER}" "${ENABLE_VISUALIZER}")
 

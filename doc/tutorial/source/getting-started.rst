@@ -624,7 +624,6 @@ output that looks similar to the following::
    MPI Support                   : not enabled (option --enable-mpi not selected)
    NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
    NS-3 OpenFlow Integration     : not enabled (Required boost libraries not found)
-   PlanetLab FdNetDevice         : not enabled (PlanetLab operating system not detected (see option --force-planetlab))
    PyViz visualizer              : enabled
    Python API Scanning Support   : not enabled (Missing 'pygccxml' Python module)
    Python Bindings               : enabled

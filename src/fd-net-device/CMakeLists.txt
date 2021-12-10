@@ -95,26 +95,6 @@ if(${ENABLE_FDNETDEV})
     list(APPEND fd-net-device_creators tap-device-creator)
   endif()
 
-  if(${ENABLE_TAPNETDEV} AND ${NS3_PLANETLAB}) # todo: find planetlab libraries
-    set(planetlab_sources helper/planetlab-fd-net-device-helper.cc)
-    set(planetlab_headers helper/planetlab-fd-net-device-helper.h)
-
-    add_executable(
-      planetlab-tap-creator helper/creator-utils.cc helper/encode-decode.cc
-                            helper/planetlab-tap-creator.cc
-    )
-    add_definitions(
-      -DPLANETLAB_TAP_CREATOR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/fd-net-device/ns${NS3_VER}-device_planetlab-tap-creator${build_profile_suffix}"
-    )
-    target_link_libraries(planetlab-tap-creator ${PLANETLAB_LIBRARIES})
-    set_runtime_outputdirectory(
-      planetlab-tap-creator
-      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/fd-net-device/ ""
-    )
-
-    list(APPEND fd-net-device_creators planetlab-tap-creator)
-  endif()
-
   if(${ENABLE_NETMAP_EMU})
     set(netmap_sources helper/netmap-net-device-helper.cc
                        model/netmap-net-device.cc
@@ -147,7 +127,6 @@ if(${ENABLE_FDNETDEV})
   set(source_files
       ${tap_sources}
       ${emu_sources}
-      ${planetlab_sources}
       ${netmap_sources}
       ${dpdk_sources}
       helper/creator-utils.cc
@@ -157,7 +136,7 @@ if(${ENABLE_FDNETDEV})
   )
 
   set(header_files
-      ${tap_headers} ${emu_headers} ${planetlab_headers} ${dpdk_headers}
+      ${tap_headers} ${emu_headers} ${dpdk_headers}
       model/fd-net-device.h helper/fd-net-device-helper.h
   )
 

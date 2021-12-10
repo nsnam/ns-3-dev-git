@@ -99,13 +99,3 @@ if(${ENABLE_TAP})
     "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
   )
 endif()
-
-if(${NS3_PLANETLAB})
-  set(name fd-planetlab-ping)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libfd-net-device} ${libinternet} ${libinternet-apps})
-  build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-  )
-endif()

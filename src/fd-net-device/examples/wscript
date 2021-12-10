@@ -35,7 +35,3 @@ def build(bld):
         obj.source = 'fd-tap-ping.cc'
         obj = bld.create_ns3_program('fd-tap-ping6', ['fd-net-device', 'internet', 'internet-apps', 'csma'])
         obj.source = 'fd-tap-ping6.cc'
-
-    if bld.env['ENABLE_PLANETLAB']:
-        obj = bld.create_ns3_program('fd-planetlab-ping', ['fd-net-device', 'internet', 'internet-apps'])
-        obj.source = 'fd-planetlab-ping.cc'
