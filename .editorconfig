@@ -13,6 +13,7 @@ root = true
 end_of_line = lf # Unix-style newlines
 charset = utf-8 # All files are in UTF-8
 insert_final_newline = true # All files end with a newline
+trim_trailing_whitespaces = true
 
 [Makefile]
 indent_style = tab
@@ -22,10 +23,18 @@ tab_width = 4
 indent_style = space
 indent_size = 4
 
+[ns3]
+indent_style = space
+indent_size = 4
+
 [wscript]
 indent_style = space
 indent_size = 4
 
 [*.{cc,h}]
+indent_style = space
+indent_size = 2
+
+[{CMakeLists.txt,*.cmake}]
 indent_style = space
 indent_size = 2
