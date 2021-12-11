@@ -417,6 +417,12 @@ macro(
   # cmake-format: on
   set(missing_dependencies FALSE)
   foreach(lib ${libraries_to_link})
+    # skip check for ns-3 modules if its a path to a library
+    if(EXISTS ${lib})
+      continue()
+    endif()
+
+    # check if the example depends on disabled modules
     string(REPLACE "lib" "" lib ${lib})
     if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
       set(missing_dependencies TRUE)
