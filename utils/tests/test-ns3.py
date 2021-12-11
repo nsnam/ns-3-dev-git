@@ -40,7 +40,6 @@ usual_lib_outdir = os.sep.join([usual_outdir, "lib"])
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Cmake commands
-cmake_refresh_cache_command = "/usr/bin/cmake ..".format(ns3_path=ns3_path)
 cmake_build_project_command = "cmake --build . -j".format(ns3_path=ns3_path)
 cmake_build_target_command = partial("cmake --build . -j {jobs} --target {target}".format,
                                      jobs=max(1, os.cpu_count() - 1)
@@ -476,13 +475,11 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 break
 
         # Scratches currently have a 'scratch_' prefix in their CMake targets
-        # Case 0: dry-run + run (should print commands to refresh cache, build target and then run)
-        self.assertIn(cmake_refresh_cache_command, stdout0)
+        # Case 0: dry-run + run (should print commands to build target and then run)
         self.assertIn(cmake_build_target_command(target="scratch_scratch-simulator"), stdout0)
         self.assertIn(scratch_path, stdout0)
 
         # Case 1: run (should print all the commands of case 1 plus CMake output from build)
-        self.assertIn(cmake_refresh_cache_command, stdout1)
         self.assertIn(cmake_build_target_command(target="scratch_scratch-simulator"), stdout1)
         self.assertIn("Built target", stdout1)
         self.assertIn(scratch_path, stdout1)
@@ -521,13 +518,11 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         self.assertIn("Built target", stdout)
         for program in get_programs_list():
             self.assertTrue(os.path.exists(program))
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_project_command, stdout)
 
     def test_04_BuildProjectNoTaskLines(self):
         return_code, stdout, stderr = run_ns3("--no-task-lines build")
         self.assertEqual(return_code, 0)
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_project_command, stdout)
 
     def test_05_TestVersionFile(self):
@@ -573,7 +568,6 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
     def test_06_OutputDirectory(self):
         # Re-build to return to the original state
         return_code, stdout, stderr = run_ns3("build")
-        self.config_ok(return_code, stdout)
         self.ns3_libraries = get_libraries_list()
         self.ns3_executables = get_programs_list()
 
@@ -593,7 +587,6 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
             # Build
             return_code, stdout, stderr = run_ns3("build")
-            self.config_ok(return_code, stdout)
 
             # Check if we have the same number of binaries and that they were built correctly
             new_programs = get_programs_list(os.sep.join([absolute_path, "build-status.py"]))
@@ -618,7 +611,6 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Try re-building
         return_code, stdout, stderr = run_ns3("build")
-        self.config_ok(return_code, stdout)
 
         # Check if we have the same binaries we had at the beginning
         new_programs = get_programs_list()
@@ -650,13 +642,11 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Build
         return_code, stdout, stderr = run_ns3("build")
-        self.config_ok(return_code, stdout)
         libraries = get_libraries_list()
         headers = get_headers_list()
 
         # Install
         return_code, stdout, stderr = run_ns3("install")
-        self.config_ok(return_code, stdout)
 
         # Find out if libraries were installed to lib or lib64 (Fedora thing)
         lib64 = os.path.exists(os.sep.join([install_prefix, "lib64"]))
@@ -724,7 +714,6 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Uninstall
         return_code, stdout, stderr = run_ns3("uninstall")
-        self.config_ok(return_code, stdout)
         self.assertIn("Built target uninstall", stdout)
 
         # Restore 3-dev version file
@@ -765,14 +754,12 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         libraries = get_libraries_list()
         for module in get_enabled_modules():
             self.assertIn(module.replace("ns3-", ""), ";".join(libraries))
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_project_command, stdout)
 
     def test_02_BuildAndRunExistingExecutableTarget(self):
         return_code, stdout, stderr = run_ns3('--run "test-runner --list"')
         self.assertEqual(return_code, 0)
         self.assertIn("Built target test-runner", stdout)
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_target_command(target="test-runner"), stdout)
 
     def test_03_BuildAndRunExistingLibraryTarget(self):
@@ -789,7 +776,6 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3('--run-no-build "test-runner --list"')
         self.assertEqual(return_code, 0)
         self.assertNotIn("Built target test-runner", stdout)
-        self.assertNotIn(cmake_refresh_cache_command, stdout)
         self.assertNotIn(cmake_build_target_command(target="test-runner"), stdout)
 
     def test_06_RunNoBuildExistingLibraryTarget(self):
@@ -817,14 +803,12 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
     def test_10_DoxygenWithBuild(self):
         return_code, stdout, stderr = run_ns3("--doxygen")
         self.assertEqual(return_code, 0)
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_target_command(target="doxygen"), stdout)
         self.assertIn("Built target doxygen", stdout)
 
     def test_11_DoxygenWithoutBuild(self):
         return_code, stdout, stderr = run_ns3("--doxygen-no-build")
         self.assertEqual(return_code, 0)
-        self.assertIn(cmake_refresh_cache_command, stdout)
         self.assertIn(cmake_build_target_command(target="doxygen-no-build"), stdout)
         self.assertIn("Built target doxygen-no-build", stdout)
 

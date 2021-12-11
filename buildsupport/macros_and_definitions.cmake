@@ -131,6 +131,10 @@ endif()
 # fPIC (position-independent code) and fPIE (position-independent executable)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# do not create a file-level dependency with shared libraries reducing
+# unnecessary relinking
+set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
+
 # Identify compiler and check version
 set(below_minimum_msg "compiler is below the minimum required version")
 set(CLANG FALSE)
@@ -234,8 +238,7 @@ macro(process_options)
 
   # make sure to default to debug if no build type is specified
   if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE
-            STRING "Choose the type of build." FORCE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
   endif()
 
   # process debug switch Used in build-profile-test-suite
@@ -1080,28 +1083,12 @@ endfunction(set_runtime_outputdirectory)
 
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
-  set(copy_headers_target copy_headers_${libname}_${visibility})
-  add_custom_target(${copy_headers_target})
   foreach(header ${headers})
-    get_filename_component(header_name ${header} NAME)
-    add_custom_command(
-      TARGET ${copy_headers_target} PRE_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-              ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name}
+    configure_file(
+      ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name}
+      NO_SOURCE_PERMISSIONS COPYONLY
     )
   endforeach()
-
-  # Create a target to copy all headers
-  add_dependencies(copy_all_headers ${copy_headers_target})
-
-  # And make sure module headers are copied before compiling them
-  if(${XCODE})
-    add_dependencies(
-      ${lib${libname}} copy_all_headers
-    ) # Xcode doesn't play nicely with object libraries
-  else()
-    add_dependencies(${lib${libname}-obj} copy_all_headers)
-  endif()
 endfunction(copy_headers_before_building_lib)
 
 # Import macros used for modules and define specialized versions for src modules

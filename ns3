@@ -23,6 +23,8 @@ def exit_handler(dry_run):
     # We should not print anything in run_only a.k.a. run-no-build cases, except if dry_run
     if not dry_run and run_only:
         return
+    if print_buffer == "":
+        return
     if dry_run:
         print("The following commands would be executed:")
     elif not run_only:
@@ -321,8 +323,11 @@ def search_cmake_cache(build_profile):
                     break
 
                 # Check the build profile
-                if "CMAKE_BUILD_TYPE" in line:
-                    if build_profile == line.split("=")[-1].lower():
+                if "build_profile:INTERNAL" in line:
+                    if build_profile:
+                        if build_profile == line.split("=")[-1]:
+                            current_cmake_cache_folder = os.path.dirname(cmake_cache_file)
+                    else:
                         current_cmake_cache_folder = os.path.dirname(cmake_cache_file)
 
                 # Check the generator
@@ -359,23 +364,35 @@ def check_config(current_cmake_cache_folder):
         print(f.read())
 
 
+def project_configured(current_cmake_cache_folder):
+    if not current_cmake_cache_folder:
+        return False
+    if not os.path.exists(current_cmake_cache_folder):
+        return False
+    if not os.path.exists(os.sep.join([current_cmake_cache_folder, "CMakeCache.txt"])):
+        return False
+    return True
+
+
 def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_generator, output, dry_run=False):
     # Aggregate all flags to configure CMake
     cmake_args = [cmake]
 
-    first_run = False
-    if not os.path.exists(current_cmake_cache_folder + os.sep + "CMakeCache.txt"):
-        first_run = True
+    if not project_configured(current_cmake_cache_folder):
+        # Create a new cmake_cache folder if one does not exist
+        current_cmake_cache_folder = os.sep.join([ns3_path, "cmake_cache"])
+        if not os.path.exists(current_cmake_cache_folder):
+            print_and_buffer("mkdir %s" % os.path.relpath(current_cmake_cache_folder, ns3_path))
+            if not dry_run:
+                os.makedirs(current_cmake_cache_folder, exist_ok=True)
 
-    if "configure" in args:
-        if first_run:
-            # Set default build type to default if a previous cache doesn't exist
-            if args.build_profile is None:
-                args.build_profile = "debug"
+        # Set default build type to default if a previous cache doesn't exist
+        if args.build_profile is None:
+            args.build_profile = "debug"
 
-            # Set generator if a previous cache doesn't exist
-            if args.G is None:
-                args.G = current_cmake_generator
+        # Set generator if a previous cache doesn't exist
+        if args.G is None:
+            args.G = current_cmake_generator
 
         # C++ standard
         if args.cxx_standard is not None:
@@ -393,67 +410,62 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                     cmake_args.append("-DCMAKE_BUILD_TYPE=release")
                 cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
-        options = (("ASSERT", "asserts"),
-                   ("LOG", "logs"),
-                   ("TESTS", "tests"),
-                   ("EXAMPLES", "examples"),
-                   ("COVERAGE", "gcov"),
-                   ("DES_METRICS", "des_metrics"),
-                   ("STATIC", "static"),
-                   ("MPI", "mpi"),
-                   ("GTK3", "gtk"),
-                   ("WARNINGS", "warnings"),
-                   ("WARNINGS_AS_ERRORS", "werror"),
-                   ("DOCS", "documentation"),
-                   ("SANITIZE", "sanitizers")
-                   )
-        for (cmake_flag, option_name) in options:
-            arg = on_off_condition(args, cmake_flag, option_name)
-            if arg:
-                cmake_args.append(arg)
+    options = (("ASSERT", "asserts"),
+               ("LOG", "logs"),
+               ("TESTS", "tests"),
+               ("EXAMPLES", "examples"),
+               ("COVERAGE", "gcov"),
+               ("DES_METRICS", "des_metrics"),
+               ("STATIC", "static"),
+               ("MPI", "mpi"),
+               ("GTK3", "gtk"),
+               ("WARNINGS", "warnings"),
+               ("WARNINGS_AS_ERRORS", "werror"),
+               ("DOCS", "documentation"),
+               ("SANITIZE", "sanitizers")
+               )
+    for (cmake_flag, option_name) in options:
+        arg = on_off_condition(args, cmake_flag, option_name)
+        if arg:
+            cmake_args.append(arg)
 
-        if args.lcov_zerocounters is not None:
-            cmake_args.append("-DNS3_COVERAGE_ZERO_COUNTERS=%s" % on_off(args.lcov_zerocounters))
+    if args.lcov_zerocounters is not None:
+        cmake_args.append("-DNS3_COVERAGE_ZERO_COUNTERS=%s" % on_off(args.lcov_zerocounters))
 
-        # Output, Brite, Click and Openflow directories
-        if args.output_directory is not None:
-            cmake_args.append("-DNS3_OUTPUT_DIRECTORY=%s" % args.output_directory)
+    # Output, Brite, Click and Openflow directories
+    if args.output_directory is not None:
+        cmake_args.append("-DNS3_OUTPUT_DIRECTORY=%s" % args.output_directory)
 
-        if args.with_brite is not None:
-            cmake_args.append("-DNS3_WITH_BRITE=%s" % args.with_brite)
+    if args.with_brite is not None:
+        cmake_args.append("-DNS3_WITH_BRITE=%s" % args.with_brite)
 
-        if args.with_click is not None:
-            cmake_args.append("-DNS3_WITH_CLICK=%s" % args.with_click)
+    if args.with_click is not None:
+        cmake_args.append("-DNS3_WITH_CLICK=%s" % args.with_click)
 
-        if args.with_openflow is not None:
-            cmake_args.append("-DNS3_WITH_OPENFLOW=%s" % args.with_openflow)
+    if args.with_openflow is not None:
+        cmake_args.append("-DNS3_WITH_OPENFLOW=%s" % args.with_openflow)
 
-        if args.prefix is not None:
-            cmake_args.append("-DCMAKE_INSTALL_PREFIX=%s" % args.prefix)
+    if args.prefix is not None:
+        cmake_args.append("-DCMAKE_INSTALL_PREFIX=%s" % args.prefix)
 
-        # Build and link visualizer
-        if args.visualize is not None:
-            cmake_args.append("-DNS3_VISUALIZER=%s" % on_off(args.visualize))
+    # Build and link visualizer
+    if args.visualize is not None:
+        cmake_args.append("-DNS3_VISUALIZER=%s" % on_off(args.visualize))
 
-        # Process enabled/disabled modules
-        if args.enable_modules:
-            cmake_args.append("-DNS3_ENABLED_MODULES=%s" % args.enable_modules)
+    # Process enabled/disabled modules
+    if args.enable_modules:
+        cmake_args.append("-DNS3_ENABLED_MODULES=%s" % args.enable_modules)
 
-        if args.disable_modules:
-            cmake_args.append("-DNS3_DISABLED_MODULES=%s" % args.disable_modules)
+    if args.disable_modules:
+        cmake_args.append("-DNS3_DISABLED_MODULES=%s" % args.disable_modules)
 
     # Try to set specified generator (will probably fail if there is an old cache)
-    if "configure" in args and args.G:
+    if args.G:
         cmake_args.append("-G")
         cmake_args.append(args.G)
 
     # Configure cmake
     cmake_args.append("..")  # for now, assuming the cmake_cache directory is inside the ns-3-dev folder
-
-    if "configure" not in args:
-        if first_run:
-            print("You need to configure ns-3 first: try ./ns3 configure")
-            exit(0)
 
     # Echo out the configure command
     print_and_buffer("cd %s; %s ; cd %s" % (os.path.relpath(current_cmake_cache_folder, ns3_path),
@@ -465,8 +477,6 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     # Run cmake
     if not dry_run:
         subprocess.run(cmake_args, cwd=current_cmake_cache_folder, stdout=output)
-
-    return first_run
 
 
 def get_program_shortcuts(build_profile, ns3_version):
@@ -568,9 +578,9 @@ def reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output
 
     # Echo out the configure command
     print_and_buffer("cd %s; %s ; cd %s" % (os.path.relpath(ns3_path, current_cmake_cache_folder),
-                                           " ".join(cmake_args),
-                                           os.path.relpath(current_cmake_cache_folder, ns3_path)
-                                           )
+                                            " ".join(cmake_args),
+                                            os.path.relpath(current_cmake_cache_folder, ns3_path)
+                                            )
                      )
 
     # Call cmake
@@ -598,56 +608,34 @@ def get_target_to_build(program_path, ns3_version, build_profile):
         return program_name.split("/")[-1]
 
 
-def configuration_step(current_cmake_cache_folder, current_cmake_generator, args, configure_and_run,
+def configuration_step(current_cmake_cache_folder, current_cmake_generator, args,
                        output, dry_run=False):
-    # There are a few cases where we want to reconfigure/refresh the cmake cache
-    #  MANUALLY (does require ./ns3 configure)
-    #   1. When we want to change settings (e.g. --enable-something or -DNS3_something=ON in CMake-land)
-    #  AUTOMATICALLY (does not require ./ns3 configure)
-    #   2. When we want to add/remove source files from modules (e.g. add a new .cc file to a CMakeLists.txt)
+    # Search for the CMake binary
+    cmake = shutil.which("cmake")
+    if not cmake:
+        raise Exception("CMake was not found")
 
-    # If we are not only running with --run-no-build or --pyrun-no-build
-    if not run_only or configure_and_run:
-        # Create a new cmake_cache folder if one does not exist
-        if not current_cmake_cache_folder:
-            current_cmake_cache_folder = os.sep.join([ns3_path, "cmake_cache"])
-            if not os.path.exists(current_cmake_cache_folder):
-                print_and_buffer("mkdir %s" % os.path.relpath(current_cmake_cache_folder, ns3_path))
-                if not dry_run:
-                    os.mkdir(current_cmake_cache_folder)
-                    current_cmake_cache_folder = os.path.abspath(current_cmake_cache_folder)
+    # If --force-refresh, we load settings from the CMakeCache, delete it, then reconfigure CMake to
+    #   force refresh cached packages/libraries that were installed/removed, without losing the current settings
+    if args.force_refresh:
+        reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output, dry_run)
+        exit(0)
 
-        # Search for the CMake binary
-        cmake = shutil.which("cmake")
-        if not cmake:
-            raise Exception("CMake was not found")
+    # Call cmake to configure/reconfigure/refresh the project
+    configure_cmake(cmake,
+                    args,
+                    current_cmake_cache_folder,
+                    current_cmake_generator,
+                    output,
+                    dry_run
+                    )
 
-        # FORCE REFRESH IS ONLY TRIGGERED MANUALLY
-        # If --force-refresh, we load settings from the CMakeCache, delete it, then reconfigure CMake to
-        #   force refresh cached packages/libraries that were installed/removed, without losing the current settings
-        if "configure" in args and args.force_refresh:
-            reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output, dry_run)
-            exit(0)
-
-        # Call cmake to configure/reconfigure/refresh the project
-        first_run = configure_cmake(cmake,
-                                    args,
-                                    current_cmake_cache_folder,
-                                    current_cmake_generator,
-                                    output,
-                                    dry_run
-                                    )
-
-        # If manually configuring, we end the script earlier
-        if "configure" in args:
-            exit(0)
-
-        return first_run, current_cmake_cache_folder
-    return False, current_cmake_cache_folder
+    # If manually configuring, we end the script earlier
+    exit(0)
 
 
 def build_step(args,
-               configure_and_run,
+               build_and_run,
                target_to_run,
                current_cmake_cache_folder,
                ns3_modules,
@@ -667,7 +655,11 @@ def build_step(args,
 
     # If we are building specific targets, we build them one by one
     if "build" in args:
-        non_executable_targets = ["doxygen", "doxygen-no-build", "install", "uninstall"]
+        non_executable_targets = ["doxygen",
+                                  "doxygen-no-build",
+                                  "install",
+                                  "uninstall",
+                                  "cmake-format"]
         # Build targets in the list
         for target in args.build:
             if target in ns3_modules:
@@ -683,13 +675,70 @@ def build_step(args,
         exit(0)
 
     # The remaining case is when we want to build something to run
-    if configure_and_run:
+    if build_and_run:
         cmake_build(current_cmake_cache_folder,
                     jobs=args.jobs,
                     target=get_target_to_build(target_to_run, ns3_version, build_profile),
                     output=output,
                     dry_run=args.dry_run
                     )
+
+
+def run_step(args, target_to_run, target_args):
+    libdir = "%s/lib" % out_dir
+    path_sep = ";" if sys.platform == "win32" else ":"
+    proc_env = {"PATH": os.getenv("PATH") + path_sep + libdir,
+                "PYTHON_PATH": "%s/bindings/python" % out_dir,
+                }
+    if sys.platform != "win32":
+        proc_env["LD_LIBRARY_PATH"] = libdir
+
+    # running from ns-3-dev (ns3_path) or cwd
+    working_dir = args.cwd if args.cwd else ns3_path
+    debugging_software = []
+
+    # running valgrind?
+    if args.valgrind:
+        debugging_software.append(shutil.which("valgrind"))
+
+    # running gdb?
+    if args.gdb:
+        debugging_software.extend([shutil.which("gdb"), "--args"])
+
+    # running with visualizer?
+    if args.visualize:
+        target_args.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
+
+    # running test.py/check?
+    if args.check:
+        target_to_run = os.sep.join([ns3_path, "test.py"])
+        target_args = ["--nowaf", "--jobs=%d" % args.jobs]
+
+    # running with command template?
+    if args.command_template:
+        commands = (args.command_template % target_to_run).split()
+        target_to_run = commands[0]
+        target_args = commands[1:] + target_args
+
+    program_arguments = [*debugging_software, target_to_run, *target_args]
+
+    if not run_only or args.dry_run:
+        exported_variables = "export "
+        for (variable, value) in proc_env.items():
+            if variable == "PATH":
+                value = "$PATH" + path_sep + libdir
+            exported_variables += "%s=%s " % (variable, value)
+        print_and_buffer("cd %s; %s; %s" % (os.path.relpath(ns3_path, working_dir),
+                                            exported_variables,
+                                            " ".join(program_arguments)
+                                            )
+                         )
+
+    if not args.dry_run:
+        try:
+            subprocess.run(program_arguments, env=proc_env, cwd=working_dir)
+        except KeyboardInterrupt:
+            print("Process was interrupted by the user")
 
 
 def main():
@@ -733,11 +782,11 @@ def main():
 
     # Check if running something or reconfiguring ns-3
     run_only = args.run_no_build or args.pyrun_no_build
-    configure_and_run = args.run or args.pyrun
+    build_and_run = args.run or args.pyrun
     target_to_run = None
     target_args = []
     current_cmake_cache_folder = None
-    if not args.check and (run_only or configure_and_run):
+    if not args.check and (run_only or build_and_run):
         target_to_run = max(args.run_no_build, args.pyrun_no_build, args.run, args.pyrun)
         if len(target_to_run) > 0:
             # While testing a weird case appeared where the target to run is between quotes,
@@ -758,19 +807,17 @@ def main():
             # We end things earlier if only checking the current project configuration
             return
 
-        first_run, current_cmake_cache_folder = configuration_step(current_cmake_cache_folder,
-                                                                   current_cmake_generator,
-                                                                   args,
-                                                                   configure_and_run,
-                                                                   output,
-                                                                   args.dry_run
-                                                                   )
+        if "configure" in args:
+            configuration_step(current_cmake_cache_folder,
+                               current_cmake_generator,
+                               args,
+                               output,
+                               args.dry_run
+                               )
 
-        # re-read contents from lock (output directory is important)
-        # re-run build profile check to get up-to-date information before loading the program shortcuts
-        if first_run:
-            exec(open(lock_file).read(), globals())
-            build_profile, ns3_version, ns3_modules = check_build_profile(out_dir)
+        if not project_configured(current_cmake_cache_folder):
+            print("You need to configure ns-3 first: try ./ns3 configure")
+            exit(0)
 
     # We could also replace the "ns3-" prefix used in c4che with the "lib" prefix currently used in cmake
     ns3_modules = [module.replace("ns3-", "") for module in ns3_modules]
@@ -779,7 +826,7 @@ def main():
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
 
     # If we have a target to run, replace shortcut with full path or raise exception
-    if run_only or configure_and_run:
+    if run_only or build_and_run:
         if target_to_run in ns3_programs:
             target_to_run = ns3_programs[target_to_run]
         else:
@@ -794,7 +841,7 @@ def main():
 
     if not run_only:
         build_step(args,
-                   configure_and_run,
+                   build_and_run,
                    target_to_run,
                    current_cmake_cache_folder,
                    ns3_modules,
@@ -813,65 +860,13 @@ def main():
         target_to_run = os.sep.join([out_dir, target_to_run])
 
     # If we're only trying to run the target, we need to check if it actually exists first
-    if (run_only or configure_and_run) and not os.path.exists(target_to_run):
+    if (run_only or build_and_run) and not os.path.exists(target_to_run):
         raise Exception("Executable has not been built yet")
 
     # Finally, we try to run it
-    if args.check or run_only or configure_and_run:
-        libdir = "%s/lib" % out_dir
-        path_sep = ";" if sys.platform == "win32" else ":"
-        proc_env = {"PATH": os.getenv("PATH") + path_sep + libdir,
-                    "PYTHON_PATH": "%s/bindings/python" % out_dir,
-                    }
-        if sys.platform != "win32":
-            proc_env["LD_LIBRARY_PATH"] = libdir
+    if args.check or run_only or build_and_run:
+        run_step(args, target_to_run, target_args)
 
-        # running from ns-3-dev (ns3_path) or cwd
-        working_dir = args.cwd if args.cwd else ns3_path
-        debugging_software = []
-
-        # running valgrind?
-        if args.valgrind:
-            debugging_software.append(shutil.which("valgrind"))
-
-        # running gdb?
-        if args.gdb:
-            debugging_software.extend([shutil.which("gdb"), "--args"])
-
-        # running with visualizer?
-        if args.visualize:
-            target_args.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
-
-        # running test.py/check?
-        if args.check:
-            target_to_run = os.sep.join([ns3_path, "test.py"])
-            target_args = ["--nowaf", "--jobs=%d" % args.jobs]
-
-        # running with command template?
-        if args.command_template:
-            commands = (args.command_template % target_to_run).split()
-            target_to_run = commands[0]
-            target_args = commands[1:] + target_args
-
-        program_arguments = [*debugging_software, target_to_run, *target_args]
-
-        if not run_only or args.dry_run:
-            exported_variables = "export "
-            for (variable, value) in proc_env.items():
-                if variable == "PATH":
-                    value = "$PATH" + path_sep + libdir
-                exported_variables += "%s=%s " % (variable, value)
-            print_and_buffer("cd %s; %s; %s" % (os.path.relpath(ns3_path, working_dir),
-                                                exported_variables,
-                                                " ".join(program_arguments)
-                                                )
-                             )
-
-        if not args.dry_run:
-            try:
-                subprocess.run(program_arguments, env=proc_env, cwd=working_dir)
-            except KeyboardInterrupt:
-                print("Process was interrupted by the user")
     return
 
 

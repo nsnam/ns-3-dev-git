@@ -14,12 +14,14 @@ set(application_sources)
 set(wifi_sources)
 if(applications IN_LIST ns3-all-enabled-modules)
   if(point-to-point IN_LIST ns3-all-enabled-modules)
+    # cmake-format: off
     set(applications_sources
         ns3tcp/ns3tcp-loss-test-suite.cc
         ns3tcp/ns3tcp-no-delay-test-suite.cc
         ns3tcp/ns3tcp-socket-test-suite.cc
         ns3tcp/ns3tcp-state-test-suite.cc
     )
+    # cmake-format: on
   endif()
   if(wifi IN_LIST ns3-all-enabled-modules)
     set(wifi_sources
