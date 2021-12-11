@@ -949,8 +949,10 @@ Building with CMake
 +++++++++++++++++++++++
 
 The ns3 wrapper script calls CMake directly, mapping Waf-like options
-to the verbose settings used by CMake. Calling ``./ns3 --verbose`` shows
-the underlying commands used by the different options.
+to the verbose settings used by CMake. Calling ``./ns3`` will execute
+a series of commands, that will be shown at the end of their execution.
+The execution of those underlying commands can be skipped to just
+print them using ``./ns3 --dry-run``.
 
 Here is are a few examples showing why we suggest the use of the ns3 wrapper script.
 
@@ -959,7 +961,7 @@ Configuration command
 
 .. sourcecode:: bash
 
-  $ ./ns3 --verbose configure --enable-tests --enable-examples -d optimized
+  $ ./ns3 configure --enable-tests --enable-examples -d optimized
 
 Corresponds to
 
@@ -975,14 +977,13 @@ To build a specific target such as ``test-runner`` we use the following ns3 comm
 
 .. sourcecode:: bash
 
-  $ ./ns3 --verbose build test-runner
+  $ ./ns3 build test-runner
 
 Which corresponds to the following commands:
 
 .. sourcecode:: bash
 
   $ cd /ns-3-dev/cmake_cache/
-  $ cmake .. # This command refreshes the CMake cache, which detects changes in source file names before building
   $ cmake --build . -j 16 --target test-runner # This command builds the test-runner target with the underlying build system
 
 
@@ -990,14 +991,13 @@ To build all targets such as modules, examples and tests, we use the following n
 
 .. sourcecode:: bash
 
-  $ ./ns3 --verbose build
+  $ ./ns3 build
 
 Which corresponds to:
 
 .. sourcecode:: bash
 
   $ cd /ns-3-dev/cmake_cache/
-  $ cmake .. # This command refreshes the CMake cache, which detects changes in source file names before building
   $ cmake --build . -j 16  # This command builds all the targets with the underlying build system
 
 Run command
@@ -1005,14 +1005,13 @@ Run command
 
 .. sourcecode:: bash
 
-  $ ./ns3 --verbose --run test-runner
+  $ ./ns3 --run test-runner
 
 Corresponds to:
 
 .. sourcecode:: bash
 
   $ cd /ns-3-dev/cmake_cache/
-  $ cmake .. # This command refreshes the CMake cache, which detects changes in source file names before building
   $ cmake --build . -j 16 --target test-runner # This command builds the test-runner target calling the underlying build system
   $ export PATH=$PATH:/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python # export library paths
   $ export LD_LIBRARY_PATH=/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python
