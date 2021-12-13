@@ -47,6 +47,10 @@
 weekly-build-ubuntu-18.04-debug:
   extends: .weekly-build-ubuntu
   image: ubuntu:18.04
+  before_script:
+    - apt-get install gcc-8 g++-8 --yes
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
   variables:
     MODE: debug
     LIBGSL: libgsl23
@@ -54,6 +58,10 @@ weekly-build-ubuntu-18.04-debug:
 weekly-build-ubuntu-18.04-release:
   extends: .weekly-build-ubuntu
   image: ubuntu:18.04
+  before_script:
+    - apt-get install gcc-8 g++-8 --yes
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
   variables:
     MODE: release
     LIBGSL: libgsl23
@@ -61,6 +69,10 @@ weekly-build-ubuntu-18.04-release:
 weekly-build-ubuntu-18.04-optimized:
   extends: .weekly-build-ubuntu
   image: ubuntu:18.04
+  before_script:
+    - apt-get install gcc-8 g++-8 --yes
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
   variables:
     MODE: optimized
     LIBGSL: libgsl23
