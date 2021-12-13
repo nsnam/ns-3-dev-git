@@ -140,7 +140,7 @@ def parse_args(argv):
                                   action="store_true", default=None, dest="configure_dry_run")
 
     parser_build = sub_parser.add_parser('build',
-                                         help=('Accepts a list of targets to build,',
+                                         help=('Accepts a list of targets to build,'
                                                ' or builds the entire project if no target is given'))
     parser_build.add_argument('build',
                               help='Build the entire project or the specified target and dependencies',
