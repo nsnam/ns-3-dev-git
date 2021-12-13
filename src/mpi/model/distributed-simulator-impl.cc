@@ -110,13 +110,8 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
 
   m_stop = false;
   m_globalFinished = false;
-  // uids are allocated from 4.
-  // uid 0 is "invalid" events
-  // uid 1 is "now" events
-  // uid 2 is "destroy" events
-  m_uid = 4;
-  // before ::Run is entered, the m_currentUid will be zero
-  m_currentUid = 0;
+  m_uid = EventId::UID::VALID;
+  m_currentUid = EventId::UID::INVALID;
   m_currentTs = 0;
   m_currentContext = Simulator::NO_CONTEXT;
   m_unscheduledEvents = 0;
@@ -544,7 +539,7 @@ DistributedSimulatorImpl::GetDelayLeft (const EventId &id) const
 void
 DistributedSimulatorImpl::Remove (const EventId &id)
 {
-  if (id.GetUid () == 2)
+  if (id.GetUid () == EventId::UID::DESTROY)
     {
       // destroy events.
       for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
@@ -586,7 +581,7 @@ DistributedSimulatorImpl::Cancel (const EventId &id)
 bool
 DistributedSimulatorImpl::IsExpired (const EventId &id) const
 {
-  if (id.GetUid () == 2)
+  if (id.GetUid () == EventId::UID::DESTROY)
     {
       if (id.PeekEventImpl () == 0
           || id.PeekEventImpl ()->IsCancelled ())

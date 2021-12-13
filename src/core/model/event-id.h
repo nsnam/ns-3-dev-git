@@ -53,6 +53,22 @@ class EventImpl;
 class EventId
 {
 public:
+
+  /** Special values of the event UID. */
+  enum UID 
+    {
+      /** Invalid UID value. */
+      INVALID = 0,
+      /** ScheduleNow() events. */
+      NOW = 1,
+      /** ScheduleDestroy() events. */
+      DESTROY = 2,
+      /** Reserved UID. */
+      RESERVED = 3,
+      /** Schedule(), etc. events. */
+      VALID = 4
+    };
+
   /** Default constructor. This EventId does nothing. */
   EventId ();
   /**
