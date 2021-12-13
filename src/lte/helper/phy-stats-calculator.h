@@ -221,6 +221,20 @@ private:
    */
   std::string m_interferenceFilename;
 
+  /**
+   * RSRP statistics output trace file
+   */
+  std::ofstream m_rsrpOutFile;
+
+  /**
+   * UE SINR statistics output trace file
+   */
+  std::ofstream m_ueSinrOutFile;
+
+  /**
+   * Interference statistics output trace file
+   */
+  std::ofstream m_interferenceOutFile;
 };
 
 } // namespace ns3

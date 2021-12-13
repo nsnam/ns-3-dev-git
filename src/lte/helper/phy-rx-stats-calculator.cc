@@ -42,6 +42,15 @@ PhyRxStatsCalculator::PhyRxStatsCalculator ()
 PhyRxStatsCalculator::~PhyRxStatsCalculator ()
 {
   NS_LOG_FUNCTION (this);
+  if (m_dlRxOutFile.is_open())
+    {
+      m_dlRxOutFile.close();
+    }
+
+  if (m_ulRxOutFile.is_open())
+    {
+      m_ulRxOutFile.close();
+    }
 }
 
 TypeId
@@ -95,42 +104,31 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
   NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi << params.m_correctness);
   NS_LOG_INFO ("Write DL Rx Phy Stats in " << GetDlRxOutputFilename ().c_str ());
 
-  std::ofstream outFile;
   if ( m_dlRxFirstWrite == true )
     {
-      outFile.open (GetDlRxOutputFilename ().c_str ());
-      if (!outFile.is_open ())
+      m_dlRxOutFile.open (GetDlRxOutputFilename ().c_str ());
+      if (!m_dlRxOutFile.is_open ())
         {
           NS_LOG_ERROR ("Can't open file " << GetDlRxOutputFilename ().c_str ());
           return;
         }
       m_dlRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
-      outFile << std::endl;
-    }
-  else
-    {
-      outFile.open (GetDlRxOutputFilename ().c_str (),  std::ios_base::app);
-      if (!outFile.is_open ())
-        {
-          NS_LOG_ERROR ("Can't open file " << GetDlRxOutputFilename ().c_str ());
-          return;
-        }
+      m_dlRxOutFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
+      m_dlRxOutFile << "\n";
     }
 
-  outFile << params.m_timestamp << "\t";
-  outFile << (uint32_t) params.m_cellId << "\t";
-  outFile << params.m_imsi << "\t";
-  outFile << params.m_rnti << "\t";
-  outFile << (uint32_t) params.m_txMode << "\t";
-  outFile << (uint32_t) params.m_layer << "\t";
-  outFile << (uint32_t) params.m_mcs << "\t";
-  outFile << params.m_size << "\t";
-  outFile << (uint32_t) params.m_rv << "\t";
-  outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_correctness << "\t";
-  outFile << (uint32_t) params.m_ccId << std::endl;
-  outFile.close ();
+  m_dlRxOutFile << params.m_timestamp << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_cellId << "\t";
+  m_dlRxOutFile << params.m_imsi << "\t";
+  m_dlRxOutFile << params.m_rnti << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_txMode << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_layer << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_mcs << "\t";
+  m_dlRxOutFile << params.m_size << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_rv << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_ndi << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_correctness << "\t";
+  m_dlRxOutFile << (uint32_t) params.m_ccId << std::endl;
 }
 
 void
@@ -139,41 +137,30 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
   NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi << params.m_correctness);
   NS_LOG_INFO ("Write UL Rx Phy Stats in " << GetUlRxOutputFilename ().c_str ());
 
-  std::ofstream outFile;
   if ( m_ulRxFirstWrite == true )
     {
-      outFile.open (GetUlRxOutputFilename ().c_str ());
-      if (!outFile.is_open ())
+      m_ulRxOutFile.open (GetUlRxOutputFilename ().c_str ());
+      if (!m_ulRxOutFile.is_open ())
         {
           NS_LOG_ERROR ("Can't open file " << GetUlRxOutputFilename ().c_str ());
           return;
         }
       m_ulRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
-      outFile << std::endl;
-    }
-  else
-    {
-      outFile.open (GetUlRxOutputFilename ().c_str (),  std::ios_base::app);
-      if (!outFile.is_open ())
-        {
-          NS_LOG_ERROR ("Can't open file " << GetUlRxOutputFilename ().c_str ());
-          return;
-        }
+      m_ulRxOutFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
+      m_ulRxOutFile << "\n";
     }
 
-  outFile << params.m_timestamp << "\t";
-  outFile << (uint32_t) params.m_cellId << "\t";
-  outFile << params.m_imsi << "\t";
-  outFile << params.m_rnti << "\t";
-  outFile << (uint32_t) params.m_layer << "\t";
-  outFile << (uint32_t) params.m_mcs << "\t";
-  outFile << params.m_size << "\t";
-  outFile << (uint32_t) params.m_rv << "\t";
-  outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_correctness << "\t";
-  outFile << (uint32_t) params.m_ccId << std::endl;
-  outFile.close ();
+  m_ulRxOutFile << params.m_timestamp << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_cellId << "\t";
+  m_ulRxOutFile << params.m_imsi << "\t";
+  m_ulRxOutFile << params.m_rnti << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_layer << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_mcs << "\t";
+  m_ulRxOutFile << params.m_size << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_rv << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_ndi << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_correctness << "\t";
+  m_ulRxOutFile << (uint32_t) params.m_ccId << std::endl;
 }
 
 void

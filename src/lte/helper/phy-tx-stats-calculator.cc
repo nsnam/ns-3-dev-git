@@ -42,8 +42,16 @@ PhyTxStatsCalculator::PhyTxStatsCalculator ()
 PhyTxStatsCalculator::~PhyTxStatsCalculator ()
 {
   NS_LOG_FUNCTION (this);
-}
+  if (m_dlTxOutFile.is_open())
+    {
+      m_dlTxOutFile.close();
+    }
 
+  if (m_ulTxOutFile.is_open())
+    {
+      m_ulTxOutFile.close();
+    }
+}
 TypeId
 PhyTxStatsCalculator::GetTypeId (void)
 {
@@ -95,41 +103,30 @@ PhyTxStatsCalculator::DlPhyTransmission (PhyTransmissionStatParameters params)
   NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi);
   NS_LOG_INFO ("Write DL Tx Phy Stats in " << GetDlTxOutputFilename ().c_str ());
 
-  std::ofstream outFile;
   if ( m_dlTxFirstWrite == true )
     {
-      outFile.open (GetDlOutputFilename ().c_str ());
-      if (!outFile.is_open ())
+      m_dlTxOutFile.open (GetDlOutputFilename ().c_str ());
+      if (!m_dlTxOutFile.is_open ())
         {
           NS_LOG_ERROR ("Can't open file " << GetDlTxOutputFilename ().c_str ());
           return;
         }
       m_dlTxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tccId";
-      outFile << std::endl;
-    }
-  else
-    {
-      outFile.open (GetDlTxOutputFilename ().c_str (),  std::ios_base::app);
-      if (!outFile.is_open ())
-        {
-          NS_LOG_ERROR ("Can't open file " << GetDlTxOutputFilename ().c_str ());
-          return;
-        }
+      m_dlTxOutFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tccId";
+      m_dlTxOutFile << "\n";
     }
 
-  outFile << params.m_timestamp << "\t";
-  outFile << (uint32_t) params.m_cellId << "\t";
-  outFile << params.m_imsi << "\t";
-  outFile << params.m_rnti << "\t";
-  //outFile << (uint32_t) params.m_txMode << "\t"; // txMode is not available at dl tx side
-  outFile << (uint32_t) params.m_layer << "\t";
-  outFile << (uint32_t) params.m_mcs << "\t";
-  outFile << params.m_size << "\t";
-  outFile << (uint32_t) params.m_rv << "\t";
-  outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_ccId << std::endl;
-  outFile.close ();
+  m_dlTxOutFile << params.m_timestamp << "\t";
+  m_dlTxOutFile << (uint32_t) params.m_cellId << "\t";
+  m_dlTxOutFile << params.m_imsi << "\t";
+  m_dlTxOutFile << params.m_rnti << "\t";
+  //m_dlTxOutFile << (uint32_t) params.m_txMode << "\t"; // txMode is not available at dl tx side
+  m_dlTxOutFile << (uint32_t) params.m_layer << "\t";
+  m_dlTxOutFile << (uint32_t) params.m_mcs << "\t";
+  m_dlTxOutFile << params.m_size << "\t";
+  m_dlTxOutFile << (uint32_t) params.m_rv << "\t";
+  m_dlTxOutFile << (uint32_t) params.m_ndi << "\t";
+  m_dlTxOutFile << (uint32_t) params.m_ccId << std::endl;
 }
 
 void
@@ -138,42 +135,31 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
   NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi);
   NS_LOG_INFO ("Write UL Tx Phy Stats in " << GetUlTxOutputFilename ().c_str ());
 
-  std::ofstream outFile;
   if ( m_ulTxFirstWrite == true )
     {
-      outFile.open (GetUlTxOutputFilename ().c_str ());
-      if (!outFile.is_open ())
+      m_ulTxOutFile.open (GetUlTxOutputFilename ().c_str ());
+      if (!m_ulTxOutFile.is_open ())
         {
           NS_LOG_ERROR ("Can't open file " << GetUlTxOutputFilename ().c_str ());
           return;
         }
       m_ulTxFirstWrite = false;
-//       outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi";
-      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tccId";
-      outFile << std::endl;
-    }
-  else
-    {
-      outFile.open (GetUlTxOutputFilename ().c_str (),  std::ios_base::app);
-      if (!outFile.is_open ())
-        {
-          NS_LOG_ERROR ("Can't open file " << GetUlTxOutputFilename ().c_str ());
-          return;
-        }
+      //m_ulTxOutFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi";
+      m_ulTxOutFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tccId";
+      m_ulTxOutFile << "\n";
     }
 
-  outFile << params.m_timestamp << "\t";
-  outFile << (uint32_t) params.m_cellId << "\t";
-  outFile << params.m_imsi << "\t";
-  outFile << params.m_rnti << "\t";
-  //outFile << (uint32_t) params.m_txMode << "\t";
-  outFile << (uint32_t) params.m_layer << "\t";
-  outFile << (uint32_t) params.m_mcs << "\t";
-  outFile << params.m_size << "\t";
-  outFile << (uint32_t) params.m_rv << "\t";
-  outFile << (uint32_t) params.m_ndi << "\t";
-  outFile << (uint32_t) params.m_ccId << std::endl;
-  outFile.close ();
+  m_ulTxOutFile << params.m_timestamp << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_cellId << "\t";
+  m_ulTxOutFile << params.m_imsi << "\t";
+  m_ulTxOutFile << params.m_rnti << "\t";
+  //m_ulTxOutFile << (uint32_t) params.m_txMode << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_layer << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_mcs << "\t";
+  m_ulTxOutFile << params.m_size << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_rv << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_ndi << "\t";
+  m_ulTxOutFile << (uint32_t) params.m_ccId << std::endl;
 }
 
 void

@@ -142,6 +142,15 @@ private:
    */
   bool m_ulRxFirstWrite;
 
+  /**
+   * DL RX PHY output trace file
+   */
+  std::ofstream m_dlRxOutFile;
+
+  /**
+   * UL RX PHY output trace file
+   */
+  std::ofstream m_ulRxOutFile;
 };
 
 } // namespace ns3
