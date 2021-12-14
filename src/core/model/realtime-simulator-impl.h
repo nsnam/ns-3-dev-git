@@ -29,9 +29,9 @@
 #include "ptr.h"
 #include "assert.h"
 #include "log.h"
-#include "system-mutex.h"
 
 #include <list>
+#include <mutex>
 
 /**
  * \file
@@ -218,7 +218,7 @@ private:
   /**@}*/
 
   /** Mutex to control access to key state. */
-  mutable SystemMutex m_mutex;
+  mutable std::mutex m_mutex;
 
   /** The synchronizer in use to track real time. */
   Ptr<Synchronizer> m_synchronizer;

@@ -21,10 +21,10 @@
  */
 #include "nstime.h"
 #include "abort.h"
-#include "system-mutex.h"
 #include "log.h"
 #include <cmath>    // pow
 #include <iomanip>  // showpos
+#include <mutex>
 #include <sstream>
 
 /**
@@ -88,21 +88,8 @@ namespace {
 // static
 Time::MarkedTimes * Time::g_markingTimes = 0;
 
-/**
- * \internal
- * Get mutex for critical sections around modification of Time::g_markingTimes
- *
- * \returns The static mutex to control access to Time::g_markingTimes.
- *
- * \relates Time
- */
-SystemMutex &
-GetMarkingMutex ()
-{
-  static SystemMutex g_markingMutex;
-  return g_markingMutex;
-}
-
+/// The static mutex for critical sections around modification of Time::g_markingTimes.
+static std::mutex g_markingMutex;
 
 // Function called to force static initialization
 // static
@@ -110,7 +97,7 @@ bool Time::StaticInit ()
 {
   static bool firstTime = true;
 
-  CriticalSection critical (GetMarkingMutex ());
+  std::unique_lock lock {g_markingMutex};
 
   if (firstTime)
     {
@@ -307,14 +294,13 @@ Time::ClearMarkedTimes ()
    *
    * It would seem natural to use this function at the end of
    * ConvertTimes, but that function already has the mutex.
-   * Our SystemMutex throws a fatal error if we try to lock it more than
-   * once in the same thread (at least in the unix implementation),
+   * The mutex can not be locked more than once in the same thread,
    * so calling this function from ConvertTimes is a bad idea.
    *
    * Instead, we copy this body into ConvertTimes.
    */
 
-  CriticalSection critical (GetMarkingMutex ());
+  std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION_NOARGS ();
   if (g_markingTimes)
@@ -330,7 +316,7 @@ Time::ClearMarkedTimes ()
 void
 Time::Mark (Time * const time)
 {
-  CriticalSection critical (GetMarkingMutex ());
+  std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION (time);
   NS_ASSERT (time != 0);
@@ -356,7 +342,7 @@ Time::Mark (Time * const time)
 void
 Time::Clear (Time * const time)
 {
-  CriticalSection critical (GetMarkingMutex ());
+  std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION (time);
   NS_ASSERT (time != 0);
@@ -386,7 +372,7 @@ Time::Clear (Time * const time)
 void
 Time::ConvertTimes (const enum Unit unit)
 {
-  CriticalSection critical (GetMarkingMutex ());
+  std::unique_lock lock {g_markingMutex};
 
   NS_LOG_FUNCTION_NOARGS ();
 

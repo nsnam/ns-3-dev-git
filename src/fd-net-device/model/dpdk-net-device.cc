@@ -25,7 +25,6 @@
 #include "ns3/log.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/simulator.h"
-#include "ns3/system-mutex.h"
 #include "ns3/uinteger.h"
 
 #include <sys/ioctl.h>
@@ -33,6 +32,7 @@
 #include <sys/signal.h>
 #include <unistd.h>
 
+#include <mutex>
 #include <poll.h>
 
 #include <rte_eal.h>
@@ -474,7 +474,7 @@ DpdkNetDevice::Write (uint8_t *buffer, size_t length)
 void
 DpdkNetDevice::DoFinishStoppingDevice (void)
 {
-  CriticalSection cs (m_pendingReadMutex);
+  std::unique_lock lock {m_pendingReadMutex};
 
   while (!m_pendingQueue.empty ())
     {

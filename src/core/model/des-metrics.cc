@@ -131,7 +131,7 @@ DesMetrics::TraceWithContext (uint32_t context, const Time & now, const Time & d
      << (now + delay).GetTimeStep () << "\"]";
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
     m_os << ss.str ();
   }
 

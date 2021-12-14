@@ -29,10 +29,10 @@
 
 #include "nstime.h"
 #include "singleton.h"
-#include "system-mutex.h"
 
 #include <stdint.h>    // uint32_t
 #include <fstream>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -160,7 +160,7 @@ private:
   char m_separator;      //!< The separator between event records.
 
   /** Mutex to control access to the output file. */
-  SystemMutex m_mutex;
+  std::mutex m_mutex;
 
 };  // class DesMetrics
 

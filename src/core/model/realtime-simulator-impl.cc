@@ -28,13 +28,12 @@
 #include "assert.h"
 #include "fatal-error.h"
 #include "log.h"
-#include "system-mutex.h"
 #include "boolean.h"
 #include "enum.h"
 
 
 #include <cmath>
-
+#include <mutex>
 
 /**
  * \file
@@ -146,7 +145,7 @@ RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
   Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     if (m_events != 0)
       {
@@ -203,7 +202,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
       uint64_t tsNow;
 
       {
-        CriticalSection cs (m_mutex);
+        std::unique_lock lock {m_mutex};
         //
         // Since we are in realtime mode, the time to delay has got to be the
         // difference between the current realtime and the timestamp of the next
@@ -314,7 +313,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   Scheduler::Event next;
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     //
     // We do know we're waiting for an event, so there had better be an event on the
@@ -399,7 +398,7 @@ RealtimeSimulatorImpl::IsFinished (void) const
 {
   bool rc;
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
     rc = m_events->IsEmpty () || m_stop;
   }
 
@@ -441,7 +440,7 @@ RealtimeSimulatorImpl::Run (void)
     {
       bool process = false;
       {
-        CriticalSection cs (m_mutex);
+        std::unique_lock lock {m_mutex};
 
         if (!m_events->IsEmpty ())
           {
@@ -471,7 +470,7 @@ RealtimeSimulatorImpl::Run (void)
   // consistency test to check that we didn't lose any events along the way.
   //
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     NS_ASSERT_MSG (m_events->IsEmpty () == false || m_unscheduledEvents == 0,
                    "RealtimeSimulatorImpl::Run(): Empty queue and unprocessed events");
@@ -516,7 +515,7 @@ RealtimeSimulatorImpl::Schedule (Time const &delay, EventImpl *impl)
 
   Scheduler::Event ev;
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
     //
     // This is the reason we had to bring the absolute time calculation in from the
     // simulator.h into the implementation.  Since the implementations may be
@@ -544,7 +543,7 @@ RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay,
   NS_LOG_FUNCTION (this << context << delay << impl);
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
     uint64_t ts;
 
     if (SystemThread::Equals (m_main))
@@ -596,7 +595,7 @@ RealtimeSimulatorImpl::ScheduleRealtimeWithContext (uint32_t context, Time const
   NS_LOG_FUNCTION (this << context << time << impl);
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     uint64_t ts = m_synchronizer->GetCurrentRealtime () + time.GetTimeStep ();
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
@@ -623,7 +622,7 @@ RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext (uint32_t context, EventIm
 {
   NS_LOG_FUNCTION (this << context << impl);
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     //
     // If the simulator is running, we're pacing and have a meaningful
@@ -664,7 +663,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
 
   EventId id;
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     //
     // Time doesn't really matter here (especially in realtime mode).  It is
@@ -719,7 +718,7 @@ RealtimeSimulatorImpl::Remove (const EventId &id)
     }
 
   {
-    CriticalSection cs (m_mutex);
+    std::unique_lock lock {m_mutex};
 
     Scheduler::Event event;
     event.impl = id.PeekEventImpl ();

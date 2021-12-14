@@ -166,7 +166,7 @@ DefaultSimulatorImpl::ProcessEventsWithContext (void)
   // swap queues
   EventsWithContext eventsWithContext;
   {
-    CriticalSection cs (m_eventsWithContextMutex);
+    std::unique_lock lock {m_eventsWithContextMutex};
     m_eventsWithContext.swap (eventsWithContext);
     m_eventsWithContextEmpty = true;
   }
@@ -266,7 +266,7 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &delay, 
       ev.timestamp = delay.GetTimeStep ();
       ev.event = event;
       {
-        CriticalSection cs (m_eventsWithContextMutex);
+        std::unique_lock lock {m_eventsWithContextMutex};
         m_eventsWithContext.push_back (ev);
         m_eventsWithContextEmpty = false;
       }
