@@ -1086,7 +1086,7 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
   foreach(header ${headers})
     configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name}
-      NO_SOURCE_PERMISSIONS COPYONLY
+      COPYONLY
     )
   endforeach()
 endfunction(copy_headers_before_building_lib)
