@@ -43,6 +43,11 @@ template <typename T>
 class SimulationSingleton
 {
 public:
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  SimulationSingleton<T> () = delete;
+  SimulationSingleton<T> (const SimulationSingleton<T> &) = delete;
+  SimulationSingleton<T> & operator = (const SimulationSingleton<T> &) = delete;
+
   /**
    * Get a pointer to the singleton instance.
    *
@@ -68,27 +73,6 @@ private:
 
   /** Delete the static instance. */
   static void DeleteObject (void);
-
-  /**
-   * \name %Singleton pattern
-   * Private constructor, copy and assignment operator.
-   *
-   *  Note these do not have to be implemented, since they are
-   *  never called.
-   */
-  /**@{*/
-  /** Default constructor */
-  SimulationSingleton<T> (void);
-
-  /** Copy constructor. */
-  SimulationSingleton<T> (const SimulationSingleton<T> &);
-  /**
-   * Assignment.
-   * \returns The Singleton.
-   */
-  SimulationSingleton<T> operator = (const SimulationSingleton<T> &);
-  /**@}*/
-
 };
 
 } // namespace ns3

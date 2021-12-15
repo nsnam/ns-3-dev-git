@@ -218,7 +218,6 @@ set(header_files
     model/math.h
     model/names.h
     model/node-printer.h
-    model/non-copyable.h
     model/nstime.h
     model/object-base.h
     model/object-factory.h

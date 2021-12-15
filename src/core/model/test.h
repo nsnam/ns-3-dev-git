@@ -28,7 +28,6 @@
 #include <limits>
 #include <stdint.h>
 
-#include "non-copyable.h"
 #include "system-wall-clock-ms.h"
 
 /**
@@ -991,7 +990,7 @@ class TestRunnerImpl;
  *
  * \see sample-test-suite.cc
  */
-class TestCase : private NonCopyable
+class TestCase
 {
 public:
   /** \brief How long the test takes to execute. */
@@ -1006,6 +1005,10 @@ public:
    *  Destructor
    */
   virtual ~TestCase ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  TestCase (const TestCase &) = delete;
+  TestCase & operator = (const TestCase &) = delete;
 
   /**
    * \return The name of this test
@@ -1244,7 +1247,7 @@ public:
  * \brief A simple way to store test vectors (for stimulus or from responses)
  */
 template <typename T>
-class TestVectors : private NonCopyable
+class TestVectors
 {
 public:
   /**
@@ -1255,6 +1258,10 @@ public:
    * Virtual destructor
    */
   virtual ~TestVectors ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  TestVectors (const TestVectors &) = delete;
+  TestVectors & operator = (const TestVectors &) = delete;
 
   /**
    * \brief Set the expected length of this vector.

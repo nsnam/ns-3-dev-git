@@ -20,9 +20,6 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
-#include "non-copyable.h"
-
-
 /**
  * \file
  * \ingroup access
@@ -60,9 +57,13 @@ namespace ns3 {
  * finalizer.
  */
 template <typename T>
-class Singleton : private NonCopyable
+class Singleton
 {
 public:
+  // Delete copy constructor and assignment operator to avoid misuse
+  Singleton<T> (const Singleton<T> &) = delete;
+  Singleton<T> & operator = (const Singleton<T> &) = delete;
+
   /**
    * Get a pointer to the singleton instance.
    *
@@ -73,6 +74,16 @@ public:
    */
   static T * Get (void);
 
+protected:
+  /** Constructor. */
+  Singleton<T> ()
+  {
+  }
+
+  /** Destructor. */
+  virtual ~Singleton<T> ()
+  {
+  }
 };
 
 } // namespace ns3

@@ -364,7 +364,6 @@ def build(bld):
         'model/hash-fnv.h',
         'model/hash.h',
         'model/valgrind.h',
-        'model/non-copyable.h',
         'model/build-profile.h',
         'model/des-metrics.h',
         'model/ascii-file.h',
