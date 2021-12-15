@@ -390,12 +390,14 @@ Miscellaneous items
 
 - Do not use ``nil`` or ``NULL`` constants; use ``0`` (improves portability)
 
-- Consider whether you want the default copy constructor and assignment
-  operator in your class, and if not, make them private such as follows:
+- Consider whether you want the default constructor, copy constructor, or assignment
+  operator in your class, and if not, explicitly mark them as deleted:
   ::
-    private:
-      ClassName (const Classname&);
-      ClassName& operator= (const ClassName&)
+    public:
+      // Explain why these are not supported
+      ClassName () = delete;
+      ClassName (const Classname&) = delete;
+      ClassName& operator= (const ClassName&) = delete;
 
 - Avoid returning a reference to an internal or local member of an object:
   ::
