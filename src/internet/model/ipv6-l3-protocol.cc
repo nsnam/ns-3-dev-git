@@ -1088,9 +1088,12 @@ void
 Ipv6L3Protocol::CallTxTrace (const Ipv6Header & ipHeader, Ptr<Packet> packet,
                                     Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  Ptr<Packet> packetCopy = packet->Copy ();
-  packetCopy->AddHeader (ipHeader);
-  m_txTrace (packetCopy, ipv6, interface);
+  if (!m_txTrace.IsEmpty ())
+  {
+    Ptr<Packet> packetCopy = packet->Copy ();
+    packetCopy->AddHeader (ipHeader);
+    m_txTrace (packetCopy, ipv6, interface);
+  }
 }
 
 void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6Header const& ipHeader)

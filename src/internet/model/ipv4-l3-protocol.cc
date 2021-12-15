@@ -741,9 +741,12 @@ void
 Ipv4L3Protocol::CallTxTrace (const Ipv4Header & ipHeader, Ptr<Packet> packet,
                                     Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  Ptr<Packet> packetCopy = packet->Copy ();
-  packetCopy->AddHeader (ipHeader);
-  m_txTrace (packetCopy, ipv4, interface);
+  if (!m_txTrace.IsEmpty ())
+    {
+      Ptr<Packet> packetCopy = packet->Copy ();
+      packetCopy->AddHeader (ipHeader);
+      m_txTrace (packetCopy, ipv4, interface);
+    }
 }
 
 void 
