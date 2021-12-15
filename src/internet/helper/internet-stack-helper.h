@@ -186,20 +186,6 @@ public:
   void SetTcp (std::string tid);
 
   /**
-   * \brief This function is used to setup the Network Simulation Cradle stack with library value.
-   * 
-   * Give the NSC stack a shared library file name to use when creating the 
-   * stack implementation.  The attr string is actually the attribute name to 
-   * be setup and val is its value. The attribute is the stack implementation 
-   * to be used and the value is the shared library name.
-   * 
-   * \param tid The type id, for the case of nsc it would be "ns3::NscTcpL4Protocol" 
-   * \param attr The attribute name that must be setup, for example "Library"
-   * \param val The attribute value, which will be in fact the shared library name (example:"liblinux2.6.26.so")
-   */
-  void SetTcp (std::string tid, std::string attr, const AttributeValue &val); 
-
-  /**
    * \brief Enable/disable IPv4 stack install.
    * \param enable enable state
    */

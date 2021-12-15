@@ -258,13 +258,6 @@ InternetStackHelper::SetTcp (const std::string tid)
 }
 
 void 
-InternetStackHelper::SetTcp (std::string tid, std::string n0, const AttributeValue &v0)
-{
-  m_tcpFactory.SetTypeId (tid);
-  m_tcpFactory.Set (n0,v0);
-}
-
-void 
 InternetStackHelper::Install (NodeContainer c) const
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)

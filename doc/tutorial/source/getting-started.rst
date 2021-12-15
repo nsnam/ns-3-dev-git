@@ -591,7 +591,6 @@ output that looks similar to the following::
    Checking for header net/ethernet.h                                 : yes 
    Checking for header linux/if_tun.h                                 : yes 
    Checking for header netpacket/packet.h                             : yes 
-   Checking for NSC location                                          : not found 
    Checking for 'sqlite3'                                             : not found 
    Checking for header linux/if_tun.h                                 : yes 
    Checking for python module 'gi'                                    : 3.26.1 
@@ -625,7 +624,6 @@ output that looks similar to the following::
    MPI Support                   : not enabled (option --enable-mpi not selected)
    NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
    NS-3 OpenFlow Integration     : not enabled (Required boost libraries not found)
-   Network Simulation Cradle     : not enabled (NSC not found (see option --with-nsc))
    PlanetLab FdNetDevice         : not enabled (PlanetLab operating system not detected (see option --force-planetlab))
    PyViz visualizer              : enabled
    Python API Scanning Support   : not enabled (Missing 'pygccxml' Python module)
