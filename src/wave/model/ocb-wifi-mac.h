@@ -126,6 +126,7 @@ public:
    * access is granted to this MAC.
    */
   virtual void Enqueue (Ptr<Packet> packet, Mac48Address to);
+  virtual bool CanForwardPacketsTo (Mac48Address to) const;
   /**
     * \param cwmin the min contention window
     * \param cwmax the max contention window

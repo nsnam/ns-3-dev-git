@@ -133,6 +133,7 @@ AmpduAggregationTest::DoRun (void)
   fem->SetAckManager (ackManager);
   m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
+  m_mac->SetState (StaWifiMac::ASSOCIATED);
 
   /*
    * Configure MPDU aggregation.
@@ -381,6 +382,7 @@ TwoLevelAggregationTest::DoRun (void)
   fem->SetAckManager (ackManager);
   m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
+  m_mac->SetState (StaWifiMac::ASSOCIATED);
 
   /*
    * Configure aggregation.
@@ -614,6 +616,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   fem->SetAckManager (ackManager);
   m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
+  m_mac->SetState (StaWifiMac::ASSOCIATED);
 
   /*
    * Configure aggregation.

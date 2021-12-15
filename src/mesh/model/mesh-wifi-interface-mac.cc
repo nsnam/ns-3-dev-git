@@ -89,6 +89,11 @@ MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
 //-----------------------------------------------------------------------------
 // WifiMac inherited
 //-----------------------------------------------------------------------------
+bool
+MeshWifiInterfaceMac::CanForwardPacketsTo (Mac48Address to) const
+{
+  return true;
+}
 void
 MeshWifiInterfaceMac::Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from)
 {

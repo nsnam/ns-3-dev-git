@@ -59,6 +59,7 @@ public:
   virtual ~ApWifiMac ();
 
   void SetLinkUpCallback (Callback<void> linkUp) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
   bool SupportsSendFrom (void) const override;

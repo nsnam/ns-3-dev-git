@@ -394,6 +394,12 @@ QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQue
           NS_LOG_DEBUG ("Skipping in flight MPDU: " << *item);
           item = peek ();
         }
+      else if (item->GetHeader ().HasData ()
+               && !m_mac->CanForwardPacketsTo (item->GetHeader ().GetAddr1 ()))
+        {
+          NS_LOG_DEBUG ("Skipping frame that cannot be forwarded: " << *item);
+          item = peek ();
+        }
       else
         {
           break;

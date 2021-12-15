@@ -149,6 +149,14 @@ public:
   virtual bool GetShortSlotTimeSupported (void) const = 0;
 
   /**
+   * Return true if packets can be forwarded to the given destination,
+   * false otherwise.
+   *
+   * \param to the address to which the packet should be sent
+   * \return whether packets can be forwarded to the given destination
+   */
+  virtual bool CanForwardPacketsTo (Mac48Address to) const = 0;
+  /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
    * \param from the address from which the packet should be sent.

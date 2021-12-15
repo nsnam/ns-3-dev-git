@@ -70,6 +70,12 @@ AdhocWifiMac::SetAddress (Mac48Address address)
   RegularWifiMac::SetBssid (address);
 }
 
+bool
+AdhocWifiMac::CanForwardPacketsTo (Mac48Address to) const
+{
+  return true;
+}
+
 void
 AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {

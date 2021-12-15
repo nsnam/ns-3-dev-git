@@ -454,11 +454,17 @@ StaWifiMac::IsWaitAssocResp (void) const
   return m_state == WAIT_ASSOC_RESP;
 }
 
+bool
+StaWifiMac::CanForwardPacketsTo (Mac48Address to) const
+{
+  return (IsAssociated ());
+}
+
 void
 StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  if (!IsAssociated ())
+  if (!CanForwardPacketsTo (to))
     {
       NotifyTxDrop (packet);
       TryToEnsureAssociated ();

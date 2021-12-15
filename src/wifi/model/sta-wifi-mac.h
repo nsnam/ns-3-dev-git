@@ -130,6 +130,7 @@ public:
    * access is granted to this MAC.
    */
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
 
   /**
    * \param phy the physical layer attached to this MAC.
