@@ -178,6 +178,15 @@ public:
    */
   QueueSize GetMaxSize (void) const;
 
+  /**
+   * \brief Check if the queue would overflow with additional bytes or packets
+   * Note: the check is performed according to the queue's operating mode (bytes or packets).
+   * \param nPackets number of additional packets
+   * \param nBytes number of additional bytes
+   * \return true if the queue should overflow, false otherwise.
+   */
+  bool WouldOverflow (uint32_t nPackets, uint32_t nBytes) const;
+
 #if 0
   // average calculation requires keeping around
   // a buffer with the date of arrival of past received packets

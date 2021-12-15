@@ -220,4 +220,17 @@ QueueBase::GetMaxSize (void) const
   return m_maxSize;
 }
 
+bool
+QueueBase::WouldOverflow (uint32_t nPackets, uint32_t nBytes) const
+{
+  if (m_maxSize.GetUnit () == QueueSizeUnit::PACKETS)
+    {
+      return (m_nPackets + nPackets > m_maxSize.GetValue ());
+    }
+  else
+    {
+      return (m_nBytes + nBytes > m_maxSize.GetValue ());
+    }
+}
+
 } // namespace ns3

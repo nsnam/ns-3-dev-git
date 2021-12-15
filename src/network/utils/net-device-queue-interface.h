@@ -347,12 +347,10 @@ NetDeviceQueue::PacketEnqueued (QueueType* queue, Ptr<const typename QueueType::
   NotifyQueuedBytes (item->GetSize ());
 
   NS_ASSERT_MSG (m_device, "Aggregated NetDevice not set");
-  Ptr<Packet> p = Create<Packet> (m_device->GetMtu ());
-
   // After enqueuing a packet, we need to check whether the queue is able to
   // store another packet. If not, we stop the queue
 
-  if (queue->GetCurrentSize () + p > queue->GetMaxSize ())
+  if (queue->WouldOverflow (1, m_device->GetMtu ()))
     {
       NS_LOG_DEBUG ("The device queue is being stopped (" << queue->GetCurrentSize ()
                     << " inside)");
@@ -370,13 +368,11 @@ NetDeviceQueue::PacketDequeued (QueueType* queue, Ptr<const typename QueueType::
   NotifyTransmittedBytes (item->GetSize ());
 
   NS_ASSERT_MSG (m_device, "Aggregated NetDevice not set");
-  Ptr<Packet> p = Create<Packet> (m_device->GetMtu ());
-
   // After dequeuing a packet, if there is room for another packet we
   // call Wake () that ensures that the queue is not stopped and restarts
   // the queue disc if the queue was stopped
 
-  if (queue->GetCurrentSize () + p <= queue->GetMaxSize ())
+  if (!queue->WouldOverflow (1, m_device->GetMtu ()))
     {
       Wake ();
     }
