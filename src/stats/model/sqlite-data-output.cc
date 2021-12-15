@@ -64,7 +64,7 @@ SqliteDataOutput::Output (DataCollector &dc)
   std::string run = dc.GetRunLabel ();
   bool res;
 
-  m_sqliteOut = new SQLiteOutput (m_dbFile, "ns-3-sqlite-data-output-sem");
+  m_sqliteOut = new SQLiteOutput (m_dbFile);
 
   res = m_sqliteOut->SpinExec ("CREATE TABLE IF NOT EXISTS Experiments (run, experiment, strategy, input, description text)");
   NS_ASSERT (res);

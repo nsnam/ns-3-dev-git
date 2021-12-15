@@ -4,26 +4,16 @@ set(sqlite_libraries)
 if(${ENABLE_SQLITE})
   set(sqlite_sources
       model/sqlite-data-output.cc
+      model/sqlite-output.cc
   )
   set(sqlite_headers
       model/sqlite-data-output.h
+      model/sqlite-output.h
   )
   include_directories(${SQLite3_INCLUDE_DIRS})
   set(sqlite_libraries
       ${SQLite3_LIBRARIES}
   )
-  if(HAVE_SEMAPHORE_H)
-    list(
-      APPEND
-      sqlite_sources
-      model/sqlite-output.cc
-    )
-    list(
-      APPEND
-      sqlite_headers
-      model/sqlite-output.h
-    )
-  endif()
 endif()
 
 set(source_files

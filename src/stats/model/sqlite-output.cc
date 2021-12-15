@@ -27,8 +27,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SQLiteOutput");
 
-SQLiteOutput::SQLiteOutput (const std::string &name, const std::string &semName)
-  : m_semName (semName)
+SQLiteOutput::SQLiteOutput (const std::string &name)
 {
   int rc = sqlite3_open (name.c_str (), &m_db);
   NS_ABORT_MSG_UNLESS (rc == SQLITE_OK, "Failed to open DB");
@@ -59,14 +58,14 @@ bool
 SQLiteOutput::SpinExec (sqlite3_stmt *stmt) const
 {
   int rc = SpinExec (m_db, stmt);
-  return !CheckError (m_db, rc, "", nullptr, false);
+  return !CheckError (m_db, rc, "", false);
 }
 
 bool
 SQLiteOutput::WaitExec (const std::string &cmd) const
 {
   int rc = WaitExec (m_db, cmd);
-  return !CheckError (m_db, rc, cmd, nullptr, false);
+  return !CheckError (m_db, rc, cmd, false);
 }
 
 bool
@@ -239,32 +238,18 @@ SQLiteOutput::WaitPrepare (sqlite3 *db, sqlite3_stmt **stmt, const std::string &
 {
   int rc;
   bool ret;
-  sem_t *sem = sem_open (m_semName.c_str (), O_CREAT, S_IRUSR | S_IWUSR, 1);
 
-  NS_ABORT_MSG_IF (sem == SEM_FAILED,
-                   "FAILED to open system semaphore, errno: " << errno);
+  std::unique_lock lock {m_mutex};
 
-  if (sem_wait (sem) == 0)
+  rc = sqlite3_prepare_v2 (db, cmd.c_str (),
+                           static_cast<int> (cmd.size ()),
+                           stmt, nullptr);
+
+  ret = CheckError (db, rc, cmd, false);
+  if (ret)
     {
-      rc = sqlite3_prepare_v2 (db, cmd.c_str (),
-                               static_cast<int> (cmd.size ()),
-                               stmt, nullptr);
-
-      ret = CheckError (db, rc, cmd, sem, false);
-      if (ret)
-        {
-          return rc;
-        }
-
-      sem_post (sem);
+      return rc;
     }
-  else
-    {
-      NS_FATAL_ERROR ("Can't lock semaphore");
-    }
-
-  sem_close (sem);
-  sem = nullptr;
 
   return rc;
 }
@@ -331,15 +316,10 @@ SQLiteOutput::Error (sqlite3 *db, const std::string &cmd)
 
 bool
 SQLiteOutput::CheckError (sqlite3 *db, int rc, const std::string &cmd,
-                          sem_t *sem, bool hardExit)
+                          bool hardExit)
 {
   if (rc != SQLITE_OK && rc != SQLITE_DONE)
     {
-      if (sem != nullptr)
-        {
-          sem_post (sem);
-          sem_close (sem);
-        }
       if (hardExit)
         {
           Error (db, cmd);
@@ -360,21 +340,21 @@ SQLiteOutput::SpinExec (sqlite3 *db, const std::string &cmd)
   bool ret;
 
   int rc = SpinPrepare (db, &stmt, cmd);
-  ret = CheckError (db, rc, cmd, nullptr, false);
+  ret = CheckError (db, rc, cmd, false);
   if (ret)
     {
       return rc;
     }
 
   rc = SpinStep (stmt);
-  ret = CheckError (db, rc, cmd, nullptr, false);
+  ret = CheckError (db, rc, cmd, false);
   if (ret)
     {
       return rc;
     }
 
   rc = SpinFinalize (stmt);
-  CheckError (db, rc, cmd, nullptr, false);
+  CheckError (db, rc, cmd, false);
 
   return rc;
 }
@@ -384,7 +364,7 @@ SQLiteOutput::SpinExec (sqlite3 *db, sqlite3_stmt *stmt)
 {
   bool ret;
   int rc = SpinStep (stmt);
-  ret = CheckError (db, rc, "", nullptr, false);
+  ret = CheckError (db, rc, "", false);
   if (ret)
     {
       return rc;
@@ -400,31 +380,17 @@ SQLiteOutput::WaitExec (sqlite3 *db, sqlite3_stmt *stmt) const
   bool ret;
   int rc = SQLITE_ERROR;
 
-  sem_t *sem = sem_open (m_semName.c_str (), O_CREAT, S_IRUSR | S_IWUSR, 1);
+  std::unique_lock lock {m_mutex};
 
-  NS_ABORT_MSG_IF (sem == SEM_FAILED,
-                   "FAILED to open system semaphore, errno: " << errno);
+  rc = SpinStep (stmt);
 
-  if (sem_wait (sem) == 0)
+  ret = CheckError (db, rc, "", false);
+  if (ret)
     {
-      rc = SpinStep (stmt);
-
-      ret = CheckError (db, rc, "", sem, false);
-      if (ret)
-        {
-          return rc;
-        }
-
-      rc = SpinFinalize (stmt);
-
-      sem_post (sem);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Can't lock system semaphore");
+      return rc;
     }
 
-  sem_close (sem);
+  rc = SpinFinalize (stmt);
 
   return rc;
 }
@@ -436,34 +402,24 @@ SQLiteOutput::WaitExec (sqlite3 *db, const std::string &cmd) const
   bool ret;
   int rc = SQLITE_ERROR;
 
-  sem_t *sem = sem_open (m_semName.c_str (), O_CREAT, S_IRUSR | S_IWUSR, 1);
+  std::unique_lock lock {m_mutex};
 
-  NS_ABORT_MSG_IF (sem == SEM_FAILED,
-                   "FAILED to open system semaphore, errno: " << errno);
-
-  if (sem_wait (sem) == 0)
+  rc = SpinPrepare (db, &stmt, cmd);
+  ret = CheckError (db, rc, cmd, false);
+  if (ret)
     {
-      rc = SpinPrepare (db, &stmt, cmd);
-      ret = CheckError (db, rc, cmd, sem, false);
-      if (ret)
-        {
-          return rc;
-        }
-
-      rc = SpinStep (stmt);
-
-      ret = CheckError (db, rc, cmd, sem, false);
-      if (ret)
-        {
-          return rc;
-        }
-
-      rc = SpinFinalize (stmt);
-
-      sem_post (sem);
+      return rc;
     }
 
-  sem_close (sem);
+  rc = SpinStep (stmt);
+
+  ret = CheckError (db, rc, cmd, false);
+  if (ret)
+    {
+      return rc;
+    }
+
+  rc = SpinFinalize (stmt);
 
   return rc;
 }

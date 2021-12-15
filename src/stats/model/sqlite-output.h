@@ -22,7 +22,7 @@
 #include "ns3/simple-ref-count.h"
 #include <sqlite3.h>
 #include <string>
-#include <semaphore.h>
+#include <mutex>
 
 namespace ns3 {
 
@@ -34,7 +34,7 @@ namespace ns3 {
  * The class is able to execute commands, and retrieve results, from an SQLITE
  * database. The methods with the "Spin" prefix, in case of concurrent access
  * to the database, will spin until the operation is applied. The methods with
- * the "Wait" prefix will wait on a system semaphore.
+ * the "Wait" prefix will wait on a mutex.
  *
  * If you run multiple simulations that write on the same database, it is
  * recommended to use the "Wait" prefixed methods. Otherwise, if the access to
@@ -48,9 +48,9 @@ public:
   /**
    * \brief SQLiteOutput constructor
    * \param name database name
-   * \param semName system semaphore name
    */
-  SQLiteOutput (const std::string &name, const std::string &semName);
+  SQLiteOutput (const std::string &name);
+
   /**
    * Destructor
    */
@@ -78,22 +78,23 @@ public:
    * \return true in case of success
    */
   bool SpinExec (sqlite3_stmt *stmt) const;
+
   /**
-   * \brief Execute a command, waiting on a system semaphore
+   * \brief Execute a command, waiting on a mutex
    * \param cmd Command to be executed
    * \return true in case of success
    */
   bool WaitExec (const std::string &cmd) const;
 
   /**
-   * \brief Execute a command, waiting on a system semaphore
+   * \brief Execute a command, waiting on a mutex
    * \param stmt Sqlite3 statement to be executed
    * \return true in case of success
    */
   bool WaitExec (sqlite3_stmt *stmt) const;
 
   /**
-   * \brief Prepare a statement, waiting on a system semaphore
+   * \brief Prepare a statement, waiting on a mutex
    * \param stmt Sqlite statement
    * \param cmd Command to prepare inside the statement
    * \return true in case of success
@@ -135,6 +136,7 @@ public:
    * \param stmt Statement
    * \return Sqlite error core
    */
+
   static int SpinStep (sqlite3_stmt *stmt);
   /**
    * \brief Finalize a statement until the result is ok or an error
@@ -157,21 +159,23 @@ public:
 
 protected:
   /**
-   * \brief Execute a command, waiting on a system semaphore
+   * \brief Execute a command, waiting on a mutex
    * \param db Database
    * \param cmd Command
    * \return Sqlite error code
    */
   int WaitExec (sqlite3 *db, const std::string &cmd) const;
+
   /**
-   * \brief Execute a statement, waiting on a system semaphore
+   * \brief Execute a statement, waiting on a mutex
    * \param db Database
    * \param stmt Statement
    * \return Sqlite error code
    */
   int WaitExec (sqlite3 *db, sqlite3_stmt *stmt) const;
+
   /**
-   * \brief Prepare a statement, waiting on a system semaphore
+   * \brief Prepare a statement, waiting on a mutex
    * \param db Database
    * \param stmt Statement
    * \param cmd Command to prepare
@@ -194,7 +198,7 @@ protected:
    * \return Sqlite error code
    */
   static int SpinExec (sqlite3 *db, sqlite3_stmt *stmt);
-  
+
   /**
    * \brief Preparing a command ignoring concurrency problems, retrying instead
    * \param db Database
@@ -210,24 +214,24 @@ protected:
    * \param cmd Command
    */
   [[ noreturn ]] static void Error (sqlite3 *db, const std::string &cmd);
+
   /**
    * \brief Check any error in the db
    * \param db Database
    * \param rc Sqlite return code
    * \param cmd Command
-   * \param sem System semaphore
    * \param hardExit if true, will exit the program
    * \return true in case of error, false otherwise
    */
   static bool CheckError (sqlite3 *db, int rc, const std::string &cmd,
-                          sem_t *sem, bool hardExit);
+                          bool hardExit);
 
 private:
-  std::string m_dBname;      //!< Database name
-  std::string m_semName;     //!< System semaphore name
+  std::string m_dBname;        //!< Database name
+  mutable std::mutex m_mutex;  //!< Mutex
   sqlite3 *m_db {
     nullptr
-  };                         //!< Database pointer
+  };                           //!< Database pointer
 };
 
 } // namespace ns3
