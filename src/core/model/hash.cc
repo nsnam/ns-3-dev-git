@@ -32,6 +32,13 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash");
 
+Hasher& GetStaticHash (void)
+{
+  static Hasher g_hasher = Hasher ();
+  g_hasher.clear();
+  return g_hasher;
+}
+
 Hasher::Hasher ()
 {
   m_impl = Create <Hash::Function::Murmur3> ();
