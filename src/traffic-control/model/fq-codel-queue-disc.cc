@@ -329,8 +329,7 @@ FqCoDelQueueDisc::DoDequeue (void)
               NS_LOG_DEBUG ("Increase deficit for new flow index " << flow->GetIndex ());
               flow->IncreaseDeficit (m_quantum);
               flow->SetStatus (FqCoDelFlow::OLD_FLOW);
-              m_oldFlows.push_back (flow);
-              m_newFlows.pop_front ();
+              m_oldFlows.splice (m_oldFlows.end (), m_newFlows, m_newFlows.begin ());
             }
           else
             {
@@ -347,8 +346,7 @@ FqCoDelQueueDisc::DoDequeue (void)
             {
               NS_LOG_DEBUG ("Increase deficit for old flow index " << flow->GetIndex ());
               flow->IncreaseDeficit (m_quantum);
-              m_oldFlows.push_back (flow);
-              m_oldFlows.pop_front ();
+              m_oldFlows.splice (m_oldFlows.end (), m_oldFlows, m_oldFlows.begin ());
             }
           else
             {
