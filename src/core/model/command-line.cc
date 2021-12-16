@@ -47,6 +47,58 @@
  * ns3::CommandLine implementation.
  */
 
+/** CommandLine anonymous namespace. */
+namespace {
+/**
+ * HTML-encode a string, for PrintDoxygenUsage().
+ * Usage and help strings, which are intended for text-only display,
+ * can contain illegal characters for HTML.  This function 
+ * encodes '&', '\"', '\'',  and '<'.
+ * \param [in] source The original string.
+ * \returns The HTML-encoded version.
+ */
+std::string 
+Encode (const std::string & source)
+{
+  std::string buffer;
+  buffer.reserve (1.1 * source.size ());
+
+  for(size_t pos = 0; pos != source.size (); ++pos) 
+    {
+      /* *NS_CHECK_STYLE_OFF* */
+      switch (source[pos]) 
+        {
+        case '&':  buffer.append ("&amp;");          break;
+        case '\"': buffer.append ("&quot;");         break;
+        case '\'': buffer.append ("&apos;");         break;
+          // case '>':  buffer.append ("&gt;");           break;
+
+        case '<':  {
+          // Special case:
+          // "...blah <file..." is not allowed
+          // "...foo<bar..."  is allowed
+          if (buffer.back () == ' ')
+            {
+              buffer.append ("&lt;");
+            }
+          else
+            {
+              buffer.append ("<");
+            }
+
+          break;
+        }
+
+        default:   buffer.append (&source[pos], 1);  break;
+        }
+      /* *NS_CHECK_STYLE_ON* */
+    }
+  return buffer;
+}
+
+}  // anonymous namespace
+
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CommandLine");
@@ -382,7 +434,6 @@ CommandLine::PrintDoxygenUsage (void) const
 
   std::fstream os (outf, std::fstream::out);
 
-
   os << "/**\n \\file " << m_shortName << ".cc\n"
      << "<h3>Usage</h3>\n"
      << "<code>$ ./ns3 --run \"" << m_shortName
@@ -392,45 +443,38 @@ CommandLine::PrintDoxygenUsage (void) const
 
   if (m_usage.length ())
     {
-      os << m_usage << std::endl;
+      os << Encode (m_usage) << "\n";
     }
+
+  auto listOptions = [&os](Items items, std::string pre)
+  {
+    os << "<dl>\n";
+    for (const auto i : items)
+      {
+        os << "  <dt>" << pre << i->m_name << " </dt>\n"
+           << "    <dd>" << Encode (i->m_help);
+
+        if ( i->HasDefault ())
+          {
+            os << " [" << Encode (i->GetDefault ()) << "]";
+          }
+        os << " </dd>\n";
+      }
+    os << "</dl>\n";
+  };
 
   if (!m_options.empty ())
     {
       os << std::endl;
-      os << "<h3>Program Options</h3>\n"
-         << "<dl>\n";
-      for (auto i : m_options)
-        {
-          os << "  <dt>\\c --" << i->m_name << " </dt>\n"
-             << "    <dd>" << i->m_help;
-
-          if ( i->HasDefault ())
-            {
-              os << " [" << i->GetDefault () << "]";
-            }
-          os << " </dd>\n";
-        }
-      os << "</dl>\n";
+      os << "<h3>Program Options</h3>\n";
+      listOptions (m_options, "\\c --");
     }
 
   if (!nonOptions.empty ())
     {
       os << std::endl;
-      os << "<h3>Program Arguments</h3>\n"
-         << "<dl>\n";
-      for (auto i : nonOptions)
-        {
-          os << "  <dt> \\c " << i->m_name << " </dt>\n"
-             << "    <dd>" << i->m_help;
-
-          if ( i->HasDefault ())
-            {
-              os << " [" << i->GetDefault () << "]";
-            }
-          os << " </dd>\n";
-        }
-      os << "</dl>\n";
+      os << "<h3>Program Arguments</h3>\n";
+      listOptions (nonOptions, "\\c ");
     }
 
   os << "*/" << std::endl;
