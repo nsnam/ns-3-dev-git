@@ -47,11 +47,24 @@ cmake_build_target_command = partial("cmake --build . -j {jobs} --target {target
 
 
 def run_ns3(args):
+    """
+    Runs the ns3 wrapper script with arguments
+    :param args: string containing arguments that will get split before calling ns3
+    :return: tuple containing (error code, stdout and stderr)
+    """
     return run_program(ns3_script, args, True)
 
 
 # Adapted from https://github.com/metabrainz/picard/blob/master/picard/util/__init__.py
 def run_program(program, args, python=False, cwd=ns3_path):
+    """
+    Runs a program with the given arguments and returns a tuple containing (error code, stdout and stderr)
+    :param program: program to execute (or python script)
+    :param args: string containing arguments that will get split before calling the program
+    :param python: flag indicating whether the program is a python script
+    :param cwd: working directory used that will be the root folder for the execution
+    :return: tuple containing (error code, stdout and stderr)
+    """
     if type(args) != str:
         raise Exception("args should be a string")
 
@@ -78,6 +91,11 @@ def run_program(program, args, python=False, cwd=ns3_path):
 
 
 def get_programs_list(build_status_script_path=usual_build_status_script):
+    """
+    Extracts the programs list from build-status.py
+    :param build_status_script_path: path containing build-status.py
+    :return: list of programs
+    """
     values = {}
     with open(build_status_script_path) as f:
         exec(f.read(), globals(), values)
@@ -85,25 +103,49 @@ def get_programs_list(build_status_script_path=usual_build_status_script):
 
 
 def get_libraries_list(lib_outdir=usual_lib_outdir):
+    """
+    Gets a list of built libraries
+    :param lib_outdir: path containing libraries
+    :return: list of built libraries
+    """
     return glob.glob(lib_outdir + '/*', recursive=True)
 
 
 def get_headers_list(outdir=usual_outdir):
+    """
+    Gets a list of header files
+    :param outdir: path containing headers
+    :return: list of headers
+    """
     return glob.glob(outdir + '/**/*.h', recursive=True)
 
 
-def read_c4che_entry(entry, c4cache_script_path=usual_c4che_script):
+def read_c4che_entry(entry, c4che_script_path=usual_c4che_script):
+    """
+    Read interesting entries from the c4che/_cache.py file
+    :param entry: entry to read from c4che/_cache.py
+    :param c4che_script_path: path containing _cache.py
+    :return: value of the requested entry
+    """
     values = {}
-    with open(c4cache_script_path) as f:
+    with open(c4che_script_path) as f:
         exec(f.read(), globals(), values)
     return values[entry]
 
 
 def get_test_enabled():
+    """
+    Check if tests are enabled in the c4che/_cache.py
+    :return: bool
+    """
     return read_c4che_entry("ENABLE_TESTS")
 
 
 def get_enabled_modules():
+    """
+    Check if tests are enabled in the c4che/_cache.py
+    :return: list of enabled modules (prefixed with 'ns3-')
+    """
     return read_c4che_entry("NS3_ENABLED_MODULES")
 
 
@@ -112,6 +154,9 @@ class NS3RunWafTargets(unittest.TestCase):
     cleaned_once = False
 
     def setUp(self):
+        """
+        Clean the default build directory, then configure and build ns-3 with waf
+        """
         if not NS3RunWafTargets.cleaned_once:
             NS3RunWafTargets.cleaned_once = True
             run_ns3("clean")
@@ -158,6 +203,9 @@ class NS3RunWafTargets(unittest.TestCase):
 
 class NS3CommonSettingsTestCase(unittest.TestCase):
     def setUp(self):
+        """
+        Clean configuration/build artifacts before common commands
+        """
         super().setUp()
         # No special setup for common test cases other than making sure we are working on a clean directory
         run_ns3("clean")
@@ -180,12 +228,15 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
 
 class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
     def setUp(self):
+        """
+        Clean configuration/build artifacts before testing configuration settings
+        """
         super().setUp()
         # No special setup for common test cases other than making sure we are working on a clean directory
         run_ns3("clean")
 
     def test_01_Debug(self):
-        return_code, stdout, stderr = run_ns3("configure -d debug")
+        return_code, stdout, stderr = run_ns3("configure -d debug --enable-verbose")
         self.assertEqual(return_code, 0)
         self.assertIn("Build profile                 : debug", stdout)
         self.assertIn("Build files have been written to", stdout)
@@ -206,7 +257,7 @@ class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
         self.assertIn("Build files have been written to", stdout)
 
     def test_03_Optimized(self):
-        return_code, stdout, stderr = run_ns3("configure -d optimized")
+        return_code, stdout, stderr = run_ns3("configure -d optimized --enable-verbose")
         self.assertEqual(return_code, 0)
         self.assertIn("Build profile                 : optimized", stdout)
         self.assertIn("Build files have been written to", stdout)
@@ -236,11 +287,21 @@ class NS3BaseTestCase(unittest.TestCase):
     cleaned_once = False
 
     def config_ok(self, return_code, stdout):
+        """
+        Check if configuration for release mode worked normally
+        :param return_code: return code from CMake
+        :param stdout: output from CMake
+        """
         self.assertEqual(return_code, 0)
         self.assertIn("Build profile                 : release", stdout)
         self.assertIn("Build files have been written to", stdout)
 
     def setUp(self):
+        """
+        Clean configuration/build artifacts before testing configuration and build settings
+        After configuring the build as release,
+        check if configuration worked and check expected output files
+        """
         super().setUp()
 
         if os.path.exists(ns3rc_script):
@@ -250,7 +311,7 @@ class NS3BaseTestCase(unittest.TestCase):
         if not NS3BaseTestCase.cleaned_once:
             NS3BaseTestCase.cleaned_once = True
             run_ns3("clean")
-            return_code, stdout, stderr = run_ns3("configure -d release")
+            return_code, stdout, stderr = run_ns3("configure -d release --enable-verbose")
             self.config_ok(return_code, stdout)
 
         # Check if build-status.py exists, then read to get list of executables
@@ -267,6 +328,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
     cleaned_once = False
 
     def setUp(self):
+        """
+        Reuse cleaning/release configuration from NS3BaseTestCase if flag is cleaned
+        """
         if not NS3ConfigureTestCase.cleaned_once:
             NS3ConfigureTestCase.cleaned_once = True
             NS3BaseTestCase.cleaned_once = False
@@ -455,7 +519,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertEqual(stderr, stderr1)
 
         # Build target before using below
-        run_ns3("configure -d release")
+        run_ns3("configure -d release --enable-verbose")
         run_ns3("build scratch-simulator")
 
         # Run all cases and then check outputs
@@ -495,6 +559,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
     cleaned_once = False
 
     def setUp(self):
+        """
+        Reuse cleaning/release configuration from NS3BaseTestCase if flag is cleaned
+        """
         if not NS3BuildBaseTestCase.cleaned_once:
             NS3BuildBaseTestCase.cleaned_once = True
             NS3BaseTestCase.cleaned_once = False
@@ -525,7 +592,24 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 0)
         self.assertIn(cmake_build_project_command, stdout)
 
-    def test_05_TestVersionFile(self):
+    def test_05_BreakBuild(self):
+        # change an essential file to break the build
+        attribute_cc_path = os.sep.join([ns3_path, "src", "core", "model", "attribute.cc"])
+        attribute_cc_bak_path = attribute_cc_path + ".bak"
+        shutil.move(attribute_cc_path, attribute_cc_bak_path)
+
+        # build should break
+        return_code, stdout, stderr = run_ns3("build")
+        self.assertNotEqual(return_code, 0)
+
+        # move file back
+        shutil.move(attribute_cc_bak_path, attribute_cc_path)
+
+        # build should work again
+        return_code, stdout, stderr = run_ns3("build")
+        self.assertEqual(return_code, 0)
+
+    def test_06_TestVersionFile(self):
         version_file = os.sep.join([ns3_path, "VERSION"])
         with open(version_file, "w") as f:
             f.write("3-00\n")
@@ -565,7 +649,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Reset flag to let it clean the build
         NS3BuildBaseTestCase.cleaned_once = False
 
-    def test_06_OutputDirectory(self):
+    def test_07_OutputDirectory(self):
         # Re-build to return to the original state
         return_code, stdout, stderr = run_ns3("build")
         self.ns3_libraries = get_libraries_list()
@@ -624,7 +708,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         for library in libraries:
             self.assertTrue(os.path.exists(library))
 
-    def test_07_InstallationAndUninstallation(self):
+    def test_08_InstallationAndUninstallation(self):
         # Remove existing libraries from the previous step
         libraries = get_libraries_list()
         for library in libraries:
@@ -728,6 +812,10 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
     cleaned_once = False
 
     def setUp(self):
+        """
+        Reuse cleaning/release configuration from NS3BaseTestCase if flag is cleaned
+        Here examples, tests and documentation are also enabled
+        """
         if not NS3ExpectedUseTestCase.cleaned_once:
             NS3ExpectedUseTestCase.cleaned_once = True
             NS3BaseTestCase.cleaned_once = False

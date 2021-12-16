@@ -44,7 +44,6 @@ macro(
   #ignore_pch
 )
   # cmake-format: on
-  message(STATUS "Processing ${folder}/${libname}")
 
   # Add library to a global list of libraries
   if("${folder}" MATCHES "src")
@@ -393,6 +392,9 @@ macro(
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
   )
+  if(${NS3_VERBOSE})
+    message(STATUS "Processed ${folder}/${libname}")
+  endif()
 endmacro()
 
 # cmake-format: off

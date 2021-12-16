@@ -80,23 +80,24 @@ def parse_args(argv):
                                   type=str, default=None)
 
     parser_configure = on_off_argument(parser_configure, "asserts", "the asserts regardless of the compile mode")
-    parser_configure = on_off_argument(parser_configure, "logs", "the logs regardless of the compile mode")
-    parser_configure = on_off_argument(parser_configure, "tests", "the ns-3 tests")
-    parser_configure = on_off_argument(parser_configure, "examples", "the ns-3 examples")
-    parser_configure = on_off_argument(parser_configure, "static", "Build a single static library with all ns-3",
-                                       "Restore the shared libraries")
-    parser_configure = on_off_argument(parser_configure, "mpi", "the MPI support for distributed simulation")
     parser_configure = on_off_argument(parser_configure, "des-metrics",
                                        "Logging all events in a json file with the name of the executable "
                                        "(which must call CommandLine::Parse(argc, argv)")
+    parser_configure = on_off_argument(parser_configure, "documentation", "documentation targets")
+    parser_configure = on_off_argument(parser_configure, "examples", "the ns-3 examples")
     parser_configure = on_off_argument(parser_configure, "gcov", "code coverage analysis")
     parser_configure = on_off_argument(parser_configure, "gtk", "GTK support in ConfigStore")
+    parser_configure = on_off_argument(parser_configure, "logs", "the logs regardless of the compile mode")
+    parser_configure = on_off_argument(parser_configure, "mpi", "the MPI support for distributed simulation")
+    parser_configure = on_off_argument(parser_configure, "tests", "the ns-3 tests")
+    parser_configure = on_off_argument(parser_configure, "sanitizers",
+                                       "address, memory leaks and undefined behavior sanitizers")
+    parser_configure = on_off_argument(parser_configure, "static", "Build a single static library with all ns-3",
+                                       "Restore the shared libraries")
+    parser_configure = on_off_argument(parser_configure, "verbose", "printing of additional build system messages")
     parser_configure = on_off_argument(parser_configure, "warnings", "compiler warnings")
     parser_configure = on_off_argument(parser_configure, "werror", "Treat compiler warnings as errors",
                                        "Treat compiler warnings as warnings")
-    parser_configure = on_off_argument(parser_configure, "documentation", "documentation targets")
-    parser_configure = on_off_argument(parser_configure, "sanitizers",
-                                       "address, memory leaks and undefined behavior sanitizers")
 
     parser_configure.add_argument('--enable-modules',
                                   help='List of modules to build (e.g. core;network;internet)',
@@ -411,18 +412,19 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                 cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
     options = (("ASSERT", "asserts"),
-               ("LOG", "logs"),
-               ("TESTS", "tests"),
-               ("EXAMPLES", "examples"),
                ("COVERAGE", "gcov"),
                ("DES_METRICS", "des_metrics"),
-               ("STATIC", "static"),
-               ("MPI", "mpi"),
+               ("DOCS", "documentation"),
+               ("EXAMPLES", "examples"),
                ("GTK3", "gtk"),
+               ("LOG", "logs"),
+               ("MPI", "mpi"),
+               ("SANITIZE", "sanitizers"),
+               ("STATIC", "static"),
+               ("TESTS", "tests"),
+               ("VERBOSE", "verbose"),
                ("WARNINGS", "warnings"),
                ("WARNINGS_AS_ERRORS", "werror"),
-               ("DOCS", "documentation"),
-               ("SANITIZE", "sanitizers")
                )
     for (cmake_flag, option_name) in options:
         arg = on_off_condition(args, cmake_flag, option_name)
@@ -531,7 +533,10 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
                                             )
                      )
     if not dry_run:
-        subprocess.run(cmake_build_command.split(), cwd=current_cmake_cache_folder, stdout=output)
+        ret = subprocess.run(cmake_build_command.split(), cwd=current_cmake_cache_folder, stdout=output)
+        # In case of failure, exit prematurely with the return code from the build
+        if ret.returncode != 0:
+            exit(ret.returncode)
 
 
 def extract_cmakecache_settings(current_cmake_cache_folder):

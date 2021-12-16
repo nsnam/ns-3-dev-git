@@ -2,6 +2,7 @@ set(libs "${libs_to_build}")
 
 # Process the visualizer module first if enabled
 if(${ENABLE_VISUALIZER})
+  message(STATUS "Processing src/visualizer")
   add_subdirectory(visualizer)
   list(REMOVE_ITEM libs visualizer)
 endif()
@@ -9,6 +10,7 @@ endif()
 # Process subdirectories
 foreach(libname ${libs})
   if(EXISTS ${PROJECT_SOURCE_DIR}/src/${libname}/CMakeLists.txt)
+    message(STATUS "Processing src/${libname}")
     add_subdirectory(${libname})
   else()
     message(

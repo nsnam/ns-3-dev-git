@@ -698,6 +698,12 @@ macro(process_options)
     endif()
   endif()
 
+  if(${NS3_VERBOSE})
+    set_property(GLOBAL PROPERTY TARGET_MESSAGES TRUE)
+  else()
+    set_property(GLOBAL PROPERTY TARGET_MESSAGES OFF)
+  endif()
+
   set(ENABLE_VISUALIZER FALSE)
   if(${NS3_VISUALIZER})
     if((NOT ${NS3_PYTHON_BINDINGS}) OR (NOT ${Python3_FOUND}))
