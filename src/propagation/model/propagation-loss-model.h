@@ -112,7 +112,15 @@ public:
 
 protected:
   /**
-   * Returns the Rx Power taking into account only the particular
+   * Subclasses must implement this; those not using random variables
+   * can return zero
+   * \param stream the stream index offset start
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t DoAssignStreams (int64_t stream) = 0;
+
+private:
+  /**
    * PropagationLossModel.
    *
    * \param txPowerDbm current transmission power (in dBm)
@@ -124,15 +132,6 @@ protected:
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const = 0;
 
-  /**
-   * Subclasses must implement this; those not using random variables
-   * can return zero
-   * \param stream the stream index offset start
-   * \return the number of stream indices assigned by this model
-   */
-  virtual int64_t DoAssignStreams (int64_t stream) = 0;
-
-private:
   Ptr<PropagationLossModel> m_next; //!< Next propagation loss model in the list
 };
 
