@@ -1,16 +1,17 @@
 set(name test)
 
-set(csma-layout_sources)
-if(csma-layout IN_LIST ns3-all-enabled-modules)
-  set(csma-layout_sources csma-system-test-suite.cc)
-endif()
-
 set(dsr_sources)
-if(dsr IN_LIST ns3-all-enabled-modules)
+
+# cmake-format: off
+if((dsr IN_LIST ns3-all-enabled-modules)
+    AND (uan IN_LIST ns3-all-enabled-modules)
+    AND (olsr IN_LIST ns3-all-enabled-modules))
   set(dsr_sources traced/traced-callback-typedef-test-suite.cc)
 endif()
+# cmake-format: on
 
 set(application_sources)
+set(csma_sources)
 set(wifi_sources)
 if(applications IN_LIST ns3-all-enabled-modules)
   if(point-to-point IN_LIST ns3-all-enabled-modules)
@@ -30,12 +31,21 @@ if(applications IN_LIST ns3-all-enabled-modules)
         ns3wifi/wifi-msdu-aggregator-test-suite.cc
     )
   endif()
+  if((csma-layout IN_LIST ns3-all-enabled-modules)
+     AND (internet-apps IN_LIST ns3-all-enabled-modules)
+  )
+    set(csma_sources csma-system-test-suite.cc)
+  endif()
 endif()
 
 set(internet_sources)
 if(internet IN_LIST ns3-all-enabled-modules)
   set(internet_sources ns3tcp/ns3tcp-socket-writer.cc)
+endif()
 
+set(network_sources)
+if(network IN_LIST ns3-all-enabled-modules)
+  set(network_sources traced/traced-value-callback-typedef-test-suite.cc)
 endif()
 
 set(traffic-control_sources)
@@ -50,12 +60,14 @@ endif()
 
 add_library(
   ${lib${name}} OBJECT
+  ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc # empty source file if only
+                                              # libcore is enabled
   ${applications_sources}
-  ${csma-layout_sources}
+  ${csma_sources}
   ${dsr_sources}
   ${internet_sources}
+  ${network_sources}
   ${traffic-control_sources}
-  traced/traced-value-callback-typedef-test-suite.cc
   ${wifi_sources}
 )
 

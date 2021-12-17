@@ -27,7 +27,7 @@ macro(process_contribution contribution_list)
   foreach(contribname ${contribution_list})
     set(folder "contrib/${contribname}")
     if(EXISTS ${PROJECT_SOURCE_DIR}/${folder}/CMakeLists.txt)
-        message(STATUS "Processing ${folder}")
+      message(STATUS "Processing ${folder}")
       add_subdirectory(${folder})
     else()
       message(
