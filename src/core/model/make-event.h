@@ -174,9 +174,9 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
 
 /**
  * \ingroup events
- * \defgroup makeeventfnptr MakeEvent from Function Pointers.
+ * \defgroup makeeventfnptr MakeEvent from Function Pointers and Lambdas.
  *
- * Create EventImpl instances from function pointers which take
+ * Create EventImpl instances from function pointers or lambdas which take
  * varying numbers of arguments.
  *
  * @{
@@ -306,6 +306,17 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
 template <typename U1, typename U2, typename U3, typename U4, typename U5, typename U6,
           typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
 EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5,U6), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+
+/**
+ * Make an EventImpl from a lambda.
+ *
+ * \param [in] function The lambda
+ * \returns The constructed EventImpl.
+ */
+template <typename T>
+EventImpl * MakeEvent (T function);
+
+
 /**@}*/
 
 } // namespace ns3
@@ -806,6 +817,30 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5,U6), T1 a1, T2 a2, T3 a3, T4 a4,
   } *ev = new EventFunctionImpl6 (f, a1, a2, a3, a4, a5, a6);
   return ev;
 }
+
+template <typename T>
+EventImpl * MakeEvent (T function)
+{
+  class EventImplFunctional : public EventImpl
+  {
+public:
+    EventImplFunctional (T function)
+      : m_function (function)
+    {
+    }
+    virtual ~EventImplFunctional ()
+    {
+    }
+private:
+    virtual void Notify (void)
+    {
+      m_function();
+    }
+    T m_function;
+  } *ev = new EventImplFunctional (function);
+  return ev;
+}
+
 
 } // namespace ns3
 

@@ -117,6 +117,14 @@ int main (int argc, char *argv[])
   EventId id = Simulator::Schedule (Seconds (30.0), &CancelledEvent);
   Simulator::Cancel (id);
 
+  Simulator::Schedule (Seconds (25.0),
+    [] ()
+    {
+      std::cout << "Code within a lambda expression at time " 
+                << Simulator::Now ().As (Time::S)
+                << std::endl;
+    });
+
   Simulator::Run ();
 
   Simulator::Destroy ();
