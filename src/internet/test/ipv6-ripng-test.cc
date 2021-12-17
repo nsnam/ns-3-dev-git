@@ -90,7 +90,7 @@ void Ipv6RipngTest::ReceivePkt (Ptr<Socket> socket)
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Received packet size is not equal to Rx buffer size");
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
   (void) availableData;
@@ -313,7 +313,7 @@ void Ipv6RipngCountToInfinityTest::ReceivePkt (Ptr<Socket> socket)
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Received packet size is not equal to Rx buffer size");
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
   (void) availableData;
@@ -532,7 +532,7 @@ void Ipv6RipngSplitHorizonStrategyTest::ReceivePktProbe (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   Address srcAddr;
   Ptr<Packet> receivedPacketProbe = socket->RecvFrom (std::numeric_limits<uint32_t>::max (), 0, srcAddr);
-  NS_ASSERT (availableData == receivedPacketProbe->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, receivedPacketProbe->GetSize (), "ReceivedPacketProbe size is not equal to the Rx buffer size");
   Ipv6Address senderAddress = Inet6SocketAddress::ConvertFrom (srcAddr).GetIpv6 ();
 
   if (senderAddress == "fe80::200:ff:fe00:4")

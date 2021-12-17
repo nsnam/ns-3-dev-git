@@ -408,7 +408,7 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
 
       if (h.GetFlags () & TcpHeader::SYN)
         {
-          NS_ASSERT (m_senderSentSegments == 1);
+          NS_TEST_ASSERT_MSG_EQ (m_senderSentSegments, 1, "Number of segments sent is equal to 1");
 
           Time s_rto = GetRto (SENDER);
           NS_TEST_ASSERT_MSG_EQ (s_rto, GetConnTimeout (SENDER),

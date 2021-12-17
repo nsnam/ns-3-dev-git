@@ -127,9 +127,9 @@ void Ipv6RawSocketImplTest::ReceivePkt (Ptr<Socket> socket)
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (2, MSG_PEEK);
-  NS_ASSERT (m_receivedPacket->GetSize () == 2);
+  NS_TEST_ASSERT_MSG_EQ (m_receivedPacket->GetSize (), 2, "ReceivedPacket size is not equal to 2");
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Received packet size is not equal to Rx buffer size");
 }
 
 void Ipv6RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
@@ -138,9 +138,9 @@ void Ipv6RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   Address addr;
   availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (2, MSG_PEEK);
-  NS_ASSERT (m_receivedPacket2->GetSize () == 2);
+  NS_TEST_ASSERT_MSG_EQ (m_receivedPacket2->GetSize (), 2, "ReceivedPacket size is not equal to 2");
   m_receivedPacket2 = socket->RecvFrom (std::numeric_limits<uint32_t>::max (), 0, addr);
-  NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket2->GetSize (), "Received packet size is not equal to Rx buffer size");
   Inet6SocketAddress v6addr = Inet6SocketAddress::ConvertFrom (addr);
   NS_TEST_EXPECT_MSG_EQ (v6addr.GetIpv6 (), Ipv6Address ("2001:db8::2"), "recvfrom");
 }

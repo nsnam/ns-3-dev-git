@@ -199,7 +199,7 @@ void Ipv4DeduplicationTest::ReceivePkt (Ptr<Socket> socket)
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
   Ptr<Packet> packet = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
-  NS_ASSERT (availableData == packet->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, packet->GetSize (), "Received packet size is not equal to the Rx buffer size");
 
   auto node = socket->GetNode ();
   std::string name = Names::FindName (node);
@@ -339,7 +339,7 @@ Ipv4DeduplicationTest::DoRun (void)
       //// many Unix variants.
       //// So, we just log it and fall through to LookupStatic ()
       auto ipv4 = (*iter)->GetObject <Ipv4> ();
-      NS_ASSERT_MSG ((bool) ipv4, "Node " << Names::FindName (*iter) << " does not have Ipv4 aggregate");
+      NS_TEST_ASSERT_MSG_EQ ((bool) ipv4, true, "Node " << Names::FindName (*iter) << " does not have Ipv4 aggregate");
       auto routing = staticRouting.GetStaticRouting (ipv4);
       routing->AddHostRouteTo (targetAddr.c_str (), ipv4->GetInterfaceForDevice (*diter), 0);
 
@@ -615,7 +615,7 @@ Ipv4DeduplicationPerformanceTest::DoRun (void)
       //// many Unix variants.
       //// So, we just log it and fall through to LookupStatic ()
       auto ipv4 = (*iter)->GetObject <Ipv4> ();
-      NS_ASSERT_MSG ((bool) ipv4, "Node " << (*iter)->GetId () << " does not have Ipv4 aggregate");
+      NS_TEST_ASSERT_MSG_EQ ((bool) ipv4, true, "Node " << (*iter)->GetId () << " does not have Ipv4 aggregate");
       auto routing = staticRouting.GetStaticRouting (ipv4);
       routing->AddHostRouteTo (targetAddr.c_str (), ipv4->GetInterfaceForDevice (*diter), 0);
 
