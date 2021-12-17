@@ -200,7 +200,7 @@ CommandLine::Parse (std::vector<std::string> args)
     {
       args.erase (args.begin ());  // discard the program name
 
-      for (auto param : args)
+      for (const auto & param : args)
         {
           if (HandleOption (param))
             {
@@ -494,9 +494,7 @@ CommandLine::PrintGlobals (std::ostream &os) const
   // Sort output
   std::vector<std::string> globals;
 
-  for (GlobalValue::Iterator i = GlobalValue::Begin ();
-       i != GlobalValue::End ();
-       ++i)
+  for (auto i = GlobalValue::Begin(); i != GlobalValue::End(); ++i)
     {
       std::stringstream ss;
       ss << "    --" << (*i)->GetName () << "=[";
@@ -508,11 +506,38 @@ CommandLine::PrintGlobals (std::ostream &os) const
       globals.push_back (ss.str ());
     }
   std::sort (globals.begin (), globals.end ());
-  for (std::vector<std::string>::const_iterator it = globals.begin ();
-       it < globals.end ();
-       ++it)
+  for (const auto & s : globals)
     {
-      os << *it;
+      os << s;
+    }
+}
+
+void
+CommandLine::PrintAttributeList (std::ostream &os, const TypeId tid, std::stringstream & header) const
+{
+  NS_LOG_FUNCTION (this);
+
+  if (!tid.GetAttributeN ())
+    {
+      return;
+    }
+  os << header.str() << "\n";
+  // To sort output
+  std::vector<std::string> attributes;
+
+  for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
+    {
+      std::stringstream ss;
+      ss << "    --" << tid.GetAttributeFullName (i) << "=[";
+      struct TypeId::AttributeInformation info = tid.GetAttribute (i);
+      ss << info.initialValue->SerializeToString (info.checker) << "]\n"
+         << "        " << info.help << "\n";
+      attributes.push_back (ss.str ());
+    }
+  std::sort (attributes.begin (), attributes.end ());
+  for (const auto & s : attributes)
+    {
+      os << s;
     }
 }
 
@@ -527,27 +552,22 @@ CommandLine::PrintAttributes (std::ostream &os, const std::string &type) const
       NS_FATAL_ERROR ("Unknown type=" << type << " in --PrintAttributes");
     }
 
-  os << "Attributes for TypeId " << tid.GetName () << std::endl;
+  std::stringstream header;
+  header << "Attributes for TypeId " << tid.GetName ();
+  PrintAttributeList (os, tid, header);
+  header.str("");
 
-  // Sort output
-  std::vector<std::string> attributes;
-
-  for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
+  //Parent Attributes
+  if (tid.GetParent () != tid)
     {
-      std::stringstream ss;
-      ss << "    --" << tid.GetAttributeFullName (i) << "=[";
-      struct TypeId::AttributeInformation info = tid.GetAttribute (i);
-      ss << info.initialValue->SerializeToString (info.checker) << "]"
-         << std::endl;
-      ss << "        " << info.help << std::endl;
-      attributes.push_back (ss.str ());
-    }
-  std::sort (attributes.begin (), attributes.end ());
-  for (std::vector<std::string>::const_iterator it = attributes.begin ();
-       it < attributes.end ();
-       ++it)
-    {
-      os << *it;
+      TypeId tmp = tid.GetParent ();
+      while (tmp.GetParent () != tmp)
+        {
+          header << "Attributes defined in parent class " << tmp.GetName ();
+          PrintAttributeList (os, tmp, header);
+          header.str("");
+          tmp = tmp.GetParent ();
+        }
     }
 }
 
@@ -573,11 +593,9 @@ CommandLine::PrintGroup (std::ostream &os, const std::string &group) const
       groupTypes.push_back (ss.str ());
     }
   std::sort (groupTypes.begin (), groupTypes.end ());
-  for (std::vector<std::string>::const_iterator it = groupTypes.begin ();
-       it < groupTypes.end ();
-       ++it)
+  for (const auto & s : groupTypes)
     {
-      os << *it;
+      os << s;
     }
 }
 
@@ -598,11 +616,9 @@ CommandLine::PrintTypeIds (std::ostream &os) const
       types.push_back (ss.str ());
     }
   std::sort (types.begin (), types.end ());
-  for (std::vector<std::string>::const_iterator it = types.begin ();
-       it < types.end ();
-       ++it)
+  for (const auto & s : types)
     {
-      os << *it;
+      os << s;
     }
 }
 
@@ -620,11 +636,9 @@ CommandLine::PrintGroups (std::ostream &os) const
 
   os << "Registered TypeId groups:" << std::endl;
   // Sets are already sorted
-  for (std::set<std::string>::const_iterator k = groups.begin ();
-       k != groups.end ();
-       ++k)
+  for (const auto & s : groups)
     {
-      os << "    " << *k << std::endl;
+      os << "    " << s << std::endl;
     }
 }
 

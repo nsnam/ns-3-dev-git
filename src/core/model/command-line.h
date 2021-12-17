@@ -26,6 +26,7 @@
 
 #include "callback.h"
 #include "nstime.h"
+#include "type-id.h"
 
 /**
  * \file
@@ -538,12 +539,21 @@ private:
    */
   void PrintGlobals (std::ostream &os) const;
   /**
-   * Handler for \c \--PrintAttributes:  print the attributes for a given type.
+   * Handler for \c \--PrintAttributes:  print the attributes for a given type
+   * as well as its parents.
    *
    * \param [in,out] os the output stream.
-   * \param [in] type The TypeId whose Attributes should be displayed
+   * \param [in] type The type name whose Attributes should be displayed,
    */
   void PrintAttributes (std::ostream &os, const std::string &type) const;
+  /**
+   * Print the Attributes for a single type.
+   *
+   * \param [in,out] os the output stream.
+   * \param [in] tid The TypeId whose Attributes should be displayed,
+   * \param [in] header A header line to print if \c tid has Attributes
+   */
+  void PrintAttributeList (std::ostream &os, const TypeId tid, std::stringstream & header) const;
   /**
    * Handler for \c \--PrintGroup:  print all types belonging to a given group.
    *
