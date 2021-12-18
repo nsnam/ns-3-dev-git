@@ -29,19 +29,19 @@
 weekly-build-clang-6-debug:
   extends: .weekly-build-clang
   variables:
-    CLANG: 6.0
+    CLANG: "6.0"
     MODE: debug
 
 weekly-build-clang-6-release:
   extends: .weekly-build-clang
   variables:
-    CLANG: 6.0
+    CLANG: "6.0"
     MODE: release
 
 weekly-build-clang-6-optimized:
   extends: .weekly-build-clang
   variables:
-    CLANG: 6.0
+    CLANG: "6.0"
     MODE: optimized
 
 # CLANG 8
