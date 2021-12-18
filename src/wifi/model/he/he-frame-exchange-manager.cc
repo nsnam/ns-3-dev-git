@@ -1234,7 +1234,9 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trig
 
   if (trigger.GetCsRequired () && hdr.GetAddr2 () != m_txopHolder && m_navEnd > Simulator::Now ())
     {
-      NS_LOG_DEBUG ("Carrier Sensing required and channel busy, do nothing");
+      NS_LOG_DEBUG ("Carrier Sensing required and channel busy (TA=" << hdr.GetAddr2 ()
+                    << ", TxopHolder=" << m_txopHolder << ", NAV end=" << m_navEnd.As (Time::S)
+                    << "), do nothing");
       return;
     }
 
@@ -1294,6 +1296,21 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trig
                                              : Create<WifiPsdu> (mpduList.front (), true));
   uint16_t staId = m_staMac->GetAssociationId ();
   SendPsduMapWithProtection (WifiPsduMap {{staId, psdu}}, txParams);
+}
+
+void
+HeFrameExchangeManager::SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << psdu << txVector);
+
+  if (psdu->GetHeader (0).IsTrigger ())
+    {
+      m_txopHolder = psdu->GetAddr2 ();
+    }
+  else if (!txVector.IsUlMu ())  // the sender of a TB PPDU is not the TXOP holder
+    {
+      VhtFrameExchangeManager::SetTxopHolder (psdu, txVector);
+    }
 }
 
 void

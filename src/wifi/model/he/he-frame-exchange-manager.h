@@ -63,6 +63,7 @@ public:
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
   void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
   void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
+  void SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
 
   /**
    * Set the Multi-user Scheduler associated with this Frame Exchange Manager.
