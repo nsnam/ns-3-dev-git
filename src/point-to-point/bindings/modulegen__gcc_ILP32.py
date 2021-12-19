@@ -81,6 +81,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## event-id.h (module 'core'): ns3::EventId::UID [enumeration]
+    module.add_enum('UID', ['INVALID', 'NOW', 'DESTROY', 'RESERVED', 'VALID'], outer_class=root_module['ns3::EventId'], import_from_module='ns.core')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
@@ -2853,6 +2855,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PointToPointHelper const &', 'arg0')])
     ## point-to-point-helper.h (module 'point-to-point'): ns3::PointToPointHelper::PointToPointHelper() [constructor]
     cls.add_constructor([])
+    ## point-to-point-helper.h (module 'point-to-point'): void ns3::PointToPointHelper::DisableFlowControl() [member function]
+    cls.add_method('DisableFlowControl', 
+                   'void', 
+                   [])
     ## point-to-point-helper.h (module 'point-to-point'): ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 

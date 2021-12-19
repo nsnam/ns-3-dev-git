@@ -168,6 +168,8 @@ def register_types(module):
     module.add_class('EdcaParameter')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## event-id.h (module 'core'): ns3::EventId::UID [enumeration]
+    module.add_enum('UID', ['INVALID', 'NOW', 'DESTROY', 'RESERVED', 'VALID'], outer_class=root_module['ns3::EventId'], import_from_module='ns.core')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## wifi-tx-vector.h (module 'wifi'): ns3::HeMuUserInfo [struct]
@@ -435,6 +437,9 @@ def register_types(module):
     module.add_enum('SupportedPcapDataLinkTypes', ['DLT_IEEE802_11', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::WifiPhyHelper'], import_from_module='ns.wifi')
     ## wifi-phy-operating-channel.h (module 'wifi'): ns3::WifiPhyOperatingChannel [class]
     module.add_class('WifiPhyOperatingChannel', import_from_module='ns.wifi')
+    typehandlers.add_type_alias('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const_iterator', 'ns3::WifiPhyOperatingChannel::ConstIterator')
+    typehandlers.add_type_alias('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const_iterator*', 'ns3::WifiPhyOperatingChannel::ConstIterator*')
+    typehandlers.add_type_alias('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const_iterator&', 'ns3::WifiPhyOperatingChannel::ConstIterator&')
     ## wifi-protection.h (module 'wifi'): ns3::WifiProtection [struct]
     module.add_class('WifiProtection', allow_subclassing=True, import_from_module='ns.wifi')
     ## wifi-protection.h (module 'wifi'): ns3::WifiProtection::Method [enumeration]
@@ -687,6 +692,9 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiTxVector, ns3::Time )', 'ns3::WifiPhy::PhyRxPayloadBeginTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiTxVector, ns3::Time )*', 'ns3::WifiPhy::PhyRxPayloadBeginTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiTxVector, ns3::Time )&', 'ns3::WifiPhy::PhyRxPayloadBeginTracedCallback&')
+    typehandlers.add_type_alias('std::tuple< unsigned char, unsigned short, int, unsigned char >', 'ns3::WifiPhy::ChannelTuple')
+    typehandlers.add_type_alias('std::tuple< unsigned char, unsigned short, int, unsigned char >*', 'ns3::WifiPhy::ChannelTuple*')
+    typehandlers.add_type_alias('std::tuple< unsigned char, unsigned short, int, unsigned char >&', 'ns3::WifiPhy::ChannelTuple&')
     ## wifi-phy-state-helper.h (module 'wifi'): ns3::WifiPhyStateHelper [class]
     module.add_class('WifiPhyStateHelper', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     typehandlers.add_type_alias('void ( * ) ( ns3::Time, ns3::Time, WifiPhyState )', 'ns3::WifiPhyStateHelper::StateTracedCallback')
@@ -1216,6 +1224,7 @@ def register_types(module):
     module.add_container('std::map< ns3::Mac48Address, ns3::WifiDlMuBarBaSequence::BlockAckInfo >', ('ns3::Mac48Address', 'ns3::WifiDlMuBarBaSequence::BlockAckInfo'), container_type='map')
     module.add_container('std::map< ns3::Mac48Address, ns3::WifiDlMuBarBaSequence::BlockAckReqInfo >', ('ns3::Mac48Address', 'ns3::WifiDlMuBarBaSequence::BlockAckReqInfo'), container_type='map')
     module.add_container('std::map< ns3::Mac48Address, ns3::WifiDlMuTfMuBar::BlockAckInfo >', ('ns3::Mac48Address', 'ns3::WifiDlMuTfMuBar::BlockAckInfo'), container_type='map')
+    module.add_container('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > >', 'std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand >', container_type='set')
     module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type='vector')
     module.add_container('std::vector< std::pair< unsigned int, unsigned int > >', 'std::pair< unsigned int, unsigned int >', container_type='vector')
     module.add_container('std::map< unsigned char, std::set< unsigned short > >', ('unsigned char', 'std::set< unsigned short >'), container_type='map')
@@ -1225,7 +1234,6 @@ def register_types(module):
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type='vector')
     module.add_container('std::vector< ns3::BandInfo >', 'ns3::BandInfo', container_type='vector')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
-    module.add_container('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > >', 'std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand >', container_type='set')
     module.add_container('ns3::WifiConstPsduMap', ('short unsigned int', 'ns3::Ptr< ns3::WifiPsdu const >'), container_type='map')
     module.add_container('std::list< ns3::WifiMode >', 'ns3::WifiMode', container_type='list')
     module.add_container('std::list< unsigned char >', 'unsigned char', container_type='list')
@@ -6619,6 +6627,10 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
+    ## wifi-helper.h (module 'wifi'): void ns3::WifiHelper::DisableFlowControl() [member function]
+    cls.add_method('DisableFlowControl', 
+                   'void', 
+                   [])
     ## wifi-helper.h (module 'wifi'): static void ns3::WifiHelper::EnableLogComponents() [member function]
     cls.add_method('EnableLogComponents', 
                    'void', 
@@ -6905,6 +6917,16 @@ def register_Ns3WifiPhyOperatingChannel_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiPhyOperatingChannel const &', 'arg0')])
     ## wifi-phy-operating-channel.h (module 'wifi'): ns3::WifiPhyOperatingChannel::WifiPhyOperatingChannel() [constructor]
     cls.add_constructor([])
+    ## wifi-phy-operating-channel.h (module 'wifi'): static ns3::WifiPhyOperatingChannel::ConstIterator ns3::WifiPhyOperatingChannel::FindFirst(uint8_t number, uint16_t frequency, uint16_t width, ns3::WifiPhyStandard standard, ns3::WifiPhyBand band, ns3::WifiPhyOperatingChannel::ConstIterator start=ns3::WifiPhyOperatingChannel::m_frequencyChannels.begin()) [member function]
+    cls.add_method('FindFirst', 
+                   'ns3::WifiPhyOperatingChannel::ConstIterator', 
+                   [param('uint8_t', 'number'), param('uint16_t', 'frequency'), param('uint16_t', 'width'), param('ns3::WifiPhyStandard', 'standard'), param('ns3::WifiPhyBand', 'band'), param('std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const_iterator', 'start', default_value='ns3::WifiPhyOperatingChannel::m_frequencyChannels.begin()')], 
+                   is_static=True)
+    ## wifi-phy-operating-channel.h (module 'wifi'): static uint8_t ns3::WifiPhyOperatingChannel::GetDefaultChannelNumber(uint16_t width, ns3::WifiPhyStandard standard, ns3::WifiPhyBand band) [member function]
+    cls.add_method('GetDefaultChannelNumber', 
+                   'uint8_t', 
+                   [param('uint16_t', 'width'), param('ns3::WifiPhyStandard', 'standard'), param('ns3::WifiPhyBand', 'band')], 
+                   is_static=True)
     ## wifi-phy-operating-channel.h (module 'wifi'): uint16_t ns3::WifiPhyOperatingChannel::GetFrequency() const [member function]
     cls.add_method('GetFrequency', 
                    'uint16_t', 
@@ -6947,6 +6969,8 @@ def register_Ns3WifiPhyOperatingChannel_methods(root_module, cls):
     cls.add_method('SetPrimary20Index', 
                    'void', 
                    [param('uint8_t', 'index')])
+    ## wifi-phy-operating-channel.h (module 'wifi'): ns3::WifiPhyOperatingChannel::m_frequencyChannels [variable]
+    cls.add_static_attribute('m_frequencyChannels', 'std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const', is_const=True)
     return
 
 def register_Ns3WifiProtection_methods(root_module, cls):
@@ -7830,10 +7854,6 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_method('SetTcp', 
                    'void', 
                    [param('std::string', 'tid')])
-    ## internet-stack-helper.h (module 'internet'): void ns3::InternetStackHelper::SetTcp(std::string tid, std::string attr, ns3::AttributeValue const & val) [member function]
-    cls.add_method('SetTcp', 
-                   'void', 
-                   [param('std::string', 'tid'), param('std::string', 'attr'), param('ns3::AttributeValue const &', 'val')])
     ## internet-stack-helper.h (module 'internet'): void ns3::InternetStackHelper::EnableAsciiIpv4Internal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface, bool explicitFilename) [member function]
     cls.add_method('EnableAsciiIpv4Internal', 
                    'void', 
@@ -10909,8 +10929,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::WifiPhy() [constructor]
     cls.add_constructor([])
-    ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::m_frequencyChannels [variable]
-    cls.add_static_attribute('m_frequencyChannels', 'std::set< std::tuple< unsigned char, unsigned short, unsigned short, ns3::FrequencyChannelType, ns3::WifiPhyBand > > const', is_const=True)
     ## wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::WifiPhyStateHelper> ns3::WifiPhy::GetState() const [member function]
     cls.add_method('GetState', 
                    'ns3::Ptr< ns3::WifiPhyStateHelper >', 
@@ -11172,7 +11190,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetChannelNumber', 
                    'void', 
                    [param('uint8_t', 'id')], 
-                   is_virtual=True)
+                   deprecated=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetChannelNumber() const [member function]
     cls.add_method('GetChannelNumber', 
                    'uint8_t', 
@@ -11187,6 +11205,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('ConfigureStandardAndBand', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard'), param('ns3::WifiPhyBand', 'band')], 
+                   deprecated=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
                    is_virtual=True)
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhyStandard ns3::WifiPhy::GetPhyStandard() const [member function]
     cls.add_method('GetPhyStandard', 
@@ -11334,11 +11357,15 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetOperatingChannel', 
                    'void', 
                    [param('uint8_t', 'number'), param('uint16_t', 'frequency'), param('uint16_t', 'width')])
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetOperatingChannel(ns3::WifiPhy::ChannelTuple const & channelTuple) [member function]
+    cls.add_method('SetOperatingChannel', 
+                   'void', 
+                   [param('ns3::WifiPhy::ChannelTuple const &', 'channelTuple')])
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetFrequency(uint16_t freq) [member function]
     cls.add_method('SetFrequency', 
                    'void', 
                    [param('uint16_t', 'freq')], 
-                   is_virtual=True)
+                   deprecated=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): uint16_t ns3::WifiPhy::GetFrequency() const [member function]
     cls.add_method('GetFrequency', 
                    'uint16_t', 
@@ -11347,7 +11374,13 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetPrimary20Index(uint8_t index) [member function]
     cls.add_method('SetPrimary20Index', 
                    'void', 
-                   [param('uint8_t', 'index')])
+                   [param('uint8_t', 'index')], 
+                   deprecated=True)
+    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetPrimary20Index() const [member function]
+    cls.add_method('GetPrimary20Index', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetNumberOfAntennas(uint8_t antennas) [member function]
     cls.add_method('SetNumberOfAntennas', 
                    'void', 
@@ -11413,7 +11446,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetChannelWidth', 
                    'void', 
                    [param('uint16_t', 'channelWidth')], 
-                   is_virtual=True)
+                   deprecated=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::AddSupportedChannelWidth(uint16_t width) [member function]
     cls.add_method('AddSupportedChannelWidth', 
                    'void', 
@@ -11488,11 +11521,16 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected')
-    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::DoChannelSwitch() [member function]
-    cls.add_method('DoChannelSwitch', 
+    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetDelayUntilChannelSwitch() [member function]
+    cls.add_method('GetDelayUntilChannelSwitch', 
                    'ns3::Time', 
                    [], 
                    visibility='protected')
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::DoChannelSwitch() [member function]
+    cls.add_method('DoChannelSwitch', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='protected')
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SwitchMaybeToCcaBusy(uint16_t channelWidth) [member function]
     cls.add_method('SwitchMaybeToCcaBusy', 
                    'void', 
@@ -18088,6 +18126,11 @@ def register_Ns3PhyEntity_methods(root_module, cls):
     cls.add_method('NotifyInterferenceRxEndAndClear', 
                    'void', 
                    [param('bool', 'reset')], 
+                   visibility='protected')
+    ## phy-entity.h (module 'wifi'): void ns3::PhyEntity::NotifyPayloadBegin(ns3::WifiTxVector const & txVector, ns3::Time const & payloadDuration) [member function]
+    cls.add_method('NotifyPayloadBegin', 
+                   'void', 
+                   [param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time const &', 'payloadDuration')], 
                    visibility='protected')
     ## phy-entity.h (module 'wifi'): uint64_t ns3::PhyEntity::ObtainNextUid(ns3::WifiTxVector const & txVector) [member function]
     cls.add_method('ObtainNextUid', 

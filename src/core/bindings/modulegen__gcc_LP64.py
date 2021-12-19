@@ -62,6 +62,8 @@ def register_types(module):
     module.add_class('EventGarbageCollector')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId')
+    ## event-id.h (module 'core'): ns3::EventId::UID [enumeration]
+    module.add_enum('UID', ['INVALID', 'NOW', 'DESTROY', 'RESERVED', 'VALID'], outer_class=root_module['ns3::EventId'])
     ## global-value.h (module 'core'): ns3::GlobalValue [class]
     module.add_class('GlobalValue')
     typehandlers.add_type_alias('std::vector< ns3::GlobalValue * > const_iterator', 'ns3::GlobalValue::Iterator')
@@ -110,8 +112,6 @@ def register_types(module):
     typehandlers.add_type_alias('std::map< std::string, ns3::LogComponent * >&', 'ns3::LogComponent::ComponentList&')
     ## names.h (module 'core'): ns3::Names [class]
     module.add_class('Names')
-    ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
-    module.add_class('NonCopyable', destructor_visibility='protected')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True)
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -135,7 +135,7 @@ def register_types(module):
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
     module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'])
     ## singleton.h (module 'core'): ns3::Singleton<ns3::DesMetrics> [class]
-    module.add_class('Singleton', parent=root_module['ns3::NonCopyable'], template_parameters=['ns3::DesMetrics'])
+    module.add_class('Singleton', destructor_visibility='protected', template_parameters=['ns3::DesMetrics'])
     ## system-condition.h (module 'core'): ns3::SystemCondition [class]
     module.add_class('SystemCondition')
     ## system-mutex.h (module 'core'): ns3::SystemMutex [class]
@@ -351,6 +351,8 @@ def register_types(module):
     module.add_class('StringValue', parent=root_module['ns3::AttributeValue'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
+    ## tuple.h (module 'core'): ns3::TupleChecker [class]
+    module.add_class('TupleChecker', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
     module.add_class('TypeIdChecker', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
@@ -375,6 +377,7 @@ def register_types(module):
     module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned char *', 'long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
+    module.add_container('std::vector< ns3::Ptr< ns3::AttributeChecker const > >', 'ns3::Ptr< ns3::AttributeChecker const >', container_type='vector')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
@@ -586,7 +589,6 @@ def register_methods(root_module):
     register_Ns3LengthQuantity_methods(root_module, root_module['ns3::Length::Quantity'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Names_methods(root_module, root_module['ns3::Names'])
-    register_Ns3NonCopyable_methods(root_module, root_module['ns3::NonCopyable'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
@@ -691,6 +693,7 @@ def register_methods(root_module):
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
     register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
+    register_Ns3TupleChecker_methods(root_module, root_module['ns3::TupleChecker'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
@@ -1390,12 +1393,6 @@ def register_Ns3Names_methods(root_module, cls):
                    is_static=True)
     return
 
-def register_Ns3NonCopyable_methods(root_module, cls):
-    ## non-copyable.h (module 'core'): ns3::NonCopyable::NonCopyable() [constructor]
-    cls.add_constructor([], 
-                        visibility='protected')
-    return
-
 def register_Ns3ObjectBase_methods(root_module, cls):
     ## object-base.h (module 'core'): ns3::ObjectBase::ObjectBase() [constructor]
     cls.add_constructor([])
@@ -1694,7 +1691,8 @@ def register_Ns3Singleton__Ns3DesMetrics_methods(root_module, cls):
                    [], 
                    is_static=True)
     ## singleton.h (module 'core'): ns3::Singleton<ns3::DesMetrics>::Singleton() [constructor]
-    cls.add_constructor([])
+    cls.add_constructor([], 
+                        visibility='protected')
     return
 
 def register_Ns3SystemCondition_methods(root_module, cls):
@@ -5021,6 +5019,18 @@ def register_Ns3TimeValue_methods(root_module, cls):
                    [param('ns3::Time const &', 'value')])
     return
 
+def register_Ns3TupleChecker_methods(root_module, cls):
+    ## tuple.h (module 'core'): ns3::TupleChecker::TupleChecker() [constructor]
+    cls.add_constructor([])
+    ## tuple.h (module 'core'): ns3::TupleChecker::TupleChecker(ns3::TupleChecker const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TupleChecker const &', 'arg0')])
+    ## tuple.h (module 'core'): std::vector<ns3::Ptr<const ns3::AttributeChecker>, std::allocator<ns3::Ptr<const ns3::AttributeChecker> > > const & ns3::TupleChecker::GetCheckers() const [member function]
+    cls.add_method('GetCheckers', 
+                   'std::vector< ns3::Ptr< ns3::AttributeChecker const > > const &', 
+                   [], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
+    return
+
 def register_Ns3TypeIdChecker_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeIdChecker::TypeIdChecker() [constructor]
     cls.add_constructor([])
@@ -5521,6 +5531,11 @@ def register_functions(root_module):
                         'ns3::Ptr< ns3::PairChecker const >', 
                         [param('ns3::Ptr< ns3::AttributeChecker const > const &', 'p')], 
                         template_parameters=['ns3::PairChecker const', ' ns3::AttributeChecker const'])
+    ## ptr.h (module 'core'): ns3::Ptr<const ns3::TupleChecker> ns3::DynamicCast(ns3::Ptr<const ns3::AttributeChecker> const & p) [free function]
+    module.add_function('DynamicCast', 
+                        'ns3::Ptr< ns3::TupleChecker const >', 
+                        [param('ns3::Ptr< ns3::AttributeChecker const > const &', 'p')], 
+                        template_parameters=['ns3::TupleChecker const', ' ns3::AttributeChecker const'])
     ## length.h (module 'core'): ns3::Length ns3::Feet(double value) [free function]
     module.add_function('Feet', 
                         'ns3::Length', 
