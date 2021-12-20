@@ -325,6 +325,10 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     NS_ASSERT_MSG (m_events->IsEmpty () == false,
                    "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
     next = m_events->RemoveNext ();
+
+    PreEventHook (EventId (next.impl, next.key.m_ts, 
+                           next.key.m_context, next.key.m_uid));
+
     m_unscheduledEvents--;
     m_eventCount++;
 

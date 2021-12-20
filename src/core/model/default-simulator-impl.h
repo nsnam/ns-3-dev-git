@@ -22,12 +22,8 @@
 #define DEFAULT_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
-#include "scheduler.h"
-#include "event-impl.h"
 #include "system-thread.h"
 #include "system-mutex.h"
-
-#include "ptr.h"
 
 #include <list>
 
@@ -38,6 +34,9 @@
  */
 
 namespace ns3 {
+
+// Forward
+class Scheduler;
 
 /**
  * \ingroup simulator

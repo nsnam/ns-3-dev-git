@@ -20,11 +20,8 @@
 
 #include "simulator.h"
 #include "default-simulator-impl.h"
-#include "scheduler.h"
-#include "event-impl.h"
 
-#include "ptr.h"
-#include "pointer.h"
+#include "scheduler.h"
 #include "assert.h"
 #include "log.h"
 
@@ -134,6 +131,9 @@ void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {
   Scheduler::Event next = m_events->RemoveNext ();
+
+  PreEventHook (EventId (next.impl, next.key.m_ts, 
+                         next.key.m_context, next.key.m_uid));
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
   m_unscheduledEvents--;

@@ -102,6 +102,13 @@ public:
   /** \copydoc Simulator::GetEventCount */
   virtual uint64_t GetEventCount (void) const = 0;
 
+  /** 
+   * Hook called before processing each event.
+   *
+   * \param [in] id The event about to be processed.
+   */
+  virtual void PreEventHook (const EventId & id) {};
+
 };
 
 } // namespace ns3

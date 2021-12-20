@@ -230,6 +230,9 @@ NullMessageSimulatorImpl::ProcessOneEvent (void)
 
   Scheduler::Event next = m_events->RemoveNext ();
 
+  PreEventHook (EventId (next.impl, next.key.m_ts, 
+                         next.key.m_context, next.key.m_uid));
+
   NS_ASSERT (next.key.m_ts >= m_currentTs);
   m_unscheduledEvents--;
   m_eventCount++;
