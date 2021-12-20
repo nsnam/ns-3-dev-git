@@ -63,7 +63,6 @@ MultiUserScheduler::DoDispose (void)
   m_dlInfo.psduMap.clear ();
   m_dlInfo.txParams.Clear ();
   m_ulInfo.txParams.Clear ();
-  m_ulInfo.trigger = 0;
   Object::DoDispose ();
 }
 
@@ -142,6 +141,7 @@ MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, 
     {
       NS_ABORT_MSG_IF (m_heFem == 0, "UL MU PPDUs are only supported by HE APs");
       m_ulInfo = ComputeUlMuInfo ();
+      CheckTriggerFrame ();
     }
 
   if (txFormat != NO_TX)
@@ -180,6 +180,18 @@ MultiUserScheduler::GetUlMuInfo (void)
   NS_ABORT_MSG_IF (m_lastTxFormat != UL_MU_TX, "Next transmission is not UL MU");
 
   return m_ulInfo;
+}
+
+void
+MultiUserScheduler::CheckTriggerFrame (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // Set the CS Required subfield to true, unless the UL Length subfield is less
+  // than or equal to 76 (see Section 26.5.2.5 of 802.11ax-2021)
+  m_ulInfo.trigger.SetCsRequired (m_ulInfo.trigger.GetUlLength () > 76);
+
+  m_heFem->SetTargetRssi (m_ulInfo.trigger);
 }
 
 } //namespace ns3

@@ -134,10 +134,9 @@ private:
   std::map<AcIndex, std::list<MasterInfo>> m_staList;   //!< Per-AC list of stations (next to serve first)
   std::list<CandidateInfo> m_candidates;                //!< Candidate stations for MU TX
   Time m_maxCredits;                                    //!< Max amount of credits a station can have
-  Ptr<WifiMacQueueItem> m_trigger;                      //!< Trigger Frame to send
-  Time m_tbPpduDuration;                                //!< Duration of the solicited TB PPDUs
+  CtrlTriggerHeader m_trigger;                          //!< Trigger Frame to send
+  WifiMacHeader m_triggerMacHdr;                        //!< MAC header for Trigger Frame
   WifiTxParameters m_txParams;                          //!< TX parameters
-  TriggerFrameType m_ulTriggerType;                     //!< Trigger Frame type for UL MU
 };
 
 } //namespace ns3

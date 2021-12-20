@@ -81,8 +81,8 @@ private:
 
   TxFormat m_txFormat;              //!< the format of next transmission
   TriggerFrameType m_ulTriggerType; //!< Trigger Frame type for UL MU
-  Ptr<WifiMacQueueItem> m_trigger;  //!< Trigger Frame to send
-  Time m_tbPpduDuration;            //!< Duration of the solicited TB PPDUs
+  CtrlTriggerHeader m_trigger;      //!< Trigger Frame to send
+  WifiMacHeader m_triggerHdr;       //!< MAC header for Trigger Frame
   WifiTxVector m_txVector;          //!< the TX vector for MU PPDUs
   WifiTxParameters m_txParams;      //!< TX parameters
   WifiPsduMap m_psduMap;            //!< the DL MU PPDU to transmit
@@ -136,10 +136,10 @@ TestMultiUserScheduler::SelectTxFormat (void)
                                         ? TriggerFrameType::BSRP_TRIGGER
                                         : TriggerFrameType::BASIC_TRIGGER);
 
-      CtrlTriggerHeader trigger (ulTriggerType, m_txVector);
+      m_trigger = CtrlTriggerHeader (ulTriggerType, m_txVector);
 
       WifiTxVector txVector = m_txVector;
-      txVector.SetGuardInterval (trigger.GetGuardInterval ());
+      txVector.SetGuardInterval (m_trigger.GetGuardInterval ());
 
       uint32_t ampduSize = (ulTriggerType == TriggerFrameType::BSRP_TRIGGER ? m_sizeOf8QosNull : 3500);
 
@@ -149,25 +149,24 @@ TestMultiUserScheduler::SelectTxFormat (void)
 
       uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (duration,
                                                                     m_apMac->GetWifiPhy ()->GetPhyBand ());
-      trigger.SetUlLength (length);
-      m_heFem->SetTargetRssi (trigger);
+      m_trigger.SetUlLength (length);
 
       Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader (trigger);
+      packet->AddHeader (m_trigger);
 
-      WifiMacHeader hdr (WIFI_MAC_CTL_TRIGGER);
-      hdr.SetAddr1 (Mac48Address::GetBroadcast ());
-      hdr.SetAddr2 (m_apMac->GetAddress ());
-      hdr.SetDsNotTo ();
-      hdr.SetDsNotFrom ();
+      m_triggerHdr = WifiMacHeader (WIFI_MAC_CTL_TRIGGER);
+      m_triggerHdr.SetAddr1 (Mac48Address::GetBroadcast ());
+      m_triggerHdr.SetAddr2 (m_apMac->GetAddress ());
+      m_triggerHdr.SetDsNotTo ();
+      m_triggerHdr.SetDsNotFrom ();
 
-      m_trigger = Create<WifiMacQueueItem> (packet, hdr);
+      auto item = Create<WifiMacQueueItem> (packet, m_triggerHdr);
 
       m_txParams.Clear ();
       // set the TXVECTOR used to send the Trigger Frame
-      m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (hdr.GetAddr1 ());
+      m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (m_triggerHdr.GetAddr1 ());
 
-      if (!m_heFem->TryAddMpdu (m_trigger, m_txParams, m_availableTime)
+      if (!m_heFem->TryAddMpdu (item, m_txParams, m_availableTime)
           || (m_availableTime != Time::Min ()
               && m_txParams.m_protection->protectionTime
                  + m_txParams.m_txDuration     // TF tx time
@@ -182,7 +181,6 @@ TestMultiUserScheduler::SelectTxFormat (void)
 
       m_txFormat = UL_MU_TX;
       m_ulTriggerType = ulTriggerType;
-      m_tbPpduDuration = duration;
     }
   else if (m_txFormat == UL_MU_TX)
     {
@@ -302,7 +300,7 @@ MultiUserScheduler::UlMuInfo
 TestMultiUserScheduler::ComputeUlMuInfo (void)
 {
   NS_LOG_FUNCTION (this);
-  return UlMuInfo {m_trigger, m_tbPpduDuration, std::move (m_txParams)};
+  return UlMuInfo {m_trigger, m_triggerHdr, std::move (m_txParams)};
 }
 
 

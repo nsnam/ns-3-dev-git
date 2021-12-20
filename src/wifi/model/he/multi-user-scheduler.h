@@ -77,8 +77,8 @@ public:
   /// Information to be provided in case of UL MU transmission
   struct UlMuInfo
   {
-    Ptr<WifiMacQueueItem> trigger;  //!< the Trigger frame used to solicit TB PPDUs
-    Time tbPpduDuration;            //!< the duration of the solicited TB PPDU
+    CtrlTriggerHeader trigger;      //!< the Trigger Frame used to solicit TB PPDUs
+    WifiMacHeader macHdr;           //!< the MAC header for the Trigger Frame
     WifiTxParameters txParams;      //!< the transmission parameters for the Trigger Frame
   };
 
@@ -167,6 +167,13 @@ private:
    * \return the information required to solicit an UL MU transmission
    */
   virtual UlMuInfo ComputeUlMuInfo (void) = 0;
+
+  /**
+   * Ensure that the Trigger Frame returned in case of UL MU transmission is
+   * correct. Currently, this method sets the CS Required, the AP Tx Power and
+   * the UL Target Receive Power subfields.
+   */
+  void CheckTriggerFrame (void);
 
   TxFormat m_lastTxFormat {NO_TX};       //!< the format of last transmission
   DlMuInfo m_dlInfo;                     //!< information required to perform a DL MU transmission

@@ -150,14 +150,10 @@ HeFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
 
   if (txFormat == MultiUserScheduler::UL_MU_TX)
     {
-      if (m_muScheduler->GetUlMuInfo ().trigger == nullptr)
-        {
-          NS_LOG_DEBUG ("The Multi-user Scheduler returned UL_MU_TX with empty Trigger Frame, do not transmit");
-          return false;
-        }
-
-      NS_ASSERT (m_muScheduler->GetUlMuInfo ().trigger->GetHeader ().IsTrigger ());
-      SendPsduMapWithProtection (WifiPsduMap {{SU_STA_ID, GetWifiPsdu (m_muScheduler->GetUlMuInfo ().trigger,
+      auto packet = Create<Packet> ();
+      packet->AddHeader (m_muScheduler->GetUlMuInfo ().trigger);
+      auto trigger = Create<WifiMacQueueItem> (packet, m_muScheduler->GetUlMuInfo ().macHdr);
+      SendPsduMapWithProtection (WifiPsduMap {{SU_STA_ID, GetWifiPsdu (trigger,
                                                                        m_muScheduler->GetUlMuInfo ().txParams.m_txVector)}},
                                  m_muScheduler->GetUlMuInfo ().txParams);
       return true;
@@ -438,8 +434,11 @@ HeFrameExchangeManager::SendPsduMap (void)
       // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
       // Trigger Frame, so that its Duration/ID is correctly computed
       NS_ASSERT (m_muScheduler != 0);
+      Time tbPpduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration (m_muScheduler->GetUlMuInfo ().trigger.GetUlLength (),
+                                                                        acknowledgment->tbPpduTxVector,
+                                                                        m_phy->GetPhyBand ());
       acknowledgment->acknowledgmentTime += m_mac->GetWifiPhy ()->GetSifs ()
-                                            + m_muScheduler->GetUlMuInfo ().tbPpduDuration;
+                                            + tbPpduDuration;
 
       timerType = WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF;
       responseTxVector = &acknowledgment->tbPpduTxVector;
@@ -450,10 +449,9 @@ HeFrameExchangeManager::SendPsduMap (void)
   else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE
            && !m_txParams.m_txVector.IsUlMu ()
            && m_psduMap.size () == 1 && m_psduMap.begin ()->first == SU_STA_ID
-           && (mpdu = *m_psduMap.begin ()->second->begin ())->GetHeader ().IsTrigger ())
+           && (*m_psduMap.begin ()->second->begin ())->GetHeader ().IsTrigger ())
     {
-      CtrlTriggerHeader trigger;
-      mpdu->GetPacket ()->PeekHeader (trigger);
+      CtrlTriggerHeader& trigger = m_muScheduler->GetUlMuInfo ().trigger;
       NS_ASSERT (trigger.IsBsrp ());
       NS_ASSERT (m_apMac != 0);
 
@@ -613,7 +611,9 @@ HeFrameExchangeManager::PrepareMuBar (const WifiTxVector& responseTxVector,
 
   CtrlTriggerHeader muBar (TriggerFrameType::MU_BAR_TRIGGER, responseTxVector);
   SetTargetRssi (muBar);
-  Mac48Address rxAddress;
+  // Set the CS Required subfield to true, unless the UL Length subfield is less
+  // than or equal to 418 (see Section 26.5.2.5 of 802.11ax-2021)
+  muBar.SetCsRequired (muBar.GetUlLength () > 418);
 
   // Add the Trigger Dependent User Info subfield to every User Info field
   for (auto& userInfo : muBar)
@@ -627,6 +627,7 @@ HeFrameExchangeManager::PrepareMuBar (const WifiTxVector& responseTxVector,
 
   Ptr<Packet> bar = Create<Packet> ();
   bar->AddHeader (muBar);
+  Mac48Address rxAddress;
   // "If the Trigger frame has one User Info field and the AID12 subfield of the
   // User Info contains the AID of a STA, then the RA field is set to the address
   // of that STA". Otherwise, it is set to the broadcast address (Sec. 9.3.1.23 -
