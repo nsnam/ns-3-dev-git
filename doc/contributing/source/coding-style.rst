@@ -396,7 +396,7 @@ Miscellaneous items
     public:
       // Explain why these are not supported
       ClassName () = delete;
-      ClassName (const Classname&) = delete;
+      ClassName (const ClassName&) = delete;
       ClassName& operator= (const ClassName&) = delete;
 
 - Avoid returning a reference to an internal or local member of an object:
