@@ -445,10 +445,45 @@ Miscellaneous items
 
       #include <ns3/header.h>
 
-- When writing library code, try to avoid the use of unused function
-  parameters; use the ``NS_UNUSED ()`` macro to explicitly note that a
-  parameter is intentionally ignored. However, when writing client code 
-  (tests and examples), ``NS_UNUSED()`` is not required and may be avoided
-  especially if the author feels that it clutters the code (example: hooking
-  a trace source to gather program output, but not using all of the parameters
-  that the trace source provides).
+- Compilers will typically issue warnings on unused entities (e.g., variables,
+  function parameters).  Use the ``[[maybe_unused]]`` attribute to suppress
+  such warnings when the entity may be unused depending on how the code
+  is compiled (e.g., if the entity is only used in a logging statement or
+  an assert statement).  Example (parameter 'p' is only used for logging):
+  ::
+    void
+    TcpSocketBase::CompleteFork (Ptr<Packet> p [[maybe_unused]], const TcpHeader& h,
+                             const Address& fromAddress, const Address& toAddress)
+    {
+    NS_LOG_FUNCTION (this << p << h << fromAddress << toAddress);
+    ...
+
+  In function or method parameters, if the parameter is definitely unused,
+  it should be left unnamed.  Example (second parameter is not used):
+  ::
+    void
+    UanMacAloha::RxPacketGood (Ptr<Packet> pkt, double, UanTxMode txMode)
+    {
+      UanHeaderCommon header;
+      pkt->RemoveHeader (header);
+      ...
+
+  In this case, the parameter is also not referenced by Doxygen; e.g.:
+  ::
+    /*
+     * Receive packet from lower layer (passed to PHY as callback).
+     *
+     * \param pkt Packet being received.
+     * \param txMode Mode of received packet.
+     */
+    void RxPacketGood (Ptr<Packet> pkt, double, UanTxMode txMode);
+
+  The omission is preferred to commenting out unused parameters such as:
+  ::
+    void
+    UanMacAloha::RxPacketGood (Ptr<Packet> pkt, double /*sinr*/, UanTxMode txMode)
+    {
+      UanHeaderCommon header;
+      pkt->RemoveHeader (header);
+      ...
+
