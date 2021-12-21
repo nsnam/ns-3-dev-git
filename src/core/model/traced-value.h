@@ -75,7 +75,7 @@ namespace TracedValueCallback {
  */
 /**
  *  TracedValue Callback signature for POD.
- *
+ * @{
  * \param [in] oldValue original value of the traced variable
  * \param [in] newValue new value of the traced variable
  */
@@ -89,8 +89,11 @@ typedef void (* Uint32)(uint32_t oldValue, uint32_t newValue);
 typedef void (* Int64) (int64_t  oldValue, int64_t  newValue);
 typedef void (* Uint64)(uint64_t oldValue, uint64_t newValue);
 typedef void (* Double)(double   oldValue, double   newValue);
+/**@}*/
+/** TracedValue Callback signature for void. */
 typedef void (* Void)  (void);
 /**@}*/
+
 }  // namespace TracedValueCallback
 
 

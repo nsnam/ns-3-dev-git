@@ -1572,7 +1572,13 @@ private:
         return false;
       }
   }
-  /** \copydoc Assign(const CallbackBase&). */
+  /* Broken: \copydoc Callback::Assign() */
+  /**
+   * Adopt the other's implementation, if type compatible
+   *
+   * \param [in] other Callback
+   * \returns \c true if \pname{other} was type-compatible and could be adopted.
+   */
   bool DoAssign (Ptr<const CallbackImplBase> other)
   {
     if (!DoCheckType (other))
@@ -1948,13 +1954,7 @@ public:
   virtual ~CallbackValue ();
   /** \param [in] base The CallbackBase to use */
   void Set (CallbackBase base);
-  /**
-   * Give value my callback, if type compatible
-   *
-   * \tparam T \deduced The type in which to retrieve the value.
-   * \param [out] value Destination callback
-   * \returns \c true if successful
-   */
+  /* Documented by print-introspected-doxygen.cc */
   template <typename T>
   bool GetAccessor (T &value) const;
   /** \return A copy of this CallBack */
@@ -1975,7 +1975,8 @@ public:
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
 private:
-  CallbackBase m_value;                 //!< the CallbackBase
+  /* Documented by print-introspected-doxygen.cc */
+  CallbackBase m_value;
 };
 
 ATTRIBUTE_ACCESSOR_DEFINE (Callback);

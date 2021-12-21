@@ -204,7 +204,7 @@ private:
    * Ordering function to identify the insertion point, according to \c m_reverse.
    * \param [in] newEvent The new event being inserted.
    * \param [in] it The current position in the bucket being examined.
-   * \return \c true if the \c newEvent belongs before \it.
+   * \return \c true if the \c newEvent belongs before \c it.
    */
   bool (*Order) (const EventKey & newEvent, const EventKey & it);
   /**

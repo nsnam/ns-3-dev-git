@@ -108,7 +108,6 @@ public:
    * Get the value.
    * \param [out] value The AttributeValue to set to the value
    *                    of this GlobalValue
-   * \returns The current value of this GlobalValue.
    */
   void GetValue (AttributeValue &value) const;
   /**

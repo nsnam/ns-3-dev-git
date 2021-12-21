@@ -619,29 +619,29 @@ class ConfigImpl : public Singleton<ConfigImpl>
 public:
   // Keep Set and SetFailSafe since their errors are triggered
   // by the underlying ObjecBase functions.
-  /** \copydoc Config::Set() */
+  /** \copydoc ns3::Config::Set() */
   void Set (std::string path, const AttributeValue &value);
-  /** \copydoc Config::SetFailSafe() */
+  /** \copydoc ns3::Config::SetFailSafe() */
   bool SetFailSafe (std::string path, const AttributeValue &value);
-  /** \copydoc Config::ConnectWithoutContextFailSafe() */
+  /** \copydoc ns3::Config::ConnectWithoutContextFailSafe() */
   bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb);
-  /** \copydoc Config::ConnectFailSafe() */
+  /** \copydoc ns3::Config::ConnectFailSafe() */
   bool ConnectFailSafe (std::string path, const CallbackBase &cb);
-  /** \copydoc Config::DisconnectWithoutContext() */
+  /** \copydoc ns3::Config::DisconnectWithoutContext() */
   void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
-  /** \copydoc Config::Disconnect() */
+  /** \copydoc ns3::Config::Disconnect() */
   void Disconnect (std::string path, const CallbackBase &cb);
-  /** \copydoc Config::LookupMatches() */
+  /** \copydoc ns3::Config::LookupMatches() */
   MatchContainer LookupMatches (std::string path);
 
-  /** \copydoc Config::RegisterRootNamespaceObject() */
+  /** \copydoc ns3::Config::RegisterRootNamespaceObject() */
   void RegisterRootNamespaceObject (Ptr<Object> obj);
-  /** \copydoc Config::UnregisterRootNamespaceObject() */
+  /** \copydoc ns3::Config::UnregisterRootNamespaceObject() */
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
-  /** \copydoc Config::GetRootNamespaceObjectN() */
+  /** \copydoc ns3::Config::GetRootNamespaceObjectN() */
   std::size_t GetRootNamespaceObjectN (void) const;
-  /** \copydoc Config::GetRootNamespaceObject() */
+  /** \copydoc ns3::Config::GetRootNamespaceObject() */
   Ptr<Object> GetRootNamespaceObject (std::size_t i) const;
 
 private:

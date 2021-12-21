@@ -18,7 +18,7 @@
  * Author: Mathew Bielejeski <bielejeski1@llnl.gov>
  */
 
-#include "length.h"
+#include "ns3/length.h"
 
 #include "ns3/log.h"
 
@@ -394,11 +394,6 @@ Length::As (Length::Unit unit) const
   return Quantity (value, unit);
 }
 
-//silence doxygen warnings about undocumented functions
-/**
- * \ingroup length
- * @{
- */
 bool
 operator== (const Length& left, const Length& right)
 {

@@ -19,6 +19,7 @@
 
 #include "ns3/core-config.h"
 #if !defined(INT64X64_DOUBLE_H) && (defined (INT64X64_USE_DOUBLE) || defined(PYTHON_SCAN))
+/** Using the ns3::int64x64_t based on double values. */
 #define INT64X64_DOUBLE_H
 
 #include <stdint.h>
@@ -280,8 +281,9 @@ private:
   /**
    * \name Arithmetic Operators
    * Arithmetic operators for int64x64_t.
+   * @{
    */
-  /**
+  /*
    * @{
    *  Arithmetic operator.
    *  \param [in] lhs Left hand argument
@@ -303,7 +305,7 @@ private:
    * \name Unary Operators
    * Unary operators for int64x64_t.
    */
-  /**
+  /*
    * @{
    *  Unary operator.
    *  \param [in] lhs Left hand argument
@@ -318,7 +320,7 @@ private:
 };  // class int64x64_t
 
 
-/**
+/*
  * \ingroup highprec
  * Equality operator.
  * \param [in] lhs Left hand argument

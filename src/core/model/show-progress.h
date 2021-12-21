@@ -165,6 +165,11 @@ private:
   /**
    * Show execution progress.
    * This function actually generates output, when directed by CheckProgress().
+   * \param [in] nEvents The actual number of events processed since the last 
+   *             progress output.
+   * \param [in] ratio The current ratio of elapsed wall clock time to the
+   *             target update interval.
+   * \param [in] speed The execution speed relative to wall clock time.
    */
   void GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed);
 

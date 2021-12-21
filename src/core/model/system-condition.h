@@ -67,6 +67,8 @@ class SystemConditionPrivate;
  * context and put the processor to sleep until an event happens somewhere
  * else that
  */
+// The last two paragraphs are truncated in the earliest commit of this code:
+// 2008-07-15	Craig Dowell	add system threads and synchronization primitives
 class SystemCondition
 {
 public:

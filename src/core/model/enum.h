@@ -155,6 +155,7 @@ Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2);
  * \returns The AttributeChecker
  * \param [in] v  The default enum value.
  * \param [in] n  The corresponding name.
+ * \param [in] args Any additional arguments.
  */
 template <typename... Ts>
 Ptr<const AttributeChecker>
@@ -174,6 +175,7 @@ MakeEnumChecker (int v, std::string n, Ts... args)
  * \param [in] checker The AttributeChecker.
  * \param [in] v  The next enum value.
  * \param [in] n  The corresponding name.
+ * \param [in] args Any additional arguments.
  */
 
 template <typename... Ts>
@@ -187,7 +189,7 @@ MakeEnumChecker (Ptr<EnumChecker> checker, int v, std::string n, Ts... args)
 /**
  * Terminate the recursion of variadic arguments.
  *
- * \returns The \pname checker
+ * \returns The \p checker
  * \param [in] checker The AttributeChecker.
  */
 // inline to allow tail call optimization

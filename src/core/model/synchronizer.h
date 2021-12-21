@@ -165,9 +165,11 @@ public:
    * waiting in the Synchronize method that an event has happened which demands
    * a reevaluation of the wait time.
    *
+   * @param [in] cond The new value for the condition variable.
+   *
    * @see Signal
    */
-  void SetCondition (bool);
+  void SetCondition (bool cond);
 
   /**
    * @brief Ask the synchronizer to remember what time it is.
@@ -282,9 +284,10 @@ protected:
    * waiting in the Synchronize method that an event has happened which
    * demands a reevaluation of the wait time.
    *
+   * @param [in] cond The new value for the condition variable.
    * @see SetCondition
    */
-  virtual void DoSetCondition (bool) = 0;
+  virtual void DoSetCondition (bool cond) = 0;
 
   /**
    * @brief Get the drift between the real time clock used to synchronize

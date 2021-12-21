@@ -31,6 +31,14 @@
 
 namespace ns3 {
 
+/**
+ * Output streamer for a std::pair.
+ * \tparam A \deduced Type of the `pair.first`.
+ * \tparam B \deduced Type of the `pair.second`.
+ * \param [in,out] os The output stream.
+ * \param [in] p The pair.
+ * \returns The output stream.
+ */
 template <class A, class B>
 std::ostream &
 operator << (std::ostream &os, const std::pair<A, B> &p)
@@ -78,10 +86,7 @@ public:
    * \return stored value as std::pair<A, B>.
    */
   result_type Get (void) const;
-  /**
-   * Set the stored value.
-   * \param[in] value std::pair<A, B> to be stored.
-   */
+  /* Documented by print-introspected-doxygen.cc */
   void Set (const result_type &value);
 
   template <typename T>
@@ -94,6 +99,7 @@ private:
 class PairChecker : public AttributeChecker
 {
 public:
+  /** Type holding an AttributeChecker for each member of a pair. */
   typedef std::pair<Ptr<const AttributeChecker>, Ptr<const AttributeChecker> > checker_pair_type;
 
   /**
@@ -170,13 +176,21 @@ template <class A, class B>
 class PairChecker : public ns3::PairChecker
 {
 public:
+  /** Default c'tor. */
   PairChecker (void);
+  /**
+   * Construct from a pair of AttributeChecker's.
+   * \param firstchecker The AttributeChecker for first.
+   * \param secondchecker The AttributeChecker for second.
+   */
   PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
   void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
   typename ns3::PairChecker::checker_pair_type GetCheckers (void) const;
 
 private:
+  /** The first checker. */
   Ptr<const AttributeChecker> m_firstchecker;
+  /** The second checker. */
   Ptr<const AttributeChecker> m_secondchecker;
 };
 
@@ -334,6 +348,14 @@ PairValue<A, B>::GetAccessor (T &value) const
   return true;
 }
 
+/**
+ * Create an AttributeAccessor for std::pair<>.
+ * \tparam A \explicit The type of pair.first.
+ * \tparam B \explicit The type of pair.second.
+ * \tparam T1 \deduced The argument pair type.
+ * \param [in] a1 The std::pair to be accessed.
+ * \returns The AttributeAccessor.
+ */
 template <typename A, typename B, typename T1>
 Ptr<const AttributeAccessor> MakePairAccessor (T1 a1)
 {

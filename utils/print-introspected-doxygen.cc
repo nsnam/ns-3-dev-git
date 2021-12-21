@@ -1052,7 +1052,7 @@ PrintAllAttributes (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
-  os << "This is a list of all" << reference << "ns3::Attributes by class.  "
+  os << "This is a list of all" << reference << "ns3::Attribute classes.  "
      << "For more information see the" << reference << "ns3:Attributes "
      << "section of this API documentation and the Attributes sections "
      << "in the Tutorial and Manual.\n"
@@ -1263,7 +1263,7 @@ PrintAllTraceSources (std::ostream & os)
  *
  * In doxygen form this will print a comment block with
  * \verbatim
- *   \ingroup attribute
+ *   \ingroup attributes
  *   \defgroup attribute_<name>Value <name>Value
  * \endverbatim
  *
@@ -1279,12 +1279,12 @@ PrintAttributeValueSection (std::ostream & os,
   NS_LOG_FUNCTION (name);
   std::string section = "attribute_" + name;
 
-  // \ingroup attribute
+  // \ingroup attributes
   // \defgroup attribute_<name>Value <name> Attribute
-  os << commentStart << sectionStart << "attribute\n"
+  os << commentStart << sectionStart << "attributes\n"
      <<   subSectionStart << "attribute_" << name << " "
      <<     name << " Attribute\n"
-     <<     "Attribute implementation for " << name << "\n";
+     <<     "AttributeValue implementation for " << name << "\n";
   if (seeBase)
     {
       // Some classes don't live in ns3::.  Yuck

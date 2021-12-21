@@ -549,6 +549,7 @@ public:
   /**
    * Round a Time to a specific unit.
    * Rounding is to nearest integer.
+   * \param [in] unit The unit to round to.
    * \return The Time rounded to the specific unit.
    */
   Time RoundTo (enum Unit unit) const
@@ -723,7 +724,8 @@ private:
   friend bool operator <  (const Time & lhs, const Time & rhs);
   friend bool operator >  (const Time & lhs, const Time & rhs);
   friend bool operator <  (const Time & time,   const EventId & event);
-  /**@}*/
+  /**@}*/  // Comparison operators
+
   /**
    * \name Arithmetic operators
    * @{
@@ -732,70 +734,49 @@ private:
   friend Time operator -  (const Time & lhs, const Time & rhs);
   friend Time operator *  (const Time & lhs, const int64x64_t & rhs);
   friend Time operator *  (const int64x64_t & lhs, const Time & rhs);
+  friend int64x64_t operator / (const Time & lhs, const Time & rhs);
+  friend Time operator /  (const Time & lhs, const int64x64_t & rhs);
+  friend Time operator %  (const Time & lhs, const Time & rhs);
+  friend int64_t Div      (const Time & lhs, const Time & rhs);
+  friend Time Rem         (const Time & lhs, const Time & rhs);
 
   template<class T>
   friend typename std::enable_if<std::is_integral<T>::value, Time>::type
   operator * (const Time& lhs, T rhs);
 
-  //this function uses is_arithmetic because it can be used by both
-  //integers and decimal types
-  /**
-   * Limited to \c is_arithmetic matches for the T argument to reduce the chances
-   * of matching some arbitrary object type.
-   */
+  // Reversed arg version (forwards to `rhs * lhs`) 
+  // Accepts both integers and decimal types
   template<class T>
   friend typename std::enable_if<std::is_arithmetic<T>::value, Time>::type
   operator * (T lhs, const Time& rhs);
 
   template<class T>
-  friend typename std::enable_if<std::is_floating_point<T>::value, Time>::type
-  operator * (const Time& lhs, T rhs);
-
-  friend int64x64_t operator / (const Time & lhs, const Time & rhs);
-  friend Time operator /  (const Time & lhs, const int64x64_t & rhs);
-
-  template<class T>
   friend typename std::enable_if<std::is_integral<T>::value, Time>::type
   operator / (const Time& lhs, T rhs);
 
+  friend Time Abs (const Time & time);
+  friend Time Max (const Time & timeA, const Time & timeB);
+  friend Time Min (const Time & timeA, const Time & timeB);
+
+  /**@}*/  // Arithmetic operators
+
+  // Leave undocumented
+  template<class T>
+  friend typename std::enable_if<std::is_floating_point<T>::value, Time>::type
+  operator * (const Time& lhs, T rhs);
   template<class T>
   friend typename std::enable_if<std::is_floating_point<T>::value, Time>::type
   operator / (const Time& lhs, T rhs);
 
-  friend Time operator %  (const Time & lhs, const Time & rhs);
-  friend int64_t Div      (const Time & lhs, const Time & rhs);
-  friend Time Rem         (const Time & lhs, const Time & rhs);
 
-  /**@}*/
   /**
    * \name Compound assignment operators
    * @{
    */
   friend Time & operator += (Time & lhs, const Time & rhs);
   friend Time & operator -= (Time & lhs, const Time & rhs);
-  /**@}*/
+  /**@}*/  // Compound assignment
 
-  /**
-   * Absolute value function for Time
-   * \param [in] time The input value
-   * \returns The absolute value of the input value
-   */
-  friend Time Abs (const Time & time);
-  /**
-   *  Max function for Time.
-   *  \param [in] timeA The first value
-   *  \param [in] timeB The seconds value
-   *  \returns The max of the two input values.
-   */
-  friend Time Max (const Time & timeA, const Time & timeB);
-  /**
-   *  Min function for Time.
-   *  \param [in] timeA The first value
-   *  \param [in] timeB The seconds value
-   *  \returns The min of the two input values.
-   */
-  friend Time Min (const Time & timeA, const Time & timeB);
-  
 
   int64_t m_data;  //!< Virtual time value, in the current unit.
 
@@ -979,6 +960,14 @@ operator * (const Time& lhs, T rhs)
   return Time (lhs.m_data * rhs);
 }
 
+// Leave undocumented
+template<class T>
+typename std::enable_if<std::is_floating_point<T>::value, Time>::type
+operator * (const Time& lhs, T rhs)
+{
+  return lhs * int64x64_t(rhs);
+}
+
 /**
  * Scale a Time by a numeric value.
  *
@@ -997,22 +986,6 @@ typename std::enable_if<std::is_arithmetic<T>::value, Time>::type
 operator * (T lhs, const Time& rhs)
 {
   return rhs * lhs;
-}
-
-/**
- * Scale a Time by a floating point value.
- *
- * \tparam T Floating point data type (float, double, etc.)
- *
- * \param [in] lhs The scale value 
- * \param [in] rhs The Time instance to scale 
- * \returns A new Time instance containing the scaled value 
- */
-template<class T>
-typename std::enable_if<std::is_floating_point<T>::value, Time>::type
-operator * (const Time& lhs, T rhs)
-{
-  return lhs * int64x64_t(rhs);
 }
 
 /**
@@ -1074,15 +1047,7 @@ operator / (const Time& lhs, T rhs)
   return Time(lhs.m_data / rhs);
 }
 
-/**
- * Divide a Time by a floating point value.
- *
- * \tparam T Floating point data type (float, double, etc.)
- *
- * \param [in] lhs The Time instance to scale 
- * \param [in] rhs The scale value
- * \returns A new Time instance containing the scaled value 
- */
+// Leave undocumented
 template<class T>
 typename std::enable_if<std::is_floating_point<T>::value, Time>::type
 operator / (const Time& lhs, T rhs)
@@ -1090,10 +1055,11 @@ operator / (const Time& lhs, T rhs)
   return lhs / int64x64_t(rhs);
 }
 
+
 /**
  * Remainder (modulus) from the quotient of two Times.
  *
- * This is exactly the same function as Rem()
+ * Rem() and operator% are equivalent:
  *
  *     Rem (ta, tb)  ==  ta % tb;
  *
@@ -1101,12 +1067,20 @@ operator / (const Time& lhs, T rhs)
  * \param [in] lhs The first time value
  * \param [in] rhs The second time value
  * \returns The remainder of `lhs / rhs`.
+ * @{
  */
 inline Time
 operator % (const Time & lhs, const Time & rhs)
 {
   return Time (lhs.m_data % rhs.m_data);
 }
+inline Time
+Rem (const Time & lhs, const Time & rhs)
+{
+  return Time (lhs.m_data % rhs.m_data);
+}
+/** @} */
+
 /**
  * Integer quotient from dividing two Times.
  *
@@ -1132,24 +1106,6 @@ Div (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data / rhs.m_data;
 }
-/**
- * Remainder (modulus) from the quotient of two Times.
- *
- * This is exactly the same function as operator%()
- *
- *     Rem (ta, tb)  ==  ta % tb;
- *
- * \see Div()
- * \param [in] lhs The first time value
- * \param [in] rhs The second time value
- * \returns The result of the remainder of the first input / second input value.
- */
-inline Time
-Rem (const Time & lhs, const Time & rhs)
-{
-  return Time (lhs.m_data % rhs.m_data);
-}
-
 /**
  * Compound addition assignment for Time.
  * \param [in] lhs The first value
