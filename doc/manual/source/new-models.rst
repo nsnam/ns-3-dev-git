@@ -188,7 +188,7 @@ makes sense to implement this in the ``src/network/`` module where |ns3|
 packets are implemented.  
 
 `cmake` and `CMakeLists.txt`
-+++++++++++++++++++
+++++++++++++++++++++++++++++
 
 |ns3| uses the `CMake <https://cmake.org/>`_ build system.
 You will want to integrate your new |ns3| uses the CMake build system. You will

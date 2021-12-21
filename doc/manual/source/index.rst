@@ -17,22 +17,9 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    :maxdepth: 2
 
    organization
-   working-with-git
-   random-variables
-   hash-functions
-   events
-   callbacks
-   object-model
-   attributes
-   object-names
-   logging
-   tracing
-   data-collection
-   statistics
-   realtime
-   helpers
+   simulator
+   features
+   develop
+
    utilities
-   gnuplot
-   python
-   tests
    support
