@@ -247,7 +247,8 @@ Please note that for older git version, the push command looks like::
 Submit work for review
 **********************
 
-After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html to create a merge request. Please remember to add, as reviewer, at least one maintainer. To get the information on who is maintaining what, please refer to the `nsnam website <https://www.nsnam.org/develop/maintainers/>`_.
+After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html
+to create a merge request. 
 
 Porting patches from mercurial repositories to git
 **************************************************
@@ -274,7 +275,7 @@ Please note that if you want to keep track of your branch, you can use as comman
 Review and merge someone else's work
 ************************************
 
-Gitlab.com has a plenty of documentation on how to handle merge requests. Please take a look here: https://docs.gitlab.com/ee/user/project/merge_requests/index.html.
+Gitlab.com has a plenty of documentation on how to handle merge requests. Please take a look here: https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html.
 
 If you are committing a patch from someone else, and it is not coming through a Merge Request process, you can use the --author='' argument to 'git commit' to assign authorship to another email address (such as we have done in the past with the Mercurial -u option).
 
