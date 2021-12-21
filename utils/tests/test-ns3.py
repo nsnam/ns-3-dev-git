@@ -77,6 +77,9 @@ def run_program(program, args, python=False, cwd=ns3_path):
     if args != "":
         arguments.extend(re.findall("(?:\".*?\"|\S)+", args))
 
+    for i in range(len(arguments)):
+        arguments[i] = arguments[i].replace("\"", "")
+
     # Call program with arguments
     ret = subprocess.run(
         arguments,
@@ -197,6 +200,17 @@ class NS3RunWafTargets(unittest.TestCase):
 
     def test_06_runTestCaseExamplesAsTestsTestSuite(self):
         return_code, stdout, stderr = run_program("test.py", "--nowaf -s examples-as-tests-test-suite", True)
+        self.assertEqual(return_code, 0)
+        self.assertIn("PASS", stdout)
+
+    def test_07_runCoreExampleSimulator(self):
+        run_ns3("clean")
+
+        return_code, stdout, stderr = run_program("waf", "configure --enable-examples --enable-tests --out build/debug", python=True)
+        self.assertEqual(return_code, 0)
+        self.assertIn("finished successfully", stdout)
+
+        return_code, stdout, stderr = run_program("waf", '--run "test-runner --suite=core-example-simulator --verbose"', True)
         self.assertEqual(return_code, 0)
         self.assertIn("PASS", stdout)
 

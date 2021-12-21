@@ -490,11 +490,11 @@ def get_program_shortcuts(build_profile, ns3_version):
 
     # We can now build a map to simplify things for users (at this point we could remove versioning prefix/suffix)
     ns3_program_map = {}
-    out_dir_name = os.path.basename(out_dir)
     for program in programs_dict["ns3_runnable_programs"]:
         if "pch_exec" in program:
             continue
-        temp_path = program.split(out_dir_name)[-1].split(os.sep)
+        temp_path = program.replace(out_dir, "").split(os.sep)
+
         # Remove version prefix and build type suffix from shortcuts (or keep them too?)
         temp_path[-1] = temp_path[-1].replace("-" + build_profile, "").replace("ns" + ns3_version + "-", "")
 
@@ -855,14 +855,29 @@ def main():
                    output
                    )
 
-    # To determine if we are being called to run-no-build a waf build,
-    # we can just check if the out_dir matches the base folder from the target_to_run
-    if out_dir.split(os.sep)[-1] == target_to_run.split(os.sep)[0]:
-        target_to_run = target_to_run.replace(out_dir.split(os.sep)[-1] + os.sep, "")
-        # Waf doesn't add version prefix and build type suffix to the scratches, so we remove them
+    def remove_overlapping_path(base_path, target_path):
+        """
+        Remove overlapping paths from output directory and target_to_run
+        :param base_path: output path of the ns-3 build
+        :param target_path: path to the executable to run
+        :return: target_path without the overlapping parts
+        """
+        target_path = target_path.split(os.sep)
+        base_path = base_path.split(os.sep)
+        while target_path[0] in base_path:
+            target_path = target_path[1:]
+        target_path = os.sep.join(target_path)
+        return target_path
+
+    target_to_run = remove_overlapping_path(out_dir, target_to_run)
+
+    # Waf doesn't add version prefix and build type suffix to the scratches, so we remove them
+    if current_cmake_cache_folder is None:
         if "scratch" in target_to_run and run_only:
-            target_to_run = target_to_run.replace(os.path.basename(target_to_run), run_only)
-        target_to_run = os.sep.join([out_dir, target_to_run])
+            waf_target_to_run = target_to_run.replace(os.path.basename(target_to_run), run_only)
+            if os.path.exists(os.sep.join([out_dir, waf_target_to_run])):
+                target_to_run = waf_target_to_run
+    target_to_run = os.sep.join([out_dir, target_to_run])
 
     # If we're only trying to run the target, we need to check if it actually exists first
     if (run_only or build_and_run) and not os.path.exists(target_to_run):
