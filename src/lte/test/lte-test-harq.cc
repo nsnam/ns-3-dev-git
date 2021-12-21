@@ -46,7 +46,6 @@
 #include <ns3/config.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
-#include <ns3/unused.h>
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/buildings-helper.h>
 

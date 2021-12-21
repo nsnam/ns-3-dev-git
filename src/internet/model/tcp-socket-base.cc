@@ -860,9 +860,8 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
 
 /* Inherit from Socket class: In TcpSocketBase, it is same as Send() call */
 int
-TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
+TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, [[maybe_unused]] const Address &address)
 {
-  NS_UNUSED (address);
   return Send (p, flags); // SendTo() and Send() are the same
 }
 
@@ -2304,9 +2303,9 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 /* Received a packet upon SYN_RCVD */
 void
 TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
-                               const Address& fromAddress, const Address& toAddress)
+                               const Address& fromAddress, 
+                               [[maybe_unused]] const Address& toAddress)
 {
-  NS_UNUSED (toAddress);
   NS_LOG_FUNCTION (this << tcpHeader);
 
   // Extract the flags. PSH, URG, CWR and ECE are disregarded.
@@ -2886,11 +2885,10 @@ TcpSocketBase::SetupEndpoint6 ()
    TcpSocketBase cloned, allocate a new end point to handle the incoming
    connection and send a SYN+ACK to complete the handshake. */
 void
-TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
+TcpSocketBase::CompleteFork ([[maybe_unused]] Ptr<Packet> p, const TcpHeader& h,
                              const Address& fromAddress, const Address& toAddress)
 {
   NS_LOG_FUNCTION (this << p << h << fromAddress << toAddress);
-  NS_UNUSED (p);
   // Get port and address from peer (connecting host)
   if (InetSocketAddress::IsMatchingType (toAddress))
     {

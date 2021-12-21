@@ -21,7 +21,6 @@
 #define ATTRIBUTE_ACCESSOR_HELPER_H
 
 #include "attribute.h"
-#include "unused.h"
 
 /**
  * \file
@@ -334,10 +333,8 @@ DoMakeAccessorHelperOne (U (T::*getter)(void) const)
     {}
 
   private:
-    virtual bool DoSet (T *object, const V *v) const
+    virtual bool DoSet ([[maybe_unused]] T *object, [[maybe_unused]] const V *v) const
     {
-      NS_UNUSED (object);
-      NS_UNUSED (v);
       return false;
     }
     virtual bool DoGet (const T *object, V *v) const
@@ -402,10 +399,8 @@ DoMakeAccessorHelperOne (void (T::*setter)(U))
       (object->*m_setter)(tmp);
       return true;
     }
-    virtual bool DoGet (const T *object, V *v) const
+    virtual bool DoGet ([[maybe_unused]] const T *object, [[maybe_unused]] V *v) const
     {
-      NS_UNUSED (object);
-      NS_UNUSED (v);
       return false;
     }
     virtual bool HasGetter (void) const

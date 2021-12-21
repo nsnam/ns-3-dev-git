@@ -30,7 +30,6 @@
 #include "ns3/names.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
-#include "ns3/unused.h"
 
 
 #include <sstream>
@@ -235,11 +234,6 @@ public:
 
 private:
   int8_t m_x; //!< X attribute target.
-  /** Silence unused variable warning. */
-  void Increment (void)
-  {
-    m_x++;
-  }
 };
 
 TypeId
@@ -633,9 +627,8 @@ public:
    * \param oldValue The old value.
    * \param newValue The new value.
    */
-  void Trace (int16_t oldValue, int16_t newValue)
+  void Trace ([[maybe_unused]] int16_t oldValue, int16_t newValue)
   {
-    NS_UNUSED (oldValue);
     m_newValue = newValue;
   }
   /**
@@ -644,9 +637,8 @@ public:
    * \param old The old value.
    * \param newValue The new value.
    */
-  void TraceWithPath (std::string path, int16_t old, int16_t newValue)
+  void TraceWithPath (std::string path, [[maybe_unused]] int16_t old, int16_t newValue)
   {
-    NS_UNUSED (old);
     m_newValue = newValue;
     m_path = path;
   }

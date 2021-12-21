@@ -350,9 +350,8 @@ private:
    *
    * Since SR is not implemented in LTE, this method does nothing.
    */
-  void DoReportSrToScheduler (uint16_t rnti)
+  void DoReportSrToScheduler ([[maybe_unused]] uint16_t rnti)
   {
-    NS_UNUSED (rnti);
   }
   
 public:

@@ -708,8 +708,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       mpdu = candidate.second;
       NS_ASSERT (mpdu != nullptr);
 
-      bool ret = m_heFem->TryAddMpdu (mpdu, dlMuInfo.txParams, actualAvailableTime);
-      NS_UNUSED (ret);
+      [[maybe_unused]] bool ret = m_heFem->TryAddMpdu (mpdu, dlMuInfo.txParams, actualAvailableTime);
       NS_ASSERT_MSG (ret, "Weird that an MPDU does not meet constraints when "
                           "transmitted over a larger RU");
     }

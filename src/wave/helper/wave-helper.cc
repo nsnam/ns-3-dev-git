@@ -25,7 +25,6 @@
 #include "ns3/wave-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/radiotap-header.h"
-#include "ns3/unused.h"
 #include "wave-mac-helper.h"
 #include "wave-helper.h"
 
@@ -362,8 +361,7 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
 {
   try
     {
-      const QosWaveMacHelper& qosMac = dynamic_cast<const QosWaveMacHelper&> (macHelper);
-      NS_UNUSED (qosMac);
+      [[maybe_unused]] const QosWaveMacHelper& qosMac = dynamic_cast<const QosWaveMacHelper&> (macHelper);
     }
   catch (const std::bad_cast &)
     {

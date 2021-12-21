@@ -62,9 +62,8 @@ SimulatorEventsTestCase::NowUs (void)
 }
 
 void
-SimulatorEventsTestCase::EventA (int a)
+SimulatorEventsTestCase::EventA ([[maybe_unused]] int a)
 {
-  NS_UNUSED (a);
   m_a = false;
 }
 
@@ -84,9 +83,8 @@ SimulatorEventsTestCase::EventB (int b)
 }
 
 void
-SimulatorEventsTestCase::EventC (int c)
+SimulatorEventsTestCase::EventC ([[maybe_unused]] int c)
 {
-  NS_UNUSED (c);
   m_c = false;
 }
 

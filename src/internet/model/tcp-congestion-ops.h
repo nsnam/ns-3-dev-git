@@ -79,9 +79,8 @@ public:
    *
    * \param tcb internal congestion state
    */
-  virtual void Init (Ptr<TcpSocketState> tcb)
+  virtual void Init ([[maybe_unused]] Ptr<TcpSocketState> tcb)
     {
-      NS_UNUSED (tcb);
     }
 
   /**

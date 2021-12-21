@@ -211,7 +211,7 @@ int main (int argc, char *argv[])
 
   // Create directories to store dat files
   struct stat buffer;
-  int retVal;
+  [[maybe_unused]] int retVal;
   if ((stat (dir.c_str (), &buffer)) == 0)
     {
       std::string dirToRemove = "rm -rf " + dir;
@@ -227,7 +227,6 @@ int main (int argc, char *argv[])
   NS_ASSERT_MSG (retVal == 0, "Error in return value");
   retVal = system ((dirToSave + "/cwndTraces/").c_str ());
   NS_ASSERT_MSG (retVal == 0, "Error in return value");
-  NS_UNUSED (retVal);
 
   // Set default parameters for queue discipline
   Config::SetDefault (qdiscTypeId + "::MaxSize", QueueSizeValue (QueueSize ("100p")));

@@ -480,9 +480,8 @@ ThreeGppRmaPropagationLossModel::GetShadowingCorrelationDistance (ChannelConditi
 }
 
 double
-ThreeGppRmaPropagationLossModel::Pl1 (double frequency, double distance3D, double h, double w)
+ThreeGppRmaPropagationLossModel::Pl1 (double frequency, double distance3D, double h, [[maybe_unused]] double w)
 {
-  NS_UNUSED (w);
   double loss = 20.0 * log10 (40.0 * M_PI * distance3D * frequency / 1e9 / 3.0) + std::min (0.03 * pow (h, 1.72), 10.0) * log10 (distance3D) - std::min (0.044 * pow (h, 1.72), 14.77) + 0.002 * log10 (h) * distance3D;
   return loss;
 }
@@ -651,11 +650,11 @@ ThreeGppUmaPropagationLossModel::GetLossNlos (double distance2D, double distance
 }
 
 double
-ThreeGppUmaPropagationLossModel::GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const
+ThreeGppUmaPropagationLossModel::GetShadowingStd ([[maybe_unused]] Ptr<MobilityModel> a, 
+                                                  [[maybe_unused]] Ptr<MobilityModel> b, 
+                                                  ChannelCondition::LosConditionValue cond) const
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   double shadowingStd;
 
   if (cond == ChannelCondition::LosConditionValue::LOS)
@@ -736,10 +735,10 @@ ThreeGppUmiStreetCanyonPropagationLossModel::~ThreeGppUmiStreetCanyonPropagation
 }
 
 double
-ThreeGppUmiStreetCanyonPropagationLossModel::GetBpDistance (double hUt, double hBs, double distance2D) const
+ThreeGppUmiStreetCanyonPropagationLossModel::GetBpDistance (double hUt, double hBs, 
+                                                            [[maybe_unused]] double distance2D) const
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (distance2D);
 
   // compute hE (see 3GPP TR 38.901, Table 7.4.1-1, Note 1)
   double hE = 1.0;
@@ -868,11 +867,11 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetUtAndBsHeights (double za, doubl
 }
 
 double
-ThreeGppUmiStreetCanyonPropagationLossModel::GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const
+ThreeGppUmiStreetCanyonPropagationLossModel::GetShadowingStd ([[maybe_unused]] Ptr<MobilityModel> a, 
+                                                              [[maybe_unused]] Ptr<MobilityModel> b, 
+                                                              ChannelCondition::LosConditionValue cond) const
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   double shadowingStd;
 
   if (cond == ChannelCondition::LosConditionValue::LOS)
@@ -943,13 +942,12 @@ ThreeGppIndoorOfficePropagationLossModel::~ThreeGppIndoorOfficePropagationLossMo
 }
 
 double
-ThreeGppIndoorOfficePropagationLossModel::GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const
+ThreeGppIndoorOfficePropagationLossModel::GetLossLos ([[maybe_unused]] double distance2D, 
+                                                      [[maybe_unused]] double distance3D, 
+                                                      [[maybe_unused]] double hUt, 
+                                                      [[maybe_unused]] double hBs) const
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (distance2D);
-  NS_UNUSED (distance3D);
-  NS_UNUSED (hUt);
-  NS_UNUSED (hBs);
 
   // check if the distance is outside the validity range
   if (distance3D < 1.0 || distance3D > 150.0)
@@ -986,11 +984,11 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossNlos (double distance2D, double
 }
 
 double
-ThreeGppIndoorOfficePropagationLossModel::GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const
+ThreeGppIndoorOfficePropagationLossModel::GetShadowingStd ([[maybe_unused]] Ptr<MobilityModel> a, 
+                                                           [[maybe_unused]] Ptr<MobilityModel> b, 
+                                                           ChannelCondition::LosConditionValue cond) const
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   double shadowingStd;
 
   if (cond == ChannelCondition::LosConditionValue::LOS)

@@ -268,7 +268,7 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
   MobilityHelper mobilityAdhoc;
-  int64_t streamIndex = 0; // used to get consistent mobility across scenarios
+  [[maybe_unused]] int64_t streamIndex = 0; // used to get consistent mobility across scenarios
 
   ObjectFactory pos;
   pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
@@ -289,7 +289,6 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
   mobilityAdhoc.Install (adhocNodes);
   streamIndex += mobilityAdhoc.AssignStreams (adhocNodes, streamIndex);
-  NS_UNUSED (streamIndex); // From this point, streamIndex is unused
 
   AodvHelper aodv;
   OlsrHelper olsr;

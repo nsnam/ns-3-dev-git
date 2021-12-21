@@ -98,10 +98,10 @@ UanTest::UanTest () : TestCase ("UAN")
 }
 
 bool
-UanTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender)
+UanTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, 
+                   [[maybe_unused]] uint16_t mode, 
+                   [[maybe_unused]] const Address &sender)
 {
-  NS_UNUSED (mode);
-  NS_UNUSED (sender);
   m_bytesRx += pkt->GetSize ();
   return true;
 }

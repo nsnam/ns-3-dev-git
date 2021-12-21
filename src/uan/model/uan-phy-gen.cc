@@ -831,9 +831,8 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
 }
 
 void
-UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
+UanPhyGen::RxEndEvent (Ptr<Packet> pkt, [[maybe_unused]] double rxPowerDb, UanTxMode txMode)
 {
-  NS_UNUSED (rxPowerDb);
   if (pkt != m_pktRx)
     {
       return;
@@ -1041,9 +1040,8 @@ UanPhyGen::AssignStreams (int64_t stream)
 }
 
 void
-UanPhyGen::NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode)
+UanPhyGen::NotifyTransStartTx (Ptr<Packet> packet, [[maybe_unused]] double txPowerDb, UanTxMode txMode)
 {
-  NS_UNUSED (txPowerDb);
   if (m_pktRx)
     {
       m_minRxSinrDb = -1e30;

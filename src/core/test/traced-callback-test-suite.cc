@@ -18,7 +18,6 @@
 
 #include "ns3/test.h"
 #include "ns3/traced-callback.h"
-#include "ns3/unused.h"
 
 using namespace ns3;
 
@@ -44,18 +43,14 @@ BasicTracedCallbackTestCase::BasicTracedCallbackTestCase ()
 {}
 
 void
-BasicTracedCallbackTestCase::CbOne (uint8_t a, double b)
+BasicTracedCallbackTestCase::CbOne ([[maybe_unused]] uint8_t a, [[maybe_unused]] double b)
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   m_one = true;
 }
 
 void
-BasicTracedCallbackTestCase::CbTwo (uint8_t a, double b)
+BasicTracedCallbackTestCase::CbTwo ([[maybe_unused]] uint8_t a, [[maybe_unused]] double b)
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   m_two = true;
 }
 

@@ -195,8 +195,8 @@ LrWpanCsmaCa::GetTimeToNextSlot (void) const
   uint64_t elapsedSuperframeSymbols;
   uint64_t symbolRate;
   Time timeAtBoundary;
-  Time elapsedCap;
-  Time beaconTime;
+  [[maybe_unused]] Time elapsedCap;
+  [[maybe_unused]] Time beaconTime;
 
 
   currentTime = Simulator::Now ();
@@ -210,8 +210,6 @@ LrWpanCsmaCa::GetTimeToNextSlot (void) const
       beaconTime = Seconds ((double) m_mac->m_rxBeaconSymbols / symbolRate);
       elapsedCap = elapsedSuperframe - beaconTime;
       NS_LOG_DEBUG ("Elapsed incoming CAP symbols: " << (elapsedCap.GetSeconds () * symbolRate)  << " (" << elapsedCap.As (Time::S) << ")");
-      NS_UNUSED (beaconTime);
-      NS_UNUSED (elapsedCap);
     }
   else
     {

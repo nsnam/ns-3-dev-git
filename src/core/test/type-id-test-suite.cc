@@ -29,7 +29,6 @@
 #include "ns3/type-id.h"
 #include "ns3/test.h"
 #include "ns3/log.h"
-#include "ns3/unused.h"
 
 using namespace std;
 
@@ -216,7 +215,6 @@ public:
   DeprecatedAttribute ()
     : m_attr (0)
   {
-    NS_UNUSED (m_attr);
   }
   virtual ~DeprecatedAttribute ()
   {}

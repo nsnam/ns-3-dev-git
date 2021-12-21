@@ -20,7 +20,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "ns3/abort.h"
-#include "ns3/unused.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 
@@ -90,10 +89,8 @@ SQLiteOutput::SpinPrepare (sqlite3_stmt **stmt, const std::string &cmd) const
 
 template<typename T>
 T
-SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
+SQLiteOutput::RetrieveColumn ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unused]] int pos) const
 {
-  NS_UNUSED (stmt);
-  NS_UNUSED (pos);
   NS_FATAL_ERROR ("Can't call generic fn");
 }
 
@@ -120,11 +117,8 @@ SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
 
 template<typename T>
 bool
-SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const T &value) const
+SQLiteOutput::Bind ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unused]] int pos, [[maybe_unused]] const T &value) const
 {
-  NS_UNUSED (stmt);
-  NS_UNUSED (pos);
-  NS_UNUSED (value);
   NS_FATAL_ERROR ("Can't call generic fn");
   return false;
 }

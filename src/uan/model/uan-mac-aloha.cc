@@ -114,9 +114,8 @@ UanMacAloha::AttachPhy (Ptr<UanPhy> phy)
 
 }
 void
-UanMacAloha::RxPacketGood (Ptr<Packet> pkt, double sinr, UanTxMode txMode)
+UanMacAloha::RxPacketGood (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTxMode txMode)
 {
-  NS_UNUSED (sinr);
   UanHeaderCommon header;
   pkt->RemoveHeader (header);
   NS_LOG_DEBUG ("Receiving packet from " << header.GetSrc () << " For " << header.GetDest ());

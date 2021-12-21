@@ -20,7 +20,6 @@
 #include "ns3/packet.h"
 #include "ns3/packet-tag-list.h"
 #include "ns3/test.h"
-#include "ns3/unused.h"
 #include <limits>     // std:numeric_limits
 #include <string>
 #include <cstdarg>
@@ -947,10 +946,7 @@ PacketTagListTest::CheckRef (const PacketTagList & ref,
   ATestTag<5> t5 (1); \
   ATestTag<6> t6 (1); \
   ATestTag<7> t7 (1); \
-  const int tagLast = 7;  /* length of ref PacketTagList */ \
-  NS_UNUSED (tagLast) /* silence warnings */
-
-
+  [[maybe_unused]] const int tagLast = 7;  /* length of ref PacketTagList */
 
 void
 PacketTagListTest::CheckRefList (const PacketTagList & ptl,

@@ -127,23 +127,20 @@ RtoTracer (Time oldval, Time newval)
 }
 
 static void
-NextTxTracer (SequenceNumber32 old, SequenceNumber32 nextTx)
+NextTxTracer ([[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextTx)
 {
-  NS_UNUSED (old);
   *nextTxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextTx << std::endl;
 }
 
 static void
-InFlightTracer (uint32_t old, uint32_t inFlight)
+InFlightTracer ([[maybe_unused]] uint32_t old, uint32_t inFlight)
 {
-  NS_UNUSED (old);
   *inFlightStream->GetStream () << Simulator::Now ().GetSeconds () << " " << inFlight << std::endl;
 }
 
 static void
-NextRxTracer (SequenceNumber32 old, SequenceNumber32 nextRx)
+NextRxTracer ([[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextRx)
 {
-  NS_UNUSED (old);
   *nextRxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextRx << std::endl;
 }
 

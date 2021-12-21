@@ -47,7 +47,6 @@
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
 #include <ns3/integer.h>
-#include <ns3/unused.h>
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/buildings-helper.h>
 
@@ -258,7 +257,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 
       double dlRxPackets = rlcStats->GetDlRxPackets (imsi, lcId);
       double dlTxPackets = rlcStats->GetDlTxPackets (imsi, lcId);
-      double dlBler =  1.0 - (dlRxPackets/dlTxPackets);
+      [[maybe_unused]] double dlBler =  1.0 - (dlRxPackets/dlTxPackets);
       double expectedDlRxPackets = dlTxPackets -dlTxPackets*m_blerRef;
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " DOWNLINK"
                    << " pkts rx " << dlRxPackets << " tx " << dlTxPackets
@@ -266,7 +265,6 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
                    << " expected rx " << expectedDlRxPackets
                    << " difference " << std::abs (expectedDlRxPackets - dlRxPackets)
                    << " tolerance " << m_toleranceRxPackets);
-      NS_UNUSED (dlBler);
 
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI
@@ -417,7 +415,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
       uint8_t lcId = 3;
       double dlRxPackets = rlcStats->GetDlRxPackets (imsi, lcId);
       double dlTxPackets = rlcStats->GetDlTxPackets (imsi, lcId);
-      double dlBler = 1.0 - (dlRxPackets/dlTxPackets);
+      [[maybe_unused]] double dlBler = 1.0 - (dlRxPackets/dlTxPackets);
       double expectedDlRxPackets = dlTxPackets -dlTxPackets*m_blerRef;
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " DOWNLINK"
                    << " pkts rx " << dlRxPackets << " tx " << dlTxPackets
@@ -425,7 +423,6 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
                    << " expected rx " << expectedDlRxPackets
                    << " difference " << std::abs (expectedDlRxPackets - dlRxPackets)
                    << " tolerance " << m_toleranceRxPackets);
-      NS_UNUSED (dlBler);
 
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI

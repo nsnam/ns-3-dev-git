@@ -21,7 +21,6 @@
 #include "example-as-test.h"
 #include "ascii-test.h"
 #include "log.h"
-#include "unused.h"
 #include "assert.h"
 
 #include <string>

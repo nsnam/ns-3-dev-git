@@ -33,7 +33,6 @@
 #include "log.h"
 #include "rng-stream.h"
 #include "rng-seed-manager.h"
-#include "unused.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>    // upper_bound

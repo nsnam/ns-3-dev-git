@@ -33,7 +33,6 @@
 #include <ns3/tcp-socket-factory.h>
 #include <ns3/inet-socket-address.h>
 #include <ns3/inet6-socket-address.h>
-#include <ns3/unused.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("ThreeGppHttpClient");
@@ -380,7 +379,7 @@ ThreeGppHttpClient::OpenConnection ()
       m_socket = Socket::CreateSocket (GetNode (),
                                        TcpSocketFactory::GetTypeId ());
 
-      int ret;
+      [[maybe_unused]] int ret;
 
       if (Ipv4Address::IsMatchingType (m_remoteServerAddress))
         {
@@ -415,7 +414,6 @@ ThreeGppHttpClient::OpenConnection ()
                              << " GetErrNo= " << m_socket->GetErrno () << ".");
         }
 
-      NS_UNUSED (ret); // Mute compiler warning.
       NS_ASSERT_MSG (m_socket != 0, "Failed creating socket.");
 
       SwitchToState (CONNECTING);

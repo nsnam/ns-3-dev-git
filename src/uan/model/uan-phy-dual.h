@@ -135,9 +135,8 @@ public:
   virtual uint32_t GetNModes (void);
   virtual UanTxMode GetMode (uint32_t n);
   virtual void Clear (void);
-  virtual void SetSleepMode (bool sleep)
+  virtual void SetSleepMode ([[maybe_unused]] bool sleep)
   {
-    NS_UNUSED (sleep);
     /// \todo This method has to be implemented
   }
   int64_t AssignStreams (int64_t stream);

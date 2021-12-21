@@ -182,12 +182,9 @@ AlwaysLosChannelConditionModel::~AlwaysLosChannelConditionModel ()
 {}
 
 Ptr<ChannelCondition>
-AlwaysLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
-                                                     Ptr<const MobilityModel> b) const
+AlwaysLosChannelConditionModel::GetChannelCondition ([[maybe_unused]] Ptr<const MobilityModel> a,
+                                                     [[maybe_unused]] Ptr<const MobilityModel> b) const
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
-
   Ptr<ChannelCondition> c = CreateObject<ChannelCondition> (ChannelCondition::LOS);
 
   return c;
@@ -221,12 +218,9 @@ NeverLosChannelConditionModel::~NeverLosChannelConditionModel ()
 {}
 
 Ptr<ChannelCondition>
-NeverLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
-                                                    Ptr<const MobilityModel> b) const
+NeverLosChannelConditionModel::GetChannelCondition ([[maybe_unused]] Ptr<const MobilityModel> a,
+                                                    [[maybe_unused]] Ptr<const MobilityModel> b) const
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
-
   Ptr<ChannelCondition> c = CreateObject<ChannelCondition> (ChannelCondition::NLOS);
 
   return c;

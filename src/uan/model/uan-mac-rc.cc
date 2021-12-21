@@ -144,9 +144,8 @@ Reservation::IncrementRetry ()
 }
 
 void
-Reservation::SetTransmitted (bool t)
+Reservation::SetTransmitted ([[maybe_unused]] bool t)
 {
-  NS_UNUSED (t);
   m_transmitted = true;
 }
 
@@ -326,9 +325,8 @@ UanMacRc::AttachPhy (Ptr<UanPhy> phy)
 }
 
 void
-UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
+UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTxMode mode)
 {
-  NS_UNUSED (sinr);
   UanHeaderCommon ch;
   pkt->RemoveHeader (ch);
   if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()) || ch.GetDest () == Mac8Address::GetBroadcast ())

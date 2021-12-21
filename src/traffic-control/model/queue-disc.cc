@@ -24,7 +24,6 @@
 #include "ns3/object-vector.h"
 #include "ns3/packet.h"
 #include "ns3/socket.h"
-#include "ns3/unused.h"
 #include "ns3/simulator.h"
 #include "queue-disc.h"
 #include "ns3/net-device-queue-interface.h"
@@ -402,9 +401,8 @@ QueueDisc::DoInitialize (void)
   NS_LOG_FUNCTION (this);
 
   // Check the configuration and initialize the parameters of this queue disc
-  bool ok = CheckConfig ();
+  [[maybe_unused]] bool ok = CheckConfig ();
   NS_ASSERT_MSG (ok, "The queue disc configuration is not correct");
-  NS_UNUSED (ok); // suppress compiler warning
   InitializeParams ();
 
   // Check the configuration and initialize the parameters of the child queue discs

@@ -25,7 +25,6 @@
 #include "empty.h"
 #include "default-deleter.h"
 #include "assert.h"
-#include "unused.h"
 #include <stdint.h>
 #include <limits>
 
@@ -81,19 +80,17 @@ public:
    * Copy constructor
    * \param [in] o The object to copy into this one.
    */
-  SimpleRefCount (const SimpleRefCount &o)
+  SimpleRefCount ([[maybe_unused]] const SimpleRefCount & o)
     : m_count (1)
   {
-    NS_UNUSED (o);
   }
   /**
    * Assignment operator
    * \param [in] o The object to copy
    * \returns The copy of \pname{o}
    */
-  SimpleRefCount &operator = (const SimpleRefCount &o)
+  SimpleRefCount &operator = ([[maybe_unused]] const SimpleRefCount &o)
   {
-    NS_UNUSED (o);
     return *this;
   }
   /**

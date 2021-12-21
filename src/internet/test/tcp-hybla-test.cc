@@ -79,9 +79,8 @@ TcpHyblaIncrementTest::TcpHyblaIncrementTest (uint32_t cWnd, uint32_t ssThresh,
 }
 
 void
-TcpHyblaIncrementTest::RhoUpdated (double oldVal, double newVal)
+TcpHyblaIncrementTest::RhoUpdated ([[maybe_unused]] double oldVal, double newVal)
 {
-  NS_UNUSED (oldVal);
   m_rho = newVal;
 }
 

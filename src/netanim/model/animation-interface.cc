@@ -868,10 +868,9 @@ AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 }
 
 void
-AnimationInterface::WifiPhyTxBeginTrace (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
+AnimationInterface::WifiPhyTxBeginTrace (std::string context, WifiConstPsduMap psduMap, [[maybe_unused]] WifiTxVector txVector, double txPowerW)
 {
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (txVector);
   CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
   Ptr<NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);

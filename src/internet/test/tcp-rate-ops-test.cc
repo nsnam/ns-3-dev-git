@@ -359,9 +359,8 @@ TcpRateLinuxWithSocketsTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, 
 }
 
 void
-TcpRateLinuxWithSocketsTest::BytesInFlightTrace (uint32_t oldValue, uint32_t newValue)
+TcpRateLinuxWithSocketsTest::BytesInFlightTrace ([[maybe_unused]] uint32_t oldValue, uint32_t newValue)
 {
-  NS_UNUSED (oldValue);
   m_bytesInFlight = newValue;
 }
 

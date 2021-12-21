@@ -167,9 +167,8 @@ TcpWestwood::EstimateBW (const Time &rtt, Ptr<TcpSocketState> tcb)
 
 uint32_t
 TcpWestwood::GetSsThresh (Ptr<const TcpSocketState> tcb,
-                          uint32_t bytesInFlight)
+                          [[maybe_unused]] uint32_t bytesInFlight)
 {
-  NS_UNUSED (bytesInFlight);
   NS_LOG_LOGIC ("CurrentBW: " << m_currentBW << " minRtt: " <<
                 tcb->m_minRtt << " ssthresh: " <<
                 m_currentBW * static_cast<double> (tcb->m_minRtt.GetSeconds ()));

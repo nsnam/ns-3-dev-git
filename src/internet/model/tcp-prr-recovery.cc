@@ -69,11 +69,11 @@ TcpPrrRecovery::~TcpPrrRecovery (void)
 }
 
 void
-TcpPrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+TcpPrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, 
+                               [[maybe_unused]] uint32_t dupAckCount,
                                uint32_t unAckDataCount, uint32_t deliveredBytes)
 {
   NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount);
-  NS_UNUSED (dupAckCount);
 
   m_prrOut = 0;
   m_prrDelivered = 0;

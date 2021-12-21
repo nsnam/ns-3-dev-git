@@ -24,7 +24,6 @@
 #include <sstream>
 #include <regex.h>
 #include "ns3/log.h"
-#include "ns3/unused.h"
 #include "ns3/node-container.h"
 #include "rocketfuel-topology-reader.h"
 
@@ -239,8 +238,8 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (int argc, char *argv[])
 
   sname = argv[0];
   tname = argv[1];
-  double v = strtod (argv[2], &endptr); // weight
-  NS_UNUSED (v); // suppress "set but not used" compiler warning in optimized builds
+  [[maybe_unused]] double v = strtod (argv[2], &endptr); // weight
+
   if (*endptr != '\0')
     {
       NS_LOG_WARN ("invalid weight: " << argv[2]);

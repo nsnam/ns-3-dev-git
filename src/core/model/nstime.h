@@ -25,7 +25,6 @@
 #include "attribute-helper.h"
 #include "event-id.h"
 #include "int64x64.h"
-#include "unused.h"
 #include <stdint.h>
 #include <limits>
 #include <cmath>
@@ -819,7 +818,7 @@ typedef void (* Time)(Time oldValue, Time newValue);
  * This is internal to the Time implementation.
  * \relates Time
  */
-static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();
+[[maybe_unused]] static bool g_TimeStaticInit = Time::StaticInit ();
 
 /**
  * Equality operator for Time.

@@ -27,7 +27,6 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/traced-value.h"
-#include "ns3/unused.h"
 #include "ns3/log.h"
 #include "ns3/queue-size.h"
 #include "ns3/queue-item.h"

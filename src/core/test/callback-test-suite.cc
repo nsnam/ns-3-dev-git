@@ -18,7 +18,6 @@
 
 #include "ns3/test.h"
 #include "ns3/callback.h"
-#include "ns3/unused.h"
 #include <stdint.h>
 
 using namespace ns3;
@@ -42,15 +41,12 @@ public:
     m_test2 = true;
     return 2;
   }
-  void Target3 (double a)
+  void Target3 ([[maybe_unused]] double a)
   {
-    NS_UNUSED (a);
     m_test3 = true;
   }
-  int Target4 (double a, int b)
+  int Target4 ([[maybe_unused]] double a, [[maybe_unused]] int b)
   {
-    NS_UNUSED (a);
-    NS_UNUSED (b);
     m_test4 = true;
     return 4;
   }
@@ -189,15 +185,12 @@ public:
     m_test2 = true;
     return 2;
   }
-  void Target3 (double a)
+  void Target3 ([[maybe_unused]] double a)
   {
-    NS_UNUSED (a);
     m_test3 = true;
   }
-  int Target4 (double a, int b)
+  int Target4 ([[maybe_unused]] double a, [[maybe_unused]] int b)
   {
-    NS_UNUSED (a);
-    NS_UNUSED (b);
     m_test4 = true;
     return 4;
   }
