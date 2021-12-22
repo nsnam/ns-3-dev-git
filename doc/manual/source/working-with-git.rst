@@ -42,6 +42,8 @@ Setup of a personal repository
 
 We will provide two ways, one anonymous (but will impede the creation of merge requests) and the other, preferred, that include forking the repository through the GitLab.com web interface.
 
+.. _Directly cloning ns-3-dev:
+
 Directly cloning ns-3-dev
 +++++++++++++++++++++++++
 

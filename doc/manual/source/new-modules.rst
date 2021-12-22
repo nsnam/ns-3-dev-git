@@ -1,6 +1,9 @@
 .. include:: replace.txt
 .. highlight:: cpp
 
+
+.. _Adding a New Module to ns3:
+
 Adding a New Module to |ns3|
 ----------------------------
 
@@ -31,12 +34,12 @@ required files:
       bindings/
       doc/
       examples/
-        wscript
+        CMakeLists.txt
       helper/
       model/
       test/
         examples-to-run.py
-      wscript
+      CMakeLists.txt
 
 Not all directories will be present in each module.
 
@@ -67,10 +70,10 @@ Let's assume we've created our new module in ``src``.
 
   $ cd new-module
   $ ls
-  doc examples  helper  model  test  wscript
+  doc examples  helper  model  test  CMakeLists.txt
 
 In more detail, the ``create-module.py`` script will create the
-directories as well as initial skeleton ``wscript``, ``.h``, ``.cc``
+directories as well as initial skeleton ``CMakeLists.txt``, ``.h``, ``.cc``
 and ``.rst`` files.  The complete module with skeleton files looks like this:
 
 .. sourcecode:: text
@@ -81,7 +84,7 @@ and ``.rst`` files.  The complete module with skeleton files looks like this:
 	  new-module.rst
 	examples/
 	  new-module-example.cc
-	  wscript
+	  CMakeLists.txt
 	helper/
 	  new-module-helper.cc
 	  new-module-helper.h
@@ -90,7 +93,7 @@ and ``.rst`` files.  The complete module with skeleton files looks like this:
 	  new-module.h
 	test/
 	  new-module-test-suite.cc
-	wscript
+	CMakeLists.txt
 
 (If required the ``bindings/`` directory listed in
 :ref:`Step-0 <Step-0>` will be created automatically during
@@ -98,28 +101,45 @@ the build.)
 
 We next walk through how to customize this module.  Informing ``ns3``
 about the files which make up your module is done by editing the two
-``wscript`` files.  We will walk through the main steps in this chapter.
+``CMakeLists.txt`` files.  We will walk through the main steps in this chapter.
 
 All |ns3| modules depend on the ``core`` module and usually on
-other modules.  This dependency is specified in the ``wscript`` file
-(at the top level of the module, not the separate ``wscript`` file
-in the ``examples`` directory!).  In the skeleton ``wscript``
+other modules.  This dependency is specified in the ``CMakeLists.txt`` file
+(at the top level of the module, not the separate ``CMakeLists.txt`` file
+in the ``examples`` directory!).  In the skeleton ``CMakeLists.txt``
 the call that will declare your new module to ``ns3`` will look
 like this (before editing):
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-  def build(bld):
-      module = bld.create_ns3_module('new-module', ['core'])
+  build_lib(
+    LIBNAME new-module 
+    SOURCE_FILES helper/new-module-helper.cc 
+                 model/new-module.cc
+    HEADER_FILES helper/new-module-helper.h 
+                 model/new-module.h
+    LIBRARIES_TO_LINK ${libcore}
+    TEST_SOURCES test/new-module-test-suite.cc
+  )
 
 Let's assume that ``new-module`` depends on the ``internet``,
-``mobility``, and ``aodv`` modules.  After editing it the ``wscript`` file
+``mobility``, and ``aodv`` modules.  After editing it the ``CMakeLists.txt`` file
 should look like:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-  def build(bld):
-      module = bld.create_ns3_module('new-module', ['internet', 'mobility', 'aodv'])
+    build_lib(
+      LIBNAME new-module 
+      SOURCE_FILES helper/new-module-helper.cc 
+                   model/new-module.cc
+      HEADER_FILES helper/new-module-helper.h 
+                   model/new-module.h
+      LIBRARIES_TO_LINK 
+        ${libinternet}
+        ${libmobility}
+        ${libaodv}
+      TEST_SOURCES test/new-module-test-suite.cc
+    )
 
 Note that only first level module dependencies should be listed, which
 is why we removed ``core``; the ``internet`` module in turn depends on
@@ -151,31 +171,49 @@ Step 3 - Declare Source Files
 *****************************
 
 The public header and source code files for your new module
-should be specified in the ``wscript`` file by modifying it with
+should be specified in the ``CMakeLists.txt`` file by modifying it with
 your text editor.
 
 As an example, after declaring the ``spectrum`` module,
-the ``src/spectrum/wscript`` specifies the source code files
-with the following list:
+the ``src/spectrum/CMakeLists.txt`` specifies the source code files
+with the following:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-   def build(bld):
+  set(source_files
+    helper/adhoc-aloha-noack-ideal-phy-helper.cc
+    helper/spectrum-analyzer-helper.cc
+    helper/spectrum-helper.cc
+    ...
+  )
 
-     module = bld.create_ns3_module('spectrum', ['internet', 'propagation', 'antenna', 'applications'])
+  set(header_files
+    helper/adhoc-aloha-noack-ideal-phy-helper.h
+    helper/spectrum-analyzer-helper.h
+    helper/spectrum-helper.h
+    ...
+  )
 
-     module.source = [
-         'model/spectrum-model.cc',
-         'model/spectrum-value.cc',
-               .
-	       .
-	       .
-         'model/microwave-oven-spectrum-value-helper.cc',
-         'helper/spectrum-helper.cc',
-         'helper/adhoc-aloha-noack-ideal-phy-helper.cc',
-         'helper/waveform-generator-helper.cc',
-         'helper/spectrum-analyzer-helper.cc',
-         ]
+  build_lib(
+    LIBNAME spectrum
+    SOURCE_FILES ${source_files}
+    HEADER_FILES ${header_files}
+    LIBRARIES_TO_LINK ${libpropagation}
+                      ${libantenna}
+    TEST_SOURCES
+      test/spectrum-ideal-phy-test.cc
+      test/spectrum-interference-test.cc
+      test/spectrum-value-test.cc
+      test/spectrum-waveform-generator-test.cc
+      test/three-gpp-channel-test-suite.cc
+      test/tv-helper-distribution-test.cc
+      test/tv-spectrum-transmitter-test.cc
+  )
+
+
+Note: the ``source_files`` and ``header_files`` lists are not necessary.
+They are used keep the ``build_lib`` macro readable for modules with many
+source files. 
 
 The objects resulting from compiling these sources will be assembled
 into a link library, which will be linked to any programs relying on this
@@ -187,31 +225,48 @@ Step 4 - Declare Public Header Files
 ************************************
 
 The header files defining the public API of your model and helpers
-also should be specified in the ``wscript`` file.
+also should be specified in the ``CMakeLists.txt`` file.
 
 Continuing with the ``spectrum`` model illustration,
 the public header files are specified with the following stanza.
-(Note that the argument to the ``bld`` function tells
-``ns3`` to install this module's headers with the other |ns3| headers):
+(Note that the variable ``header_files`` tells
+``CMake`` to install this module's headers with the other |ns3| headers):
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-    headers = bld(features='ns3header')
+    set(header_files
+        helper/adhoc-aloha-noack-ideal-phy-helper.h
+        helper/spectrum-analyzer-helper.h
+        ...
+        model/tv-spectrum-transmitter.h
+        model/waveform-generator.h
+        model/wifi-spectrum-value-helper.h
+    )
 
-    headers.module = 'spectrum'
+    build_lib(
+      LIBNAME spectrum
+      ...
+      HEADER_FILES ${header_files}
+      ...
+    )
 
-    headers.source = [
-        'model/spectrum-model.h',
-        'model/spectrum-value.h',
-               .
-	       .
-	       .
-        'model/microwave-oven-spectrum-value-helper.h',
-        'helper/spectrum-helper.h',
-        'helper/adhoc-aloha-noack-ideal-phy-helper.h',
-        'helper/waveform-generator-helper.h',
-        'helper/spectrum-analyzer-helper.h',
-        ]
+If the list of headers is short, use the following instead:
+
+.. sourcecode:: cmake
+
+    build_lib(
+      LIBNAME spectrum
+      ...
+      HEADER_FILES 
+        helper/adhoc-aloha-noack-ideal-phy-helper.h
+        helper/spectrum-analyzer-helper.h
+        ...
+        model/tv-spectrum-transmitter.h
+        model/waveform-generator.h
+        model/wifi-spectrum-value-helper.h
+      ...
+    )
+    
 
 Headers made public in this way will be accessible to users of your model
 with include statements like
@@ -233,18 +288,24 @@ Step 5 - Declare Tests
 **********************
 
 If your new module has tests, then they must be specified in your
-``wscript`` file by modifying it with your text editor.
+``CMakeLists.txt`` file by modifying it with your text editor.
 
 The ``spectrum`` model tests are specified with the following stanza:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-    module_test = bld.create_ns3_module_test_library('spectrum')
-
-    module_test.source = [
-        'test/spectrum-interference-test.cc',
-        'test/spectrum-value-test.cc',
-        ]
+    build_lib(
+    LIBNAME spectrum
+    ...
+    TEST_SOURCES
+      test/spectrum-ideal-phy-test.cc
+      test/spectrum-interference-test.cc
+      test/spectrum-value-test.cc
+      test/spectrum-waveform-generator-test.cc
+      test/three-gpp-channel-test-suite.cc
+      test/tv-helper-distribution-test.cc
+      test/tv-spectrum-transmitter-test.cc
+  )
 
 See :doc:`Tests <tests>` for more information on how to write test cases.	
 
@@ -252,43 +313,46 @@ Step 6 - Declare Examples
 *************************
 
 If your new module has examples, then they must be specified in your
-``examples/wscript`` file.  (The skeleton top-level ``wscript`` will
-recursively include ``examples/wscript`` only if the examples were
+``examples/CMakeLists.txt`` file.  (The skeleton top-level ``CMakeLists.txt`` will
+recursively include ``examples/CMakeLists.txt`` only if the examples were
 enabled at configure time.)
 
 The ``spectrum`` model defines it's first example in
-``src/spectrum/examples/wscript`` with
+``src/spectrum/examples/CMakeLists.txt`` with
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-  def build(bld):
-    obj = bld.create_ns3_program('adhoc-aloha-ideal-phy',
-                                 ['spectrum', 'mobility'])
-    obj.source = 'adhoc-aloha-ideal-phy.cc'
+  build_lib_example(
+    NAME adhoc-aloha-ideal-phy
+    SOURCE_FILES adhoc-aloha-ideal-phy.cc
+    LIBRARIES_TO_LINK 
+      ${libspectrum}
+      ${libmobility}
+      ${libinternet}
+      ${libapplications}
+  )
 
-Note that the second argument to the function ``create_ns3_program()``
-is the list of modules that the program being created depends on; again,
-don't forget to include ``new-module`` in the list.  It's best practice
-to list only the direct module dependencies, and let ``ns3`` deduce
-the full dependency tree.
+
+Note that the variable ``libraries_to_link`` is the list of modules that
+the program being created depends on; again, don't forget to include
+``new-module`` in the list.  It's best practice to list only the direct 
+module dependencies, and let ``CMake`` deduce the full dependency tree.
 
 Occasionally, for clarity, you may want to split the implementation
 for your example among several source files.  In this case, just
 include those files as additional explicit sources of the example:
 
-.. sourcecode:: python
-
-   obj = bld.create_ns3_program('new-module-example', [new-module])
-   obj.source = ['new-module-example.cc', 'new-module-example-part.cc']
-
-Python examples are specified using the following
-function call.  Note that the second argument for the function
-``register_ns3_script()`` is the list of modules that the Python example
-depends on:
-
-.. sourcecode:: python
-
-    bld.register_ns3_script('new-module-example.py', ['new-module'])
+.. sourcecode:: cmake
+ 
+  build_lib_example(
+    NAME new-module-example
+    SOURCE_FILES new-module-example.cc
+    LIBRARIES_TO_LINK 
+      ${libspectrum} 
+      ${libmobility} 
+      ${libinternet}
+      ${libapplications}
+  )
 
 Step 7 - Examples Run as Tests
 ******************************
@@ -330,11 +394,11 @@ two lists of C++ and Python examples:
 As indicated in the comment, each entry in the C++ list of examples to run
 contains the tuple ``(example_name, do_run, do_valgrind_run)``, where
 
-  * ``example_name`` is the executable to be run,
-  * ``do_run`` is a condition under which to run the example, and
-  * ``do_valgrind_run`` is a condition under which to run the example
-    under valgrind.  (This is needed because NSC causes illegal instruction
-    crashes with some tests when they are run under valgrind.)
+* ``example_name`` is the executable to be run,
+* ``do_run`` is a condition under which to run the example, and
+* ``do_valgrind_run`` is a condition under which to run the example
+  under valgrind.  (This is needed because NSC causes illegal instruction
+  crashes with some tests when they are run under valgrind.)
 
 Note that the two conditions are Python statements that
 can depend on ``ns3`` configuration variables.  For example, using the
@@ -347,8 +411,8 @@ NSC_ENABLED variable that was defined up until ns-3.35:
 Each entry in the Python list of examples to run contains the tuple
 ``(example_name, do_run)``, where, as for the C++ examples,
 
-  * ``example_name`` is the Python script to be run, and
-  * ``do_run`` is a condition under which to run the example.
+* ``example_name`` is the Python script to be run, and
+* ``do_run`` is a condition under which to run the example.
 
 Again, the condition is a Python statement that can
 depend on ``ns3`` configuration variables.  For example,
@@ -363,7 +427,7 @@ Step 8 - Configure and Build
 
 You can now configure, build and test your module as normal.
 You must reconfigure the project as a first step so that ``ns3``
-caches the new information in your ``wscript`` files,
+caches the new information in your ``CMakeLists.txt`` files,
 or else your new module will not be included in the build.
 
 .. sourcecode:: bash
@@ -379,15 +443,10 @@ if your module has any enabled) in the test output.
 Step 9 - Python Bindings
 ************************
 
-Adding Python bindings to your module is optional, and the step is
-commented out by default in the ``create-module.py`` script.
-
-.. sourcecode:: python
-
-    # bld.ns3_python_bindings()
+Adding Python bindings to your module is optional.
 
 If you want to include Python bindings (needed only if you want
 to write Python ns-3 programs instead of C++ ns-3 programs), you
-should uncomment the above and install the Python API scanning
-system (covered elsewhere in this manual) and scan your module to
-generate new bindings.
+should scan your module to generate new bindings for the Python 
+API (covered elsewhere in this manual), and they will be used 
+if NS3_PYTHON_BINDINGS is set to ON.

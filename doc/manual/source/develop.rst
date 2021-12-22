@@ -9,6 +9,7 @@ This chapter describes the development ecosystem generaly used to create new mod
    :maxdepth: 2
 
    working-with-git
+   working-with-cmake
    logging
    tests
    new-models
