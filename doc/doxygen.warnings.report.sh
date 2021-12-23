@@ -321,7 +321,7 @@ else
     CLASS_DIAGRAMS = no
     WARNINGS = no
     SOURCE_BROWSER = no
-    HTML_OUTPUT html-warn
+    HTML_OUTPUT = html-warn
     WARN_LOGFILE = doc/$WARNINGSLOGFILE
 EOF
 
