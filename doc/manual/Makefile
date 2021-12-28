@@ -73,8 +73,6 @@ SOURCEFIGS = \
 	${SRC}/stats/doc/Wifi-default.png \
 	${SRC}/stats/doc/dcf-overview.dia \
 	${SRC}/stats/doc/dcf-overview-with-aggregation.dia \
-	${SRC}/stats/doc/gnuplot-example.png \
-	${SRC}/stats/doc/file-example.png \
 	${SRC}/stats/doc/seventh-packet-byte-count.png \
 	${SRC}/stats/doc/gnuplot-helper-example.png \
 	${SRC}/stats/doc/gnuplot-aggregator.png \
