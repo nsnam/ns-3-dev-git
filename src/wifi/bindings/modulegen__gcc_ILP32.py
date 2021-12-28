@@ -19486,10 +19486,10 @@ def register_Ns3MultiUserSchedulerUlMuInfo_methods(root_module, cls):
     cls.add_constructor([])
     ## multi-user-scheduler.h (module 'wifi'): ns3::MultiUserScheduler::UlMuInfo::UlMuInfo(ns3::MultiUserScheduler::UlMuInfo const & arg0) [constructor]
     cls.add_constructor([param('ns3::MultiUserScheduler::UlMuInfo const &', 'arg0')])
-    ## multi-user-scheduler.h (module 'wifi'): ns3::MultiUserScheduler::UlMuInfo::tbPpduDuration [variable]
-    cls.add_instance_attribute('tbPpduDuration', 'ns3::Time', is_const=False)
+    ## multi-user-scheduler.h (module 'wifi'): ns3::MultiUserScheduler::UlMuInfo::macHdr [variable]
+    cls.add_instance_attribute('macHdr', 'ns3::WifiMacHeader', is_const=False)
     ## multi-user-scheduler.h (module 'wifi'): ns3::MultiUserScheduler::UlMuInfo::trigger [variable]
-    cls.add_instance_attribute('trigger', 'ns3::Ptr< ns3::WifiMacQueueItem >', is_const=False)
+    cls.add_instance_attribute('trigger', 'ns3::CtrlTriggerHeader', is_const=False)
     ## multi-user-scheduler.h (module 'wifi'): ns3::MultiUserScheduler::UlMuInfo::txParams [variable]
     cls.add_instance_attribute('txParams', 'ns3::WifiTxParameters', is_const=False)
     return
