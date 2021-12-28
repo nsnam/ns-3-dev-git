@@ -927,7 +927,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
     {
       NS_LOG_WARN ("No route to host, drop!");
-      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), GetInterfaceForDevice (oif));
+      m_dropTrace (hdr, packet, DROP_NO_ROUTE, Ptr (this), GetInterfaceForDevice (oif));
     }
 }
 
@@ -944,14 +944,14 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
   if (ipv6Interface->IsUp ())
     {
-      m_rxTrace (packet, m_node->GetObject<Ipv6> (), interface);
+      m_rxTrace (packet, Ptr (this), interface);
     }
   else
     {
       NS_LOG_LOGIC ("Dropping received packet-- interface is down");
       Ipv6Header hdr;
       packet->RemoveHeader (hdr);
-      m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
+      m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, Ptr (this), interface);
       return;
     }
 
@@ -1015,7 +1015,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
       if (isDropped)
         {
-          m_dropTrace (hdr, packet, dropReason, m_node->GetObject<Ipv6> (), interface);
+          m_dropTrace (hdr, packet, dropReason, Ptr (this), interface);
         }
 
       if (stopProcessing)
@@ -1170,20 +1170,20 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 
               for (std::list<Ipv6ExtensionFragment::Ipv6PayloadHeaderPair>::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  CallTxTrace (it->second, it->first, m_node->GetObject<Ipv6> (), interface);
+                  CallTxTrace (it->second, it->first, Ptr (this), interface);
                   outInterface->Send (it->first, it->second, route->GetGateway ());
                 }
             }
           else
             {
-              CallTxTrace (ipHeader, packet, m_node->GetObject<Ipv6> (), interface);
+              CallTxTrace (ipHeader, packet, Ptr (this), interface);
               outInterface->Send (packet, ipHeader, route->GetGateway ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, Ptr (this), interface);
         }
     }
   else
@@ -1198,20 +1198,20 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 
               for (std::list<Ipv6ExtensionFragment::Ipv6PayloadHeaderPair>::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  CallTxTrace (it->second, it->first, m_node->GetObject<Ipv6> (), interface);
+                  CallTxTrace (it->second, it->first, Ptr (this), interface);
                   outInterface->Send (it->first, it->second, ipHeader.GetDestination ());
                 }
             }
           else
             {
-              CallTxTrace (ipHeader, packet, m_node->GetObject<Ipv6> (), interface);
+              CallTxTrace (ipHeader, packet, Ptr (this), interface);
               outInterface->Send (packet, ipHeader, ipHeader.GetDestination ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << ipHeader.GetDestination ());
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, Ptr (this), interface);
         }
     }
 }
@@ -1225,7 +1225,7 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
   if (header.GetDestination().IsDocumentation ())
     {
       NS_LOG_WARN ("Received a packet for 2001:db8::/32 (documentation class).  Drop.");
-      m_dropTrace (header, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
+      m_dropTrace (header, p, DROP_ROUTE_ERROR, Ptr (this), 0);
       return;
     }
 
@@ -1243,7 +1243,7 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
   if (ipHeader.GetHopLimit () == 0)
     {
       NS_LOG_WARN ("TTL exceeded.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), 0);
+      m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, Ptr (this), 0);
       // Do not reply to multicast IPv6 address
       if (ipHeader.GetDestination ().IsMulticast () == false)
         {
@@ -1318,7 +1318,7 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<const NetDevice> idev, Ptr<Ipv6Mult
       if (h.GetHopLimit () == 0)
         {
           NS_LOG_WARN ("TTL exceeded.  Drop.");
-          m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), interfaceId);
+          m_dropTrace (header, packet, DROP_TTL_EXPIRED, Ptr (this), interfaceId);
           return;
         }
       NS_LOG_LOGIC ("Forward multicast via interface " << interfaceId);
@@ -1375,7 +1375,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
           if (isDropped)
             {
-              m_dropTrace (ip, packet, dropReason, m_node->GetObject<Ipv6> (), iif);
+              m_dropTrace (ip, packet, dropReason, Ptr (this), iif);
             }
 
           if (stopProcessing)
@@ -1405,7 +1405,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
                 {
                   GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, ip.GetSerializedSize () + nextHeaderPosition);
                 }
-              m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, m_node->GetObject<Ipv6> (), iif);
+              m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, Ptr (this), iif);
               break;
             }
           else
@@ -1449,7 +1449,7 @@ void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipH
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno);
 
-  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
+  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, Ptr (this), 0);
 
   if (!ipHeader.GetDestination ().IsMulticast ())
     {
@@ -1530,7 +1530,7 @@ void Ipv6L3Protocol::RegisterOptions ()
 
 void Ipv6L3Protocol::ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason)
 {
-  m_dropTrace (ipHeader, p, dropReason, m_node->GetObject<Ipv6> (), 0);
+  m_dropTrace (ipHeader, p, dropReason, Ptr (this), 0);
 }
 
 void Ipv6L3Protocol::AddMulticastAddress (Ipv6Address address, uint32_t interface)

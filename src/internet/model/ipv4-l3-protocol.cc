@@ -592,7 +592,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       NS_LOG_LOGIC ("Dropping received packet -- interface is down");
       Ipv4Header ipHeader;
       packet->RemoveHeader (ipHeader);
-      m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
+      m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, Ptr (this), interface);
       return;
     }
 
@@ -612,7 +612,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
   if (!ipHeader.IsChecksumOk ()) 
     {
       NS_LOG_LOGIC ("Dropping received packet -- checksum not ok");
-      m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, m_node->GetObject<Ipv4> (), interface);
+      m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, Ptr (this), interface);
       return;
     }
 
@@ -656,7 +656,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
   if (m_enableDpd && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
     {
       NS_LOG_LOGIC ("Dropping received packet -- duplicate.");
-      m_dropTrace (ipHeader, packet, DROP_DUPLICATE, m_node->GetObject<Ipv4> (), interface);
+      m_dropTrace (ipHeader, packet, DROP_DUPLICATE, Ptr (this), interface);
       return;
     }
 
@@ -669,7 +669,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
                                       ))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), interface);
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, Ptr (this), interface);
     }
 }
 
@@ -898,7 +898,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   else
     {
       NS_LOG_WARN ("No route to host.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), 0);
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, Ptr (this), 0);
       DecreaseIdentification (source, destination, protocol);
     }
 }
@@ -971,7 +971,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   if (route == 0)
     {
       NS_LOG_WARN ("No route to host.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), 0);
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, Ptr (this), 0);
       return;
     }
   Ptr<NetDevice> outDev = route->GetOutputDevice ();
@@ -1003,13 +1003,13 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
           for ( std::list<Ipv4PayloadHeaderPair>::iterator it = listFragments.begin (); it != listFragments.end (); it++ )
             {
               NS_LOG_LOGIC ("Sending fragment " << *(it->first) );
-              CallTxTrace (it->second, it->first, m_node->GetObject<Ipv4> (), interface);
+              CallTxTrace (it->second, it->first, Ptr (this), interface);
               outInterface->Send (it->first, it->second, target);
             }
         }
       else
         {
-          CallTxTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
+          CallTxTrace (ipHeader, packet, Ptr (this), interface);
           outInterface->Send (packet, ipHeader, target);
         }
     }
@@ -1036,7 +1036,7 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
       if (ipHeader.GetTtl () == 0)
         {
           NS_LOG_WARN ("TTL exceeded.  Drop.");
-          m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), interface);
+          m_dropTrace (header, packet, DROP_TTL_EXPIRED, Ptr (this), interface);
           return;
         }
       NS_LOG_LOGIC ("Forward multicast via interface " << interface);
@@ -1073,7 +1073,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
           icmp->SendTimeExceededTtl (ipHeader, packet, false);
         }
       NS_LOG_WARN ("TTL exceeded.  Drop.");
-      m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), interface);
+      m_dropTrace (header, packet, DROP_TTL_EXPIRED, Ptr (this), interface);
       return;
     }
   // in case the packet still has a priority tag attached, remove it
@@ -1434,7 +1434,7 @@ Ipv4L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeade
 {
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno); 
-  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv4> (), 0);
+  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, Ptr (this), 0);
 
   // \todo Send an ICMP no route.
 }
@@ -1734,7 +1734,7 @@ Ipv4L3Protocol::HandleFragmentsTimeout (FragmentKey_t key, Ipv4Header & ipHeader
       Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
       icmp->SendTimeExceededTtl (ipHeader, packet, true);
     }
-  m_dropTrace (ipHeader, packet, DROP_FRAGMENT_TIMEOUT, m_node->GetObject<Ipv4> (), iif);
+  m_dropTrace (ipHeader, packet, DROP_FRAGMENT_TIMEOUT, Ptr (this), iif);
 
   // clear the buffers
   it->second = 0;
