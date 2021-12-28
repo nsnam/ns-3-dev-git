@@ -67,6 +67,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## event-id.h (module 'core'): ns3::EventId::UID [enumeration]
+    module.add_enum('UID', ['INVALID', 'NOW', 'DESTROY', 'RESERVED', 'VALID'], outer_class=root_module['ns3::EventId'], import_from_module='ns.core')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## inet6-socket-address.h (module 'network'): ns3::Inet6SocketAddress [class]
@@ -113,8 +115,6 @@ def register_types(module):
     module.add_class('Mac8Address', import_from_module='ns.network')
     ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
-    ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
-    module.add_class('NonCopyable', destructor_visibility='protected', import_from_module='ns.core')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -473,7 +473,6 @@ def register_methods(root_module):
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
     register_Ns3Mac8Address_methods(root_module, root_module['ns3::Mac8Address'])
-    register_Ns3NonCopyable_methods(root_module, root_module['ns3::NonCopyable'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
@@ -2060,12 +2059,6 @@ def register_Ns3Mac8Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
                    is_static=True)
-    return
-
-def register_Ns3NonCopyable_methods(root_module, cls):
-    ## non-copyable.h (module 'core'): ns3::NonCopyable::NonCopyable() [constructor]
-    cls.add_constructor([], 
-                        visibility='protected')
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
