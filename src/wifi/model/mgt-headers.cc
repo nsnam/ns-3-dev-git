@@ -1681,9 +1681,24 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
   m_category = static_cast<uint8_t> (type);
   switch (type)
     {
+    case QOS:
+      {
+        m_actionValue = static_cast<uint8_t> (action.qos);
+        break;
+      }
     case BLOCK_ACK:
       {
         m_actionValue = static_cast<uint8_t> (action.blockAck);
+        break;
+      }
+    case PUBLIC:
+      {
+        m_actionValue = static_cast<uint8_t> (action.publicAction);
+        break;
+      }
+    case RADIO_MEASUREMENT:
+      {
+        m_actionValue = static_cast<uint8_t> (action.radioMeasurementAction);
         break;
       }
     case MESH:
@@ -1701,6 +1716,21 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
         m_actionValue = static_cast<uint8_t> (action.selfProtectedAction);
         break;
       }
+    case DMG:
+      {
+        m_actionValue = static_cast<uint8_t> (action.dmgAction);
+        break;
+      }
+    case FST:
+      {
+        m_actionValue = static_cast<uint8_t> (action.fstAction);
+        break;
+      }
+    case UNPROTECTED_DMG:
+      {
+        m_actionValue = static_cast<uint8_t> (action.unprotectedDmgAction);
+        break;
+      }
     case VENDOR_SPECIFIC_ACTION:
       {
         break;
@@ -1713,14 +1743,26 @@ WifiActionHeader::GetCategory ()
 {
   switch (m_category)
     {
+    case QOS:
+      return QOS;
     case BLOCK_ACK:
       return BLOCK_ACK;
+    case PUBLIC:
+      return PUBLIC;
+    case RADIO_MEASUREMENT:
+      return RADIO_MEASUREMENT;
     case MESH:
       return MESH;
     case MULTIHOP:
       return MULTIHOP;
     case SELF_PROTECTED:
       return SELF_PROTECTED;
+    case DMG:
+      return DMG;
+    case FST:
+      return FST;
+    case UNPROTECTED_DMG:
+      return UNPROTECTED_DMG;
     case VENDOR_SPECIFIC_ACTION:
       return VENDOR_SPECIFIC_ACTION;
     default:
@@ -1736,6 +1778,30 @@ WifiActionHeader::GetAction ()
   retval.selfProtectedAction = PEER_LINK_OPEN; //Needs to be initialized to something to quiet valgrind in default cases
   switch (m_category)
     {
+    case QOS:
+      switch (m_actionValue)
+        {
+        case ADDTS_REQUEST:
+          retval.qos = ADDTS_REQUEST;
+          break;
+        case ADDTS_RESPONSE:
+          retval.qos = ADDTS_RESPONSE;
+          break;
+        case DELTS:
+          retval.qos = DELTS;
+          break;
+        case SCHEDULE:
+          retval.qos = SCHEDULE;
+          break;
+        case QOS_MAP_CONFIGURE:
+          retval.qos = QOS_MAP_CONFIGURE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown qos action code");
+          retval.qos = ADDTS_REQUEST; /* quiet compiler */
+        }
+      break;
+
     case BLOCK_ACK:
       switch (m_actionValue)
         {
@@ -1748,6 +1814,51 @@ WifiActionHeader::GetAction ()
         case BLOCK_ACK_DELBA:
           retval.blockAck = BLOCK_ACK_DELBA;
           break;
+        default:
+          NS_FATAL_ERROR ("Unknown block ack action code");
+          retval.blockAck = BLOCK_ACK_ADDBA_REQUEST; /* quiet compiler */
+        }
+      break;
+
+    case PUBLIC:
+      switch (m_actionValue)
+        {
+        case QAB_REQUEST:
+          retval.publicAction = QAB_REQUEST;
+          break;
+        case QAB_RESPONSE:
+          retval.publicAction = QAB_RESPONSE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown public action code");
+          retval.publicAction = QAB_REQUEST; /* quiet compiler */
+        }
+      break;
+
+    case RADIO_MEASUREMENT:
+      switch (m_actionValue)
+        {
+        case RADIO_MEASUREMENT_REQUEST:
+          retval.radioMeasurementAction = RADIO_MEASUREMENT_REQUEST;
+          break;
+        case RADIO_MEASUREMENT_REPORT:
+          retval.radioMeasurementAction = RADIO_MEASUREMENT_REPORT;
+          break;
+        case LINK_MEASUREMENT_REQUEST:
+          retval.radioMeasurementAction = LINK_MEASUREMENT_REQUEST;
+          break;
+        case LINK_MEASUREMENT_REPORT:
+          retval.radioMeasurementAction = LINK_MEASUREMENT_REPORT;
+          break;
+        case NEIGHBOR_REPORT_REQUEST:
+          retval.radioMeasurementAction = NEIGHBOR_REPORT_REQUEST;
+          break;
+        case NEIGHBOR_REPORT_RESPONSE:
+          retval.radioMeasurementAction = NEIGHBOR_REPORT_RESPONSE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown radio measurement action code");
+          retval.radioMeasurementAction = RADIO_MEASUREMENT_REQUEST; /* quiet compiler */
         }
       break;
 
@@ -1813,7 +1924,7 @@ WifiActionHeader::GetAction ()
           break;
         default:
           NS_FATAL_ERROR ("Unknown mesh peering management action code");
-          retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
+          retval.meshAction = LINK_METRIC_REPORT; /* quiet compiler */
         }
       break;
 
@@ -1828,11 +1939,141 @@ WifiActionHeader::GetAction ()
           break;
         default:
           NS_FATAL_ERROR ("Unknown mesh peering management action code");
-          retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
+          retval.multihopAction = PROXY_UPDATE; /* quiet compiler */
         }
       break;
+
+    case DMG:
+      switch (m_actionValue)
+        {
+        case DMG_POWER_SAVE_CONFIGURATION_REQUEST:
+          retval.dmgAction = DMG_POWER_SAVE_CONFIGURATION_REQUEST;
+          break;
+        case DMG_POWER_SAVE_CONFIGURATION_RESPONSE:
+          retval.dmgAction = DMG_POWER_SAVE_CONFIGURATION_RESPONSE;
+          break;
+        case DMG_INFORMATION_REQUEST:
+          retval.dmgAction = DMG_INFORMATION_REQUEST;
+          break;
+        case DMG_INFORMATION_RESPONSE:
+          retval.dmgAction = DMG_INFORMATION_RESPONSE;
+          break;
+        case DMG_HANDOVER_REQUEST:
+          retval.dmgAction = DMG_HANDOVER_REQUEST;
+          break;
+        case DMG_HANDOVER_RESPONSE:
+          retval.dmgAction = DMG_HANDOVER_RESPONSE;
+          break;
+        case DMG_DTP_REQUEST:
+          retval.dmgAction = DMG_DTP_REQUEST;
+          break;
+        case DMG_DTP_RESPONSE:
+          retval.dmgAction = DMG_DTP_RESPONSE;
+          break;
+        case DMG_RELAY_SEARCH_REQUEST:
+          retval.dmgAction = DMG_RELAY_SEARCH_REQUEST;
+          break;
+        case DMG_RELAY_SEARCH_RESPONSE:
+          retval.dmgAction = DMG_RELAY_SEARCH_RESPONSE;
+          break;
+        case DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REQUEST:
+          retval.dmgAction = DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REQUEST;
+          break;
+        case DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REPORT:
+          retval.dmgAction = DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REPORT;
+          break;
+        case DMG_RLS_REQUEST:
+          retval.dmgAction = DMG_RLS_REQUEST;
+          break;
+        case DMG_RLS_RESPONSE:
+          retval.dmgAction = DMG_RLS_RESPONSE;
+          break;
+        case DMG_RLS_ANNOUNCEMENT:
+          retval.dmgAction = DMG_RLS_ANNOUNCEMENT;
+          break;
+        case DMG_RLS_TEARDOWN:
+          retval.dmgAction = DMG_RLS_TEARDOWN;
+          break;
+        case DMG_RELAY_ACK_REQUEST:
+          retval.dmgAction = DMG_RELAY_ACK_REQUEST;
+          break;
+        case DMG_RELAY_ACK_RESPONSE:
+          retval.dmgAction = DMG_RELAY_ACK_RESPONSE;
+          break;
+        case DMG_TPA_REQUEST:
+          retval.dmgAction = DMG_TPA_REQUEST;
+          break;
+        case DMG_TPA_RESPONSE:
+          retval.dmgAction = DMG_TPA_RESPONSE;
+          break;
+        case DMG_ROC_REQUEST:
+          retval.dmgAction = DMG_ROC_REQUEST;
+          break;
+        case DMG_ROC_RESPONSE:
+          retval.dmgAction = DMG_ROC_RESPONSE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown DMG management action code");
+          retval.dmgAction = DMG_POWER_SAVE_CONFIGURATION_REQUEST; /* quiet compiler */
+        }
+      break;
+
+    case FST:
+      switch (m_actionValue)
+        {
+        case FST_SETUP_REQUEST:
+          retval.fstAction = FST_SETUP_REQUEST;
+          break;
+        case FST_SETUP_RESPONSE:
+          retval.fstAction = FST_SETUP_RESPONSE;
+          break;
+        case FST_TEAR_DOWN:
+          retval.fstAction = FST_TEAR_DOWN;
+          break;
+        case FST_ACK_REQUEST:
+          retval.fstAction = FST_ACK_REQUEST;
+          break;
+        case FST_ACK_RESPONSE:
+          retval.fstAction = FST_ACK_RESPONSE;
+          break;
+        case ON_CHANNEL_TUNNEL_REQUEST:
+          retval.fstAction = ON_CHANNEL_TUNNEL_REQUEST;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown FST management action code");
+          retval.fstAction = FST_SETUP_REQUEST; /* quiet compiler */
+        }
+      break;
+
+    case UNPROTECTED_DMG:
+      switch (m_actionValue)
+        {
+        case UNPROTECTED_DMG_ANNOUNCE:
+          retval.unprotectedDmgAction = UNPROTECTED_DMG_ANNOUNCE;
+          break;
+        case UNPROTECTED_DMG_BRP:
+          retval.unprotectedDmgAction = UNPROTECTED_DMG_BRP;
+          break;
+        case UNPROTECTED_MIMO_BF_SETUP:
+          retval.unprotectedDmgAction = UNPROTECTED_MIMO_BF_SETUP;
+          break;
+        case UNPROTECTED_MIMO_BF_POLL:
+          retval.unprotectedDmgAction = UNPROTECTED_MIMO_BF_POLL;
+          break;
+        case UNPROTECTED_MIMO_BF_FEEDBACK:
+          retval.unprotectedDmgAction = UNPROTECTED_MIMO_BF_FEEDBACK;
+          break;
+        case UNPROTECTED_MIMO_BF_SELECTION:
+          retval.unprotectedDmgAction = UNPROTECTED_MIMO_BF_SELECTION;
+          break;
+        default:
+          NS_FATAL_ERROR ("Unknown Unprotected DMG action code");
+          retval.unprotectedDmgAction = UNPROTECTED_DMG_ANNOUNCE; /* quiet compiler */
+        }
+      break;
+
     default:
-      NS_FATAL_ERROR ("Unsupported mesh action");
+      NS_FATAL_ERROR ("Unsupported action");
       retval.selfProtectedAction = PEER_LINK_OPEN; /* quiet compiler */
     }
   return retval;
@@ -1858,29 +2099,37 @@ WifiActionHeader::GetInstanceTypeId () const
 std::string
 WifiActionHeader::CategoryValueToString (CategoryValue value) const
 {
-  if (value == BLOCK_ACK)
+  switch (value)
     {
+    case QOS:
+      return "QoS";
+    case BLOCK_ACK:
       return "BlockAck";
-    }
-  else if (value == MESH)
-    {
+    case PUBLIC:
+      return "Public";
+    case RADIO_MEASUREMENT:
+      return "RadioMeasurement";
+    case MESH:
       return "Mesh";
-    }
-  else if (value == SELF_PROTECTED)
-    {
+    case MULTIHOP:
+      return "Multihop";
+    case SELF_PROTECTED:
       return "SelfProtected";
-    }
-  else if (value == VENDOR_SPECIFIC_ACTION)
-    {
+    case DMG:
+      return "Dmg";
+    case FST:
+      return "Fst";
+    case UNPROTECTED_DMG:
+      return "UnprotectedDmg";
+    case VENDOR_SPECIFIC_ACTION:
       return "VendorSpecificAction";
-    }
-  else
-    {
+    default:
       std::ostringstream convert;
       convert << value;
       return convert.str ();
     }
 }
+
 std::string
 WifiActionHeader::SelfProtectedActionValueToString (SelfProtectedActionValue value) const
 {

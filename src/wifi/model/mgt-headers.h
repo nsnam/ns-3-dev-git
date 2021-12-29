@@ -1263,30 +1263,58 @@ public:
   ///CategoryValue enumeration
   enum CategoryValue //table 8-38 staring from IEEE 802.11, Part11, (Year 2012)
   {
+    QOS = 1,
     BLOCK_ACK = 3,
+    PUBLIC = 4,
+    RADIO_MEASUREMENT = 5,      //Category: Radio Measurement
     MESH = 13,                  //Category: Mesh
     MULTIHOP = 14,              //not used so far
     SELF_PROTECTED = 15,        //Category: Self Protected
+    DMG = 16,                   //Category: DMG
+    FST = 18,                   //Category: Fast Session Transfer
+    UNPROTECTED_DMG = 20,       //Category: Unprotected DMG
     //Since vendor specific action has no stationary Action value,the parse process is not here.
     //Refer to vendor-specific-action in wave module.
     VENDOR_SPECIFIC_ACTION = 127,
   };
 
-  ///SelfProtectedActionValue enumeration
-  enum SelfProtectedActionValue //Category: 15 (Self Protected)
+  ///QosActionValue enumeration
+  enum QosActionValue
   {
-    PEER_LINK_OPEN = 1,         //Mesh Peering Open
-    PEER_LINK_CONFIRM = 2,      //Mesh Peering Confirm
-    PEER_LINK_CLOSE = 3,        //Mesh Peering Close
-    GROUP_KEY_INFORM = 4,       //Mesh Group Key Inform
-    GROUP_KEY_ACK = 5,          //Mesh Group Key Acknowledge
+    ADDTS_REQUEST = 0,
+    ADDTS_RESPONSE = 1,
+    DELTS = 2,
+    SCHEDULE = 3,
+    QOS_MAP_CONFIGURE = 4,
   };
 
-  ///MultihopActionValue enumeration
-  enum MultihopActionValue
+  /**
+   * Block Ack Action field values
+   * See 802.11 Table 8-202
+   */
+  enum BlockAckActionValue
   {
-    PROXY_UPDATE = 0,                   //not used so far
-    PROXY_UPDATE_CONFIRMATION = 1,      //not used so far
+    BLOCK_ACK_ADDBA_REQUEST = 0,
+    BLOCK_ACK_ADDBA_RESPONSE = 1,
+    BLOCK_ACK_DELBA = 2
+  };
+
+  ///PublicActionValue enumeration
+  enum PublicActionValue
+  {
+    QAB_REQUEST = 16,
+    QAB_RESPONSE = 17,
+  };
+
+  ///RadioMeasurementActionValue enumeration
+  enum RadioMeasurementActionValue
+  {
+    RADIO_MEASUREMENT_REQUEST = 0,
+    RADIO_MEASUREMENT_REPORT = 1,
+    LINK_MEASUREMENT_REQUEST = 2,
+    LINK_MEASUREMENT_REPORT = 3,
+    NEIGHBOR_REPORT_REQUEST = 4,
+    NEIGHBOR_REPORT_RESPONSE = 5
   };
 
   ///MeshActionValue enumeration
@@ -1305,27 +1333,97 @@ public:
     TBTT_ADJUSTMENT_RESPONSE = 10,        //Action Value:10 in Category 13: Mesh (not used so far)
   };
 
-  /**
-   * Block Ack Action field values
-   * See 802.11 Table 8-202
-   */
-  enum BlockAckActionValue
+  ///MultihopActionValue enumeration
+  enum MultihopActionValue
   {
-    BLOCK_ACK_ADDBA_REQUEST = 0,
-    BLOCK_ACK_ADDBA_RESPONSE = 1,
-    BLOCK_ACK_DELBA = 2
+    PROXY_UPDATE = 0,                   //not used so far
+    PROXY_UPDATE_CONFIRMATION = 1,      //not used so far
   };
 
+  ///SelfProtectedActionValue enumeration
+  enum SelfProtectedActionValue //Category: 15 (Self Protected)
+  {
+    PEER_LINK_OPEN = 1,         //Mesh Peering Open
+    PEER_LINK_CONFIRM = 2,      //Mesh Peering Confirm
+    PEER_LINK_CLOSE = 3,        //Mesh Peering Close
+    GROUP_KEY_INFORM = 4,       //Mesh Group Key Inform
+    GROUP_KEY_ACK = 5,          //Mesh Group Key Acknowledge
+  };
+
+  /**
+   * DMG Action field values
+   * See 802.11ad Table 8-281b
+   */
+  enum DmgActionValue
+  {
+    DMG_POWER_SAVE_CONFIGURATION_REQUEST = 0,
+    DMG_POWER_SAVE_CONFIGURATION_RESPONSE = 1,
+    DMG_INFORMATION_REQUEST = 2,
+    DMG_INFORMATION_RESPONSE = 3,
+    DMG_HANDOVER_REQUEST = 4,
+    DMG_HANDOVER_RESPONSE = 5,
+    DMG_DTP_REQUEST = 6,
+    DMG_DTP_RESPONSE = 7,
+    DMG_RELAY_SEARCH_REQUEST = 8,
+    DMG_RELAY_SEARCH_RESPONSE = 9,
+    DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REQUEST = 10,
+    DMG_MULTI_RELAY_CHANNEL_MEASUREMENT_REPORT = 11,
+    DMG_RLS_REQUEST = 12,
+    DMG_RLS_RESPONSE = 13,
+    DMG_RLS_ANNOUNCEMENT = 14,
+    DMG_RLS_TEARDOWN = 15,
+    DMG_RELAY_ACK_REQUEST = 16,
+    DMG_RELAY_ACK_RESPONSE = 17,
+    DMG_TPA_REQUEST = 18,
+    DMG_TPA_RESPONSE = 19,
+    DMG_TPA_REPORT = 20,
+    DMG_ROC_REQUEST = 21,
+    DMG_ROC_RESPONSE = 22
+  };
+
+  /**
+   * FST Action field values
+   * See 802.11ad Table 8-281x
+   */
+  enum FstActionValue
+  {
+    FST_SETUP_REQUEST = 0,
+    FST_SETUP_RESPONSE = 1,
+    FST_TEAR_DOWN = 2,
+    FST_ACK_REQUEST = 3,
+    FST_ACK_RESPONSE = 4,
+    ON_CHANNEL_TUNNEL_REQUEST = 5
+  };
+
+  /**
+   * Unprotected DMG action field values
+   * See 802.11ad Table 8-281ae
+   */
+  enum UnprotectedDmgActionValue
+  {
+    UNPROTECTED_DMG_ANNOUNCE = 0,
+    UNPROTECTED_DMG_BRP = 1,
+    UNPROTECTED_MIMO_BF_SETUP = 2,
+    UNPROTECTED_MIMO_BF_POLL = 3,
+    UNPROTECTED_MIMO_BF_FEEDBACK = 4,
+    UNPROTECTED_MIMO_BF_SELECTION = 5,
+  };
 
   /**
    * typedef for union of different ActionValues
    */
   typedef union
   {
-    MeshActionValue meshAction; ///< mesh action
-    MultihopActionValue multihopAction; ///< multi hop action
-    SelfProtectedActionValue selfProtectedAction; ///< self protected action
+    QosActionValue qos; ///< qos
     BlockAckActionValue blockAck; ///< block ack
+    RadioMeasurementActionValue radioMeasurementAction; ///< radio measurement
+    PublicActionValue publicAction; ///< public
+    SelfProtectedActionValue selfProtectedAction; ///< self protected
+    MultihopActionValue multihopAction; ///< multi hop
+    MeshActionValue meshAction; ///< mesh
+    DmgActionValue dmgAction; ///< dmg
+    FstActionValue fstAction; ///< fst
+    UnprotectedDmgActionValue unprotectedDmgAction; ///< unprotected dmg
   } ActionValue; ///< the action value
   /**
    * Set action for this Action header.
