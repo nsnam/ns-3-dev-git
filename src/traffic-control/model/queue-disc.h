@@ -205,21 +205,21 @@ public:
     /// Total packets dropped before enqueue
     uint32_t nTotalDroppedPacketsBeforeEnqueue;
     /// Packets dropped before enqueue, for each reason
-    std::map<std::string, uint32_t> nDroppedPacketsBeforeEnqueue;
+    std::map<std::string, uint32_t, std::less<>> nDroppedPacketsBeforeEnqueue;
     /// Total packets dropped after dequeue
     uint32_t nTotalDroppedPacketsAfterDequeue;
     /// Packets dropped after dequeue, for each reason
-    std::map<std::string, uint32_t> nDroppedPacketsAfterDequeue;
+    std::map<std::string, uint32_t, std::less<>> nDroppedPacketsAfterDequeue;
     /// Total dropped bytes
     uint64_t nTotalDroppedBytes;
     /// Total bytes dropped before enqueue
     uint64_t nTotalDroppedBytesBeforeEnqueue;
     /// Bytes dropped before enqueue, for each reason
-    std::map<std::string, uint64_t> nDroppedBytesBeforeEnqueue;
+    std::map<std::string, uint64_t, std::less<>> nDroppedBytesBeforeEnqueue;
     /// Total bytes dropped after dequeue
     uint64_t nTotalDroppedBytesAfterDequeue;
     /// Bytes dropped after dequeue, for each reason
-    std::map<std::string, uint64_t> nDroppedBytesAfterDequeue;
+    std::map<std::string, uint64_t, std::less<>> nDroppedBytesAfterDequeue;
     /// Total requeued packets
     uint32_t nTotalRequeuedPackets;
     /// Total requeued bytes
@@ -227,11 +227,11 @@ public:
     /// Total marked packets
     uint32_t nTotalMarkedPackets;
     /// Marked packets, for each reason
-    std::map<std::string, uint32_t> nMarkedPackets;
+    std::map<std::string, uint32_t, std::less<>> nMarkedPackets;
     /// Total marked bytes
     uint32_t nTotalMarkedBytes;
     /// Marked bytes, for each reason
-    std::map<std::string, uint64_t> nMarkedBytes;
+    std::map<std::string, uint64_t, std::less<>> nMarkedBytes;
 
     /// constructor
     Stats ();
