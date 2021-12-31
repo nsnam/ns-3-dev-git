@@ -17,7 +17,6 @@ SOURCES = \
 	source/attributes.rst \
 	source/callbacks.rst \
 	source/develop.rst \
-	source/working-with-git.rst \
 	source/documentation.rst \
 	source/enable-modules.rst \
 	source/enable-tests.rst \
@@ -33,6 +32,7 @@ SOURCES = \
 	source/object-model.rst \
 	source/object-names.rst \
 	source/organization.rst \
+	source/profiling.rst \
 	source/python.rst \
 	source/random-variables.rst \
 	source/realtime.rst \
@@ -46,6 +46,8 @@ SOURCES = \
 	source/troubleshoot.rst \
 	source/utilities.rst \
 	source/working-with-cmake.rst \
+	source/working-with-git.rst \
+	source/working-with-gitlab-ci-local.rst \
 	${SRC}/stats/doc/data-collection.rst \
 	${SRC}/stats/doc/data-collection-overview.rst \
 	${SRC}/stats/doc/statistics.rst \
@@ -64,12 +66,30 @@ SOURCES = \
 #  3) both a .pdf and .png file
 
 SOURCEFIGS = \
-        figures/software-organization.dia \
+    figures/software-organization.dia \
 	figures/plot-2d.png \
 	figures/plot-2d-with-error-bars.png \
 	figures/plot-3d.png \
 	figures/gtk-config-lena-dual-stripe-device-view.png \
 	figures/gtk-config-lena-dual-stripe-eNB-tx-power.png \
+	figures/heaptrack.png \
+	figures/hotspot-cycles.png \
+	figures/hotspot-setup.png \
+	figures/hotspot-top-down.png \
+	figures/uprof-collect-callstack.png \
+	figures/uprof-collect-callstack.png \
+	figures/uprof-profile-application.png \
+	figures/uprof-select-events.png \
+	figures/uprof-start.png \
+	figures/uprof-stats.png \
+	figures/uprof-strace-lte.png \
+	figures/vtune-configure.png \
+	figures/vtune-landing.png \
+	figures/vtune-perf-snapshot.png \
+	figures/vtune-select-uarch-profiling.png \
+	figures/vtune-uarch-core-stats.png \
+	figures/vtune-uarch-profiling-summary.png \
+	figures/vtune-uarch-wifi-stats.png \
 	${SRC}/stats/doc/Stat-framework-arch.png \
 	${SRC}/stats/doc/Wifi-default.png \
 	${SRC}/stats/doc/dcf-overview.dia \
