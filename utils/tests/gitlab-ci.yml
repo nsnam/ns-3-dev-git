@@ -70,7 +70,7 @@ per-commit-compile-debug:
     MODE: debug
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
@@ -85,7 +85,7 @@ per-commit-compile-release:
     MODE: release
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -100,7 +100,7 @@ per-commit-compile-optimized:
     MODE: optimized
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 # .cmake-build:
 #   stage: build
@@ -131,7 +131,7 @@ per-commit-compile-optimized:
 #     MODE: release
 #   before_script:
 #     - pacman -Syu --noconfirm
-#     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+#     - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 # Weekly jobs for other distribution and compilers
 include:

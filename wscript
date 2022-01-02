@@ -901,13 +901,6 @@ def configure(conf):
                                  conf.env['ENABLE_GSL'],
                                  "GSL not found")
 
-    conf.find_program('libgcrypt-config', var='LIBGCRYPT_CONFIG', msg="libgcrypt-config", mandatory=False)
-    if env.LIBGCRYPT_CONFIG:
-        conf.check_cfg(path=env.LIBGCRYPT_CONFIG, msg="Checking for libgcrypt", args='--cflags --libs', package='',
-                                     define_name="HAVE_GCRYPT", global_define=True, uselib_store='GCRYPT', mandatory=False)
-    conf.report_optional_feature("libgcrypt", "Gcrypt library",
-                                 conf.env.HAVE_GCRYPT, "libgcrypt not found: you can use libgcrypt-config to find its location.")
-
     why_not_desmetrics = "defaults to disabled"
     if Options.options.enable_desmetrics:
         conf.env['ENABLE_DES_METRICS'] = True

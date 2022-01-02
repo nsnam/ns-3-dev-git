@@ -12,7 +12,6 @@
 # Examples                      : not enabled (defaults to disabled)
 # File descriptor NetDevice     : enabled
 # GNU Scientific Library (GSL)  : enabled
-# Gcrypt library                : not enabled (libgcrypt not found: you can use libgcrypt-config to find its location.)
 # GtkConfigStore                : enabled
 # MPI Support                   : not enabled (option --enable-mpi not selected)
 # NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
@@ -126,9 +125,6 @@ macro(write_fakewaf_config)
 
   string(APPEND out "GNU Scientific Library (GSL)  : ")
   check_on_or_off("${NS3_GSL}" "${GSL_FOUND}")
-
-  # string(APPEND out "Gcrypt library                : not enabled (libgcrypt
-  # not found: you can use libgcrypt-config to find its location.)
 
   string(APPEND out "GtkConfigStore                : ")
   check_on_or_off("${NS3_GTK3}" "${GTK3_FOUND}")

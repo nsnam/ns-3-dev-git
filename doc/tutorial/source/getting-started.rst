@@ -619,7 +619,6 @@ output that looks similar to the following::
    Examples                      : enabled
    File descriptor NetDevice     : enabled
    GNU Scientific Library (GSL)  : not enabled (GSL not found)
-   Gcrypt library                : not enabled (libgcrypt not found: you can use libgcrypt-config to find its location.)
    GtkConfigStore                : not enabled (library 'gtk+-3.0 >= 3.0' not found)
    MPI Support                   : not enabled (option --enable-mpi not selected)
    NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
