@@ -544,7 +544,12 @@ MeshWifiInterfaceMac::ConfigureStandard (enum WifiStandard standard)
   NS_ABORT_IF (!GetQosSupported ());
   RegularWifiMac::ConfigureStandard (standard);
   m_standard = standard;
+}
 
+void
+MeshWifiInterfaceMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
+{
+  RegularWifiMac::ConfigureContentionWindow (cwMin, cwMax);
   // We use the single DCF provided by WifiMac for the purpose of
   // Beacon transmission. For this we need to reconfigure the channel
   // access parameters slightly, and do so here.

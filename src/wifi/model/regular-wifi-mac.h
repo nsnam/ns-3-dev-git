@@ -272,7 +272,7 @@ protected:
    * This method is called to set the minimum and the maximum
    * contention window size.
    */
-  void ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax);
+  virtual void ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax);
 
   /**
    * This method acts as the MacRxMiddle receive callback and is
@@ -405,6 +405,11 @@ private:
    * \param timeout the BK block ack inactivity timeout.
    */
   void SetBkBlockAckInactivityTimeout (uint16_t timeout);
+
+  /**
+   * Configure PHY dependent parameters such as CWmin and CWmax.
+   */
+  void ConfigurePhyDependentParameters (void);
 
   TypeOfStation m_typeOfStation;                        //!< the type of station
 

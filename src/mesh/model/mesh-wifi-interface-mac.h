@@ -193,6 +193,15 @@ public:
    */
   virtual void ConfigureStandard (enum WifiStandard standard);
   /**
+   * \param cwMin the minimum contention window size
+   * \param cwMax the maximum contention window size
+   *
+   * This method is called to set the minimum and the maximum
+   * contention window size.
+   */
+  virtual void ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax);
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
    * have been assigned.
