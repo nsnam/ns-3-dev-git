@@ -366,6 +366,7 @@ Miscellaneous items
 
 - The following emacs mode line should be the first line in a file:
   ::
+
     /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 - ``NS_LOG_COMPONENT_DEFINE("log-component-name");`` statements should be
@@ -375,11 +376,13 @@ Miscellaneous items
 
 - Const reference syntax:
   ::
+
     void MySub (const T&);    // Method 1  (prefer this syntax)
     void MySub (T const&);    // Method 2  (avoid this syntax)
 
 - Use a space between the function name and the parentheses, e.g.:
   ::
+
     void MySub(const T&);     // avoid this
     void MySub (const T&);    // use this instead
   This spacing rule applies both to function declarations and invocations.
@@ -393,6 +396,7 @@ Miscellaneous items
 - Consider whether you want the default constructor, copy constructor, or assignment
   operator in your class, and if not, explicitly mark them as deleted:
   ::
+
     public:
       // Explain why these are not supported
       ClassName () = delete;
@@ -401,6 +405,7 @@ Miscellaneous items
 
 - Avoid returning a reference to an internal or local member of an object:
   ::
+
     a_type& foo (void);  // should be avoided, return a pointer or an object.
     const a_type& foo (void); // same as above
   This guidance does not apply to the use of references to implement operators.
@@ -412,9 +417,11 @@ Miscellaneous items
 
 - For standard headers, use the C++ style of inclusion, such as
   ::
+
     #include <cheader>
   instead of
   ::
+
     #include <header.h>
 
 - Do not bring the C++ standard library namespace into |ns3| source files by
@@ -426,13 +433,16 @@ Miscellaneous items
 
   - inside .h files, always use
     ::
+
       #include <ns3/header.h>
 
   - inside .cc files, use
     ::
+
       #include "header.h"
     if file is in same directory, otherwise use
     ::
+
       #include <ns3/header.h>
 
 - When writing library code, try to avoid the use of unused function
@@ -442,4 +452,3 @@ Miscellaneous items
   especially if the author feels that it clutters the code (example: hooking
   a trace source to gather program output, but not using all of the parameters
   that the trace source provides).
-
