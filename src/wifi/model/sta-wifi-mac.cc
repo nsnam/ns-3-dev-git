@@ -417,8 +417,16 @@ StaWifiMac::MissedBeacons (void)
     {
       delay = m_phy->GetDelayUntilIdle ();
     }
-  Simulator::Schedule (delay, &StaWifiMac::SetState, this, UNASSOCIATED);
-  Simulator::Schedule (delay, &StaWifiMac::TryToEnsureAssociated, this);
+  Simulator::Schedule (delay, &StaWifiMac::Disassociated, this);
+}
+
+void
+StaWifiMac::Disassociated (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Set state to UNASSOCIATED and start scanning");
+  SetState (UNASSOCIATED);
+  TryToEnsureAssociated ();
 }
 
 void
@@ -1160,6 +1168,19 @@ StaWifiMac::PhyCapabilitiesChanged (void)
       NS_LOG_DEBUG ("PHY capabilities changed: send reassociation request");
       SetState (WAIT_ASSOC_RESP);
       SendAssociationRequest (true);
+    }
+}
+
+void
+StaWifiMac::NotifyChannelSwitching (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  RegularWifiMac::NotifyChannelSwitching ();
+
+  if (IsInitialized ())
+    {
+      Disassociated ();
     }
 }
 

@@ -150,6 +150,8 @@ public:
    */
   uint16_t GetAssociationId (void) const;
 
+  void NotifyChannelSwitching (void) override;
+
 private:
   /**
    * The current MAC state of the STA.
@@ -267,6 +269,10 @@ private:
    * \param delay the delay before the watchdog fires
    */
   void RestartBeaconWatchdog (Time delay);
+  /**
+   * Take actions after disassociation.
+   */
+  void Disassociated (void);
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.

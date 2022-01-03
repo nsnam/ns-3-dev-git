@@ -1634,7 +1634,7 @@ Bug2843TestCase::DoRun (void)
  * The scenario considers an access point and a station using a 20 MHz channel width.
  * After 1s, we change the channel width and the channel number to use a 40 MHz channel.
  * The tests checks the operational channel width sent in Beacon frames
- * and verify that a reassociation procedure is executed.
+ * and verify that the association procedure is executed twice.
  *
  * See \bugid{2831}
  */
@@ -1662,16 +1662,16 @@ private:
   Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
   Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
 
-  uint16_t m_reassocReqCount; ///< count number of reassociation requests
-  uint16_t m_reassocRespCount; ///< count number of reassociation responses
+  uint16_t m_assocReqCount; ///< count number of association requests
+  uint16_t m_assocRespCount; ///< count number of association responses
   uint16_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
   uint16_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
 };
 
 Bug2831TestCase::Bug2831TestCase ()
   : TestCase ("Test case for Bug 2831"),
-    m_reassocReqCount (0),
-    m_reassocRespCount (0),
+    m_assocReqCount (0),
+    m_assocRespCount (0),
     m_countOperationalChannelWidth20 (0),
     m_countOperationalChannelWidth40 (0)
 {
@@ -1694,13 +1694,13 @@ Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p, RxPowerWa
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;
   packet->RemoveHeader (hdr);
-  if (hdr.IsReassocReq ())
+  if (hdr.IsAssocReq ())
     {
-      m_reassocReqCount++;
+      m_assocReqCount++;
     }
-  else if (hdr.IsReassocResp ())
+  else if (hdr.IsAssocResp ())
     {
-      m_reassocRespCount++;
+      m_assocRespCount++;
     }
   else if (hdr.IsBeacon ())
     {
@@ -1813,8 +1813,8 @@ Bug2831TestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_ASSERT_MSG_EQ (m_reassocReqCount, 1, "Reassociation request not received");
-  NS_TEST_ASSERT_MSG_EQ (m_reassocRespCount, 1, "Reassociation response not received");
+  NS_TEST_ASSERT_MSG_EQ (m_assocReqCount, 2, "Second Association request not received");
+  NS_TEST_ASSERT_MSG_EQ (m_assocRespCount, 2, "Second Association response not received");
   NS_TEST_ASSERT_MSG_EQ (m_countOperationalChannelWidth20, 10, "Incorrect operational channel width before channel change");
   NS_TEST_ASSERT_MSG_EQ (m_countOperationalChannelWidth40, 20, "Incorrect operational channel width after channel change");
 }

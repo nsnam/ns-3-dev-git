@@ -1154,6 +1154,21 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
 }
 
 void
+RegularWifiMac::NotifyChannelSwitching (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // we may have changed PHY band, in which case it is necessary to re-configure
+  // the PHY dependent parameters. In any case, this makes no harm
+  ConfigurePhyDependentParameters ();
+
+  // SetupPhy not only resets the remote station manager, but also sets the
+  // default TX mode and MCS, which is required when switching to a channel
+  // in a different band
+  m_stationManager->SetupPhy (m_phy);
+}
+
+void
 RegularWifiMac::ConfigurePhyDependentParameters (void)
 {
   WifiPhyBand band = m_phy->GetPhyBand ();

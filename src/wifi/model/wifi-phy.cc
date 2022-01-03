@@ -1191,21 +1191,6 @@ WifiPhy::GetDelayUntilChannelSwitch (void)
       break;
     }
 
-  if (delay.IsZero ())
-    {
-      // channel switch can be done now
-      NS_LOG_DEBUG ("switching channel");
-      m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
-      m_interference.EraseEvents ();
-      /*
-      * Needed here to be able to correctly sensed the medium for the first
-      * time after the switching. The actual switching is not performed until
-      * after m_channelSwitchDelay. Packets received during the switching
-      * state are added to the event list and are employed later to figure
-      * out the state of the medium after the switching.
-      */
-    }
-
   return delay;
 }
 
@@ -1238,6 +1223,7 @@ WifiPhy::DoChannelSwitch (void)
 
   m_band = static_cast<WifiPhyBand> (std::get<2> (m_channelSettings));
 
+  NS_LOG_DEBUG ("switching channel");
   m_operatingChannel.Set (std::get<0> (m_channelSettings), 0, std::get<1> (m_channelSettings),
                           m_standard, m_band);
   m_operatingChannel.SetPrimary20Index (std::get<3> (m_channelSettings));
@@ -1249,12 +1235,18 @@ WifiPhy::DoChannelSwitch (void)
 
   AddSupportedChannelWidth (GetChannelWidth ());
 
-  // If channel has been switched after initialization, invoke the capabilities
-  // changed callback (causing the transmission of an Association Request if this
-  // is a station)
-  if (IsInitialized () && !m_capabilitiesChangedCallback.IsNull ())
+  if (IsInitialized ())
     {
-      m_capabilitiesChangedCallback ();
+      // notify channel switching
+      m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
+      m_interference.EraseEvents ();
+      /*
+      * Needed here to be able to correctly sensed the medium for the first
+      * time after the switching. The actual switching is not performed until
+      * after m_channelSwitchDelay. Packets received during the switching
+      * state are added to the event list and are employed later to figure
+      * out the state of the medium after the switching.
+      */
     }
 }
 

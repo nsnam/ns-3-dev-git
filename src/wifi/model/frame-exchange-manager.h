@@ -226,7 +226,7 @@ public:
    * the MAC layer that a channel switching occurred. When a channel switching
    * occurs, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
-  void NotifySwitchingStartNow (Time duration);
+  virtual void NotifySwitchingStartNow (Time duration);
 
   /**
    * This method is typically invoked by the PhyListener to notify

@@ -64,8 +64,6 @@ private:
   void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
   /// \copydoc ns3::Txop::HasFramesToTransmit
   bool HasFramesToTransmit (void) override;
-  /// \copydoc ns3::Txop::NotifyChannelSwitching
-  void NotifyChannelSwitching (void) override;
   /// \copydoc ns3::Txop::NotifySleep
   void NotifySleep (void) override;
   /// \copydoc ns3::Txop::NotifyWakeUp
@@ -193,6 +191,11 @@ public:
   {
     m_test->NotifyInternalCollision (DynamicCast<TxopTest<TxopType>> (txop));
   }
+  /// \copydoc ns3::FrameExchangeManager::NotifySwitchingStartNow
+  void NotifySwitchingStartNow (Time duration) override
+  {
+    m_test->NotifyChannelSwitching ();
+  }
 
 private:
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
@@ -228,9 +231,8 @@ public:
   void GenerateBackoff (uint32_t i);
   /**
    * Notify channel switching function
-   * \param i the index of the Txop
    */
-  void NotifyChannelSwitching (uint32_t i);
+  void NotifyChannelSwitching (void);
 
 
 private:
@@ -430,13 +432,6 @@ TxopTest<TxopType>::HasFramesToTransmit (void)
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::NotifyChannelSwitching (void)
-{
-  m_test->NotifyChannelSwitching (m_i);
-}
-
-template <typename TxopType>
-void
 TxopTest<TxopType>::NotifySleep (void)
 {
 }
@@ -509,16 +504,18 @@ ChannelAccessManagerTest<TxopType>::GenerateBackoff (uint32_t i)
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching (uint32_t i)
+ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching (void)
 {
-  Ptr<TxopTest<TxopType>> state = m_txop[i];
-  if (!state->m_expectedGrants.empty ())
+  for (auto& state : m_txop)
     {
-      std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
-      state->m_expectedGrants.pop_front ();
-      NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
+      if (!state->m_expectedGrants.empty ())
+        {
+          std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
+          state->m_expectedGrants.pop_front ();
+          NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
+        }
+      state->Txop::m_access = Txop::NOT_REQUESTED;
     }
-  state->Txop::m_access = Txop::NOT_REQUESTED;
 }
 
 template <typename TxopType>

@@ -660,6 +660,9 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
       m_accessTimeout.Cancel ();
     }
 
+  // Notify the FEM, which will in turn notify the MAC
+  m_feManager->NotifySwitchingStartNow (duration);
+
   //Reset backoffs
   for (auto txop : m_txops)
     {
@@ -671,7 +674,6 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
         }
       txop->ResetCw ();
       txop->m_access = Txop::NOT_REQUESTED;
-      txop->NotifyChannelSwitching ();
     }
 
   NS_LOG_DEBUG ("switching start for " << duration);

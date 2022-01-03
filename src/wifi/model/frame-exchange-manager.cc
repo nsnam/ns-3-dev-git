@@ -885,8 +885,15 @@ void
 FrameExchangeManager::NotifySwitchingStartNow (Time duration)
 {
   NS_LOG_DEBUG ("Switching channel. Cancelling MAC pending events");
-  m_mac->GetWifiRemoteStationManager ()->Reset ();
-  Reset ();
+  m_mac->NotifyChannelSwitching ();
+  if (m_txTimer.IsRunning ())
+    {
+      // we were transmitting something before channel switching. Since we will
+      // not be able to receive the response, have the timer expire now, so that
+      // we perform the actions required in case of missing response
+      m_txTimer.Reschedule (Seconds (0));
+    }
+  Simulator::ScheduleNow (&FrameExchangeManager::Reset, this);
 }
 
 void

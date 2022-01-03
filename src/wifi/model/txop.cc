@@ -382,13 +382,6 @@ Txop::GenerateBackoff (void)
 }
 
 void
-Txop::NotifyChannelSwitching (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_queue->Flush ();
-}
-
-void
 Txop::NotifySleep (void)
 {
   NS_LOG_FUNCTION (this);

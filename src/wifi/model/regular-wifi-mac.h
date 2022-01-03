@@ -209,6 +209,11 @@ public:
    */
   uint16_t GetMaxAmsduSize (AcIndex ac) const;
 
+  /**
+   * Notify that channel has been switched.
+   */
+  virtual void NotifyChannelSwitching (void);
+
 protected:
   void DoInitialize () override;
   void DoDispose () override;
