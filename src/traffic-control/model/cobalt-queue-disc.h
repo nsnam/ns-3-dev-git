@@ -165,6 +165,9 @@ private:
    */
   int64_t ControlLaw (int64_t t);
 
+  /**
+   * \brief Updates the inverse square root
+   */
   void InvSqrt (void);
 
   /**
@@ -210,7 +213,8 @@ private:
 
   /**
    * Called to decide whether the current packet should be dropped based on decisions taken by Blue and Codel working parallely
-   * Returns true if the packet should be dropped, false otherwise
+   *
+   * \return true if the packet should be dropped, false otherwise
    * \param item current packet
    * \param now time in CoDel time units (microseconds)
    */

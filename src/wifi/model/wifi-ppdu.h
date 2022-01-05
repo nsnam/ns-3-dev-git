@@ -107,7 +107,6 @@ public:
    * Get the channel width over which the PPDU will effectively be
    * transmitted.
    *
-   * \param ppdu the PPDU to send
    * \return the effective channel width (in MHz) used for the tranmsission
    */
   virtual uint16_t GetTransmissionChannelWidth (void) const;
@@ -117,7 +116,6 @@ public:
    * channel. Normally, a PPDU can be received if it is transmitted over a
    * channel that overlaps the primary20 channel of a PHY entity.
    *
-   * \param ppdu the given PPDU
    * \param txCenterFreq the center frequency (MHz) of the channel over which the
    *        PPDU is transmitted
    * \param p20MinFreq the minimum frequency (MHz) of the primary channel

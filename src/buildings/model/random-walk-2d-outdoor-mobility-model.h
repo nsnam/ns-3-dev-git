@@ -77,15 +77,16 @@ private:
   void Rebound (Time timeLeft);
   /**
    * \brief Avoid a building
-   * \param timeLeft The remaining time of the walk
+   * \param delayLeft The remaining time of the walk
    * \param intersectPosition The position at which the building is intersected
    */
   void AvoidBuilding (Time delayLeft, Vector intersectPosition);
   /**
    * Walk according to position and velocity, until distance is reached,
    * time is reached, or intersection with the bounding box, or building
+   * \param delayLeft The remaining time of the walk
    */
-  void DoWalk (Time timeLeft);
+  void DoWalk (Time delayLeft);
   /**
    * Perform initialization of the object before MobilityModel::DoInitialize ()
    */

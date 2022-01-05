@@ -71,6 +71,7 @@ public:
    * The maximum number of bits to be deserialized in one single call is 64.
    *
    * \param size The number of bits to pop.
+   * \return The popped bits value
    */
   uint64_t GetBits (uint8_t size);
 

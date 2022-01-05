@@ -70,7 +70,6 @@ class TestBaseClass:
         @param argv argument list
         @param desc description
         @param mode test mode
-        @return none
         """
         self.my_env = os.environ
         set_workdir()

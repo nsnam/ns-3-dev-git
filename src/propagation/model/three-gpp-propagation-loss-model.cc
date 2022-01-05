@@ -32,7 +32,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ThreeGppPropagationLossModel");
 
-static const double M_C = 3.0e8; // propagation velocity in free space
+static const double M_C = 3.0e8; //!< propagation velocity in free space
 
 // ------------------------------------------------------------------------- //
 

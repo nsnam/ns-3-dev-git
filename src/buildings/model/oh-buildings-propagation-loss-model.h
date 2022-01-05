@@ -40,6 +40,10 @@ class OhBuildingsPropagationLossModel : public BuildingsPropagationLossModel
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   OhBuildingsPropagationLossModel ();
   ~OhBuildingsPropagationLossModel ();
@@ -53,7 +57,7 @@ public:
   
 private:
 
-  Ptr<OkumuraHataPropagationLossModel> m_okumuraHata;
+  Ptr<OkumuraHataPropagationLossModel> m_okumuraHata; //!< OkumuraHata Propagation Loss Model
 
 };
 

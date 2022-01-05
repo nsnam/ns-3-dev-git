@@ -30,9 +30,13 @@ namespace ns3 {
 
 class Building;
 
+/**
+ * Container for Building class
+ */
 class BuildingList
 {
 public:
+  /// Const Iterator
   typedef std::vector< Ptr<Building> >::const_iterator Iterator;
 
   /**

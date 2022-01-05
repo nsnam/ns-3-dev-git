@@ -217,9 +217,15 @@ private:
    */
   void
   RecvDsdv (Ptr<Socket> socket);
-  /// Send packet
+  /**
+   * Send a packet
+   * \param route the route
+   * \param packet the packet
+   * \param header the IPv4 header
+   */
   void
-  Send (Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
+  Send (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header);
+
   /**
    * Create loopback route for given header
    *
@@ -245,9 +251,14 @@ private:
   /// Merge periodic updates
   void
   MergeTriggerPeriodicUpdates ();
-  /// Notify that packet is dropped for some reason
+  /**
+   * Notify that packet is dropped for some reason
+   * \param packet the dropped packet
+   * \param header the IPv4 header
+   * \param err the error number
+   */
   void
-  Drop (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
+  Drop (Ptr<const Packet> packet, const Ipv4Header & header, Socket::SocketErrno err);
   /// Timer to trigger periodic updates from a node
   Timer m_periodicUpdateTimer;
   /// Timer used by the trigger updates in case of Weighted Settling Time is used

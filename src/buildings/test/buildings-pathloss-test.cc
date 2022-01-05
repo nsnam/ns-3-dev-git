@@ -38,16 +38,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
 
-/**
+/*
  * Test 1.1 BuildingsPathlossModel Pathloss compound test
- */
-
-/**
+ *
  * This TestSuite tests the BuildingPathlossModel by reproducing
  * several communication scenarios 
  */
-
-
 BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
   : TestSuite ("buildings-pathloss-test", SYSTEM)
 {
@@ -127,11 +123,11 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
 }
 
 
-
+/// Static variable for test initialization
 static BuildingsPathlossTestSuite buildingsPathlossTestSuite;
 
 
-/**
+/*
  * TestCase
  */
 

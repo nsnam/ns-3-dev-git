@@ -38,15 +38,23 @@ class Building : public Object
 {
 public:
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
-
+  /**
+   * Building type enum
+   */
   enum BuildingType_t
     {
       Residential, Office, Commercial
     };
+  /**
+   * External building wall type enum
+   */
   enum ExtWallsType_t
     {
       Wood, ConcreteWithWindows, ConcreteWithoutWindows, StoneBlocks
@@ -215,19 +223,19 @@ public:
 
 private:
 
-  Box m_buildingBounds;
+  Box m_buildingBounds; //!< Building boundaries
 
   /**
    * number of floors, must be greater than 0, and 1 means only one floor
    * (i.e., groundfloor)
    */
   uint16_t m_floors;
-  uint16_t m_roomsX;
-  uint16_t m_roomsY;
+  uint16_t m_roomsX; //!< X Room coordinate
+  uint16_t m_roomsY; //!< Y Room coordinate
 
-  uint32_t m_buildingId;
-  BuildingType_t m_buildingType;
-  ExtWallsType_t m_externalWalls;
+  uint32_t m_buildingId; //!< Building ID number
+  BuildingType_t m_buildingType;   //!< Building type
+  ExtWallsType_t m_externalWalls;  //!< External building wall type
 
 };
 

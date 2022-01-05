@@ -26,6 +26,7 @@
 
 namespace ns3 {
 
+/// Priority map
 typedef std::array<uint16_t, 16> Priomap;
 
 /**
@@ -105,6 +106,7 @@ std::ostream &operator << (std::ostream &os, const Priomap &priomap);
  * \return std::istream
  */
 std::istream &operator >> (std::istream &is, Priomap &priomap);
+
 
 ATTRIBUTE_HELPER_HEADER (Priomap);
 

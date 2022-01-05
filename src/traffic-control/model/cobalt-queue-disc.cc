@@ -129,16 +129,6 @@ static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
   return (uint32_t)(((uint64_t)A * R) >> 32);
 }
 
-double min (double x, double y)
-{
-  return (x < y) ? x : y;
-}
-
-double max (double x, double y)
-{
-  return (x > y) ? x : y;
-}
-
 /**
  * Returns the current time translated in CoDel time representation
  * \return the current time
@@ -408,7 +398,7 @@ void CobaltQueueDisc::CobaltQueueFull (int64_t now)
   if (CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
       NS_LOG_LOGIC ("inside IF block");
-      m_pDrop = min (m_pDrop + m_increment, (double)1.0);
+      m_pDrop = std::min (m_pDrop + m_increment, (double)1.0);
       m_lastUpdateTimeBlue = now;
     }
   m_dropping = true;
@@ -425,7 +415,7 @@ void CobaltQueueDisc::CobaltQueueEmpty (int64_t now)
   NS_LOG_FUNCTION (this);
   if (m_pDrop && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
-      m_pDrop = max (m_pDrop - m_decrement, (double)0.0);
+      m_pDrop = std::max (m_pDrop - m_decrement, (double)0.0);
       m_lastUpdateTimeBlue = now;
     }
   m_dropping = false;
@@ -501,7 +491,7 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
       isMarked = (m_useEcn && Mark (item, FORCED_MARK));
       drop = !isMarked;
 
-      m_count = max (m_count, m_count + 1);
+      m_count = std::max (m_count, m_count + 1);
 
       InvSqrt ();
       m_dropNext = ControlLaw (m_dropNext);
@@ -530,7 +520,7 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
   // Enable Blue Enhancement if sojourn time is greater than blueThreshold and its been m_target time until the last time blue was updated
   if (CoDelTimeAfter (sojournTime, Time2CoDel (m_blueThreshold)) && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
-      m_pDrop = min (m_pDrop + m_increment, (double)1.0);
+      m_pDrop = std::min (m_pDrop + m_increment, (double)1.0);
       m_lastUpdateTimeBlue = now;
     }
 

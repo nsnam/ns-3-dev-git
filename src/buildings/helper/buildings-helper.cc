@@ -48,11 +48,8 @@ BuildingsHelper::Install (Ptr<Node> node)
 {
   Ptr<Object> object = node;
   Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-  if (model == 0)
-    {
-      NS_ABORT_MSG_UNLESS (0 != model, "node " << node->GetId () << " does not have a MobilityModel");
 
-    }
+  NS_ABORT_MSG_UNLESS (0 != model, "node " << node->GetId () << " does not have a MobilityModel");
 
   Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> ();
   model->AggregateObject (buildingInfo);

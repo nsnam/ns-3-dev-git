@@ -58,6 +58,10 @@ class BuildingsPropagationLossModel : public PropagationLossModel
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   BuildingsPropagationLossModel ();
@@ -72,35 +76,81 @@ public:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 protected:
+  /**
+   * Calculate the external wall loss
+   * \param a Building data
+   * \returns the propagation loss (in dBm)
+   */
   double ExternalWallLoss (Ptr<MobilityBuildingInfo> a) const;
+  /**
+   * Calculate the height loss
+   * \param n Building data
+   * \returns the propagation loss (in dBm)
+   */
   double HeightLoss (Ptr<MobilityBuildingInfo> n) const;
+  /**
+   * Calculate the internal wall loss
+   * \param a Room A data
+   * \param b Room B data
+   * \returns the propagation loss (in dBm)
+   */
   double InternalWallsLoss (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
   
+  /**
+   * Calculate the shadowing loss
+   * \param a Room A data
+   * \param b Room B data
+   * \returns the propagation loss (in dBm)
+   */
   double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  double m_lossInternalWall; // in meters
+  double m_lossInternalWall; //!< loss from internal walls (in dBm)
 
-  
+  /**
+   * \ingroup propagation
+   * 
+   * This model allows the computation of shadowing loss
+   */
   class ShadowingLoss
   {
   public:
     ShadowingLoss ();
+    /**
+     * Constructor
+     * \param shadowingValue Value for shadowing
+     * \param receiver Receiver position
+     */
     ShadowingLoss (double shadowingValue, Ptr<MobilityModel> receiver);
+    /**
+     * \returns the loss (in dBm)
+     */
     double GetLoss () const;
+    /**
+     * \returns the receiver mobility model
+     */
     Ptr<MobilityModel> GetReceiver (void) const;
   protected:
-    double m_shadowingValue;
-    Ptr<MobilityModel> m_receiver;
+    double m_shadowingValue; //!< Shadowing value
+    Ptr<MobilityModel> m_receiver; //!< The receiver mobility model
   };
 
+  /// Map of the shadowng loss
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
+  /**
+   * Caluculate the Standard deviation of the normal distribution used for calculate the shadowing
+   * \param a Room A data
+   * \param b Room B data
+   * \return the Standard deviation of the normal distribution
+   */
   double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
-
+  /// Standard deviation of the normal distribution used for calculate the shadowing due to ext walls
   double m_shadowingSigmaExtWalls;
+  /// Standard deviation of the normal distribution used for calculate the shadowing for outdoor nodes
   double m_shadowingSigmaOutdoor;
+  /// Standard deviation of the normal distribution used for calculate the shadowing for indoor nodes
   double m_shadowingSigmaIndoor;
-  Ptr<NormalRandomVariable> m_randVariable;
+  Ptr<NormalRandomVariable> m_randVariable; //!< Random variable
 
   virtual int64_t DoAssignStreams (int64_t stream);
 };

@@ -36,12 +36,29 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
 
+/**
+ * \ingroup propagation
+ * \defgroup building-test Buildings module tests
+ */
+
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * Room coordinates
+ */
 struct Room
 {
+  /**
+   * Constructor
+   * \param xx X coord
+   * \param yy Y coord
+   * \param zz Z coord
+   */
   Room (uint32_t xx, uint32_t yy, uint32_t zz);
-  uint32_t x;
-  uint32_t y;
-  uint32_t z;
+  uint32_t x; //!< X coord
+  uint32_t y; //!< Y coord
+  uint32_t z; //!< Z coord (floor)
 };
 
 Room::Room (uint32_t xx, uint32_t yy, uint32_t zz)
@@ -60,7 +77,12 @@ operator < (const Room& a, const Room& b)
 }
 
 
-
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * RandomRoomPositionAllocator test
+ */
 class RandomRoomPositionAllocatorTestCase : public TestCase
 {
 public:
@@ -139,8 +161,12 @@ RandomRoomPositionAllocatorTestCase::DoRun ()
 
 
 
-
-
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * SameRoomPositionAllocator test
+ */
 class SameRoomPositionAllocatorTestCase : public TestCase
 {
 public:
@@ -214,16 +240,17 @@ SameRoomPositionAllocatorTestCase::DoRun ()
 }
 
 
-
-
-
-
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * \brief RandomRoomPositionAllocator TestSuite
+ */
 class BuildingPositionAllocatorTestSuite : public TestSuite
 {
 public:
   BuildingPositionAllocatorTestSuite ();
 };
-
 
 BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
   : TestSuite ("building-position-allocator", UNIT)
@@ -235,4 +262,5 @@ BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
 
 }
 
-static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance;
+/// Static variable for test initialization
+static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance; 

@@ -1053,7 +1053,7 @@ PrintAllAttributes (std::ostream & os)
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
   os << "This is a list of all" << reference << "ns3::Attribute classes.  "
-     << "For more information see the" << reference << "ns3:Attributes "
+     << "For more information see the" << reference << "ns3::Attributes "
      << "section of this API documentation and the Attributes sections "
      << "in the Tutorial and Manual.\n"
      << std::endl;
@@ -1524,6 +1524,8 @@ PrintAttributeImplementations (std::ostream & os)
       { "OrganizationIdentifier",
                           "OrganizationIdentifier",
                                             true,  "vendor-specific-action.h" },
+      { "Priomap",        "Priomap",        true,  "prio-queue-disc.h"  },
+      { "QueueSize",      "QueueSize",      true,  "queue-size.h"       },
       { "Rectangle",      "Rectangle",      true,  "rectangle.h"        },
       { "Ssid",           "Ssid",           true,  "ssid.h"             },
       { "TypeId",         "TypeId",         true,  "type-id.h"          },

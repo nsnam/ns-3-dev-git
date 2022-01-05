@@ -28,7 +28,13 @@
 using namespace ns3;
 
 /**
- * Test shadowing calculation
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * Shadowing compound test
+ *
+ * This TestSuite tests the shadowing model of BuildingPathlossModel 
+ * by reproducing several communication scenarios 
  */
 class BuildingsShadowingTestSuite : public TestSuite
 {
@@ -37,20 +43,39 @@ public:
 };
 
 
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
+ * Shadowing test
+ */
 class BuildingsShadowingTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param m1 First MobilityModel Index
+   * \param m2 Second MobilityModel Index
+   * \param refValue Theoretical loss
+   * \param sigmaRef Theoretical loss standard deviation
+   * \param name Test name
+   */
   BuildingsShadowingTestCase (uint16_t m1, uint16_t m2, double refValue, double sigmaRef, std::string name);
   virtual ~BuildingsShadowingTestCase ();
 
 private:
   virtual void DoRun (void);
+  /**
+   * Create a mobility model based on its index
+   * \param index MobilityModel index
+   * \return The MobilityModel
+   */
   Ptr<MobilityModel> CreateMobilityModel (uint16_t index);
 
-  uint16_t m_mobilityModelIndex1;
-  uint16_t m_mobilityModelIndex2;
-  double m_lossRef;     // pathloss value (without shadowing)
-  double m_sigmaRef;
+  uint16_t m_mobilityModelIndex1;  //!< First MobilityModel Index
+  uint16_t m_mobilityModelIndex2;  //!< Second MobilityModel Index
+  double m_lossRef;     //!< pathloss value (without shadowing)
+  double m_sigmaRef;    //!< pathloss standard deviation value reference value
 
 };
 

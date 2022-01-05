@@ -163,6 +163,7 @@ private:
    *
    * @param [in] arg This SystemThread instance to communicate to the newly
    *                 launched thread.
+   * @return a null pointer (for compatibility)
    */
   static void * DoRun (void *arg);
 
@@ -174,5 +175,3 @@ private:
 } // namespace ns3
 
 #endif /* SYSTEM_THREAD_H */
-
-

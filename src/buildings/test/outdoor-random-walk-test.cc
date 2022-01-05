@@ -34,31 +34,28 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("OutdoorRandomWalkTest");
 
 /**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
  * Test case for the class OutdoorRandomWalkTestCase. It checks if the
  * positions visited by the user are outside buildings
  */
 class OutdoorRandomWalkTestCase : public TestCase
 {
 public:
-  /**
-   * Constructor
-   */
   OutdoorRandomWalkTestCase ();
-
-  /**
-   * Destructor
-   */
   virtual ~OutdoorRandomWalkTestCase ();
 
 private:
-  /**
-   * Builds the simulation scenario and perform the tests
-   */
   virtual void DoRun (void);
 
+  /**
+   * Check that the position is the expected one
+   * \param model Mobility model
+   */
   void CheckPositionOutdoor (Ptr<RandomWalk2dOutdoorMobilityModel> model);
 
-  std::vector<Ptr<Building> > m_buildings;
+  std::vector<Ptr<Building> > m_buildings; //!< Buildings
 };
 
 OutdoorRandomWalkTestCase::OutdoorRandomWalkTestCase ()
@@ -150,6 +147,9 @@ OutdoorRandomWalkTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
  * Test suite for the buildings channel condition model
  */
 class OutdoorRandomWalkTestSuite : public TestSuite
@@ -164,4 +164,5 @@ OutdoorRandomWalkTestSuite::OutdoorRandomWalkTestSuite ()
   AddTestCase (new OutdoorRandomWalkTestCase, TestCase::QUICK);
 }
 
+/// Static variable for test initialization
 static OutdoorRandomWalkTestSuite OutdoorRandomWalkTestSuite;

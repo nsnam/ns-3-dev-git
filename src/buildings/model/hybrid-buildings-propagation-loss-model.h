@@ -57,6 +57,10 @@ class HybridBuildingsPropagationLossModel : public BuildingsPropagationLossModel
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   HybridBuildingsPropagationLossModel ();
   ~HybridBuildingsPropagationLossModel ();
@@ -91,6 +95,9 @@ public:
   void SetRooftopHeight (double rooftopHeight);
 
   /**
+   * \brief Compute the path loss according to the nodes position
+   * using the appropriate model.
+   * 
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
    * \returns the propagation loss (in dBm)
@@ -99,20 +106,47 @@ public:
 
   
 private:
-
+  /**
+   * Compute the path loss using either OkumuraHataPropagationLossModel 
+   * or Kun2600MhzPropagationLossModel
+   * 
+   * \param a the mobility model of the source
+   * \param b the mobility model of the destination
+   * \returns the propagation loss (in dBm)
+   */
   double OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  /**
+   * Compute the path loss using either ItuR1411LosPropagationLossModelor
+   * ItuR1411NlosOverRooftopPropagationLossModel
+   * 
+   * \param a the mobility model of the source
+   * \param b the mobility model of the destination
+   * \returns the propagation loss (in dBm)
+   */
   double ItuR1411 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  /**
+   * Compute the path loss using ItuR1238PropagationLossModel
+   * 
+   * \param a the mobility model of the source
+   * \param b the mobility model of the destination
+   * \returns the propagation loss (in dBm)
+   */
   double ItuR1238 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
+  /// OkumuraHataPropagationLossModel
   Ptr<OkumuraHataPropagationLossModel> m_okumuraHata;
+  /// ItuR1411LosPropagationLossModel
   Ptr<ItuR1411LosPropagationLossModel> m_ituR1411Los;
+  /// ItuR1411NlosOverRooftopPropagationLossModel
   Ptr<ItuR1411NlosOverRooftopPropagationLossModel> m_ituR1411NlosOverRooftop;
+  /// ItuR1238PropagationLossModel
   Ptr<ItuR1238PropagationLossModel> m_ituR1238;
+  /// Kun2600MhzPropagationLossModel
   Ptr<Kun2600MhzPropagationLossModel> m_kun2600Mhz;
 
   double m_itu1411NlosThreshold; ///< in meters (switch Los -> NLoS)
-  double m_rooftopHeight;
-  double m_frequency;
+  double m_rooftopHeight;        ///< Roof Height (in meters)
+  double m_frequency;            ///< Operation frequency
 
 };
 

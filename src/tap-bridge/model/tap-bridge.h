@@ -49,15 +49,15 @@ class Node;
 
 /**
  * \ingroup tap-bridge
- * 
- * \brief A bridge to make it appear that a real host process is connected to 
+ *
+ * \brief A bridge to make it appear that a real host process is connected to
  * an ns-3 net device.
  *
  * The Tap Bridge lives in a kind of a gray world somewhere between a
  * Linux host and an ns-3 bridge device.  From the Linux perspective,
  * this code appears as the user mode handler for a Tap net device.  That
  * is, when the Linux host writes to a /dev/tap device (that is either
- * manually or automatically created depending on basic operating mode 
+ * manually or automatically created depending on basic operating mode
  * -- more on this later), the write is redirected into the TapBridge that
  * lives in the ns-3 world; and from this perspective, becomes a read.
  * In other words, a Linux process writes a packet to a tap device and
@@ -70,7 +70,7 @@ class Node;
  * the host using the Linux TAP mechanism.  This write to the device will
  * then appear to the Linux host as if a packet has arrived on its
  * device.
- * 
+ *
  * The upshot is that the Tap Bridge appears to bridge a tap device on a
  * Linux host in the "real world" to an ns-3 net device in the simulation
  * and make is appear that a ns-3 net device is actually installed in the
@@ -81,12 +81,12 @@ class Node;
  * Linux.  This is not just arbitrary policy, it is because:
  *
  * - Bits sent to the Tap Bridge from higher layers in the ghost node (using
- *   the TapBridge Send() method) are completely ignored.  The Tap Bridge is 
+ *   the TapBridge Send() method) are completely ignored.  The Tap Bridge is
  *   not, itself, connected to any network, neither in Linux nor in ns-3;
  * - The bridged ns-3 net device is has had its receive callback disconnected
- *   from the ns-3 node and reconnected to the Tap Bridge.  All data received 
- *   by a bridged device will be sent to the Linux host and will not be 
- *   received by the node.  From the perspective of the ghost node, you can 
+ *   from the ns-3 node and reconnected to the Tap Bridge.  All data received
+ *   by a bridged device will be sent to the Linux host and will not be
+ *   received by the node.  From the perspective of the ghost node, you can
  *   send over this device but you cannot ever receive.
  *
  * Of course, if you understand all of the issues you can take control of
@@ -145,7 +145,7 @@ public:
    * \param bridgedDevice device to set
    *
    * \attention The ns-3 net device that is being set as the device must have an
-   * an IP address assigned to it before the simulation is run.  This address 
+   * an IP address assigned to it before the simulation is run.  This address
    * will be used to set the hardware address of the host Linux device.
    */
   void SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice);
@@ -156,7 +156,7 @@ public:
    * The tap bridge consumes a non-trivial amount of time to start.  It starts
    * up in the context of a scheduled event to ensure that all configuration
    * has been completed before extracting the configuration (IP addresses, etc.)
-   * In order to allow a more reasonable start-up sequence than a thundering 
+   * In order to allow a more reasonable start-up sequence than a thundering
    * herd of devices, the time at which each device starts is also configurable
    * bot via the Attribute system and via this call.
    *
@@ -219,8 +219,8 @@ public:
 protected:
   /**
    * Call out to a separate process running as suid root in order to get our
-   * tap device created.  We do this to avoid having the entire simulation 
-   * running as root.  If this method returns, we'll have a socket waiting 
+   * tap device created.  We do this to avoid having the entire simulation
+   * running as root.  If this method returns, we'll have a socket waiting
    * for us in m_sock that we can use to talk to the tap device.
    */
   virtual void DoDispose (void);
@@ -253,8 +253,8 @@ private:
 
   /**
    * Call out to a separate process running as suid root in order to get our
-   * tap device created.  We do this to avoid having the entire simulation 
-   * running as root.  If this method returns, we'll have a socket waiting 
+   * tap device created.  We do this to avoid having the entire simulation
+   * running as root.  If this method returns, we'll have a socket waiting
    * for us in m_sock that we can use to talk to the tap device.
    */
   void CreateTap (void);
@@ -271,11 +271,13 @@ private:
 
   /**
    * Callback to process packets that are read
+   * \param buf input buffer
+   * \param len input buffer length
    */
   void ReadCallback (uint8_t *buf, ssize_t len);
 
   /**
-   * Forward a packet received from the tap device to the bridged ns-3 
+   * Forward a packet received from the tap device to the bridged ns-3
    * device
    *
    * \param buf A character buffer containing the actual packet bits that were
@@ -289,17 +291,17 @@ private:
    * checking on a received packet to make sure it isn't too evil for our
    * poor naive virginal simulator to handle.
    *
-   * \param packet The packet we received from the host, and which we need 
+   * \param packet The packet we received from the host, and which we need
    *               to check.
    * \param src    A pointer to the data structure that will get the source
    *               MAC address of the packet (extracted from the packet Ethernet
    *               header).
    * \param dst    A pointer to the data structure that will get the destination
-   *               MAC address of the packet (extracted from the packet Ethernet 
+   *               MAC address of the packet (extracted from the packet Ethernet
    *               header).
-   * \param type   A pointer to the variable that will get the packet type from 
+   * \param type   A pointer to the variable that will get the packet type from
    *               either the Ethernet header in the case of type interpretation
-   *               (DIX framing) or from the 802.2 LLC header in the case of 
+   *               (DIX framing) or from the 802.2 LLC header in the case of
    *               length interpretation (802.3 framing).
    * \returns the packet, or null if the packet has been filtered.
    */
@@ -410,8 +412,8 @@ private:
   /**
    * The MAC address to use as the hardware address on the host; only used
    * in UseLocal mode.  This value comes from the MAC
-   * address assigned to the bridged ns-3 net device and matches the MAC 
-   * address of the underlying network TAP which we configured to have the 
+   * address assigned to the bridged ns-3 net device and matches the MAC
+   * address of the underlying network TAP which we configured to have the
    * same value.
    */
   Mac48Address m_tapMac;
@@ -438,7 +440,7 @@ private:
 
   /**
    * a copy of the node id so the read thread doesn't have to GetNode() in
-   * in order to find the node ID.  Thread unsafe reference counting in 
+   * in order to find the node ID.  Thread unsafe reference counting in
    * multithreaded apps is not a good thing.
    */
   uint32_t m_nodeId;

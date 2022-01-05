@@ -159,7 +159,7 @@ private:
    * \link BuildingsChannelConditionModel \endlink, which requires
    * \link MobilityBuildingInfo \endlink aggregated to the nodes to compute
    * LOS and NLOS. Otherwise, the callback is hooked to a local method
-   * \link GetChaCondWithNoBuildings \endlink
+   * \link GetChCondWithNoBuildings \endlink
    * , which construct the ChannelCondtion object and set the condition to
    * outdoor to outdoor with LOS.
    */
@@ -167,8 +167,8 @@ private:
 
   /**
    * \brief Get the channel condition and redirect the callback
-   * \link ComputeChCond \endlink to \link GetChaCondWithBuildings \endlink
-   * or to \link GetChaCondWithNoBuildings \endlink depending on if there are
+   * \link ComputeChCond \endlink to \link GetChCondWithBuildings \endlink
+   * or to \link GetChCondWithNoBuildings \endlink depending on if there are
    * buildings in the scenario or not.
    *
    * \param a tx mobility model

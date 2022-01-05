@@ -40,6 +40,7 @@ namespace ns3 {
 class BuildingContainer
 {
 public:
+  /// Const iterator
   typedef std::vector<Ptr<Building> >::const_iterator Iterator;
 
   /**
@@ -200,7 +201,7 @@ public:
   static BuildingContainer GetGlobal (void);
 
 private:
-  std::vector<Ptr<Building> > m_buildings;
+  std::vector<Ptr<Building> > m_buildings; //!< Building container
 };
 
 } // namespace ns3

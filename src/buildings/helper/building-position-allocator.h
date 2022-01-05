@@ -35,14 +35,16 @@ class UniformRandomVariable;
 /**
  * Allocate each position by randomly choosing a building from the list
  * of all buildings, and then randomly choosing a position inside the building.
- * 
  */
 class RandomBuildingPositionAllocator : public PositionAllocator
 {
 public:
   RandomBuildingPositionAllocator ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // inherited from PositionAllocator
@@ -60,8 +62,8 @@ public:
 
 private:
 
-  bool m_withReplacement;
-  mutable std::vector< Ptr<Building> > m_buildingListWithoutReplacement;
+  bool m_withReplacement; //!< If true, the building will be randomly selected with replacement
+  mutable std::vector< Ptr<Building> > m_buildingListWithoutReplacement; //!< List of building without replacement
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
@@ -86,7 +88,10 @@ class OutdoorPositionAllocator : public PositionAllocator
 public:
   OutdoorPositionAllocator ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // inherited from PositionAllocator
@@ -137,7 +142,10 @@ class RandomRoomPositionAllocator : public PositionAllocator
 public:
   RandomRoomPositionAllocator ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // inherited from PositionAllocator
@@ -155,14 +163,17 @@ public:
 
 private:
 
+  /**
+   * Room informations
+   */
   struct RoomInfo 
   {
-    Ptr<Building> b;
-    uint32_t roomx;
-    uint32_t roomy;
-    uint32_t floor;
+    Ptr<Building> b; //!< Building
+    uint32_t roomx;  //!< Room (x coord)
+    uint32_t roomy;  //!< Room (y coord)
+    uint32_t floor;  //!< Room (floor number)
   };
-  mutable std::vector<RoomInfo> m_roomListWithoutReplacement;
+  mutable std::vector<RoomInfo> m_roomListWithoutReplacement; //!< Container of rooms
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
@@ -179,9 +190,17 @@ class SameRoomPositionAllocator : public PositionAllocator
 {
 public:
   SameRoomPositionAllocator ();
+
+  /**
+   * Constructor
+   * \param c Node container
+   */
   SameRoomPositionAllocator (NodeContainer c);
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // inherited from PositionAllocator
@@ -199,8 +218,8 @@ public:
 
 private:
 
-  NodeContainer m_nodes;
-  mutable NodeContainer::Iterator m_nodeIt;
+  NodeContainer m_nodes; //!< Nodes container
+  mutable NodeContainer::Iterator m_nodeIt; //!< Nodes iterator
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
@@ -227,7 +246,10 @@ public:
                               uint32_t y,
                               uint32_t z,
                               Ptr<Building> b);
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
@@ -244,11 +266,11 @@ public:
 
 private:
 
-  uint32_t roomx;
-  uint32_t roomy;
-  uint32_t floor;
+  uint32_t roomx; //!< Index of the room on the x-axis 
+  uint32_t roomy; //!< Index of the room on the y-axis 
+  uint32_t floor; //!< Index of the room on the z-axis (i.e., floor number)
 
-  Ptr<Building> bptr;
+  Ptr<Building> bptr; //!< Pointer to the chosen building
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;

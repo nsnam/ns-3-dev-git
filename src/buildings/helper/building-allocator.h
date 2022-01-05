@@ -47,7 +47,10 @@ public:
   GridBuildingAllocator ();
   virtual ~GridBuildingAllocator ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /** 
@@ -68,22 +71,25 @@ public:
   BuildingContainer Create (uint32_t n) const;
 
 private:
-
+  /**
+   * Pushes the attributes into the relevant position allocators
+   */
   void PushAttributes () const;
-  mutable uint32_t m_current;
-  enum GridPositionAllocator::LayoutType m_layoutType;
-  double m_xMin;
-  double m_yMin;
-  uint32_t m_n;
-  double m_lengthX;
-  double m_lengthY;
-  double m_deltaX;
-  double m_deltaY;
-  double m_height;
 
-  mutable ObjectFactory m_buildingFactory;
-  Ptr<GridPositionAllocator> m_lowerLeftPositionAllocator;
-  Ptr<GridPositionAllocator> m_upperRightPositionAllocator;
+  mutable uint32_t m_current; //!< current building number
+  enum GridPositionAllocator::LayoutType m_layoutType; //!< Layout type
+  double m_xMin;    //!< The x coordinate where the grid starts
+  double m_yMin;    //!< The y coordinate where the grid starts
+  uint32_t m_n;     //!< The number of objects laid out on a line
+  double m_lengthX; //!< The length of the wall of each building along the X axis.
+  double m_lengthY; //!< The length of the wall of each building along the Y axis.
+  double m_deltaX;  //!< The x space between buildings
+  double m_deltaY;  //!< The y space between buildings
+  double m_height;  //!< The height of the building (roof level)
+
+  mutable ObjectFactory m_buildingFactory; //!< The building factory
+  Ptr<GridPositionAllocator> m_lowerLeftPositionAllocator;  //!< The upper left position allocator
+  Ptr<GridPositionAllocator> m_upperRightPositionAllocator; //!< The upper right position allocator
   
 };
 

@@ -28,8 +28,14 @@
 using namespace ns3;
 
 /**
-* Test 1.1 pathloss calculation
-*/
+ * \ingroup building-test
+ * \ingroup tests
+ *
+ * Test 1.1 BuildingsPathlossModel Pathloss compound test
+ *
+ * This TestSuite tests the BuildingPathlossModel by reproducing
+ * several communication scenarios 
+ */
 class BuildingsPathlossTestSuite : public TestSuite
 {
 public:
@@ -37,22 +43,44 @@ public:
 };
 
 
+/**
+ * \ingroup building-test
+ * \ingroup tests
+ *
+ * Test 1.1 BuildingsPathlossModel Pathloss test
+ *
+ */
 class BuildingsPathlossTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param freq Communication frequency
+   * \param m1 First MobilityModel Index
+   * \param m2 Second MobilityModel Index
+   * \param env Enviroment type
+   * \param city City size
+   * \param refValue Theoretical loss
+   * \param name Test name
+   */
   BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, EnvironmentType env, CitySize city, double refValue, std::string name);
   virtual ~BuildingsPathlossTestCase ();
 
 private:
   virtual void DoRun (void);
+  /**
+   * Create a mobility model based on its index
+   * \param index MobilityModel index
+   * \return The MobilityModel
+   */
   Ptr<MobilityModel> CreateMobilityModel (uint16_t index);
 
-  double m_freq;
-  uint16_t m_mobilityModelIndex1;
-  uint16_t m_mobilityModelIndex2;
-  EnvironmentType m_env;
-  CitySize m_city;
-  double m_lossRef;
+  double m_freq; //!< Communication frequency
+  uint16_t m_mobilityModelIndex1; //!< First MobilityModel Index
+  uint16_t m_mobilityModelIndex2; //!< Second MobilityModel Index
+  EnvironmentType m_env; //!< Enviroment type
+  CitySize m_city; //!< City size
+  double m_lossRef; //!< Theoretical loss
 
 };
 

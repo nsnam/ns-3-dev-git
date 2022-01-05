@@ -33,6 +33,9 @@ namespace ns3 {
 class MobilityModel;
 class Building;
 
+/**
+ * Helper used to install a MobilityBuildingInfo into a set of nodes.
+ */
 class BuildingsHelper
 {
 public:

@@ -21,7 +21,7 @@
 /**
  * \file
  * \ingroup mpi
- * Declaration of class ns3::NullMessageSimulatorImpl. 
+ * Declaration of class ns3::NullMessageSimulatorImpl.
  */
 
 
@@ -98,7 +98,7 @@ private:
   friend class RemoteChannelBundleManager;
 
   /**
-   * Non blocking receive of pending messages.  
+   * Non blocking receive of pending messages.
    */
   void HandleArrivingMessagesNonBlocking (void);
 
@@ -134,6 +134,7 @@ private:
    * Get the current SafeTime; the maximum time that events can
    * be processed based on information received from neighboring
    * MPI tasks.
+   * \return the current SafeTime
    */
   Time GetSafeTime (void);
 

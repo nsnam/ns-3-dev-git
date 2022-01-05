@@ -38,23 +38,66 @@ NS_LOG_COMPONENT_DEFINE ("BuildingList");
 class BuildingListPriv : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   BuildingListPriv ();
   ~BuildingListPriv ();
-
+  
+  /**
+   * Add a Building to the list.
+   * 
+   * \param building building to add
+   * \returns index of building in list.
+   */
   uint32_t Add (Ptr<Building> building);
+  /**
+   * Returns an interator to the start of the list.
+   * 
+   * \returns iterator to the begin of the container.
+   */
   BuildingList::Iterator Begin (void) const;
+  /**
+   * Returns an interator to the end of the list.
+   * 
+   * \returns iterator to the end of the container.
+   */
   BuildingList::Iterator End (void) const;
+  /**
+   * Gets the n-th Building in the container
+   * \param n Building position
+   * \returns a pointer to the Building
+   */
   Ptr<Building> GetBuilding (uint32_t n);
+  /**
+   * Gets the number of Building in the container
+   * \returns the container size
+   */
   uint32_t GetNBuildings (void);
 
+  /**
+   * Get the Singleton instance of BuildingListPriv (or create one)
+   * \return the BuildingListPriv instance
+   */
   static Ptr<BuildingListPriv> Get (void);
 
 private:
   virtual void DoDispose (void);
+  /**
+   * Get the Singleton instance of BuildingListPriv (or create one)
+   * \return the BuildingListPriv instance
+   */
   static Ptr<BuildingListPriv> *DoGet (void);
+  /**
+   * Dispose the Singleton instance of BuildingListPriv.
+   * 
+   * \note: this function is automatically called at the simulation end.
+   * 
+   */
   static void Delete (void);
-  std::vector<Ptr<Building> > m_buildings;
+  std::vector<Ptr<Building> > m_buildings; //!< Container of Building
 };
 
 NS_OBJECT_ENSURE_REGISTERED (BuildingListPriv);

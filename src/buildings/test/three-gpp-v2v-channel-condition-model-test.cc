@@ -38,6 +38,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("ThreeGppV2vChannelConditionModelsTest");
 
 /**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
  * Test case for the classes ThreeGppV2vUrbanChannelConditionModel,
  * and ThreeGppV2vHighwayChannelConditionModel to test their code to
  * deterministically determine NLOS state. The test checks if the
@@ -473,6 +476,9 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun (void)
 
 
 /**
+ * \ingroup building-test
+ * \ingroup tests
+ * 
  * Test suite for the 3GPP V2V channel condition model
  *
  * Note that, in 3GPP V2V scenarios, the channel condition model is
@@ -483,8 +489,8 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun (void)
  *
  * The test ThreeGppV2vBuildingsChCondModelTestCase checks the
  * 1st step of the procedure, the deterministic one, using buildings for
- * both \link ThreeGppV2vUrbanChannelConditionModel \endlink and
- * \link ThreeGppV2vHighwayChannelConditionModel \endlink .
+ * both \link ns3::ThreeGppV2vUrbanChannelConditionModel \endlink and
+ * \link ns3::ThreeGppV2vHighwayChannelConditionModel \endlink .
  *
  * The tests ThreeGppV2vUrbanLosNlosvChCondModelTestCase and
  * ThreeGppV2vHighwayLosNlosvChCondModelTestCase check the
@@ -506,4 +512,5 @@ ThreeGppV2vChCondModelsTestSuite::ThreeGppV2vChCondModelsTestSuite ()
   AddTestCase (new ThreeGppV2vHighwayLosNlosvChCondModelTestCase, TestCase::QUICK); // test for the probabilistic procedure (LOS vs NLOSv), in V2V highway scenario
 }
 
+/// Static variable for test initialization
 static ThreeGppV2vChCondModelsTestSuite ThreeGppV2vChCondModelsTestSuite;
