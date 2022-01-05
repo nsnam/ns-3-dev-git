@@ -37,9 +37,9 @@ stages:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d $MODE
-    - ./waf
-    - if [ "$MODE" != "debug" ]; then ./test.py --nowaf; fi
+    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts
+    - ./ns3 build
+    - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
   cache:
     # Use separate key for each (debug/optimized/release) jobs because
     # they run in parallel and will otherwise overwrite each other
@@ -70,7 +70,7 @@ per-commit-compile-debug:
     MODE: debug
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
@@ -85,7 +85,7 @@ per-commit-compile-release:
     MODE: release
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -100,38 +100,38 @@ per-commit-compile-optimized:
     MODE: optimized
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
-
-.cmake-build:
-  stage: build
-  script:
-    - mkdir -p $CCACHE_BASEDIR_VALUE
-    - export CCACHE_BASEDIR=${PWD}
-    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests
-    - ./ns3 build
-    - ./test.py --nowaf
-  cache:
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
-  timeout: 9h
-  variables:
-    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-    
-per-commit-compile-release-cmake:
-  extends: .cmake-build
-  except:
-    variables:
-      - $PYBINDGEN == "True"
-      - $RELEASE == "weekly"
-      - $RELEASE == "daily"
-  image: archlinux
-  variables:
-    COMPILER: g++
-    MODE: release
-  before_script:
-    - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
+
+# .cmake-build:
+#   stage: build
+#   script:
+#     - mkdir -p $CCACHE_BASEDIR_VALUE
+#     - export CCACHE_BASEDIR=${PWD}
+#     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+#     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests
+#     - ./ns3 build
+#     - ./test.py -n
+#   cache:
+#     paths:
+#       - $CCACHE_BASEDIR_VALUE/
+#   timeout: 9h
+#   variables:
+#     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+    
+# per-commit-compile-release-cmake:
+#   extends: .cmake-build
+#   except:
+#     variables:
+#       - $PYBINDGEN == "True"
+#       - $RELEASE == "weekly"
+#       - $RELEASE == "daily"
+#   image: archlinux
+#   variables:
+#     COMPILER: g++
+#     MODE: release
+#   before_script:
+#     - pacman -Syu --noconfirm
+#     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost ninja cmake --noconfirm
 
 # Weekly jobs for other distribution and compilers
 include:
@@ -141,4 +141,4 @@ include:
   - 'utils/tests/gitlab-ci-clang.yml'
   - 'utils/tests/gitlab-ci-test.yml'
   - 'utils/tests/gitlab-ci-doc.yml'
-  - 'utils/tests/gitlab-ci-pybindgen.yml'
+#  - 'utils/tests/gitlab-ci-pybindgen.yml'

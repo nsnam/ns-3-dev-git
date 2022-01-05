@@ -11,9 +11,10 @@
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --disable-gtk --disable-python -d $MODE
-    - ./waf
-    - ./test.py --nowaf $VALGRIND_FLAG $FULLNESS
+    # missing the flag --disable-python
+    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
+    - ./ns3 build
+    - ./test.py -n $VALGRIND_FLAG $FULLNESS
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
@@ -38,7 +39,7 @@ daily-test-debug:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Run the test.py script with files compiled in release mode
 daily-test-release:
@@ -52,7 +53,7 @@ daily-test-release:
       - $RELEASE == "daily"
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
@@ -66,7 +67,7 @@ daily-test-optimized:
       - $RELEASE == "daily"
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 ### Valgrind tests
 # Run the test.py script with files compiled in optimized mode + valgrind (daily)
@@ -85,7 +86,7 @@ daily-test-optimized-valgrind:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Run the test.py script with files compiled in debug mode
 weekly-test-debug-valgrind:
@@ -103,7 +104,7 @@ weekly-test-debug-valgrind:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Run the test.py script with files compiled in release mode
 weekly-test-release-valgrind:
@@ -121,7 +122,7 @@ weekly-test-release-valgrind:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 weekly-test-optimized-valgrind:
@@ -139,7 +140,7 @@ weekly-test-optimized-valgrind:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm
 
 # Do a check for the TAKES_FOREVER jobs, only in optimized mode
 weekly-test-takes-forever-optimized:
@@ -157,4 +158,4 @@ weekly-test-takes-forever-optimized:
     - linux
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind ninja cmake --noconfirm

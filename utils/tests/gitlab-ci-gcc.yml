@@ -16,47 +16,28 @@
   before_script:
     - apt-get --quiet update --yes
     - update-alternatives --install /usr/bin/gfortran gfortran /usr/local/bin/gfortran 999
-    - apt-get --quiet install gcc g++ python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev --yes
+    - apt-get --quiet install gcc g++ cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev --yes
   variables:
     COMPILER: g++
 
-# GCC 7
-# weekly-build-gcc-7-debug:
+# GCC 8
+# weekly-build-gcc-8-debug:
 #   extends: .weekly-build-gcc
-#   image: gcc:7
+#   image: gcc:8
 #   variables:
 #     MODE: debug
-# 
-# weekly-build-gcc-7-release:
+
+# weekly-build-gcc-8-release:
 #   extends: .weekly-build-gcc
-#   image: gcc:7
+#   image: gcc:8
 #   variables:
 #     MODE: release
-# 
-# weekly-build-gcc-7-optimized:
+
+# weekly-build-gcc-8-optimized:
 #   extends: .weekly-build-gcc
-#   image: gcc:7
+#   image: gcc:8
 #   variables:
 #     MODE: optimized
-
-# GCC 8
-weekly-build-gcc-8-debug:
-  extends: .weekly-build-gcc
-  image: gcc:8
-  variables:
-    MODE: debug
-
-weekly-build-gcc-8-release:
-  extends: .weekly-build-gcc
-  image: gcc:8
-  variables:
-    MODE: release
-
-weekly-build-gcc-8-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:8
-  variables:
-    MODE: optimized
 
 # GCC 9
 weekly-build-gcc-9-debug:
