@@ -32,7 +32,6 @@ class ShowOlsrRoutingTable(InformationWindow):
         @param self this object
         @param visualizer visualizer object
         @param node_index the node index
-        @return none
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,

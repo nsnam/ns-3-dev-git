@@ -18,13 +18,12 @@ class StatisticsCollector(object):
 
     ## NetDevStats class
     class NetDevStats(object):
-        ## @var __slots__
-        #  class members
+        ## class members
         __slots__ = ['rxPackets', 'rxBytes', 'txPackets', 'txBytes',
                      'rxPacketRate', 'rxBitRate', 'txPacketRate', 'txBitRate']
 
     def __init__(self, visualizer):
-        """
+        """!
         Collects interface statistics for all nodes.
         @param self this object
         @param visualizer visualizer object
@@ -123,7 +122,7 @@ class ShowInterfaceStatistics(InformationWindow):
         ) = range(9)
 
     def __init__(self, visualizer, node_index, statistics_collector):
-        """
+        """!
         Initializer.
         @param self this object
         @param visualizer the visualizer object

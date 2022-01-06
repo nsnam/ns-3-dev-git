@@ -210,10 +210,20 @@ public:
 
 
   // Yes, I know, this is just a utility function, not really related to the class in any way.
-
+  /**
+   * Utility function - clips a line to a bounding box.
+   * \param [in] boundsX1 Bounding box, minimum X coord
+   * \param [in] boundsY1 Bounding box, minimum Y coord
+   * \param [in] boundsX2 Bounding box, maximum X coord
+   * \param [in] boundsY2 Bounding box, maximum Y coord
+   * \param [in,out] lineX1 Line, minimum X coord (any on input, clipped to the bounding box on output)
+   * \param [in,out] lineY1 Line, minimum Y coord (any on input, clipped to the bounding box on output)
+   * \param [in,out] lineX2 Line, maximum X coord (any on input, clipped to the bounding box on output)
+   * \param [in,out] lineY2 Line, maximum Y coord (any on input, clipped to the bounding box on output)
+   */
   // -#- @lineX1(direction=inout); @lineY1(direction=inout); @lineX2(direction=inout); @lineY2(direction=inout) -#-
-  static void LineClipping (double boundsX1, double boundsY1, double boundsX2, double boundsY2, double &lineX1, double &lineY1, double &lineX2, double &lineY2); ///< don't break this line or pybindgen will not be able to pick up the above annotation :(
-
+  static void LineClipping (double boundsX1, double boundsY1, double boundsX2, double boundsY2, double &lineX1, double &lineY1, double &lineX2, double &lineY2);
+  // Don't break the above line or pybindgen will not be able to pick up the above annotation :(
 
 private:
 

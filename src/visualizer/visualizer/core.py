@@ -110,18 +110,19 @@ class Node(PyVizObject):
     #  selected property
     ## @var highlighted
     #  highlighted property
-    ## @var __gsignals__
-    # signal emitted whenever a tooltip is about to be shown for the node
-    # the first signal parameter is a python list of strings, to which information can be appended
+
+    ## signal emitted whenever a tooltip is about to be shown for the node
+    ## the first signal parameter is a python list of strings, to which 
+    ## information can be appended
     __gsignals__ = {
         'query-extra-tooltip-info': (GObject.SignalFlags.RUN_LAST, None, (object,)),
         }
 
     def __init__(self, visualizer, node_index):
-        """ Initialize function.
+        """! Initialize function.
         @param self The object pointer.
-        @param visualizer: visualizer object
-        @param node_index: node index
+        @param visualizer visualizer object
+        @param node_index node index
         """
         super(Node, self).__init__()
 
@@ -524,7 +525,6 @@ class Channel(PyVizObject):
 
         @param self: class object.
         @param channel: channel.
-        @return none
         """
         self.channel = channel
         self.canvas_item = GooCanvas.CanvasEllipse(radius_x=30, radius_y=30,
@@ -576,7 +576,6 @@ class WiredLink(Link):
         @param self: class object.
         @param node1: class object.
         @param node2: class object.
-        @return none
         """
         assert isinstance(node1, Node)
         assert isinstance(node2, (Node, Channel))
@@ -621,7 +620,6 @@ class SimulationThread(threading.Thread):
 
         @param self: class object.
         @param viz: class object.
-        @return none
         """
         super(SimulationThread, self).__init__()
         assert isinstance(viz, Visualizer)
@@ -689,8 +687,8 @@ class ShowTransmissionsMode(object):
     #  none
     ## @var SELECTED
     #  selected
-    ## @var __slots__
-    #  enumeration
+
+    ## enumeration
     __slots__ = []
 ShowTransmissionsMode.ALL = ShowTransmissionsMode()
 ShowTransmissionsMode.NONE = ShowTransmissionsMode()

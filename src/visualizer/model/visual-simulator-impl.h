@@ -81,7 +81,11 @@ protected:
   void NotifyConstructionCompleted (void);
 
 private:
-  Ptr<SimulatorImpl> GetSim (); ///< get the simulator implementation
+  /**
+   * Get the simulator implementation
+   * \return a pointer to the simulator implementation
+   */
+  Ptr<SimulatorImpl> GetSim ();
   Ptr<SimulatorImpl> m_simulator; ///< the simulator implementation
   ObjectFactory m_simulatorImplFactory; ///< simulator implementation factory
 

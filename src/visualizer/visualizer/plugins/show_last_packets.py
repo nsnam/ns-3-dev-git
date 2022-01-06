@@ -95,7 +95,7 @@ class ShowLastPackets(InformationWindow):
 
 
     def __init__(self, visualizer, node_index):
-        """
+        """!
         Initializer
         @param self this object
         @param visualizer the visualizer object

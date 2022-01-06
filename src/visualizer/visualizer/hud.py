@@ -25,7 +25,6 @@ class Axes(object):
 
         @param self: this object
         @param viz: visualization object
-        @return none
         """
         self.viz = viz
         self.color = 0x8080C0FF

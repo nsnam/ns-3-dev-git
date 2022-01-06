@@ -32,13 +32,13 @@ class SvgItem(GooCanvas.ItemSimple):
     #  maximum x
     ## @var bounds_y2
     #  maximum y
-    ## @var __gproperties__
-    # setup our custom properties
+
+    ## setup our custom properties
     __gproperties__ = {
         'x': (float,                                # property type
               'X',                                  # property nick name
               'The x coordinate of a SVG image',    # property description
-              -10e6,                                    # property minimum value
+              -10e6,                                # property minimum value
               10e6,                                 # property maximum value
               0,                                    # property default value
               GObject.PARAM_READWRITE),             # property flags
@@ -69,9 +69,13 @@ class SvgItem(GooCanvas.ItemSimple):
         }
 
     def __init__(self, x, y, rsvg_handle, **kwargs):
-        """
+        """!
         Initializer
         @param self this object
+        @param x The x coordinate of a SVG image
+        @param y The y coordinate of a SVG image
+        @param rsvg_handle SVG handle
+        @param kwargs key-value arguments 
         """
         super(SvgItem, self).__init__(**kwargs)
         assert isinstance(rsvg_handle, rsvg.Handle)

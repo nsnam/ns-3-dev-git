@@ -84,7 +84,6 @@ class IterableIPShell:
     @param cout: Console standard output.
     @param cerr: Console standard error.
     @param input_func: Replacement for builtin raw_input()
-    @return none
     """
     io = IPython.utils.io
     if input_func:
@@ -149,6 +148,7 @@ class IterableIPShell:
   def __update_namespace(self):
     """!
     Update self.IP namespace for autocompletion with sys.modules
+    @return none
     """
     for k, v in list(sys.modules.items()):
         if not '.' in k:
@@ -157,6 +157,7 @@ class IterableIPShell:
   def execute(self):
     """!
     Executes the current line provided by the shell object.
+    @return none
     """
     self.history_level = 0
     orig_stdout = sys.stdout

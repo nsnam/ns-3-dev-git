@@ -25,12 +25,11 @@ class ShowIpv4RoutingTable(InformationWindow):
         ) = range(5)
 
     def __init__(self, visualizer, node_index):
-        """
+        """!
         Initializer
         @param self this object
         @param visualizer visualizer object
         @param node_index the node index
-        @return the statistics
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,

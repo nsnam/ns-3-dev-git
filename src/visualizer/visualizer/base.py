@@ -16,9 +16,9 @@ PIXELS_PER_METER = 3.0 # pixels-per-meter, at 100% zoom level
 
 ## PyVizObject class
 class PyVizObject(GObject.GObject):
-    ## @var __gtype_name__
-    #  global type name
+    ##  global type name
     __gtype_name__ = "PyVizObject"
+
     ## Returns tooltip text string.
     #
     ## @param tooltip: tooltip object.
@@ -47,11 +47,12 @@ class NetDeviceTraits(object):
     ## @var is_virtual
     #  is virtual
     def __init__(self, is_wireless=None, is_virtual=False):
-        ''' Initialize function.
-
+        """!
+        Initialize function.
+        @param self The current class
         @param is_wireless is wireless flag
         @param is_virtual is virtual flag
-        '''
+        """
         assert is_virtual or is_wireless is not None
         self.is_wireless = is_wireless
         self.is_virtual = is_virtual
