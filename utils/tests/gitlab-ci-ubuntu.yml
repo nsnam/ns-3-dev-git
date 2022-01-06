@@ -26,10 +26,13 @@ weekly-build-ubuntu-18.04-debug:
   image: ubuntu:18.04
   before_script:
     - apt-get --quiet update --yes
+    - apt-get --quiet install software-properties-common --yes
+    - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+    - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-8 g++-8 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
     MODE: debug
     LIBGSL: libgsl23
@@ -39,10 +42,13 @@ weekly-build-ubuntu-18.04-release:
   image: ubuntu:18.04
   before_script:
     - apt-get --quiet update --yes
+    - apt-get --quiet install software-properties-common --yes
+    - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+    - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-8 g++-8 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
     MODE: release
     LIBGSL: libgsl23
@@ -52,57 +58,60 @@ weekly-build-ubuntu-18.04-optimized:
   image: ubuntu:18.04
   before_script:
     - apt-get --quiet update --yes
+    - apt-get --quiet install software-properties-common --yes
+    - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+    - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-8 g++-8 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
     MODE: optimized
     LIBGSL: libgsl23
 
-# Ubuntu 20.04 (Until April 2025)
-weekly-build-ubuntu-20.04-debug:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:20.04
-  variables:
-    MODE: debug
-    LIBGSL: libgsl23
+# # Ubuntu 20.04 (Until April 2025)
+# weekly-build-ubuntu-20.04-debug:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:20.04
+#   variables:
+#     MODE: debug
+#     LIBGSL: libgsl23
 
-weekly-build-ubuntu-20.04-release:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:20.04
-  variables:
-    MODE: release
-    LIBGSL: libgsl23
+# weekly-build-ubuntu-20.04-release:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:20.04
+#   variables:
+#     MODE: release
+#     LIBGSL: libgsl23
 
-weekly-build-ubuntu-20.04-optimized:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:20.04
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl23
+# weekly-build-ubuntu-20.04-optimized:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:20.04
+#   variables:
+#     MODE: optimized
+#     LIBGSL: libgsl23
 
-# Ubuntu 21.04 (Until January 2022)
-weekly-build-ubuntu-21.04-debug:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:21.04
-  variables:
-    MODE: debug
-    LIBGSL: libgsl25
+# # Ubuntu 21.04 (Until January 2022)
+# weekly-build-ubuntu-21.04-debug:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:21.04
+#   variables:
+#     MODE: debug
+#     LIBGSL: libgsl25
 
-weekly-build-ubuntu-21.04-release:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:21.04
-  variables:
-    MODE: release
-    LIBGSL: libgsl25
+# weekly-build-ubuntu-21.04-release:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:21.04
+#   variables:
+#     MODE: release
+#     LIBGSL: libgsl25
 
-weekly-build-ubuntu-21.04-optimized:
-  extends: .weekly-build-ubuntu
-  image: ubuntu:21.04
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl25
+# weekly-build-ubuntu-21.04-optimized:
+#   extends: .weekly-build-ubuntu
+#   image: ubuntu:21.04
+#   variables:
+#     MODE: optimized
+#     LIBGSL: libgsl25
 
 # Ubuntu Rolling
 weekly-build-ubuntu-rolling-debug:

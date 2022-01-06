@@ -18,24 +18,24 @@
   variables:
     COMPILER: g++
 
-# Fedora 33
-weekly-build-fedora-33-debug:
-  extends: .weekly-build-fedora
-  image: fedora:33
-  variables:
-    MODE: debug
+# # Fedora 33
+# weekly-build-fedora-33-debug:
+#   extends: .weekly-build-fedora
+#   image: fedora:33
+#   variables:
+#     MODE: debug
 
-weekly-build-fedora-33-release:
-  extends: .weekly-build-fedora
-  image: fedora:33
-  variables:
-    MODE: release
+# weekly-build-fedora-33-release:
+#   extends: .weekly-build-fedora
+#   image: fedora:33
+#   variables:
+#     MODE: release
 
-weekly-build-fedora-33-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:33
-  variables:
-    MODE: optimized
+# weekly-build-fedora-33-optimized:
+#   extends: .weekly-build-fedora
+#   image: fedora:33
+#   variables:
+#     MODE: optimized
 
 # Fedora 34
 weekly-build-fedora-34-debug:
@@ -53,5 +53,24 @@ weekly-build-fedora-34-release:
 weekly-build-fedora-34-optimized:
   extends: .weekly-build-fedora
   image: fedora:34
+  variables:
+    MODE: optimized
+
+# Fedora 35
+weekly-build-fedora-35-debug:
+  extends: .weekly-build-fedora
+  image: fedora:35
+  variables:
+    MODE: debug
+
+weekly-build-fedora-35-release:
+  extends: .weekly-build-fedora
+  image: fedora:35
+  variables:
+    MODE: release
+
+weekly-build-fedora-35-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:35
   variables:
     MODE: optimized
