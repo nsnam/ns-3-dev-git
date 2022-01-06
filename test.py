@@ -2004,4 +2004,7 @@ def main(argv):
     return run_tests()
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    returncode = main(sys.argv)
+    if os.getenv("NS_COMMANDLINE_INTROSPECTION", None) is not None:
+        returncode = 0
+    sys.exit(returncode)
