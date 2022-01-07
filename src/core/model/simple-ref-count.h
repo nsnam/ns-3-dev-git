@@ -80,7 +80,7 @@ public:
    * Copy constructor
    * \param [in] o The object to copy into this one.
    */
-  SimpleRefCount ([[maybe_unused]] const SimpleRefCount & o)
+  SimpleRefCount (const SimpleRefCount & o [[maybe_unused]])
     : m_count (1)
   {
   }
