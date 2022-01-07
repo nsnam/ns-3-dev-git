@@ -274,8 +274,9 @@ public:
 
   /**
    * \brief PhySpectrum received a new list of LteControlMessage
+   * \param msgList List of control messages
    */
-  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
+  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgList);
 
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);

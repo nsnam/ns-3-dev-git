@@ -41,6 +41,8 @@ class Packet;
 
 /**
  * \ingroup wimax
+ * 
+ * WiMAX PHY entity
  */
 class WimaxPhy : public Object
 {

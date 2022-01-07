@@ -30,6 +30,16 @@
 // just needed to log a std::vector<int> properly...
 namespace std {
 
+/**
+ * \brief Stream insertion operator.
+ * 
+ * \note This function scope is stricly local, and can not be 
+ * used in other source files.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] v The std::vector<int>.
+ * \returns The reference to the output stream.
+ */
 ostream&
 operator << (ostream& os, const vector<int>& v)
 {

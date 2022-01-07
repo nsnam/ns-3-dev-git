@@ -43,7 +43,7 @@ namespace ns3 {
  * Following the Linux implementation, we included the Hybrid Slow Start,
  * that effectively prevents the overshooting of slow start
  * while maintaining a full utilization of the network. This new type of slow
- * start can be disabled through the \Attribute{HyStart} attribute.
+ * start can be disabled through the HyStart attribute.
  *
  * CUBIC TCP is implemented and used by default in Linux kernels 2.6.19
  * and above; this version follows the implementation in Linux 3.14, which

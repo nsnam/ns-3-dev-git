@@ -94,6 +94,7 @@ SQLiteOutput::RetrieveColumn ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unuse
   NS_FATAL_ERROR ("Can't call generic fn");
 }
 
+/// \copydoc SQLiteOutput::RetrieveColumn
 template<>
 int
 SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
@@ -101,6 +102,7 @@ SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
   return sqlite3_column_int (stmt, pos);
 }
 
+/// \copydoc SQLiteOutput::RetrieveColumn
 template<>
 uint32_t
 SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
@@ -108,6 +110,7 @@ SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
   return static_cast<uint32_t> (sqlite3_column_int (stmt, pos));
 }
 
+/// \copydoc SQLiteOutput::RetrieveColumn
 template<>
 double
 SQLiteOutput::RetrieveColumn (sqlite3_stmt *stmt, int pos) const
@@ -123,6 +126,7 @@ SQLiteOutput::Bind ([[maybe_unused]] sqlite3_stmt *stmt, [[maybe_unused]] int po
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const Time &value) const
@@ -134,6 +138,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const Time &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const double &value) const
@@ -145,6 +150,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const double &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint32_t &value) const
@@ -156,6 +162,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint32_t &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long &value) const
@@ -167,6 +174,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long long &value) const
@@ -178,6 +186,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long long &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint16_t &value) const
@@ -189,6 +198,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint16_t &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint8_t &value) const
@@ -200,6 +210,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint8_t &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const int &value) const
@@ -211,6 +222,7 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const int &value) const
   return false;
 }
 
+//! \copydoc SQLiteOutput::Bind
 template<>
 bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const std::string &value) const

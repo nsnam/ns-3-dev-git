@@ -57,10 +57,6 @@ public:
    */
   virtual
   ~AbstractAnimationInterfaceTestCase ();
-  /**
-   * \brief Run unit tests for this class.
-   * \return false if all tests have passed, false otherwise
-   */
   virtual void
   DoRun (void);
 

@@ -45,7 +45,10 @@ public:
   {
   }
 
-  /// Add new sample
+  /**
+   * Add new sample
+   * \param x The sample
+   */
   void Update (T const & x)
   {
     // Give the variance calculator the next value.
@@ -66,19 +69,40 @@ public:
   }
 
   // Sample statistics
-  /// Sample size
+  /**
+   * Sample size
+   * \return the sample size
+   */
   uint32_t Count   () const { return m_size; }
-  /// Minimum
+  /**
+   * Sample minimum
+   * \return the minimum of the sample
+   */
   T        Min     () const { return m_min; }
-  /// Maximum
+  /**
+   * Sample maximum
+   * \return the maximum of the sample
+   */
   T        Max     () const { return m_max; }
-  /// Sample average
+  /**
+   * Sample average
+   * \return the average of the sample
+   */
   double   Avg     () const { return m_varianceCalculator.getMean ();}
-  /// Estimate of mean, alias to Avg
+  /**
+   * Sample estimate of mean, alias to Avg
+   * \return the average of the sample
+   */
   double   Mean    () const { return Avg (); }
-  /// Unbiased estimate of variance
+  /**
+   * Sample unbiased nbiased estimate of variance
+   * \return the unbiased nbiased estimate of variance
+   */
   double   Var     () const { return m_varianceCalculator.getVariance ();}
-  /// Standard deviation
+  /**
+   * Sample standard deviation
+   * \return the standard deviation
+   */
   double   Stddev  () const { return std::sqrt (Var ()); }
 
   /**
@@ -109,7 +133,7 @@ public:
    */
   double   Error95 () const { return 1.960 * std::sqrt (Var () / Count ()); }
   /**
-  * \brief Margin of error of the mean for 99% confidence level 
+   * \brief Margin of error of the mean for 99% confidence level 
    *
    * Note that estimates are valid for 
    *   - uncorrelated measurements, 
@@ -129,7 +153,12 @@ private:
   MinMaxAvgTotalCalculator<double> m_varianceCalculator; //!< Variance calculator.
 };
 
-/// Print avg (err) [min, max]
+/**
+ * Print avg (err) [min, max]
+ * \param os The output stream
+ * \param x The Average value to print
+ * \return the ouput stream.
+ */
 template <typename T>
 std::ostream & operator<< (std::ostream & os, Average<T> const & x)
 {

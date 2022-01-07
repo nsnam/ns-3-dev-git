@@ -64,6 +64,10 @@ public:
    */
   typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendCallback;
 
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   VirtualNetDevice ();
 
@@ -94,6 +98,7 @@ public:
 
   /**
    * \brief Configure whether the virtual device supports SendFrom
+   * \param supportsSendFrom true if the device supports SendFrom
    */
   void SetSupportsSendFrom (bool supportsSendFrom);
 
@@ -152,22 +157,22 @@ protected:
 
 private:
 
-  Address m_myAddress;
-  SendCallback m_sendCb;
-  TracedCallback<Ptr<const Packet> > m_macRxTrace;
-  TracedCallback<Ptr<const Packet> > m_macTxTrace;
-  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
-  TracedCallback<Ptr<const Packet> > m_snifferTrace;
-  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
-  Ptr<Node> m_node;
-  ReceiveCallback m_rxCallback;
-  PromiscReceiveCallback m_promiscRxCallback;
-  std::string m_name;
-  uint32_t m_index;
-  uint16_t m_mtu;
-  bool m_needsArp;
-  bool m_supportsSendFrom;
-  bool m_isPointToPoint;
+  Address m_myAddress;    //!< MAC address
+  SendCallback m_sendCb;  //!< send callback
+  TracedCallback<Ptr<const Packet> > m_macRxTrace;            //!< Rx trace
+  TracedCallback<Ptr<const Packet> > m_macTxTrace;            //!< Tx trace
+  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;     //!< Promisc Rx trace
+  TracedCallback<Ptr<const Packet> > m_snifferTrace;          //!< Sniffer trace
+  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;   //!< Promisc Sniffer trace
+  Ptr<Node> m_node;                               //!< Pointer to the node
+  ReceiveCallback m_rxCallback;                   //!< Rx callback
+  PromiscReceiveCallback m_promiscRxCallback;     //!< Promisc Rx callback
+  std::string m_name;       //!< Name of the device
+  uint32_t m_index;         //!< Device index
+  uint16_t m_mtu;           //!< MTU
+  bool m_needsArp;          //!< True if the device needs ARP
+  bool m_supportsSendFrom;  //!< True if the device supports SendFrm
+  bool m_isPointToPoint;    //!< True if the device is a PointToPoint type device
 };
 
 } // namespace ns3

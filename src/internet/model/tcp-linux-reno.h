@@ -28,6 +28,14 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup congestionOps
+ *
+ * \brief Reno congestion control algorithm
+ * 
+ * This class implement the Reno congestion control type
+ * and it mimics the one implemented in the Linux kernel.
+ */
 class TcpLinuxReno : public TcpCongestionOps
 {
 public:

@@ -25,14 +25,10 @@ using namespace ns3;
 
 namespace {
 
-//===========================================================================
-// Function: CreateCommaSeparatedFile
-//
-//
-// This function creates a file with 2 columns of values and separated
-// by commas.
-//===========================================================================
-
+/**
+ * This function creates a file with 2 columns of values and separated
+ * by commas.
+ */
 void CreateCommaSeparatedFile ()
 {
   using namespace std;
@@ -69,14 +65,10 @@ void CreateCommaSeparatedFile ()
 }
 
 
-//===========================================================================
-// Function: CreateSpaceSeparatedFile
-//
-//
-// This function creates a file with 2 columns of values and separated
-// by spaces.
-//===========================================================================
-
+/**
+ * This function creates a file with 2 columns of values and separated
+ * by commas.
+ */
 void CreateSpaceSeparatedFile ()
 {
   using namespace std;
@@ -114,13 +106,9 @@ void CreateSpaceSeparatedFile ()
 }
 
 
-//===========================================================================
-// Function: CreateFormattedFile
-//
-//
-// This function creates a file with formatted values.
-//===========================================================================
-
+/**
+ * This function creates a file with formatted values.
+ */
 void CreateFormattedFile ()
 {
   using namespace std;

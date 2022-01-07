@@ -159,7 +159,6 @@ class PatchChunkLine:
     def __init__(self):
         """! Initializer
         @param self The current class
-        @return none
         """
         self.__type = 0
         self.__line = ''
@@ -244,7 +243,6 @@ class PatchChunk:
         @param self:  this object
         @param src_pos: source position
         @param dst_pos: destination position
-        @return none
         """
         self.__lines = []
         self.__src_pos = int(src_pos)
@@ -316,7 +314,6 @@ class Patch:
     def __init__(self):
         """! Initializer
         @param self The current class
-        @return none
         """
         self.__src = ''
         self.__dst = ''

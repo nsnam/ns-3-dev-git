@@ -14,9 +14,19 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief Simple data emitter to check that a probe receives data.
+ */
 class SampleEmitter : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   SampleEmitter ()
   {
@@ -25,35 +35,40 @@ public:
   virtual ~SampleEmitter ()
   {
   }
+  /// Start emission of data.
   void Start ()
   {
     Reschedule ();
   }
+  /// Reschedule a report \sa Report
   void Reschedule ()
   {
     m_time = m_var->GetValue ();
     Simulator::Schedule (Seconds (m_time), &SampleEmitter::Report, this);
     m_time += Simulator::Now ().GetSeconds ();
   }
+  /// \return the time delta of the next report.
   double GetTime ()
   {
     return m_time;
   }
+  /// \return a random variable, different for each reschedule.
   double GetValue ()
   {
     return aux;
   }
 private:
+  /// Reports a new value and reschedules \sa Reschedule
   void Report ()
   {
     aux = m_var->GetValue ();
     m_trace = aux;
     Reschedule ();
   }
-  Ptr<ExponentialRandomVariable> m_var;
-  double m_time;
-  TracedValue<double> m_trace;
-  double aux;
+  Ptr<ExponentialRandomVariable> m_var; //!< Random value generator.
+  double m_time;  //!< Delta time between reschedules.
+  TracedValue<double> m_trace; //!< Trace
+  double aux; //!< Emitted value.
 };
 
 
@@ -69,6 +84,13 @@ SampleEmitter::GetTypeId (void)
   return tid;
 }
 
+
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief DoubleProbe class - Test case for connecting and receiving data.
+ */
 class ProbeTestCase1 : public TestCase
 {
 public:
@@ -77,10 +99,17 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Trace sink.
+   * \param context Trace context
+   * \param oldValue Old value
+   * \param newValue New value
+   */
   void TraceSink (std::string context, double oldValue, double newValue);
-  uint32_t m_objectProbed;
-  uint32_t m_pathProbed;
-  Ptr<SampleEmitter> m_s;
+  uint32_t m_objectProbed;  //!< Number of probes by Object
+  uint32_t m_pathProbed;    //!< Number of probed by Path
+  Ptr<SampleEmitter> m_s;   //!< Sample emitter pointer
 };
 
 ProbeTestCase1::ProbeTestCase1 ()
@@ -160,6 +189,12 @@ ProbeTestCase1::DoRun (void)
 }
 
 
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief DoubleProbe class TestSuite
+ */
 class ProbeTestSuite : public TestSuite
 {
 public:
@@ -172,6 +207,6 @@ ProbeTestSuite::ProbeTestSuite ()
   AddTestCase (new ProbeTestCase1, TestCase::QUICK);
 }
 
-// Do not forget to allocate an instance of this TestSuite
+ /// Static variable for test initialization
 static ProbeTestSuite probeTestSuite;
 

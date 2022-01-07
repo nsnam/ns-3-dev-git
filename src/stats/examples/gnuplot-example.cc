@@ -26,13 +26,9 @@ using namespace ns3;
 
 namespace {
 
-//===========================================================================
-// Function: Create2DPlotFile
-//
-//
-// This function creates a 2-D plot file.
-//===========================================================================
-
+/**
+ * This function creates a 2-D plot file.
+ */
 void Create2DPlotFile ()
 {
   std::string fileNameWithNoExtension = "plot-2d";
@@ -92,13 +88,9 @@ void Create2DPlotFile ()
 }
 
 
-//===========================================================================
-// Function: Create2DPlotWithErrorBarsFile
-//
-//
-// This function creates a 2-D plot with error bars file.
-//===========================================================================
-
+/**
+ * This function creates a 2-D plot with error bars file.
+ */
 void Create2DPlotWithErrorBarsFile ()
 {
   std::string fileNameWithNoExtension = "plot-2d-with-error-bars";
@@ -170,13 +162,9 @@ void Create2DPlotWithErrorBarsFile ()
 }
 
 
-//===========================================================================
-// Function: Create3DPlotFile
-//
-//
-// This function creates a 3-D plot file.
-//===========================================================================
-
+/**
+ * This function creates a 3-D plot file.
+ */
 void Create3DPlotFile ()
 {
   std::string fileNameWithNoExtension = "plot-3d";

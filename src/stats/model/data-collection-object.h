@@ -51,13 +51,22 @@ public:
   /// Unset the status of an individual object.
   void Disable (void);
 
-  /// Check the status of an individual object.
+  /**
+   * Check the status of an individual object.
+   * \return true if the object is enabled
+   */
   virtual bool IsEnabled (void) const;
 
-  /// Get the object's name.
+  /**
+   * Get the object's name.
+   * \return the object's name
+   */
   std::string GetName (void) const;
 
-  /// Set the object's name.  All spaces are replaced by underscores.
+  /**
+   * Set the object's name.
+   * \param name the object's name
+   */
   void SetName (std::string name);
 
 protected:

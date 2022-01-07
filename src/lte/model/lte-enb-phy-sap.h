@@ -45,7 +45,6 @@ public:
   /**
    * \brief Send the MAC PDU to the channel
    * \param p the MAC PDU to send
-   * \return true if
    */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 

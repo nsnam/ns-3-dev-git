@@ -113,6 +113,7 @@ public:
    * \param stmt Sqlite statement
    * \param pos Position of the bind argument inside the statement
    * \param value Value to bind
+   * \return true on success, false otherwise
    */
   template<typename T>
   bool Bind (sqlite3_stmt *stmt, int pos, const T &value) const;
@@ -121,6 +122,7 @@ public:
    * \brief Retrieve a value from an executed statement
    * \param stmt sqlite statement
    * \param pos Column position
+   * \return the value from the executed statement
    */
   template<typename T>
   T RetrieveColumn (sqlite3_stmt *stmt, int pos) const;
@@ -185,7 +187,14 @@ protected:
    */
   static int SpinExec (sqlite3 *db, const std::string &cmd);
 
+  /**
+   * \brief Execute a Prepared Statement Object ignoring concurrency problems, retrying instead
+   * \param db Database
+   * \param stmt Prepared Statement Object
+   * \return Sqlite error code
+   */
   static int SpinExec (sqlite3 *db, sqlite3_stmt *stmt);
+  
   /**
    * \brief Preparing a command ignoring concurrency problems, retrying instead
    * \param db Database

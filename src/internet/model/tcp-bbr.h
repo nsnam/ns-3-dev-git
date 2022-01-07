@@ -33,6 +33,14 @@ class TcpBbrCheckGainValuesTest;
 
 namespace ns3 {
 
+/**
+ * \ingroup congestionOps
+ *
+ * \brief BBR congestion control algorithm
+ * 
+ * This class implement the BBR (Bottleneck Bandwidth and Round-trip propagation time)
+ * congestion control type.
+ */
 class TcpBbr : public TcpCongestionOps
 {
 public:

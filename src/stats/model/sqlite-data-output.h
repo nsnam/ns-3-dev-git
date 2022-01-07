@@ -63,7 +63,7 @@ private:
 public:
     /**
      * Constructor
-     * \param owner pointer to the instance this object belongs to
+     * \param db pointer to the instance this object belongs to
      * \param run experiment descriptor
      */
     SqliteOutputCallback (const Ptr<SQLiteOutput> &db, std::string run);
@@ -137,7 +137,7 @@ private:
     Ptr<SQLiteOutput> m_db; //!< Db
     std::string m_runLabel; //!< Run label
 
-
+    /// Pointer to a Sqlite3 singleton statement
     sqlite3_stmt *m_insertSingletonStatement;
   };
 

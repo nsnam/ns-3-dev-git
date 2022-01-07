@@ -33,6 +33,8 @@ class SsServiceFlowManager;
 
 /**
  * \ingroup wimax
+ * 
+ * IPCS classifier
  */
 class IpcsClassifier : public Object
 {

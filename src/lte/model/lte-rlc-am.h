@@ -135,7 +135,7 @@ private:
   {
     Ptr<Packet> m_pdu; ///< PDU
     uint16_t    m_retxCount; ///< retransmit count
-    Time        m_waitingSince; ///!< Layer arrival time
+    Time        m_waitingSince; ///< Layer arrival time
   };
 
   std::vector <RetxPdu> m_txedBuffer;  ///< Buffer for transmitted and retransmitted PDUs 

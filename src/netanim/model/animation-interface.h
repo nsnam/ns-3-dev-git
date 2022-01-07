@@ -111,7 +111,6 @@ public:
    * \param stopTime Stop Time for capturing values
    * \param pollInterval The periodic interval at which the counters are written to the trace file
    *        Default: 1s
-   * \returns none
    */
   void EnableIpv4L3ProtocolCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
 
@@ -122,7 +121,6 @@ public:
    * \param stopTime Stop Time for capturing values
    * \param pollInterval The periodic interval at which the counters are written to the trace file
    *        Default: 1s
-   * \returns none
    */
   void EnableQueueCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
 
@@ -133,7 +131,6 @@ public:
    * \param stopTime Stop Time for capturing values
    * \param pollInterval The periodic interval at which the counters are written to the trace file
    *        Default: 1s
-   * \returns none
    */
   void EnableWifiMacCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
 
@@ -144,7 +141,6 @@ public:
    * \param stopTime Stop Time for capturing values
    * \param pollInterval The periodic interval at which the counters are written to the trace file
    *        Default: 1s
-   * \returns none
    */
   void EnableWifiPhyCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
 
@@ -188,7 +184,6 @@ public:
    *
    * \param t The time at which AnimationInterface should begin capture of traffic info
    *
-   * \returns none
    */
   void SetStartTime (Time t);
 
@@ -197,7 +192,6 @@ public:
    *
    * \param t The time at which AnimationInterface should stop capture of traffic info
    *
-   * \returns none
    */
   void SetStopTime (Time t);
 
@@ -208,7 +202,6 @@ public:
             filenames : filename, filename-1, filename-2..., filename-N
             where each file contains packet info for 'maxPktsPerFile' number of packets
    *
-   * \returns none
    */
   void SetMaxPktsPerTraceFile (uint64_t maxPktsPerFile);
 
@@ -219,7 +212,6 @@ public:
    * \param t Time interval between fetching mobility/position information
    * Default: 0.25s
    *
-   * \returns none
    */
   void SetMobilityPollInterval (Time t);
 
@@ -228,14 +220,12 @@ public:
    *
    * \param cb Address of callback function
    *
-   * \returns none
    */
   void SetAnimWriteCallback (AnimWriteCallback cb);
 
   /**
    * \brief Reset the write callback function
    *
-   * \returns none
    */
   void ResetAnimWriteCallback ();
 
@@ -246,7 +236,6 @@ public:
    * \param y Y co-ordinate of the node
    * \param z Z co-ordinate of the node
    *
-   * \returns none
    */
   static void SetConstantPosition (Ptr <Node> n, double x, double y, double z = 0);
 
@@ -255,7 +244,6 @@ public:
    * \param n Ptr to the node
    * \param descr A string to briefly describe the node
    *
-   * \returns none
    */
   void UpdateNodeDescription (Ptr <Node> n, std::string descr);
 
@@ -264,7 +252,6 @@ public:
    * \param nodeId Id of the node
    * \param descr A string to briefly describe the node
    *
-   * \returns none
    */
   void UpdateNodeDescription (uint32_t nodeId, std::string descr);
 
@@ -273,7 +260,6 @@ public:
    * \param nodeId Id of the node
    * \param resourceId Id of the image resource that was previously added
    *
-   * \returns none
    */
   void UpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
 
@@ -283,7 +269,6 @@ public:
    * \param width Width of the node
    * \param height Height of the node
    *
-   * \returns none
    */
   void UpdateNodeSize (uint32_t nodeId, double width, double height);
 
@@ -294,7 +279,6 @@ public:
    * \param g Green component value (0-255)
    * \param b Blue component value (0-255)
    *
-   * \returns none
    */
   void UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
 
@@ -305,7 +289,6 @@ public:
    * \param g Green component value (0-255)
    * \param b Blue component value (0-255)
    *
-   * \returns none
    */
   void UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
 
@@ -315,7 +298,6 @@ public:
    * \param nodeId Node Id of the node
    * \param counter Current value of the counter
    *
-   * \returns none
    */
   void UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter);
 
@@ -329,7 +311,6 @@ public:
    * \param opacity Opacity of the background: A value between 0.0 and 1.0. 0.0 is transparent,
    *        1.0 is opaque
    *
-   * \returns none
    */
   void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
 
@@ -339,7 +320,6 @@ public:
    * \param toNode Node Id of the "to Node" of the p2p link
    * \param linkDescription Description of the link such as link bandwidth
    *
-   * \returns none
    */
   void UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
                               std::string linkDescription);
@@ -350,7 +330,6 @@ public:
    * \param toNode Ptr to the "to Node" of the p2p link
    * \param linkDescription Description of the link such as link bandwidth
    *
-   * \returns none
    */
   void UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
                               std::string linkDescription);
@@ -374,7 +353,6 @@ public:
   /**
    * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is solely
    *        used for tracking mobility, routing paths and counters
-   * \returns none
    */
   void SkipPacketTracing ();
 
@@ -384,7 +362,6 @@ public:
    * \param enable if true enables writing the packet metadata to the XML trace file
    *        if false disables writing the packet metadata
    *
-   * \returns none
    */
   void EnablePacketMetadata (bool enable = true);
 

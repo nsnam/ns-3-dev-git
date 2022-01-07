@@ -33,6 +33,8 @@ class RngReq;
 
 /**
  * \ingroup wimax
+ * 
+ * Profile manager for burst communications
  */
 class BurstProfileManager : public Object
 {

@@ -51,10 +51,10 @@ public:
 
   /**
    * Assignment operator
-   *
+   * \param value value to assign
    * \returns X2IfaceInfo& 
    */
-  X2IfaceInfo& operator= (const X2IfaceInfo &);
+  X2IfaceInfo& operator= (const X2IfaceInfo &value);
 
 public:
   Ipv4Address   m_remoteIpAddr; ///< remote IP address
@@ -80,10 +80,10 @@ public:
 
   /**
    * Assignment operator
-   *
+   * \param value value to assign
    * \returns X2CellInfo&  
    */
-  X2CellInfo& operator= (const X2CellInfo &);
+  X2CellInfo& operator= (const X2CellInfo &value);
 
 public:
   uint16_t m_localCellId; ///< local cell ID

@@ -25,13 +25,9 @@ using namespace ns3;
 
 namespace {
 
-//===========================================================================
-// Function: Create2dPlot
-//
-//
-// This function creates a 2-Dimensional plot.
-//===========================================================================
-
+/**
+ * This function creates a 2-Dimensional plot.
+ */
 void Create2dPlot ()
 {
   using namespace std;

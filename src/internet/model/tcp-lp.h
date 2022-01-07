@@ -32,6 +32,11 @@ namespace ns3 {
 
 class TcpSocketState;
 
+/**
+ * \ingroup congestionOps
+ *
+ * \brief TCP-LP (Low Priority) congestion control algorithm
+ */
 class TcpLp : public TcpNewReno
 {
 public:

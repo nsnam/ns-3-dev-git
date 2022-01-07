@@ -108,8 +108,6 @@ public:
    * \param rnti RNTI of the UE
    * \param s initial state of the UeManager
    * \param componentCarrierId primary component carrier ID
-   * 
-   * \return 
    */
   UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId);
 

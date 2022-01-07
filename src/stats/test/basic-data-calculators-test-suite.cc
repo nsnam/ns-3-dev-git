@@ -27,10 +27,12 @@ using namespace ns3;
 
 const double TOLERANCE = 1e-14;
 
-// ===========================================================================
-// Test case for a single integer.
-// ===========================================================================
-
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief MinMaxAvgTotalCalculator class - Test case for a single integer.
+ */
 class OneIntegerTestCase : public TestCase
 {
 public:
@@ -98,10 +100,12 @@ OneIntegerTestCase::DoRun (void)
 }
 
 
-// ===========================================================================
-// Test case for five integers.
-// ===========================================================================
-
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief MinMaxAvgTotalCalculator class - Test case for five integers.
+ */
 class FiveIntegersTestCase : public TestCase
 {
 public:
@@ -169,10 +173,12 @@ FiveIntegersTestCase::DoRun (void)
 }
 
 
-// ===========================================================================
-// Test case for five double values.
-// ===========================================================================
-
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief MinMaxAvgTotalCalculator class - Test case for five double values.
+ */
 class FiveDoublesTestCase : public TestCase
 {
 public:
@@ -240,6 +246,12 @@ FiveDoublesTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup stats-test
+ * \ingroup tests
+ *
+ * \brief MinMaxAvgTotalCalculator class TestSuite
+ */
 class BasicDataCalculatorsTestSuite : public TestSuite
 {
 public:
@@ -254,4 +266,5 @@ BasicDataCalculatorsTestSuite::BasicDataCalculatorsTestSuite ()
   AddTestCase (new FiveDoublesTestCase, TestCase::QUICK);
 }
 
-static BasicDataCalculatorsTestSuite basicDataCalculatorsTestSuite;
+ /// Static variable for test initialization
+ static BasicDataCalculatorsTestSuite basicDataCalculatorsTestSuite;

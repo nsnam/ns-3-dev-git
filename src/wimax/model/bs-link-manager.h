@@ -34,6 +34,8 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
+ * 
+ * BaseStation Link Manager
  */
 class BSLinkManager : public Object
 {

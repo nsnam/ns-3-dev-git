@@ -329,13 +329,6 @@ protected:
    * \returns the modified buffer iterator
    */
   template <int N>
-  /**
-   * Deserialize a sequence
-   * \param optionalOrDefaultMask buffer to store the result
-   * \param isExtensionMarkerPresent true if Extension Marker is present
-   * \param bIterator buffer iterator
-   * \returns the modified buffer iterator
-   */
   Buffer::Iterator DeserializeSequence (std::bitset<N> *optionalOrDefaultMask,
                                         bool isExtensionMarkerPresent,
                                         Buffer::Iterator bIterator);

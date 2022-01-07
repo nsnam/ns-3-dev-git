@@ -142,7 +142,7 @@ public:
   };
 
   /**
-   * \param title the title to be associated to this dataset.
+   * \param title the title to be associated to this dataset (default "Untitled").
    *
    * Create an empty dataset. Usually, the dataset's title is 
    * displayed in the legend box.

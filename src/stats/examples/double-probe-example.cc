@@ -31,7 +31,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("DoubleProbeExample");
 
-/*
+/**
  * This is our test object, an object that increments counters at
  * various times and emits one of them as a trace source.
  */
@@ -46,11 +46,14 @@ public:
   Emitter ();
 private:
   void DoInitialize (void);
+
+  /// Generate data - actually this function is not traced.
   void Emit (void);
+  /// Counts how many times this function is called.
   void Count (void);
 
-  TracedValue<double> m_counter;  // normally this would be integer type
-  Ptr<ExponentialRandomVariable> m_var;
+  TracedValue<double> m_counter;  //!< Sample counter, normally this would be integer type
+  Ptr<ExponentialRandomVariable> m_var; //!< Random number generator
 
 };
 

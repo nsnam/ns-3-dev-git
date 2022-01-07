@@ -46,6 +46,8 @@ class BsServiceFlowManager;
 
 /**
  * \ingroup wimax
+ * 
+ * BaseStation NetDevice
  */
 class BaseStationNetDevice : public WimaxNetDevice
 {
