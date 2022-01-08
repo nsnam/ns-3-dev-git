@@ -44,6 +44,12 @@ class PointToPointHelper;
 
 /**
  * \ingroup brite
+ * \ingroup tests
+ * \defgroup brite-tests BRITE module tests
+ */
+
+/**
+ * \ingroup brite
  * \brief Interface with BRITE, the Boston university Representative Internet
  *        Topology gEnerator
  *
@@ -140,54 +146,56 @@ public:
   Ptr<Node> GetNodeForAs (uint32_t asNum, uint32_t nodeNum);
 
   /**
-    * Returns the number of AS created in the topology
-    *
-    * \returns the number of AS created in the topology
-    */
+   * Returns the number of AS created in the topology
+   *
+   * \returns the number of AS created in the topology
+   */
   uint32_t GetNAs (void) const;
 
   /**
-    * Returns the system number for the MPI instance that this AS is assigned to.  Will always return 0 if MPI not used
-    *
-    * \returns The system number that the specified AS number belongs to
-    *
-    * param asNum The AS Number
-    */
+   * Returns the system number for the MPI instance that this AS is assigned to.  Will always return 0 if MPI not used
+   *
+   * \returns The system number that the specified AS number belongs to
+   *
+   * \param asNum The AS Number
+   */
   uint32_t GetSystemNumberForAs (uint32_t asNum) const;
 
   /**
-    * \param address an Ipv4AddressHelper which is used to install
-    *                Ipv4 addresses on all the node interfaces in
-    *                the topology
-    */
+   * \param address an Ipv4AddressHelper which is used to install
+   *                IPv4 addresses on all the node interfaces in
+   *                the topology
+   */
   void AssignIpv4Addresses (Ipv4AddressHelper& address);
 
   /**
-    * \param network an IPv6 address representing the network portion
-    *                of the IPv6 Address
-    * \param prefix the prefix length
-    */
+   * \param address an Ipv6AddressHelper which is used to install
+   *                IPv6 addresses on all the node interfaces in
+   *                the topology
+   */
   void AssignIpv6Addresses (Ipv6AddressHelper& address);
 
   /**
-    * Returns the number of nodes created within
-    * the topology
-    *
-    * \returns the total number of nodes within the brite topology
-    */
+   * Returns the number of nodes created within
+   * the topology
+   *
+   * \returns the total number of nodes within the brite topology
+   */
   uint32_t GetNNodesTopology () const;
 
   /**
-    * Returns the number of edges created within
-    * the topology
-    *
-    * \returns the total number of edges within the brite topology
-    */
+   * Returns the number of edges created within
+   * the topology
+   *
+   * \returns the total number of edges within the brite topology
+   */
   uint32_t GetNEdgesTopology () const;
 
 private:
-  //brite values are unitless however all examples provided use mbps to specify rate
-  //this constant value is used to convert the mbps provided by brite to bps.
+  /**
+   * brite values are unitless however all examples provided use mbps to specify rate
+   * this constant value is used to convert the mbps provided by brite to bps.
+   */
   static const int mbpsToBps = 1000000;
 
   /**
@@ -199,13 +207,13 @@ private:
    */
   struct BriteNodeInfo
   {
-    int nodeId;
-    double xCoordinate;
-    double yCoordinate;
-    int inDegree;
-    int outDegree;
-    int asId;
-    std::string type;
+    int nodeId;           //!< Node ID
+    double xCoordinate;   //!< X coordinate
+    double yCoordinate;   //!< Y coordinate
+    int inDegree;         //!< Ingress (IN) degree
+    int outDegree;        //!< Egress (OUT) degree
+    int asId;             //!< AS ID
+    std::string type;     //!< Node type
   };
 
   /**
@@ -217,23 +225,27 @@ private:
    */
   struct BriteEdgeInfo
   {
-    int edgeId;
-    int srcId;
-    int destId;
-    double length;
-    double delay;
-    double bandwidth;
-    int asFrom;
-    int asTo;
-    std::string type;
+    int edgeId;         //!< Edge ID
+    int srcId;          //!< Src node ID
+    int destId;         //!< Dst node ID
+    double length;      //!< Length
+    double delay;       //!< Delay
+    double bandwidth;   //!< Bandwidth
+    int asFrom;         //!< Originating AS
+    int asTo;           //!< Destination AS
+    std::string type;   //!< Edge type
   };
 
   //stores all of the nodes used in the BRITE generated topology
   NodeContainer m_nodes;
 
+  /// Build the Node Info list
   void BuildBriteNodeInfoList (void);
+  /// Build the Edge Info list
   void BuildBriteEdgeInfoList (void);
+  /// Construct the topology.
   void ConstructTopology (void);
+  /// Generate the BRITE topology.
   void GenerateBriteTopology (void);
 
   /// brite configuration file to use
