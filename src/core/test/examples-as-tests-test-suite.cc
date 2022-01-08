@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \file
- * \ingroup core-tests
  * \ingroup examples-as-tests
  * Examples-as-tests test suite
  */
@@ -59,7 +58,14 @@ public:
    */
   virtual ~CommandLineExampleTestCase();
 
-  //Inherited function
+  /**
+  * Override this function to filter the version string from
+  * the command-line-example output.
+  * Since the version changes each time a commit is made it shouldn't
+  * be tested as part of the command-line-example output.
+  * 
+  * \returns The string of post-processing commands.
+  */
   virtual std::string GetPostProcessingCommand (void) const;
 };
 
@@ -72,12 +78,6 @@ CommandLineExampleTestCase::CommandLineExampleTestCase ()
 CommandLineExampleTestCase::~CommandLineExampleTestCase ()
 {}
 
-/**
- * Override this function to filter the version string from
- * the command-line-example output.
- * Since the version changes each time a commit is made it shouldn't
- * be tested as part of the command-line-example output
- */
 std::string
 CommandLineExampleTestCase::GetPostProcessingCommand (void) const
 {

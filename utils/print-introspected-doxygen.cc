@@ -1052,8 +1052,8 @@ PrintAllAttributes (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
-  os << "This is a list of all" << reference << "ns3::Attribute classes.  "
-     << "For more information see the" << reference << "ns3::Attributes "
+  os << "This is a list of all" << reference << "attributes classes.  "
+     << "For more information see the" << reference << "attributes "
      << "section of this API documentation and the Attributes sections "
      << "in the Tutorial and Manual.\n"
      << std::endl;

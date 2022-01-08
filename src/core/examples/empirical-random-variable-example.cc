@@ -29,10 +29,12 @@
 #include <iostream>
 #include <map>
 
+
 /**
  * \file
- * \ingroup core-examples
- * \ingroup randomvariable
+ * \ingroup core-examples randomvariable
+ * \defgroup empirical-rng-example Core example: Empirical random variables use.
+ * 
  * Example program illustrating use of ns3::EmpiricalRandomVariable
  *
  * This example illustrates
@@ -47,8 +49,16 @@
  * random number generator
  */
 
+
 using namespace ns3;
 
+/**
+ * \ingroup empirical-rng-example
+ * 
+ * \brief Sample the random variable only once.
+ * \param mode Rng mode (Normal or Antithetic).
+ * \param erv The empirical random variable.
+ */
 void
 RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
 {
@@ -68,6 +78,14 @@ RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
   erv->SetInterpolate (false);
 }
 
+/**
+ * \ingroup empirical-rng-example
+ * 
+ * \brief Prints a stat line.
+ * \param value The value to print.
+ * \param count The number of times that value has been sampled.
+ * \param n The total number of random values sampled.
+ */
 void
 PrintStatsLine (const double value, const long count, const long n)
 {
@@ -79,6 +97,15 @@ PrintStatsLine (const double value, const long count, const long n)
             << std::endl;
 }
 
+/**
+ * \ingroup empirical-rng-example
+ * 
+ * \brief Prints the summary.
+ * \param sum The number of sampled values.
+ * \param n The total number of random values to be drawn.
+ * \param weighted The average of the sample.
+ * \param expected The expected average of the sample.
+ */
 void
 PrintSummary (long sum, long n, double weighted, double expected)
 {
@@ -100,6 +127,14 @@ PrintSummary (long sum, long n, double weighted, double expected)
             << std::endl;
 }
 
+/**
+ * \ingroup empirical-rng-example
+ * 
+ * \brief Sample the random variable.
+ * \param mode Rng mode (Normal or Antithetic).
+ * \param erv The empirical random variable.
+ * \param n Number of samples to draw.
+ */
 void
 RunBothModes (std::string mode, Ptr<EmpiricalRandomVariable> erv, long n)
 {

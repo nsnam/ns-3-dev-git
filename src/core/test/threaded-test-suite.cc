@@ -35,30 +35,81 @@
 
 using namespace ns3;
 
+/// Maximum number of threads.
 #define MAXTHREADS 64
 
+/**
+ * \file
+ * \ingroup threaded-tests
+ * Threaded events test suite
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup threaded-tests Threaded events tests
+ */
+
+/**
+ * \ingroup threaded-tests
+ *  
+ * \brief Check threaded event handling with various thread number, schedulers, and  simulator types.
+ */
 class ThreadedSimulatorEventsTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor.
+   * 
+   * \param schedulerFactory The scheduler factory.
+   * \param simulatorType The simulator type.
+   * \param threads The number of threads.
+   */
   ThreadedSimulatorEventsTestCase (ObjectFactory schedulerFactory, const std::string &simulatorType, unsigned int threads);
+  /**
+   * Event A
+   * \param a The Event parameter.
+   */
   void EventA (int a);
+  /**
+   * Event B
+   * \param b The Event parameter.
+   */
   void EventB (int b);
+  /**
+   * Event C
+   * \param c The Event parameter.
+   */
   void EventC (int c);
+  /**
+   * Event D
+   * \param d The Event parameter.
+   */
   void EventD (int d);
+  /**
+   * No-op function, records the thread that called it. 
+   * \param threadno The thread number.
+   */
   void DoNothing (unsigned int threadno);
+  /**
+   * Schedule a thread.
+   * \param context The context.
+   */
   static void SchedulingThread (std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> context);
+  /**
+   * End the thread execution.
+   */
   void End (void);
-  uint64_t m_b;
-  uint64_t m_a;
-  uint64_t m_c;
-  uint64_t m_d;
-  unsigned int m_threads;
-  bool m_threadWaiting[MAXTHREADS];
-  bool m_stop;
-  ObjectFactory m_schedulerFactory;
-  std::string m_simulatorType;
-  std::string m_error;
-  std::list<Ptr<SystemThread> > m_threadlist;
+  uint64_t m_a; //!< The value incremented when EventA is called.
+  uint64_t m_b; //!< The value incremented when EventB is called.
+  uint64_t m_c; //!< The value incremented when EventC is called.
+  uint64_t m_d; //!< The value incremented when EventD is called.
+  unsigned int m_threads; //!< The number of threads.
+  bool m_threadWaiting[MAXTHREADS]; //!< Threads waiting to be scheduled.
+  bool m_stop;  //!< Stop variable.
+  ObjectFactory m_schedulerFactory; //!< Scheduler factory.
+  std::string m_simulatorType;      //!< Simulator type.
+  std::string m_error;              //!< Error condition.
+  std::list<Ptr<SystemThread> > m_threadlist; //!< Thread list.
 
 private:
   virtual void DoSetup (void);
@@ -225,6 +276,11 @@ ThreadedSimulatorEventsTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_a, m_d, "Bad scheduling");
 }
 
+/**
+ * \ingroup threaded-tests
+ *  
+ * \brief The threaded simulator Test Suite.
+ */
 class ThreadedSimulatorTestSuite : public TestSuite
 {
 public:
@@ -263,4 +319,7 @@ public:
           }
       }
   }
-} g_threadedSimulatorTestSuite;
+};
+
+/// Static variable for test initialization.
+static ThreadedSimulatorTestSuite g_threadedSimulatorTestSuite; 

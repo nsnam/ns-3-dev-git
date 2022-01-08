@@ -43,14 +43,12 @@
 
 /**
  * \file
- * \ingroup core-tests
- * \ingroup length
  * \ingroup length-tests
- * Length class test suite.
+ * Length class tests.
  */
 
 /**
- * \ingroup core-tests
+ * \ingroup core-tests length
  * \defgroup length-tests Length test suite
  */
 
@@ -139,13 +137,20 @@ private:
 
   /**
    * Test that a length object can be constructed from a string
-   * @{
+   * \param unitValue  //!< Value to test.
+   * \param meterValue //!< Reference value [m].
+   * \param tolerance  //!< Tolerance.
+   * \param symbols    //!< Unit symbols.
    */
   void TestConstructLengthFromString (double unitValue,
                                       double meterValue,
                                       double tolerance,
                                       const std::initializer_list<std::string>& symbols);
 
+  /**
+   * Test that a length object can be constructed from a string
+   * @{
+   */
   void TestConstructLengthFromMeterString ();
   void TestConstructLengthFromNanoMeterString ();
   void TestConstructLengthFromMicroMeterString ();
@@ -1491,10 +1496,14 @@ public:
   {}
 
 private:
-    //class with Length attribute
+    /// Class with Length attribute
     class TestObject : public Object
     {
     public:
+        /**
+         * \brief Get the type ID.
+         * \return The object TypeId.
+         */
         static TypeId GetTypeId ();
 
         TestObject ()
@@ -1505,7 +1514,7 @@ private:
         {}
 
     private:
-        Length m_length;
+        Length m_length; //!< Length object
     };
 
 private:

@@ -34,13 +34,25 @@ using namespace std;
 
 using namespace ns3;
 
-
+/// Const string used to build the test name.
 const std::string suite ("type-id: ");
 
-//----------------------------
-//
-// Test for uniqueness of all TypeIds
+/**
+ * \file
+ * \ingroup typeid-tests
+ * TypeId test suite
+ */
 
+/**
+ * \ingroup core-tests
+ * \defgroup typeid-tests TypeId class tests
+ */
+
+/**
+ * \ingroup typeid-tests
+ * 
+ * Test for uniqueness of all TypeIds.
+ */
 class UniqueTypeIdTestCase : public TestCase
 {
 public:
@@ -116,10 +128,11 @@ UniqueTypeIdTestCase::DoRun (void)
 }
 
 
-//----------------------------
-//
-// Collision test
-
+/**
+ * \ingroup typeid-tests
+ * 
+ * Collision test.
+ */
 class CollisionTestCase : public TestCase
 {
 public:
@@ -196,20 +209,21 @@ CollisionTestCase::DoRun (void)
 }
 
 
-//----------------------------
-//
-// Deprecated Attribute test
-
+/**
+ * \ingroup typeid-tests
+ * 
+ * Class used to test deprecated Attributes.
+ */
 class DeprecatedAttribute : public Object
 {
 private:
   // float m_obsAttr;  // this is obsolete, no trivial forwarding
   // int m_oldAttr;  // this has become m_attr
-  int m_attr;
+  int m_attr; //!< An attribute to test deprecation.
 
   // TracedValue<int> m_obsTrace;  // this is obsolete, no trivial forwarding
   // TracedValue<double> m_oldTrace;  // this has become m_trace
-  TracedValue<double> m_trace;
+  TracedValue<double> m_trace;  //!< A TracedValue to test deprecation.
 
 public:
   DeprecatedAttribute ()
@@ -219,7 +233,10 @@ public:
   virtual ~DeprecatedAttribute ()
   {}
 
-  // Register a type with a deprecated Attribute and TraceSource
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void)
   {
     static TypeId tid = TypeId ("DeprecatedAttribute")
@@ -274,6 +291,11 @@ public:
 };
 
 
+/**
+ * \ingroup typeid-tests
+ * 
+ * Check deprecated Attributes and TraceSources.
+ */
 class DeprecatedAttributeTestCase : public TestCase
 {
 public:
@@ -332,10 +354,11 @@ DeprecatedAttributeTestCase::DoRun (void)
 }
 
 
-//----------------------------
-//
-// Performance test
-
+/**
+ * \ingroup typeid-tests
+ * 
+ * Performance test: measure average lookup time.
+ */
 class LookupTimeTestCase : public TestCase
 {
 public:
@@ -345,6 +368,11 @@ public:
 private:
   void DoRun (void);
   void DoSetup (void);
+  /**
+   * Report the performance test results.
+   * \param how How the TypeId is searched (name or hash).
+   * \param delta The time required for the lookup.
+   */
   void Report (const std::string how, const uint32_t delta) const;
 
   enum
@@ -422,10 +450,11 @@ LookupTimeTestCase::Report (const std::string how,
 }
 
 
-//----------------------------
-//
-// TypeId test suites
-
+/**
+ * \ingroup typeid-tests
+ * 
+ * TypeId test suites.
+ */
 class TypeIdTestSuite : public TestSuite
 {
 public:
@@ -447,9 +476,15 @@ TypeIdTestSuite::TypeIdTestSuite ()
   AddTestCase (new DeprecatedAttributeTestCase, QUICK);
 }
 
-static TypeIdTestSuite g_TypeIdTestSuite;
+/// Static variable for test initialization.
+static TypeIdTestSuite g_TypeIdTestSuite; 
 
 
+/**
+ * \ingroup typeid-tests
+ * 
+ * TypeId performance test suites.
+ */
 class TypeIdPerformanceSuite : public TestSuite
 {
 public:
@@ -462,4 +497,5 @@ TypeIdPerformanceSuite::TypeIdPerformanceSuite ()
   AddTestCase (new LookupTimeTestCase, QUICK);
 }
 
+/// Static variable for test initialization.
 static TypeIdPerformanceSuite g_TypeIdPerformanceSuite;

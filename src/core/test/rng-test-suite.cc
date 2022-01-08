@@ -28,6 +28,26 @@
 
 using namespace ns3;
 
+/**
+ * \file
+ * \ingroup rng-tests
+ * Random number generators tests.
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup rng-tests Random number generators tests
+ */
+
+/**
+ * \ingroup rng-tests
+ * 
+ * Fill an array with increasing values, in the [start, end] range.
+ * \param array The array to fill.
+ * \param n The size of the array.
+ * \param start The start value.
+ * \param end The end value.
+ */
 void
 FillHistoRangeUniformly (double *array, uint32_t n, double start, double end)
 {
@@ -41,19 +61,29 @@ FillHistoRangeUniformly (double *array, uint32_t n, double start, double end)
     }
 }
 
-// ===========================================================================
-// Test case for uniform distribution random number generator
-// ===========================================================================
+/**
+ * \ingroup core-tests
+ * 
+ * Test case for uniform distribution random number generator.
+ */
 class RngUniformTestCase : public TestCase
 {
 public:
+  /// Number of runs.
   static const uint32_t N_RUNS = 5;
+  /// Number of bins.
   static const uint32_t N_BINS = 50;
+  /// Number of measurements.
   static const uint32_t N_MEASUREMENTS = 1000000;
 
   RngUniformTestCase ();
   virtual ~RngUniformTestCase ();
 
+  /**
+   * Run a chi-squared test on the results of the random number generator.
+   * \param u The random number generaor.
+   * \return the chi-squared test result.
+   */
   double ChiSquaredTest (Ptr<UniformRandomVariable> u);
 
 private:
@@ -122,19 +152,29 @@ RngUniformTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 }
 
-// ===========================================================================
-// Test case for normal distribution random number generator
-// ===========================================================================
+/**
+ * \ingroup rng-tests
+ * 
+ * Test case for normal distribution random number generator.
+ */
 class RngNormalTestCase : public TestCase
 {
 public:
+  /// Number of runs.
   static const uint32_t N_RUNS = 5;
+  /// Number of bins.
   static const uint32_t N_BINS = 50;
+  /// Number of measurements.
   static const uint32_t N_MEASUREMENTS = 1000000;
 
   RngNormalTestCase ();
   virtual ~RngNormalTestCase ();
 
+  /**
+   * Run a chi-squared test on the results of the random number generator.
+   * \param n The random number generaor.
+   * \return the chi-squared test result.
+   */
   double ChiSquaredTest (Ptr<NormalRandomVariable> n);
 
 private:
@@ -217,19 +257,29 @@ RngNormalTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 }
 
-// ===========================================================================
-// Test case for exponential distribution random number generator
-// ===========================================================================
+/**
+ * \ingroup rng-tests
+ * 
+ * Test case for exponential distribution random number generator.
+ */
 class RngExponentialTestCase : public TestCase
 {
 public:
+  /// Number of runs.
   static const uint32_t N_RUNS = 5;
+  /// Number of bins.
   static const uint32_t N_BINS = 50;
+  /// Number of measurements.
   static const uint32_t N_MEASUREMENTS = 1000000;
 
   RngExponentialTestCase ();
   virtual ~RngExponentialTestCase ();
 
+  /**
+   * Run a chi-squared test on the results of the random number generator.
+   * \param n The random number generaor.
+   * \return the chi-squared test result.
+   */
   double ChiSquaredTest (Ptr<ExponentialRandomVariable> n);
 
 private:
@@ -311,19 +361,29 @@ RngExponentialTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 }
 
-// ===========================================================================
-// Test case for pareto distribution random number generator
-// ===========================================================================
+/**
+ * \ingroup rng-tests
+ * 
+ * Test case for pareto distribution random number generator.
+ */
 class RngParetoTestCase : public TestCase
 {
 public:
+  /// Number of runs.
   static const uint32_t N_RUNS = 5;
+  /// Number of bins.
   static const uint32_t N_BINS = 50;
+  /// Number of measurements.
   static const uint32_t N_MEASUREMENTS = 1000000;
 
   RngParetoTestCase ();
   virtual ~RngParetoTestCase ();
 
+  /**
+   * Run a chi-squared test on the results of the random number generator.
+   * \param p The random number generaor.
+   * \return the chi-squared test result.
+   */
   double ChiSquaredTest (Ptr<ParetoRandomVariable> p);
 
 private:
@@ -410,6 +470,11 @@ RngParetoTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
 }
 
+/**
+ * \ingroup rng-tests
+ *  
+ * \brief The random number generators Test Suite.
+ */
 class RngTestSuite : public TestSuite
 {
 public:
@@ -425,4 +490,4 @@ RngTestSuite::RngTestSuite ()
   AddTestCase (new RngParetoTestCase, TestCase::QUICK);
 }
 
-static RngTestSuite rngTestSuite;
+static RngTestSuite g_rngTestSuite; //!< Static variable for test initialization

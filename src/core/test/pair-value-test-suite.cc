@@ -38,20 +38,40 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("PairTestSuite");
 
+/**
+ * \file
+ * \ingroup pair-tests
+ * Pairs tests.
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup pair-tests Pairs tests
+ */
+
+/**
+ * \ingroup pair-tests
+ * 
+ * Object holding pairs of values.
+ */
 class PairObject : public Object
 {
 public:
   PairObject ();
   virtual ~PairObject ();
 
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static
   TypeId GetTypeId ();
 
   friend std::ostream &operator <<(std::ostream &os, const PairObject &obj);
 
 private:
-  std::pair <std::string, std::string> m_stringPair;
-  std::pair <double, int> m_doubleIntPair;
+  std::pair <std::string, std::string> m_stringPair;  //!< A string pair.
+  std::pair <double, int> m_doubleIntPair;             //!< A pair of double, int.
 };
 
 PairObject::PairObject ()
@@ -84,6 +104,13 @@ PairObject::GetTypeId ()
   return tid;
 }
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] obj The PairObject.
+ * \returns The reference to the output stream.
+ */
 std::ostream &
 operator << (std::ostream &os, const PairObject &obj)
 {
@@ -92,7 +119,11 @@ operator << (std::ostream &os, const PairObject &obj)
   return os;
 }
 
-/* Test instantiation, initialization, access */
+/**
+ * \ingroup pair-tests
+ * 
+ * Pair test - Test instantiation, initialization, access.
+ */
 class PairValueTestCase : public TestCase
 {
 public:
@@ -132,6 +163,11 @@ PairValueTestCase::DoRun ()
 
 }
 
+/**
+ * \ingroup pair-tests
+ * 
+ * Pair test - test setting through attribute interface.
+ */
 class PairValueSettingsTestCase : public TestCase
 {
 public:
@@ -160,6 +196,11 @@ PairValueSettingsTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ ((oss.str ()), (ref.str ()), "Pairs not correctly set");
 }
 
+/**
+ * \ingroup pair-tests
+ *  
+ * \brief The pair-value Test Suite.
+ */
 class PairValueTestSuite : public TestSuite
 {
   public:
@@ -173,4 +214,4 @@ PairValueTestSuite::PairValueTestSuite ()
   AddTestCase (new PairValueSettingsTestCase (), TestCase::QUICK);
 }
 
-static PairValueTestSuite pairValueTestSuite; //!< Static variable for test initialization
+static PairValueTestSuite g_pairValueTestSuite; //!< Static variable for test initialization

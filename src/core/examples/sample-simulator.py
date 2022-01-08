@@ -44,13 +44,21 @@ class MyModel(object):
         print ("Member method received event at", ns.core.Simulator.Now().GetSeconds(), \
             "s started at", value, "s")
 
+## Example function - starts MyModel.
+## \param [in] model The instance of MyModel
+## \return None.
 def ExampleFunction(model):
     print ("ExampleFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
     model.Start()
 
+## Example function - triggered at a random time.
+## \param [in] model The instance of MyModel
+## \return None.
 def RandomFunction(model):
     print ("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
 
+## Example function - triggered if an event is canceled (should not be called).
+## \return None.
 def CancelledEvent():
     print ("I should never be called... ")
 

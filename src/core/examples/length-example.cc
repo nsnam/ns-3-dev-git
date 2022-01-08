@@ -31,15 +31,19 @@
  */
 
 using namespace ns3;
-using Unit = Length::Unit;
 
+/**
+ * \ingroup core-examples
+ * \ingroup length
+ * \brief Demonstrates the use of ns3::Length constructors.
+ */
 void Constructors ()
 {
     double input = 5;
-    Length::Quantity quantity (input, Unit::Meter);
+    Length::Quantity quantity (input, Length::Unit::Meter);
 
     std::cout << "\nConstructors:"
-              << "\nLength (" << input << ", Unit::Meter) = " << Length (input, Unit::Meter)
+              << "\nLength (" << input << ", Unit::Meter) = " << Length (input, Length::Unit::Meter)
               << "\nLength (" << input << ", \"m\") = " << Length (input, "m")
               << "\nLength (" << input << ", \"meter\") = " << Length (input, "meter")
               << "\nLength (Quantity(" << input << ", Unit::Meter)) = " << Length (quantity)
@@ -52,20 +56,30 @@ void Constructors ()
               << std::endl;
 }
 
+/**
+ * \ingroup core-examples
+ * \ingroup length
+ * \brief Demonstrates the use of ns3::Length conversions.
+ */
 void Conversions ()
 {
   //construct length using value and unit
-  Length moonDistance (3.84402e8, Unit::Meter);
+  Length moonDistance (3.84402e8, Length::Unit::Meter);
 
   //Demonstrate conversion to various units
   std::cout << "\nConversions: "
             << "\nDistance to moon = " << moonDistance
-            << "\nIn Feet: " << moonDistance.As (Unit::Foot)
-            << "\nIn Miles: " << moonDistance.As (Unit::Mile)
-            << "\nIn Kilometers: " << moonDistance.As (Unit::Kilometer)
+            << "\nIn Feet: " << moonDistance.As (Length::Unit::Foot)
+            << "\nIn Miles: " << moonDistance.As (Length::Unit::Mile)
+            << "\nIn Kilometers: " << moonDistance.As (Length::Unit::Kilometer)
             << std::endl;
 }
 
+/**
+ * \ingroup core-examples
+ * \ingroup length
+ * \brief Demonstrates the use of ns3::Length arithmetic operators.
+ */
 void ArithmeticOperators ()
 {
   double scale = 10;
@@ -89,6 +103,11 @@ void ArithmeticOperators ()
 
 }
 
+/**
+ * \ingroup core-examples
+ * \ingroup length
+ * \brief Demonstrates the use of ns3::Length equality operators.
+ */
 void EqualityOperators ()
 {
   Length oneMeter = Meters (1);
@@ -119,6 +138,11 @@ void EqualityOperators ()
             << std::endl;
 }
 
+/**
+ * \ingroup core-examples
+ * \ingroup length
+ * \brief Demonstrates the use of ns3::Length multiplications and divisions.
+ */
 void DivAndMod ()
 {
   //construct length using helper function
@@ -128,16 +152,16 @@ void DivAndMod ()
 
   int64_t count = Div (totalLen, pieceLen, &remainder);
 
-  std::cout << "\nHow many times can a " << totalLen.As (Unit::Foot) << " length "
-            << "be split into " << pieceLen.As (Unit::Foot) << " sized pieces? "
+  std::cout << "\nHow many times can a " << totalLen.As (Length::Unit::Foot) << " length "
+            << "be split into " << pieceLen.As (Length::Unit::Foot) << " sized pieces? "
             << count
-            << "\nremainder: " << remainder.As (Unit::Foot)
+            << "\nremainder: " << remainder.As (Length::Unit::Foot)
             << std::endl;
 
   std::cout << "\nHow much remains after splitting a "
-            << totalLen.As (Unit::Foot) << " length into "
-            << pieceLen.As (Unit::Foot) << " sized pieces? "
-            << Mod (totalLen, pieceLen).As (Unit::Foot)
+            << totalLen.As (Length::Unit::Foot) << " length into "
+            << pieceLen.As (Length::Unit::Foot) << " sized pieces? "
+            << Mod (totalLen, pieceLen).As (Length::Unit::Foot)
             << std::endl;
 }
 

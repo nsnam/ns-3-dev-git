@@ -42,24 +42,48 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("AttributeContainerTestSuite");
 
+/**
+ * \file
+ * \ingroup attribute-tests
+ * Attribute container test suite
+ */
+
+/**
+ * \ingroup attribute-tests
+ * Attribute container object.
+ */
 class AttributeContainerObject : public Object
 {
 public:
   AttributeContainerObject ();
   virtual ~AttributeContainerObject ();
 
+  /**
+   * Reverses the list of doubles.
+   */
   void ReverseList ();
 
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */  
   static
   TypeId GetTypeId ();
 
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param [in] os The reference to the output stream.
+   * \param [in] obj The AttributeContainer object.
+   * \returns The reference to the output stream.
+   */
   friend std::ostream &operator <<(std::ostream &os, const AttributeContainerObject &obj);
 
 private:
-  std::list<double> m_doublelist;
-  std::vector<int> m_intvec;
+  std::list<double> m_doublelist; //!< List of doubles.
+  std::vector<int> m_intvec;      //!< Vector of ints.
   // TODO(jared): need PairValue attributevalue to handle std::pair elements
-  std::map<std::string, int> m_map;
+  std::map<std::string, int> m_map; //!< Map of <std::string, int>.
 };
 
 AttributeContainerObject::AttributeContainerObject ()
@@ -93,7 +117,7 @@ AttributeContainerObject::GetTypeId ()
                    AttributeContainerValue <PairValue <StringValue, IntegerValue> > (),
                    MakeAttributeContainerAccessor <PairValue <StringValue, IntegerValue> > (&AttributeContainerObject::m_map),
                    MakeAttributeContainerChecker<PairValue <StringValue, IntegerValue> > (
-                     MakePairChecker<StringValue, IntegerValue> (MakeStringChecker (), MakeIntegerChecker<int> ())))
+                   MakePairChecker<StringValue, IntegerValue> (MakeStringChecker (), MakeIntegerChecker<int> ())))
     ;
   return tid;
 }
@@ -121,8 +145,15 @@ operator << (std::ostream &os, const AttributeContainerObject &obj)
   return os;
 }
 
-// this handles mixed constness and compatible, yet
-// distinct numerical classes (like int and long)
+/**
+ * \ingroup attribute-tests
+ *  
+ * This function handles mixed constness and compatible, yet
+ * distinct numerical classes (like int and long)
+ * \param x The left operand.
+ * \param y The right operand.
+ * \return true if the pairs have the same numerical values.
+ */
 template <class A, class B, class C, class D>
 bool
 operator ==(const std::pair<A, B> &x, const std::pair<C, D> &y)
@@ -130,7 +161,11 @@ operator ==(const std::pair<A, B> &x, const std::pair<C, D> &y)
   return x.first == y.first && x.second == y.second;
 }
 
-/* Test instantiation, initialization, access */
+/**
+ * \ingroup attribute-tests
+ *  
+ * Test AttributeContainer instantiation, initialization, access
+ */
 class AttributeContainerTestCase : public TestCase
 {
 public:
@@ -232,7 +267,11 @@ AttributeContainerTestCase::DoRun ()
   }
 }
 
-// test serdes functions
+/**
+ * \ingroup attribute-tests
+ *  
+ * Attribute serialization and deserialization TestCase.
+ */
 class AttributeContainerSerializationTestCase : public TestCase
 {
 public:
@@ -318,6 +357,11 @@ AttributeContainerSerializationTestCase::DoRun (void)
   }
 }
 
+/**
+ * \ingroup attribute-tests
+ *  
+ * Attribute set and get TestCase.
+ */
 class AttributeContainerSetGetTestCase : public TestCase
 {
 public:
@@ -416,6 +460,11 @@ AttributeContainerSetGetTestCase::DoRun (void)
   }
 }
 
+/**
+ * \ingroup attribute-tests
+ *  
+ * Attribute attribute container TestCase.
+ */
 class AttributeContainerTestSuite : public TestSuite
 {
   public:
@@ -430,4 +479,4 @@ AttributeContainerTestSuite::AttributeContainerTestSuite ()
   AddTestCase (new AttributeContainerSetGetTestCase (), TestCase::QUICK);
 }
 
-static AttributeContainerTestSuite AttributeContainerTestSuite; //!< Static variable for test initialization
+static AttributeContainerTestSuite g_attributeContainerTestSuite; //!< Static variable for test initialization

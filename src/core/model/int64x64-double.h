@@ -79,20 +79,26 @@ public:
   inline int64x64_t ()
     : _v (0)
   {}
-  /**@{*/
   /**
-   * Construct from a floating point value.
-   *
-   * \param [in] v Floating value to represent
+   * \name Construct from a floating point value.
    */
-  inline int64x64_t (double v)
-    : _v (v)
+  /**
+   * @{
+   * Constructor from a floating point.
+   *
+   * \param [in] value Floating value to represent.
+   */
+  inline int64x64_t (double value)
+    : _v (value)
   {}
-  inline int64x64_t (long double v)
-    : _v (v)
+  inline int64x64_t (long double value)
+    : _v (value)
   {}
   /**@}*/
 
+  /**
+   * \name Construct from an integral type.
+   */
   /**@{*/
   /**
    * Construct from an integral type.
@@ -281,7 +287,6 @@ private:
   /**
    * \name Arithmetic Operators
    * Arithmetic operators for int64x64_t.
-   * @{
    */
   /*
    * @{
@@ -290,15 +295,32 @@ private:
    *  \param [in] rhs Right hand argument
    *  \return The result of the operator.
    */
-  friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
+  // *NS_CHECK_STYLE_OFF*
+  friend inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v == rhs._v; };
+  friend inline bool operator <  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v < rhs._v; };
+  friend inline bool operator >  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v > rhs._v; };
 
-  friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-
-  friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator /= (      int64x64_t & lhs, const int64x64_t & rhs);
+  friend inline int64x64_t & operator += ( int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v += rhs._v;
+      return lhs;
+    };
+  friend inline int64x64_t & operator -= ( int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v -= rhs._v;
+      return lhs;
+    };
+  friend inline int64x64_t & operator *= ( int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v *= rhs._v;
+      return lhs;
+    };
+  friend inline int64x64_t & operator /= ( int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v /= rhs._v;
+      return lhs;
+    };
+  // *NS_CHECK_STYLE_ON*
   /**@}*/
 
   /**
@@ -311,128 +333,15 @@ private:
    *  \param [in] lhs Left hand argument
    *  \return The result of the operator.
    */
-  friend int64x64_t   operator -  (const int64x64_t & lhs);
-  friend int64x64_t   operator !  (const int64x64_t & lhs);
+  friend inline int64x64_t   operator +  (const int64x64_t & lhs) { return lhs; };
+  friend inline int64x64_t   operator -  (const int64x64_t & lhs) { return int64x64_t (-lhs._v); };
+  friend inline int64x64_t   operator !  (const int64x64_t & lhs) { return int64x64_t (!lhs._v); };
   /**@}*/
 
   long double _v;  //!< The Q64.64 value.
 
 };  // class int64x64_t
 
-
-/*
- * \ingroup highprec
- * Equality operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v == rhs._v;
-}
-/**
- * \ingroup highprec
- * Less than operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v < rhs._v;
-}
-/**
- * \ingroup highprec
- * Greater operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v > rhs._v;
-}
-
-/**
- * \ingroup highprec
- * Compound addition operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v += rhs._v;
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound subtraction operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v -= rhs._v;
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound multiplication operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v *= rhs._v;
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound division operator
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v /= rhs._v;
-  return lhs;
-}
-
-/**
- * \ingroup highprec
- * Unary plus operator
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator + (const int64x64_t & lhs)
-{
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Unary negation operator (change sign operator)
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator - (const int64x64_t & lhs)
-{
-  return int64x64_t (-lhs._v);
-}
-/**
- * \ingroup highprec
- * Logical not operator
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator ! (const int64x64_t & lhs)
-{
-  return int64x64_t (!lhs._v);
-}
 
 
 } // namespace ns3

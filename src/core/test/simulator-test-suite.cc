@@ -27,26 +27,70 @@
 
 using namespace ns3;
 
+/**
+ * \file
+ * \ingroup simulator-tests
+ * Simulator class test suite
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup simulator-tests Simulator class tests
+ */
+
+/**
+ * \ingroup simulator-tests
+ *  
+ * \brief Check that basic event handling is working with different Simulator implementations.
+ */
 class SimulatorEventsTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor.
+   * \param schedulerFactory Scheduler factory.
+   */
   SimulatorEventsTestCase (ObjectFactory schedulerFactory);
   virtual void DoRun (void);
-  void EventA (int a);
-  void EventB (int b);
-  void EventC (int c);
-  void EventD (int d);
+  /**
+   * Test Event.
+   * \param value Event parameter.
+   * @{
+   */
+  void EventA (int value);
+  void EventB (int value);
+  void EventC (int value);
+  void EventD (int value);
+  /** @} */
+
+  /**
+   * Test Event.
+   */
   void Eventfoo0 (void);
+
+  /**
+   * Get the simulator time.
+   * \return The actual time [ms].
+   */
   uint64_t NowUs (void);
-  void destroy (void);
-  bool m_b;
+  /**
+   * Checks that the events has been detroyed.
+   */
+  void Destroy (void);
+  /**
+   * Checks that events are properly handled.
+   * @{
+   */
   bool m_a;
+  bool m_b;
   bool m_c;
   bool m_d;
-  EventId m_idC;
   bool m_destroy;
-  EventId m_destroyId;
-  ObjectFactory m_schedulerFactory;
+  /** @} */
+
+  EventId m_idC;        //!< Event C.
+  EventId m_destroyId;  //!< Event to check event lifetime.
+  ObjectFactory m_schedulerFactory; //!< Scheduler factory.
 };
 
 SimulatorEventsTestCase::SimulatorEventsTestCase (ObjectFactory schedulerFactory)
@@ -106,7 +150,7 @@ SimulatorEventsTestCase::Eventfoo0 (void)
 {}
 
 void
-SimulatorEventsTestCase::destroy (void)
+SimulatorEventsTestCase::Destroy (void)
 {
   if (m_destroyId.IsExpired ())
     {
@@ -146,17 +190,17 @@ SimulatorEventsTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (anotherId.IsExpired (), true, "Event was removed: it is now expired");
 
   m_destroy = false;
-  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::destroy, this);
+  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::Destroy, this);
   NS_TEST_EXPECT_MSG_EQ (!m_destroyId.IsExpired (), true, "Event should not have expired yet");
   m_destroyId.Cancel ();
   NS_TEST_EXPECT_MSG_EQ (m_destroyId.IsExpired (), true, "Event was canceled: should have expired now");
 
-  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::destroy, this);
+  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::Destroy, this);
   NS_TEST_EXPECT_MSG_EQ (!m_destroyId.IsExpired (), true, "Event should not have expired yet");
   Simulator::Remove (m_destroyId);
   NS_TEST_EXPECT_MSG_EQ (m_destroyId.IsExpired (), true, "Event was canceled: should have expired now");
 
-  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::destroy, this);
+  m_destroyId = Simulator::ScheduleDestroy (&SimulatorEventsTestCase::Destroy, this);
   NS_TEST_EXPECT_MSG_EQ (!m_destroyId.IsExpired (), true, "Event should not have expired yet");
 
   Simulator::Run ();
@@ -168,20 +212,36 @@ SimulatorEventsTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_destroy, true, "Event should have run");
 }
 
+
+/**
+ * \ingroup simulator-tests
+ *  
+ * \brief Check that all templates are instantiated correctly.
+ * 
+ * This is a compilation test, it cannot fail at runtime.
+ */
 class SimulatorTemplateTestCase : public TestCase
 {
 public:
   SimulatorTemplateTestCase ();
-  // only here for testing of Ptr<>
-  void Ref (void) const
-  {}
-  void Unref (void) const
-  {}
+  /**
+   * Ref and Unref - only here for testing of Ptr<>
+   * 
+   * @{
+   */
+  void Ref (void) const {};
+  void Unref (void) const {};
+  /** @} */
 
 private:
   virtual void DoRun (void);
 
   /* *NS_CHECK_STYLE_OFF* */
+  /**
+   * Function used for scheduling.
+   * 
+   * @{
+   */
   void bar0 (void) {}
   void bar1 (int) {}
   void bar2 (int, int) {}
@@ -215,10 +275,16 @@ private:
   void cbaz3c (const int &, const int &, const int &) const {}
   void cbaz4c (const int &, const int &, const int &, const int &) const {}
   void cbaz5c (const int &, const int &, const int &, const int &, const int &) const {}
+  /** @} */
   /* *NS_CHECK_STYLE_ON* */
 
 };
 
+/**
+  * Function used for scheduling.
+  * 
+  * @{
+  */
 static void foo0 (void)
 {}
 static void foo1 (int)
@@ -251,6 +317,7 @@ static void cber4 (const int &, const int &, const int &, const int &)
 {}
 static void cber5 (const int &, const int &, const int &, const int &, const int &)
 {}
+/** @} */
 
 SimulatorTemplateTestCase::SimulatorTemplateTestCase ()
   : TestCase ("Check that all templates are instantiated correctly. This is a compilation test, it cannot fail at runtime.")
@@ -463,6 +530,12 @@ SimulatorTemplateTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+
+/**
+ * \ingroup simulator-tests
+ *  
+ * \brief The simulator Test Suite.
+ */
 class SimulatorTestSuite : public TestSuite
 {
 public:
@@ -482,4 +555,6 @@ public:
     factory.SetTypeId (PriorityQueueScheduler::GetTypeId ());
     AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
   }
-} g_simulatorTestSuite;
+};
+
+static SimulatorTestSuite g_simulatorTestSuite; //!< Static variable for test initialization

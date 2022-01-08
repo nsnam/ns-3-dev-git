@@ -193,7 +193,6 @@ set(source_files
     model/rng-seed-manager.cc
     model/rng-stream.cc
     model/command-line.cc
-    model/type-name.cc
     model/attribute.cc
     model/boolean.cc
     model/integer.cc

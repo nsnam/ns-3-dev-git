@@ -50,17 +50,19 @@ std::string TypeNameGet (void)
  * \returns The numeric type name as a string.
  * @{
  */
-template <> std::string TypeNameGet< int8_t  > (void);
-template <> std::string TypeNameGet< int16_t > (void);
-template <> std::string TypeNameGet< int32_t > (void);
-template <> std::string TypeNameGet< int64_t > (void);
-template <> std::string TypeNameGet< uint8_t > (void);
-template <> std::string TypeNameGet< uint16_t> (void);
-template <> std::string TypeNameGet< uint32_t> (void);
-template <> std::string TypeNameGet< uint64_t> (void);
-template <> std::string TypeNameGet< float   > (void);
-template <> std::string TypeNameGet< double  > (void);
-/**@}*/
+// *NS_CHECK_STYLE_OFF*
+template <> inline std::string TypeNameGet< int8_t  > (void) { return "int8_t"  ; };
+template <> inline std::string TypeNameGet< int16_t > (void) { return "int16_t" ; };
+template <> inline std::string TypeNameGet< int32_t > (void) { return "int32_t" ; };
+template <> inline std::string TypeNameGet< int64_t > (void) { return "int64_t" ; };
+template <> inline std::string TypeNameGet< uint8_t > (void) { return "uint8_t" ; };
+template <> inline std::string TypeNameGet< uint16_t> (void) { return "uint16_t"; };
+template <> inline std::string TypeNameGet< uint32_t> (void) { return "uint32_t"; };
+template <> inline std::string TypeNameGet< uint64_t> (void) { return "uint64_t"; };
+template <> inline std::string TypeNameGet< float   > (void) { return "float"   ; };
+template <> inline std::string TypeNameGet< double  > (void) { return "double"  ; };
+// *NS_CHECK_STYLE_ON*
+/** @} */
 
 } // namespace ns3
 

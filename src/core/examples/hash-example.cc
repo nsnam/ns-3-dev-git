@@ -111,7 +111,7 @@ namespace Hash {
 /**
  * \ingroup hash
  *  Namespace for hasher-example.
-*/
+ */
 namespace Example {
 
 /**
@@ -386,7 +386,7 @@ public:
   /**
    * Time and report the execution of one hash across the entire Dictionary.
    *
-   * \param [in] hindex Index of the hash Collider to use.
+   * \param [in] collider The hash Collider to use.
    */
   void TimeOne (const Collider & collider)
   {

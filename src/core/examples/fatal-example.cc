@@ -26,13 +26,19 @@
 
 /**
  * \file
+ * \defgroup fatal-example Core example: NS_FATAL error handlers
  * \ingroup core-examples
- * \ingroup ptr
+ * \ingroup fatal
+ * 
  * Example program illustrating use of the NS_FATAL error handlers.
  */
 
 using namespace ns3;
 
+/**
+ * \ingroup fatal-example
+ * \brief Triggers a fatal error without message, deferring termination.
+ */
 void
 FatalNoMsg (void)
 {
@@ -41,6 +47,10 @@ FatalNoMsg (void)
   NS_FATAL_ERROR_NO_MSG_CONT ();
 }
 
+/**
+ * \ingroup fatal-example
+ * \brief Triggers a fatal error with an error message, deferring termination.
+ */
 void
 FatalCont (void)
 {
@@ -49,6 +59,10 @@ FatalCont (void)
   NS_FATAL_ERROR_CONT ("fatal error, but continuing");
 }
 
+/**
+ * \ingroup fatal-example
+ * \brief Triggers a fatal error with message, and terminating.
+ */
 void
 Fatal (void)
 {

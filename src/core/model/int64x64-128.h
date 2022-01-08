@@ -20,14 +20,24 @@
 #include "ns3/core-config.h"
 
 #if !defined(INT64X64_128_H) && defined (INT64X64_USE_128) && !defined(PYTHON_SCAN)
+/**
+ * \ingroup highprec
+ * Use uint128_t for int64x64_t implementation
+ */
 #define INT64X64_128_H
 
 #include <stdint.h>
 #include <cmath>  // pow
 
 #if defined(HAVE___UINT128_T) && !defined(HAVE_UINT128_T)
+/**
+ * \ingroup highprec
+ * Some compilers do not have this defined, so we define it.
+ * @{
+ */
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
+/** @} */
 #endif
 
 /**
@@ -89,10 +99,13 @@ public:
   {}
   /**
    * \name Construct from a floating point value.
+   */
+  /**
+   * @{
+   * Constructor from a floating point.
    *
    * \param [in] value Floating value to represent.
    */
-  /**@{*/
   inline int64x64_t (const double value)
   {
     const int64x64_t tmp ((long double)value);
@@ -130,10 +143,13 @@ public:
 
   /**
    * \name Construct from an integral type.
+   */
+  /**@{*/
+  /**
+   * Construct from an integral type.
    *
    * \param [in] v Integer value to represent.
    */
-  /**@{*/
   inline int64x64_t (const int v)
     : _v (v)
   {
@@ -164,6 +180,9 @@ public:
   {
     _v <<= 64;
   }
+  inline int64x64_t (const int128_t v)
+    : _v (v)
+  {}
   /**@}*/
 
   /**
@@ -304,15 +323,32 @@ private:
    *  \param [in] rhs Right hand argument
    *  \return The result of the operator.
    */
-  friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
+  // *NS_CHECK_STYLE_OFF*
+  friend inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v == rhs._v; };
+  friend inline bool operator <  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v < rhs._v; };
+  friend inline bool operator >  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v > rhs._v; };
 
-  friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-
-  friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);
-  friend int64x64_t & operator /= (      int64x64_t & lhs, const int64x64_t & rhs);
+  friend inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v += rhs._v;
+       return lhs;
+    };
+  friend inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs._v -= rhs._v;
+      return lhs;
+    };
+  friend inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs.Mul (rhs);
+      return lhs;
+    };
+  friend inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
+    {
+      lhs.Div (rhs);
+      return lhs;
+    };
+  // *NS_CHECK_STYLE_ON*
   /**@}*/
 
   /**
@@ -325,8 +361,9 @@ private:
    *  \param [in] lhs Left hand argument
    *  \return The result of the operator.
    */
-  friend int64x64_t   operator -  (const int64x64_t & lhs);
-  friend int64x64_t   operator !  (const int64x64_t & lhs);
+  friend inline int64x64_t   operator +  (const int64x64_t & lhs) { return lhs; };
+  friend inline int64x64_t   operator -  (const int64x64_t & lhs) { return int64x64_t (-lhs._v); };
+  friend inline int64x64_t   operator !  (const int64x64_t & lhs) { return int64x64_t (!lhs._v); };
   /**@}*/
 
   /**
@@ -385,133 +422,10 @@ private:
    */
   static uint128_t UmulByInvert (const uint128_t a, const uint128_t b);
 
-  /**
-   * Construct from an integral type.
-   *
-   * \param [in] v Integer value to represent.
-   */
-  inline int64x64_t (const int128_t v)
-    : _v (v)
-  {}
-
   int128_t _v;  //!< The Q64.64 value.
 
 };  // class int64x64_t
 
-
-/**
- * \ingroup highprec
- * Equality operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v == rhs._v;
-}
-/**
- * \ingroup highprec
- * Less than operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v < rhs._v;
-}
-/**
- * \ingroup highprec
- * Greater operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v > rhs._v;
-}
-
-/**
- * \ingroup highprec
- * Compound addition operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v += rhs._v;
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound subtraction operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs._v -= rhs._v;
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound multiplication operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs.Mul (rhs);
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Compound division operator.
- * \param [in] lhs Left hand argument
- * \param [in] rhs Right hand argument
- * \return The result of the operator.
- */
-inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
-{
-  lhs.Div (rhs);
-  return lhs;
-}
-
-/**
- * \ingroup highprec
- * Unary plus operator.
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator + (const int64x64_t & lhs)
-{
-  return lhs;
-}
-/**
- * \ingroup highprec
- * Unary negation operator (change sign operator).
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator - (const int64x64_t & lhs)
-{
-  return int64x64_t (-lhs._v);
-}
-/**
- * \ingroup highprec
- * Logical not operator.
- * \param [in] lhs Left hand argument
- * \return The result of the operator.
- */
-inline int64x64_t operator ! (const int64x64_t & lhs)
-{
-  return int64x64_t (!lhs._v);
-}
 
 
 } // namespace ns3

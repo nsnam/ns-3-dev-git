@@ -49,6 +49,13 @@ namespace test {
 namespace RandomVariable {
 
 /**
+ * \file
+ * \ingroup rng-tests
+ * Random number generator streams tests.
+ */
+
+/**
+ * \ingroup rng-tests
  * Base class for RandomVariableStream test suites.
  */
 class TestCaseBase : public TestCase
@@ -339,6 +346,7 @@ private:
 
 
 /**
+ * \ingroup rng-tests
  * Test case for uniform distribution random variable stream generator.
  */
 class UniformTestCase : public TestCaseBase
@@ -460,6 +468,7 @@ UniformTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic uniform distribution random variable stream generator
  */
 class UniformAntitheticTestCase : public TestCaseBase
@@ -535,6 +544,7 @@ UniformAntitheticTestCase::DoRun (void)
 
 }
 /**
+ * \ingroup rng-tests
  * Test case for constant random variable stream generator
  */
 class ConstantTestCase : public TestCaseBase
@@ -581,6 +591,7 @@ ConstantTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for sequential random variable stream generator
  */
 class SequentialTestCase : public TestCaseBase
@@ -637,6 +648,7 @@ SequentialTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for normal distribution random variable stream generator
  */
 class NormalTestCase : public TestCaseBase
@@ -718,6 +730,7 @@ NormalTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic normal distribution random variable stream generator
  */
 class NormalAntitheticTestCase : public TestCaseBase
@@ -801,6 +814,7 @@ NormalAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for exponential distribution random variable stream generator
  */
 class ExponentialTestCase : public TestCaseBase
@@ -877,6 +891,7 @@ ExponentialTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic exponential distribution random variable stream generator
  */
 class ExponentialAntitheticTestCase : public TestCaseBase
@@ -956,6 +971,7 @@ ExponentialAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for Pareto distribution random variable stream generator
  */
 class ParetoTestCase : public TestCaseBase
@@ -1043,6 +1059,7 @@ ParetoTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic Pareto distribution random variable stream generator
  */
 class ParetoAntitheticTestCase : public TestCaseBase
@@ -1134,6 +1151,7 @@ ParetoAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for Weibull distribution random variable stream generator
  */
 class WeibullTestCase : public TestCaseBase
@@ -1238,6 +1256,7 @@ WeibullTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic Weibull distribution random variable stream generator
  */
 class WeibullAntitheticTestCase : public TestCaseBase
@@ -1344,6 +1363,7 @@ WeibullAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for log-normal distribution random variable stream generator
  */
 class LogNormalTestCase : public TestCaseBase
@@ -1440,6 +1460,7 @@ LogNormalTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic log-normal distribution random variable stream generator
  */
 class LogNormalAntitheticTestCase : public TestCaseBase
@@ -1538,6 +1559,7 @@ LogNormalAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for gamma distribution random variable stream generator
  */
 class GammaTestCase : public TestCaseBase
@@ -1624,6 +1646,7 @@ GammaTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic gamma distribution random variable stream generator
  */
 class GammaAntitheticTestCase : public TestCaseBase
@@ -1714,6 +1737,7 @@ GammaAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for Erlang distribution random variable stream generator
  */
 class ErlangTestCase : public TestCaseBase
@@ -1803,6 +1827,7 @@ ErlangTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic Erlang distribution random variable stream generator
  */
 class ErlangAntitheticTestCase : public TestCaseBase
@@ -1896,6 +1921,7 @@ ErlangAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for Zipf distribution random variable stream generator
  */
 class ZipfTestCase : public TestCaseBase
@@ -1971,6 +1997,7 @@ ZipfTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic Zipf distribution random variable stream generator
  */
 class ZipfAntitheticTestCase : public TestCaseBase
@@ -2049,6 +2076,7 @@ ZipfAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for Zeta distribution random variable stream generator
  */
 class ZetaTestCase : public TestCaseBase
@@ -2108,6 +2136,7 @@ ZetaTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic Zeta distribution random variable stream generator
  */
 class ZetaAntitheticTestCase : public TestCaseBase
@@ -2170,6 +2199,7 @@ ZetaAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for deterministic random variable stream generator
  */
 class DeterministicTestCase : public TestCaseBase
@@ -2243,6 +2273,7 @@ DeterministicTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for empirical distribution random variable stream generator
  */
 class EmpiricalTestCase : public TestCaseBase
@@ -2335,6 +2366,7 @@ EmpiricalTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for antithetic empirical distribution random variable stream generator
  */
 class EmpiricalAntitheticTestCase : public TestCaseBase
@@ -2405,6 +2437,7 @@ EmpiricalAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * Test case for caching of Normal RV parameters (see issue #302)
  */
 class NormalCachingTestCase : public TestCaseBase
@@ -2437,6 +2470,7 @@ NormalCachingTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */ 
@@ -2489,7 +2523,7 @@ RandomVariableSuite::RandomVariableSuite ()
   AddTestCase (new NormalCachingTestCase);
 }
 
-static RandomVariableSuite randomVariableSuite;
+static RandomVariableSuite randomVariableSuite;  //!< Static variable for test initialization
 
 }  // namespace RandomVariable
 
