@@ -15,7 +15,6 @@ STANDARDLOGFILE=doxygen.log
 WARNINGSLOGFILE=doxygen.warnings.log
 # Default choice:  generate it
 LOG="$DIR/$WARNINGSLOGFILE"
-
 # Verbose log
 VERBLOG="$DIR/doxygen.verbose.log"
 
@@ -309,7 +308,10 @@ if [ $skip_doxy -eq 1 ]; then
 else
 
     # Modify doxygen.conf to generate all the warnings
-    # (We also suppress dot graphs, so shorten the run time.)
+    # We keep dot active to generate graphs in the documentaion
+    # (see for example PacketTagList) and warn about ill-formed
+    # graphs, but we disable all the doxygen-generated diagrams
+    # to shorten the run time.
 
     conf=doc/doxygen.conf
     cp $conf ${conf}.bak
@@ -317,12 +319,20 @@ else
 
     # doxygen.warnings.report.sh:
     EXTRACT_ALL = no
-    HAVE_DOT = no
-    CLASS_DIAGRAMS = no
     WARNINGS = no
+    WARN_LOGFILE = doc/$WARNINGSLOGFILE
     SOURCE_BROWSER = no
     HTML_OUTPUT = html-warn
-    WARN_LOGFILE = doc/$WARNINGSLOGFILE
+    CLASS_DIAGRAMS = no
+    CLASS_GRAPH = no
+    COLLABORATION_GRAPH = no
+    GROUP_GRAPHS = no
+    INCLUDE_GRAPH = no
+    INCLUDED_BY_GRAPH = no
+    CALL_GRAPH = no
+    CALLER_GRAPH = no
+    GRAPHICAL_HIERARCHY = no
+    DIRECTORY_GRAPH = no
 EOF
 
 
