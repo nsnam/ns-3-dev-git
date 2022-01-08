@@ -163,15 +163,15 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
     }
 
   auto errorTable = (ldpc ? AwgnErrorTableLdpc1458 : (size < m_threshold ? AwgnErrorTableBcc32 : AwgnErrorTableBcc1458));
-  auto itVector = errorTable[mcs];
-  auto itTable = std::find_if (itVector.begin(), itVector.end(),
+  const auto& itVector = errorTable[mcs];
+  auto itTable = std::find_if (itVector.cbegin (), itVector.cend (),
       [&roundedSnr](const std::pair<double, double>& element) {
           return element.first == roundedSnr;
       });
-  double minSnr = itVector.begin ()->first;
-  double maxSnr = (--itVector.end ())->first;
+  double minSnr = itVector.cbegin ()->first;
+  double maxSnr = (--itVector.cend ())->first;
   double per;
-  if (itTable == itVector.end ())
+  if (itTable == itVector.cend ())
     {
       if (roundedSnr < minSnr)
         {
@@ -184,7 +184,7 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
       else
         {
           double a = 0.0, b = 0.0, previousSnr = 0.0, nextSnr = 0.0;
-          for (auto i = itVector.begin (); i != itVector.end (); ++i)
+          for (auto i = itVector.cbegin (); i != itVector.cend (); ++i)
             {
               if (i->first < roundedSnr)
                 {

@@ -422,8 +422,8 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
 {
   NS_LOG_FUNCTION (this << channelWidth << band.first << band.second << staId << window.first << window.second);
   double psr = 1.0; /* Packet Success Rate */
-  auto niIt = nis->find (band)->second;
-  auto j = niIt.begin ();
+  const auto& niIt = nis->find (band)->second;
+  auto j = niIt.cbegin ();
   Time previous = j->first;
   WifiMode payloadMode = event->GetTxVector ().GetMode (staId);
   Time phyPayloadStart = j->first;
@@ -435,7 +435,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
   Time windowEnd = phyPayloadStart + window.second;
   double noiseInterferenceW = m_firstPowerPerBand.find (band)->second;
   double powerW = event->GetRxPowerW (band);
-  while (++j != niIt.end ())
+  while (++j != niIt.cend ())
     {
       Time current = j->first;
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
