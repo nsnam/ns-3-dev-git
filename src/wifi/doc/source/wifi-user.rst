@@ -35,15 +35,15 @@ from the bottom layer (Channel) up to the device layer (WifiNetDevice).
 
 To create a WifiNetDevice, users need to follow these steps:
 
-* Decide on which physical layer framework, the ``SpectrumWifiPhy`` or 
-  ``YansWifiPhy``, to use.  This will affect which Channel and Phy type to use. 
+* Decide on which physical layer framework, the ``SpectrumWifiPhy`` or
+  ``YansWifiPhy``, to use.  This will affect which Channel and Phy type to use.
 * Configure the Channel: Channel takes care of getting signal
   from one device to other devices on the same Wi-Fi channel.
   The main configurations of WifiChannel are propagation loss model and propagation delay model.
 * Configure the WifiPhy: WifiPhy takes care of actually sending and receiving wireless
   signal from Channel.  Here, WifiPhy decides whether each frame will be successfully
   decoded or not depending on the received signal strength and noise.  Thus, the main
-  configuration of WifiPhy is the error rate model, which is the one that actually 
+  configuration of WifiPhy is the error rate model, which is the one that actually
   calculates the probability of successfully decoding the frame based on the signal.
 * Configure WifiMac: this step is more related to the architecture and device level.
   The users configure the wifi architecture (i.e. ad-hoc or ap-sta) and whether QoS (802.11e),
@@ -74,7 +74,7 @@ default values in the simulator, and infrastructure mode::
   // and install Wifi devices.  Configure a Wifi standard to use, which
   // will align various parameters in the Phy and Mac to standard defaults.
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   // Declare NetDeviceContainers to hold the container returned by the helper
   NetDeviceContainer wifiStaDevices;
   NetDeviceContainer wifiApDevice;
@@ -85,8 +85,8 @@ default values in the simulator, and infrastructure mode::
   mac.SetType ("ns3::ApWifiMac");
   wifiApDevice = wifi.Install (phy, mac, wifiApNode);
 
-At this point, the 11 nodes have Wi-Fi devices configured, attached to a 
-common channel.  The rest of this section describes how additional 
+At this point, the 11 nodes have Wi-Fi devices configured, attached to a
+common channel.  The rest of this section describes how additional
 configuration may be performed.
 
 YansWifiChannelHelper
@@ -269,12 +269,9 @@ The following values for WifiStandard are defined in
   WIFI_STANDARD_80211b,
   WIFI_STANDARD_80211g,
   WIFI_STANDARD_80211p,
-  WIFI_STANDARD_80211n_2_4GHZ,
-  WIFI_STANDARD_80211n_5GHZ,
+  WIFI_STANDARD_80211n,
   WIFI_STANDARD_80211ac,
-  WIFI_STANDARD_80211ax_2_4GHZ,
-  WIFI_STANDARD_80211ax_5GHZ,
-  WIFI_STANDARD_80211ax_6GHZ
+  WIFI_STANDARD_80211ax
 
 By default, the WifiHelper (the typical use case for WifiPhy creation) will
 configure the WIFI_STANDARD_80211a standard by default.  Other values
@@ -323,7 +320,7 @@ Following are a few examples to clarify these rules:
 ::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   YansWifiPhyHelper phyHelper;
   phyHelper.Set ("ChannelSettings", StringValue ("{0, 40, WIFI_PHY_BAND_5GHZ, 0}"));
   // channel number unspecified
@@ -332,7 +329,7 @@ Following are a few examples to clarify these rules:
 ::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211ax);
   YansWifiPhyHelper phyHelper;
   phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_2_4GHZ, 0}"));
   // both channel number and width unspecified
@@ -388,10 +385,10 @@ map of ChannelNumber to the center frequency and channel width commonly
 known for that channel in practice.  For example:
 
 * Channel 1, when IEEE 802.11b is configured, corresponds to a channel
-  width of 22 MHz and a center frequency of 2412 MHz.  
+  width of 22 MHz and a center frequency of 2412 MHz.
 
-* Channel 36, when IEEE 802.11n is configured at 5 GHz, corresponds to 
-  a channel width of 20 MHz and a center frequency of 5180 MHz.  
+* Channel 36, when IEEE 802.11n is configured at 5 GHz, corresponds to
+  a channel width of 20 MHz and a center frequency of 5180 MHz.
 
 The following channel numbers are well-defined for 2.4 GHz standards:
 
@@ -453,7 +450,7 @@ The following channel numbers are well-defined for 6 GHz standards (802.11ax onl
 
 
 The channel number may be set either before or after creation of the
-WifiPhy object.  
+WifiPhy object.
 
 If an unknown channel number (other than zero) is configured, the
 simulator will exit with an error; for instance, such as:
@@ -474,7 +471,7 @@ such as:
 ::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   ...
   Ptr<WifiPhy> wifiPhy = ...;
   wifiPhy->SetAttribute ("ChannelSettings", StringValue ("{14, 20, BAND_5GHZ, 0}"));
@@ -577,7 +574,7 @@ For example the following user code configures a MAC that will be a non-AP STA w
 in an infrastructure network where the AP has SSID ``ns-3-ssid``::
 
     WifiHelper wifi;
-    wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+    wifi.SetStandard (WIFI_STANDARD_80211n);
 
     WifiMacHelper wifiMacHelper;
     Ssid ssid = Ssid ("ns-3-ssid");
@@ -638,7 +635,7 @@ UP   Access Category
 ===  ===============
 
 TOS and DSCP values map onto user priorities and access categories according
-to the following table.  
+to the following table.
 
 ============  ============  ==  ===============
 DiffServ PHB  TOS (binary)  UP  Access Category
@@ -671,7 +668,7 @@ So, for example,::
     destAddress.SetTos (0xc0);
 
 will map to CS6, User Priority 6, and Access Category AC_VO.
-Also, the ns3-wifi-ac-mapping test suite (defined in 
+Also, the ns3-wifi-ac-mapping test suite (defined in
 src/test/ns3wifi/wifi-ac-mapping-test-suite.cc) can provide additional
 useful information.
 
@@ -709,7 +706,7 @@ The ``WifiHelper::SetStandard`` method sets various default timing parameters as
 In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("HtMcs7"), "ControlMode", StringValue("HtMcs0"));
 
   //Install PHY and MAC
@@ -763,7 +760,7 @@ HT is an acronym for High Throughput, a term synonymous with the IEEE 802.11n
 standard.  Once the ``ns3::WifiHelper::Install`` has been called and the
 user sets the standard to a variant that supports HT capabilities (802.11n,
 802.11ac, or 802.11ax), an HT configuration object will automatically be
-created for the device.  The configuration object is used to store and 
+created for the device.  The configuration object is used to store and
 manage HT-specific attributes.
 
 802.11n/ac PHY layer can use either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter for a given device, the following lines of code could be used (in this example, it enables the support of a short guard interval for the first station)::
@@ -791,7 +788,7 @@ manage; therefore, this object is a placeholder for future growth.
 HE configuration
 ================
 
-IEEE 802.11ax is also known as High Efficiency (HE).  Once the ``ns3::WifiHelper::Install`` has been called and IEEE 802.11ax configured as the standard, an 
+IEEE 802.11ax is also known as High Efficiency (HE).  Once the ``ns3::WifiHelper::Install`` has been called and IEEE 802.11ax configured as the standard, an
 HE configuration object will automatically be created to manage HE-specific
 attributes for 802.11ax devices.
 
@@ -845,7 +842,7 @@ Finally, we manually place them by using the ``ns3::ListPositionAllocator``::
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11
-  wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -873,7 +870,7 @@ Finally, we manually place them by using the ``ns3::ListPositionAllocator``::
 
   // other set up (e.g. InternetStack, Application)
 
-Infrastructure (access point and clients) WifiNetDevice configuration 
+Infrastructure (access point and clients) WifiNetDevice configuration
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This is a typical example of how a user might configure an access point and a set of clients.
@@ -890,9 +887,9 @@ Each node is equipped with 802.11b Wi-Fi device::
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211b);
 
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default (); 
+  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11
-  wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
   YansWifiChannelHelper wifiChannel;
   // reference loss must be changed since 802.11b is operating at 2.4GHz

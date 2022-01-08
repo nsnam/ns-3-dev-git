@@ -35,7 +35,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
-packet-level abstraction of the PHY-level for different PHYs, corresponding to 
+packet-level abstraction of the PHY-level for different PHYs, corresponding to
 802.11a/b/e/g/n/ac/ax specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
@@ -56,18 +56,18 @@ The implementation is modular and provides roughly three sublayers of models:
   In |ns3|, the lower-level MAC is comprised of a **Frame Exchange Manager** hierarchy,
   a **Channel Access Manager** and a **MAC middle** entity.
 * the so-called **MAC high models**: they implement non-time-critical processes
-  in Wifi such as the MAC-level beacon generation, probing, and association 
+  in Wifi such as the MAC-level beacon generation, probing, and association
   state machines, and a set of **Rate control algorithms**.  In the literature,
-  this sublayer is sometimes called the **upper MAC** and consists of more 
-  software-oriented implementations vs. time-critical hardware implementations. 
+  this sublayer is sometimes called the **upper MAC** and consists of more
+  software-oriented implementations vs. time-critical hardware implementations.
 
-Next, we provide an design overview of each layer, shown in 
+Next, we provide an design overview of each layer, shown in
 Figure :ref:`wifi-architecture`.
 
 .. _wifi-architecture:
 
 .. figure:: figures/WifiArchitecture.*
-   
+
    *WifiNetDevice architecture*
 
 MAC high models
@@ -76,7 +76,7 @@ MAC high models
 There are presently three **MAC high models** that provide for the three
 (non-mesh; the mesh equivalent, which is a sibling of these with common
 parent ``ns3::RegularWifiMac``, is not discussed here) Wi-Fi topological
-elements - Access Point (AP) (``ns3::ApWifiMac``), 
+elements - Access Point (AP) (``ns3::ApWifiMac``),
 non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS) - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
@@ -95,7 +95,7 @@ configuration, an attribute ``QosSupported`` that allows
 configuration of 802.11e/WMM-style QoS support.
 
 There are also several **rate control algorithms** that can be used by the
-MAC low layer.  A complete list of available rate control algorithms is 
+MAC low layer.  A complete list of available rate control algorithms is
 provided in a separate section.
 
 MAC low layer
@@ -111,13 +111,13 @@ The **MAC low layer** is split into three main components:
 #. ``ns3::Txop`` and ``ns3::QosTxop`` which handle the packet queue.
    The ``ns3::Txop`` object is used by high MACs that are not QoS-enabled,
    and for transmission of frames (e.g., of type Management)
-   that the standard says should access the medium using the DCF. 
+   that the standard says should access the medium using the DCF.
    ``ns3::QosTxop`` is used by QoS-enabled high MACs.
 
 PHY layer models
 ================
 
-In short, the physical layer models are mainly responsible for modeling 
+In short, the physical layer models are mainly responsible for modeling
 the reception of packets and for tracking energy consumption.  There
 are typically three main components to packet reception:
 
@@ -146,10 +146,10 @@ include multiple technologies coexisting on the same channel.
 Scope and Limitations
 *********************
 
-The IEEE 802.11 standard [ieee80211]_ is a large specification, 
-and not all aspects are covered by |ns3|; the documentation of |ns3|'s 
-conformance by itself would lead to a very long document.  This section 
-attempts to summarize compliance with the standard and with behavior 
+The IEEE 802.11 standard [ieee80211]_ is a large specification,
+and not all aspects are covered by |ns3|; the documentation of |ns3|'s
+conformance by itself would lead to a very long document.  This section
+attempts to summarize compliance with the standard and with behavior
 found in practice.
 
 The physical layer and channel models operate on a per-packet basis, with
@@ -169,6 +169,7 @@ The following details pertain to the physical layer and channel models:
 * 802.11n/ac/ax beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
+* Channel Switch Announcement is not supported
 * Authentication and encryption are missing
 * Processing delays are not modeled
 * Channel bonding implementation only supports the use of the configured channel width
@@ -198,7 +199,7 @@ We organize these more detailed sections from the bottom-up, in terms of
 layering, by describing the channel and PHY models first, followed by
 the MAC models.
 
-We focus first on the choice between physical layer frameworks.  |ns3| 
+We focus first on the choice between physical layer frameworks.  |ns3|
 contains support for a Wi-Fi-only physical layer model called YansWifiPhy
 that offers no frequency-level decomposition of the signal.  For simulations
 that involve only Wi-Fi signals on the Wi-Fi channel, and that do not
@@ -211,12 +212,12 @@ similarly configured.
 The SpectrumWifiPhy framework uses the :ref:`sec-spectrum-module` channel
 framework.
 
-The YansWifiChannel is the only concrete channel model class in 
-the |ns3| wifi module.  The 
-``ns3::YansWifiChannel`` implementation uses the propagation loss and 
+The YansWifiChannel is the only concrete channel model class in
+the |ns3| wifi module.  The
+``ns3::YansWifiChannel`` implementation uses the propagation loss and
 delay models provided within the |ns3| :ref:`Propagation` module.
 In particular, a number of propagation models can be added (chained together,
-if multiple loss models are added) to the channel object, and a propagation 
+if multiple loss models are added) to the channel object, and a propagation
 delay model also added. Packets sent from a ``ns3::YansWifiPhy`` object
 onto the channel with a particular signal power, are copied to all of the
 other ``ns3::YansWifiPhy`` objects after the signal power is reduced due
@@ -225,11 +226,11 @@ transmission (serialization) delay and propagation delay due to
 any channel propagation delay model (typically due to speed-of-light
 delay between the positions of the devices).
 
-Only objects of ``ns3::YansWifiPhy`` may be attached to a 
-``ns3::YansWifiChannel``; therefore, objects modeling other 
+Only objects of ``ns3::YansWifiPhy`` may be attached to a
+``ns3::YansWifiChannel``; therefore, objects modeling other
 (interfering) technologies such as LTE are not allowed. Furthermore,
 packets from different channels do not interact; if a channel is logically
-configured for e.g. channels 5 and 6, the packets do not cause 
+configured for e.g. channels 5 and 6, the packets do not cause
 adjacent channel interference (even if their channel numbers overlap).
 
 WifiPhy and related models
@@ -247,7 +248,7 @@ and energy consumption.  The ``ns3::WifiPhy`` hooks to the ``ns3::FrameExchangeM
 object in the WifiNetDevice.
 
 There are currently two implementations of the ``WifiPhy``: the
-``ns3::YansWifiPhy`` and the ``ns3::SpectrumWifiPhy``.  They each work in 
+``ns3::YansWifiPhy`` and the ``ns3::SpectrumWifiPhy``.  They each work in
 conjunction with five other objects:
 
 * **PhyEntity**: Contains the amendment-specific part of the PHY processing
@@ -348,14 +349,14 @@ Class ``ns3::YansWifiPhy`` is responsible for taking packets passed to
 it from the MAC (the ``ns3::FrameExchangeManager`` object) and sending them onto the
 ``ns3::YansWifiChannel`` to which it is attached.  It is also responsible
 to receive packets from that channel, and, if reception is deemed to have
-been successful, to pass them up to the MAC. 
+been successful, to pass them up to the MAC.
 
-The energy of the signal intended to be received is 
+The energy of the signal intended to be received is
 calculated from the transmission power and adjusted based on the Tx gain
 of the transmitter, Rx gain of the receiver, and any path loss propagation
 model in effect.
 
-Class ``ns3::WifiPhyStateHelper`` manages the state machine of the PHY 
+Class ``ns3::WifiPhyStateHelper`` manages the state machine of the PHY
 layer, and allows other objects to hook as *listeners* to monitor PHY
 state.  The main use of listeners is for the MAC layer to know when
 the PHY is busy or not (for transmission and collision avoidance).
@@ -390,7 +391,7 @@ spatial reuse considerations.  Users are cautioned about the behavior of
 raising this threshold; namely, that all packets with power below this
 threshold will be discarded upon reception.
 
-In ``StartReceivePreamble ()``, the packet is immediately added 
+In ``StartReceivePreamble ()``, the packet is immediately added
 to the interference helper for signal-to-noise
 tracking, and then further reception steps are decided upon the state of
 the PHY.  In the case that the PHY is transmitting, for instance, the
@@ -411,13 +412,13 @@ an event ``PhyEntity::EndReceiveField ()`` is scheduled for the end of the
 preamble and the PHY is put into the CCA_BUSY state. Currently, there is only a
 simple threshold-based preamble detection model in ns-3,
 called ``ThresholdPreambleDetectionModel``.  If there is no preamble detection
-model, the preamble is assumed to have been detected.  
+model, the preamble is assumed to have been detected.
 It is important to note that, starting with the ns-3.30 release, the default
 in the WifiPhyHelper is to add the ``ThresholdPreambleDetectionModel`` with
 a threshold RSSI of -82 dBm, and a threshold SNR of 4 dB.  Both the RSSI
 and SNR must be above these respective values for the preamble to be
 successfully detected.  The default sensitivity has been reduced in ns-3.30
-compared with that of previous releases, so some packet receptions that were 
+compared with that of previous releases, so some packet receptions that were
 previously successful will now fail on this check.  More details on the
 modeling behind this change are provided in [lanante2019]_.
 
@@ -436,7 +437,7 @@ corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
 for "probability of error (PER)" for this header based on the SNR that has
 been tracked by the InterferenceHelper.  The ``PhyEntity`` then draws
-a random number from a uniform distribution and compares it against the 
+a random number from a uniform distribution and compares it against the
 PER and decides success or failure.
 
 This is iteratively performed up to the beginning of the data field
@@ -449,8 +450,8 @@ If, in the course of reception, a packet is errored or dropped due to
 the PHY being in a state in which it cannot receive a packet, the packet
 is added to the interference helper, and the aggregate of the energy of
 all such signals is compared against an energy detection threshold to
-determine whether the PHY should enter a CCA_BUSY state. 
-The ``WifiPhy::CcaEdThreshold`` attribute 
+determine whether the PHY should enter a CCA_BUSY state.
+The ``WifiPhy::CcaEdThreshold`` attribute
 corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
 In section 16.4.8.5 in the 802.11-2012 standard: "CCA Mode 1: Energy above
 threshold. CCA shall report a busy medium upon detection of any energy above
@@ -490,12 +491,12 @@ the ``WifiPhy`` for a reception decision.
 .. _snir:
 
 .. figure:: figures/snir.*
-   
+
    *SNIR function over time*
 
-From the SNIR function we can derive the Bit Error Rate (BER) and Packet 
+From the SNIR function we can derive the Bit Error Rate (BER) and Packet
 Error Rate (PER) for
-the modulation and coding scheme being used for the transmission.  
+the modulation and coding scheme being used for the transmission.
 
 If MIMO is used and the number of spatial streams is lower than the number
 of active antennas at the receiver, then a gain is applied to the calculated
@@ -606,16 +607,16 @@ The obtained results are very close to TGax curves as shown in Figure
 
 .. figure:: figures/default-table-based-error-model-validation.*
    :scale: 75%
-  
+
    *Comparison of table-based OFDM Error Model with TGax results.*
 
 Legacy ErrorRateModels
 ######################
 
 The original error rate model was called the ``ns3::YansErrorRateModel`` and
-was based on analytical results.  For 802.11b modulations, the 1 Mbps mode 
+was based on analytical results.  For 802.11b modulations, the 1 Mbps mode
 is based on DBPSK. BER is from equation 5.2-69 from [proakis2001]_.
-The 2 Mbps model is based on DQPSK. Equation 8 of [ferrari2004]_.  
+The 2 Mbps model is based on DQPSK. Equation 8 of [ferrari2004]_.
 More details are provided in [lacage2006yans]_.
 
 The ``ns3::NistErrorRateModel`` was later added.
@@ -665,7 +666,7 @@ and classes found in the spectrum module:
 
 * ``wifi-spectrum-value-helper.{cc,h}``
 
-The current ``SpectrumWifiPhy`` class 
+The current ``SpectrumWifiPhy`` class
 reuses the existing interference manager and error rate models originally
 built for ``YansWifiPhy``, but allows, as a first step, foreign (non Wi-Fi)
 signals to be treated as additive noise.
@@ -694,7 +695,7 @@ a few ``SpectrumModel``-related classes.  The class
 spectrum framework and spread their energy across the bands. The
 spectrum is sub-divided into sub-bands (the width of an OFDM
 subcarrier, which depends on the technology). The power allocated to a particular channel
-is spread across the sub-bands roughly according to how power would 
+is spread across the sub-bands roughly according to how power would
 be allocated to sub-carriers. Adjacent channels are models by the use of
 OFDM transmit spectrum masks as defined in the standards.
 
@@ -788,11 +789,11 @@ following conditions are met:
 The backoff procedure of DCF is described in section 10.3.4.3 of [ieee80211-2016]_.
 
 *  “A STA shall invoke the backoff procedure to transfer a frame
-   when finding the medium busy as indicated by either the physical or 
+   when finding the medium busy as indicated by either the physical or
    virtual CS mechanism.”
-*  “A backoff procedure shall be performed immediately after the end of 
-   every transmission with the More Fragments bit set to 0 of an MPDU of 
-   type Data, Management, or Control with subtype PS-Poll, even if no 
+*  “A backoff procedure shall be performed immediately after the end of
+   every transmission with the More Fragments bit set to 0 of an MPDU of
+   type Data, Management, or Control with subtype PS-Poll, even if no
    additional transmissions are currently queued.”
 
 The EDCA backoff procedure is slightly different than the DCF backoff procedure
@@ -1204,10 +1205,10 @@ Depending on your goal, the common tasks are (in no particular order):
 
 * Creating or modifying the default Wi-Fi frames/headers by making changes to ``wifi-mac-header.*``.
 * MAC low modification. For example, handling new/modified control frames (think RTS/CTS/ACK/Block ACK),
-  making changes to two-way transaction/four-way transaction.  Users usually make changes to 
+  making changes to two-way transaction/four-way transaction.  Users usually make changes to
   ``frame-exchange-manager.*`` or its subclasses to accomplish this.
   Handling of control frames is performed in ``FrameExchangeManager::ReceiveMpdu``.
-* MAC high modification. For example, handling new management frames (think beacon/probe), 
+* MAC high modification. For example, handling new management frames (think beacon/probe),
   beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
 * Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interest for this task.
 * Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
