@@ -137,18 +137,18 @@ protected:
   /// Map of the shadowng loss
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
   /**
-   * Caluculate the Standard deviation of the normal distribution used for calculate the shadowing
+   * Calculate the Standard deviation of the normal distribution used to calculate the shadowing
    * \param a Room A data
    * \param b Room B data
    * \return the Standard deviation of the normal distribution
    */
   double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
-  /// Standard deviation of the normal distribution used for calculate the shadowing due to ext walls
+  /// Standard deviation of the normal distribution used to calculate the shadowing due to ext walls
   double m_shadowingSigmaExtWalls;
-  /// Standard deviation of the normal distribution used for calculate the shadowing for outdoor nodes
+  /// Standard deviation of the normal distribution used to calculate the shadowing for outdoor nodes
   double m_shadowingSigmaOutdoor;
-  /// Standard deviation of the normal distribution used for calculate the shadowing for indoor nodes
+  /// Standard deviation of the normal distribution used to calculate the shadowing for indoor nodes
   double m_shadowingSigmaIndoor;
   Ptr<NormalRandomVariable> m_randVariable; //!< Random variable
 
