@@ -32,6 +32,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("ChannelConditionModelsTest");
 
 /**
+ * \ingroup propagation-tests
+ *
  * Test case for the 3GPP channel condition models. It determines the
  * channel condition multiple times, estimates the LOS probability and
  * compares it with the value given by the formulas in 3GPP TR 38.901,
@@ -263,6 +265,8 @@ ThreeGppChannelConditionModelTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup propagation-tests
+ *
  * Test suite for the channel condition models
  */
 class ChannelConditionModelsTestSuite : public TestSuite
@@ -277,4 +281,5 @@ ChannelConditionModelsTestSuite::ChannelConditionModelsTestSuite ()
   AddTestCase (new ThreeGppChannelConditionModelTestCase, TestCase::QUICK);
 }
 
-static ChannelConditionModelsTestSuite ChannelConditionModelsTestSuite;
+/// Static variable for test initialization
+static ChannelConditionModelsTestSuite g_channelConditionModelsTestSuite;

@@ -33,7 +33,12 @@ namespace ns3 {
 
 /**
  * \defgroup propagation Propagation Models
- *
+ */
+
+/**
+ * \ingroup propagation
+ * \ingroup tests
+ * \defgroup propagation-tests Propagation module tests
  */
 
 class MobilityModel;
@@ -112,9 +117,12 @@ public:
 
 protected:
   /**
+   * Assign a fixed random variable stream number to the random variables used by this model.
+   * 
    * Subclasses must implement this; those not using random variables
-   * can return zero
-   * \param stream the stream index offset start
+   * can return zero.
+   * 
+   * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
   virtual int64_t DoAssignStreams (int64_t stream) = 0;

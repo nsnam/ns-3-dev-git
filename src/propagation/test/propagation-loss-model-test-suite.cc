@@ -33,7 +33,19 @@ NS_LOG_COMPONENT_DEFINE ("PropagationLossModelsTest");
 // This is a simple test to validate propagation loss models of ns-3 wifi.
 // See the chapter in the ns-3 testing and validation guide for more detail
 // ===========================================================================
-//
+
+
+/**
+ * \ingroup propagation
+ * \defgroup propagation-test Propagation module tests
+ */
+
+
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief FriisPropagationLossModel Test
+ */
 class FriisPropagationLossModelTestCase : public TestCase
 {
 public:
@@ -43,13 +55,15 @@ public:
 private:
   virtual void DoRun (void);
 
+  /// Test vector
   typedef struct {
-    Vector m_position;
-    double m_pt;  // dBm
-    double m_pr;  // W
-    double m_tolerance;
+    Vector m_position;  //!< Test node position
+    double m_pt;        //!< Tx power [dBm]
+    double m_pr;        //!< Rx power [W]
+    double m_tolerance; //!< Tolerance
   } TestVector;
 
+  /// Test vectors
   TestVectors<TestVector> m_testVectors;
 };
 
@@ -132,6 +146,11 @@ FriisPropagationLossModelTestCase::DoRun (void)
 
 // Added for Two-Ray Ground Model - tomhewer@mac.com
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief TwoRayGroundPropagationLossModel Test
+ */
 class TwoRayGroundPropagationLossModelTestCase : public TestCase
 {
 public:
@@ -141,14 +160,15 @@ public:
 private:
   virtual void DoRun (void);
 
-  typedef struct
-  {
-    Vector m_position;
-    double m_pt;  // dBm
-    double m_pr;  // W
-    double m_tolerance;
+  /// Test vector
+  typedef struct {
+    Vector m_position;  //!< Test node position
+    double m_pt;        //!< Tx power [dBm]
+    double m_pr;        //!< Rx power [W]
+    double m_tolerance; //!< Tolerance
   } TestVector;
 
+  /// Test vectors
   TestVectors<TestVector> m_testVectors;
 };
 
@@ -261,6 +281,11 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief LogDistancePropagationLossModel Test
+ */
 class LogDistancePropagationLossModelTestCase : public TestCase
 {
 public:
@@ -270,13 +295,15 @@ public:
 private:
   virtual void DoRun (void);
 
+  /// Test vector
   typedef struct {
-    Vector m_position;
-    double m_pt;  // dBm
-    double m_pr;  // W
-    double m_tolerance;
+    Vector m_position;  //!< Test node position
+    double m_pt;        //!< Tx power [dBm]
+    double m_pr;        //!< Rx power [W]
+    double m_tolerance; //!< Tolerance
   } TestVector;
 
+  /// Test vectors
   TestVectors<TestVector> m_testVectors;
 };
 
@@ -348,6 +375,11 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
     }
 }
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief MatrixPropagationLossModel Test
+ */
 class MatrixPropagationLossModelTestCase : public TestCase
 {
 public:
@@ -396,6 +428,11 @@ MatrixPropagationLossModelTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief RangePropagationLossModel Test
+ */
 class RangePropagationLossModelTestCase : public TestCase
 {
 public:
@@ -436,6 +473,18 @@ RangePropagationLossModelTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief Propagation models TestSuite
+ * 
+ * This TestSuite tests the following models:
+ *   - FriisPropagationLossModel
+ *   - TwoRayGroundPropagationLossModel
+ *   - LogDistancePropagationLossModel
+ *   - MatrixPropagationLossModel
+ *   - RangePropagationLossModel
+ */
 class PropagationLossModelsTestSuite : public TestSuite
 {
 public:
@@ -452,4 +501,5 @@ PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   AddTestCase (new RangePropagationLossModelTestCase, TestCase::QUICK);
 }
 
-static PropagationLossModelsTestSuite propagationLossModelsTestSuite;
+/// Static variable for test initialization
+static PropagationLossModelsTestSuite g_propagationLossModelsTestSuite;

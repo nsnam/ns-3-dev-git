@@ -26,8 +26,10 @@
 namespace ns3 {
 
 /**
-* \brief Base class for the 3GPP propagation models
-*/
+ * \ingroup propagation
+ * 
+ * \brief Base class for the 3GPP propagation models
+ */
 class ThreeGppPropagationLossModel : public PropagationLossModel
 {
 public:
@@ -101,15 +103,6 @@ private:
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const override;
 
-  /**
-   * If this  model uses objects of type RandomVariableStream,
-   * set the stream numbers to the integers starting with the offset
-   * 'stream'. Return the number of streams (possibly zero) that
-   * have been assigned.
-   *
-   * \param stream
-   * \return the number of stream indices assigned by this model
-   */
   virtual int64_t DoAssignStreams (int64_t stream) override;
   
   /**
@@ -391,15 +384,6 @@ public:
   ThreeGppUmaPropagationLossModel & operator = (const ThreeGppUmaPropagationLossModel &) = delete;
 
 private:
-  /**
-   * If this  model uses objects of type RandomVariableStream,
-   * set the stream numbers to the integers starting with the offset
-   * 'stream'. Return the number of streams (possibly zero) that
-   * have been assigned.
-   *
-   * \param stream
-   * \return the number of stream indices assigned by this model
-   */
   virtual int64_t DoAssignStreams (int64_t stream) override;
 
   /**

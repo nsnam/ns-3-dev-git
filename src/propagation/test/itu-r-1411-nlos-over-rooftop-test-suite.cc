@@ -33,24 +33,47 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModelTest");
 
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief ItuR1411NlosOverRooftopPropagationLossModel Test Case
+ * 
+ */
 class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param freq carrier frequency in Hz
+   * \param dist 2D distance between UT and BS in meters
+   * \param hb height of BS in meters
+   * \param hm height of UT in meters
+   * \param env environment type
+   * \param city city type
+   * \param refValue reference loss value
+   * \param name TestCase name
+   */ 
   ItuR1411NlosOverRooftopPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name);
   virtual ~ItuR1411NlosOverRooftopPropagationLossModelTestCase ();
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Create a MobilityModel
+   * \param index mobility model index
+   * \return a new MobilityModel
+   */
   Ptr<MobilityModel> CreateMobilityModel (uint16_t index);
 
-  double m_freq;
-  double m_dist;
-  double m_hb;
-  double m_hm;
-  EnvironmentType m_env;
-  CitySize m_city;
-  double m_lossRef;
-
+  double m_freq;    //!< carrier frequency in Hz
+  double m_dist;    //!< 2D distance between UT and BS in meters
+  double m_hb;      //!< height of BS in meters
+  double m_hm;      //!< height of UT in meters
+  EnvironmentType m_env;  //!< environment type
+  CitySize m_city;        //!< city type
+  double m_lossRef; //!< reference loss
 };
 
 ItuR1411NlosOverRooftopPropagationLossModelTestCase::ItuR1411NlosOverRooftopPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name)
@@ -98,7 +121,12 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun (void)
 }
 
 
-
+/**
+ * \ingroup propagation-tests
+ *
+ * \brief ItuR1411NlosOverRooftopPropagationLossModel TestSuite
+ * 
+ */
 class ItuR1411NlosOverRooftopPropagationLossModelTestSuite : public TestSuite
 {
 public:
@@ -106,21 +134,15 @@ public:
 };
 
 
-
 ItuR1411NlosOverRooftopPropagationLossModelTestSuite::ItuR1411NlosOverRooftopPropagationLossModelTestSuite ()
   : TestSuite ("itu-r-1411-nlos-over-rooftop", SYSTEM)
 {
-
   LogComponentEnable ("ItuR1411NlosOverRooftopPropagationLossModelTest", LOG_LEVEL_ALL);
 
   // reference values obtained with the octave scripts in src/propagation/test/reference/
-
   AddTestCase (new ItuR1411NlosOverRooftopPropagationLossModelTestCase (2.1140e9, 900, 30, 1, UrbanEnvironment, LargeCity, 143.68, "f=2114Mhz, dist=900, urban large city"), TestCase::QUICK);
-
   AddTestCase (new ItuR1411NlosOverRooftopPropagationLossModelTestCase (1.865e9, 500, 30, 1, UrbanEnvironment, LargeCity,  132.84, "f=2114Mhz, dist=900, urban large city"), TestCase::QUICK);
-
 }
 
-
-
+/// Static variable for test initialization
 static ItuR1411NlosOverRooftopPropagationLossModelTestSuite g_ituR1411NlosOverRooftopTestSuite;

@@ -36,6 +36,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("ProbabilisticV2vChannelConditionModelsTest");
 
 /**
+ * \ingroup propagation-tests
+ * 
  * Test case for the V2V Urban channel condition models using a fully
  * probabilistic model to determine LOS, NLOS and NLOSv states. The test
  * determines the channel condition multiple times,
@@ -226,6 +228,8 @@ V2vUrbanProbChCondModelTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup propagation-tests
+ * 
  * Test case for the V2V Highway channel condition models using a fully
  * probabilistic model to determine LOS, NLOS and NLOSv states. The test
  * determines the channel condition multiple times,
@@ -434,6 +438,8 @@ V2vHighwayProbChCondModelTestCase::DoRun (void)
 }
 
 /**
+ * \ingroup propagation-tests
+ * 
  * Test suite for the probabilistic V2V channel condition model
  *
  * The tests V2vUrbanProbChCondModelTestCase and
@@ -458,4 +464,5 @@ ProbabilisticV2vChCondModelsTestSuite::ProbabilisticV2vChCondModelsTestSuite ()
   AddTestCase (new V2vHighwayProbChCondModelTestCase, TestCase::QUICK); // test for a fully probabilistic model (NLOS vs LOS vs NLOSv), in V2V highway scenario*/
 }
 
-static ProbabilisticV2vChCondModelsTestSuite probabilisticV2vChCondModelsTestSuite;
+/// Static variable for test initialization
+static ProbabilisticV2vChCondModelsTestSuite g_probabilisticV2vChCondModelsTestSuite;

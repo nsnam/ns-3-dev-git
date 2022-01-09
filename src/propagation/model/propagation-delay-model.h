@@ -58,14 +58,19 @@ public:
    * 'stream'.  Return the number of streams (possibly zero) that
    * have been assigned.
    *
-   * \param stream
+   * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
 protected:
   /**
+   * Assign a fixed random variable stream number to the random variables used by this model.
+   * 
    * Subclasses must implement this; those not using random variables
-   * can return zero
+   * can return zero.
+   * 
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
    */
   virtual int64_t DoAssignStreams (int64_t stream) = 0;
 };
