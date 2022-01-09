@@ -24,6 +24,13 @@ set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
 set(NS3_INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
 set_property(CACHE NS3_INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
 
+# Purposefully hidden option since we can't really do that safely from the CMake
+# side
+mark_as_advanced(NS3_ENABLE_SUDO)
+option(NS3_ENABLE_SUDO
+       "Set executables ownership to root and enable the SUID flag" OFF
+)
+
 # WSLv1 doesn't support tap features
 if(EXISTS "/proc/version")
   file(READ "/proc/version" CMAKE_LINUX_DISTRO)
@@ -231,6 +238,33 @@ macro(clear_global_cached_variables)
     ns3-python-bindings-modules
   )
 endmacro()
+
+# function used to search for package and program dependencies than store list
+# of missing dependencies in the list whose name is stored in missing_deps
+function(check_deps package_deps program_deps missing_deps)
+  set(local_missing_deps)
+  # Search for package dependencies
+  foreach(package ${package_deps})
+    find_package(${package})
+    if(NOT ${${package}_FOUND})
+      list(APPEND local_missing_deps ${package})
+    endif()
+  endforeach()
+
+  # And for program dependencies
+  foreach(program ${program_deps})
+    # CMake likes to cache find_* to speed things up, so we can't reuse names
+    # here or it won't check other dependencies
+    string(TOUPPER ${program} upper_${program})
+    find_program(${upper_${program}} ${program})
+    if(NOT ${upper_${program}})
+      list(APPEND local_missing_deps ${program})
+    endif()
+  endforeach()
+
+  # Store list of missing dependencies in the parent scope
+  set(${missing_deps} ${local_missing_deps} PARENT_SCOPE)
+endfunction()
 
 # process all options passed in main cmakeLists
 macro(process_options)
@@ -573,8 +607,14 @@ macro(process_options)
       if(NOT ${GTK3_FOUND})
         message(STATUS "GTK3 was not found. Continuing without it.")
       else()
-        message(STATUS "GTK3 was found.")
+        if(${GTK3_VERSION} VERSION_LESS 3.22)
+          set(GTK3_FOUND FALSE)
+          message(STATUS "GTK3 found with incompatible version ${GTK3_VERSION}")
+        else()
+          message(STATUS "GTK3 was found.")
+        endif()
       endif()
+
     endif()
   endif()
 
@@ -631,7 +671,7 @@ macro(process_options)
     endif()
   endif()
 
-  find_package(Python3 COMPONENTS Interpreter Development)
+  find_package(Python3 COMPONENTS Interpreter Development QUIET)
   set(ENABLE_PYTHON_BINDINGS OFF)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
@@ -667,11 +707,11 @@ macro(process_options)
   if(${ENABLE_TESTS})
     add_custom_target(all-test-targets)
 
-    # Create a custom target to run test.py --nowaf Target is also used to
+    # Create a custom target to run test.py --no-build Target is also used to
     # produce code coverage output
     add_custom_target(
       run_test_py
-      COMMAND ${Python3_EXECUTABLE} test.py --nowaf
+      COMMAND ${Python3_EXECUTABLE} test.py --no-build
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets
     )
@@ -740,31 +780,35 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_DOCS})
-    mark_as_advanced(DOXYGEN DOT DIA)
-    find_program(DOXYGEN doxygen REQUIRED)
-    find_program(DOT dot REQUIRED)
-    find_program(DIA dia REQUIRED)
-    if((NOT DOT) OR (NOT DIA))
-      message(
-        FATAL_ERROR
-          "Dot and Dia are required by Doxygen docs."
-          "They're shipped within the graphviz and dia packages on Ubuntu"
-      )
-    endif()
+  # checking for documentation dependencies and creating targets
+
+  # First we check for doxygen dependencies
+  mark_as_advanced(DOXYGEN)
+  check_deps("" "doxygen;dot;dia" doxygen_docs_missing_deps)
+  if(doxygen_docs_missing_deps)
+    message(
+      STATUS
+        "docs: doxygen documentation not enabled due to missing dependencies: ${doxygen_docs_missing_deps}"
+    )
+  else()
+    # We checked this already exists, but we need the path to the executable
+    find_package(Doxygen QUIET)
+
     # Get introspected doxygen
     add_custom_target(
       run-print-introspected-doxygen
       COMMAND
         ${CMAKE_OUTPUT_DIRECTORY}/utils/ns${NS3_VER}-print-introspected-doxygen${build_profile_suffix}
-        print-introspected-doxygen >
-        ${PROJECT_SOURCE_DIR}/doc/introspected-doxygen.h
+        > ${PROJECT_SOURCE_DIR}/doc/introspected-doxygen.h
+      COMMAND
+        ${CMAKE_OUTPUT_DIRECTORY}/utils/ns${NS3_VER}-print-introspected-doxygen${build_profile_suffix}
+        --output-text > ${PROJECT_SOURCE_DIR}/doc/ns3-object.txt
       DEPENDS print-introspected-doxygen
     )
     add_custom_target(
       run-introspected-command-line
       COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
-              ${Python3_EXECUTABLE} ./test.py --nowaf --constrain=example
+              ${Python3_EXECUTABLE} ./test.py --no-build --constrain=example
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS is
                                # set to ON
@@ -773,11 +817,11 @@ macro(process_options)
     file(
       WRITE ${PROJECT_SOURCE_DIR}/doc/introspected-command-line.h
       "/* This file is automatically generated by
-CommandLine::PrintDoxygenUsage() from the CommandLine configuration
-in various example programs.  Do not edit this file!  Edit the
-CommandLine configuration in those files instead.
-*/
-\n"
+  CommandLine::PrintDoxygenUsage() from the CommandLine configuration
+  in various example programs.  Do not edit this file!  Edit the
+  CommandLine configuration in those files instead.
+  */
+  \n"
     )
     add_custom_target(
       assemble-introspected-command-line
@@ -790,48 +834,45 @@ CommandLine configuration in those files instead.
     )
 
     add_custom_target(
-      doxygen
-      COMMAND ${DOXYGEN} ${PROJECT_SOURCE_DIR}/doc/doxygen.conf
+      update_doxygen_version
+      COMMAND ${PROJECT_SOURCE_DIR}/doc/ns3_html_theme/get_version.sh
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-      DEPENDS run-print-introspected-doxygen assemble-introspected-command-line
     )
 
     add_custom_target(
-      doxygen-no-build COMMAND ${DOXYGEN} ${PROJECT_SOURCE_DIR}/doc/doxygen.conf
+      doxygen
+      COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/doc/doxygen.conf
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+      DEPENDS update_doxygen_version run-print-introspected-doxygen
+              assemble-introspected-command-line
     )
 
-    mark_as_advanced(
-      SPHINX_EXECUTABLE
-      SPHINX_OUTPUT_HTML
-      SPHINX_OUTPUT_MAN
-      SPHINX_WARNINGS_AS_ERRORS
-      EPSTOPDF
-      PDFLATEX
-      LATEXMK
-      CONVERT
-      DVIPNG
+    add_custom_target(
+      doxygen-no-build
+      COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/doc/doxygen.conf
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+      DEPENDS update_doxygen_version
     )
-    find_package(Sphinx REQUIRED)
-    find_program(EPSTOPDF epstopdf)
-    find_program(PDFLATEX pdflatex)
-    find_program(LATEXMK latexmk)
-    find_program(CONVERT convert)
-    find_program(DVIPNG dvipng)
-    if((NOT EPSTOPDF)
-       OR (NOT PDFLATEX)
-       OR (NOT LATEXMK)
-       OR (NOT CONVERT)
-       OR (NOT DVIPNG)
+  endif()
+
+  # Now we check for sphinx dependencies
+  mark_as_advanced(
+    SPHINX_EXECUTABLE SPHINX_OUTPUT_HTML SPHINX_OUTPUT_MAN
+    SPHINX_WARNINGS_AS_ERRORS
+  )
+
+  # Check deps accepts a list of packages, list of programs and name of the
+  # return variable
+  check_deps(
+    "Sphinx" "epstopdf;pdflatex;latexmk;convert;dvipng"
+    sphinx_docs_missing_deps
+  )
+  if(sphinx_docs_missing_deps)
+    message(
+      STATUS
+        "docs: sphinx documentation not enabled due to missing dependencies: ${sphinx_docs_missing_deps}"
     )
-      message(
-        FATAL_ERROR
-          "Convert, Dvipng, Epstopdf, Pdflatex, Latexmk and fncychap.sty are required by Sphinx docs."
-          " They're shipped within the dvipng, imagemagick, texlive, texlive-font-utils and latexmk packages on Ubuntu."
-          " Imagemagick may fail due to a security policy issue."
-          " https://gitlab.com/nsnam/ns-3-dev/-/blob/master/utils/tests/gitlab-ci-doc.yml#L10-11"
-      )
-    endif()
+  else()
     add_custom_target(sphinx COMMENT "Building sphinx documents")
 
     function(sphinx_target targetname)
@@ -846,6 +887,7 @@ CommandLine configuration in those files instead.
     sphinx_target(models)
     sphinx_target(tutorial)
   endif()
+  # end of checking for documentation dependencies and creating targets
 
   # Process core-config
   if(${NS3_INT64X64} MATCHES "INT128")

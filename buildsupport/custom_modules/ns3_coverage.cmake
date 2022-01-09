@@ -31,8 +31,8 @@ if(${NS3_COVERAGE})
   if(${NS3_COVERAGE_ZERO_COUNTERS})
     set(zero_counters "--lcov-zerocounters")
   endif()
-  # The following target will run test.py --nowaf to generate the code coverage
-  # files .gcno and .gcda output will be in ${CMAKE_BINARY_DIR} a.k.a.
+  # The following target will run test.py --no-build to generate the code
+  # coverage files .gcno and .gcda output will be in ${CMAKE_BINARY_DIR} a.k.a.
   # cmake_cache or cmake-build-${build_suffix}
 
   # Create output directory for coverage info and html

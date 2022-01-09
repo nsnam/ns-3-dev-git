@@ -132,6 +132,15 @@ macro(
                                 ns${NS3_VER}-${libname}${build_profile_suffix}
   )
 
+  # export include directories used by this library so that it can be used by
+  # 3rd-party consumers of ns-3 using find_package(ns3) this will automatically
+  # add the build/include path to them, so that they can ns-3 headers with
+  # <ns3/something.h>
+  target_include_directories(
+    ${lib${libname}} PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
+                            $<INSTALL_INTERFACE:include>
+  )
+
   set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
       CACHE INTERNAL
             "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"

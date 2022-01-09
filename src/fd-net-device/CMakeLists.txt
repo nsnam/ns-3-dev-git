@@ -135,9 +135,8 @@ if(${ENABLE_FDNETDEV})
       model/fd-net-device.cc
   )
 
-  set(header_files
-      ${tap_headers} ${emu_headers} ${dpdk_headers}
-      model/fd-net-device.h helper/fd-net-device-helper.h
+  set(header_files ${tap_headers} ${emu_headers} ${dpdk_headers}
+                   model/fd-net-device.h helper/fd-net-device-helper.h
   )
 
   set(libraries_to_link ${libnetwork} ${LIB_AS_NEEDED_PRE} ${DPDK_LIBRARIES}

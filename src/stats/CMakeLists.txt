@@ -1,7 +1,7 @@
 set(name stats)
 
 if(${NS3_SQLITE})
-  find_package(SQLite3)
+  find_package(SQLite3 QUIET)
   check_include_file_cxx(semaphore.h HAVE_SEMAPHORE_H)
   if(${SQLite3_FOUND})
     set(sqlite_sources model/sqlite-data-output.cc)

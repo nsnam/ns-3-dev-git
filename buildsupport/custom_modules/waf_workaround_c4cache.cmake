@@ -63,6 +63,7 @@ function(generate_c4che_cachepy)
   cache_cmake_flag(NS3_OPENFLOW "ENABLE_OPENFLOW" cache_contents)
   cache_cmake_flag(NS3_CLICK "NSCLICK" cache_contents)
   cache_cmake_flag(NS3_BRITE "ENABLE_BRITE" cache_contents)
+  cache_cmake_flag(NS3_ENABLE_SUDO "ENABLE_SUDO" cache_contents)
   cache_cmake_flag(NS3_PYTHON_BINDINGS "ENABLE_PYTHON_BINDINGS" cache_contents)
 
   string(APPEND cache_contents "EXAMPLE_DIRECTORIES = [")
