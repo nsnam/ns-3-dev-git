@@ -1070,7 +1070,7 @@ def run_tests():
     # our users pain while waiting for extraneous stuff to compile and link, so
     # we allow users that know what they''re doing to not invoke waf at all.
     #
-    if not options.nowaf:
+    if not options.no_build:
 
         #
         # If the user is running the "kinds" or "list" options, there is an
@@ -1957,7 +1957,7 @@ def main(argv):
     parser.add_option("-m", "--multiple", action="store_true", dest="multiple", default=False,
                       help="report multiple failures from test suites and test cases")
 
-    parser.add_option("-n", "--nowaf", action="store_true", dest="nowaf", default=False,
+    parser.add_option("-n", "--no-build", action="store_true", dest="no_build", default=False,
                       help="do not run waf before starting testing")
 
     parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",

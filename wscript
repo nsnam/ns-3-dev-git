@@ -1539,10 +1539,10 @@ def _print_introspected_doxygen(bld):
     # test.py appears not to create or keep the output directory
     # if no real tests are run, so we just stuff all the
     # .command-line output files into testpy-output/
-    # NS_COMMANDLINE_INTROSPECTION=".." test.py --nowaf --constrain=example
+    # NS_COMMANDLINE_INTROSPECTION=".." test.py -n --constrain=example
     Logs.info("Running CommandLine introspection")
     proc_env['NS_COMMANDLINE_INTROSPECTION'] = '..'
-    subprocess.run(["./test.py", "--nowaf", "--constrain=example"],
+    subprocess.run(["./test.py", "-n", "--constrain=example"],
                    env=proc_env, stdout=subprocess.DEVNULL)
 
     doxygen_out = os.path.join('doc', 'introspected-command-line.h')

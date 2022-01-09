@@ -45,7 +45,7 @@
 #   -l, --list            print the list of known tests
 #   -m, --multiple        report multiple failures from test suites and test
 #                         cases
-#   -n, --nowaf           do not run waf before starting testing
+#   -n, --no-build           do not run waf before starting testing
 #   -p PYEXAMPLE, --pyexample=PYEXAMPLE
 #                         specify a single python example to run (with relative
 #                         path)
@@ -93,7 +93,7 @@ def main(argv):
       '-m',
       '--multiple',
       '-n',
-      '--nowaf',
+      '--no-build',
       '-p first',
       '--pyexample=first',
       '-r',
