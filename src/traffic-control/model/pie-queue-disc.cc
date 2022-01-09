@@ -89,7 +89,7 @@ TypeId PieQueueDisc::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("MaxBurstAllowance",
                    "Current max burst allowance before random drop",
-                   TimeValue (MilliSeconds (15)),
+                   TimeValue (MilliSeconds (150)),
                    MakeTimeAccessor (&PieQueueDisc::m_maxBurst),
                    MakeTimeChecker ())
     .AddAttribute ("UseDequeueRateEstimator",
