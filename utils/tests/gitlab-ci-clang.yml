@@ -16,7 +16,7 @@
       - $CLANG_BUILD_ENABLE == "True"
   before_script:
     - apt-get --quiet update --yes
-    - apt-get --quiet install cmake ninja-build gsl-bin libgsl-dev ccache sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-0 libgtk-3-dev libboost-all-dev libgsl23 --yes
+    - apt-get --quiet install cmake ninja-build gsl-bin libgsl-dev ccache sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-0 libgtk-3-dev libboost-all-dev libgsl23 ssh --yes
     - apt-get --quiet install software-properties-common gnupg wget --yes
     - echo -en "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main \n deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main" > /etc/apt/sources.list.d/llvm.list
     - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -

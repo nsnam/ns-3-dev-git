@@ -16,7 +16,7 @@
   before_script:
     - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc g++ cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc g++ cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL ssh --yes
   variables:
     COMPILER: g++
 
@@ -30,7 +30,7 @@ weekly-build-ubuntu-18.04-debug:
     - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
     - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL ssh --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
@@ -46,7 +46,7 @@ weekly-build-ubuntu-18.04-release:
     - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
     - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL ssh --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
@@ -62,7 +62,7 @@ weekly-build-ubuntu-18.04-optimized:
     - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
     - apt-get --quiet update --yes
     - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
-    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+    - apt-get --quiet install gcc-9 g++-9 cmake ninja-build python python3 python-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL ssh --yes
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:

@@ -37,7 +37,7 @@ stages:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts
+    - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts
     - ./ns3 build
     - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
   cache:
