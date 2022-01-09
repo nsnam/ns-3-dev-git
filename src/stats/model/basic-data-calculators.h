@@ -106,6 +106,9 @@ public:
   double getSqrSum () const { return m_squareTotal; }
 
 protected:
+  /**
+   * Dispose of this Object.
+   */
   virtual void DoDispose (void);
 
   uint32_t m_count;      //!< Count value of MinMaxAvgTotalCalculator
@@ -299,6 +302,9 @@ public:
   virtual void Output (DataOutputCallback &callback) const;
 
 protected:
+  /**
+   * Dispose of this Object.
+   */
   virtual void DoDispose (void);
 
   T m_count; //!< Count value of CounterCalculator

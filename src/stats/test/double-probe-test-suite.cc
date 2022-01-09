@@ -15,8 +15,7 @@
 using namespace ns3;
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Simple data emitter to check that a probe receives data.
  */
@@ -86,8 +85,7 @@ SampleEmitter::GetTypeId (void)
 
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief DoubleProbe class - Test case for connecting and receiving data.
  */
@@ -190,8 +188,7 @@ ProbeTestCase1::DoRun (void)
 
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief DoubleProbe class TestSuite
  */

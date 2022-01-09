@@ -30,8 +30,7 @@ using namespace ns3;
 const double TOLERANCE = 2e-14;
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Average class - Test case for a single integer.
  */
@@ -99,8 +98,7 @@ OneIntegerAverageTestCase::DoRun (void)
 
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Average class - Test case for five integers.
  */
@@ -170,8 +168,7 @@ FiveIntegersAverageTestCase::DoRun (void)
 
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Average class - Test case for five double values.
  */
@@ -241,8 +238,7 @@ FiveDoublesAverageTestCase::DoRun (void)
 
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Average class TestSuite
  */

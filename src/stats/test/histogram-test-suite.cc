@@ -24,13 +24,7 @@
 using namespace ns3;
 
 /**
- * \ingroup stats
- * \defgroup stats-test Stats module tests
- */
-
-/**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Histogram Test
  */
@@ -81,8 +75,7 @@ HistogramTestCase::DoRun (void)
 }
 
 /**
- * \ingroup stats-test
- * \ingroup tests
+ * \ingroup stats-tests
  *
  * \brief Histogram TestSuite
  */

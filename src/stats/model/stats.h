@@ -75,4 +75,10 @@
  * for subsequent output in a specific format, e.g., Omnet++, SQLite, etc.
  */
 
+/**
+ * \ingroup stats
+ * \ingroup tests
+ * \defgroup stats-tests Statistics module tests
+ */
+
 #endif /* STATS_H */

@@ -79,7 +79,7 @@ public:
   /**
    * Construct a BriteTopologyHelper using NS3 to generate seed values
    * need by BRITE
-   *
+   * \param confFile a BRITE configuration file
    */
   BriteTopologyHelper (std::string confFile);
 
@@ -140,6 +140,7 @@ public:
    * Returns a given router node for a given AS
    *
    * \param asNum the AS number
+   * \param nodeNum the Node number
    * \return the specified node
    *
    */
@@ -236,7 +237,7 @@ private:
     std::string type;   //!< Edge type
   };
 
-  //stores all of the nodes used in the BRITE generated topology
+  /// stores all of the nodes used in the BRITE generated topology
   NodeContainer m_nodes;
 
   /// Build the Node Info list
