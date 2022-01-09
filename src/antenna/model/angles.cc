@@ -30,7 +30,9 @@ NS_LOG_COMPONENT_DEFINE ("Angles");
 
 bool Angles::m_printDeg = false;
 
+/// Degrees to Radians conversion constant
 const double DEG_TO_RAD = M_PI / 180.0;
+/// Radians to Degrees conversion constant
 const double RAD_TO_DEG = 180.0 / M_PI;
 
 

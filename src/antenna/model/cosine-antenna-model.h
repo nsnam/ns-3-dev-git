@@ -28,6 +28,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup antenna
  *
  * \brief Cosine Antenna Model
  *
@@ -49,7 +50,10 @@ namespace ns3 {
 class CosineAntennaModel : public AntennaModel
 {
 public:
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId ();
 
   // inherited from AntennaModel
@@ -95,7 +99,7 @@ private:
 
   /**
    * Compute the exponent of the cosine antenna model from the beamwidth
-   * \param beamwidthRadians the beamwidth in degrees
+   * \param beamwidthDegrees the beamwidth in degrees
    * \return the exponent
    */
   static double GetExponentFromBeamwidth (double beamwidthDegrees);

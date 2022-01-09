@@ -178,7 +178,21 @@ public:
   double GetInclination (void) const;
 
   // friend methods
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param [in] os The reference to the output stream.
+   * \param [in] a The angle.
+   * \returns The reference to the output stream.
+   */
   friend std::ostream& operator<< (std::ostream& os, const Angles& a);
+  /**
+   * \brief Stream extraction operator.
+   *
+   * \param [in] is The reference to the input stream.
+   * \param [out] a The angle.
+   * \returns The reference to the input stream.
+   */
   friend std::istream& operator>> (std::istream& is, Angles& a);
 
   static bool m_printDeg; //!< flag for printing in radians or degrees units

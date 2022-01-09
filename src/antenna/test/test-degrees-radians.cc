@@ -28,18 +28,33 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup tests
+ *
+ * \brief Test degree to radians conversion
+ */
 class DegreesToRadiansTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param a test param
+   * \return the test name
+   */
   static std::string BuildNameString (double a);
+  /**
+   * Constructor
+   * \param a angle in degrees
+   * \param b expected angle in radians
+   */
   DegreesToRadiansTestCase (double a, double b);
 
 
 private:
   virtual void DoRun (void);
 
-  double m_a;
-  double m_b;
+  double m_a; //!< angle in degrees
+  double m_b; //!< expected angle in radians
 };
 
 std::string DegreesToRadiansTestCase::BuildNameString (double a)
@@ -66,18 +81,33 @@ DegreesToRadiansTestCase::DoRun ()
 
 
 
+/**
+ * \ingroup tests
+ *
+ * \brief Test radians to degree conversion
+ */
 class RadiansToDegreesTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param a test param
+   * \return the test name
+   */
   static std::string BuildNameString (double a);
+  /**
+   * Constructor
+   * \param a angle in radians
+   * \param b expected angle in degrees
+   */
   RadiansToDegreesTestCase (double a, double b);
 
 
 private:
   virtual void DoRun (void);
 
-  double m_a;
-  double m_b;
+  double m_a; //!< angle in radians
+  double m_b; //!< expected angle in degrees
 };
 
 std::string RadiansToDegreesTestCase::BuildNameString (double a)
@@ -104,6 +134,11 @@ RadiansToDegreesTestCase::DoRun ()
 
 
 
+/**
+ * \ingroup tests
+ *
+ * \brief TestSuite: degree to radians (and viceversa) conversions 
+ */
 class DegreesRadiansTestSuite : public TestSuite
 {
 public:
@@ -131,4 +166,5 @@ DegreesRadiansTestSuite::DegreesRadiansTestSuite ()
 
 };
 
-static DegreesRadiansTestSuite staticDegreesRadiansTestSuiteInstance;
+/// Static variable for test initialization
+static DegreesRadiansTestSuite g_staticDegreesRadiansTestSuiteInstance;

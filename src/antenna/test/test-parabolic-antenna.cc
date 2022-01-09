@@ -33,27 +33,54 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestParabolicAntennaModel");
 
+/**
+ * \ingroup antenna-tests
+ *
+ * \brief Test condition (equal to or less than)
+ */
 enum ParabolicAntennaModelGainTestCondition  {
   EQUAL = 0,
   LESSTHAN = 1
 };
 
+/**
+ * \ingroup antenna-tests
+ *
+ * \brief ParabolicAntennaModel Test
+ */
 class ParabolicAntennaModelTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param a Antenna angle
+   * \param b Beamwidth
+   * \param o Orientation
+   * \param g MaxGain
+   * \return the test name
+   */
   static std::string BuildNameString (Angles a, double b, double o, double g);
+  /**
+   * Constructor
+   * \param a Antenna angle
+   * \param b Beamwidth
+   * \param o Orientation
+   * \param g MaxGain
+   * \param expectedGainDb Expeted antenna gain
+   * \param cond Test condition
+   */
   ParabolicAntennaModelTestCase (Angles a, double b, double o, double g, double expectedGainDb, ParabolicAntennaModelGainTestCondition cond);
 
 
 private:
   virtual void DoRun (void);
 
-  Angles m_a;
-  double m_b;
-  double m_o;
-  double m_g;
-  double m_expectedGain;
-  ParabolicAntennaModelGainTestCondition m_cond;
+  Angles m_a; //!< Antenna angle
+  double m_b; //!< Beamwidth
+  double m_o; //!< Orientation
+  double m_g; //!< MaxGain
+  double m_expectedGain;  //!< Expected gain
+  ParabolicAntennaModelGainTestCondition m_cond; //!< Test condition
 };
 
 std::string ParabolicAntennaModelTestCase::BuildNameString (Angles a, double b, double o, double g)
@@ -102,8 +129,11 @@ ParabolicAntennaModelTestCase::DoRun ()
 }
 
 
-
-
+/**
+ * \ingroup antenna-tests
+ *
+ * \brief ParabolicAntennaModel TestSuite
+ */
 class ParabolicAntennaModelTestSuite : public TestSuite
 {
 public:
@@ -182,4 +212,5 @@ ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite ()
 
 };
 
-static ParabolicAntennaModelTestSuite staticParabolicAntennaModelTestSuiteInstance;
+/// Static variable for test initialization
+static ParabolicAntennaModelTestSuite g_staticParabolicAntennaModelTestSuiteInstance;

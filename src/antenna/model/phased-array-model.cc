@@ -32,13 +32,6 @@ NS_LOG_COMPONENT_DEFINE ("PhasedArrayModel");
 
 NS_OBJECT_ENSURE_REGISTERED (PhasedArrayModel);
 
-/**
- * Prints to the output stream the vector of complex numbers
- *
- * \param os output stream
- * \param cv the vector of complex numbers
- * \return ostream the output stream
- */
 std::ostream&
 operator<< (std::ostream& os, const PhasedArrayModel::ComplexVector& cv)
 {

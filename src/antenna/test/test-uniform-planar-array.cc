@@ -36,7 +36,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TestUniformPlanarArray");
 
 /**
- * \ingroup tests
+ * \ingroup antenna-tests
  *
  * \brief UniformPlanarArray Test Case
  */
@@ -173,7 +173,7 @@ UniformPlanarArrayTestCase::DoRun ()
 
 
 /**
- * \ingroup tests
+ * \ingroup antenna-tests
  *
  * \brief UniformPlanarArray Test Suite
  */

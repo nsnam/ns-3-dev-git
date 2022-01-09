@@ -28,18 +28,33 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup antenna-tests
+ *
+ * \brief IsotropicAntennaModel Test
+ */
 class IsotropicAntennaModelTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param a Antenna angle
+   * \return the test name
+   */
   static std::string BuildNameString (Angles a);
+  /**
+   * Constructor
+   * \param a Antenna angle
+   * \param expectedGainDb Expeted antenna gain
+   */
   IsotropicAntennaModelTestCase (Angles a, double expectedGainDb);
 
 
 private:
   virtual void DoRun (void);
 
-  Angles m_a;
-  double m_expectedGain;
+  Angles m_a; //!< Antenna angle
+  double m_expectedGain;  //!< Expected gain
 };
 
 std::string IsotropicAntennaModelTestCase::BuildNameString (Angles a)
@@ -68,6 +83,11 @@ IsotropicAntennaModelTestCase::DoRun ()
 
 
 
+/**
+ * \ingroup antenna-tests
+ *
+ * \brief IsotropicAntennaModel TestSuite
+ */
 class IsotropicAntennaModelTestSuite : public TestSuite
 {
 public:
@@ -89,4 +109,5 @@ IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite ()
 
 };
 
-static IsotropicAntennaModelTestSuite staticIsotropicAntennaModelTestSuiteInstance;
+/// Static variable for test initialization
+static IsotropicAntennaModelTestSuite g_staticIsotropicAntennaModelTestSuiteInstance;

@@ -28,17 +28,32 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup tests
+ *
+ * \brief Angles Test using one vector for initialization
+ */
 class OneVectorConstructorTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param v test parameter
+   * \return the test name
+   */
   static std::string BuildNameString (Vector v);
+  /**
+   * Constructor
+   * \param v vector
+   * \param a expected angle
+   */
   OneVectorConstructorTestCase (Vector v, Angles a);
 
 private:
   virtual void DoRun (void);
 
-  Vector m_v;
-  Angles m_a;
+  Vector m_v; //!< vector
+  Angles m_a; //!< expected angle
 };
 
 std::string OneVectorConstructorTestCase::BuildNameString (Vector v)
@@ -65,20 +80,35 @@ OneVectorConstructorTestCase::DoRun ()
 
 
 
-
-
+/**
+ * \ingroup tests
+ *
+ * \brief Angles Test using two vectors for initialization
+ */
 class TwoVectorsConstructorTestCase : public TestCase
 {
 public:
+  /**
+   * Build the test name
+   * \param v test parameter
+   * \param o test parameter
+   * \return the test name
+   */
   static std::string BuildNameString (Vector v, Vector o);
+  /**
+   * Constructor
+   * \param v point
+   * \param o origin
+   * \param a expected angle
+   */
   TwoVectorsConstructorTestCase (Vector v, Vector o, Angles a);
 
 private:
   virtual void DoRun (void);
 
-  Vector m_v;
-  Vector m_o;
-  Angles m_a;
+  Vector m_v; //!< point
+  Vector m_o; //!< origin
+  Angles m_a; //!< expected angle
 };
 
 std::string TwoVectorsConstructorTestCase::BuildNameString (Vector v, Vector o)
@@ -106,9 +136,11 @@ TwoVectorsConstructorTestCase::DoRun ()
 
 
 
-
-
-
+/**
+ * \ingroup tests
+ *
+ * \brief Angles TestSuite
+ */
 class AnglesTestSuite : public TestSuite
 {
 public:
@@ -206,4 +238,5 @@ AnglesTestSuite::AnglesTestSuite ()
 
 }
 
-static AnglesTestSuite staticAnglesTestSuiteInstance;
+/// Static variable for test initialization
+static AnglesTestSuite g_staticAnglesTestSuiteInstance;

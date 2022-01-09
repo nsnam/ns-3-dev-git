@@ -27,6 +27,19 @@
 
 namespace ns3 {
 
+
+/**
+ * \defgroup antenna Antenna module
+ * \brief This module contains several antenna
+ * radiation pattern models.
+ */
+
+/**
+ * \ingroup antenna
+ * \ingroup tests
+ * \defgroup antenna-tests Antenna module tests
+ */
+
 /** 
  * \ingroup antenna
  * 
@@ -38,8 +51,6 @@ namespace ns3 {
  * angles. This choice is the one proposed "Antenna Theory - Analysis
  * and Design", C.A. Balanis, Wiley, 2nd Ed., see in particular
  * section 2.2 "Radiation pattern".
- * 
- *
  */
 class AntennaModel : public Object
 {
@@ -49,7 +60,10 @@ public:
   AntennaModel ();
   virtual ~AntennaModel ();
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId ();
 
 

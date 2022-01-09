@@ -48,7 +48,8 @@ public:
 
 
   /**
-   * Inherited from Object
+   * \brief Get the type ID.
+   * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 
@@ -146,7 +147,13 @@ protected:
   uint32_t m_id {0}; //!< the ID of this antenna array instance
 };
 
-
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] cv A vector of complex values.
+ * \returns The reference to the output stream.
+ */
 std::ostream& operator<< (std::ostream& os, const PhasedArrayModel::ComplexVector& cv);
 
 } /* namespace ns3 */
