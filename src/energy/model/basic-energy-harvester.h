@@ -48,6 +48,10 @@ namespace ns3 {
 class BasicEnergyHarvester: public EnergyHarvester
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   BasicEnergyHarvester ();
@@ -115,14 +119,14 @@ private:
 
 private:
 
-  Ptr<RandomVariableStream> m_harvestablePower; // Random variable for the harvestable power
+  Ptr<RandomVariableStream> m_harvestablePower; //!< Random variable for the harvestable power
 
-  TracedValue<double> m_harvestedPower;         // current harvested power, in Watt
-  TracedValue<double> m_totalEnergyHarvestedJ;  // total harvested energy, in Joule
+  TracedValue<double> m_harvestedPower;         //!< current harvested power, in Watt
+  TracedValue<double> m_totalEnergyHarvestedJ;  //!< total harvested energy, in Joule
 
-  EventId m_energyHarvestingUpdateEvent;        // energy harvesting event
-  Time m_lastHarvestingUpdateTime;              // last harvesting time
-  Time m_harvestedPowerUpdateInterval;          // harvestable energy update interval
+  EventId m_energyHarvestingUpdateEvent;        //!< energy harvesting event
+  Time m_lastHarvestingUpdateTime;              //!< last harvesting time
+  Time m_harvestedPowerUpdateInterval;          //!< harvestable energy update interval
 
 };
 

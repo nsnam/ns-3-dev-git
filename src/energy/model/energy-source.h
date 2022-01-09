@@ -38,7 +38,12 @@ namespace ns3 {
   
 /**
  * \defgroup energy Energy Models
- *
+ */
+
+/**
+ * \ingroup energy
+ * \ingroup tests
+ * \defgroup energy-tests Energy module tests
  */
 
 /**
@@ -81,6 +86,10 @@ class EnergyHarvester;
 class EnergySource : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   EnergySource ();
   virtual ~EnergySource ();

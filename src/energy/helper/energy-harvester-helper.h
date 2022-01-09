@@ -72,7 +72,7 @@ public:
   EnergyHarvesterContainer Install (EnergySourceContainer sourceContainer) const;
 
   /**
-   * \param nodeName Name of node where EnergyHarvester will be installed.
+   * \param sourceName Name of node where EnergyHarvester will be installed.
    * \returns An EnergyHarvesterContainer which contains all the EnergyHarvesters.
    *
    * This function installs an EnergyHarvester onto a node.
@@ -81,7 +81,7 @@ public:
 
 private:
   /**
-   * \param node Pointer to node where the energy harvester is to be installed.
+   * \param source Pointer to node where the energy harvester is to be installed.
    * \returns Pointer to the created EnergyHarvester.
    *
    * Child classes of EnergyHarvesterHelper only have to implement this function,

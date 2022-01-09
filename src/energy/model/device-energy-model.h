@@ -50,6 +50,10 @@ public:
   typedef Callback<void, int> ChangeStateCallback;
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   DeviceEnergyModel ();
   virtual ~DeviceEnergyModel ();

@@ -38,6 +38,10 @@ namespace ns3 {
 class SimpleDeviceEnergyModel : public DeviceEnergyModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   SimpleDeviceEnergyModel ();
   virtual ~SimpleDeviceEnergyModel ();
@@ -128,11 +132,11 @@ private:
    */
   virtual double DoGetCurrentA (void) const;
 
-  Time m_lastUpdateTime;
-  double m_actualCurrentA;
-  Ptr<EnergySource> m_source;
-  Ptr<Node> m_node;
-  TracedValue<double> m_totalEnergyConsumption;
+  Time m_lastUpdateTime;        //!< Last update time
+  double m_actualCurrentA;      //!< actual curred (in Ampere)
+  Ptr<EnergySource> m_source;   //!< Energy source
+  Ptr<Node> m_node;             //!< Node
+  TracedValue<double> m_totalEnergyConsumption; //!< Total energy consumption trace
 };
 
 } // namespace ns3

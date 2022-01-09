@@ -44,9 +44,14 @@ namespace ns3 {
 class EnergySourceContainer : public Object
 {
 public:
+  /// Const iterator for EnergySource container
   typedef std::vector< Ptr<EnergySource> >::const_iterator Iterator;
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   /**
    * Creates an empty EnergySourceContainer.
@@ -173,7 +178,7 @@ private:
   virtual void DoInitialize (void);
 
 private:
-  std::vector< Ptr<EnergySource> > m_sources;
+  std::vector< Ptr<EnergySource> > m_sources; //!< Energy source container
 
 };
 

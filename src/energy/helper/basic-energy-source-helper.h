@@ -43,7 +43,7 @@ private:
   virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const;
 
 private:
-  ObjectFactory m_basicEnergySource;
+  ObjectFactory m_basicEnergySource; //!< Energy source factory
 
 };
 

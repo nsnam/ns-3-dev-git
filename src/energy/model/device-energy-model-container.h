@@ -43,6 +43,7 @@ namespace ns3 {
 class DeviceEnergyModelContainer
 {
 public:
+  /// Const iterator of DeviceEnergyModel container
   typedef std::vector< Ptr<DeviceEnergyModel> >::const_iterator Iterator;
 
 public:
@@ -168,7 +169,7 @@ public:
   void Clear (void);
 
 private:
-  std::vector< Ptr<DeviceEnergyModel> > m_models;
+  std::vector< Ptr<DeviceEnergyModel> > m_models; //!< Container of Energy models
 
 };
 

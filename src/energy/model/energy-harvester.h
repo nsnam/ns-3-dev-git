@@ -36,21 +36,18 @@ namespace ns3 {
 class EnergySource;
 
 /**
- * \defgroup energy Energy Models
- *
- */
-
-/**
  * \ingroup energy
  *
  * \brief Energy harvester base class.
- *
- *
  */
 
 class EnergyHarvester : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   EnergyHarvester ();
@@ -82,7 +79,7 @@ public:
   void SetEnergySource (Ptr<EnergySource> source);
 
   /**
-   * \returns source Pointer to energy source connected to the harvester.
+   * \returns Pointer to energy source connected to the harvester.
    *
    * When a subclass needs to get access to the connected energy source,
    * it can invoke this method.
@@ -90,7 +87,7 @@ public:
   Ptr<EnergySource> GetEnergySource (void) const;
 
   /**
-   * \returns power Amount of power currently provided by the harvester.
+   * \returns Amount of power currently provided by the harvester.
    *
    * This method is called by the energy source connected to the harvester in order
    * to determine the amount of energy that the harvester provided since last update.
@@ -111,6 +108,8 @@ private:
    *
    * This method should be used to connect the logic behind the particular implementation
    * of the energy harvester with the energy source.
+   * 
+   * \returns Amount of power currently provided by the harvester.
    */
   virtual double DoGetPower (void) const;
 

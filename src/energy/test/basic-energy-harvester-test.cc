@@ -33,6 +33,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvesterTestSuite");
 
+/**
+ * \ingroup energy-tests
+ *
+ * \brief Energy Harvester Test
+ */
 class BasicEnergyHarvesterTestCase : public TestCase
 {
 public:
@@ -41,11 +46,11 @@ public:
 
   void DoRun (void);
 
-  double m_timeS;     // in seconds
-  double m_tolerance; // tolerance for energy estimation
+  double m_timeS;     //!< Time, in seconds
+  double m_tolerance; //!< Tolerance for energy estimation
 
-  ObjectFactory m_energySource;
-  ObjectFactory m_energyHarvester;
+  ObjectFactory m_energySource; //!< Energy source factory
+  ObjectFactory m_energyHarvester; //!< Energy harvester factory
 
 };
 
@@ -118,6 +123,11 @@ BasicEnergyHarvesterTestCase::DoRun ()
 
 }
 
+/**
+ * \ingroup energy-tests
+ *
+ * \brief Energy harvester TestSuite
+ */
 class BasicEnergyHarvesterTestSuite : public TestSuite
 {
 public:
@@ -130,5 +140,5 @@ BasicEnergyHarvesterTestSuite::BasicEnergyHarvesterTestSuite ()
   AddTestCase (new BasicEnergyHarvesterTestCase, TestCase::QUICK);
 }
 
-// create an instance of the test suite
+/// create an instance of the test suite
 static BasicEnergyHarvesterTestSuite g_basicEnergyHarvesterTestSuite;

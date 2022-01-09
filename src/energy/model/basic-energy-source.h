@@ -37,6 +37,10 @@ namespace ns3 {
 class BasicEnergySource : public EnergySource
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   BasicEnergySource ();
   virtual ~BasicEnergySource ();
@@ -136,16 +140,19 @@ private:
   void CalculateRemainingEnergy (void);
 
 private:
-  double m_initialEnergyJ;                // initial energy, in Joules
-  double m_supplyVoltageV;                // supply voltage, in Volts
-  double m_lowBatteryTh;                  // low battery threshold, as a fraction of the initial energy
-  double m_highBatteryTh;                 // high battery threshold, as a fraction of the initial energy
-  bool m_depleted;                        // set to true when the remaining energy goes below the low threshold,
-                                          // set to false again when the remaining energy exceeds the high threshold
-  TracedValue<double> m_remainingEnergyJ; // remaining energy, in Joules
-  EventId m_energyUpdateEvent;            // energy update event
-  Time m_lastUpdateTime;                  // last update time
-  Time m_energyUpdateInterval;            // energy update interval
+  double m_initialEnergyJ;                //!< initial energy, in Joules
+  double m_supplyVoltageV;                //!< supply voltage, in Volts
+  double m_lowBatteryTh;                  //!< low battery threshold, as a fraction of the initial energy
+  double m_highBatteryTh;                 //!< high battery threshold, as a fraction of the initial energy
+  /**
+   * set to true when the remaining energy goes below the low threshold,
+   * set to false again when the remaining energy exceeds the high threshold
+   */
+  bool m_depleted;
+  TracedValue<double> m_remainingEnergyJ; //!< remaining energy, in Joules
+  EventId m_energyUpdateEvent;            //!< energy update event
+  Time m_lastUpdateTime;                  //!< last update time
+  Time m_energyUpdateInterval;            //!< energy update interval
 
 };
 

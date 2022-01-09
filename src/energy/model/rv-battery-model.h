@@ -50,6 +50,10 @@ namespace ns3 {
 class RvBatteryModel : public EnergySource
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   RvBatteryModel ();
   virtual ~RvBatteryModel ();
@@ -216,17 +220,17 @@ private:
   double RvModelAFunction (Time t, Time sk, Time sk_1, double beta);
 
 private:
-  double m_openCircuitVoltage;
-  double m_cutoffVoltage;
-  double m_alpha; // alpha value of RV model, in Coulomb
-  double m_beta;  // beta value of RV model, in second^-1
+  double m_openCircuitVoltage; //!< Open circuit voltage (in Volts)
+  double m_cutoffVoltage;      //!< Cutoff voltage (in Volts)
+  double m_alpha; //!< alpha value of RV model, in Coulomb
+  double m_beta;  //!< beta value of RV model, in second^-1
 
-  double m_previousLoad;  // load value (total current) of previous sampling
-  std::vector<double> m_load;     // load profile
-  std::vector<Time> m_timeStamps; // time stamps of load profile
-  Time m_lastSampleTime;
+  double m_previousLoad;  //!< load value (total current) of previous sampling
+  std::vector<double> m_load;     //!< load profile
+  std::vector<Time> m_timeStamps; //!< time stamps of load profile
+  Time m_lastSampleTime;          //!< Last sample time
 
-  int m_numOfTerms; // # of terms for infinite sum in battery level estimation
+  int m_numOfTerms; //!< Number# of terms for infinite sum in battery level estimation
 
   /**
    * Battery level is defined as: output of Discharge function / alpha value
@@ -246,15 +250,16 @@ private:
    */
   TracedValue<double> m_batteryLevel;
 
-  double m_lowBatteryTh;           // low battery threshold, as a fraction of the initial energy
+  double m_lowBatteryTh;           //!< low battery threshold, as a fraction of the initial energy
 
   /**
+   * Sampling interval.
    * (1 / sampling interval) = sampling frequency
    */
-  Time m_samplingInterval;
-  EventId m_currentSampleEvent;
+  Time m_samplingInterval; 
+  EventId m_currentSampleEvent; //!< Current sample event
 
-  TracedValue<Time> m_lifetime;   // time of death of the battery
+  TracedValue<Time> m_lifetime;   //!< time of death of the battery
 };
 
 } // namespace ns3

@@ -39,6 +39,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("RvBatteryModelTestSuite");
 
 /**
+ * \ingroup energy
+ * 
  * This example was originally devised as a test, then it was converted
  * to an example.
  *
@@ -86,17 +88,18 @@ public:
                          std::vector<Time> timeStamps,
                          Time expLifetime);
 
+  /// Load profile of the battery
   typedef struct LoadProfile
   {
-    std::vector<double> loads;
-    std::vector<Time> timeStamps;
-    Time itsyLifetime;
-    Time dualFoilLifeTime;
+    std::vector<double> loads;      //!< Loads container
+    std::vector<Time> timeStamps;   //!< Timestamps container
+    Time itsyLifetime;              //!< Expected lifetime for an ITSY battery
+    Time dualFoilLifeTime;          //!< Expected lifetime for a Dualfoil battery
   } LoadProfile;
 
-  std::vector<LoadProfile> m_loadProfiles;
-  double m_alpha;
-  double m_beta;
+  std::vector<LoadProfile> m_loadProfiles; //!< Load profiles
+  double m_alpha; //!< Alpha parameter of the battery model
+  double m_beta;  //!< Beta parameter of the battery model
 };
 
 BatteryLifetimeTest::BatteryLifetimeTest ()

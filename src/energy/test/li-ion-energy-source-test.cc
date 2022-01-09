@@ -29,6 +29,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LiIonEnergySourceTestSuite");
 
+
+/**
+ * \ingroup energy-tests
+ *
+ * \brief LiIon battery Test
+ */
 class LiIonEnergyTestCase : public TestCase
 {
 public:
@@ -37,7 +43,7 @@ public:
 
   void DoRun (void);
 
-  Ptr<Node> m_node;
+  Ptr<Node> m_node; //!< Node to aggreagte the source to.
 };
 
 LiIonEnergyTestCase::LiIonEnergyTestCase ()
@@ -77,6 +83,11 @@ LiIonEnergyTestCase::DoRun ()
                              "Incorrect consumed energy!");
 }
 
+/**
+ * \ingroup energy-tests
+ *
+ * \brief LiIon battery TestSuite
+ */
 class LiIonEnergySourceTestSuite : public TestSuite
 {
 public:
@@ -89,5 +100,5 @@ LiIonEnergySourceTestSuite::LiIonEnergySourceTestSuite ()
   AddTestCase (new LiIonEnergyTestCase, TestCase::QUICK);
 }
 
-// create an instance of the test suite
+/// create an instance of the test suite
 static LiIonEnergySourceTestSuite g_liIonEnergySourceTestSuite;

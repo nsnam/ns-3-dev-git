@@ -43,7 +43,7 @@ private:
   virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const;
 
 private:
-  ObjectFactory m_rvBatteryModel;
+  ObjectFactory m_rvBatteryModel; //!< RV Battery factory
 
 };
 

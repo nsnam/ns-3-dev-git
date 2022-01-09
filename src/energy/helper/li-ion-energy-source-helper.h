@@ -45,7 +45,7 @@ private:
   virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const;
 
 private:
-  ObjectFactory m_liIonEnergySource;
+  ObjectFactory m_liIonEnergySource; //!< LiIon Battery factory
 
 };
 

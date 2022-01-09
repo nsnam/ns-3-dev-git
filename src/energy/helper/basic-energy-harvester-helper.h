@@ -44,7 +44,7 @@ private:
   virtual Ptr<EnergyHarvester> DoInstall (Ptr<EnergySource> source) const;
 
 private:
-  ObjectFactory m_basicEnergyHarvester;
+  ObjectFactory m_basicEnergyHarvester; //!< Energy source factory
 
 };
   

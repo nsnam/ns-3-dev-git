@@ -72,6 +72,10 @@ namespace ns3 {
 class LiIonEnergySource : public EnergySource
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   LiIonEnergySource ();
   virtual ~LiIonEnergySource ();
@@ -173,6 +177,7 @@ private:
 
   /**
    *  \param current the actual discharge current value.
+   *  \return the cell voltage 
    *
    *  Get the cell voltage in function of the discharge current.
    *  It consider different discharge curves for different discharge currents
@@ -181,23 +186,23 @@ private:
   double GetVoltage (double current) const;
 
 private:
-  double m_initialEnergyJ;                // initial energy, in Joules
-  TracedValue<double> m_remainingEnergyJ; // remaining energy, in Joules
-  double m_drainedCapacity;               // capacity drained from the cell, in Ah
-  double m_supplyVoltageV;                // actual voltage of the cell
-  double m_lowBatteryTh;                  // low battery threshold, as a fraction of the initial energy
-  EventId m_energyUpdateEvent;            // energy update event
-  Time m_lastUpdateTime;                  // last update time
-  Time m_energyUpdateInterval;            // energy update interval
-  double m_eFull;                         // initial voltage of the cell, in Volts
-  double m_eNom;                          // nominal voltage of the cell, in Volts
-  double m_eExp;                          // cell voltage at the end of the exponential zone, in Volts
-  double m_internalResistance;            // internal resistance of the cell, in Ohms
-  double m_qRated;                        // rated capacity of the cell, in Ah
-  double m_qNom;                          // cell capacity at the end of the nominal zone, in Ah
-  double m_qExp;                          // capacity value at the end of the exponential zone, in Ah
-  double m_typCurrent;                    // typical discharge current used to fit the curves
-  double m_minVoltTh;                     // minimum threshold voltage to consider the battery depleted
+  double m_initialEnergyJ;                //!< initial energy, in Joules
+  TracedValue<double> m_remainingEnergyJ; //!< remaining energy, in Joules
+  double m_drainedCapacity;               //!< capacity drained from the cell, in Ah
+  double m_supplyVoltageV;                //!< actual voltage of the cell
+  double m_lowBatteryTh;                  //!< low battery threshold, as a fraction of the initial energy
+  EventId m_energyUpdateEvent;            //!< energy update event
+  Time m_lastUpdateTime;                  //!< last update time
+  Time m_energyUpdateInterval;            //!< energy update interval
+  double m_eFull;                         //!< initial voltage of the cell, in Volts
+  double m_eNom;                          //!< nominal voltage of the cell, in Volts
+  double m_eExp;                          //!< cell voltage at the end of the exponential zone, in Volts
+  double m_internalResistance;            //!< internal resistance of the cell, in Ohms
+  double m_qRated;                        //!< rated capacity of the cell, in Ah
+  double m_qNom;                          //!< cell capacity at the end of the nominal zone, in Ah
+  double m_qExp;                          //!< capacity value at the end of the exponential zone, in Ah
+  double m_typCurrent;                    //!< typical discharge current used to fit the curves
+  double m_minVoltTh;                     //!< minimum threshold voltage to consider the battery depleted
 };
 
 } // namespace ns3
