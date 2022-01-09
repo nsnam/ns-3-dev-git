@@ -382,7 +382,7 @@ int main (int argc, char *argv[])
                 {
                   previous = throughput;
                 }
-              else
+              else if (throughput > 0)
                 {
                   NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                   exit (1);
@@ -392,7 +392,7 @@ int main (int argc, char *argv[])
                 {
                   prevThroughput [index] = throughput;
                 }
-              else
+              else if (throughput > 0)
                 {
                   NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                   exit (1);
