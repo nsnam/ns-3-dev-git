@@ -29,7 +29,12 @@
 // to use the using directive to access the ns3 namespace directly
 using namespace ns3;
 
-// This is an example TestCase.
+
+/**
+ * \ingroup openflow-tests
+ *
+ * \brief OpenFlow Test
+ */
 class SwitchFlowTableTestCase : public TestCase
 {
 public:
@@ -46,7 +51,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  sw_chain* m_chain;
+  sw_chain* m_chain; //!< OpenFlow service function chain
 };
 
 void
@@ -173,6 +178,11 @@ SwitchFlowTableTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (chain_lookup (m_chain, &key), 0, "Key provided shouldn't match the flow but it does.");
 }
 
+/**
+ * \ingroup openflow-tests
+ *
+ * \brief OpenFlow TestSuite
+ */
 class SwitchTestSuite : public TestSuite
 {
 public:
@@ -184,6 +194,6 @@ SwitchTestSuite::SwitchTestSuite () : TestSuite ("openflow", UNIT)
   AddTestCase (new SwitchFlowTableTestCase, TestCase::QUICK);
 }
 
-// Do not forget to allocate an instance of this TestSuite
+/// Do not forget to allocate an instance of this TestSuite
 static SwitchTestSuite switchTestSuite;
 

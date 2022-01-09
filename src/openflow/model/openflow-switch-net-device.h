@@ -80,6 +80,13 @@ namespace ns3 {
  */
 
 /**
+ * \ingroup openflow
+ * \ingroup tests
+ * \defgroup openflow-tests OpenFlow module tests
+ */
+
+
+/**
  * \ingroup openflow 
  * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  */
@@ -136,7 +143,7 @@ public:
    *
    * \param switchPort The port to add.
    * \return 0 if everything's ok, otherwise an error number.
-   * \sa #EXFULL
+   * Possible error numbers: EXFULL
    */
   int AddSwitchPort (Ptr<NetDevice> switchPort);
 
@@ -148,7 +155,7 @@ public:
    * don't have an understood use [perhaps it may have to do with
    * MPLS integration].
    *
-   * \sa #EINVAL
+   * Possible error numbers: EINVAL
    *
    * \param ovpm The data for adding a virtual port.
    * \return 0 if everything's ok, otherwise an error number.
@@ -258,7 +265,7 @@ protected:
    * \param protocol The protocol defining the Packet.
    * \param src The source address of the Packet.
    * \param dst The destination address of the Packet.
-   * \param PacketType Type of the packet.
+   * \param packetType Type of the packet.
    */
   void ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Packet> packet, uint16_t protocol, const Address& src, const Address& dst, PacketType packetType);
 
@@ -278,7 +285,7 @@ private:
   /**
    * Add a flow.
    *
-   * \sa #ENOMEM, #ENOBUFS, #ESRCH
+   * Possible error numbers: ENOMEM, ENOBUFS, ESRCH
    *
    * \param ofm The flow data to add.
    * \return 0 if everything's ok, otherwise an error number.
@@ -307,6 +314,7 @@ private:
    * Sends a copy of the Packet over the provided output port
    *
    * \param packet_uid Packet UID; used to fetch the packet and its metadata.
+   * \param out_port Output port.
    */
   void OutputPacket (uint32_t packet_uid, int out_port);
 
@@ -477,15 +485,16 @@ private:
   int ReceivePacketOut (const void *msg);
   int ReceiveFlow (const void *msg);
   int ReceivePortMod (const void *msg);
-  int ReceiveStatsRequest (const void *oh);
-  int ReceiveEchoRequest (const void *oh);
-  int ReceiveEchoReply (const void *oh);
+  int ReceiveStatsRequest (const void *msg);
+  int ReceiveEchoRequest (const void *msg);
+  int ReceiveEchoReply (const void *msg);
   int ReceiveVPortMod (const void *msg);
   int ReceiveVPortTableFeaturesRequest (const void *msg);
   /**@}*/
 
-  /// Callbacks
+  /// Rx Callback
   NetDevice::ReceiveCallback m_rxCallback;
+  /// Promiscuopus Rx Callback
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
   Mac48Address m_address;               ///< Address of this device.
@@ -494,9 +503,11 @@ private:
   uint32_t m_ifIndex;                   ///< Interface Index
   uint16_t m_mtu;                       ///< Maximum Transmission Unit
 
+  /// PacketData type
   typedef std::map<uint32_t,ofi::SwitchPacketMetadata> PacketData_t;
   PacketData_t m_packetData;            ///< Packet data
 
+  /// Switch's port type
   typedef std::vector<ofi::Port> Ports_t;
   Ports_t m_ports;                      ///< Switch's ports
 

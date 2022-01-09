@@ -111,6 +111,7 @@ class OpenFlowSwitchNetDevice;
 namespace ofi {
 
 /**
+ * \ingroup openflow
  * \brief Port and its metadata.
  *
  * We need to store port metadata, because OpenFlow dictates that there
@@ -134,16 +135,27 @@ struct Port
 
   uint32_t config;            ///< Some subset of OFPPC_* flags.
   uint32_t state;             ///< Some subset of OFPPS_* flags.
-  Ptr<NetDevice> netdev;
-  unsigned long long int rx_packets, tx_packets;
-  unsigned long long int rx_bytes, tx_bytes;
-  unsigned long long int tx_dropped;
-  unsigned long long int mpls_ttl0_dropped;
+  Ptr<NetDevice> netdev;      ///< NetDevice pointer
+  unsigned long long int rx_packets;  //!< Counter of Rx packets
+  unsigned long long int tx_packets;  //!< Counter of Tx packets
+  unsigned long long int rx_bytes;    //!< Counter of Rx bytes
+  unsigned long long int tx_bytes;    //!< Counter of Tx bytes
+  unsigned long long int tx_dropped;  //!< Counter of Tx dropped packets
+  unsigned long long int mpls_ttl0_dropped; //!< Counter of packets dropped due to MPLS TTL
 };
 
+/**
+ * \ingroup openflow
+ * OpenFlow statistics
+ */
 class Stats
 {
 public:
+  /**
+   * Constructor
+   * \param _type OpenFlow stats type.
+   * \param body_len Stat body length.
+   */
   Stats (ofp_stats_types _type, size_t body_len);
 
   /**
@@ -180,15 +192,16 @@ public:
    */
   struct FlowStatsState
   {
-    int table_idx;
-    sw_table_position position;
-    ofp_flow_stats_request rq;
-    time_t now;
+    int table_idx;      //!< Table index
+    sw_table_position position; //!< Table position
+    ofp_flow_stats_request rq;  //!< Stats requests
+    time_t now; //!< Actual time
 
-    ofpbuf *buffer;
+    ofpbuf *buffer; //!< Buffer
   };
 
   /**
+   * \ingroup openflow
    * \brief State of the PortStats request/reply.
    */
   struct PortStatsState
@@ -197,27 +210,52 @@ public:
     uint32_t *ports;    ///< Array of ports in network byte order
   };
 
-  ofp_stats_types type;
+  ofp_stats_types type; //!< Status type
 private:
+  /**
+   * Dumps the stats description
+   * \param [in] state The state.
+   * \param [out] buffer Output buffer.
+   * \return zero on success
+   */
   int DescStatsDump (void *state, ofpbuf *buffer);
 
+  /**
+   * @{
+   * Initialize the stats.
+   * \param body Body member of the struct ofp_stats_request.
+   * \param body_len Length of the body member.
+   * \param state State information.
+   * \return 0 if successful, otherwise a negative error code.
+   */
   int FlowStatsInit (const void *body, int body_len, void **state);
-  int (*FlowDumpCallback)(sw_flow *flow, void *state);
-  int FlowStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, FlowStatsState *s, ofpbuf *buffer);
-
   int AggregateStatsInit (const void *body, int body_len, void **state);
-  int (*AggregateDumpCallback)(sw_flow *flow, void *state);
-  int AggregateStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, ofp_aggregate_stats_request *s, ofpbuf *buffer);
-
-  int TableStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, void *state, ofpbuf *buffer);
-
   int PortStatsInit (const void *body, int body_len, void **state);
-  int PortStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, PortStatsState *s, ofpbuf *buffer);
+  /** @} */
 
+  /// Flow dump callback functor
+  int (*FlowDumpCallback)(sw_flow *flow, void *state);
+  /// Aggregate dump callback functor
+  int (*AggregateDumpCallback)(sw_flow *flow, void *state);
+
+  /**
+   * @{
+   * Dump the stats.
+   * \param dp OpenFlow NetDevice.
+   * \param state State.
+   * \param [out] buffer output buffer.
+   * \return 0 if successful
+   */
+  int FlowStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, FlowStatsState *state, ofpbuf *buffer);
+  int AggregateStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, ofp_aggregate_stats_request *state, ofpbuf *buffer);
+  int TableStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, void *state, ofpbuf *buffer);
+  int PortStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, PortStatsState *state, ofpbuf *buffer);
   int PortTableStatsDump (Ptr<OpenFlowSwitchNetDevice> dp, void *state, ofpbuf *buffer);
+  /** @} */
 };
 
 /**
+ * \ingroup openflow
  * \brief Class for handling flow table actions.
  */
 struct Action
@@ -251,6 +289,7 @@ struct Action
 };
 
 /**
+ * \ingroup openflow
  * \brief Class for handling virtual port table actions.
  */
 struct VPortAction
@@ -283,6 +322,7 @@ struct VPortAction
 };
 
 /**
+ * \ingroup openflow
  * \brief Class for handling Ericsson Vendor-defined actions.
  */
 struct EricssonAction
@@ -314,6 +354,7 @@ struct EricssonAction
 };
 
 /**
+ * \ingroup openflow
  * \brief Callback for a stats dump request.
  */
 struct StatsDumpCallback
@@ -326,6 +367,7 @@ struct StatsDumpCallback
 };
 
 /**
+ * \ingroup openflow
  * \brief Packet Metadata, allows us to track the packet's metadata as it passes through the switch.
  */
 struct SwitchPacketMetadata
@@ -338,6 +380,7 @@ struct SwitchPacketMetadata
 };
 
 /**
+ * \ingroup openflow
  * \brief An interface for a Controller of OpenFlowSwitchNetDevices
  *
  * Follows the OpenFlow specification for a controller.
@@ -424,11 +467,13 @@ protected:
    */
   uint8_t GetPacketType (ofpbuf* buffer);
 
+  /// OpenFlowSwitchNetDevice container type
   typedef std::set<Ptr<OpenFlowSwitchNetDevice> > Switches_t;
   Switches_t m_switches;  ///< The collection of switches registered to this controller.
 };
 
 /**
+ * \ingroup openflow
  * Demonstration of a Drop controller. When a connected switch
  * passes it a packet the switch doesn't recognize, the controller
  * configures the switch to make a flow that drops alike packets.
@@ -446,6 +491,7 @@ public:
 };
 
 /**
+ * \ingroup openflow
  * Demonstration of a Learning controller. When a connected switch
  * passes it a packet the switch doesn't recognize, the controller
  * delves into its learned states and figures out if we know what
@@ -469,11 +515,13 @@ public:
   void ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
 
 protected:
+  /// Learned state
   struct LearnedState
   {
     uint32_t port;                      ///< Learned port.
   };
   Time m_expirationTime;                ///< Time it takes for learned MAC state entry/created flow to expire.
+  /// Learned state type
   typedef std::map<Mac48Address, LearnedState> LearnState_t;
   LearnState_t m_learnState;            ///< Learned state data.
 };
