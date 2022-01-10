@@ -41,6 +41,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("ThreeGppChannelTestSuite");
 
 /**
+ * \ingroup spectrum-tests
+ *
  * Test case for the ThreeGppChannelModel class.
  * 1) check if the channel matrix has the correct dimensions
  * 2) check if the channel matrix is correctly normalized
@@ -207,6 +209,8 @@ ThreeGppChannelMatrixComputationTest::DoRun (void)
 }
 
 /**
+ * \ingroup spectrum-tests
+ *
  * Test case for the ThreeGppChannelModel class.
  * It checks if the channel realizations are correctly updated during the
  * simulation.
@@ -346,6 +350,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun (void)
 }
 
 /**
+ * \ingroup spectrum-tests
  * \brief A structure that holds the parameters for the function
  * CheckLongTermUpdate. In this way the problem with the limited
  * number of parameters of method Schedule is avoided.
@@ -385,6 +390,8 @@ struct CheckLongTermUpdateParams
 };
 
 /**
+ * \ingroup spectrum-tests
+ * 
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
  *    are the same
@@ -571,7 +578,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
 }
 
 /**
- * \ingroup spectrum
+ * \ingroup spectrum-tests
  *
  * Test suite for the ThreeGppChannelModel class
  */
@@ -592,4 +599,5 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite ()
   AddTestCase (new ThreeGppSpectrumPropagationLossModelTest, TestCase::QUICK);
 }
 
+/// Static variable for test initialization
 static ThreeGppChannelTestSuite myTestSuite;

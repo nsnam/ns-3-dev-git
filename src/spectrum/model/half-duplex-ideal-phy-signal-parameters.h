@@ -46,6 +46,7 @@ struct HalfDuplexIdealPhySignalParameters : public SpectrumSignalParameters
 
   /**
    * copy constructor
+   * \param p object to copy
    */
   HalfDuplexIdealPhySignalParameters (const HalfDuplexIdealPhySignalParameters& p);
 

@@ -25,13 +25,6 @@
 #include <ns3/double.h>
 #include <ns3/tv-spectrum-transmitter.h>
 
-/**
- * This test verifies the accuracy of the spectrum/PSD model in the 
- * TvSpectrumTransmitter class. To do so, it tests if the max power spectral 
- * density, start frequency, and end frequency comply with expected values. 
- * Values for TV/modulation type, start frequency, channel bandwidth, and 
- * base PSD are swept and tested for each case.
- */
 NS_LOG_COMPONENT_DEFINE ("TvSpectrumTransmitterTest");
 
 using namespace ns3;
@@ -41,9 +34,25 @@ const double TOLERANCE = 1e-15;
 //           Follows http://realtimecollisiondetection.net/blog/?p=89
 double epsilon;
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * This test verifies the accuracy of the spectrum/PSD model in the 
+ * TvSpectrumTransmitter class. To do so, it tests if the max power spectral 
+ * density, start frequency, and end frequency comply with expected values. 
+ * Values for TV/modulation type, start frequency, channel bandwidth, and 
+ * base PSD are swept and tested for each case.
+ */
 class TvSpectrumTransmitterTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param startFrequency Start frequency.
+   * \param channelBandwidth Channel Bandwidth.
+   * \param basePsd Base Power Spectral Density (PSD).
+   * \param tvType TV type.
+   */
   TvSpectrumTransmitterTestCase (double startFrequency, 
                             double channelBandwidth, 
                             double basePsd, 
@@ -52,15 +61,23 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Build the test name
+   * \param tvType TV type.
+   * \param startFrequency Start frequency.
+   * \param channelBandwidth Channel Bandwidth.
+   * \param basePsd Base Power Spectral Density (PSD).
+   * \return The test name
+   */
   static std::string Name (TvSpectrumTransmitter::TvType tvType, 
                            double startFrequency, 
                            double channelBandwidth, 
                            double basePsd);
 
-  double m_startFrequency;
-  double m_channelBandwidth; 
-  double m_basePsd;
-  TvSpectrumTransmitter::TvType m_tvType;
+  double m_startFrequency;      //!< Start frequency.
+  double m_channelBandwidth;    //!< Channel Bandwidth.
+  double m_basePsd;             //!< Base Power Spectral Density (PSD).
+  TvSpectrumTransmitter::TvType m_tvType; //!< TV type.
 };
 
 
@@ -154,6 +171,11 @@ TvSpectrumTransmitterTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * Test suite for the TvSpectrumTransmitter class
+ */
 class TvSpectrumTransmitterTestSuite : public TestSuite
 {
 public:
@@ -208,4 +230,5 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite ()
     }
 }
 
+/// Static variable for test initialization
 static TvSpectrumTransmitterTestSuite g_tvSpectrumTransmitterTestSuite;

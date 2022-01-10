@@ -34,19 +34,35 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumInterferenceTest");
 
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Spectrum Interference Test
+ */
 class SpectrumInterferenceTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param s Spectrum value
+   * \param txBytes number of bytes to transmit
+   * \param rxCorrect extected Rx bytes
+   * \param name test name
+   */
   SpectrumInterferenceTestCase (Ptr<SpectrumValue> s, uint32_t txBytes, bool rxCorrect, std::string name);
   virtual ~SpectrumInterferenceTestCase ();
   virtual void DoRun (void);
+  /**
+   * Retrieve the test results
+   * \param si SpectrumInterference instance
+   */
   void RetrieveTestResult (SpectrumInterference* si);
 
 private:
-  Ptr<SpectrumValue> m_s;
-  uint32_t m_txBytes;
-  uint32_t m_rxCorrectKnownOutcome;
-  Ptr<const SpectrumModel> m_mySpectrumModel;
+  Ptr<SpectrumValue> m_s;             //!< Spectrum value
+  uint32_t m_txBytes;                 //!< number of bytes to transmit
+  uint32_t m_rxCorrectKnownOutcome;   //!< extected Rx bytes
+  Ptr<const SpectrumModel> m_mySpectrumModel; //!< Spectrum model pointer
 };
 
 
@@ -130,6 +146,11 @@ SpectrumInterferenceTestCase::RetrieveTestResult (SpectrumInterference* si)
 
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Spectrum Interference TestSuite
+ */
 class SpectrumInterferenceTestSuite : public TestSuite
 {
 public:
@@ -191,4 +212,5 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
 
 }
 
+/// Static variable for test initialization
 static SpectrumInterferenceTestSuite spectrumInterferenceTestSuite;

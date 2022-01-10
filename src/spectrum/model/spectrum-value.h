@@ -572,10 +572,12 @@ private:
   void ChangeSign ();
   /**
    * Shift the values to the left
+   * \param n number of positions to shift
    */
   void ShiftLeft (int n);
   /**
    * Shift the values to the right
+   * \param n number of positions to shift
    */
   void ShiftRight (int n);
   /**

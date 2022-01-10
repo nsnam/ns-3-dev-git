@@ -66,6 +66,7 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
 
   /**
    * copy constructor
+   * \param p object to copy
    */
   SpectrumSignalParameters (const SpectrumSignalParameters& p);
 

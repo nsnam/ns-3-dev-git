@@ -114,10 +114,12 @@ private:
 
   /**
    * Adds a signal to the data collected.
+   * \param psd signal to add
    */
   void AddSignal (Ptr<const SpectrumValue> psd);
   /**
    * Removes a signal to the data collected.
+   * \param psd signal to subtract
    */
   void SubtractSignal  (Ptr<const SpectrumValue> psd);
   /**

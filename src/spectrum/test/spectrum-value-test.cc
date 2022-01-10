@@ -34,17 +34,35 @@ using namespace ns3;
 
 #define TOLERANCE 1e-6
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Spectrum Value Test
+ */
 class SpectrumValueTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param a first SpectrumValue
+   * \param b second SpectrumValue
+   * \param name test name
+   */
   SpectrumValueTestCase (SpectrumValue a, SpectrumValue b, std::string name);
   virtual ~SpectrumValueTestCase ();
   virtual void DoRun (void);
 
 private:
+  /**
+   * Check that two SpectrumValue are equal withing a tolerance
+   * \param x first SpectrumValue
+   * \param y second SpectrumValue
+   * \return true if the two values are withing the tolerance
+   */
   bool MoreOrLessEqual (SpectrumValue x, SpectrumValue y);
-  SpectrumValue m_a;
-  SpectrumValue m_b;
+
+  SpectrumValue m_a; //!< first SpectrumValue
+  SpectrumValue m_b; //!< second SpectrumValue
 };
 
 
@@ -78,10 +96,11 @@ SpectrumValueTestCase::DoRun (void)
 
 
 
-
-
-
-
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Spectrum Value TestSuite
+ */
 class SpectrumValueTestSuite : public TestSuite
 {
 public:
@@ -246,10 +265,11 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
 
 
 
-
-
-
-
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Spectrum Converter TestSuite
+ */
 class SpectrumConverterTestSuite : public TestSuite
 {
 public:
@@ -327,15 +347,11 @@ SpectrumConverterTestSuite::SpectrumConverterTestSuite ()
 //   NS_LOG_LOGIC(t21b);
 //   NS_LOG_LOGIC(*res);
   AddTestCase (new SpectrumValueTestCase (t21b, *res, ""), TestCase::QUICK);
-
-
 }
 
 
 
-
-
-
-// static instance of test suites
+/// Static variable for test initialization
 static SpectrumValueTestSuite g_SpectrumValueTestSuite;
+/// Static variable for test initialization
 static SpectrumConverterTestSuite g_SpectrumConverterTestSuite;

@@ -28,7 +28,12 @@ namespace ns3 {
 
 /**
  * \defgroup spectrum Spectrum Models
- *
+ */
+
+/**
+ * \ingroup spectrum
+ * \ingroup tests
+ * \defgroup spectrum-tests Spectrum Models tests
  */
 
 /**

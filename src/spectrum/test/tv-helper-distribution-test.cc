@@ -22,7 +22,13 @@
 #include <ns3/log.h>
 #include <ns3/tv-spectrum-transmitter-helper.h>
 
+NS_LOG_COMPONENT_DEFINE ("TvHelperDistributionTest");
+
+using namespace ns3;
+
 /**
+ * \ingroup spectrum-tests
+ * 
  * This test verifies the accuracy of the private GetRandomNumTransmitters()  
  * method in the TvSpectrumTransmitterHelper class. The method generates a 
  * random number corresponding to the number of TV transmitters to create based 
@@ -40,21 +46,26 @@
  * 41 and 60 transmitters can be created (all inclusive). This is tested with 
  * various cases.
  */
-NS_LOG_COMPONENT_DEFINE ("TvHelperDistributionTest");
-
-using namespace ns3;
-
-
 class TvHelperDistributionTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param maxNumTransmitters maximum number of transmitters.
+   */
   TvHelperDistributionTestCase (uint32_t maxNumTransmitters);
   virtual ~TvHelperDistributionTestCase ();
 
 private:
   virtual void DoRun (void);
+  /**
+   * Build the test name
+   * \param maxNumTransmitters maximum number of transmitters.
+   * \return The test name
+   */
   static std::string Name (uint32_t maxNumTransmitters);
-  uint32_t m_maxNumTransmitters;
+  uint32_t m_maxNumTransmitters;  //!< Maximum number of transmitters.
 };
 
 std::string 
@@ -120,6 +131,11 @@ TvHelperDistributionTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * Test suite for the TvSpectrumTransmitterHelper class
+ */
 class TvHelperDistributionTestSuite : public TestSuite
 {
 public:
@@ -137,4 +153,5 @@ TvHelperDistributionTestSuite::TvHelperDistributionTestSuite ()
     }
 }
 
+/// Static variable for test initialization
 static TvHelperDistributionTestSuite g_TvHelperDistributionTestSuite;

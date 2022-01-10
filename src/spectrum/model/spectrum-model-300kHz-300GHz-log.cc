@@ -24,10 +24,19 @@
 namespace ns3 {
 
 
+/**
+ * \ingroup spectrum
+ * Spectrum model logger for frequencies between 300 Khz 300 Ghz
+ */
 Ptr<SpectrumModel> SpectrumModel300Khz300GhzLog;
 
 
-
+/**
+ * \ingroup spectrum
+ * 
+ * Static initializer class for Spectrum model logger 
+ * for frequencies between 300 Khz 300 Ghz
+ */
 class static_SpectrumModel300Khz300GhzLog_initializer
 {
 public:
@@ -42,10 +51,12 @@ public:
     SpectrumModel300Khz300GhzLog = Create<SpectrumModel> (freqs);
   }
 
-} static_SpectrumModel300Khz300GhzLog_initializer_instance;
+};
 
-
-
-
+/**
+ * \ingroup spectrum
+ * Static variable for analyzer initialization
+ */
+static_SpectrumModel300Khz300GhzLog_initializer g_static_SpectrumModel300Khz300GhzLog_initializer_instance;
 
 }

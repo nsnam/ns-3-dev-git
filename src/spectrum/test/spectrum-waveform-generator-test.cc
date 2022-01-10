@@ -28,20 +28,36 @@ using namespace ns3;
 
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Waveform generator Test
+ */
 class WaveformGeneratorTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * 
+   * \param period waveform period (seconds)
+   * \param dutyCycle waveform duty cycle
+   * \param stop stop time (seconds)
+   */
   WaveformGeneratorTestCase (double period, double dutyCycle, double stop);
   virtual ~WaveformGeneratorTestCase ();
 
 private:
   virtual void DoRun (void);
 
+  /**
+   * Trace if the waveform is active
+   * \param newPkt unused.
+   */
   void    TraceWave (Ptr<const Packet> newPkt);
-  double  m_period;
-  double  m_dutyCycle;
-  double  m_stop;
-  int     m_fails;
+  double  m_period;     //!< waveform period (seconds)
+  double  m_dutyCycle;  //!< waveform duty cycle 
+  double  m_stop;       //!< stop time (seconds)
+  int     m_fails;      //!< failure check
 };
 
 void
@@ -101,6 +117,11 @@ WaveformGeneratorTestCase::DoRun (void)
 }
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Waveform generator TestSuite
+ */
 class WaveformGeneratorTestSuite : public TestSuite
 {
 public:
@@ -118,4 +139,5 @@ WaveformGeneratorTestSuite::WaveformGeneratorTestSuite ()
   AddTestCase (new WaveformGeneratorTestCase (1.0, 0.5, 1.7), TestCase::QUICK);
 }
 
+/// Static variable for test initialization
 static WaveformGeneratorTestSuite g_waveformGeneratorTestSuite;

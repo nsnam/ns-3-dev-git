@@ -64,9 +64,21 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 }
 
 
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Ideal Spectrum PHY Test
+ */
 class SpectrumIdealPhyTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   * \param snrLinear SNR (linear)
+   * \param phyRate PHY rate (bps)
+   * \param rateIsAchievable Check if the rate is achievable
+   * \param channelType Channel type
+   */
   SpectrumIdealPhyTestCase (double snrLinear,
 			    uint64_t phyRate,
 			    bool rateIsAchievable,
@@ -75,12 +87,19 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Get the test name
+   * \param channelType Channel type
+   * \param snrLinear SNR (linear)
+   * \param phyRate PHY rate (bps)
+   * \return the test name
+   */
   static std::string Name (std::string channelType, double snrLinear, uint64_t phyRate);
   
-  double      m_snrLinear;
-  uint64_t    m_phyRate;
-  bool        m_rateIsAchievable;
-  std::string m_channelType;
+  double      m_snrLinear;        //!< SNR (linear)
+  uint64_t    m_phyRate;          //!< PHY rate (bps)
+  bool        m_rateIsAchievable; //!< Check if the rate is achievable
+  std::string m_channelType;      //!< Channel type
 };
 
 std::string 
@@ -210,7 +229,11 @@ SpectrumIdealPhyTestCase::DoRun (void)
 
 
 
-
+/**
+ * \ingroup spectrum-tests
+ *
+ * \brief Ideal Spectrum PHY TestSuite
+ */
 class SpectrumIdealPhyTestSuite : public TestSuite
 {
 public:
@@ -245,4 +268,5 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite ()
     }
 }
 
+/// Static variable for test initialization
 static SpectrumIdealPhyTestSuite g_spectrumIdealPhyTestSuite;
