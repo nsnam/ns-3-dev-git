@@ -35,7 +35,12 @@
 namespace ns3 {
 /**
  * \defgroup mpi MPI Distributed Simulation
- *
+ */
+
+/**
+ * \ingroup mpi
+ * \ingroup tests
+ * \defgroup mpi-tests MPI Distributed Simulation tests
  */
 
 class ParallelCommunicationInterface;
