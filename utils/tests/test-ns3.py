@@ -288,7 +288,7 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
         @return None
         """
         return_code, stdout, stderr = run_ns3("")
-        self.assertEqual(return_code, 0)
+        self.assertEqual(return_code, 1)
         self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
     def test_02_NoTaskLines(self):
@@ -297,7 +297,7 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
         @return None
         """
         return_code, stdout, stderr = run_ns3("--quiet")
-        self.assertEqual(return_code, 0)
+        self.assertEqual(return_code, 1)
         self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
     def test_03_CheckConfig(self):
@@ -307,7 +307,25 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
         """
         return_code, stdout, stderr = run_ns3("--check-config")
         self.assertEqual(return_code, 1)
-        self.assertIn("Project was not configured", stderr)
+        self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
+
+    def test_04_CheckProfile(self):
+        """!
+        Test only passing --check-profile argument to ns3
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("--check-profile")
+        self.assertEqual(return_code, 1)
+        self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
+
+    def test_05_CheckVersion(self):
+        """!
+        Test only passing --check-version argument to ns3
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("--check-version")
+        self.assertEqual(return_code, 1)
+        self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
 
 class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
@@ -734,6 +752,33 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                                               )
         self.assertNotEqual(return_code, 0)
 
+    def test_10_CheckConfig(self):
+        """!
+        Test passing --check-config argument to ns3 to get the configuration table
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("--check-config")
+        self.assertEqual(return_code, 0)
+        self.assertIn("Summary of optional NS-3 features", stdout)
+
+    def test_11_CheckProfile(self):
+        """!
+        Test passing --check-profile argument to ns3 to get the build profile
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("--check-profile")
+        self.assertEqual(return_code, 0)
+        self.assertIn("Build profile: debug", stdout)
+
+    def test_12_CheckVersion(self):
+        """!
+        Test passing --check-version argument to ns3 to get the build version
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("--check-version")
+        self.assertEqual(return_code, 0)
+        self.assertIn("ns-3 version:", stdout)
+
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
@@ -1047,6 +1092,32 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Reset flag to let it clean the build
         NS3BuildBaseTestCase.cleaned_once = False
 
+    def test_09_Scratches(self):
+        """!
+        Tries to build scratch-simulator and subdir/scratch-simulator-subdir
+        @return None
+        """
+        # Build.
+        targets = {"scratch/scratch-simulator": "scratch-simulator",
+                   "scratch-simulator": "scratch-simulator",
+                   "scratch/subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
+                   "subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
+                   "scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
+                   }
+        for (target_to_run, target_cmake) in targets.items():
+            # Test if build is working.
+            build_line = "target scratch_%s" % target_cmake
+            return_code, stdout, stderr = run_ns3("build %s" % target_to_run)
+            self.assertEqual(return_code, 0)
+            self.assertIn(build_line, stdout)
+
+            # Test if run is working
+            return_code, stdout, stderr = run_ns3("run %s" % target_to_run)
+            self.assertEqual(return_code, 0)
+            self.assertIn(build_line, stdout)
+            stdout = stdout.replace("scratch_%s" % target_cmake, "")  # remove build lines
+            self.assertIn(target_to_run.split("/")[-1], stdout)
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!
@@ -1353,6 +1424,89 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         fstat = os.stat(scratch_simulator_path)
         self.assertEqual(fstat.st_uid, 0)  # check the file was correctly chown'ed by root
         self.assertEqual(fstat.st_mode & stat.S_ISUID, stat.S_ISUID)  # check if normal users can run as sudo
+
+    def test_16_CommandTemplate(self):
+        """!
+        Check if command template is working
+        @return None
+        """
+
+        # Command templates that are empty or do not have a %s should fail
+        return_code0, stdout0, stderr0 = run_ns3('run sample-simulator --command-template')
+        self.assertEqual(return_code0, 2)
+        self.assertIn("argument --command-template: expected one argument", stderr0)
+
+        return_code1, stdout1, stderr1 = run_ns3('run sample-simulator --command-template=" "')
+        return_code2, stdout2, stderr2 = run_ns3('run sample-simulator --command-template " "')
+        return_code3, stdout3, stderr3 = run_ns3('run sample-simulator --command-template "echo "')
+        self.assertEqual((return_code1, return_code2, return_code3), (1, 1, 1))
+        self.assertIn("not all arguments converted during string formatting", stderr1)
+        self.assertEqual(stderr1, stderr2)
+        self.assertEqual(stderr2, stderr3)
+
+        # Command templates with %s should at least continue and try to run the target
+        return_code4, stdout4, stderr4 = run_ns3('run sample-simulator --command-template "%s --PrintVersion"')
+        return_code5, stdout5, stderr5 = run_ns3('run sample-simulator --command-template="%s --PrintVersion"')
+        self.assertEqual((return_code4, return_code5), (0, 0))
+        self.assertIn("sample-simulator --PrintVersion", stdout4)
+        self.assertIn("sample-simulator --PrintVersion", stdout5)
+
+    def test_17_ForwardArgumentsToRunTargets(self):
+        """!
+        Check if all flavors of different argument passing to
+        executable targets are working
+        @return None
+        """
+
+        # Test if all argument passing flavors are working
+        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --help"')
+        return_code1, stdout1, stderr1 = run_ns3('run sample-simulator --command-template="%s --help"')
+        return_code2, stdout2, stderr2 = run_ns3('run sample-simulator -- --help')
+
+        self.assertEqual((return_code0, return_code1, return_code2), (0, 0, 0))
+        self.assertIn("sample-simulator --help", stdout0)
+        self.assertIn("sample-simulator --help", stdout1)
+        self.assertIn("sample-simulator --help", stdout2)
+
+        # Test if the same thing happens with an additional run argument (e.g. --no-build)
+        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --help" --no-build')
+        return_code1, stdout1, stderr1 = run_ns3('run sample-simulator --command-template="%s --help" --no-build')
+        return_code2, stdout2, stderr2 = run_ns3('run sample-simulator --no-build -- --help')
+        self.assertEqual((return_code0, return_code1, return_code2), (0, 0, 0))
+        self.assertEqual(stdout0, stdout1)
+        self.assertEqual(stdout1, stdout2)
+        self.assertEqual(stderr0, stderr1)
+        self.assertEqual(stderr1, stderr2)
+
+        # Now collect results for each argument individually
+        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --PrintGlobals"')
+        return_code1, stdout1, stderr1 = run_ns3('run "sample-simulator --PrintGroups"')
+        return_code2, stdout2, stderr2 = run_ns3('run "sample-simulator --PrintTypeIds"')
+
+        self.assertEqual((return_code0, return_code1, return_code2), (0, 0, 0))
+        self.assertIn("sample-simulator --PrintGlobals", stdout0)
+        self.assertIn("sample-simulator --PrintGroups", stdout1)
+        self.assertIn("sample-simulator --PrintTypeIds", stdout2)
+
+        # Then check if all the arguments are correctly merged by checking the outputs
+        cmd = 'run "sample-simulator --PrintGlobals" --command-template="%s --PrintGroups" -- --PrintTypeIds'
+        return_code, stdout, stderr = run_ns3(cmd)
+        self.assertEqual(return_code, 0)
+
+        # The order of the arguments is command template,
+        # arguments passed with the target itself
+        # and forwarded arguments after the -- separator
+        self.assertIn("sample-simulator --PrintGroups --PrintGlobals --PrintTypeIds", stdout)
+
+        # Check if it complains about the missing -- separator
+        cmd0 = 'run sample-simulator --command-template="%s " --PrintTypeIds'
+        cmd1 = 'run sample-simulator --PrintTypeIds'
+
+        return_code0, stdout0, stderr0 = run_ns3(cmd0)
+        return_code1, stdout1, stderr1 = run_ns3(cmd1)
+        self.assertEqual((return_code0, return_code1), (1, 1))
+        self.assertIn("To forward configuration or runtime options, put them after '--'", stderr0)
+        self.assertIn("To forward configuration or runtime options, put them after '--'", stderr1)
 
 
 if __name__ == '__main__':

@@ -72,8 +72,7 @@ def parse_args(argv):
     parser_configure = sub_parser.add_parser('configure',
                                              help='Try "./ns3 configure --help" for more configuration options')
     parser_configure.add_argument('configure',
-                                  nargs='?',
-                                  action='store', default=True)
+                                  action='store_true', default=False)
     parser_configure.add_argument('-d', '--build-profile',
                                   help='Build profile',
                                   dest='build_profile',
@@ -93,6 +92,8 @@ def parse_args(argv):
     parser_configure = on_off_argument(parser_configure, "des-metrics",
                                        "Logging all events in a json file with the name of the executable "
                                        "(which must call CommandLine::Parse(argc, argv)")
+    parser_configure = on_off_argument(parser_configure, "build-version",
+                                       "embedding git changes as a build version during build")
     parser_configure = on_off_argument(parser_configure, "examples", "the ns-3 examples")
     parser_configure = on_off_argument(parser_configure, "gcov", "code coverage analysis")
     parser_configure = on_off_argument(parser_configure, "gtk", "GTK support in ConfigStore")
@@ -151,21 +152,16 @@ def parse_args(argv):
                                   action="store_true", default=None, dest="configure_dry_run")
 
     parser_clean = sub_parser.add_parser('clean', help='Removes files created by waf and ns3')
-    parser_clean.add_argument('clean',
-                              nargs="?",
-                              action="store", default=True)
+    parser_clean.add_argument('clean',  action="store_true", default=False)
     parser_clean.add_argument('--dry-run',
                               help="Do not execute the commands",
                               action="store_true", default=None, dest="clean_dry_run")
 
     parser_install = sub_parser.add_parser('install', help='Install ns-3')
-    parser_install.add_argument('install',
-                                nargs="?",
-                                action="store", default=True)
+    parser_install.add_argument('install', action="store_true", default=False)
+
     parser_uninstall = sub_parser.add_parser('uninstall', help='Uninstall ns-3')
-    parser_uninstall.add_argument('uninstall',
-                                  nargs="?",
-                                  action="store", default=True)
+    parser_uninstall.add_argument('uninstall', action="store_true", default=False)
 
     parser_run = sub_parser.add_parser('run',
                                        help='Try "./ns3 run --help" for more runtime options')
@@ -177,7 +173,7 @@ def parse_args(argv):
                             action="store_true", default=False)
     parser_run.add_argument('--command-template',
                             help=('Template of the command used to run the program given by run;'
-                                  ' It should be a shell command string containing %s inside,'
+                                  ' It should be a shell command string containing %%s inside,'
                                   ' which will be replaced by the actual program.'),
                             type=str, default=None)
     parser_run.add_argument('--cwd',
@@ -189,9 +185,9 @@ def parse_args(argv):
     parser_run.add_argument('--valgrind',
                             help='Change the default command template to run programs with valgrind',
                             action="store_true", default=None)
-    parser_run.add_argument('--visualize',
+    parser_run.add_argument('--vis', '--visualize',
                             help='Modify --run arguments to enable the visualizer',
-                            action="store_true", default=None)
+                            action="store_true", dest="visualize", default=None)
     parser_run.add_argument('--dry-run',
                             help="Do not execute the commands",
                             action="store_true", default=None, dest="run_dry_run")
@@ -203,9 +199,8 @@ def parse_args(argv):
     parser_shell = sub_parser.add_parser('shell',
                                          help='Try "./ns3 shell --help" for more runtime options')
     parser_shell.add_argument('shell',
-                              nargs="?",
                               help='Export necessary environment variables and open a shell',
-                              action="store", default=True)
+                              action="store_true", default=False)
 
     parser_docs = sub_parser.add_parser('docs',
                                         help='Try "./ns3 docs --help" for more documentation options')
@@ -231,6 +226,12 @@ def parse_args(argv):
     parser.add_argument('--check',
                         help='DEPRECATED (run ./test.py)',
                         action='store_true', default=None)
+    parser.add_argument('--check-profile',
+                        help='Print out current build profile',
+                        action='store_true', default=None)
+    parser.add_argument('--check-version',
+                        help='Print the current build version',
+                        action='store_true', default=None)
 
     # parser.add_argument('--docset',
     #               help=(
@@ -239,7 +240,8 @@ def parse_args(argv):
     #               action="store_true", default=None,
     #               dest="docset_build")
 
-    args = parser.parse_args(argv)
+    # Parse known arguments and separate from unknown arguments
+    args, unknown_args = parser.parse_known_args(argv)
 
     # Merge dry_runs
     dry_run_args = [(args.__getattribute__(name) if name in args else None) for name in
@@ -253,6 +255,23 @@ def parse_args(argv):
 
     if args.run and args.enable_sudo is None:
         args.enable_sudo = True
+
+    # Filter arguments before --
+    setattr(args, "program_args", [])
+    if unknown_args:
+        try:
+            args_separator_index = argv.index('--')
+            args.program_args = argv[args_separator_index + 1:]
+        except ValueError:
+            msg = "Unknown options were given: {options}.\n"\
+                  "To see the allowed options add the `--help` option.\n"\
+                  "To forward configuration or runtime options, put them after '--'.\n"
+            if args.run:
+                msg += "Try: ./ns3 run {target} -- {options}\n"
+            if args.configure:
+                msg += "Try: ./ns3 configure -- {options}\n"
+            msg = msg.format(options=", ".join(unknown_args), target=args.run)
+            raise Exception(msg)
     return args
 
 
@@ -337,7 +356,7 @@ def search_cmake_cache(build_profile):
                         current_cmake_cache_folder = os.path.dirname(cmake_cache_file)
 
                 # Check the generator
-                if "CMAKE_GENERATOR" in line:
+                if "CMAKE_GENERATOR:" in line:
                     current_cmake_generator = line.split("=")[-1]
 
     if not current_cmake_generator:
@@ -360,12 +379,17 @@ def search_cmake_cache(build_profile):
     return current_cmake_cache_folder, current_cmake_generator
 
 
+def project_not_configured(config_msg=""):
+    print("You need to configure ns-3 first: try ./ns3 configure%s" % config_msg)
+    exit(1)
+
+
 def check_config(current_cmake_cache_folder):
     if current_cmake_cache_folder is None:
-        raise Exception("Project was not configured")
+        project_not_configured()
     waf_like_config_table = current_cmake_cache_folder + os.sep + "ns3wafconfig.txt"
     if not os.path.exists(waf_like_config_table):
-        raise Exception("Project was not configured")
+        project_not_configured()
     with open(waf_like_config_table, "r") as f:
         print(f.read())
 
@@ -419,6 +443,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     options = (("ASSERT", "asserts"),
                ("COVERAGE", "gcov"),
                ("DES_METRICS", "des_metrics"),
+               ("ENABLE_BUILD_VERSION", "build_version"),
                ("ENABLE_SUDO", "sudo"),
                ("EXAMPLES", "examples"),
                ("GTK3", "gtk"),
@@ -468,6 +493,9 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         cmake_args.append("-G")
         cmake_args.append(args.G)
 
+    # Append CMake flags passed using the -- separator
+    cmake_args.extend(args.program_args)
+
     # Configure cmake
     cmake_args.append("..")  # for now, assuming the cmake_cache directory is inside the ns-3-dev folder
 
@@ -501,6 +529,11 @@ def get_program_shortcuts(build_profile, ns3_version):
 
         # Remove version prefix and build type suffix from shortcuts (or keep them too?)
         temp_path[-1] = temp_path[-1].replace("-" + build_profile, "").replace("ns" + ns3_version + "-", "")
+
+        # Deal with scratch subdirs
+        if "scratch" in temp_path and len(temp_path) > 3:
+            subdir = "_".join([*temp_path[2:-1], ""])
+            temp_path[-1] = temp_path[-1].replace(subdir, "")
 
         # Check if there is a .cc file for that specific program
         source_file_path = os.sep.join(temp_path) + ".cc"
@@ -611,7 +644,7 @@ def get_target_to_build(program_path, ns3_version, build_profile):
     if "scratch" in program_path:
         # Get the path to the program and replace slashes with underlines
         # to get unique targets for CMake, preventing collisions with modules examples
-        return program_name.split(out_dir + "/")[1].replace("/", "_")
+        return program_name.replace(out_dir, "").replace("/", "_")[1:]
     else:
         # Other programs just use their normal names (without version prefix and build_profile suffix) as targets
         return program_name.split("/")[-1]
@@ -661,7 +694,9 @@ def build_step(args,
 
     # If we are building specific targets, we build them one by one
     if "build" in args:
-        non_executable_targets = ["docs",
+        non_executable_targets = ["check-version",
+                                  "cmake-format",
+                                  "docs",
                                   "doxygen",
                                   "doxygen-no-build",
                                   "sphinx",
@@ -670,7 +705,7 @@ def build_step(args,
                                   "tutorial",
                                   "install",
                                   "uninstall",
-                                  "cmake-format"]
+                                  ]
         # Build targets in the list
         for target in args.build:
             if target in ns3_modules:
@@ -723,6 +758,7 @@ def run_step(args, target_to_run, target_args):
     debugging_software = []
     working_dir = ns3_path
     use_shell = False
+    target_args += args.program_args
 
     # running test.py/check?
     if args.check:
@@ -893,6 +929,15 @@ def main():
     # Get build profile
     build_profile, ns3_version, ns3_modules, enable_sudo = check_build_profile(out_dir)
 
+    if args.check_profile:
+        if build_profile:
+            print("Build profile: %s" % build_profile)
+        else:
+            project_not_configured()
+
+    if args.check_version:
+        args.build = ["check-version"]
+
     # Check if running something or reconfiguring ns-3
     run_only = False
     build_and_run = False
@@ -934,8 +979,10 @@ def main():
                                )
 
         if not project_configured(current_cmake_cache_folder):
-            print("You need to configure ns-3 first: try ./ns3 configure")
-            exit(0)
+            project_not_configured()
+
+    if ns3_modules is None:
+        project_not_configured()
 
     # We could also replace the "ns3-" prefix used in c4che with the "lib" prefix currently used in cmake
     ns3_modules = [module.replace("ns3-", "") for module in ns3_modules]

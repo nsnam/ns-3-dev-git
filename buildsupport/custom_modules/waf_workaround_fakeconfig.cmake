@@ -74,9 +74,16 @@ function(print_formatted_table_with_modules table_name modules output)
   set(width 26) # Variable with column width
   string(REPLACE "lib" "" modules_to_print "${modules}")
   list(SORT modules_to_print) # Sort for nice output
+  set(modules_with_large_names)
   foreach(module ${modules_to_print})
     # Get the size of the module string name
     string(LENGTH ${module} module_name_length)
+
+    # Skip modules with names wider than 26 characters
+    if(${module_name_length} GREATER_EQUAL ${width})
+      list(APPEND modules_with_large_names ${module})
+      continue()
+    endif()
 
     # Calculate trailing spaces to fill the column
     math(EXPR num_trailing_spaces "${width} - ${module_name_length}")
@@ -94,7 +101,13 @@ function(print_formatted_table_with_modules table_name modules output)
       set(count 0)
     endif()
   endforeach()
+
+  # Print modules with large names one by one
+  foreach(module ${modules_with_large_names})
+    string(APPEND temp "${module}\n")
+  endforeach()
   string(APPEND temp "\n")
+
   # Save the table outer scope out variable
   set(${output} ${${output}}${temp} PARENT_SCOPE)
 endfunction()
