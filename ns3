@@ -789,8 +789,6 @@ def run_step(args, target_to_run, target_args):
             commands = (args.command_template % target_to_run).split()
             target_to_run = commands[0]
             target_args = commands[1:] + target_args
-            if target_to_run in ["mpiexec", "mpirun"]:
-                target_args = ["--allow-run-as-root"] + target_args
 
     program_arguments = [*debugging_software, target_to_run, *target_args]
 

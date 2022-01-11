@@ -37,6 +37,9 @@ stages:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - export OMPI_ALLOW_RUN_AS_ROOT=1
+    - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    - export OMPI_MCA_rmaps_base_oversubscribe=1
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts
     - ./ns3 build
     - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
