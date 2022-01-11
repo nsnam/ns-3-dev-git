@@ -58,4 +58,12 @@ VhtFrameExchangeManager::GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVe
   return Create<WifiPsdu> (mpdu, txVector.GetModulationClass () >= WIFI_MOD_CLASS_VHT);
 }
 
+uint32_t
+VhtFrameExchangeManager::GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const
+{
+  return (txVector.GetModulationClass () >= WIFI_MOD_CLASS_VHT
+          ? MpduAggregator::GetSizeIfAggregated (mpdu->GetSize (), 0)
+          : HtFrameExchangeManager::GetPsduSize (mpdu, txVector));
+}
+
 } //namespace ns3

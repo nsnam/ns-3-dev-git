@@ -385,7 +385,8 @@ FrameExchangeManager::SendMpdu (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Time txDuration = m_phy->CalculateTxDuration (m_mpdu->GetSize (), m_txParams.m_txVector, m_phy->GetPhyBand ());
+  Time txDuration = m_phy->CalculateTxDuration (GetPsduSize (m_mpdu, m_txParams.m_txVector),
+                                                m_txParams.m_txVector, m_phy->GetPhyBand ());
 
   NS_ASSERT (m_txParams.m_acknowledgment);
 
@@ -402,7 +403,8 @@ FrameExchangeManager::SendMpdu (void)
     }
   else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NORMAL_ACK)
     {
-      m_mpdu->GetHeader ().SetDuration (GetFrameDurationId (m_mpdu->GetHeader (), m_mpdu->GetSize (),
+      m_mpdu->GetHeader ().SetDuration (GetFrameDurationId (m_mpdu->GetHeader (),
+                                                            GetPsduSize (m_mpdu, m_txParams.m_txVector),
                                                             m_txParams, m_fragmentedPacket));
 
       // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
@@ -452,6 +454,12 @@ FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
     {
       m_mac->GetTxopQueue (mpdu->GetQueueAc ())->DequeueIfQueued (mpdu);
     }
+}
+
+uint32_t
+FrameExchangeManager::GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const
+{
+  return mpdu->GetSize ();
 }
 
 void

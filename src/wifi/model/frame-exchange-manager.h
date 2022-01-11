@@ -375,6 +375,17 @@ protected:
    */
   void UpdateTxDuration (Mac48Address receiver, WifiTxParameters& txParams) const;
 
+  /**
+   * Get the size in bytes of the given MPDU, which is to be transmitted with the
+   * given TXVECTOR. The purpose of this method is that it can be overridden to
+   * compute the size of an S-MPDU.
+   *
+   * \param mpdu the given MPDU
+   * \param txVector the given TXVECTOR
+   * \return the size of the MPDU
+   */
+  virtual uint32_t GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const;
+
   Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
   WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
   EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
