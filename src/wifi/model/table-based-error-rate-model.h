@@ -25,6 +25,7 @@
 #include "ns3/error-rate-tables.h"
 #include "error-rate-model.h"
 #include "wifi-mode.h"
+#include <optional>
 
 namespace ns3 {
 
@@ -50,9 +51,9 @@ public:
   /**
    * \brief Utility function to convert WifiMode to an MCS value
    * \param mode the WifiMode
-   * \return the MCS value
+   * \return the equivalent MCS value, if found
    */
-  static uint8_t GetMcsForMode (WifiMode mode);
+  static std::optional<uint8_t> GetMcsForMode (WifiMode mode);
 
 
 private:

@@ -81,17 +81,17 @@ TableBasedErrorRateModel::RoundSnr (double snr, double precision) const
   return std::floor (snr * multiplier + 0.5) / multiplier;
 }
 
-uint8_t
+std::optional<uint8_t>
 TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
 {
-  uint8_t mcs = 0xff; // Initialize to invalid mcs
+  std::optional<uint8_t> mcs;
   WifiModulationClass modulationClass = mode.GetModulationClass ();
   WifiCodeRate codeRate = mode.GetCodeRate ();
   uint16_t constellationSize = mode.GetConstellationSize ();
 
   if (modulationClass == WIFI_MOD_CLASS_OFDM || modulationClass == WIFI_MOD_CLASS_ERP_OFDM)
     {
-      if (constellationSize == 2)
+      if (constellationSize == 2)    // BPSK
         {
           if (codeRate == WIFI_CODE_RATE_1_2)
             {
@@ -99,40 +99,40 @@ TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
             }
           if (codeRate == WIFI_CODE_RATE_3_4)
             {
-              mcs = 1;
+              // No MCS uses BPSK and a Coding Rate of 3/4
             }
         }
-      else if (constellationSize == 4)
+      else if (constellationSize == 4)    // QPSK
         {
           if (codeRate == WIFI_CODE_RATE_1_2)
+            {
+              mcs = 1;
+            }
+          else if (codeRate == WIFI_CODE_RATE_3_4)
             {
               mcs = 2;
             }
-          else if (codeRate == WIFI_CODE_RATE_3_4)
-            {
-              mcs = 3;
-            }
         }
-      else if (constellationSize == 16)
+      else if (constellationSize == 16)    // 16-QAM
         {
           if (codeRate == WIFI_CODE_RATE_1_2)
             {
-              mcs = 4;
+              mcs = 3;
             }
           else if (codeRate == WIFI_CODE_RATE_3_4)
             {
-              mcs = 5;
+              mcs = 4;
             }
         }
-      else if (constellationSize == 64)
+      else if (constellationSize == 64)    // 64-QAM
         {
           if (codeRate == WIFI_CODE_RATE_2_3)
             {
-              mcs = 6;
+              mcs = 5;
             }
           else if (codeRate == WIFI_CODE_RATE_3_4)
             {
-              mcs = 7;
+              mcs = 6;
             }
         }
     }
@@ -140,7 +140,6 @@ TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
     {
       mcs = mode.GetMcsValue ();
     }
-  NS_ABORT_MSG_IF (mcs == 0xff, "Error, MCS value for mode not found");
   return mcs;
 }
 
@@ -150,7 +149,16 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
   NS_LOG_FUNCTION (this << mode << txVector << snr << nbits << +numRxAntennas << field << staId);
   uint64_t size = std::max<uint64_t> (1, (nbits / 8));
   double roundedSnr = RoundSnr (RatioToDb (snr), SNR_PRECISION);
-  uint8_t mcs = GetMcsForMode (mode);
+  uint8_t mcs;
+  if (auto ret = GetMcsForMode (mode); ret.has_value ())
+    {
+      mcs = ret.value ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("No MCS found for mode " << mode << ": use fallback error rate model");
+      return m_fallbackErrorModel->GetChunkSuccessRate (mode, txVector, snr, nbits, staId);
+    }
   bool ldpc = txVector.IsLdpc ();
   NS_LOG_FUNCTION (this << +mcs << roundedSnr << size << ldpc);
 
