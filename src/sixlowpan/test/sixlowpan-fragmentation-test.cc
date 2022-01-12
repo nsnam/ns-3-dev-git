@@ -45,8 +45,7 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN Fragmentation Test
  */
@@ -462,8 +461,7 @@ SixlowpanFragmentationTest::DoRun (void)
 
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN Fragmentation TestSuite
  */

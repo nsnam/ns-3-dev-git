@@ -54,6 +54,12 @@ class EventId;
 
 /**
  * \ingroup sixlowpan
+ * \ingroup tests
+ * \defgroup sixlowpan-tests 6LoWPAN module tests
+ */
+
+/**
+ * \ingroup sixlowpan
  *
  * \brief Shim performing 6LoWPAN compression, decompression and fragmentation.
  *

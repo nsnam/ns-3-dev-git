@@ -40,8 +40,7 @@
 using namespace ns3;
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN HC1 Test
  */
@@ -211,8 +210,7 @@ SixlowpanHc1ImplTest::DoRun (void)
 
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN HC1 TestSuite
  */

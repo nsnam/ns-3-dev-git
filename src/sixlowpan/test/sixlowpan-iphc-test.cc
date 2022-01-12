@@ -39,15 +39,9 @@
 
 using namespace ns3;
 
-/**
- * \ingroup sixlowpan
- * \defgroup sixlowpan-test 6LoWPAN module tests
- */
-
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN IPHC Test
  */
@@ -215,8 +209,7 @@ SixlowpanIphcImplTest::DoRun (void)
 
 
 /**
- * \ingroup sixlowpan-test
- * \ingroup tests
+ * \ingroup sixlowpan-tests
  *
  * \brief 6LoWPAN IPHC TestSuite
  */
