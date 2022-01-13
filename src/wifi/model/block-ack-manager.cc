@@ -185,7 +185,7 @@ BlockAckManager::UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Ad
   if (it != m_agreements.end ())
     {
       OriginatorBlockAckAgreement& agreement = it->second.first;
-      agreement.SetBufferSize (respHdr->GetBufferSize () + 1);
+      agreement.SetBufferSize (respHdr->GetBufferSize ());
       agreement.SetTimeout (respHdr->GetTimeout ());
       agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
       agreement.SetStartingSequence (startingSeq);
@@ -549,7 +549,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
     }
   return {nSuccessfulMpdus, nFailedMpdus};
 }
-  
+
 void
 BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
 {

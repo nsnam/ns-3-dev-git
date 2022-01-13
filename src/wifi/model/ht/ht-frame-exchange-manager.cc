@@ -219,7 +219,7 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
     }
   respHdr.SetTid (reqHdr->GetTid ());
 
-  respHdr.SetBufferSize (GetSupportedBaBufferSize () - 1);
+  respHdr.SetBufferSize (GetSupportedBaBufferSize ());
   respHdr.SetTimeout (reqHdr->GetTimeout ());
 
   WifiActionHeader actionHdr;
@@ -288,9 +288,9 @@ HtFrameExchangeManager::CreateBlockAckAgreement (const MgtAddBaResponseHeader *r
 {
   NS_LOG_FUNCTION (this << *respHdr << originator << startingSeq);
   uint8_t tid = respHdr->GetTid ();
-  
+
   RecipientBlockAckAgreement agreement (originator, respHdr->IsAmsduSupported (), tid,
-                                        respHdr->GetBufferSize () + 1, respHdr->GetTimeout (),
+                                        respHdr->GetBufferSize (), respHdr->GetTimeout (),
                                         startingSeq,
                                         m_mac->GetWifiRemoteStationManager ()->GetHtSupported ()
                                         && m_mac->GetWifiRemoteStationManager ()->GetHtSupported (originator));
@@ -941,7 +941,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpd
 {
   NS_ASSERT (mpdu != 0);
   NS_LOG_FUNCTION (this << *mpdu << &txParams << ppduDurationLimit);
-  
+
   Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
   uint32_t ampduSize = txParams.GetSizeIfAddMpdu (mpdu);
 
@@ -1361,7 +1361,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           mpdu->GetPacket ()->PeekHeader (blockAckReq);
           NS_ABORT_MSG_IF (blockAckReq.IsMultiTid (), "Multi-TID BlockAckReq not supported");
           uint8_t tid = blockAckReq.GetTidInfo ();
-          
+
           auto agreementIt = m_agreements.find ({sender, tid});
 
           if (agreementIt == m_agreements.end ())

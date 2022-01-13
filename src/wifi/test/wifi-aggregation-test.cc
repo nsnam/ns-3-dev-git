@@ -176,7 +176,7 @@ AmpduAggregationTest::DoRun (void)
   respHdr.SetAmsduSupport (reqHdr.IsAmsduSupported ());
   respHdr.SetImmediateBlockAck ();
   respHdr.SetTid (reqHdr.GetTid ());
-  respHdr.SetBufferSize (63);
+  respHdr.SetBufferSize (64);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
   m_mac->GetBEQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
@@ -477,7 +477,7 @@ TwoLevelAggregationTest::DoRun (void)
   respHdr.SetAmsduSupport (reqHdr.IsAmsduSupported ());
   respHdr.SetImmediateBlockAck ();
   respHdr.SetTid (reqHdr.GetTid ());
-  respHdr.SetBufferSize (63);
+  respHdr.SetBufferSize (64);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
   m_mac->GetVIQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
@@ -523,7 +523,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);
   htFem->DequeuePsdu (psdu);
-  
+
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetVIQueue ()->GetWifiMacQueue ()->GetNPackets (), 5,
                          "Unexpected number of MSDUs left in the EDCA queue");
 
@@ -656,7 +656,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   respHdr.SetAmsduSupport (reqHdr.IsAmsduSupported ());
   respHdr.SetImmediateBlockAck ();
   respHdr.SetTid (reqHdr.GetTid ());
-  respHdr.SetBufferSize (bufferSize - 1);
+  respHdr.SetBufferSize (bufferSize);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
   m_mac->GetBEQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
@@ -683,7 +683,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
   Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
-  
+
   auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);
   htFem->DequeuePsdu (psdu);
