@@ -37,12 +37,13 @@
 
 using namespace ns3;
 
-// Variable to assign hash to a new packet's flow
-int32_t hash;
+/// Variable to assign g_hash to a new packet's flow
+static int32_t g_hash;
 
 /**
- * Simple test packet filter able to classify IPv4 packets
- *
+ * \ingroup system-tests-tc
+ * 
+ * Simple test packet filter able to classify IPv4 packets.
  */
 class Ipv4TestPacketFilter : public Ipv4PacketFilter {
 public:
@@ -56,7 +57,18 @@ public:
   virtual ~Ipv4TestPacketFilter ();
 
 private:
+  /**
+   * Classify a QueueDiscItem
+   * \param item The item to classify (unused).
+   * \return a pre-set hash value.
+   */
   virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+
+  /**
+   * Check the protocol.
+   * \param item The item to check (unused).
+   * \return true.
+   */
   virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
 };
 
@@ -82,7 +94,7 @@ Ipv4TestPacketFilter::~Ipv4TestPacketFilter ()
 int32_t
 Ipv4TestPacketFilter::DoClassify (Ptr<QueueDiscItem> item) const
 {
-  return hash;
+  return g_hash;
 }
 
 bool
@@ -92,7 +104,9 @@ Ipv4TestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 }
 
 /**
- * This class tests packets for which there is no suitable filter
+ * \ingroup system-tests-tc
+ * 
+ * This class tests packets for which there is no suitable filter.
  */
 class FqCoDelQueueDiscNoSuitableFilter : public TestCase
 {
@@ -121,7 +135,7 @@ FqCoDelQueueDiscNoSuitableFilter::DoRun (void)
   Ptr<Ipv4TestPacketFilter> filter = CreateObject<Ipv4TestPacketFilter> ();
   queueDisc->AddPacketFilter (filter);
 
-  hash = -1;
+  g_hash = -1;
   queueDisc->SetQuantum (1500);
   queueDisc->Initialize ();
 
@@ -143,7 +157,9 @@ FqCoDelQueueDiscNoSuitableFilter::DoRun (void)
 }
 
 /**
- * This class tests the IP flows separation and the packet limit
+ * \ingroup system-tests-tc
+ * 
+ * This class tests the IP flows separation and the packet limit.
  */
 class FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
 {
@@ -153,6 +169,11 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -212,7 +233,9 @@ FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
 }
 
 /**
- * This class tests the deficit per flow
+ * \ingroup system-tests-tc
+ * 
+ * This class tests the deficit per flow.
  */
 class FqCoDelQueueDiscDeficit : public TestCase
 {
@@ -222,6 +245,11 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -354,7 +382,9 @@ FqCoDelQueueDiscDeficit::DoRun (void)
 }
 
 /**
- * This class tests the TCP flows separation
+ * \ingroup system-tests-tc
+ * 
+ * This class tests the TCP flows separation.
  */
 class FqCoDelQueueDiscTCPFlowsSeparation : public TestCase
 {
@@ -364,6 +394,12 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue The queue disc.
+   * \param ipHdr The IPv4 header.
+   * \param tcpHdr The TCP header.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr);
 };
 
@@ -440,6 +476,8 @@ FqCoDelQueueDiscTCPFlowsSeparation::DoRun (void)
 }
 
 /**
+ * \ingroup system-tests-tc
+ * 
  * This class tests the UDP flows separation
  */
 class FqCoDelQueueDiscUDPFlowsSeparation : public TestCase
@@ -450,6 +488,12 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue The queue disc.
+   * \param ipHdr The IPv4 header.
+   * \param udpHdr The UDP header.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr);
 };
 
@@ -526,8 +570,12 @@ FqCoDelQueueDiscUDPFlowsSeparation::DoRun (void)
 }
 
 /**
- * This class tests ECN marking
- * Any future classifier options (e.g. SetAssociativeHash) should be disabled to prevent a hash collision on this test case.
+ * \ingroup system-tests-tc
+ * 
+ * \brief This class tests ECN marking.
+ * 
+ * Any future classifier options (e.g. SetAssociativeHash) should be
+ * disabled to prevent a hash collision on this test case.
  */
 class FqCoDelQueueDiscECNMarking : public TestCase
 {
@@ -537,8 +585,27 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue some packets.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   * \param nPkt The number of packets to enqueue.
+   * \param nPktEnqueued The expected number of queue disc classes.
+   * \param nQueueFlows The expected number of flows in the queue.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows);
+  /**
+   * Dequeue some packets.
+   * \param queue The queue disc.
+   * \param nPkt The number of packets to dequeue.
+   */
   void Dequeue (Ptr<FqCoDelQueueDisc> queue, uint32_t nPkt);
+  /**
+   * Dequeue some packets with delay.
+   * \param queue The queue disc.
+   * \param delay Delay [seconds].
+   * \param nPkt The number of packets to dequeue.
+   */
   void DequeueWithDelay (Ptr<FqCoDelQueueDisc> queue, double delay, uint32_t nPkt);
 };
 
@@ -834,9 +901,12 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
   Simulator::Destroy ();
 }
 
-/*
- * This class tests linear probing, collision response, and set
+/**
+ * \ingroup system-tests-tc
+ * 
+ * \brief This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqCodel.
+ * 
  * We modified DoClassify () and CheckProtocol () so that we could control
  * the hash returned for each packet. In the beginning, we use flow hashes
  * ranging from 0 to 7. These must go into different queues in the same set. 
@@ -855,7 +925,6 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
  * is 16. Since m_flowIndices[16] wasn’t previously allotted, a new flow
  * is created, and the tag corresponding to this queue is set to 20.
 */
-
 class FqCoDelQueueDiscSetLinearProbing : public TestCase
 {
 public:
@@ -863,6 +932,11 @@ public:
   virtual ~FqCoDelQueueDiscSetLinearProbing ();
 private:
   virtual void DoRun (void);
+  /**
+   * Enqueue a packet.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr);
 };
 
@@ -900,25 +974,25 @@ FqCoDelQueueDiscSetLinearProbing::DoRun (void)
   hdr.SetDestination (Ipv4Address ("10.10.1.2"));
   hdr.SetProtocol (7);
 
-  hash = 0;
+  g_hash = 0;
   AddPacket (queueDisc, hdr);
-  hash = 1;
-  AddPacket (queueDisc, hdr);
-  AddPacket (queueDisc, hdr);
-  hash = 2;
-  AddPacket (queueDisc, hdr);
-  hash = 3;
-  AddPacket (queueDisc, hdr);
-  hash = 4;
+  g_hash = 1;
   AddPacket (queueDisc, hdr);
   AddPacket (queueDisc, hdr);
-  hash = 5;
+  g_hash = 2;
   AddPacket (queueDisc, hdr);
-  hash = 6;
+  g_hash = 3;
   AddPacket (queueDisc, hdr);
-  hash = 7;
+  g_hash = 4;
   AddPacket (queueDisc, hdr);
-  hash = 1024;
+  AddPacket (queueDisc, hdr);
+  g_hash = 5;
+  AddPacket (queueDisc, hdr);
+  g_hash = 6;
+  AddPacket (queueDisc, hdr);
+  g_hash = 7;
+  AddPacket (queueDisc, hdr);
+  g_hash = 1024;
   AddPacket (queueDisc, hdr);
 
   NS_TEST_ASSERT_MSG_EQ (queueDisc->QueueDisc::GetNPackets (), 11,
@@ -939,11 +1013,11 @@ FqCoDelQueueDiscSetLinearProbing::DoRun (void)
                          "unexpected number of packets in the seventh flow queue of set one");
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (7)->GetQueueDisc ()->GetNPackets (), 1,
                          "unexpected number of packets in the eighth flow queue of set one");
-  hash = 1025;
+  g_hash = 1025;
   AddPacket (queueDisc, hdr);
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 3,
                          "unexpected number of packets in the first flow of set one");
-  hash = 10;
+  g_hash = 10;
   AddPacket (queueDisc, hdr);
   NS_TEST_ASSERT_MSG_EQ (queueDisc->GetQueueDiscClass (8)->GetQueueDisc ()->GetNPackets (), 1,
                          "unexpected number of packets in the first flow of set two");
@@ -952,8 +1026,11 @@ FqCoDelQueueDiscSetLinearProbing::DoRun (void)
 
 
 /**
- * This class tests L4S mode
- * Any future classifier options (e.g. SetAssociativeHash) should be disabled to prevent a hash collision on this test case.
+ * \ingroup system-tests-tc
+ * 
+ * \brief This class tests L4S mode.
+ * Any future classifier options (e.g. SetAssociativeHash) should be
+ * disabled to prevent a hash collision on this test case.
  */
 class FqCoDelQueueDiscL4sMode : public TestCase
 {
@@ -963,9 +1040,36 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Enqueue some packets.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   * \param nPkt The number of packets to enqueue.
+   */
   void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+
+  /**
+   * Enqueue some packets with delay.
+   * \param queue The queue disc.
+   * \param hdr The IPv4 header.
+   * \param delay Delay [seconds].
+   * \param nPkt The number of packets to enqueue.
+   */
   void AddPacketWithDelay (Ptr<FqCoDelQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt);
+
+  /**
+   * Dequeue some packets.
+   * \param queue The queue disc.
+   * \param nPkt The number of packets to dequeue.
+   */
   void Dequeue (Ptr<FqCoDelQueueDisc> queue, uint32_t nPkt);
+  /**
+   * Dequeue some packets with delay.
+   * \param queue The queue disc.
+   * \param delay Delay [seconds].
+   * \param nPkt The number of packets to dequeue.
+   */
   void DequeueWithDelay (Ptr<FqCoDelQueueDisc> queue, double delay, uint32_t nPkt);
 };
 
@@ -1106,6 +1210,13 @@ FqCoDelQueueDiscL4sMode::DoRun (void)
   Simulator::Destroy ();
 
 }
+
+
+/**
+ * \ingroup system-tests-tc
+ * 
+ * FQ-CoDel queue disc test suite.
+ */
 class FqCoDelQueueDiscTestSuite : public TestSuite
 {
 public:
@@ -1125,4 +1236,5 @@ FqCoDelQueueDiscTestSuite::FqCoDelQueueDiscTestSuite ()
   AddTestCase (new FqCoDelQueueDiscL4sMode, TestCase::QUICK);
 }
 
-static FqCoDelQueueDiscTestSuite fqCoDelQueueDiscTestSuite;
+/// Do not forget to allocate an instance of this TestSuite.
+static FqCoDelQueueDiscTestSuite g_fqCoDelQueueDiscTestSuite;

@@ -54,21 +54,28 @@ NS_LOG_COMPONENT_DEFINE ("Ns3TcpLossTest");
 // revised vectors are the correct ones.  In other words, don't simply
 // enable this to true to clear a failing test without looking at the
 // results closely.
-const bool WRITE_VECTORS = false;            // set to true to write response vectors
-const bool WRITE_PCAP = false;              // set to true to write out pcap
-const bool WRITE_LOGGING = false;            // set to true to write logging
-const uint32_t PCAP_LINK_TYPE = 1187373557; // Some large random number -- we use to verify data was written by this program
-const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
+const bool WRITE_VECTORS = false;           //!< Set to true to write response vectors.
+const bool WRITE_PCAP = false;              //!< Set to true to write out pcap.
+const bool WRITE_LOGGING = false;           //!< Set to true to write logging.
+const uint32_t PCAP_LINK_TYPE = 1187373557; //!< Some large random number -- we use to verify data was written by this program.
+const uint32_t PCAP_SNAPLEN   = 64;         //!< Don't bother to save much data.
 
-// ===========================================================================
-// Tests of TCP implementation loss behavior
-// ===========================================================================
-//
-
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * \brief Tests of TCP implementation loss behavior.
+ */
 class Ns3TcpLossTestCase : public TestCase
 {
 public:
   Ns3TcpLossTestCase ();
+
+  /**
+   * Constructor.
+   * 
+   * \param tcpModel The TCP model name.
+   * \param testCase Testcase number.
+   */
   Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase);
   virtual ~Ns3TcpLossTestCase ()
   {
@@ -79,24 +86,50 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  Ptr<OutputStreamWrapper> m_osw;
-  std::string m_pcapFilename;
-  PcapFile m_pcapFile;
-  uint32_t m_testCase;
-  uint32_t m_totalTxBytes;
-  uint32_t m_currentTxBytes;
-  bool m_writeVectors;
-  bool m_writeResults;
-  bool m_writeLogging;
-  bool m_needToClose;
-  std::string m_tcpModel;
+  Ptr<OutputStreamWrapper> m_osw; //!< The output stream.
+  std::string m_pcapFilename;     //!< The PCAP filename.
+  PcapFile m_pcapFile;            //!< The PCAP ffile.
+  uint32_t m_testCase;            //!< Testcase number.
+  uint32_t m_totalTxBytes;        //!< Total number of bytes to send.
+  uint32_t m_currentTxBytes;      //!< Current number of bytes sent.
+  bool m_writeVectors;            //!< True if response vectors have to be written (and not read).
+  bool m_writeResults;            //!< True if write PCAP files.
+  bool m_writeLogging;            //!< True if write logging.
+  bool m_needToClose;             //!< Check if the sending socket need to be closed.
+  std::string m_tcpModel;         //!< The TCP model name.
 
+  /**
+   * Check that the transmitted packets are consitent with the trace.
+   * This callback is hooked to ns3::Ipv4L3Protocol/Tx.
+   * 
+   * \param context The callback context (unused).
+   * \param packet The transmitted packet.
+   * \param ipv4 The IPv4 object that did send the packet (unused).
+   * \param interface The IPv4 interface that did send the packet (unused).
+   */
   void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  /**
+   * CWND trace.
+   * 
+   * \param oldval The old value.
+   * \param newval The new value.
+   */
   void CwndTracer (uint32_t oldval, uint32_t newval);
+  /**
+   * Write to the socket until the buffer is full.
+   * 
+   * \param localSocket The output socket.
+   * \param txSpace The space left on the socket (unused).
+   */
   void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
-  void StartFlow (Ptr<Socket> localSocket,
-                  Ipv4Address servAddress,
-                  uint16_t servPort);
+  /**
+   * Start transmitting a TCP flow.
+   * 
+   * \param localSocket The sending socket.
+   * \param servAddress The IPv4 address of the server (i.e., the destination address).
+   * \param servPort The TCP port of the server (i.e., the destination port).
+   */
+  void StartFlow (Ptr<Socket> localSocket, Ipv4Address servAddress, uint16_t servPort);
 
 };
 
@@ -165,7 +198,7 @@ Ns3TcpLossTestCase::DoTeardown (void)
 }
 
 void
-Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ns3TcpLossTestCase::Ipv4L3Tx (std::string, Ptr<const Packet> packet, Ptr<Ipv4>, uint32_t)
 {
   //
   // We're not testing IP so remove and toss the header.  In order to do this,
@@ -244,7 +277,7 @@ Ns3TcpLossTestCase::CwndTracer (uint32_t oldval, uint32_t newval)
 ////////////////////////////////////////////////////////////////////
 // Implementing an "application" to send bytes over a TCP connection
 void
-Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
+Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t)
 {
   while (m_currentTxBytes < m_totalTxBytes)
     {
@@ -473,6 +506,11 @@ Ns3TcpLossTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * TCP implementation loss behavior TestSuite.
+ */
 class Ns3TcpLossTestSuite : public TestSuite
 {
 public:
@@ -506,5 +544,6 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
 
 }
 
-static Ns3TcpLossTestSuite ns3TcpLossTestSuite;
+/// Do not forget to allocate an instance of this TestSuite.
+static Ns3TcpLossTestSuite g_ns3TcpLossTestSuite;
 

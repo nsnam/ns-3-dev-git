@@ -40,41 +40,48 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3SocketTest");
 
-// ===========================================================================
-// Tests of TCP implementations from the application/socket perspective
-// ===========================================================================
-//
-//
-class Ns3TcpSocketTestCase1 : public TestCase
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * \brief Tests of TCP implementations from the application/socket perspective 
+ * using point-to-point links.
+ */
+class Ns3TcpSocketTestCaseP2P : public TestCase
 {
 public:
-  Ns3TcpSocketTestCase1 ();
-  virtual ~Ns3TcpSocketTestCase1 () {}
+  Ns3TcpSocketTestCaseP2P ();
+  virtual ~Ns3TcpSocketTestCaseP2P () {}
 
 private:
   virtual void DoRun (void);
-  bool m_writeResults;
+  bool m_writeResults;  //!< True if write PCAP files.
 
+  /**
+   * Receive a TCP packet.
+   * \param path The callback context (unused).
+   * \param p The received packet.
+   * \param address The sender's address (unused).
+   */
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
 
-  TestVectors<uint32_t> m_inputs;
-  TestVectors<uint32_t> m_responses;
+  TestVectors<uint32_t> m_inputs;     //!< Sent packets test vector.
+  TestVectors<uint32_t> m_responses;  //!< Received packets test vector.
 };
 
-Ns3TcpSocketTestCase1::Ns3TcpSocketTestCase1 ()
+Ns3TcpSocketTestCaseP2P::Ns3TcpSocketTestCaseP2P ()
   : TestCase ("Check that ns-3 TCP successfully transfers an application data write of various sizes (point-to-point)"),
     m_writeResults (false)
 {
 }
 
 void 
-Ns3TcpSocketTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+Ns3TcpSocketTestCaseP2P::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
 }
 
 void
-Ns3TcpSocketTestCase1::DoRun (void)
+Ns3TcpSocketTestCaseP2P::DoRun (void)
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close
@@ -116,7 +123,7 @@ Ns3TcpSocketTestCase1::DoRun (void)
   apps.Stop (sinkStopTimeObj);
 
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpSocketTestCase1::SinkRx, this));
+                   MakeCallback (&Ns3TcpSocketTestCaseP2P::SinkRx, this));
 
   Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
   // Send 1, 10, 100, 1000 bytes
@@ -150,36 +157,48 @@ Ns3TcpSocketTestCase1::DoRun (void)
     }
 }
 
-class Ns3TcpSocketTestCase2 : public TestCase
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * \brief Tests of TCP implementations from the application/socket perspective 
+ * using CSMA links.
+ */
+class Ns3TcpSocketTestCaseCsma : public TestCase
 {
 public:
-  Ns3TcpSocketTestCase2 ();
-  virtual ~Ns3TcpSocketTestCase2 () {}
+  Ns3TcpSocketTestCaseCsma ();
+  virtual ~Ns3TcpSocketTestCaseCsma () {}
 
 private:
   virtual void DoRun (void);
-  bool m_writeResults;
+  bool m_writeResults;  //!< True if write PCAP files.
 
+  /**
+   * Receive a TCP packet.
+   * \param path The callback context (unused).
+   * \param p The received packet.
+   * \param address The sender's address (unused).
+   */
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
 
-  TestVectors<uint32_t> m_inputs;
-  TestVectors<uint32_t> m_responses;
+  TestVectors<uint32_t> m_inputs;     //!< Sent packets test vector.
+  TestVectors<uint32_t> m_responses;  //!< Received packets test vector.
 };
 
-Ns3TcpSocketTestCase2::Ns3TcpSocketTestCase2 ()
+Ns3TcpSocketTestCaseCsma::Ns3TcpSocketTestCaseCsma ()
   : TestCase ("Check to see that ns-3 TCP successfully transfers an application data write of various sizes (CSMA)"),
     m_writeResults (false)
 {
 }
 
 void 
-Ns3TcpSocketTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+Ns3TcpSocketTestCaseCsma::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
 }
 
 void
-Ns3TcpSocketTestCase2::DoRun (void)
+Ns3TcpSocketTestCaseCsma::DoRun (void)
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close
@@ -225,7 +244,7 @@ Ns3TcpSocketTestCase2::DoRun (void)
   apps.Stop (sinkStopTimeObj);
 
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpSocketTestCase2::SinkRx, this));
+                   MakeCallback (&Ns3TcpSocketTestCaseCsma::SinkRx, this));
 
   Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
   // Send 1, 10, 100, 1000 bytes
@@ -262,6 +281,11 @@ Ns3TcpSocketTestCase2::DoRun (void)
     }
 }
 
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * TCP implementations from the application/socket perspective TestSuite.
+ */
 class Ns3TcpSocketTestSuite : public TestSuite
 {
 public:
@@ -271,8 +295,9 @@ public:
 Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite ()
   : TestSuite ("ns3-tcp-socket", SYSTEM)
 {
-  AddTestCase (new Ns3TcpSocketTestCase1, TestCase::QUICK);
-  AddTestCase (new Ns3TcpSocketTestCase2, TestCase::QUICK);
+  AddTestCase (new Ns3TcpSocketTestCaseP2P, TestCase::QUICK);
+  AddTestCase (new Ns3TcpSocketTestCaseCsma, TestCase::QUICK);
 }
 
-static Ns3TcpSocketTestSuite ns3TcpSocketTestSuite;
+/// Do not forget to allocate an instance of this TestSuite.
+static Ns3TcpSocketTestSuite g_ns3TcpSocketTestSuite;

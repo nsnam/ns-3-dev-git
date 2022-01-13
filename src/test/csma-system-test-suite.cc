@@ -51,6 +51,11 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA Bridge mode test.
+ */
 class CsmaBridgeTestCase : public TestCase
 {
 public:
@@ -59,8 +64,14 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
   void SinkRx (Ptr<const Packet> p, const Address &ad);
-  uint32_t m_count;
+  uint32_t m_count; //!< Counter of received packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -155,6 +166,11 @@ CsmaBridgeTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_count, 10, "Bridge should have passed 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA Broadcast mode test.
+ */
 class CsmaBroadcastTestCase : public TestCase
 {
 public:
@@ -163,12 +179,26 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   * @{
+   */
   void SinkRxNode1 (Ptr<const Packet> p, const Address &ad);
   void SinkRxNode2 (Ptr<const Packet> p, const Address &ad);
+  /** @} */
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_countNode1;
-  uint32_t m_countNode2;
-  uint32_t m_drops;
+
+  uint32_t m_countNode1; //!< Counter of received packets on node 1.
+  uint32_t m_countNode2; //!< Counter of received packets on node 2.
+  uint32_t m_drops;      //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -275,6 +305,11 @@ CsmaBroadcastTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_countNode2, 10, "Node 2 should have received 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA Multicast mode test.
+ */
 class CsmaMulticastTestCase : public TestCase
 {
 public:
@@ -283,10 +318,22 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
   void SinkRx (Ptr<const Packet> p, const Address &ad);
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_count;
-  uint32_t m_drops;
+
+  uint32_t m_count; //!< Counter of received packets.
+  uint32_t m_drops; //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -435,6 +482,11 @@ CsmaMulticastTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_count, 10, "Node 4 should have received 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA One Subnet mode test.
+ */
 class CsmaOneSubnetTestCase : public TestCase
 {
 public:
@@ -443,12 +495,25 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   * @{
+   */
   void SinkRxNode0 (Ptr<const Packet> p, const Address &ad);
   void SinkRxNode1 (Ptr<const Packet> p, const Address &ad);
+  /** @} */
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_countNode0;
-  uint32_t m_countNode1;
-  uint32_t m_drops;
+  uint32_t m_countNode0; //!< Counter of received packets on node 0.
+  uint32_t m_countNode1; //!< Counter of received packets on node 1.
+  uint32_t m_drops;      //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -563,6 +628,11 @@ CsmaOneSubnetTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_countNode1, 10, "Node 1 should have received 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA PacketSocket test.
+ */
 class CsmaPacketSocketTestCase : public TestCase
 {
 public:
@@ -571,10 +641,22 @@ public:
 
 private:
   virtual void DoRun (void);
-  void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
+  /**
+   * Sink called when a packet is received by a node.
+   * \param path Sink path.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
+  void SinkRx (std::string path, Ptr<const Packet> p, const Address &ad);
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_count;
-  uint32_t m_drops;
+
+  uint32_t m_count; //!< Counter of received packets.
+  uint32_t m_drops; //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -669,6 +751,11 @@ CsmaPacketSocketTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_count, 10, "Node 0 should have received 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA PING test.
+ */
 class CsmaPingTestCase : public TestCase
 {
 public:
@@ -677,12 +764,29 @@ public:
 
 private:
   virtual void DoRun (void);
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
   void SinkRx (Ptr<const Packet> p, const Address &ad);
+
+  /**
+   * Sink called when a PING ois received.
+   * \param context Context path (unused).
+   * \param rtt Round Trip Time (unused).
+   */
   void PingRtt (std::string context, Time rtt);
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_countSinkRx;
-  uint32_t m_countPingRtt;
-  uint32_t m_drops;
+
+  uint32_t m_countSinkRx;   //!< Counter of received packets.
+  uint32_t m_countPingRtt;  //!< Counter of PING received.
+  uint32_t m_drops;         //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -790,6 +894,11 @@ CsmaPingTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_countPingRtt, 9, "Node 2 should have been pinged 9 times");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA Raw IP test.
+ */
 class CsmaRawIpSocketTestCase : public TestCase
 {
 public:
@@ -798,10 +907,22 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
   void SinkRx (Ptr<const Packet> p, const Address &ad);
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_count;
-  uint32_t m_drops;
+
+  uint32_t m_count; //!< Counter of received packets.
+  uint32_t m_drops; //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -888,6 +1009,11 @@ CsmaRawIpSocketTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_count, 10, "Node 3 should have received 10 packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA star mode test.
+ */
 class CsmaStarTestCase : public TestCase
 {
 public:
@@ -896,10 +1022,22 @@ public:
 
 private:
   virtual void DoRun (void);
+
+  /**
+   * Sink called when a packet is received by a node.
+   * \param p Received packet (unused).
+   * \param ad Sender's address (uused).
+   */
   void SinkRx (Ptr<const Packet> p, const Address &ad);
+
+  /**
+   * Sink called when a packet is dropped.
+   * \param p Received packet (unused).
+   */
   void DropEvent (Ptr<const Packet> p);
-  uint32_t m_count;
-  uint32_t m_drops;
+
+  uint32_t m_count; //!< Counter of received packets.
+  uint32_t m_drops; //!< Counter of dropped packets.
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -1070,6 +1208,11 @@ CsmaStarTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_count, 10 * ( nSpokes * (nFill + 1)), "Hub node did not receive the proper number of packets");
 }
 
+/**
+ * \ingroup system-tests-csma
+ * 
+ * \brief CSMA TestSuite.
+ */
 class CsmaSystemTestSuite : public TestSuite
 {
 public:
@@ -1089,5 +1232,5 @@ CsmaSystemTestSuite::CsmaSystemTestSuite ()
   AddTestCase (new CsmaStarTestCase, TestCase::QUICK);
 }
 
-// Do not forget to allocate an instance of this TestSuite
+/// Do not forget to allocate an instance of this TestSuite
 static CsmaSystemTestSuite csmaSystemTestSuite;

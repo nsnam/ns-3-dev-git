@@ -28,10 +28,18 @@
 
 using namespace ns3;
 
+/// Microseconds to nanoseconds conversion factor.
 static const uint64_t US_PER_NS = (uint64_t)1000;
-static const uint64_t US_PER_SEC = (uint64_t)1000000;
+/// Nanoseconds to seconds conversion factor.
 static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
 
+/**
+ * \ingroup system-tests-perf
+ * 
+ * Get the system clock time in nanoseconds.
+ * 
+ * \return the system clock time in nanoseconds.
+ */
 uint64_t
 GetRealtimeInNs (void)
 {
@@ -42,6 +50,16 @@ GetRealtimeInNs (void)
   return nsResult;
 }
 
+/**
+ * \ingroup system-tests-perf
+ * 
+ * Check the performance of writing to file.
+ * 
+ * \param file The file to write to.
+ * \param n The number of writes to perform.
+ * \param buffer The buffer to write.
+ * \param size The buffer size.
+ */
 void
 PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
 {
@@ -54,6 +72,16 @@ PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
     }
 }
 
+/**
+ * \ingroup system-tests-perf
+ * 
+ * Check the performance of writing to an output stream.
+ * 
+ * \param stream The output stream to write to.
+ * \param n The number of writes to perform.
+ * \param buffer The buffer to write.
+ * \param size The buffer size.
+ */
 void
 PerfStream (ostream &stream, uint32_t n, const char *buffer, uint32_t size)
 {

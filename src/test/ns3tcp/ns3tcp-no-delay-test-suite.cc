@@ -39,26 +39,37 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpNoDelayTest");
 
-// ===========================================================================
-// Tests of Nagle's algorithm and the TCP no delay option
-// ===========================================================================
-//
-//
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * \brief Tests of Nagle's algorithm and the TCP no delay option.
+ */
 class Ns3TcpNoDelayTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor.
+   * 
+   * \param noDelay Enable or disable TCP no delay option.
+   */
   Ns3TcpNoDelayTestCase (bool noDelay);
   virtual ~Ns3TcpNoDelayTestCase () {}
 
 private:
   virtual void DoRun (void);
-  bool m_noDelay;
-  bool m_writeResults;
+  bool m_noDelay;       //!< Enable or disable TCP no delay option.
+  bool m_writeResults;  //!< True if write PCAP files.
 
+  /**
+   * Receive a TCP packet.
+   * \param path The callback context (unused).
+   * \param p The received packet.
+   * \param address The sender's address (unused).
+   */
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
 
-  TestVectors<uint32_t> m_inputs;
-  TestVectors<uint32_t> m_responses;
+  TestVectors<uint32_t> m_inputs;     //!< Sent packets test vector.
+  TestVectors<uint32_t> m_responses;  //!< Received packets test vector.
 };
 
 Ns3TcpNoDelayTestCase::Ns3TcpNoDelayTestCase (bool noDelay)
@@ -69,7 +80,7 @@ Ns3TcpNoDelayTestCase::Ns3TcpNoDelayTestCase (bool noDelay)
 }
 
 void 
-Ns3TcpNoDelayTestCase::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+Ns3TcpNoDelayTestCase::SinkRx (std::string, Ptr<const Packet> p, const Address &)
 {
   m_responses.Add (p->GetSize ());
 }
@@ -192,6 +203,11 @@ Ns3TcpNoDelayTestCase::DoRun (void)
     }
 }
 
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * TCP Nagle's algorithm and the TCP no delay option TestSuite.
+ */
 class Ns3TcpNoDelayTestSuite : public TestSuite
 {
 public:
@@ -205,4 +221,5 @@ Ns3TcpNoDelayTestSuite::Ns3TcpNoDelayTestSuite ()
   AddTestCase (new Ns3TcpNoDelayTestCase (false), TestCase::QUICK);
 }
 
-static Ns3TcpNoDelayTestSuite ns3TcpNoDelayTestSuite;
+/// Do not forget to allocate an instance of this TestSuite.
+static Ns3TcpNoDelayTestSuite g_ns3TcpNoDelayTestSuite;

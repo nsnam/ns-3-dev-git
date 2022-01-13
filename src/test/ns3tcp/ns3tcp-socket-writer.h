@@ -24,7 +24,12 @@
 
 namespace ns3
 {
-//  Simple class to write data to sockets
+
+/**
+ * \ingroup system-tests-tcp
+ * 
+ * \brief Simple class to write data to sockets.
+ */
 class SocketWriter : public Application
 {
 public:
@@ -36,18 +41,33 @@ public:
    */
   static TypeId GetTypeId (void);
   
+  /**
+   * Setup the socket.
+   * \param node The node owning the socket.
+   * \param peer The destinaiton address.
+   */
   void Setup (Ptr<Node> node, Address peer);
+  /**
+   * Connect the socket.
+   */
   void Connect ();
+  /**
+   * Write to the socket.
+   * \param numBytes The number of bytes to write.
+   */
   void Write (uint32_t numBytes);
+  /**
+   * Close the socket.
+   */
   void Close ();
 
 private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
-  Address m_peer;
-  Ptr<Node> m_node;
-  Ptr<Socket> m_socket;
-  bool m_isSetup;
-  bool m_isConnected;
+  Address m_peer;         //!< Peer's address.
+  Ptr<Node> m_node;       //!< Node pointer
+  Ptr<Socket> m_socket;   //!< Socket.
+  bool m_isSetup;         //!< True if the socket is connected.
+  bool m_isConnected;     //!< True if the socket setup has been done.
 };
 }
