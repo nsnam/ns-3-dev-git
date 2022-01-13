@@ -14,16 +14,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/core-module.h"
+// This header does not provide much functionality but is meant to demonstrate how,
+// in a scratch subdirectory, one can create new programs that are implemented
+// in multiple files and headers.
 
-using namespace ns3;
+#include <string>
 
-NS_LOG_COMPONENT_DEFINE ("ScratchSimulator");
+namespace ns3 {
 
-int
-main (int argc, char *argv[])
-{
-  NS_LOG_UNCOND ("Scratch Simulator");
-  CommandLine cmd;
-  cmd.Parse (argc, argv);
-}
+/**
+ * Get a message from the subdir.
+ *
+ * \return The message from the subdir
+ */
+std::string ScratchSubdirGetMessage ();
+
+} // namespace ns3
