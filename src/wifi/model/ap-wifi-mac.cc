@@ -1088,9 +1088,19 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
     }
   else if (hdr->IsMgt ())
     {
-      if (hdr->IsProbeReq ())
+      if (hdr->IsProbeReq ()
+          && (hdr->GetAddr1 ().IsGroup () || hdr->GetAddr1 () == GetAddress ()))
         {
-          NS_ASSERT (hdr->GetAddr1 ().IsBroadcast ());
+          // In the case where the Address 1 field contains a group address, the
+          // Address 3 field also is validated to verify that the group addressed
+          // frame originated from a STA in the BSS of which the receiving STA is
+          // a member (Section 9.3.3.1 of 802.11-2020)
+          if (hdr->GetAddr1 ().IsGroup ()
+              && !hdr->GetAddr3 ().IsBroadcast () && hdr->GetAddr3 () != GetAddress ())
+            {
+              // not addressed to us
+              return;
+            }
           MgtProbeRequestHeader probeRequestHeader;
           packet->PeekHeader (probeRequestHeader);
           Ssid ssid = probeRequestHeader.GetSsid ();
