@@ -107,7 +107,7 @@ and the other is to use the --pyrun option to ns3:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --pyrun examples/wireless/mixed-wireless.py
+  $ ./ns3 run examples/wireless/mixed-wireless.py
 
 As of ns-3.30, a --pyrun-no-build option was added to allow the running of
 a program without invoking a project rebuild.  This option may be useful
@@ -117,7 +117,7 @@ different arguments, such as from scripts. It can be used in place of
 
 .. sourcecode:: bash
 
-  $ ./ns3 --pyrun-no-build examples/wireless/mixed-wireless.py
+  $ ./ns3 run examples/wireless/mixed-wireless.py --no-build
 
 To run a python script under the C debugger:
 

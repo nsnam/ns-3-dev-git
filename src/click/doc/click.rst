@@ -103,7 +103,7 @@ If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good t
 
 Next, try running one of the examples::
 
-  $ ./ns3 --run nsclick-simple-lan
+  $ ./ns3 run nsclick-simple-lan
 
 You may then view the resulting .pcap traces, which are named nsclick-simple-lan-0-0.pcap and nsclick-simple-lan-0-1.pcap.
 

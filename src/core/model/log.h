@@ -54,11 +54,11 @@
  * Use the environment variable NS_LOG to define a ':'-separated list of
  * logging components to enable. For example (using bash syntax),
  * \code
- *   $ NS_LOG="OlsrAgent" ./ns3 --run ...
+ *   $ NS_LOG="OlsrAgent" ./ns3 run ...
  * \endcode
  * would enable one component at all log levels.
  * \code
- *   $NS_LOG="OlsrAgent:Ipv4L3Protocol" ./ns3 --run ...
+ *   $NS_LOG="OlsrAgent:Ipv4L3Protocol" ./ns3 run ...
  * \endcode
  * would enable two components, at all log levels, etc.
  * \c NS_LOG="*" will enable all available log components at all levels.

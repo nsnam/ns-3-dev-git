@@ -49,7 +49,7 @@ first is by setting the ``NS_LOG`` environment variable; e.g.:
 
 .. sourcecode:: bash
 
-   $ NS_LOG="*" ./ns3 --run first
+   $ NS_LOG="*" ./ns3 run first
 
 will run the ``first`` tutorial program with all logging output.  (The
 specifics of the ``NS_LOG`` format will be discussed below.)
@@ -58,7 +58,7 @@ This can be made more granular by selecting individual components:
 
 .. sourcecode:: bash
 
-   $ NS_LOG="Ipv4L3Protocol" ./ns3 --run first
+   $ NS_LOG="Ipv4L3Protocol" ./ns3 run first
 
 The output can be further tailored with prefix options.
   
@@ -115,7 +115,7 @@ To see what log components are defined, any of these will work:
 
 .. sourcecode:: bash
 
-   $ NS_LOG="print-list" ./ns3 --run ...
+   $ NS_LOG="print-list" ./ns3 run ...
 
    $ NS_LOG="foo"  # a token not matching any log-component
 
@@ -253,7 +253,7 @@ class (``|prefix_level``).
 
 .. sourcecode:: bash
 
-   $ NS_LOG="*=all|prefix_level" ./ns3 --run scratch-simulator
+   $ NS_LOG="*=all|prefix_level" ./ns3 run scratch-simulator
    Scratch Simulator
    [ERROR] error message
    [WARN] warn message

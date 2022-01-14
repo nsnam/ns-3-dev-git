@@ -141,7 +141,7 @@ interval enabled (cases 9-16), and then with channel bonding enabled and
 short guard first disabled then enabled (cases 17-32).  Cases 33-64 repeat
 the same configurations but for two spatial streams (MIMO abstraction).
 
-When run with the legacy YansWifiPhy, as in ``./ns3 --run "wifi-spectrum-saturation-example --wifiType=ns3::YansWifiPhy"``, the same output is observed:
+When run with the legacy YansWifiPhy, as in ``./ns3 run "wifi-spectrum-saturation-example --wifiType=ns3::YansWifiPhy"``, the same output is observed:
 
 ::
 
@@ -204,7 +204,7 @@ Some sample output with default arguments (no interference) is:
 
 ::
 
-  ./ns3 --run "wifi-spectrum-per-interference"
+  ./ns3 run "wifi-spectrum-per-interference"
 
   wifiType: ns3::SpectrumWifiPhy distance: 50m; time: 10; TxPower: 16 dBm (40 mW)
   index   MCS  Rate (Mb/s) Tput (Mb/s) Received Signal (dBm)Noi+Inf(dBm) SNR (dB)
@@ -223,7 +223,7 @@ higher order modulations, due to lower SNR:
 
 ::
 
-  ./ns3 --run "wifi-spectrum-per-interference --waveformPower=0.001"
+  ./ns3 run "wifi-spectrum-per-interference --waveformPower=0.001"
 
   wifiType: ns3::SpectrumWifiPhy distance: 50m; sent: 1000 TxPower: 16 dBm (40 mW)
   index   MCS Rate (Mb/s) Tput (Mb/s) Received Signal (dBm)Noi+Inf(dBm)  SNR (dB)
@@ -266,7 +266,7 @@ generate an eps file using gnuplot and vizualize the graph.
 
 ::
 
-  ./ns3 --run "wifi-bianchi"
+  ./ns3 run "wifi-bianchi"
 
 .. _fig-wifi-bianchi-11a-54-adhoc:
 
@@ -283,7 +283,7 @@ When run for 802.11g 6 Mbit/s in infrastucture mode, the output is:
 
 ::
 
-  ./ns3 --run "wifi-bianchi --standard=11g --phyRate=6 --duration=500 --infra"
+  ./ns3 run "wifi-bianchi --standard=11g --phyRate=6 --duration=500 --infra"
 
 .. _fig-wifi-bianchi-11g-6-infra:
 

@@ -71,4 +71,4 @@ or
 
 .. sourcecode:: bash
 
-  $ NS_LOG="PrioQueueDisc" ./ns3 --run "test-runner --suite=prio-queue-disc"
+  $ NS_LOG="PrioQueueDisc" ./ns3 run "test-runner --suite=prio-queue-disc"

@@ -35,25 +35,25 @@ To run it, simply open terminal and type
 
 .. sourcecode:: bash
 
-    $ ./ns3 --run print-introspected-doxygen
+    $ ./ns3 run print-introspected-doxygen
 
 This will give all the output, formatted for Doxygen, which can be viewed
 in a text editor.
 
 One way to use this is to capture it to a file::
 
-    $ ./ns3 --run print-introspected-doxygen > doc.html
+    $ ./ns3 run print-introspected-doxygen > doc.html
 
 Some users might prefer to use tools like grep
 to locate the required piece of information from the documentation
 instead of using an editor. For such uses-cases and more,
 `print-introspected-doxygen` can return plain text::
 
-    $ ./ns3 --run "print-introspected-doxygen --output-text"
+    $ ./ns3 run "print-introspected-doxygen --output-text"
 
 (Note the quotes around the inner command and options.)
 
-    $ ./ns3 --run "print-introspected-doxygen --output-text" | grep "hello"
+    $ ./ns3 run "print-introspected-doxygen --output-text" | grep "hello"
 
 This will output the following::
 
@@ -80,7 +80,7 @@ Command-line Arguments
 
 .. sourcecode:: bash
 
-    $ ./ns3 --run "bench-simulator --help"
+    $ ./ns3 run "bench-simulator --help"
 
     Program Options:
 	--cal:    use CalendarSheduler [false]
@@ -115,7 +115,7 @@ To run it, simply open the terminal and type
 
 .. sourcecode:: bash
 
-    $ ./ns3 --run bench-simulator
+    $ ./ns3 run bench-simulator
     
 It will show something like this depending upon the scheduler being benchmarked::
 
@@ -137,7 +137,7 @@ Suppose we had to benchmark `CalendarScheduler` instead, we would have written
 
 .. sourcecode:: bash
 
-    $ ./ns3 --run "bench-simulator --cal"
+    $ ./ns3 run "bench-simulator --cal"
  
 And the output would look something like this::
 

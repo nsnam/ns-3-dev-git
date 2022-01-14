@@ -843,7 +843,7 @@ directory you must run it out of the scratch directory):
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst
+  $ ./ns3 run scratch/myfirst
 
 You should see some output:
 

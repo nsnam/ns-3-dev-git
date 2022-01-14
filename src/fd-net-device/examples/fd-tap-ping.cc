@@ -66,7 +66,7 @@
 //
 //  4)  The example can be executed as follows using ns3:
 //
-//     ./ns3 --run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>"
+//     ./ns3 run fd-tap-ping --command-template="%s --tapNetwork=<TAP-network-address> --tapMask=<TAP-network-mask>"
 //
 
 #include "ns3/abort.h"

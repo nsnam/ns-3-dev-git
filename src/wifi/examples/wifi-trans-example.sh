@@ -76,7 +76,7 @@ do
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
     cd $ns3Dir
-    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
+    ./ns3 run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt
@@ -99,7 +99,7 @@ do
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
     cd $ns3Dir
-    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
+    ./ns3 run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt
@@ -126,7 +126,7 @@ do
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
     cd $ns3Dir
-    ./ns3 --run "wifi-trans-example --standard=$std --bw=$bw"
+    ./ns3 run "wifi-trans-example --standard=$std --bw=$bw"
     echo "Generate PSD using ${file}.tr"
     file="${pre}${std}-${bw}MHz${suf}"
     gnuplot ${file}.plt

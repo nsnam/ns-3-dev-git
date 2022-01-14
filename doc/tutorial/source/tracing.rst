@@ -488,7 +488,7 @@ If you now build and run this example,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run fourth
+  $ ./ns3 run fourth
 
 you will see the output from the ``IntTrace`` function execute as soon
 as the trace source is hit:
@@ -2035,7 +2035,7 @@ to run.
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run fifth
+  $ ./ns3 run fifth
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   'build' finished successfully (0.684s)
@@ -2059,7 +2059,7 @@ of all of this work.  Let's redirect that output to a file called
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run fifth > cwnd.dat 2>&1
+  $ ./ns3 run fifth > cwnd.dat 2>&1
 
 Now edit up "cwnd.dat" in your favorite editor and remove the ns3
 build status and drop lines, leaving only the traced data (you could
@@ -2277,7 +2277,7 @@ Now, back to the example.  If you build and run this example,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run sixth
+  $ ./ns3 run sixth
 
 you will see the same messages appear as when you ran "fifth", but two
 new files will appear in the top-level directory of your |ns3|

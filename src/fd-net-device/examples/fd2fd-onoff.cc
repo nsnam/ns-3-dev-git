@@ -37,8 +37,8 @@
 //
 // Steps to run the experiment:
 //
-// $ ./ns3 --run="fd2fd-onoff"
-// $ ./ns3 --run="fd2fd-onoff --tcpMode=1"
+// $ ./ns3 run="fd2fd-onoff"
+// $ ./ns3 run="fd2fd-onoff --tcpMode=1"
 //
 
 #include <sys/socket.h>

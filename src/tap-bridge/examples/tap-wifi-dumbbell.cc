@@ -53,7 +53,7 @@
 //
 // 1) Ping one of the simulated nodes on the left side of the topology.
 //
-//    ./ns3 --run tap-wifi-dumbbell&
+//    ./ns3 run tap-wifi-dumbbell&
 //    ping 10.1.1.3
 //
 // 2) Configure a route in the linux host and ping once of the nodes on the 
@@ -61,7 +61,7 @@
 //    delays due to CBR background traffic on the point-to-point (see next
 //    item).
 //
-//    ./ns3 --run tap-wifi-dumbbell&
+//    ./ns3 run tap-wifi-dumbbell&
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
@@ -77,7 +77,7 @@
 //    reflected in large delays seen by ping.  You can crank down the CBR 
 //    traffic data rate and watch the ping timing change dramatically.
 //
-//    ./ns3 --run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
+//    ./ns3 run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
@@ -93,7 +93,7 @@
 //    sudo brctl addif mybridge mytap1
 //    sudo brctl addif mybridge mytap2
 //    sudo ifconfig mybridge 10.1.1.5 netmask 255.255.255.0 up
-//    ./ns3 --run "tap-wifi-dumbbell --mode=UseBridge --tapName=mytap2"&
+//    ./ns3 run "tap-wifi-dumbbell --mode=UseBridge --tapName=mytap2"&
 //    ping 10.1.1.3
 
 #include <iostream>

@@ -814,7 +814,7 @@ to 20 Mb/s) to create a higher BDP link, such as
 
 ::
 
-  ./ns3 --run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
+  ./ns3 run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
 
 More information (paper): http://www.hamilton.ie/net/htcp3.pdf
 

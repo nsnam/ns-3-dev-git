@@ -145,8 +145,8 @@ Example:
 
 .. sourcecode:: bash
 
-  $ ./ns3 -d debug configure --enable-examples
-  $ ./ns3 --run "dumbbell-animation"
+  $ ./ns3 configure -d debug --enable-examples
+  $ ./ns3 run "dumbbell-animation"
 
 The above will create an XML file dumbbell-animation.xml
 

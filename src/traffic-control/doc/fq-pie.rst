@@ -95,4 +95,4 @@ The test suite can be run using the following commands::
 
 or::
 
-  $ NS_LOG="FqPieQueueDisc" ./ns3 --run "test-runner --suite=fq-pie-queue-disc"
+  $ NS_LOG="FqPieQueueDisc" ./ns3 run "test-runner --suite=fq-pie-queue-disc"

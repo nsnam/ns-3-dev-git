@@ -130,13 +130,13 @@ automatically):
 
 ::
 
-  $ ./ns3 --run first
+  $ ./ns3 run first
 
 To view possible command-line options, specify the `--PrintHelp` argument:
 
 ::
 
-  $ ./ns3 --run 'first --PrintHelp'
+  $ ./ns3 run 'first --PrintHelp'
 
 To continue reading about the conceptual model and architecture of |ns3|,
 the tutorial chapter :ref:`Conceptual Overview` would be the next natural place

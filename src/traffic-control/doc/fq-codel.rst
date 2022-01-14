@@ -131,8 +131,8 @@ command-line options):
 
 .. sourcecode:: bash
 
-   $ ./ns3 --run "FqCoDel-L4S-example --PrintHelp"
-   $ ./ns3 --run "FqCoDel-L4S-example --scenarioNum=5"
+   $ ./ns3 run "FqCoDel-L4S-example --PrintHelp"
+   $ ./ns3 run "FqCoDel-L4S-example --scenarioNum=5"
 
 The expected output from the previous command are .dat files.
 
@@ -162,7 +162,7 @@ or:
 
 .. sourcecode:: bash
 
-   $ NS_LOG="FqCoDelQueueDisc" ./ns3 --run "test-runner --suite=fq-codel-queue-disc"
+   $ NS_LOG="FqCoDelQueueDisc" ./ns3 run "test-runner --suite=fq-codel-queue-disc"
 
 Set associative hashing is tested by generating a probability collision graph. 
 This graph is then overlapped with the theoretical graph provided in the original 

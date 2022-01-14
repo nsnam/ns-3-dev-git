@@ -44,7 +44,7 @@
 // the AP or both has/have traffic to send.
 //
 // Example for an IEEE 802.11ac station sending traffic to an 802.11a AP using Ideal rate adaptation algorithm:
-// ./ns3 --run "wifi-backward-compatibility --apVersion=80211a --staVersion=80211ac --staRaa=Ideal"
+// ./ns3 run "wifi-backward-compatibility --apVersion=80211a --staVersion=80211ac --staRaa=Ideal"
 
 using namespace ns3;
 

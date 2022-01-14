@@ -301,7 +301,7 @@ public:
    * deterministic value of seed=3 and default run number=1 every time:
    *   NS_GLOBAL_VALUE="RngSeed=3" ./test.py -s random-variable-stream-generators
    * or equivalently (to see log output):
-   *   NS_LOG="RandomVariableStreamGenerators" NS_GLOBAL_VALUE="RngSeed=3" ./ns3 --run "test-runner --suite=random-variable-stream-generators"
+   *   NS_LOG="RandomVariableStreamGenerators" NS_GLOBAL_VALUE="RngSeed=3" ./ns3 run "test-runner --suite=random-variable-stream-generators"
    *
    * Conversely, this command will cause this test suite to use a seed
    * based on time-of-day, and run number=0: 

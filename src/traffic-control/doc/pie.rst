@@ -72,8 +72,8 @@ command-line options):
 
 .. sourcecode:: bash
 
-   $ ./ns3 --run "pie-example --PrintHelp"
-   $ ./ns3 --run "pie-example --writePcap=1"
+   $ ./ns3 run "pie-example --PrintHelp"
+   $ ./ns3 run "pie-example --writePcap=1"
 
 The expected output from the previous commands are ten .pcap files.
 
@@ -111,5 +111,5 @@ or alternatively (to see logging statements in a debug build):
 
 .. sourcecode:: bash
 
-  $ NS_LOG="PieQueueDisc" ./ns3 --run "test-runner --suite=pie-queue-disc"
+  $ NS_LOG="PieQueueDisc" ./ns3 run "test-runner --suite=pie-queue-disc"
 

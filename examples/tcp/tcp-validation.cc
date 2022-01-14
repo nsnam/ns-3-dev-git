@@ -113,13 +113,13 @@
 // validation cases (and syntax of how to run):
 // ------------
 // Case 'dctcp-10ms':  DCTCP single flow, 10ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./ns3 --run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=1 --validation=dctcp-10ms'
+//     ./ns3 run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=1 --validation=dctcp-10ms'
 //    - Throughput between 48 Mbps and 49 Mbps for time greater than 5.6s
 //    - DCTCP alpha below 0.1 for time greater than 5.4s
 //    - DCTCP alpha between 0.06 and 0.085 for time greater than 7s
 //
 // Case 'dctcp-80ms': DCTCP single flow, 80ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./ns3 --run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms'
+//     ./ns3 run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms'
 //    - Throughput less than 20 Mbps for time less than 14s
 //    - Throughput less than 48 Mbps for time less than 30s
 //    - Throughput between 47.5 Mbps and 48.5 for time greater than 32s
@@ -128,14 +128,14 @@
 //    - DCTCP alpha between 0.015 and 0.025 for time greater than 34
 //
 // Case 'cubic-50ms-no-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN disabled, CoDel:
-//     ./ns3 --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//     ./ns3 run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
 //    - Maximum value of cwnd is 511 segments at 5.4593 seconds
 //    - cwnd decreases to 173 segments at 5.80304 seconds
 //    - cwnd reaches another local maxima around 14.2815 seconds of 236 segments
 //    - cwnd reaches a second maximum around 18.048 seconds of 234 segments
 //
 // Case 'cubic-50ms-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./ns3 --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//     ./ns3 run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
 //    - Maximum value of cwnd is 511 segments at 5.4593 seconds
 //    - cwnd decreases to 173 segments at 5.7939 seconds
 //    - cwnd reaches another local maxima around 14.3477 seconds of 236 segments

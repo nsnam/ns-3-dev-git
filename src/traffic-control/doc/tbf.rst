@@ -113,8 +113,8 @@ The example for TBF is `tbf-example.cc` located in ``examples/traffic-control/``
 
 .. sourcecode:: bash
 
-   $ ./ns3 --run "tbf-example --PrintHelp"
-   $ ./ns3 --run "tbf-example --burst=125000 --rate=1Mbps --peakRate=1.5Mbps"
+   $ ./ns3 run "tbf-example --PrintHelp"
+   $ ./ns3 run "tbf-example --burst=125000 --rate=1Mbps --peakRate=1.5Mbps"
 
 The expected output from the previous commands are traced value changes in the number of tokens in the first and second buckets.
 
@@ -144,4 +144,4 @@ or
 
 .. sourcecode:: bash
 
-  $ NS_LOG="TbfQueueDisc" ./ns3 --run "test-runner --suite=tbf-queue-disc"
+  $ NS_LOG="TbfQueueDisc" ./ns3 run "test-runner --suite=tbf-queue-disc"

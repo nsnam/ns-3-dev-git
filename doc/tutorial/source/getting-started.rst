@@ -1001,7 +1001,7 @@ Run command
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run test-runner
+  $ ./ns3 run test-runner
 
 Corresponds to:
 
@@ -1287,7 +1287,7 @@ ubiquitous hello world program by typing the following:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run hello-simulator
+  $ ./ns3 run hello-simulator
 
 ns3 first checks to make sure that the program is built correctly and
 executes a build if required.  ns3 then executes the program, which
@@ -1334,7 +1334,7 @@ To feed command line arguments to an |ns3| program use this pattern:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run <ns3-program> --command-template="%s <args>"
+  $ ./ns3 run <ns3-program> --command-template="%s <args>"
 
 Substitute your program name for ``<ns3-program>``, and the arguments
 for ``<args>``.  The ``--command-template`` argument to ns3 is
@@ -1350,7 +1350,7 @@ by single quotes, such as:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run '<ns3-program> --arg1=value1 --arg2=value2 ...'
+  $ ./ns3 run '<ns3-program> --arg1=value1 --arg2=value2 ...'
 
 Another particularly useful example is to run a test suite by itself.
 Let's assume that a ``mytest`` test suite exists (it doesn't).
@@ -1360,7 +1360,7 @@ tests in parallel, by repeatedly invoking the real testing program,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run test-runner --command-template="%s --suite=mytest --verbose"
+  $ ./ns3 run test-runner --command-template="%s --suite=mytest --verbose"
 
 This passes the arguments to the ``test-runner`` program.
 Since ``mytest`` does not exist, an error message will be generated.
@@ -1368,7 +1368,7 @@ To print the available ``test-runner`` options:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run test-runner --command-template="%s --help"
+  $ ./ns3 run test-runner --command-template="%s --help"
 
 Debugging
 +++++++++
@@ -1382,7 +1382,7 @@ For example, to run your |ns3| program ``hello-simulator`` with the arguments
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run=hello-simulator --command-template="gdb %s --args <args>"
+  $ ./ns3 run=hello-simulator --command-template="gdb %s --args <args>"
 
 Notice that the |ns3| program name goes with the ``--run`` argument,
 and the control utility (here ``gdb``) is the first token
@@ -1397,7 +1397,7 @@ debugger:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run test-runner --command-template="gdb %s --args --suite=mytest --verbose"
+  $ ./ns3 run test-runner --command-template="gdb %s --args --suite=mytest --verbose"
 
 Working Directory
 +++++++++++++++++
@@ -1409,24 +1409,7 @@ the ``--cwd`` argument:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --cwd=...
-
-It may be more convenient to start with your working directory where
-you want the output files, in which case a little indirection can help:
-
-.. sourcecode:: bash
-
-  $ function ns3f {
-      CWD="$PWD"
-      cd $NS3DIR >/dev/null
-      ./ns3 --cwd="$CWD" $*
-      cd - >/dev/null
-    }
-
-This embellishment of the previous version saves the current working directory,
-``cd``'s to the ns3 directory, then instructs ns3 to change the working
-directory *back* to the saved current working directory before running the
-program.
+  $ ./ns3 run program-name --cwd=...
 
 We mention this ``--cwd`` command for completeness; most users will simply
 run ns3 from the top-level directory and generate the output data files there.
@@ -1438,12 +1421,12 @@ As of the ns-3.30 release, a new ns3 option was introduced to allow the
 running of programs while skipping the build step.  This can reduce the time
 to run programs when, for example, running the same program repeatedly
 through a shell script, or when demonstrating program execution. 
-This option, ``--run-no-build``, behaves the same as the ``-run`` option, 
-except that the program and ns-3 libraries will not be rebuilt.
+The option ``--no-build`` modifies the ``run`` option,
+skipping the build steps of the program and required ns-3 libraries.
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run-no-build '<ns3-program> --arg1=value1 --arg2=value2 ...'
+  $ ./ns3 run '<ns3-program> --arg1=value1 --arg2=value2 ...' --no-build
 
 Build version
 +++++++++++++
@@ -1564,7 +1547,7 @@ option which will print the full build version and exit.
 
 .. sourcecode:: text
 
-  ./ns3 --run-no-build "command-line-example --version"
+  ./ns3 run "command-line-example --version" --no-build
   Waf: Entering directory `/g/g14/mdb/gitlab/mdb/ns-3-dev/build/debug'
   ns-3.33+249@g80e0dd0-dirty-debug
 

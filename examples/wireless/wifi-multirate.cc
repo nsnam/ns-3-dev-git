@@ -23,21 +23,21 @@
  * QUICK INSTRUCTIONS:
  *
  * To optimize build:
- * ./ns3 -d optimized configure
+ * ./ns3 configure -d optimized
  * ./ns3
  *
  * To compile:
- * ./ns3 --run wifi-multirate
+ * ./ns3 run wifi-multirate
  *
  * To compile with command line(useful for varying parameters):
- * ./ns3 --run "wifi-multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager"
+ * ./ns3 run "wifi-multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager"
  *
  * To turn on NS_LOG:
  * export NS_LOG=multirate=level_all
- * (can only view log if built with ./ns3 -d debug configure)
+ * (can only view log if built with ./ns3 configure -d debug)
  *
  * To debug:
- * ./ns3 --shell
+ * ./ns3 shell
  * gdb ./build/debug/examples/wireless/wifi-multirate
  *
  * To view pcap files:

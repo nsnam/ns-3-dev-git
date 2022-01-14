@@ -62,7 +62,7 @@
 // an RTT. The size of initial congestion window is set to 10, and pacing
 // of the initial window is enabled. The available command-line options and
 // their default values can be observed in the usual way by running the
-// program to print the help info; i.e.: ./ns3 --run 'tcp-pacing --PrintHelp'
+// program to print the help info; i.e.: ./ns3 run 'tcp-pacing --PrintHelp'
 //
 // When pacing is disabled, TCP sends eligible packets back-to-back. The
 // differences in behaviour when pacing is disabled can be observed from the

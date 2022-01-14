@@ -37,7 +37,7 @@
 // There are a number of command-line options available to control
 // the default behavior.  The list of available command-line options
 // can be listed with the following command:
-// ./ns3 --run "wifi-simple-adhoc-grid --help"
+// ./ns3 run "wifi-simple-adhoc-grid --help"
 //
 // Note that all ns-3 attributes (not just the ones exposed in the below
 // script) can be changed at command line; see the ns-3 documentation.
@@ -47,21 +47,21 @@
 // the default of 500m.
 // To see this effect, try running:
 //
-// ./ns3 --run "wifi-simple-adhoc-grid --distance=500"
-// ./ns3 --run "wifi-simple-adhoc-grid --distance=1000"
-// ./ns3 --run "wifi-simple-adhoc-grid --distance=1500"
+// ./ns3 run "wifi-simple-adhoc-grid --distance=500"
+// ./ns3 run "wifi-simple-adhoc-grid --distance=1000"
+// ./ns3 run "wifi-simple-adhoc-grid --distance=1500"
 //
 // The source node and sink node can be changed like this:
 //
-// ./ns3 --run "wifi-simple-adhoc-grid --sourceNode=20 --sinkNode=10"
+// ./ns3 run "wifi-simple-adhoc-grid --sourceNode=20 --sinkNode=10"
 //
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
 //
-// ./ns3 --run "wifi-simple-adhoc-grid --verbose=1"
+// ./ns3 run "wifi-simple-adhoc-grid --verbose=1"
 //
 // By default, trace file writing is off-- to enable it, try:
-// ./ns3 --run "wifi-simple-adhoc-grid --tracing=1"
+// ./ns3 run "wifi-simple-adhoc-grid --tracing=1"
 //
 // When you are done tracing, you will notice many pcap trace files
 // in your directory.  If you have tcpdump installed, you can try this:

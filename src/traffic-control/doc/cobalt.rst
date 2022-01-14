@@ -109,7 +109,7 @@ An example program named `cobalt-vs-codel.cc` is located in
 
 ::
 
-   $ ./ns3 --run cobalt-vs-codel
+   $ ./ns3 run cobalt-vs-codel
 
 
 Validation
@@ -137,5 +137,5 @@ or
 
 ::
 
-  $ NS_LOG="CobaltQueueDisc" ./ns3 --run "test-runner --suite=cobalt-queue-disc"
+  $ NS_LOG="CobaltQueueDisc" ./ns3 run "test-runner --suite=cobalt-queue-disc"
 

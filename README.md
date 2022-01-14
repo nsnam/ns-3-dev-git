@@ -73,7 +73,7 @@ enabled), it should be easy to run the sample programs with the
 following command, such as:
 
 ```shell
-./ns3 --run simple-global-routing
+./ns3 run simple-global-routing
 ```
 
 That program should generate a `simple-global-routing.tr` text

@@ -27,7 +27,7 @@
 // - pcap traces also generated in the following files
 //   "tcp-large-transfer-$n-$i.pcap" where n and i represent node and interface
 // numbers respectively
-//  Usage (e.g.): ./ns3 --run tcp-large-transfer
+//  Usage (e.g.): ./ns3 run tcp-large-transfer
 
 #include <iostream>
 #include <fstream>

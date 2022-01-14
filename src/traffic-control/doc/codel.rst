@@ -82,8 +82,8 @@ command-line options):
 
 .. sourcecode:: bash
 
-   $ ./ns3 --run "codel-vs-pfifo-basic-test --PrintHelp"
-   $ ./ns3 --run "codel-vs-pfifo-basic-test --queueType=CoDel --pcapFileName=codel.pcap --cwndTrFileName=cwndCodel.tr"
+   $ ./ns3 run "codel-vs-pfifo-basic-test --PrintHelp"
+   $ ./ns3 run "codel-vs-pfifo-basic-test --queueType=CoDel --pcapFileName=codel.pcap --cwndTrFileName=cwndCodel.tr"
 
 The expected output from the previous commands are two files: `codel.pcap` file and `cwndCoDel.tr` (ASCII trace) file The .pcap file can be analyzed using 
 wireshark or tcptrace:
@@ -97,8 +97,8 @@ deployment scenario.  To run the file:
 
 .. sourcecode:: bash
 
-   $ ./ns3 --run "codel-vs-pfifo-asymmetric --PrintHelp"
-   $ ./ns3 --run codel-vs-pfifo-asymmetric
+   $ ./ns3 run "codel-vs-pfifo-asymmetric --PrintHelp"
+   $ ./ns3 run codel-vs-pfifo-asymmetric
 
 The expected output from the previous commands is six pcap files:
 
@@ -145,5 +145,5 @@ or
 
 .. sourcecode:: bash
 
-  $ NS_LOG="CoDelQueueDisc" ./ns3 --run "test-runner --suite=codel-queue-disc"
+  $ NS_LOG="CoDelQueueDisc" ./ns3 run "test-runner --suite=codel-queue-disc"
 

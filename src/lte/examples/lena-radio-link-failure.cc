@@ -266,7 +266,7 @@ Throughput (bool firstWrite, Time binSize, std::string fileName)
  *
  * The example can be run as follows:
  *
- * ./ns3 --run "lena-radio-link-failure --numberOfEnbs=1 --simTime=25"
+ * ./ns3 run "lena-radio-link-failure --numberOfEnbs=1 --simTime=25"
  */
 int
 main (int argc, char *argv[])

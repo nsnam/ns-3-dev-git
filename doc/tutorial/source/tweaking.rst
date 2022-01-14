@@ -85,7 +85,7 @@ did previously,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst
+  $ ./ns3 run scratch/myfirst
 
 You should see the now familiar output of the first |ns3| example
 program
@@ -329,7 +329,7 @@ and look through it with your favorite editor if you like,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst > log.out 2>&1
+  $ ./ns3 run scratch/myfirst > log.out 2>&1
 
 I personally use this extremely verbose version of logging when I am presented 
 with a problem and I have no idea where things are going wrong.  I can follow the 
@@ -386,7 +386,7 @@ Now, if you run the script,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst
+  $ ./ns3 run scratch/myfirst
 
 you will ``not`` see your new message since its associated logging 
 component (``FirstScriptExample``) has not been enabled.  In order to see your
@@ -448,7 +448,7 @@ the script for help in the following way,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --PrintHelp"
+  $ ./ns3 run "scratch/myfirst --PrintHelp"
 
 This will ask ns3 to run the ``scratch/myfirst`` script and pass the command
 line argument ``--PrintHelp`` to the script.  The quotes are required to 
@@ -488,7 +488,7 @@ will be ``ns3::PointToPointNetDevice``.  Let's go ahead and type in,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --PrintAttributes=ns3::PointToPointNetDevice"
+  $ ./ns3 run "scratch/myfirst --PrintAttributes=ns3::PointToPointNetDevice"
 
 The system will print out all of the ``Attributes`` of this kind of net device.
 Among the ``Attributes`` you will see listed is,
@@ -564,7 +564,7 @@ the formula implied by the help item:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --ns3::PointToPointNetDevice::DataRate=5Mbps"
+  $ ./ns3 run "scratch/myfirst --ns3::PointToPointNetDevice::DataRate=5Mbps"
 
 This will set the default value of the ``DataRate`` ``Attribute`` back to 
 five megabits per second.  Are you surprised by the result?  It turns out that
@@ -575,7 +575,7 @@ the net device:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --PrintAttributes=ns3::PointToPointChannel"
+  $ ./ns3 run "scratch/myfirst --PrintAttributes=ns3::PointToPointChannel"
 
 We discover the ``Delay`` ``Attribute`` of the channel is set in the following
 way:
@@ -589,7 +589,7 @@ We can then set both of these default values through the command line system,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst
+  $ ./ns3 run "scratch/myfirst
     --ns3::PointToPointNetDevice::DataRate=5Mbps
     --ns3::PointToPointChannel::Delay=2ms"
 
@@ -627,7 +627,7 @@ end up looking something like,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst
+  $ ./ns3 run "scratch/myfirst
     --ns3::PointToPointNetDevice::DataRate=5Mbps 
     --ns3::PointToPointChannel::Delay=2ms 
     --ns3::UdpEchoClient::MaxPackets=2"
@@ -638,7 +638,7 @@ a feature for this.  If we ask for command line help we should see:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --PrintHelp"
+  $ ./ns3 run "scratch/myfirst --PrintHelp"
   myfirst [Program Arguments] [General Arguments]
 
   General Arguments:
@@ -658,7 +658,7 @@ again on the point-to-point module:
 
 .. sourcecode:: bash
 
-  ./ns3 --run "scratch/myfirst --PrintGroup=PointToPoint"
+  ./ns3 run "scratch/myfirst --PrintGroup=PointToPoint"
   TypeIds in group PointToPoint:
     ns3::PointToPointChannel
     ns3::PointToPointNetDevice
@@ -713,7 +713,7 @@ Try,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --PrintHelp"
+  $ ./ns3 run "scratch/myfirst --PrintHelp"
 
 .. sourcecode:: bash
 
@@ -734,7 +734,7 @@ setting the ``--nPackets`` argument in the command line,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/myfirst --nPackets=2"
+  $ ./ns3 run "scratch/myfirst --nPackets=2"
 
 You should now see
 
@@ -870,7 +870,7 @@ You can now build the script and run it from the command line:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst
+  $ ./ns3 run scratch/myfirst
 
 Just as you have seen many times before, you will see some messages from ns3 and then
 "'build' finished successfully" with some number of messages from 
@@ -1019,7 +1019,7 @@ script in the usual way:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run scratch/myfirst
+  $ ./ns3 run scratch/myfirst
 
 If you look at the top level directory of your distribution, you should now
 see three log files:  ``myfirst.tr`` is the ASCII trace file we have 

@@ -172,11 +172,11 @@ Examples
 For an example demonstrating its use in a simple learning controller/switch, 
 run::
 
-  $ ./ns3 --run openflow-switch
+  $ ./ns3 run openflow-switch
 
 To see it in detailed logging, run::
 
-  $ ./ns3 --run "openflow-switch -v"
+  $ ./ns3 run "openflow-switch -v"
 
 
 Helpers

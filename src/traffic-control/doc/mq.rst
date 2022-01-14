@@ -78,5 +78,5 @@ or
 
 ::
 
-  $ NS_LOG="WifiAcMappingTest" ./ns3 --run "test-runner --suite=ns3-wifi-ac-mapping"
+  $ NS_LOG="WifiAcMappingTest" ./ns3 run "test-runner --suite=ns3-wifi-ac-mapping"
 

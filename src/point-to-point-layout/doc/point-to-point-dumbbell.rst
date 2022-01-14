@@ -145,22 +145,22 @@ The example for this helper is `dumbbell-animation.cc` located in
 ``src/netanim/examples``. The following command shows the available command-
 line options for this example::
 
-   $ ./ns3 --run "dumbbell-animation --PrintHelp"
+   $ ./ns3 run "dumbbell-animation --PrintHelp"
 
 The following command sets up a dumbbell topology with the default
 configuration::
 
-   $ ./ns3 --run dumbbell-animation
+   $ ./ns3 run dumbbell-animation
 
 The following command sets up a dumbbell topology with 6 left leaf nodes and 9
 right leaf nodes::
 
-   $ ./ns3 --run "dumbbell-animation --nLeftLeaf=6 --nRightLeaf=9"
+   $ ./ns3 run "dumbbell-animation --nLeftLeaf=6 --nRightLeaf=9"
 
 The following command sets up a dumbbell topology with 10 left leaf nodes and
 10 right leaf nodes::
 
-   $ ./ns3 --run "dumbbell-animation --nLeaf=10"
+   $ ./ns3 run "dumbbell-animation --nLeaf=10"
 
 The expected output from the previous commands is a XML file to playback the
 animation using NetAnim.

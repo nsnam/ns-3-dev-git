@@ -22,7 +22,7 @@
 # * logging output from Ns3TcpLossTest case must first be enabled 
 # * by manually editing ns3-tcp-loss-test-suite.cc and setting 
 # * WRITE_LOGGING to true. Then, the test suite should be re-run 
-# * with ./ns3 --run "test-runner --suite='ns3-tcp-loss'"
+# * with ./ns3 run "test-runner --suite='ns3-tcp-loss'"
 # * This will generate a number of log files which are parsed 
 # * below for eventual plotting to .eps format using gnuplot.
 # * To run this file in gnuplot, simply: gnuplot plot.gp

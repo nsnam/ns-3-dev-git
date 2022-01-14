@@ -175,14 +175,14 @@ There are examples which use both IPv4 and IPv6 networking.
       .. code-block:: bash
 
          # By default IPv4 network is selected
-         ./ns3 --run nix-simple
+         ./ns3 run nix-simple
 
    b. Using IPv6:
 
       .. code-block:: bash
 
          # Use the --useIPv6 flag
-         ./ns3 --run "nix-simple --useIPv6"
+         ./ns3 run "nix-simple --useIPv6"
 
 
 
@@ -199,14 +199,14 @@ There are examples which use both IPv4 and IPv6 networking.
       .. code-block:: bash
 
          # By default IPv4 network is selected
-         ./ns3 --run nms-p2p-nix
+         ./ns3 run nms-p2p-nix
 
    b. Using IPv6:
 
       .. code-block:: bash
 
          # Use the --useIPv6 flag
-         ./ns3 --run "nms-p2p-nix --useIPv6"
+         ./ns3 run "nms-p2p-nix --useIPv6"
 
 3.  nix-simple-multi-address.cc
 
@@ -217,7 +217,7 @@ There are examples which use both IPv4 and IPv6 networking.
    .. code-block:: bash
 
       # By default IPv4 network is selected
-      ./ns3 --run nix-simple-multi-address
+      ./ns3 run nix-simple-multi-address
 
 4.  nix-double-wifi.cc
 
@@ -230,15 +230,15 @@ There are examples which use both IPv4 and IPv6 networking.
       .. code-block:: bash
 
          # By default IPv4 network is selected
-         ./ns3 --run nix-double-wifi
+         ./ns3 run nix-double-wifi
          # Use the --enableNixLog to enable NixVectorRouting logging.
-         ./ns3 --run "nix-double-wifi --enableNixLog"
+         ./ns3 run "nix-double-wifi --enableNixLog"
 
    b. Using IPv6:
 
       .. code-block:: bash
 
          # Use the --useIPv6 flag
-         ./ns3 --run "nix-double-wifi --useIPv6"
+         ./ns3 run "nix-double-wifi --useIPv6"
          # Use the --enableNixLog to enable NixVectorRouting logging.
-         ./ns3 --run "nix-double-wifi --useIPv6 --enableNixLog"
+         ./ns3 run "nix-double-wifi --useIPv6 --enableNixLog"

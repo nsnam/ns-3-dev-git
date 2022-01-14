@@ -705,7 +705,7 @@ output corresponding to the steps we took above:
 
 .. sourcecode:: bash
 
-    $ ./ns3 --run main-attribute-value
+    $ ./ns3 run main-attribute-value
     1.  dtq limit: 80p
     2.  txQueue limit: 80p
     3.  txQueue limit changed: 60p

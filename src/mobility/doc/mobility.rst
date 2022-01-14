@@ -287,7 +287,7 @@ Example usage:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "ns2-mobility-trace \
+  $ ./ns3 run "ns2-mobility-trace \
   --traceFile=src/mobility/examples/default.ns_movements \
   --nodeNum=2 \
   --duration=100.0 \

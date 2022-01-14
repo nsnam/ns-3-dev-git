@@ -325,7 +325,7 @@ TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
       /*
         To count the bad test names, use NS_LOG_UNCOND instead
         of NS_FATAL_ERROR, and the command
-        $ ./ns3 --run "test-runner --list" 2>&1 | grep "^Invalid" | wc
+        $ ./ns3 run "test-runner --list" 2>&1 | grep "^Invalid" | wc
       */
       NS_LOG_UNCOND ("Invalid test name: cannot contain any of '"
                      << badchars << "': " << testCase->m_name);

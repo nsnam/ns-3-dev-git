@@ -81,10 +81,10 @@
  * several different simulation scenarios.
  * For example, to set up a scenario and save the configuration
  * as "scenario1.txt":
- *   ./ns3 --run "vanet-routing-compare --scenario=1 --saveconfig=scenario1.txt"
+ *   ./ns3 run "vanet-routing-compare --scenario=1 --saveconfig=scenario1.txt"
  * Then, to re-play the scenario using the save configuration
  * settings:
- *   ./ns3 --run "vanet-routing-compare --loadconfig=scenario1.txt"
+ *   ./ns3 run "vanet-routing-compare --loadconfig=scenario1.txt"
  *
  * Class Diagram:
  *   main()

@@ -28,7 +28,7 @@
  * occur at future times.  When run with no arguments, it prints out
  * something like this:
  * \code
- * $ ./ns3 --run sample-log-time-format
+ * $ ./ns3 run sample-log-time-format
  * RandomVariableStream:RandomVariableStream(0x184e3a0)
  * RandomVariableStream:UniformRandomVariable(0x184e3a0)
  * RandomVariableStream:SetStream(0x184e3a0, -1)
@@ -60,7 +60,7 @@
  * replacement function for printing time.  This can be demonstrated
  * by setting the 'replace-time-printer' parameter to true:
  * \code
- * ./ns3 --run 'sample-log-time-format --replaceTimePrinter=1'
+ * ./ns3 run 'sample-log-time-format --replaceTimePrinter=1'
  * RandomVariableStream:RandomVariableStream(0x15fb080)
  * RandomVariableStream:UniformRandomVariable(0x15fb080)
  * RandomVariableStream:SetStream(0x15fb080, -1)

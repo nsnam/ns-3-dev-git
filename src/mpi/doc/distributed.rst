@@ -188,7 +188,7 @@ If you already built |ns3| without MPI enabled, you must re-build::
 
 Configure |ns3| with the --enable-mpi option::
 
-    $ ./ns3 -d debug configure --enable-examples --enable-tests --enable-mpi
+    $ ./ns3 configure -d debug --enable-examples --enable-tests --enable-mpi
 
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
@@ -204,12 +204,12 @@ the `--command-template` way of running the mpiexec program, or to use
 `./ns3 shell` and run the executables directly on the command line.
 Here are a few examples (from the root |ns3| directory)::
 
-    $ ./ns3 --command-template="mpiexec -np 2 %s" --run simple-distributed
-    $ ./ns3 --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0" --run nms-p2p-nix-distributed
+    $ ./ns3 run simple-distributed --command-template="mpiexec -np 2 %s"
+    $ ./ns3 run nms-p2p-nix-distributed --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0"
             
 An example using the null message synchronization algorithm::
 
-    $ ./ns3 --command-template="mpiexec -np 2 %s --nullmsg" --run simple-distributed
+    $ ./ns3 run simple-distributed --command-template="mpiexec -np 2 %s --nullmsg"
 
 The np switch is the number of logical processors to use. The machinefile switch
 is which machines to use. In order to use machinefile, the target file must

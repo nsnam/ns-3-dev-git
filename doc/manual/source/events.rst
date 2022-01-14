@@ -219,7 +219,7 @@ or by using a command line argument::
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run ...  -–SimulatorImplementationType=ns3::DistributedSimulatorImpl
+  $ ./ns3 run "...  -–SimulatorImplementationType=ns3::DistributedSimulatorImpl"
 
 In addition to the basic simulator engines there is a general facility used
 to build "adapters" which provide small behavior modifications to one of 

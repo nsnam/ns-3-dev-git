@@ -60,7 +60,7 @@ be invoked as follows (please note the use of double quotes):
 
 ::
 
-  ./ns3 --run "seventh --help"
+  ./ns3 run "seventh --help"
 
 which produces:
 
@@ -84,7 +84,7 @@ toggling the boolean value as follows:
 
 ::
 
-  ./ns3 --run "seventh --useIpv6=1"
+  ./ns3 run "seventh --useIpv6=1"
 
 and have a look at the pcap generated, such as with ``tcpdump``:
 

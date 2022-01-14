@@ -29,7 +29,7 @@ This step presumes that you have a reasonably solid ns-3-dev that you
 and/or the buildbots have been testing
    - building static, optimized, and debug versions
    - try Python visualizer (not tested by buildbots)
-      -- ./ns3 --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
+      -- ./ns3 run src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
      are reporting 'pass' state, based on the tip of the repository
    - revise and check in AUTHORS, RELEASE_NOTES.md, and CHANGES.html

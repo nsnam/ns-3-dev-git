@@ -358,7 +358,7 @@ run the program.
 .. sourcecode:: bash
 
   $ export NS_LOG=
-  $ ./ns3 --run scratch/mysecond
+  $ ./ns3 run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in 
 ``first.cc``, you will see similar output when you run the script.
@@ -540,7 +540,7 @@ devices set to four:
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/mysecond --nCsma=4"
+  $ ./ns3 run "scratch/mysecond --nCsma=4"
 
 You should now see,
 
@@ -615,7 +615,7 @@ If you build the new script and run the simulation setting ``nCsma`` to 100,
 
 .. sourcecode:: bash
 
-  $ ./ns3 --run "scratch/mysecond --nCsma=100"
+  $ ./ns3 run "scratch/mysecond --nCsma=100"
 
 you will see the following output:
 
@@ -1187,7 +1187,7 @@ repository you would type,
 .. sourcecode:: bash
 
   $ cp examples/tutorial/third.cc scratch/mythird.cc
-  $ ./ns3 --run scratch/mythird
+  $ ./ns3 run scratch/mythird
 
 Again, since we have set up the UDP echo applications just as we did in the 
 ``second.cc`` script, you will see similar output.
