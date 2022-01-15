@@ -538,8 +538,8 @@ def register_types(module):
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
     module.add_container('std::vector< ns3::Ptr< ns3::QueueDisc > >', 'ns3::Ptr< ns3::QueueDisc >', container_type='vector')
     module.add_container('std::vector< unsigned short >', 'short unsigned int', container_type='vector')
-    module.add_container('std::map< std::string, unsigned int >', ('std::string', 'unsigned int'), container_type='map')
-    module.add_container('std::map< std::string, unsigned long long >', ('std::string', 'long unsigned int'), container_type='map')
+    module.add_container('std::map< std::basic_string< char >, unsigned int, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned int > > >', ('std::string', 'unsigned int'), container_type='map')
+    module.add_container('std::map< std::basic_string< char >, unsigned long long, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned long long > > >', ('std::string', 'long unsigned int'), container_type='map')
     typehandlers.add_type_alias('std::array< unsigned short, 16 >', 'ns3::Priomap')
     typehandlers.add_type_alias('std::array< unsigned short, 16 >*', 'ns3::Priomap*')
     typehandlers.add_type_alias('std::array< unsigned short, 16 >&', 'ns3::Priomap&')
@@ -3927,6 +3927,11 @@ def register_Ns3QueueBase_methods(root_module, cls):
     cls.add_method('SetMaxSize', 
                    'void', 
                    [param('ns3::QueueSize', 'size')])
+    ## queue.h (module 'network'): bool ns3::QueueBase::WouldOverflow(uint32_t nPackets, uint32_t nBytes) const [member function]
+    cls.add_method('WouldOverflow', 
+                   'bool', 
+                   [param('uint32_t', 'nPackets'), param('uint32_t', 'nBytes')], 
+                   is_const=True)
     return
 
 def register_Ns3QueueDisc_methods(root_module, cls):
@@ -4151,17 +4156,17 @@ def register_Ns3QueueDiscStats_methods(root_module, cls):
                    [param('std::ostream &', 'os')], 
                    is_const=True)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedBytesAfterDequeue [variable]
-    cls.add_instance_attribute('nDroppedBytesAfterDequeue', 'std::map< std::string, unsigned long long >', is_const=False)
+    cls.add_instance_attribute('nDroppedBytesAfterDequeue', 'std::map< std::basic_string< char >, unsigned long long, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned long long > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedBytesBeforeEnqueue [variable]
-    cls.add_instance_attribute('nDroppedBytesBeforeEnqueue', 'std::map< std::string, unsigned long long >', is_const=False)
+    cls.add_instance_attribute('nDroppedBytesBeforeEnqueue', 'std::map< std::basic_string< char >, unsigned long long, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned long long > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedPacketsAfterDequeue [variable]
-    cls.add_instance_attribute('nDroppedPacketsAfterDequeue', 'std::map< std::string, unsigned int >', is_const=False)
+    cls.add_instance_attribute('nDroppedPacketsAfterDequeue', 'std::map< std::basic_string< char >, unsigned int, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned int > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedPacketsBeforeEnqueue [variable]
-    cls.add_instance_attribute('nDroppedPacketsBeforeEnqueue', 'std::map< std::string, unsigned int >', is_const=False)
+    cls.add_instance_attribute('nDroppedPacketsBeforeEnqueue', 'std::map< std::basic_string< char >, unsigned int, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned int > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nMarkedBytes [variable]
-    cls.add_instance_attribute('nMarkedBytes', 'std::map< std::string, unsigned long long >', is_const=False)
+    cls.add_instance_attribute('nMarkedBytes', 'std::map< std::basic_string< char >, unsigned long long, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned long long > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nMarkedPackets [variable]
-    cls.add_instance_attribute('nMarkedPackets', 'std::map< std::string, unsigned int >', is_const=False)
+    cls.add_instance_attribute('nMarkedPackets', 'std::map< std::basic_string< char >, unsigned int, std::less< void >, std::allocator< std::pair< std::basic_string< char > const, unsigned int > > >', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDequeuedBytes [variable]
     cls.add_instance_attribute('nTotalDequeuedBytes', 'uint64_t', is_const=False)
     ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDequeuedPackets [variable]
