@@ -1687,7 +1687,7 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 }
 
 void
-WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
+WifiPhy::Send (WifiConstPsduMap psdus, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
   /* Transmission can happen if:
@@ -1712,16 +1712,6 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
           NotifyTxDrop (psdu.second);
         }
       return;
-    }
-  
-  // Set RU PHY indices
-  if (txVector.IsMu ())
-    {
-      for (auto& heMuUserInfo : txVector.GetHeMuUserInfoMap ())
-        {
-          heMuUserInfo.second.ru.SetPhyIndex (txVector.GetChannelWidth (),
-                                              m_operatingChannel.GetPrimaryChannelIndex (20));
-        }
     }
 
   Time txDuration = CalculateTxDuration (psdus, txVector, GetPhyBand ());

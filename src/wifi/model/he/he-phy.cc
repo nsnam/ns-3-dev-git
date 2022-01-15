@@ -328,7 +328,8 @@ HePhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, 
       flag = HePpdu::PSD_NON_HE_TB;
     }
   return Create<HePpdu> (psdus, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
-                         ObtainNextUid (txVector), flag);
+                         ObtainNextUid (txVector), flag,
+                         m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 }
 
 void
