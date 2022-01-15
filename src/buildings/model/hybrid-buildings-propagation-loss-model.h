@@ -107,26 +107,31 @@ public:
   
 private:
   /**
-   * @{
-   * \param a the mobility model of the source
-   * \param b the mobility model of the destination
-   * \returns the propagation loss (in dBm)
-   */
-  /**
    * Compute the path loss using either OkumuraHataPropagationLossModel
-   * or Kun2600MhzPropagationLossModel
+   * or Kun2600MhzPropagationLossModel.
+   * 
+   * \param a The mobility model of the source.
+   * \param b The mobility model of the destination.
+   * \returns the propagation loss (in dBm).
    */
   double OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   /**
    * Compute the path loss using either ItuR1411LosPropagationLossModel or
-   * ItuR1411NlosOverRooftopPropagationLossModel
+   * ItuR1411NlosOverRooftopPropagationLossModel.
+   * 
+   * \param a The mobility model of the source.
+   * \param b The mobility model of the destination.
+   * \returns the propagation loss (in dBm).
    */
   double ItuR1411 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   /**
-   * Compute the path loss using ItuR1238PropagationLossModel
+   * Compute the path loss using ItuR1238PropagationLossModel.
+   * 
+   * \param a The mobility model of the source.
+   * \param b The mobility model of the destination.
+   * \returns the propagation loss (in dBm).
    */
   double ItuR1238 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  /** @} */
 
   /// OkumuraHataPropagationLossModel
   Ptr<OkumuraHataPropagationLossModel> m_okumuraHata;
