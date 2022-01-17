@@ -1530,7 +1530,7 @@ PrintAttributeImplementations (std::ostream & os)
       { "Ssid",           "Ssid",           true,  "ssid.h"             },
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
-      // { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      { "ValueClassTest", "ValueClassTest", false, "attribute-test-suite.cc" /* core/test/ */  },
       { "Vector",         "Vector",         true,  "vector.h"           },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
