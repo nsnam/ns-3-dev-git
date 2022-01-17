@@ -156,6 +156,15 @@ protected:
   virtual void BlockAckAfterTbPpduTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector& txVector);
 
   /**
+   * Get the TRIGVECTOR that the MAC has to pass to the PHY when transmitting
+   * the given Trigger Frame.
+   *
+   * \param trigger the given Trigger Frame
+   * \return the TRIGVECTOR
+   */
+  WifiTxVector GetTrigVector (const CtrlTriggerHeader& trigger) const;
+
+  /**
    * Return a TXVECTOR for the UL frame that the station will send in response to
    * the given Trigger frame, configured with the BSS color and transmit power
    * level to use for the consequent HE TB PPDU.
@@ -201,6 +210,7 @@ protected:
 
   Ptr<ApWifiMac> m_apMac;                             //!< MAC pointer (null if not an AP)
   Ptr<StaWifiMac> m_staMac;                           //!< MAC pointer (null if not a STA)
+  WifiTxVector m_trigVector;                          //!< the TRIGVECTOR
 
 private:
   /**

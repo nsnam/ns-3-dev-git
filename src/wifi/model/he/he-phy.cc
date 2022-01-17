@@ -68,7 +68,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Exte
 /* *NS_CHECK_STYLE_ON* */
 
 HePhy::HePhy (bool buildModeList /* = true */)
-  : VhtPhy (false) //don't add VHT modes to list
+  : VhtPhy (false), //don't add VHT modes to list
+    m_trigVectorExpirationTime (Seconds (0))
 {
   NS_LOG_FUNCTION (this << buildModeList);
   m_bssMembershipSelector = HE_PHY;
@@ -311,6 +312,14 @@ HePhy::GetSymbolDuration (const WifiTxVector& txVector) const
   uint16_t gi = txVector.GetGuardInterval ();
   NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
   return NanoSeconds (12800 + gi);
+}
+
+void
+HePhy::SetTrigVector (const WifiTxVector& trigVector, Time validity)
+{
+  m_trigVector = trigVector;
+  m_trigVectorExpirationTime = Simulator::Now () + validity;
+  NS_LOG_FUNCTION (this << m_trigVector << m_trigVectorExpirationTime.As (Time::US));
 }
 
 Ptr<WifiPpdu>

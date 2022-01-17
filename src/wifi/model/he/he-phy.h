@@ -172,6 +172,15 @@ public:
   uint64_t GetCurrentHeTbPpduUid (void) const;
 
   /**
+   * Set the TRIGVECTOR and the associated expiration time. A TRIGVECTOR shall expire
+   * when the TX timer associated with the transmission of the Trigger Frame expires.
+   *
+   * \param trigVector the TRIGVECTOR
+   * \param validity the amount of time (from now) until expiration of the TRIGVECTOR
+   */
+  void SetTrigVector (const WifiTxVector& trigVector, Time validity);
+
+  /**
    * Get the center frequency of the non-OFDMA part of the current TxVector for the
    * given STA-ID.
    * Note this method is only to be used for UL MU.
@@ -414,6 +423,8 @@ protected:
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 
   EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
+  WifiTxVector m_trigVector;                 //!< the TRIGVECTOR
+  Time m_trigVectorExpirationTime;           //!< expiration time of the TRIGVECTOR
 
 private:
   void BuildModeList (void) override;
