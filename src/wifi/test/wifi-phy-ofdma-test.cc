@@ -1392,11 +1392,13 @@ private:
   Ptr<OfdmaSpectrumWifiPhy> m_phy; ///< Phy
 
   uint64_t m_totalBytesDropped; ///< total number of dropped bytes
+  WifiTxVector m_trigVector;    ///< TRIGVECTOR
 };
 
 TestMultipleHeTbPreambles::TestMultipleHeTbPreambles ()
   : TestCase ("UL-OFDMA multiple RX events test"),
-    m_totalBytesDropped (0)
+    m_totalBytesDropped (0),
+    m_trigVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false)
 {
 }
 
@@ -1411,6 +1413,7 @@ TestMultipleHeTbPreambles::Reset (void)
   m_totalBytesDropped = 0;
   //We have to reset PHY here since we do not trigger OFDMA payload RX event in this test
   m_phy->Reset ();
+  m_trigVector.GetHeMuUserInfoMap ().clear ();
 }
 
 void
@@ -1452,6 +1455,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   txVector.SetMode (HePhy::GetHeMcs7 (), staId);
   txVector.SetNss (1, staId);
 
+  m_trigVector.GetHeMuUserInfoMap ().insert ({staId, HeMuUserInfo {ru, HePhy::GetHeMcs7 (), 1}});
+
   Ptr<Packet> pkt = Create<Packet> (payloadSize);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);
@@ -1477,6 +1482,11 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   rxParams->duration = nonOfdmaDuration;
   rxParams->ppdu = ppdu;
 
+  uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration, m_phy->GetPhyBand ());
+  txVector.SetLength (length);
+  m_trigVector.SetLength (length);
+  auto hePhy = DynamicCast<HePhy> (m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  hePhy->SetTrigVector (m_trigVector, ppduDuration);
   m_phy->StartRx (rxParams);
 
   //Schedule OFDMA part
@@ -1638,6 +1648,19 @@ TestMultipleHeTbPreambles::DoRun (void)
 class TestUlOfdmaPhyTransmission : public TestCase
 {
 public:
+  /**
+   * Erroneous info included in a TRIGVECTOR
+   */
+  enum TrigVectorInfo
+  {
+    NONE = 0,
+    CHANNEL_WIDTH,
+    UL_LENGTH,
+    AID,
+    RU_TYPE,
+    MCS
+  };
+
   TestUlOfdmaPhyTransmission ();
   virtual ~TestUlOfdmaPhyTransmission ();
 
@@ -1654,6 +1677,13 @@ private:
    * \return the TXVECTOR for HE TB PPDU
    */
   WifiTxVector GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_t index, uint8_t bssColor) const;
+  /**
+   * Set TRIGVECTOR for HE TB PPDU
+   *
+   * \param bssColor the BSS color of the TX STA
+   * \param error the erroneous info (if any) in the TRIGVECTOR to set
+   */
+  void SetTrigVector (uint8_t bssColor, TrigVectorInfo error);
   /**
    * Send HE TB PPDU function
    * \param txStaId the ID of the TX STA
@@ -1783,11 +1813,13 @@ private:
    * \param expectedBytesFromSta2 the expected number of bytes from STA 2
    * \param scheduleTxSta1 flag indicating to schedule a HE TB PPDU from STA 1
    * \param expectedStateBeforeEnd the expected state of the PHY before the end of the transmission
+   * \param error the erroneous info (if any) in the TRIGVECTOR to set
    */
   void ScheduleTest (Time delay, bool solicited, WifiPhyState expectedStateAtEnd,
                      uint32_t expectedSuccessFromSta1, uint32_t expectedFailuresFromSta1, uint32_t expectedBytesFromSta1,
                      uint32_t expectedSuccessFromSta2, uint32_t expectedFailuresFromSta2, uint32_t expectedBytesFromSta2,
-                     bool scheduleTxSta1 = true, WifiPhyState expectedStateBeforeEnd = WifiPhyState::RX);
+                     bool scheduleTxSta1 = true, WifiPhyState expectedStateBeforeEnd = WifiPhyState::RX,
+                     TrigVectorInfo error = NONE);
 
   /**
    * Schedule power measurement related checks.
@@ -1920,6 +1952,67 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_
   txVector.SetMode (HePhy::GetHeMcs7 (), txStaId);
   txVector.SetNss (1, txStaId);
   return txVector;
+}
+
+void
+TestUlOfdmaPhyTransmission::SetTrigVector (uint8_t bssColor, TrigVectorInfo error)
+{
+  uint16_t channelWidth = m_channelWidth;
+  if (error == CHANNEL_WIDTH)
+    {
+      channelWidth = (channelWidth == 160 ? 20 : channelWidth * 2);
+    }
+
+  WifiTxVector txVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0,
+                         channelWidth, false, false, false, bssColor);
+
+  HeRu::RuType ruType = HeRu::RU_106_TONE;
+  if (channelWidth == 20)
+    {
+      ruType = (error == RU_TYPE ? HeRu::RU_52_TONE : HeRu::RU_106_TONE);
+    }
+  else if (channelWidth == 40)
+    {
+      ruType = (error == RU_TYPE ? HeRu::RU_106_TONE : HeRu::RU_242_TONE);
+    }
+  else if (channelWidth == 80)
+    {
+      ruType = (error == RU_TYPE ? HeRu::RU_242_TONE : HeRu::RU_484_TONE);
+    }
+  else if (channelWidth == 160)
+    {
+      ruType = (error == RU_TYPE ? HeRu::RU_484_TONE : HeRu::RU_996_TONE);
+    }
+  else
+    {
+      NS_ASSERT_MSG (false, "Unsupported channel width");
+    }
+
+  uint16_t aid1 = (error == AID ? 3 : 1);
+  uint16_t aid2 = (error == AID ? 4 : 2);
+
+  HeRu::RuSpec ru1 (ruType, 1, true);
+  ru1.SetPhyIndex (channelWidth, 0);
+  txVector.SetRu (ru1, aid1);
+  txVector.SetMode ((error == MCS ? HePhy::GetHeMcs5 () : HePhy::GetHeMcs7 ()), aid1);
+  txVector.SetNss (1, aid1);
+
+  HeRu::RuSpec ru2 (ruType, (channelWidth == 160 ? 1 : 2),
+                    (channelWidth == 160 ? false : true));
+  ru2.SetPhyIndex (channelWidth, 0);
+  txVector.SetRu (ru2, aid2);
+  txVector.SetMode ((error == MCS ? HePhy::GetHeMcs5 () : HePhy::GetHeMcs7 ()), aid2);
+  txVector.SetNss (1, aid2);
+
+  uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (m_expectedPpduDuration,
+                                                                m_phyAp->GetPhyBand ());
+  if (error == UL_LENGTH)
+    {
+      ++length;
+    }
+  txVector.SetLength (length);
+  auto hePhyAp = DynamicCast<HePhy> (m_phyAp->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  hePhyAp->SetTrigVector (txVector, m_expectedPpduDuration);
 }
 
 void
@@ -2248,16 +2341,28 @@ void
 TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhyState expectedStateAtEnd,
                                           uint32_t expectedSuccessFromSta1, uint32_t expectedFailuresFromSta1, uint32_t expectedBytesFromSta1,
                                           uint32_t expectedSuccessFromSta2, uint32_t expectedFailuresFromSta2, uint32_t expectedBytesFromSta2,
-                                          bool scheduleTxSta1, WifiPhyState expectedStateBeforeEnd)
+                                          bool scheduleTxSta1, WifiPhyState expectedStateBeforeEnd,
+                                          TrigVectorInfo error)
 {
-  //AP send SU packet with UID = 0 (2) to mimic transmission of solicited (unsolicited) HE TB PPDUs
-  Simulator::Schedule (delay - MilliSeconds (10), &TestUlOfdmaPhyTransmission::SendHeSuPpdu, this, 0, 50, solicited ? 0 : 2, 0);
+  static uint64_t uid = 0;
+
+  //AP sends an SU packet preceding HE TB PPDUs
+  Simulator::Schedule (delay - MilliSeconds (10), &TestUlOfdmaPhyTransmission::SendHeSuPpdu, this, 0, 50, ++uid, 0);
+  if (!solicited)
+    {
+      // UID of TB PPDUs will be different than the one of the preceding frame
+      ++uid;
+    }
+  else
+    {
+      Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SetTrigVector, this, 0, error);
+    }
   //STA1 and STA2 send MU UL PPDUs addressed to AP
   if (scheduleTxSta1)
     {
-      Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 1, 1, 1000, 0, 0);
+      Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 1, 1, 1000, uid, 0);
     }
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, 0, 0);
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, uid, 0);
 
   //Verify it takes m_expectedPpduDuration to transmit the PPDUs
   Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phyAp, expectedStateBeforeEnd);
@@ -2407,13 +2512,69 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Verify that both unsolicited HE TB PPDUs have been corrected received
+  //Verify that no unsolicited HE TB PPDU is received
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs");
+                       "Dropping of unsolicited HE TB PPDUs");
   ScheduleTest (delay, false,
                 WifiPhyState::IDLE,
-                1, 0, 1000,  //One PSDU of 1000 bytes should have been successfully received from STA 1
-                1, 0, 1001); //One PSDU of 1001 bytes should have been successfully received from STA 2
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that HE TB PPDUs with channel width differing from TRIGVECTOR are discarded
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Dropping of HE TB PPDUs with channel width differing from TRIGVECTOR");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY, CHANNEL_WIDTH);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that HE TB PPDUs with UL Length differing from TRIGVECTOR are discarded
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Dropping of HE TB PPDUs with UL Length differing from TRIGVECTOR");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY, UL_LENGTH);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that HE TB PPDUs with AIDs differing from TRIGVECTOR are discarded
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Dropping of HE TB PPDUs with AIDs differing from TRIGVECTOR");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY, AID);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that HE TB PPDUs with RU type differing from TRIGVECTOR are discarded
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Dropping of HE TB PPDUs with RU type differing from TRIGVECTOR");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY, RU_TYPE);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that HE TB PPDUs with MCS differing from TRIGVECTOR are discarded
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Dropping of HE TB PPDUs with MCS differing from TRIGVECTOR");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
+                0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
+                true, WifiPhyState::CCA_BUSY, MCS);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2441,18 +2602,6 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Generate an interference on RU 1 and verify that only STA 1's unsolicited HE TB PPDU has been impacted
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with interference on RU 1 during PSDU reception");
-  //A strong non-wifi interference is generated on RU 1 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::GenerateInterference, this, interferencePsdRu1, MilliSeconds (100));
-  ScheduleTest (delay, false,
-                WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE due to the interference (primary channel)
-                0, 1, 0,     //Reception of the PSDU from STA 1 should have failed (since interference occupies RU 1)
-                1, 0, 1001); //One PSDU of 1001 bytes should have been successfully received from STA 2
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
   //Generate an interference on RU 2 and verify that only STA 2's solicited HE TB PPDU has been impacted
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDUs with interference on RU 2 during PSDU reception");
@@ -2475,18 +2624,6 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Generate an interference on RU 2 and verify that only STA 2's unsolicited HE TB PPDU has been impacted
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with interference on RU 2 during PSDU reception");
-  //A strong non-wifi interference is generated on RU 2 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::GenerateInterference, this, interferencePsdRu2, MilliSeconds (100));
-  ScheduleTest (delay, false,
-                (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE if interference on primary channel
-                1, 0, 1000, //One PSDU of 1000 bytes should have been successfully received from STA 1
-                0, 1, 0);   //Reception of the PSDU from STA 2 should have failed (since interference occupies RU 2)
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
   //Generate an interference on the full band and verify that both solicited HE TB PPDUs have been impacted
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDUs with interference on the full band during PSDU reception");
@@ -2503,18 +2640,6 @@ TestUlOfdmaPhyTransmission::RunOne (void)
 
   Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::GenerateInterference, this, interferencePsdAll, MilliSeconds (100));
   ScheduleTest (delay, true,
-                WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE due to the interference
-                0, 1, 0,  //Reception of the PSDU from STA 1 should have failed (since interference occupies RU 1)
-                0, 1, 0); //Reception of the PSDU from STA 2 should have failed (since interference occupies RU 2)
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
-  //Generate an interference on the full band and verify that both unsolicited HE TB PPDUs have been impacted
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with interference on the full band during PSDU reception");
-  //A strong non-wifi interference is generated on the full band during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::GenerateInterference, this, interferencePsdAll, MilliSeconds (100));
-  ScheduleTest (delay, false,
                 WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE due to the interference
                 0, 1, 0,  //Reception of the PSDU from STA 1 should have failed (since interference occupies RU 1)
                 0, 1, 0); //Reception of the PSDU from STA 2 should have failed (since interference occupies RU 2)
@@ -2550,19 +2675,6 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Send another HE TB PPDU (of another UL MU transmission) on RU 1 and verify that both unsolicited HE TB PPDUs have been impacted if they are on the same
-  // 20 MHz channel. Only STA 1's unsolicited HE TB PPDU is impacted otherwise.
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with another HE TB PPDU arriving on RU 1 during PSDU reception");
-  //Another HE TB PPDU arrives at AP on the same RU as STA 1 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 0);
-  ScheduleTest (delay, false,
-                WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE due to the interference on primary channel width
-                0, 1, 0,  //Reception of the PSDU from STA 1 should have failed (since interference from STA 3 on same 20 MHz channel)
-                succ, fail, bytes); //same as solicited case
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
   //Send another HE TB PPDU (of another UL MU transmission) on RU 2 and verify that both solicited HE TB PPDUs have been impacted if they are on the same
   // 20 MHz channel. Only STA 2's solicited HE TB PPDU is impacted otherwise.
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
@@ -2591,19 +2703,6 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Send another HE TB PPDU (of another UL MU transmission) on RU 2 and verify that both unsolicited HE TB PPDUs have been impacted if they are on the same
-  // 20 MHz channel. Only STA 2's unsolicited HE TB PPDU is impacted otherwise.
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with another HE TB PPDU arriving on RU2 during payload reception");
-  //Another HE TB PPDU arrives at AP on the same RU as STA 2 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 2, 1002, 1, 0);
-  ScheduleTest (delay, false,
-                (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE if interference on primary channel
-                succ, fail, bytes, //same as solicited case
-                0, 1, 0); //Reception of the PSDU from STA 2 should have failed (since interference from STA 3 on same 20 MHz channel)
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
   //Send an HE SU PPDU during 400 ns window and verify that both solicited HE TB PPDUs have been impacted
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDUs with an HE SU PPDU arriving during the 400 ns window");
@@ -2616,62 +2715,17 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Send an HE SU PPDU during 400 ns window and verify that both solicited HE TB PPDUs have been impacted
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs with an HE SU PPDU arriving during the 400 ns window");
-  //One HE SU arrives at AP during the 400ns window
-  Simulator::Schedule (delay + NanoSeconds (300), &TestUlOfdmaPhyTransmission::SendHeSuPpdu, this, 3, 1002, 1, 0);
-  ScheduleTest (delay, false,
-                WifiPhyState::IDLE,
-                0, 1, 0,  //Reception of the PSDU from STA 1 should have failed failed (since interference from STA 3)
-                0, 1, 0); //Reception of the PSDU from STA 2 should have failed failed (since interference from STA 3)
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
   //Only send a solicited HE TB PPDU from STA 2 on RU 2 and verify that it has been correctly received
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDU only on RU 2");
-  //Check that STA3 will correctly set its state to RX if in measurement channel or IDLE otherwise
+  //Check that STA3 will correctly set its state to CCA_BUSY if in measurement channel or IDLE otherwise
   Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phySta3,
-                       (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::RX); //PHY should move to RX instead of IDLE if HE TB PPDU on primary channel;
+                       (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY); //PHY should move to CCA_BUSY instead of IDLE if HE TB PPDU on primary channel;
   ScheduleTest (delay, true,
                 WifiPhyState::IDLE,
                 0, 0, 0,    //No transmission scheduled for STA 1
                 1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
                 false, WifiPhyState::RX); //Measurement channel is total channel width
-  delay += Seconds (1.0);
-
-  //---------------------------------------------------------------------------
-  //Only send an unsolicited HE TB PPDU from STA 2 on RU 2 and verify that it has been correctly received if it's in the
-  // correct measurement channel
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of unsolicited HE TB PPDUs only on RU 2");
-  //Check that STA3 will correctly set its state to RX if in measurement channel or IDLE otherwise
-  Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phySta3,
-                       (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::RX); //PHY should move to RX instead of IDLE if HE TB PPDU on primary channel;
-  //Expected figures from STA 2
-  WifiPhyState state;
-  if (m_channelWidth == 20)
-    {
-      //One PSDU of 1001 bytes should have been successfully received from STA 2 (since measurement channel is primary channel)
-      succ = 1;
-      fail = 0;
-      bytes = 1001;
-      state = WifiPhyState::RX;
-    }
-  else
-    {
-      //No PSDU should have been received from STA 2 (since measurement channel is primary channel)
-      succ = 0;
-      fail = 0;
-      bytes = 0;
-      state = WifiPhyState::IDLE;
-    }
-  ScheduleTest (delay, false,
-                WifiPhyState::IDLE,
-                0, 0, 0, //No transmission scheduled for STA 1
-                succ, fail, bytes,
-                false, state);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2805,6 +2859,12 @@ private:
    * \param txDuration the duration of the PPDU
    */
   void SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, Time txDuration);
+  /**
+   * Set TRIGVECTOR for HE TB PPDU
+   *
+   * \param ppduDuration the duration of the HE TB PPDU
+   */
+  void SetTrigVector (Time ppduDuration);
 
   /**
    * Generate interference function
@@ -3140,6 +3200,23 @@ TestPhyPaddingExclusion::DoTeardown (void)
 }
 
 void
+TestPhyPaddingExclusion::SetTrigVector (Time ppduDuration)
+{
+  WifiTxVector trigVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0,
+                           DEFAULT_CHANNEL_WIDTH, false, false, 1);
+  trigVector.SetRu (HeRu::RuSpec (HeRu::RU_106_TONE, 1, false), 1);
+  trigVector.SetMode (HePhy::GetHeMcs7 (), 1);
+  trigVector.SetNss (1, 1);
+  trigVector.SetRu (HeRu::RuSpec (HeRu::RU_106_TONE, 2, false), 2);
+  trigVector.SetMode (HePhy::GetHeMcs7 (), 2);
+  trigVector.SetNss (1, 2);
+  trigVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration,
+                                                                    m_phyAp->GetPhyBand ()));
+  auto hePhyAp = DynamicCast<HePhy> (m_phyAp->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  hePhyAp->SetTrigVector (trigVector, ppduDuration);
+}
+
+void
 TestPhyPaddingExclusion::DoRun (void)
 {
   Time expectedPpduDuration = NanoSeconds (279200);
@@ -3150,6 +3227,10 @@ TestPhyPaddingExclusion::DoRun (void)
   //STA1 and STA2 send MU UL PPDUs addressed to AP:
   Simulator::Schedule (Seconds (1.0), &TestPhyPaddingExclusion::SendHeTbPpdu, this, 1, 1, 1000, ppduWithPaddingDuration);
   Simulator::Schedule (Seconds (1.0), &TestPhyPaddingExclusion::SendHeTbPpdu, this, 2, 2, 1001, ppduWithPaddingDuration);
+
+  // Set TRIGVECTOR on AP
+  Simulator::Schedule (Seconds (1.0), &TestPhyPaddingExclusion::SetTrigVector, this,
+                       ppduWithPaddingDuration);
 
   //Verify it takes expectedPpduDuration + padding to transmit the PPDUs
   Simulator::Schedule (Seconds (1.0) + ppduWithPaddingDuration - NanoSeconds (1), &TestPhyPaddingExclusion::CheckPhyState, this, m_phyAp, WifiPhyState::RX);
@@ -3168,6 +3249,10 @@ TestPhyPaddingExclusion::DoRun (void)
   //STA1 and STA2 send MU UL PPDUs addressed to AP:
   Simulator::Schedule (Seconds (2.0), &TestPhyPaddingExclusion::SendHeTbPpdu, this, 1, 1, 1000, ppduWithPaddingDuration);
   Simulator::Schedule (Seconds (2.0), &TestPhyPaddingExclusion::SendHeTbPpdu, this, 2, 2, 1001, ppduWithPaddingDuration);
+
+  // Set TRIGVECTOR on AP
+  Simulator::Schedule (Seconds (2.0), &TestPhyPaddingExclusion::SetTrigVector, this,
+                       ppduWithPaddingDuration);
 
   //A strong non-wifi interference is generated on RU 1 during padding reception
   BandInfo bandInfo;
