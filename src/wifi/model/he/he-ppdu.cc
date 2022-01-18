@@ -134,6 +134,7 @@ HePpdu::DoGetTxVector (void) const
   txVector.SetNss (m_heSig.GetNStreams ());
   txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
   txVector.SetBssColor (m_heSig.GetBssColor ());
+  txVector.SetLength (m_lSig.GetLength ());
   txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
   for (auto const& muUserInfo : m_muUserInfos)
     {
