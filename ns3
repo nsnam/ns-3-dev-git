@@ -816,6 +816,7 @@ def build_step(args,
                                   "sphinx",
                                   "manual",
                                   "models",
+                                  "timeTraceReport",
                                   "tutorial",
                                   "contributing",
                                   "install",
@@ -894,7 +895,7 @@ def run_step(args, target_to_run, target_args):
 
         # running valgrind?
         if args.valgrind:
-            debugging_software.append(shutil.which("valgrind"))
+            debugging_software.extend([shutil.which("valgrind"), "--leak-check=full"])
 
         # running gdb?
         if args.gdb:

@@ -386,7 +386,7 @@ macro(process_options)
       ExternalProject_Add(
         ClangBuildAnalyzer
         GIT_REPOSITORY "https://github.com/aras-p/ClangBuildAnalyzer.git"
-        GIT_TAG "5d40542c5b2080637206e9d51e2957d0017ba8b3"
+        GIT_TAG "47406981a1c5a89e8f8c62802b924c3e163e7cb4"
         INSTALL_COMMAND cmake -E copy_if_different ClangBuildAnalyzer
                         ${PROJECT_BINARY_DIR}
       )
