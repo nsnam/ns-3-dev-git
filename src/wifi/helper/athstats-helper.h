@@ -21,6 +21,13 @@
 #ifndef ATHSTATS_HELPER_H
 #define ATHSTATS_HELPER_H
 
+#include <stdint.h>
+#include <iosfwd>
+#include <string>
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/ptr.h"
+#include "ns3/type-id.h"
 #include "ns3/wifi-phy-state.h"
 #include "ns3/wifi-phy-common.h"
 
