@@ -996,6 +996,11 @@ def register_Ns3PhasedArrayModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [param('uint64_t', 'index')], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
+    ## phased-array-model.h (module 'antenna'): uint32_t ns3::PhasedArrayModel::GetId() const [member function]
+    cls.add_method('GetId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## phased-array-model.h (module 'antenna'): uint64_t ns3::PhasedArrayModel::GetNumberOfElements() const [member function]
     cls.add_method('GetNumberOfElements', 
                    'uint64_t', 

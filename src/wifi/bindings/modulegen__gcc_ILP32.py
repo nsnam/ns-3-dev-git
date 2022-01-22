@@ -527,6 +527,13 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( uint8_t, double, bool, double, double )&', 'ns3::ObssPdAlgorithm::ResetTracedCallback&')
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel [class]
+    module.add_class('PhasedArrayModel', import_from_module='ns.antenna', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias('std::vector< std::complex< double > >', 'ns3::PhasedArrayModel::ComplexVector')
+    typehandlers.add_type_alias('std::vector< std::complex< double > >*', 'ns3::PhasedArrayModel::ComplexVector*')
+    typehandlers.add_type_alias('std::vector< std::complex< double > >&', 'ns3::PhasedArrayModel::ComplexVector&')
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::PhasedArraySpectrumPropagationLossModel [class]
+    module.add_class('PhasedArraySpectrumPropagationLossModel', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
     ## preamble-detection-model.h (module 'wifi'): ns3::PreambleDetectionModel [class]
     module.add_class('PreambleDetectionModel', parent=root_module['ns3::Object'])
     ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel [class]
@@ -1440,6 +1447,8 @@ def register_types(module):
     module.add_container('std::map< std::pair< ns3::Mac48Address, unsigned char >, unsigned long long >', ('std::pair< ns3::Mac48Address, unsigned char >', 'long unsigned int'), container_type='map')
     module.add_container('ns3::MinstrelRate', 'ns3::RateInfo', container_type='vector')
     module.add_container('ns3::SampleRate', 'std::vector< unsigned char >', container_type='vector')
+    module.add_container('std::vector< std::complex< double > >', 'std::complex< double >', container_type='vector')
+    module.add_container('ns3::PhasedArrayModel::ComplexVector', 'std::complex< double >', container_type='vector')
     module.add_container('std::vector< ns3::BandInfo >', 'ns3::BandInfo', container_type='vector')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
     module.add_container('ns3::WifiConstPsduMap', ('short unsigned int', 'ns3::Ptr< ns3::WifiPsdu const >'), container_type='map')
@@ -1833,6 +1842,8 @@ def register_methods(root_module):
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3ObssPdAlgorithm_methods(root_module, root_module['ns3::ObssPdAlgorithm'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
+    register_Ns3PhasedArrayModel_methods(root_module, root_module['ns3::PhasedArrayModel'])
+    register_Ns3PhasedArraySpectrumPropagationLossModel_methods(root_module, root_module['ns3::PhasedArraySpectrumPropagationLossModel'])
     register_Ns3PreambleDetectionModel_methods(root_module, root_module['ns3::PreambleDetectionModel'])
     register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
     register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
@@ -9225,6 +9236,102 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
                    [])
     return
 
+def register_Ns3PhasedArrayModel_methods(root_module, cls):
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel::PhasedArrayModel(ns3::PhasedArrayModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::PhasedArrayModel const &', 'arg0')])
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel::PhasedArrayModel() [constructor]
+    cls.add_constructor([])
+    ## phased-array-model.h (module 'antenna'): ns3::Ptr<const ns3::AntennaModel> ns3::PhasedArrayModel::GetAntennaElement() const [member function]
+    cls.add_method('GetAntennaElement', 
+                   'ns3::Ptr< ns3::AntennaModel const >', 
+                   [], 
+                   is_const=True)
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel::ComplexVector ns3::PhasedArrayModel::GetBeamformingVector() const [member function]
+    cls.add_method('GetBeamformingVector', 
+                   'ns3::PhasedArrayModel::ComplexVector', 
+                   [], 
+                   is_const=True)
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel::ComplexVector ns3::PhasedArrayModel::GetBeamformingVector(ns3::Angles a) const [member function]
+    cls.add_method('GetBeamformingVector', 
+                   'ns3::PhasedArrayModel::ComplexVector', 
+                   [param('ns3::Angles', 'a')], 
+                   is_const=True)
+    ## phased-array-model.h (module 'antenna'): std::pair<double, double> ns3::PhasedArrayModel::GetElementFieldPattern(ns3::Angles a) const [member function]
+    cls.add_method('GetElementFieldPattern', 
+                   'std::pair< double, double >', 
+                   [param('ns3::Angles', 'a')], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
+    ## phased-array-model.h (module 'antenna'): ns3::Vector ns3::PhasedArrayModel::GetElementLocation(uint64_t index) const [member function]
+    cls.add_method('GetElementLocation', 
+                   'ns3::Vector', 
+                   [param('uint64_t', 'index')], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
+    ## phased-array-model.h (module 'antenna'): uint32_t ns3::PhasedArrayModel::GetId() const [member function]
+    cls.add_method('GetId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## phased-array-model.h (module 'antenna'): uint64_t ns3::PhasedArrayModel::GetNumberOfElements() const [member function]
+    cls.add_method('GetNumberOfElements', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
+    ## phased-array-model.h (module 'antenna'): ns3::PhasedArrayModel::ComplexVector ns3::PhasedArrayModel::GetSteeringVector(ns3::Angles a) const [member function]
+    cls.add_method('GetSteeringVector', 
+                   'ns3::PhasedArrayModel::ComplexVector', 
+                   [param('ns3::Angles', 'a')], 
+                   is_const=True)
+    ## phased-array-model.h (module 'antenna'): static ns3::TypeId ns3::PhasedArrayModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## phased-array-model.h (module 'antenna'): void ns3::PhasedArrayModel::SetAntennaElement(ns3::Ptr<ns3::AntennaModel> antennaElement) [member function]
+    cls.add_method('SetAntennaElement', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::AntennaModel >', 'antennaElement')])
+    ## phased-array-model.h (module 'antenna'): void ns3::PhasedArrayModel::SetBeamformingVector(ns3::PhasedArrayModel::ComplexVector const & beamformingVector) [member function]
+    cls.add_method('SetBeamformingVector', 
+                   'void', 
+                   [param('ns3::PhasedArrayModel::ComplexVector const &', 'beamformingVector')])
+    ## phased-array-model.h (module 'antenna'): static double ns3::PhasedArrayModel::ComputeNorm(ns3::PhasedArrayModel::ComplexVector const & vector) [member function]
+    cls.add_method('ComputeNorm', 
+                   'double', 
+                   [param('ns3::PhasedArrayModel::ComplexVector const &', 'vector')], 
+                   is_static=True, visibility='protected')
+    return
+
+def register_Ns3PhasedArraySpectrumPropagationLossModel_methods(root_module, cls):
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::PhasedArraySpectrumPropagationLossModel::PhasedArraySpectrumPropagationLossModel(ns3::PhasedArraySpectrumPropagationLossModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::PhasedArraySpectrumPropagationLossModel const &', 'arg0')])
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::PhasedArraySpectrumPropagationLossModel::PhasedArraySpectrumPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b, ns3::Ptr<const ns3::PhasedArrayModel> aPhasedArrayModel, ns3::Ptr<const ns3::PhasedArrayModel> bPhasedArrayModel) const [member function]
+    cls.add_method('CalcRxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b'), param('ns3::Ptr< ns3::PhasedArrayModel const >', 'aPhasedArrayModel'), param('ns3::Ptr< ns3::PhasedArrayModel const >', 'bPhasedArrayModel')], 
+                   is_const=True)
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): static ns3::TypeId ns3::PhasedArraySpectrumPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): void ns3::PhasedArraySpectrumPropagationLossModel::SetNext(ns3::Ptr<ns3::PhasedArraySpectrumPropagationLossModel> next) [member function]
+    cls.add_method('SetNext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PhasedArraySpectrumPropagationLossModel >', 'next')])
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): void ns3::PhasedArraySpectrumPropagationLossModel::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='protected')
+    ## phased-array-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::PhasedArraySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b, ns3::Ptr<const ns3::PhasedArrayModel> aPhasedArrayModel, ns3::Ptr<const ns3::PhasedArrayModel> bPhasedArrayModel) const [member function]
+    cls.add_method('DoCalcRxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b'), param('ns3::Ptr< ns3::PhasedArrayModel const >', 'aPhasedArrayModel'), param('ns3::Ptr< ns3::PhasedArrayModel const >', 'bPhasedArrayModel')], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True, visibility='private')
+    return
+
 def register_Ns3PreambleDetectionModel_methods(root_module, cls):
     ## preamble-detection-model.h (module 'wifi'): ns3::PreambleDetectionModel::PreambleDetectionModel() [constructor]
     cls.add_constructor([])
@@ -9393,6 +9500,11 @@ def register_Ns3QueueBase_methods(root_module, cls):
     cls.add_method('SetMaxSize', 
                    'void', 
                    [param('ns3::QueueSize', 'size')])
+    ## queue.h (module 'network'): bool ns3::QueueBase::WouldOverflow(uint32_t nPackets, uint32_t nBytes) const [member function]
+    cls.add_method('WouldOverflow', 
+                   'bool', 
+                   [param('uint32_t', 'nPackets'), param('uint32_t', 'nBytes')], 
+                   is_const=True)
     return
 
 def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
@@ -9820,9 +9932,9 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::AntennaModel> ns3::SpectrumPhy::GetRxAntenna() const [member function]
-    cls.add_method('GetRxAntenna', 
-                   'ns3::Ptr< ns3::AntennaModel >', 
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetAntenna() const [member function]
+    cls.add_method('GetAntenna', 
+                   'ns3::Ptr< ns3::Object >', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
@@ -13565,9 +13677,9 @@ def register_Ns3WifiSpectrumPhyInterface_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## wifi-spectrum-phy-interface.h (module 'wifi'): ns3::Ptr<ns3::AntennaModel> ns3::WifiSpectrumPhyInterface::GetRxAntenna() const [member function]
-    cls.add_method('GetRxAntenna', 
-                   'ns3::Ptr< ns3::AntennaModel >', 
+    ## wifi-spectrum-phy-interface.h (module 'wifi'): ns3::Ptr<ns3::Object> ns3::WifiSpectrumPhyInterface::GetAntenna() const [member function]
+    cls.add_method('GetAntenna', 
+                   'ns3::Ptr< ns3::Object >', 
                    [], 
                    is_const=True, is_virtual=True)
     ## wifi-spectrum-phy-interface.h (module 'wifi'): void ns3::WifiSpectrumPhyInterface::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
@@ -15213,10 +15325,10 @@ def register_Ns3ChannelCondition_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsEqual(ns3::Ptr<const ns3::ChannelCondition> otherCondition) const [member function]
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsEqual(ns3::ChannelCondition::LosConditionValue losCondition, ns3::ChannelCondition::O2iConditionValue o2iCondition) const [member function]
     cls.add_method('IsEqual', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::ChannelCondition const >', 'otherCondition')], 
+                   [param('ns3::ChannelCondition::LosConditionValue', 'losCondition'), param('ns3::ChannelCondition::O2iConditionValue', 'o2iCondition')], 
                    is_const=True)
     ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsI2i() const [member function]
     cls.add_method('IsI2i', 
@@ -22104,6 +22216,10 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumChannel const &', 'arg0')])
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel::SpectrumChannel() [constructor]
     cls.add_constructor([])
+    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel(ns3::Ptr<ns3::PhasedArraySpectrumPropagationLossModel> loss) [member function]
+    cls.add_method('AddPhasedArraySpectrumPropagationLossModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PhasedArraySpectrumPropagationLossModel >', 'loss')])
     ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::AddPropagationLossModel(ns3::Ptr<ns3::PropagationLossModel> loss) [member function]
     cls.add_method('AddPropagationLossModel', 
                    'void', 
@@ -22122,6 +22238,10 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## spectrum-channel.h (module 'spectrum'): ns3::Ptr<ns3::PhasedArraySpectrumPropagationLossModel> ns3::SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel() [member function]
+    cls.add_method('GetPhasedArraySpectrumPropagationLossModel', 
+                   'ns3::Ptr< ns3::PhasedArraySpectrumPropagationLossModel >', 
+                   [])
     ## spectrum-channel.h (module 'spectrum'): ns3::Ptr<ns3::PropagationLossModel> ns3::SpectrumChannel::GetPropagationLossModel() [member function]
     cls.add_method('GetPropagationLossModel', 
                    'ns3::Ptr< ns3::PropagationLossModel >', 
@@ -22160,6 +22280,11 @@ def register_Ns3SpectrumWifiPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## spectrum-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::Object> ns3::SpectrumWifiPhy::GetAntenna() const [member function]
+    cls.add_method('GetAntenna', 
+                   'ns3::Ptr< ns3::Object >', 
+                   [], 
+                   is_const=True)
     ## spectrum-wifi-phy.h (module 'wifi'): uint32_t ns3::SpectrumWifiPhy::GetBandBandwidth() const [member function]
     cls.add_method('GetBandBandwidth', 
                    'uint32_t', 
@@ -22175,11 +22300,6 @@ def register_Ns3SpectrumWifiPhy_methods(root_module, cls):
                    'uint16_t', 
                    [param('uint16_t', 'currentChannelWidth')], 
                    is_const=True, is_virtual=True)
-    ## spectrum-wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::AntennaModel> ns3::SpectrumWifiPhy::GetRxAntenna() const [member function]
-    cls.add_method('GetRxAntenna', 
-                   'ns3::Ptr< ns3::AntennaModel >', 
-                   [], 
-                   is_const=True)
     ## spectrum-wifi-phy.h (module 'wifi'): ns3::Ptr<const ns3::SpectrumModel> ns3::SpectrumWifiPhy::GetRxSpectrumModel() [member function]
     cls.add_method('GetRxSpectrumModel', 
                    'ns3::Ptr< ns3::SpectrumModel const >', 

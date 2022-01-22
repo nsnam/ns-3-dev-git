@@ -5107,9 +5107,9 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::AntennaModel> ns3::SpectrumPhy::GetRxAntenna() const [member function]
-    cls.add_method('GetRxAntenna', 
-                   'ns3::Ptr< ns3::AntennaModel >', 
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetAntenna() const [member function]
+    cls.add_method('GetAntenna', 
+                   'ns3::Ptr< ns3::Object >', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
@@ -6584,9 +6584,9 @@ def register_Ns3LrWpanPhy_methods(root_module, cls):
     cls.add_method('SetAntenna', 
                    'void', 
                    [param('ns3::Ptr< ns3::AntennaModel >', 'a')])
-    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::Ptr<ns3::AntennaModel> ns3::LrWpanPhy::GetRxAntenna() const [member function]
-    cls.add_method('GetRxAntenna', 
-                   'ns3::Ptr< ns3::AntennaModel >', 
+    ## lr-wpan-phy.h (module 'lr-wpan'): ns3::Ptr<ns3::Object> ns3::LrWpanPhy::GetAntenna() const [member function]
+    cls.add_method('GetAntenna', 
+                   'ns3::Ptr< ns3::Object >', 
                    [], 
                    is_const=True, is_virtual=True)
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::Ptr<const ns3::SpectrumModel> ns3::LrWpanPhy::GetRxSpectrumModel() const [member function]
