@@ -7,29 +7,35 @@ function(create_scratch source_files)
     return()
   endif()
 
-  # If the scratch has more than a source file, we need
-  # to find the source with the main function
-  unset(scratch_src)
+  # If the scratch has more than a source file, we need to find the source with
+  # the main function
+  set(scratch_src)
   foreach(source_file ${source_files})
-      file(READ ${source_file} source_file_contents)
-      string(REGEX MATCHALL "main[(| (]" main_position "${source_file_contents}")
-      if(CMAKE_MATCH_0)
-        set(scratch_src ${source_file})
-      endif()
+    file(READ ${source_file} source_file_contents)
+    string(REGEX MATCHALL "main[(| (]" main_position "${source_file_contents}")
+    if(CMAKE_MATCH_0)
+      set(scratch_src ${source_file})
+    endif()
   endforeach()
+
+  if(NOT scratch_src)
+    return()
+  endif()
 
   # Get parent directory name
   get_filename_component(scratch_dirname ${scratch_src} DIRECTORY)
-  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" scratch_dirname
-                 ${scratch_dirname}
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" scratch_dirname
+                 "${scratch_dirname}"
   )
+  string(REPLACE "/" "_" scratch_dirname "${scratch_dirname}")
+
   # Get source name
   get_filename_component(scratch_name ${scratch_src} NAME_WE)
 
   set(target_prefix scratch_)
-  if(${scratch_dirname})
+  if(scratch_dirname)
     # Join the names together if dirname is not the scratch folder
-    set(target_prefix scratch_${scratch_dirname}_)
+    set(target_prefix scratch${scratch_dirname}_)
   endif()
 
   # Get source absolute path and transform into relative path

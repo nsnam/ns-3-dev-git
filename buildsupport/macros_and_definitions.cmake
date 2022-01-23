@@ -256,6 +256,7 @@ function(check_deps package_deps program_deps missing_deps)
     # CMake likes to cache find_* to speed things up, so we can't reuse names
     # here or it won't check other dependencies
     string(TOUPPER ${program} upper_${program})
+    mark_as_advanced(${upper_${program}})
     find_program(${upper_${program}} ${program})
     if(NOT ${upper_${program}})
       list(APPEND local_missing_deps ${program})
@@ -1196,12 +1197,13 @@ function(recursive_dependency module_name)
     file(READ ${contrib_cmakelist} cmakelists_content)
     set(contrib TRUE)
   else()
+    set(cmakelists_content "")
     message(
       STATUS "The CMakeLists.txt file for module ${module_name} was not found."
     )
   endif()
 
-  filter_libraries(${cmakelists_content} matches)
+  filter_libraries("${cmakelists_content}" matches)
 
   # Add this visited module dependencies to the dependencies list
   if(contrib)
@@ -1388,6 +1390,51 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
     set(${tests_enabled} "${${tests_enabled}}" PARENT_SCOPE)
   endif()
 endfunction(parse_ns3rc)
+
+function(find_external_library_header_and_library name header_name library_name
+         search_paths
+)
+  mark_as_advanced(${name}_library)
+  find_library(
+    ${name}_library ${library_name} HINTS ${search_paths} ENV LD_LIBRARY_PATH
+    PATH_SUFFIXES /build /lib /build/lib /
+  )
+  set(${name}_library_dir)
+  if(${name}_library)
+    get_filename_component(${name}_library_dir ${${name}_library} DIRECTORY
+    )# e.g. lib/openflow.(so|dll|dylib|a) -> lib
+  endif()
+  mark_as_advanced(${name}_header)
+  find_file(
+    ${name}_header ${header_name}
+    HINTS ${search_paths} ${${name}_library_dir}/../
+          ${${name}_library_dir}/../../
+    PATH_SUFFIXES
+      /build
+      /include
+      /build/include
+      /build/include/${name}
+      /include/${name}
+      /${name}
+      /
+  )
+  # If we find both library and header, we export their values
+  if(${name}_library AND ${name}_header)
+    get_filename_component(header_include_dir ${${name}_header} DIRECTORY
+    )# e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
+    get_filename_component(header_include_dir2 ${header_include_dir} DIRECTORY
+    )# e.g. include/(click) -> #include <click/simclick.h> should work
+    set(${name}_include_directories
+        "${header_include_dir};${header_include_dir2}" PARENT_SCOPE
+    )
+    set(${name}_library ${${name}_library} PARENT_SCOPE)
+    set(${name}_header ${${name}_header} PARENT_SCOPE)
+  else()
+    set(${name}_include_directories PARENT_SCOPE)
+    set(${name}_library PARENT_SCOPE)
+    set(${name}_header PARENT_SCOPE)
+  endif()
+endfunction()
 
 # Waf workaround scripts
 include(buildsupport/custom_modules/waf_workaround_c4cache.cmake)

@@ -1,30 +1,15 @@
 set(NS3_WITH_CLICK "" CACHE PATH "Build with click support")
 set(NS3_CLICK "OFF" CACHE INTERNAL "ON if Click is found in NS3_WITH_CLICK")
 
-if(NOT NS3_WITH_CLICK)
+find_external_library_header_and_library(
+  "click" "simclick.h" "click" "${NS3_WITH_CLICK}"
+)
+if(NOT (click_library AND click_header))
+  message(STATUS "Click was not found")
   return()
 endif()
 
-find_library(
-  click_dep click PATHS ${NS3_WITH_CLICK} PATH_SUFFIXES /build /build/lib /lib
-)
-find_file(click_header simclick.h HINTS ${NS3_WITH_CLICK}
-          PATH_SUFFIXES /build /include /build/include /build/include/click
-                        /include/click
-)
-
-if(NOT (click_dep AND click_header))
-  message(STATUS "Click was not found in ${NS3_WITH_CLICK}")
-  return()
-endif()
-
-get_filename_component(
-  openflow_header_include_folder ${openflow_header} DIRECTORY
-) # include/click/ (simclick.h)
-get_filename_component(
-  openflow_header_include_folder ${openflow_header_include_folder} DIRECTORY
-) # include/(click)
-include_directories(${openflow_header_include_folder})
+include_directories(${click_include_directories})
 set(NS3_CLICK "ON" CACHE INTERNAL "ON if Click is found in NS3_WITH_CLICK")
 add_definitions(-DNS3_CLICK)
 
@@ -38,7 +23,7 @@ set(header_files helper/click-internet-stack-helper.h
                  model/ipv4-click-routing.h model/ipv4-l3-click-protocol.h
 )
 
-set(libraries_to_link ${libcore} ${libnetwork} ${libinternet} ${click_dep})
+set(libraries_to_link ${libcore} ${libnetwork} ${libinternet} ${click_library})
 
 set(test_sources test/ipv4-click-routing-test.cc)
 

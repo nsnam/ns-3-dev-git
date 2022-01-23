@@ -73,7 +73,7 @@ option(NS3_LINK_TIME_OPTIMIZATION "Build with link-time optimization" OFF)
 option(NS3_MONOLIB
        "Build a single shared ns-3 library and link it against executables" OFF
 )
-option(NS3_MPI "Build with MPI support" ON)
+option(NS3_MPI "Build with MPI support" OFF)
 option(NS3_NATIVE_OPTIMIZATIONS "Build with -march=native -mtune=native" OFF)
 set(NS3_OUTPUT_DIRECTORY "" CACHE STRING "Directory to store built artifacts")
 option(NS3_PRECOMPILE_HEADERS

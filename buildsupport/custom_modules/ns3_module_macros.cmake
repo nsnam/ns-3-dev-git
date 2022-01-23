@@ -324,7 +324,8 @@ macro(
       )
       execute_process(
         COMMAND
-          ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_OUTPUT_DIRECTORY}
+          ${CMAKE_COMMAND} -E env
+          PYTHONPATH=${CMAKE_OUTPUT_DIRECTORY}:$ENV{PYTHONPATH}
           ${modulegen_modular_command} ${CMAKE_CURRENT_SOURCE_DIR} ${arch}
           ${prefix}${libname_sub} ${module_src}
         TIMEOUT 60

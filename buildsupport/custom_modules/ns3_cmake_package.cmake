@@ -15,6 +15,75 @@
 #
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
+function(build_required_and_libs_lists module_name visibility libraries
+         all_ns3_libraries
+)
+  set(linked_libs_list)
+  set(required_modules_list)
+  foreach(lib ${libraries})
+    if(${lib} IN_LIST all_ns3_libraries)
+      get_target_property(lib_real_name ${lib} OUTPUT_NAME)
+      string(REPLACE "lib" "" required_module_name ${lib})
+      set(required_modules_list
+          "${required_modules_list} ns3-${required_module_name}"
+      )
+    else()
+      set(lib_real_name ${lib})
+    endif()
+    set(linked_libs_list "${linked_libs_list} -l${lib_real_name}")
+  endforeach()
+  set(pkgconfig_${visibility}_libs ${linked_libs_list} PARENT_SCOPE)
+  set(pkgconfig_${visibility}_required ${required_modules_list} PARENT_SCOPE)
+endfunction()
+
+function(pkgconfig_module libname)
+  # Fetch all libraries that will be linked to module
+  get_target_property(all_libs ${libname} LINK_LIBRARIES)
+
+  # Then fetch public libraries
+  get_target_property(interface_libs ${libname} INTERFACE_LINK_LIBRARIES)
+
+  # Filter linking flags
+  string(REPLACE "${LIB_AS_NEEDED_PRE}" "" all_libs "${all_libs}")
+  string(REPLACE "${LIB_AS_NEEDED_POST}" "" all_libs "${all_libs}")
+  string(REPLACE "${LIB_AS_NEEDED_PRE}" "" interface_libs "${interface_libs}")
+  string(REPLACE "${LIB_AS_NEEDED_POST}" "" interface_libs "${interface_libs}")
+
+  foreach(interface_lib ${interface_libs})
+    list(REMOVE_ITEM all_libs ${interface_lib})
+  endforeach()
+  set(private_libs ${all_libs})
+
+  # Create two lists of publicly and privately linked libraries to this module
+  string(REPLACE "lib" "" module_name ${libname})
+
+  # These filter out ns and non-ns libraries into public and private libraries
+  # linked against module_name
+  get_target_property(pkgconfig_target_lib ${libname} OUTPUT_NAME)
+
+  # pkgconfig_public_libs pkgconfig_public_required
+  build_required_and_libs_lists(
+    "${module_name}" public "${interface_libs}"
+    "${ns3-libs};${ns3-contrib-libs}"
+  )
+
+  # pkgconfig_private_libs pkgconfig_private_required
+  build_required_and_libs_lists(
+    "${module_name}" private "${private_libs}"
+    "${ns3-libs};${ns3-contrib-libs}"
+  )
+
+  # Configure pkgconfig file for the module using pkgconfig variables
+  set(pkgconfig_file ${CMAKE_BINARY_DIR}/pkgconfig/ns3-${module_name}.pc)
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/buildsupport/pkgconfig_template.pc.in
+    ${pkgconfig_file} @ONLY
+  )
+
+  # Set file to be installed
+  install(FILES ${pkgconfig_file} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endfunction()
+
 function(ns3_cmake_package)
   # Only create configuration to export if there is an module configured to be
   # built
@@ -26,6 +95,14 @@ function(ns3_cmake_package)
     )
     return()
   endif()
+
+  # CMake does not support '-' separated versions in config packages, so replace
+  # them with dots
+  string(REPLACE "-" "." ns3_version "${NS3_VER}")
+
+  foreach(library ${ns3-libs}${ns3-contrib-libs})
+    pkgconfig_module(${library})
+  endforeach()
 
   install(
     EXPORT ns3ExportTargets
@@ -41,9 +118,6 @@ function(ns3_cmake_package)
     PATH_VARS CMAKE_INSTALL_LIBDIR
   )
 
-  # CMake does not support '-' separated versions in config packages, so replace
-  # them with dots
-  string(REPLACE "-" "." ns3_version "${NS3_VER}")
   write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/ns3ConfigVersion.cmake VERSION ${ns3_version}
     COMPATIBILITY ExactVersion

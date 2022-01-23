@@ -1,24 +1,16 @@
 set(NS3_WITH_BRITE "" CACHE PATH "Build with brite support")
 set(NS3_BRITE "OFF" CACHE INTERNAL "ON if Brite is found in NS3_WITH_BRITE")
-if(NOT NS3_WITH_BRITE)
-  return()
-endif()
 
-find_library(
-  brite_dep brite PATHS ${NS3_WITH_BRITE} PATH_SUFFIXES /build /build/lib /lib
+find_external_library_header_and_library(
+  "brite" "Brite.h" "brite" "${NS3_WITH_BRITE}"
 )
-find_file(brite_header Brite.h HINTS ${NS3_WITH_BRITE}
-          PATH_SUFFIXES /build /build/include /include
-)
-
-if(NOT (brite_dep AND brite_header))
-  message(STATUS "Brite was not found in ${NS3_WITH_BRITE}")
+if(NOT (brite_library AND brite_header))
+  message(STATUS "Brite was not found")
   return()
 endif()
 
 # Only process module if include folder and library have been found
-get_filename_component(brite_include_folder ${brite_header} DIRECTORY)
-include_directories(${brite_include_folder})
+include_directories(${brite_include_directories})
 set(NS3_BRITE "ON" CACHE INTERNAL "ON if Brite is found in NS3_WITH_BRITE")
 
 set(name brite)
@@ -29,7 +21,7 @@ set(header_files helper/brite-topology-helper.h)
 
 # link to dependencies
 set(libraries_to_link ${libnetwork} ${libcore} ${libinternet}
-                      ${libpoint-to-point} ${brite_dep}
+                      ${libpoint-to-point} ${brite_library}
 )
 
 set(test_sources test/brite-test-topology.cc)

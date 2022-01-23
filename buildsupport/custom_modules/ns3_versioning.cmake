@@ -66,6 +66,7 @@ function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE
 endfunction()
 
 function(configure_embedded_version)
+  mark_as_advanced(GIT)
   find_program(GIT git)
   if(${NS3_ENABLE_BUILD_VERSION} AND (NOT GIT))
     message(FATAL_ERROR "Embedding build version into libraries require Git.")

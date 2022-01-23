@@ -225,7 +225,7 @@ class NS3RunWafTargets(unittest.TestCase):
         Try to run a different executable built by waf
         @return None
         """
-        return_code, stdout, stderr = run_ns3("run command-line-example --no-build")
+        return_code, stdout, stderr = run_ns3("run command-line-example --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("command-line-example", stdout)
 
@@ -552,14 +552,14 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         @return None
         """
         # Try filtering disabled modules to disable lte and modules that depend on it.
-        return_code, stdout, stderr = run_ns3("configure --disable-modules='lte;mpi'")
+        return_code, stdout, stderr = run_ns3("configure --disable-modules='lte;wimax'")
         self.config_ok(return_code, stdout)
 
         # At this point we should have fewer modules.
         enabled_modules = get_enabled_modules()
         self.assertLess(len(enabled_modules), len(self.ns3_modules))
         self.assertNotIn("ns3-lte", enabled_modules)
-        self.assertNotIn("ns3-mpi", enabled_modules)
+        self.assertNotIn("ns3-wimax", enabled_modules)
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure --disable-modules=''")
@@ -696,9 +696,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Run all cases and then check outputs
         return_code0, stdout0, stderr0 = run_ns3("--dry-run run scratch-simulator")
-        return_code1, stdout1, stderr1 = run_ns3("run scratch-simulator")
+        return_code1, stdout1, stderr1 = run_ns3("run scratch-simulator --verbose")
         return_code2, stdout2, stderr2 = run_ns3("--dry-run run scratch-simulator --no-build")
-        return_code3, stdout3, stderr3 = run_ns3("run scratch-simulator --no-build ")
+        return_code3, stdout3, stderr3 = run_ns3("run scratch-simulator --no-build")
 
         # Return code and stderr should be the same for all of them.
         self.assertEqual(sum([return_code0, return_code1, return_code2, return_code3]), 0)
@@ -778,6 +778,118 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("--check-version")
         self.assertEqual(return_code, 0)
         self.assertIn("ns-3 version:", stdout)
+
+    def test_13_Scratches(self):
+        """!
+        Test if CMake target names for scratches and ns3 shortcuts
+        are working correctly
+        """
+
+        test_files = ["scratch/main.cc",
+                      "scratch/empty.cc",
+                      "scratch/subdir1/main.cc",
+                      "scratch/subdir2/main.cc"]
+
+        # Create test scratch files
+        for path in test_files:
+            filepath = os.path.join(ns3_path, path)
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            with open(filepath, "w") as f:
+                if "main" in path:
+                    f.write("int main (int argc, char *argv[]){}")
+                else:
+                    # no main function will prevent this target from
+                    # being created, we should skip it and continue
+                    # processing without crashing
+                    f.write("")
+
+        # Reload the cmake cache to pick them up
+        return_code, stdout, stderr = run_ns3("configure")
+        self.assertEqual(return_code, 0)
+
+        # Try to build them with ns3 and cmake
+        for path in test_files:
+            path = path.replace(".cc", "")
+            return_code1, stdout1, stderr1 = run_program("cmake", "--build . --target %s"
+                                                         % path.replace("/", "_"),
+                                                         cwd=os.path.join(ns3_path, "cmake_cache"))
+            return_code2, stdout2, stderr2 = run_ns3("build %s" % path)
+            if "main" in path:
+                self.assertEqual(return_code1, 0)
+                self.assertEqual(return_code2, 0)
+            else:
+                self.assertEqual(return_code1, 2)
+                self.assertEqual(return_code2, 1)
+
+        # Try to run them
+        for path in test_files:
+            path = path.replace(".cc", "")
+            return_code, stdout, stderr = run_ns3("run %s --no-build" % path)
+            if "main" in path:
+                self.assertEqual(return_code, 0)
+            else:
+                self.assertEqual(return_code, 1)
+
+        # Delete the test files and reconfigure to clean them up
+        for path in test_files:
+            source_absolute_path = os.path.join(ns3_path, path)
+            os.remove(source_absolute_path)
+            if "empty" in path:
+                continue
+            filename = os.path.basename(path).replace(".cc", "")
+            executable_absolute_path = os.path.dirname(os.path.join(ns3_path, "build", path))
+            executable_name = list(filter(lambda x: filename in x,
+                                          os.listdir(executable_absolute_path)
+                                          )
+                                   )[0]
+
+            os.remove(os.path.join(executable_absolute_path, executable_name))
+            if path not in ["scratch/main.cc", "scratch/empty.cc"]:
+                os.rmdir(os.path.dirname(source_absolute_path))
+
+        return_code, stdout, stderr = run_ns3("configure")
+        self.assertEqual(return_code, 0)
+
+    def test_14_MpiCommandTemplate(self):
+        """!
+        Test if ns3 is inserting additional arguments by MPICH and OpenMPI to run on the CI
+        """
+        # Skip test if mpi is not installed
+        if shutil.which("mpiexec") is None:
+            return
+
+        # Ensure sample simulator was built
+        return_code, stdout, stderr = run_ns3("build sample-simulator")
+        self.assertEqual(return_code, 0)
+
+        # Get executable path
+        sample_simulator_path = list(filter(lambda x: "sample-simulator" in x, self.ns3_executables))[0]
+
+        mpi_command = "--dry-run run sample-simulator --command-template=\"mpiexec -np 2 %s\""
+        non_mpi_command = "--dry-run run sample-simulator --command-template=\"echo %s\""
+
+        # Get the commands to run sample-simulator in two processes with mpi
+        return_code, stdout, stderr = run_ns3(mpi_command)
+        self.assertEqual(return_code, 0)
+        self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
+
+        # Get the commands to run sample-simulator in two processes with mpi, now with the environment variable
+        return_code, stdout, stderr = run_ns3(mpi_command, env={"MPI_CI": "1"})
+        self.assertEqual(return_code, 0)
+        if shutil.which("ompi_info"):
+            self.assertIn("mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path, stdout)
+        else:
+            self.assertIn("mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout)
+
+        # Now we repeat for the non-mpi command
+        return_code, stdout, stderr = run_ns3(non_mpi_command)
+        self.assertEqual(return_code, 0)
+        self.assertIn("echo %s" % sample_simulator_path, stdout)
+
+        # Again the non-mpi command, with the MPI_CI environment variable set
+        return_code, stdout, stderr = run_ns3(non_mpi_command, env={"MPI_CI": "1"})
+        self.assertEqual(return_code, 0)
+        self.assertIn("echo %s" % sample_simulator_path, stdout)
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
@@ -1039,47 +1151,63 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # specifying ns3-01 (text version with 'dev' is not supported)
         # and specifying ns3-00 (a wrong version)
         for version in ["", "3.01", "3.00"]:
-            test_cmake_project = """
-            cmake_minimum_required(VERSION 3.10..3.10)
-            project(ns3_consumer CXX)
-            
-            list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
-            find_package(ns3 {version} COMPONENTS libcore)
-            add_executable(test main.cpp)
-            target_link_libraries(test PRIVATE ns3::libcore)
-            """.format(lib=("lib64" if lib64 else "lib"), version=version)
+            find_package_import = """
+                                  list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
+                                  find_package(ns3 {version} COMPONENTS libcore)
+                                  target_link_libraries(test PRIVATE ns3::libcore)
+                                  """.format(lib=("lib64" if lib64 else "lib"), version=version)
+            pkgconfig_import = """
+                               list(APPEND CMAKE_PREFIX_PATH ./)
+                               include(FindPkgConfig)
+                               pkg_check_modules(ns3 REQUIRED IMPORTED_TARGET ns3-core{version})
+                               target_link_libraries(test PUBLIC PkgConfig::ns3)
+                               """.format(lib=("lib64" if lib64 else "lib"),
+                                          version="="+version if version else ""
+                                          )
 
-            test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
-            with open(test_cmake_project_file, "w") as f:
-                f.write(test_cmake_project)
+            for import_type in [pkgconfig_import, find_package_import]:
+                test_cmake_project = """
+                                     cmake_minimum_required(VERSION 3.10..3.10)
+                                     project(ns3_consumer CXX)
+                                     add_executable(test main.cpp)
+                                     """ + import_type
 
-            # Configure the test project
-            cmake = shutil.which("cmake")
-            return_code, stdout, stderr = run_program(cmake,
-                                                      "-DCMAKE_BUILD_TYPE=debug .",
-                                                      cwd=install_prefix)
+                test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
+                with open(test_cmake_project_file, "w") as f:
+                    f.write(test_cmake_project)
 
-            if version == "3.00":
-                self.assertEqual(return_code, 1)
-                self.assertIn('Could not find a configuration file for package "ns3" that is compatible',
-                              stderr.replace("\n", ""))
-            else:
-                self.assertEqual(return_code, 0)
-                self.assertIn("Build files", stdout)
+                # Configure the test project
+                cmake = shutil.which("cmake")
+                return_code, stdout, stderr = run_program(cmake,
+                                                          "-DCMAKE_BUILD_TYPE=debug .",
+                                                          cwd=install_prefix)
+                if version == "3.00":
+                    self.assertEqual(return_code, 1)
+                    if import_type == find_package_import:
+                        self.assertIn('Could not find a configuration file for package "ns3" that is compatible',
+                                      stderr.replace("\n", ""))
+                    elif import_type == pkgconfig_import:
+                        self.assertIn('A required package was not found',
+                                      stderr.replace("\n", ""))
+                    else:
+                        raise Exception("Unknown import type")
+                else:
+                    self.assertEqual(return_code, 0)
+                    self.assertIn("Build files", stdout)
 
-            # Build the test project making use of import ns-3
-            return_code, stdout, stderr = run_program("cmake", "--build .", cwd=install_prefix)
+                # Build the test project making use of import ns-3
+                return_code, stdout, stderr = run_program("cmake", "--build .", cwd=install_prefix)
 
-            if version == "3.00":
-                self.assertEqual(return_code, 2)
-                self.assertGreater(len(stderr), 0)
-            else:
-                self.assertEqual(return_code, 0)
-                self.assertIn("Built target", stdout)
+                if version == "3.00":
+                    self.assertEqual(return_code, 2)
+                    self.assertGreater(len(stderr), 0)
+                else:
+                    self.assertEqual(return_code, 0)
+                    self.assertIn("Built target", stdout)
 
-                # Try running the test program that imports ns-3
-                return_code, stdout, stderr = run_program("./test", "", cwd=install_prefix)
-                self.assertEqual(return_code, 0)
+                    # Try running the test program that imports ns-3
+                    return_code, stdout, stderr = run_program("./test", "", cwd=install_prefix)
+                    self.assertEqual(return_code, 0)
 
         # Uninstall
         return_code, stdout, stderr = run_ns3("uninstall")
@@ -1112,7 +1240,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             self.assertIn(build_line, stdout)
 
             # Test if run is working
-            return_code, stdout, stderr = run_ns3("run %s" % target_to_run)
+            return_code, stdout, stderr = run_ns3("run %s --verbose" % target_to_run)
             self.assertEqual(return_code, 0)
             self.assertIn(build_line, stdout)
             stdout = stdout.replace("scratch_%s" % target_cmake, "")  # remove build lines
@@ -1174,7 +1302,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Try to build and run test-runner
         @return None
         """
-        return_code, stdout, stderr = run_ns3('run "test-runner --list"')
+        return_code, stdout, stderr = run_ns3('run "test-runner --list" --verbose')
         self.assertEqual(return_code, 0)
         self.assertIn("Built target test-runner", stdout)
         self.assertIn(cmake_build_target_command(target="test-runner"), stdout)
@@ -1202,7 +1330,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Try to run test-runner without building
         @return None
         """
-        return_code, stdout, stderr = run_ns3('run "test-runner --list" --no-build ')
+        return_code, stdout, stderr = run_ns3('run "test-runner --list" --no-build --verbose')
         self.assertEqual(return_code, 0)
         self.assertNotIn("Built target test-runner", stdout)
         self.assertNotIn(cmake_build_target_command(target="test-runner"), stdout)
@@ -1230,7 +1358,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Test if scratch simulator is executed through gdb
         @return None
         """
-        return_code, stdout, stderr = run_ns3("run scratch-simulator --gdb --no-build")
+        return_code, stdout, stderr = run_ns3("run scratch-simulator --gdb --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stdout)
         self.assertIn("No debugging symbols found", stdout)
@@ -1240,7 +1368,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
       Test if scratch simulator is executed through valgrind
       @return None
       """
-        return_code, stdout, stderr = run_ns3("run scratch-simulator --valgrind --no-build")
+        return_code, stdout, stderr = run_ns3("run scratch-simulator --valgrind --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stderr)
         self.assertIn("Memcheck", stderr)
@@ -1445,8 +1573,8 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(stderr2, stderr3)
 
         # Command templates with %s should at least continue and try to run the target
-        return_code4, stdout4, stderr4 = run_ns3('run sample-simulator --command-template "%s --PrintVersion"')
-        return_code5, stdout5, stderr5 = run_ns3('run sample-simulator --command-template="%s --PrintVersion"')
+        return_code4, stdout4, _ = run_ns3('run sample-simulator --command-template "%s --PrintVersion" --verbose')
+        return_code5, stdout5, _ = run_ns3('run sample-simulator --command-template="%s --PrintVersion" --verbose')
         self.assertEqual((return_code4, return_code5), (0, 0))
         self.assertIn("sample-simulator --PrintVersion", stdout4)
         self.assertIn("sample-simulator --PrintVersion", stdout5)
@@ -1459,9 +1587,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         """
 
         # Test if all argument passing flavors are working
-        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --help"')
-        return_code1, stdout1, stderr1 = run_ns3('run sample-simulator --command-template="%s --help"')
-        return_code2, stdout2, stderr2 = run_ns3('run sample-simulator -- --help')
+        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --help" --verbose')
+        return_code1, stdout1, stderr1 = run_ns3('run sample-simulator --command-template="%s --help" --verbose')
+        return_code2, stdout2, stderr2 = run_ns3('run sample-simulator --verbose -- --help')
 
         self.assertEqual((return_code0, return_code1, return_code2), (0, 0, 0))
         self.assertIn("sample-simulator --help", stdout0)
@@ -1479,9 +1607,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(stderr1, stderr2)
 
         # Now collect results for each argument individually
-        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --PrintGlobals"')
-        return_code1, stdout1, stderr1 = run_ns3('run "sample-simulator --PrintGroups"')
-        return_code2, stdout2, stderr2 = run_ns3('run "sample-simulator --PrintTypeIds"')
+        return_code0, stdout0, stderr0 = run_ns3('run "sample-simulator --PrintGlobals" --verbose')
+        return_code1, stdout1, stderr1 = run_ns3('run "sample-simulator --PrintGroups" --verbose')
+        return_code2, stdout2, stderr2 = run_ns3('run "sample-simulator --PrintTypeIds" --verbose')
 
         self.assertEqual((return_code0, return_code1, return_code2), (0, 0, 0))
         self.assertIn("sample-simulator --PrintGlobals", stdout0)
@@ -1489,7 +1617,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertIn("sample-simulator --PrintTypeIds", stdout2)
 
         # Then check if all the arguments are correctly merged by checking the outputs
-        cmd = 'run "sample-simulator --PrintGlobals" --command-template="%s --PrintGroups" -- --PrintTypeIds'
+        cmd = 'run "sample-simulator --PrintGlobals" --command-template="%s --PrintGroups" --verbose -- --PrintTypeIds'
         return_code, stdout, stderr = run_ns3(cmd)
         self.assertEqual(return_code, 0)
 
