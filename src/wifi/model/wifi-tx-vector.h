@@ -35,6 +35,21 @@ struct HeMuUserInfo
   HeRu::RuSpec ru; ///< RU specification
   WifiMode mcs;    ///< MCS
   uint8_t nss;     ///< number of spatial streams
+
+  /**
+    * Compare this user info to the given user info.
+    *
+    * \param other the given user info
+    * \return true if this user info compares equal to the given user info, false otherwise
+    */
+  bool operator== (const HeMuUserInfo& other) const;
+  /**
+    * Compare this user info to the given user info.
+    *
+    * \param other the given user info
+    * \return true if this user info differs from the given user info, false otherwise
+    */
+  bool operator!= (const HeMuUserInfo& other) const;
 };
 
 /**

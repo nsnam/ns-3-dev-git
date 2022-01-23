@@ -598,5 +598,21 @@ HeRu::GetEqualSizedRusForStations (uint16_t bandwidth, std::size_t& nStations,
   return ruType;
 }
 
+bool
+HeRu::RuSpec::operator== (const RuSpec& other) const
+{
+  // we do not compare the RU PHY indices because they may be uninitialized for
+  // one of the compared RUs. This event should not cause the comparison to evaluate
+  // to false
+  return m_ruType == other.m_ruType
+         && m_index == other.m_index
+         && m_primary80MHz == other.m_primary80MHz;
+}
+
+bool
+HeRu::RuSpec::operator!= (const RuSpec& other) const
+{
+  return !(*this == other);
+}
 
 } //namespace ns3

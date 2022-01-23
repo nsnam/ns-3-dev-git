@@ -542,4 +542,18 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
   return os;
 }
 
+bool
+HeMuUserInfo::operator== (const HeMuUserInfo& other) const
+{
+  return ru == other.ru
+         && mcs.GetMcsValue () == other.mcs.GetMcsValue ()
+         && nss == other.nss;
+}
+
+bool
+HeMuUserInfo::operator!= (const HeMuUserInfo& other) const
+{
+  return !(*this == other);
+}
+
 } //namespace ns3
