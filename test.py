@@ -1090,28 +1090,21 @@ def run_tests():
         # user wants to run everything.
         #
         if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            if sys.platform == "win32":
-                waf_cmd = "./waf --target=test-runner"
-            else:
-                waf_cmd = "./waf --target=test-runner"
+            build_cmd = "./ns3 build test-runner"
         elif len(options.example):
-            if sys.platform == "win32": #Modify for windows
-                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
-            else:
-                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
+            build_cmd = "./ns3 build %s" % os.path.basename(options.example)
         else:
-            if sys.platform == "win32": #Modify for windows
-                waf_cmd = "./waf"
-            else:
-                waf_cmd = "./waf"
+            build_cmd = "./ns3"
+
+        if sys.platform == "win32":
+            build_cmd = sys.executable + " " + build_cmd
 
         if options.verbose:
-            print("Building: %s" % waf_cmd)
+            print("Building: %s" % build_cmd)
 
-        proc = subprocess.Popen(waf_cmd, shell = True)
-        proc.communicate()
+        proc = subprocess.run(build_cmd, shell=True)
         if proc.returncode:
-            print("Waf died. Not running tests", file=sys.stderr)
+            print("ns3 died. Not running tests", file=sys.stderr)
             return proc.returncode
 
 
@@ -1229,7 +1222,7 @@ def run_tests():
         if rc != 0:
             # This is usually a sign that ns-3 crashed or exited uncleanly
             print(('test.py error:  test-runner return code returned {}'.format(rc)))
-            print(('To debug, try running {}\n'.format('\'./waf --run \"test-runner --print-test-name-list\"\'')))
+            print(('To debug, try running {}\n'.format('\'./ns3 run \"test-runner --print-test-name-list\"\'')))
             return
         if isinstance(standard_out, bytes):
             standard_out = standard_out.decode()
@@ -1890,11 +1883,11 @@ def run_tests():
         print()
         if not ENABLE_TESTS:
             print('***  Note: ns-3 tests are currently disabled. Enable them by adding')
-            print('***  "--enable-tests" to ./waf configure or modifying your .ns3rc file.')
+            print('***  "--enable-tests" to ./ns3 configure or modifying your .ns3rc file.')
             print()
         if not ENABLE_EXAMPLES:
             print('***  Note: ns-3 examples are currently disabled. Enable them by adding')
-            print('***  "--enable-examples" to ./waf configure or modifying your .ns3rc file.')
+            print('***  "--enable-examples" to ./ns3 configure or modifying your .ns3rc file.')
             print()
 
     #
