@@ -85,6 +85,9 @@ div.sphinxsidebar a {
   background-repeat:repeat;
   border-bottom: 1px solid #5B5B5B;
   color: white;
+  position: relative;
+  /* Doxygen tab bar ("Main Page", "Related Pages"..) is at z: 9999 */
+  z-index:10000;
 }
 
 #projectlogo {
