@@ -140,14 +140,13 @@ div.sphinxsidebar a {
 /*   background-origin: padding-box; */
 /*   background-position: -10px 0; */
   background-repeat: no-repeat;
+  background-size: 100% 39px;
   display: table-cell;
   float:left;
   height: 40px;
   margin: 0px 0px 0px 0px;
-  overflow: hidden;
   padding:0px 0px 0px 0px;
   vertical-align: middle;
-  width: 450px;
 }
 
 
