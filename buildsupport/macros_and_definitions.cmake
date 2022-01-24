@@ -827,6 +827,7 @@ macro(process_options)
     sphinx_target(manual)
     sphinx_target(models)
     sphinx_target(tutorial)
+    sphinx_target(contributing)
   endif()
   # end of checking for documentation dependencies and creating targets
 
