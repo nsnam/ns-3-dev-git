@@ -17706,6 +17706,11 @@ def register_Ns3FrameExchangeManager_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiMacQueueItem >', 
                    [], 
                    visibility='protected')
+    ## frame-exchange-manager.h (module 'wifi'): uint32_t ns3::FrameExchangeManager::GetPsduSize(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector const & txVector) const [member function]
+    cls.add_method('GetPsduSize', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('ns3::WifiTxVector const &', 'txVector')], 
+                   is_const=True, is_virtual=True, visibility='protected')
     ## frame-exchange-manager.h (module 'wifi'): ns3::Time ns3::FrameExchangeManager::GetRtsDurationId(ns3::WifiTxVector const & rtsTxVector, ns3::Time txDuration, ns3::Time response) const [member function]
     cls.add_method('GetRtsDurationId', 
                    'ns3::Time', 
@@ -22566,9 +22571,9 @@ def register_Ns3TableBasedErrorRateModel_methods(root_module, cls):
     cls.add_constructor([param('ns3::TableBasedErrorRateModel const &', 'arg0')])
     ## table-based-error-rate-model.h (module 'wifi'): ns3::TableBasedErrorRateModel::TableBasedErrorRateModel() [constructor]
     cls.add_constructor([])
-    ## table-based-error-rate-model.h (module 'wifi'): static uint8_t ns3::TableBasedErrorRateModel::GetMcsForMode(ns3::WifiMode mode) [member function]
+    ## table-based-error-rate-model.h (module 'wifi'): static std::optional<unsigned char> ns3::TableBasedErrorRateModel::GetMcsForMode(ns3::WifiMode mode) [member function]
     cls.add_method('GetMcsForMode', 
-                   'uint8_t', 
+                   'std::optional< unsigned char >', 
                    [param('ns3::WifiMode', 'mode')], 
                    is_static=True)
     ## table-based-error-rate-model.h (module 'wifi'): static ns3::TypeId ns3::TableBasedErrorRateModel::GetTypeId() [member function]
@@ -26141,6 +26146,11 @@ def register_Ns3VhtFrameExchangeManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## vht-frame-exchange-manager.h (module 'wifi'): uint32_t ns3::VhtFrameExchangeManager::GetPsduSize(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector const & txVector) const [member function]
+    cls.add_method('GetPsduSize', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('ns3::WifiTxVector const &', 'txVector')], 
+                   is_const=True, is_virtual=True, visibility='protected')
     ## vht-frame-exchange-manager.h (module 'wifi'): ns3::Ptr<ns3::WifiPsdu> ns3::VhtFrameExchangeManager::GetWifiPsdu(ns3::Ptr<ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector const & txVector) const [member function]
     cls.add_method('GetWifiPsdu', 
                    'ns3::Ptr< ns3::WifiPsdu >', 
