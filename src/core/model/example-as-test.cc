@@ -25,7 +25,8 @@
 
 #include <string>
 #include <sstream>
-#include <cstdlib>  // itoa(), system ()
+#include <cstdlib>  // itoa(), system (), getenv ()
+#include <cstring>
 
 /**
  * \file
@@ -121,6 +122,13 @@ ExampleAsTestCase::DoRun (void)
 
   // Make sure the example didn't outright crash
   NS_TEST_ASSERT_MSG_EQ (status, 0, "example " + m_program + " failed");
+
+  // Check that we're not just introspecting the command-line
+  const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
+  if (envVar != 0 && std::strlen (envVar) != 0)
+    {
+      return;
+    }
 
   // Compare the testFile to the reference file
   NS_ASCII_TEST_EXPECT_EQ (testFile, refFile);
