@@ -87,7 +87,7 @@ option(NS3_STATIC "Build a static ns-3 library and link it against executables"
        OFF
 )
 option(NS3_VERBOSE "Print additional build system messages" OFF)
-option(NS3_VISUALIZER "Build visualizer module" OFF)
+option(NS3_VISUALIZER "Build visualizer module" ON)
 option(NS3_WARNINGS "Enable compiler warnings" ON)
 option(NS3_WARNINGS_AS_ERRORS
        "Treat warnings as errors. Requires NS3_WARNINGS=ON" ON
@@ -144,6 +144,7 @@ generate_c4che_cachepy()
 generate_buildstatus()
 generate_fakewaflock()
 write_fakewaf_config()
+write_header_to_modules_map()
 
 # Export package targets when installing
 ns3_cmake_package()

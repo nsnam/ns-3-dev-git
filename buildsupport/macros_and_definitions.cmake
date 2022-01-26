@@ -221,7 +221,9 @@ macro(clear_global_cached_variables)
   unset(ns3-contrib-libs CACHE)
   unset(ns3-example-folders CACHE)
   unset(ns3-execs CACHE)
+  unset(ns3-execs-py CACHE)
   unset(ns3-external-libs CACHE)
+  unset(ns3-headers-to-module-map CACHE)
   unset(ns3-libs CACHE)
   unset(ns3-libs-tests CACHE)
   unset(ns3-python-bindings-modules CACHE)
@@ -232,7 +234,9 @@ macro(clear_global_cached_variables)
     ns3-contrib-libs
     ns3-example-folders
     ns3-execs
+    ns3-execs-py
     ns3-external-libs
+    ns3-headers-to-module-map
     ns3-libs
     ns3-libs-tests
     ns3-python-bindings-modules
@@ -612,29 +616,43 @@ macro(process_options)
     endif()
   endif()
 
-  find_package(Python3 COMPONENTS Interpreter Development QUIET)
+  find_package(Python COMPONENTS Interpreter Development QUIET)
+
+  # Check if python3 was found, and mark as not found if python2 is found
+  if(${Python_FOUND} AND (${Python_VERSION_MAJOR} LESS 3))
+    set(Python_FOUND FALSE)
+    message(
+      STATUS:
+      "bindings: an incompatible version of Python was found, bindings will be disabled"
+    )
+  endif()
+
   set(ENABLE_PYTHON_BINDINGS OFF)
   if(${NS3_PYTHON_BINDINGS})
-    if(NOT ${Python3_FOUND})
+    if(NOT ${Python_FOUND})
       message(FATAL_ERROR "NS3_PYTHON_BINDINGS requires Python3")
     endif()
     set(ENABLE_PYTHON_BINDINGS ON)
-    link_directories(${Python3_LIBRARY_DIRS})
-    include_directories(${Python3_INCLUDE_DIRS})
-    set(PYTHONDIR ${Python3_SITELIB})
-    set(PYTHONARCHDIR ${Python3_SITEARCH})
-    set(HAVE_PYEMBED TRUE)
-    set(HAVE_PYEXT TRUE)
-    set(HAVE_PYTHON_H TRUE)
+
     set(destination_dir ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns)
-    file(COPY bindings/python/ns__init__.py DESTINATION ${destination_dir})
-    file(RENAME ${destination_dir}/ns__init__.py ${destination_dir}/__init__.py)
+    configure_file(
+      bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
+    )
   endif()
 
   if(${NS3_SCAN_PYTHON_BINDINGS})
     # empty scan target that will depend on other module scan targets to scan
     # all of them
     add_custom_target(apiscan-all)
+  endif()
+
+  set(ENABLE_VISUALIZER FALSE)
+  if(${NS3_VISUALIZER})
+    if((NOT ${ENABLE_PYTHON_BINDINGS}) OR (NOT ${Python_FOUND}))
+      message(STATUS "Visualizer requires NS3_PYTHON_BINDINGS and Python3")
+    else()
+      set(ENABLE_VISUALIZER TRUE)
+    endif()
   endif()
 
   if(${NS3_COVERAGE} AND (NOT ${ENABLE_TESTS} OR NOT ${ENABLE_EXAMPLES}))
@@ -652,7 +670,7 @@ macro(process_options)
     # produce code coverage output
     add_custom_target(
       run_test_py
-      COMMAND ${Python3_EXECUTABLE} test.py --no-build
+      COMMAND ${Python_EXECUTABLE} test.py --no-build
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets
     )
@@ -683,14 +701,6 @@ macro(process_options)
     set_property(GLOBAL PROPERTY TARGET_MESSAGES TRUE)
   else()
     set_property(GLOBAL PROPERTY TARGET_MESSAGES OFF)
-  endif()
-
-  set(ENABLE_VISUALIZER FALSE)
-  if(${NS3_VISUALIZER})
-    if((NOT ${NS3_PYTHON_BINDINGS}) OR (NOT ${Python3_FOUND}))
-      message(FATAL_ERROR "Visualizer requires NS3_PYTHON_BINDINGS and Python3")
-    endif()
-    set(ENABLE_VISUALIZER TRUE)
   endif()
 
   mark_as_advanced(Boost_INCLUDE_DIR)
@@ -749,7 +759,7 @@ macro(process_options)
     add_custom_target(
       run-introspected-command-line
       COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
-              ${Python3_EXECUTABLE} ./test.py --no-build --constrain=example
+              ${Python_EXECUTABLE} ./test.py --no-build --constrain=example
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS is
                                # set to ON
@@ -1070,6 +1080,17 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
     add_dependencies(timeTraceReport ${target_prefix}${target_name})
   endif()
 endfunction(set_runtime_outputdirectory)
+
+function(scan_python_examples path)
+  file(GLOB_RECURSE python_examples ${path}/*.py)
+  foreach(python_example ${python_examples})
+    if(NOT (${python_example} MATCHES "examples-to-run"))
+      set(ns3-execs-py "${python_example};${ns3-execs-py}"
+          CACHE INTERNAL "list of python scripts"
+      )
+    endif()
+  endforeach()
+endfunction()
 
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
@@ -1434,6 +1455,20 @@ function(find_external_library_header_and_library name header_name library_name
     set(${name}_include_directories PARENT_SCOPE)
     set(${name}_library PARENT_SCOPE)
     set(${name}_header PARENT_SCOPE)
+  endif()
+endfunction()
+
+function(write_header_to_modules_map)
+  if(${NS3_SCAN_PYTHON_BINDINGS})
+    set(header_map ${ns3-headers-to-module-map})
+
+    # Trim last comma
+    string(LENGTH "${header_map}" header_map_len)
+    math(EXPR header_map_len "${header_map_len}-1")
+    string(SUBSTRING "${header_map}" 0 ${header_map_len} header_map)
+
+    # Then write to header_map.json for consumption of pybindgen
+    file(WRITE ${PROJECT_BINARY_DIR}/header_map.json "{${header_map}}")
   endif()
 endfunction()
 

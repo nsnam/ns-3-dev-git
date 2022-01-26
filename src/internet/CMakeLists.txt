@@ -251,7 +251,6 @@ set(header_files
     model/udp-header.h
     model/udp-l4-protocol.h
     model/udp-socket-factory.h
-    model/udp-socket-impl.h
     model/udp-socket.h
     model/windowed-filter.h
 )

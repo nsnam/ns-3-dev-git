@@ -1120,6 +1120,7 @@ def run_tests():
     if os.path.exists(build_status_file):
         ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
         ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
+        ns3_runnable_scripts = [os.path.basename(script) for script in ns3_runnable_scripts]
     else:
         print('The build status file was not found.  You must do waf build before running test.py.', file=sys.stderr)
         sys.exit(2)

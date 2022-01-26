@@ -65,6 +65,9 @@ function(generate_c4che_cachepy)
   cache_cmake_flag(NS3_BRITE "ENABLE_BRITE" cache_contents)
   cache_cmake_flag(NS3_ENABLE_SUDO "ENABLE_SUDO" cache_contents)
   cache_cmake_flag(NS3_PYTHON_BINDINGS "ENABLE_PYTHON_BINDINGS" cache_contents)
+  cache_cmake_flag(
+    NS3_SCAN_PYTHON_BINDINGS "ENABLE_SCAN_PYTHON_BINDINGS" cache_contents
+  )
 
   string(APPEND cache_contents "EXAMPLE_DIRECTORIES = [")
   foreach(example_folder ${ns3-example-folders})
@@ -75,7 +78,7 @@ function(generate_c4che_cachepy)
   string(APPEND cache_contents "APPNAME = 'ns'\n")
   string(APPEND cache_contents "BUILD_PROFILE = '${build_profile}'\n")
   string(APPEND cache_contents "VERSION = '${NS3_VER}' \n")
-  string(APPEND cache_contents "PYTHON = ['${Python3_EXECUTABLE}']\n")
+  string(APPEND cache_contents "PYTHON = ['${Python_EXECUTABLE}']\n")
 
   mark_as_advanced(VALGRIND)
   find_program(VALGRIND valgrind)

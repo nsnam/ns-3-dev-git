@@ -232,7 +232,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
     #module_parser.add_post_scan_hook(post_scan_hook)
 
     castxml_options = dict(
-        include_paths=[top_builddir],
+        include_paths=[top_builddir, os.path.join(top_builddir, "include")],
          define_symbols={
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
@@ -256,6 +256,8 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
     scan_header = os.path.join(os.path.dirname(output_file_name), "scan-header.h")
     if not os.path.exists(scan_header):
         scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)
+    if not os.path.exists(scan_header):
+        scan_header = os.path.join(top_builddir, "include", "ns3", "%s-module.h" % module_name)
 
     module_parser.parse_init([scan_header],
                              None, whitelist_paths=[top_builddir],
@@ -280,5 +282,11 @@ if __name__ == '__main__':
     if len(sys.argv) != 6:
         print("ns3modulescan-modular.py top_builddir module_path module_headers output_file_name cflags")
         sys.exit(1)
-    ns3_module_scan(sys.argv[1], sys.argv[2], eval(sys.argv[3]), sys.argv[4], sys.argv[5])
+    if os.path.exists(sys.argv[3]):
+        import json
+        with open(sys.argv[3], "r") as f:
+            module_headers = json.load(f)
+    else:
+        module_headers = eval(sys.argv[3])
+    ns3_module_scan(sys.argv[1], sys.argv[2], module_headers, sys.argv[4], sys.argv[5])
     sys.exit(0)

@@ -99,6 +99,7 @@ def parse_args(argv):
     parser_configure = on_off_argument(parser_configure, "gtk", "GTK support in ConfigStore")
     parser_configure = on_off_argument(parser_configure, "logs", "the logs regardless of the compile mode")
     parser_configure = on_off_argument(parser_configure, "mpi", "the MPI support for distributed simulation")
+    parser_configure = on_off_argument(parser_configure, "python-bindings", "python bindings")
     parser_configure = on_off_argument(parser_configure, "tests", "the ns-3 tests")
     parser_configure = on_off_argument(parser_configure, "sanitizers",
                                        "address, memory leaks and undefined behavior sanitizers")
@@ -109,7 +110,6 @@ def parse_args(argv):
     parser_configure = on_off_argument(parser_configure, "warnings", "compiler warnings")
     parser_configure = on_off_argument(parser_configure, "werror", "Treat compiler warnings as errors",
                                        "Treat compiler warnings as warnings")
-    parser_configure = on_off_argument(parser_configure, "visualizer", "the visualizer module")
     parser_configure.add_argument('--enable-modules',
                                   help='List of modules to build (e.g. core;network;internet)',
                                   action="store", type=str, default=None)
@@ -286,6 +286,8 @@ def check_build_profile(output_directory):
     ns3_version = None
     ns3_modules = None
     ns3_modules_tests = []
+    ns3_modules_apiscan = []
+    ns3_modules_bindings = []
     enable_sudo = False
     if output_directory and os.path.exists(c4che_path):
         c4che_info = {}
@@ -293,10 +295,17 @@ def check_build_profile(output_directory):
         build_profile = c4che_info["BUILD_PROFILE"]
         ns3_version = c4che_info["VERSION"]
         ns3_modules = c4che_info["NS3_ENABLED_MODULES"]
-        ns3_modules_tests = [x + "-test" for x in ns3_modules]
         if "ENABLE_SUDO" in c4che_info:
             enable_sudo = c4che_info["ENABLE_SUDO"]
-    return build_profile, ns3_version, ns3_modules + ns3_modules_tests if ns3_modules else None, enable_sudo
+        if ns3_modules:
+            if c4che_info["ENABLE_TESTS"]:
+                ns3_modules_tests = [x + "-test" for x in ns3_modules]
+            if c4che_info["ENABLE_PYTHON_BINDINGS"]:
+                ns3_modules_bindings = [x + "-bindings" for x in ns3_modules]
+            if "ENABLE_SCAN_PYTHON_BINDINGS" in c4che_info and c4che_info["ENABLE_SCAN_PYTHON_BINDINGS"]:
+                ns3_modules_apiscan = [x + "-apiscan" for x in ns3_modules]
+            ns3_modules = ns3_modules + ns3_modules_tests + ns3_modules_apiscan + ns3_modules_bindings
+    return build_profile, ns3_version, ns3_modules, enable_sudo
 
 
 def print_and_buffer(message):
@@ -453,11 +462,11 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                ("GTK3", "gtk"),
                ("LOG", "logs"),
                ("MPI", "mpi"),
+               ("PYTHON_BINDINGS", "python_bindings"),
                ("SANITIZE", "sanitizers"),
                ("STATIC", "static"),
                ("TESTS", "tests"),
                ("VERBOSE", "verbose"),
-               ("VISUALIZER", "visualizer"),
                ("WARNINGS", "warnings"),
                ("WARNINGS_AS_ERRORS", "werror"),
                )
@@ -552,6 +561,19 @@ def get_program_shortcuts(build_profile, ns3_version):
             ns3_program_map[shortcut_path] = program
             if source_shortcut:
                 ns3_program_map[shortcut_path + ".cc"] = program
+            temp_path.pop(0)
+
+
+    if programs_dict["ns3_runnable_scripts"]:
+        scratch_scripts = glob.glob(os.path.join(ns3_path, "scratch", "*.py"), recursive=True)
+        programs_dict["ns3_runnable_scripts"].extend(scratch_scripts)
+
+    for program in programs_dict["ns3_runnable_scripts"]:
+        temp_path = program.replace(ns3_path, "").split(os.sep)
+        program = program.strip()
+        while len(temp_path):
+            shortcut_path = os.sep.join(temp_path)
+            ns3_program_map[shortcut_path] = program
             temp_path.pop(0)
     return ns3_program_map
 
@@ -658,6 +680,9 @@ def reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output
 
 
 def get_target_to_build(program_path, ns3_version, build_profile):
+    if ".py" in program_path:
+        return None
+
     build_profile_suffix = "" if build_profile in ["release"] else "-" + build_profile
     program_name = "".join(*re.findall("(.*)ns%s-(.*)%s" % (ns3_version, build_profile_suffix), program_path))
 
@@ -712,7 +737,8 @@ def build_step(args,
 
     # If we are building specific targets, we build them one by one
     if "build" in args:
-        non_executable_targets = ["check-version",
+        non_executable_targets = ["apiscan-all",
+                                  "check-version",
                                   "cmake-format",
                                   "docs",
                                   "doxygen",
@@ -787,6 +813,11 @@ def run_step(args, target_to_run, target_args):
         target_to_run = "bash"
         use_shell = True
     else:
+        # running a python script?
+        if ".py" in target_to_run:
+            target_args = [target_to_run] + target_args
+            target_to_run = "python3"
+
         # running from ns-3-dev (ns3_path) or cwd
         if args.cwd:
             working_dir = args.cwd
@@ -1060,7 +1091,7 @@ def main():
         target_path = os.sep.join(target_path)
         return target_path
 
-    if not args.check and not args.shell and target_to_run:
+    if not args.check and not args.shell and target_to_run and not ".py" in target_to_run:
         target_to_run = remove_overlapping_path(out_dir, target_to_run)
 
         # Waf doesn't add version prefix and build type suffix to the scratches, so we remove them
@@ -1072,7 +1103,7 @@ def main():
         target_to_run = os.sep.join([out_dir, target_to_run])
 
         # If we're only trying to run the target, we need to check if it actually exists first
-        if (run_only or build_and_run) and not os.path.exists(target_to_run):
+        if (run_only or build_and_run) and ".py" not in target_to_run and not os.path.exists(target_to_run):
             raise Exception("Executable has not been built yet")
 
     # Setup program as sudo

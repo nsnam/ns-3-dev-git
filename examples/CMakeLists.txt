@@ -9,4 +9,5 @@ if(${ENABLE_EXAMPLES})
         CACHE INTERNAL "list of example folders"
     )
   endforeach()
+  scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR})
 endif()

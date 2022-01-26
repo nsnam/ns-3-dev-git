@@ -1,5 +1,7 @@
 set(name fd-net-device)
 
+set(module_enabled_features) # modulegen_customizations consumes this list
+
 mark_as_advanced(ENABLE_THREADING)
 set(ENABLE_THREADING ${HAVE_PTHREAD_H})
 
@@ -57,6 +59,7 @@ endif()
 
 if(${ENABLE_FDNETDEV})
   set(fd-net-device_creators)
+  list(APPEND module_enabled_features FdNetDevice)
 
   if(${ENABLE_EMUNETDEV})
     set(emu_sources helper/emu-fd-net-device-helper.cc)
@@ -74,6 +77,7 @@ if(${ENABLE_FDNETDEV})
     )
 
     list(APPEND fd-net-device_creators raw-sock-creator)
+    list(APPEND module_enabled_features EmuFdNetDevice)
   endif()
 
   if(${ENABLE_TAPNETDEV})
@@ -93,6 +97,7 @@ if(${ENABLE_FDNETDEV})
     )
 
     list(APPEND fd-net-device_creators tap-device-creator)
+    list(APPEND module_enabled_features TapFdNetDevice)
   endif()
 
   if(${ENABLE_NETMAP_EMU})

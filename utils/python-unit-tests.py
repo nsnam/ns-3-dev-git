@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 # Copyright (C) 2008-2011 INESC Porto
 
 # This program is free software; you can redistribute it and/or modify
@@ -24,6 +26,8 @@ import ns.internet
 import ns.mobility
 import ns.csma
 import ns.applications
+
+UINT32_MAX = 0xFFFFFFFF
 
 
 ## TestSimulator class
@@ -170,7 +174,7 @@ class TestSimulator(unittest.TestCase):
             @return none
             """
             assert self._received_packet is None
-            self._received_packet = socket.Recv()
+            self._received_packet = socket.Recv(maxSize=UINT32_MAX, flags=0)
 
         sink = ns.network.Socket.CreateSocket(node, ns.core.TypeId.LookupByName("ns3::UdpSocketFactory"))
         sink.Bind(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), 80))
