@@ -279,24 +279,24 @@ def parse_args(argv):
     return args
 
 
-def check_build_profile(output_directory):
+def check_c4che_data(output_directory):
     # Check the c4cache for the build type (in case there are multiple cmake cache folders
     c4che_path = os.sep.join([output_directory, "c4che", "_cache.py"])
-    build_profile = None
-    ns3_version = None
-    ns3_modules = None
+
     ns3_modules_tests = []
     ns3_modules_apiscan = []
     ns3_modules_bindings = []
-    enable_sudo = False
+    ns3_modules = None
+
+    c4che_info = {"BUILD_PROFILE" : None,
+                  "VERSION" : None,
+                  "ENABLE_EXAMPLES" : False,
+                  "ENABLE_SUDO" : False,
+                  "ENABLE_TESTS" : False,
+                  }
     if output_directory and os.path.exists(c4che_path):
-        c4che_info = {}
         exec(open(c4che_path).read(), globals(), c4che_info)
-        build_profile = c4che_info["BUILD_PROFILE"]
-        ns3_version = c4che_info["VERSION"]
         ns3_modules = c4che_info["NS3_ENABLED_MODULES"]
-        if "ENABLE_SUDO" in c4che_info:
-            enable_sudo = c4che_info["ENABLE_SUDO"]
         if ns3_modules:
             if c4che_info["ENABLE_TESTS"]:
                 ns3_modules_tests = [x + "-test" for x in ns3_modules]
@@ -305,7 +305,7 @@ def check_build_profile(output_directory):
             if "ENABLE_SCAN_PYTHON_BINDINGS" in c4che_info and c4che_info["ENABLE_SCAN_PYTHON_BINDINGS"]:
                 ns3_modules_apiscan = [x + "-apiscan" for x in ns3_modules]
             ns3_modules = ns3_modules + ns3_modules_tests + ns3_modules_apiscan + ns3_modules_bindings
-    return build_profile, ns3_version, ns3_modules, enable_sudo
+    return c4che_info, ns3_modules
 
 
 def print_and_buffer(message):
@@ -535,10 +535,13 @@ def get_program_shortcuts(build_profile, ns3_version):
 
     # We can now build a map to simplify things for users (at this point we could remove versioning prefix/suffix)
     ns3_program_map = {}
+    longest_shortcut_map = {}
+
     for program in programs_dict["ns3_runnable_programs"]:
         if "pch_exec" in program:
             continue
         temp_path = program.replace(out_dir, "").split(os.sep)
+        temp_path.pop(0) # remove first path separator
 
         # Remove version prefix and build type suffix from shortcuts (or keep them too?)
         temp_path[-1] = temp_path[-1].replace("-" + build_profile, "").replace("ns" + ns3_version + "-", "")
@@ -555,14 +558,35 @@ def get_program_shortcuts(build_profile, ns3_version):
             source_shortcut = True
 
         program = program.strip()
+        longest_shortcut = None
         while len(temp_path):
             # Shortcuts: /src/aodv/examples/aodv can be accessed with aodv/examples/aodv, examples/aodv, aodv
             shortcut_path = os.sep.join(temp_path)
-            ns3_program_map[shortcut_path] = program
+            if not longest_shortcut:
+                longest_shortcut = shortcut_path
+
+            # Store longest shortcut path for collisions
+            if shortcut_path not in longest_shortcut_map:
+                longest_shortcut_map[shortcut_path] = [longest_shortcut]
+            else:
+                longest_shortcut_map[shortcut_path].append(longest_shortcut)
+
+            ns3_program_map[shortcut_path] = [program]
             if source_shortcut:
-                ns3_program_map[shortcut_path + ".cc"] = program
+                cc_shortcut_path = shortcut_path + ".cc"
+                ns3_program_map[cc_shortcut_path] = [program]
+
+                # Store longest shortcut path for collisions
+                if cc_shortcut_path not in longest_shortcut_map:
+                    longest_shortcut_map[cc_shortcut_path] = [longest_shortcut]
+                else:
+                    longest_shortcut_map[cc_shortcut_path].append(longest_shortcut)
             temp_path.pop(0)
 
+    # Filter collisions
+    collisions = list(filter(lambda x: x if len(x[1]) > 1 else None, longest_shortcut_map.items()))
+    for (colliding_shortcut, longest_shortcuts) in collisions:
+        ns3_program_map[colliding_shortcut] = longest_shortcuts
 
     if programs_dict["ns3_runnable_scripts"]:
         scratch_scripts = glob.glob(os.path.join(ns3_path, "scratch", "*.py"), recursive=True)
@@ -573,7 +597,7 @@ def get_program_shortcuts(build_profile, ns3_version):
         program = program.strip()
         while len(temp_path):
             shortcut_path = os.sep.join(temp_path)
-            ns3_program_map[shortcut_path] = program
+            ns3_program_map[shortcut_path] = [program]
             temp_path.pop(0)
     return ns3_program_map
 
@@ -589,12 +613,12 @@ def cmake_check_version():
     cmake = shutil.which("cmake")
     if not cmake:
         print("Error:  CMake not found; please install version 3.10 or greater, or modify $PATH")
-        exit(-1)
+        exit(1)
     cmake_output = subprocess.check_output([cmake, "--version"]).decode("utf-8")
     version = re.findall("version (.*)", cmake_output)[0]
     if parse_version(version) < parse_version("3.10.0"):
         print("Error:  CMake found at %s but version %s is older than 3.10" % (cmake, version))
-        exit(-1)
+        exit(1)
     return cmake, version
 
 
@@ -970,18 +994,26 @@ def main():
         # We end things earlier when cleaning
         return
 
-    # Docs options become cmake targets
-    if args.docs:
-        args.build = [args.docs] if args.docs != "all" else ["sphinx", "doxygen"]
-
     # Installation and uninstallation options become cmake targets
     if args.install:
         args.build = ['install']
     if args.uninstall:
         args.build = ['uninstall']
 
-    # Get build profile
-    build_profile, ns3_version, ns3_modules, enable_sudo = check_build_profile(out_dir)
+    # Get build profile and other settings
+    c4che_info, ns3_modules  = check_c4che_data(out_dir)
+    build_profile = c4che_info["BUILD_PROFILE"]
+    enable_sudo = c4che_info["ENABLE_SUDO"]
+    ns3_version = c4che_info["VERSION"]
+
+    # Docs options become cmake targets
+    if args.docs:
+        args.build = [args.docs] if args.docs != "all" else ["sphinx", "doxygen"]
+        if "doxygen" in args.build and (not c4che_info["ENABLE_EXAMPLES"] or not c4che_info["ENABLE_TESTS"]):
+            print('The "./ns3 docs doxygen" and "./ns3 docs all" commands,\n'
+                  'require examples and tests to generate introspected documentation.\n'
+                  'Try "./ns3 docs doxygen-no-build" or enable examples and tests.')
+            exit(1)
 
     if args.check_profile:
         if build_profile:
@@ -1052,17 +1084,25 @@ def main():
     # Now that CMake is configured, we can look for c++ targets in build-status.py
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
 
+    def check_ambiguous_target(target_type, target_to_run, ns3_programs):
+        if len(ns3_programs[target_to_run]) > 1:
+            print('%s target "%s" is ambiguous. Try one of these: "%s"'
+                  % (target_type, target_to_run, '", "'.join(ns3_programs[target_to_run])))
+            exit(1)
+        return ns3_programs[target_to_run][0]
+
     # If we have a target to run, replace shortcut with full path or raise exception
     if run_only or build_and_run:
         if target_to_run in ns3_programs:
-            target_to_run = ns3_programs[target_to_run]
+            target_to_run = check_ambiguous_target("Run", target_to_run, ns3_programs)
         else:
             raise Exception("Couldn't find the specified program: %s" % target_to_run)
 
     if "build" in args:
         complete_targets = []
         for target in args.build:
-            complete_targets.append(ns3_programs[target] if target in ns3_programs else target)
+            build_target = check_ambiguous_target("Build", target, ns3_programs) if target in ns3_programs else target
+            complete_targets.append(build_target)
         args.build = complete_targets
         del complete_targets
 
@@ -1108,7 +1148,7 @@ def main():
 
     # Setup program as sudo
     if enable_sudo or (args.run and args.enable_sudo):
-        sudo_step(args, target_to_run, set(ns3_programs.values()) if enable_sudo else set())
+        sudo_step(args, target_to_run, set(ns3_programs.values()[0]) if enable_sudo else set())
 
     # Finally, we try to run it
     if args.check or args.shell or run_only or build_and_run:

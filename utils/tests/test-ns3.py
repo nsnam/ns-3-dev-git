@@ -1332,6 +1332,55 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_program("./test.py", "-p src/core/examples/sample-simulator.py", python=True)
         self.assertEqual(return_code, 0)
 
+    def test_11_AmbiguityCheck(self):
+        """!
+        Test if ns3 can alert correctly in case a shortcut collision happens
+        @return None
+        """
+        # Copy second.cc from the tutorial examples to the scratch folder
+        shutil.copy("./examples/tutorial/second.cc", "./scratch/second.cc")
+
+        # Reconfigure to re-scan the scratches
+        return_code, stdout, stderr = run_ns3("configure --enable-examples")
+        self.assertEqual(return_code, 0)
+
+        # Try to run second and collide
+        return_code, stdout, stderr = run_ns3("build second")
+        self.assertEqual(return_code, 1)
+        self.assertIn(
+           'Build target "second" is ambiguous. Try one of these: "scratch/second", "examples/tutorial/second"',
+           stdout
+        )
+
+        # Try to run scratch/second and succeed
+        return_code, stdout, stderr = run_ns3("build scratch/second")
+        self.assertEqual(return_code, 0)
+        self.assertIn(cmake_build_target_command(target="scratch_second"), stdout)
+
+        # Try to run scratch/second and succeed
+        return_code, stdout, stderr = run_ns3("build tutorial/second")
+        self.assertEqual(return_code, 0)
+        self.assertIn(cmake_build_target_command(target="second"), stdout)
+
+        # Try to run second and collide
+        return_code, stdout, stderr = run_ns3("run second")
+        self.assertEqual(return_code, 1)
+        self.assertIn(
+            'Run target "second" is ambiguous. Try one of these: "scratch/second", "examples/tutorial/second"',
+            stdout
+        )
+
+        # Try to run scratch/second and succeed
+        return_code, stdout, stderr = run_ns3("run scratch/second")
+        self.assertEqual(return_code, 0)
+
+        # Try to run scratch/second and succeed
+        return_code, stdout, stderr = run_ns3("run tutorial/second")
+        self.assertEqual(return_code, 0)
+
+        # Remove second
+        os.remove("./scratch/second.cc")
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!

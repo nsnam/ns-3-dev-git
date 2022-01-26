@@ -118,18 +118,43 @@ macro(
     unset(module_name)
   endforeach()
 
-  # ns-3 libraries are linked publicly, to make sure other modules can find each
-  # other without being directly linked
-  target_link_libraries(
-    ${lib${libname}} PUBLIC ${LIB_AS_NEEDED_PRE} "${ns_libraries_to_link}"
-                            ${LIB_AS_NEEDED_POST}
-  )
+  if(NOT ${NS3_REEXPORT_THIRD_PARTY_LIBRARIES})
+    # ns-3 libraries are linked publicly, to make sure other modules can find
+    # each other without being directly linked
+    set(exported_libraries PUBLIC ${LIB_AS_NEEDED_PRE} ${ns_libraries_to_link}
+                           ${LIB_AS_NEEDED_POST}
+    )
 
-  # non-ns-3 libraries are linked privately, not propagating unnecessary
-  # libraries such as pthread, librt, etc
+    # non-ns-3 libraries are linked privately, not propagating unnecessary
+    # libraries such as pthread, librt, etc
+    set(private_libraries PRIVATE ${LIB_AS_NEEDED_PRE}
+                          ${non_ns_libraries_to_link} ${LIB_AS_NEEDED_POST}
+    )
+
+    # we don't re-export included libraries from 3rd-party modules
+    set(exported_include_directories)
+  else()
+    # we export everything by default when NS3_REEXPORT_THIRD_PARTY_LIBRARIES=ON
+    set(exported_libraries PUBLIC ${LIB_AS_NEEDED_PRE} ${ns_libraries_to_link}
+                           ${non_ns_libraries_to_link} ${LIB_AS_NEEDED_POST}
+    )
+    set(private_libraries)
+
+    # with NS3_REEXPORT_THIRD_PARTY_LIBRARIES, we export all 3rd-party library
+    # include directories, allowing consumers of this module to include and link
+    # the 3rd-party code with no additional setup
+    get_target_includes(${lib${libname}} exported_include_directories)
+    string(REPLACE "-I" "" exported_include_directories
+                   "${exported_include_directories}"
+    )
+    string(REPLACE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/include" ""
+                   exported_include_directories
+                   "${exported_include_directories}"
+    )
+  endif()
+
   target_link_libraries(
-    ${lib${libname}} PRIVATE ${LIB_AS_NEEDED_PRE} "${non_ns_libraries_to_link}"
-                             ${LIB_AS_NEEDED_POST}
+    ${lib${libname}} ${exported_libraries} ${private_libraries}
   )
 
   # set output name of library
@@ -145,6 +170,7 @@ macro(
   target_include_directories(
     ${lib${libname}} PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
                             $<INSTALL_INTERFACE:include>
+    INTERFACE ${exported_include_directories}
   )
 
   set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
@@ -236,7 +262,7 @@ macro(
   endif()
 
   # Add target to scan python bindings
-  if(${NS3_SCAN_PYTHON_BINDINGS}
+  if(${ENABLE_SCAN_PYTHON_BINDINGS}
      AND EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${libname}-module.h
   )
     set(bindings_output_folder
@@ -266,17 +292,7 @@ macro(
     )
 
     # API scan needs the include directories to find a few headers (e.g. mpi.h)
-    get_target_property(include_dirs ${lib${libname}} INCLUDE_DIRECTORIES)
-    set(modulegen_include_dirs)
-    foreach(include_dir ${include_dirs})
-      if(include_dir MATCHES "<")
-        # Skip CMake build and install interface includes
-        continue()
-      else()
-        # Append the include directory to a list
-        set(modulegen_include_dirs ${modulegen_include_dirs} -I${include_dir})
-      endif()
-    endforeach()
+    get_target_includes(${lib${libname}} modulegen_include_dirs)
 
     set(module_to_generate_api ${module_api_ILP32})
     set(LP64toILP32)
@@ -304,7 +320,9 @@ macro(
 
   # Build pybindings if requested and if bindings subfolder exists in
   # NS3/src/libname
-  if(${NS3_PYTHON_BINDINGS} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
+  if(${ENABLE_PYTHON_BINDINGS} AND EXISTS
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/bindings"
+  )
     set(bindings_output_folder
         ${CMAKE_OUTPUT_DIRECTORY}/${folder}/${libname}/bindings
     )
@@ -354,7 +372,7 @@ macro(
         message(
           FATAL_ERROR
             "Something went wrong during processing of the python bindings of module ${libname}."
-            " Make sure the correct versions of Pybindgen and Pygccxml are installed (use the pip ones)."
+            " Make sure you have the latest version of Pybindgen."
         )
         if(EXISTS ${module_src})
           file(REMOVE ${module_src})
@@ -407,8 +425,7 @@ macro(
       ${bindings-name}
       PROPERTIES OUTPUT_NAME ${prefix}${libname_sub}
                  PREFIX ""
-                 ${suffix}
-                 LIBRARY_OUTPUT_DIRECTORY
+                 ${suffix} LIBRARY_OUTPUT_DIRECTORY
                  ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns
     )
 

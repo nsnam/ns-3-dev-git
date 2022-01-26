@@ -73,6 +73,18 @@ function(pkgconfig_module libname)
     "${ns3-libs};${ns3-contrib-libs}"
   )
 
+  set(pkgconfig_interface_include_directories)
+  if(${NS3_REEXPORT_THIRD_PARTY_LIBRARIES})
+    get_target_includes(${libname} pkgconfig_interface_include_directories)
+    string(REPLACE "-I${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/include" ""
+                   pkgconfig_interface_include_directories
+                   "${pkgconfig_interface_include_directories}"
+    )
+    string(REPLACE ";-I" " -I" pkgconfig_interface_include_directories
+                   "${pkgconfig_interface_include_directories}"
+    )
+  endif()
+
   # Configure pkgconfig file for the module using pkgconfig variables
   set(pkgconfig_file ${CMAKE_BINARY_DIR}/pkgconfig/ns3-${module_name}.pc)
   configure_file(

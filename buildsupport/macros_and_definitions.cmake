@@ -24,8 +24,16 @@ set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
 set(NS3_INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
 set_property(CACHE NS3_INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
 
-# Purposefully hidden option since we can't really do that safely from the CMake
-# side
+# Purposefully hidden options:
+
+# for ease of use, export all libraries and include directories to ns-3 module
+# consumers by default
+mark_as_advanced(NS3_REEXPORT_THIRD_PARTY_LIBRARIES)
+option(NS3_REEXPORT_THIRD_PARTY_LIBRARIES "Export all third-party libraries
+and include directories to ns-3 module consumers" ON
+)
+
+# since we can't really do that safely from the CMake side
 mark_as_advanced(NS3_ENABLE_SUDO)
 option(NS3_ENABLE_SUDO
        "Set executables ownership to root and enable the SUID flag" OFF
@@ -619,37 +627,69 @@ macro(process_options)
   find_package(Python COMPONENTS Interpreter Development QUIET)
 
   # Check if python3 was found, and mark as not found if python2 is found
-  if(${Python_FOUND} AND (${Python_VERSION_MAJOR} LESS 3))
-    set(Python_FOUND FALSE)
-    message(
-      STATUS:
-      "bindings: an incompatible version of Python was found, bindings will be disabled"
-    )
+  if(${Python_FOUND})
+    if(${Python_VERSION_MAJOR} LESS 3)
+      set(Python_FOUND FALSE)
+      message(
+        STATUS
+        "Python: an incompatible version of Python was found, python bindings will be disabled"
+      )
+    endif()
   endif()
 
   set(ENABLE_PYTHON_BINDINGS OFF)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python_FOUND})
-      message(FATAL_ERROR "NS3_PYTHON_BINDINGS requires Python3")
-    endif()
-    set(ENABLE_PYTHON_BINDINGS ON)
+      message(
+        STATUS
+        "Bindings: python bindings require Python, but it could not be found"
+      )
+    else()
+      check_python_packages("pybindgen" missing_packages)
+      if(missing_packages)
+        message(
+          STATUS
+            "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
+        )
+      else()
+        set(ENABLE_PYTHON_BINDINGS ON)
 
-    set(destination_dir ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns)
-    configure_file(
-      bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
-    )
+        set(destination_dir ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns)
+        configure_file(
+          bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
+        )
+      endif()
+    endif()
   endif()
 
+  set(ENABLE_SCAN_PYTHON_BINDINGS OFF)
   if(${NS3_SCAN_PYTHON_BINDINGS})
-    # empty scan target that will depend on other module scan targets to scan
-    # all of them
-    add_custom_target(apiscan-all)
+    if(NOT ${Python_FOUND})
+      message(
+        STATUS
+          "Bindings: scanning python bindings require Python, but it could not be found"
+      )
+    else()
+      # Check if pybindgen, pygccxml and cxxfilt are installed
+      check_python_packages("pybindgen;pygccxml;cxxfilt" missing_packages)
+      if(missing_packages)
+        message(
+          STATUS
+            "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
+        )
+      else()
+        set(ENABLE_SCAN_PYTHON_BINDINGS ON)
+        # empty scan target that will depend on other module scan targets to
+        # scan all of them
+        add_custom_target(apiscan-all)
+      endif()
+    endif()
   endif()
 
   set(ENABLE_VISUALIZER FALSE)
   if(${NS3_VISUALIZER})
     if((NOT ${ENABLE_PYTHON_BINDINGS}) OR (NOT ${Python_FOUND}))
-      message(STATUS "Visualizer requires NS3_PYTHON_BINDINGS and Python3")
+      message(STATUS "Visualizer requires Python bindings")
     else()
       set(ENABLE_VISUALIZER TRUE)
     endif()
@@ -1459,7 +1499,7 @@ function(find_external_library_header_and_library name header_name library_name
 endfunction()
 
 function(write_header_to_modules_map)
-  if(${NS3_SCAN_PYTHON_BINDINGS})
+  if(${ENABLE_SCAN_PYTHON_BINDINGS})
     set(header_map ${ns3-headers-to-module-map})
 
     # Trim last comma
@@ -1470,6 +1510,35 @@ function(write_header_to_modules_map)
     # Then write to header_map.json for consumption of pybindgen
     file(WRITE ${PROJECT_BINARY_DIR}/header_map.json "{${header_map}}")
   endif()
+endfunction()
+
+function(get_target_includes target output)
+  set(include_directories)
+  get_target_property(include_dirs ${target} INCLUDE_DIRECTORIES)
+  foreach(include_dir ${include_dirs})
+    if(include_dir MATCHES "<")
+      # Skip CMake build and install interface includes
+      continue()
+    else()
+      # Append the include directory to a list
+      set(include_directories ${include_directories} -I${include_dir})
+    endif()
+  endforeach()
+  set(${output} ${include_directories} PARENT_SCOPE)
+endfunction()
+
+function(check_python_packages packages missing_packages)
+  set(missing)
+  foreach(package ${packages})
+    execute_process(
+      COMMAND ${Python_EXECUTABLE} -c "import ${package}"
+      RESULT_VARIABLE return_code OUTPUT_QUIET ERROR_QUIET
+    )
+    if(NOT (${return_code} EQUAL 0))
+      list(APPEND missing ${package})
+    endif()
+  endforeach()
+  set(${missing_packages} "${missing}" PARENT_SCOPE)
 endfunction()
 
 # Waf workaround scripts

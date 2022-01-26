@@ -30,9 +30,3 @@ set(test_sources test/ipv4-click-routing-test.cc)
 build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
           "${test_sources}"
 )
-
-# click install headers when finished and we can't start compiling before that
-# happens
-if(NOT ${XCODE})
-  add_dependencies(${libclick-obj} ${click_dep})
-endif()
