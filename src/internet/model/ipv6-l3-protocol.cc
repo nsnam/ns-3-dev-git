@@ -1116,35 +1116,42 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   // Check packet size
   std::list<Ipv6ExtensionFragment::Ipv6PayloadHeaderPair> fragments;
 
+  // Check if this is the source of the packet
+  bool fromMe = false;
+  for (uint32_t i = 0; i < GetNInterfaces (); i++ )
+    {
+      for (uint32_t j = 0; j < GetNAddresses (i); j++ )
+        {
+          if (GetAddress (i,j).GetAddress () == ipHeader.GetSource ())
+            {
+              fromMe = true;
+              break;
+            }
+        }
+    }
+
+  size_t targetMtu = 0;
+
   // Check if we have a Path MTU stored. If so, use it. Else, use the link MTU.
-  size_t targetMtu = (size_t)(m_pmtuCache->GetPmtu (ipHeader.GetDestination()));
+  // Note: PMTU must not be cached in intermediate nodes, and must be checked only by the source node
+  if (fromMe)
+    {
+      targetMtu = (size_t)(m_pmtuCache->GetPmtu (ipHeader.GetDestination ()));
+    }
   if (targetMtu == 0)
     {
       targetMtu = dev->GetMtu ();
     }
 
-  if (packet->GetSize () > targetMtu + 40) /* 40 => size of IPv6 header */
+  if (packet->GetSize () + ipHeader.GetSerializedSize () > targetMtu)
     {
       // Router => drop
-
-      bool fromMe = false;
-      for (uint32_t i=0; i<GetNInterfaces(); i++ )
-        {
-          for (uint32_t j=0; j<GetNAddresses(i); j++ )
-            {
-              if (GetAddress(i,j).GetAddress() == ipHeader.GetSource())
-                {
-                  fromMe = true;
-                  break;
-                }
-            }
-        }
       if (!fromMe)
         {
           Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
           if ( icmpv6 )
             {
-              packet->AddHeader(ipHeader);
+              packet->AddHeader (ipHeader);
               icmpv6->SendErrorTooBig (packet, ipHeader.GetSource (), dev->GetMtu ());
             }
           return;

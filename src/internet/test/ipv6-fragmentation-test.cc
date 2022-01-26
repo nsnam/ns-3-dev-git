@@ -176,6 +176,26 @@ public:
    * \returns The sent packet.
    */
   Ptr<Packet> SendClient (void);
+
+  /**
+   * \brief Handle Server's incoming packets.
+   * Ensure no packet greater than MTU is received
+   *
+   * \param packet the packet.
+   * \param ipv6 the Ipv6 protocol.
+   * \param interface the IP-level interface index.
+   */
+  void HandleServerRx (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
+
+  /**
+   * \brief Handle Client's transmitting packets.
+   * Ensure no packet greater than MTU is transmitted
+   *
+   * \param packet the packet.
+   * \param ipv6 the Ipv6 protocol.
+   * \param interface the IP-level interface index.
+   */
+  void HandleClientTx (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 };
 
 
@@ -320,6 +340,16 @@ Ptr<Packet> Ipv6FragmentationTest::SendClient (void)
   return p;
 }
 
+void Ipv6FragmentationTest::HandleServerRx (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  NS_TEST_EXPECT_MSG_LT_OR_EQ (packet->GetSize (), ipv6->GetMtu (interface), "Received packet size > MTU: packetSizes: " << packet->GetSize ());
+}
+
+void Ipv6FragmentationTest::HandleClientTx (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  NS_TEST_EXPECT_MSG_LT_OR_EQ (packet->GetSize (), ipv6->GetMtu (interface), "Transmitted packet size > MTU: packetSizes: " << packet->GetSize ());
+}
+
 void
 Ipv6FragmentationTest::DoRun (void)
 {
@@ -345,6 +375,7 @@ Ipv6FragmentationTest::DoRun (void)
     Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001::1"), Ipv6Prefix (32));
     ipv6->AddAddress (netdev_idx, ipv6Addr);
     ipv6->SetUp (netdev_idx);
+    ipv6->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv6FragmentationTest::HandleServerRx, this));
   }
   StartServer (serverNode);
 
@@ -365,6 +396,7 @@ Ipv6FragmentationTest::DoRun (void)
     Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001::2"), Ipv6Prefix (32));
     ipv6->AddAddress (netdev_idx, ipv6Addr);
     ipv6->SetUp (netdev_idx);
+    ipv6->TraceConnectWithoutContext ("Tx", MakeCallback (&Ipv6FragmentationTest::HandleClientTx, this));
   }
   StartClient (clientNode);
 
@@ -376,7 +408,7 @@ Ipv6FragmentationTest::DoRun (void)
 
 
   // some small packets, some rather big ones
-  uint32_t packetSizes[5] = {2000, 2500, 5000, 10000, 65000};
+  uint32_t packetSizes[5] = {1500, 2000, 5000, 10000, 65000};
 
   // using the alphabet
   uint8_t fillData[78];

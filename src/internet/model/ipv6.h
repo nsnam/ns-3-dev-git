@@ -365,7 +365,9 @@ public:
 
   /**
    * \brief Higher-level layers call this method to send a packet
-   * down the stack to the MAC and PHY layers.
+   * down the stack to the MAC and PHY layers. All PMTU values are
+   * stored at this level, so packet size calculations should be
+   * done mathematically at higher levels.
    *
    * \param packet packet to send
    * \param source source address of packet

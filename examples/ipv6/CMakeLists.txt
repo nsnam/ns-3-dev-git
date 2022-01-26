@@ -71,3 +71,13 @@ set(libraries_to_link ${liblr-wpan} ${libinternet} ${libsixlowpan}
 build_example(
   "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
 )
+
+set(name fragmentation-ipv6-PMTU)
+set(source_files ${name}.cc)
+set(header_files)
+set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps}
+                      ${libpoint-to-point}
+)
+build_example(
+  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+)
