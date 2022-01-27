@@ -23,10 +23,8 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d release
-    - ./waf
-#    - ./ns3 configure -d release -GNinja --enable-examples --enable-tests --enable-asserts
-#    - ./ns3 build
+    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d release
+    - ./ns3 build
 #    - mkdir -p public/doxygen
     - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
     - git fetch ns-3-origin
