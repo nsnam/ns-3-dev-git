@@ -1,18 +1,19 @@
-set(name brite-generic-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libbrite} ${libinternet} ${libpoint-to-point}
-                      ${libnix-vector-routing} ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME brite-generic-example
+  SOURCE_FILES brite-generic-example.cc
+  LIBRARIES_TO_LINK
+    ${libbrite}
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libnix-vector-routing}
+    ${libapplications}
 )
 
 if(${ENABLE_MPI})
-  set(name brite-MPI-example)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link
+  build_lib_example(
+    NAME brite-MPI-example
+    SOURCE_FILES brite-MPI-example.cc
+    LIBRARIES_TO_LINK
       ${libbrite}
       ${libinternet}
       ${libpoint-to-point}
@@ -21,8 +22,8 @@ if(${ENABLE_MPI})
       ${libmpi}
       ${MPI_CXX_LIBRARIES}
   )
-  build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  target_include_directories(
+    ${name}
+    PUBLIC ${MPI_CXX_INCLUDE_DIRS}
   )
-  target_include_directories(${name} PUBLIC ${MPI_CXX_INCLUDE_DIRS})
 endif()

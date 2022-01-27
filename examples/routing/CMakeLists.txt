@@ -1,83 +1,90 @@
-set(name dynamic-global-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libcsma} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME dynamic-global-routing
+  SOURCE_FILES dynamic-global-routing.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name static-routing-slash32)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libcsma} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME static-routing-slash32
+  SOURCE_FILES static-routing-slash32.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name global-routing-slash32)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libcsma} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME global-routing-slash32
+  SOURCE_FILES global-routing-slash32.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name global-injection-slash32)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libcsma} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME global-injection-slash32
+  SOURCE_FILES global-injection-slash32.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name simple-global-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor}
-)
-build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+set(name
+    simple-global-routing
 )
 
-set(name simple-alternate-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications})
+set(libraries_to_link)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME simple-global-routing
+  SOURCE_FILES simple-global-routing.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name mixed-global-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libcsma}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME simple-alternate-routing
+  SOURCE_FILES simple-alternate-routing.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name simple-routing-ping6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME mixed-global-routing
+  SOURCE_FILES mixed-global-routing.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libcsma}
+    ${libapplications}
 )
 
-set(name manet-routing-compare)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
+build_example(
+  NAME simple-routing-ping6
+  SOURCE_FILES simple-routing-ping6.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
+)
+
+build_example(
+  NAME manet-routing-compare
+  SOURCE_FILES manet-routing-compare.cc
+  LIBRARIES_TO_LINK
     ${libwifi}
     ${libdsr}
     ${libdsdv}
@@ -86,30 +93,29 @@ set(libraries_to_link
     ${libinternet}
     ${libapplications}
 )
+
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME ripng-simple-network
+  SOURCE_FILES ripng-simple-network.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name ripng-simple-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME rip-simple-network
+  SOURCE_FILES rip-simple-network.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name rip-simple-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name global-routing-multi-switch-plus-router)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
+  NAME global-routing-multi-switch-plus-router
+  SOURCE_FILES global-routing-multi-switch-plus-router.cc
+  LIBRARIES_TO_LINK
     ${libcore}
     ${libnetwork}
     ${libapplications}
@@ -120,16 +126,13 @@ set(libraries_to_link
     ${libcsma}
     ${libinternet}
 )
-build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
 
-set(name simple-multicast-flooding)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libnetwork} ${libapplications}
-                      ${libinternet}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME simple-multicast-flooding
+  SOURCE_FILES simple-multicast-flooding.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libnetwork}
+    ${libapplications}
+    ${libinternet}
 )

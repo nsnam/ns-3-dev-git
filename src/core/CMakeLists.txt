@@ -1,23 +1,35 @@
-# Set module name
-set(name core)
-
 # Set lib core link dependencies
 set(libraries_to_link)
 
 set(gsl_test_sources)
 if(${GSL_FOUND})
   include_directories(${GSL_INCLUDE_DIRS})
-  set(libraries_to_link ${libraries_to_link} ${GSL_LIBRARIES})
-  set(gsl_test_sources test/rng-test-suite.cc
-                       test/random-variable-stream-test-suite.cc
+  set(libraries_to_link
+      ${libraries_to_link}
+      ${GSL_LIBRARIES}
+  )
+  set(gsl_test_sources
+      test/rng-test-suite.cc
+      test/random-variable-stream-test-suite.cc
   )
 endif()
 
 # Check for dependencies and add sources accordingly
-check_include_file_cxx("boost/units/quantity.hpp" HAVE_BOOST_UNITS_QUANTITY)
-check_include_file_cxx("boost/units/systems/si.hpp" HAVE_BOOST_UNITS_SI)
-if(${HAVE_BOOST_UNITS_QUANTITY} AND ${HAVE_BOOST_UNITS_SI})
-  add_definitions(-DHAVE_BOOST -DHAVE_BOOST_UNITS)
+check_include_file_cxx(
+  "boost/units/quantity.hpp"
+  HAVE_BOOST_UNITS_QUANTITY
+)
+check_include_file_cxx(
+  "boost/units/systems/si.hpp"
+  HAVE_BOOST_UNITS_SI
+)
+if(${HAVE_BOOST_UNITS_QUANTITY}
+   AND ${HAVE_BOOST_UNITS_SI}
+)
+  add_definitions(
+    -DHAVE_BOOST
+    -DHAVE_BOOST_UNITS
+  )
   message(STATUS "Boost Units have been found.")
 else()
   message(
@@ -28,28 +40,59 @@ else()
   )
 endif()
 
-set(rt_sources model/realtime-simulator-impl.cc
-               model/wall-clock-synchronizer.cc
+set(rt_sources
+    model/realtime-simulator-impl.cc
+    model/wall-clock-synchronizer.cc
 )
-set(rt_headers model/realtime-simulator-impl.h model/wall-clock-synchronizer.h)
+set(rt_headers
+    model/realtime-simulator-impl.h
+    model/wall-clock-synchronizer.h
+)
 if(${ENABLE_REALTIME})
-  set(libraries_to_link ${libraries_to_link} ${LIBRT})
+  set(libraries_to_link
+      ${libraries_to_link}
+      ${LIBRT}
+  )
 endif()
 
 set(osclock_sources)
-set(osclock_sources model/unix-system-wall-clock-ms.cc)
+set(osclock_sources
+    model/unix-system-wall-clock-ms.cc
+)
 
 set(int64x64_sources)
 set(int64x64_headers)
 
-if(${NS3_INT64X64} MATCHES "INT128")
-  set(int64x64_sources model/int64x64-128.cc)
-  set(int64x64_headers model/int64x64-128.h)
-elseif(${NS3_INT64X64} MATCHES "DOUBLE")
-  set(int64x64_headers model/int64x64-double.h)
-elseif(${NS3_INT64X64} MATCHES "CAIRO")
-  set(int64x64_sources model/int64x64-cairo.cc)
-  set(int64x64_headers model/int64x64-cairo.h model/cairo-wideint-private.h)
+if(${NS3_INT64X64}
+   MATCHES
+   "INT128"
+)
+  set(int64x64_sources
+      model/int64x64-128.cc
+  )
+  set(int64x64_headers
+      model/int64x64-128.h
+  )
+elseif(
+  ${NS3_INT64X64}
+  MATCHES
+  "DOUBLE"
+)
+  set(int64x64_headers
+      model/int64x64-double.h
+  )
+elseif(
+  ${NS3_INT64X64}
+  MATCHES
+  "CAIRO"
+)
+  set(int64x64_sources
+      model/int64x64-cairo.cc
+  )
+  set(int64x64_headers
+      model/int64x64-cairo.h
+      model/cairo-wideint-private.h
+  )
 endif()
 
 set(thread_sources)
@@ -58,33 +101,57 @@ set(thread_test_sources)
 
 if(${NS3_PTHREAD})
   if(${THREADS_FOUND})
-    set(thread_sources model/unix-fd-reader.cc)
-    set(thread_headers model/unix-fd-reader.h)
     set(thread_sources
-        ${thread_sources} model/system-thread.cc model/unix-system-mutex.cc
+        model/unix-fd-reader.cc
+    )
+    set(thread_headers
+        model/unix-fd-reader.h
+    )
+    set(thread_sources
+        ${thread_sources}
+        model/system-thread.cc
+        model/unix-system-mutex.cc
         model/unix-system-condition.cc
     )
 
-    set(thread_headers ${thread_headers} model/system-mutex.h
-                       model/system-thread.h model/system-condition.h
+    set(thread_headers
+        ${thread_headers}
+        model/system-mutex.h
+        model/system-thread.h
+        model/system-condition.h
     )
-    set(libraries_to_link ${libraries_to_link} pthread)
-    set(thread_test_sources test/threaded-test-suite.cc)
+    set(libraries_to_link
+        ${libraries_to_link}
+        pthread
+    )
+    set(thread_test_sources
+        test/threaded-test-suite.cc
+    )
   endif()
 endif()
 
 if(${ENABLE_EXAMPLES})
-  set(example_as_test_sources model/example-as-test.cc)
-  set(example_as_test_headers model/example-as-test.h)
-  set(example_as_test_suite test/examples-as-tests-test-suite.cc)
+  set(example_as_test_sources
+      model/example-as-test.cc
+  )
+  set(example_as_test_headers
+      model/example-as-test.h
+  )
+  set(example_as_test_suite
+      test/examples-as-tests-test-suite.cc
+  )
 endif()
 
 # Embedded version support
 set(embedded_version_sources)
 set(embedded_version_headers)
 if(${NS3_ENABLE_BUILD_VERSION})
-  set(embedded_version_sources model/version.cc)
-  set(embedded_version_headers model/version.h)
+  set(embedded_version_sources
+      model/version.cc
+  )
+  set(embedded_version_headers
+      model/version.h
+  )
 endif()
 
 # Define core lib sources
@@ -298,6 +365,10 @@ set(test_sources
 )
 
 # Build core lib
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+build_lib(
+  LIBNAME core
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK ${libraries_to_link}
+  TEST_SOURCES ${test_sources}
 )

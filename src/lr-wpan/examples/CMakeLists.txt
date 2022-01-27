@@ -1,39 +1,30 @@
-set(name lr-wpan-data)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+set(base_examples
+    lr-wpan-data
+    lr-wpan-packet-print
+    lr-wpan-phy-test
 )
 
-set(name lr-wpan-error-distance-plot)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan} ${libstats})
+foreach(
+  example
+  ${base_examples}
+)
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK ${liblr-wpan}
+  )
+endforeach()
+
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME lr-wpan-error-distance-plot
+  SOURCE_FILES lr-wpan-error-distance-plot.cc
+  LIBRARIES_TO_LINK ${liblr-wpan}
+                    ${libstats}
 )
 
-set(name lr-wpan-error-model-plot)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan} ${libstats})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name lr-wpan-packet-print)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name lr-wpan-phy-test)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME lr-wpan-error-model-plot
+  SOURCE_FILES lr-wpan-error-model-plot.cc
+  LIBRARIES_TO_LINK ${liblr-wpan}
+                    ${libstats}
 )

@@ -1,7 +1,11 @@
-set(name wifi-example-sim)
-set(source_files ${name}.cc wifi-example-apps.cc)
-set(header_files wifi-example-apps.h)
-set(libraries_to_link ${libstats} ${libinternet} ${libmobility} ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-example-sim
+  SOURCE_FILES wifi-example-sim.cc
+               wifi-example-apps.cc
+  HEADER_FILES wifi-example-apps.h
+  LIBRARIES_TO_LINK
+    ${libstats}
+    ${libinternet}
+    ${libmobility}
+    ${libwifi}
 )

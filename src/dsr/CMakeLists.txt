@@ -1,5 +1,6 @@
-set(name dsr)
-set(source_files
+build_lib(
+  LIBNAME dsr
+  SOURCE_FILES
     helper/dsr-helper.cc
     helper/dsr-main-helper.cc
     model/dsr-errorbuff.cc
@@ -14,9 +15,7 @@ set(source_files
     model/dsr-routing.cc
     model/dsr-rreq-table.cc
     model/dsr-rsendbuff.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/dsr-helper.h
     helper/dsr-main-helper.h
     model/dsr-errorbuff.h
@@ -31,12 +30,7 @@ set(header_files
     model/dsr-routing.h
     model/dsr-rreq-table.h
     model/dsr-rsendbuff.h
-)
-
-set(libraries_to_link ${libinternet} ${libwifi})
-
-set(test_sources test/dsr-test-suite.cc)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libwifi}
+  TEST_SOURCES test/dsr-test-suite.cc
 )

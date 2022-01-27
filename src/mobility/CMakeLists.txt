@@ -1,6 +1,6 @@
-set(name mobility)
-
-set(source_files
+build_lib(
+  LIBNAME mobility
+  SOURCE_FILES
     helper/group-mobility-helper.cc
     helper/mobility-helper.cc
     helper/ns2-mobility-helper.cc
@@ -21,9 +21,7 @@ set(source_files
     model/steady-state-random-waypoint-mobility-model.cc
     model/waypoint-mobility-model.cc
     model/waypoint.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/group-mobility-helper.h
     helper/mobility-helper.h
     helper/ns2-mobility-helper.h
@@ -44,11 +42,8 @@ set(header_files
     model/steady-state-random-waypoint-mobility-model.h
     model/waypoint-mobility-model.h
     model/waypoint.h
-)
-
-set(libraries_to_link ${libnetwork})
-
-set(test_sources
+  LIBRARIES_TO_LINK ${libnetwork}
+  TEST_SOURCES
     test/box-line-intersection-test.cc
     test/geo-to-cartesian-test.cc
     test/mobility-test-suite.cc
@@ -57,8 +52,4 @@ set(test_sources
     test/rand-cart-around-geo-test.cc
     test/steady-state-random-waypoint-mobility-model-test.cc
     test/waypoint-mobility-model-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

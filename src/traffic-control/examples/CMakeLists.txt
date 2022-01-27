@@ -1,80 +1,88 @@
-set(name red-tests)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME red-tests
+  SOURCE_FILES red-tests.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
+    ${libtraffic-control}
 )
 
-set(name red-vs-ared)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libpoint-to-point-layout}
-                      ${libinternet} ${libapplications} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME red-vs-ared
+  SOURCE_FILES red-vs-ared.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libpoint-to-point-layout}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name adaptive-red-tests)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME adaptive-red-tests
+  SOURCE_FILES adaptive-red-tests.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
+    ${libtraffic-control}
 )
 
-set(name pfifo-vs-red)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libpoint-to-point-layout}
-                      ${libinternet} ${libapplications} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME pfifo-vs-red
+  SOURCE_FILES pfifo-vs-red.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libpoint-to-point-layout}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name codel-vs-pfifo-basic-test)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libnetwork} ${libinternet}
-                      ${libapplications} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME codel-vs-pfifo-basic-test
+  SOURCE_FILES codel-vs-pfifo-basic-test.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libnetwork}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name codel-vs-pfifo-asymmetric)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libnetwork} ${libinternet}
-                      ${libapplications} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME codel-vs-pfifo-asymmetric
+  SOURCE_FILES codel-vs-pfifo-asymmetric.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libnetwork}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name pie-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME pie-example
+  SOURCE_FILES pie-example.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
+    ${libtraffic-control}
 )
 
-set(name fqcodel-l4s-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
-    ${libpoint-to-point} ${libinternet} ${libinternet-apps} ${libapplications}
-    ${libflow-monitor} ${libtraffic-control}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fqcodel-l4s-example
+  SOURCE_FILES fqcodel-l4s-example.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libinternet-apps}
+    ${libapplications}
+    ${libflow-monitor}
+    ${libtraffic-control}
 )

@@ -1,47 +1,55 @@
-set(name nsclick-simple-lan)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick} ${libcsma} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-simple-lan
+  SOURCE_FILES nsclick-simple-lan.cc
+  LIBRARIES_TO_LINK
+    ${libclick}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name nsclick-raw-wlan)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick} ${libwifi} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-raw-wlan
+  SOURCE_FILES nsclick-raw-wlan.cc
+  LIBRARIES_TO_LINK
+    ${libclick}
+    ${libwifi}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name nsclick-udp-client-server-csma)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick} ${libcsma} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-udp-client-server-csma
+  SOURCE_FILES nsclick-udp-client-server-csma.cc
+  LIBRARIES_TO_LINK
+    ${libclick}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name nsclick-udp-client-server-wifi)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick} ${libwifi} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-udp-client-server-wifi
+  SOURCE_FILES nsclick-udp-client-server-wifi.cc
+  LIBRARIES_TO_LINK
+    ${libclick}
+    ${libwifi}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name nsclick-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick} ${libcsma} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-routing
+  SOURCE_FILES nsclick-routing.cc
+  LIBRARIES_TO_LINK
+    ${libclick}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name nsclick-defines)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libclick})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME nsclick-defines
+  SOURCE_FILES nsclick-defines.cc
+  LIBRARIES_TO_LINK ${libclick}
 )

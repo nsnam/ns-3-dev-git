@@ -412,15 +412,21 @@ macro(process_options)
   mark_as_advanced(CMAKE_FORMAT_PROGRAM)
   find_program(CMAKE_FORMAT_PROGRAM cmake-format HINTS ~/.local/bin)
   if(CMAKE_FORMAT_PROGRAM)
-    file(GLOB_RECURSE ALL_CMAKE_FILES CMakeLists.txt buildsupport/*.cmake)
+    file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt contrib/**/CMakeLists.txt examples/**/CMakeLists.txt)
+    file(GLOB INTERNAL_CMAKE_FILES CMakeLists.txt utils/**/CMakeLists.txt src/CMakeLists.txt buildsupport/**/*.cmake)
     add_custom_target(
       cmake-format
       COMMAND
         ${CMAKE_FORMAT_PROGRAM} -c
         ${PROJECT_SOURCE_DIR}/buildsupport/cmake-format.txt -i
-        ${ALL_CMAKE_FILES}
+        ${INTERNAL_CMAKE_FILES}
+      COMMAND
+        ${CMAKE_FORMAT_PROGRAM} -c
+        ${PROJECT_SOURCE_DIR}/buildsupport/cmake-format-modules.txt -i
+        ${MODULES_CMAKE_FILES}
     )
-    unset(ALL_CMAKE_FILES)
+    unset(MODULES_CMAKE_FILES)
+    unset(INTERNAL_CMAKE_FILES)
   endif()
 
   # If the user has not set a CXX standard version, assume the minimum
@@ -868,8 +874,8 @@ macro(process_options)
 
     function(sphinx_target targetname)
       add_custom_target(
-        sphinx_${targetname} COMMAND make SPHINXOPTS=-N -k html singlehtml
-                                     latexpdf
+        sphinx_${targetname}
+        COMMAND make SPHINXOPTS=-N -k html singlehtml latexpdf
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/${targetname}
       )
       add_dependencies(sphinx sphinx_${targetname})
@@ -1074,7 +1080,8 @@ macro(process_options)
   if(${NS3_NETANIM})
     include(FetchContent)
     FetchContent_Declare(
-      netanim GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
+      netanim
+      GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
       GIT_TAG netanim-3.108
     )
     FetchContent_Populate(netanim)
@@ -1145,27 +1152,16 @@ endfunction(copy_headers_before_building_lib)
 # Import macros used for modules and define specialized versions for src modules
 include(buildsupport/custom_modules/ns3_module_macros.cmake)
 
-macro(build_lib libname source_files header_files libraries_to_link
-      test_sources
-)
-  build_lib_impl(
-    "src" "${libname}" "${source_files}" "${header_files}"
-    "${libraries_to_link}" "${test_sources}"
-  )
-endmacro()
-
-macro(build_lib_example name source_files header_files libraries_to_link)
-  build_lib_example_impl(
-    "src/${libname}" "${name}" "${source_files}" "${header_files}"
-    "${libraries_to_link}"
-  )
-endmacro()
-
 # Contrib modules counterparts of macros above
 include(buildsupport/custom_modules/ns3_contributions.cmake)
 
 # Macro to build examples in ns-3-dev/examples/
-macro(build_example name source_files header_files libraries_to_link)
+macro(build_example)
+  set(options)
+  set(oneValueArgs NAME)
+  set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
+  cmake_parse_arguments("EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
   set(missing_dependencies FALSE)
   foreach(lib ${libraries_to_link})
     string(REPLACE "lib" "" lib ${lib})
@@ -1176,30 +1172,30 @@ macro(build_example name source_files header_files libraries_to_link)
 
   if(NOT ${missing_dependencies})
     # Create shared library with sources and headers
-    add_executable(${name} "${source_files}" "${header_files}")
+    add_executable(${EXAMPLE_NAME} "${EXAMPLE_SOURCE_FILES}" "${EXAMPLE_HEADER_FILES}")
 
     if(${NS3_STATIC})
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
+        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
       )
     elseif(${NS3_MONOLIB})
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
+        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
       )
     else()
       # Link the shared library with the libraries passed
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE} ${libraries_to_link}
+        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${EXAMPLE_LIBRARIES_TO_LINK}
         ${optional_visualizer_lib} ${LIB_AS_NEEDED_POST}
       )
     endif()
 
     if(${PRECOMPILE_HEADERS_ENABLED})
-      target_precompile_headers(${name} REUSE_FROM stdlib_pch_exec)
+      target_precompile_headers(${EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
     endif()
 
     set_runtime_outputdirectory(
-      ${name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/ ""
+      ${EXAMPLE_NAME} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/ ""
     )
   endif()
 endmacro()
@@ -1458,7 +1454,8 @@ function(find_external_library_header_and_library name header_name library_name
 )
   mark_as_advanced(${name}_library)
   find_library(
-    ${name}_library ${library_name} HINTS ${search_paths} ENV LD_LIBRARY_PATH
+    ${name}_library ${library_name}
+    HINTS ${search_paths} ENV LD_LIBRARY_PATH
     PATH_SUFFIXES /build /lib /build/lib /
   )
   set(${name}_library_dir)
@@ -1532,7 +1529,8 @@ function(check_python_packages packages missing_packages)
   foreach(package ${packages})
     execute_process(
       COMMAND ${Python_EXECUTABLE} -c "import ${package}"
-      RESULT_VARIABLE return_code OUTPUT_QUIET ERROR_QUIET
+      RESULT_VARIABLE return_code
+      OUTPUT_QUIET ERROR_QUIET
     )
     if(NOT (${return_code} EQUAL 0))
       list(APPEND missing ${package})

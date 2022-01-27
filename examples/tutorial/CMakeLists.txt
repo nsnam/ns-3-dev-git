@@ -1,75 +1,75 @@
-set(name hello-simulator)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME hello-simulator
+  SOURCE_FILES hello-simulator.cc
+  LIBRARIES_TO_LINK ${libcore}
 )
 
-set(name first)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpoint-to-point} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME first
+  SOURCE_FILES first.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name second)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpoint-to-point} ${libcsma} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME second
+  SOURCE_FILES second.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name third)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpoint-to-point} ${libcsma} ${libwifi}
-                      ${libinternet} ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME third
+  SOURCE_FILES third.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpoint-to-point}
+    ${libcsma}
+    ${libwifi}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name fourth)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fourth
+  SOURCE_FILES fourth.cc
+  LIBRARIES_TO_LINK ${libcore}
 )
 
-set(name fifth)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpoint-to-point} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fifth
+  SOURCE_FILES fifth.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name sixth)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpoint-to-point} ${libinternet}
-                      ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME sixth
+  SOURCE_FILES sixth.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name seventh)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libstats} ${libpoint-to-point}
-                      ${libinternet} ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME seventh
+  SOURCE_FILES seventh.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libstats}
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )

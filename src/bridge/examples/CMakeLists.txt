@@ -1,15 +1,19 @@
-set(name csma-bridge)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libbridge} ${libcsma} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME csma-bridge
+  SOURCE_FILES csma-bridge.cc
+  LIBRARIES_TO_LINK
+    ${libbridge}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name csma-bridge-one-hop)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libbridge} ${libcsma} ${libinternet} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME csma-bridge-one-hop
+  SOURCE_FILES csma-bridge-one-hop.cc
+  LIBRARIES_TO_LINK
+    ${libbridge}
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )

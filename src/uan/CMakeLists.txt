@@ -1,6 +1,6 @@
-set(name uan)
-
-set(source_files
+build_lib(
+  LIBNAME uan
+  SOURCE_FILES
     helper/acoustic-modem-energy-model-helper.cc
     helper/uan-helper.cc
     model/acoustic-modem-energy-model.cc
@@ -24,9 +24,7 @@ set(source_files
     model/uan-transducer-hd.cc
     model/uan-transducer.cc
     model/uan-tx-mode.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/acoustic-modem-energy-model-helper.h
     helper/uan-helper.h
     model/acoustic-modem-energy-model.h
@@ -50,12 +48,10 @@ set(header_files
     model/uan-transducer-hd.h
     model/uan-transducer.h
     model/uan-tx-mode.h
-)
-
-set(libraries_to_link ${libnetwork} ${libmobility} ${libenergy})
-
-set(test_sources test/uan-energy-model-test.cc test/uan-test.cc)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libmobility}
+    ${libenergy}
+  TEST_SOURCES test/uan-energy-model-test.cc
+               test/uan-test.cc
 )

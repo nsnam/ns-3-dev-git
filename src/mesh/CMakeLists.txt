@@ -1,6 +1,6 @@
-set(name mesh)
-
-set(source_files
+build_lib(
+  LIBNAME mesh
+  SOURCE_FILES
     helper/dot11s/dot11s-installer.cc
     helper/flame/flame-installer.cc
     helper/mesh-helper.cc
@@ -34,9 +34,7 @@ set(source_files
     model/mesh-point-device.cc
     model/mesh-wifi-beacon.cc
     model/mesh-wifi-interface-mac.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/dot11s/dot11s-installer.h
     helper/flame/flame-installer.h
     helper/mesh-helper.h
@@ -67,11 +65,11 @@ set(header_files
     model/mesh-wifi-beacon.h
     model/mesh-wifi-interface-mac-plugin.h
     model/mesh-wifi-interface-mac.h
-)
-
-set(libraries_to_link ${libinternet} ${libwifi} ${libapplications})
-
-set(test_sources
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libwifi}
+    ${libapplications}
+  TEST_SOURCES
     test/dot11s/dot11s-test-suite.cc
     test/dot11s/hwmp-proactive-regression.cc
     test/dot11s/hwmp-reactive-regression.cc
@@ -83,8 +81,4 @@ set(test_sources
     test/flame/flame-test-suite.cc
     test/flame/regression.cc
     test/mesh-information-element-vector-test-suite.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

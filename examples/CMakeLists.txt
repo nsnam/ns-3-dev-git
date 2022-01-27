@@ -5,7 +5,8 @@ if(${ENABLE_EXAMPLES})
   foreach(examplefolder ${examples_to_build})
     add_subdirectory(${examplefolder})
 
-    set(ns3-example-folders "${examplefolder};${ns3-example-folders}"
+    set(ns3-example-folders
+        "${examplefolder};${ns3-example-folders}"
         CACHE INTERNAL "list of example folders"
     )
   endforeach()

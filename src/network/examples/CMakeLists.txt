@@ -1,36 +1,19 @@
-set(header_files)
-
-set(name bit-serializer)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libcore} ${libnetwork})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+set(base_examples
+    bit-serializer
+    main-packet-header
+    main-packet-tag
+    packet-socket-apps
+    lollipop-comparisions
 )
 
-set(name main-packet-header)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libnetwork})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+foreach(
+  example
+  ${base_examples}
 )
-
-set(name main-packet-tag)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libnetwork})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name packet-socket-apps)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libnetwork} ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name lollipop-comparisions)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libnetwork} ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK ${libnetwork}
+                      ${libcore}
+  )
+endforeach()

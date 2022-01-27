@@ -68,8 +68,10 @@ endforeach()
 
 # Scan *.cc files in ns-3-dev/scratch subdirectories and build a target for each
 # subdirectory
-file(GLOB_RECURSE scratch_subdirectories LIST_DIRECTORIES true
-     ${CMAKE_CURRENT_SOURCE_DIR}/**
+file(
+  GLOB_RECURSE scratch_subdirectories
+  LIST_DIRECTORIES true
+  ${CMAKE_CURRENT_SOURCE_DIR}/**
 )
 # Filter out files
 foreach(entry ${scratch_subdirectories})

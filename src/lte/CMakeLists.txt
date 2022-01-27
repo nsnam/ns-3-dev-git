@@ -1,9 +1,13 @@
-set(name lte)
-
 if(${ENABLE_EMU})
-  set(emu_sources helper/emu-epc-helper.cc)
-  set(emu_headers helper/emu-epc-helper.h)
-  set(emu_libraries ${libfd-net-device})
+  set(emu_sources
+      helper/emu-epc-helper.cc
+  )
+  set(emu_headers
+      helper/emu-epc-helper.h
+  )
+  set(emu_libraries
+      ${libfd-net-device}
+  )
 endif()
 
 set(source_files
@@ -268,20 +272,6 @@ set(header_files
     model/tta-ff-mac-scheduler.h
 )
 
-set(libraries_to_link
-    ${emu_libraries}
-    ${libcore}
-    ${libnetwork}
-    ${libspectrum}
-    ${libstats}
-    ${libbuildings}
-    ${libvirtual-net-device}
-    ${libpoint-to-point}
-    ${libapplications}
-    ${libinternet}
-    ${libcsma}
-)
-
 set(test_sources
     test/epc-test-gtpu.cc
     test/epc-test-s1u-downlink.cc
@@ -342,6 +332,21 @@ set(test_sources
     test/test-lte-x2-handover.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+build_lib(
+  LIBNAME lte
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK
+    ${emu_libraries}
+    ${libcore}
+    ${libnetwork}
+    ${libspectrum}
+    ${libstats}
+    ${libbuildings}
+    ${libvirtual-net-device}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet}
+    ${libcsma}
+  TEST_SOURCES ${test_sources}
 )

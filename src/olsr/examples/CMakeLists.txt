@@ -1,19 +1,21 @@
-set(name olsr-hna)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libwifi} ${libcsma}
-                      ${libolsr}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME olsr-hna
+  SOURCE_FILES olsr-hna.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libwifi}
+    ${libcsma}
+    ${libolsr}
 )
 
-set(name simple-point-to-point-olsr)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libolsr}
-                      ${libapplications} ${libwifi}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME simple-point-to-point-olsr
+  SOURCE_FILES simple-point-to-point-olsr.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libolsr}
+    ${libapplications}
+    ${libwifi}
 )

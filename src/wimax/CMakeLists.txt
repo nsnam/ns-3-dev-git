@@ -1,5 +1,3 @@
-set(name wimax)
-
 set(source_files
     helper/wimax-helper.cc
     model/cid.cc
@@ -98,11 +96,16 @@ set(header_files
     model/wimax-mac-to-mac-header.h
 )
 
-set(libraries_to_link ${libnetwork} ${libinternet} ${libpropagation}
-                      ${libmobility}
-)
-
-set(test_sources
+build_lib(
+  LIBNAME wimax
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libinternet}
+    ${libpropagation}
+    ${libmobility}
+  TEST_SOURCES
     test/mac-messages-test.cc
     test/phy-test.cc
     test/qos-test.cc
@@ -110,8 +113,4 @@ set(test_sources
     test/wimax-fragmentation-test.cc
     test/wimax-service-flow-test.cc
     test/wimax-tlv-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

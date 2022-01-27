@@ -1,39 +1,40 @@
-set(name socket-bound-static-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetwork} ${libcsma} ${libpoint-to-point}
-                      ${libinternet}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME socket-bound-static-routing
+  SOURCE_FILES socket-bound-static-routing.cc
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcsma}
+    ${libpoint-to-point}
+    ${libinternet}
 )
 
-set(name socket-bound-tcp-static-routing)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetwork} ${libcsma} ${libpoint-to-point}
-                      ${libinternet} ${libapplications}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME socket-bound-tcp-static-routing
+  SOURCE_FILES socket-bound-tcp-static-routing.cc
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcsma}
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name socket-options-ipv4)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetwork} ${libcsma} ${libpoint-to-point}
-                      ${libinternet}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME socket-options-ipv4
+  SOURCE_FILES socket-options-ipv4.cc
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcsma}
+    ${libpoint-to-point}
+    ${libinternet}
 )
 
-set(name socket-options-ipv6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetwork} ${libcsma} ${libpoint-to-point}
-                      ${libinternet}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME socket-options-ipv6
+  SOURCE_FILES socket-options-ipv6.cc
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcsma}
+    ${libpoint-to-point}
+    ${libinternet}
 )

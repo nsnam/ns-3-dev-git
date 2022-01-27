@@ -1,15 +1,17 @@
-set(name udp-client-server)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME udp-client-server
+  SOURCE_FILES udp-client-server.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name udp-trace-client-server)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME udp-trace-client-server
+  SOURCE_FILES udp-trace-client-server.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libapplications}
 )

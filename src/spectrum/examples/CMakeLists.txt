@@ -1,53 +1,57 @@
-set(name adhoc-aloha-ideal-phy)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libinternet}
-                      ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME adhoc-aloha-ideal-phy
+  SOURCE_FILES adhoc-aloha-ideal-phy.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name adhoc-aloha-ideal-phy-matrix-propagation-loss-model)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libinternet}
-                      ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME adhoc-aloha-ideal-phy-matrix-propagation-loss-model
+  SOURCE_FILES adhoc-aloha-ideal-phy-matrix-propagation-loss-model.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name adhoc-aloha-ideal-phy-with-microwave-oven)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libinternet}
-                      ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name tv-trans-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME adhoc-aloha-ideal-phy-with-microwave-oven
+  SOURCE_FILES adhoc-aloha-ideal-phy-with-microwave-oven.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libinternet}
+    ${libapplications}
 )
 
-set(name tv-trans-regional-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libcore})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tv-trans-example
+  SOURCE_FILES tv-trans-example.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libcore}
 )
 
-set(name three-gpp-channel-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libspectrum} ${libmobility} ${libcore} ${liblte})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tv-trans-regional-example
+  SOURCE_FILES tv-trans-regional-example.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libcore}
+)
+
+build_lib_example(
+  NAME three-gpp-channel-example
+  SOURCE_FILES three-gpp-channel-example.cc
+  LIBRARIES_TO_LINK
+    ${libspectrum}
+    ${libmobility}
+    ${libcore}
+    ${liblte}
 )

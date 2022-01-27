@@ -1,62 +1,64 @@
-set(name traffic-control)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libpoint-to-point} ${libapplications}
-                      ${libtraffic-control} ${libflow-monitor}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME traffic-control
+  SOURCE_FILES traffic-control.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libtraffic-control}
+    ${libflow-monitor}
 )
 
-set(name queue-discs-benchmark)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
-    ${libinternet} ${libpoint-to-point} ${libapplications} ${libinternet-apps}
-    ${libtraffic-control} ${libflow-monitor}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME queue-discs-benchmark
+  SOURCE_FILES queue-discs-benchmark.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet-apps}
+    ${libtraffic-control}
+    ${libflow-monitor}
 )
 
-set(name red-vs-fengadaptive)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
-    ${libinternet} ${libpoint-to-point} ${libpoint-to-point-layout}
-    ${libapplications} ${libtraffic-control}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME red-vs-fengadaptive
+  SOURCE_FILES red-vs-fengadaptive.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libpoint-to-point-layout}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name red-vs-nlred)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
-    ${libinternet} ${libpoint-to-point} ${libpoint-to-point-layout}
-    ${libapplications} ${libtraffic-control}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME red-vs-nlred
+  SOURCE_FILES red-vs-nlred.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libpoint-to-point-layout}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name tbf-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libpoint-to-point} ${libapplications}
-                      ${libtraffic-control}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tbf-example
+  SOURCE_FILES tbf-example.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libtraffic-control}
 )
 
-set(name cobalt-vs-codel)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libpoint-to-point} ${libapplications}
-                      ${libtraffic-control}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME cobalt-vs-codel
+  SOURCE_FILES cobalt-vs-codel.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libtraffic-control}
 )

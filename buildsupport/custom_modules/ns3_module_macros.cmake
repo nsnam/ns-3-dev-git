@@ -20,39 +20,40 @@
 # This macro processes a ns-3 module
 #
 # Arguments:
-# folder = src or contrib/contributor_module
-# libname = core, wifi, contributor_module
-# source_files = "list;of;.cc;files;"
-# header_files = "list;of;public;.h;files;"
-# libraries_to_link = "list;of;${library_names};"
-# test_sources = "list;of;.cc;test;files;"
+# LIBNAME = core, wifi, contributor_module
+# SOURCE_FILES = "list;of;.cc;files;"
+# HEADER_FILES = "list;of;public;.h;files;"
+# LIBRARIES_TO_LINK = "list;of;${library_names};"
+# TEST_SOURCES = "list;of;.cc;test;files;"
 #
-# Hidden argument (this is not a function, so you don't really need to pass arguments explicitly)
-# deprecated_header_files = "list;of;deprecated;.h;files", copy won't get triggered if deprecated_header_files isn't set
-# ignore_pch = TRUE or FALSE, prevents the PCH from including undesired system libraries (e.g. custom GLIBC for DCE)
-# module_enabled_features = "list;of;enabled;features;for;this;module" (used by fd-net-device)
+# DEPRECATED_HEADER_FILES = "list;of;deprecated;.h;files", copy won't get triggered if DEPRECATED_HEADER_FILES isn't set
+# IGNORE_PCH = TRUE or FALSE, prevents the PCH from including undesired system libraries (e.g. custom GLIBC for DCE)
+# MODULE_ENABLED_FEATURES = "list;of;enabled;features;for;this;module" (used by fd-net-device)
+# cmake-format: on
 
-macro(
-  build_lib_impl
-  folder
-  libname
-  source_files
-  header_files
-  libraries_to_link
-  test_sources
-  #deprecated_header_files
-  #ignore_pch
-  #module_enabled_features
-)
-  # cmake-format: on
+function(build_lib)
+  # Argument parsing
+  set(options IGNORE_PCH)
+  set(oneValueArgs LIBNAME)
+  set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK TEST_SOURCES
+                     DEPRECATED_HEADER_FILES MODULE_ENABLED_FEATURES
+  )
+  cmake_parse_arguments(
+    "BLIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
+
+  # Get path src/module or contrib/module
+  string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER
+                 "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
 
   # Add library to a global list of libraries
-  if("${folder}" MATCHES "src")
-    set(ns3-libs "${lib${libname}};${ns3-libs}"
+  if("${FOLDER}" MATCHES "src")
+    set(ns3-libs "${lib${BLIB_LIBNAME}};${ns3-libs}"
         CACHE INTERNAL "list of processed upstream modules"
     )
   else()
-    set(ns3-contrib-libs "${lib${libname}};${ns3-contrib-libs}"
+    set(ns3-contrib-libs "${lib${BLIB_LIBNAME}};${ns3-contrib-libs}"
         CACHE INTERNAL "list of processed contrib modules"
     )
   endif()
@@ -60,29 +61,34 @@ macro(
   if(NOT ${XCODE})
     # Create object library with sources and headers, that will be used in
     # lib-ns3-static and the shared library
-    add_library(${lib${libname}-obj} OBJECT "${source_files}" "${header_files}")
+    add_library(
+      ${lib${BLIB_LIBNAME}-obj} OBJECT "${BLIB_SOURCE_FILES}"
+                                       "${BLIB_HEADER_FILES}"
+    )
 
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${ignore_pch}))
-      target_precompile_headers(${lib${libname}-obj} REUSE_FROM stdlib_pch)
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+      target_precompile_headers(${lib${BLIB_LIBNAME}-obj} REUSE_FROM stdlib_pch)
     endif()
 
     # Create shared library with previously created object library (saving
     # compilation time for static libraries)
-    add_library(${lib${libname}} SHARED $<TARGET_OBJECTS:${lib${libname}-obj}>)
+    add_library(
+      ${lib${BLIB_LIBNAME}} SHARED $<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>
+    )
   else()
     # Xcode and CMake don't play well when using object libraries, so we have a
     # specific path for that
-    add_library(${lib${libname}} SHARED "${source_files}")
+    add_library(${lib${BLIB_LIBNAME}} SHARED "${BLIB_SOURCE_FILES}")
 
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${ignore_pch}))
-      target_precompile_headers(${lib${libname}} REUSE_FROM stdlib_pch)
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+      target_precompile_headers(${lib${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
     endif()
   endif()
 
-  add_library(ns3::${lib${libname}} ALIAS ${lib${libname}})
+  add_library(ns3::${lib${BLIB_LIBNAME}} ALIAS ${lib${BLIB_LIBNAME}})
 
   # Associate public headers with library for installation purposes
-  if("${libname}" STREQUAL "core")
+  if("${BLIB_LIBNAME}" STREQUAL "core")
     set(config_headers ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
                        ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
     )
@@ -93,21 +99,21 @@ macro(
     endif()
   endif()
   set_target_properties(
-    ${lib${libname}}
+    ${lib${BLIB_LIBNAME}}
     PROPERTIES
       PUBLIC_HEADER
-      "${header_files};${deprecated_header_files};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${libname}-module.h"
+      "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
   )
 
   if(${NS3_CLANG_TIMETRACE})
-    add_dependencies(timeTraceReport ${lib${libname}})
+    add_dependencies(timeTraceReport ${lib${BLIB_LIBNAME}})
   endif()
 
   # Split ns and non-ns libraries to manage their propagation properly
   set(non_ns_libraries_to_link)
   set(ns_libraries_to_link)
 
-  foreach(library ${libraries_to_link})
+  foreach(library ${BLIB_LIBRARIES_TO_LINK})
     # Remove lib prefix from module name (e.g. libcore -> core)
     string(REPLACE "lib" "" module_name "${library}")
     if(${module_name} IN_LIST ns3-all-enabled-modules)
@@ -143,7 +149,7 @@ macro(
     # with NS3_REEXPORT_THIRD_PARTY_LIBRARIES, we export all 3rd-party library
     # include directories, allowing consumers of this module to include and link
     # the 3rd-party code with no additional setup
-    get_target_includes(${lib${libname}} exported_include_directories)
+    get_target_includes(${lib${BLIB_LIBNAME}} exported_include_directories)
     string(REPLACE "-I" "" exported_include_directories
                    "${exported_include_directories}"
     )
@@ -154,13 +160,13 @@ macro(
   endif()
 
   target_link_libraries(
-    ${lib${libname}} ${exported_libraries} ${private_libraries}
+    ${lib${BLIB_LIBNAME}} ${exported_libraries} ${private_libraries}
   )
 
   # set output name of library
   set_target_properties(
-    ${lib${libname}} PROPERTIES OUTPUT_NAME
-                                ns${NS3_VER}-${libname}${build_profile_suffix}
+    ${lib${BLIB_LIBNAME}}
+    PROPERTIES OUTPUT_NAME ns${NS3_VER}-${BLIB_LIBNAME}${build_profile_suffix}
   )
 
   # export include directories used by this library so that it can be used by
@@ -168,8 +174,9 @@ macro(
   # add the build/include path to them, so that they can ns-3 headers with
   # <ns3/something.h>
   target_include_directories(
-    ${lib${libname}} PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
-                            $<INSTALL_INTERFACE:include>
+    ${lib${BLIB_LIBNAME}}
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
+           $<INSTALL_INTERFACE:include>
     INTERFACE ${exported_include_directories}
   )
 
@@ -179,7 +186,7 @@ macro(
   )
   if(${NS3_STATIC} OR ${NS3_MONOLIB})
     set(lib-ns3-static-objs
-        "$<TARGET_OBJECTS:${lib${libname}-obj}>;${lib-ns3-static-objs}"
+        "$<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>;${lib-ns3-static-objs}"
         CACHE
           INTERNAL
           "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
@@ -187,55 +194,56 @@ macro(
   endif()
 
   # Write a module header that includes all headers from that module
-  write_module_header("${libname}" "${header_files}")
+  write_module_header("${BLIB_LIBNAME}" "${BLIB_HEADER_FILES}")
 
   # Copy all header files to outputfolder/include before each build
   copy_headers_before_building_lib(
-    ${libname} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${header_files}" public
+    ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${BLIB_HEADER_FILES}"
+    public
   )
-  if(deprecated_header_files)
+  if(BLIB_DEPRECATED_HEADER_FILES)
     copy_headers_before_building_lib(
-      ${libname} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${deprecated_header_files}"
-      deprecated
+      ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+      "${BLIB_DEPRECATED_HEADER_FILES}" deprecated
     )
   endif()
 
   # Build tests if requested
   if(${ENABLE_TESTS})
-    list(LENGTH test_sources test_source_len)
+    list(LENGTH BLIB_TEST_SOURCES test_source_len)
     if(${test_source_len} GREATER 0)
-      # Create libname of output library test of module
-      set(test${libname} lib${libname}-test CACHE INTERNAL "")
-      set(ns3-libs-tests "${test${libname}};${ns3-libs-tests}"
+      # Create BLIB_LIBNAME of output library test of module
+      set(test${BLIB_LIBNAME} lib${BLIB_LIBNAME}-test CACHE INTERNAL "")
+      set(ns3-libs-tests "${test${BLIB_LIBNAME}};${ns3-libs-tests}"
           CACHE INTERNAL "list of test libraries"
       )
 
       # Create shared library containing tests of the module
-      add_library(${test${libname}} SHARED "${test_sources}")
+      add_library(${test${BLIB_LIBNAME}} SHARED "${BLIB_TEST_SOURCES}")
 
       # Link test library to the module library
       if(${NS3_MONOLIB})
         target_link_libraries(
-          ${test${libname}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
+          ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
           ${LIB_AS_NEEDED_POST}
         )
       else()
         target_link_libraries(
-          ${test${libname}} ${LIB_AS_NEEDED_PRE} ${lib${libname}}
-          "${libraries_to_link}" ${LIB_AS_NEEDED_POST}
+          ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}}
+          "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
         )
       endif()
       set_target_properties(
-        ${test${libname}}
+        ${test${BLIB_LIBNAME}}
         PROPERTIES OUTPUT_NAME
-                   ns${NS3_VER}-${libname}-test${build_profile_suffix}
+                   ns${NS3_VER}-${BLIB_LIBNAME}-test${build_profile_suffix}
       )
 
       target_compile_definitions(
-        ${test${libname}} PRIVATE NS_TEST_SOURCEDIR="${folder}/${libname}/test"
+        ${test${BLIB_LIBNAME}} PRIVATE NS_TEST_SOURCEDIR="${FOLDER}/test"
       )
-      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${ignore_pch}))
-        target_precompile_headers(${test${libname}} REUSE_FROM stdlib_pch)
+      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+        target_precompile_headers(${test${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
       endif()
     endif()
   endif()
@@ -263,11 +271,9 @@ macro(
 
   # Add target to scan python bindings
   if(${ENABLE_SCAN_PYTHON_BINDINGS}
-     AND EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${libname}-module.h
+     AND EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h
   )
-    set(bindings_output_folder
-        ${PROJECT_SOURCE_DIR}/${folder}/${libname}/bindings
-    )
+    set(bindings_output_folder ${PROJECT_SOURCE_DIR}/${FOLDER}/bindings)
     file(MAKE_DIRECTORY ${bindings_output_folder})
     set(module_api_ILP32 ${bindings_output_folder}/modulegen__gcc_ILP32.py)
     set(module_api_LP64 ${bindings_output_folder}/modulegen__gcc_LP64.py)
@@ -279,12 +285,12 @@ macro(
 
     set(header_map "")
     # We need a python map that takes header.h to module e.g. "ptr.h": "core"
-    foreach(header ${header_files})
+    foreach(header ${BLIB_HEADER_FILES})
       # header is a relative path to the current working directory
       get_filename_component(
         header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
       )
-      string(APPEND header_map "\"${header_name}\":\"${libname}\",")
+      string(APPEND header_map "\"${header_name}\":\"${BLIB_LIBNAME}\",")
     endforeach()
 
     set(ns3-headers-to-module-map "${ns3-headers-to-module-map}${header_map}"
@@ -292,7 +298,7 @@ macro(
     )
 
     # API scan needs the include directories to find a few headers (e.g. mpi.h)
-    get_target_includes(${lib${libname}} modulegen_include_dirs)
+    get_target_includes(${lib${BLIB_LIBNAME}} modulegen_include_dirs)
 
     set(module_to_generate_api ${module_api_ILP32})
     set(LP64toILP32)
@@ -306,40 +312,38 @@ macro(
     endif()
 
     add_custom_target(
-      ${lib${libname}}-apiscan
+      ${lib${BLIB_LIBNAME}}-apiscan
       COMMAND
-        ${modulescan_modular_command} ${CMAKE_OUTPUT_DIRECTORY} ${libname}
+        ${modulescan_modular_command} ${CMAKE_OUTPUT_DIRECTORY} ${BLIB_LIBNAME}
         ${PROJECT_BINARY_DIR}/header_map.json ${module_to_generate_api}
         \"${arch_flags} ${modulegen_include_dirs}\"
       COMMAND ${LP64toILP32}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      DEPENDS ${lib${libname}}
+      DEPENDS ${lib${BLIB_LIBNAME}}
     )
-    add_dependencies(apiscan-all ${lib${libname}}-apiscan)
+    add_dependencies(apiscan-all ${lib${BLIB_LIBNAME}}-apiscan)
   endif()
 
   # Build pybindings if requested and if bindings subfolder exists in
-  # NS3/src/libname
+  # NS3/src/BLIB_LIBNAME
   if(${ENABLE_PYTHON_BINDINGS} AND EXISTS
                                    "${CMAKE_CURRENT_SOURCE_DIR}/bindings"
   )
-    set(bindings_output_folder
-        ${CMAKE_OUTPUT_DIRECTORY}/${folder}/${libname}/bindings
-    )
+    set(bindings_output_folder ${CMAKE_OUTPUT_DIRECTORY}/${FOLDER}/bindings)
     file(MAKE_DIRECTORY ${bindings_output_folder})
     set(module_src ${bindings_output_folder}/ns3module.cc)
     set(module_hdr ${bindings_output_folder}/ns3module.h)
 
-    string(REPLACE "-" "_" libname_sub ${libname}) # '-' causes problems (e.g.
-                                                   # csma-layout), replace with
-                                                   # '_' (e.g. csma_layout)
+    string(REPLACE "-" "_" BLIB_LIBNAME_sub ${BLIB_LIBNAME}) # '-' causes
+                                                             # problems (e.g.
+    # csma-layout), replace with '_' (e.g. csma_layout)
 
-    # Set prefix of binding to _ if a ${libname}.py exists, and copy the
-    # ${libname}.py to the output folder
+    # Set prefix of binding to _ if a ${BLIB_LIBNAME}.py exists, and copy the
+    # ${BLIB_LIBNAME}.py to the output folder
     set(prefix)
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/bindings/${libname}.py)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/bindings/${BLIB_LIBNAME}.py)
       set(prefix _)
-      file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/${libname}.py
+      file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bindings/${BLIB_LIBNAME}.py
            DESTINATION ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns
       )
     endif()
@@ -349,7 +353,7 @@ macro(
                                                                  # force
                                                                  # reprocessing
       string(REPLACE ";" "," ENABLED_FEATURES
-                     "${ns3-libs};${module_enabled_features}"
+                     "${ns3-libs};${BLIB_MODULE_ENABLED_FEATURES}"
       )
       set(modulegen_modular_command
           GCC_RTTI_ABI_COMPLETE=True NS3_ENABLED_FEATURES="${ENABLED_FEATURES}"
@@ -361,7 +365,7 @@ macro(
           ${CMAKE_COMMAND} -E env
           PYTHONPATH=${CMAKE_OUTPUT_DIRECTORY}:$ENV{PYTHONPATH}
           ${modulegen_modular_command} ${CMAKE_CURRENT_SOURCE_DIR} ${arch}
-          ${prefix}${libname_sub} ${module_src}
+          ${prefix}${BLIB_LIBNAME_sub} ${module_src}
         TIMEOUT 60
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT_FILE ${module_hdr}
@@ -371,7 +375,7 @@ macro(
       if(${error_code} OR NOT (EXISTS ${module_hdr}))
         message(
           FATAL_ERROR
-            "Something went wrong during processing of the python bindings of module ${libname}."
+            "Something went wrong during processing of the python bindings of module ${BLIB_LIBNAME}."
             " Make sure you have the latest version of Pybindgen."
         )
         if(EXISTS ${module_src})
@@ -382,13 +386,13 @@ macro(
 
     # Add core module helper sources
     set(python_module_files ${module_hdr} ${module_src})
-    if(${libname} STREQUAL "core")
+    if(${BLIB_LIBNAME} STREQUAL "core")
       list(APPEND python_module_files
            ${CMAKE_CURRENT_SOURCE_DIR}/bindings/module_helpers.cc
            ${CMAKE_CURRENT_SOURCE_DIR}/bindings/scan-header.h
       )
     endif()
-    set(bindings-name lib${libname}-bindings)
+    set(bindings-name lib${BLIB_LIBNAME}-bindings)
     add_library(${bindings-name} SHARED "${python_module_files}")
     target_include_directories(
       ${bindings-name} PUBLIC ${Python_INCLUDE_DIRS} ${bindings_output_folder}
@@ -396,7 +400,7 @@ macro(
     target_compile_options(${bindings-name} PRIVATE -Wno-error)
 
     # If there is any, remove the "lib" prefix of libraries (search for
-    # "set(lib${libname}")
+    # "set(lib${BLIB_LIBNAME}")
     list(LENGTH ns_libraries_to_link num_libraries)
     if(num_libraries GREATER "0")
       string(REPLACE ";" "-bindings;" bindings_to_link
@@ -405,8 +409,8 @@ macro(
     endif()
     target_link_libraries(
       ${bindings-name}
-      PUBLIC ${LIB_AS_NEEDED_PRE} ${lib${libname}} "${bindings_to_link}"
-             "${libraries_to_link}" ${LIB_AS_NEEDED_POST}
+      PUBLIC ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}} "${bindings_to_link}"
+             "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
       PRIVATE ${Python_LIBRARIES}
     )
     target_include_directories(
@@ -423,7 +427,7 @@ macro(
     # Set binding library name and output folder
     set_target_properties(
       ${bindings-name}
-      PROPERTIES OUTPUT_NAME ${prefix}${libname_sub}
+      PROPERTIES OUTPUT_NAME ${prefix}${BLIB_LIBNAME_sub}
                  PREFIX ""
                  ${suffix} LIBRARY_OUTPUT_DIRECTORY
                  ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns
@@ -437,7 +441,7 @@ macro(
     # Make sure all bindings are built before building the visualizer module
     # that makes use of them
     if(${ENABLE_VISUALIZER})
-      if(NOT (${name} STREQUAL visualizer))
+      if(NOT (${BLIB_LIBNAME} STREQUAL visualizer))
         add_dependencies(${libvisualizer} ${bindings-name})
       endif()
     endif()
@@ -445,39 +449,42 @@ macro(
 
   # Handle package export
   install(
-    TARGETS ${lib${name}}
+    TARGETS ${lib${BLIB_LIBNAME}}
     EXPORT ns3ExportTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
   )
   if(${NS3_VERBOSE})
-    message(STATUS "Processed ${folder}/${libname}")
+    message(STATUS "Processed ${FOLDER}")
   endif()
-endmacro()
+endfunction()
 
 # cmake-format: off
 #
 # This macro processes a ns-3 module example
 #
-# Arguments: folder = src or contrib/contributor_module libname = core, wifi, contributor_module (this is implicit, as
-# it is called by build_lib_impl)
-# name = example name (e.g. command-line-example)
-# source_files = "cmake;list;of;.cc;files;"
-# header_files = "cmake;list;of;public;.h;files;"
-# libraries_to_link = "cmake;list;of;${library_names};"
+# Arguments:
+# NAME = example name (e.g. command-line-example)
+# LIBNAME = parent library (e.g. core)
+# SOURCE_FILES = "cmake;list;of;.cc;files;"
+# HEADER_FILES = "cmake;list;of;public;.h;files;"
+# LIBRARIES_TO_LINK = "cmake;list;of;${library_names};"
 #
-macro(
-  build_lib_example_impl
-  folder
-  name
-  source_files
-  header_files
-  libraries_to_link
-)
+function(build_lib_example)
+  # Argument parsing
+  set(options IGNORE_PCH)
+  set(oneValueArgs NAME)
+  set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
+  cmake_parse_arguments("BLIB_EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  # Get path src/module or contrib/module
+  string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER "${CMAKE_CURRENT_SOURCE_DIR}")
+  get_filename_component(FOLDER ${FOLDER} DIRECTORY)
+
   # cmake-format: on
   set(missing_dependencies FALSE)
-  foreach(lib ${libraries_to_link})
+  foreach(lib ${BLIB_EXAMPLE_LIBRARIES_TO_LINK})
     # skip check for ns-3 modules if its a path to a library
     if(EXISTS ${lib})
       continue()
@@ -492,40 +499,46 @@ macro(
 
   if(NOT missing_dependencies)
     # Create shared library with sources and headers
-    add_executable(${name} "${source_files}" "${header_files}")
+    add_executable(
+      "${BLIB_EXAMPLE_NAME}" ${BLIB_EXAMPLE_SOURCE_FILES}
+                             ${BLIB_EXAMPLE_HEADER_FILES}
+    )
 
     if(${NS3_STATIC})
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
+        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
       )
     elseif(${NS3_MONOLIB})
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
+        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
+        ${LIB_AS_NEEDED_POST}
       )
     else()
       target_link_libraries(
-        ${name} ${LIB_AS_NEEDED_PRE} ${lib${libname}} ${libraries_to_link}
-        ${optional_visualizer_lib} ${LIB_AS_NEEDED_POST}
+        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_EXAMPLE_LIBNAME}}
+        ${BLIB_EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
+        ${LIB_AS_NEEDED_POST}
       )
     endif()
 
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${ignore_pch}))
-      target_precompile_headers(${name} REUSE_FROM stdlib_pch_exec)
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_EXAMPLE_IGNORE_PCH}))
+      target_precompile_headers(${BLIB_EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
     endif()
 
     set_runtime_outputdirectory(
-      ${name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${folder}/examples/ ""
+      ${BLIB_EXAMPLE_NAME}
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
     )
   endif()
-endmacro()
+endfunction()
 
 # This macro processes a ns-3 module header file (module_name-module.h)
 #
-# Arguments: name = module name (e.g. core, wifi) header_files =
+# Arguments: name = module name (e.g. core, wifi) HEADER_FILES =
 # "cmake;list;of;public;.h;files;"
-macro(write_module_header name header_files)
-  string(TOUPPER ${name} uppercase_name)
-  string(REPLACE "-" "_" final_name ${uppercase_name})
+function(write_module_header name header_files)
+  string(TOUPPER "${name}" uppercase_name)
+  string(REPLACE "-" "_" final_name "${uppercase_name}")
   # Common module_header
   list(APPEND contents "#ifdef NS3_MODULE_COMPILATION ")
   list(
@@ -559,4 +572,4 @@ macro(write_module_header name header_files)
 #endif "
   )
   file(WRITE ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h ${contents})
-endmacro()
+endfunction()

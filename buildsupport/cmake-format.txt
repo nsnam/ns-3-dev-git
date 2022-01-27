@@ -3,4 +3,5 @@ format:
   line_width: 80
   dangle_parens: true
   autosort: true
+  enable_sort: true
   max_subgroups_hwrap: 3

@@ -1,6 +1,6 @@
-set(name energy)
-
-set(source_files
+build_lib(
+  LIBNAME energy
+  SOURCE_FILES
     helper/basic-energy-harvester-helper.cc
     helper/basic-energy-source-helper.cc
     helper/energy-harvester-container.cc
@@ -18,9 +18,7 @@ set(source_files
     model/li-ion-energy-source.cc
     model/rv-battery-model.cc
     model/simple-device-energy-model.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/basic-energy-harvester-helper.h
     helper/basic-energy-source-helper.h
     helper/energy-harvester-container.h
@@ -38,14 +36,7 @@ set(header_files
     model/li-ion-energy-source.h
     model/rv-battery-model.h
     model/simple-device-energy-model.h
-)
-
-set(libraries_to_link ${libnetwork})
-
-set(test_sources test/basic-energy-harvester-test.cc
-                 test/li-ion-energy-source-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+  LIBRARIES_TO_LINK ${libnetwork}
+  TEST_SOURCES test/basic-energy-harvester-test.cc
+               test/li-ion-energy-source-test.cc
 )

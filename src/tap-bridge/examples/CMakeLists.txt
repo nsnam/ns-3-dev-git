@@ -1,38 +1,44 @@
 if(${ENABLE_TAP})
-  set(name tap-csma)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libcsma} ${libtap-bridge} ${libinternet} ${libwifi})
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME tap-csma
+    SOURCE_FILES tap-csma.cc
+    LIBRARIES_TO_LINK
+      ${libcsma}
+      ${libtap-bridge}
+      ${libinternet}
+      ${libwifi}
   )
 
-  set(name tap-csma-virtual-machine)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libcsma} ${libtap-bridge} ${libinternet})
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME tap-csma-virtual-machine
+    SOURCE_FILES tap-csma-virtual-machine.cc
+    LIBRARIES_TO_LINK
+      ${libcsma}
+      ${libtap-bridge}
+      ${libinternet}
   )
 
-  set(name tap-wifi-virtual-machine)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libcsma} ${libtap-bridge} ${libinternet} ${libwifi}
-                        ${libmobility}
-  )
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME tap-wifi-virtual-machine
+    SOURCE_FILES tap-wifi-virtual-machine.cc
+    LIBRARIES_TO_LINK
+      ${libcsma}
+      ${libtap-bridge}
+      ${libinternet}
+      ${libwifi}
+      ${libmobility}
   )
 
-  set(name tap-wifi-dumbbell)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libwifi} ${libcsma} ${libpoint-to-point}
-                        ${libtap-bridge} ${libinternet} ${libapplications}
-  )
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME tap-wifi-dumbbell
+    SOURCE_FILES tap-wifi-dumbbell.cc
+    LIBRARIES_TO_LINK
+      ${libwifi}
+      ${libcsma}
+      ${libpoint-to-point}
+      ${libtap-bridge}
+      ${libinternet}
+      ${libapplications}
   )
 
 endif()

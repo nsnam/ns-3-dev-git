@@ -1,6 +1,6 @@
-set(name flow-monitor)
-
-set(source_files
+build_lib(
+  LIBNAME flow-monitor
+  SOURCE_FILES
     helper/flow-monitor-helper.cc
     model/flow-classifier.cc
     model/flow-monitor.cc
@@ -9,9 +9,7 @@ set(source_files
     model/ipv4-flow-probe.cc
     model/ipv6-flow-classifier.cc
     model/ipv6-flow-probe.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/flow-monitor-helper.h
     model/flow-classifier.h
     model/flow-monitor.h
@@ -20,12 +18,6 @@ set(header_files
     model/ipv4-flow-probe.h
     model/ipv6-flow-classifier.h
     model/ipv6-flow-probe.h
-)
-
-set(libraries_to_link ${libinternet} ${libconfig-store})
-
-set(test_sources)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libconfig-store}
 )

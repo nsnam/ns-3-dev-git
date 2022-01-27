@@ -1,37 +1,29 @@
-set(name dumbbell-animation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libapplications}
-                      ${libpoint-to-point-layout}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+set(base_examples
+    dumbbell-animation
+    grid-animation
+    star-animation
+    colors-link-description
+    resources-counters
 )
 
-set(name grid-animation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libapplications}
-                      ${libpoint-to-point-layout}
+foreach(
+  example
+  ${base_examples}
 )
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK
+      ${libnetanim}
+      ${libapplications}
+      ${libpoint-to-point-layout}
+  )
+endforeach()
 
-set(name star-animation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libapplications}
-                      ${libpoint-to-point-layout}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name wireless-animation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
+  NAME wireless-animation
+  SOURCE_FILES wireless-animation.cc
+  LIBRARIES_TO_LINK
     ${libnetanim}
     ${libapplications}
     ${libpoint-to-point}
@@ -40,36 +32,14 @@ set(libraries_to_link
     ${libmobility}
     ${libnetwork}
 )
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
 
-set(name uan-animation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libinternet} ${libmobility}
-                      ${libapplications} ${libuan}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name colors-link-description)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libapplications}
-                      ${libpoint-to-point-layout}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name resources-counters)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetanim} ${libapplications}
-                      ${libpoint-to-point-layout}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME uan-animation
+  SOURCE_FILES uan-animation.cc
+  LIBRARIES_TO_LINK
+    ${libnetanim}
+    ${libinternet}
+    ${libmobility}
+    ${libapplications}
+    ${libuan}
 )

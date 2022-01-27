@@ -1,83 +1,90 @@
-set(name fragmentation-ipv6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fragmentation-ipv6
+  SOURCE_FILES fragmentation-ipv6.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name fragmentation-ipv6-two-MTU)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fragmentation-ipv6-two-MTU
+  SOURCE_FILES fragmentation-ipv6-two-MTU.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name icmpv6-redirect)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME icmpv6-redirect
+  SOURCE_FILES icmpv6-redirect.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name loose-routing-ipv6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME loose-routing-ipv6
+  SOURCE_FILES loose-routing-ipv6.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name ping6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME ping6
+  SOURCE_FILES ping6.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name radvd)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME radvd
+  SOURCE_FILES radvd.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name radvd-two-prefix)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME radvd-two-prefix
+  SOURCE_FILES radvd-two-prefix.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
 )
 
-set(name test-ipv6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME test-ipv6
+  SOURCE_FILES test-ipv6.cc
+  LIBRARIES_TO_LINK ${libpoint-to-point}
+                    ${libinternet}
 )
 
-set(name wsn-ping6)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${liblr-wpan} ${libinternet} ${libsixlowpan}
-                      ${libmobility} ${libinternet-apps}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wsn-ping6
+  SOURCE_FILES wsn-ping6.cc
+  LIBRARIES_TO_LINK
+    ${liblr-wpan}
+    ${libinternet}
+    ${libsixlowpan}
+    ${libmobility}
+    ${libinternet-apps}
 )
 
-set(name fragmentation-ipv6-PMTU)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcsma} ${libinternet} ${libinternet-apps}
-                      ${libpoint-to-point}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME fragmentation-ipv6-PMTU
+  SOURCE_FILES fragmentation-ipv6-PMTU.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libinternet-apps}
+    ${libpoint-to-point}
 )

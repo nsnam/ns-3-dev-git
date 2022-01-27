@@ -1,6 +1,6 @@
-set(name traffic-control)
-
-set(source_files
+build_lib(
+  LIBNAME traffic-control
+  SOURCE_FILES
     helper/queue-disc-container.cc
     helper/traffic-control-helper.cc
     model/cobalt-queue-disc.cc
@@ -18,9 +18,7 @@ set(source_files
     model/red-queue-disc.cc
     model/tbf-queue-disc.cc
     model/traffic-control-layer.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/queue-disc-container.h
     helper/traffic-control-helper.h
     model/cobalt-queue-disc.h
@@ -38,11 +36,11 @@ set(header_files
     model/red-queue-disc.h
     model/tbf-queue-disc.h
     model/traffic-control-layer.h
-)
-
-set(libraries_to_link ${libnetwork} ${libcore} ${libconfig-store})
-
-set(test_sources
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcore}
+    ${libconfig-store}
+  TEST_SOURCES
     test/adaptive-red-queue-disc-test-suite.cc
     test/cobalt-queue-disc-test-suite.cc
     test/codel-queue-disc-test-suite.cc
@@ -53,8 +51,4 @@ set(test_sources
     test/red-queue-disc-test-suite.cc
     test/tbf-queue-disc-test-suite.cc
     test/tc-flow-control-test-suite.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

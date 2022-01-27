@@ -105,6 +105,12 @@ A ns-3 module is created as a cpp/shlib object, like this:
         test/test-mymodule.cc
         )
 
-    build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}" "${test_sources}")
+    build_lib(
+       LIBNAME ${name}
+       SOURCE_FILES ${source_files}
+       HEADER_FILES ${header_files}
+       LIBRARIES_TO_LINK ${libraries_to_link}
+       TEST_SOURCES ${test_sources}
+       )
 
 

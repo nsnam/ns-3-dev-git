@@ -1,19 +1,23 @@
-set(name energy-model-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libwifi} ${libenergy}
-                      ${libinternet} ${libconfig-store}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME energy-model-example
+  SOURCE_FILES energy-model-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libwifi}
+    ${libenergy}
+    ${libinternet}
+    ${libconfig-store}
 )
 
-set(name energy-model-with-harvesting-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libwifi} ${libenergy}
-                      ${libinternet} ${libconfig-store}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME energy-model-with-harvesting-example
+  SOURCE_FILES energy-model-with-harvesting-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libwifi}
+    ${libenergy}
+    ${libinternet}
+    ${libconfig-store}
 )

@@ -1,6 +1,6 @@
-set(name applications)
-
-set(source_files
+build_lib(
+  LIBNAME applications
+  SOURCE_FILES
     helper/bulk-send-helper.cc
     helper/on-off-helper.cc
     helper/packet-sink-helper.cc
@@ -24,9 +24,7 @@ set(source_files
     model/udp-echo-server.cc
     model/udp-server.cc
     model/udp-trace-client.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/bulk-send-helper.h
     helper/on-off-helper.h
     helper/packet-sink-helper.h
@@ -50,16 +48,10 @@ set(header_files
     model/udp-echo-server.h
     model/udp-server.h
     model/udp-trace-client.h
-)
-
-# link to dependencies
-set(libraries_to_link ${libinternet} ${libstats})
-
-set(test_sources
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libstats}
+  TEST_SOURCES
     test/three-gpp-http-client-server-test.cc
-    test/bulk-send-application-test-suite.cc test/udp-client-server-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+    test/bulk-send-application-test-suite.cc
+    test/udp-client-server-test.cc
 )

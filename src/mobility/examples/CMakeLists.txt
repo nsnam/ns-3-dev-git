@@ -1,55 +1,42 @@
-set(name bonnmotion-ns2-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility})
+set(base_examples
+    bonnmotion-ns2-example
+    main-random-topology
+    main-random-walk
+    ns2-mobility-trace
+)
+foreach(
+  example
+  ${base_examples}
+)
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK ${libcore}
+                      ${libmobility}
+  )
+endforeach()
+
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME main-grid-topology
+  SOURCE_FILES main-grid-topology.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libnetwork}
 )
 
-set(name main-grid-topology)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libnetwork})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME mobility-trace-example
+  SOURCE_FILES mobility-trace-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libnetwork}
 )
 
-set(name main-random-topology)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name main-random-walk)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name mobility-trace-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libnetwork})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name ns2-mobility-trace)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name reference-point-group-mobility-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libnetwork} ${libmobility})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME reference-point-group-mobility-example
+  SOURCE_FILES reference-point-group-mobility-example.cc
+  LIBRARIES_TO_LINK ${libnetwork}
+                    ${libmobility}
 )

@@ -1,4 +1,4 @@
-set(name internet)
+set(name)
 
 set(source_files
     helper/internet-stack-helper.cc
@@ -255,10 +255,6 @@ set(header_files
     model/windowed-filter.h
 )
 
-set(libraries_to_link ${libnetwork} ${libcore} ${libbridge}
-                      ${libtraffic-control}
-)
-
 set(test_sources
     test/global-route-manager-impl-test-suite.cc
     test/icmp-test.cc
@@ -334,6 +330,14 @@ set(test_sources
     test/udp-test.cc
 )
 
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+build_lib(
+  LIBNAME internet
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libcore}
+    ${libbridge}
+    ${libtraffic-control}
+  TEST_SOURCES ${test_sources}
 )

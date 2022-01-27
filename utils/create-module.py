@@ -13,18 +13,6 @@ if(HAVE_STDINT_H)
     add_definitions(-DHAVE_STDINT_H)
 endif()
 
-set(name {MODULE})
-
-set(source_files
-    model/{MODULE}.cc
-    helper/{MODULE}-helper.cc
-    )
-    
-set(header_files
-    model/{MODULE}.h
-    helper/{MODULE}-helper.h
-    )
-
 set(libraries_to_link 
     ${{libcore}}
     )
@@ -35,12 +23,16 @@ if(${{ENABLE_EXAMPLES}})
         )
 endif()    
 
-set(test_sources
-    test/{MODULE}-test-suite.cc
-    ${{examples_as_tests_sources}}
-    )    
-
-{BUILD_LIB_MACRO}("${{name}}" "${{source_files}}" "${{header_files}}" "${{libraries_to_link}}" "${{test_sources}}")
+build_lib(
+    LIBNAME {MODULE}
+    SOURCE_FILES model/{MODULE}.cc
+                 helper/{MODULE}-helper.cc 
+    HEADER_FILES model/{MODULE}.h
+                 helper/{MODULE}-helper.h
+    LIBRARIES_TO_LINK ${{libraries_to_link}}
+    TEST_SOURCES test/{MODULE}-test-suite.cc
+                 ${{examples_as_tests_sources}}
+)
     
 '''
 
@@ -109,11 +101,12 @@ namespace ns3 {{
 
 
 EXAMPLES_CMAKELISTS_TEMPLATE = '''\
-set(name {MODULE}-example)
-set(source_files ${{name}}.cc)
-set(header_files)
 set(libraries_to_link ${{lib{MODULE}}})
-{BUILD_EXAMPLE_MACRO}("${{name}}" "${{source_files}}" "${{header_files}}" "${{libraries_to_link}}")
+build_lib_example(
+    NAME {MODULE}-example
+    SOURCE_FILES ${{name}}.cc
+    LIBRARIES_TO_LINK ${{libraries_to_link}}
+)
 
 '''
 
@@ -327,8 +320,8 @@ def create_file(path, template, **kwargs):
 
 def make_cmakelists(moduledir, modname):
     path = Path(moduledir, 'CMakeLists.txt')
-    macro = "build_lib" if "contrib" not in str(path) else "build_contrib_lib"
-    create_file(path, CMAKELISTS_TEMPLATE, MODULE=modname, BUILD_LIB_MACRO=macro)
+    macro = "build_lib"
+    create_file(path, CMAKELISTS_TEMPLATE, MODULE=modname)
 
     return True 
 

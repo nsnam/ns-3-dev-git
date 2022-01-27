@@ -1,7 +1,8 @@
-set(name simple-error-model)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME simple-error-model
+  SOURCE_FILES simple-error-model.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
 )

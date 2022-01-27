@@ -1,23 +1,24 @@
-set(name li-ion-energy-source)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libenergy})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME li-ion-energy-source
+  SOURCE_FILES li-ion-energy-source.cc
+  LIBRARIES_TO_LINK ${libcore}
+                    ${libenergy}
 )
 
-set(name rv-battery-model-test)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libenergy} ${libwifi})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME rv-battery-model-test
+  SOURCE_FILES rv-battery-model-test.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libenergy}
+    ${libwifi}
 )
 
-set(name basic-energy-model-test)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libenergy} ${libwifi})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME basic-energy-model-test
+  SOURCE_FILES basic-energy-model-test.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libenergy}
+    ${libwifi}
 )

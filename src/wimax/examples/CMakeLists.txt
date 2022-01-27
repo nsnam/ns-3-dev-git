@@ -1,27 +1,30 @@
-set(name wimax-ipv4)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwimax} ${libinternet} ${libmobility} ${libcsma}
-                      ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wimax-ipv4
+  SOURCE_FILES wimax-ipv4.cc
+  LIBRARIES_TO_LINK
+    ${libwimax}
+    ${libinternet}
+    ${libmobility}
+    ${libcsma}
+    ${libapplications}
 )
 
-set(name wimax-multicast)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwimax} ${libinternet} ${libcsma} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wimax-multicast
+  SOURCE_FILES wimax-multicast.cc
+  LIBRARIES_TO_LINK
+    ${libwimax}
+    ${libinternet}
+    ${libcsma}
+    ${libapplications}
 )
 
-set(name wimax-simple)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwimax} ${libinternet} ${libmobility}
-                      ${libapplications}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wimax-simple
+  SOURCE_FILES wimax-simple.cc
+  LIBRARIES_TO_LINK
+    ${libwimax}
+    ${libinternet}
+    ${libmobility}
+    ${libapplications}
 )

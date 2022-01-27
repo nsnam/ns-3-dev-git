@@ -1,5 +1,3 @@
-set(name spectrum)
-
 set(source_files
     helper/adhoc-aloha-noack-ideal-phy-helper.cc
     helper/spectrum-analyzer-helper.cc
@@ -77,9 +75,13 @@ set(header_files
     test/spectrum-test.h
 )
 
-set(libraries_to_link ${libpropagation} ${libantenna})
-
-set(test_sources
+build_lib(
+  LIBNAME spectrum
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK ${libpropagation}
+                    ${libantenna}
+  TEST_SOURCES
     test/spectrum-ideal-phy-test.cc
     test/spectrum-interference-test.cc
     test/spectrum-value-test.cc
@@ -87,8 +89,4 @@ set(test_sources
     test/three-gpp-channel-test-suite.cc
     test/tv-helper-distribution-test.cc
     test/tv-spectrum-transmitter-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

@@ -1,315 +1,287 @@
-set(name mixed-wired-wireless)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications} ${libolsr} ${libnetanim})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME mixed-wired-wireless
+  SOURCE_FILES mixed-wired-wireless.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libolsr}
+    ${libnetanim}
 )
 
-set(name wifi-80211e-txop)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-80211e-txop
+  SOURCE_FILES wifi-80211e-txop.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-80211n-mimo)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-80211n-mimo
+  SOURCE_FILES wifi-80211n-mimo.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-adhoc)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-adhoc
+  SOURCE_FILES wifi-adhoc.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-aggregation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-aggregation
+  SOURCE_FILES wifi-aggregation.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-ap)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ap
+  SOURCE_FILES wifi-ap.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-backward-compatibility)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-backward-compatibility
+  SOURCE_FILES wifi-backward-compatibility.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-blockack)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-blockack
+  SOURCE_FILES wifi-blockack.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-clear-channel-cmu)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-clear-channel-cmu
+  SOURCE_FILES wifi-clear-channel-cmu.cc
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libwifi}
 )
 
-set(name wifi-dsss-validation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-dsss-validation
+  SOURCE_FILES wifi-dsss-validation.cc
+  LIBRARIES_TO_LINK ${libwifi}
 )
 
-set(name wifi-he-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-he-network
+  SOURCE_FILES wifi-he-network.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-hidden-terminal)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications} ${libflow-monitor})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-hidden-terminal
+  SOURCE_FILES wifi-hidden-terminal.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name wifi-ht-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ht-network
+  SOURCE_FILES wifi-ht-network.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-mixed-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-mixed-network
+  SOURCE_FILES wifi-mixed-network.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-multi-tos)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-multi-tos
+  SOURCE_FILES wifi-multi-tos.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-multirate)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi} ${libolsr} ${libapplications}
-                      ${libflow-monitor}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-multirate
+  SOURCE_FILES wifi-multirate.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libwifi}
+    ${libolsr}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name wifi-ofdm-he-validation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ofdm-he-validation
+  SOURCE_FILES wifi-ofdm-he-validation.cc
+  LIBRARIES_TO_LINK ${libwifi}
 )
 
-set(name wifi-ofdm-ht-validation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ofdm-ht-validation
+  SOURCE_FILES wifi-ofdm-ht-validation.cc
+  LIBRARIES_TO_LINK ${libwifi}
 )
 
-set(name wifi-ofdm-validation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ofdm-validation
+  SOURCE_FILES wifi-ofdm-validation.cc
+  LIBRARIES_TO_LINK ${libwifi}
 )
 
-set(name wifi-ofdm-vht-validation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libwifi} ${libconfig-store}
-                      ${libstats}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name wifi-error-models-comparison)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi})
-build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-ofdm-vht-validation
+  SOURCE_FILES wifi-ofdm-vht-validation.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libwifi}
+    ${libconfig-store}
+    ${libstats}
 )
 
-set(name wifi-power-adaptation-distance)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-error-models-comparison
+  SOURCE_FILES wifi-error-models-comparison.cc
+  LIBRARIES_TO_LINK ${libwifi}
 )
 
-set(name wifi-power-adaptation-interference)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications} ${libflow-monitor})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-power-adaptation-distance
+  SOURCE_FILES wifi-power-adaptation-distance.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-rate-adaptation-distance)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-power-adaptation-interference
+  SOURCE_FILES wifi-power-adaptation-interference.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name wifi-simple-adhoc)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-rate-adaptation-distance
+  SOURCE_FILES wifi-rate-adaptation-distance.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-simple-adhoc-grid)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi} ${libolsr})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-simple-adhoc
+  SOURCE_FILES wifi-simple-adhoc.cc
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libwifi}
 )
 
-set(name wifi-simple-ht-hidden-stations)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-simple-adhoc-grid
+  SOURCE_FILES wifi-simple-adhoc-grid.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libwifi}
+    ${libolsr}
 )
 
-set(name wifi-simple-infra)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-simple-ht-hidden-stations
+  SOURCE_FILES wifi-simple-ht-hidden-stations.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-simple-interference)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libwifi})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-simple-infra
+  SOURCE_FILES wifi-simple-infra.cc
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libwifi}
 )
 
-set(name wifi-sleep)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-simple-interference
+  SOURCE_FILES wifi-simple-interference.cc
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libwifi}
 )
 
-set(name wifi-spatial-reuse)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-sleep
+  SOURCE_FILES wifi-sleep.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-spectrum-per-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-spatial-reuse
+  SOURCE_FILES wifi-spatial-reuse.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-spectrum-per-interference)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-spectrum-per-example
+  SOURCE_FILES wifi-spectrum-per-example.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-spectrum-saturation-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-spectrum-per-interference
+  SOURCE_FILES wifi-spectrum-per-interference.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-tcp)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-spectrum-saturation-example
+  SOURCE_FILES wifi-spectrum-saturation-example.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-timing-attributes)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-tcp
+  SOURCE_FILES wifi-tcp.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-txop-aggregation)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-timing-attributes
+  SOURCE_FILES wifi-timing-attributes.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-vht-network)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-txop-aggregation
+  SOURCE_FILES wifi-txop-aggregation.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
 )
 
-set(name wifi-wired-bridging)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libcsma} ${libbridge} ${libapplications})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-vht-network
+  SOURCE_FILES wifi-vht-network.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
+)
+
+build_example(
+  NAME wifi-wired-bridging
+  SOURCE_FILES wifi-wired-bridging.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libcsma}
+    ${libbridge}
+    ${libapplications}
 )

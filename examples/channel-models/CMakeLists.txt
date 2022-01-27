@@ -1,9 +1,11 @@
-set(name three-gpp-v2v-channel-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libpropagation}
-                      ${libspectrum} ${libantenna} ${libbuildings}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME three-gpp-v2v-channel-example
+  SOURCE_FILES three-gpp-v2v-channel-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libpropagation}
+    ${libspectrum}
+    ${libantenna}
+    ${libbuildings}
 )

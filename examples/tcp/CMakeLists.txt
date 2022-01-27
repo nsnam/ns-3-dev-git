@@ -1,30 +1,36 @@
-set(name tcp-large-transfer)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libapplications} ${libinternet})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-large-transfer
+  SOURCE_FILES tcp-large-transfer.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet}
 )
 
-set(name tcp-star-server)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libapplications} ${libinternet})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-star-server
+  SOURCE_FILES tcp-star-server.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet}
 )
 
-set(name star)
-set(source_files ${name}.cc)
-set(libraries_to_link
-    ${libnetanim} ${libpoint-to-point} ${libpoint-to-point-layout}
-    ${libapplications} ${libinternet}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME star
+  SOURCE_FILES star.cc
+  LIBRARIES_TO_LINK
+    ${libnetanim}
+    ${libpoint-to-point}
+    ${libpoint-to-point-layout}
+    ${libapplications}
+    ${libinternet}
 )
 
-set(name tcp-bbr-example)
-set(source_files ${name}.cc)
-set(libraries_to_link
+build_example(
+  NAME tcp-bbr-example
+  SOURCE_FILES tcp-bbr-example.cc
+  LIBRARIES_TO_LINK
     ${libpoint-to-point}
     ${libinternet}
     ${libapplications}
@@ -33,66 +39,76 @@ set(libraries_to_link
     ${libinternet-apps}
     ${libflow-monitor}
 )
+
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-bulk-send
+  SOURCE_FILES tcp-bulk-send.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet}
 )
 
-set(name tcp-bulk-send)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libapplications} ${libinternet})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-pcap-nanosec-example
+  SOURCE_FILES tcp-pcap-nanosec-example.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libinternet}
 )
 
-set(name tcp-pcap-nanosec-example)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libapplications} ${libinternet})
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-variants-comparison
+  SOURCE_FILES tcp-variants-comparison.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name tcp-variants-comparison)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-pacing
+  SOURCE_FILES tcp-pacing.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
 )
 
-set(name tcp-pacing)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libflow-monitor}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-linux-reno
+  SOURCE_FILES tcp-linux-reno.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
+    ${libnetwork}
 )
 
-set(name tcp-linux-reno)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libtraffic-control} ${libnetwork}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME tcp-validation
+  SOURCE_FILES tcp-validation.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libinternet}
+    ${libapplications}
+    ${libtraffic-control}
+    ${libnetwork}
+    ${libinternet-apps}
 )
 
-set(name tcp-validation)
-set(source_files ${name}.cc)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libtraffic-control} ${libnetwork} ${libinternet-apps}
-)
 build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name dctcp-example)
-set(source_files ${name}.cc)
-set(libraries_to_link
-    ${libcore} ${libnetwork} ${libinternet} ${libpoint-to-point}
-    ${libapplications} ${libtraffic-control}
-)
-build_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME dctcp-example
+  SOURCE_FILES dctcp-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libnetwork}
+    ${libinternet}
+    ${libpoint-to-point}
+    ${libapplications}
+    ${libtraffic-control}
 )

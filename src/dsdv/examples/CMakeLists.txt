@@ -1,7 +1,9 @@
-set(name dsdv-manet)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libinternet} ${libdsdv} ${libapplications})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME dsdv-manet
+  SOURCE_FILES dsdv-manet.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libinternet}
+    ${libdsdv}
+    ${libapplications}
 )

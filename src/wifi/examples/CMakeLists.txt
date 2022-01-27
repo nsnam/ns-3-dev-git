@@ -1,51 +1,59 @@
-set(name wifi-phy-test)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libnetwork} ${libwifi})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-phy-test
+  SOURCE_FILES wifi-phy-test.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libnetwork}
+    ${libwifi}
 )
 
-set(name wifi-test-interference-helper)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libmobility} ${libnetwork} ${libwifi})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-test-interference-helper
+  SOURCE_FILES wifi-test-interference-helper.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libnetwork}
+    ${libwifi}
 )
 
-set(name wifi-manager-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats}
-                      ${libmobility} ${libpropagation}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-manager-example
+  SOURCE_FILES wifi-manager-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libnetwork}
+    ${libwifi}
+    ${libstats}
+    ${libmobility}
+    ${libpropagation}
 )
 
-set(name wifi-trans-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libnetwork} ${libwifi} ${libstats}
-                      ${libmobility} ${libpropagation}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name wifi-phy-configuration)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libconfig-store})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-trans-example
+  SOURCE_FILES wifi-trans-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libnetwork}
+    ${libwifi}
+    ${libstats}
+    ${libmobility}
+    ${libpropagation}
 )
 
-set(name wifi-bianchi)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libwifi} ${libapplications} ${libinternet-apps})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wifi-phy-configuration
+  SOURCE_FILES wifi-phy-configuration.cc
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libconfig-store}
+)
+
+build_lib_example(
+  NAME wifi-bianchi
+  SOURCE_FILES wifi-bianchi.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libinternet-apps}
 )

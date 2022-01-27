@@ -1,6 +1,6 @@
-set(name wave)
-
-set(source_files
+build_lib(
+  LIBNAME wave
+  SOURCE_FILES
     helper/wave-bsm-helper.cc
     helper/wave-bsm-stats.cc
     helper/wave-helper.cc
@@ -17,9 +17,7 @@ set(source_files
     model/vsa-manager.cc
     model/wave-frame-exchange-manager.cc
     model/wave-net-device.cc
-)
-
-set(header_files
+  HEADER_FILES
     helper/wave-bsm-helper.h
     helper/wave-bsm-stats.h
     helper/wave-helper.h
@@ -36,12 +34,11 @@ set(header_files
     model/vsa-manager.h
     model/wave-frame-exchange-manager.h
     model/wave-net-device.h
-)
-
-set(libraries_to_link ${libcore} ${libpropagation} ${libwifi} ${libinternet})
-
-set(test_sources test/mac-extension-test-suite.cc test/ocb-test-suite.cc)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpropagation}
+    ${libwifi}
+    ${libinternet}
+  TEST_SOURCES test/mac-extension-test-suite.cc
+               test/ocb-test-suite.cc
 )

@@ -1,13 +1,20 @@
-set(header_files)
-set(libraries_to_link ${libpoint-to-point} ${libinternet} ${libapplications}
-                      ${libnix-vector-routing}
+set(base_examples
+    nix-simple
+    nix-simple-multi-address
+    nms-p2p-nix
 )
 
-set(nix_examples nix-simple nix-simple-multi-address nms-p2p-nix)
-
-foreach(example ${nix_examples})
-  set(source_files ${example}.cc)
+foreach(
+  example
+  ${base_examples}
+)
   build_lib_example(
-    "${example}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK
+      ${libpoint-to-point}
+      ${libinternet}
+      ${libapplications}
+      ${libnix-vector-routing}
   )
 endforeach()

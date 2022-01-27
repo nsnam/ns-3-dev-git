@@ -1,27 +1,31 @@
-set(name wave-simple-80211p)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libapplications} ${libmobility}
-                      ${libnetwork} ${libwifi} ${libwave}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wave-simple-80211p
+  SOURCE_FILES wave-simple-80211p.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libapplications}
+    ${libmobility}
+    ${libnetwork}
+    ${libwifi}
+    ${libwave}
 )
 
-set(name wave-simple-device)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libapplications} ${libmobility}
-                      ${libnetwork} ${libwifi} ${libwave}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME wave-simple-device
+  SOURCE_FILES wave-simple-device.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libapplications}
+    ${libmobility}
+    ${libnetwork}
+    ${libwifi}
+    ${libwave}
 )
 
-set(name vanet-routing-compare)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link
+build_lib_example(
+  NAME vanet-routing-compare
+  SOURCE_FILES vanet-routing-compare.cc
+  LIBRARIES_TO_LINK
     ${libcore}
     ${libaodv}
     ${libapplications}
@@ -34,7 +38,4 @@ set(libraries_to_link
     ${libpropagation}
     ${libwifi}
     ${libwave}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
 )

@@ -1,49 +1,33 @@
-set(name uan-cw-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libmobility} ${libstats}
-                      ${libapplications} ${libuan}
+set(base_examples
+    uan-cw-example
+    uan-rc-example
+    uan-ipv4-example
+    uan-raw-example
 )
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+foreach(
+  example
+  ${base_examples}
 )
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK
+      ${libinternet}
+      ${libmobility}
+      ${libstats}
+      ${libapplications}
+      ${libuan}
+  )
+endforeach()
 
-set(name uan-rc-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libmobility} ${libstats}
-                      ${libapplications} ${libuan}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name uan-6lowpan-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libmobility} ${libstats}
-                      ${libapplications} ${libuan} ${libsixlowpan}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name uan-ipv4-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libmobility} ${libstats}
-                      ${libapplications} ${libuan}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name uan-raw-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libinternet} ${libmobility} ${libstats}
-                      ${libapplications} ${libuan}
-)
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME uan-6lowpan-example
+  SOURCE_FILES uan-6lowpan-example.cc
+  LIBRARIES_TO_LINK
+    ${libinternet}
+    ${libmobility}
+    ${libstats}
+    ${libapplications}
+    ${libuan}
+    ${libsixlowpan}
 )

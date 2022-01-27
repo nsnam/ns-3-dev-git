@@ -1,5 +1,3 @@
-set(name wifi)
-
 set(source_files
     helper/athstats-helper.cc
     helper/spectrum-wifi-helper.cc
@@ -274,11 +272,18 @@ set(header_files
     model/yans-wifi-phy.h
 )
 
-set(libraries_to_link ${libnetwork} ${libpropagation} ${libenergy}
-                      ${libspectrum} ${libantenna} ${libmobility}
-)
-
-set(test_sources
+build_lib(
+  LIBNAME wifi
+  SOURCE_FILES ${source_files}
+  HEADER_FILES ${header_files}
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libpropagation}
+    ${libenergy}
+    ${libspectrum}
+    ${libantenna}
+    ${libmobility}
+  TEST_SOURCES
     test/block-ack-test-suite.cc
     test/channel-access-manager-test.cc
     test/inter-bss-test-suite.cc
@@ -297,8 +302,4 @@ set(test_sources
     test/wifi-test.cc
     test/wifi-transmit-mask-test.cc
     test/wifi-txop-test.cc
-)
-
-build_lib("${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-          "${test_sources}"
 )

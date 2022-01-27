@@ -1,17 +1,20 @@
-set(name main-propagation-loss)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpropagation} ${libconfig-store}
-                      ${libstats} ${libmobility} ${libbuildings}
-)
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME main-propagation-loss
+  SOURCE_FILES main-propagation-loss.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpropagation}
+    ${libconfig-store}
+    ${libstats}
+    ${libmobility}
+    ${libbuildings}
 )
 
-set(name jakes-propagation-model-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libpropagation} ${libbuildings})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME jakes-propagation-model-example
+  SOURCE_FILES jakes-propagation-model-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libpropagation}
+    ${libbuildings}
 )

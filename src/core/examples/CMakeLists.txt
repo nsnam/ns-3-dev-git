@@ -1,139 +1,58 @@
-set(name main-callback)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+set(base_examples
+    command-line-example
+    fatal-example
+    hash-example
+    length-example
+    main-callback
+    main-ptr
+    sample-log-time-format
+    sample-random-variable
+    sample-random-variable-stream
+    sample-show-progress
+    sample-simulator
+    system-path-examples
+    test-string-value-formatting
 )
 
-set(name sample-simulator)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+foreach(
+  example
+  ${base_examples}
 )
+  build_lib_example(
+    NAME ${example}
+    SOURCE_FILES ${example}.cc
+    LIBRARIES_TO_LINK ${libcore}
+  )
+endforeach()
 
-set(name main-ptr)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name main-random-variable-stream)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libconfig-store} ${libstats})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name sample-random-variable)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name sample-random-variable-stream)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name command-line-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name fatal-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name hash-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name sample-log-time-format)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name test-string-value-formatting)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name sample-show-progress)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME main-random-variable-stream
+  SOURCE_FILES main-random-variable-stream.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libconfig-store}
+    ${libstats}
 )
 
 if(${NS3_ENABLE_BUILD_VERSION})
-  set(name build-version-example)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libcore})
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME build-version-example
+    SOURCE_FILES build-version-example.cc
+    LIBRARIES_TO_LINK ${libcore}
   )
 endif()
 
 if(${ENABLE_REALTIME})
-  set(name main-test-sync)
-  set(source_files ${name}.cc)
-  set(header_files)
-  set(libraries_to_link ${libnetwork})
   build_lib_example(
-    "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+    NAME main-test-sync
+    SOURCE_FILES main-test-sync.cc
+    LIBRARIES_TO_LINK ${libnetwork}
   )
 endif()
 
-set(name length-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
 build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name empirical-random-variable-example)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore} ${libflow-monitor})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
-)
-
-set(name system-path-examples)
-set(source_files ${name}.cc)
-set(header_files)
-set(libraries_to_link ${libcore})
-build_lib_example(
-  "${name}" "${source_files}" "${header_files}" "${libraries_to_link}"
+  NAME empirical-random-variable-example
+  SOURCE_FILES empirical-random-variable-example.cc
+  LIBRARIES_TO_LINK ${libcore}
+                    ${libflow-monitor}
 )
