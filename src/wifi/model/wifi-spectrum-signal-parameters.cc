@@ -28,6 +28,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiSpectrumSignalParameters");
 
 WifiSpectrumSignalParameters::WifiSpectrumSignalParameters ()
+  : txCenterFreq (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -37,6 +38,7 @@ WifiSpectrumSignalParameters::WifiSpectrumSignalParameters (const WifiSpectrumSi
 {
   NS_LOG_FUNCTION (this << &p);
   ppdu = p.ppdu;
+  txCenterFreq = p.txCenterFreq;
 }
 
 Ptr<SpectrumSignalParameters>

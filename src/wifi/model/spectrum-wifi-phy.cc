@@ -356,13 +356,6 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // does not overlap with the receiver's primary20 channel
   if (wifiRxParams->txPhy != 0)
     {
-      Ptr<WifiNetDevice> dev = DynamicCast<WifiNetDevice> (rxParams->txPhy->GetDevice ());
-      NS_ASSERT (dev != 0);
-      Ptr<WifiPhy> txPhy = dev->GetPhy ();
-      NS_ASSERT (txPhy != 0);
-      uint16_t txChannelWidth = wifiRxParams->ppdu->GetTxVector ().GetChannelWidth ();
-      uint16_t txCenterFreq = txPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txChannelWidth);
-
       // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
       uint16_t width = (GetChannelWidth () % 20 == 0 ? 20 : GetChannelWidth ());
       uint16_t p20MinFreq =
@@ -370,7 +363,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       uint16_t p20MaxFreq =
           GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) + width / 2;
 
-      if (!wifiRxParams->ppdu->CanBeReceived (txCenterFreq, p20MinFreq, p20MaxFreq))
+      if (!wifiRxParams->ppdu->CanBeReceived (wifiRxParams->txCenterFreq, p20MinFreq, p20MaxFreq))
         {
           NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
           m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),

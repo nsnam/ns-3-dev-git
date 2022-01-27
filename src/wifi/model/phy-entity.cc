@@ -1061,6 +1061,7 @@ PhyEntity::Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type)
   txParams->duration = txDuration;
   txParams->psd = txPowerSpectrum;
   txParams->ppdu = ppdu;
+  txParams->txCenterFreq = GetCenterFrequencyForChannelWidth (ppdu->GetTxVector ());
   NS_LOG_DEBUG ("Starting " << type << " with power " << WToDbm (txPowerWatts) << " dBm on channel " << +m_wifiPhy->GetChannelNumber () << " for " << txParams->duration.As (Time::MS));
   NS_LOG_DEBUG ("Starting " << type << " with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   auto spectrumWifiPhy = DynamicCast<SpectrumWifiPhy> (m_wifiPhy);
