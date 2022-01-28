@@ -440,7 +440,7 @@ function(build_lib)
 
     # Make sure all bindings are built before building the visualizer module
     # that makes use of them
-    if(${ENABLE_VISUALIZER})
+    if(${ENABLE_VISUALIZER} AND (visualizer IN_LIST libs_to_build))
       if(NOT (${BLIB_LIBNAME} STREQUAL visualizer))
         add_dependencies(${libvisualizer} ${bindings-name})
       endif()

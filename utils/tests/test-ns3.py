@@ -539,8 +539,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("ns3-network", enabled_modules)
         self.assertIn("ns3-wifi", enabled_modules)
 
+        # Try enabling only core
+        return_code, stdout, stderr = run_ns3("configure --enable-modules='core' --enable-python-bindings")
+        self.config_ok(return_code, stdout)
+        self.assertIn("ns3-core", get_enabled_modules())
+
         # Try cleaning the list of enabled modules to reset to the normal configuration.
-        return_code, stdout, stderr = run_ns3("configure --enable-modules=''")
+        return_code, stdout, stderr = run_ns3("configure --enable-modules='' --disable-python-bindings")
         self.config_ok(return_code, stdout)
 
         # At this point we should have the same amount of modules that we had when we started.

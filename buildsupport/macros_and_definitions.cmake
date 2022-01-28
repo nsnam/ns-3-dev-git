@@ -1030,7 +1030,7 @@ macro(process_options)
   endforeach()
 
   unset(optional_visualizer_lib)
-  if(${ENABLE_VISUALIZER})
+  if(${ENABLE_VISUALIZER} AND (visualizer IN_LIST libs_to_build))
     set(optional_visualizer_lib ${libvisualizer})
   endif()
 

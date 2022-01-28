@@ -1,9 +1,11 @@
 set(libs "${libs_to_build}")
 
 # Process the visualizer module first if enabled
-if(${ENABLE_VISUALIZER})
-  message(STATUS "Processing src/visualizer")
-  add_subdirectory(visualizer)
+if(visualizer IN_LIST libs)
+  if(${ENABLE_VISUALIZER})
+    message(STATUS "Processing src/visualizer")
+    add_subdirectory(visualizer)
+  endif()
   list(REMOVE_ITEM libs visualizer)
 endif()
 
