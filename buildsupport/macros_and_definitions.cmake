@@ -487,15 +487,18 @@ macro(process_options)
 
   set(ENABLE_SQLITE False)
   if(${NS3_SQLITE})
-    find_package(
-            SQLite3
-            QUIET
+    #find_package(SQLite3 QUIET) # unsupported in CMake 3.10
+    # We emulate the behavior of find_package below
+    find_external_library(
+            DEPENDENCY_NAME SQLite3
+            HEADER_NAME sqlite3.h
+            LIBRARY_NAME sqlite3
     )
 
     if(${SQLite3_FOUND})
       set(ENABLE_SQLITE True)
     else()
-      message(STATUS SQLite was not found)
+      message(STATUS "SQLite was not found")
     endif()
   endif()
 
@@ -1464,25 +1467,33 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
   endif()
 endfunction(parse_ns3rc)
 
-function(find_external_library_header_and_library name header_name library_name
-         search_paths
+function(find_external_library
 )
-  mark_as_advanced(${name}_library)
+  set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
+  set(multiValueArgs SEARCH_PATHS)
+  cmake_parse_arguments("FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  set(name ${FIND_LIB_DEPENDENCY_NAME})
+  set(library_name ${FIND_LIB_LIBRARY_NAME})
+  set(header_name ${FIND_LIB_HEADER_NAME})
+  set(search_paths ${FIND_LIB_SEARCH_PATHS})
+
+  mark_as_advanced(${name}_library_internal)
   find_library(
-    ${name}_library ${library_name}
+    ${name}_library_internal ${library_name}
     HINTS ${search_paths} ENV LD_LIBRARY_PATH
     PATH_SUFFIXES /build /lib /build/lib /
   )
-  set(${name}_library_dir)
-  if(${name}_library)
-    get_filename_component(${name}_library_dir ${${name}_library} DIRECTORY
+  set(${name}_library_dir_internal)
+  if(${name}_library_internal)
+    get_filename_component(${name}_library_dir_internal ${${name}_library_internal} DIRECTORY
     )# e.g. lib/openflow.(so|dll|dylib|a) -> lib
   endif()
-  mark_as_advanced(${name}_header)
+  mark_as_advanced(${name}_header_internal)
   find_file(
-    ${name}_header ${header_name}
-    HINTS ${search_paths} ${${name}_library_dir}/../
-          ${${name}_library_dir}/../../
+    ${name}_header_internal ${header_name}
+    HINTS ${search_paths} ${${name}_library_dir_internal}/../
+          ${${name}_library_dir_internal}/../../
     PATH_SUFFIXES
       /build
       /include
@@ -1493,20 +1504,22 @@ function(find_external_library_header_and_library name header_name library_name
       /
   )
   # If we find both library and header, we export their values
-  if(${name}_library AND ${name}_header)
-    get_filename_component(header_include_dir ${${name}_header} DIRECTORY
+  if(${name}_header_internal AND (NOT ("${name}_library_internal-NOTFOUND" MATCHES "${${name}_library_internal}")))
+    get_filename_component(header_include_dir ${${name}_header_internal} DIRECTORY
     )# e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
     get_filename_component(header_include_dir2 ${header_include_dir} DIRECTORY
     )# e.g. include/(click) -> #include <click/simclick.h> should work
-    set(${name}_include_directories
+    set(${name}_INCLUDE_DIRS
         "${header_include_dir};${header_include_dir2}" PARENT_SCOPE
     )
-    set(${name}_library ${${name}_library} PARENT_SCOPE)
-    set(${name}_header ${${name}_header} PARENT_SCOPE)
+    set(${name}_LIBRARIES ${${name}_library_internal} PARENT_SCOPE)
+    set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
+    set(${name}_FOUND TRUE PARENT_SCOPE)
   else()
-    set(${name}_include_directories PARENT_SCOPE)
-    set(${name}_library PARENT_SCOPE)
-    set(${name}_header PARENT_SCOPE)
+    set(${name}_INCLUDE_DIRS PARENT_SCOPE)
+    set(${name}_LIBRARIES PARENT_SCOPE)
+    set(${name}_HEADER PARENT_SCOPE)
+    set(${name}_FOUND FALSE PARENT_SCOPE)
   endif()
 endfunction()
 

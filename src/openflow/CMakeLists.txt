@@ -9,15 +9,15 @@ set(NS3_OPENFLOW
           "ON if Openflow is found in NS3_WITH_OPENFLOW"
 )
 
-find_external_library_header_and_library(
-  "openflow"
-  "openflow.h"
-  "openflow"
-  "${NS3_WITH_OPENFLOW}"
+find_external_library(
+  DEPENDENCY_NAME openflow
+  HEADER_NAME openflow.h
+  LIBRARY_NAME openflow
+  SEARCH_PATHS ${NS3_WITH_OPENFLOW}
 )
+
 if(NOT
-   (openflow_library
-    AND openflow_header)
+   ${openflow_FOUND}
 )
   message(STATUS "Openflow was not found")
   return()
@@ -34,7 +34,7 @@ if(NOT
   return()
 endif()
 
-include_directories(${openflow_include_directories})
+include_directories(${openflow_INCLUDE_DIRS})
 add_definitions(
   -DNS3_OPENFLOW
   -DENABLE_OPENFLOW
@@ -56,6 +56,6 @@ build_lib(
     model/openflow-interface.h
     model/openflow-switch-net-device.h
   LIBRARIES_TO_LINK ${libinternet}
-                    ${openflow_library}
+                    ${openflow_LIBRARIES}
   TEST_SOURCES test/openflow-switch-test-suite.cc
 )

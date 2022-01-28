@@ -9,21 +9,21 @@ set(NS3_CLICK
           "ON if Click is found in NS3_WITH_CLICK"
 )
 
-find_external_library_header_and_library(
-  "click"
-  "simclick.h"
-  "click"
-  "${NS3_WITH_CLICK}"
+find_external_library(
+  DEPENDENCY_NAME click
+  HEADER_NAME simclick.h
+  LIBRARY_NAME click
+  SEARCH_PATHS ${NS3_WITH_CLICK}
 )
+
 if(NOT
-   (click_library
-    AND click_header)
+   ${click_FOUND}
 )
   message(STATUS "Click was not found")
   return()
 endif()
 
-include_directories(${click_include_directories})
+include_directories(${click_INCLUDE_DIRS})
 set(NS3_CLICK
     "ON"
     CACHE INTERNAL
@@ -45,6 +45,6 @@ build_lib(
     ${libcore}
     ${libnetwork}
     ${libinternet}
-    ${click_library}
+    ${click_LIBRARIES}
   TEST_SOURCES test/ipv4-click-routing-test.cc
 )

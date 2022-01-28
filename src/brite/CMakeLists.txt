@@ -9,22 +9,22 @@ set(NS3_BRITE
           "ON if Brite is found in NS3_WITH_BRITE"
 )
 
-find_external_library_header_and_library(
-  "brite"
-  "Brite.h"
-  "brite"
-  "${NS3_WITH_BRITE}"
+find_external_library(
+  DEPENDENCY_NAME brite
+  HEADER_NAME Brite.h
+  LIBRARY_NAME brite
+  SEARCH_PATHS ${NS3_WITH_BRITE}
 )
+
 if(NOT
-   (brite_library
-    AND brite_header)
+   ${brite_FOUND}
 )
   message(STATUS "Brite was not found")
   return()
 endif()
 
 # Only process module if include folder and library have been found
-include_directories(${brite_include_directories})
+include_directories(${brite_INCLUDE_DIRS})
 set(NS3_BRITE
     "ON"
     CACHE INTERNAL
@@ -40,6 +40,6 @@ build_lib(
     ${libcore}
     ${libinternet}
     ${libpoint-to-point}
-    ${brite_library}
+    ${brite_LIBRARIES}
   TEST_SOURCES test/brite-test-topology.cc
 )

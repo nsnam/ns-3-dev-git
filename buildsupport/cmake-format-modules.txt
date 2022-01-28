@@ -25,6 +25,13 @@ additional_commands:
             HEADER_FILES : '*'
             LIBRARIES_TO_LINK : '*'
 
+    find_external_library:
+        kwargs:
+            DEPENDENCY_NAME : '1'
+            HEADER_NAME : '1'
+            LIBRARY_NAME : '1'
+            SEARCH_PATHS : '*'
+
 format:
   tab_size: 2
   line_width: 80
