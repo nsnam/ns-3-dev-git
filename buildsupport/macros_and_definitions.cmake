@@ -485,6 +485,20 @@ macro(process_options)
     endif()
   endif()
 
+  set(ENABLE_SQLITE False)
+  if(${NS3_SQLITE})
+    find_package(
+            SQLite3
+            QUIET
+    )
+
+    if(${SQLite3_FOUND})
+      set(ENABLE_SQLITE True)
+    else()
+      message(STATUS SQLite was not found)
+    endif()
+  endif()
+
   if(${NS3_NATIVE_OPTIMIZATIONS} AND ${GCC})
     add_compile_options(-march=native -mtune=native)
   endif()
@@ -935,6 +949,7 @@ macro(process_options)
   check_include_file_cxx("stdlib.h" "HAVE_STDLIB_H")
   check_include_file_cxx("signal.h" "HAVE_SIGNAL_H")
   check_include_file_cxx("netpacket/packet.h" "HAVE_PACKETH")
+  check_include_file_cxx(semaphore.h HAVE_SEMAPHORE_H)
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(

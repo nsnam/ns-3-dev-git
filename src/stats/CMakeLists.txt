@@ -1,51 +1,27 @@
-if(${NS3_SQLITE})
-  find_package(
-    SQLite3
-    QUIET
+set(sqlite_sources)
+set(sqlite_header)
+set(sqlite_libraries)
+if(${ENABLE_SQLITE})
+  set(sqlite_sources
+      model/sqlite-data-output.cc
   )
-  check_include_file_cxx(
-    semaphore.h
-    HAVE_SEMAPHORE_H
+  set(sqlite_headers
+      model/sqlite-data-output.h
   )
-  if(${SQLite3_FOUND})
-    set(sqlite_sources
-        model/sqlite-data-output.cc
+  include_directories(${SQLite3_INCLUDE_DIRS})
+  set(sqlite_libraries
+      ${SQLite3_LIBRARIES}
+  )
+  if(HAVE_SEMAPHORE_H)
+    list(
+      APPEND
+      sqlite_sources
+      model/sqlite-output.cc
     )
-    set(sqlite_headers
-        model/sqlite-data-output.h
-    )
-
-    include_directories(${SQLite3_INCLUDE_DIRS})
-    set(sqlite_libraries
-        ${SQLite3_LIBRARIES}
-    )
-
-    if(HAVE_SEMAPHORE_H)
-      list(
-        APPEND
-        sqlite_sources
-        model/sqlite-output.cc
-      )
-      list(
-        APPEND
-        sqlite_headers
-        model/sqlite-output.h
-      )
-    endif()
-  endif()
-
-  mark_as_advanced(ENABLE_SQLITE)
-  if("${SQLite3_FOUND}")
-    set(ENABLE_SQLITE
-        True
-        CACHE INTERNAL
-              ""
-    )
-  else()
-    set(ENABLE_SQLITE
-        False
-        CACHE INTERNAL
-              ""
+    list(
+      APPEND
+      sqlite_headers
+      model/sqlite-output.h
     )
   endif()
 endif()
