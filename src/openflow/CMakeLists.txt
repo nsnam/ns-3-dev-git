@@ -45,6 +45,8 @@ set(NS3_OPENFLOW
           "ON if Openflow is found in NS3_WITH_OPENFLOW"
 )
 
+add_compile_options(-Wno-stringop-truncation)
+
 build_lib(
   LIBNAME openflow
   SOURCE_FILES
