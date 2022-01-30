@@ -33,10 +33,15 @@
 
 using namespace ns3;
 
-//----------------------------------------------------------------------
-//------------------------------------------------------
+/**
+ * Sender application.
+ */
 class Sender : public Application {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   Sender();
   virtual ~Sender();
@@ -48,35 +53,52 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
+  /**
+   * Send a packet.
+   */
   void SendPacket ();
 
-  uint32_t        m_pktSize;
-  Ipv4Address     m_destAddr;
-  uint32_t        m_destPort;
-  Ptr<ConstantRandomVariable> m_interval;
-  uint32_t        m_numPkts;
+  uint32_t        m_pktSize;    //!< The packet size.
+  Ipv4Address     m_destAddr;   //!< Destination address.
+  uint32_t        m_destPort;   //!< Destination port.
+  Ptr<ConstantRandomVariable> m_interval; //!< Rng for sending packets.
+  uint32_t        m_numPkts;    //!< Number of packets to send.
 
-  Ptr<Socket>     m_socket;
-  EventId         m_sendEvent;
+  Ptr<Socket>     m_socket;     //!< Sending socket.
+  EventId         m_sendEvent;  //!< Send packet event.
 
+  /// Tx TracedCallback.
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
-  uint32_t        m_count;
+  uint32_t        m_count;      //!< Number of packets sent.
 
   // end class Sender
 };
 
 
-
-
-//------------------------------------------------------
+/**
+ * Receiver application.
+ */
 class Receiver : public Application {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   Receiver();
   virtual ~Receiver();
 
+  /**
+   * Set the counter calculator for received packets.
+   * \param calc The CounterCalculator.
+   */
   void SetCounter (Ptr<CounterCalculator<> > calc);
+
+  /**
+   * Set the delay tracker for received packets.
+   * \param delay The Delay calculator.
+   */
   void SetDelayTracker (Ptr<TimeMinMaxAvgTotalCalculator> delay);
 
 protected:
@@ -86,24 +108,35 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
+  /**
+   * Receive a packet.
+   * \param socket The receiving socket.
+   */
   void Receive (Ptr<Socket> socket);
 
-  Ptr<Socket>     m_socket;
+  Ptr<Socket>     m_socket; //!< Receiving socket.
+  uint32_t        m_port;   //!< Listening port.
 
-  uint32_t        m_port;
-
-  Ptr<CounterCalculator<> > m_calc;
-  Ptr<TimeMinMaxAvgTotalCalculator> m_delay;
+  Ptr<CounterCalculator<> > m_calc; //!< Counter of the number of received packets.
+  Ptr<TimeMinMaxAvgTotalCalculator> m_delay;  //!< Delay calculator.
 
   // end class Receiver
 };
 
 
-
-
-//------------------------------------------------------
+/**
+ * Timestamp tag - it carries when the packet has been sent.
+ * 
+ * It would have been more realistic to include this info in 
+ * a header. Here we show how to avoid the extra overhead in
+ * a simulation.
+ */
 class TimestampTag : public Tag {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -111,14 +144,21 @@ public:
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
 
-  // these are our accessors to our tag structure
+  /**
+   * Set the timestamp.
+   * \param time The timestamp.
+   */
   void SetTimestamp (Time time);
+  /**
+   * Get the timestamp.
+   * \return the timestamp.
+   */
   Time GetTimestamp (void) const;
 
   void Print (std::ostream &os) const;
 
 private:
-  Time m_timestamp;
+  Time m_timestamp; //!< Timestamp.
 
   // end class TimestampTag
 };

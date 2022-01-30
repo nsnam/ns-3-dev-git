@@ -80,57 +80,155 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("PowerAdaptationInterference");
 
-//Packet size generated at the AP.
+/// Packet size generated at the AP.
 static const uint32_t packetSize = 1420;
 
+/**
+ * \brief Class to collect node statistics.
+ */
 class NodeStatistics
 {
 public:
+  /**
+   * \brief Constructor.
+   * 
+   * \param aps Access points
+   * \param stas WiFi Stations.
+   */
   NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas);
 
+  /**
+   * \brief Collects the statistics at a given time.
+   * 
+   * \param time Time at which the statistics are collected.
+   */
   void CheckStatistics (double time);
 
+  /**
+   * \brief Callback called by WifiNetDevice/Phy/PhyTxBegin. 
+   * 
+   * \param path The trace path.
+   * \param packet The sent packet.
+   * \param powerW The Tx power.
+   */
   void PhyCallback (std::string path, Ptr<const Packet> packet, double powerW);
+  /**
+   * \brief Callback called by PacketSink/Rx.
+   * 
+   * \param path The trace path.
+   * \param packet The received packet.
+   * \param from The sender address.
+   */
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
+  /**
+   * \brief Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
+   * 
+   * \param path The trace path.
+   * \param oldPower Old Tx power.
+   * \param newPower Actual Tx power.
+   * \param dest Destination of the transmission.
+   */
   void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest);
+  /**
+   * \brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
+   * 
+   * \param path The trace path.
+   * \param oldRate Old rate.
+   * \param newRate Actual rate.
+   * \param dest Destination of the transmission.
+   */
   void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
+  /**
+   * \brief Callback called by YansWifiPhy/State/State.
+   * 
+   * \param path The trace path.
+   * \param init Time when the state started.
+   * \param duration Amount of time we've been in (or will be in) the state.
+   * \param state The state.
+   */
   void StateCallback (std::string path, Time init, Time duration, WifiPhyState state);
 
+  /**
+   * \brief Get the Throughput output data
+   * 
+   * \return the Throughput output data.
+   */
   Gnuplot2dDataset GetDatafile ();
+  /**
+   * \brief Get the Power output data.
+   * 
+   * \return the Power output data.
+   */
   Gnuplot2dDataset GetPowerDatafile ();
+  /**
+   * \brief Get the IDLE state output data.
+   * 
+   * \return the IDLE state output data.
+   */
   Gnuplot2dDataset GetIdleDatafile ();
+  /**
+   * \brief Get the BUSY state output data.
+   * 
+   * \return the BUSY state output data.
+   */
   Gnuplot2dDataset GetBusyDatafile ();
+  /**
+   * \brief Get the TX state output data.
+   * 
+   * \return the TX state output data.
+   */
   Gnuplot2dDataset GetTxDatafile ();
+  /**
+   * \brief Get the RX state output data.
+   * 
+   * \return the RX state output data.
+   */
   Gnuplot2dDataset GetRxDatafile ();
 
+  /**
+   * \brief Get the Busy time.
+   * 
+   * \return the busy time. 
+   */
   double GetBusyTime ();
 
 private:
+  /// Time, DataRate pair vector.
   typedef std::vector<std::pair<Time, DataRate> > TxTime;
+  /**
+   * \brief Setup the WifiPhy object.
+   * 
+   * \param phy The WifiPhy to setup.
+   */
   void SetupPhy (Ptr<WifiPhy> phy);
+  /**
+   * \brief Get the time at which a given datarate has been recorded.
+   * 
+   * \param rate The datarate to search.
+   * \return the time.
+   */
   Time GetCalcTxTime (DataRate rate);
 
-  std::map<Mac48Address, double> currentPower;
-  std::map<Mac48Address, DataRate> currentRate;
-  uint32_t m_bytesTotal;
-  double totalEnergy;
-  double totalTime;
-  double busyTime;
-  double idleTime;
-  double txTime;
-  double rxTime;
-  double totalBusyTime;
-  double totalIdleTime;
-  double totalTxTime;
-  double totalRxTime;
-  Ptr<WifiPhy> myPhy;
-  TxTime timeTable;
-  Gnuplot2dDataset m_output;
-  Gnuplot2dDataset m_output_power;
-  Gnuplot2dDataset m_output_idle;
-  Gnuplot2dDataset m_output_busy;
-  Gnuplot2dDataset m_output_rx;
-  Gnuplot2dDataset m_output_tx;
+  std::map<Mac48Address, double> m_currentPower;  //!< Current Tx power for each sender.
+  std::map<Mac48Address, DataRate> m_currentRate; //!< Current Tx rate for each sender.
+  uint32_t m_bytesTotal;  //!< Number of received bytes.
+  double m_totalEnergy;   //!< Energy used.
+  double m_totalTime;     //!< Time spent.
+  double busyTime;        //!< BUSY time.
+  double idleTime;        //!< IDLE time.
+  double txTime;          //!< TX time.
+  double rxTime;          //!< RX time.
+  double m_totalBusyTime; //!< Total time in BUSY state.
+  double m_totalIdleTime; //!< Total time in IDLE state.
+  double m_totalTxTime;   //!< Total time in TX state.
+  double m_totalRxTime;   //!< Total time in RX state.
+  TxTime m_timeTable;     //!< Time, DataRate table.
+  Gnuplot2dDataset m_output;        //!< Throughput output data.
+  Gnuplot2dDataset m_output_power;  //!< Power output data.
+  Gnuplot2dDataset m_output_idle;   //!< IDLE output data.
+  Gnuplot2dDataset m_output_busy;   //!< BUSY output data.
+  Gnuplot2dDataset m_output_rx;     //!< RX output data.
+  Gnuplot2dDataset m_output_tx;     //!< TX output data.
 };
 
 NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
@@ -138,7 +236,6 @@ NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
   Ptr<NetDevice> device = aps.Get (0);
   Ptr<WifiNetDevice> wifiDevice = DynamicCast<WifiNetDevice> (device);
   Ptr<WifiPhy> phy = wifiDevice->GetPhy ();
-  myPhy = phy;
   SetupPhy (phy);
   DataRate dataRate = DataRate (phy->GetDefaultMode ().GetDataRate (phy->GetChannelWidth ()));
   double power = phy->GetTxPowerEnd ();
@@ -147,20 +244,20 @@ NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
       Ptr<NetDevice> staDevice = stas.Get (j);
       Ptr<WifiNetDevice> wifiStaDevice = DynamicCast<WifiNetDevice> (staDevice);
       Mac48Address addr = wifiStaDevice->GetMac ()->GetAddress ();
-      currentPower[addr] = power;
-      currentRate[addr] = dataRate;
+      m_currentPower[addr] = power;
+      m_currentRate[addr] = dataRate;
     }
-  currentRate[Mac48Address ("ff:ff:ff:ff:ff:ff")] = dataRate;
-  totalEnergy = 0;
-  totalTime = 0;
+  m_currentRate[Mac48Address ("ff:ff:ff:ff:ff:ff")] = dataRate;
+  m_totalEnergy = 0;
+  m_totalTime = 0;
   busyTime = 0;
   idleTime = 0;
   txTime = 0;
   rxTime = 0;
-  totalBusyTime = 0;
-  totalIdleTime = 0;
-  totalTxTime = 0;
-  totalRxTime = 0;
+  m_totalBusyTime = 0;
+  m_totalIdleTime = 0;
+  m_totalTxTime = 0;
+  m_totalRxTime = 0;
   m_bytesTotal = 0;
   m_output.SetTitle ("Throughput Mbits/s");
   m_output_idle.SetTitle ("Idle Time");
@@ -181,14 +278,14 @@ NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
       DataRate dataRate = DataRate (mode.GetDataRate (phy->GetChannelWidth ()));
       Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetPhyBand ());
       NS_LOG_DEBUG (mode.GetUniqueName () << " " << time.GetSeconds () << " " << dataRate);
-      timeTable.push_back (std::make_pair (time, dataRate));
+      m_timeTable.push_back (std::make_pair (time, dataRate));
     }
 }
 
 Time
 NodeStatistics::GetCalcTxTime (DataRate rate)
 {
-  for (TxTime::const_iterator i = timeTable.begin (); i != timeTable.end (); i++)
+  for (TxTime::const_iterator i = m_timeTable.begin (); i != m_timeTable.end (); i++)
     {
       if (rate == i->second)
         {
@@ -208,21 +305,21 @@ NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet, double 
 
   if (head.GetType () == WIFI_MAC_DATA)
     {
-      totalEnergy += pow (10.0, currentPower[dest] / 10.0) * GetCalcTxTime (currentRate[dest]).GetSeconds ();
-      totalTime += GetCalcTxTime (currentRate[dest]).GetSeconds ();
+      m_totalEnergy += pow (10.0, m_currentPower[dest] / 10.0) * GetCalcTxTime (m_currentRate[dest]).GetSeconds ();
+      m_totalTime += GetCalcTxTime (m_currentRate[dest]).GetSeconds ();
     }
 }
 
 void
 NodeStatistics::PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest)
 {
-  currentPower[dest] = newPower;
+  m_currentPower[dest] = newPower;
 }
 
 void
 NodeStatistics::RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest)
 {
-  currentRate[dest] = newRate;
+  m_currentRate[dest] = newRate;
 }
 
 void
@@ -231,22 +328,22 @@ NodeStatistics::StateCallback (std::string path, Time init, Time duration, WifiP
   if (state == WifiPhyState::CCA_BUSY)
     {
       busyTime += duration.GetSeconds ();
-      totalBusyTime += duration.GetSeconds ();
+      m_totalBusyTime += duration.GetSeconds ();
     }
   else if (state == WifiPhyState::IDLE)
     {
       idleTime += duration.GetSeconds ();
-      totalIdleTime += duration.GetSeconds ();
+      m_totalIdleTime += duration.GetSeconds ();
     }
   else if (state == WifiPhyState::TX)
     {
       txTime += duration.GetSeconds ();
-      totalTxTime += duration.GetSeconds ();
+      m_totalTxTime += duration.GetSeconds ();
     }
   else if (state == WifiPhyState::RX)
     {
       rxTime += duration.GetSeconds ();
-      totalRxTime += duration.GetSeconds ();
+      m_totalRxTime += duration.GetSeconds ();
     }
 }
 
@@ -261,9 +358,9 @@ NodeStatistics::CheckStatistics (double time)
 {
   double mbs = ((m_bytesTotal * 8.0) / (1000000 * time));
   m_bytesTotal = 0;
-  double atp = totalEnergy / time;
-  totalEnergy = 0;
-  totalTime = 0;
+  double atp = m_totalEnergy / time;
+  m_totalEnergy = 0;
+  m_totalTime = 0;
   m_output_power.Add ((Simulator::Now ()).GetSeconds (), atp);
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
@@ -318,7 +415,7 @@ NodeStatistics::GetTxDatafile ()
 double
 NodeStatistics::GetBusyTime ()
 {
-  return totalBusyTime + totalRxTime;
+  return m_totalBusyTime + m_totalRxTime;
 }
 
 void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest)
