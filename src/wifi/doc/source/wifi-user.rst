@@ -274,7 +274,7 @@ The following values for WifiStandard are defined in
   WIFI_STANDARD_80211ax
 
 By default, the WifiHelper (the typical use case for WifiPhy creation) will
-configure the WIFI_STANDARD_80211a standard by default.  Other values
+configure the WIFI_STANDARD_80211ax standard by default.  Other values
 for standards should be passed explicitly to the WifiHelper object.
 
 If user has not already configured ChannelSettings when SetStandard is called,

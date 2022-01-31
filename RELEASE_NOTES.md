@@ -27,6 +27,9 @@ requirements (Note: not all ns-3 features are available on all systems):
 ### New user-visible features
 
 - (spectrum) ThreeGppSpectrumPropagationLossModel and ThreeGppChannelModel now support multiple PhasedArrayModel instances per device. This feature can be used to implement MIMO.
+- (wifi) The default Wi-Fi standard has been upgraded from 802.11a to 802.11ax.
+- (wifi) The default Wi-Fi rate control has been changed from ArfWifiManager to IdealWifiManager.
+
 ### Bugs fixed
 
 - (spectrum) Fix condition for channel matrix update in ThreeGppChannelModel (left and right operand were pointing to the same object)

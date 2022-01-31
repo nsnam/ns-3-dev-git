@@ -1026,7 +1026,7 @@ The following rate control algorithms can be used by the MAC low layer:
 
 Algorithms found in real devices:
 
-* ``ArfWifiManager`` (default for ``WifiHelper``)
+* ``ArfWifiManager``
 * ``OnoeWifiManager``
 * ``ConstantRateWifiManager``
 * ``MinstrelWifiManager``
@@ -1034,7 +1034,7 @@ Algorithms found in real devices:
 
 Algorithms in literature:
 
-* ``IdealWifiManager``
+* ``IdealWifiManager``  (default for ``WifiHelper``)
 * ``AarfWifiManager`` [lacage2004aarfamrr]_
 * ``AmrrWifiManager`` [lacage2004aarfamrr]_
 * ``CaraWifiManager`` [kim2006cara]_

@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
     // i.e. without further channel number/width/frequency configuration
 
     case 1:
-      // By default, WifiHelper will use WIFI_STANDARD_80211a
+      wifi.SetStandard (WIFI_STANDARD_80211a);
       staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
       apDevice = wifi.Install (phy, macAp, wifiApNode.Get (0));
       phySta = GetYansWifiPhyPtr (staDevice);
@@ -179,6 +179,7 @@ int main (int argc, char *argv[])
       PrintAttributesIfEnabled (printAttributes);
       break;
     case 7:
+      // By default, WifiHelper will use WIFI_STANDARD_80211ax
       wifi.SetStandard (WIFI_STANDARD_80211ax);
       phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_2_4GHZ, 0}"));
       staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));

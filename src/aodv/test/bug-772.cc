@@ -136,6 +136,7 @@ Bug772ChainTest::CreateDevices ()
   wifiPhy.Set ("TxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   wifiPhy.Set ("RxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211a);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"), "MaxSlrc", UintegerValue (7));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes);
 

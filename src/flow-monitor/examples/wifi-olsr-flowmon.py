@@ -56,7 +56,6 @@ def main(argv):
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     ssid = ns.wifi.Ssid("wifi-default")
-    wifi.SetRemoteStationManager("ns3::ArfWifiManager")
     wifiMac.SetType ("ns3::AdhocWifiMac",
                      "Ssid", ns.wifi.SsidValue(ssid))
 

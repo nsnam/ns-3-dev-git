@@ -19,7 +19,7 @@
  */
 
 /**
- * This is a simple example in order to show how 802.11e compressed block ack mechanism could be used.
+ * This is a simple example in order to show how 802.11n compressed block ack mechanism could be used.
  *
  * Network topology:
  *
@@ -78,9 +78,10 @@ int main (int argc, char * argv[])
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   WifiMacHelper mac;
   /* disable fragmentation */
-  wifi.SetRemoteStationManager ("ns3::AarfWifiManager", "FragmentationThreshold", UintegerValue (2500));
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager", "FragmentationThreshold", UintegerValue (2500));
 
   Ssid ssid ("My-network");
 

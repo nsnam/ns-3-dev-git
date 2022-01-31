@@ -295,7 +295,6 @@ main (int argc, char *argv[])
       ss << i;
       ssidString += ss.str ();
       Ssid ssid = Ssid (ssidString);
-      wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
       macInfra.SetType ("ns3::StaWifiMac",
                         "Ssid", SsidValue (ssid));

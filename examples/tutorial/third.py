@@ -93,11 +93,10 @@ channel = ns.wifi.YansWifiChannelHelper.Default()
 phy = ns.wifi.YansWifiPhyHelper()
 phy.SetChannel(channel.Create())
 
-wifi = ns.wifi.WifiHelper()
-wifi.SetRemoteStationManager("ns3::AarfWifiManager")
-
 mac = ns.wifi.WifiMacHelper()
 ssid = ns.wifi.Ssid ("ns-3-ssid")
+
+wifi = ns.wifi.WifiHelper()
 
 mac.SetType ("ns3::StaWifiMac", "Ssid", ns.wifi.SsidValue(ssid), "ActiveProbing", ns.core.BooleanValue(False))
 staDevices = wifi.Install(phy, mac, wifiStaNodes)

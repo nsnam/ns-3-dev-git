@@ -115,7 +115,8 @@ int main (int argc, char *argv[])
   phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi; //the default standard of 802.11a will be selected by this helper since the program doesn't specify another one
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211a);
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
   WifiMacHelper mac;
 

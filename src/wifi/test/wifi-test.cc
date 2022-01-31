@@ -954,7 +954,8 @@ SetChannelFrequencyTest::DoRun ()
   {
     // case 1:
     WifiHelper wifi;
-    // By default, WifiHelper will use WIFI_PHY_STANDARD_80211a
+    wifi.SetStandard (WIFI_STANDARD_80211a);
+    wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     // We expect channel 36, width 20, frequency 5180
@@ -1021,9 +1022,9 @@ SetChannelFrequencyTest::DoRun ()
   }
   {
     // case 7:
+    // By default, WifiHelper will use WIFI_PHY_STANDARD_80211ax
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    wifi.SetStandard (WIFI_STANDARD_80211ax);
     phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_2_4GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
@@ -1036,7 +1037,6 @@ SetChannelFrequencyTest::DoRun ()
     // case 8:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    wifi.SetStandard (WIFI_STANDARD_80211ax);
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 42, "802.11ax-5GHz configuration");
@@ -1047,7 +1047,6 @@ SetChannelFrequencyTest::DoRun ()
     // case 9:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    wifi.SetStandard (WIFI_STANDARD_80211ax);
     phy.Set ("ChannelSettings", StringValue ("{0, 0, BAND_6GHZ, 0}"));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);

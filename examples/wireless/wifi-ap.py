@@ -118,7 +118,6 @@ def main(argv):
     wifiPhy.SetChannel(wifiChannel.Create())
 
     ssid = ns.wifi.Ssid("wifi-default")
-    wifi.SetRemoteStationManager("ns3::ArfWifiManager")
     wifiMac = ns.wifi.WifiMacHelper()
 
     # setup stas.

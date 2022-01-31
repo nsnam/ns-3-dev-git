@@ -712,11 +712,11 @@ WifiHelper::~WifiHelper ()
 }
 
 WifiHelper::WifiHelper ()
-  : m_standard (WIFI_STANDARD_80211a),
+  : m_standard (WIFI_STANDARD_80211ax),
     m_selectQueueCallback (&SelectQueueByDSField),
     m_enableFlowControl (true)
 {
-  SetRemoteStationManager ("ns3::ArfWifiManager");
+  SetRemoteStationManager ("ns3::IdealWifiManager");
 }
 
 void

@@ -136,7 +136,6 @@ WifiAcMappingTest::DoRun (void)
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   Ssid ssid = Ssid ("wifi-ac-mapping");
-  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
   // Setup the AP, which will be the source of traffic for this test
   NodeContainer ap;

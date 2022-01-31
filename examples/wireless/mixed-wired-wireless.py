@@ -260,7 +260,6 @@ def main(argv):
         ssid = ns.wifi.Ssid('wifi-infra' + str(i))
         wifiInfra = ns.wifi.WifiHelper()
         wifiPhy.SetChannel(wifiChannel.Create())
-        wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
         macInfra = ns.wifi.WifiMacHelper();
         macInfra.SetType("ns3::StaWifiMac",
                          "Ssid", ns.wifi.SsidValue(ssid))
