@@ -1582,8 +1582,9 @@ PrintAttributeImplementations (std::ostream & os)
   PrintAttributeValueWithName (os, "Tuple", "std::tuple<Args...>", "tuple.h");
   PrintMakeChecker            (os, "Tuple", "tuple.h");
 
-  PrintAttributeValueSection  (os, "AttributeContainer", false);
-  PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer", "attribute-container.h");
+  // AttributeContainer is already documented.
+  // PrintAttributeValueSection  (os, "AttributeContainer", false);
+  // PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer", "attribute-container.h");
   PrintMakeChecker            (os, "AttributeContainer",  "attribute-container.h");
 }  // PrintAttributeImplementations ()
 

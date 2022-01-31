@@ -788,6 +788,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """!
         Test if CMake target names for scratches and ns3 shortcuts
         are working correctly
+        @return None
         """
 
         test_files = ["scratch/main.cc",
@@ -858,6 +859,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
     def test_14_MpiCommandTemplate(self):
         """!
         Test if ns3 is inserting additional arguments by MPICH and OpenMPI to run on the CI
+        @return None
         """
         # Skip test if mpi is not installed
         if shutil.which("mpiexec") is None:
