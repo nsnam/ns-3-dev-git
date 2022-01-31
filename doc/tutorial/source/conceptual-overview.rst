@@ -887,7 +887,7 @@ most of our *repositories* will look:
   drwxr-xr-x                               [up]
   -rwxrwxrwx  12507 nov 23 23:12 AUTHORS
   drwxrwxrwx      0 dez 30  2020 bindings
-  drwxrwxrwx   4096 nov 28 11:25 buildsupport
+  drwxrwxrwx   4096 nov 28 11:25 build-support
   -rwxrwxrwx 189870 nov 28 10:13 CHANGES.html
   -rwxrwxrwx   1490 nov 22 10:56 .clang-format
   -rwxrwxrwx   5079 nov 28 10:50 CMakeLists.txt

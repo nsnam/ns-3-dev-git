@@ -50,7 +50,7 @@ except ImportError:
 # XXX This should really be part of a ns3 command to list the configuration
 # items relative to optional ns-3 pieces.
 #
-# A list of interesting configuration items in the waf configuration
+# A list of interesting configuration items in the ns3 configuration
 # cache which we may be interested in when deciding on which examples
 # to run and how to run them.  These are set by ns3 during the
 # configuration phase and the corresponding assignments are usually
@@ -593,16 +593,14 @@ def sigint_hook(signal, frame):
 # and use that result.
 #
 def read_ns3_config():
+    lock_filename = ".lock-ns3_%s_build" % sys.platform
     f = None
     try:
         # sys.platform reports linux2 for python2 and linux for python3
-        f = open(".lock-waf_" + sys.platform + "_build", "rt")
+        f = open(lock_filename, "rt")
     except FileNotFoundError:
-        try:
-            f = open(".lock-waf_linux2_build", "rt")
-        except FileNotFoundError:
-            print('The .lock-waf ... directory was not found.  You must do waf build before running test.py.', file=sys.stderr)
-            sys.exit(2)
+        print('The .lock-ns3 file was not found.  You must configure before running test.py.', file=sys.stderr)
+        sys.exit(2)
 
     for line in f:
         if line.startswith("top_dir ="):
@@ -619,7 +617,7 @@ def read_ns3_config():
     global NS3_BUILDDIR
     NS3_BUILDDIR = out_dir
 
-    with open("%s/c4che/_cache.py" % out_dir) as f:
+    with open(lock_filename) as f:
         for line in f.readlines():
             for item in interesting_config_items:
                 if line.startswith(item):
@@ -1116,10 +1114,10 @@ def run_tests():
     #
     # Get the information from the build status file.
     #
-    build_status_file = os.path.join(NS3_BUILDDIR, 'build-status.py')
-    if os.path.exists(build_status_file):
-        ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
-        ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
+    lock_filename = ".lock-ns3_%s_build" % sys.platform
+    if os.path.exists(lock_filename):
+        ns3_runnable_programs = get_list_from_file(lock_filename, "ns3_runnable_programs")
+        ns3_runnable_scripts = get_list_from_file(lock_filename, "ns3_runnable_scripts")
         ns3_runnable_scripts = [os.path.basename(script) for script in ns3_runnable_scripts]
     else:
         print('The build status file was not found.  You must configure before running test.py.', file=sys.stderr)

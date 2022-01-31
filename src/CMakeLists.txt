@@ -25,7 +25,7 @@ endforeach()
 # Build the lib-ns3-static (ns3.x-static-buildtype.a/.lib) with all sublibraries
 if(${NS3_STATIC})
   add_library(
-    ${lib-ns3-static} STATIC ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc
+    ${lib-ns3-static} STATIC ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                              "${lib-ns3-static-objs}"
   )
 
@@ -65,7 +65,7 @@ endif()
 # sublibraries
 if(${NS3_MONOLIB})
   add_library(
-    ${lib-ns3-monolib} SHARED ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc
+    ${lib-ns3-monolib} SHARED ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                               "${lib-ns3-static-objs}"
   )
   set_target_properties(

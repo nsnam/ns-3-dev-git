@@ -1,25 +1,27 @@
 set(base_examples
+    lena-cc-helper
     lena-cqi-threshold
+    lena-deactivate-bearer
+    lena-distributed-ffr
     lena-dual-stripe
     lena-fading
+    lena-frequency-reuse
     lena-intercell-interference
+    lena-ipv6-addr-conf
+    lena-ipv6-ue-rh
+    lena-ipv6-ue-ue
     lena-pathloss-traces
     lena-profiling
+    lena-radio-link-failure
     lena-rem
     lena-rem-sector-antenna
     lena-rlc-traces
     lena-simple
     lena-simple-epc
-    lena-deactivate-bearer
+    lena-simple-epc-backhaul
+    lena-uplink-power-control
     lena-x2-handover
     lena-x2-handover-measures
-    lena-frequency-reuse
-    lena-distributed-ffr
-    lena-uplink-power-control
-    lena-ipv6-addr-conf
-    lena-ipv6-ue-rh
-    lena-ipv6-ue-ue
-    lena-radio-link-failure
 )
 
 foreach(

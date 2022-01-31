@@ -93,8 +93,8 @@ endif()
 add_library(
   ${lib${name}}
   OBJECT
-  ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc # empty source file if only
-                                              # libcore is enabled
+  ${PROJECT_SOURCE_DIR}/build-support/empty.cc # empty source file if only
+  # libcore is enabled
   ${applications_sources}
   ${csma_sources}
   ${dsr_sources}

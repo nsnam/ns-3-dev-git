@@ -39,7 +39,7 @@ build/
 version.cache
 
 .idea/
-cmake_cache/
+cmake-cache/
 cmake-build-debug/
 cmake-build-relwithdebinfo/
 cmake-build-minsizerel/

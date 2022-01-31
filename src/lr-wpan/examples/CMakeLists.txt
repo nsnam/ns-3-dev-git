@@ -1,5 +1,6 @@
 set(base_examples
     lr-wpan-data
+    lr-wpan-mlme
     lr-wpan-packet-print
     lr-wpan-phy-test
 )

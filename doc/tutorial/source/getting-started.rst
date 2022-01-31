@@ -677,10 +677,10 @@ output that looks similar to the following::
 
    -- Configuring done
    -- Generating done
-   -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake_cache
+   -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake-cache
    Finished executing the following commands:
-   mkdir cmake_cache
-   cd cmake_cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=ON -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
+   mkdir cmake-cache
+   cd cmake-cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=ON -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
 
 
 Note the last part of the above output.  Some |ns3| options are not enabled by
@@ -1011,7 +1011,7 @@ Corresponds to
 
 .. sourcecode:: console
 
-  $ cd /ns-3-dev/cmake_cache/
+  $ cd /ns-3-dev/cmake-cache/
   $ cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=ON -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_TESTS=ON -DNS3_EXAMPLES=ON ..
 
 Build command
@@ -1027,7 +1027,7 @@ Which corresponds to the following commands:
 
 .. sourcecode:: console
 
-  $ cd /ns-3-dev/cmake_cache/
+  $ cd /ns-3-dev/cmake-cache/
   $ cmake --build . -j 16 --target test-runner # This command builds the test-runner target with the underlying build system
 
 
@@ -1041,7 +1041,7 @@ Which corresponds to:
 
 .. sourcecode:: console
 
-  $ cd /ns-3-dev/cmake_cache/
+  $ cd /ns-3-dev/cmake-cache/
   $ cmake --build . -j 16  # This command builds all the targets with the underlying build system
 
 Run command
@@ -1055,7 +1055,7 @@ Corresponds to:
 
 .. sourcecode:: console
 
-  $ cd /ns-3-dev/cmake_cache/
+  $ cd /ns-3-dev/cmake-cache/
   $ cmake --build . -j 16 --target test-runner # This command builds the test-runner target calling the underlying build system
   $ export PATH=$PATH:/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python # export library paths
   $ export LD_LIBRARY_PATH=/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python
@@ -1161,10 +1161,10 @@ system and underlying build system. https://cmake.org/cmake/help/latest/generato
 
   ...
 
-  $ -- Build files have been written to: /ns-3-dev/cmake_cache
+  $ -- Build files have been written to: /ns-3-dev/cmake-cache
 
 
-There will be a NS3.cbp file inside the cache folder used during configuration (in this case cmake_cache).
+There will be a NS3.cbp file inside the cache folder used during configuration (in this case cmake-cache).
 This is a Code::Blocks project file that can be opened by the IDE.
 
 When you first open the IDE, you will be greeted by a window asking you to select the compiler you want.
@@ -1217,11 +1217,11 @@ system and underlying build system. https://cmake.org/cmake/help/latest/generato
 
   ...
 
-  $ -- Build files have been written to: /ns-3-dev/cmake_cache
+  $ -- Build files have been written to: /ns-3-dev/cmake-cache
 
 
 There will be a NS3.xcodeproj file inside the cache folder used during configuration
-(in this case cmake_cache). This is a XCode project file that can be opened by the IDE.
+(in this case cmake-cache). This is a XCode project file that can be opened by the IDE.
 
 Loading the project will take a while, and you will be greeted with the following prompt.
 Select to automatically create the schemes.
@@ -1288,7 +1288,7 @@ executing each test, which will actually look something like:
 
   -- Configuring done
   -- Generating done
-  -- Build files have been written to: /ns-3-dev/cmake_cache
+  -- Build files have been written to: /ns-3-dev/cmake-cache
 
   ...
   Scanning dependencies of target tap-creator

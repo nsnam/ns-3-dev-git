@@ -1,19 +1,3 @@
-set(name)
-
-set(source_files)
-
-set(header_files)
-
-set(deprecated_header_files)
-
-set(libraries_to_link
-    ${libinternet}
-)
-
-set(test_sources
-    test/nix-test.cc
-)
-
 build_lib(
   LIBNAME nix-vector-routing
   SOURCE_FILES helper/nix-vector-helper.cc

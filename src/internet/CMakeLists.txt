@@ -1,5 +1,3 @@
-set(name)
-
 set(source_files
     helper/internet-stack-helper.cc
     helper/internet-trace-helper.cc
@@ -129,8 +127,6 @@ set(source_files
     model/udp-socket-impl.cc
     model/udp-socket.cc
 )
-
-set(private_header_files)
 
 set(header_files
     ${header_files}

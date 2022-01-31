@@ -91,7 +91,7 @@ function(configure_embedded_version)
   check_git_repo_has_ns3_tags(HAS_NS3_TAGS NS3_VERSION_TAG)
 
   set(version_cache_file_template
-      ${PROJECT_SOURCE_DIR}/buildsupport/version.cache.in
+      ${PROJECT_SOURCE_DIR}/build-support/version.cache.in
   )
   set(version_cache_file ${PROJECT_SOURCE_DIR}/src/core/model/version.cache)
 
@@ -199,7 +199,7 @@ function(configure_embedded_version)
   # Enable embedding build version
   add_definitions(-DENABLE_BUILD_VERSION=1)
   configure_file(
-    buildsupport/version-defines-template.h
+    build-support/version-defines-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
   )
   set(ENABLE_BUILD_VERSION True PARENT_SCOPE)

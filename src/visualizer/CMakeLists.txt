@@ -1,4 +1,4 @@
-include_directories(${Python_INCLUDE_DIRS})
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 build_lib(
   LIBNAME visualizer
@@ -6,7 +6,7 @@ build_lib(
                model/visual-simulator-impl.cc
   HEADER_FILES model/pyviz.h
   LIBRARIES_TO_LINK
-    ${Python_LIBRARIES}
+    ${PYTHON_LIBRARIES}
     ${libcore}
     ${libinternet}
     ${libwifi}

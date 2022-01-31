@@ -23,7 +23,7 @@ if(${ENABLE_MPI})
       ${MPI_CXX_LIBRARIES}
   )
   target_include_directories(
-    ${name}
+    brite-MPI-example
     PUBLIC ${MPI_CXX_INCLUDE_DIRS}
   )
 endif()

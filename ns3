@@ -11,7 +11,7 @@ import sys
 
 ns3_path = os.path.dirname(os.path.abspath(__file__))
 out_dir = os.sep.join([ns3_path, "build"])
-lock_file = os.sep.join([ns3_path, ".lock-waf_%s_build" % sys.platform])
+lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
 
 print_buffer = ""
 verbose = True
@@ -284,33 +284,31 @@ def parse_args(argv):
     return args
 
 
-def check_c4che_data(output_directory):
-    # Check the c4cache for the build type (in case there are multiple cmake cache folders
-    c4che_path = os.sep.join([output_directory, "c4che", "_cache.py"])
-
+def check_lock_data(output_directory):
+    # Check the .lock-ns3 for the build type (in case there are multiple cmake cache folders
     ns3_modules_tests = []
     ns3_modules_apiscan = []
     ns3_modules_bindings = []
     ns3_modules = None
 
-    c4che_info = {"BUILD_PROFILE": None,
+    build_info = {"BUILD_PROFILE": None,
                   "VERSION": None,
                   "ENABLE_EXAMPLES": False,
                   "ENABLE_SUDO": False,
                   "ENABLE_TESTS": False,
                   }
-    if output_directory and os.path.exists(c4che_path):
-        exec(open(c4che_path).read(), globals(), c4che_info)
-        ns3_modules = c4che_info["NS3_ENABLED_MODULES"]
+    if output_directory and os.path.exists(lock_file):
+        exec(open(lock_file).read(), globals(), build_info)
+        ns3_modules = build_info["NS3_ENABLED_MODULES"]
         if ns3_modules:
-            if c4che_info["ENABLE_TESTS"]:
+            if build_info["ENABLE_TESTS"]:
                 ns3_modules_tests = [x + "-test" for x in ns3_modules]
-            if c4che_info["ENABLE_PYTHON_BINDINGS"]:
+            if build_info["ENABLE_PYTHON_BINDINGS"]:
                 ns3_modules_bindings = [x + "-bindings" for x in ns3_modules]
-            if "ENABLE_SCAN_PYTHON_BINDINGS" in c4che_info and c4che_info["ENABLE_SCAN_PYTHON_BINDINGS"]:
+            if "ENABLE_SCAN_PYTHON_BINDINGS" in build_info and build_info["ENABLE_SCAN_PYTHON_BINDINGS"]:
                 ns3_modules_apiscan = [x + "-apiscan" for x in ns3_modules]
             ns3_modules = ns3_modules + ns3_modules_tests + ns3_modules_apiscan + ns3_modules_bindings
-    return c4che_info, ns3_modules
+    return build_info, ns3_modules
 
 
 def print_and_buffer(message):
@@ -379,8 +377,8 @@ def search_cmake_cache(build_profile):
 
     if not current_cmake_generator:
         # Search for available generators
-        cmake_generator_map = {"make": "Unix Makefiles",
-                               "ninja": "Ninja",
+        cmake_generator_map = {"ninja": "Ninja",
+                               "make": "Unix Makefiles",
                                "xcodebuild": "Xcode"
                                }
         available_generators = []
@@ -428,7 +426,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
 
     if not project_configured(current_cmake_cache_folder):
         # Create a new cmake_cache folder if one does not exist
-        current_cmake_cache_folder = os.sep.join([ns3_path, "cmake_cache"])
+        current_cmake_cache_folder = os.sep.join([ns3_path, "cmake-cache"])
         if not os.path.exists(current_cmake_cache_folder):
             print_and_buffer("mkdir %s" % os.path.relpath(current_cmake_cache_folder, ns3_path))
             if not dry_run:
@@ -549,11 +547,9 @@ def refresh_cmake(current_cmake_cache_folder, output):
 
 
 def get_program_shortcuts(build_profile, ns3_version):
-    build_status_file = os.sep.join([out_dir, "build-status.py"])
-
-    # Import programs from build-status.py
+    # Import programs from .lock-ns3
     programs_dict = {}
-    exec(open(build_status_file).read(), globals(), programs_dict)
+    exec(open(lock_file).read(), globals(), programs_dict)
 
     # We can now build a map to simplify things for users (at this point we could remove versioning prefix/suffix)
     ns3_program_map = {}
@@ -689,8 +685,18 @@ def extract_cmakecache_settings(current_cmake_cache_folder):
     current_settings = re.findall("(NS3_.*):.*=(.*)", contents)  # extract NS3 specific settings
     current_settings.extend(re.findall("(CMAKE_BUILD_TYPE):.*=(.*)", contents))  # extract build type
     current_settings.extend(re.findall("(CMAKE_GENERATOR):.*=(.*)", contents))  # extract generator
+    current_settings.extend(re.findall("(CMAKE_CXX_COMPILER):.*=(.*)", contents))  # C++ compiler
+    current_settings.extend(re.findall("(CMAKE_CXX_FLAGS):.*=(.*)", contents))  # C++ flags
+    current_settings.extend(re.findall("(CMAKE_C_COMPILER):.*=(.*)", contents))  # C compiler
+    current_settings.extend(re.findall("(CMAKE_C_FLAGS):.*=(.*)", contents))  # C flags
+    current_settings.extend(re.findall("(CMAKE_INSTALL_PREFIX):.*=(.*)", contents))  # installation directory
 
-    return dict(current_settings)
+    # Transform list into dictionary
+    settings_dictionary = dict(current_settings)
+    del settings_dictionary["NS3_INT64X64-STRINGS"]  # remove cached options or CMake will warn you
+
+    # Return dictionary with NS3-related CMake settings
+    return settings_dictionary
 
 
 def reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output, dry_run=False):
@@ -938,6 +944,12 @@ def run_step(args, target_to_run, target_args):
     if not args.dry_run:
         try:
             ret = subprocess.run(program_arguments, env=proc_env, cwd=working_dir, shell=use_shell)
+
+            # Forward POSIX signal error codes
+            if ret.returncode < 0:
+                os.kill(os.getpid(), -ret.returncode)
+
+            # Return in case of a positive error number
             exit(ret.returncode)
         except KeyboardInterrupt:
             print("Process was interrupted by the user")
@@ -1052,15 +1064,15 @@ def main():
         args.build = ['uninstall']
 
     # Get build profile and other settings
-    c4che_info, ns3_modules = check_c4che_data(out_dir)
-    build_profile = c4che_info["BUILD_PROFILE"]
-    enable_sudo = c4che_info["ENABLE_SUDO"]
-    ns3_version = c4che_info["VERSION"]
+    build_info, ns3_modules = check_lock_data(out_dir)
+    build_profile = build_info["BUILD_PROFILE"]
+    enable_sudo = build_info["ENABLE_SUDO"]
+    ns3_version = build_info["VERSION"]
 
     # Docs options become cmake targets
     if args.docs:
         args.build = [args.docs] if args.docs != "all" else ["sphinx", "doxygen"]
-        if "doxygen" in args.build and (not c4che_info["ENABLE_EXAMPLES"] or not c4che_info["ENABLE_TESTS"]):
+        if "doxygen" in args.build and (not build_info["ENABLE_EXAMPLES"] or not build_info["ENABLE_TESTS"]):
             print('The "./ns3 docs doxygen" and "./ns3 docs all" commands,\n'
                   'require examples and tests to generate introspected documentation.\n'
                   'Try "./ns3 docs doxygen-no-build" or enable examples and tests.')
@@ -1140,10 +1152,10 @@ def main():
     if ns3_modules is None:
         project_not_configured()
 
-    # We could also replace the "ns3-" prefix used in c4che with the "lib" prefix currently used in cmake
+    # We could also replace the "ns3-" prefix used in .lock-ns3 with the "lib" prefix currently used in cmake
     ns3_modules = [module.replace("ns3-", "") for module in ns3_modules]
 
-    # Now that CMake is configured, we can look for c++ targets in build-status.py
+    # Now that CMake is configured, we can look for c++ targets in .lock-ns3
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
 
     def check_ambiguous_target(target_type, target_to_check, programs):

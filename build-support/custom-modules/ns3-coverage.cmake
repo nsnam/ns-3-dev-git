@@ -34,7 +34,7 @@ if(${NS3_COVERAGE})
   endif()
   # The following target will run test.py --no-build to generate the code
   # coverage files .gcno and .gcda output will be in ${CMAKE_BINARY_DIR} a.k.a.
-  # cmake_cache or cmake-build-${build_suffix}
+  # cmake-cache or cmake-build-${build_suffix}
 
   # Create output directory for coverage info and html
   file(MAKE_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage)

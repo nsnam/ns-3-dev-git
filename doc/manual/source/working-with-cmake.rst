@@ -104,8 +104,8 @@ To check what underlying commands dare being executed, add the
 
   ~/ns-3-dev$ ./ns3 --dry-run configure -d release --enable-examples --enable-tests
   The following commands would be executed:
-  mkdir cmake_cache
-  cd cmake_cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
+  mkdir cmake-cache
+  cd cmake-cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
 
 Now we run it for real:
 
@@ -147,10 +147,10 @@ Now we run it for real:
 
   -- Configuring done
   -- Generating done
-  -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake_cache
+  -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake-cache
   Finished executing the following commands:
-  mkdir cmake_cache
-  cd cmake_cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
+  mkdir cmake-cache
+  cd cmake-cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
 
 Notice that CCache is automatically used (if installed) for your convenience.
 
@@ -194,9 +194,9 @@ navigate to it and run `CMake`_ pointing to the ns-3-dev folder.
 .. sourcecode:: console
 
   ~$ cd ns-3-dev
-  ~/ns-3-dev$ mkdir cmake_cache
-  ~/ns-3-dev$ cd cmake_cache
-  ~/ns-3-dev/cmake_cache$ cmake ..
+  ~/ns-3-dev$ mkdir cmake-cache
+  ~/ns-3-dev$ cd cmake-cache
+  ~/ns-3-dev/cmake-cache$ cmake ..
 
 You can pass additional arguments to the CMake command, to configure it. To change variable values,
 you should use the -D option followed by the variable name.
@@ -222,7 +222,7 @@ created previously.
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake -DCMAKE_BUILD_TYPE=DEBUG ..
+  ~/ns-3-dev/cmake-cache$ cmake -DCMAKE_BUILD_TYPE=DEBUG ..
 
 Another common option to change is the `generator`_, which is the real underlying build system called by CMake.
 There are many generators supported by CMake, including the ones listed in the table below.
@@ -250,23 +250,23 @@ prefer Ninja to Makefiles, which are the default, we need to run the following c
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake -G Ninja ..
+  ~/ns-3-dev/cmake-cache$ cmake -G Ninja ..
 
 This command may fail if there are different generator files in the same CMake cache folder. It is recommended to clean up
 the CMake cache folder, then recreate it and reconfigure setting the generator in the first run.
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cd ..
-  ~/ns-3-dev$ rm -R cmake_cache && mkdir cmake_cache && cd cmake_cache
-  ~/ns-3-dev/cmake_cache$ cmake -DCMAKE_BUILD_TYPE=release -G Ninja ..
+  ~/ns-3-dev/cmake-cache$ cd ..
+  ~/ns-3-dev$ rm -R cmake-cache && mkdir cmake-cache && cd cmake-cache
+  ~/ns-3-dev/cmake-cache$ cmake -DCMAKE_BUILD_TYPE=release -G Ninja ..
 
 After configuring for the first time, settings will be initialized to their
 default values, and then you can use the ``ccmake`` command to manually change them:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ ccmake .
+  ~/ns-3-dev/cmake-cache$ ccmake .
   CMAKE_BUILD_TYPE                 release
   CMAKE_INSTALL_PREFIX             /usr/local
   NS3_ASSERT                       OFF
@@ -292,7 +292,7 @@ To enable both examples and tests, run:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake -DNS3_EXAMPLES=ON -DNS3_TESTS=ON ..
+  ~/ns-3-dev/cmake-cache$ cmake -DNS3_EXAMPLES=ON -DNS3_TESTS=ON ..
 
 
 .. _Manually refresh the CMake cache:
@@ -309,7 +309,7 @@ The refresh is done by running the CMake command from the CMake cache folder.
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake ..
+  ~/ns-3-dev/cmake-cache$ cmake ..
 
 Previous settings stored in the CMakeCache.txt will be preserved, while new modules will be
 scanned and targets will be added.
@@ -357,9 +357,9 @@ invoking CMake build. To build all the targets, run:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake --build . 
+  ~/ns-3-dev/cmake-cache$ cmake --build .
 
-Notice the single dot now refers to the ``cmake_cache`` directory, where the underlying 
+Notice the single dot now refers to the ``cmake-cache`` directory, where the underlying
 build system files are stored (referred inside CMake as ``PROJECT_BINARY_DIR`` or 
 ``CMAKE_BINARY_DIR``, which have slightly different uses if working with sub-projects).
 
@@ -370,7 +370,7 @@ To build specific targets, run:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ cmake --build . --target target_name
+  ~/ns-3-dev/cmake-cache$ cmake --build . --target target_name
 
 Where target_name is a valid target name. Module libraries are prefixed with ``lib`` (e.g. libcore),
 executables from the scratch folder are prefixed with ``scratch_`` (e.g. scratch_scratch-simulator).
@@ -540,7 +540,7 @@ produces the following:
 
   ~/ns-3-dev$ ./ns3 --dry-run run scratch-simulator
   The following commands would be executed:
-  cd cmake_cache; cmake --build . -j 15 --target scratch_scratch-simulator ; cd ..
+  cd cmake-cache; cmake --build . -j 15 --target scratch_scratch-simulator ; cd ..
   export PATH=$PATH:~/ns-3-dev/build/lib 
   export PYTHONPATH=~/ns-3-dev/build/bindings/python
   export LD_LIBRARY_PATH=~/ns-3-dev/build/lib 
@@ -572,10 +572,10 @@ Or directly:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake_cache$ export PATH=$PATH:~/ns-3-dev/build/lib 
-  ~/ns-3-dev/cmake_cache$ export PYTHONPATH=~/ns-3-dev/build/bindings/python
-  ~/ns-3-dev/cmake_cache$ export LD_LIBRARY_PATH=~/ns-3-dev/build/lib 
-  ~/ns-3-dev/cmake_cache$ gdb ../build/scratch/ns3-dev-scratch-simulator
+  ~/ns-3-dev/cmake-cache$ export PATH=$PATH:~/ns-3-dev/build/lib
+  ~/ns-3-dev/cmake-cache$ export PYTHONPATH=~/ns-3-dev/build/bindings/python
+  ~/ns-3-dev/cmake-cache$ export LD_LIBRARY_PATH=~/ns-3-dev/build/lib
+  ~/ns-3-dev/cmake-cache$ gdb ../build/scratch/ns3-dev-scratch-simulator
 
 
 Modifying files
@@ -802,7 +802,7 @@ Linking third-party libraries using CMake's find_package
 Assume we have a module with optional features that rely on a third-party library
 that provides a FindThirdPartyPackage.cmake. This Find.cmake file can be distributed
 by `CMake itself`_, via library/package managers (APT, Pacman, 
-`VcPkg`_), or included to the project tree in the buildsupport/3rd_party directory.
+`VcPkg`_), or included to the project tree in the build-support/3rd-party directory.
 
 .. _CMake itself: https://github.com/Kitware/CMake/tree/master/Modules
 .. _Vcpkg: https://github.com/Microsoft/vcpkg#using-vcpkg-with-cmake
@@ -959,7 +959,7 @@ Inclusion of options
 
 There are two ways of managing module options: option switches or cached variables.
 Both are present in the main CMakeLists.txt in the ns-3-dev directory and the 
-buildsupport/macros_and_definitions.cmake file.
+build-support/macros-and-definitions.cmake file.
 
 
 .. sourcecode:: cmake
@@ -984,10 +984,8 @@ buildsupport/macros_and_definitions.cmake file.
     set(NS3_OUTPUT_DIRECTORY "" CACHE PATH "Directory to store built artifacts")
 
     # The last case are options that can only assume predefined values
-    # First we cache different values for that variable
+    # First we cache the default option
     set(NS3_INT64X64 "INT128" CACHE STRING "Int64x64 implementation")
-    set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
-    set(NS3_INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
 
     # Then set a cache property for the variable indicating it can assume 
     # specific values
@@ -1009,7 +1007,7 @@ In order for CMake to feel more familiar to Waf users, a few macros and function
 were created. 
 
 The most frequently used macros them can be found in 
-``buildsupport/macros_and_definitions.cmake``. This file includes build type checking, 
+``build-support/macros-and-definitions.cmake``. This file includes build type checking,
 compiler family and version checking, enabling and disabling features based
 on user options, checking for dependencies of enabled features, 
 pre-compiling headers, filtering enabled/disabled modules and dependencies,
@@ -1018,7 +1016,7 @@ and more.
 Module macros
 =============
 
-Module macros are located in ``buildsupport/custom_modules/ns3_module_macros.cmake``.
+Module macros are located in ``build-support/custom-modules/ns3-module-macros.cmake``.
 This file contains macros defining a library (``build_lib``), the associated test library,
 examples (``build_lib_example``) and more. It also contains the macro that builds the 
 module header (``write_module_header``) that includes all headers from the module
@@ -1449,7 +1447,7 @@ bindings for the module using pybindgen.
         set(module_to_generate_api ${module_api_LP64})
         set(LP64toILP32
             ${Python_EXECUTABLE}
-            ${PROJECT_SOURCE_DIR}/buildsupport/pybindings_LP64_to_ILP32.py
+            ${PROJECT_SOURCE_DIR}/build-support/pybindings_LP64_to_ILP32.py
             ${module_api_LP64} ${module_api_ILP32}
         )
       endif()
@@ -1474,7 +1472,7 @@ The targets can be built to execute the scanning using one of the following comm
 
 .. sourcecode:: console
 
-  ~/cmake_cache$ cmake --build . --target libcore-apiscan
+  ~/cmake-cache$ cmake --build . --target libcore-apiscan
   ~/ns-3-dev/$ ./ns3 build core-apiscan
   
 To re-scan all bindings, use ``./ns3 build apiscan-all``. 
@@ -1859,7 +1857,7 @@ followed by a header configuration:
   # CMake variables and save the resulting file to the target destination 
   # (in the second argument)
   configure_file(
-    buildsupport/core-config-template.h
+    build-support/core-config-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
   )
 
@@ -2027,7 +2025,7 @@ handled directly by CMake:
 
 Other flags need to be handled manually and change based on 
 the compiler used. The most commonly used are handled in 
-``buildsupport/macros_and_definitions.cmake``.
+``build-support/macros-and-definitions.cmake``.
 
 .. sourcecode:: cmake
 

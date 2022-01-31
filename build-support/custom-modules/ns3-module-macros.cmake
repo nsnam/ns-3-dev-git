@@ -306,7 +306,7 @@ function(build_lib)
       set(module_to_generate_api ${module_api_LP64})
       set(LP64toILP32
           ${Python_EXECUTABLE}
-          ${PROJECT_SOURCE_DIR}/buildsupport/pybindings_LP64_to_ILP32.py
+          ${PROJECT_SOURCE_DIR}/build-support/pybindings-LP64-to-ILP32.py
           ${module_api_LP64} ${module_api_ILP32}
       )
     endif()
@@ -386,16 +386,15 @@ function(build_lib)
 
     # Add core module helper sources
     set(python_module_files ${module_hdr} ${module_src})
-    if(${BLIB_LIBNAME} STREQUAL "core")
-      list(APPEND python_module_files
-           ${CMAKE_CURRENT_SOURCE_DIR}/bindings/module_helpers.cc
-           ${CMAKE_CURRENT_SOURCE_DIR}/bindings/scan-header.h
-      )
-    endif()
+    file(GLOB custom_python_module_files
+         ${CMAKE_CURRENT_SOURCE_DIR}/bindings/*.cc
+         ${CMAKE_CURRENT_SOURCE_DIR}/bindings/*.h
+    )
+    list(APPEND python_module_files ${custom_python_module_files})
     set(bindings-name lib${BLIB_LIBNAME}-bindings)
     add_library(${bindings-name} SHARED "${python_module_files}")
     target_include_directories(
-      ${bindings-name} PUBLIC ${Python_INCLUDE_DIRS} ${bindings_output_folder}
+      ${bindings-name} PUBLIC ${PYTHON_INCLUDE_DIRS} ${bindings_output_folder}
     )
     target_compile_options(${bindings-name} PRIVATE -Wno-error)
 

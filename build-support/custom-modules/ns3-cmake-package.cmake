@@ -88,7 +88,7 @@ function(pkgconfig_module libname)
   # Configure pkgconfig file for the module using pkgconfig variables
   set(pkgconfig_file ${CMAKE_BINARY_DIR}/pkgconfig/ns3-${module_name}.pc)
   configure_file(
-    ${PROJECT_SOURCE_DIR}/buildsupport/pkgconfig_template.pc.in
+    ${PROJECT_SOURCE_DIR}/build-support/pkgconfig-template.pc.in
     ${pkgconfig_file} @ONLY
   )
 
@@ -125,7 +125,7 @@ function(ns3_cmake_package)
 
   include(CMakePackageConfigHelpers)
   configure_package_config_file(
-    "buildsupport/Config.cmake.in" "ns3Config.cmake"
+    "build-support/Config.cmake.in" "ns3Config.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ns3
     PATH_VARS CMAKE_INSTALL_LIBDIR
   )

@@ -1,5 +1,3 @@
-set(name)
-
 set(source_files
     helper/application-container.cc
     helper/delay-jitter-estimation.cc

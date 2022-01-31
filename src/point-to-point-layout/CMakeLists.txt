@@ -1,11 +1,3 @@
-set(name)
-
-set(source_files)
-
-set(header_files)
-
-set(libraries_to_link)
-
 build_lib(
   LIBNAME point-to-point-layout
   SOURCE_FILES

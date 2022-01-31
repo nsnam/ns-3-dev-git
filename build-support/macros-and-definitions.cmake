@@ -18,23 +18,20 @@
 # Export compile time variable setting the directory to the NS3 root folder
 add_definitions(-DPROJECT_SOURCE_PATH="${PROJECT_SOURCE_DIR}")
 
-# Cache options for NS3_INT64X64
+# Set INT128 as the default option for INT64X64 and register alternative
+# implementations
 set(NS3_INT64X64 "INT128" CACHE STRING "Int64x64 implementation")
-set(NS3_INT64X64 "CAIRO" CACHE STRING "Int64x64 implementation")
-set(NS3_INT64X64 "DOUBLE" CACHE STRING "Int64x64 implementation")
 set_property(CACHE NS3_INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
 
 # Purposefully hidden options:
 
 # for ease of use, export all libraries and include directories to ns-3 module
 # consumers by default
-mark_as_advanced(NS3_REEXPORT_THIRD_PARTY_LIBRARIES)
 option(NS3_REEXPORT_THIRD_PARTY_LIBRARIES "Export all third-party libraries
 and include directories to ns-3 module consumers" ON
 )
 
 # since we can't really do that safely from the CMake side
-mark_as_advanced(NS3_ENABLE_SUDO)
 option(NS3_ENABLE_SUDO
        "Set executables ownership to root and enable the SUID flag" OFF
 )
@@ -125,7 +122,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Get installation folder default values for each platform and include package
 # configuration macro
 include(GNUInstallDirs)
-include(buildsupport/custom_modules/ns3_cmake_package.cmake)
+include(build-support/custom-modules/ns3-cmake-package.cmake)
 
 if(${XCODE})
   # Is that so hard not to break people's CI, AAPL? Why would you output the
@@ -318,6 +315,7 @@ macro(process_options)
   set(ENABLE_TESTS OFF)
   if(${NS3_TESTS} OR ${ns3rc_tests_enabled})
     set(ENABLE_TESTS ON)
+    enable_testing()
   endif()
 
   set(profiles_without_suffixes release)
@@ -341,7 +339,7 @@ macro(process_options)
     endif()
   endif()
 
-  include(buildsupport/custom_modules/ns3_versioning.cmake)
+  include(build-support/custom-modules/ns3-versioning.cmake)
   set(ENABLE_BUILD_VERSION False)
   configure_embedded_version()
 
@@ -424,18 +422,18 @@ macro(process_options)
       CMakeLists.txt
       utils/**/CMakeLists.txt
       src/CMakeLists.txt
-      buildsupport/**/*.cmake
-      buildsupport/*.cmake
+      build-support/**/*.cmake
+      build-support/*.cmake
     )
     add_custom_target(
       cmake-format
       COMMAND
         ${CMAKE_FORMAT_PROGRAM} -c
-        ${PROJECT_SOURCE_DIR}/buildsupport/cmake-format.txt -i
+        ${PROJECT_SOURCE_DIR}/build-support/cmake-format.txt -i
         ${INTERNAL_CMAKE_FILES}
       COMMAND
         ${CMAKE_FORMAT_PROGRAM} -c
-        ${PROJECT_SOURCE_DIR}/buildsupport/cmake-format-modules.txt -i
+        ${PROJECT_SOURCE_DIR}/build-support/cmake-format-modules.txt -i
         ${MODULES_CMAKE_FILES}
     )
     unset(MODULES_CMAKE_FILES)
@@ -548,7 +546,7 @@ macro(process_options)
     endif()
     message(STATUS "iwyu is enabled")
     set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE
-        ${PROJECT_SOURCE_DIR}/buildsupport/iwyu_wrapper.sh;${PROJECT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/build-support/iwyu-wrapper.sh;${PROJECT_SOURCE_DIR}
     )
   else()
     unset(CMAKE_CXX_INCLUDE_WHAT_YOU_USE)
@@ -577,9 +575,9 @@ macro(process_options)
 
   # find required dependencies
   list(APPEND CMAKE_MODULE_PATH
-       "${PROJECT_SOURCE_DIR}/buildsupport/custom_modules"
+       "${PROJECT_SOURCE_DIR}/build-support/custom-modules"
   )
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/buildsupport/3rd_party")
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
 
   # GTK3 Don't search for it if you don't have it installed, as it take an
   # insane amount of time
@@ -757,13 +755,13 @@ macro(process_options)
       DEPENDS all-test-targets
     )
     if(${ENABLE_EXAMPLES})
-      include(buildsupport/custom_modules/ns3_coverage.cmake)
+      include(build-support/custom-modules/ns3-coverage.cmake)
     endif()
   endif()
 
   # Process config-store-config
   configure_file(
-    buildsupport/config-store-config-template.h
+    build-support/config-store-config-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
   )
 
@@ -958,9 +956,9 @@ macro(process_options)
   endif()
   # end of checking for documentation dependencies and creating targets
 
-  # Process core-config
+  # Process core-config If INT128 is not found, fallback to CAIRO
   if(${NS3_INT64X64} MATCHES "INT128")
-    include(buildsupport/3rd_party/FindInt128.cmake)
+    include(build-support/3rd-party/FindInt128.cmake)
     find_int128_types()
     if(UINT128_FOUND)
       set(HAVE___UINT128_T TRUE)
@@ -971,10 +969,7 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_INT64X64} MATCHES "CAIRO")
-    set(INT64X64_USE_CAIRO TRUE)
-  endif()
-
+  # If long double and double have different sizes, fallback to CAIRO
   if(${NS3_INT64X64} MATCHES "DOUBLE")
     # WSLv1 has a long double issue that will result in a few tests failing
     # https://github.com/microsoft/WSL/issues/830
@@ -991,6 +986,11 @@ macro(process_options)
     else()
       set(INT64X64_USE_DOUBLE TRUE)
     endif()
+  endif()
+
+  # Fallback option
+  if(${NS3_INT64X64} MATCHES "CAIRO")
+    set(INT64X64_USE_CAIRO TRUE)
   endif()
 
   include(CheckIncludeFileCXX)
@@ -1010,7 +1010,7 @@ macro(process_options)
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(
-    buildsupport/core-config-template.h
+    build-support/core-config-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
   )
 
@@ -1124,13 +1124,13 @@ macro(process_options)
         <limits>
         <math.h>
     )
-    add_library(stdlib_pch OBJECT ${PROJECT_SOURCE_DIR}/buildsupport/empty.cc)
+    add_library(stdlib_pch OBJECT ${PROJECT_SOURCE_DIR}/build-support/empty.cc)
     target_precompile_headers(
       stdlib_pch PUBLIC "${precompiled_header_libraries}"
     )
 
     add_executable(
-      stdlib_pch_exec ${PROJECT_SOURCE_DIR}/buildsupport/empty_main.cc
+      stdlib_pch_exec ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
     )
     target_precompile_headers(
       stdlib_pch_exec PUBLIC "${precompiled_header_libraries}"
@@ -1156,10 +1156,10 @@ macro(process_options)
       GIT_TAG netanim-3.108
     )
     FetchContent_Populate(netanim)
-    file(COPY buildsupport/3rd_party/netanim_cmakelists.cmake
+    file(COPY build-support/3rd-party/netanim-cmakelists.cmake
          DESTINATION ${netanim_SOURCE_DIR}
     )
-    file(RENAME ${netanim_SOURCE_DIR}/netanim_cmakelists.cmake
+    file(RENAME ${netanim_SOURCE_DIR}/netanim-cmakelists.cmake
          ${netanim_SOURCE_DIR}/CMakeLists.txt
     )
     add_subdirectory(${netanim_SOURCE_DIR})
@@ -1192,6 +1192,23 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
 
   if(${ENABLE_TESTS})
     add_dependencies(all-test-targets ${target_prefix}${target_name})
+    # Create a CTest entry for each executable
+    if(WIN32)
+      # Windows require this workaround to make sure the DLL files are located
+      add_test(
+        NAME ctest-${target_prefix}${target_name}
+        COMMAND
+          ${CMAKE_COMMAND} -E env
+          "PATH=$ENV{PATH};${CMAKE_RUNTIME_OUTPUT_DIRECTORY};${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+          ${ns3-exec-outputname}
+        WORKING_DIRECTORY ${output_directory}
+      )
+    else()
+      add_test(NAME ctest-${target_prefix}${target_name}
+               COMMAND ${ns3-exec-outputname}
+               WORKING_DIRECTORY ${output_directory}
+      )
+    endif()
   endif()
 
   if(${NS3_CLANG_TIMETRACE})
@@ -1221,10 +1238,10 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
 endfunction(copy_headers_before_building_lib)
 
 # Import macros used for modules and define specialized versions for src modules
-include(buildsupport/custom_modules/ns3_module_macros.cmake)
+include(build-support/custom-modules/ns3-module-macros.cmake)
 
 # Contrib modules counterparts of macros above
-include(buildsupport/custom_modules/ns3_contributions.cmake)
+include(build-support/custom-modules/ns3-contributions.cmake)
 
 # Macro to build examples in ns-3-dev/examples/
 macro(build_example)
@@ -1589,6 +1606,7 @@ function(find_external_library)
   set(not_found_headers)
   set(include_dirs)
   foreach(header ${header_names})
+    mark_as_advanced(${name}_header_internal_${header})
     find_file(
       ${name}_header_internal_${header} ${header}
       HINTS ${search_paths}
@@ -1682,8 +1700,5 @@ function(check_python_packages packages missing_packages)
   set(${missing_packages} "${missing}" PARENT_SCOPE)
 endfunction()
 
-# Waf workaround scripts
-include(buildsupport/custom_modules/waf_workaround_c4cache.cmake)
-include(buildsupport/custom_modules/waf_workaround_buildstatus.cmake)
-include(buildsupport/custom_modules/waf_workaround_lock.cmake)
-include(buildsupport/custom_modules/waf_workaround_fakeconfig.cmake)
+include(build-support/custom-modules/ns3-lock.cmake)
+include(build-support/custom-modules/ns3-configtable.cmake)

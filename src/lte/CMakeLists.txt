@@ -1,9 +1,16 @@
+set(emu_sources)
+set(emu_headers)
+set(emu_features)
+set(emu_libraries)
 if(${ENABLE_EMU})
   set(emu_sources
       helper/emu-epc-helper.cc
   )
   set(emu_headers
       helper/emu-epc-helper.h
+  )
+  set(emu_features
+      EmuFdNetDevice
   )
   set(emu_libraries
       ${libfd-net-device}
@@ -349,4 +356,5 @@ build_lib(
     ${libinternet}
     ${libcsma}
   TEST_SOURCES ${test_sources}
+  MODULE_ENABLED_FEATURES ${emu_features}
 )

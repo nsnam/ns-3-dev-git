@@ -11,9 +11,9 @@ if(CCACHE_FOUND)
   message(
     STATUS "CCache is enabled. Precompiled headers are disabled by default."
   )
-  set(NS3_PRECOMPILE_HEADERS OFF CACHE BOOL "")
-else()
-  set(NS3_PRECOMPILE_HEADERS ON CACHE BOOL "")
+  set(NS3_PRECOMPILE_HEADERS OFF
+      CACHE BOOL "Precompile module headers to speed up compilation" FORCE
+  )
 endif()
 
 # ##############################################################################
@@ -102,7 +102,7 @@ set(NS3_DISABLED_MODULES ""
 )
 
 # Include macros used below
-include(buildsupport/macros_and_definitions.cmake)
+include(build-support/macros-and-definitions.cmake)
 
 # Scan module libraries
 subdirlist(libs_to_build ${CMAKE_SOURCE_DIR}/src)
@@ -139,11 +139,8 @@ add_subdirectory(scratch)
 # Build test utils
 add_subdirectory(utils)
 
-# Workaround for missing waf files used by test.py
-generate_c4che_cachepy()
-generate_buildstatus()
-generate_fakewaflock()
-write_fakewaf_config()
+write_lock()
+write_configtable()
 write_header_to_modules_map()
 
 # Export package targets when installing

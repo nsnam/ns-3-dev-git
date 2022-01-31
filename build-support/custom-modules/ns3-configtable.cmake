@@ -112,7 +112,7 @@ function(print_formatted_table_with_modules table_name modules output)
   set(${output} ${${output}}${temp} PARENT_SCOPE)
 endfunction()
 
-macro(write_fakewaf_config)
+macro(write_configtable)
   set(out "---- Summary of optional NS-3 features:\n")
   string(APPEND out "Build profile                 : ${build_profile}\n")
   string(APPEND out
