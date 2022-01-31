@@ -44,6 +44,23 @@
 
 using namespace ns3;
 
+/**
+ * \file
+ * \ingroup system-tests-traced
+ * 
+ * TracedCallback tests to verify if they are called with
+ * the right type and number of arguments.
+ */
+
+
+/**
+ * \ingroup system-tests-traced
+ * 
+ * TracedCallback Testcase.
+ * 
+ * This test verifies that the TracedCallback is called with
+ * the right type and number of arguments.
+ */
 class TracedCallbackTypedefTestCase : public TestCase
 {
 public:
@@ -60,29 +77,13 @@ public:
    * in the \c m_nArgs public value, then inspect it
    * in the CheckType() method.
    */
-  static int m_nArgs;
+  static std::size_t m_nArgs;
 
 private:
-  /** Invoker boilerplate. */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  class CheckerBase;
 
   /** Callback checkers. */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  template <typename... Ts>
   class Checker;
-
-  template <typename T1, typename T2, typename T3, typename T4>
-  class Checker<T1, T2, T3, T4, empty>;
-
-  template <typename T1, typename T2, typename T3>
-  class Checker<T1, T2, T3, empty, empty>;
-
-
-  template <typename T1, typename T2>
-  class Checker<T1, T2, empty, empty, empty>;
-
-  template <typename T1>
-  class Checker<T1, empty, empty, empty, empty>;
 
   virtual void DoRun (void);
 
@@ -96,7 +97,12 @@ private:
 
 namespace {
 
-/** Record typedefs which are identical to previously declared. */
+/** 
+ * \ingroup system-tests-traced
+ * 
+ * Record typedefs which are identical to previously declared.
+ * \return a container of strings representing the duplicates.
+ */
 std::set<std::string>
 Duplicates (void)
 {
@@ -112,12 +118,16 @@ Duplicates (void)
 }
 
 /**
+ * \ingroup system-tests-traced
+ * 
  * Container for duplicate types.
  */
 std::set<std::string> g_dupes = Duplicates ();
 
 
 /**
+ * \ingroup system-tests-traced
+ * 
  * Stringify the known TracedCallback type names.
  *
  * \tparam T \explicit The typedef name.
@@ -131,6 +141,11 @@ std::string TypeName (int N)
   return "unknown";
 }
 
+/**
+ * \ingroup system-tests-traced
+ * 
+ * Returns a sting representing the type of a class.
+*/
 #define TYPENAME(T)               \
   template <> \
   inline std::string  \
@@ -142,8 +157,13 @@ std::string TypeName (int N)
   }
 
 /**
+ * \ingroup system-tests-traced
+ * 
  * \name Stringify known typename.
+*/
+/**
  * @{
+ * \brief Stringify a known typename
  */
 TYPENAME (dsr::DsrOptionSRHeader::TracedCallback);
 TYPENAME (EpcUeNas::StateTracedCallback);
@@ -156,7 +176,7 @@ TYPENAME (Ipv6L3Protocol::TxRxTracedCallback);
 TYPENAME (LrWpanMac::SentTracedCallback);
 TYPENAME (LrWpanMac::StateTracedCallback);
 TYPENAME (LrWpanPhy::StateTracedCallback);
-// TYPENAME (LteEnbMac::DlSchedulingTracedCallback);
+TYPENAME (LteEnbMac::DlSchedulingTracedCallback);
 TYPENAME (LteEnbMac::UlSchedulingTracedCallback);
 TYPENAME (LteEnbPhy::ReportInterferenceTracedCallback);
 TYPENAME (LteEnbPhy::ReportUeSinrTracedCallback);
@@ -205,6 +225,8 @@ TYPENAME (WifiRemoteStationManager::RateChangeTracedCallback);
 
 
 /**
+ * \ingroup system-tests-traced
+ * 
  * Log that a callback was invoked.
  *
  * We can't actually do anything with any of the arguments,
@@ -212,66 +234,31 @@ TYPENAME (WifiRemoteStationManager::RateChangeTracedCallback);
  *
  * \param [in] N The number of arguments passed to the callback.
  */
-void SinkIt (unsigned int N)
+void SinkIt (std::size_t N)
 {
   std::cout << "with " << N << " args." << std::endl;
   TracedCallbackTypedefTestCase::m_nArgs = N;
 }
 
 /**
+ * \ingroup system-tests-traced
+ * 
  * Sink functions.
- * @{
  */
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
+template <typename... Ts>
 class TracedCbSink
 {
 public:
-  static void Sink (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+  /**
+   * \brief Sink function, called by a TracedCallback.
+   * \tparam Ts prameters of the TracedCallback.
+   */
+  static void Sink (Ts...)
   {
-    SinkIt (5);
+    const std::size_t n = sizeof...(Ts);
+    SinkIt (n);
   }
 };
-
-template <typename T1, typename T2, typename T3, typename T4>
-class TracedCbSink<T1, T2, T3, T4, empty>
-{
-public:
-  static void Sink (T1 a1, T2 a2, T3 a3, T4 a4)
-  {
-    SinkIt (4);
-  }
-};
-
-template <typename T1, typename T2, typename T3>
-class TracedCbSink<T1, T2, T3, empty, empty>
-{
-public:
-  static void Sink (T1 a1, T2 a2, T3 a3)
-  {
-    SinkIt (3);
-  }
-};
-
-template <typename T1, typename T2>
-class TracedCbSink<T1, T2, empty, empty, empty>
-{
-public:
-  static void Sink (T1 a1, T2 a2)
-  {
-    SinkIt (2);
-  }
-};
-
-template <typename T1>
-class TracedCbSink< T1, empty, empty, empty, empty>
-{
-public:
-  static void Sink (T1 a1)
-  {
-    SinkIt (1);
-  }
-};
-/** @} */
 
 
 }  // unnamed namespace
@@ -286,142 +273,65 @@ public:
   --------------------------------------------------------------------
 */
 
-int TracedCallbackTypedefTestCase::m_nArgs = 0;
+std::size_t TracedCallbackTypedefTestCase::m_nArgs = 0;
 
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class TracedCallbackTypedefTestCase::CheckerBase : public Object
+template <typename... Ts>
+class TracedCallbackTypedefTestCase::Checker : public Object
 {
+  /// TracedCallback to be called.
+  TracedCallback<Ts...> m_cb;
 public:
-  typename TypeTraits<T1>::BaseType m1;
-  typename TypeTraits<T2>::BaseType m2;
-  typename TypeTraits<T3>::BaseType m3;
-  typename TypeTraits<T4>::BaseType m4;
-  typename TypeTraits<T5>::BaseType m5;
+  Checker  () {};
+  virtual ~Checker () {};
+  
+  /// Arguments of the TracedCallback.
+  std::tuple<typename TypeTraits<Ts>::BaseType...> m_items;
 
-  void Cleanup (int N)
+  /// Number of arguments of the TracedCallback.
+  const std::size_t m_nItems = sizeof...(Ts);
+
+  /**
+   * Invoke a TracedCallback.
+   */
+  template <typename U>
+  void Invoke (void)
+  {
+    U sink = TracedCbSink<Ts...>::Sink;
+    Callback<void, Ts...> cb = MakeCallback (sink);
+
+    std::cout << TypeName<U> (m_nItems) << " invoked ";
+    m_cb.ConnectWithoutContext (cb);
+    std::apply(m_cb, m_items);
+    Cleanup ();
+  }
+  
+  /**
+   * Cleanup the test.
+   */
+  void Cleanup ()
   {
     if (m_nArgs == 0)
       {
         std::cout << std::endl;
       }
-    NS_ASSERT_MSG (m_nArgs && m_nArgs == N, "failed.");
+    NS_ASSERT_MSG (m_nArgs && m_nArgs == m_nItems, "failed, m_nArgs: " << m_nArgs << " N: " << m_nItems);
     m_nArgs = 0;
   }
-};  // TracedCallbackTypedefTestCase::CheckerBase
 
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-class TracedCallbackTypedefTestCase::Checker : public CheckerBase<T1, T2, T3, T4, T5>
-{
-  TracedCallback<T1, T2, T3, T4, T5> m_cb;
+};
 
-public:
-  template <typename U>
-  void Invoke (void)
-  {
-    const int N = 5;
-    U sink = TracedCbSink<T1, T2, T3, T4, T5>::Sink;
-    Callback<void, T1, T2, T3, T4, T5> cb = MakeCallback (sink);
-
-    std::cout << TypeName<U> (N) << " invoked ";
-    m_cb.ConnectWithoutContext (cb);
-    m_cb (this->m1, this->m2, this->m3, this->m4, this->m5);
-    this->Cleanup (N);
-  }
-};  // Checker<5>
-
-template <typename T1, typename T2, typename T3, typename T4>
-class TracedCallbackTypedefTestCase::Checker<T1, T2, T3, T4, empty>
-  : public CheckerBase<T1, T2, T3, T4, empty>
-{
-  TracedCallback<T1, T2, T3, T4> m_cb;
-
-public:
-  template <typename U>
-  void Invoke (void)
-  {
-    const int N = 4;
-    U sink = TracedCbSink<T1, T2, T3, T4, empty>::Sink;
-    Callback<void, T1, T2, T3, T4> cb = MakeCallback (sink);
-
-    std::cout << TypeName<U> (N) << " invoked ";
-    m_cb.ConnectWithoutContext (cb);
-    m_cb (this->m1, this->m2, this->m3, this->m4);
-    this->Cleanup (N);
-  }
-};  // Checker <4>
-
-template <typename T1, typename T2, typename T3>
-class TracedCallbackTypedefTestCase::Checker<T1, T2, T3, empty, empty>
-  : public CheckerBase<T1, T2, T3, empty, empty>
-{
-  TracedCallback<T1, T2, T3> m_cb;
-
-public:
-  template <typename U>
-  void Invoke (void)
-  {
-    const int N = 3;
-    U sink = TracedCbSink<T1, T2, T3, empty, empty>::Sink;
-    Callback<void, T1, T2, T3> cb = MakeCallback (sink);
-
-    std::cout << TypeName<U> (N) << " invoked ";
-    m_cb.ConnectWithoutContext (cb);
-    m_cb (this->m1, this->m2, this->m3);
-    this->Cleanup (N);
-  }
-};  // Checker<3>
-
-template <typename T1, typename T2>
-class TracedCallbackTypedefTestCase::Checker<T1, T2, empty, empty, empty>
-  : public CheckerBase<T1, T2, empty, empty, empty>
-{
-  TracedCallback<T1, T2> m_cb;
-
-public:
-  template <typename U>
-  void Invoke (void)
-  {
-    const int N = 2;
-    U sink = TracedCbSink<T1, T2, empty, empty, empty>::Sink;
-    Callback<void, T1, T2> cb = MakeCallback (sink);
-
-    std::cout << TypeName<U> (N) << " invoked ";
-    m_cb.ConnectWithoutContext (cb);
-    m_cb (this->m1, this->m2);
-    this->Cleanup (N);
-  }
-};  // Checker<2>
-
-template <typename T1>
-class TracedCallbackTypedefTestCase::Checker<T1, empty, empty, empty, empty>
-  : public CheckerBase<T1, empty, empty, empty, empty>
-{
-  TracedCallback<T1> m_cb;
-
-public:
-  template <typename U>
-  void Invoke (void)
-  {
-    const int N = 1;
-    U sink = TracedCbSink<T1, empty, empty, empty, empty>::Sink;
-    Callback<void, T1> cb = MakeCallback (sink);
-
-    std::cout << TypeName<U> (N) << " invoked ";
-    m_cb.ConnectWithoutContext (cb);
-    m_cb (this->m1);
-    this->Cleanup (N);
-  }
-};  // Checker<1>
 
 TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
   : TestCase ("Check basic TracedCallback operation")
 {
 }
 
-void
-TracedCallbackTypedefTestCase::DoRun (void)
-{
-
+/**
+ * \ingroup system-tests-traced
+ * 
+ * Check the TracedCallback duplicate by checking if it maches the TracedCallback
+ * it is supposed to be equal to.
+ */
 #define DUPE(U, T1)                                                     \
   if (g_dupes.find ( # U ) == g_dupes.end ()) {                           \
       NS_TEST_ASSERT_MSG_NE (0, 1,                                        \
@@ -435,95 +345,85 @@ TracedCallbackTypedefTestCase::DoRun (void)
       " used to match the typedef " << # T1 <<                         \
       " but no longer does.  Please add a new CHECK call.")
 
-#define CHECK(U, T1, T2, T3, T4, T5)                                    \
-  CreateObject< Checker<T1, T2, T3, T4, T5> > ()->Invoke<U> ()
+
+/**
+ * \ingroup system-tests-traced
+ * 
+ * Check the TracedCallback by calling its Invoke function.
+ */
+#define CHECK(U, ...)                                    \
+  CreateObject< Checker< __VA_ARGS__ > > ()->Invoke<U> ()
+
+
+void
+TracedCallbackTypedefTestCase::DoRun (void)
+{
 
   CHECK (dsr::DsrOptionSRHeader::TracedCallback,
-         const dsr::DsrOptionSRHeader &,
-         empty, empty, empty, empty);
+         const dsr::DsrOptionSRHeader &);
 
   CHECK (EpcUeNas::StateTracedCallback,
-         EpcUeNas::State, EpcUeNas::State,
-         empty, empty, empty);
+         EpcUeNas::State, EpcUeNas::State);
 
   CHECK (Ipv4L3Protocol::DropTracedCallback,
          const Ipv4Header &, Ptr<const Packet>,
          Ipv4L3Protocol::DropReason, Ptr<Ipv4>, uint32_t );
 
   CHECK (Ipv4L3Protocol::SentTracedCallback,
-         const Ipv4Header &, Ptr<const Packet>, uint32_t,
-         empty, empty);
+         const Ipv4Header &, Ptr<const Packet>, uint32_t);
 
   CHECK (Ipv4L3Protocol::TxRxTracedCallback,
-         Ptr<const Packet>, Ptr<Ipv4>, uint32_t,
-         empty, empty);
+         Ptr<const Packet>, Ptr<Ipv4>, uint32_t);
 
   CHECK (Ipv6L3Protocol::DropTracedCallback,
          const Ipv6Header &, Ptr<const Packet>,
-         Ipv6L3Protocol::DropReason, Ptr<Ipv6>, uint32_t
-         );
+         Ipv6L3Protocol::DropReason, Ptr<Ipv6>, uint32_t);
 
   CHECK (Ipv6L3Protocol::SentTracedCallback,
-         const Ipv6Header &, Ptr<const Packet>, uint32_t,
-         empty, empty);
+         const Ipv6Header &, Ptr<const Packet>, uint32_t);
 
   CHECK (Ipv6L3Protocol::TxRxTracedCallback,
-         Ptr<const Packet>, Ptr<Ipv6>, uint32_t,
-         empty, empty);
+         Ptr<const Packet>, Ptr<Ipv6>, uint32_t);
 
   CHECK (LrWpanMac::SentTracedCallback,
-         Ptr<const Packet>, uint8_t, uint8_t,
-         empty, empty);
+         Ptr<const Packet>, uint8_t, uint8_t);
 
   CHECK (LrWpanMac::StateTracedCallback,
-         LrWpanMacState, LrWpanMacState,
-         empty, empty, empty);
+         LrWpanMacState, LrWpanMacState);
 
   CHECK (LrWpanPhy::StateTracedCallback,
-         Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration,
-         empty, empty);
+         Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration);
 
-
-  /*  Too many args :(
   CHECK (LteEnbMac::DlSchedulingTracedCallback,
          uint32_t, uint32_t, uint16_t,
-         uint8_t, uint16_t, uint8_t, uint16_t);
-  */
+         uint8_t, uint16_t, uint8_t, uint16_t, uint8_t);
 
   CHECK (LteEnbMac::UlSchedulingTracedCallback,
          uint32_t, uint32_t, uint16_t, uint8_t, uint16_t);
 
   CHECK (LteEnbPhy::ReportUeSinrTracedCallback,
-         uint16_t, uint16_t, double, uint8_t,
-         empty);
+         uint16_t, uint16_t, double, uint8_t);
 
   CHECK (LteEnbPhy::ReportInterferenceTracedCallback,
-         uint16_t, Ptr<SpectrumValue>,
-         empty, empty, empty);
+         uint16_t, Ptr<SpectrumValue>);
 
   CHECK (LteEnbRrc::ConnectionHandoverTracedCallback,
-         uint64_t, uint16_t, uint16_t,
-         empty, empty);
+         uint64_t, uint16_t, uint16_t);
 
   CHECK (LteEnbRrc::HandoverStartTracedCallback,
-         uint64_t, uint16_t, uint16_t, uint16_t,
-         empty);
+         uint64_t, uint16_t, uint16_t, uint16_t);
 
   CHECK (LteEnbRrc::NewUeContextTracedCallback,
-         uint16_t, uint16_t,
-         empty, empty, empty);
+         uint16_t, uint16_t);
 
   CHECK (LteEnbRrc::ReceiveReportTracedCallback,
-         uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport,
-         empty);
+         uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport);
 
   CHECK (LtePdcp::PduRxTracedCallback,
-         uint16_t, uint8_t, uint32_t, uint64_t,
-         empty);
+         uint16_t, uint8_t, uint32_t, uint64_t);
 
   CHECK (LtePdcp::PduTxTracedCallback,
-         uint16_t, uint8_t, uint32_t,
-         empty, empty);
+         uint16_t, uint8_t, uint32_t);
 
   DUPE  (LteRlc::NotifyTxTracedCallback, LtePdcp::PduTxTracedCallback);
 
@@ -533,12 +433,10 @@ TracedCallbackTypedefTestCase::DoRun (void)
          uint16_t, uint16_t, double, double, uint8_t);
 
   CHECK (LteUePhy::StateTracedCallback,
-         uint16_t, uint16_t, LteUePhy::State, LteUePhy::State,
-         empty);
+         uint16_t, uint16_t, LteUePhy::State, LteUePhy::State);
 
   CHECK (LteUeRrc::CellSelectionTracedCallback,
-         uint64_t, uint16_t,
-         empty, empty, empty);
+         uint64_t, uint16_t);
 
   DUPE  (LteUeRrc::ImsiCidRntiTracedCallback, LteEnbRrc::ConnectionHandoverTracedCallback);
 
@@ -548,130 +446,105 @@ TracedCallbackTypedefTestCase::DoRun (void)
          uint64_t, uint16_t, uint16_t, LteUeRrc::State, LteUeRrc::State);
 
   CHECK (Mac48Address::TracedCallback,
-         Mac48Address,
-         empty, empty, empty, empty);
+         Mac48Address);
 
   CHECK (MobilityModel::TracedCallback,
-         Ptr<const MobilityModel>,
-         empty, empty, empty, empty);
+         Ptr<const MobilityModel>);
 
   CHECK (olsr::RoutingProtocol::PacketTxRxTracedCallback,
-         const olsr::PacketHeader &, const olsr::MessageList &,
-         empty, empty, empty);
+         const olsr::PacketHeader &, const olsr::MessageList &);
 
   CHECK (olsr::RoutingProtocol::TableChangeTracedCallback,
-         uint32_t,
-         empty, empty, empty, empty);
+         uint32_t);
 
   CHECK (Packet::AddressTracedCallback,
-         Ptr<const Packet>, const Address &,
-         empty, empty, empty);
+         Ptr<const Packet>, const Address &);
 
   CHECK (Packet::Mac48AddressTracedCallback,
-         Ptr<const Packet>, Mac48Address,
-         empty, empty, empty);
+         Ptr<const Packet>, Mac48Address);
 
   CHECK (Packet::SinrTracedCallback,
-         Ptr<const Packet>, double,
-         empty, empty, empty);
+         Ptr<const Packet>, double);
 
   CHECK (Packet::SizeTracedCallback,
-         uint32_t, uint32_t,
-         empty, empty, empty);
+         uint32_t, uint32_t);
 
   CHECK (Packet::TracedCallback,
-         Ptr<const Packet>,
-         empty, empty, empty, empty);
+         Ptr<const Packet>);
 
   CHECK (PacketBurst::TracedCallback,
-         Ptr<const PacketBurst>,
-         empty, empty, empty, empty);
+         Ptr<const PacketBurst>);
 
   CHECK (dot11s::PeerManagementProtocol::LinkOpenCloseTracedCallback,
-         Mac48Address, Mac48Address,
-         empty, empty, empty);
+         Mac48Address, Mac48Address);
 
   CHECK (PhyReceptionStatParameters::TracedCallback,
-         PhyReceptionStatParameters,
-         empty, empty, empty, empty);
+         PhyReceptionStatParameters);
 
   CHECK (PhyTransmissionStatParameters::TracedCallback,
-         PhyTransmissionStatParameters,
-         empty, empty, empty, empty);
+         PhyTransmissionStatParameters);
 
   CHECK (SixLowPanNetDevice::DropTracedCallback,
          SixLowPanNetDevice::DropReason, Ptr<const Packet>,
-         Ptr<SixLowPanNetDevice>, uint32_t,
-         empty);
+         Ptr<SixLowPanNetDevice>, uint32_t);
 
   CHECK (SixLowPanNetDevice::RxTxTracedCallback,
-         Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t,
-         empty, empty);
+         Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t);
 
   CHECK (SpectrumChannel::LossTracedCallback,
-         Ptr<const SpectrumPhy>, Ptr<const SpectrumPhy>, double,
-         empty, empty);
+         Ptr<const SpectrumPhy>, Ptr<const SpectrumPhy>, double);
 
   CHECK (SpectrumValue::TracedCallback,
-         Ptr<SpectrumValue>,
-         empty, empty, empty, empty);
+         Ptr<SpectrumValue>);
 
   CHECK (TimeSeriesAdaptor::OutputTracedCallback,
-         double, double,
-         empty, empty, empty);
+         double, double);
 
   CHECK (UanMac::PacketModeTracedCallback,
-         Ptr<const Packet>, UanTxMode,
-         empty, empty, empty);
+         Ptr<const Packet>, UanTxMode);
 
   CHECK (UanMacCw::QueueTracedCallback,
-         Ptr<const Packet>, uint16_t,
-         empty, empty, empty);
+         Ptr<const Packet>, uint16_t);
 
   CHECK (UanMacRc::QueueTracedCallback,
-         Ptr<const Packet>, uint32_t,
-         empty, empty, empty);
+         Ptr<const Packet>, uint32_t);
 
   CHECK (UanNetDevice::RxTxTracedCallback,
-         Ptr<const Packet>, Mac8Address,
-         empty, empty, empty);
+         Ptr<const Packet>, Mac8Address);
 
   CHECK (UanPhy::TracedCallback,
-         Ptr<const Packet>, double, UanTxMode,
-         empty, empty);
+         Ptr<const Packet>, double, UanTxMode);
 
   CHECK (UeManager::StateTracedCallback,
          uint64_t, uint16_t, uint16_t, UeManager::State, UeManager::State);
 
   CHECK (WifiMacHeader::TracedCallback,
-         const WifiMacHeader &,
-         empty, empty, empty, empty);
+         const WifiMacHeader &);
 
   CHECK (WifiPhyStateHelper::RxEndErrorTracedCallback,
-         Ptr<const Packet>, double,
-         empty, empty, empty);
+         Ptr<const Packet>, double);
 
   CHECK (WifiPhyStateHelper::RxOkTracedCallback,
-         Ptr<const Packet>, double, WifiMode, WifiPreamble,
-         empty);
+         Ptr<const Packet>, double, WifiMode, WifiPreamble);
 
   CHECK (WifiPhyStateHelper::StateTracedCallback,
-         Time, Time, WifiPhyState,
-         empty, empty);
+         Time, Time, WifiPhyState);
 
   CHECK (WifiPhyStateHelper::TxTracedCallback,
-         Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t,
-         empty);
+         Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t);
 
   CHECK (WifiRemoteStationManager::PowerChangeTracedCallback,
-         double, double, Mac48Address,
-         empty, empty);
+         double, double, Mac48Address);
 
   CHECK (WifiRemoteStationManager::RateChangeTracedCallback,
-         DataRate, DataRate, Mac48Address,
-         empty, empty);
+         DataRate, DataRate, Mac48Address);
 }
 
+/**
+ * \ingroup system-tests-traced
+ *
+ * \brief TracedCallback typedef TestSuite
+ */
 class TracedCallbackTypedefTestSuite : public TestSuite
 {
 public:
@@ -684,4 +557,5 @@ TracedCallbackTypedefTestSuite::TracedCallbackTypedefTestSuite ()
   AddTestCase (new TracedCallbackTypedefTestCase, TestCase::QUICK);
 }
 
+/// Static variable for test initialization
 static TracedCallbackTypedefTestSuite tracedCallbackTypedefTestSuite;
