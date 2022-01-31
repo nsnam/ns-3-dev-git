@@ -120,6 +120,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY})
 set(CMAKE_HEADER_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/include/ns3)
 set(THIRD_PARTY_DIRECTORY ${PROJECT_SOURCE_DIR}/3rd-party)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Get installation folder default values for each platform and include package
 # configuration macro
@@ -1180,15 +1181,21 @@ macro(build_example)
   set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
   cmake_parse_arguments("EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  set(missing_dependencies FALSE)
-  foreach(lib ${libraries_to_link})
+  set(missing_dependencies)
+  foreach(lib ${EXAMPLE_LIBRARIES_TO_LINK})
+    # skip check for ns-3 modules if its a path to a library
+    if(EXISTS ${lib})
+      continue()
+    endif()
+
+    # check if the example depends on disabled modules
     string(REPLACE "lib" "" lib ${lib})
     if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
-      set(missing_dependencies TRUE)
+      list(APPEND missing_dependencies ${lib})
     endif()
   endforeach()
 
-  if(NOT ${missing_dependencies})
+  if(NOT missing_dependencies)
     # Create shared library with sources and headers
     add_executable(${EXAMPLE_NAME} "${EXAMPLE_SOURCE_FILES}" "${EXAMPLE_HEADER_FILES}")
 
@@ -1470,49 +1477,71 @@ endfunction(parse_ns3rc)
 function(find_external_library
 )
   set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
-  set(multiValueArgs SEARCH_PATHS)
+  set(multiValueArgs HEADER_NAMES LIBRARY_NAMES PATH_SUFFIXES SEARCH_PATHS)
   cmake_parse_arguments("FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   set(name ${FIND_LIB_DEPENDENCY_NAME})
-  set(library_name ${FIND_LIB_LIBRARY_NAME})
-  set(header_name ${FIND_LIB_HEADER_NAME})
+  set(library_names "${FIND_LIB_LIBRARY_NAME};${FIND_LIB_LIBRARY_NAMES}")
+  set(header_names "${FIND_LIB_HEADER_NAME};${FIND_LIB_HEADER_NAMES}")
   set(search_paths ${FIND_LIB_SEARCH_PATHS})
+  set(path_suffixes "${FIND_LIB_PATH_SUFFIXES}")
 
-  mark_as_advanced(${name}_library_internal)
-  find_library(
-    ${name}_library_internal ${library_name}
-    HINTS ${search_paths} ENV LD_LIBRARY_PATH
-    PATH_SUFFIXES /build /lib /build/lib /
-  )
-  set(${name}_library_dir_internal)
-  if(${name}_library_internal)
-    get_filename_component(${name}_library_dir_internal ${${name}_library_internal} DIRECTORY
-    )# e.g. lib/openflow.(so|dll|dylib|a) -> lib
-  endif()
-  mark_as_advanced(${name}_header_internal)
-  find_file(
-    ${name}_header_internal ${header_name}
-    HINTS ${search_paths} ${${name}_library_dir_internal}/../
-          ${${name}_library_dir_internal}/../../
-    PATH_SUFFIXES
-      /build
-      /include
-      /build/include
-      /build/include/${name}
-      /include/${name}
-      /${name}
-      /
-  )
-  # If we find both library and header, we export their values
-  if(${name}_header_internal AND (NOT ("${name}_library_internal-NOTFOUND" MATCHES "${${name}_library_internal}")))
-    get_filename_component(header_include_dir ${${name}_header_internal} DIRECTORY
-    )# e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
-    get_filename_component(header_include_dir2 ${header_include_dir} DIRECTORY
-    )# e.g. include/(click) -> #include <click/simclick.h> should work
-    set(${name}_INCLUDE_DIRS
-        "${header_include_dir};${header_include_dir2}" PARENT_SCOPE
+  set(not_found_libraries)
+  set(library_dirs)
+  set(libraries)
+  foreach(library ${library_names})
+    mark_as_advanced(${name}_library_internal_${library})
+    find_library(
+      ${name}_library_internal_${library} ${library}
+      HINTS ${search_paths} ENV LD_LIBRARY_PATH
+      PATH_SUFFIXES /build /lib /build/lib / ${path_suffixes}
     )
-    set(${name}_LIBRARIES ${${name}_library_internal} PARENT_SCOPE)
+    if("${${name}_library_internal_${library}}" STREQUAL "${name}_library_internal_${library}-NOTFOUND")
+      list(APPEND not_found_libraries ${library})
+    else()
+      get_filename_component(${name}_library_dir_internal ${${name}_library_internal_${library}} DIRECTORY
+      )# e.g. lib/openflow.(so|dll|dylib|a) -> lib
+      list(APPEND library_dirs ${${name}_library_dir_internal})
+      list(APPEND libraries ${${name}_library_internal_${library}})
+    endif()
+  endforeach()
+
+  set(not_found_headers)
+  set(include_dirs)
+  foreach(header ${header_names})
+    mark_as_advanced(${name}_header_internal_${header})
+    string(REPLACE ";" "/../ " upper_dirs "${library_dirs};")
+    string(REPLACE ";" "/../../ " upper_upper_dirs "${library_dirs};")
+    find_file(
+      ${name}_header_internal_${header} ${header}
+      HINTS ${search_paths} ${upper_dirs} ${upper_upper_dirs}
+      PATH_SUFFIXES
+        /build
+        /include
+        /build/include
+        /build/include/${name}
+        /include/${name}
+        /${name}
+        /
+        ${path_suffixes}
+    )
+    if("${${name}_header_internal_${header}}" STREQUAL "${name}_header_internal_${header}-NOTFOUND")
+      list(APPEND not_found_headers ${header})
+    else()
+      get_filename_component(header_include_dir ${${name}_header_internal_${header}} DIRECTORY
+              )# e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
+      get_filename_component(header_include_dir2 ${header_include_dir} DIRECTORY
+              )# e.g. include/(click) -> #include <click/simclick.h> should work
+      list(APPEND include_dirs ${header_include_dir} ${header_include_dir2})
+    endif()
+  endforeach()
+
+  list(REMOVE_DUPLICATES include_dirs)
+
+  # If we find both library and header, we export their values
+  if((NOT not_found_libraries}) AND (NOT not_found_headers))
+    set(${name}_INCLUDE_DIRS "${include_dirs}" PARENT_SCOPE)
+    set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
     set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
     set(${name}_FOUND TRUE PARENT_SCOPE)
   else()

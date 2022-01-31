@@ -30,6 +30,9 @@ additional_commands:
             DEPENDENCY_NAME : '1'
             HEADER_NAME : '1'
             LIBRARY_NAME : '1'
+            HEADER_NAMES : '*'
+            LIBRARY_NAMES : '*'
+            PATH_SUFFIXES : '*'
             SEARCH_PATHS : '*'
 
 format:

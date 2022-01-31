@@ -483,7 +483,7 @@ function(build_lib_example)
   get_filename_component(FOLDER ${FOLDER} DIRECTORY)
 
   # cmake-format: on
-  set(missing_dependencies FALSE)
+  set(missing_dependencies)
   foreach(lib ${BLIB_EXAMPLE_LIBRARIES_TO_LINK})
     # skip check for ns-3 modules if its a path to a library
     if(EXISTS ${lib})
@@ -493,7 +493,7 @@ function(build_lib_example)
     # check if the example depends on disabled modules
     string(REPLACE "lib" "" lib ${lib})
     if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
-      set(missing_dependencies TRUE)
+      list(APPEND missing_dependencies ${lib})
     endif()
   endforeach()
 
