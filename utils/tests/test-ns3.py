@@ -165,109 +165,6 @@ def get_enabled_modules():
     return read_c4che_entry("NS3_ENABLED_MODULES")
 
 
-class NS3RunWafTargets(unittest.TestCase):
-    """!
-    ns3 tests related to compatibility with Waf-produced binaries
-    """
-
-    ## when cleaned_once is False, clean up build artifacts and reconfigure
-    cleaned_once = False
-
-    def setUp(self):
-        """!
-        Clean the default build directory, then configure and build ns-3 with waf
-        @return None
-        """
-        if not NS3RunWafTargets.cleaned_once:
-            NS3RunWafTargets.cleaned_once = True
-            run_ns3("clean")
-            return_code, stdout, stderr = run_program("waf", "configure --enable-examples --enable-tests", python=True)
-            self.assertEqual(return_code, 0)
-            self.assertIn("finished successfully", stdout)
-
-            return_code, stdout, stderr = run_program("waf", "build", python=True)
-            self.assertEqual(return_code, 0)
-            self.assertIn("finished successfully", stdout)
-
-    def test_01_loadExecutables(self):
-        """!
-        Try to load executables built by waf
-        @return None
-        """
-        # Check if build-status.py exists, then read to get list of executables.
-        self.assertTrue(os.path.exists(usual_build_status_script))
-        ## ns3_executables holds a list of executables in build-status.py
-        self.ns3_executables = get_programs_list()
-        self.assertGreater(len(self.ns3_executables), 0)
-
-    def test_02_loadModules(self):
-        """!
-        Try to load modules built by waf
-        @return None
-        """
-        # Check if c4che.py exists than read to get the list of enabled modules.
-        self.assertTrue(os.path.exists(usual_c4che_script))
-        ## ns3_modules holds a list to the modules enabled stored in c4che.py
-        self.ns3_modules = get_enabled_modules()
-        self.assertGreater(len(self.ns3_modules), 0)
-
-    def test_03_runNobuildScratchSim(self):
-        """!
-        Try to run an executable built by waf
-        @return None
-        """
-        return_code, stdout, stderr = run_ns3("run scratch-simulator --no-build")
-        self.assertEqual(return_code, 0)
-        self.assertIn("Scratch Simulator", stderr)
-
-    def test_04_runNobuildExample(self):
-        """!
-        Try to run a different executable built by waf
-        @return None
-        """
-        return_code, stdout, stderr = run_ns3("run command-line-example --verbose --no-build")
-        self.assertEqual(return_code, 0)
-        self.assertIn("command-line-example", stdout)
-
-    def test_05_runTestCaseCoreExampleSimulator(self):
-        """!
-        Try to run a test case built by waf that calls the ns3 wrapper script
-        @return None
-        """
-        return_code, stdout, stderr = run_program("test.py", "--no-build -s core-example-simulator", True)
-        self.assertEqual(return_code, 0)
-        self.assertIn("PASS", stdout)
-
-    def test_06_runTestCaseExamplesAsTestsTestSuite(self):
-        """!
-        Try to run a different test case built by waf that calls the ns3 wrapper script
-        @return None
-        """
-        return_code, stdout, stderr = run_program("test.py", "--no-build -s examples-as-tests-test-suite", True)
-        self.assertEqual(return_code, 0)
-        self.assertIn("PASS", stdout)
-
-    def test_07_runCoreExampleSimulator(self):
-        """!
-        Try to run test cases built by waf that calls the ns3 wrapper script
-        when the output directory is set to a different path
-        @return None
-        """
-        run_ns3("clean")
-
-        return_code, stdout, stderr = run_program("waf",
-                                                  "configure --enable-examples --enable-tests --out build/debug",
-                                                  python=True)
-        self.assertEqual(return_code, 0)
-        self.assertIn("finished successfully", stdout)
-
-        return_code, stdout, stderr = run_program("waf",
-                                                  '--run "test-runner --suite=core-example-simulator --verbose"',
-                                                  True)
-        self.assertEqual(return_code, 0)
-        self.assertIn("PASS", stdout)
-
-
 class NS3CommonSettingsTestCase(unittest.TestCase):
     """!
     ns3 tests related to generic options
@@ -1831,7 +1728,6 @@ if __name__ == '__main__':
     suite = unittest.TestSuite()
 
     # Put tests cases in order
-    suite.addTests(loader.loadTestsFromTestCase(NS3RunWafTargets))
     suite.addTests(loader.loadTestsFromTestCase(NS3CommonSettingsTestCase))
     suite.addTests(loader.loadTestsFromTestCase(NS3ConfigureBuildProfileTestCase))
     suite.addTests(loader.loadTestsFromTestCase(NS3ConfigureTestCase))

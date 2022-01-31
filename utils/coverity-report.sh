@@ -49,14 +49,14 @@ function doo ()
 say $(date)
 blank
 
-doo ./waf clean
+doo ./ns3 clean
 blank
 
-doo ./waf configure $NS3CONFIG
+doo ./ns3 configure $NS3CONFIG
 blank
 
 cov=coverity/cov-int
-doo cov-build --dir $cov ./waf build
+doo cov-build --dir $cov ./ns3 build
 blank
 
 tarf=coverity/ns-3.tgz

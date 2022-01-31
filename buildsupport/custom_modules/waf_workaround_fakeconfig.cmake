@@ -1,6 +1,6 @@
 # cmake-format: off
 #
-# A sample of what Waf currently produces
+# A sample of what Waf produced
 
 # ---- Summary of optional NS-3 features:
 # Build profile                 : debug
@@ -210,6 +210,6 @@ macro(write_fakewaf_config)
     string(APPEND out "\n")
   endif()
 
-  file(WRITE ${PROJECT_BINARY_DIR}/ns3wafconfig.txt ${out})
+  file(WRITE ${PROJECT_BINARY_DIR}/ns3config.txt ${out})
   message(STATUS ${out})
 endmacro()

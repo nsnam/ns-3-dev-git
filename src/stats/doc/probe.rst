@@ -184,7 +184,7 @@ users to temporarily insert Probe statements like `printf` statements within
 existing |ns3| models.  Note that in order to be able to use the DoubleProbe in this example like this, 2 things were necessary:
 
 1. the stats module header file was included in the example .cc file 
-2. the example was made dependent on the stats module in its wscript file.
+2. the example was made dependent on the stats module in its CMakeLists.txt file.
 
 Analogous things need to be done in order to add other Probes in other places in the |ns3| code base.
 

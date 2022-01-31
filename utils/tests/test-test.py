@@ -45,7 +45,7 @@
 #   -l, --list            print the list of known tests
 #   -m, --multiple        report multiple failures from test suites and test
 #                         cases
-#   -n, --no-build           do not run waf before starting testing
+#   -n, --no-build           do not run ns3 before starting testing
 #   -p PYEXAMPLE, --pyexample=PYEXAMPLE
 #                         specify a single python example to run (with relative
 #                         path)
@@ -111,8 +111,8 @@ def main(argv):
       '--xml=t_opt.xml && rm -rf t_opt.xml',
     ]
 
-    configure_string = sys.executable + ' waf configure --enable-tests --enable-examples'
-    clean_string = sys.executable + ' waf clean'
+    configure_string = sys.executable + ' ns3 configure --enable-tests --enable-examples'
+    clean_string = sys.executable + ' ns3 clean'
     cmd_execute_list = [ '%s && %s test.py %s && %s' % (configure_string, sys.executable, option, clean_string) for option in test_cases]
     runner = TestBaseClass(argv[1:], "Test suite for the ns-3 unit test runner" , 'test-py')
     return runner.runtests(cmd_execute_list)

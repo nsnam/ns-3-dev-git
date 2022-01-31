@@ -153,7 +153,7 @@ The above will create an XML file dumbbell-animation.xml
 Mandatory
 #########
 
-1. Ensure that your program's wscript includes the "netanim" module. An example of such a wscript is at src/netanim/examples/wscript. 
+1. Ensure that your program's CMakeLists.txt includes the "netanim" module. An example of such a CMakeLists.txt is at src/netanim/examples/CMakeLists.txt.
 2. Include the header [#include "ns3/netanim-module.h"] in your test program
 3. Add the statement
 

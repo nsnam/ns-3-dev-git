@@ -126,7 +126,7 @@ protected:
  * \par Test Addition
  *
  * To use an example program as a test you need to create a test suite
- * file and add it to the appropriate list in your module wscript
+ * file and add it to the appropriate list in your module CMakeLists.txt
  * file. The "good" output reference file needs to be generated for
  * detecting regressions.
  *
@@ -148,7 +148,7 @@ protected:
  * the same example is run twice with different arguments.
  *
  * You then need to add that newly created test suite file to the list
- * of test sources in `mymodule/wscript`.   Building of examples
+ * of test sources in `mymodule/CMakeLists.txt`.   Building of examples
  * is an option so you need to guard the inclusion of the test suite:
  *
  * \code{.py}
@@ -156,7 +156,7 @@ protected:
  *    module.source.append('model/mymodule-examples-test-suite.cc')
  * \endcode
  *
- * Since you modified a wscript file you need to reconfigure and
+ * Since you modified a CMakeLists.txt file you need to reconfigure and
  * rebuild everything.
  *
  * You just added new tests so you will need to generate the "good"

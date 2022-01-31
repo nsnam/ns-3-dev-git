@@ -33,7 +33,7 @@ do
   if [[ "$line" == example* ]]
     then
       name=${line#example      }
-      NS_LOG="*" ./waf --run "$name" >& /dev/null
+      NS_LOG="*" ./ns3 --run "$name" >& /dev/null
       status="$?"
       echo "program $name status $status"
   fi

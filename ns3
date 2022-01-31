@@ -152,7 +152,7 @@ def parse_args(argv):
                                   help="Do not execute the commands",
                                   action="store_true", default=None, dest="configure_dry_run")
 
-    parser_clean = sub_parser.add_parser('clean', help='Removes files created by waf and ns3')
+    parser_clean = sub_parser.add_parser('clean', help='Removes files created by ns3')
     parser_clean.add_argument('clean', action="store_true", default=False)
     parser_clean.add_argument('--dry-run',
                               help="Do not execute the commands",
@@ -405,10 +405,10 @@ def project_not_configured(config_msg=""):
 def check_config(current_cmake_cache_folder):
     if current_cmake_cache_folder is None:
         project_not_configured()
-    waf_like_config_table = current_cmake_cache_folder + os.sep + "ns3wafconfig.txt"
-    if not os.path.exists(waf_like_config_table):
+    config_table = current_cmake_cache_folder + os.sep + "ns3config.txt"
+    if not os.path.exists(config_table):
         project_not_configured()
-    with open(waf_like_config_table, "r") as f:
+    with open(config_table, "r") as f:
         print(f.read())
 
 

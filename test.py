@@ -47,14 +47,14 @@ try:
 except ImportError:
     import Queue as queue
 #
-# XXX This should really be part of a waf command to list the configuration
+# XXX This should really be part of a ns3 command to list the configuration
 # items relative to optional ns-3 pieces.
 #
 # A list of interesting configuration items in the waf configuration
 # cache which we may be interested in when deciding on which examples
-# to run and how to run them.  These are set by waf during the
+# to run and how to run them.  These are set by ns3 during the
 # configuration phase and the corresponding assignments are usually
-# found in the associated subdirectory wscript files.
+# found in the associated subdirectory CMakeLists.txt files.
 #
 interesting_config_items = [
     "NS3_ENABLED_MODULES",
@@ -92,13 +92,13 @@ PYTHON = ""
 VALGRIND_FOUND = True
 
 #
-# This will be given a prefix and a suffix when the waf config file is
+# This will be given a prefix and a suffix when the ns3 config file is
 # read.
 #
 test_runner_name = "test-runner"
 
 #
-# If the user has constrained us to run certain kinds of tests, we can tell waf
+# If the user has constrained us to run certain kinds of tests, we can tell ns3
 # to only build
 #
 core_kinds = ["core", "performance", "system", "unit"]
@@ -148,7 +148,7 @@ def parse_examples_to_run_file(
         # some tests when they are run under valgrind.
         #
         # Note that the two conditions are Python statements that
-        # can depend on waf configuration variables.  For example,
+        # can depend on ns3 configuration variables.  For example,
         # when NSC was in the codebase, we could write:
         #
         #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
@@ -167,7 +167,7 @@ def parse_examples_to_run_file(
                 example_arguments = example_name_parts[1]
 
             # Add the proper prefix and suffix to the example name to
-            # match what is done in the wscript file.
+            # match what is done in the CMakeLists.txt file.
             example_path = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
             # Set the full path for the example.
@@ -195,7 +195,7 @@ def parse_examples_to_run_file(
         # do_run is a condition under which to run the example.
         #
         # Note that the condition is a Python statement that can
-        # depend on waf configuration variables.  For example,
+        # depend on ns3 configuration variables.  For example,
         #
         #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
         #
@@ -578,21 +578,21 @@ def sigint_hook(signal, frame):
 
 #
 # In general, the build process itself naturally takes care of figuring out
-# which tests are built into the test runner.  For example, if waf configure
+# which tests are built into the test runner.  For example, if ns3 configure
 # determines that ENABLE_EMU is false due to some missing dependency,
 # the tests for the emu net device simply will not be built and will
 # therefore not be included in the built test runner.
 #
 # Examples, however, are a different story.  In that case, we are just given
 # a list of examples that could be run.  Instead of just failing, for example,
-# an example if its library support is not present, we look into the waf
+# an example if its library support is not present, we look into the ns3
 # saved configuration for relevant configuration items.
 #
-# XXX This function pokes around in the waf internal state file.  To be a
-# little less hacky, we should add a command to waf to return this info
+# XXX This function pokes around in the ns3 internal state file.  To be a
+# little less hacky, we should add a command to ns3 to return this info
 # and use that result.
 #
-def read_waf_config():
+def read_ns3_config():
     f = None
     try:
         # sys.platform reports linux2 for python2 and linux for python3
@@ -630,9 +630,9 @@ def read_waf_config():
             print("%s ==" % item, eval(item))
 
 #
-# It seems pointless to fork a process to run waf to fork a process to run
+# It seems pointless to fork a process to run ns3 to fork a process to run
 # the test runner, so we just run the test runner directly.  The main thing
-# that waf would do for us would be to sort out the shared library path but
+# that ns3 would do for us would be to sort out the shared library path but
 # we can deal with that easily and do here.
 #
 # There can be many different ns-3 repositories on a system, and each has
@@ -1042,12 +1042,12 @@ class worker_thread(threading.Thread):
 #
 def run_tests():
     #
-    # Pull some interesting configuration information out of waf, primarily
+    # Pull some interesting configuration information out of ns3, primarily
     # so we can know where executables can be found, but also to tell us what
     # pieces of the system have been built.  This will tell us what examples
     # are runnable.
     #
-    read_waf_config()
+    read_ns3_config()
 
     #
     # Set the proper suffix.
@@ -1060,15 +1060,15 @@ def run_tests():
 
     #
     # Add the proper prefix and suffix to the test-runner name to
-    # match what is done in the wscript file.
+    # match what is done in the CMakeLists.txt file.
     #
     test_runner_name = "%s%s-%s%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE_SUFFIX)
 
     #
-    # Run waf to make sure that everything is built, configured and ready to go
+    # Run ns3 to make sure that everything is built, configured and ready to go
     # unless we are explicitly told not to.  We want to be careful about causing
     # our users pain while waiting for extraneous stuff to compile and link, so
-    # we allow users that know what they''re doing to not invoke waf at all.
+    # we allow users that know what they're doing to not invoke ns3 at all.
     #
     if not options.no_build:
 
@@ -1079,7 +1079,7 @@ def run_tests():
         # options, so if we see them, we can safely only build the test-runner.
         #
         # If the user has constrained us to running only a particular type of
-        # file, we can only ask waf to build what we know will be necessary.
+        # file, we can only ask ns3 to build what we know will be necessary.
         # For example, if the user only wants to run BVT tests, we only have
         # to build the test-runner and can ignore all of the examples.
         #
@@ -1122,7 +1122,7 @@ def run_tests():
         ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
         ns3_runnable_scripts = [os.path.basename(script) for script in ns3_runnable_scripts]
     else:
-        print('The build status file was not found.  You must do waf build before running test.py.', file=sys.stderr)
+        print('The build status file was not found.  You must configure before running test.py.', file=sys.stderr)
         sys.exit(2)
 
     #
@@ -1529,7 +1529,7 @@ def run_tests():
 
     elif len(options.example):
         # Add the proper prefix and suffix to the example name to
-        # match what is done in the wscript file.
+        # match what is done in the CMakeLists.txt file.
         example_name = "%s%s-%s%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE_SUFFIX)
 
         key_list = []
@@ -1952,7 +1952,7 @@ def main(argv):
                       help="report multiple failures from test suites and test cases")
 
     parser.add_option("-n", "--no-build", action="store_true", dest="no_build", default=False,
-                      help="do not run waf before starting testing")
+                      help="do not build before starting testing")
 
     parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",
                       metavar="PYEXAMPLE",

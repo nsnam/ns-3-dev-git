@@ -24,7 +24,7 @@
 
 // Order is important here, as it determines which implementation
 // will generate doxygen API docs.  This order mimics the
-// selection logic in wscript, so we generate docs from the
+// selection logic in CMakeLists.txt, so we generate docs from the
 // implementation actually chosen by the configuration.
 #if defined (INT64X64_USE_128) && !defined (PYTHON_SCAN)
 #include "int64x64-128.h"

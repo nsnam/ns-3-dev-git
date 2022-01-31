@@ -1046,7 +1046,7 @@ protected:
    * subdirectories, then the variable NS_TEST_SOURCEDIR may not work
    * and the user may want to explicitly pass in a directory string.
    *
-   * Note that NS_TEST_SOURCEDIR is set in src/wscript for each module
+   * Note that NS_TEST_SOURCEDIR is set in src/CMakeLists.txt for each module
    */
   void SetDataDir (std::string directory);
 

@@ -2,5 +2,4 @@
 *
 
 # Include specific files that should be tracked by Git
-!wscript
 !.gitignore

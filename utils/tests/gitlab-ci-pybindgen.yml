@@ -14,8 +14,8 @@
 #   script:
 #     - git clone https://github.com/afq984/python-cxxfilt.git
 #     - mv python-cxxfilt/cxxfilt bindings/python
-#     - CXX="g++" ./waf configure --disable-examples --disable-tests -d debug
-#     - ./waf --apiscan=$MODULE
+#     - CXX="g++" ./ns3 configure --disable-examples --disable-tests -d debug
+#     - ./ns3 --apiscan=$MODULE
 #     - git diff src > pybindgen_new.patch
 #   artifacts:
 #     paths:

@@ -46,8 +46,6 @@
   --dict=/usr/share/dict/propernames \
   --dict=/usr/share/dict/connectives"
 
-Waf: Entering directory `build'
-Waf: Leaving directory `build'
 'build' finished successfully (3.028s)
 
 Hasher

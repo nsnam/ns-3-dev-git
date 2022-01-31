@@ -29,8 +29,7 @@ massif.*
 coverity
 TAGS
 
-.lock-waf_*_build
-.waf*
+.lock-ns3
 
 build-dir/
 build/

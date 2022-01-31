@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-# These methods are used by test.py and waf to look for and read the
+# These methods are used by test.py to look for and read the
 # .ns3rc configuration file, which is used to specify the modules that
 # should be enabled
 
