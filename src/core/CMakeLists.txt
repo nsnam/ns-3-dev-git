@@ -145,7 +145,7 @@ endif()
 # Embedded version support
 set(embedded_version_sources)
 set(embedded_version_headers)
-if(${NS3_ENABLE_BUILD_VERSION})
+if(${ENABLE_BUILD_VERSION})
   set(embedded_version_sources
       model/version.cc
   )

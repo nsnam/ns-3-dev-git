@@ -102,7 +102,7 @@
  *
  * Type: string literal
  */
-#cmakedefine NS3_VERSION_RELEASE_CANDIDATE "@NS3_VERSION_RELEASE_CANDIDATE@"
+#cmakedefine NS3_VERSION_RELEASE_CANDIDATE @NS3_VERSION_RELEASE_CANDIDATE@
 
 /**
  * The number of repository commits between #NS3_VERSION_CLOSEST_TAG

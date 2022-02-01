@@ -6,8 +6,13 @@
 function(check_git_repo_has_ns3_tags HAS_TAGS GIT_VERSION_TAG)
   execute_process(
     COMMAND ${GIT} describe --tags --abbrev=0 --match ns-3.[0-9]*
-    OUTPUT_VARIABLE GIT_TAG_OUTPUT
+    OUTPUT_VARIABLE GIT_TAG_OUTPUT ERROR_QUIET
   )
+
+  # Result will be empty in case of a shallow clone or no git repo
+  if(NOT GIT_TAG_OUTPUT)
+    return()
+  endif()
 
   string(REPLACE "\r" "" GIT_TAG_OUTPUT ${GIT_TAG_OUTPUT}) # remove CR (carriage
                                                            # return)
@@ -66,13 +71,16 @@ function(check_ns3_closest_tags CLOSEST_TAG VERSION_TAG_DISTANCE
 endfunction()
 
 function(configure_embedded_version)
-  mark_as_advanced(GIT)
-  find_program(GIT git)
-  if(${NS3_ENABLE_BUILD_VERSION} AND (NOT GIT))
-    message(FATAL_ERROR "Embedding build version into libraries require Git.")
+  if(NOT ${NS3_ENABLE_BUILD_VERSION})
+    add_custom_target(
+      check-version COMMAND echo Reconfigure ns-3 with
+                            NS3_ENABLE_BUILD_VERSION=ON
+    )
+    return()
   endif()
 
-  # Check version target will not be created
+  mark_as_advanced(GIT)
+  find_program(GIT git)
   if(NOT GIT)
     message(
       STATUS "Git was not found. Version related targets won't be enabled"
@@ -82,69 +90,117 @@ function(configure_embedded_version)
 
   check_git_repo_has_ns3_tags(HAS_NS3_TAGS NS3_VERSION_TAG)
 
-  if(NOT ${HAS_NS3_TAGS})
+  set(version_cache_file_template
+      ${PROJECT_SOURCE_DIR}/buildsupport/version.cache.in
+  )
+  set(version_cache_file ${PROJECT_SOURCE_DIR}/src/core/model/version.cache)
+
+  # Check if ns-3 git tags were found or at least version.cache file exists in
+  # the src/core/model
+  if((NOT HAS_NS3_TAGS) AND (NOT (EXISTS ${version_cache_file})))
     message(
       FATAL_ERROR
-        "This repository doesn't contain ns-3 git tags to bake into the libraries."
+        "The ns-3 git commit history or the version.cache file are required to embed build version into libraries."
     )
+    return()
   endif()
 
-  check_ns3_closest_tags(
-    NS3_VERSION_CLOSEST_TAG NS3_VERSION_TAG_DISTANCE NS3_VERSION_COMMIT_HASH
-    NS3_VERSION_DIRTY_FLAG
-  )
+  # If git tags were found, extract the information
+  if(HAS_NS3_TAGS)
+    check_ns3_closest_tags(
+      NS3_VERSION_CLOSEST_TAG NS3_VERSION_TAG_DISTANCE NS3_VERSION_COMMIT_HASH
+      NS3_VERSION_DIRTY_FLAG
+    )
+    # Split commit tag (ns-3.<minor>[.patch][-RC<digit>]) into
+    # (ns;3.<minor>[.patch];[-RC<digit>]):
+    string(REPLACE "-" ";" NS3_VER_LIST ${NS3_VERSION_TAG})
+    list(LENGTH NS3_VER_LIST NS3_VER_LIST_LEN)
+
+    # Get last version tag fragment (RC<digit>)
+    set(RELEASE_CANDIDATE " ")
+    if(${NS3_VER_LIST_LEN} GREATER 2)
+      list(GET NS3_VER_LIST 2 RELEASE_CANDIDATE)
+    endif()
+
+    # Get 3.<minor>[.patch]
+    list(GET NS3_VER_LIST 1 VERSION_STRING)
+    # Split into a list 3;<minor>[;patch]
+    string(REPLACE "." ";" VERSION_LIST ${VERSION_STRING})
+    list(LENGTH VERSION_LIST VER_LIST_LEN)
+
+    list(GET VERSION_LIST 0 NS3_VERSION_MAJOR)
+    if(${VER_LIST_LEN} GREATER 1)
+      list(GET VERSION_LIST 1 NS3_VERSION_MINOR)
+      if(${VER_LIST_LEN} GREATER 2)
+        list(GET VERSION_LIST 2 NS3_VERSION_PATCH)
+      else()
+        set(NS3_VERSION_PATCH "00")
+      endif()
+    endif()
+
+    # Transform list with 1 entry into strings
+    set(NS3_VERSION_MAJOR "${NS3_VERSION_MAJOR}")
+    set(NS3_VERSION_MINOR "${NS3_VERSION_MINOR}")
+    set(NS3_VERSION_PATCH "${NS3_VERSION_PATCH}")
+    set(NS3_VERSION_TAG "${NS3_VERSION_TAG}")
+    set(NS3_VERSION_RELEASE_CANDIDATE "${RELEASE_CANDIDATE}")
+    if(${NS3_VERSION_RELEASE_CANDIDATE} STREQUAL " ")
+      set(NS3_VERSION_RELEASE_CANDIDATE \"\")
+    endif()
+    set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
+
+    # Create version.cache file
+    configure_file(${version_cache_file_template} ${version_cache_file} @ONLY)
+  else()
+    # Consume version.cache created previously
+    file(STRINGS ${version_cache_file} version_cache_contents)
+    foreach(line ${version_cache_contents})
+      # Remove white spaces e.g. CLOSEST_TAG = '"ns-3.35"' =>
+      # CLOSEST_TAG='"ns-3.35"'
+      string(REPLACE " " "" line "${line}")
+
+      # Transform line into list  CLOSEST_TAG='"ns-3.35"' =>
+      # CLOSEST_TAG;'"ns-3.35"'
+      string(REPLACE "=" ";" line "${line}")
+
+      # Replace single and double quotes used by python
+      string(REPLACE "'" "" line "${line}")
+      string(REPLACE "\"" "" line "${line}")
+
+      # Get key and value
+      list(GET line 0 varname)
+      list(GET line 1 varvalue)
+
+      # If value is empty, replace with an empty string, assume its the release
+      # candidate string
+      if(NOT varvalue)
+        set(varvalue "\"\"")
+      endif()
+
+      # Define version variables with the NS3_ prefix to configure
+      # version-defines.h header
+      set(NS3_${varname} ${varvalue})
+    endforeach()
+    set(NS3_VERSION_CLOSEST_TAG ${NS3_CLOSEST_TAG})
+  endif()
+
   set(DIRTY)
   if(${NS3_VERSION_DIRTY_FLAG})
     set(DIRTY "-dirty")
   endif()
 
+  # Add check-version target
   set(version
       ${NS3_VERSION_TAG}+${NS3_VERSION_TAG_DISTANCE}@${NS3_VERSION_COMMIT_HASH}${DIRTY}-${build_profile}
   )
+  string(REPLACE "\"" "" version "${version}")
   add_custom_target(check-version COMMAND echo ns-3 version: ${version})
 
-  # Split commit tag (ns-3.<minor>[.patch][-RC<digit>]) into
-  # (ns;3.<minor>[.patch];[-RC<digit>]):
-  string(REPLACE "-" ";" NS3_VER_LIST ${NS3_VERSION_TAG})
-  list(LENGTH NS3_VER_LIST NS3_VER_LIST_LEN)
-
-  # Get last version tag fragment (RC<digit>)
-  set(RELEASE_CANDIDATE " ")
-  if(${NS3_VER_LIST_LEN} GREATER 2)
-    list(GET NS3_VER_LIST 2 RELEASE_CANDIDATE)
-  endif()
-
-  # Get 3.<minor>[.patch]
-  list(GET NS3_VER_LIST 1 VERSION_STRING)
-  # Split into a list 3;<minor>[;patch]
-  string(REPLACE "." ";" VERSION_LIST ${VERSION_STRING})
-  list(LENGTH VERSION_LIST VER_LIST_LEN)
-
-  list(GET VERSION_LIST 0 NS3_VERSION_MAJOR)
-  if(${VER_LIST_LEN} GREATER 1)
-    list(GET VERSION_LIST 1 NS3_VERSION_MINOR)
-    if(${VER_LIST_LEN} GREATER 2)
-      list(GET VERSION_LIST 2 NS3_VERSION_PATCH)
-    else()
-      set(NS3_VERSION_PATCH "00")
-    endif()
-  endif()
-
-  # Transform list with 1 entry into strings
-  set(NS3_VERSION_MAJOR "${NS3_VERSION_MAJOR}")
-  set(NS3_VERSION_MINOR "${NS3_VERSION_MINOR}")
-  set(NS3_VERSION_PATCH "${NS3_VERSION_PATCH}")
-  set(NS3_VERSION_TAG "${NS3_VERSION_TAG}")
-  set(NS3_VERSION_RELEASE_CANDIDATE "${RELEASE_CANDIDATE}")
-  set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
-
   # Enable embedding build version
-  if(${NS3_ENABLE_BUILD_VERSION})
-    add_definitions(-DENABLE_BUILD_VERSION=1)
-    configure_file(
-      buildsupport/version-defines-template.h
-      ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
-    )
-  endif()
-
+  add_definitions(-DENABLE_BUILD_VERSION=1)
+  configure_file(
+    buildsupport/version-defines-template.h
+    ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
+  )
+  set(ENABLE_BUILD_VERSION True PARENT_SCOPE)
 endfunction()

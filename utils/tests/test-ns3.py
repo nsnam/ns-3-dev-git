@@ -780,6 +780,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         Test passing --check-version argument to ns3 to get the build version
         @return None
         """
+        return_code, _, _ = run_ns3("configure --enable-build-version")
+        self.assertEqual(return_code, 0)
+
         return_code, stdout, stderr = run_ns3("--check-version")
         self.assertEqual(return_code, 0)
         self.assertIn("ns-3 version:", stdout)

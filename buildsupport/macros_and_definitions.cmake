@@ -341,6 +341,7 @@ macro(process_options)
   endif()
 
   include(buildsupport/custom_modules/ns3_versioning.cmake)
+  set(ENABLE_BUILD_VERSION False)
   configure_embedded_version()
 
   if(${NS3_CLANG_FORMAT})
@@ -1536,7 +1537,9 @@ function(find_external_library
     endif()
   endforeach()
 
-  list(REMOVE_DUPLICATES include_dirs)
+  if(include_dirs)
+    list(REMOVE_DUPLICATES include_dirs)
+  endif()
 
   # If we find both library and header, we export their values
   if((NOT not_found_libraries}) AND (NOT not_found_headers))

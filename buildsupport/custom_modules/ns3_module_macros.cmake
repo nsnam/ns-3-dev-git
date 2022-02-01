@@ -92,7 +92,7 @@ function(build_lib)
     set(config_headers ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
                        ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
     )
-    if(${NS3_ENABLE_BUILD_VERSION})
+    if(${ENABLE_BUILD_VERSION})
       list(APPEND config_headers
            ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
       )

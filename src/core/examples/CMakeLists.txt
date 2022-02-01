@@ -34,7 +34,7 @@ build_lib_example(
     ${libstats}
 )
 
-if(${NS3_ENABLE_BUILD_VERSION})
+if(${ENABLE_BUILD_VERSION})
   build_lib_example(
     NAME build-version-example
     SOURCE_FILES build-version-example.cc
