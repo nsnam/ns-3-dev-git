@@ -729,6 +729,14 @@ private:
   TracedCallback<const WifiMacHeader &> m_txOkCallback;  ///< transmit OK callback
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
+  /**
+   * TracedCallback signature for MPDU drop events.
+   *
+   * \param reason the reason why the MPDU was dropped (\see WifiMacDropReason)
+   * \param mpdu the dropped MPDU
+   */
+  typedef void (* DroppedMpduCallback)(WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+
   /// TracedCallback for MPDU drop events typedef
   typedef TracedCallback<WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpduTracedCallback;
 
@@ -743,6 +751,16 @@ private:
   MpduTracedCallback m_ackedMpduCallback;  ///< ack'ed MPDU callback
   MpduTracedCallback m_nackedMpduCallback; ///< nack'ed MPDU callback
 
+  /**
+   * TracedCallback signature for MPDU response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param mpdu the MPDU whose response was not received before the timeout
+   * \param txVector the TXVECTOR used to transmit the MPDU
+   */
+  typedef void (* MpduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiMacQueueItem> mpdu,
+                                               const WifiTxVector& txVector);
+
   /// TracedCallback for MPDU response timeout events typedef
   typedef TracedCallback<uint8_t, Ptr<const WifiMacQueueItem>, const WifiTxVector&> MpduResponseTimeoutTracedCallback;
 
@@ -752,6 +770,16 @@ private:
    */
   MpduResponseTimeoutTracedCallback m_mpduResponseTimeoutCallback;
 
+  /**
+   * TracedCallback signature for PSDU response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param psdu the PSDU whose response was not received before the timeout
+   * \param txVector the TXVECTOR used to transmit the PSDU
+   */
+  typedef void (* PsduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiPsdu> psdu,
+                                               const WifiTxVector& txVector);
+
   /// TracedCallback for PSDU response timeout events typedef
   typedef TracedCallback<uint8_t, Ptr<const WifiPsdu>, const WifiTxVector&> PsduResponseTimeoutTracedCallback;
 
@@ -760,6 +788,18 @@ private:
    * This trace source is fed by a WifiTxTimer object.
    */
   PsduResponseTimeoutTracedCallback m_psduResponseTimeoutCallback;
+
+  /**
+   * TracedCallback signature for PSDU map response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param psduMap the PSDU map for which not all responses were received before the timeout
+   * \param missingStations the MAC addresses of the stations that did not respond
+   * \param nTotalStations the total number of stations that had to respond
+   */
+  typedef void (* PsduMapResponseTimeoutCallback)(uint8_t reason, WifiPsduMap* psduMap,
+                                                  const std::set<Mac48Address>* missingStations,
+                                                  std::size_t nTotalStations);
 
   /// TracedCallback for PSDU map response timeout events typedef
   typedef TracedCallback<uint8_t, WifiPsduMap*, const std::set<Mac48Address>*, std::size_t> PsduMapResponseTimeoutTracedCallback;
