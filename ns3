@@ -210,7 +210,8 @@ def parse_args(argv):
                                         help='Try "./ns3 docs --help" for more documentation options')
     parser_docs.add_argument('docs',
                              help='Build project documentation',
-                             choices=["manual", "models", "tutorial", "contributing", "sphinx", "doxygen-no-build", "doxygen", "all"],
+                             choices=["manual", "models", "tutorial", "contributing",
+                                      "sphinx", "doxygen-no-build", "doxygen", "all"],
                              action="store", type=str, default=None)
 
     parser.add_argument('-j', '--jobs',
@@ -288,11 +289,11 @@ def check_c4che_data(output_directory):
     ns3_modules_bindings = []
     ns3_modules = None
 
-    c4che_info = {"BUILD_PROFILE" : None,
-                  "VERSION" : None,
-                  "ENABLE_EXAMPLES" : False,
-                  "ENABLE_SUDO" : False,
-                  "ENABLE_TESTS" : False,
+    c4che_info = {"BUILD_PROFILE": None,
+                  "VERSION": None,
+                  "ENABLE_EXAMPLES": False,
+                  "ENABLE_SUDO": False,
+                  "ENABLE_TESTS": False,
                   }
     if output_directory and os.path.exists(c4che_path):
         exec(open(c4che_path).read(), globals(), c4che_info)
@@ -525,6 +526,22 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         if ret.returncode != 0:
             exit(ret.returncode)
 
+        update_scratches_list(current_cmake_cache_folder)
+
+
+def update_scratches_list(current_cmake_cache_folder):
+    # Store list of scratches to trigger a reconfiguration step if needed
+    current_scratch_sources = glob.glob(os.path.join(ns3_path, "scratch", "**", "*.cc"), recursive=True)
+    with open(os.path.join(current_cmake_cache_folder, "ns3scratches"), "w") as f:
+        f.write("\n".join(current_scratch_sources))
+
+
+def refresh_cmake(current_cmake_cache_folder, output):
+    ret = subprocess.run([shutil.which("cmake"), ".."], cwd=current_cmake_cache_folder, stdout=output)
+    if ret.returncode != 0:
+        exit(ret.returncode)
+    update_scratches_list(current_cmake_cache_folder)
+
 
 def get_program_shortcuts(build_profile, ns3_version):
     build_status_file = os.sep.join([out_dir, "build-status.py"])
@@ -541,7 +558,7 @@ def get_program_shortcuts(build_profile, ns3_version):
         if "pch_exec" in program:
             continue
         temp_path = program.replace(out_dir, "").split(os.sep)
-        temp_path.pop(0) # remove first path separator
+        temp_path.pop(0)  # remove first path separator
 
         # Remove version prefix and build type suffix from shortcuts (or keep them too?)
         temp_path[-1] = temp_path[-1].replace("-" + build_profile, "").replace("ns" + ns3_version + "-", "")
@@ -702,6 +719,7 @@ def reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output
             raise Exception("Reconfiguring CMake to force refresh failed. "
                             "A backup of the settings was saved in %s" % settings_bak_file)
 
+        update_scratches_list(current_cmake_cache_folder)
 
 def get_target_to_build(program_path, ns3_version, build_profile):
     if ".py" in program_path:
@@ -1001,7 +1019,7 @@ def main():
         args.build = ['uninstall']
 
     # Get build profile and other settings
-    c4che_info, ns3_modules  = check_c4che_data(out_dir)
+    c4che_info, ns3_modules = check_c4che_data(out_dir)
     build_profile = c4che_info["BUILD_PROFILE"]
     enable_sudo = c4che_info["ENABLE_SUDO"]
     ns3_version = c4che_info["VERSION"]
@@ -1064,12 +1082,23 @@ def main():
             # We end things earlier if only checking the current project configuration
             return
 
+        # Check for changes in scratch sources and trigger a reconfigure if sources changed
+        if current_cmake_cache_folder:
+            current_scratch_sources = glob.glob(os.path.join(ns3_path, "scratch", "**", "*.cc"),
+                                                recursive=True)
+            scratches_file = os.path.join(current_cmake_cache_folder, "ns3scratches")
+            if os.path.exists(scratches_file):
+                with open(scratches_file, "r") as f:
+                    previous_scratches_sources = f.read().split('\n')
+                    if previous_scratches_sources != current_scratch_sources:
+                        refresh_cmake(current_cmake_cache_folder, output)
+
         if args.configure:
             configuration_step(current_cmake_cache_folder,
                                current_cmake_generator,
                                args,
                                output,
-                               args.dry_run
+                               args.dry_run,
                                )
 
         if not project_configured(current_cmake_cache_folder):
@@ -1131,7 +1160,7 @@ def main():
         target_path = os.sep.join(target_path)
         return target_path
 
-    if not args.check and not args.shell and target_to_run and not ".py" in target_to_run:
+    if not args.check and not args.shell and target_to_run and ".py" not in target_to_run:
         target_to_run = remove_overlapping_path(out_dir, target_to_run)
 
         # Waf doesn't add version prefix and build type suffix to the scratches, so we remove them

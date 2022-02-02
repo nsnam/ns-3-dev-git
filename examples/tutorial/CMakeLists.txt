@@ -45,7 +45,8 @@ build_example(
 
 build_example(
   NAME fifth
-  SOURCE_FILES fifth.cc tutorial-app.cc
+  SOURCE_FILES fifth.cc
+               tutorial-app.cc
   LIBRARIES_TO_LINK
     ${libcore}
     ${libpoint-to-point}
@@ -55,7 +56,8 @@ build_example(
 
 build_example(
   NAME sixth
-  SOURCE_FILES sixth.cc tutorial-app.cc
+  SOURCE_FILES sixth.cc
+               tutorial-app.cc
   LIBRARIES_TO_LINK
     ${libcore}
     ${libpoint-to-point}
@@ -65,7 +67,8 @@ build_example(
 
 build_example(
   NAME seventh
-  SOURCE_FILES seventh.cc tutorial-app.cc
+  SOURCE_FILES seventh.cc
+               tutorial-app.cc
   LIBRARIES_TO_LINK
     ${libcore}
     ${libstats}
