@@ -111,6 +111,7 @@ set(source_files
     model/supported-rates.cc
     model/table-based-error-rate-model.cc
     model/threshold-preamble-detection-model.cc
+    model/tim.cc
     model/txop.cc
     model/vht/vht-capabilities.cc
     model/vht/vht-configuration.cc
@@ -265,6 +266,7 @@ set(header_files
     model/supported-rates.h
     model/table-based-error-rate-model.h
     model/threshold-preamble-detection-model.h
+    model/tim.h
     model/txop.h
     model/vht/vht-capabilities.h
     model/vht/vht-configuration.h
@@ -333,6 +335,7 @@ build_lib(
     test/channel-access-manager-test.cc
     test/inter-bss-test-suite.cc
     test/power-rate-adaptation-test.cc
+    test/power-save-test.cc
     test/spectrum-wifi-phy-test.cc
     test/tx-duration-test.cc
     test/wifi-aggregation-test.cc
