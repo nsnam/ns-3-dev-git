@@ -413,13 +413,6 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   m_feManager->SetMacRxMiddle (m_rxMiddle);
   m_feManager->SetAddress (GetAddress ());
   m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
-  if (GetQosSupported ())
-    {
-      for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
-        {
-          GetQosTxop (ac)->SetQosFrameExchangeManager (DynamicCast<QosFrameExchangeManager> (m_feManager));
-        }
-    }
 }
 
 

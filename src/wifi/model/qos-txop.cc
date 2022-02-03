@@ -125,7 +125,6 @@ QosTxop::DoDispose (void)
     }
   m_baManager = 0;
   m_qosBlockedDestinations = 0;
-  m_qosFem = 0;
   Txop::DoDispose ();
 }
 
@@ -137,13 +136,6 @@ QosTxop::GetQosQueueSize (uint8_t tid, Mac48Address receiver) const
   uint8_t queueSize = static_cast<uint8_t> (std::ceil (std::min (bufferSize, 64769u) / 256.0));
   NS_LOG_DEBUG ("Buffer size=" << bufferSize << " Queue Size=" << +queueSize);
   return queueSize;
-}
-
-void
-QosTxop::SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem)
-{
-  NS_LOG_FUNCTION (this << qosFem);
-  m_qosFem = qosFem;
 }
 
 void
@@ -444,7 +436,6 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
                       Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem != 0);
-  NS_ASSERT (m_qosFem != 0);
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime << initialFrame);
 
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
@@ -455,7 +446,8 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
   Time actualAvailableTime = (initialFrame && txParams.GetSize (recipient) == 0
                               ? Time::Min () : availableTime);
 
-  if (!m_qosFem->TryAddMpdu (peekedItem, txParams, actualAvailableTime))
+  auto qosFem = StaticCast<QosFrameExchangeManager> (m_mac->GetFrameExchangeManager ());
+  if (!qosFem->TryAddMpdu (peekedItem, txParams, actualAvailableTime))
     {
       return nullptr;
     }
@@ -482,7 +474,7 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
           && !peekedItem->GetHeader ().IsRetry () && !peekedItem->IsFragment ()
           && !peekedItem->IsInFlight ())
         {
-          Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_qosFem);
+          auto htFem = StaticCast<HtFrameExchangeManager> (qosFem);
           mpdu = htFem->GetMsduAggregator ()->GetNextAmsdu (peekedItem, txParams, availableTime);
         }
 

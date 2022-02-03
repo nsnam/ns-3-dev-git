@@ -93,13 +93,6 @@ public:
   void SetDroppedMpduCallback (DroppedMpdu callback) override;
 
   /**
-   * Set the Frame Exchange Manager associated with this QoS STA.
-   *
-   * \param qosFem the associated QoS Frame Exchange Manager.
-   */
-  void SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem);
-
-  /**
    * Get the access category of this object.
    *
    * \return the access category.
@@ -460,7 +453,6 @@ private:
   bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
 
   AcIndex m_ac;                                         //!< the access category
-  Ptr<QosFrameExchangeManager> m_qosFem;                //!< the QoS Frame Exchange Manager
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the block ack manager
   uint8_t m_blockAckThreshold;                          /**< the block ack threshold (use BA mechanism if number of packets in queue reaches

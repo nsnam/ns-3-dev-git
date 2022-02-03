@@ -736,13 +736,6 @@ WifiMac::SetupFrameExchangeManager (WifiStandard standard)
   m_feManager->SetAckedMpduCallback (MakeCallback (&MpduTracedCallback::operator(),
                                                    &m_ackedMpduCallback));
   m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
-  if (GetQosSupported ())
-    {
-      for (const auto& pair : m_edca)
-        {
-          pair.second->SetQosFrameExchangeManager (DynamicCast<QosFrameExchangeManager> (m_feManager));
-        }
-    }
 }
 
 Ptr<FrameExchangeManager>
