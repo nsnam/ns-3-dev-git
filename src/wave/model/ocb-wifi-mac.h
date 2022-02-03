@@ -177,6 +177,7 @@ public:
 
   // Inherited from base class
   virtual void ConfigureStandard (enum WifiStandard standard);
+  virtual void SetWifiPhy (Ptr<WifiPhy> phy);
 protected:
   virtual void DoDispose (void);
 private:

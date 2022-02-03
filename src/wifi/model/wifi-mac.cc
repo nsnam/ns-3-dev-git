@@ -655,10 +655,14 @@ void
 WifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
-
   NS_ABORT_IF (standard >= WIFI_STANDARD_80211n && !m_qosSupported);
+  NS_ABORT_MSG_IF (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsSet (),
+                   "PHY must have been set and an operating channel must have been set");
 
+  ConfigurePhyDependentParameters ();
+  m_channelAccessManager->SetupPhyListener (m_phy);
   SetupFrameExchangeManager (standard);
+  m_feManager->SetWifiPhy (m_phy);
 }
 
 void
@@ -768,12 +772,6 @@ WifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   m_phy = phy;
-  NS_ABORT_MSG_IF (!m_phy->GetOperatingChannel ().IsSet (),
-                   "PHY operating channel must have been set");
-  ConfigurePhyDependentParameters ();
-  m_channelAccessManager->SetupPhyListener (phy);
-  NS_ASSERT (m_feManager != 0);
-  m_feManager->SetWifiPhy (phy);
 }
 
 Ptr<WifiPhy>

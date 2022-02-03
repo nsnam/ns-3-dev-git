@@ -126,6 +126,7 @@ AmpduAggregationTest::DoRun (void)
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
+  m_mac->SetWifiPhy (m_phy);
   m_mac->ConfigureStandard (WIFI_STANDARD_80211n);
   Ptr<FrameExchangeManager> fem = m_mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
@@ -134,7 +135,6 @@ AmpduAggregationTest::DoRun (void)
   Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
   ackManager->SetWifiMac (m_mac);
   fem->SetAckManager (ackManager);
-  m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
 
@@ -377,6 +377,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
+  m_mac->SetWifiPhy (m_phy);
   m_mac->ConfigureStandard (WIFI_STANDARD_80211n);
   Ptr<FrameExchangeManager> fem = m_mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
@@ -385,7 +386,6 @@ TwoLevelAggregationTest::DoRun (void)
   Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
   ackManager->SetWifiMac (m_mac);
   fem->SetAckManager (ackManager);
-  m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
 
@@ -613,6 +613,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   m_mac->SetDevice (m_device);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
+  m_mac->SetWifiPhy (m_phy);
   m_mac->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<FrameExchangeManager> fem = m_mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
@@ -621,7 +622,6 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
   ackManager->SetWifiMac (m_mac);
   fem->SetAckManager (ackManager);
-  m_mac->SetWifiPhy (m_phy);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
 

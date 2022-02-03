@@ -70,26 +70,16 @@ Ptr<Node>
 PowerRateAdaptationTest::ConfigureNode ()
 {
   /*
+   * Create and configure node.
+   */
+  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
+  Ptr<Node> node = CreateObject<Node> ();
+  node->AddDevice (dev);
+
+  /*
    * Create channel model. Is is necessary to configure correctly the phy layer.
    */
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
-
-  /*
-   * Create mac layer. We use Adhoc because association is not needed to get supported rates.
-   */
-  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
-  Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac> ();
-  mac->SetDevice (dev);
-  mac->ConfigureStandard (WIFI_STANDARD_80211a);
-  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
-
-  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
-  protectionManager->SetWifiMac (mac);
-  fem->SetProtectionManager (protectionManager);
-
-  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
-  ackManager->SetWifiMac (mac);
-  fem->SetAckManager (ackManager);
 
   /*
    * Create mobility model. Is needed by the phy layer for transmission.
@@ -102,6 +92,7 @@ PowerRateAdaptationTest::ConfigureNode ()
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
   phy->SetInterferenceHelper (interferenceHelper);
+  dev->SetPhy (phy);
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (mobility);
@@ -118,16 +109,25 @@ PowerRateAdaptationTest::ConfigureNode ()
    * Create manager.
    */
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
+  dev->SetRemoteStationManager (manager);
 
   /*
-   * Create and configure node. Add mac and phy layer and the manager.
+   * Create mac layer. We use Adhoc because association is not needed to get supported rates.
    */
-  Ptr<Node> node = CreateObject<Node> ();
+  Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac> ();
+  mac->SetDevice (dev);
   mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
-  dev->SetPhy (phy);
-  dev->SetRemoteStationManager (manager);
-  node->AddDevice (dev);
+  mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (mac);
+  fem->SetProtectionManager (protectionManager);
+
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (mac);
+  fem->SetAckManager (ackManager);
 
   return node;
 }

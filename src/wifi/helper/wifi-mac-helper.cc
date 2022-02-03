@@ -56,6 +56,7 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
   Ptr<WifiMac> mac = macObjectFactory.Create<WifiMac> ();
   mac->SetDevice (device);
   mac->SetAddress (Mac48Address::Allocate ());
+  device->SetMac (mac);
   mac->ConfigureStandard (standard);
 
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();

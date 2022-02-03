@@ -381,6 +381,20 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
 }
 
 void
+OcbWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  WifiMac::SetWifiPhy (phy);
+  NS_ABORT_MSG_IF (!phy->GetOperatingChannel ().IsSet (),
+                   "PHY operating channel must have been set");
+  m_channelAccessManager->SetupPhyListener (phy);
+  if (m_feManager != nullptr)
+    {
+      m_feManager->SetWifiPhy (phy);
+    }
+}
+
+void
 OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
@@ -413,6 +427,10 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   m_feManager->SetMacRxMiddle (m_rxMiddle);
   m_feManager->SetAddress (GetAddress ());
   m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+  if (auto phy = GetWifiPhy (); phy != nullptr)
+    {
+      m_feManager->SetWifiPhy (phy);
+    }
 }
 
 

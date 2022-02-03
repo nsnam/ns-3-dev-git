@@ -722,6 +722,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+      node->AddDevice (device);
       device->SetStandard (m_standard);
       if (m_standard == WIFI_STANDARD_UNSPECIFIED)
         {
@@ -754,13 +755,11 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           device->SetEhtConfiguration (ehtConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
+      device->SetRemoteStationManager (manager);
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       device->SetPhy (phy);
       phy->ConfigureStandard (m_standard);
       Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
-      device->SetMac (mac);
-      device->SetRemoteStationManager (manager);
-      node->AddDevice (device);
       if ((m_standard >= WIFI_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {
           Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();

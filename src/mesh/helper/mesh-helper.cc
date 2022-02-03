@@ -182,14 +182,19 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   // this is a const method, but we need to force the correct QoS setting
   ObjectFactory macObjectFactory = m_mac;
   macObjectFactory.Set ("QosSupported", BooleanValue (true));  // a mesh station is a QoS station
+  Ptr<WifiPhy> phy = phyHelper.Create (node, device);
+  node->AddDevice (device);
+  phy->ConfigureStandard (m_standard);
+  device->SetPhy (phy);
   Ptr<MeshWifiInterfaceMac> mac = macObjectFactory.Create<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
   mac->SetDevice (device);
   Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
   NS_ASSERT (manager != 0);
-  Ptr<WifiPhy> phy = phyHelper.Create (node, device);
+  device->SetRemoteStationManager (manager);
   mac->SetAddress (Mac48Address::Allocate ());
+  device->SetMac (mac);
   mac->ConfigureStandard (m_standard);
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
   if (fem != nullptr)
@@ -202,11 +207,6 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
       ackManager->SetWifiMac (mac);
       fem->SetAckManager (ackManager);
     }
-  phy->ConfigureStandard (m_standard);
-  device->SetMac (mac);
-  device->SetPhy (phy);
-  device->SetRemoteStationManager (manager);
-  node->AddDevice (device);
   mac->SwitchFrequencyChannel (channelId);
 
   return device;
