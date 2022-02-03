@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/object-vector.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/channel.h"
 #include "ns3/pointer.h"
@@ -53,12 +54,19 @@ WifiNetDevice::GetTypeId (void)
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetChannel),
-                   MakePointerChecker<Channel> ())
+                   MakePointerChecker<Channel> (),
+                   TypeId::DEPRECATED,
+                   "Use the Channel attribute of WifiPhy")
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    PointerValue (),
-                   MakePointerAccessor (&WifiNetDevice::GetPhy,
+                   MakePointerAccessor ((Ptr<WifiPhy> (WifiNetDevice::*) (void) const) &WifiNetDevice::GetPhy,
                                         &WifiNetDevice::SetPhy),
                    MakePointerChecker<WifiPhy> ())
+    .AddAttribute ("Phys", "The PHY layers attached to this device (11be multi-link devices only).",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&WifiNetDevice::GetPhy,
+                                             &WifiNetDevice::GetNPhys),
+                   MakeObjectVectorChecker<WifiPhy> ())
     .AddAttribute ("Mac", "The MAC layer attached to this device.",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetMac,
@@ -115,11 +123,15 @@ WifiNetDevice::DoDispose (void)
       m_mac->Dispose ();
       m_mac = 0;
     }
-  if (m_phy)
+  for (auto& phy : m_phys)
     {
-      m_phy->Dispose ();
-      m_phy = 0;
+      if (phy != nullptr)
+        {
+          phy->Dispose ();
+          phy = nullptr;
+        }
     }
+  m_phys.clear ();
   if (m_stationManager)
     {
       m_stationManager->Dispose ();
@@ -152,9 +164,13 @@ void
 WifiNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_phy)
+
+  for (const auto& phy : m_phys)
     {
-      m_phy->Initialize ();
+      if (phy)
+        {
+          phy->Initialize ();
+        }
     }
   if (m_mac)
     {
@@ -171,7 +187,7 @@ void
 WifiNetDevice::CompleteConfig (void)
 {
   if (m_mac == 0
-      || m_phy == 0
+      || m_phys.empty ()
       || m_stationManager == 0
       || m_node == 0
       || m_configComplete)
@@ -179,11 +195,11 @@ WifiNetDevice::CompleteConfig (void)
       return;
     }
   m_mac->SetWifiRemoteStationManager (m_stationManager);
-  m_mac->SetWifiPhy (m_phy);
+  m_mac->SetWifiPhy (m_phys[SINGLE_LINK_OP_ID]);
   m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
-  m_stationManager->SetupPhy (m_phy);
+  m_stationManager->SetupPhy (m_phys[SINGLE_LINK_OP_ID]);
   m_stationManager->SetupMac (m_mac);
   m_configComplete = true;
 }
@@ -211,7 +227,19 @@ WifiNetDevice::SetMac (const Ptr<WifiMac> mac)
 void
 WifiNetDevice::SetPhy (const Ptr<WifiPhy> phy)
 {
-  m_phy = phy;
+  m_phys.clear ();
+  m_phys.push_back (phy);
+  m_linkUp = true;
+  CompleteConfig ();
+}
+
+void
+WifiNetDevice::SetPhys (const std::vector<Ptr<WifiPhy>>& phys)
+{
+  NS_ABORT_MSG_IF (phys.size () > 1 && m_ehtConfiguration == nullptr,
+                   "Multiple PHYs only allowed for 11be multi-link devices");
+  m_phys = phys;
+  m_linkUp = true;
   CompleteConfig ();
 }
 
@@ -231,7 +259,26 @@ WifiNetDevice::GetMac (void) const
 Ptr<WifiPhy>
 WifiNetDevice::GetPhy (void) const
 {
-  return m_phy;
+  return GetPhy (SINGLE_LINK_OP_ID);
+}
+
+Ptr<WifiPhy>
+WifiNetDevice::GetPhy (uint8_t i) const
+{
+  NS_ASSERT (i < GetPhys ().size ());
+  return GetPhys ().at (i);
+}
+
+const std::vector<Ptr<WifiPhy>>&
+WifiNetDevice::GetPhys (void) const
+{
+  return m_phys;
+}
+
+uint8_t
+WifiNetDevice::GetNPhys (void) const
+{
+  return GetPhys ().size ();
 }
 
 Ptr<WifiRemoteStationManager>
@@ -255,7 +302,15 @@ WifiNetDevice::GetIfIndex (void) const
 Ptr<Channel>
 WifiNetDevice::GetChannel (void) const
 {
-  return m_phy->GetChannel ();
+  for (uint8_t i = 1; i < GetNPhys (); i++)
+    {
+      if (GetPhy (i)->GetChannel () != GetPhy (i - 1)->GetChannel ())
+        {
+          NS_ABORT_MSG ("Do not call WifiNetDevice::GetChannel() when using multiple channels");
+        }
+    }
+
+  return m_phys[SINGLE_LINK_OP_ID]->GetChannel ();
 }
 
 void
@@ -290,7 +345,7 @@ WifiNetDevice::GetMtu (void) const
 bool
 WifiNetDevice::IsLinkUp (void) const
 {
-  return m_phy != 0 && m_linkUp;
+  return !m_phys.empty () && m_linkUp;
 }
 
 void
@@ -492,7 +547,7 @@ WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
 Ptr<VhtConfiguration>
 WifiNetDevice::GetVhtConfiguration (void) const
 {
-  return (m_standard >= WIFI_STANDARD_80211ac && m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ
+  return (m_standard >= WIFI_STANDARD_80211ac && m_phys[SINGLE_LINK_OP_ID]->GetPhyBand () == WIFI_PHY_BAND_5GHZ
           ? m_vhtConfiguration : nullptr);
 }
 

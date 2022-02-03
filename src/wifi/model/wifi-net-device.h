@@ -24,6 +24,7 @@
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
 #include "wifi-standards.h"
+#include <vector>
 
 namespace ns3 {
 
@@ -90,6 +91,10 @@ public:
    */
   void SetPhy (const Ptr<WifiPhy> phy);
   /**
+   * \param phys the PHY layers to use (for 11be multi-link devices only)
+   */
+  void SetPhys (const std::vector<Ptr<WifiPhy>>& phys);
+  /**
    * \param manager the manager to use.
    */
   void SetRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
@@ -99,8 +104,23 @@ public:
   Ptr<WifiMac> GetMac (void) const;
   /**
    * \returns the PHY we are currently using.
+   *
+   * This GetPhy variant is needed to keep using "Phy" in the path names.
    */
   Ptr<WifiPhy> GetPhy (void) const;
+  /**
+   * \param i the index (starting at 0) of the PHY object to retrieve
+   * \returns the requested PHY object
+   */
+  virtual Ptr<WifiPhy> GetPhy (uint8_t i) const;
+  /**
+   * \returns a const reference to the vector of PHY objects
+   */
+  virtual const std::vector<Ptr<WifiPhy>>& GetPhys (void) const;
+  /**
+   * \returns the number of PHY objects
+   */
+  uint8_t GetNPhys (void) const;
   /**
    * \returns the remote station manager we are currently using.
    */
@@ -196,7 +216,7 @@ private:
   void CompleteConfig (void);
 
   Ptr<Node> m_node; //!< the node
-  Ptr<WifiPhy> m_phy; //!< the phy
+  std::vector<Ptr<WifiPhy>> m_phys; //!< the phy objects
   Ptr<WifiMac> m_mac; //!< the MAC
   Ptr<WifiRemoteStationManager> m_stationManager; //!< the station manager
   Ptr<HtConfiguration> m_htConfiguration; //!< the HtConfiguration

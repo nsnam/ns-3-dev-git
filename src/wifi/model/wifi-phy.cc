@@ -27,6 +27,7 @@
 #include "ns3/pointer.h"
 #include "ns3/string.h"
 #include "ns3/tuple.h"
+#include "ns3/channel.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/error-model.h"
@@ -61,6 +62,11 @@ WifiPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("Channel",
+                   "The channel attached to this PHY",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiPhy::GetChannel),
+                   MakePointerChecker<Channel> ())
     .AddAttribute ("ChannelSettings",
                    "Tuple {channel number, channel width (MHz), PHY band, primary20 index} "
                    "describing the settings of the operating channel. The primary20 index is "

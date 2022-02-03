@@ -190,11 +190,11 @@ public:
    * \param index the index of PHY entity
    * \return corresponding PHY entity
    */
-  Ptr<WifiPhy> GetPhy (uint32_t index) const;
+  Ptr<WifiPhy> GetPhy (uint8_t index) const;
   /**
    * \return all inserted PHY entities.
    */
-  std::vector<Ptr<WifiPhy> > GetPhys (void) const;
+  const std::vector<Ptr<WifiPhy>>& GetPhys (void) const;
 
   /**
    * \param channelScheduler the channel scheduler for multiple channel operation

@@ -555,8 +555,7 @@ WifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool p
       return;
     }
 
-  Ptr<WifiPhy> phy = device->GetPhy ();
-  NS_ABORT_MSG_IF (phy == 0, "WifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
+  NS_ABORT_MSG_IF (device->GetPhys ().empty (), "WifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
   PcapHelper pcapHelper;
 
@@ -570,10 +569,24 @@ WifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool p
       filename = pcapHelper.GetFilenameFromDevice (prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, m_pcapDlt);
+  uint8_t linkId = 0;
+  // find the last point in the filename
+  auto pos = filename.find_last_of ('.');
+  // if not found, set pos to filename size
+  pos = (pos == std::string::npos) ? filename.size () : pos;
 
-  phy->TraceConnectWithoutContext ("MonitorSnifferTx", MakeBoundCallback (&WifiPhyHelper::PcapSniffTxEvent, file));
-  phy->TraceConnectWithoutContext ("MonitorSnifferRx", MakeBoundCallback (&WifiPhyHelper::PcapSniffRxEvent, file));
+  for (auto& phy : device->GetPhys ())
+    {
+      std::string tmp = filename;
+      if (device->GetNPhys () > 1)
+        {
+          // insert LinkId only for multi-link devices
+          tmp.insert (pos, "-" + std::to_string (linkId++));
+        }
+      auto file = pcapHelper.CreateFile (tmp, std::ios::out, m_pcapDlt);
+      phy->TraceConnectWithoutContext ("MonitorSnifferTx", MakeBoundCallback (&WifiPhyHelper::PcapSniffTxEvent, file));
+      phy->TraceConnectWithoutContext ("MonitorSnifferRx", MakeBoundCallback (&WifiPhyHelper::PcapSniffRxEvent, file));
+    }
 }
 
 void
@@ -622,18 +635,34 @@ WifiPhyHelper::EnableAsciiInternal (
           filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
-      //We could go poking through the PHY and the state looking for the
-      //correct trace source, but we can let Config deal with that with
-      //some search cost.  Since this is presumably happening at topology
-      //creation time, it doesn't seem much of a price to pay.
-      oss.str ("");
-      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, theStream));
+      // find the last point in the filename
+      auto pos = filename.find_last_of ('.');
+      // if not found, set pos to filename size
+      pos = (pos == std::string::npos) ? filename.size () : pos;
 
-      oss.str ("");
-      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, theStream));
+      for (uint8_t linkId = 0; linkId < device->GetNPhys (); linkId++)
+        {
+          std::string tmp = filename;
+          if (device->GetNPhys () > 1)
+            {
+              // insert LinkId only for multi-link devices
+              tmp.insert (pos, "-" + std::to_string (linkId));
+            }
+          auto theStream = asciiTraceHelper.CreateFileStream (tmp);
+          //We could go poking through the PHY and the state looking for the
+          //correct trace source, but we can let Config deal with that with
+          //some search cost.  Since this is presumably happening at topology
+          //creation time, it doesn't seem much of a price to pay.
+          oss.str ("");
+          oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phys/"
+              << +linkId << "/State/RxOk";
+          Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, theStream));
+
+          oss.str ("");
+          oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phys/"
+              << +linkId << "/State/Tx";
+          Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, theStream));
+        }
 
       return;
     }
