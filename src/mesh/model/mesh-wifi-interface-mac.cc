@@ -560,7 +560,6 @@ MeshWifiInterfaceMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
   // Beacon transmission. For this we need to reconfigure the channel
   // access parameters slightly, and do so here.
   m_txop = CreateObject<Txop> ();
-  m_txop->SetChannelAccessManager (m_channelAccessManager);
   m_txop->SetWifiMac (this);
   m_txop->SetTxMiddle (m_txMiddle);
   m_txop->SetMinCw (0);

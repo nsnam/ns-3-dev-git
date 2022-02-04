@@ -66,6 +66,7 @@ public:
   bool SupportsSendFrom (void) const override;
   void SetAddress (Mac48Address address) override;
   Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const override;
+  void ConfigureStandard (WifiStandard standard) override;
 
   /**
    * \param interval the interval between two beacon transmissions.

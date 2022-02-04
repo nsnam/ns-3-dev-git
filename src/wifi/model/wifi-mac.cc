@@ -54,8 +54,6 @@ WifiMac::WifiMac ()
   m_rxMiddle->SetForwardCallback (MakeCallback (&WifiMac::Receive, this));
 
   m_txMiddle = Create<MacTxMiddle> ();
-
-  m_channelAccessManager = CreateObject<ChannelAccessManager> ();
 }
 
 WifiMac::~WifiMac ()
@@ -345,7 +343,10 @@ WifiMac::DoDispose ()
   m_rxMiddle = 0;
   m_txMiddle = 0;
 
-  m_channelAccessManager->Dispose ();
+  if (m_channelAccessManager != nullptr)
+    {
+      m_channelAccessManager->Dispose ();
+    }
   m_channelAccessManager = 0;
 
   if (m_txop != nullptr)
@@ -560,7 +561,6 @@ WifiMac::SetupEdcaQueue (AcIndex ac)
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
   Ptr<QosTxop> edca = CreateObject<QosTxop> (ac);
-  edca->SetChannelAccessManager (m_channelAccessManager);
   edca->SetWifiMac (this);
   edca->SetTxMiddle (m_txMiddle);
   edca->GetBaManager ()->SetTxOkCallback (MakeCallback (&MpduTracedCallback::operator(),
@@ -659,10 +659,23 @@ WifiMac::ConfigureStandard (WifiStandard standard)
   NS_ABORT_MSG_IF (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsSet (),
                    "PHY must have been set and an operating channel must have been set");
 
-  ConfigurePhyDependentParameters ();
+  m_channelAccessManager = CreateObject<ChannelAccessManager> ();
   m_channelAccessManager->SetupPhyListener (m_phy);
+
+  ConfigurePhyDependentParameters ();
+
   SetupFrameExchangeManager (standard);
   m_feManager->SetWifiPhy (m_phy);
+  m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+
+  if (m_txop != nullptr)
+    {
+      m_txop->SetChannelAccessManager (m_channelAccessManager);
+    }
+  for (auto it = m_edca.begin (); it!= m_edca.end (); ++it)
+    {
+      it->second->SetChannelAccessManager (m_channelAccessManager);
+    }
 }
 
 void
@@ -739,7 +752,6 @@ WifiMac::SetupFrameExchangeManager (WifiStandard standard)
                                                      &m_droppedMpduCallback));
   m_feManager->SetAckedMpduCallback (MakeCallback (&MpduTracedCallback::operator(),
                                                    &m_ackedMpduCallback));
-  m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
 }
 
 Ptr<FrameExchangeManager>
@@ -802,7 +814,6 @@ WifiMac::SetQosSupported (bool enable)
     {
       // create a non-QoS TXOP
       m_txop = CreateObject<Txop> ();
-      m_txop->SetChannelAccessManager (m_channelAccessManager);
       m_txop->SetWifiMac (this);
       m_txop->SetTxMiddle (m_txMiddle);
       m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),

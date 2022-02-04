@@ -378,6 +378,8 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;
     }
+
+  dcf->SetChannelAccessManager (m_channelAccessManager);
 }
 
 void
@@ -387,7 +389,10 @@ OcbWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
   WifiMac::SetWifiPhy (phy);
   NS_ABORT_MSG_IF (!phy->GetOperatingChannel ().IsSet (),
                    "PHY operating channel must have been set");
-  m_channelAccessManager->SetupPhyListener (phy);
+  if (m_channelAccessManager != nullptr)
+    {
+      m_channelAccessManager->SetupPhyListener (phy);
+    }
   if (m_feManager != nullptr)
     {
       m_feManager->SetWifiPhy (phy);
@@ -399,6 +404,9 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   NS_ASSERT (standard == WIFI_STANDARD_80211p);
+
+  // Setup ChannelAccessManager
+  m_channelAccessManager = CreateObject<ChannelAccessManager> ();
 
   uint32_t cwmin = 15;
   uint32_t cwmax = 1023;
@@ -430,6 +438,7 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   if (auto phy = GetWifiPhy (); phy != nullptr)
     {
       m_feManager->SetWifiPhy (phy);
+      m_channelAccessManager->SetupPhyListener (phy);
     }
 }
 

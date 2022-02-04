@@ -340,9 +340,10 @@ public:
   /**
    * \param standard the wifi standard to be configured
    *
-   * This method completes the configuration process for a requested PHY standard.
-   * Subclasses should implement this method to configure their DCF queues
-   * according to the requested standard.
+   * This method completes the configuration process for a requested PHY standard
+   * by creating the Frame Exchange Manager and the Channel Access Manager and
+   * configuring the PHY dependent parameters.
+   * This method can only be called after a configured PHY has been set.
    */
   virtual void ConfigureStandard (WifiStandard standard);
 
@@ -688,8 +689,9 @@ private:
   Mac48Address m_bssid;   //!< the BSSID
 
   /** This type defines a mapping between an Access Category index,
-  and a pointer to the corresponding channel access function */
-  typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
+  and a pointer to the corresponding channel access function.
+  Access Categories are sorted in decreasing order of priority. */
+  typedef std::map<AcIndex, Ptr<QosTxop>, std::greater<AcIndex>> EdcaQueues;
 
   /** This is a map from Access Category index to the corresponding
   channel access function */

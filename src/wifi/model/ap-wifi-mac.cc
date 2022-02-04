@@ -110,7 +110,6 @@ ApWifiMac::ApWifiMac ()
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
   m_beaconTxop->SetMaxCw (0);
-  m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
 
   //Let the lower layers know that we are acting as an AP.
@@ -142,6 +141,14 @@ ApWifiMac::SetAddress (Mac48Address address)
   //overriding this function and setting both in our parent class.
   WifiMac::SetAddress (address);
   WifiMac::SetBssid (address);
+}
+
+void
+ApWifiMac::ConfigureStandard (WifiStandard standard)
+{
+  NS_LOG_FUNCTION (this << standard);
+  WifiMac::ConfigureStandard (standard);
+  m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
 }
 
 Ptr<WifiMacQueue>
