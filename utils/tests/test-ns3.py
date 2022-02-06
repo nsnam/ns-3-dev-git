@@ -1237,6 +1237,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         """
         # Build.
         targets = {"scratch/scratch-simulator": "scratch-simulator",
+                   "scratch/scratch-simulator.cc": "scratch-simulator",
                    "scratch-simulator": "scratch-simulator",
                    "scratch/subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
                    "subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
@@ -1254,7 +1255,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             self.assertEqual(return_code, 0)
             self.assertIn(build_line, stdout)
             stdout = stdout.replace("scratch_%s" % target_cmake, "")  # remove build lines
-            self.assertIn(target_to_run.split("/")[-1], stdout)
+            self.assertIn(target_to_run.split("/")[-1].replace(".cc", ""), stdout)
 
         NS3BuildBaseTestCase.cleaned_once = False
 
@@ -1498,15 +1499,20 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 1)
         self.assertIn("Couldn't find the specified program: nonsense", stderr)
 
-    def test_08_RunNoBuildGdb(self):
+    def test_08_RunNoBuildGdbAndLldb(self):
         """!
-        Test if scratch simulator is executed through gdb
+        Test if scratch simulator is executed through gdb and lldb
         @return None
         """
         return_code, stdout, stderr = run_ns3("run scratch-simulator --gdb --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stdout)
         self.assertIn("No debugging symbols found", stdout)
+
+        return_code, stdout, stderr = run_ns3("run scratch-simulator --lldb --verbose --no-build")
+        self.assertEqual(return_code, 0)
+        self.assertIn("scratch-simulator", stdout)
+        self.assertIn("(lldb) target create", stdout)
 
     def test_09_RunNoBuildValgrind(self):
         """!
