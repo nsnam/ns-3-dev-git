@@ -83,7 +83,7 @@ PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
  * \param size The buffer size.
  */
 void
-PerfStream (ostream &stream, uint32_t n, const char *buffer, uint32_t size)
+PerfStream (std::ostream &stream, uint32_t n, const char *buffer, uint32_t size)
 {
 
   for (uint32_t i = 0; i < n; ++i)
@@ -121,7 +121,7 @@ main (int argc, char *argv[])
       //
       for (uint32_t i = 0; i < iter; ++i)
         {
-          ofstream stream;
+          std::ofstream stream;
           if (binmode)
             {
               stream.open ("streamtest", std::ios_base::binary | std::ios_base::out);
@@ -134,11 +134,11 @@ main (int argc, char *argv[])
           uint64_t start = GetRealtimeInNs ();
           PerfStream (stream, n, buffer, 1024);
           uint64_t et = GetRealtimeInNs () - start;
-          result = min (result, et);
+          result = std::min (result, et);
           stream.close ();
           std::cout << "."; std::cout.flush ();
         }
-      cout << std::endl;
+      std::cout << std::endl;
     }
   else
     {

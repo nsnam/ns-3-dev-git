@@ -41,3 +41,9 @@ if(network IN_LIST libs_to_build)
     print-introspected-doxygen ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/ ""
   )
 endif()
+
+if(core IN_LIST ns3-all-enabled-modules)
+  add_executable(perf-io perf/perf-io.cc)
+  target_link_libraries(perf-io PRIVATE ${libcore})
+  set_runtime_outputdirectory(perf-io ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/perf/ "")
+endif()

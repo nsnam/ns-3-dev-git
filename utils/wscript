@@ -32,3 +32,6 @@ def build(bld):
         obj = bld.create_ns3_program('print-introspected-doxygen', ['network'])
         obj.source = 'print-introspected-doxygen.cc'
         obj.use = [mod for mod in env['NS3_ENABLED_MODULES']]
+
+    obj = bld.create_ns3_program('perf-io', ['core'])
+    obj.source = 'perf/perf-io.cc'
