@@ -546,9 +546,6 @@ if [ "$filterin" != "" ] ; then
     echo "Filtered Warnings"
     echo "========================================"
     echo "$filterin"
-    exit_status=1
-else
-    exit_status=0
 fi
 
 status_report 0 $me
