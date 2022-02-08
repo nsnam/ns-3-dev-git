@@ -38,10 +38,8 @@
  * to make very large simulations.
  */
 
-// for timing functions
-#include <cstdlib>
-#include <sys/time.h>
-#include <fstream>
+#include <chrono>
+#include <sstream>
 
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
@@ -54,11 +52,6 @@
 #include "ns3/nix-vector-helper.h"
 
 using namespace ns3;
-
-typedef struct timeval TIMER_TYPE;
-#define TIMER_NOW(_t) gettimeofday (&_t,NULL);
-#define TIMER_SECONDS(_t) ((double)(_t).tv_sec + (_t).tv_usec*1e-6)
-#define TIMER_DIFF(_t1, _t2) (TIMER_SECONDS (_t1)-TIMER_SECONDS (_t2))
 
 NS_LOG_COMPONENT_DEFINE ("CampusNetworkModel");
 
@@ -157,8 +150,8 @@ private:
 int
 main (int argc, char *argv[])
 {
-  TIMER_TYPE t0, t1, t2;
-  TIMER_NOW (t0);
+  auto t0 = std::chrono::steady_clock::now ();
+
   std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
   // LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
 
@@ -687,8 +680,7 @@ main (int argc, char *argv[])
     }
 
   std::cout << "Created " << NodeList::GetNNodes () << " nodes." << std::endl;
-  TIMER_TYPE routingStart;
-  TIMER_NOW (routingStart);
+  auto routingStart = std::chrono::steady_clock::now ();
 
   if (nix)
     {
@@ -702,25 +694,28 @@ main (int argc, char *argv[])
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
     }
 
-  TIMER_TYPE routingEnd;
-  TIMER_NOW (routingEnd);
-  std::cout << "Routing tables population took " 
-       << TIMER_DIFF (routingEnd, routingStart) << std::endl;
+  auto routingEnd = std::chrono::steady_clock::now ();
+  std::cout << "Routing tables population took "
+            << std::chrono::duration_cast<std::chrono::milliseconds> (routingEnd - routingStart).count () << "ms"
+            << std::endl;
 
   Simulator::ScheduleNow (Progress);
   std::cout << "Running simulator..." << std::endl;
-  TIMER_NOW (t1);
+  auto t1 = std::chrono::steady_clock::now ();
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
-  TIMER_NOW (t2);
+  auto t2 = std::chrono::steady_clock::now ();
   std::cout << "Simulator finished." << std::endl;
   Simulator::Destroy ();
 
-  double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
-  std::cout << "-----" << std::endl << "Runtime Stats:" << std::endl;
-  std::cout << "Simulator init time: " << d1 << std::endl;
-  std::cout << "Simulator run time: " << d2 << std::endl;
-  std::cout << "Total elapsed time: " << d1+d2 << std::endl;
+  auto d1 = std::chrono::duration_cast<std::chrono::seconds>(t1 - t0);
+  auto d2 = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1);
+
+  std::cout << "-----" << std::endl
+            << "Runtime Stats:" << std::endl;
+  std::cout << "Simulator init time: " << d1.count () << "s" << std::endl;
+  std::cout << "Simulator run time: " << d2.count () << "s" << std::endl;
+  std::cout << "Total elapsed time: " << (d1 + d2).count () << "s" << std::endl;
 
   delete[] nodes_netLR;
   return 0;
