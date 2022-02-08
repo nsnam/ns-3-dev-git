@@ -410,7 +410,7 @@ DpdkNetDevice::InitDpdk (int argc, char** argv, std::string dpdkDriver)
   CheckAllPortsLinkStatus ();
 
   NS_LOG_INFO ("Launching core threads");
-  rte_eal_mp_remote_launch (LaunchCore, this, CALL_MASTER);
+  rte_eal_mp_remote_launch (LaunchCore, this, CALL_MAIN);
 }
 
 uint8_t*
