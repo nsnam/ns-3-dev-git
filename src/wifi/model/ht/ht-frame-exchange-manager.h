@@ -198,6 +198,16 @@ public:
    */
   BlockAckType GetBlockAckType (Mac48Address originator, uint8_t tid) const;
 
+  /**
+   * Sends DELBA frame to cancel a block ack agreement with STA
+   * addressed by <i>addr</i> for TID <i>tid</i>.
+   *
+   * \param addr address of the recipient.
+   * \param tid traffic ID.
+   * \param byOriginator flag to indicate whether this is set by the originator.
+   */
+  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
+
 protected:
   void DoDispose () override;
 
@@ -333,16 +343,6 @@ protected:
    */
   void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startingSeq,
                          uint16_t timeout, bool immediateBAck);
-
-  /**
-   * Sends DELBA frame to cancel a block ack agreement with STA
-   * addressed by <i>addr</i> for TID <i>tid</i>.
-   *
-   * \param addr address of the recipient.
-   * \param tid traffic ID.
-   * \param byOriginator flag to indicate whether this is set by the originator.
-   */
-  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
 
   /**
    * Create a BlockAck frame with header equal to <i>blockAck</i> and start its transmission.

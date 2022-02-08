@@ -984,6 +984,11 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 //and act by locally establishing the agreement on
                 //the appropriate queue.
                 GetQosTxop (respHdr.GetTid ())->GotAddBaResponse (&respHdr, from);
+                auto htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                if (htFem != 0)
+                  {
+                    GetQosTxop (respHdr.GetTid ())->GetBaManager ()->SetBlockAckInactivityCallback (MakeCallback (&HtFrameExchangeManager::SendDelbaFrame, htFem));
+                  }
                 //This frame is now completely dealt with, so we're done.
                 return;
               }

@@ -313,7 +313,6 @@ HtFrameExchangeManager::CreateBlockAckAgreement (const MgtAddBaResponseHeader *r
     }
 
   m_agreements.insert ({{originator, tid}, agreement});
-  GetBaManager (tid)->SetBlockAckInactivityCallback (MakeCallback (&HtFrameExchangeManager::SendDelbaFrame, this));
 }
 
 void
