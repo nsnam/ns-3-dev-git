@@ -125,7 +125,7 @@ macro(write_fakewaf_config)
   check_on_or_off("${NS3_DES_METRICS}" "${NS3_DES_METRICS}")
 
   string(APPEND out "DPDK NetDevice                : ")
-  check_on_or_off("ON" "${ENABLE_DPDKDEVNET}")
+  check_on_or_off("${NS3_DPDK}" "${ENABLE_DPDKDEVNET}")
 
   string(APPEND out "Emulation FdNetDevice         : ")
   check_on_or_off("${ENABLE_EMU}" "${ENABLE_EMUNETDEV}")

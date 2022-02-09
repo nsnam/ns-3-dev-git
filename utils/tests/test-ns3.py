@@ -522,7 +522,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("build core-test")
 
         # Then check if they went back to the original list
-        self.assertGreater(len(stderr), 0)
+        self.assertEqual(return_code, 1)
+        self.assertIn("Target to build does not exist: core-test", stdout)
 
     def test_03_EnableModules(self):
         """!
@@ -938,7 +939,8 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         """
         # tests are not enabled, so the target isn't available
         return_code, stdout, stderr = run_ns3("build core-test")
-        self.assertGreater(len(stderr), 0)
+        self.assertEqual(return_code, 1)
+        self.assertIn("Target to build does not exist: core-test", stdout)
 
     def test_03_BuildProject(self):
         """!
@@ -1266,6 +1268,12 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         @return None
         """
 
+        # Skip this test if pybindgen is not available
+        try:
+            import pybindgen
+        except Exception:
+            self.skipTest("Pybindgen is not available")
+
         # First we enable python bindings
         return_code, stdout, stderr = run_ns3("configure --enable-examples --enable-tests --enable-python-bindings")
         self.assertEqual(return_code, 0)
@@ -1499,26 +1507,27 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 1)
         self.assertIn("Couldn't find the specified program: nonsense", stderr)
 
-    def test_08_RunNoBuildGdbAndLldb(self):
+    def test_08_RunNoBuildGdb(self):
         """!
         Test if scratch simulator is executed through gdb and lldb
         @return None
         """
+        if shutil.which("gdb") is None:
+            self.skipTest("Missing gdb")
+
         return_code, stdout, stderr = run_ns3("run scratch-simulator --gdb --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stdout)
         self.assertIn("No debugging symbols found", stdout)
 
-        return_code, stdout, stderr = run_ns3("run scratch-simulator --lldb --verbose --no-build")
-        self.assertEqual(return_code, 0)
-        self.assertIn("scratch-simulator", stdout)
-        self.assertIn("(lldb) target create", stdout)
-
     def test_09_RunNoBuildValgrind(self):
         """!
-      Test if scratch simulator is executed through valgrind
-      @return None
-      """
+        Test if scratch simulator is executed through valgrind
+        @return None
+        """
+        if shutil.which("valgrind") is None:
+            self.skipTest("Missing valgrind")
+
         return_code, stdout, stderr = run_ns3("run scratch-simulator --valgrind --verbose --no-build")
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stderr)
@@ -1529,6 +1538,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Test the doxygen target that does trigger a full build
         @return None
         """
+        if shutil.which("doxygen") is None:
+            self.skipTest("Missing doxygen")
+
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
         doxygen_files = ["introspected-command-line.h", "introspected-doxygen.h"]
@@ -1552,6 +1564,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Test the doxygen target that doesn't trigger a full build
         @return None
         """
+        if shutil.which("doxygen") is None:
+            self.skipTest("Missing doxygen")
+
         # Rebuilding dot images is super slow, so not removing doxygen products
         # doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
         # doxygen_build_folder = os.sep.join([doc_folder, "html"])
@@ -1568,6 +1583,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         Test every individual target for Sphinx-based documentation
         @return None
         """
+        if shutil.which("sphinx-build") is None:
+            self.skipTest("Missing sphinx")
+
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
         # First we need to clean old docs, or it will not make any sense.
@@ -1598,6 +1616,11 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         both doxygen and sphinx based documentation
         @return None
         """
+        if shutil.which("doxygen") is None:
+            self.skipTest("Missing doxygen")
+        if shutil.which("sphinx-build") is None:
+            self.skipTest("Missing sphinx")
+
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
         # First we need to clean old docs, or it will not make any sense.
@@ -1639,7 +1662,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
 
         # Skip test if variable containing sudo password is the default value
         if sudo_password is None:
-            return
+            self.skipTest("SUDO_PASSWORD environment variable was not specified")
 
         enable_sudo = read_c4che_entry("ENABLE_SUDO")
         self.assertFalse(enable_sudo is True)
@@ -1670,7 +1693,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
                             prev_fstat.st_uid == 0
 
         if sys.platform == "win32" or likely_fuse_mount:
-            return
+            self.skipTest("Windows or likely a FUSE mount")
 
         # If this is a valid platform, we can continue
         self.assertEqual(fstat.st_uid, 0)  # check the file was correctly chown'ed by root
@@ -1786,6 +1809,19 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual((return_code0, return_code1), (1, 1))
         self.assertIn("To forward configuration or runtime options, put them after '--'", stderr0)
         self.assertIn("To forward configuration or runtime options, put them after '--'", stderr1)
+
+    def test_18_RunNoBuildLldb(self):
+        """!
+        Test if scratch simulator is executed through lldb
+        @return None
+        """
+        if shutil.which("lldb") is None:
+            self.skipTest("Missing lldb")
+
+        return_code, stdout, stderr = run_ns3("run scratch-simulator --lldb --verbose --no-build")
+        self.assertEqual(return_code, 0)
+        self.assertIn("scratch-simulator", stdout)
+        self.assertIn("(lldb) target create", stdout)
 
 
 if __name__ == '__main__':

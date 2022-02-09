@@ -1,3 +1,9 @@
+option(
+  NS3_DPDK
+  "Enable fd-net-device DPDK features"
+  OFF
+)
+
 set(module_enabled_features) # modulegen_customizations consumes this list
 
 mark_as_advanced(ENABLE_THREADING)
@@ -80,7 +86,8 @@ if(${THREADS_ENABLED}
             ""
   )
 
-  if(PKG_CONFIG_FOUND
+  if(${NS3_DPDK}
+     AND PKG_CONFIG_FOUND
      AND DPDK_FOUND
   )
     set(ENABLE_DPDKDEVNET

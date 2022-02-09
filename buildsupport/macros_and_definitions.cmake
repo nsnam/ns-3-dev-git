@@ -415,8 +415,18 @@ macro(process_options)
   mark_as_advanced(CMAKE_FORMAT_PROGRAM)
   find_program(CMAKE_FORMAT_PROGRAM cmake-format HINTS ~/.local/bin)
   if(CMAKE_FORMAT_PROGRAM)
-    file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt contrib/**/CMakeLists.txt examples/**/CMakeLists.txt)
-    file(GLOB INTERNAL_CMAKE_FILES CMakeLists.txt utils/**/CMakeLists.txt src/CMakeLists.txt buildsupport/**/*.cmake)
+    file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt
+         contrib/**/CMakeLists.txt examples/**/CMakeLists.txt
+    )
+    file(
+      GLOB
+      INTERNAL_CMAKE_FILES
+      CMakeLists.txt
+      utils/**/CMakeLists.txt
+      src/CMakeLists.txt
+      buildsupport/**/*.cmake
+      buildsupport/*.cmake
+    )
     add_custom_target(
       cmake-format
       COMMAND
@@ -490,12 +500,10 @@ macro(process_options)
 
   set(ENABLE_SQLITE False)
   if(${NS3_SQLITE})
-    #find_package(SQLite3 QUIET) # unsupported in CMake 3.10
-    # We emulate the behavior of find_package below
+    # find_package(SQLite3 QUIET) # unsupported in CMake 3.10 We emulate the
+    # behavior of find_package below
     find_external_library(
-            DEPENDENCY_NAME SQLite3
-            HEADER_NAME sqlite3.h
-            LIBRARY_NAME sqlite3
+      DEPENDENCY_NAME SQLite3 HEADER_NAME sqlite3.h LIBRARY_NAME sqlite3
     )
 
     if(${SQLite3_FOUND})
@@ -650,17 +658,25 @@ macro(process_options)
     endif()
   endif()
 
-  find_package(Python COMPONENTS Interpreter Development QUIET)
-
-  # Check if python3 was found, and mark as not found if python2 is found
-  if(${Python_FOUND})
-    if(${Python_VERSION_MAJOR} LESS 3)
-      set(Python_FOUND FALSE)
-      message(
-        STATUS
-        "Python: an incompatible version of Python was found, python bindings will be disabled"
-      )
+  # cmake-format: off
+  set(Python_ADDITIONAL_VERSIONS 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
+  # cmake-format: on
+  find_package(PythonInterp)
+  set(Python_EXECUTABLE)
+  set(Python_FOUND FALSE)
+  if(${PythonInterp_FOUND})
+    set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
+    find_package(PythonLibs)
+    if(${PythonLibs_FOUND})
+      set(Python_FOUND TRUE)
+    else()
+      message(STATUS "Python: development libraries were not found")
     endif()
+  else()
+    message(
+      STATUS
+        "Python: an incompatible version of Python was found, python bindings will be disabled"
+    )
   endif()
 
   set(ENABLE_PYTHON_BINDINGS OFF)
@@ -668,7 +684,7 @@ macro(process_options)
     if(NOT ${Python_FOUND})
       message(
         STATUS
-        "Bindings: python bindings require Python, but it could not be found"
+          "Bindings: python bindings require Python, but it could not be found"
       )
     else()
       check_python_packages("pybindgen" missing_packages)
@@ -807,6 +823,26 @@ macro(process_options)
       STATUS
         "docs: doxygen documentation not enabled due to missing dependencies: ${doxygen_docs_missing_deps}"
     )
+    # cmake-format: off
+    set(doxygen_missing_msg
+        echo The following Doxygen dependencies are missing: ${doxygen_docs_missing_deps}.
+            Reconfigure the project after installing them.
+    )
+    # cmake-format: on
+
+    # Create stub targets to inform users about missing dependencies
+    add_custom_target(
+      run-print-introspected-doxygen COMMAND ${doxygen_missing_msg}
+    )
+    add_custom_target(
+      run-introspected-command-line COMMAND ${doxygen_missing_msg}
+    )
+    add_custom_target(
+      assemble-introspected-command-line COMMAND ${doxygen_missing_msg}
+    )
+    add_custom_target(update_doxygen_version COMMAND ${doxygen_missing_msg})
+    add_custom_target(doxygen COMMAND ${doxygen_missing_msg})
+    add_custom_target(doxygen-no-build COMMAND ${doxygen_missing_msg})
   else()
     # We checked this already exists, but we need the path to the executable
     find_package(Doxygen QUIET)
@@ -889,13 +925,26 @@ macro(process_options)
       STATUS
         "docs: sphinx documentation not enabled due to missing dependencies: ${sphinx_docs_missing_deps}"
     )
+    # cmake-format: off
+    set(sphinx_missing_msg
+        echo The following Sphinx dependencies are missing: ${sphinx_docs_missing_deps}.
+            Reconfigure the project after installing them.
+    )
+    # cmake-format: on
+
+    # Create stub targets to inform users about missing dependencies
+    add_custom_target(sphinx COMMAND ${sphinx_missing_msg})
+    add_custom_target(sphinx_manual COMMAND ${sphinx_missing_msg})
+    add_custom_target(sphinx_models COMMAND ${sphinx_missing_msg})
+    add_custom_target(sphinx_tutorial COMMAND ${sphinx_missing_msg})
+    add_custom_target(sphinx_contributing COMMAND ${sphinx_missing_msg})
   else()
     add_custom_target(sphinx COMMENT "Building sphinx documents")
 
     function(sphinx_target targetname)
       add_custom_target(
-        sphinx_${targetname}
-        COMMAND make SPHINXOPTS=-N -k html singlehtml latexpdf
+        sphinx_${targetname} COMMAND make SPHINXOPTS=-N -k html singlehtml
+                                     latexpdf
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/${targetname}
       )
       add_dependencies(sphinx sphinx_${targetname})
@@ -1101,8 +1150,7 @@ macro(process_options)
   if(${NS3_NETANIM})
     include(FetchContent)
     FetchContent_Declare(
-      netanim
-      GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
+      netanim GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
       GIT_TAG netanim-3.108
     )
     FetchContent_Populate(netanim)
@@ -1181,7 +1229,9 @@ macro(build_example)
   set(options)
   set(oneValueArgs NAME)
   set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
-  cmake_parse_arguments("EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(
+    "EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
 
   set(missing_dependencies)
   foreach(lib ${EXAMPLE_LIBRARIES_TO_LINK})
@@ -1199,7 +1249,9 @@ macro(build_example)
 
   if(NOT missing_dependencies)
     # Create shared library with sources and headers
-    add_executable(${EXAMPLE_NAME} "${EXAMPLE_SOURCE_FILES}" "${EXAMPLE_HEADER_FILES}")
+    add_executable(
+      ${EXAMPLE_NAME} "${EXAMPLE_SOURCE_FILES}" "${EXAMPLE_HEADER_FILES}"
+    )
 
     if(${NS3_STATIC})
       target_link_libraries(
@@ -1207,7 +1259,8 @@ macro(build_example)
       )
     elseif(${NS3_MONOLIB})
       target_link_libraries(
-        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
+        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
+        ${LIB_AS_NEEDED_POST}
       )
     else()
       # Link the shared library with the libraries passed
@@ -1222,7 +1275,8 @@ macro(build_example)
     endif()
 
     set_runtime_outputdirectory(
-      ${EXAMPLE_NAME} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/ ""
+      ${EXAMPLE_NAME}
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/ ""
     )
   endif()
 endmacro()
@@ -1476,11 +1530,12 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
   endif()
 endfunction(parse_ns3rc)
 
-function(find_external_library
-)
+function(find_external_library)
   set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
   set(multiValueArgs HEADER_NAMES LIBRARY_NAMES PATH_SUFFIXES SEARCH_PATHS)
-  cmake_parse_arguments("FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(
+    "FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
 
   set(name ${FIND_LIB_DEPENDENCY_NAME})
   set(library_names "${FIND_LIB_LIBRARY_NAME};${FIND_LIB_LIBRARY_NAMES}")
@@ -1495,28 +1550,50 @@ function(find_external_library
     mark_as_advanced(${name}_library_internal_${library})
     find_library(
       ${name}_library_internal_${library} ${library}
-      HINTS ${search_paths} ENV LD_LIBRARY_PATH
-      PATH_SUFFIXES /build /lib /build/lib / ${path_suffixes}
+      HINTS ${search_paths}
+            ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
+            ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install
+                                    # directory (e.g. /usr/)
+            ENV
+            LD_LIBRARY_PATH # Search for libraries in LD_LIBRARY_PATH
+                            # directories
+            ENV
+            PATH # Search for libraries in PATH directories
+      PATH_SUFFIXES /build /lib /build/lib / /bin ${path_suffixes}
     )
-    if("${${name}_library_internal_${library}}" STREQUAL "${name}_library_internal_${library}-NOTFOUND")
+    if("${${name}_library_internal_${library}}" STREQUAL
+       "${name}_library_internal_${library}-NOTFOUND"
+    )
       list(APPEND not_found_libraries ${library})
     else()
-      get_filename_component(${name}_library_dir_internal ${${name}_library_internal_${library}} DIRECTORY
-      )# e.g. lib/openflow.(so|dll|dylib|a) -> lib
+      get_filename_component(
+        ${name}_library_dir_internal ${${name}_library_internal_${library}}
+        DIRECTORY
+      ) # e.g. lib/openflow.(so|dll|dylib|a) -> lib
       list(APPEND library_dirs ${${name}_library_dir_internal})
       list(APPEND libraries ${${name}_library_internal_${library}})
     endif()
   endforeach()
 
+  # For each library that was found (e.g. /usr/lib/pthread.so), get their parent
+  # directory (/usr/lib) and its parent (/usr)
+  set(parent_dirs)
+  foreach(libdir ${library_dirs})
+    get_filename_component(parent_libdir ${libdir} DIRECTORY)
+    get_filename_component(parent_parent_libdir ${parent_libdir} DIRECTORY)
+    list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
+  endforeach()
+
   set(not_found_headers)
   set(include_dirs)
   foreach(header ${header_names})
-    mark_as_advanced(${name}_header_internal_${header})
-    string(REPLACE ";" "/../ " upper_dirs "${library_dirs};")
-    string(REPLACE ";" "/../../ " upper_upper_dirs "${library_dirs};")
     find_file(
       ${name}_header_internal_${header} ${header}
-      HINTS ${search_paths} ${upper_dirs} ${upper_upper_dirs}
+      HINTS ${search_paths}
+            ${parent_dirs}
+            ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
+            ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
+                                    # directory (e.g. /usr/)
       PATH_SUFFIXES
         /build
         /include
@@ -1527,13 +1604,17 @@ function(find_external_library
         /
         ${path_suffixes}
     )
-    if("${${name}_header_internal_${header}}" STREQUAL "${name}_header_internal_${header}-NOTFOUND")
+    if("${${name}_header_internal_${header}}" STREQUAL
+       "${name}_header_internal_${header}-NOTFOUND"
+    )
       list(APPEND not_found_headers ${header})
     else()
-      get_filename_component(header_include_dir ${${name}_header_internal_${header}} DIRECTORY
-              )# e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
-      get_filename_component(header_include_dir2 ${header_include_dir} DIRECTORY
-              )# e.g. include/(click) -> #include <click/simclick.h> should work
+      get_filename_component(
+        header_include_dir ${${name}_header_internal_${header}} DIRECTORY
+      ) # e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
+      get_filename_component(
+        header_include_dir2 ${header_include_dir} DIRECTORY
+      ) # e.g. include/(click) -> #include <click/simclick.h> should work
       list(APPEND include_dirs ${header_include_dir} ${header_include_dir2})
     endif()
   endforeach()
@@ -1590,8 +1671,7 @@ function(check_python_packages packages missing_packages)
   foreach(package ${packages})
     execute_process(
       COMMAND ${Python_EXECUTABLE} -c "import ${package}"
-      RESULT_VARIABLE return_code
-      OUTPUT_QUIET ERROR_QUIET
+      RESULT_VARIABLE return_code OUTPUT_QUIET ERROR_QUIET
     )
     if(NOT (${return_code} EQUAL 0))
       list(APPEND missing ${package})

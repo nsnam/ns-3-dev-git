@@ -94,6 +94,7 @@ def parse_args(argv):
                                        "(which must call CommandLine::Parse(argc, argv)")
     parser_configure = on_off_argument(parser_configure, "build-version",
                                        "embedding git changes as a build version during build")
+    parser_configure = on_off_argument(parser_configure, "dpdk", "the fd-net-device DPDK features")
     parser_configure = on_off_argument(parser_configure, "examples", "the ns-3 examples")
     parser_configure = on_off_argument(parser_configure, "gcov", "code coverage analysis")
     parser_configure = on_off_argument(parser_configure, "gtk", "GTK support in ConfigStore")
@@ -460,6 +461,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     options = (("ASSERT", "asserts"),
                ("COVERAGE", "gcov"),
                ("DES_METRICS", "des_metrics"),
+               ("DPDK", "dpdk"),
                ("ENABLE_BUILD_VERSION", "build_version"),
                ("ENABLE_SUDO", "sudo"),
                ("EXAMPLES", "examples"),
