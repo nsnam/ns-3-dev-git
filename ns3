@@ -724,12 +724,18 @@ def reconfigure_cmake_to_force_refresh(cmake, current_cmake_cache_folder, output
 
         update_scratches_list(current_cmake_cache_folder)
 
+
 def get_target_to_build(program_path, ns3_version, build_profile):
     if ".py" in program_path:
         return None
 
     build_profile_suffix = "" if build_profile in ["release"] else "-" + build_profile
-    program_name = "".join(*re.findall("(.*)ns%s-(.*)%s" % (ns3_version, build_profile_suffix), program_path))
+
+    try:
+        program_name = "".join(*re.findall("(.*)ns%s-(.*)%s" % (ns3_version, build_profile_suffix), program_path))
+    except TypeError:
+        print("Target to build does not exist: %s" % program_path)
+        exit(1)
 
     if "scratch" in program_path:
         # Get the path to the program and replace slashes with underlines
