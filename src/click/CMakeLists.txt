@@ -12,7 +12,8 @@ set(NS3_CLICK
 find_external_library(
   DEPENDENCY_NAME click
   HEADER_NAME simclick.h
-  LIBRARY_NAME click
+  LIBRARY_NAMES nsclick
+                click
   SEARCH_PATHS ${NS3_WITH_CLICK}
 )
 
