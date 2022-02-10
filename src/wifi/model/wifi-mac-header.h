@@ -37,6 +37,7 @@ enum WifiMacType
 {
     WIFI_MAC_CTL_TRIGGER = 0,
     WIFI_MAC_CTL_CTLWRAPPER,
+    WIFI_MAC_CTL_PSPOLL,
     WIFI_MAC_CTL_RTS,
     WIFI_MAC_CTL_CTS,
     WIFI_MAC_CTL_ACK,
@@ -236,6 +237,14 @@ class WifiMacHeader : public Header
      */
     void SetNoRetry();
     /**
+     * Set the Power Management bit in the Frame Control field.
+     */
+    void SetPowerManagement();
+    /**
+     * Un-set the Power Management bit in the Frame Control field.
+     */
+    void SetNoPowerManagement();
+    /**
      * Set the TID for the QoS header.
      *
      * \param tid the TID for the QoS header
@@ -382,6 +391,12 @@ class WifiMacHeader : public Header
      * \return true if the header is a CF-End header, false otherwise
      */
     bool IsCfEnd() const;
+    /**
+     * Return true if the header is a PS-POLL header.
+     *
+     * \return true if the header is a PS-POLL header, false otherwise
+     */
+    bool IsPsPoll() const;
     /**
      * Return true if the header is a RTS header.
      *
@@ -534,6 +549,12 @@ class WifiMacHeader : public Header
      */
     bool IsRetry() const;
     /**
+     * Return if the Power Management bit is set.
+     *
+     * \return true if the Power Management bit is set, false otherwise
+     */
+    bool IsPowerManagement() const;
+    /**
      * Return if the More Data bit is set.
      *
      * \return true if the More Data bit is set, false otherwise
@@ -653,14 +674,15 @@ class WifiMacHeader : public Header
      */
     void PrintFrameControl(std::ostream& os) const;
 
-    uint8_t m_ctrlType;     ///< control type
-    uint8_t m_ctrlSubtype;  ///< control subtype
-    uint8_t m_ctrlToDs;     ///< control to DS
-    uint8_t m_ctrlFromDs;   ///< control from DS
-    uint8_t m_ctrlMoreFrag; ///< control more fragments
-    uint8_t m_ctrlRetry;    ///< control retry
-    uint8_t m_ctrlMoreData; ///< control more data
-    uint8_t m_ctrlWep;      ///< control WEP
+    uint8_t m_ctrlType;            ///< control type
+    uint8_t m_ctrlSubtype;         ///< control subtype
+    uint8_t m_ctrlToDs;            ///< control to DS
+    uint8_t m_ctrlFromDs;          ///< control from DS
+    uint8_t m_ctrlMoreFrag;        ///< control more fragments
+    uint8_t m_ctrlRetry;           ///< control retry
+    uint8_t m_ctrlPowerManagement; ///< control power management
+    uint8_t m_ctrlMoreData;        ///< control more data
+    uint8_t m_ctrlWep;             ///< control WEP
     uint8_t m_ctrlOrder;  ///< control order (set to 1 for QoS Data and Management frames to signify
                           ///< that HT/VHT/HE control field is present, knowing that the latter are
                           ///< not implemented yet)

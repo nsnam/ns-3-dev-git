@@ -49,6 +49,7 @@ enum
     SUBTYPE_CTL_CTLWRAPPER = 7,
     SUBTYPE_CTL_BACKREQ = 8,
     SUBTYPE_CTL_BACKRESP = 9,
+    SUBTYPE_CTL_PSPOLL = 10,
     SUBTYPE_CTL_RTS = 11,
     SUBTYPE_CTL_CTS = 12,
     SUBTYPE_CTL_ACK = 13,
@@ -59,6 +60,7 @@ enum
 WifiMacHeader::WifiMacHeader()
     : m_ctrlMoreFrag(0),
       m_ctrlRetry(0),
+      m_ctrlPowerManagement(0),
       m_ctrlMoreData(0),
       m_ctrlWep(0),
       m_ctrlOrder(0),
@@ -149,6 +151,10 @@ WifiMacHeader::SetType(WifiMacType type, bool resetToDsFromDs)
     case WIFI_MAC_CTL_BACKRESP:
         m_ctrlType = TYPE_CTL;
         m_ctrlSubtype = SUBTYPE_CTL_BACKRESP;
+        break;
+    case WIFI_MAC_CTL_PSPOLL:
+        m_ctrlType = TYPE_CTL;
+        m_ctrlSubtype = SUBTYPE_CTL_PSPOLL;
         break;
     case WIFI_MAC_CTL_RTS:
         m_ctrlType = TYPE_CTL;
@@ -369,6 +375,18 @@ WifiMacHeader::SetQosTid(uint8_t tid)
 }
 
 void
+WifiMacHeader::SetPowerManagement()
+{
+    m_ctrlPowerManagement = 1;
+}
+
+void
+WifiMacHeader::SetNoPowerManagement()
+{
+    m_ctrlPowerManagement = 0;
+}
+
+void
 WifiMacHeader::SetQosEosp()
 {
     m_qosEosp = 1;
@@ -510,6 +528,8 @@ WifiMacHeader::GetType() const
             return WIFI_MAC_CTL_BACKREQ;
         case SUBTYPE_CTL_BACKRESP:
             return WIFI_MAC_CTL_BACKRESP;
+        case SUBTYPE_CTL_PSPOLL:
+            return WIFI_MAC_CTL_PSPOLL;
         case SUBTYPE_CTL_RTS:
             return WIFI_MAC_CTL_RTS;
         case SUBTYPE_CTL_CTS:
@@ -680,6 +700,12 @@ WifiMacHeader::IsCts() const
 }
 
 bool
+WifiMacHeader::IsPsPoll() const
+{
+    return (GetType() == WIFI_MAC_CTL_PSPOLL);
+}
+
+bool
 WifiMacHeader::IsAck() const
 {
     return (GetType() == WIFI_MAC_CTL_ACK);
@@ -830,6 +856,12 @@ WifiMacHeader::IsMoreFragments() const
 }
 
 bool
+WifiMacHeader::IsPowerManagement() const
+{
+    return (m_ctrlPowerManagement == 1);
+}
+
+bool
 WifiMacHeader::IsQosBlockAck() const
 {
     NS_ASSERT(IsQosData());
@@ -914,6 +946,7 @@ WifiMacHeader::GetFrameControl() const
     val |= (m_ctrlFromDs << 9) & (0x1 << 9);
     val |= (m_ctrlMoreFrag << 10) & (0x1 << 10);
     val |= (m_ctrlRetry << 11) & (0x1 << 11);
+    val |= (m_ctrlPowerManagement << 12) & (0x1 << 12);
     val |= (m_ctrlMoreData << 13) & (0x1 << 13);
     val |= (m_ctrlWep << 14) & (0x1 << 14);
     val |= (m_ctrlOrder << 15) & (0x1 << 15);
@@ -941,6 +974,7 @@ WifiMacHeader::SetFrameControl(uint16_t ctrl)
     m_ctrlFromDs = (ctrl >> 9) & 0x01;
     m_ctrlMoreFrag = (ctrl >> 10) & 0x01;
     m_ctrlRetry = (ctrl >> 11) & 0x01;
+    m_ctrlPowerManagement = (ctrl >> 12) & 0x01;
     m_ctrlMoreData = (ctrl >> 13) & 0x01;
     m_ctrlWep = (ctrl >> 14) & 0x01;
     m_ctrlOrder = (ctrl >> 15) & 0x01;
@@ -975,6 +1009,7 @@ WifiMacHeader::GetSize() const
     case TYPE_CTL:
         switch (m_ctrlSubtype)
         {
+        case SUBTYPE_CTL_PSPOLL:
         case SUBTYPE_CTL_RTS:
         case SUBTYPE_CTL_BACKREQ:
         case SUBTYPE_CTL_BACKRESP:
@@ -1024,6 +1059,7 @@ WifiMacHeader::GetTypeString() const
         FOO(CTL_BACKRESP);
         FOO(CTL_END);
         FOO(CTL_END_ACK);
+        FOO(CTL_PSPOLL);
         FOO(CTL_TRIGGER);
 
         FOO(MGT_BEACON);
@@ -1084,9 +1120,12 @@ WifiMacHeader::GetInstanceTypeId() const
 void
 WifiMacHeader::PrintFrameControl(std::ostream& os) const
 {
-    os << "ToDS=" << std::hex << (int)m_ctrlToDs << ", FromDS=" << std::hex << (int)m_ctrlFromDs
-       << ", MoreFrag=" << std::hex << (int)m_ctrlMoreFrag << ", Retry=" << std::hex
-       << (int)m_ctrlRetry << ", MoreData=" << std::hex << (int)m_ctrlMoreData << std::dec;
+    os << "ToDS=" << std::hex << static_cast<int>(m_ctrlToDs)
+       << ", FromDS=" << static_cast<int>(m_ctrlFromDs)
+       << ", MoreFrag=" << static_cast<int>(m_ctrlMoreFrag)
+       << ", Retry=" << static_cast<int>(m_ctrlRetry)
+       << ", PowerManagement=" << static_cast<int>(m_ctrlPowerManagement)
+       << ", MoreData=" << static_cast<int>(m_ctrlMoreData) << std::dec;
 }
 
 void
@@ -1095,6 +1134,10 @@ WifiMacHeader::Print(std::ostream& os) const
     os << GetTypeString() << " ";
     switch (GetType())
     {
+    case WIFI_MAC_CTL_PSPOLL:
+        os << "Duration/ID=" << std::hex << m_duration << std::dec << ", BSSID(RA)=" << m_addr1
+           << ", TA=" << m_addr2;
+        break;
     case WIFI_MAC_CTL_RTS:
     case WIFI_MAC_CTL_TRIGGER:
         os << "Duration/ID=" << m_duration << "us"
@@ -1208,6 +1251,7 @@ WifiMacHeader::Serialize(Buffer::Iterator i) const
     case TYPE_CTL:
         switch (m_ctrlSubtype)
         {
+        case SUBTYPE_CTL_PSPOLL:
         case SUBTYPE_CTL_RTS:
         case SUBTYPE_CTL_TRIGGER:
         case SUBTYPE_CTL_BACKREQ:
@@ -1264,6 +1308,7 @@ WifiMacHeader::Deserialize(Buffer::Iterator start)
     case TYPE_CTL:
         switch (m_ctrlSubtype)
         {
+        case SUBTYPE_CTL_PSPOLL:
         case SUBTYPE_CTL_RTS:
         case SUBTYPE_CTL_TRIGGER:
         case SUBTYPE_CTL_BACKREQ:
