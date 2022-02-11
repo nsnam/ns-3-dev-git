@@ -67,6 +67,7 @@ us a note on ns-developers mailing list.</p>
 <li><b>SpectrumPhy</b> function <b>GetRxAntenna</b> is renamed to <b>GetAntenna</b>, and its return value is changed to <b>Ptr<Object></b> instead of <b>Ptr<AntennaModel></b> to support also <b>PhasedArrayModel</b> type of antenna.</li>
 <li><b>vScatt</b> attribute moved from ThreeGppSpectrumPropagationLossModel to ThreeGppChannelModel.</li>
 <li><b>ChannelCondition::IsEqual</b> now has LOS and O2I parameters instead of a pointer to ChannelCondition.</li>
+<li>tcp: <b>TcpWestwood::EstimatedBW</b> trace source changed from <b>TracedValueCallback::Double</b> to <b>TracedValueCallback::DataRate</b>.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
