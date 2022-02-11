@@ -59,7 +59,7 @@ TcpWestwood::GetTypeId (void)
                   MakeEnumChecker(TcpWestwood::WESTWOOD, "Westwood",TcpWestwood::WESTWOODPLUS, "WestwoodPlus"))
     .AddTraceSource("EstimatedBW", "The estimated bandwidth",
                     MakeTraceSourceAccessor(&TcpWestwood::m_currentBW),
-                    "ns3::TracedValueCallback::Double")
+                    "ns3::TracedValueCallback::DataRate")
   ;
   return tid;
 }
@@ -130,34 +130,34 @@ TcpWestwood::EstimateBW (const Time &rtt, Ptr<TcpSocketState> tcb)
 
   NS_ASSERT (!rtt.IsZero ());
 
-  m_currentBW = m_ackedSegments * tcb->m_segmentSize / rtt.GetSeconds ();
-
   if (m_pType == TcpWestwood::WESTWOOD)
     {
       Time currentAck = Simulator::Now ();
-      m_currentBW = m_ackedSegments * tcb->m_segmentSize / (currentAck - m_lastAck).GetSeconds ();
+
+      NS_ABORT_MSG_IF (currentAck == m_lastAck,
+        "This violates a model assumption and would lead to divide-by-zero; please report to ns-3 maintainers if this occurs.");
+
+      m_currentBW = DataRate (m_ackedSegments * tcb->m_segmentSize * 8.0 / (currentAck - m_lastAck).GetSeconds ());
       m_lastAck = currentAck;
     }
   else if (m_pType == TcpWestwood::WESTWOODPLUS)
     {
-      m_currentBW = m_ackedSegments * tcb->m_segmentSize / rtt.GetSeconds ();
+      m_currentBW = DataRate (m_ackedSegments * tcb->m_segmentSize * 8.0 / rtt.GetSeconds ());
       m_IsCount = false;
     }
 
   m_ackedSegments = 0;
+
   NS_LOG_LOGIC ("Estimated BW: " << m_currentBW);
 
   // Filter the BW sample
 
-  double alpha = 0.9;
+  constexpr double alpha = 0.9;
 
-  if (m_fType == TcpWestwood::NONE)
+  if (m_fType == TcpWestwood::TUSTIN)
     {
-    }
-  else if (m_fType == TcpWestwood::TUSTIN)
-    {
-      double sample_bwe = m_currentBW;
-      m_currentBW = (alpha * m_lastBW) + ((1 - alpha) * ((sample_bwe + m_lastSampleBW) / 2));
+      DataRate sample_bwe = m_currentBW;
+      m_currentBW = (m_lastBW * alpha) + (((sample_bwe + m_lastSampleBW) * 0.5) * (1 - alpha));
       m_lastSampleBW = sample_bwe;
       m_lastBW = m_currentBW;
     }
@@ -169,12 +169,13 @@ uint32_t
 TcpWestwood::GetSsThresh (Ptr<const TcpSocketState> tcb,
                           [[maybe_unused]] uint32_t bytesInFlight)
 {
-  NS_LOG_LOGIC ("CurrentBW: " << m_currentBW << " minRtt: " <<
-                tcb->m_minRtt << " ssthresh: " <<
-                m_currentBW * static_cast<double> (tcb->m_minRtt.GetSeconds ()));
+  uint32_t ssThresh = static_cast<uint32_t> ((m_currentBW * tcb->m_minRtt) / 8.0);
 
-  return std::max (2*tcb->m_segmentSize,
-                   uint32_t (m_currentBW * static_cast<double> (tcb->m_minRtt.GetSeconds ())));
+  NS_LOG_LOGIC ("CurrentBW: " << m_currentBW <<
+                " minRtt: " << tcb->m_minRtt <<
+                " ssThresh: " << ssThresh);
+
+  return std::max (2 * tcb->m_segmentSize, ssThresh);
 }
 
 Ptr<TcpCongestionOps>

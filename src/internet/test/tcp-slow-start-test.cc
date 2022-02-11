@@ -21,7 +21,6 @@
 #include "ns3/simple-channel.h"
 #include "ns3/node.h"
 #include "ns3/config.h"
-#include "ns3/tcp-westwood.h"
 #include "ns3/tcp-header.h"
 #include "tcp-general-test.h"
 
@@ -275,7 +274,6 @@ public:
     // This test have less packets to transmit than SsTh
     std::list<TypeId> types;
     types.insert (types.begin (), TcpNewReno::GetTypeId ());
-    types.insert (types.begin (), TcpWestwood::GetTypeId ());
 
     for (std::list<TypeId>::iterator it = types.begin (); it != types.end (); ++it)
       {

@@ -34,17 +34,14 @@
 #define TCP_WESTWOOD_H
 
 #include "tcp-congestion-ops.h"
+#include "ns3/data-rate.h"
 #include "ns3/tcp-recovery-ops.h"
-#include "ns3/sequence-number.h"
 #include "ns3/traced-value.h"
 #include "ns3/event-id.h"
 
 namespace ns3 {
 
-class Packet;
-class TcpHeader;
 class Time;
-class EventId;
 
 /**
  * \ingroup congestionOps
@@ -63,6 +60,8 @@ class EventId;
  * the number of acknowledged segments on the receipt of an ACK.
  * The EstimateBW estimates the bandwidth based on the value returned by CountAck
  * and the sampling interval (last ACK inter-arrival time for Westwood and last RTT for Westwood+).
+ *
+ * WARNING: this TCP model lacks validation and regression tests; use with caution.
  */
 class TcpWestwood : public TcpNewReno
 {
@@ -124,9 +123,9 @@ private:
   void EstimateBW (const Time& rtt, Ptr<TcpSocketState> tcb);
 
 protected:
-  TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW
-  double                 m_lastSampleBW;           //!< Last bandwidth sample
-  double                 m_lastBW;                 //!< Last bandwidth sample after being filtered
+  TracedValue<DataRate>  m_currentBW;              //!< Current value of the estimated BW
+  DataRate               m_lastSampleBW;           //!< Last bandwidth sample
+  DataRate               m_lastBW;                 //!< Last bandwidth sample after being filtered
   enum ProtocolType      m_pType;                  //!< 0 for Westwood, 1 for Westwood+
   enum FilterType        m_fType;                  //!< 0 for none, 1 for Tustin
 
@@ -134,7 +133,6 @@ protected:
   bool                   m_IsCount;                //!< Start keeping track of m_ackedSegments for Westwood+ if TRUE
   EventId                m_bwEstimateEvent;        //!< The BW estimation event for Westwood+
   Time                   m_lastAck;                //!< The last ACK time
-
 };
 
 } // namespace ns3
