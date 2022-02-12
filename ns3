@@ -659,7 +659,9 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
                      )
     if not dry_run:
         if output is not None:
-            kwargs = {"capture_output": True}
+            kwargs = {"stdout": subprocess.PIPE,
+                      "stderr": subprocess.PIPE
+                      }
         else:
             kwargs = {"stdout": output}
 
