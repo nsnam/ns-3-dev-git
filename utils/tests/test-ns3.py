@@ -1588,14 +1588,16 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
 
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
-        # First we need to clean old docs, or it will not make any sense.
-        for target in ["manual", "models", "tutorial"]:
+        # For each sphinx doc target.
+        for target in ["contributing", "manual",  "models", "tutorial"]:
+            # First we need to clean old docs, or it will not make any sense.
             doc_build_folder = os.sep.join([doc_folder, target, "build"])
+            doc_temp_folder = os.sep.join([doc_folder, target, "source-temp"])
             if os.path.exists(doc_build_folder):
                 shutil.rmtree(doc_build_folder)
+            if os.path.exists(doc_temp_folder):
+                shutil.rmtree(doc_temp_folder)
 
-        # For each sphinx doc target.
-        for target in ["manual", "models", "tutorial"]:
             # Build
             return_code, stdout, stderr = run_ns3("docs %s" % target)
             self.assertEqual(return_code, 0)

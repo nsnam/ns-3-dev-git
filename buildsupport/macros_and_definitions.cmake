@@ -942,11 +942,13 @@ macro(process_options)
     add_custom_target(sphinx COMMENT "Building sphinx documents")
 
     function(sphinx_target targetname)
+      # cmake-format: off
       add_custom_target(
-        sphinx_${targetname} COMMAND make SPHINXOPTS=-N -k html singlehtml
-                                     latexpdf
+        sphinx_${targetname}
+        COMMAND make SPHINXOPTS=-N -k html singlehtml latexpdf
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/${targetname}
       )
+      # cmake-format: on
       add_dependencies(sphinx sphinx_${targetname})
     endfunction()
     sphinx_target(manual)

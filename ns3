@@ -827,7 +827,7 @@ def build_step(args,
                 target = get_target_to_build(target, ns3_version, build_profile)
             else:
                 # Sphinx target should have the sphinx prefix
-                if target in ["manual", "models", "tutorial"]:
+                if target in ["contributing", "manual", "models", "tutorial"]:
                     target = "sphinx_%s" % target
 
                 # Docs should build both doxygen and sphinx based docs
