@@ -658,7 +658,21 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
                                             )
                      )
     if not dry_run:
-        ret = subprocess.run(cmake_build_command.split(), cwd=current_cmake_cache_folder, stdout=output)
+        if output is not None:
+            kwargs = {"capture_output": True}
+        else:
+            kwargs = {"stdout": output}
+
+        ret = subprocess.run(cmake_build_command.split(),
+                             cwd=current_cmake_cache_folder,
+                             **kwargs
+                             )
+
+        # Print errors in case compilation fails and output != None (quiet)
+        if ret.returncode != 0 and output is not None:
+            print(ret.stdout.decode())
+            print(ret.stderr.decode())
+
         # In case of failure, exit prematurely with the return code from the build
         if ret.returncode != 0:
             exit(ret.returncode)
@@ -732,6 +746,7 @@ def get_target_to_build(program_path, ns3_version, build_profile):
         return None
 
     build_profile_suffix = "" if build_profile in ["release"] else "-" + build_profile
+    program_name = ""
 
     try:
         program_name = "".join(*re.findall("(.*)ns%s-(.*)%s" % (ns3_version, build_profile_suffix), program_path))
@@ -1128,12 +1143,12 @@ def main():
     # Now that CMake is configured, we can look for c++ targets in build-status.py
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
 
-    def check_ambiguous_target(target_type, target_to_run, ns3_programs):
-        if len(ns3_programs[target_to_run]) > 1:
+    def check_ambiguous_target(target_type, target_to_check, programs):
+        if len(programs[target_to_check]) > 1:
             print('%s target "%s" is ambiguous. Try one of these: "%s"'
-                  % (target_type, target_to_run, '", "'.join(ns3_programs[target_to_run])))
+                  % (target_type, target_to_check, '", "'.join(programs[target_to_check])))
             exit(1)
-        return ns3_programs[target_to_run][0]
+        return programs[target_to_check][0]
 
     # If we have a target to run, replace shortcut with full path or raise exception
     if run_only or build_and_run:
