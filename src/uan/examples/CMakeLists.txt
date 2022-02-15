@@ -2,6 +2,7 @@ set(base_examples
     uan-cw-example
     uan-rc-example
     uan-ipv4-example
+    uan-ipv6-example
     uan-raw-example
 )
 foreach(
