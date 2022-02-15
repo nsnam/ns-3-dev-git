@@ -163,22 +163,20 @@ main (int argc, char *argv[])
   YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
-
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
+
+  WifiHelper wifi;
+
+  NetDeviceContainer staDevices;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-
-  NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
+  NetDeviceContainer apDevices;
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid));
-
-  NetDeviceContainer apDevices;
   apDevices = wifi.Install (phy, mac, wifiApNode);
 
   MobilityHelper mobility;
