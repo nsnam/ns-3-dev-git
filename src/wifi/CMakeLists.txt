@@ -118,6 +118,8 @@ set(source_files
     model/wifi-information-element-vector.cc
     model/wifi-information-element.cc
     model/wifi-mac-header.cc
+    model/wifi-mac-queue-container.cc
+    model/wifi-mac-queue-elem.cc
     model/wifi-mac-queue-item.cc
     model/wifi-mac-queue.cc
     model/wifi-mac-trailer.cc
@@ -261,6 +263,8 @@ set(header_files
     model/wifi-information-element-vector.h
     model/wifi-information-element.h
     model/wifi-mac-header.h
+    model/wifi-mac-queue-container.h
+    model/wifi-mac-queue-elem.h
     model/wifi-mac-queue-item.h
     model/wifi-mac-queue.h
     model/wifi-mac-trailer.h
