@@ -24,11 +24,10 @@
 #ifndef WIFI_MAC_QUEUE_ITEM_H
 #define WIFI_MAC_QUEUE_ITEM_H
 
-#include "ns3/nstime.h"
 #include "ns3/packet.h"
-#include "wifi-mac-header.h"
 #include "amsdu-subframe-header.h"
-#include "qos-utils.h"
+#include "wifi-mac-header.h"
+#include "wifi-mac-queue-elem.h"
 #include <list>
 #include <optional>
 
@@ -154,7 +153,7 @@ public:
   DeaggregatedMsdusCI end (void);
 
   /// Const iterator typedef
-  typedef std::list<Ptr<WifiMacQueueItem>>::iterator Iterator;
+  typedef std::list<WifiMacQueueElem>::iterator Iterator;
 
   /**
    * Set the queue iterator stored by this object.
@@ -182,6 +181,10 @@ public:
    * \return the AC of the queue this item is stored into
    */
   AcIndex GetQueueAc (void) const;
+  /**
+   * \return the expiry time of this MPDU
+   */
+  Time GetExpiryTime (void) const;
 
   /**
    * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
@@ -221,14 +224,11 @@ private:
    */
   void DoAggregate (Ptr<const WifiMacQueueItem> msdu);
 
-  friend class WifiMacQueue;  // to set queue AC and iterator information
-
   Ptr<const Packet> m_packet;                   //!< The packet (MSDU or A-MSDU) contained in this queue item
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
   Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
-  Iterator m_queueIt;                           //!< Queue iterator pointing to this MPDU, if queued
-  AcIndex m_queueAc;                            //!< AC associated with the queue this MPDU is stored into
+  std::optional<Iterator> m_queueIt;            //!< Queue iterator pointing to this MPDU, if queued
   bool m_inFlight;                              //!< whether the MPDU is in flight
 };
 

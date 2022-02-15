@@ -20,6 +20,7 @@
 
 #include "ns3/test.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/fcfs-wifi-queue-scheduler.h"
 #include "ns3/simulator.h"
 
 using namespace ns3;
@@ -55,55 +56,64 @@ WifiMacQueueDropOldestTest::DoRun ()
 {
   auto wifiMacQueue = CreateObject<WifiMacQueue> (AC_BE);
   wifiMacQueue->SetMaxSize (QueueSize ("5p"));
-  wifiMacQueue->SetAttribute ("DropPolicy", EnumValue (WifiMacQueue::DROP_OLDEST));
+  auto wifiMacScheduler = CreateObject<FcfsWifiQueueScheduler> ();
+  wifiMacScheduler->SetAttribute ("DropPolicy", EnumValue (FcfsWifiQueueScheduler::DROP_OLDEST));
+  wifiMacScheduler->m_perAcInfo[AC_BE].wifiMacQueue = wifiMacQueue;
+  wifiMacQueue->SetScheduler (wifiMacScheduler);
+
+  Mac48Address addr1 = Mac48Address::Allocate ();
 
   // Initialize the queue with 5 packets.
-  std::vector<uint64_t> packetUids;
+  std::list<uint64_t> packetUids;
   for (uint32_t i = 0; i < 5; i++)
     {
       WifiMacHeader header;
       header.SetType (WIFI_MAC_QOSDATA);
+      header.SetAddr1 (addr1);
       header.SetQosTid (0);
       auto packet = Create<Packet> ();
       auto item = Create<WifiMacQueueItem> (packet, header);
-      wifiMacQueue->PushFront (item);
+      wifiMacQueue->Enqueue (item);
 
       packetUids.push_back (packet->GetUid ());
     }
 
   // Check that all elements are inserted successfully.
-  auto it = wifiMacQueue->GetContainer ().begin ();
+  auto mpdu = wifiMacQueue->PeekByTidAndAddress (0, addr1);
   NS_TEST_EXPECT_MSG_EQ (wifiMacQueue->GetNPackets (), 5, "Queue has unexpected number of elements");
-  for (uint32_t i = 5; i > 0; i--)
+  for (auto packetUid : packetUids)
     {
-      NS_TEST_EXPECT_MSG_EQ ((*it)->GetPacket ()->GetUid (),
-                             packetUids.at (i - 1),
+      NS_TEST_EXPECT_MSG_EQ (mpdu->GetPacket ()->GetUid (),
+                             packetUid,
                              "Stored packet is not the expected one");
-      it++;
+      mpdu = wifiMacQueue->PeekByTidAndAddress (0, addr1, mpdu);
     }
 
-  // Push another element in front of the queue.
+  // Push another element into the queue.
   WifiMacHeader header;
   header.SetType (WIFI_MAC_QOSDATA);
+  header.SetAddr1 (addr1);
   header.SetQosTid (0);
   auto packet = Create<Packet> ();
   auto item = Create<WifiMacQueueItem> (packet, header);
-  wifiMacQueue->PushFront (item);
+  wifiMacQueue->Enqueue (item);
 
-  // Update the vector of expected packet UIDs.
-  packetUids.at (4) = packet->GetUid ();
+  // Update the list of expected packet UIDs.
+  packetUids.pop_front ();
+  packetUids.push_back (packet->GetUid ());
 
   // Check that front packet was replaced correctly.
-  it = wifiMacQueue->GetContainer ().begin ();
+  mpdu = wifiMacQueue->PeekByTidAndAddress (0, addr1);
   NS_TEST_EXPECT_MSG_EQ (wifiMacQueue->GetNPackets (), 5, "Queue has unexpected number of elements");
-  for (uint32_t i = 5; i > 0; i--)
+  for (auto packetUid : packetUids)
     {
-      NS_TEST_EXPECT_MSG_EQ ((*it)->GetPacket ()->GetUid (),
-                             packetUids.at (i - 1),
+      NS_TEST_EXPECT_MSG_EQ (mpdu->GetPacket ()->GetUid (),
+                             packetUid,
                              "Stored packet is not the expected one");
-      it++;
+      mpdu = wifiMacQueue->PeekByTidAndAddress (0, addr1, mpdu);
     }
 
+  wifiMacScheduler->Dispose ();
   Simulator::Destroy ();
 }
 

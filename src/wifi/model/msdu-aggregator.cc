@@ -127,13 +127,10 @@ MsduAggregator::GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters
       // find the next MPDU before dequeuing the current one
       Ptr<const WifiMacQueueItem> msdu = peekedItem;
       peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
-      queue->DequeueIfQueued (msdu);
-
+      queue->DequeueIfQueued ({amsdu});
       // perform A-MSDU aggregation
-      queue->Transform (amsdu, [&msdu](Ptr<WifiMacQueueItem> amsdu)
-                               {
-                                 amsdu->Aggregate (msdu);
-                               });
+      amsdu->Aggregate (msdu);
+      queue->Replace (msdu, amsdu);
 
       nMsdu++;
     }

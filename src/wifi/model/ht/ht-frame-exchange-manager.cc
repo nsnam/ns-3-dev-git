@@ -119,7 +119,8 @@ HtFrameExchangeManager::NeedSetupBlockAck (Mac48Address recipient, uint8_t tid)
     }
   else
     {
-      uint32_t packets = qosTxop->GetWifiMacQueue ()->GetNPacketsByTidAndAddress (tid, recipient);
+      WifiContainerQueueId queueId {WIFI_QOSDATA_UNICAST_QUEUE, recipient, tid};
+      uint32_t packets = qosTxop->GetWifiMacQueue ()->GetNPackets (queueId);
       establish = ((qosTxop->GetBlockAckThreshold () > 0 && packets >= qosTxop->GetBlockAckThreshold ())
                    || (m_mpduAggregator->GetMaxAmpduSize (recipient, tid, WIFI_MOD_CLASS_HT) > 0 && packets > 1)
                    || m_mac->GetWifiRemoteStationManager ()->GetVhtSupported ());
@@ -186,13 +187,8 @@ HtFrameExchangeManager::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16
   txParams.m_protection = std::unique_ptr<WifiProtection> (new WifiNoProtection);
   txParams.m_acknowledgment = GetAckManager ()->TryAddMpdu (mpdu, txParams);
 
-  // Push the MPDU to the front of the queue and transmit it
-  auto queue = m_mac->GetQosTxop (tid)->GetWifiMacQueue ();
-  if (!queue->PushFront (mpdu))
-    {
-      NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");
-      queue->Replace (queue->Peek (), mpdu);
-    }
+  // Wifi MAC queue scheduler is expected to prioritize management frames
+  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->Enqueue (mpdu);
   SendMpduWithProtection (mpdu, txParams);
 }
 
@@ -270,7 +266,8 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
   //It is unclear which queue this frame should go into. For now we
   //bung it into the queue corresponding to the TID for which we are
   //establishing an agreement, and push it to the head.
-  m_mac->GetQosTxop (reqHdr->GetTid ())->PushFront (mpdu);
+  // Wifi MAC queue scheduler is expected to prioritize management frames
+  m_mac->GetQosTxop (reqHdr->GetTid ())->Queue (mpdu);
 }
 
 uint16_t
@@ -313,7 +310,7 @@ HtFrameExchangeManager::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byO
   packet->AddHeader (delbaHdr);
   packet->AddHeader (actionHdr);
 
-  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->PushFront (Create<WifiMacQueueItem> (packet, hdr));
+  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
 }
 
 void

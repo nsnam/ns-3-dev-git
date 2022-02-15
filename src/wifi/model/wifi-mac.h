@@ -49,6 +49,7 @@ class EhtConfiguration;
 class FrameExchangeManager;
 class ChannelAccessManager;
 class ExtendedCapabilities;
+class WifiMacQueueScheduler;
 
 /**
  * Enumeration for type of station
@@ -174,6 +175,19 @@ public:
    *         if such (Qos)Txop is installed, or a null pointer, otherwise
    */
   virtual Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const;
+
+  /**
+   * Set the wifi MAC queue scheduler
+   *
+   * \param scheduler the wifi MAC queue scheduler
+   */
+  virtual void SetMacQueueScheduler (Ptr<WifiMacQueueScheduler> scheduler);
+  /**
+   * Get the wifi MAC queue scheduler
+   *
+   * \return the wifi MAC queue scheduler
+   */
+  Ptr<WifiMacQueueScheduler> GetMacQueueScheduler (void) const;
 
    /**
    * This method is invoked by a subclass to specify what type of
@@ -617,6 +631,7 @@ protected:
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
   Ptr<Txop> m_txop;                                 //!< TXOP used for transmission of frames to non-QoS peers.
+  Ptr<WifiMacQueueScheduler> m_scheduler;           //!< wifi MAC queue scheduler
 
   Callback<void> m_linkUp;       //!< Callback when a link is up
   Callback<void> m_linkDown;     //!< Callback when a link is down

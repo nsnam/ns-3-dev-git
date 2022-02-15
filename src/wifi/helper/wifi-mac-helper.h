@@ -79,6 +79,16 @@ public:
   void SetAssocManager (std::string type, Args&&... args);
 
   /**
+   * Helper function used to set the MAC queue scheduler.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of MAC queue scheduler
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void SetMacQueueScheduler (std::string type, Args&&... args);
+
+  /**
    * Helper function used to set the Protection Manager.
    *
    * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
@@ -122,6 +132,7 @@ public:
 protected:
   ObjectFactory m_mac;                ///< MAC object factory
   ObjectFactory m_assocManager;       ///< Association Manager
+  ObjectFactory m_queueScheduler;     ///< MAC queue scheduler
   ObjectFactory m_protectionManager;  ///< Factory to create a protection manager
   ObjectFactory m_ackManager;         ///< Factory to create an acknowledgment manager
   ObjectFactory m_muScheduler;        ///< Multi-user Scheduler object factory
@@ -150,6 +161,14 @@ WifiMacHelper::SetAssocManager (std::string type, Args&&... args)
 {
   m_assocManager.SetTypeId (type);
   m_assocManager.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetMacQueueScheduler (std::string type, Args&&... args)
+{
+  m_queueScheduler.SetTypeId (type);
+  m_queueScheduler.Set (args...);
 }
 
 template <typename... Args>

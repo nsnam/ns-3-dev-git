@@ -20,6 +20,7 @@
 
 #include "ns3/wifi-net-device.h"
 #include "wifi-mac-helper.h"
+#include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-protection-manager.h"
 #include "ns3/wifi-ack-manager.h"
@@ -35,6 +36,7 @@ WifiMacHelper::WifiMacHelper ()
   SetType ("ns3::AdhocWifiMac");
 
   m_assocManager.SetTypeId ("ns3::WifiDefaultAssocManager");
+  m_queueScheduler.SetTypeId ("ns3::FcfsWifiQueueScheduler");
   m_protectionManager.SetTypeId ("ns3::WifiDefaultProtectionManager");
   m_ackManager.SetTypeId ("ns3::WifiDefaultAckManager");
 }
@@ -60,6 +62,9 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
   mac->SetAddress (Mac48Address::Allocate ());
   device->SetMac (mac);
   mac->ConfigureStandard (standard);
+
+  Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler> ();
+  mac->SetMacQueueScheduler (queueScheduler);
 
   // WaveNetDevice stores PHY entities in a different member than WifiNetDevice, hence
   // GetNPhys() would return 0. We have to attach a protection manager and an ack manager

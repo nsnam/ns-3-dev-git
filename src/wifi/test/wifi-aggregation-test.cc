@@ -44,6 +44,7 @@
 #include "ns3/packet-socket-helper.h"
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-default-ack-manager.h"
+#include "ns3/fcfs-wifi-queue-scheduler.h"
 #include <iterator>
 #include <algorithm>
 
@@ -138,6 +139,7 @@ AmpduAggregationTest::DoRun (void)
   fem->SetAckManager (ackManager);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
+  m_mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
 
   /*
    * Configure MPDU aggregation.
@@ -389,6 +391,7 @@ TwoLevelAggregationTest::DoRun (void)
   fem->SetAckManager (ackManager);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
+  m_mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
 
   /*
    * Configure aggregation.
@@ -627,6 +630,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   fem->SetAckManager (ackManager);
   m_device->SetMac (m_mac);
   m_mac->SetState (StaWifiMac::ASSOCIATED);
+  m_mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
 
   /*
    * Configure aggregation.

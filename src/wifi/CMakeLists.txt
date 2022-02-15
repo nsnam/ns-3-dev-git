@@ -32,6 +32,7 @@ set(source_files
     model/eht/multi-link-element.cc
     model/error-rate-model.cc
     model/extended-capabilities.cc
+    model/fcfs-wifi-queue-scheduler.cc
     model/frame-capture-model.cc
     model/frame-exchange-manager.cc
     model/he/constant-obss-pd-algorithm.cc
@@ -177,6 +178,7 @@ set(header_files
     model/eht/multi-link-element.h
     model/error-rate-model.h
     model/extended-capabilities.h
+    model/fcfs-wifi-queue-scheduler.h
     model/frame-capture-model.h
     model/frame-exchange-manager.h
     model/he/constant-obss-pd-algorithm.h

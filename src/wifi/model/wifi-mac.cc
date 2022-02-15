@@ -36,6 +36,7 @@
 #include "ns3/eht-configuration.h"
 #include "ns3/he-frame-exchange-manager.h"
 #include "extended-capabilities.h"
+#include "wifi-mac-queue-scheduler.h"
 
 namespace ns3 {
 
@@ -355,6 +356,11 @@ WifiMac::DoDispose ()
     }
 
   m_device = 0;
+  if (m_scheduler != nullptr)
+    {
+      m_scheduler->Dispose ();
+    }
+  m_scheduler = nullptr;
 }
 
 WifiMac::LinkEntity::~LinkEntity ()
@@ -499,6 +505,19 @@ WifiMac::GetTxopQueue (AcIndex ac) const
 {
   Ptr<Txop> txop = (ac == AC_BE_NQOS ? m_txop : StaticCast<Txop> (GetQosTxop (ac)));
   return (txop ? txop->GetWifiMacQueue () : nullptr);
+}
+
+void
+WifiMac::SetMacQueueScheduler (Ptr<WifiMacQueueScheduler> scheduler)
+{
+  m_scheduler = scheduler;
+  m_scheduler->SetWifiMac (this);
+}
+
+Ptr<WifiMacQueueScheduler>
+WifiMac::GetMacQueueScheduler (void) const
+{
+  return m_scheduler;
 }
 
 void

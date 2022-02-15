@@ -136,7 +136,8 @@ QosTxop::GetLink (uint8_t linkId) const
 uint8_t
 QosTxop::GetQosQueueSize (uint8_t tid, Mac48Address receiver) const
 {
-  uint32_t bufferSize = m_queue->GetNBytes (tid, receiver);
+  WifiContainerQueueId queueId {WIFI_QOSDATA_UNICAST_QUEUE, receiver, tid};
+  uint32_t bufferSize = m_queue->GetNBytes (queueId);
   // A queue size value of 254 is used for all sizes greater than 64 768 octets.
   uint8_t queueSize = static_cast<uint8_t> (std::ceil (std::min (bufferSize, 64769u) / 256.0));
   NS_LOG_DEBUG ("Buffer size=" << bufferSize << " Queue Size=" << +queueSize);
@@ -304,10 +305,8 @@ QosTxop::HasFramesToTransmit (void)
   // the starting sequence number of the transmit (and receiver) window
   bool baManagerHasPackets {m_baManager->GetBar (false)};
   // remove MSDUs with expired lifetime starting from the head of the queue
-  // TODO Add a WifiMacQueue method that serves this purpose; IsEmpty () can
-  // then reuse such method.
-  m_queue->IsEmpty ();
-  bool queueIsNotEmpty {m_queue->PeekFirstAvailable (m_qosBlockedDestinations)};
+  m_queue->WipeAllExpiredMpdus ();
+  bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable (m_qosBlockedDestinations));
 
   bool ret = (baManagerHasPackets || queueIsNotEmpty);
   NS_LOG_FUNCTION (this << baManagerHasPackets << queueIsNotEmpty);
@@ -576,22 +575,6 @@ QosTxop::GetRemainingTxop (uint8_t linkId) const
     }
   NS_LOG_FUNCTION (this << remainingTxop);
   return remainingTxop;
-}
-
-void
-QosTxop::PushFront (Ptr<WifiMacQueueItem> mpdu)
-{
-  NS_LOG_FUNCTION (this << *mpdu);
-
-  if (!m_queue->PushFront (mpdu))
-    {
-      NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");
-      m_queue->Replace (m_queue->Peek (), mpdu);
-    }
-  if (HasFramesToTransmit () && GetLink (0).access == NOT_REQUESTED)  // TODO use appropriate linkId
-    {
-      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
-    }
 }
 
 void

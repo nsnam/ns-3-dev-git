@@ -476,6 +476,7 @@ Txop::GetTxopLimit (uint8_t linkId) const
 bool
 Txop::HasFramesToTransmit (void)
 {
+  m_queue->WipeAllExpiredMpdus ();
   bool ret = (!m_queue->IsEmpty ());
   NS_LOG_FUNCTION (this << ret);
   return ret;

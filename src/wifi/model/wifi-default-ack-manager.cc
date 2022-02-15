@@ -151,7 +151,7 @@ WifiDefaultAckManager::IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
   //   protected by RTS/CTS (see Annex G.3 of IEEE 802.11-2016)
   if (m_baThreshold > 0
       && GetMaxDistFromStartingSeq (mpdu, txParams) < m_baThreshold * edca->GetBaBufferSize (receiver, tid)
-      && (edca->GetWifiMacQueue ()->GetNPackets (tid, receiver)
+      && (edca->GetWifiMacQueue ()->GetNPackets ({WIFI_QOSDATA_UNICAST_QUEUE, receiver, tid})
           - edca->GetBaManager ()->GetNBufferedPackets (receiver, tid) > 1)
       && !(edca->GetTxopLimit (m_linkId).IsStrictlyPositive ()
            && edca->GetRemainingTxop (m_linkId) == edca->GetTxopLimit (m_linkId)

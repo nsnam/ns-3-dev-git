@@ -35,6 +35,8 @@
 #include "ns3/channel-access-manager.h"
 #include "ns3/mac-tx-middle.h"
 #include "ns3/qos-txop.h"
+#include "ns3/wifi-mac-queue-scheduler.h"
+#include "ns3/wifi-mac-queue.h"
 
 namespace ns3 {
 
@@ -566,6 +568,7 @@ MeshWifiInterfaceMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
   m_txop->SetMinCw (0);
   m_txop->SetMaxCw (0);
   m_txop->SetAifsn (1);
+  m_scheduler->SetWifiMac (this);
 }
 } // namespace ns3
 

@@ -41,8 +41,7 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
 WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp)
   : m_packet (p),
     m_header (header),
-    m_tstamp (tstamp),
-    m_queueAc (AC_UNDEF)
+    m_tstamp (tstamp)
 {
   if (header.IsQosData () && header.IsQosAmsdu ())
     {
@@ -204,26 +203,34 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
 bool
 WifiMacQueueItem::IsQueued (void) const
 {
-  return m_queueAc != AC_UNDEF;
+  return m_queueIt.has_value ();
 }
 
 void
 WifiMacQueueItem::SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag)
 {
-  // empty for now
+  m_queueIt = queueIt;
 }
 
 WifiMacQueueItem::Iterator
 WifiMacQueueItem::GetQueueIt (WmqIteratorTag tag) const
 {
-  return m_queueIt;
+  NS_ASSERT (IsQueued ());
+  return m_queueIt.value ();
 }
 
 AcIndex
 WifiMacQueueItem::GetQueueAc (void) const
 {
   NS_ASSERT (IsQueued ());
-  return m_queueAc;
+  return (*m_queueIt)->ac;
+}
+
+Time
+WifiMacQueueItem::GetExpiryTime (void) const
+{
+  NS_ASSERT (IsQueued ());
+  return (*m_queueIt)->expiryTime;
 }
 
 void

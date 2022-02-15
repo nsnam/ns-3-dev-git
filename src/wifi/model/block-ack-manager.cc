@@ -266,9 +266,9 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
 {
   Time now = Simulator::Now ();
   Ptr<const WifiMacQueueItem> bar;
-  // remove all expired MPDUs from the head of the MAC queue, so that
+  // remove all expired MPDUs from the MAC queue, so that
   // BlockAckRequest frames (if needed) are scheduled
-  m_queue->IsEmpty ();
+  m_queue->WipeAllExpiredMpdus ();
 
   auto nextBar = m_bars.begin ();
 
@@ -299,33 +299,6 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
               // skip this BAR as there is no data queued
               nextBar++;
               continue;
-            }
-          // remove expired outstanding MPDUs and update the starting sequence number
-          for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
-            {
-              if (!(*mpduIt)->IsQueued ())
-                {
-                  // the MPDU is no longer in the EDCA queue
-                  mpduIt = it->second.second.erase (mpduIt);
-                  continue;
-                }
-
-              if ((*mpduIt)->GetTimeStamp () + m_queue->GetMaxDelay () <= now)
-                {
-                  // MPDU expired
-                  it->second.first.NotifyDiscardedMpdu (*mpduIt);
-                  // Remove from the EDCA queue and fire the Expired trace source, but the
-                  // consequent call to NotifyDiscardedMpdu does nothing (in particular,
-                  // does not schedule a BAR) because we have advanced the transmit window
-                  // and hence this MPDU became an old packet
-                  m_queue->TtlExceeded (*mpduIt, now);
-                  mpduIt = it->second.second.erase (mpduIt);
-                }
-              else
-                {
-                  // MPDUs are typically in increasing order of remaining lifetime
-                  break;
-                }
             }
           // update BAR if the starting sequence number changed
           CtrlBAckRequestHeader reqHdr;
@@ -385,7 +358,6 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
   if (status == ACKNOWLEDGED)
     {
       // the MPDU has to be dequeued from the EDCA queue
-      m_queue->DequeueIfQueued (*mpduIt);
       return it->second.second.erase (mpduIt);
     }
 
@@ -401,7 +373,7 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
         {
           m_droppedOldMpduCallback (*mpduIt);
         }
-      m_queue->Remove (*mpduIt, false);
+      m_queue->Remove (*mpduIt);
       return it->second.second.erase (mpduIt);
     }
 
@@ -453,6 +425,7 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
     {
       if ((*queueIt)->GetHeader ().GetSequenceNumber () == mpdu->GetHeader ().GetSequenceNumber ())
         {
+          m_queue->DequeueIfQueued ({*queueIt});
           HandleInFlightMpdu (queueIt, ACKNOWLEDGED, it, Simulator::Now ());
           break;
         }
@@ -522,10 +495,12 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
 
       NS_ASSERT (blockAck.IsCompressed () || blockAck.IsExtendedCompressed () || blockAck.IsMultiSta ());
       Time now = Simulator::Now ();
+      std::list<Ptr<const WifiMacQueueItem>> acked;
 
       for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); )
         {
           uint16_t currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
+          NS_LOG_DEBUG ("Current seq=" << currentSeq);
           if (blockAck.IsPacketReceived (currentSeq, index))
             {
               it->second.first.NotifyAckedMpdu (*queueIt);
@@ -534,17 +509,27 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
                 {
                   m_txOkCallback (*queueIt);
                 }
+              acked.push_back (*queueIt);
               queueIt = HandleInFlightMpdu (queueIt, ACKNOWLEDGED, it, now);
             }
           else
             {
-              nFailedMpdus++;
-              if (!m_txFailedCallback.IsNull ())
-                {
-                  m_txFailedCallback (*queueIt);
-                }
-              queueIt = HandleInFlightMpdu (queueIt, TO_RETRANSMIT, it, now);
+              ++queueIt;
             }
+        }
+
+      // Dequeue all acknowledged MPDUs at once
+      m_queue->DequeueIfQueued (acked);
+
+      // Remaining outstanding MPDUs have not been acknowledged
+      for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); )
+        {
+          nFailedMpdus++;
+          if (!m_txFailedCallback.IsNull ())
+            {
+              m_txFailedCallback (*queueIt);
+            }
+          queueIt = HandleInFlightMpdu (queueIt, TO_RETRANSMIT, it, now);
         }
     }
   return {nSuccessfulMpdus, nFailedMpdus};
@@ -611,7 +596,7 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
       if (it->second.first.GetDistance ((*mpduIt)->GetHeader ().GetSequenceNumber ()) >= SEQNO_SPACE_HALF_SIZE)
         {
           NS_LOG_DEBUG ("Dropping old MPDU: " << **mpduIt);
-          m_queue->DequeueIfQueued (*mpduIt);
+          m_queue->DequeueIfQueued ({*mpduIt});
           if (!m_droppedOldMpduCallback.IsNull ())
             {
               m_droppedOldMpduCallback (*mpduIt);
@@ -780,8 +765,9 @@ BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, 
   NS_ASSERT (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING));
   if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::REJECTED) && ExistsAgreement (recipient, tid))
     {
-      uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient) +
-        GetNBufferedPackets (recipient, tid);
+      WifiContainerQueueId queueId {WIFI_QOSDATA_UNICAST_QUEUE, recipient, tid};
+      uint32_t packets = m_queue->GetNPackets (queueId)
+                         + GetNBufferedPackets (recipient, tid);
       if (packets >= m_blockAckThreshold)
         {
           NotifyAgreementEstablished (recipient, tid, startingSeq);

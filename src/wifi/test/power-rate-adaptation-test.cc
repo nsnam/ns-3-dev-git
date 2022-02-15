@@ -30,6 +30,7 @@
 #include "ns3/interference-helper.h"
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-default-ack-manager.h"
+#include "ns3/fcfs-wifi-queue-scheduler.h"
 
 using namespace ns3;
 
@@ -119,6 +120,7 @@ PowerRateAdaptationTest::ConfigureNode ()
   mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
 
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();

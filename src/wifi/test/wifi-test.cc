@@ -54,6 +54,7 @@
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-default-assoc-manager.h"
+#include "ns3/fcfs-wifi-queue-scheduler.h"
 
 using namespace ns3;
 
@@ -165,6 +166,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
     {
       StaticCast<StaWifiMac> (mac)->SetAssocManager (CreateObject<WifiDefaultAssocManager> ());
     }
+  mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (mac);
@@ -344,6 +346,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (mac);
@@ -553,6 +556,7 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   txMac->SetAddress (Mac48Address::Allocate ());
   txDev->SetMac (txMac);
   txMac->ConfigureStandard (WIFI_STANDARD_80211a);
+  txMac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   auto fem = txMac->GetFrameExchangeManager ();
   auto protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (txMac);
@@ -1769,6 +1773,7 @@ Bug2831TestCase::DoRun (void)
   apMac->SetAddress (Mac48Address::Allocate ());
   apDev->SetMac (apMac);
   apMac->ConfigureStandard (WIFI_STANDARD_80211ax);
+  apMac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (apMac);
@@ -1807,6 +1812,7 @@ Bug2831TestCase::DoRun (void)
   staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax);
   StaticCast<StaWifiMac> (staMac)->SetAssocManager (CreateObject<WifiDefaultAssocManager> ());
+  staMac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   fem = staMac->GetFrameExchangeManager ();
   protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (staMac);

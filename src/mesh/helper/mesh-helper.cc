@@ -20,16 +20,17 @@
  */
 
 #include "mesh-helper.h"
-#include "ns3/simulator.h"
-#include "ns3/pointer.h"
-#include "ns3/mesh-point-device.h"
-#include "ns3/wifi-net-device.h"
-#include "ns3/minstrel-wifi-manager.h"
-#include "ns3/mesh-wifi-interface-mac.h"
-#include "ns3/wifi-helper.h"
+#include "ns3/fcfs-wifi-queue-scheduler.h"
 #include "ns3/frame-exchange-manager.h"
-#include "ns3/wifi-default-protection-manager.h"
+#include "ns3/mesh-point-device.h"
+#include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/minstrel-wifi-manager.h"
+#include "ns3/pointer.h"
+#include "ns3/simulator.h"
 #include "ns3/wifi-default-ack-manager.h"
+#include "ns3/wifi-default-protection-manager.h"
+#include "ns3/wifi-helper.h"
+#include "ns3/wifi-net-device.h"
 
 namespace ns3
 {
@@ -127,6 +128,7 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   device->SetRemoteStationManager (manager);
   mac->SetAddress (Mac48Address::Allocate ());
   device->SetMac (mac);
+  mac->SetMacQueueScheduler (CreateObject<FcfsWifiQueueScheduler> ());
   mac->ConfigureStandard (m_standard);
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
   if (fem)

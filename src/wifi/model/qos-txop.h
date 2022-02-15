@@ -212,14 +212,6 @@ public:
   void ResetBa (Mac48Address recipient, uint8_t tid);
 
   /**
-   * \param mpdu the given MPDU
-   *
-   * Store the given MPDU in the front of the internal queue until it
-   * can be sent safely.
-   */
-  void PushFront (Ptr<WifiMacQueueItem> mpdu);
-
-  /**
    * Set threshold for block ack mechanism. If number of packets in the
    * queue reaches the threshold, block ack mechanism is used.
    *

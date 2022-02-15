@@ -63,6 +63,8 @@ public:
    */
   WifiMacQueueSchedulerImpl ();
 
+  /** \copydoc ns3::WifiMacQueueScheduler::SetWifiMac */
+  void SetWifiMac (Ptr<WifiMac> mac) final;
   /** \copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,uint8_t) */
   std::optional<WifiContainerQueueId> GetNext (AcIndex ac, uint8_t linkId) final;
   /** \copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,uint8_t,const WifiContainerQueueId&) */
@@ -252,6 +254,21 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoDispose (void)
 {
   m_perAcInfo.clear ();
   WifiMacQueueScheduler::DoDispose ();
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::SetWifiMac (Ptr<WifiMac> mac)
+{
+  for (auto ac : {AC_BE, AC_BK, AC_VI, AC_VO, AC_BE_NQOS, AC_BEACON})
+    {
+      if (auto queue = mac->GetTxopQueue (ac); queue != nullptr)
+        {
+          m_perAcInfo.at (ac).wifiMacQueue = queue;
+          queue->SetScheduler (this);
+        }
+    }
+  WifiMacQueueScheduler::SetWifiMac (mac);
 }
 
 template <class Priority, class Compare>

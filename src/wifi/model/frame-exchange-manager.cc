@@ -302,6 +302,8 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be
   // expired and the queue might be empty.
+  queue->WipeAllExpiredMpdus ();
+
   if (queue->IsEmpty ())
     {
       NS_LOG_DEBUG ("Queue empty");
@@ -482,7 +484,7 @@ FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
 
   if (mpdu->IsQueued ())
     {
-      m_mac->GetTxopQueue (mpdu->GetQueueAc ())->DequeueIfQueued (mpdu);
+      m_mac->GetTxopQueue (mpdu->GetQueueAc ())->DequeueIfQueued ({mpdu});
     }
 }
 

@@ -483,13 +483,24 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
       auto dev = DynamicCast<WifiNetDevice> (m_apDevice);
       Ptr<WifiMacQueue> queue = dev->GetMac ()->GetQosTxop (AC_BE)->GetWifiMacQueue ();
       m_flushed = 0;
-      for (auto it = queue->GetContainer ().begin (); it != queue->GetContainer ().end (); )
+      for (uint32_t i = 0; i < m_staDevices.GetN (); i++)
         {
-          auto tmp = it++;
-          if (!(*tmp)->IsInFlight ())
+          auto staDev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
+          Ptr<const WifiMacQueueItem> lastInFlight = nullptr;
+          Ptr<const WifiMacQueueItem> mpdu;
+
+          while ((mpdu = queue->PeekByTidAndAddress (0, staDev->GetMac ()->GetAddress (),
+                                                     lastInFlight)) != nullptr)
             {
-              queue->Remove (*tmp, false);
-              m_flushed++;
+              if (mpdu->IsInFlight ())
+                {
+                  lastInFlight = mpdu;
+                }
+              else
+                {
+                  queue->Remove (mpdu);
+                  m_flushed++;
+                }
             }
         }
     }
