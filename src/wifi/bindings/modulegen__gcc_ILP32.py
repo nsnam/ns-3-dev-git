@@ -3858,6 +3858,8 @@ def register_Ns3Hasher_methods(root_module, cls):
     return
 
 def register_Ns3HeMuUserInfo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
     ## wifi-tx-vector.h (module 'wifi'): ns3::HeMuUserInfo::HeMuUserInfo() [constructor]
     cls.add_constructor([])
     ## wifi-tx-vector.h (module 'wifi'): ns3::HeMuUserInfo::HeMuUserInfo(ns3::HeMuUserInfo const & arg0) [constructor]
@@ -3931,6 +3933,8 @@ def register_Ns3HeRu_methods(root_module, cls):
 
 def register_Ns3HeRuRuSpec_methods(root_module, cls):
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('==')
     ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec(ns3::HeRu::RuSpec const & arg0) [constructor]
     cls.add_constructor([param('ns3::HeRu::RuSpec const &', 'arg0')])
     ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec() [constructor]
@@ -7860,14 +7864,14 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('>=')
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
     cls.add_unary_numeric_operator('-')
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
     cls.add_constructor([])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(double const value) [constructor]
@@ -7886,6 +7890,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(long long unsigned int const v) [constructor]
     cls.add_constructor([param('long long unsigned int const', 'v')])
+    ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int128_t const v) [constructor]
+    cls.add_constructor([param('int128_t const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int64_t const hi, uint64_t const lo) [constructor]
     cls.add_constructor([param('int64_t const', 'hi'), param('uint64_t const', 'lo')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(ns3::int64x64_t const & o) [constructor]
@@ -12424,10 +12430,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu const >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector')])
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::Send(ns3::WifiConstPsduMap psdus, ns3::WifiTxVector txVector) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::Send(ns3::WifiConstPsduMap psdus, ns3::WifiTxVector const & txVector) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('std::unordered_map< unsigned short, ns3::Ptr< ns3::WifiPsdu const > >', 'psdus'), param('ns3::WifiTxVector', 'txVector')])
+                   [param('std::unordered_map< unsigned short, ns3::Ptr< ns3::WifiPsdu const > >', 'psdus'), param('ns3::WifiTxVector const &', 'txVector')])
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetCapabilitiesChangedCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetCapabilitiesChangedCallback', 
                    'void', 
@@ -25299,8 +25305,8 @@ def register_Ns3HePpdu_methods(root_module, cls):
     cls.add_constructor([param('ns3::HePpdu const &', 'arg0')])
     ## he-ppdu.h (module 'wifi'): ns3::HePpdu::HePpdu(ns3::Ptr<const ns3::WifiPsdu> psdu, ns3::WifiTxVector const & txVector, ns3::Time ppduDuration, ns3::WifiPhyBand band, uint64_t uid) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::WifiPsdu const >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time', 'ppduDuration'), param('ns3::WifiPhyBand', 'band'), param('uint64_t', 'uid')])
-    ## he-ppdu.h (module 'wifi'): ns3::HePpdu::HePpdu(ns3::WifiConstPsduMap const & psdus, ns3::WifiTxVector const & txVector, ns3::Time ppduDuration, ns3::WifiPhyBand band, uint64_t uid, ns3::HePpdu::TxPsdFlag flag) [constructor]
-    cls.add_constructor([param('ns3::WifiConstPsduMap const &', 'psdus'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time', 'ppduDuration'), param('ns3::WifiPhyBand', 'band'), param('uint64_t', 'uid'), param('ns3::HePpdu::TxPsdFlag', 'flag')])
+    ## he-ppdu.h (module 'wifi'): ns3::HePpdu::HePpdu(ns3::WifiConstPsduMap const & psdus, ns3::WifiTxVector const & txVector, ns3::Time ppduDuration, ns3::WifiPhyBand band, uint64_t uid, ns3::HePpdu::TxPsdFlag flag, uint8_t p20Index) [constructor]
+    cls.add_constructor([param('ns3::WifiConstPsduMap const &', 'psdus'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time', 'ppduDuration'), param('ns3::WifiPhyBand', 'band'), param('uint64_t', 'uid'), param('ns3::HePpdu::TxPsdFlag', 'flag'), param('uint8_t', 'p20Index')])
     ## he-ppdu.h (module 'wifi'): bool ns3::HePpdu::CanBeReceived(uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20MaxFreq) const [member function]
     cls.add_method('CanBeReceived', 
                    'bool', 
@@ -25525,6 +25531,10 @@ def register_Ns3HtFrameExchangeManager_methods(root_module, cls):
     cls.add_method('SendAddBaResponse', 
                    'void', 
                    [param('ns3::MgtAddBaRequestHeader const *', 'reqHdr'), param('ns3::Mac48Address', 'originator')])
+    ## ht-frame-exchange-manager.h (module 'wifi'): void ns3::HtFrameExchangeManager::SendDelbaFrame(ns3::Mac48Address addr, uint8_t tid, bool byOriginator) [member function]
+    cls.add_method('SendDelbaFrame', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')])
     ## ht-frame-exchange-manager.h (module 'wifi'): void ns3::HtFrameExchangeManager::SetWifiMac(ns3::Ptr<ns3::WifiMac> const mac) [member function]
     cls.add_method('SetWifiMac', 
                    'void', 
@@ -25645,11 +25655,6 @@ def register_Ns3HtFrameExchangeManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'peekedItem'), param('ns3::Time', 'availableTime'), param('bool', 'initialFrame')], 
                    is_virtual=True, visibility='protected')
-    ## ht-frame-exchange-manager.h (module 'wifi'): void ns3::HtFrameExchangeManager::SendDelbaFrame(ns3::Mac48Address addr, uint8_t tid, bool byOriginator) [member function]
-    cls.add_method('SendDelbaFrame', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')], 
-                   visibility='protected')
     ## ht-frame-exchange-manager.h (module 'wifi'): bool ns3::HtFrameExchangeManager::SendMpduFromBaManager(ns3::Ptr<ns3::QosTxop> edca, ns3::Time availableTime, bool initialFrame) [member function]
     cls.add_method('SendMpduFromBaManager', 
                    'bool', 
@@ -26353,6 +26358,11 @@ def register_Ns3HeFrameExchangeManager_methods(root_module, cls):
     cls.add_method('GetHeTbTxVector', 
                    'ns3::WifiTxVector', 
                    [param('ns3::CtrlTriggerHeader', 'trigger'), param('ns3::Mac48Address', 'triggerSender')], 
+                   is_const=True, visibility='protected')
+    ## he-frame-exchange-manager.h (module 'wifi'): ns3::WifiTxVector ns3::HeFrameExchangeManager::GetTrigVector(ns3::CtrlTriggerHeader const & trigger) const [member function]
+    cls.add_method('GetTrigVector', 
+                   'ns3::WifiTxVector', 
+                   [param('ns3::CtrlTriggerHeader const &', 'trigger')], 
                    is_const=True, visibility='protected')
     ## he-frame-exchange-manager.h (module 'wifi'): ns3::Time ns3::HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize, ns3::Mac48Address receiver, ns3::WifiTxParameters const & txParams) const [member function]
     cls.add_method('GetTxDuration', 
@@ -27241,6 +27251,10 @@ def register_Ns3HePhy_methods(root_module, cls):
     cls.add_method('SetEndOfHeSigACallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::HeSigAParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## he-phy.h (module 'wifi'): void ns3::HePhy::SetTrigVector(ns3::WifiTxVector const & trigVector, ns3::Time validity) [member function]
+    cls.add_method('SetTrigVector', 
+                   'void', 
+                   [param('ns3::WifiTxVector const &', 'trigVector'), param('ns3::Time', 'validity')])
     ## he-phy.h (module 'wifi'): void ns3::HePhy::StartReceivePreamble(ns3::Ptr<ns3::WifiPpdu> ppdu, ns3::RxPowerWattPerChannelBand & rxPowersW, ns3::Time rxDuration) [member function]
     cls.add_method('StartReceivePreamble', 
                    'void', 

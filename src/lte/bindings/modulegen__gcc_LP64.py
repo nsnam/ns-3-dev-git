@@ -11230,14 +11230,14 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('>=')
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
     cls.add_unary_numeric_operator('-')
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
     cls.add_constructor([])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(double const value) [constructor]
@@ -11256,6 +11256,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(long long unsigned int const v) [constructor]
     cls.add_constructor([param('long long unsigned int const', 'v')])
+    ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int128_t const v) [constructor]
+    cls.add_constructor([param('int128_t const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int64_t const hi, uint64_t const lo) [constructor]
     cls.add_constructor([param('int64_t const', 'hi'), param('uint64_t const', 'lo')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(ns3::int64x64_t const & o) [constructor]
@@ -21749,28 +21751,17 @@ def register_Ns3Mac64AddressValue_methods(root_module, cls):
     return
 
 def register_Ns3MacStatsCalculator_methods(root_module, cls):
-    ## mac-stats-calculator.h (module 'lte'): ns3::MacStatsCalculator::MacStatsCalculator(ns3::MacStatsCalculator const & arg0) [constructor]
-    cls.add_constructor([param('ns3::MacStatsCalculator const &', 'arg0')])
     ## mac-stats-calculator.h (module 'lte'): ns3::MacStatsCalculator::MacStatsCalculator() [constructor]
     cls.add_constructor([])
-    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::DlScheduling(uint16_t cellId, uint64_t imsi, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
-    cls.add_method('DlScheduling', 
-                   'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')])
-    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::DlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
-    cls.add_method('DlSchedulingCallback', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')], 
-                   is_static=True)
-    ## mac-stats-calculator.h (module 'lte'): std::string ns3::MacStatsCalculator::GetDlOutputFilename() [member function]
-    cls.add_method('GetDlOutputFilename', 
-                   'std::string', 
-                   [])
     ## mac-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::MacStatsCalculator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::SetUlOutputFilename(std::string outputFilename) [member function]
+    cls.add_method('SetUlOutputFilename', 
+                   'void', 
+                   [param('std::string', 'outputFilename')])
     ## mac-stats-calculator.h (module 'lte'): std::string ns3::MacStatsCalculator::GetUlOutputFilename() [member function]
     cls.add_method('GetUlOutputFilename', 
                    'std::string', 
@@ -21779,14 +21770,23 @@ def register_Ns3MacStatsCalculator_methods(root_module, cls):
     cls.add_method('SetDlOutputFilename', 
                    'void', 
                    [param('std::string', 'outputFilename')])
-    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::SetUlOutputFilename(std::string outputFilename) [member function]
-    cls.add_method('SetUlOutputFilename', 
+    ## mac-stats-calculator.h (module 'lte'): std::string ns3::MacStatsCalculator::GetDlOutputFilename() [member function]
+    cls.add_method('GetDlOutputFilename', 
+                   'std::string', 
+                   [])
+    ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::DlScheduling(uint16_t cellId, uint64_t imsi, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
+    cls.add_method('DlScheduling', 
                    'void', 
-                   [param('std::string', 'outputFilename')])
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')])
     ## mac-stats-calculator.h (module 'lte'): void ns3::MacStatsCalculator::UlScheduling(uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb, uint8_t componentCarrierId) [member function]
     cls.add_method('UlScheduling', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint16_t', 'rnti'), param('uint8_t', 'mcsTb'), param('uint16_t', 'sizeTb'), param('uint8_t', 'componentCarrierId')])
+    ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::DlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, ns3::DlSchedulingCallbackInfo dlSchedulingCallbackInfo) [member function]
+    cls.add_method('DlSchedulingCallback', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MacStatsCalculator >', 'macStats'), param('std::string', 'path'), param('ns3::DlSchedulingCallbackInfo', 'dlSchedulingCallbackInfo')], 
+                   is_static=True)
     ## mac-stats-calculator.h (module 'lte'): static void ns3::MacStatsCalculator::UlSchedulingCallback(ns3::Ptr<ns3::MacStatsCalculator> macStats, std::string path, uint32_t frameNo, uint32_t subframeNo, uint16_t rnti, uint8_t mcs, uint16_t size, uint8_t componentCarrierId) [member function]
     cls.add_method('UlSchedulingCallback', 
                    'void', 
@@ -22937,28 +22937,17 @@ def register_Ns3PfFfMacScheduler_methods(root_module, cls):
     return
 
 def register_Ns3PhyRxStatsCalculator_methods(root_module, cls):
-    ## phy-rx-stats-calculator.h (module 'lte'): ns3::PhyRxStatsCalculator::PhyRxStatsCalculator(ns3::PhyRxStatsCalculator const & arg0) [constructor]
-    cls.add_constructor([param('ns3::PhyRxStatsCalculator const &', 'arg0')])
     ## phy-rx-stats-calculator.h (module 'lte'): ns3::PhyRxStatsCalculator::PhyRxStatsCalculator() [constructor]
     cls.add_constructor([])
-    ## phy-rx-stats-calculator.h (module 'lte'): void ns3::PhyRxStatsCalculator::DlPhyReception(ns3::PhyReceptionStatParameters params) [member function]
-    cls.add_method('DlPhyReception', 
-                   'void', 
-                   [param('ns3::PhyReceptionStatParameters', 'params')])
-    ## phy-rx-stats-calculator.h (module 'lte'): static void ns3::PhyRxStatsCalculator::DlPhyReceptionCallback(ns3::Ptr<ns3::PhyRxStatsCalculator> phyRxStats, std::string path, ns3::PhyReceptionStatParameters params) [member function]
-    cls.add_method('DlPhyReceptionCallback', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::PhyRxStatsCalculator >', 'phyRxStats'), param('std::string', 'path'), param('ns3::PhyReceptionStatParameters', 'params')], 
-                   is_static=True)
-    ## phy-rx-stats-calculator.h (module 'lte'): std::string ns3::PhyRxStatsCalculator::GetDlRxOutputFilename() [member function]
-    cls.add_method('GetDlRxOutputFilename', 
-                   'std::string', 
-                   [])
     ## phy-rx-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::PhyRxStatsCalculator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## phy-rx-stats-calculator.h (module 'lte'): void ns3::PhyRxStatsCalculator::SetUlRxOutputFilename(std::string outputFilename) [member function]
+    cls.add_method('SetUlRxOutputFilename', 
+                   'void', 
+                   [param('std::string', 'outputFilename')])
     ## phy-rx-stats-calculator.h (module 'lte'): std::string ns3::PhyRxStatsCalculator::GetUlRxOutputFilename() [member function]
     cls.add_method('GetUlRxOutputFilename', 
                    'std::string', 
@@ -22967,14 +22956,23 @@ def register_Ns3PhyRxStatsCalculator_methods(root_module, cls):
     cls.add_method('SetDlRxOutputFilename', 
                    'void', 
                    [param('std::string', 'outputFilename')])
-    ## phy-rx-stats-calculator.h (module 'lte'): void ns3::PhyRxStatsCalculator::SetUlRxOutputFilename(std::string outputFilename) [member function]
-    cls.add_method('SetUlRxOutputFilename', 
+    ## phy-rx-stats-calculator.h (module 'lte'): std::string ns3::PhyRxStatsCalculator::GetDlRxOutputFilename() [member function]
+    cls.add_method('GetDlRxOutputFilename', 
+                   'std::string', 
+                   [])
+    ## phy-rx-stats-calculator.h (module 'lte'): void ns3::PhyRxStatsCalculator::DlPhyReception(ns3::PhyReceptionStatParameters params) [member function]
+    cls.add_method('DlPhyReception', 
                    'void', 
-                   [param('std::string', 'outputFilename')])
+                   [param('ns3::PhyReceptionStatParameters', 'params')])
     ## phy-rx-stats-calculator.h (module 'lte'): void ns3::PhyRxStatsCalculator::UlPhyReception(ns3::PhyReceptionStatParameters params) [member function]
     cls.add_method('UlPhyReception', 
                    'void', 
                    [param('ns3::PhyReceptionStatParameters', 'params')])
+    ## phy-rx-stats-calculator.h (module 'lte'): static void ns3::PhyRxStatsCalculator::DlPhyReceptionCallback(ns3::Ptr<ns3::PhyRxStatsCalculator> phyRxStats, std::string path, ns3::PhyReceptionStatParameters params) [member function]
+    cls.add_method('DlPhyReceptionCallback', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PhyRxStatsCalculator >', 'phyRxStats'), param('std::string', 'path'), param('ns3::PhyReceptionStatParameters', 'params')], 
+                   is_static=True)
     ## phy-rx-stats-calculator.h (module 'lte'): static void ns3::PhyRxStatsCalculator::UlPhyReceptionCallback(ns3::Ptr<ns3::PhyRxStatsCalculator> phyRxStats, std::string path, ns3::PhyReceptionStatParameters params) [member function]
     cls.add_method('UlPhyReceptionCallback', 
                    'void', 
@@ -22983,91 +22981,78 @@ def register_Ns3PhyRxStatsCalculator_methods(root_module, cls):
     return
 
 def register_Ns3PhyStatsCalculator_methods(root_module, cls):
-    ## phy-stats-calculator.h (module 'lte'): ns3::PhyStatsCalculator::PhyStatsCalculator(ns3::PhyStatsCalculator const & arg0) [constructor]
-    cls.add_constructor([param('ns3::PhyStatsCalculator const &', 'arg0')])
     ## phy-stats-calculator.h (module 'lte'): ns3::PhyStatsCalculator::PhyStatsCalculator() [constructor]
     cls.add_constructor([])
-    ## phy-stats-calculator.h (module 'lte'): std::string ns3::PhyStatsCalculator::GetCurrentCellRsrpSinrFilename() [member function]
-    cls.add_method('GetCurrentCellRsrpSinrFilename', 
-                   'std::string', 
-                   [])
-    ## phy-stats-calculator.h (module 'lte'): std::string ns3::PhyStatsCalculator::GetInterferenceFilename() [member function]
-    cls.add_method('GetInterferenceFilename', 
-                   'std::string', 
-                   [])
     ## phy-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::PhyStatsCalculator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetCurrentCellRsrpSinrFilename(std::string filename) [member function]
+    cls.add_method('SetCurrentCellRsrpSinrFilename', 
+                   'void', 
+                   [param('std::string', 'filename')])
+    ## phy-stats-calculator.h (module 'lte'): std::string ns3::PhyStatsCalculator::GetCurrentCellRsrpSinrFilename() [member function]
+    cls.add_method('GetCurrentCellRsrpSinrFilename', 
+                   'std::string', 
+                   [])
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetUeSinrFilename(std::string filename) [member function]
+    cls.add_method('SetUeSinrFilename', 
+                   'void', 
+                   [param('std::string', 'filename')])
     ## phy-stats-calculator.h (module 'lte'): std::string ns3::PhyStatsCalculator::GetUeSinrFilename() [member function]
     cls.add_method('GetUeSinrFilename', 
+                   'std::string', 
+                   [])
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetInterferenceFilename(std::string filename) [member function]
+    cls.add_method('SetInterferenceFilename', 
+                   'void', 
+                   [param('std::string', 'filename')])
+    ## phy-stats-calculator.h (module 'lte'): std::string ns3::PhyStatsCalculator::GetInterferenceFilename() [member function]
+    cls.add_method('GetInterferenceFilename', 
                    'std::string', 
                    [])
     ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double rsrp, double sinr, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportCurrentCellRsrpSinr', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr'), param('uint8_t', 'componentCarrierId')])
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportUeSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId) [member function]
+    cls.add_method('ReportUeSinr', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'sinrLinear'), param('uint8_t', 'componentCarrierId')])
+    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportInterference(uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> interference) [member function]
+    cls.add_method('ReportInterference', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'interference')])
     ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double rsrp, double sinr, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportCurrentCellRsrpSinrCallback', 
                    'void', 
                    [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'rsrp'), param('double', 'sinr'), param('uint8_t', 'componentCarrierId')], 
                    is_static=True)
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportInterference(uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> interference) [member function]
-    cls.add_method('ReportInterference', 
-                   'void', 
-                   [param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'interference')])
-    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportInterference(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> interference) [member function]
-    cls.add_method('ReportInterference', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'interference')], 
-                   is_static=True)
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::ReportUeSinr(uint16_t cellId, uint64_t imsi, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId) [member function]
-    cls.add_method('ReportUeSinr', 
-                   'void', 
-                   [param('uint16_t', 'cellId'), param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('double', 'sinrLinear'), param('uint8_t', 'componentCarrierId')])
     ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportUeSinr(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId) [member function]
     cls.add_method('ReportUeSinr', 
                    'void', 
                    [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('double', 'sinrLinear'), param('uint8_t', 'componentCarrierId')], 
                    is_static=True)
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetCurrentCellRsrpSinrFilename(std::string filename) [member function]
-    cls.add_method('SetCurrentCellRsrpSinrFilename', 
+    ## phy-stats-calculator.h (module 'lte'): static void ns3::PhyStatsCalculator::ReportInterference(ns3::Ptr<ns3::PhyStatsCalculator> phyStats, std::string path, uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> interference) [member function]
+    cls.add_method('ReportInterference', 
                    'void', 
-                   [param('std::string', 'filename')])
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetInterferenceFilename(std::string filename) [member function]
-    cls.add_method('SetInterferenceFilename', 
-                   'void', 
-                   [param('std::string', 'filename')])
-    ## phy-stats-calculator.h (module 'lte'): void ns3::PhyStatsCalculator::SetUeSinrFilename(std::string filename) [member function]
-    cls.add_method('SetUeSinrFilename', 
-                   'void', 
-                   [param('std::string', 'filename')])
+                   [param('ns3::Ptr< ns3::PhyStatsCalculator >', 'phyStats'), param('std::string', 'path'), param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'interference')], 
+                   is_static=True)
     return
 
 def register_Ns3PhyTxStatsCalculator_methods(root_module, cls):
-    ## phy-tx-stats-calculator.h (module 'lte'): ns3::PhyTxStatsCalculator::PhyTxStatsCalculator(ns3::PhyTxStatsCalculator const & arg0) [constructor]
-    cls.add_constructor([param('ns3::PhyTxStatsCalculator const &', 'arg0')])
     ## phy-tx-stats-calculator.h (module 'lte'): ns3::PhyTxStatsCalculator::PhyTxStatsCalculator() [constructor]
     cls.add_constructor([])
-    ## phy-tx-stats-calculator.h (module 'lte'): void ns3::PhyTxStatsCalculator::DlPhyTransmission(ns3::PhyTransmissionStatParameters params) [member function]
-    cls.add_method('DlPhyTransmission', 
-                   'void', 
-                   [param('ns3::PhyTransmissionStatParameters', 'params')])
-    ## phy-tx-stats-calculator.h (module 'lte'): static void ns3::PhyTxStatsCalculator::DlPhyTransmissionCallback(ns3::Ptr<ns3::PhyTxStatsCalculator> phyTxStats, std::string path, ns3::PhyTransmissionStatParameters params) [member function]
-    cls.add_method('DlPhyTransmissionCallback', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::PhyTxStatsCalculator >', 'phyTxStats'), param('std::string', 'path'), param('ns3::PhyTransmissionStatParameters', 'params')], 
-                   is_static=True)
-    ## phy-tx-stats-calculator.h (module 'lte'): std::string ns3::PhyTxStatsCalculator::GetDlTxOutputFilename() [member function]
-    cls.add_method('GetDlTxOutputFilename', 
-                   'std::string', 
-                   [])
     ## phy-tx-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::PhyTxStatsCalculator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## phy-tx-stats-calculator.h (module 'lte'): void ns3::PhyTxStatsCalculator::SetUlTxOutputFilename(std::string outputFilename) [member function]
+    cls.add_method('SetUlTxOutputFilename', 
+                   'void', 
+                   [param('std::string', 'outputFilename')])
     ## phy-tx-stats-calculator.h (module 'lte'): std::string ns3::PhyTxStatsCalculator::GetUlTxOutputFilename() [member function]
     cls.add_method('GetUlTxOutputFilename', 
                    'std::string', 
@@ -23076,14 +23061,23 @@ def register_Ns3PhyTxStatsCalculator_methods(root_module, cls):
     cls.add_method('SetDlTxOutputFilename', 
                    'void', 
                    [param('std::string', 'outputFilename')])
-    ## phy-tx-stats-calculator.h (module 'lte'): void ns3::PhyTxStatsCalculator::SetUlTxOutputFilename(std::string outputFilename) [member function]
-    cls.add_method('SetUlTxOutputFilename', 
+    ## phy-tx-stats-calculator.h (module 'lte'): std::string ns3::PhyTxStatsCalculator::GetDlTxOutputFilename() [member function]
+    cls.add_method('GetDlTxOutputFilename', 
+                   'std::string', 
+                   [])
+    ## phy-tx-stats-calculator.h (module 'lte'): void ns3::PhyTxStatsCalculator::DlPhyTransmission(ns3::PhyTransmissionStatParameters params) [member function]
+    cls.add_method('DlPhyTransmission', 
                    'void', 
-                   [param('std::string', 'outputFilename')])
+                   [param('ns3::PhyTransmissionStatParameters', 'params')])
     ## phy-tx-stats-calculator.h (module 'lte'): void ns3::PhyTxStatsCalculator::UlPhyTransmission(ns3::PhyTransmissionStatParameters params) [member function]
     cls.add_method('UlPhyTransmission', 
                    'void', 
                    [param('ns3::PhyTransmissionStatParameters', 'params')])
+    ## phy-tx-stats-calculator.h (module 'lte'): static void ns3::PhyTxStatsCalculator::DlPhyTransmissionCallback(ns3::Ptr<ns3::PhyTxStatsCalculator> phyTxStats, std::string path, ns3::PhyTransmissionStatParameters params) [member function]
+    cls.add_method('DlPhyTransmissionCallback', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PhyTxStatsCalculator >', 'phyTxStats'), param('std::string', 'path'), param('ns3::PhyTransmissionStatParameters', 'params')], 
+                   is_static=True)
     ## phy-tx-stats-calculator.h (module 'lte'): static void ns3::PhyTxStatsCalculator::UlPhyTransmissionCallback(ns3::Ptr<ns3::PhyTxStatsCalculator> phyTxStats, std::string path, ns3::PhyTransmissionStatParameters params) [member function]
     cls.add_method('UlPhyTransmissionCallback', 
                    'void', 

@@ -2466,14 +2466,14 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('>=')
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
     cls.add_unary_numeric_operator('-')
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
     cls.add_constructor([])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(double const value) [constructor]
@@ -2492,6 +2492,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(long long unsigned int const v) [constructor]
     cls.add_constructor([param('long long unsigned int const', 'v')])
+    ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int128_t const v) [constructor]
+    cls.add_constructor([param('int128_t const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int64_t const hi, uint64_t const lo) [constructor]
     cls.add_constructor([param('int64_t const', 'hi'), param('uint64_t const', 'lo')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(ns3::int64x64_t const & o) [constructor]
@@ -2914,6 +2916,11 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::PreEventHook(ns3::EventId const & id) [member function]
+    cls.add_method('PreEventHook', 
+                   'void', 
+                   [param('ns3::EventId const &', 'id')], 
+                   is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Remove(ns3::EventId const & id) [member function]
     cls.add_method('Remove', 
                    'void', 
@@ -2995,10 +3002,10 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     cls.add_method('Realtime', 
                    'bool', 
                    [])
-    ## synchronizer.h (module 'core'): void ns3::Synchronizer::SetCondition(bool arg0) [member function]
+    ## synchronizer.h (module 'core'): void ns3::Synchronizer::SetCondition(bool cond) [member function]
     cls.add_method('SetCondition', 
                    'void', 
-                   [param('bool', 'arg0')])
+                   [param('bool', 'cond')])
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::SetOrigin(uint64_t ts) [member function]
     cls.add_method('SetOrigin', 
                    'void', 
@@ -3036,10 +3043,10 @@ def register_Ns3Synchronizer_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True, visibility='protected')
-    ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetCondition(bool arg0) [member function]
+    ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetCondition(bool cond) [member function]
     cls.add_method('DoSetCondition', 
                    'void', 
-                   [param('bool', 'arg0')], 
+                   [param('bool', 'cond')], 
                    is_pure_virtual=True, is_virtual=True, visibility='protected')
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetOrigin(uint64_t ns) [member function]
     cls.add_method('DoSetOrigin', 
@@ -5341,6 +5348,21 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
     cls.add_method('SetFailSafe', 
                    'bool', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h (module 'core'): ns3::Config::MatchContainer::Iterator ns3::Config::MatchContainer::begin() const [member function]
+    cls.add_method('begin', 
+                   'ns3::Config::MatchContainer::Iterator', 
+                   [], 
+                   is_const=True)
+    ## config.h (module 'core'): ns3::Config::MatchContainer::Iterator ns3::Config::MatchContainer::end() const [member function]
+    cls.add_method('end', 
+                   'ns3::Config::MatchContainer::Iterator', 
+                   [], 
+                   is_const=True)
+    ## config.h (module 'core'): std::size_t ns3::Config::MatchContainer::size() const [member function]
+    cls.add_method('size', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3HashImplementation_methods(root_module, cls):
@@ -5556,6 +5578,10 @@ def register_functions(root_module):
     module.add_function('GetLogComponent', 
                         'ns3::LogComponent &', 
                         [param('std::string const', 'name')])
+    ## hash.h (module 'core'): ns3::Hasher & ns3::GetStaticHash() [free function]
+    module.add_function('GetStaticHash', 
+                        'ns3::Hasher &', 
+                        [])
     ## hash.h (module 'core'): uint32_t ns3::Hash32(std::string const s) [free function]
     module.add_function('Hash32', 
                         'uint32_t', 
