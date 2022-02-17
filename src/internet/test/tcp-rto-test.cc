@@ -407,7 +407,7 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
 
       if (h.GetFlags () & TcpHeader::SYN)
         {
-          NS_TEST_ASSERT_MSG_EQ (m_senderSentSegments, 1, "Number of segments sent is equal to 1");
+          NS_TEST_ASSERT_MSG_EQ (m_senderSentSegments, 1, "Number of segments sent is different than 1");
 
           Time s_rto = GetRto (SENDER);
           NS_TEST_ASSERT_MSG_EQ (s_rto, GetConnTimeout (SENDER),
@@ -419,7 +419,7 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
           NS_LOG_INFO ("TX: " << h << m_senderSentSegments);
 
           NS_TEST_ASSERT_MSG_EQ (h.GetSequenceNumber ().GetValue (), 1,
-                                 "First packet has been correctly sent");
+                                 "First packet was not correctly sent");
 
           // Remember, from RFC:
           // m_rto = Max (m_rtt->GetEstimate () +
