@@ -112,7 +112,7 @@ public:
    * \return number of bits remaining in the
    *         nix-vector (ie m_total - m_used)
    */
-  uint32_t GetRemainingBits (void);
+  uint32_t GetRemainingBits (void) const;
   /**
    * \return the number of bytes required for serialization
    */
@@ -150,6 +150,17 @@ public:
    */
   uint32_t BitCount (uint32_t numberOfNeighbors) const;
 
+  /**
+   * Set the NixVector Epoch
+   * \param epoch the NixVector Epoch
+   */
+  void SetEpoch (uint32_t epoch);
+
+  /**
+   * Get the NixVector Epoch
+   * \return the NixVector Epoch
+   */
+  uint32_t GetEpoch () const;
 
 private:
   /// Typedef: the NixVector bits storage.
@@ -188,6 +199,8 @@ private:
    * the nix-vector
    */
   uint32_t m_totalBitSize;
+
+  uint32_t m_epoch; //!< Epoch of the Nix-vector creation
 
   /**
    * Internal for pretty printing of nix-vector (fill)

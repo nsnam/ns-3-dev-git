@@ -448,6 +448,11 @@ private:
    */
   static bool g_isCacheDirty;
 
+  /**
+   * Nix Epoch, incremented each time a flush is perfomed.
+   */
+  static uint32_t g_epoch;
+
   /** Cache stores nix-vectors based on destination ip */
   mutable NixMap_t m_nixCache;
 

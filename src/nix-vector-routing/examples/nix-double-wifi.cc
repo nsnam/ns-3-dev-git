@@ -65,7 +65,7 @@
  * IPv4:
  * \verbatim
    Time: +7s, Nix Routing
-   Route Path: (Node 4 to Node 7, Nix Vector: 100011)
+   Route path from Node 4 to Node 7, Nix Vector: 100011 (6 bits left)
    10.1.1.3                 (Node 4)  ---->   10.1.1.4                 (Node 0)
    10.1.2.1                 (Node 0)  ---->   10.1.2.2                 (Node 1)
    10.1.3.4                 (Node 1)  ---->   10.1.3.3                 (Node 7)
@@ -74,7 +74,7 @@
  * IPv6:
  * \verbatim
    Time: +7s, Nix Routing
-   Route Path: (Node 4 to Node 7, Nix Vector: 100011)
+   Route path from Node 4 to Node 7, Nix Vector: 100011 (6 bits left)
    2001:1::200:ff:fe00:5    (Node 4)  ---->   fe80::200:ff:fe00:6      (Node 0)
    fe80::200:ff:fe00:1      (Node 0)  ---->   fe80::200:ff:fe00:2      (Node 1)
    fe80::200:ff:fe00:a      (Node 1)  ---->   2001:3::200:ff:fe00:9    (Node 7)

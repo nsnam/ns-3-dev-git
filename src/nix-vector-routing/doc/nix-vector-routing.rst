@@ -53,6 +53,17 @@ net-devices are added on a node and net-devices added on the channels
 associated with current node's net-devices. Please check the ``nix-simple.cc``
 example below to understand how nix-vectors are calculated.
 
+**How does Nix reacts to topology changes?**
+Routes in Nix are specific to a given network topology, and are cached by
+the sender node. Nix monitors the following events: Interface up/down, 
+Route add/removal, Address add/removal to understand if the cached routes 
+are valid or if they have to be purged. 
+
+If the topology changes while the packet is "in flight", the associated 
+NixVector is invalid, and have to be rebuilt by an intermediate node.
+This is possible because the NixVecor carries an "Epoch", i.e., a counter
+indicating when the NixVector has been created. If the topology changes,
+the Epoch is globally updated, and any outdated NixVector is rebuilt.
 
 |ns3| supports IPv4 as well as IPv6 Nix-Vector routing.
 

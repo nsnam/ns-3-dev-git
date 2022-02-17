@@ -312,21 +312,21 @@ NixVectorRoutingTest::DoRun (void)
 
   // Test the Path
   const std::string p_nSrcnAnCnDstv4 = "Time: +3s, Nix Routing\n"
-                                              "Route Path: (Node 0 to Node 4, Nix Vector: 01001)\n"
+                                              "Route path from Node 0 to Node 4, Nix Vector: 01001 (5 bits left)\n"
                                               "10.1.0.1                 (Node 0)  ---->   10.1.0.2                 (Node 1)\n"
                                               "10.1.4.1                 (Node 1)  ---->   10.1.4.2                 (Node 3)\n"
                                               "10.1.3.1                 (Node 3)  ---->   10.1.3.2                 (Node 4)\n\n";
   NS_TEST_EXPECT_MSG_EQ (stringStream1v4.str (), p_nSrcnAnCnDstv4, "Routing Path is incorrect.");
 
   const std::string p_nSrcnAnCnDstv6 = "Time: +3s, Nix Routing\n"
-                                              "Route Path: (Node 0 to Node 4, Nix Vector: 01001)\n"
+                                              "Route path from Node 0 to Node 4, Nix Vector: 01001 (5 bits left)\n"
                                               "2001::200:ff:fe00:1      (Node 0)  ---->   fe80::200:ff:fe00:2      (Node 1)\n"
                                               "fe80::200:ff:fe00:9      (Node 1)  ---->   fe80::200:ff:fe00:a      (Node 3)\n"
                                               "fe80::200:ff:fe00:7      (Node 3)  ---->   2001:3::200:ff:fe00:8    (Node 4)\n\n";
   NS_TEST_EXPECT_MSG_EQ (stringStream1v6.str (), p_nSrcnAnCnDstv6, "Routing Path is incorrect.");
 
   const std::string p_nSrcnAnBnCnDstv4 = "Time: +9s, Nix Routing\n"
-                                                 "Route Path: (Node 0 to Node 4, Nix Vector: 0111)\n"
+                                                 "Route path from Node 0 to Node 4, Nix Vector: 0111 (4 bits left)\n"
                                                  "10.1.0.1                 (Node 0)  ---->   10.1.0.2                 (Node 1)\n"
                                                  "10.1.1.1                 (Node 1)  ---->   10.1.1.2                 (Node 2)\n"
                                                  "10.1.2.1                 (Node 2)  ---->   10.1.2.2                 (Node 3)\n"
@@ -334,7 +334,7 @@ NixVectorRoutingTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (stringStream3v4.str (), p_nSrcnAnBnCnDstv4, "Routing Path is incorrect.");
 
   const std::string p_nSrcnAnBnCnDstv6 = "Time: +9s, Nix Routing\n"
-                                                 "Route Path: (Node 0 to Node 4, Nix Vector: 0111)\n"
+                                                 "Route path from Node 0 to Node 4, Nix Vector: 0111 (4 bits left)\n"
                                                  "2001::200:ff:fe00:1      (Node 0)  ---->   fe80::200:ff:fe00:2      (Node 1)\n"
                                                  "fe80::200:ff:fe00:3      (Node 1)  ---->   fe80::200:ff:fe00:4      (Node 2)\n"
                                                  "fe80::200:ff:fe00:5      (Node 2)  ---->   fe80::200:ff:fe00:6      (Node 3)\n"

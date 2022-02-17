@@ -53,7 +53,6 @@
     n2 (left)  IP: 10.1.2.2
     n2 (right) IP: 10.1.3.1, 10.2.3.1
     n3 (left)  IP: 10.1.3.2, 10.2.3.2
-
    \endverbatim
  *
  * Cases considered:
@@ -63,76 +62,77 @@
  *  - At t = +3s, Path from n0 to n1 (10.2.1.2).
  *  - At t = +7s, Path from n0 to n3 (10.2.3.2).
  *
+ * Logging output:
  * \verbatim
-   Logging output:
    At time +2s client sent 1024 bytes to 10.1.3.2 port 9
    At time +2.01106s server received 1024 bytes from 10.1.1.1 port 49153
    At time +2.01106s server sent 1024 bytes to 10.1.1.1 port 49153
    At time +2.02212s client received 1024 bytes from 10.1.3.2 port 9
+  \endverbatim
+ *
+ * Output in nix-simple-multi-address.routes:
+ * \verbatim
+  Time: +3s, Nix Routing
+  Route path from Node 0 to Node 1, Nix Vector: 0 (1 bits left)
+  10.2.1.1                 (Node 0)  ---->   10.2.1.2                 (Node 1)
 
-   Output in nix-simple-multi-address.routes:
-   Time: +3s, Nix Routing
-   Route Path: (Node 0 to Node 1, Nix Vector: 0)
-   10.2.1.1 (Node 0)   ---->   10.2.1.2 (Node 1)
+  Node: 0, Time: +4s, Local time: +4s, Nix Routing
+  NixCache:
+  Destination                   NixVector
+  10.1.3.2                      011 (3 bits left)
+  IpRouteCache:
+  Destination                   Gateway                       Source                        OutputDevice
+  10.1.3.2                      10.1.1.2                      10.1.1.1                        1
 
-   Node: 0, Time: +4s, Local time: +4s, Nix Routing
-   NixCache:
-   Destination     NixVector
-   10.1.3.2        011
-   10.2.1.2        0
-   Ipv4RouteCache:
-   Destination     Gateway         Source            OutputDevice
-   10.1.3.2        10.1.1.2        10.1.1.1          1
+  Node: 1, Time: +4s, Local time: +4s, Nix Routing
+  NixCache:
+  IpRouteCache:
+  Destination                   Gateway                       Source                        OutputDevice
+  10.1.1.1                      10.1.1.1                      10.1.1.2                        1
+  10.1.3.2                      10.1.2.2                      10.1.2.1                        2
 
-   Node: 1, Time: +4s, Local time: +4s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
-   Destination     Gateway         Source            OutputDevice
-   10.1.1.1        10.1.1.1        10.1.1.2          1
-   10.1.3.2        10.1.2.2        10.1.2.1          2
+  Node: 2, Time: +4s, Local time: +4s, Nix Routing
+  NixCache:
+  IpRouteCache:
+  Destination                   Gateway                       Source                        OutputDevice
+  10.1.1.1                      10.1.2.1                      10.1.2.2                        1
+  10.1.3.2                      10.1.3.2                      10.1.3.1                        2
 
-   Node: 2, Time: +4s, Local time: +4s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
-   Destination     Gateway         Source            OutputDevice
-   10.1.1.1        10.1.2.1        10.1.2.2          1
-   10.1.3.2        10.1.3.2        10.1.3.1          2
+  Node: 3, Time: +4s, Local time: +4s, Nix Routing
+  NixCache:
+  Destination                   NixVector
+  10.1.1.1                      000 (3 bits left)
+  IpRouteCache:
+  Destination                   Gateway                       Source                        OutputDevice
+  10.1.1.1                      10.1.3.1                      10.1.3.2                        1
 
-   Node: 3, Time: +4s, Local time: +4s, Nix Routing
-   NixCache:
-   Destination     NixVector
-   10.1.1.1        000
-   Ipv4RouteCache:
-   Destination     Gateway         Source            OutputDevice
-   10.1.1.1        10.1.3.1        10.1.3.2          1
+  Node: 0, Time: +6s, Local time: +6s, Nix Routing
+  NixCache:
+  IpRouteCache:
 
-   Node: 0, Time: +6s, Local time: +6s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
+  Node: 1, Time: +6s, Local time: +6s, Nix Routing
+  NixCache:
+  IpRouteCache:
 
-   Node: 1, Time: +6s, Local time: +6s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
+  Node: 2, Time: +6s, Local time: +6s, Nix Routing
+  NixCache:
+  IpRouteCache:
 
-   Node: 2, Time: +6s, Local time: +6s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
+  Node: 3, Time: +6s, Local time: +6s, Nix Routing
+  NixCache:
+  IpRouteCache:
 
-   Node: 3, Time: +6s, Local time: +6s, Nix Routing
-   NixCache:
-   Ipv4RouteCache:
-
-   Time: +7s, Nix Routing
-   Route Path: (Node 0 to Node 3, Nix Vector: 011)
-   10.1.1.1 (Node 0)   ---->   10.1.1.2 (Node 1)
-   10.1.2.1 (Node 1)   ---->   10.1.2.2 (Node 2)
-   10.1.3.1 (Node 2)   ---->   10.2.3.2 (Node 3)
- * \endverbatim
+  Time: +7s, Nix Routing
+  Route path from Node 0 to Node 3, Nix Vector: 011 (3 bits left)
+  10.1.1.1                 (Node 0)  ---->   10.1.1.2                 (Node 1)
+  10.1.2.1                 (Node 1)  ---->   10.1.2.2                 (Node 2)
+  10.1.3.1                 (Node 2)  ---->   10.2.3.2                 (Node 3)
+ \endverbatim
  */
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("NixSimpleExample");
+NS_LOG_COMPONENT_DEFINE ("NixSimpleMultiAddressExample");
 
 int
 main (int argc, char *argv[])

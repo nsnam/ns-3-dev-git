@@ -241,7 +241,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
 }
 
 void
-Packet::SetNixVector (Ptr<NixVector> nixVector)
+Packet::SetNixVector (Ptr<NixVector> nixVector) const
 {
   m_nixVector = nixVector;
 }

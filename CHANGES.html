@@ -84,6 +84,8 @@ attributes of <b>WifiPhy</b> can now only be used to get the corresponding value
 can be now configured through the <b>ChannelSettings</b> attribute. See the wifi model documentation
 for information on how to set this new attribute.</li>
 <li>UE handover now works with and without enabled CA (carrier aggregation) in inter-eNB, intra-eNB, inter-frequency and intra-frequency scenarios. Previously only inter-eNB intra-frequency handover was supported and only in non-CA scenarios. </li>
+<li>NixVectorRouting: <b>NixVectorRouting</b> can now better cope with topology changes. In-flight packets are not anymore causing crashes, and
+the path is dynamically rebuilt by intermediate routers (this happens only to packets in-flight during the topology change).</li>
 </ul>
 
 <hr>

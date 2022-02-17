@@ -33,7 +33,8 @@ NixVector::NixVector ()
   : m_nixVector (0),
     m_used (0),
     m_currentVectorBitSize (0),
-    m_totalBitSize (0)
+    m_totalBitSize (0),
+    m_epoch (0)
 {
   NS_LOG_FUNCTION (this);
 
@@ -49,7 +50,8 @@ NixVector::NixVector (const NixVector &o)
   : m_nixVector (o.m_nixVector),
     m_used (o.m_used),
     m_currentVectorBitSize (o.m_currentVectorBitSize),
-    m_totalBitSize (o.m_totalBitSize)
+    m_totalBitSize (o.m_totalBitSize),
+    m_epoch (o.m_epoch)
 {
 }
 
@@ -64,6 +66,7 @@ NixVector::operator = (const NixVector &o)
   m_used = o.m_used;
   m_currentVectorBitSize = o.m_currentVectorBitSize;
   m_totalBitSize = o.m_totalBitSize;
+  m_epoch = o.m_epoch;
   return *this;
 }
 
@@ -80,7 +83,8 @@ NixVector::Copy (void) const
 /* For printing the nix vector */
 std::ostream & operator << (std::ostream &os, const NixVector &nix)
 {
-  nix.DumpNixVector (os); 
+  nix.DumpNixVector (os);
+  os << " (" << nix.GetRemainingBits () << " bits left)";
   return os;
 }
 
@@ -111,7 +115,6 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
           // because we are working with a new 
           // entry in the vector
           m_currentVectorBitSize = numberOfBits;
-          m_totalBitSize += numberOfBits;
         }
       else
         {
@@ -133,7 +136,6 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
           // because we are working with a new 
           // entry in the vector
           m_currentVectorBitSize = (numberOfBits - (32 - m_currentVectorBitSize));
-          m_totalBitSize += numberOfBits;
         }
     }
   else
@@ -152,8 +154,8 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
       // accordingly 
       m_nixVector.back () = newBits;
       m_currentVectorBitSize += numberOfBits;
-      m_totalBitSize += numberOfBits;
     }
+  m_totalBitSize += numberOfBits;
 }
 
 uint32_t
@@ -215,8 +217,11 @@ NixVector::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
   uint32_t totalSizeInBytes = 0;
-  totalSizeInBytes = sizeof (m_used) + sizeof (m_currentVectorBitSize) + 
-    sizeof (m_totalBitSize) + (4 * m_nixVector.size ());
+  totalSizeInBytes = sizeof (m_used) + 
+                     sizeof (m_currentVectorBitSize) + 
+                     sizeof (m_totalBitSize) + 
+                     (sizeof (uint32_t) * m_nixVector.size ()) + 
+                     sizeof (m_epoch);
 
   return totalSizeInBytes;
 }
@@ -226,55 +231,20 @@ NixVector::Serialize (uint32_t* buffer, uint32_t maxSize) const
 {
   NS_LOG_FUNCTION (this << buffer << maxSize);
   uint32_t* p = buffer;
-  uint32_t size = 0;
 
-  if (size + 4 <= maxSize)
-    {
-      size += 4;
-      // grab number of used bits
-      *p++ = m_used;
-    }
-  else
+  if (maxSize < GetSerializedSize ())
     {
       return 0;
     }
 
-  if (size + 4 <= maxSize)
-    {
-      size += 4;
-      // grab number of current used bits
-      // for the front vector
-      *p++ = m_currentVectorBitSize;
-    }
-  else
-    {
-      return 0;
-    }
-
-  if (size + 4 <= maxSize)
-    {
-      size += 4;
-      // grab total bit size
-      *p++ = m_totalBitSize;
-    }
-  else 
-    {
-      return 0;
-    }
+  *p++ = m_used;
+  *p++ = m_currentVectorBitSize;
+  *p++ = m_totalBitSize;
   for (uint32_t j = 0; j < m_nixVector.size (); j++)
     {
-      if (size + 4 <= maxSize)
-        {
-          size += 4;
-          *p++ = m_nixVector.at (j);
-        }
-      else
-        {
-          return 0;
-        }
+      *p++ = m_nixVector.at (j);
     }
-
-  // Serialized successfully
+  *p++ = m_epoch;
   return 1;
 }
 
@@ -283,36 +253,42 @@ NixVector::Deserialize (const uint32_t* buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this << buffer << size);
   const uint32_t* p = buffer;
-  uint32_t sizeCheck = size - 4;
 
-  NS_ASSERT (sizeCheck >= 4);
+  NS_ASSERT_MSG (size >= 16, "NixVector minimum serialized length is 16 bytes");
+  if (size < 16)
+    {
+      // return zero if an entire nix-vector was
+      // not deserialized
+      return 0;
+    }
+
   m_used = *p++;
-  sizeCheck -= 4;
-
-  NS_ASSERT (sizeCheck >= 4);
   m_currentVectorBitSize = *p++;
-  sizeCheck -= 4;
-
-  NS_ASSERT (sizeCheck >= 4);
   m_totalBitSize = *p++;
-  sizeCheck -= 4;
+
+  // NixVector is packed in 32-bit unsigned ints.
+  uint32_t nixVectorLenth = m_totalBitSize / 32 + 1;
+  NS_ASSERT_MSG (size >= 16 + nixVectorLenth,
+                 "NixVector serialized length should have been " << 16 + nixVectorLenth << " but buffer is shorter");
+  if (size < 16 + nixVectorLenth * 4)
+    {
+      // return zero if an entire nix-vector was
+      // not deserialized
+      return 0;
+    }
 
   // make sure the nix-vector
   // is empty
   m_nixVector.clear ();
-  while (sizeCheck > 0)
+  for (uint32_t j = 0; j < nixVectorLenth; j++)
     {
-      NS_ASSERT (sizeCheck >= 4);
       uint32_t nix = *p++;
       m_nixVector.push_back (nix);
-      sizeCheck -= 4;
     }
 
-  NS_ASSERT (sizeCheck == 0);
+  m_epoch = *p++;
 
-  // return zero if an entire nix-vector was 
-  // not deserialized
-  return (sizeCheck != 0) ? 0 : 1;
+  return (GetSerializedSize ());
 }
 
 void
@@ -353,8 +329,8 @@ NixVector::DumpNixVector (std::ostream &os) const
     }
 }
 
-uint32_t 
-NixVector::GetRemainingBits (void)
+uint32_t
+NixVector::GetRemainingBits (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -439,6 +415,18 @@ NixVector::PrintDec2BinNixFill (uint32_t decimalNum, uint32_t bitCount, std::ost
       PrintDec2BinNixFill (decimalNum / 2, bitCount, os);
       os << decimalNum % 2;
     }
+}
+
+void
+NixVector::SetEpoch (uint32_t epoch)
+{
+  m_epoch = epoch;
+}
+
+uint32_t
+NixVector::GetEpoch () const
+{
+  return m_epoch;
 }
 
 } // namespace ns3

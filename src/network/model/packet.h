@@ -687,16 +687,20 @@ public:
   /**
    * \brief Set the packet nix-vector.
    *
-   * Note: This function supports a temporary solution
+   * \note Note: This function supports a temporary solution
    * to a specific problem in this generic class, i.e. 
    * how to associate something specific like nix-vector 
    * with a packet.  This design methodology 
    * should _not_ be followed, and is only here as an 
    * impetus to fix this general issue.
    *
+   * \warning For real this function is not const, as it is the
+   * setter for a mutable variable member. The const qualifier
+   * is needed to set a private mutable variable of const objects.
+   * 
    * \param nixVector the nix vector
    */
-  void SetNixVector (Ptr<NixVector> nixVector);
+  void SetNixVector (Ptr<NixVector> nixVector) const;
   /**
    * \brief Get the packet nix-vector.
    *
@@ -785,7 +789,7 @@ private:
   PacketMetadata m_metadata;      //!< the packet's metadata
 
   /* Please see comments above about nix-vector */
-  Ptr<NixVector> m_nixVector; //!< the packet's Nix vector
+  mutable Ptr<NixVector> m_nixVector; //!< the packet's Nix vector
 
   static uint32_t m_globalUid; //!< Global counter of packets Uid
 };
