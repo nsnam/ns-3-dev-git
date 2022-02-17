@@ -57,7 +57,7 @@ public:
    * \param desc Test description.
    */
   TcpSlowStartNormalTest (uint32_t segmentSize, uint32_t packetSize,
-                          uint32_t initSsTh, uint32_t packets, TypeId& congControl,
+                          uint32_t initSsTh, uint32_t packets, const TypeId& congControl,
                           const std::string &desc);
 
 protected:
@@ -87,7 +87,7 @@ TcpSlowStartNormalTest::TcpSlowStartNormalTest (uint32_t segmentSize,
                                                 uint32_t packetSize,
                                                 uint32_t initSsTh,
                                                 uint32_t packets,
-                                                TypeId &typeId,
+                                                const TypeId &typeId,
                                                 const std::string &desc)
   : TcpGeneralTest (desc),
     m_ackedBytes (0),
@@ -230,7 +230,7 @@ public:
    * \param desc Test description.
    */
   TcpSlowStartAttackerTest (uint32_t segmentSize, uint32_t packetSize,
-                            uint32_t initSsTh, uint32_t packets, TypeId& congControl,
+                            uint32_t initSsTh, uint32_t packets, const TypeId& congControl,
                             const std::string &desc);
 
 protected:
@@ -241,7 +241,8 @@ TcpSlowStartAttackerTest::TcpSlowStartAttackerTest (uint32_t segmentSize,
                                                     uint32_t packetSize,
                                                     uint32_t initSsTh,
                                                     uint32_t packets,
-                                                    TypeId &typeId, const std::string &msg)
+                                                    const TypeId &typeId,
+                                                    const std::string &msg)
   : TcpSlowStartNormalTest (segmentSize, packetSize, initSsTh, packets, typeId, msg)
 {
 
@@ -272,29 +273,31 @@ public:
   TcpSlowStartTestSuite () : TestSuite ("tcp-slow-start-test", UNIT)
   {
     // This test have less packets to transmit than SsTh
-    std::list<TypeId> types;
-    types.insert (types.begin (), TcpNewReno::GetTypeId ());
+    std::list<TypeId> types = {
+      TcpNewReno::GetTypeId (),
+    };
 
-    for (std::list<TypeId>::iterator it = types.begin (); it != types.end (); ++it)
+    for (const auto &t : types)
       {
-        AddTestCase (new TcpSlowStartNormalTest (500, 500, 10000, 10, (*it),
-                                                 "slow start 500 byte, " + (*it).GetName ()),
+        std::string typeName = t.GetName ();
+
+        AddTestCase (new TcpSlowStartNormalTest (500, 500, 10000, 10, t,
+                                                 "slow start 500 byte, " + typeName),
                      TestCase::QUICK);
-        AddTestCase (new TcpSlowStartNormalTest (1000, 1000, 10000, 9, (*it),
-                                                 "slow start 1000 byte, " + (*it).GetName ()),
+        AddTestCase (new TcpSlowStartNormalTest (1000, 1000, 10000, 9, t,
+                                                 "slow start 1000 byte, " + typeName),
                      TestCase::QUICK);
-        AddTestCase (new TcpSlowStartNormalTest (500, 250, 10000, 10, (*it),
-                                                 "slow start small packets, " + (*it).GetName ()),
+        AddTestCase (new TcpSlowStartNormalTest (500, 250, 10000, 10, t,
+                                                 "slow start small packets, " + typeName),
                      TestCase::QUICK);
-        AddTestCase (new TcpSlowStartAttackerTest (500, 500, 10000, 10, (*it),
-                                                   "slow start ack attacker, 500 byte, " + (*it).GetName ()),
+        AddTestCase (new TcpSlowStartAttackerTest (500, 500, 10000, 10, t,
+                                                   "slow start ack attacker, 500 byte, " + typeName),
                      TestCase::QUICK);
-        AddTestCase (new TcpSlowStartAttackerTest (1000, 1000, 10000, 9, (*it),
-                                                   "slow start ack attacker, 1000 byte, " + (*it).GetName ()),
+        AddTestCase (new TcpSlowStartAttackerTest (1000, 1000, 10000, 9, t,
+                                                   "slow start ack attacker, 1000 byte, " + typeName),
                      TestCase::QUICK);
       }
   }
 };
 
 static TcpSlowStartTestSuite g_tcpSlowStartTestSuite; //!< Static variable for test initialization
-

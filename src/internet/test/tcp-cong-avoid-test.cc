@@ -65,7 +65,7 @@ public:
    * \param desc The test description.
    */
   TcpNewRenoCongAvoidNormalTest (uint32_t segmentSize, uint32_t packetSize,
-                                 uint32_t packets, TypeId& congControl,
+                                 uint32_t packets, const TypeId& congControl,
                                  const std::string &desc);
 protected:
   virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
@@ -94,7 +94,7 @@ private:
 TcpNewRenoCongAvoidNormalTest::TcpNewRenoCongAvoidNormalTest (uint32_t segmentSize,
                                                               uint32_t packetSize,
                                                               uint32_t packets,
-                                                              TypeId &typeId,
+                                                              const TypeId &typeId,
                                                               const std::string &desc)
   : TcpGeneralTest (desc),
     m_segmentSize (segmentSize),
@@ -192,18 +192,19 @@ class TcpRenoCongAvoidTestSuite : public TestSuite
 public:
   TcpRenoCongAvoidTestSuite () : TestSuite ("tcp-cong-avoid-test", UNIT)
   {
-    std::list<TypeId> types;
-    types.insert (types.begin (), TcpNewReno::GetTypeId ());
+    std::list<TypeId> types = {
+      TcpNewReno::GetTypeId (),
+    };
 
-    for (std::list<TypeId>::iterator it = types.begin (); it != types.end (); ++it)
+    for (const auto &t : types)
       {
+        std::string typeName = t.GetName ();
+
         for (uint32_t i = 10; i <= 50; i += 10)
           {
-            AddTestCase (new TcpNewRenoCongAvoidNormalTest (500, 500, i, (*it),
-                                                            "cong avoid MSS=500, pkt_size=500," + (*it).GetName ()),
+            AddTestCase (new TcpNewRenoCongAvoidNormalTest (500, 500, i, t, "cong avoid MSS=500, pkt_size=500," + typeName),
                          TestCase::QUICK);
-            AddTestCase (new TcpNewRenoCongAvoidNormalTest (500, 1000, i, (*it),
-                                                            "cong avoid MSS=500, pkt_size=1000," + (*it).GetName ()),
+            AddTestCase (new TcpNewRenoCongAvoidNormalTest (500, 1000, i, t, "cong avoid MSS=500, pkt_size=1000," + typeName),
                          TestCase::QUICK);
           }
       }

@@ -49,7 +49,7 @@ public:
    * \param congControl Congestion control type.
    * \param msg Test description.
    */
-  TcpRtoTest (TypeId &congControl, const std::string &msg);
+  TcpRtoTest (const TypeId &congControl, const std::string &msg);
 
 protected:
 
@@ -68,7 +68,7 @@ private:
   bool m_segmentReceived; //!< True if segments have been received.
 };
 
-TcpRtoTest::TcpRtoTest (TypeId &congControl, const std::string &desc)
+TcpRtoTest::TcpRtoTest (const TypeId &congControl, const std::string &desc)
   : TcpGeneralTest (desc),
     m_afterRTOExpired (false),
     m_segmentReceived (false)
@@ -182,12 +182,12 @@ class TcpSsThreshRtoTest : public TcpGeneralTest
 public:
   /**
    * \brief Constructor.
-   * \param congControl Congestion control type.
+   * \param congControl congestion control type
    * \param seqToDrop sequence number to drop
    * \param minRto minimum RTO
-   * \param msg Test description.
+   * \param msg test description
    */
-  TcpSsThreshRtoTest (TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &msg);
+  TcpSsThreshRtoTest (const TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &msg);
 
 protected:
 
@@ -200,7 +200,7 @@ protected:
 
   virtual void ConfigureEnvironment ();
 
-    /**
+  /**
    * \brief Called when a packet has been dropped.
    * \param ipH IPv4 header.
    * \param tcpH TCP header.
@@ -216,7 +216,7 @@ private:
   Time m_minRtoTime; //!< the minimum RTO time
 };
 
-TcpSsThreshRtoTest::TcpSsThreshRtoTest (TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &desc)
+TcpSsThreshRtoTest::TcpSsThreshRtoTest (const TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &desc)
   : TcpGeneralTest (desc),
     m_seqToDrop (seqToDrop),
     m_minRtoTime (minRto)
@@ -250,7 +250,7 @@ TcpSsThreshRtoTest::CreateReceiverErrorModel ()
 
   Ptr<TcpSeqErrorModel> errorModel = CreateObject<TcpSeqErrorModel> ();
 
-  for (uint32_t i = 0; i<3; ++i)
+  for (uint32_t i = 0; i < 3; ++i)
     {
       errorModel->AddSeqToKill (SequenceNumber32 (m_seqToDrop));
     }
@@ -262,7 +262,7 @@ TcpSsThreshRtoTest::CreateReceiverErrorModel ()
 
 void
 TcpSsThreshRtoTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH,
-                            Ptr<const Packet> p)
+                                Ptr<const Packet> p)
 {
   NS_LOG_DEBUG ("DROPPED! " << tcpH);
 }
@@ -301,8 +301,8 @@ TcpSsThreshRtoTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, Socket
   NS_LOG_DEBUG ("After RTO for " << who);
   Ptr<TcpSocketMsgBase> senderSocket = GetSenderSocket();
 
-  // compute the ssThresh according to RFC 5681, using the 
-  uint32_t ssThresh = std::max(m_bytesInFlightBeforeRto/2, 2*tcb->m_segmentSize);
+  // compute the ssThresh according to RFC 5681, using the
+  uint32_t ssThresh = std::max (m_bytesInFlightBeforeRto / 2, 2 * tcb->m_segmentSize);
 
   NS_LOG_DEBUG ("ssThresh " << ssThresh << " m_ssThreshSocket " << m_ssThreshSocket);
 
@@ -327,7 +327,7 @@ public:
    * \param congControl Congestion control type.
    * \param msg Test description.
    */
-  TcpTimeRtoTest (TypeId &congControl, const std::string &msg);
+  TcpTimeRtoTest (const TypeId &congControl, const std::string &msg);
 
 protected:
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
@@ -354,8 +354,8 @@ private:
 };
 
 
-TcpTimeRtoTest::TcpTimeRtoTest (TypeId &congControl, const std::string &desc)
-  :   TcpGeneralTest (desc),
+TcpTimeRtoTest::TcpTimeRtoTest (const TypeId &congControl, const std::string &desc)
+  : TcpGeneralTest (desc),
     m_senderSentSegments (0),
     m_closed (false)
 {
@@ -385,7 +385,7 @@ TcpTimeRtoTest::CreateReceiverErrorModel ()
   Ptr<TcpSeqErrorModel> errorModel = CreateObject<TcpSeqErrorModel> ();
 
   // Drop packet for 7 times. At the 7th, the connection should be dropped.
-  for (uint32_t i = 0; i<7; ++i)
+  for (uint32_t i = 0; i < 7; ++i)
     {
       errorModel->AddSeqToKill (SequenceNumber32 (1));
     }
@@ -433,13 +433,13 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
               Time clockGranularity = GetClockGranularity (SENDER);
               m_previousRTO = rttEstimator->GetEstimate ();
 
-              if (clockGranularity > rttEstimator->GetVariation ()*4)
+              if (clockGranularity > rttEstimator->GetVariation () * 4)
                 {
                   m_previousRTO += clockGranularity;
                 }
               else
                 {
-                  m_previousRTO += rttEstimator->GetVariation ()*4;
+                  m_previousRTO += rttEstimator->GetVariation () * 4;
                 }
 
               m_previousRTO = Max (m_previousRTO, GetMinRto (SENDER));
@@ -458,12 +458,11 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
     }
   else if (who == RECEIVER)
     {
-
     }
 }
 
 void
-TcpTimeRtoTest::ErrorClose  (SocketWho who)
+TcpTimeRtoTest::ErrorClose (SocketWho who)
 {
   m_closed = true;
 }
@@ -477,7 +476,7 @@ TcpTimeRtoTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho 
 
   if (actualRto < Seconds (60))
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL (actualRto, m_previousRTO+m_previousRTO, Seconds (0.01),
+      NS_TEST_ASSERT_MSG_EQ_TOL (actualRto, m_previousRTO + m_previousRTO, Seconds (0.01),
                                  "RTO has not doubled after an expiration");
       m_previousRTO += m_previousRTO;
     }
@@ -514,24 +513,31 @@ class TcpRtoTestSuite : public TestSuite
 public:
   TcpRtoTestSuite () : TestSuite ("tcp-rto-test", UNIT)
   {
-    std::list<TypeId> types;
-    types.insert (types.begin (), TcpNewReno::GetTypeId ());
+    std::list<TypeId> types = {
+      TcpNewReno::GetTypeId (),
+    };
 
-    for (std::list<TypeId>::iterator it = types.begin (); it != types.end (); ++it)
+    for (const auto &t : types)
       {
-        AddTestCase (new TcpRtoTest ((*it), (*it).GetName () + " RTO retransmit testing"), TestCase::QUICK);
-        uint32_t seqToDrop = 25001;
-        Time minRto = Seconds (0.5);
+        AddTestCase (new TcpRtoTest (t, t.GetName () + " RTO retransmit testing"), TestCase::QUICK);
+
+        constexpr uint32_t seqToDrop = 25001;
+
         // With RTO of 0.5 seconds, BytesInFlight winds down to zero before RTO
-        AddTestCase (new TcpSsThreshRtoTest ((*it), seqToDrop, minRto, (*it).GetName () + " RTO ssthresh testing, set to 2*MSL"), TestCase::QUICK);
-        // With RTO of 0.005 seconds, FlightSize/2 > 2*SMSS 
-        minRto = Seconds (0.005);
-        AddTestCase (new TcpSsThreshRtoTest ((*it), seqToDrop, minRto, (*it).GetName () + " RTO ssthresh testing, set to half of BytesInFlight"), TestCase::QUICK);
-        AddTestCase (new TcpTimeRtoTest ((*it), (*it).GetName () + " RTO timing testing"), TestCase::QUICK);
+        AddTestCase (new TcpSsThreshRtoTest (
+                        t, seqToDrop, Seconds (0.5),
+                        t.GetName () + " RTO ssthresh testing, set to 2*MSL"),
+                     TestCase::QUICK);
+
+        // With RTO of 0.005 seconds, FlightSize/2 > 2*SMSS
+        AddTestCase (new TcpSsThreshRtoTest (
+                        t, seqToDrop, Seconds (0.005),
+                        t.GetName () + " RTO ssthresh testing, set to half of BytesInFlight"),
+                     TestCase::QUICK);
+
+        AddTestCase (new TcpTimeRtoTest (t, t.GetName () + " RTO timing testing"), TestCase::QUICK);
       }
   }
 };
 
 static TcpRtoTestSuite g_TcpRtoTestSuite; //!< Static variable for test initialization
-
-
