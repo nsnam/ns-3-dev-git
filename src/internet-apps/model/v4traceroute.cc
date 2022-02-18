@@ -97,9 +97,8 @@ V4TraceRoute::V4TraceRoute ()
     m_maxTtl (30),
     m_waitIcmpReplyTimeout (Seconds (5))
 {
-  osRoute.clear ();
-  routeIpv4.clear ();
-
+  m_osRoute.clear ();
+  m_routeIpv4.clear ();
 }
 
 V4TraceRoute::~V4TraceRoute ()
@@ -111,7 +110,7 @@ V4TraceRoute::~V4TraceRoute ()
 void
 V4TraceRoute::Print (Ptr<OutputStreamWrapper> stream)
 {
-  printStream = stream;
+  m_printStream = stream;
 }
 
 void
@@ -123,16 +122,16 @@ V4TraceRoute::StartApplication (void)
 
   if (m_verbose)
     {
-	  NS_LOG_UNCOND("Traceroute to " << m_remote << ", "
-                << m_maxTtl << " hops Max, "
-                << m_size << " bytes of data.");
+      NS_LOG_UNCOND("Traceroute to " << m_remote << ", "
+                                     << m_maxTtl << " hops Max, "
+                                     << m_size << " bytes of data.");
     }
 
-  if (printStream != NULL)
+  if (m_printStream != NULL)
     {
-      *printStream->GetStream () << "Traceroute to " << m_remote << ", "
-                                 << m_maxTtl << " hops Max, "
-                                 << m_size << " bytes of data.\n";
+      *m_printStream->GetStream () << "Traceroute to " << m_remote << ", "
+                                   << m_maxTtl << " hops Max, "
+                                   << m_size << " bytes of data.\n";
     }
 
 
@@ -171,16 +170,6 @@ V4TraceRoute::StopApplication (void)
   if (m_socket)
     {
       m_socket->Close ();
-    }
-
-  if (m_verbose)
-    {
-	  NS_LOG_UNCOND("\nTrace Complete");
-    }
-
-  if (printStream != NULL)
-    {
-      *printStream->GetStream () << "Trace Complete\n" << std::endl;
     }
 }
 
@@ -261,28 +250,31 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
               NS_ASSERT (Simulator::Now () >= sendTime);
               Time delta = Simulator::Now () - sendTime;
 
-              routeIpv4.str ("");
-              routeIpv4.clear ();
-              routeIpv4 << realFrom.GetIpv4 ();
-              osRoute << delta.As (Time::MS);
+              m_routeIpv4.str ("");
+              m_routeIpv4.clear ();
+              m_routeIpv4 << realFrom.GetIpv4 ();
+              m_osRoute << delta.As (Time::MS);
               if (m_probeCount == m_maxProbes)
                 {
                   if (m_verbose)
                     {
-                	  NS_LOG_UNCOND(m_ttl << " " << routeIpv4.str () << " " << osRoute.str ());
+                      NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
                     }
 
-                  if (printStream != NULL)
+                  if (m_printStream != NULL)
                     {
-                      *printStream->GetStream () << m_ttl << " "
-                                                 << routeIpv4.str () << " "
-                                                 << osRoute.str () << "\n";
+                      *m_printStream->GetStream () << m_ttl << " "
+                                                   << m_routeIpv4.str () << " "
+                                                   << m_osRoute.str () << "\n";
                     }
-                  osRoute.str ("");
-                  osRoute.clear ();
-                  routeIpv4.str ("");
-                  routeIpv4.clear ();
-
+                  m_osRoute.str ("");
+                  m_osRoute.clear ();
+                  m_routeIpv4.str ("");
+                  m_routeIpv4.clear ();
+                }
+              else
+                {
+                  m_osRoute << " ";
                 }
 
               m_waitIcmpReplyTimer.Cancel ();
@@ -308,13 +300,10 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
 
           if (i != m_sent.end () && echo.GetIdentifier () == 0)
             {
-              uint32_t * buf = new uint32_t [m_size];
               uint32_t dataSize = echo.GetDataSize ();
 
               if (dataSize == m_size)
                 {
-                  echo.GetData ((uint8_t *)buf);
-
                   Time sendTime = i->second;
                   NS_ASSERT (Simulator::Now () >= sendTime);
                   Time delta = Simulator::Now () - sendTime;
@@ -323,33 +312,45 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
 
                   if (m_verbose)
                     {
-                      routeIpv4.str ("");
-                      routeIpv4.clear ();
-                      routeIpv4 << realFrom.GetIpv4 ();
-                      osRoute << delta.As (Time::MS);
+                      m_routeIpv4.str ("");
+                      m_routeIpv4.clear ();
+                      m_routeIpv4 << realFrom.GetIpv4 ();
+                      m_osRoute << delta.As (Time::MS);
 
                       if (m_probeCount == m_maxProbes)
                         {
-                    	  NS_LOG_UNCOND(m_ttl << " " << routeIpv4.str () << " " << osRoute.str ());
-                          if (printStream != NULL)
+                          NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
+                          if (m_printStream != NULL)
                             {
-                              *printStream->GetStream () << m_ttl << " "
-                                                         << routeIpv4.str () << " "
-                                                         << osRoute.str () << "\n";
+                              *m_printStream->GetStream () << m_ttl << " "
+                                                           << m_routeIpv4.str () << " "
+                                                           << m_osRoute.str () << "\n";
                             }
 
-                          osRoute.clear ();
-                          routeIpv4.clear ();
+                          m_osRoute.clear ();
+                          m_routeIpv4.clear ();
+                        }
+                      else
+                        {
+                          m_osRoute << " ";
                         }
                     }
                 }
-              delete[] buf;
             }
 
           m_waitIcmpReplyTimer.Cancel ();
           if (m_probeCount == m_maxProbes)
             {
-              StopApplication ();
+              if (m_verbose)
+                {
+                  NS_LOG_UNCOND ("\nTrace Complete");
+                }
+
+              if (m_printStream != NULL)
+                {
+                  *m_printStream->GetStream () << "Trace Complete\n" << std::endl;
+                }
+              Simulator::ScheduleNow (&V4TraceRoute::StopApplication, this);
             }
           else if (m_ttl < m_maxTtl + 1)
             {
@@ -378,14 +379,9 @@ V4TraceRoute::Send ()
   // (where any difference would show up anyway) and borrow that code.  Don't
   // be too surprised when you see that this is a little endian convention.
   //
-  uint8_t* data = new uint8_t[m_size];
-  for (uint32_t i = 0; i < m_size; ++i)
-    {
-      data[i] = 0;
-    }
   NS_ASSERT (m_size >= 16);
 
-  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) data, m_size);
+  Ptr<Packet> dataPacket = Create<Packet> (m_size);
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
@@ -414,9 +410,6 @@ V4TraceRoute::Send ()
 
   InetSocketAddress dst = InetSocketAddress (m_remote, 0);
   m_socket->SendTo (p, 0, dst);
-
-  delete[] data;
-
 }
 
 
@@ -444,24 +437,24 @@ V4TraceRoute::HandleWaitReplyTimeout (void)
       m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
     }
 
-  osRoute << "*  ";
+  m_osRoute << "*  ";
   if (m_probeCount == m_maxProbes)
     {
       if (m_verbose)
         {
-    	  NS_LOG_UNCOND(m_ttl << " " << routeIpv4.str () << " " << osRoute.str ());
+          NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
         }
 
-      if (printStream != NULL)
+      if (m_printStream != NULL)
         {
-          *printStream->GetStream () << m_ttl
-                                     << " " << routeIpv4.str () << " "
-                                     << osRoute.str () << "\n";
+          *m_printStream->GetStream () << m_ttl
+                                       << " " << m_routeIpv4.str () << " "
+                                       << m_osRoute.str () << "\n";
         }
-      osRoute.str ("");
-      osRoute.clear ();
-      routeIpv4.str ("");
-      routeIpv4.clear ();
+      m_osRoute.str ("");
+      m_osRoute.clear ();
+      m_routeIpv4.str ("");
+      m_routeIpv4.clear ();
     }
 }
 

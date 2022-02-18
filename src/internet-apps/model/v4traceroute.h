@@ -126,14 +126,13 @@ private:
   EventId m_waitIcmpReplyTimer;
   /// All sent but not answered packets. Map icmp seqno -> when sent
   std::map<uint16_t, Time> m_sent;
-  /// Stream of characters used for printing the traceroute results
-  std::ostringstream os;
+
   /// Stream of characters used for printing a single route
-  std::ostringstream osRoute;
+  std::ostringstream m_osRoute;
   /// The Ipv4 address of the latest hop found
-  std::ostringstream routeIpv4;
+  std::ostringstream m_routeIpv4;
   /// Stream of the traceroute used for the output file
-  Ptr<OutputStreamWrapper> printStream;
+  Ptr<OutputStreamWrapper> m_printStream;
 
 
 };
