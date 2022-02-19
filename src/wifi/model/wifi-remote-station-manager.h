@@ -278,6 +278,12 @@ public:
    */
   bool GetHeSupported (void) const;
   /**
+   * Return whether the device has EHT capability support enabled.
+   *
+   * \return true if EHT capability support is enabled, false otherwise
+   */
+  bool GetEhtSupported (void) const;
+  /**
    * Return whether the device has LDPC support enabled.
    *
    * \return true if LDPC support is enabled, false otherwise

@@ -145,7 +145,7 @@ MpduAggregator::GetMaxAmpduSize (Mac48Address recipient, uint8_t tid,
 
   // Determine the constraint imposed by the recipient based on the PPDU
   // format used to transmit the A-MPDU
-  if (modulation == WIFI_MOD_CLASS_HE)
+  if (modulation >= WIFI_MOD_CLASS_HE)
     {
       NS_ABORT_MSG_IF (!heCapabilities, "HE Capabilities element not received");
 

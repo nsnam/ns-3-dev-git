@@ -41,6 +41,7 @@ class WifiMacQueueItem;
 class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
+class EhtConfiguration;
 class FrameExchangeManager;
 class ChannelAccessManager;
 class ExtendedCapabilities;
@@ -347,6 +348,10 @@ public:
    * \return pointer to HeConfiguration if it exists
    */
   Ptr<HeConfiguration> GetHeConfiguration (void) const;
+  /**
+   * \return pointer to EhtConfiguration if it exists
+   */
+  Ptr<EhtConfiguration> GetEhtConfiguration (void) const;
 
   /**
    * Return the extended capabilities of the device.
@@ -409,6 +414,12 @@ public:
    * \return true if HE is supported, false otherwise
    */
   bool GetHeSupported () const;
+  /**
+   * Return whether the device supports EHT.
+   *
+   * \return true if EHT is supported, false otherwise
+   */
+  bool GetEhtSupported () const;
 
   /**
    * Return the maximum A-MPDU size of the given Access Category.

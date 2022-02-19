@@ -33,6 +33,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/eht-configuration.h"
 #include "ns3/he-frame-exchange-manager.h"
 #include "extended-capabilities.h"
 
@@ -118,60 +119,64 @@ WifiMac::GetTypeId (void)
                    MakePointerChecker<QosTxop> ())
     .AddAttribute ("VO_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_VO access class "
-                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE PPDUs). "
+                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
                    "Value 0 means A-MSDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_voMaxAmsduSize),
                    MakeUintegerChecker<uint16_t> (0, 11398))
     .AddAttribute ("VI_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_VI access class "
-                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE PPDUs). "
+                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
                    "Value 0 means A-MSDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_viMaxAmsduSize),
                    MakeUintegerChecker<uint16_t> (0, 11398))
     .AddAttribute ("BE_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_BE access class "
-                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE PPDUs). "
+                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
                    "Value 0 means A-MSDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_beMaxAmsduSize),
                    MakeUintegerChecker<uint16_t> (0, 11398))
     .AddAttribute ("BK_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_BK access class "
-                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE PPDUs). "
+                   "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
                    "Value 0 means A-MSDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_bkMaxAmsduSize),
                    MakeUintegerChecker<uint16_t> (0, 11398))
     .AddAttribute ("VO_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_VO access class "
-                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, and 6500631 for HE PPDUs). "
+                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, 6500631 for HE PPDUs "
+                   "and 15523200 for EHT PPDUs). "
                    "Value 0 means A-MPDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_voMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 6500631))
+                   MakeUintegerChecker<uint32_t> (0, 15523200))
     .AddAttribute ("VI_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_VI access class "
-                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, and 6500631 for HE PPDUs). "
+                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, 6500631 for HE PPDUs "
+                   "and 15523200 for EHT PPDUs). "
                    "Value 0 means A-MPDU aggregation is disabled for that AC.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&WifiMac::m_viMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 6500631))
+                   MakeUintegerChecker<uint32_t> (0, 15523200))
     .AddAttribute ("BE_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_BE access class "
-                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, and 6500631 for HE PPDUs). "
+                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, 6500631 for HE PPDUs "
+                   "and 15523200 for EHT PPDUs). "
                    "Value 0 means A-MPDU aggregation is disabled for that AC.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&WifiMac::m_beMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 6500631))
+                   MakeUintegerChecker<uint32_t> (0, 15523200))
     .AddAttribute ("BK_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_BK access class "
-                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, and 6500631 for HE PPDUs). "
+                   "(capped to 65535 for HT PPDUs, 1048575 for VHT PPDUs, 6500631 for HE PPDUs "
+                   "and 15523200 for EHT PPDUs). "
                    "Value 0 means A-MPDU aggregation is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiMac::m_bkMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 6500631))
+                   MakeUintegerChecker<uint32_t> (0, 15523200))
     .AddAttribute ("VO_BlockAckThreshold",
                    "If number of packets in VO queue reaches this value, "
                    "block ack mechanism is used. If this value is 0, block ack is never used."
@@ -1061,6 +1066,12 @@ WifiMac::GetHeConfiguration (void) const
   return GetDevice ()->GetHeConfiguration ();
 }
 
+Ptr<EhtConfiguration>
+WifiMac::GetEhtConfiguration (void) const
+{
+  return GetDevice ()->GetEhtConfiguration ();
+}
+
 bool
 WifiMac::GetHtSupported () const
 {
@@ -1085,6 +1096,16 @@ bool
 WifiMac::GetHeSupported () const
 {
   if (GetHeConfiguration ())
+    {
+      return true;
+    }
+  return false;
+}
+
+bool
+WifiMac::GetEhtSupported () const
+{
+  if (GetEhtConfiguration ())
     {
       return true;
     }

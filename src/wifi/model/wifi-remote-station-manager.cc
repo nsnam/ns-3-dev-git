@@ -34,6 +34,7 @@
 #include "ns3/ht-phy.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/eht-configuration.h"
 #include "wifi-net-device.h"
 
 namespace ns3 {
@@ -244,6 +245,12 @@ bool
 WifiRemoteStationManager::GetHeSupported (void) const
 {
   return m_wifiPhy->GetDevice ()->GetHeConfiguration () != nullptr;
+}
+
+bool
+WifiRemoteStationManager::GetEhtSupported (void) const
+{
+  return m_wifiPhy->GetDevice ()->GetEhtConfiguration () != nullptr;
 }
 
 bool
@@ -576,7 +583,11 @@ WifiRemoteStationManager::GetCtsToSelfTxVector (void)
 {
   WifiMode defaultMode = GetDefaultMode ();
   WifiPreamble defaultPreamble;
-  if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+  if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_EHT)
+    {
+      defaultPreamble = WIFI_PREAMBLE_EHT_MU;
+    }
+  else if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       defaultPreamble = WIFI_PREAMBLE_HE_SU;
     }
@@ -956,7 +967,8 @@ WifiRemoteStationManager::NeedRts (const WifiMacHeader &header, uint32_t size)
       && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+          || (mode.GetModulationClass () == WIFI_MOD_CLASS_EHT))
       && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-ERP stations");
@@ -984,7 +996,8 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
       && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
           || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+          || (mode.GetModulationClass () == WIFI_MOD_CLASS_EHT))
       && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
