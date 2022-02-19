@@ -832,6 +832,13 @@ WifiPhy::Configure80211ax (void)
 }
 
 void
+WifiPhy::Configure80211be (void)
+{
+  NS_LOG_FUNCTION (this);
+  Configure80211ax ();
+}
+
+void
 WifiPhy::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
@@ -875,6 +882,9 @@ WifiPhy::ConfigureStandard (WifiStandard standard)
       break;
     case WIFI_STANDARD_80211ax:
       Configure80211ax ();
+      break;
+    case WIFI_STANDARD_80211be:
+      Configure80211be ();
       break;
     case WIFI_STANDARD_UNSPECIFIED:
     default:
