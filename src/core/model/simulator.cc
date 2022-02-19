@@ -286,7 +286,7 @@ Simulator::IsExpired (const EventId &id)
 
 Time Now (void)
 {
-  return Time (Simulator::Now ());
+  return Simulator::Now ();
 }
 
 Time
