@@ -271,6 +271,7 @@ if(${ENABLE_FDNETDEV})
   set(header_files
       ${tap_headers}
       ${emu_headers}
+      ${netmap_headers}
       ${dpdk_headers}
       model/fd-net-device.h
       helper/fd-net-device-helper.h
