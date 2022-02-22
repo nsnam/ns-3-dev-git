@@ -470,30 +470,6 @@ public:
   WifiMode GetMcs (WifiModulationClass modulation, uint8_t mcs) const;
 
   /**
-   * \brief Set channel number.
-   *
-   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
-   *
-   * where Starting channel frequency is standard-dependent,
-   * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
-   *
-   * If the operating channel for this object has not been set yet, the given
-   * channel number is saved and will be used, along with the center frequency and
-   * width that have been saved similarly, to set the operating channel when the
-   * standard and band are configured. Note that if center frequency and channel
-   * number are both 0 when the standard and band are configured, a default channel
-   * (of the configured width, if any, or the default width for the current standard
-   * and band, otherwise) is set.
-   * If the operating channel for this object has been already set, the specified
-   * channel number must uniquely identify a channel in the band being used. If so,
-   * this method may still fail to take action if the PHY model determines that
-   * the channel number cannot be switched for some reason (e.g. sleep state)
-   *
-   * \param id the channel number
-   */
-  NS_DEPRECATED_3_35
-  virtual void SetChannelNumber (uint8_t id);
-  /**
    * Return current channel number.
    *
    * \return the current channel number
@@ -503,15 +479,6 @@ public:
    * \return the required time for channel switch operation of this WifiPhy
    */
   Time GetChannelSwitchDelay (void) const;
-
-  /**
-   * Configure the PHY-level parameters for different Wi-Fi standard.
-   *
-   * \param standard the Wi-Fi standard
-   * \param band the Wi-Fi band
-   */
-  NS_DEPRECATED_3_35
-  virtual void ConfigureStandardAndBand (WifiStandard standard, WifiPhyBand band);
 
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
@@ -859,18 +826,6 @@ public:
    */
   Ptr<MobilityModel> GetMobility (void) const;
 
-  /**
-   * Set the operating channel according to the specified parameters. If this object
-   * has been already initialized, setting the operating channel involves a channel
-   * switch, which might be suppressed (e.g., if this object is in sleep mode) or
-   * delayed (e.g., if this object is transmitting a frame).
-   *
-   * \param number the channel number (use 0 to leave it unspecified)
-   * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
-   * \param width the channel width in MHz (use 0 to leave it unspecified)
-   */
-  void SetOperatingChannel (uint8_t number, uint16_t frequency, uint16_t width);
-
   using ChannelTuple = std::tuple<uint8_t /* channel number */,
                                   uint16_t /* channel width */,
                                   int /* WifiPhyBand */,
@@ -887,34 +842,9 @@ public:
    */
   void SetOperatingChannel (const ChannelTuple& channelTuple);
   /**
-   * If the operating channel for this object has not been set yet, the given
-   * center frequency is saved and will be used, along with the channel number and
-   * width that have been saved similarly, to set the operating channel when the
-   * standard and band are configured. Note that if center frequency and
-   * channel number are both 0 when the standard and band are configured, a default
-   * channel (of the configured width, if any, or the default width for the current
-   * standard and band, otherwise) is set.
-   * If the operating channel for this object has been already set, the specified
-   * center frequency must uniquely identify a channel in the band being used. If so,
-   * this method may still fail to take action if the PHY model determines that
-   * the operating channel cannot be switched for some reason (e.g. sleep state)
-   *
-   * \param freq the operating center frequency (MHz) on this node.
-   */
-  NS_DEPRECATED_3_35
-  virtual void SetFrequency (uint16_t freq);
-  /**
    * \return the operating center frequency (MHz)
    */
   uint16_t GetFrequency (void) const;
-  /**
-   * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
-   * with the lowest center frequency).
-   *
-   * \param index the index of the primary 20 MHz channel
-   */
-  NS_DEPRECATED_3_35
-  void SetPrimary20Index (uint8_t index);
   /**
    * \return the index of the primary 20 MHz channel
    */
@@ -997,22 +927,6 @@ public:
    * \return the channel width in MHz
    */
   uint16_t GetChannelWidth (void) const;
-  /**
-   * If the operating channel for this object has not been set yet, the given
-   * channel width is saved and will be used, along with the center frequency and
-   * channel number that have been saved similarly, to set the operating channel
-   * when the standard and band are configured. Note that if center frequency and
-   * channel number are both 0 when the standard and band are configured, a default
-   * channel (of the configured width, if any, or the default width for the current
-   * standard and band, otherwise) is set.
-   * Do not call this method when the standard and band of this object have been
-   * already configured, because it cannot uniquely identify a channel in the band
-   * being used.
-   *
-   * \param channelWidth the channel width (in MHz)
-   */
-  NS_DEPRECATED_3_35
-  virtual void SetChannelWidth (uint16_t channelWidth);
   /**
    * \param width the channel width (in MHz) to support
    */
@@ -1420,10 +1334,6 @@ private:
 
   WifiStandard m_standard;                  //!< WifiStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand
-  uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
-  uint8_t m_initialChannelNumber;           //!< Store channel number until initialization
-  uint16_t m_initialChannelWidth;           //!< Store channel width (MHz) until initialization
-  uint8_t m_initialPrimary20Index;          //!< Store the index of primary20 until initialization
   ChannelTuple m_channelSettings;           //!< Store operating channel settings until initialization
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
   std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)

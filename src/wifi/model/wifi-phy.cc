@@ -312,10 +312,6 @@ WifiPhy::WifiPhy ()
     m_previouslyRxPpduUid (UINT64_MAX),
     m_standard (WIFI_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
-    m_initialFrequency (0),
-    m_initialChannelNumber (0),
-    m_initialChannelWidth (0),
-    m_initialPrimary20Index (0),
     m_sifs (Seconds (0)),
     m_slot (Seconds (0)),
     m_pifs (Seconds (0)),
@@ -819,61 +815,6 @@ WifiPhy::Configure80211ax (void)
 }
 
 void
-WifiPhy::ConfigureStandardAndBand (WifiStandard standard, WifiPhyBand band)
-{
-  NS_LOG_FUNCTION (this << standard << band);
-  m_standard = standard;
-  m_band = band;
-
-  if (m_initialFrequency == 0 && m_initialChannelNumber == 0)
-    {
-      // set a default channel if the user did not specify anything
-      if (m_initialChannelWidth == 0)
-        {
-          // set a default channel width
-          m_initialChannelWidth = GetDefaultChannelWidth (m_standard, m_band);
-        }
-
-      m_operatingChannel.SetDefault (m_initialChannelWidth, m_standard, m_band);
-    }
-  else
-    {
-      m_operatingChannel.Set (m_initialChannelNumber, m_initialFrequency, m_initialChannelWidth,
-                              m_standard, m_band);
-    }
-  m_operatingChannel.SetPrimary20Index (m_initialPrimary20Index);
-
-  switch (standard)
-    {
-    case WIFI_STANDARD_80211a:
-      Configure80211a ();
-      break;
-    case WIFI_STANDARD_80211b:
-      Configure80211b ();
-      break;
-    case WIFI_STANDARD_80211g:
-      Configure80211g ();
-      break;
-    case WIFI_STANDARD_80211p:
-      Configure80211p ();
-      break;
-    case WIFI_STANDARD_80211n:
-      Configure80211n ();
-      break;
-    case WIFI_STANDARD_80211ac:
-      Configure80211ac ();
-      break;
-    case WIFI_STANDARD_80211ax:
-      Configure80211ax ();
-      break;
-    case WIFI_STANDARD_UNSPECIFIED:
-    default:
-      NS_ASSERT_MSG (false, "Unsupported standard");
-      break;
-    }
-}
-
-void
 WifiPhy::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
@@ -944,60 +885,10 @@ WifiPhy::GetOperatingChannel (void) const
   return m_operatingChannel;
 }
 
-void
-WifiPhy::SetFrequency (uint16_t frequency)
-{
-  NS_LOG_FUNCTION (this << frequency);
-
-  if (!m_operatingChannel.IsSet ())
-    {
-      // ConfigureStandardAndBand has not been called yet, so store the frequency
-      // into m_initialFrequency
-      NS_LOG_DEBUG ("Saving frequency configuration for initialization");
-      m_initialFrequency = frequency;
-      return;
-    }
-
-  if (GetFrequency () == frequency)
-    {
-      NS_LOG_DEBUG ("No frequency change requested");
-      return;
-    }
-
-  // if the frequency does not uniquely identify an operating channel,
-  // the simulation aborts
-  SetOperatingChannel (0, frequency, 0);
-}
-
 uint16_t
 WifiPhy::GetFrequency (void) const
 {
   return m_operatingChannel.GetFrequency ();
-}
-
-void
-WifiPhy::SetChannelNumber (uint8_t nch)
-{
-  NS_LOG_FUNCTION (this << +nch);
-
-  if (!m_operatingChannel.IsSet ())
-    {
-      // ConfigureStandardAndBand has not been called yet, so store the channel
-      // into m_initialChannelNumber
-      NS_LOG_DEBUG ("Saving channel number configuration for initialization");
-      m_initialChannelNumber = nch;
-      return;
-    }
-
-  if (GetChannelNumber () == nch)
-    {
-      NS_LOG_DEBUG ("No channel change requested");
-      return;
-    }
-
-  // if the channel number does not uniquely identify an operating channel,
-  // the simulation aborts
-  SetOperatingChannel (nch, 0, 0);
 }
 
 uint8_t
@@ -1006,105 +897,16 @@ WifiPhy::GetChannelNumber (void) const
   return m_operatingChannel.GetNumber ();
 }
 
-void
-WifiPhy::SetChannelWidth (uint16_t channelWidth)
-{
-  NS_LOG_FUNCTION (this << channelWidth);
-
-  if (channelWidth != 0)
-    {
-      AddSupportedChannelWidth (channelWidth);
-    }
-
-  if (!m_operatingChannel.IsSet ())
-    {
-      // ConfigureStandardAndBand has not been called yet, so store the channel width
-      // into m_initialChannelWidth
-      NS_LOG_DEBUG ("Saving channel width configuration for initialization");
-      m_initialChannelWidth = channelWidth;
-      return;
-    }
-
-  if (GetChannelWidth () == channelWidth)
-    {
-      NS_LOG_DEBUG ("No channel width change requested");
-      return;
-    }
-
-  NS_ABORT_MSG ("The channel width does not uniquely identify an operating channel.");
-}
-
 uint16_t
 WifiPhy::GetChannelWidth (void) const
 {
   return m_operatingChannel.GetWidth ();
 }
 
-void
-WifiPhy::SetPrimary20Index (uint8_t index)
-{
-  NS_LOG_FUNCTION (this << +index);
-
-  if (!m_operatingChannel.IsSet ())
-    {
-      // ConfigureStandardAndBand has not been called yet, so store the primary20
-      // index into m_initialPrimary20Index
-      NS_LOG_DEBUG ("Saving primary20 index configuration for initialization");
-      m_initialPrimary20Index = index;
-      return;
-    }
-
-  m_operatingChannel.SetPrimary20Index (index);
-}
-
 uint8_t
 WifiPhy::GetPrimary20Index (void) const
 {
   return m_operatingChannel.GetPrimaryChannelIndex (20);
-}
-
-void
-WifiPhy::SetOperatingChannel (uint8_t number, uint16_t frequency, uint16_t width)
-{
-  Time delay = Seconds (0);
-
-  if (IsInitialized ())
-    {
-      delay = GetDelayUntilChannelSwitch ();
-    }
-
-  if (delay.IsStrictlyNegative ())
-    {
-      // switching channel is not possible now
-      return;
-    }
-  if (delay.IsStrictlyPositive ())
-    {
-      // switching channel has been postponed
-      void (WifiPhy::*fp) (uint8_t, uint16_t, uint16_t) = &WifiPhy::SetOperatingChannel;
-      Simulator::Schedule (delay, fp, this, number, frequency, width);
-      return;
-    }
-
-  // channel can be switched now.
-  uint16_t prevChannelWidth = 0;
-  if (m_operatingChannel.IsSet ())
-    {
-      prevChannelWidth = GetChannelWidth ();
-    }
-
-  m_operatingChannel.Set (number, frequency, width, m_standard, m_band);
-
-  if (GetChannelWidth () != prevChannelWidth)
-    {
-      AddSupportedChannelWidth (GetChannelWidth ());
-
-      // If channel width changed after initialization, invoke the capabilities changed callback
-      if (IsInitialized () && !m_capabilitiesChangedCallback.IsNull ())
-        {
-          m_capabilitiesChangedCallback ();
-        }
-    }
 }
 
 void
