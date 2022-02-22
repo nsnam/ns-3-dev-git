@@ -29,7 +29,7 @@ massif.*
 coverity
 TAGS
 
-.lock-ns3
+.lock-ns3_*
 
 build-dir/
 build/
