@@ -104,12 +104,6 @@ public:
   virtual bool IsQosTxop () const;
 
   /**
-   * Set ChannelAccessManager this Txop is associated to.
-   *
-   * \param manager ChannelAccessManager to associate.
-   */
-  void SetChannelAccessManager (const Ptr<ChannelAccessManager> manager);
-  /**
    * Set the wifi MAC this Txop is associated to.
    *
    * \param mac associated wifi MAC
@@ -318,7 +312,6 @@ protected:
    */
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
-  Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
@@ -328,7 +321,6 @@ protected:
   uint32_t m_cwMin;              //!< the minimum contention window
   uint32_t m_cwMax;              //!< the maximum contention window
   uint32_t m_cw;                 //!< the current contention window
-  uint32_t m_backoff;            //!< the current backoff
   ChannelAccessStatus m_access;  //!< channel access status
   uint32_t m_backoffSlots;       //!< the number of backoff slots
   /**

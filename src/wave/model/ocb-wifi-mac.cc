@@ -379,7 +379,8 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
       break;
     }
 
-  dcf->SetChannelAccessManager (GetLink (SINGLE_LINK_OP_ID).channelAccessManager);
+  dcf->SetWifiMac (this);
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager-> Add (dcf);
 }
 
 void

@@ -593,7 +593,7 @@ ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
   Ptr<TxopTest<TxopType>> txop = CreateObject<TxopTest<TxopType>> (this, m_txop.size ());
   txop->SetAifsn (aifsn);
   m_txop.push_back (txop);
-  txop->SetChannelAccessManager (m_ChannelAccessManager);
+  m_ChannelAccessManager->Add (txop);
 }
 
 template <typename TxopType>

@@ -561,6 +561,7 @@ MeshWifiInterfaceMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
   // access parameters slightly, and do so here.
   m_txop = CreateObject<Txop> ();
   m_txop->SetWifiMac (this);
+  GetLink (0).channelAccessManager->Add (m_txop);
   m_txop->SetTxMiddle (m_txMiddle);
   m_txop->SetMinCw (0);
   m_txop->SetMaxCw (0);

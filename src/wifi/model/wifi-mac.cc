@@ -563,7 +563,6 @@ WifiMac::SetupEdcaQueue (AcIndex ac)
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
   Ptr<QosTxop> edca = CreateObject<QosTxop> (ac);
-  edca->SetWifiMac (this);
   edca->SetTxMiddle (m_txMiddle);
   edca->GetBaManager ()->SetTxOkCallback (MakeCallback (&MpduTracedCallback::operator(),
                                                         &m_ackedMpduCallback));
@@ -680,18 +679,20 @@ WifiMac::ConfigureStandard (WifiStandard standard)
       link->feManager->SetWifiPhy (link->phy);
       link->feManager->SetWifiMac (this);
       link->channelAccessManager->SetupFrameExchangeManager (link->feManager);
+
+      if (m_txop != nullptr)
+        {
+          m_txop->SetWifiMac (this);
+          link->channelAccessManager->Add (m_txop);
+        }
+      for (auto it = m_edca.begin (); it!= m_edca.end (); ++it)
+        {
+          it->second->SetWifiMac (this);
+          link->channelAccessManager->Add (it->second);
+        }
     }
 
   ConfigurePhyDependentParameters ();
-
-  if (m_txop != nullptr)
-    {
-      m_txop->SetChannelAccessManager (m_links[SINGLE_LINK_OP_ID]->channelAccessManager);
-    }
-  for (auto it = m_edca.begin (); it!= m_edca.end (); ++it)
-    {
-      it->second->SetChannelAccessManager (m_links[SINGLE_LINK_OP_ID]->channelAccessManager);
-    }
 }
 
 void
@@ -878,7 +879,6 @@ WifiMac::SetQosSupported (bool enable)
     {
       // create a non-QoS TXOP
       m_txop = CreateObject<Txop> ();
-      m_txop->SetWifiMac (this);
       m_txop->SetTxMiddle (m_txMiddle);
       m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
                                                     &m_droppedMpduCallback));

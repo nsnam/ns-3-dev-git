@@ -88,12 +88,10 @@ Txop::Txop ()
 }
 
 Txop::Txop (Ptr<WifiMacQueue> queue)
-  : m_channelAccessManager (0),
-    m_queue (queue),
+  : m_queue (queue),
     m_cwMin (0),
     m_cwMax (0),
     m_cw (0),
-    m_backoff (0),
     m_access (NOT_REQUESTED),
     m_backoffSlots (0),
     m_backoffStart (Seconds (0.0))
@@ -115,15 +113,6 @@ Txop::DoDispose (void)
   m_mac = 0;
   m_rng = 0;
   m_txMiddle = 0;
-  m_channelAccessManager = 0;
-}
-
-void
-Txop::SetChannelAccessManager (const Ptr<ChannelAccessManager> manager)
-{
-  NS_LOG_FUNCTION (this << manager);
-  m_channelAccessManager = manager;
-  m_channelAccessManager->Add (this);
 }
 
 void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
@@ -297,7 +286,7 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
   packet->RemovePacketTag (priorityTag);
-  if (m_channelAccessManager->NeedBackoffUponAccess (this))
+  if (m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->NeedBackoffUponAccess (this))
     {
       GenerateBackoff ();
     }
@@ -319,7 +308,7 @@ Txop::StartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
     {
-      m_channelAccessManager->RequestAccess (this);
+      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
     }
 }
 
@@ -368,7 +357,7 @@ Txop::RequestAccess (void)
 {
   if (m_access == NOT_REQUESTED)
     {
-      m_channelAccessManager->RequestAccess (this);
+      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
     }
 }
 
@@ -376,9 +365,9 @@ void
 Txop::GenerateBackoff (void)
 {
   NS_LOG_FUNCTION (this);
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  uint32_t backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (backoff);
+  StartBackoffNow (backoff);
 }
 
 void

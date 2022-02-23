@@ -106,7 +106,6 @@ ApWifiMac::ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop = CreateObject<Txop> (CreateObject<WifiMacQueue> (AC_BEACON));
-  m_beaconTxop->SetWifiMac (this);
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
   m_beaconTxop->SetMaxCw (0);
@@ -148,7 +147,11 @@ ApWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   WifiMac::ConfigureStandard (standard);
-  m_beaconTxop->SetChannelAccessManager (GetLink (SINGLE_LINK_OP_ID).channelAccessManager);
+  m_beaconTxop->SetWifiMac (this);
+  for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
+    {
+      GetLink (linkId).channelAccessManager->Add (m_beaconTxop);
+    }
 }
 
 Ptr<WifiMacQueue>
