@@ -230,8 +230,10 @@ public:
   /**
    * Called by the FrameExchangeManager to notify the completion of the transmissions.
    * This method generates a new backoff and restarts access if needed.
+   *
+   * \param linkId the ID of the link the FrameExchangeManager is operating on
    */
-  virtual void NotifyChannelReleased (void);
+  virtual void NotifyChannelReleased (uint8_t linkId);
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -251,11 +253,12 @@ public:
 
   /**
    * \param nSlots the number of slots of the backoff.
+   * \param linkId the ID of the given link
    *
-   * Start a backoff by initializing the backoff counter to the number of
-   * slots specified.
+   * Start a backoff for the given link by initializing the backoff counter to
+   * the number of slots specified.
    */
-  void StartBackoffNow (uint32_t nSlots);
+  void StartBackoffNow (uint32_t nSlots, uint8_t linkId);
 
 protected:
   ///< ChannelAccessManager associated class
@@ -276,9 +279,11 @@ protected:
    */
   virtual bool HasFramesToTransmit (void);
   /**
-   * Generate a new backoff now.
+   * Generate a new backoff for the given link now.
+   *
+   * \param linkId the ID of the given link
    */
-  virtual void GenerateBackoff (void);
+  virtual void GenerateBackoff (uint8_t linkId);
   /**
    * Request access from Txop if needed.
    */
@@ -294,24 +299,27 @@ protected:
    */
   uint32_t GetCw (void) const;
   /**
-   * Return the current number of backoff slots.
+   * Return the current number of backoff slots on the given link.
    *
+   * \param linkId the ID of the given link
    * \return the current number of backoff slots
    */
-  uint32_t GetBackoffSlots (void) const;
+  uint32_t GetBackoffSlots (uint8_t linkId) const;
   /**
-   * Return the time when the backoff procedure started.
+   * Return the time when the backoff procedure started on the given link.
    *
+   * \param linkId the ID of the given link
    * \return the time when the backoff procedure started
    */
-  Time GetBackoffStart (void) const;
+  Time GetBackoffStart (uint8_t linkId) const;
   /**
-   * Update backoff slots that nSlots has passed.
+   * Update backoff slots for the given link that nSlots has passed.
    *
    * \param nSlots the number of slots to decrement
    * \param backoffUpdateBound the time at which backoff should start
+   * \param linkId the ID of the given link
    */
-  void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
+  void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound, uint8_t linkId);
 
   /**
    * Structure holding information specific to a single link. Here, the meaning of
@@ -324,6 +332,11 @@ protected:
     virtual ~LinkEntity () = default;
 
     uint8_t id {0};                                 //!< Link ID (starting at 0)
+    uint32_t backoffSlots {0};                      //!< the number of backoff slots
+    Time backoffStart {0};                          /**< the backoffStart variable is used to keep
+                                                         track of the time at which a backoff was
+                                                         started or the time at which the backoff
+                                                         counter was last updated */
   };
 
   /**
@@ -350,18 +363,14 @@ protected:
   uint32_t m_cwMax;              //!< the maximum contention window
   uint32_t m_cw;                 //!< the current contention window
   ChannelAccessStatus m_access;  //!< channel access status
-  uint32_t m_backoffSlots;       //!< the number of backoff slots
-  /**
-   * the backoffStart variable is used to keep track of the
-   * time at which a backoff was started or the time at which
-   * the backoff counter was last updated.
-   */
-  Time m_backoffStart;
 
   uint8_t m_aifsn;        //!< the AIFSN
   Time m_txopLimit;       //!< the TXOP limit time
 
-  TracedCallback<uint32_t> m_backoffTrace;      //!< backoff trace value
+  /// TracedCallback for backoff trace value typedef
+  typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> BackoffValueTracedCallback;
+
+  BackoffValueTracedCallback m_backoffTrace;    //!< backoff trace value
   TracedValue<uint32_t> m_cwTrace;              //!< CW trace value
 
 private:

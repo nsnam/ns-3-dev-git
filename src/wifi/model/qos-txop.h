@@ -89,7 +89,7 @@ public:
   bool IsQosTxop (void) const override;
   bool HasFramesToTransmit (void) override;
   void NotifyChannelAccessed (Time txopDuration) override;
-  void NotifyChannelReleased (void) override;
+  void NotifyChannelReleased (uint8_t linkId) override;
   void SetDroppedMpduCallback (DroppedMpdu callback) override;
 
   /**
@@ -439,8 +439,6 @@ protected:
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
-
-  void DoInitialize (void) override;
 
   /**
    * Check if the given MPDU is to be considered old according to the current

@@ -105,11 +105,11 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
     {
       NS_LOG_DEBUG ("Send CF-End frame");
       m_phy->Send (Create<WifiPsdu> (Create<Packet> (), cfEnd), cfEndTxVector);
-      Simulator::Schedule (txDuration, &Txop::NotifyChannelReleased, m_edca);
+      Simulator::Schedule (txDuration, &Txop::NotifyChannelReleased, m_edca, m_linkId);
       return true;
     }
 
-  m_edca->NotifyChannelReleased ();
+  m_edca->NotifyChannelReleased (m_linkId);
   m_edca = 0;
   return false;
 }
@@ -125,7 +125,7 @@ QosFrameExchangeManager::PifsRecovery (void)
   if (m_channelAccessManager->GetAccessGrantStart () - m_phy->GetSifs ()
       > Simulator::Now () - m_phy->GetPifs ())
     {
-      m_edca->NotifyChannelReleased ();
+      m_edca->NotifyChannelReleased (m_linkId);
       m_edca = 0;
     }
   else
@@ -144,7 +144,7 @@ QosFrameExchangeManager::CancelPifsRecovery (void)
 
   NS_LOG_DEBUG ("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
   m_pifsRecoveryEvent.Cancel ();
-  m_edca->NotifyChannelReleased ();
+  m_edca->NotifyChannelReleased (m_linkId);
 }
 
 bool
@@ -226,7 +226,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
 
           // TXOP not even started, return false
           NS_LOG_DEBUG ("No frame transmitted");
-          m_edca->NotifyChannelReleased ();
+          m_edca->NotifyChannelReleased (m_linkId);
           m_edca = 0;
           return false;
         }
@@ -253,7 +253,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
     }
 
   NS_LOG_DEBUG ("No frame transmitted");
-  m_edca->NotifyChannelReleased ();
+  m_edca->NotifyChannelReleased (m_linkId);
   m_edca = 0;
   return false;
 }
@@ -557,7 +557,7 @@ QosFrameExchangeManager::TransmissionSucceeded (void)
     }
   else
     {
-      m_edca->NotifyChannelReleased ();
+      m_edca->NotifyChannelReleased (m_linkId);
       m_edca = 0;
     }
   m_initialFrame = false;
@@ -580,7 +580,7 @@ QosFrameExchangeManager::TransmissionFailed (void)
       // The backoff procedure shall be invoked by an EDCAF when the transmission
       // of an MPDU in the initial PPDU of a TXOP fails (Sec. 10.22.2.2 of 802.11-2016)
       NS_LOG_DEBUG ("TX of the initial frame of a TXOP failed: terminate TXOP");
-      m_edca->NotifyChannelReleased ();
+      m_edca->NotifyChannelReleased (m_linkId);
       m_edca = 0;
     }
   else
@@ -605,7 +605,7 @@ QosFrameExchangeManager::TransmissionFailed (void)
           // method of the Txop class, which only generates a new backoff value and
           // requests channel access if needed,
           NS_LOG_DEBUG ("TX of a non-initial frame of a TXOP failed: invoke backoff");
-          m_edca->Txop::NotifyChannelReleased ();
+          m_edca->Txop::NotifyChannelReleased (m_linkId);
           m_edcaBackingOff = m_edca;
           m_edca = 0;
         }

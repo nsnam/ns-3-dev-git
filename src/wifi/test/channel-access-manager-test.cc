@@ -26,6 +26,7 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/qos-txop.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/adhoc-wifi-mac.h"
 
 using namespace ns3;
 
@@ -72,7 +73,7 @@ private:
   /// \copydoc ns3::Txop::NotifyWakeUp
   void NotifyWakeUp (void) override;
   /// \copydoc ns3::Txop::GenerateBackoff
-  void GenerateBackoff (void) override;
+  void GenerateBackoff (uint8_t linkId) override;
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
@@ -427,7 +428,7 @@ TxopTest<TxopType>::NotifyChannelAccessed (Time txopDuration)
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::GenerateBackoff (void)
+TxopTest<TxopType>::GenerateBackoff (uint8_t linkId)
 {
   m_test->GenerateBackoff (m_i);
 }
@@ -492,7 +493,7 @@ ChannelAccessManagerTest<TxopType>::NotifyInternalCollision (Ptr<TxopTest<TxopTy
       struct TxopTest<TxopType>::ExpectedBackoff expected = state->m_expectedInternalCollision.front ();
       state->m_expectedInternalCollision.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected internal collision time is now");
-      state->StartBackoffNow (expected.nSlots);
+      state->StartBackoffNow (expected.nSlots, 0);
     }
 }
 
@@ -507,7 +508,7 @@ ChannelAccessManagerTest<TxopType>::GenerateBackoff (uint32_t i)
       struct TxopTest<TxopType>::ExpectedBackoff expected = state->m_expectedBackoff.front ();
       state->m_expectedBackoff.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected backoff is now");
-      state->StartBackoffNow (expected.nSlots);
+      state->StartBackoffNow (expected.nSlots, 0);
     }
 }
 
@@ -594,6 +595,10 @@ ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
   txop->SetAifsn (aifsn);
   m_txop.push_back (txop);
   m_ChannelAccessManager->Add (txop);
+  // the following causes the creation of a link for the txop object
+  auto mac = CreateObject<AdhocWifiMac> ();
+  mac->SetWifiPhys ({nullptr});
+  txop->SetWifiMac (mac);
 }
 
 template <typename TxopType>
@@ -730,7 +735,7 @@ ChannelAccessManagerTest<TxopType>::DoAccessRequest (uint64_t txTime, uint64_t e
 {
   if (m_ChannelAccessManager->NeedBackoffUponAccess (state))
     {
-      state->GenerateBackoff ();
+      state->GenerateBackoff (0);
     }
   state->QueueTx (txTime, expectedGrantTime);
   m_ChannelAccessManager->RequestAccess (state);

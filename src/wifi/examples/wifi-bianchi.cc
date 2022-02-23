@@ -610,7 +610,7 @@ CwTrace (std::string context, uint32_t oldVal, uint32_t newVal)
 }
 
 void
-BackoffTrace (std::string context, uint32_t newVal)
+BackoffTrace (std::string context, uint32_t newVal, uint8_t /* linkId */)
 {
   NS_LOG_INFO ("Backoff time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " val=" << newVal);
   if (tracing)

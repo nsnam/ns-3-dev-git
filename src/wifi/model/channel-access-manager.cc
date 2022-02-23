@@ -292,7 +292,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
    *    associated with that AC are empty; the medium is busy on the primary channel
    */
   if (!txop->HasFramesToTransmit () && txop->GetAccessStatus () != Txop::GRANTED
-      && txop->GetBackoffSlots () == 0)
+      && txop->GetBackoffSlots (m_linkId) == 0)
     {
       if (!IsBusy ())
         {
@@ -303,7 +303,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
           // (performed by the next call to ChannelAccessManager::RequestAccess())
           Time delay = (txop->IsQosTxop () ? Seconds (0)
                                            : GetSifs () + txop->GetAifsn () * GetSlot ());
-          txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
+          txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay, m_linkId);
         }
       else
         {
@@ -332,14 +332,14 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop)
    */
   Time accessGrantStart = GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ());
 
-  if (txop->IsQosTxop () && txop->GetBackoffStart () > accessGrantStart)
+  if (txop->IsQosTxop () && txop->GetBackoffStart (m_linkId) > accessGrantStart)
     {
       // The backoff start time reported by the EDCAF is more recent than the last
       // time the medium was busy plus an AIFS, hence we need to align it to the
       // next slot boundary.
-      Time diff = txop->GetBackoffStart () - accessGrantStart;
+      Time diff = txop->GetBackoffStart (m_linkId) - accessGrantStart;
       uint32_t nIntSlots = (diff / GetSlot ()).GetHigh () + 1;
-      txop->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * GetSlot ()));
+      txop->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * GetSlot ()), m_linkId);
     }
 
   UpdateBackoff ();
@@ -365,7 +365,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
            * This is the first Txop we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
-          NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << txop->GetBackoffSlots ());
+          NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << txop->GetBackoffSlots (m_linkId));
           i++; //go to the next item in the list.
           k++;
           std::vector<Ptr<Txop> > internalCollisionTxops;
@@ -376,7 +376,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
                   && GetBackoffEndFor (otherTxop) <= Simulator::Now ())
                 {
                   NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" <<
-                                otherTxop->GetBackoffSlots ());
+                                otherTxop->GetBackoffSlots (m_linkId));
                   /**
                    * all other Txops with a lower priority whose backoff
                    * has expired and which needed access to the medium
@@ -477,7 +477,7 @@ Time
 ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
-  Time mostRecentEvent = std::max ({txop->GetBackoffStart (),
+  Time mostRecentEvent = std::max ({txop->GetBackoffStart (m_linkId),
                                     GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ())});
   NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
@@ -488,7 +488,7 @@ Time
 ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
-  Time backoffEnd = GetBackoffStartFor (txop) + (txop->GetBackoffSlots () * GetSlot ());
+  Time backoffEnd = GetBackoffStartFor (txop) + (txop->GetBackoffSlots (m_linkId) * GetSlot ());
   NS_LOG_DEBUG ("Backoff end: " << backoffEnd.As (Time::US));
 
   return backoffEnd;
@@ -520,10 +520,10 @@ ChannelAccessManager::UpdateBackoff (void)
             {
               nIntSlots++;
             }
-          uint32_t n = std::min (nIntSlots, txop->GetBackoffSlots ());
+          uint32_t n = std::min (nIntSlots, txop->GetBackoffSlots (m_linkId));
           NS_LOG_DEBUG ("dcf " << k << " dec backoff slots=" << n);
           Time backoffUpdateBound = backoffStart + (n * GetSlot ());
-          txop->UpdateBackoffSlotsNow (n, backoffUpdateBound);
+          txop->UpdateBackoffSlotsNow (n, backoffUpdateBound, m_linkId);
         }
       ++k;
     }
@@ -611,8 +611,8 @@ ChannelAccessManager::DisableEdcaFor (Ptr<Txop> qosTxop, Time duration)
   UpdateBackoff ();
   Time resume = Simulator::Now () + duration;
   NS_LOG_DEBUG ("Backoff will resume at time " << resume << " with "
-                << qosTxop->GetBackoffSlots () << " remaining slot(s)");
-  qosTxop->UpdateBackoffSlotsNow (0, resume);
+                << qosTxop->GetBackoffSlots (m_linkId) << " remaining slot(s)");
+  qosTxop->UpdateBackoffSlotsNow (0, resume, m_linkId);
   DoRestartAccessTimeoutIfNeeded ();
 }
 
@@ -722,11 +722,11 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   //Reset backoffs
   for (auto txop : m_txops)
     {
-      uint32_t remainingSlots = txop->GetBackoffSlots ();
+      uint32_t remainingSlots = txop->GetBackoffSlots (m_linkId);
       if (remainingSlots > 0)
         {
-          txop->UpdateBackoffSlotsNow (remainingSlots, now);
-          NS_ASSERT (txop->GetBackoffSlots () == 0);
+          txop->UpdateBackoffSlotsNow (remainingSlots, now, m_linkId);
+          NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw ();
       txop->m_access = Txop::NOT_REQUESTED;
@@ -779,11 +779,11 @@ ChannelAccessManager::NotifyWakeupNow (void)
   m_sleeping = false;
   for (auto txop : m_txops)
     {
-      uint32_t remainingSlots = txop->GetBackoffSlots ();
+      uint32_t remainingSlots = txop->GetBackoffSlots (m_linkId);
       if (remainingSlots > 0)
         {
-          txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now ());
-          NS_ASSERT (txop->GetBackoffSlots () == 0);
+          txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now (), m_linkId);
+          NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw ();
       txop->m_access = Txop::NOT_REQUESTED;
@@ -798,11 +798,11 @@ ChannelAccessManager::NotifyOnNow (void)
   m_off = false;
   for (auto txop : m_txops)
     {
-      uint32_t remainingSlots = txop->GetBackoffSlots ();
+      uint32_t remainingSlots = txop->GetBackoffSlots (m_linkId);
       if (remainingSlots > 0)
         {
-          txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now ());
-          NS_ASSERT (txop->GetBackoffSlots () == 0);
+          txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now (), m_linkId);
+          NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw ();
       txop->m_access = Txop::NOT_REQUESTED;

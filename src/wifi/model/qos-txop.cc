@@ -540,9 +540,9 @@ QosTxop::IsTxopStarted (void) const
 }
 
 void
-QosTxop::NotifyChannelReleased (void)
+QosTxop::NotifyChannelReleased (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
 
   if (m_startTxop.IsStrictlyPositive ())
     {
@@ -550,7 +550,7 @@ QosTxop::NotifyChannelReleased (void)
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
   m_startTxop = Seconds (0);
-  Txop::NotifyChannelReleased ();
+  Txop::NotifyChannelReleased (linkId);
 }
 
 Time
@@ -662,14 +662,6 @@ QosTxop::GetBlockAckInactivityTimeout (void) const
 }
 
 void
-QosTxop::DoInitialize (void)
-{
-  NS_LOG_FUNCTION (this);
-  ResetCw ();
-  GenerateBackoff ();
-}
-
-void
 QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
@@ -678,7 +670,7 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
     {
       m_baManager->NotifyAgreementNoReply (recipient, tid);
       Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
-      GenerateBackoff ();
+      GenerateBackoff (SINGLE_LINK_OP_ID);
       if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
         {
           m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);

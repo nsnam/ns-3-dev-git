@@ -127,7 +127,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
   if (queue->IsEmpty ())
     {
       NS_LOG_DEBUG ("Queue empty");
-      m_dcf->NotifyChannelReleased ();
+      m_dcf->NotifyChannelReleased (0);
       m_dcf = 0;
       return false;
     }

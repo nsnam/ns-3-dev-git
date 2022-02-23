@@ -73,7 +73,7 @@ Txop::GetTypeId (void)
     .AddTraceSource ("BackoffTrace",
                      "Trace source for backoff values",
                      MakeTraceSourceAccessor (&Txop::m_backoffTrace),
-                     "ns3::TracedCallback::Uint32Callback")
+                     "ns3::Txop::BackoffValueTracedCallback")
     .AddTraceSource ("CwTrace",
                      "Trace source for contention window values",
                      MakeTraceSourceAccessor (&Txop::m_cwTrace),
@@ -92,9 +92,7 @@ Txop::Txop (Ptr<WifiMacQueue> queue)
     m_cwMin (0),
     m_cwMax (0),
     m_cw (0),
-    m_access (NOT_REQUESTED),
-    m_backoffSlots (0),
-    m_backoffStart (Seconds (0.0))
+    m_access (NOT_REQUESTED)
 {
   NS_LOG_FUNCTION (this);
   m_rng = CreateObject<UniformRandomVariable> ();
@@ -224,40 +222,44 @@ Txop::UpdateFailedCw (void)
 }
 
 uint32_t
-Txop::GetBackoffSlots (void) const
+Txop::GetBackoffSlots (uint8_t linkId) const
 {
-  return m_backoffSlots;
+  return GetLink (linkId).backoffSlots;
 }
 
 Time
-Txop::GetBackoffStart (void) const
+Txop::GetBackoffStart (uint8_t linkId) const
 {
-  return m_backoffStart;
+  return GetLink (linkId).backoffStart;
 }
 
 void
-Txop::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
+Txop::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << nSlots << backoffUpdateBound);
-  m_backoffSlots -= nSlots;
-  m_backoffStart = backoffUpdateBound;
-  NS_LOG_DEBUG ("update slots=" << nSlots << " slots, backoff=" << m_backoffSlots);
+  NS_LOG_FUNCTION (this << nSlots << backoffUpdateBound << +linkId);
+  auto& link = GetLink (linkId);
+
+  link.backoffSlots -= nSlots;
+  link.backoffStart = backoffUpdateBound;
+  NS_LOG_DEBUG ("update slots=" << nSlots << " slots, backoff=" << link.backoffSlots);
 }
 
 void
-Txop::StartBackoffNow (uint32_t nSlots)
+Txop::StartBackoffNow (uint32_t nSlots, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << nSlots);
-  if (m_backoffSlots != 0)
+  NS_LOG_FUNCTION (this << nSlots << +linkId);
+  auto& link = GetLink (linkId);
+
+  if (link.backoffSlots != 0)
     {
-      NS_LOG_DEBUG ("reset backoff from " << m_backoffSlots << " to " << nSlots << " slots");
+      NS_LOG_DEBUG ("reset backoff from " << link.backoffSlots << " to " << nSlots << " slots");
     }
   else
     {
       NS_LOG_DEBUG ("start backoff=" << nSlots << " slots");
     }
-  m_backoffSlots = nSlots;
-  m_backoffStart = Simulator::Now ();
+  link.backoffSlots = nSlots;
+  link.backoffStart = Simulator::Now ();
 }
 
 void
@@ -316,7 +318,7 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
   packet->RemovePacketTag (priorityTag);
   if (m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->NeedBackoffUponAccess (this))
     {
-      GenerateBackoff ();
+      GenerateBackoff (SINGLE_LINK_OP_ID);
     }
   m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
   StartAccessIfNeeded ();
@@ -345,7 +347,10 @@ Txop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ResetCw ();
-  GenerateBackoff ();
+  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+    {
+      GenerateBackoff (linkId);
+    }
 }
 
 Txop::ChannelAccessStatus
@@ -369,11 +374,11 @@ Txop::NotifyChannelAccessed (Time txopDuration)
 }
 
 void
-Txop::NotifyChannelReleased (void)
+Txop::NotifyChannelReleased (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   m_access = NOT_REQUESTED;
-  GenerateBackoff ();
+  GenerateBackoff (linkId);
   if (HasFramesToTransmit ())
     {
       Simulator::ScheduleNow (&Txop::RequestAccess, this);
@@ -390,12 +395,12 @@ Txop::RequestAccess (void)
 }
 
 void
-Txop::GenerateBackoff (void)
+Txop::GenerateBackoff (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   uint32_t backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (backoff);
-  StartBackoffNow (backoff);
+  m_backoffTrace (backoff, linkId);
+  StartBackoffNow (backoff, linkId);
 }
 
 void
