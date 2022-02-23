@@ -27,7 +27,7 @@
 #include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
+#define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
 
 // Time (in nanoseconds) to be added to the PSDU duration to yield the duration
 // of the timer that is started when the PHY indicates the start of the reception
@@ -53,6 +53,7 @@ FrameExchangeManager::GetTypeId (void)
 
 FrameExchangeManager::FrameExchangeManager ()
   : m_navEnd (Seconds (0)),
+    m_linkId (0),
     m_promisc (false),
     m_moreFragments (false)
 {
@@ -124,6 +125,13 @@ Ptr<WifiAckManager>
 FrameExchangeManager::GetAckManager (void) const
 {
   return m_ackManager;
+}
+
+void
+FrameExchangeManager::SetLinkId (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  m_linkId = linkId;
 }
 
 void

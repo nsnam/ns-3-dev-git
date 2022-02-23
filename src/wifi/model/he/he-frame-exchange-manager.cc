@@ -32,7 +32,7 @@
 #include <functional>
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
+#define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
 
 namespace ns3 {
 

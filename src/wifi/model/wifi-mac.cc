@@ -678,6 +678,8 @@ WifiMac::ConfigureStandard (WifiStandard standard)
         }
       link->feManager->SetWifiPhy (link->phy);
       link->feManager->SetWifiMac (this);
+      link->feManager->SetLinkId (link->id);
+      link->channelAccessManager->SetLinkId (link->id);
       link->channelAccessManager->SetupFrameExchangeManager (link->feManager);
 
       if (m_txop != nullptr)

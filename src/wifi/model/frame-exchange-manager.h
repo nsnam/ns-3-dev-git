@@ -92,6 +92,12 @@ public:
                 WifiTxVector txVector, std::vector<bool> perMpduStatus);
 
   /**
+   * Set the ID of the link this Frame Exchange Manager is associated with.
+   *
+   * \param linkId the ID of the link this Frame Exchange Manager is associated with
+   */
+  void SetLinkId (uint8_t linkId);
+  /**
    * Set the MAC layer to use.
    *
    * \param mac the MAC layer to use
@@ -398,6 +404,7 @@ protected:
   Mac48Address m_self;                              //!< the MAC address of this device
   Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
   Time m_navEnd;                                    //!< NAV expiration time
+  uint8_t m_linkId;                                 //!< the ID of the link this object is associated with
   bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   AckedMpdu m_ackedMpduCallback;                    //!< the acknowledged MPDU callback

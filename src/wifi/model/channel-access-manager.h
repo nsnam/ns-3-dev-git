@@ -69,6 +69,12 @@ public:
    */
   void RemovePhyListener (Ptr<WifiPhy> phy);
   /**
+   * Set the ID of the link this Channel Access Manager is associated with.
+   *
+   * \param linkId the ID of the link this Channel Access Manager is associated with
+   */
+  void SetLinkId (uint8_t linkId);
+  /**
    * Set up the Frame Exchange Manager.
    *
    * \param feManager the Frame Exchange Manager
@@ -352,6 +358,7 @@ private:
   PhyListener* m_phyListener;                         //!< the PHY listener
   Ptr<WifiPhy> m_phy;                                 //!< pointer to the PHY
   Ptr<FrameExchangeManager> m_feManager;              //!< pointer to the Frame Exchange Manager
+  uint8_t m_linkId;                                   //!< the ID of the link this object is associated with
 };
 
 } //namespace ns3

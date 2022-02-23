@@ -26,6 +26,9 @@
 #include "wifi-phy.h"
 #include "frame-exchange-manager.h"
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "] "
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ChannelAccessManager");
@@ -109,7 +112,8 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastSwitchingEnd (MicroSeconds (0)),
     m_sleeping (false),
     m_off (false),
-    m_phyListener (0)
+    m_phyListener (0),
+    m_linkId (0)
 {
   NS_LOG_FUNCTION (this);
   InitLastBusyStructs ();
@@ -157,6 +161,13 @@ ChannelAccessManager::RemovePhyListener (Ptr<WifiPhy> phy)
       m_phyListener = 0;
       m_phy = 0;
     }
+}
+
+void
+ChannelAccessManager::SetLinkId (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  m_linkId = linkId;
 }
 
 void
