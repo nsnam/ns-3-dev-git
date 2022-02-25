@@ -23,6 +23,7 @@
 
 #include "ns3/traced-value.h"
 #include "wifi-mac-header.h"
+#include <memory>
 
 namespace ns3 {
 
@@ -312,6 +313,33 @@ protected:
    */
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
+  /**
+   * Structure holding information specific to a single link. Here, the meaning of
+   * "link" is that of the 11be amendment which introduced multi-link devices. For
+   * previous amendments, only one link can be created.
+   */
+  struct LinkEntity
+  {
+    /// Destructor (a virtual method is needed to make this struct polymorphic)
+    virtual ~LinkEntity () = default;
+
+    uint8_t id {0};                                 //!< Link ID (starting at 0)
+  };
+
+  /**
+   * Get a reference to the link associated with the given ID.
+   *
+   * \param linkId the given link ID
+   * \return a reference to the link associated with the given ID
+   */
+  LinkEntity& GetLink (uint8_t linkId) const;
+  /**
+   * Get the number of links.
+   *
+   * \return the number of links
+   */
+  uint8_t GetNLinks (void) const;
+
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
@@ -335,6 +363,16 @@ protected:
 
   TracedCallback<uint32_t> m_backoffTrace;      //!< backoff trace value
   TracedValue<uint32_t> m_cwTrace;              //!< CW trace value
+
+private:
+  /**
+   * Create a LinkEntity object.
+   *
+   * \return a unique pointer to the created LinkEntity object
+   */
+  virtual std::unique_ptr<LinkEntity> CreateLinkEntity (void) const;
+
+  std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of LinkEntity objects
 };
 
 } //namespace ns3

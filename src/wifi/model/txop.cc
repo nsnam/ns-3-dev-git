@@ -113,6 +113,27 @@ Txop::DoDispose (void)
   m_mac = 0;
   m_rng = 0;
   m_txMiddle = 0;
+  m_links.clear ();
+}
+
+std::unique_ptr<Txop::LinkEntity>
+Txop::CreateLinkEntity (void) const
+{
+  return std::make_unique<LinkEntity> ();
+}
+
+Txop::LinkEntity&
+Txop::GetLink (uint8_t linkId) const
+{
+  NS_ASSERT (linkId < m_links.size ());
+  NS_ASSERT (m_links.at (linkId));  // check that the pointer owns an object
+  return *m_links.at (linkId);
+}
+
+uint8_t
+Txop::GetNLinks (void) const
+{
+  return m_links.size ();
 }
 
 void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
@@ -126,6 +147,13 @@ Txop::SetWifiMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
+  m_links.resize (m_mac->GetNLinks ());
+  uint8_t linkId = 0;
+  for (auto& link : m_links)
+    {
+      link = CreateLinkEntity ();
+      link->id = linkId++;
+    }
 }
 
 void
