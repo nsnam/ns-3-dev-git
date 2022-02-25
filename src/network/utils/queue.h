@@ -465,7 +465,7 @@ TypeId
 Queue<Item>::GetTypeId (void)
 {
   std::string name = GetTypeParamName<Queue<Item> > ();
-  static TypeId tid = TypeId (("ns3::Queue<" + name + ">").c_str ())
+  static TypeId tid = TypeId ("ns3::Queue<" + name + ">")
     .SetParent<QueueBase> ()
     .SetGroupName ("Network")
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",

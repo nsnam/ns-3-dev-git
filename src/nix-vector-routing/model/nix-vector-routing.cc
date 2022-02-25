@@ -56,7 +56,7 @@ NixVectorRouting<T>::GetTypeId (void)
 {
   std::string Tname = GetTypeParamName<NixVectorRouting<T> > ();
   std::string name = (Tname == "Ipv4RoutingProtocol" ? "Ipv4" : "Ipv6");
-  static TypeId tid = TypeId (("ns3::" + name + "NixVectorRouting").c_str ())
+  static TypeId tid = TypeId ("ns3::" + name + "NixVectorRouting")
     .SetParent<T> ()
     .SetGroupName ("NixVectorRouting")
     .template AddConstructor<NixVectorRouting<T> > ()

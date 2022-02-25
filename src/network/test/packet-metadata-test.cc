@@ -124,7 +124,7 @@ HistoryHeader<N>::GetTypeId (void)
 {
   std::ostringstream oss;
   oss << "ns3::HistoryHeader<"<<N<<">";
-  static TypeId tid = TypeId (oss.str ().c_str ())
+  static TypeId tid = TypeId (oss.str ())
     .SetParent<HistoryHeaderBase> ()
     .AddConstructor<HistoryHeader<N> > ()
   ;
@@ -261,7 +261,7 @@ HistoryTrailer<N>::GetTypeId (void)
 {
   std::ostringstream oss;
   oss << "ns3::HistoryTrailer<"<<N<<">";
-  static TypeId tid = TypeId (oss.str ().c_str ())
+  static TypeId tid = TypeId (oss.str ())
     .SetParent<HistoryTrailerBase> ()
     .AddConstructor<HistoryTrailer<N> > ()
   ;

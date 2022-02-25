@@ -33,7 +33,7 @@ template <typename T>
 NixVectorHelper<T>::NixVectorHelper ()
 {
   std::string name = (IsIpv4::value ? "Ipv4" : "Ipv6");
-  m_agentFactory.SetTypeId (("ns3::" + name + "NixVectorRouting").c_str ());
+  m_agentFactory.SetTypeId ("ns3::" + name + "NixVectorRouting");
 }
 
 template <typename T>

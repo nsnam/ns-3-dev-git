@@ -810,7 +810,7 @@ namespace ns3 {
  *         The TypeId class
  *********************************************************************/
 
-TypeId::TypeId (const char *name)
+TypeId::TypeId (const std::string &name)
 {
   NS_LOG_FUNCTION (this << name);
   uint16_t uid = IidManager::Get ()->AllocateUid (name);

@@ -94,7 +94,7 @@ template <int N>
 TypeId 
 BenchHeader<N>::GetTypeId (void)
 {
-  static TypeId tid = TypeId (GetTypeName ().c_str ())
+  static TypeId tid = TypeId (GetTypeName ())
     .SetParent<Header> ()
     .SetGroupName ("Utils")
     .HideFromDocumentation ()
@@ -161,7 +161,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void) {
-    static TypeId tid = TypeId (GetName ().c_str ())
+    static TypeId tid = TypeId (GetName ())
       .SetParent<Tag> ()
       .SetGroupName ("Utils")
       .HideFromDocumentation ()

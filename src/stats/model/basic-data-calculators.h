@@ -163,9 +163,9 @@ template <typename T>
 TypeId
 MinMaxAvgTotalCalculator<T>::GetTypeId (void)
 {
-  static TypeId tid = TypeId ( ("ns3::MinMaxAvgTotalCalculator<"
-                                + TypeNameGet<T> ()
-                                + ">").c_str () )
+  static TypeId tid = TypeId ("ns3::MinMaxAvgTotalCalculator<"
+                              + TypeNameGet<T> ()
+                              + ">")
     .SetParent<Object> ()
     .SetGroupName ("Stats")
     .AddConstructor<MinMaxAvgTotalCalculator<T> > ()
@@ -329,9 +329,9 @@ template <typename T>
 TypeId
 CounterCalculator<T>::GetTypeId (void)
 {
-  static TypeId tid = TypeId ( ("ns3::CounterCalculator<"
-                                + TypeNameGet<T> ()
-                                + ">").c_str () )
+  static TypeId tid = TypeId ("ns3::CounterCalculator<"
+                              + TypeNameGet<T> ()
+                              + ">")
     .SetParent<Object> ()
     .SetGroupName ("Stats")
     .AddConstructor<CounterCalculator<T> > ()

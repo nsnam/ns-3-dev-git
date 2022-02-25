@@ -92,7 +92,7 @@ public:
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestTag<" << N << ">";
-    static TypeId tid = TypeId (oss.str ().c_str ())
+    static TypeId tid = TypeId (oss.str ())
       .SetParent<ATestTagBase> ()
       .SetGroupName ("Network")
       .HideFromDocumentation ()
@@ -250,7 +250,7 @@ public:
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestHeader<" << N << ">";
-    static TypeId tid = TypeId (oss.str ().c_str ())
+    static TypeId tid = TypeId (oss.str ())
       .SetParent<ATestHeaderBase> ()
       .SetGroupName ("Network")
       .HideFromDocumentation ()
@@ -336,7 +336,7 @@ public:
   static TypeId GetTypeId (void) {
     std::ostringstream oss;
     oss << "anon::ATestTrailer<" << N << ">";
-    static TypeId tid = TypeId (oss.str ().c_str ())
+    static TypeId tid = TypeId (oss.str ())
       .SetParent<ATestTrailerBase> ()
       .SetGroupName ("Network")
       .HideFromDocumentation ()

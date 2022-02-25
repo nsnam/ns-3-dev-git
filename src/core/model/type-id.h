@@ -176,7 +176,7 @@ public:
    * No two instances can share the same name. The name is expected to be
    * the full c++ typename of associated c++ object.
    */
-  explicit TypeId (const char * name);
+  explicit TypeId (const std::string &name);
 
   /**
    * Get the parent of this TypeId.

@@ -168,8 +168,8 @@ CollisionTestCase::DoRun (void)
        << "'" << t1Name << "', '" << t2Name << "'"
        << " in alphabetical order:"
        << endl;
-  TypeId t1 (t1Name.c_str ());
-  TypeId t2 (t2Name.c_str ());
+  TypeId t1 (t1Name);
+  TypeId t2 (t2Name);
 
   // Check that they are alphabetical: t1 name < t2 name
   NS_TEST_ASSERT_MSG_EQ ( (t1.GetHash () & HashChainFlag), 0,

@@ -169,12 +169,12 @@ private:
     static TypeId GetTypeId (void)
     {
       static TypeId tid =
-        TypeId ( ("CheckTvCb<" + TypeName<T>() + ">").c_str ())
+        TypeId ("CheckTvCb<" + TypeName<T>() + ">")
         .SetParent <Object> ()
         .AddTraceSource ("value",
                          "A value being traced.",
                          MakeTraceSourceAccessor (&CheckTvCb<T>::m_value),
-                         ("ns3::TracedValueCallback::" + TypeName<T>()).c_str () )
+                         ("ns3::TracedValueCallback::" + TypeName<T>()) )
         ;
       return tid;
     }  // GetTypeId ()
