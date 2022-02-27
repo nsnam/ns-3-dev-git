@@ -796,6 +796,7 @@ macro(process_options)
       message(STATUS "GSL was not found. Continuing without it.")
     else()
       message(STATUS "GSL was found.")
+      add_definitions(-DHAVE_GSL)
     endif()
   endif()
 
