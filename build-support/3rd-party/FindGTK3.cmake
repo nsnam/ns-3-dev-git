@@ -160,6 +160,7 @@ function(_GTK3_FIND_INCLUDE_DIR _var _hdr)
           /usr/openwin
           /sw
           /opt/local
+          /opt/local/lib
           $ENV{GTKMM_BASEPATH}
           [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
           [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
