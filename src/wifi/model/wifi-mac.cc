@@ -600,9 +600,9 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
   switch (ac)
     {
     case AC_VO:
-      dcf->SetMinCw ((cwmin + 1) / 4 - 1);
-      dcf->SetMaxCw ((cwmin + 1) / 2 - 1);
-      dcf->SetAifsn (2);
+      dcf->SetMinCw ((cwmin + 1) / 4 - 1, SINGLE_LINK_OP_ID);
+      dcf->SetMaxCw ((cwmin + 1) / 2 - 1, SINGLE_LINK_OP_ID);
+      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
       if (isDsss)
         {
           dcf->SetTxopLimit (MicroSeconds (3264));
@@ -613,9 +613,9 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
         }
       break;
     case AC_VI:
-      dcf->SetMinCw ((cwmin + 1) / 2 - 1);
-      dcf->SetMaxCw (cwmin);
-      dcf->SetAifsn (2);
+      dcf->SetMinCw ((cwmin + 1) / 2 - 1, SINGLE_LINK_OP_ID);
+      dcf->SetMaxCw (cwmin, SINGLE_LINK_OP_ID);
+      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
       if (isDsss)
         {
           dcf->SetTxopLimit (MicroSeconds (6016));
@@ -626,21 +626,21 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
         }
       break;
     case AC_BE:
-      dcf->SetMinCw (cwmin);
-      dcf->SetMaxCw (cwmax);
-      dcf->SetAifsn (3);
+      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
+      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
+      dcf->SetAifsn (3, SINGLE_LINK_OP_ID);
       dcf->SetTxopLimit (MicroSeconds (0));
       break;
     case AC_BK:
-      dcf->SetMinCw (cwmin);
-      dcf->SetMaxCw (cwmax);
-      dcf->SetAifsn (7);
+      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
+      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
+      dcf->SetAifsn (7, SINGLE_LINK_OP_ID);
       dcf->SetTxopLimit (MicroSeconds (0));
       break;
     case AC_BE_NQOS:
-      dcf->SetMinCw (cwmin);
-      dcf->SetMaxCw (cwmax);
-      dcf->SetAifsn (2);
+      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
+      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
+      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
       dcf->SetTxopLimit (MicroSeconds (0));
       break;
     case AC_BEACON:

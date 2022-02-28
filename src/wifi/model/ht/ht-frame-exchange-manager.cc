@@ -1114,11 +1114,11 @@ HtFrameExchangeManager::BlockAckTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector&
 
   if (resetCw)
     {
-      m_edca->ResetCw ();
+      m_edca->ResetCw (m_linkId);
     }
   else
     {
-      m_edca->UpdateFailedCw ();
+      m_edca->UpdateFailedCw (m_linkId);
     }
 
   m_psdu = 0;
@@ -1324,7 +1324,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           m_channelAccessManager->NotifyAckTimeoutResetNow ();
 
           // Reset the CW
-          m_edca->ResetCw ();
+          m_edca->ResetCw (m_linkId);
 
           m_psdu = 0;
           TransmissionSucceeded ();

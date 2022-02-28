@@ -343,30 +343,35 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
     {
     case AC_VO:
       dcf = WifiMac::GetVOQueue ();
+      dcf->SetWifiMac (this);
       dcf->SetMinCw ((cwmin + 1) / 4 - 1);
       dcf->SetMaxCw ((cwmin + 1) / 2 - 1);
       dcf->SetAifsn (aifsn);
       break;
     case AC_VI:
       dcf = WifiMac::GetVIQueue ();
+      dcf->SetWifiMac (this);
       dcf->SetMinCw ((cwmin + 1) / 2 - 1);
       dcf->SetMaxCw (cwmin);
       dcf->SetAifsn (aifsn);
       break;
     case AC_BE:
       dcf = WifiMac::GetBEQueue ();
+      dcf->SetWifiMac (this);
       dcf->SetMinCw (cwmin);
       dcf->SetMaxCw (cwmax);
       dcf->SetAifsn (aifsn);
       break;
     case AC_BK:
       dcf = WifiMac::GetBKQueue ();
+      dcf->SetWifiMac (this);
       dcf->SetMinCw (cwmin);
       dcf->SetMaxCw (cwmax);
       dcf->SetAifsn (aifsn);
       break;
     case AC_BE_NQOS:
       dcf = WifiMac::GetTxop ();
+      dcf->SetWifiMac (this);
       dcf->SetMinCw (cwmin);
       dcf->SetMaxCw (cwmax);
       dcf->SetAifsn (aifsn);
@@ -379,7 +384,6 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
       break;
     }
 
-  dcf->SetWifiMac (this);
   GetLink (SINGLE_LINK_OP_ID).channelAccessManager-> Add (dcf);
 }
 

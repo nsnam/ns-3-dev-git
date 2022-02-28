@@ -94,12 +94,7 @@ QosTxop::QosTxop (AcIndex ac)
   : Txop (CreateObject<WifiMacQueue> (ac)),
     m_ac (ac),
     m_startTxop (Seconds (0)),
-    m_txopDuration (Seconds (0)),
-    m_muCwMin (0),
-    m_muCwMax (0),
-    m_muAifsn (0),
-    m_muEdcaTimer (Seconds (0)),
-    m_muEdcaTimerStartTime (Seconds (0))
+    m_txopDuration (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
   m_qosBlockedDestinations = Create<QosBlockedDestinations> ();
@@ -128,6 +123,18 @@ QosTxop::DoDispose (void)
   Txop::DoDispose ();
 }
 
+std::unique_ptr<Txop::LinkEntity>
+QosTxop::CreateLinkEntity (void) const
+{
+  return std::make_unique<QosLinkEntity> ();
+}
+
+QosTxop::QosLinkEntity&
+QosTxop::GetLink (uint8_t linkId) const
+{
+  return static_cast<QosLinkEntity&> (Txop::GetLink (linkId));
+}
+
 uint8_t
 QosTxop::GetQosQueueSize (uint8_t tid, Mac48Address receiver) const
 {
@@ -147,88 +154,90 @@ QosTxop::SetDroppedMpduCallback (DroppedMpdu callback)
 }
 
 void
-QosTxop::SetMuCwMin (uint16_t cwMin)
+QosTxop::SetMuCwMin (uint16_t cwMin, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << cwMin);
-  m_muCwMin = cwMin;
+  NS_LOG_FUNCTION (this << cwMin << +linkId);
+  GetLink (linkId).muCwMin = cwMin;
 }
 
 void
-QosTxop::SetMuCwMax (uint16_t cwMax)
+QosTxop::SetMuCwMax (uint16_t cwMax, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << cwMax);
-  m_muCwMax = cwMax;
+  NS_LOG_FUNCTION (this << cwMax << +linkId);
+  GetLink (linkId).muCwMax = cwMax;
 }
 
 void
-QosTxop::SetMuAifsn (uint8_t aifsn)
+QosTxop::SetMuAifsn (uint8_t aifsn, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << +aifsn);
-  m_muAifsn = aifsn;
+  NS_LOG_FUNCTION (this << +aifsn << +linkId);
+  GetLink (linkId).muAifsn = aifsn;
 }
 
 void
-QosTxop::SetMuEdcaTimer (Time timer)
+QosTxop::SetMuEdcaTimer (Time timer, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << timer);
-  m_muEdcaTimer = timer;
+  NS_LOG_FUNCTION (this << timer << +linkId);
+  GetLink (linkId).muEdcaTimer = timer;
 }
 
 void
-QosTxop::StartMuEdcaTimerNow (void)
+QosTxop::StartMuEdcaTimerNow (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  m_muEdcaTimerStartTime = Simulator::Now ();
-  if (EdcaDisabled ())
+  NS_LOG_FUNCTION (this << +linkId);
+  auto& link = GetLink (linkId);
+  link.muEdcaTimerStartTime = Simulator::Now ();
+  if (EdcaDisabled (linkId))
     {
-      NS_LOG_DEBUG ("Disable EDCA for " << m_muEdcaTimer.As (Time::MS));
-      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->DisableEdcaFor (this, m_muEdcaTimer);
+      NS_LOG_DEBUG ("Disable EDCA for " << link.muEdcaTimer.As (Time::MS));
+      m_mac->GetChannelAccessManager (linkId)->DisableEdcaFor (this, link.muEdcaTimer);
     }
 }
 
 bool
-QosTxop::MuEdcaTimerRunning (void) const
+QosTxop::MuEdcaTimerRunning (uint8_t linkId) const
 {
-  return (m_muEdcaTimerStartTime.IsStrictlyPositive () && m_muEdcaTimer.IsStrictlyPositive ()
-          && m_muEdcaTimerStartTime + m_muEdcaTimer > Simulator::Now ());
+  auto& link = GetLink (linkId);
+  return (link.muEdcaTimerStartTime.IsStrictlyPositive () && link.muEdcaTimer.IsStrictlyPositive ()
+          && link.muEdcaTimerStartTime + link.muEdcaTimer > Simulator::Now ());
 }
 
 bool
-QosTxop::EdcaDisabled (void) const
+QosTxop::EdcaDisabled (uint8_t linkId) const
 {
-  return (MuEdcaTimerRunning () && m_muAifsn == 0);
+  return (MuEdcaTimerRunning (linkId) && GetLink (linkId).muAifsn == 0);
 }
 
 uint32_t
-QosTxop::GetMinCw (void) const
+QosTxop::GetMinCw (uint8_t linkId) const
 {
-  if (!MuEdcaTimerRunning ())
+  if (!MuEdcaTimerRunning (linkId))
     {
-      return m_cwMin;
+      return GetLink (linkId).cwMin;
     }
-  NS_ASSERT (!EdcaDisabled ());
-  return m_muCwMin;
+  NS_ASSERT (!EdcaDisabled (linkId));
+  return GetLink (linkId).muCwMin;
 }
 
 uint32_t
-QosTxop::GetMaxCw (void) const
+QosTxop::GetMaxCw (uint8_t linkId) const
 {
-  if (!MuEdcaTimerRunning ())
+  if (!MuEdcaTimerRunning (linkId))
     {
-      return m_cwMax;
+      return GetLink (linkId).cwMax;
     }
-  NS_ASSERT (!EdcaDisabled ());
-  return m_muCwMax;
+  NS_ASSERT (!EdcaDisabled (linkId));
+  return GetLink (linkId).muCwMax;
 }
 
 uint8_t
-QosTxop::GetAifsn (void) const
+QosTxop::GetAifsn (uint8_t linkId) const
 {
-  if (!MuEdcaTimerRunning ())
+  if (!MuEdcaTimerRunning (linkId))
     {
-      return m_aifsn;
+      return GetLink (linkId).aifsn;
     }
-  return m_muAifsn;
+  return GetLink (linkId).muAifsn;
 }
 
 Ptr<BlockAckManager>

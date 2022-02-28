@@ -797,14 +797,14 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTx
       // Dequeue the MPDU if it is stored in a queue
       DequeueMpdu (mpdu);
       m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
-      m_dcf->ResetCw ();
+      m_dcf->ResetCw (m_linkId);
     }
   else
     {
       NS_LOG_DEBUG ("Missed Ack, retransmit MPDU");
       mpdu->GetHeader ().SetRetry ();
       RetransmitMpduAfterMissedAck (mpdu);
-      m_dcf->UpdateFailedCw ();
+      m_dcf->UpdateFailedCw (m_linkId);
     }
 
   m_mpdu = 0;
@@ -843,12 +843,12 @@ FrameExchangeManager::DoCtsTimeout (Ptr<WifiPsdu> psdu)
           DequeueMpdu (mpdu);
           NotifyPacketDiscarded (mpdu);
         }
-      m_dcf->ResetCw ();
+      m_dcf->ResetCw (m_linkId);
     }
   else
     {
       NS_LOG_DEBUG ("Missed CTS, retransmit MPDU(s)");
-      m_dcf->UpdateFailedCw ();
+      m_dcf->UpdateFailedCw (m_linkId);
     }
   // Make the sequence numbers of the MPDUs available again if the MPDUs have never
   // been transmitted, both in case the MPDUs have been discarded and in case the
@@ -907,12 +907,12 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
           m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
           DequeueMpdu (mpdu);
           NotifyPacketDiscarded (mpdu);
-          txop->ResetCw ();
+          txop->ResetCw (m_linkId);
         }
       else
         {
           NS_LOG_DEBUG ("Update CW");
-          txop->UpdateFailedCw ();
+          txop->UpdateFailedCw (m_linkId);
         }
     }
 
@@ -1186,7 +1186,7 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
 
   // The CW shall be reset to aCWmin after every successful attempt to transmit
   // a frame containing all or part of an MSDU or MMPDU (sec. 10.3.3 of 802.11-2016)
-  m_dcf->ResetCw ();
+  m_dcf->ResetCw (m_linkId);
 
   if (mpdu->GetHeader ().IsMoreFragments ())
     {

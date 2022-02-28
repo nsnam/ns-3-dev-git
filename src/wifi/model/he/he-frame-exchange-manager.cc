@@ -904,13 +904,13 @@ HeFrameExchangeManager::TbPpduTimeout (WifiPsduMap* psduMap,
   if (staMissedTbPpduFrom->size () == nSolicitedStations)
     {
       // no station replied, the transmission failed
-      m_edca->UpdateFailedCw ();
+      m_edca->UpdateFailedCw (m_linkId);
 
       TransmissionFailed ();
     }
   else if (!m_multiStaBaEvent.IsRunning ())
     {
-      m_edca->ResetCw ();
+      m_edca->ResetCw (m_linkId);
       TransmissionSucceeded ();
     }
 
@@ -966,11 +966,11 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
 
   if (resetCw)
     {
-      m_edca->ResetCw ();
+      m_edca->ResetCw (m_linkId);
     }
   else
     {
-      m_edca->UpdateFailedCw ();
+      m_edca->UpdateFailedCw (m_linkId);
     }
 
   if (staMissedBlockAckFrom->size () == nSolicitedStations)
@@ -1238,7 +1238,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck (const WifiTxParameters& txParams)
 
   // continue with the TXOP if time remains
   m_psduMap.clear ();
-  m_edca->ResetCw ();
+  m_edca->ResetCw (m_linkId);
   m_muSnrTag.Reset ();
   Simulator::Schedule (txDuration, &HeFrameExchangeManager::TransmissionSucceeded, this);
 }
@@ -1528,7 +1528,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
               // all of the stations that replied with a TB PPDU sent QoS Null frames.
               NS_LOG_DEBUG ("Continue the TXOP");
               m_psduMap.clear ();
-              m_edca->ResetCw ();
+              m_edca->ResetCw (m_linkId);
               TransmissionSucceeded ();
             }
         }
@@ -1567,7 +1567,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
 
           NS_ASSERT (m_edca != 0);
           m_psduMap.clear ();
-          m_edca->ResetCw ();
+          m_edca->ResetCw (m_linkId);
           TransmissionSucceeded ();
         }
 
@@ -1653,7 +1653,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
               m_channelAccessManager->NotifyAckTimeoutResetNow ();
               m_triggerFrame = nullptr;  // this is strictly needed for DL_MU_TF_MU_BAR only
 
-              m_edca->ResetCw ();
+              m_edca->ResetCw (m_linkId);
               m_psduMap.clear ();
               TransmissionSucceeded ();
             }
@@ -1731,7 +1731,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                   // transmitted in response to a Basic Trigger Frame and at least one
                   // MPDU was acknowledged. Therefore, it needs to update the access
                   // parameters if it received an MU EDCA Parameter Set element.
-                  m_mac->GetQosTxop (tid)->StartMuEdcaTimerNow ();
+                  m_mac->GetQosTxop (tid)->StartMuEdcaTimerNow (m_linkId);
                 }
             }
 
@@ -1900,7 +1900,7 @@ HeFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSigna
               // all of the stations that replied with a TB PPDU sent QoS Null frames.
               NS_LOG_DEBUG ("Continue the TXOP");
               m_psduMap.clear ();
-              m_edca->ResetCw ();
+              m_edca->ResetCw (m_linkId);
               TransmissionSucceeded ();
             }
         }
@@ -1941,7 +1941,7 @@ HeFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSigna
 
           NS_ASSERT (m_edca != 0);
           m_psduMap.clear ();
-          m_edca->ResetCw ();
+          m_edca->ResetCw (m_linkId);
           TransmissionSucceeded ();
         }
 

@@ -361,10 +361,9 @@ public:
   /**
    * Function to trace CW value used by the given station after the MU exchange
    * \param staIndex the index of the given station
-   * \param oldCw the previous Contention Window value
    * \param cw the current Contention Window value
    */
-  void TraceCw (uint32_t staIndex, uint32_t oldCw, uint32_t cw);
+  void TraceCw (uint32_t staIndex, uint32_t cw, uint8_t /* linkId */);
   /**
    * Callback invoked when FrameExchangeManager passes PSDUs to the PHY
    * \param context the context
@@ -444,7 +443,7 @@ OfdmaAckSequenceTest::L7Receive (std::string context, Ptr<const Packet> p, const
 }
 
 void
-OfdmaAckSequenceTest::TraceCw (uint32_t staIndex, uint32_t oldCw, uint32_t cw)
+OfdmaAckSequenceTest::TraceCw (uint32_t staIndex, uint32_t cw, uint8_t /* linkId */)
 {
   if (m_cwValues.at (staIndex) == 2)
     {
@@ -1268,7 +1267,7 @@ OfdmaAckSequenceTest::DoRun (void)
   Simulator::Run ();
 
   CheckResults (dev->GetMac ()->GetWifiPhy ()->GetSifs (), dev->GetMac ()->GetWifiPhy ()->GetSlot (),
-                apBeQosTxop->GetAifsn ());
+                apBeQosTxop->Txop::GetAifsn ());
 
   Simulator::Destroy ();
 }

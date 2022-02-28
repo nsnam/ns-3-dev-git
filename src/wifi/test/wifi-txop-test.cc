@@ -224,8 +224,8 @@ WifiTxopTest::DoRun (void)
   PointerValue ptr;
   dev->GetMac ()->GetAttribute ("BE_Txop", ptr);
   ptr.Get<QosTxop> ()->SetTxopLimit (m_txopLimit);
-  m_aifsn = ptr.Get<QosTxop> ()->GetAifsn ();
-  m_cwMin = ptr.Get<QosTxop> ()->GetMinCw ();
+  m_aifsn = ptr.Get<QosTxop> ()->Txop::GetAifsn ();
+  m_cwMin = ptr.Get<QosTxop> ()->Txop::GetMinCw ();
 
   PacketSocketHelper packetSocket;
   packetSocket.Install (wifiApNode);

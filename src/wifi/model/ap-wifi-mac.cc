@@ -106,9 +106,6 @@ ApWifiMac::ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop = CreateObject<Txop> (CreateObject<WifiMacQueue> (AC_BEACON));
-  m_beaconTxop->SetAifsn (1);
-  m_beaconTxop->SetMinCw (0);
-  m_beaconTxop->SetMaxCw (0);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
 
   //Let the lower layers know that we are acting as an AP.
@@ -148,6 +145,9 @@ ApWifiMac::ConfigureStandard (WifiStandard standard)
   NS_LOG_FUNCTION (this << standard);
   WifiMac::ConfigureStandard (standard);
   m_beaconTxop->SetWifiMac (this);
+  m_beaconTxop->SetAifsns (std::vector<uint8_t> (GetNLinks (), 1));
+  m_beaconTxop->SetMinCws (std::vector<uint32_t> (GetNLinks (), 0));
+  m_beaconTxop->SetMaxCws (std::vector<uint32_t> (GetNLinks (), 0));
   for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
     {
       GetLink (linkId).channelAccessManager->Add (m_beaconTxop);
@@ -482,33 +482,33 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edca = GetQosTxop (AC_BE);
       txopLimit = edca->GetTxopLimit ();
       edcaParameters.SetBeAci (0);
-      edcaParameters.SetBeCWmin (edca->GetMinCw ());
-      edcaParameters.SetBeCWmax (edca->GetMaxCw ());
-      edcaParameters.SetBeAifsn (edca->GetAifsn ());
+      edcaParameters.SetBeCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBeCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBeAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
       edcaParameters.SetBeTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_BK);
       txopLimit = edca->GetTxopLimit ();
       edcaParameters.SetBkAci (1);
-      edcaParameters.SetBkCWmin (edca->GetMinCw ());
-      edcaParameters.SetBkCWmax (edca->GetMaxCw ());
-      edcaParameters.SetBkAifsn (edca->GetAifsn ());
+      edcaParameters.SetBkCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBkCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBkAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
       edcaParameters.SetBkTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VI);
       txopLimit = edca->GetTxopLimit ();
       edcaParameters.SetViAci (2);
-      edcaParameters.SetViCWmin (edca->GetMinCw ());
-      edcaParameters.SetViCWmax (edca->GetMaxCw ());
-      edcaParameters.SetViAifsn (edca->GetAifsn ());
+      edcaParameters.SetViCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetViCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetViAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
       edcaParameters.SetViTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VO);
       txopLimit = edca->GetTxopLimit ();
       edcaParameters.SetVoAci (3);
-      edcaParameters.SetVoCWmin (edca->GetMinCw ());
-      edcaParameters.SetVoCWmax (edca->GetMaxCw ());
-      edcaParameters.SetVoAifsn (edca->GetAifsn ());
+      edcaParameters.SetVoCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetVoCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
+      edcaParameters.SetVoAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
       edcaParameters.SetVoTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edcaParameters.SetQosInfo (0);

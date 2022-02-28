@@ -1181,9 +1181,9 @@ void
 StaWifiMac::SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit)
 {
   Ptr<QosTxop> edca = GetQosTxop (ac);
-  edca->SetMinCw (cwMin);
-  edca->SetMaxCw (cwMax);
-  edca->SetAifsn (aifsn);
+  edca->SetMinCw (cwMin, SINGLE_LINK_OP_ID);
+  edca->SetMaxCw (cwMax, SINGLE_LINK_OP_ID);
+  edca->SetAifsn (aifsn, SINGLE_LINK_OP_ID);
   edca->SetTxopLimit (txopLimit);
 }
 
@@ -1191,10 +1191,10 @@ void
 StaWifiMac::SetMuEdcaParameters (AcIndex ac, uint16_t cwMin, uint16_t cwMax, uint8_t aifsn, Time muEdcaTimer)
 {
   Ptr<QosTxop> edca = GetQosTxop (ac);
-  edca->SetMuCwMin (cwMin);
-  edca->SetMuCwMax (cwMax);
-  edca->SetMuAifsn (aifsn);
-  edca->SetMuEdcaTimer (muEdcaTimer);
+  edca->SetMuCwMin (cwMin, SINGLE_LINK_OP_ID);
+  edca->SetMuCwMax (cwMax, SINGLE_LINK_OP_ID);
+  edca->SetMuAifsn (aifsn, SINGLE_LINK_OP_ID);
+  edca->SetMuEdcaTimer (muEdcaTimer, SINGLE_LINK_OP_ID);
 }
 
 void

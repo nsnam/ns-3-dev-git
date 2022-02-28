@@ -366,79 +366,117 @@ public:
 
   /**
    * Set the minimum contention window size to use while the MU EDCA Timer
-   * is running.
+   * is running for the given link.
    *
    * \param cwMin the minimum contention window size.
+   * \param linkId the ID of the given link
    */
-  void SetMuCwMin (uint16_t cwMin);
+  void SetMuCwMin (uint16_t cwMin, uint8_t linkId);
   /**
    * Set the maximum contention window size to use while the MU EDCA Timer
-   * is running.
+   * is running for the given link.
    *
    * \param cwMax the maximum contention window size.
+   * \param linkId the ID of the given link
    */
-  void SetMuCwMax (uint16_t cwMax);
+  void SetMuCwMax (uint16_t cwMax, uint8_t linkId);
   /**
    * Set the number of slots that make up an AIFS while the MU EDCA Timer
-   * is running.
+   * is running for the given link.
    *
    * \param aifsn the number of slots that make up an AIFS.
+   * \param linkId the ID of the given link
    */
-  void SetMuAifsn (uint8_t aifsn);
+  void SetMuAifsn (uint8_t aifsn, uint8_t linkId);
   /**
-   * Set the MU EDCA Timer.
+   * Set the MU EDCA Timer for the given link.
    *
    * \param timer the timer duration.
+   * \param linkId the ID of the given link
    */
-  void SetMuEdcaTimer (Time timer);
+  void SetMuEdcaTimer (Time timer, uint8_t linkId);
   /**
-   * Start the MU EDCA Timer.
-   */
-  void StartMuEdcaTimerNow (void);
-  /**
-   * Return true if the MU EDCA Timer is running, false otherwise.
+   * Start the MU EDCA Timer for the given link.
    *
+   * \param linkId the ID of the given link
+   */
+  void StartMuEdcaTimerNow (uint8_t linkId);
+  /**
+   * Return true if the MU EDCA Timer is running for the given link, false otherwise.
+   *
+   * \param linkId the ID of the given link
    * \return whether the MU EDCA Timer is running
    */
-  bool MuEdcaTimerRunning (void) const;
+  bool MuEdcaTimerRunning (uint8_t linkId) const;
   /**
    * Return true if the EDCA is disabled (the MU EDCA Timer is running and the
-   * MU AIFSN is zero), false otherwise.
+   * MU AIFSN is zero) for the given link, false otherwise.
    *
+   * \param linkId the ID of the given link
    * \return whether the EDCA is disabled
    */
-  bool EdcaDisabled (void) const;
+  bool EdcaDisabled (uint8_t linkId) const;
   /**
-   * Return the minimum contention window size from the EDCA Parameter Set
-   * or the MU EDCA Parameter Set, depending on whether the MU EDCA Timer is
-   * running or not.
-   *
-   * \return the currently used minimum contention window size.
-   */
-  uint32_t GetMinCw (void) const override;
-  /**
-   * Return the maximum contention window size from the EDCA Parameter Set
-   * or the MU EDCA Parameter Set, depending on whether the MU EDCA Timer is
-   * running or not.
-   *
-   * \return the currently used maximum contention window size.
-   */
-  uint32_t GetMaxCw (void) const override;
-  /**
-   * Return the number of slots that make up an AIFS according to the
+   * For the given link, return the minimum contention window size from the
    * EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether the
    * MU EDCA Timer is running or not.
    *
+   * \param linkId the ID of the given link
+   * \return the currently used minimum contention window size.
+   */
+  uint32_t GetMinCw (uint8_t linkId) const override;
+  /**
+   * For the given link, return the maximum contention window size from the
+   * EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether the
+   * MU EDCA Timer is running or not.
+   *
+   * \param linkId the ID of the given link
+   * \return the currently used maximum contention window size.
+   */
+  uint32_t GetMaxCw (uint8_t linkId) const override;
+  /**
+   * For the given link, return the number of slots that make up an AIFS according
+   * to the EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether
+   * the MU EDCA Timer is running or not.
+   *
+   * \param linkId the ID of the given link
    * \return the number of slots that currently make up an AIFS.
    */
-  uint8_t GetAifsn (void) const override;
+  uint8_t GetAifsn (uint8_t linkId) const override;
 
 protected:
+  /**
+   * Structure holding information specific to a single link. Here, the meaning of
+   * "link" is that of the 11be amendment which introduced multi-link devices. For
+   * previous amendments, only one link can be created.
+   */
+  struct QosLinkEntity : public Txop::LinkEntity
+  {
+    /// Destructor (a virtual method is needed to make this struct polymorphic)
+    virtual ~QosLinkEntity () = default;
+
+    uint32_t muCwMin {0};                       //!< the MU CW minimum
+    uint32_t muCwMax {0};                       //!< the MU CW maximum
+    uint8_t muAifsn {0};                        //!< the MU AIFSN
+    Time muEdcaTimer {0};                       //!< the MU EDCA Timer
+    Time muEdcaTimerStartTime {0};              //!< last start time of the MU EDCA Timer
+  };
+
   void DoDispose (void) override;
+
+  /**
+   * Get a reference to the link associated with the given ID.
+   *
+   * \param linkId the given link ID
+   * \return a reference to the link associated with the given ID
+   */
+  QosLinkEntity& GetLink (uint8_t linkId) const;
 
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
+
+  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
   /**
    * Check if the given MPDU is to be considered old according to the current
@@ -462,12 +500,6 @@ private:
   Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response
   Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit BlockAckRequest should be sent upon missed BlockAck Response
-
-  uint32_t m_muCwMin;          //!< the MU CW minimum
-  uint32_t m_muCwMax;          //!< the MU CW maximum
-  uint8_t m_muAifsn;           //!< the MU AIFSN
-  Time m_muEdcaTimer;          //!< the MU EDCA Timer
-  Time m_muEdcaTimerStartTime; //!< last start time of the MU EDCA Timer
 
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };

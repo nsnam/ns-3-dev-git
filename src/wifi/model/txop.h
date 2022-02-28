@@ -24,6 +24,7 @@
 #include "ns3/traced-value.h"
 #include "wifi-mac-header.h"
 #include <memory>
+#include <vector>
 
 namespace ns3 {
 
@@ -130,23 +131,71 @@ public:
   Ptr<WifiMacQueue > GetWifiMacQueue () const;
 
   /**
-   * Set the minimum contention window size.
+   * Set the minimum contention window size. For 11be multi-link devices,
+   * set the minimum contention window size on the first link.
    *
    * \param minCw the minimum contention window size.
    */
   void SetMinCw (uint32_t minCw);
   /**
-   * Set the maximum contention window size.
+   * Set the minimum contention window size for each link.
+   * Note that the size of <i>minCws</i> must match the number
+   * of links.
+   *
+   * \param minCws the minimum contention window size values.
+   */
+  void SetMinCws (std::vector<uint32_t> minCws);
+  /**
+   * Set the minimum contention window size for the given link.
+   *
+   * \param minCw the minimum contention window size.
+   * \param linkId the ID of the given link
+   */
+  void SetMinCw (uint32_t minCw, uint8_t linkId);
+  /**
+   * Set the maximum contention window size. For 11be multi-link devices,
+   * set the maximum contention window size on the first link.
    *
    * \param maxCw the maximum contention window size.
    */
   void SetMaxCw (uint32_t maxCw);
   /**
-   * Set the number of slots that make up an AIFS.
+   * Set the maximum contention window size for each link.
+   * Note that the size of <i>maxCws</i> must match the number
+   * of links.
+   *
+   * \param maxCws the maximum contention window size values.
+   */
+  void SetMaxCws (std::vector<uint32_t> maxCws);
+  /**
+   * Set the maximum contention window size for the given link.
+   *
+   * \param maxCw the maximum contention window size.
+   * \param linkId the ID of the given link
+   */
+  void SetMaxCw (uint32_t maxCw, uint8_t linkId);
+  /**
+   * Set the number of slots that make up an AIFS. For 11be multi-link devices,
+   * set the number of slots that make up an AIFS on the first link.
    *
    * \param aifsn the number of slots that make up an AIFS.
    */
   void SetAifsn (uint8_t aifsn);
+  /**
+   * Set the number of slots that make up an AIFS for each link.
+   * Note that the size of <i>aifsns</i> must match the number
+   * of links.
+   *
+   * \param aifsns the number of slots that make up an AIFS for each link.
+   */
+  void SetAifsns (std::vector<uint8_t> aifsns);
+  /**
+   * Set the number of slots that make up an AIFS for the given link.
+   *
+   * \param aifsn the number of slots that make up an AIFS.
+   * \param linkId the ID of the given link
+   */
+  void SetAifsn (uint8_t aifsn, uint8_t linkId);
   /**
    * Set the TXOP limit.
    *
@@ -155,23 +204,65 @@ public:
    */
   void SetTxopLimit (Time txopLimit);
   /**
-   * Return the minimum contention window size.
+   * Return the minimum contention window size. For 11be multi-link devices,
+   * return the minimum contention window size on the first link.
    *
    * \return the minimum contention window size.
    */
-  virtual uint32_t GetMinCw (void) const;
+  uint32_t GetMinCw (void) const;
   /**
-   * Return the maximum contention window size.
+   * Return the minimum contention window size for each link.
+   *
+   * \return the minimum contention window size values.
+   */
+  std::vector<uint32_t> GetMinCws (void) const;
+  /**
+   * Return the minimum contention window size for the given link.
+   *
+   * \param linkId the ID of the given link
+   * \return the minimum contention window size.
+   */
+  virtual uint32_t GetMinCw (uint8_t linkId) const;
+  /**
+   * Return the maximum contention window size. For 11be multi-link devices,
+   * return the maximum contention window size on the first link.
    *
    * \return the maximum contention window size.
    */
-  virtual uint32_t GetMaxCw (void) const;
+  uint32_t GetMaxCw (void) const;
   /**
-   * Return the number of slots that make up an AIFS.
+   * Return the maximum contention window size for each link.
+   *
+   * \return the maximum contention window size values.
+   */
+  std::vector<uint32_t> GetMaxCws (void) const;
+  /**
+   * Return the maximum contention window size for the given link.
+   *
+   * \param linkId the ID of the given link
+   * \return the maximum contention window size.
+   */
+  virtual uint32_t GetMaxCw (uint8_t linkId) const;
+  /**
+   * Return the number of slots that make up an AIFS. For 11be multi-link devices,
+   * return the number of slots that make up an AIFS on the first link.
    *
    * \return the number of slots that make up an AIFS.
    */
-  virtual uint8_t GetAifsn (void) const;
+  uint8_t GetAifsn (void) const;
+  /**
+   * Return the number of slots that make up an AIFS for each link.
+   *
+   * \return the number of slots that make up an AIFS for each link.
+   */
+  std::vector<uint8_t> GetAifsns (void) const;
+  /**
+   * Return the number of slots that make up an AIFS for the given link.
+   *
+   * \param linkId the ID of the given link
+   * \return the number of slots that make up an AIFS.
+   */
+  virtual uint8_t GetAifsn (uint8_t linkId) const;
   /**
    * Return the TXOP limit.
    *
@@ -179,18 +270,22 @@ public:
    */
   Time GetTxopLimit (void) const;
   /**
-   * Update the value of the CW variable to take into account
+   * Update the value of the CW variable for the given link to take into account
    * a transmission success or a transmission abort (stop transmission
    * of a packet after the maximum number of retransmissions has been
    * reached). By default, this resets the CW variable to minCW.
+   *
+   * \param linkId the ID of the given link
    */
-  void ResetCw (void);
+  void ResetCw (uint8_t linkId);
   /**
-   * Update the value of the CW variable to take into account
+   * Update the value of the CW variable for the given link to take into account
    * a transmission failure. By default, this triggers a doubling
    * of CW (capped by maxCW).
+   *
+   * \param linkId the ID of the given link
    */
-  void UpdateFailedCw (void);
+  void UpdateFailedCw (uint8_t linkId);
 
   /**
    * When sleep operation occurs, if there is a pending packet transmission,
@@ -294,10 +389,13 @@ protected:
   void RequestAccess (void);
 
   /**
-   * \returns the current value of the CW variable. The initial value is
-   *          minCW.
+   * Get the current value of the CW variable for the given link. The initial
+   * value is minCw.
+   *
+   * \param linkId the ID of the given link
+   * \return the current value of the CW variable for the given link
    */
-  uint32_t GetCw (void) const;
+  uint32_t GetCw (uint8_t linkId) const;
   /**
    * Return the current number of backoff slots on the given link.
    *
@@ -337,6 +435,10 @@ protected:
                                                          track of the time at which a backoff was
                                                          started or the time at which the backoff
                                                          counter was last updated */
+    uint32_t cw {0};                                //!< the current contention window
+    uint32_t cwMin {0};                             //!< the minimum contention window
+    uint32_t cwMax {0};                             //!< the maximum contention window
+    uint8_t aifsn {0};                              //!< the AIFSN
   };
 
   /**
@@ -359,19 +461,17 @@ protected:
   Ptr<WifiMac> m_mac;                               //!< the wifi MAC
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
 
-  uint32_t m_cwMin;              //!< the minimum contention window
-  uint32_t m_cwMax;              //!< the maximum contention window
-  uint32_t m_cw;                 //!< the current contention window
   ChannelAccessStatus m_access;  //!< channel access status
 
-  uint8_t m_aifsn;        //!< the AIFSN
   Time m_txopLimit;       //!< the TXOP limit time
 
   /// TracedCallback for backoff trace value typedef
   typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> BackoffValueTracedCallback;
+  /// TracedCallback for CW trace value typedef
+  typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> CwValueTracedCallback;
 
   BackoffValueTracedCallback m_backoffTrace;    //!< backoff trace value
-  TracedValue<uint32_t> m_cwTrace;              //!< CW trace value
+  CwValueTracedCallback m_cwTrace;              //!< CW trace value
 
 private:
   /**

@@ -302,7 +302,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
           // to correctly align the backoff start time at the next slot boundary
           // (performed by the next call to ChannelAccessManager::RequestAccess())
           Time delay = (txop->IsQosTxop () ? Seconds (0)
-                                           : GetSifs () + txop->GetAifsn () * GetSlot ());
+                                           : GetSifs () + txop->GetAifsn (m_linkId) * GetSlot ());
           txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay, m_linkId);
         }
       else
@@ -330,7 +330,7 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop)
   /*
    * EDCAF operations shall be performed at slot boundaries (Sec. 10.22.2.4 of 802.11-2016)
    */
-  Time accessGrantStart = GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ());
+  Time accessGrantStart = GetAccessGrantStart () + (txop->GetAifsn (m_linkId) * GetSlot ());
 
   if (txop->IsQosTxop () && txop->GetBackoffStart (m_linkId) > accessGrantStart)
     {
@@ -358,7 +358,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
     {
       Ptr<Txop> txop = *i;
       if (txop->GetAccessStatus () == Txop::REQUESTED
-          && (!txop->IsQosTxop () || !StaticCast<QosTxop> (txop)->EdcaDisabled ())
+          && (!txop->IsQosTxop () || !StaticCast<QosTxop> (txop)->EdcaDisabled (m_linkId))
           && GetBackoffEndFor (txop) <= Simulator::Now () )
         {
           /**
@@ -478,7 +478,7 @@ ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
   Time mostRecentEvent = std::max ({txop->GetBackoffStart (m_linkId),
-                                    GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ())});
+                                    GetAccessGrantStart () + (txop->GetAifsn (m_linkId) * GetSlot ())});
   NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
   return mostRecentEvent;
@@ -728,7 +728,7 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
           txop->UpdateBackoffSlotsNow (remainingSlots, now, m_linkId);
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
-      txop->ResetCw ();
+      txop->ResetCw (m_linkId);
       txop->m_access = Txop::NOT_REQUESTED;
     }
 
@@ -785,7 +785,7 @@ ChannelAccessManager::NotifyWakeupNow (void)
           txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now (), m_linkId);
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
-      txop->ResetCw ();
+      txop->ResetCw (m_linkId);
       txop->m_access = Txop::NOT_REQUESTED;
       txop->NotifyWakeUp ();
     }
@@ -804,7 +804,7 @@ ChannelAccessManager::NotifyOnNow (void)
           txop->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now (), m_linkId);
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
-      txop->ResetCw ();
+      txop->ResetCw (m_linkId);
       txop->m_access = Txop::NOT_REQUESTED;
       txop->NotifyOn ();
     }

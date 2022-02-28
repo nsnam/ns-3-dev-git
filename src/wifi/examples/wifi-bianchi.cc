@@ -600,12 +600,12 @@ TracePacketReception (std::string context, Ptr<const Packet> p, uint16_t channel
 }
 
 void
-CwTrace (std::string context, uint32_t oldVal, uint32_t newVal)
+CwTrace (std::string context, uint32_t cw, uint8_t /* linkId */)
 {
-  NS_LOG_INFO ("CW time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " val=" << newVal);
+  NS_LOG_INFO ("CW time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " val=" << cw);
   if (tracing)
     {
-      cwTraceFile << Simulator::Now ().GetSeconds () << " " << ContextToNodeId (context) << " " << newVal << std::endl;
+      cwTraceFile << Simulator::Now ().GetSeconds () << " " << ContextToNodeId (context) << " " << cw << std::endl;
     }
 }
 

@@ -592,13 +592,13 @@ void
 ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
 {
   Ptr<TxopTest<TxopType>> txop = CreateObject<TxopTest<TxopType>> (this, m_txop.size ());
-  txop->SetAifsn (aifsn);
   m_txop.push_back (txop);
   m_ChannelAccessManager->Add (txop);
   // the following causes the creation of a link for the txop object
   auto mac = CreateObject<AdhocWifiMac> ();
   mac->SetWifiPhys ({nullptr});
   txop->SetWifiMac (mac);
+  txop->SetAifsn (aifsn);
 }
 
 template <typename TxopType>
