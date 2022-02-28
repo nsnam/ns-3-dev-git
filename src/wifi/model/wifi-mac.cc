@@ -674,16 +674,17 @@ WifiMac::ConfigurePhyDependentParameters (void)
       SetDsssSupported (true);
       cwmin = 31;
       cwmax = 1023;
-      return;
     }
-
-  if (standard >= WIFI_STANDARD_80211g && band == WIFI_PHY_BAND_2_4GHZ)
+  else
     {
-      SetErpSupported (true);
-    }
+      if (standard >= WIFI_STANDARD_80211g && band == WIFI_PHY_BAND_2_4GHZ)
+        {
+          SetErpSupported (true);
+        }
 
-  cwmin = 15;
-  cwmax = 1023;
+      cwmin = 15;
+      cwmax = 1023;
+    }
 
   ConfigureContentionWindow (cwmin, cwmax);
 }
