@@ -466,7 +466,6 @@ private:
   uint8_t m_blockAckThreshold;                          /**< the block ack threshold (use BA mechanism if number of packets in queue reaches
                                                              this value. If this value is 0, block ack is never used. When A-MPDU is enabled,
                                                              block ack mechanism is used regardless of this value) */
-  Time m_currentPacketTimestamp;                        //!< the current packet timestamp
   uint16_t m_blockAckInactivityTimeout;                 //!< the BlockAck inactivity timeout value (in TUs, i.e. blocks of 1024 microseconds)
   Time m_startTxop;                                     //!< the start TXOP time
   Time m_txopDuration;                                  //!< the duration of a TXOP
