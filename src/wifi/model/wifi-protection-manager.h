@@ -46,6 +46,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+  WifiProtectionManager ();
   virtual ~WifiProtectionManager ();
 
   /**
@@ -54,6 +55,12 @@ public:
    * \param mac a pointer to the MAC
    */
   void SetWifiMac (Ptr<WifiMac> mac);
+  /**
+   * Set the ID of the link this Protection Manager is associated with.
+   *
+   * \param linkId the ID of the link this Protection Manager is associated with
+   */
+  void SetLinkId (uint8_t linkId);
 
   /**
    * Determine the protection method to use if the given MPDU is added to the current
@@ -85,6 +92,7 @@ protected:
   virtual void DoDispose (void);
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager
+  uint8_t m_linkId;   //!< ID of the link this Protection Manager is operating on
 };
 
 

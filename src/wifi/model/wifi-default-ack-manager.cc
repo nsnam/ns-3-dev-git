@@ -644,7 +644,7 @@ WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
   Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
   NS_ABORT_MSG_IF (apMac == nullptr, "HE APs only can send Trigger Frames");
 
-  Ptr<HeFrameExchangeManager> heFem = DynamicCast<HeFrameExchangeManager> (m_mac->GetFrameExchangeManager ());
+  auto heFem = DynamicCast<HeFrameExchangeManager> (m_mac->GetFrameExchangeManager (m_linkId));
   NS_ABORT_MSG_IF (heFem == nullptr, "HE APs only can send Trigger Frames");
 
   CtrlTriggerHeader trigger;

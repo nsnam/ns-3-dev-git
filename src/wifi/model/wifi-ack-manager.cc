@@ -40,6 +40,12 @@ WifiAckManager::GetTypeId (void)
   return tid;
 }
 
+WifiAckManager::WifiAckManager ()
+  : m_linkId (0)
+{
+  NS_LOG_FUNCTION (this);
+}
+
 WifiAckManager::~WifiAckManager ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -58,6 +64,13 @@ WifiAckManager::SetWifiMac (Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
+}
+
+void
+WifiAckManager::SetLinkId (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  m_linkId = linkId;
 }
 
 void

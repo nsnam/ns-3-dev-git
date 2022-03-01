@@ -65,10 +65,12 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
       Ptr<WifiProtectionManager> protectionManager = m_protectionManager.Create<WifiProtectionManager> ();
       protectionManager->SetWifiMac (mac);
+      protectionManager->SetLinkId (SINGLE_LINK_OP_ID);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager> ();
       ackManager->SetWifiMac (mac);
+      ackManager->SetLinkId (SINGLE_LINK_OP_ID);
       fem->SetAckManager (ackManager);
 
       // create and install the Multi User Scheduler if this is an HE AP

@@ -47,6 +47,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+  WifiAckManager ();
   virtual ~WifiAckManager ();
 
   /**
@@ -55,6 +56,12 @@ public:
    * \param mac a pointer to the MAC
    */
   void SetWifiMac (Ptr<WifiMac> mac);
+  /**
+   * Set the ID of the link this Acknowledgment Manager is associated with.
+   *
+   * \param linkId the ID of the link this Acknowledgment Manager is associated with
+   */
+  void SetLinkId (uint8_t linkId);
 
   /**
    * Set the QoS Ack policy for the given MPDU, which must be a QoS data frame.
@@ -102,6 +109,7 @@ protected:
   void DoDispose (void) override;
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Acknowledgment Manager
+  uint8_t m_linkId;   //!< ID of the link this Acknowledgment Manager is operating on
 };
 
 

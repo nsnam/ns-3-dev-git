@@ -39,6 +39,12 @@ WifiProtectionManager::GetTypeId (void)
   return tid;
 }
 
+WifiProtectionManager::WifiProtectionManager ()
+  : m_linkId (0)
+{
+  NS_LOG_FUNCTION (this);
+}
+
 WifiProtectionManager::~WifiProtectionManager ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -57,6 +63,13 @@ WifiProtectionManager::SetWifiMac (Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
+}
+
+void
+WifiProtectionManager::SetLinkId (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  m_linkId = linkId;
 }
 
 } //namespace ns3
