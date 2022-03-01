@@ -702,7 +702,7 @@ HtFrameExchangeManager::GetPsduDurationId (Time txDuration, const WifiTxParamete
   // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
   // of 802.11-2016)
-  return std::max (m_edca->GetRemainingTxop () - txDuration, Seconds (0));
+  return std::max (m_edca->GetRemainingTxop (m_linkId) - txDuration, Seconds (0));
 }
 
 void

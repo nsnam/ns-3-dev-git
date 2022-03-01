@@ -85,16 +85,14 @@ QosTxop::GetTypeId (void)
     .AddTraceSource ("TxopTrace",
                      "Trace source for TXOP start and duration times",
                      MakeTraceSourceAccessor (&QosTxop::m_txopTrace),
-                     "ns3::TracedValueCallback::Time")
+                     "ns3::QosTxop::TxopTracedCallback")
   ;
   return tid;
 }
 
 QosTxop::QosTxop (AcIndex ac)
   : Txop (CreateObject<WifiMacQueue> (ac)),
-    m_ac (ac),
-    m_startTxop (Seconds (0)),
-    m_txopDuration (Seconds (0))
+    m_ac (ac)
 {
   NS_LOG_FUNCTION (this);
   m_qosBlockedDestinations = Create<QosBlockedDestinations> ();
@@ -536,38 +534,42 @@ QosTxop::NotifyChannelAccessed (uint8_t linkId, Time txopDuration)
   NS_LOG_FUNCTION (this << +linkId << txopDuration);
 
   NS_ASSERT (txopDuration != Time::Min ());
-  m_startTxop = Simulator::Now ();
-  m_txopDuration = txopDuration;
+  GetLink (linkId).startTxop = Simulator::Now ();
+  GetLink (linkId).txopDuration = txopDuration;
   Txop::NotifyChannelAccessed (linkId);
 }
 
 bool
-QosTxop::IsTxopStarted (void) const
+QosTxop::IsTxopStarted (uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this << !m_startTxop.IsZero ());
-  return (!m_startTxop.IsZero ());
+  auto& link = GetLink (linkId);
+  NS_LOG_FUNCTION (this << !link.startTxop.IsZero ());
+  return (!link.startTxop.IsZero ());
 }
 
 void
 QosTxop::NotifyChannelReleased (uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << +linkId);
+  auto& link = GetLink (linkId);
 
-  if (m_startTxop.IsStrictlyPositive ())
+  if (link.startTxop.IsStrictlyPositive ())
     {
-      NS_LOG_DEBUG ("Terminating TXOP. Duration = " << Simulator::Now () - m_startTxop);
-      m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
+      NS_LOG_DEBUG ("Terminating TXOP. Duration = " << Simulator::Now () - link.startTxop);
+      m_txopTrace (link.startTxop, Simulator::Now () - link.startTxop, linkId);
     }
-  m_startTxop = Seconds (0);
+  link.startTxop = Seconds (0);
   Txop::NotifyChannelReleased (linkId);
 }
 
 Time
-QosTxop::GetRemainingTxop (void) const
+QosTxop::GetRemainingTxop (uint8_t linkId) const
 {
-  NS_ASSERT (m_startTxop.IsStrictlyPositive ());
-  Time remainingTxop = m_txopDuration;
-  remainingTxop -= (Simulator::Now () - m_startTxop);
+  auto& link = GetLink (linkId);
+  NS_ASSERT (link.startTxop.IsStrictlyPositive ());
+
+  Time remainingTxop = link.txopDuration;
+  remainingTxop -= (Simulator::Now () - link.startTxop);
   if (remainingTxop.IsStrictlyNegative ())
     {
       remainingTxop = Seconds (0);

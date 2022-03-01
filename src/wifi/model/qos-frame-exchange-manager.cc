@@ -101,7 +101,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
                                                 cfEndTxVector, m_phy->GetPhyBand ());
 
   // Send the CF-End frame if the remaining duration is long enough to transmit this frame
-  if (m_edca->GetRemainingTxop () > txDuration)
+  if (m_edca->GetRemainingTxop (m_linkId) > txDuration)
     {
       NS_LOG_DEBUG ("Send CF-End frame");
       m_phy->Send (Create<WifiPsdu> (Create<Packet> (), cfEnd), cfEndTxVector);
@@ -119,7 +119,7 @@ QosFrameExchangeManager::PifsRecovery (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_edca != 0);
-  NS_ASSERT (m_edca->IsTxopStarted ());
+  NS_ASSERT (m_edca->IsTxopStarted (m_linkId));
 
   // Release the channel if it has not been idle for the last PIFS interval
   if (m_channelAccessManager->GetAccessGrantStart () - m_phy->GetSifs ()
@@ -196,7 +196,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
   if (backingOff)
     {
       NS_ASSERT (m_edca->GetTxopLimit ().IsStrictlyPositive ());
-      NS_ASSERT (m_edca->IsTxopStarted ());
+      NS_ASSERT (m_edca->IsTxopStarted (m_linkId));
       NS_ASSERT (!m_pifsRecovery);
       NS_ASSERT (!m_initialFrame);
 
@@ -212,8 +212,8 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
       // TXOP. In such a case, we assume that a new TXOP is being started if it
       // elapsed more than TXOPlimit since the start of the paused TXOP. Note
       // that GetRemainingTxop returns 0 iff Now - TXOPstart >= TXOPlimit
-      if (!m_edca->IsTxopStarted ()
-          || (backingOff && m_edca->GetRemainingTxop ().IsZero ()))
+      if (!m_edca->IsTxopStarted (m_linkId)
+          || (backingOff && m_edca->GetRemainingTxop (m_linkId).IsZero ()))
         {
           // starting a new TXOP
           m_edca->NotifyChannelAccessed (m_linkId, txopDuration);
@@ -234,7 +234,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
       // We are continuing a TXOP, check if we can transmit another frame
       NS_ASSERT (!m_initialFrame);
 
-      if (!StartFrameExchange (m_edca, m_edca->GetRemainingTxop (), false))
+      if (!StartFrameExchange (m_edca, m_edca->GetRemainingTxop (m_linkId), false))
         {
           NS_LOG_DEBUG ("Not enough remaining TXOP time");
           return SendCfEndIfNeeded ();
@@ -461,7 +461,7 @@ QosFrameExchangeManager::GetFrameDurationId (const WifiMacHeader& header, uint32
   // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
   // of 802.11-2016)
-  return std::max (m_edca->GetRemainingTxop ()
+  return std::max (m_edca->GetRemainingTxop (m_linkId)
                    - m_phy->CalculateTxDuration (size, txParams.m_txVector, m_phy->GetPhyBand ()),
                    txParams.m_acknowledgment->acknowledgmentTime);
 }
@@ -486,7 +486,7 @@ QosFrameExchangeManager::GetRtsDurationId (const WifiTxVector& rtsTxVector, Time
   // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
   // of 802.11-2016)
-  return std::max (m_edca->GetRemainingTxop ()
+  return std::max (m_edca->GetRemainingTxop (m_linkId)
                    - m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetPhyBand ()),
                    Seconds (0));
 }
@@ -512,7 +512,7 @@ QosFrameExchangeManager::GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector
   // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
   // of 802.11-2016)
-  return std::max (m_edca->GetRemainingTxop ()
+  return std::max (m_edca->GetRemainingTxop (m_linkId)
                    - m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, m_phy->GetPhyBand ()),
                    Seconds (0));
 }
@@ -547,7 +547,7 @@ QosFrameExchangeManager::TransmissionSucceeded (void)
     }
 
   if (m_edca->GetTxopLimit ().IsStrictlyPositive ()
-      && m_edca->GetRemainingTxop () > m_phy->GetSifs ())
+      && m_edca->GetRemainingTxop (m_linkId) > m_phy->GetSifs ())
     {
       NS_LOG_DEBUG ("Schedule another transmission in a SIFS");
       bool (QosFrameExchangeManager::*fp) (Ptr<QosTxop>, Time) = &QosFrameExchangeManager::StartTransmission;

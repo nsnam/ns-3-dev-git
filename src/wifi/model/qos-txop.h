@@ -352,17 +352,19 @@ public:
   uint8_t GetQosQueueSize (uint8_t tid, Mac48Address receiver) const;
 
   /**
-   * Return true if a TXOP has started.
+   * Return true if a TXOP has started on the given link.
    *
+   * \param linkId the ID of the given link
    * \return true if a TXOP has started, false otherwise.
    */
-  virtual bool IsTxopStarted (void) const;
+  virtual bool IsTxopStarted (uint8_t linkId) const;
   /**
-   * Return the remaining duration in the current TXOP.
+   * Return the remaining duration in the current TXOP on the given link.
    *
+   * \param linkId the ID of the given link
    * \return the remaining duration in the current TXOP.
    */
-  virtual Time GetRemainingTxop (void) const;
+  virtual Time GetRemainingTxop (uint8_t linkId) const;
 
   /**
    * Set the minimum contention window size to use while the MU EDCA Timer
@@ -455,6 +457,8 @@ protected:
     /// Destructor (a virtual method is needed to make this struct polymorphic)
     virtual ~QosLinkEntity () = default;
 
+    Time startTxop {0};                         //!< the start TXOP time
+    Time txopDuration {0};                      //!< the duration of a TXOP
     uint32_t muCwMin {0};                       //!< the MU CW minimum
     uint32_t muCwMax {0};                       //!< the MU CW maximum
     uint8_t muAifsn {0};                        //!< the MU AIFSN
@@ -495,13 +499,14 @@ private:
                                                              this value. If this value is 0, block ack is never used. When A-MPDU is enabled,
                                                              block ack mechanism is used regardless of this value) */
   uint16_t m_blockAckInactivityTimeout;                 //!< the BlockAck inactivity timeout value (in TUs, i.e. blocks of 1024 microseconds)
-  Time m_startTxop;                                     //!< the start TXOP time
-  Time m_txopDuration;                                  //!< the duration of a TXOP
   Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response
   Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit BlockAckRequest should be sent upon missed BlockAck Response
 
-  TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
+  /// TracedCallback for TXOP trace typedef
+  typedef TracedCallback<Time /* start time */, Time /* duration */, uint8_t /* link ID*/> TxopTracedCallback;
+
+  TxopTracedCallback m_txopTrace; //!< TXOP trace callback
 };
 
 } //namespace ns3

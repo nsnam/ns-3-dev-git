@@ -1354,8 +1354,9 @@ class BlockAckAggregationDisabledTest : public TestCase
      * Callback for the TxopTrace trace
      * \param startTime TXOP start time
      * \param duration TXOP duration
+     * \param linkId the ID of the link
      */
-    void Trace (Time startTime, Time duration);
+    void Trace (Time startTime, Time duration, uint8_t linkId);
     Time m_max {Seconds (0)};  ///< max TXOP duration
   };
 
@@ -1403,7 +1404,8 @@ private:
 };
 
 void
-BlockAckAggregationDisabledTest::TxopDurationTracer::Trace (Time startTime, Time duration)
+BlockAckAggregationDisabledTest::TxopDurationTracer::Trace (Time startTime, Time duration,
+                                                            uint8_t linkId)
 {
   if (duration > m_max)
     {

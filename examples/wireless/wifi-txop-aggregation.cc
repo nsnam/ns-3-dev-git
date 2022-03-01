@@ -84,13 +84,14 @@ struct TxopDurationTracer
    *
    * \param startTime TXOP start time
    * \param duration TXOP duration
+   * \param linkId the ID of the link
    */
-  void Trace (Time startTime, Time duration);
+  void Trace (Time startTime, Time duration, uint8_t linkId);
   Time m_max {Seconds (0)};     //!< maximum TXOP duration
 };
 
 void
-TxopDurationTracer::Trace (Time startTime, Time duration)
+TxopDurationTracer::Trace (Time startTime, Time duration, uint8_t linkId)
 {
   if (duration > m_max)
     {
