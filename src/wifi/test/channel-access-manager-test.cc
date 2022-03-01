@@ -65,13 +65,13 @@ private:
   /// \copydoc ns3::Txop::DoDispose
   void DoDispose (void) override;
   /// \copydoc ns3::Txop::NotifyChannelAccessed
-  void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
+  void NotifyChannelAccessed (uint8_t linkId, Time txopDuration = Seconds (0)) override;
   /// \copydoc ns3::Txop::HasFramesToTransmit
   bool HasFramesToTransmit (void) override;
   /// \copydoc ns3::Txop::NotifySleep
-  void NotifySleep (void) override;
+  void NotifySleep (uint8_t linkId) override;
   /// \copydoc ns3::Txop::NotifyWakeUp
-  void NotifyWakeUp (void) override;
+  void NotifyWakeUp (uint8_t linkId) override;
   /// \copydoc ns3::Txop::GenerateBackoff
   void GenerateBackoff (uint8_t linkId) override;
 
@@ -187,7 +187,7 @@ public:
    */
   bool StartTransmission (Ptr<Txop> dcf) override
   {
-    dcf->NotifyChannelAccessed ();
+    dcf->NotifyChannelAccessed (0);
     return true;
   }
   /// \copydoc ns3::FrameExchangeManager::NotifyInternalCollision
@@ -420,9 +420,9 @@ TxopTest<TxopType>::DoDispose (void)
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::NotifyChannelAccessed (Time txopDuration)
+TxopTest<TxopType>::NotifyChannelAccessed (uint8_t linkId, Time txopDuration)
 {
-  Txop::m_access = Txop::NOT_REQUESTED;
+  Txop::GetLink (0).access = Txop::NOT_REQUESTED;
   m_test->NotifyAccessGranted (m_i);
 }
 
@@ -442,13 +442,13 @@ TxopTest<TxopType>::HasFramesToTransmit (void)
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::NotifySleep (void)
+TxopTest<TxopType>::NotifySleep (uint8_t linkId)
 {
 }
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::NotifyWakeUp (void)
+TxopTest<TxopType>::NotifyWakeUp (uint8_t linkId)
 {
 }
 
@@ -524,7 +524,7 @@ ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching (void)
           state->m_expectedGrants.pop_front ();
           NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
         }
-      state->Txop::m_access = Txop::NOT_REQUESTED;
+      state->Txop::GetLink (0).access = Txop::NOT_REQUESTED;
     }
 }
 

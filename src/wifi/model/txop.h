@@ -288,18 +288,22 @@ public:
   void UpdateFailedCw (uint8_t linkId);
 
   /**
-   * When sleep operation occurs, if there is a pending packet transmission,
-   * it will be reinserted to the front of the queue.
+   * Notify that the given link switched to sleep mode.
+   *
+   * \param linkId the ID of the given link
    */
-  virtual void NotifySleep (void);
+  virtual void NotifySleep (uint8_t linkId);
   /**
    * When off operation occurs, the queue gets cleaned up.
    */
   virtual void NotifyOff (void);
   /**
-   * When wake up operation occurs, channel access will be restarted.
+   * When wake up operation occurs on a link, channel access on that link
+   * will be restarted.
+   *
+   * \param linkId the ID of the link
    */
-  virtual void NotifyWakeUp (void);
+  virtual void NotifyWakeUp (uint8_t linkId);
   /**
    * When on operation occurs, channel access will be started.
    */
@@ -317,11 +321,12 @@ public:
 
   /**
    * Called by the FrameExchangeManager to notify that channel access has
-   * been granted for the given amount of time.
+   * been granted on the given link for the given amount of time.
    *
+   * \param linkId the ID of the given link
    * \param txopDuration the duration of the TXOP gained (zero for DCF)
    */
-  virtual void NotifyChannelAccessed (Time txopDuration = Seconds (0));
+  virtual void NotifyChannelAccessed (uint8_t linkId, Time txopDuration = Seconds (0));
   /**
    * Called by the FrameExchangeManager to notify the completion of the transmissions.
    * This method generates a new backoff and restarts access if needed.
@@ -342,9 +347,10 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
-   * \return the current channel access status.
+   * \param linkId the ID of the given link
+   * \return the current channel access status for the given link
    */
-  virtual ChannelAccessStatus GetAccessStatus (void) const;
+  virtual ChannelAccessStatus GetAccessStatus (uint8_t linkId) const;
 
   /**
    * \param nSlots the number of slots of the backoff.
@@ -364,9 +370,11 @@ protected:
 
   /* Txop notifications forwarded here */
   /**
-   * Notify that access request has been received.
+   * Notify that access request has been received for the given link.
+   *
+   * \param linkId the ID of the given link
    */
-  virtual void NotifyAccessRequested (void);
+  virtual void NotifyAccessRequested (uint8_t linkId);
 
   /**
    * Check if the Txop has frames to transmit.
@@ -380,13 +388,17 @@ protected:
    */
   virtual void GenerateBackoff (uint8_t linkId);
   /**
-   * Request access from Txop if needed.
+   * Request access from Txop on the given link if needed.
+   *
+   * \param linkId the ID of the given link
    */
-  virtual void StartAccessIfNeeded (void);
+  virtual void StartAccessIfNeeded (uint8_t linkId);
   /**
-   * Request access to the ChannelAccessManager
+   * Request access to the ChannelAccessManager associated with the given link
+   *
+   * \param linkId the ID of the given link
    */
-  void RequestAccess (void);
+  void RequestAccess (uint8_t linkId);
 
   /**
    * Get the current value of the CW variable for the given link. The initial
@@ -439,6 +451,7 @@ protected:
     uint32_t cwMin {0};                             //!< the minimum contention window
     uint32_t cwMax {0};                             //!< the maximum contention window
     uint8_t aifsn {0};                              //!< the AIFSN
+    ChannelAccessStatus access {NOT_REQUESTED};     //!< channel access status
   };
 
   /**
@@ -460,8 +473,6 @@ protected:
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
   Ptr<WifiMac> m_mac;                               //!< the wifi MAC
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
-
-  ChannelAccessStatus m_access;  //!< channel access status
 
   Time m_txopLimit;       //!< the TXOP limit time
 

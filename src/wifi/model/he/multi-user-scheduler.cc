@@ -152,7 +152,7 @@ MultiUserScheduler::AccessReqTimeout (void)
   // request channel access if not requested yet
   auto edca = m_apMac->GetQosTxop (m_accessReqAc);
 
-  if (edca->GetAccessStatus () == Txop::NOT_REQUESTED)
+  if (edca->GetAccessStatus (SINGLE_LINK_OP_ID) == Txop::NOT_REQUESTED)
     {
       m_apMac->GetChannelAccessManager ()->RequestAccess (edca);
     }

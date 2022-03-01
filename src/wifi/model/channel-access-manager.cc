@@ -291,7 +291,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
    *    with that AC has now become non-empty and any other transmit queues
    *    associated with that AC are empty; the medium is busy on the primary channel
    */
-  if (!txop->HasFramesToTransmit () && txop->GetAccessStatus () != Txop::GRANTED
+  if (!txop->HasFramesToTransmit () && txop->GetAccessStatus (m_linkId) != Txop::GRANTED
       && txop->GetBackoffSlots (m_linkId) == 0)
     {
       if (!IsBusy ())
@@ -343,8 +343,8 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop)
     }
 
   UpdateBackoff ();
-  NS_ASSERT (txop->GetAccessStatus () != Txop::REQUESTED);
-  txop->NotifyAccessRequested ();
+  NS_ASSERT (txop->GetAccessStatus (m_linkId) != Txop::REQUESTED);
+  txop->NotifyAccessRequested (m_linkId);
   DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
 }
@@ -357,7 +357,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
   for (Txops::iterator i = m_txops.begin (); i != m_txops.end (); k++)
     {
       Ptr<Txop> txop = *i;
-      if (txop->GetAccessStatus () == Txop::REQUESTED
+      if (txop->GetAccessStatus (m_linkId) == Txop::REQUESTED
           && (!txop->IsQosTxop () || !StaticCast<QosTxop> (txop)->EdcaDisabled (m_linkId))
           && GetBackoffEndFor (txop) <= Simulator::Now () )
         {
@@ -372,7 +372,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
           for (Txops::iterator j = i; j != m_txops.end (); j++, k++)
             {
               Ptr<Txop> otherTxop = *j;
-              if (otherTxop->GetAccessStatus () == Txop::REQUESTED
+              if (otherTxop->GetAccessStatus (m_linkId) == Txop::REQUESTED
                   && GetBackoffEndFor (otherTxop) <= Simulator::Now ())
                 {
                   NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" <<
@@ -541,7 +541,7 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded (void)
   Time expectedBackoffEnd = Simulator::GetMaximumSimulationTime ();
   for (auto txop : m_txops)
     {
-      if (txop->GetAccessStatus () == Txop::REQUESTED)
+      if (txop->GetAccessStatus (m_linkId) == Txop::REQUESTED)
         {
           Time tmp = GetBackoffEndFor (txop);
           if (tmp > Simulator::Now ())
@@ -729,7 +729,7 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw (m_linkId);
-      txop->m_access = Txop::NOT_REQUESTED;
+      txop->GetLink (m_linkId).access = Txop::NOT_REQUESTED;
     }
 
   NS_LOG_DEBUG ("switching start for " << duration);
@@ -750,7 +750,7 @@ ChannelAccessManager::NotifySleepNow (void)
   //Reset backoffs
   for (auto txop : m_txops)
     {
-      txop->NotifySleep ();
+      txop->NotifySleep (m_linkId);
     }
 }
 
@@ -786,8 +786,8 @@ ChannelAccessManager::NotifyWakeupNow (void)
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw (m_linkId);
-      txop->m_access = Txop::NOT_REQUESTED;
-      txop->NotifyWakeUp ();
+      txop->GetLink (m_linkId).access = Txop::NOT_REQUESTED;
+      txop->NotifyWakeUp (m_linkId);
     }
 }
 
@@ -805,7 +805,7 @@ ChannelAccessManager::NotifyOnNow (void)
           NS_ASSERT (txop->GetBackoffSlots (m_linkId) == 0);
         }
       txop->ResetCw (m_linkId);
-      txop->m_access = Txop::NOT_REQUESTED;
+      txop->GetLink (m_linkId).access = Txop::NOT_REQUESTED;
       txop->NotifyOn ();
     }
 }

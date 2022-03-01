@@ -292,7 +292,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
       return false;
     }
 
-  m_dcf->NotifyChannelAccessed ();
+  m_dcf->NotifyChannelAccessed (m_linkId);
   Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
   NS_ASSERT (mpdu != 0);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());

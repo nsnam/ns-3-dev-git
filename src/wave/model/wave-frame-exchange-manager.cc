@@ -132,7 +132,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
       return false;
     }
 
-  m_dcf->NotifyChannelAccessed ();
+  m_dcf->NotifyChannelAccessed (0);
   Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
   NS_ASSERT (mpdu != 0);
 

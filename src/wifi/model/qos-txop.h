@@ -88,7 +88,7 @@ public:
 
   bool IsQosTxop (void) const override;
   bool HasFramesToTransmit (void) override;
-  void NotifyChannelAccessed (Time txopDuration) override;
+  void NotifyChannelAccessed (uint8_t linkId, Time txopDuration) override;
   void NotifyChannelReleased (uint8_t linkId) override;
   void SetDroppedMpduCallback (DroppedMpdu callback) override;
 

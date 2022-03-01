@@ -95,8 +95,7 @@ Txop::Txop ()
 }
 
 Txop::Txop (Ptr<WifiMacQueue> queue)
-  : m_queue (queue),
-    m_access (NOT_REQUESTED)
+  : m_queue (queue)
 {
   NS_LOG_FUNCTION (this);
   m_rng = CreateObject<UniformRandomVariable> ();
@@ -428,7 +427,7 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
       GenerateBackoff (SINGLE_LINK_OP_ID);
     }
   m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
-  StartAccessIfNeeded ();
+  StartAccessIfNeeded (0);  // TODO use appropriate linkId
 }
 
 int64_t
@@ -440,12 +439,12 @@ Txop::AssignStreams (int64_t stream)
 }
 
 void
-Txop::StartAccessIfNeeded (void)
+Txop::StartAccessIfNeeded (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
+  NS_LOG_FUNCTION (this << +linkId);
+  if (HasFramesToTransmit () && GetLink (linkId).access == NOT_REQUESTED)
     {
-      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
+      m_mac->GetChannelAccessManager (linkId)->RequestAccess (this);
     }
 }
 
@@ -461,43 +460,44 @@ Txop::DoInitialize ()
 }
 
 Txop::ChannelAccessStatus
-Txop::GetAccessStatus (void) const
+Txop::GetAccessStatus (uint8_t linkId) const
 {
-  return m_access;
+  return GetLink (linkId).access;
 }
 
 void
-Txop::NotifyAccessRequested (void)
+Txop::NotifyAccessRequested (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  m_access = REQUESTED;
+  NS_LOG_FUNCTION (this << +linkId);
+  GetLink (linkId).access = REQUESTED;
 }
 
 void
-Txop::NotifyChannelAccessed (Time txopDuration)
+Txop::NotifyChannelAccessed (uint8_t linkId, Time txopDuration)
 {
-  NS_LOG_FUNCTION (this << txopDuration);
-  m_access = GRANTED;
+  NS_LOG_FUNCTION (this << +linkId << txopDuration);
+  GetLink (linkId).access = GRANTED;
 }
 
 void
 Txop::NotifyChannelReleased (uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << +linkId);
-  m_access = NOT_REQUESTED;
+  GetLink (linkId).access = NOT_REQUESTED;
   GenerateBackoff (linkId);
   if (HasFramesToTransmit ())
     {
-      Simulator::ScheduleNow (&Txop::RequestAccess, this);
+      Simulator::ScheduleNow (&Txop::RequestAccess, this, linkId);
     }
 }
 
 void
-Txop::RequestAccess (void)
+Txop::RequestAccess (uint8_t linkId)
 {
-  if (m_access == NOT_REQUESTED)
+  NS_LOG_FUNCTION (this << +linkId);
+  if (GetLink (linkId).access == NOT_REQUESTED)
     {
-      m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
+      m_mac->GetChannelAccessManager (linkId)->RequestAccess (this);
     }
 }
 
@@ -511,9 +511,9 @@ Txop::GenerateBackoff (uint8_t linkId)
 }
 
 void
-Txop::NotifySleep (void)
+Txop::NotifySleep (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
 }
 
 void
@@ -524,17 +524,20 @@ Txop::NotifyOff (void)
 }
 
 void
-Txop::NotifyWakeUp (void)
+Txop::NotifyWakeUp (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  StartAccessIfNeeded ();
+  NS_LOG_FUNCTION (this << +linkId);
+  StartAccessIfNeeded (linkId);
 }
 
 void
-Txop::NotifyOn (void)
+Txop::NotifyOn ()
 {
   NS_LOG_FUNCTION (this);
-  StartAccessIfNeeded ();
+  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+    {
+      StartAccessIfNeeded (linkId);
+    }
 }
 
 bool

@@ -216,7 +216,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
           || (backingOff && m_edca->GetRemainingTxop ().IsZero ()))
         {
           // starting a new TXOP
-          m_edca->NotifyChannelAccessed (txopDuration);
+          m_edca->NotifyChannelAccessed (m_linkId, txopDuration);
 
           if (StartFrameExchange (m_edca, txopDuration, true))
             {
@@ -248,7 +248,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
 
   if (StartFrameExchange (m_edca, Time::Min (), true))
     {
-      m_edca->NotifyChannelAccessed (Seconds (0));
+      m_edca->NotifyChannelAccessed (m_linkId, Seconds (0));
       return true;
     }
 

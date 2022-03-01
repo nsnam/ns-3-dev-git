@@ -531,14 +531,14 @@ QosTxop::GetBlockAckType (Mac48Address recipient, uint8_t tid) const
 }
 
 void
-QosTxop::NotifyChannelAccessed (Time txopDuration)
+QosTxop::NotifyChannelAccessed (uint8_t linkId, Time txopDuration)
 {
-  NS_LOG_FUNCTION (this << txopDuration);
+  NS_LOG_FUNCTION (this << +linkId << txopDuration);
 
   NS_ASSERT (txopDuration != Time::Min ());
   m_startTxop = Simulator::Now ();
   m_txopDuration = txopDuration;
-  Txop::NotifyChannelAccessed ();
+  Txop::NotifyChannelAccessed (linkId);
 }
 
 bool
@@ -582,7 +582,7 @@ QosTxop::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
   m_queue->PushFront (Create<WifiMacQueueItem> (packet, hdr));
-  if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
+  if (HasFramesToTransmit () && GetLink (0).access == NOT_REQUESTED)  // TODO use appropriate linkId
     {
       m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
     }
@@ -617,7 +617,7 @@ QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address r
       m_baManager->NotifyAgreementRejected (recipient, tid);
     }
 
-  if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
+  if (HasFramesToTransmit () && GetLink (0).access == NOT_REQUESTED)  // TODO use appropriate linkId
     {
       m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
     }
@@ -680,7 +680,7 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
       m_baManager->NotifyAgreementNoReply (recipient, tid);
       Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
       GenerateBackoff (SINGLE_LINK_OP_ID);
-      if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
+      if (HasFramesToTransmit () && GetLink (SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
         {
           m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
         }
