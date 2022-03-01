@@ -20,12 +20,12 @@ foreach(
 endforeach()
 
 build_lib_example(
-    NAME nix-double-wifi
-    SOURCE_FILES nix-double-wifi.cc
-    LIBRARIES_TO_LINK
-      ${libpoint-to-point}
-      ${libwifi}
-      ${libapplications}
-      ${libinternet}
-      ${libnix-vector-routing}
-  )
+  NAME nix-double-wifi
+  SOURCE_FILES nix-double-wifi.cc
+  LIBRARIES_TO_LINK
+    ${libpoint-to-point}
+    ${libwifi}
+    ${libapplications}
+    ${libinternet}
+    ${libnix-vector-routing}
+)

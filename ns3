@@ -88,29 +88,40 @@ def parse_args(argv):
                                   help='Compile NS-3 with the given C++ standard',
                                   type=str, default=None)
 
-    parser_configure = on_off_argument(parser_configure, "asserts", "the asserts regardless of the compile mode")
-    parser_configure = on_off_argument(parser_configure, "des-metrics",
-                                       "Logging all events in a json file with the name of the executable "
-                                       "(which must call CommandLine::Parse(argc, argv)")
-    parser_configure = on_off_argument(parser_configure, "build-version",
-                                       "embedding git changes as a build version during build")
-    parser_configure = on_off_argument(parser_configure, "dpdk", "the fd-net-device DPDK features")
-    parser_configure = on_off_argument(parser_configure, "examples", "the ns-3 examples")
-    parser_configure = on_off_argument(parser_configure, "gcov", "code coverage analysis")
-    parser_configure = on_off_argument(parser_configure, "gtk", "GTK support in ConfigStore")
-    parser_configure = on_off_argument(parser_configure, "logs", "the logs regardless of the compile mode")
-    parser_configure = on_off_argument(parser_configure, "mpi", "the MPI support for distributed simulation")
-    parser_configure = on_off_argument(parser_configure, "python-bindings", "python bindings")
-    parser_configure = on_off_argument(parser_configure, "tests", "the ns-3 tests")
-    parser_configure = on_off_argument(parser_configure, "sanitizers",
-                                       "address, memory leaks and undefined behavior sanitizers")
-    parser_configure = on_off_argument(parser_configure, "static", "Build a single static library with all ns-3",
-                                       "Restore the shared libraries")
-    parser_configure = on_off_argument(parser_configure, "sudo", "use of sudo to setup suid bits on ns3 executables.")
-    parser_configure = on_off_argument(parser_configure, "verbose", "printing of additional build system messages")
-    parser_configure = on_off_argument(parser_configure, "warnings", "compiler warnings")
-    parser_configure = on_off_argument(parser_configure, "werror", "Treat compiler warnings as errors",
-                                       "Treat compiler warnings as warnings")
+    # On-Off options
+    # First positional is transformed into --enable-option --disable-option
+    # Second positional is used for description "Enable %s" % second positional/"Disable %s" % second positional
+    # When an optional third positional is given, the second is used as is as the enable description
+    # and the third is used as is as the disable description
+    on_off_options = [
+        ("asserts", "the asserts regardless of the compile mode"),
+        ("des-metrics", "Logging all events in a json file with the name of the executable "
+                        "(which must call CommandLine::Parse(argc, argv)"
+         ),
+        ("build-version", "embedding git changes as a build version during build"),
+        ("dpdk", "the fd-net-device DPDK features"),
+        ("examples", "the ns-3 examples"),
+        ("gcov", "code coverage analysis"),
+        ("gsl", "GNU Scientific Library (GSL) features"),
+        ("gtk", "GTK support in ConfigStore"),
+        ("logs", "the logs regardless of the compile mode"),
+        ("mpi", "the MPI support for distributed simulation"),
+        ("python-bindings", "python bindings"),
+        ("tests", "the ns-3 tests"),
+        ("sanitizers", "address, memory leaks and undefined behavior sanitizers"),
+        ("static", "Build a single static library with all ns-3",
+                   "Restore the shared libraries"
+         ),
+        ("sudo", "use of sudo to setup suid bits on ns3 executables."),
+        ("verbose", "printing of additional build system messages"),
+        ("warnings", "compiler warnings"),
+        ("werror", "Treat compiler warnings as errors",
+                   "Treat compiler warnings as warnings"
+         ),
+    ]
+    for on_off_option in on_off_options:
+        parser_configure = on_off_argument(parser_configure, *on_off_option)
+
     parser_configure.add_argument('--enable-modules',
                                   help='List of modules to build (e.g. core;network;internet)',
                                   action="store", type=str, default=None)
@@ -463,6 +474,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                ("ENABLE_BUILD_VERSION", "build_version"),
                ("ENABLE_SUDO", "sudo"),
                ("EXAMPLES", "examples"),
+               ("GSL", "gsl"),
                ("GTK3", "gtk"),
                ("LOG", "logs"),
                ("MPI", "mpi"),
