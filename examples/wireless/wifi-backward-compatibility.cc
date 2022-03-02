@@ -39,7 +39,7 @@
 // network where the AP and the station use different 802.11 standards.
 //
 // It outputs the throughput for a given configuration: user can specify
-// the 802.11 versions for the AT and the station as well as their rate
+// the 802.11 versions for the AP and the station as well as their rate
 // adaptation algorithms. It also allows to decide whether the station,
 // the AP or both has/have traffic to send.
 //
