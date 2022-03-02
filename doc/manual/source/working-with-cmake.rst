@@ -681,16 +681,206 @@ Linking third-party libraries
 Depending on a third-party library is a bit more complicated as we have multiple
 ways to handle that within CMake.
 
+.. _Linking third-party libraries without CMake or PkgConfig support:
+
 Linking third-party libraries without CMake or PkgConfig support
 ================================================================
 
 When the third-party library you want to use do not export CMake files to use
 ``find_package`` or PkgConfig files to use ``pkg_check_modules``, we need to 
 search for the headers and libraries manually. To simplify this process,
-we include the macro ``find_external_library`` that searches for libraries and header include directories,
-exporting results similarly to ``find_package``.
+we include the macro ``find_external_library`` that searches for libraries and
+header include directories, exporting results similarly to ``find_package``.
 
-We use a commented version of the ``CMakeLists.txt`` file from the Openflow module as an example:
+Here is how it works:
+
+.. sourcecode:: cmake
+
+  function(find_external_library)
+    # Parse arguments
+    set(options QUIET)
+    set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
+    set(multiValueArgs HEADER_NAMES LIBRARY_NAMES PATH_SUFFIXES SEARCH_PATHS)
+    cmake_parse_arguments(
+      "FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+    )
+
+    # Set the external package/dependency name
+    set(name ${FIND_LIB_DEPENDENCY_NAME})
+
+    # We process individual and list of headers and libraries by transforming them
+    # into lists
+    set(library_names "${FIND_LIB_LIBRARY_NAME};${FIND_LIB_LIBRARY_NAMES}")
+    set(header_names "${FIND_LIB_HEADER_NAME};${FIND_LIB_HEADER_NAMES}")
+
+    # Just changing the parsed argument name back to something shorter
+    set(search_paths ${FIND_LIB_SEARCH_PATHS})
+    set(path_suffixes "${FIND_LIB_PATH_SUFFIXES}")
+
+    set(not_found_libraries)
+    set(library_dirs)
+    set(libraries)
+
+    # For each of the library names in LIBRARY_NAMES or LIBRARY_NAME
+    foreach(library ${library_names})
+      # We mark this value is advanced not to pollute the configuration with
+      # ccmake with the cache variables used internally
+      mark_as_advanced(${name}_library_internal_${library})
+
+      # We search for the library named ${library} and store the results in
+      # ${name}_library_internal_${library}
+      find_library(
+        ${name}_library_internal_${library} ${library}
+        HINTS ${search_paths}
+              ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
+              ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install
+              # directory (e.g. /usr/)
+              ENV
+              LD_LIBRARY_PATH # Search for libraries in LD_LIBRARY_PATH
+              # directories
+              ENV
+              PATH # Search for libraries in PATH directories
+        PATH_SUFFIXES /build /lib /build/lib / /bin ${path_suffixes}
+      )
+      # Note: the PATH_SUFFIXES above apply to *ALL* PATHS and HINTS Which
+      # translates to CMake searching on standard library directories
+      # CMAKE_SYSTEM_PREFIX_PATH, user-settable CMAKE_PREFIX_PATH or
+      # CMAKE_LIBRARY_PATH and the directories listed above
+      #
+      # e.g.  from Ubuntu 22.04 CMAKE_SYSTEM_PREFIX_PATH =
+      # /usr/local;/usr;/;/usr/local;/usr/X11R6;/usr/pkg;/opt
+      #
+      # Searched directories without suffixes
+      #
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[0] = /usr/local/
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[3] = /usr/local ${CMAKE_SYSTEM_PREFIX_PATH}[4]
+      # = /usr/X11R6 ${CMAKE_SYSTEM_PREFIX_PATH}[5] = /usr/pkg
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt ${search_paths}[0] ...
+      # ${search_paths}[n] ${CMAKE_OUTPUT_DIRECTORY} ${CMAKE_INSTALL_PREFIX}
+      # ${LD_LIBRARY_PATH}[0] ... ${LD_LIBRARY_PATH}[m] ${PATH}[0] ... ${PATH}[m]
+      #
+      # Searched directories with suffixes include all of the directories above
+      # plus all suffixes PATH_SUFFIXES /build /lib /build/lib / /bin
+      # ${path_suffixes}
+      #
+      # /usr/local/build /usr/local/lib /usr/local/build/lib /usr/local/bin
+      # /usr/local/${path_suffixes}[0] ... /usr/local/${path_suffixes}[k]
+      #
+      # /usr/build /usr/lib /usr/build/lib ... ${PATH}[m]/${path_suffixes}[k]
+
+      # After searching the library, the internal variable should have either the
+      # absolute path to the library or the name of the variable appended with
+      # -NOTFOUND
+      if("${${name}_library_internal_${library}}" STREQUAL
+         "${name}_library_internal_${library}-NOTFOUND"
+      )
+        # We keep track of libraries that were not found
+        list(APPEND not_found_libraries ${library})
+      else()
+        # We get the name of the parent directory of the library and append the
+        # library to a list of found libraries
+        get_filename_component(
+          ${name}_library_dir_internal ${${name}_library_internal_${library}}
+          DIRECTORY
+        ) # e.g. lib/openflow.(so|dll|dylib|a) -> lib
+        list(APPEND library_dirs ${${name}_library_dir_internal})
+        list(APPEND libraries ${${name}_library_internal_${library}})
+      endif()
+    endforeach()
+
+    # For each library that was found (e.g. /usr/lib/pthread.so), get their parent
+    # directory (/usr/lib) and its parent (/usr)
+    set(parent_dirs)
+    foreach(libdir ${library_dirs})
+      get_filename_component(parent_libdir ${libdir} DIRECTORY)
+      get_filename_component(parent_parent_libdir ${parent_libdir} DIRECTORY)
+      list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
+    endforeach()
+
+    set(not_found_headers)
+    set(include_dirs)
+    foreach(header ${header_names})
+      # The same way with libraries, we mark the internal variable as advanced not
+      # to pollute ccmake configuration with variables used internally
+      mark_as_advanced(${name}_header_internal_${header})
+
+      # Here we search for the header file named ${header} and store the result in
+      # ${name}_header_internal_${header}
+      find_file(
+        ${name}_header_internal_${header} ${header}
+        HINTS ${search_paths} ${parent_dirs}
+              ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
+              ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
+        # directory (e.g. /usr/)
+        PATH_SUFFIXES
+          /build
+          /include
+          /build/include
+          /build/include/${name}
+          /include/${name}
+          /${name}
+          /
+          ${path_suffixes}
+      )
+      # The same way we did with libraries, here we search on
+      # CMAKE_SYSTEM_PREFIX_PATH, along with user-settable ${search_paths}, the
+      # parent directories from the libraries, CMAKE_OUTPUT_DIRECTORY and
+      # CMAKE_INSTALL_PREFIX
+      #
+      # And again, for each of them, for every suffix listed /usr/local/build
+      # /usr/local/include /usr/local/build/include
+      # /usr/local/build/include/${name} /usr/local/include/${name}
+      # /usr/local/${name} /usr/local/ /usr/local/${path_suffixes}[0] ...
+      # /usr/local/${path_suffixes}[k] ...
+
+      # If the header file was not found, append to the not-found list
+      if("${${name}_header_internal_${header}}" STREQUAL
+         "${name}_header_internal_${header}-NOTFOUND"
+      )
+        list(APPEND not_found_headers ${header})
+      else()
+        # If the header file was found, get their directories and the parent of
+        # their directories to add as include directories
+        get_filename_component(
+          header_include_dir ${${name}_header_internal_${header}} DIRECTORY
+        ) # e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
+        get_filename_component(
+          header_include_dir2 ${header_include_dir} DIRECTORY
+        ) # e.g. include/(click) -> #include <click/simclick.h> should work
+        list(APPEND include_dirs ${header_include_dir} ${header_include_dir2})
+      endif()
+    endforeach()
+
+    # Remove duplicate include directories
+    if(include_dirs)
+      list(REMOVE_DUPLICATES include_dirs)
+    endif()
+
+    # If we find both library and header, we export their values
+    if((NOT not_found_libraries}) AND (NOT not_found_headers))
+      set(${name}_INCLUDE_DIRS "${include_dirs}" PARENT_SCOPE)
+      set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
+      set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
+      set(${name}_FOUND TRUE PARENT_SCOPE)
+      set(status_message "find_external_library: ${name} was found.")
+    else()
+      set(${name}_INCLUDE_DIRS PARENT_SCOPE)
+      set(${name}_LIBRARIES PARENT_SCOPE)
+      set(${name}_HEADER PARENT_SCOPE)
+      set(${name}_FOUND FALSE PARENT_SCOPE)
+      set(status_message
+          "find_external_library: ${name} was not found. Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\"."
+      )
+    endif()
+
+    if(NOT ${FIND_LIB_QUIET})
+      message(STATUS "${status_message}")
+    endif()
+  endfunction()
+
+A commented version of the Openflow module ``CMakeLists.txt`` has an 
+example of ``find_external_library`` usage.
 
 .. sourcecode:: cmake
 
@@ -730,7 +920,7 @@ We use a commented version of the ``CMakeLists.txt`` file from the Openflow modu
       DEPENDENCY_NAME openflow
       HEADER_NAME openflow.h
       LIBRARY_NAME openflow
-      SEARCH_PATHS ${NS3_WITH_OPENFLOW}
+      SEARCH_PATHS ${NS3_WITH_OPENFLOW} # user-settable search path, empty by default
     )
 
     # Check if header and library were found, 
@@ -758,6 +948,10 @@ We use a commented version of the ``CMakeLists.txt`` file from the Openflow modu
 
     # Here we consume the include directories found by 
     # find_external_library
+    #
+    # This will make the following work:
+    #  include<openflow/openflow.h>
+    #  include<openflow.h>
     include_directories(${openflow_INCLUDE_DIRS})
 
     # Manually set definitions
@@ -800,19 +994,160 @@ Linking third-party libraries using CMake's find_package
 ========================================================
 
 Assume we have a module with optional features that rely on a third-party library
-that provides a FindThirdPartyPackage.cmake. This Find.cmake file can be distributed
+that provides a FindThirdPartyPackage.cmake. This ``Find${Package}.cmake`` file can be distributed
 by `CMake itself`_, via library/package managers (APT, Pacman, 
 `VcPkg`_), or included to the project tree in the build-support/3rd-party directory.
 
 .. _CMake itself: https://github.com/Kitware/CMake/tree/master/Modules
 .. _Vcpkg: https://github.com/Microsoft/vcpkg#using-vcpkg-with-cmake
 
-This CMake file can be used to import the third-party library into the ns-3 project
-and used to enable optional features, add include directories and get a list of 
-libraries that we can link to our modules.
+When ``find_package(${Package})`` is called, the ``Find${Package}.cmake`` file gets processed,
+and multiple variables are set. There is no hard standard in the name of those variables, nor if
+they should follow the modern CMake usage, where just linking to the library will include 
+associated header directories, forward compile flags and so on. 
 
-We use a modified version of the ``CMakeLists.xt`` file from the Stats module as an example:
+We assume the old CMake style is the one being used, which means we need to include the include
+directories provided by the ``Find${Package}.cmake module``, usually exported as a variable 
+``${Package}_INCLUDE_DIRS``, and get a list of libraries for that module so that they can be 
+added to the list of libraries to link of the ns-3 modules. Libraries are usually exported as
+the variable ``${Package}_LIBRARIES``.
 
+As an example for the above, we use the Boost library 
+(excerpt from ``macros-and-definitions.cmake`` and ``src/core/CMakeLists.txt``):
+
+.. sourcecode:: cmake
+
+  # https://cmake.org/cmake/help/v3.10/module/FindBoost.html?highlight=module%20find#module:FindBoost
+  find_package(Boost)
+
+  # It is recommended to create either an empty list that is conditionally filled
+  # and later included in the LIBRARIES_TO_LINK list unconditionally
+  set(boost_libraries)
+
+  # If Boost is found, Boost_FOUND will be set to true, which we can then test
+  if(${Boost_FOUND})
+    # This will export Boost include directories to ALL subdirectories
+    # of the current CMAKE_CURRENT_SOURCE_DIR
+    #
+    # If calling this from the top-level directory (ns-3-dev), it will
+    # be used by all contrib/src modules, examples, etc
+    include_directories(${Boost_INCLUDE_DIRS})
+
+    # This is a trick for Boost
+    # Sometimes you want to check if specific Boost headers are available,
+    # but they would not be found if they're not in system include directories
+    set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS})
+
+    # We get the list of Boost libraries and save them in the boost_libraries list
+    set(boost_libraries ${Boost_LIBRARIES})
+  endif()
+
+  # If Boost was found earlier, we will be able to check if Boost headers are available
+  check_include_file_cxx(
+    "boost/units/quantity.hpp"
+    HAVE_BOOST_UNITS_QUANTITY
+  )
+  check_include_file_cxx(
+    "boost/units/systems/si.hpp"
+    HAVE_BOOST_UNITS_SI
+  )
+  if(${HAVE_BOOST_UNITS_QUANTITY}
+    AND ${HAVE_BOOST_UNITS_SI}
+  )
+    # Activate optional features that rely on Boost
+    add_definitions(
+      -DHAVE_BOOST
+      -DHAVE_BOOST_UNITS
+    )
+    # In this case, the Boost libraries are header-only, 
+    # but in case we needed real libraries, we could add
+    # boost_libraries to either the auxiliary libraries_to_link list
+    # or the build_lib's LIBRARIES_TO_LINK list
+    message(STATUS "Boost Units have been found.")
+  else()
+    message(
+      STATUS
+        "Boost Units are an optional feature of length.cc."
+    )
+  endif()
+
+
+If ``Find${Package}.cmake`` does not exist in your module path, CMake will warn you that is the case.
+If ``${Package_FOUND}`` is set to False, other variables such as the ones related to libraries and 
+include directories might not be set, and can result in CMake failures to configure if used.
+
+In case the ``Find${Package}.cmake`` you need is not distributed by the upstream CMake project, 
+you can create your own and add it to ``build-support/3rd-party``. This directory is included 
+to the ``CMAKE_MODULE_PATH`` variable, making it available for calls without needing to include
+the file with the absolute path to it. To add more directories to the ``CMAKE_MODULE_PATH``,
+use the following:
+
+.. sourcecode:: cmake
+
+  # Excerpt from build-support/macros-and-definitions.cmake
+
+  # Add ns-3 custom modules to the module path
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/custom-modules")
+
+  # Add the 3rd-party modules to the module path
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
+
+  # Add your new modules directory to the module path 
+  # (${PROJECT_SOURCE_DIR} is /path/to/ns-3-dev/)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/new-modules")
+
+
+One of the custom Find files currently shipped by ns-3 is the ``FindGTK3.cmake`` file. 
+GTK3 requires Harfbuzz, which has its own ``FindHarfBuzz.cmake`` file. Both of them
+are in the ``build-support/3rd-party`` directory.
+
+.. sourcecode:: cmake
+
+  # You don't need to keep adding this, this is just a demonstration
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
+
+  # If the user-settable NS3_GTK3 is set, look for HarfBuzz and GTK
+  if(${NS3_GTK3})
+    # Use FindHarfBuzz.cmake to find HarfBuzz
+    find_package(HarfBuzz QUIET)
+
+    # If HarfBuzz is not found
+    if(NOT ${HarfBuzz_FOUND})
+      message(STATUS "Harfbuzz is required by GTK3 and was not found.")
+    else()
+      # FindGTK3.cmake does some weird tricks and results in warnings,
+      # that we can only suppress this way
+      set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "")
+
+      # If HarfBuzz is found, search for GTK
+      find_package(GTK3 QUIET)
+
+      # Remove suppressions needed for quiet operations
+      unset(CMAKE_SUPPRESS_DEVELOPER_WARNINGS CACHE)
+
+      # If GTK3 is not found, inform the user
+      if(NOT ${GTK3_FOUND})
+        message(STATUS "GTK3 was not found. Continuing without it.")
+      else()
+        # If an incompatible version is found, set the GTK3_FOUND flag to false,
+        # to make sure it won't be used later
+        if(${GTK3_VERSION} VERSION_LESS 3.22)
+          set(GTK3_FOUND FALSE)
+          message(STATUS "GTK3 found with incompatible version ${GTK3_VERSION}")
+        else()
+          # A compatible GTK3 version was found
+          message(STATUS "GTK3 was found.")
+        endif()
+      endif()
+    endif()
+  endif()
+
+The Stats module can use the same ``find_package`` macro to search for SQLite3.
+
+Note: we currently use a custom macro to find Python3 and SQLite3 since  
+``FindPython3.cmake`` and ``FindSQLite3.cmake`` were included in CMake 3.12 and 3.14.
+More details on how to use the macro are listed in 
+`Linking third-party libraries without CMake or PkgConfig support`_.
 
 .. sourcecode:: cmake
 

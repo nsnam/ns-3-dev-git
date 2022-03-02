@@ -1551,41 +1551,89 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
 endfunction(parse_ns3rc)
 
 function(find_external_library)
+  # Parse arguments
+  set(options QUIET)
   set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
   set(multiValueArgs HEADER_NAMES LIBRARY_NAMES PATH_SUFFIXES SEARCH_PATHS)
   cmake_parse_arguments(
     "FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
   )
 
+  # Set the external package/dependency name
   set(name ${FIND_LIB_DEPENDENCY_NAME})
+
+  # We process individual and list of headers and libraries by transforming them
+  # into lists
   set(library_names "${FIND_LIB_LIBRARY_NAME};${FIND_LIB_LIBRARY_NAMES}")
   set(header_names "${FIND_LIB_HEADER_NAME};${FIND_LIB_HEADER_NAMES}")
+
+  # Just changing the parsed argument name back to something shorter
   set(search_paths ${FIND_LIB_SEARCH_PATHS})
   set(path_suffixes "${FIND_LIB_PATH_SUFFIXES}")
 
   set(not_found_libraries)
   set(library_dirs)
   set(libraries)
+
+  # For each of the library names in LIBRARY_NAMES or LIBRARY_NAME
   foreach(library ${library_names})
+    # We mark this value is advanced not to pollute the configuration with
+    # ccmake with the cache variables used internally
     mark_as_advanced(${name}_library_internal_${library})
+
+    # We search for the library named ${library} and store the results in
+    # ${name}_library_internal_${library}
     find_library(
       ${name}_library_internal_${library} ${library}
       HINTS ${search_paths}
             ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
             ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install
-                                    # directory (e.g. /usr/)
+            # directory (e.g. /usr/)
             ENV
             LD_LIBRARY_PATH # Search for libraries in LD_LIBRARY_PATH
-                            # directories
+            # directories
             ENV
             PATH # Search for libraries in PATH directories
       PATH_SUFFIXES /build /lib /build/lib / /bin ${path_suffixes}
     )
+    # Note: the PATH_SUFFIXES above apply to *ALL* PATHS and HINTS Which
+    # translates to CMake searching on standard library directories
+    # CMAKE_SYSTEM_PREFIX_PATH, user-settable CMAKE_PREFIX_PATH or
+    # CMAKE_LIBRARY_PATH and the directories listed above
+    #
+    # e.g.  from Ubuntu 22.04 CMAKE_SYSTEM_PREFIX_PATH =
+    # /usr/local;/usr;/;/usr/local;/usr/X11R6;/usr/pkg;/opt
+    #
+    # Searched directories without suffixes
+    #
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[0] = /usr/local/
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[3] = /usr/local ${CMAKE_SYSTEM_PREFIX_PATH}[4]
+    # = /usr/X11R6 ${CMAKE_SYSTEM_PREFIX_PATH}[5] = /usr/pkg
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt ${search_paths}[0] ...
+    # ${search_paths}[n] ${CMAKE_OUTPUT_DIRECTORY} ${CMAKE_INSTALL_PREFIX}
+    # ${LD_LIBRARY_PATH}[0] ... ${LD_LIBRARY_PATH}[m] ${PATH}[0] ... ${PATH}[m]
+    #
+    # Searched directories with suffixes include all of the directories above
+    # plus all suffixes PATH_SUFFIXES /build /lib /build/lib / /bin
+    # ${path_suffixes}
+    #
+    # /usr/local/build /usr/local/lib /usr/local/build/lib /usr/local/bin
+    # /usr/local/${path_suffixes}[0] ... /usr/local/${path_suffixes}[k]
+    #
+    # /usr/build /usr/lib /usr/build/lib ... ${PATH}[m]/${path_suffixes}[k]
+
+    # After searching the library, the internal variable should have either the
+    # absolute path to the library or the name of the variable appended with
+    # -NOTFOUND
     if("${${name}_library_internal_${library}}" STREQUAL
        "${name}_library_internal_${library}-NOTFOUND"
     )
+      # We keep track of libraries that were not found
       list(APPEND not_found_libraries ${library})
     else()
+      # We get the name of the parent directory of the library and append the
+      # library to a list of found libraries
       get_filename_component(
         ${name}_library_dir_internal ${${name}_library_internal_${library}}
         DIRECTORY
@@ -1607,14 +1655,18 @@ function(find_external_library)
   set(not_found_headers)
   set(include_dirs)
   foreach(header ${header_names})
+    # The same way with libraries, we mark the internal variable as advanced not
+    # to pollute ccmake configuration with variables used internally
     mark_as_advanced(${name}_header_internal_${header})
+
+    # Here we search for the header file named ${header} and store the result in
+    # ${name}_header_internal_${header}
     find_file(
       ${name}_header_internal_${header} ${header}
-      HINTS ${search_paths}
-            ${parent_dirs}
+      HINTS ${search_paths} ${parent_dirs}
             ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
             ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
-                                    # directory (e.g. /usr/)
+      # directory (e.g. /usr/)
       PATH_SUFFIXES
         /build
         /include
@@ -1625,11 +1677,25 @@ function(find_external_library)
         /
         ${path_suffixes}
     )
+    # The same way we did with libraries, here we search on
+    # CMAKE_SYSTEM_PREFIX_PATH, along with user-settable ${search_paths}, the
+    # parent directories from the libraries, CMAKE_OUTPUT_DIRECTORY and
+    # CMAKE_INSTALL_PREFIX
+    #
+    # And again, for each of them, for every suffix listed /usr/local/build
+    # /usr/local/include /usr/local/build/include
+    # /usr/local/build/include/${name} /usr/local/include/${name}
+    # /usr/local/${name} /usr/local/ /usr/local/${path_suffixes}[0] ...
+    # /usr/local/${path_suffixes}[k] ...
+
+    # If the header file was not found, append to the not-found list
     if("${${name}_header_internal_${header}}" STREQUAL
        "${name}_header_internal_${header}-NOTFOUND"
     )
       list(APPEND not_found_headers ${header})
     else()
+      # If the header file was found, get their directories and the parent of
+      # their directories to add as include directories
       get_filename_component(
         header_include_dir ${${name}_header_internal_${header}} DIRECTORY
       ) # e.g. include/click/ (simclick.h) -> #include <simclick.h> should work
@@ -1640,6 +1706,7 @@ function(find_external_library)
     endif()
   endforeach()
 
+  # Remove duplicate include directories
   if(include_dirs)
     list(REMOVE_DUPLICATES include_dirs)
   endif()
@@ -1650,11 +1717,19 @@ function(find_external_library)
     set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
     set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
     set(${name}_FOUND TRUE PARENT_SCOPE)
+    set(status_message "find_external_library: ${name} was found.")
   else()
     set(${name}_INCLUDE_DIRS PARENT_SCOPE)
     set(${name}_LIBRARIES PARENT_SCOPE)
     set(${name}_HEADER PARENT_SCOPE)
     set(${name}_FOUND FALSE PARENT_SCOPE)
+    set(status_message
+        "find_external_library: ${name} was not found. Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\"."
+    )
+  endif()
+
+  if(NOT ${FIND_LIB_QUIET})
+    message(STATUS "${status_message}")
   endif()
 endfunction()
 
