@@ -282,25 +282,41 @@ endfunction()
 macro(process_options)
   clear_global_cached_variables()
 
-  # make sure to default to debug if no build type is specified
+  # make sure to default to RelWithDebInfo if no build type is specified
   if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
+    set(CMAKE_BUILD_TYPE "default" CACHE STRING "Choose the type of build."
+                                         FORCE
+    )
+    set(NS3_ASSERT ON CACHE BOOL "Enable assert on failure" FORCE)
+    set(NS3_LOG ON CACHE BOOL "Enable logging to be built" FORCE)
+    set(NS3_WARNINGS_AS_ERRORS OFF
+        CACHE BOOL "Treat warnings as errors. Requires NS3_WARNINGS=ON" FORCE
+    )
   endif()
 
   # process debug switch Used in build-profile-test-suite
   string(TOLOWER ${CMAKE_BUILD_TYPE} cmakeBuildType)
   set(build_profile "${cmakeBuildType}" CACHE INTERNAL "")
   if(${cmakeBuildType} STREQUAL "debug")
+    string(REPLACE "-g" "-Og -g" CMAKE_CXX_FLAGS_DEBUG
+                   "${CMAKE_CXX_FLAGS_DEBUG}"
+    )
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
-  elseif(${cmakeBuildType} STREQUAL "relwithdebinfo")
-    add_definitions(-DNS3_BUILD_PROFILE_RELEASE)
+  elseif(${cmakeBuildType} STREQUAL "relwithdebinfo" OR ${cmakeBuildType}
+                                                        STREQUAL "default"
+  )
+    set(cmakeBuildType relwithdebinfo)
+    set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+    add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "release")
-    add_definitions(-DNS3_BUILD_PROFILE_OPTIMIZED)
     if(${NS3_NATIVE_OPTIMIZATIONS})
+      add_definitions(-DNS3_BUILD_PROFILE_OPTIMIZED)
       set(build_profile "optimized" CACHE INTERNAL "")
+    else()
+      add_definitions(-DNS3_BUILD_PROFILE_RELEASE)
     endif()
   else()
-    add_definitions(-DNS3_BUILD_PROFILE_OPTIMIZED)
+    add_definitions(-DNS3_BUILD_PROFILE_RELEASE)
   endif()
 
   # Enable examples if activated via command line (NS3_EXAMPLES) or ns3rc config
@@ -656,17 +672,36 @@ macro(process_options)
     endif()
   endif()
 
-  # cmake-format: off
-  set(Python_ADDITIONAL_VERSIONS 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9 3.10 3.11)
-  # cmake-format: on
-  find_package(PythonInterp)
-  set(Python_EXECUTABLE)
-  set(Python_FOUND FALSE)
-  if(${PythonInterp_FOUND})
-    set(Python_EXECUTABLE ${PYTHON_EXECUTABLE})
+  set(Python3_LIBRARIES)
+  set(Python3_EXECUTABLE)
+  set(Python3_FOUND FALSE)
+  set(Python3_INCLUDE_DIRS)
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0")
+    find_package(Python3 COMPONENTS Interpreter Development)
+  else()
+    # cmake-format: off
+    set(Python_ADDITIONAL_VERSIONS 3.1 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9)
+    # cmake-format: on
+    find_package(PythonInterp)
     find_package(PythonLibs)
-    if(${PythonLibs_FOUND})
-      set(Python_FOUND TRUE)
+
+    # Move deprecated results into the FindPython3 resulting variables
+    set(Python3_Interpreter_FOUND ${PYTHONINTERP_FOUND})
+    set(Python3_Development_FOUND ${PYTHONLIBS_FOUND})
+    if(${PYTHONINTERP_FOUND})
+      set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
+      set(Python3_FOUND TRUE)
+    endif()
+    if(${PYTHONLIBS_FOUND})
+      set(Python3_LIBRARIES ${PYTHON_LIBRARIES})
+      set(Python3_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+    endif()
+  endif()
+
+  # Check if both Python interpreter and development libraries were found
+  if(${Python3_Interpreter_FOUND})
+    if(${Python3_Development_FOUND})
+      set(Python3_FOUND TRUE)
     else()
       message(STATUS "Python: development libraries were not found")
     endif()
@@ -679,7 +714,7 @@ macro(process_options)
 
   set(ENABLE_PYTHON_BINDINGS OFF)
   if(${NS3_PYTHON_BINDINGS})
-    if(NOT ${Python_FOUND})
+    if(NOT ${Python3_FOUND})
       message(
         STATUS
           "Bindings: python bindings require Python, but it could not be found"
@@ -704,14 +739,16 @@ macro(process_options)
 
   set(ENABLE_SCAN_PYTHON_BINDINGS OFF)
   if(${NS3_SCAN_PYTHON_BINDINGS})
-    if(NOT ${Python_FOUND})
+    if(NOT ${Python3_FOUND})
       message(
         STATUS
           "Bindings: scanning python bindings require Python, but it could not be found"
       )
     else()
       # Check if pybindgen, pygccxml and cxxfilt are installed
-      check_python_packages("pybindgen;pygccxml;cxxfilt" missing_packages)
+      check_python_packages(
+        "pybindgen;pygccxml;cxxfilt;castxml" missing_packages
+      )
       if(missing_packages)
         message(
           STATUS
@@ -728,7 +765,7 @@ macro(process_options)
 
   set(ENABLE_VISUALIZER FALSE)
   if(${NS3_VISUALIZER})
-    if((NOT ${ENABLE_PYTHON_BINDINGS}) OR (NOT ${Python_FOUND}))
+    if((NOT ${ENABLE_PYTHON_BINDINGS}) OR (NOT ${Python3_FOUND}))
       message(STATUS "Visualizer requires Python bindings")
     else()
       set(ENABLE_VISUALIZER TRUE)
@@ -750,7 +787,7 @@ macro(process_options)
     # produce code coverage output
     add_custom_target(
       run_test_py
-      COMMAND ${Python_EXECUTABLE} test.py --no-build
+      COMMAND ${Python3_EXECUTABLE} test.py --no-build
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets
     )
@@ -779,8 +816,12 @@ macro(process_options)
 
   if(${NS3_VERBOSE})
     set_property(GLOBAL PROPERTY TARGET_MESSAGES TRUE)
+    set(CMAKE_FIND_DEBUG_MODE TRUE)
+    set(CMAKE_VERBOSE_MAKEFILE TRUE CACHE INTERNAL "")
   else()
     set_property(GLOBAL PROPERTY TARGET_MESSAGES OFF)
+    unset(CMAKE_FIND_DEBUG_MODE)
+    unset(CMAKE_VERBOSE_MAKEFILE CACHE)
   endif()
 
   mark_as_advanced(Boost_INCLUDE_DIR)
@@ -860,7 +901,7 @@ macro(process_options)
     add_custom_target(
       run-introspected-command-line
       COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
-              ${Python_EXECUTABLE} ./test.py --no-build --constrain=example
+              ${Python3_EXECUTABLE} ./test.py --no-build --constrain=example
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS is
                                # set to ON
@@ -957,12 +998,34 @@ macro(process_options)
   endif()
   # end of checking for documentation dependencies and creating targets
 
+  # Adding this module manually is required by CMake 3.10
+  include(CheckCXXSourceCompiles)
+
   # Process core-config If INT128 is not found, fallback to CAIRO
   if(${NS3_INT64X64} MATCHES "INT128")
-    include(build-support/3rd-party/FindInt128.cmake)
-    find_int128_types()
-    if(UINT128_FOUND)
-      set(HAVE___UINT128_T TRUE)
+    check_cxx_source_compiles(
+      "#include <stdint.h>
+       int main(int argc, char **argv)
+         {
+            (void)argc; (void)argv;
+            if ((uint128_t *) 0) return 0;
+            if (sizeof (uint128_t)) return 0;
+            return 1;
+         }"
+      HAVE_UINT128_T
+    )
+    check_cxx_source_compiles(
+      "#include <stdint.h>
+       int main(int argc, char **argv)
+         {
+           (void)argc; (void)argv;
+           if ((__uint128_t *) 0) return 0;
+           if (sizeof (__uint128_t)) return 0;
+           return 1;
+        }"
+      HAVE___UINT128_T
+    )
+    if(HAVE_UINT128_T OR HAVE___UINT128_T)
       set(INT64X64_USE_128 TRUE)
     else()
       message(STATUS "Int128 was not found. Falling back to Cairo.")
@@ -994,7 +1057,8 @@ macro(process_options)
     set(INT64X64_USE_CAIRO TRUE)
   endif()
 
-  include(CheckIncludeFileCXX)
+  include(CheckIncludeFileCXX) # Used to check a single header at a time
+  include(CheckIncludeFiles) # Used to check multiple headers at once
   include(CheckFunctionExists)
 
   # Check for required headers and functions, set flags if they're found or warn
@@ -1231,10 +1295,7 @@ endfunction()
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
   foreach(header ${headers})
-    configure_file(
-      ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name}
-      COPYONLY
-    )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/ COPYONLY)
   endforeach()
 endfunction(copy_headers_before_building_lib)
 
@@ -1550,6 +1611,56 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
   endif()
 endfunction(parse_ns3rc)
 
+function(log_find_searched_paths)
+  # Parse arguments
+  set(options)
+  set(oneValueArgs TARGET_TYPE TARGET_NAME SEARCH_RESULT SEARCH_SYSTEM_PREFIX)
+  set(multiValueArgs SEARCH_PATHS SEARCH_SUFFIXES)
+  cmake_parse_arguments(
+    "LOGFIND" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
+
+  # Get searched paths and add cmake_system_prefix_path if not explicitly marked
+  # not to include it
+  set(tsearch_paths ${LOGFIND_SEARCH_PATHS})
+  if("${LOGFIND_SEARCH_SYSTEM_PREFIX}" STREQUAL "")
+    list(APPEND tsearch_paths "${CMAKE_SYSTEM_PREFIX_PATH}")
+  endif()
+
+  set(log_find
+      "Looking for ${LOGFIND_TARGET_TYPE} ${LOGFIND_TARGET_NAME} in:\n"
+  )
+  # For each search path and suffix combination, print a line
+  foreach(tsearch_path ${tsearch_paths})
+    foreach(suffix ${LOGFIND_SEARCH_SUFFIXES})
+      string(APPEND log_find
+             "\t${tsearch_path}${suffix}/${LOGFIND_TARGET_NAME}\n"
+      )
+    endforeach()
+  endforeach()
+
+  # Add a final line saying if the file was found and where, or if it was not
+  # found
+  if("${${LOGFIND_SEARCH_RESULT}}" STREQUAL "${LOGFIND_SEARCH_RESULT}-NOTFOUND")
+    string(APPEND log_find
+           "\n\t${LOGFIND_TARGET_TYPE} ${LOGFIND_TARGET_NAME} was not found\n"
+    )
+  else()
+    string(
+      APPEND
+      log_find
+      "\n\t${LOGFIND_TARGET_TYPE} ${LOGFIND_TARGET_NAME} was found in ${${LOGFIND_SEARCH_RESULT}}\n"
+    )
+  endif()
+
+  # Replace duplicate path separators
+  string(REPLACE "//" "/" log_find "${log_find}")
+
+  # Print find debug message similar to the one produced by
+  # CMAKE_FIND_DEBUG_MODE=true in CMake >= 3.17
+  message(STATUS ${log_find})
+endfunction()
+
 function(find_external_library)
   # Parse arguments
   set(options QUIET)
@@ -1575,6 +1686,18 @@ function(find_external_library)
   set(library_dirs)
   set(libraries)
 
+  # Paths and suffixes where libraries will be searched on
+  set(library_search_paths
+      ${search_paths}
+      ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
+      ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install directory
+                              # (e.g. /usr/)
+      $ENV{LD_LIBRARY_PATH} # Search for libraries in LD_LIBRARY_PATH
+                            # directories
+      $ENV{PATH} # Search for libraries in PATH directories
+  )
+  set(suffixes /build /lib /build/lib / /bin ${path_suffixes})
+
   # For each of the library names in LIBRARY_NAMES or LIBRARY_NAME
   foreach(library ${library_names})
     # We mark this value is advanced not to pollute the configuration with
@@ -1585,17 +1708,9 @@ function(find_external_library)
     # ${name}_library_internal_${library}
     find_library(
       ${name}_library_internal_${library} ${library}
-      HINTS ${search_paths}
-            ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
-            ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install
-            # directory (e.g. /usr/)
-            ENV
-            LD_LIBRARY_PATH # Search for libraries in LD_LIBRARY_PATH
-            # directories
-            ENV
-            PATH # Search for libraries in PATH directories
-      PATH_SUFFIXES /build /lib /build/lib / /bin ${path_suffixes}
+      HINTS ${library_search_paths} PATH_SUFFIXES ${suffixes}
     )
+    # cmake-format: off
     # Note: the PATH_SUFFIXES above apply to *ALL* PATHS and HINTS Which
     # translates to CMake searching on standard library directories
     # CMAKE_SYSTEM_PREFIX_PATH, user-settable CMAKE_PREFIX_PATH or
@@ -1607,21 +1722,45 @@ function(find_external_library)
     # Searched directories without suffixes
     #
     # ${CMAKE_SYSTEM_PREFIX_PATH}[0] = /usr/local/
-    # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
-    # ${CMAKE_SYSTEM_PREFIX_PATH}[3] = /usr/local ${CMAKE_SYSTEM_PREFIX_PATH}[4]
-    # = /usr/X11R6 ${CMAKE_SYSTEM_PREFIX_PATH}[5] = /usr/pkg
-    # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt ${search_paths}[0] ...
-    # ${search_paths}[n] ${CMAKE_OUTPUT_DIRECTORY} ${CMAKE_INSTALL_PREFIX}
-    # ${LD_LIBRARY_PATH}[0] ... ${LD_LIBRARY_PATH}[m] ${PATH}[0] ... ${PATH}[m]
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
+    # ...
+    # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt
+    # ${LD_LIBRARY_PATH}[0]
+    # ...
+    # ${LD_LIBRARY_PATH}[m]
+    # ${PATH}[0]
+    # ...
+    # ${PATH}[m]
     #
     # Searched directories with suffixes include all of the directories above
-    # plus all suffixes PATH_SUFFIXES /build /lib /build/lib / /bin
-    # ${path_suffixes}
+    # plus all suffixes
+    # PATH_SUFFIXES /build /lib /build/lib / /bin # ${path_suffixes}
     #
-    # /usr/local/build /usr/local/lib /usr/local/build/lib /usr/local/bin
-    # /usr/local/${path_suffixes}[0] ... /usr/local/${path_suffixes}[k]
+    # /usr/local/build
+    # /usr/local/lib
+    # /usr/local/build/lib
+    # /usr/local/bin
+    # ...
     #
-    # /usr/build /usr/lib /usr/build/lib ... ${PATH}[m]/${path_suffixes}[k]
+    # cmake-format: on
+    # Or enable NS3_VERBOSE to print the searched paths
+
+    # Print tested paths to the searched library and if it was found
+    if(${NS3_VERBOSE} AND (${CMAKE_VERSION} VERSION_LESS "3.17.0"))
+      log_find_searched_paths(
+        TARGET_TYPE
+        Library
+        TARGET_NAME
+        ${library}
+        SEARCH_RESULT
+        ${name}_library_internal_${library}
+        SEARCH_PATHS
+        ${library_search_paths}
+        SEARCH_SUFFIXES
+        ${suffixes}
+      )
+    endif()
 
     # After searching the library, the internal variable should have either the
     # absolute path to the library or the name of the variable appended with
@@ -1652,22 +1791,26 @@ function(find_external_library)
     list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
   endforeach()
 
+  # If we already found a library somewhere, limit the search paths for the
+  # header
+  if(parent_dirs)
+    set(header_search_paths ${parent_dirs})
+    set(header_skip_system_prefix NO_CMAKE_SYSTEM_PATH)
+  else()
+    set(header_search_paths
+        ${search_paths} ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in
+                                                  # ns-3-dev/build
+        ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
+    )
+  endif()
+
   set(not_found_headers)
   set(include_dirs)
   foreach(header ${header_names})
     # The same way with libraries, we mark the internal variable as advanced not
     # to pollute ccmake configuration with variables used internally
     mark_as_advanced(${name}_header_internal_${header})
-
-    # Here we search for the header file named ${header} and store the result in
-    # ${name}_header_internal_${header}
-    find_file(
-      ${name}_header_internal_${header} ${header}
-      HINTS ${search_paths} ${parent_dirs}
-            ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
-            ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
-      # directory (e.g. /usr/)
-      PATH_SUFFIXES
+    set(suffixes
         /build
         /include
         /build/include
@@ -1677,16 +1820,48 @@ function(find_external_library)
         /
         ${path_suffixes}
     )
+
+    # cmake-format: off
+    # Here we search for the header file named ${header} and store the result in
+    # ${name}_header_internal_${header}
+    #
     # The same way we did with libraries, here we search on
     # CMAKE_SYSTEM_PREFIX_PATH, along with user-settable ${search_paths}, the
     # parent directories from the libraries, CMAKE_OUTPUT_DIRECTORY and
     # CMAKE_INSTALL_PREFIX
     #
     # And again, for each of them, for every suffix listed /usr/local/build
-    # /usr/local/include /usr/local/build/include
-    # /usr/local/build/include/${name} /usr/local/include/${name}
-    # /usr/local/${name} /usr/local/ /usr/local/${path_suffixes}[0] ...
-    # /usr/local/${path_suffixes}[k] ...
+    # /usr/local/include
+    # /usr/local/build/include
+    # /usr/local/build/include/${name}
+    # /usr/local/include/${name}
+    # ...
+    #
+    # cmake-format: on
+    # Or enable NS3_VERBOSE to get the searched paths printed while configuring
+
+    find_file(${name}_header_internal_${header} ${header}
+              HINTS ${header_search_paths} # directory (e.g. /usr/)
+                    ${header_skip_system_prefix} PATH_SUFFIXES ${suffixes}
+    )
+
+    # Print tested paths to the searched header and if it was found
+    if(${NS3_VERBOSE} AND (${CMAKE_VERSION} VERSION_LESS "3.17.0"))
+      log_find_searched_paths(
+        TARGET_TYPE
+        Header
+        TARGET_NAME
+        ${header}
+        SEARCH_RESULT
+        ${name}_header_internal_${header}
+        SEARCH_PATHS
+        ${header_search_paths}
+        SEARCH_SUFFIXES
+        ${suffixes}
+        SEARCH_SYSTEM_PREFIX
+        ${header_skip_system_prefix}
+      )
+    endif()
 
     # If the header file was not found, append to the not-found list
     if("${${name}_header_internal_${header}}" STREQUAL
@@ -1766,7 +1941,7 @@ function(check_python_packages packages missing_packages)
   set(missing)
   foreach(package ${packages})
     execute_process(
-      COMMAND ${Python_EXECUTABLE} -c "import ${package}"
+      COMMAND ${Python3_EXECUTABLE} -c "import ${package}"
       RESULT_VARIABLE return_code OUTPUT_QUIET ERROR_QUIET
     )
     if(NOT (${return_code} EQUAL 0))

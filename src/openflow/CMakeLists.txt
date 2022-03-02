@@ -19,7 +19,7 @@ find_external_library(
 if(NOT
    ${openflow_FOUND}
 )
-  message(STATUS "Openflow was not found")
+  message(STATUS "Skipping src/openflow")
   return()
 endif()
 

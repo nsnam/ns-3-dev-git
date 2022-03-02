@@ -14,20 +14,20 @@ out_dir = os.sep.join([ns3_path, "build"])
 lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
 
 print_buffer = ""
-verbose = True
+run_verbose = True
 
 
 # Prints everything in the print_buffer on exit
 def exit_handler(dry_run):
-    global print_buffer, verbose
-    # We should not print anything in run except if dry_run or verbose
-    if not dry_run and not verbose:
+    global print_buffer, run_verbose
+    # We should not print anything in run except if dry_run or run_verbose
+    if not dry_run and not run_verbose:
         return
     if print_buffer == "":
         return
     if dry_run:
         print("The following commands would be executed:")
-    elif verbose:
+    elif run_verbose:
         print("Finished executing the following commands:")
     print(print_buffer[1:])
 
@@ -56,7 +56,7 @@ def on_off_condition(args, cmake_flag, option_name):
 
 
 def parse_args(argv):
-    parser = argparse.ArgumentParser(description="ns-3 wrapper for the CMake build system")
+    parser = argparse.ArgumentParser(description="ns-3 wrapper for the CMake build system", add_help=False)
     sub_parser = parser.add_subparsers()
 
     parser_build = sub_parser.add_parser('build',
@@ -68,6 +68,12 @@ def parse_args(argv):
     parser_build.add_argument('--dry-run',
                               help="Do not execute the commands",
                               action="store_true", default=None, dest="build_dry_run")
+    parser_build.add_argument('-v', '--verbose',
+                              help="Print verbose build commands",
+                              action="store_true", default=None, dest="build_verbose")
+    parser_build.add_argument('--quiet',
+                              help="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                              action="store_true", default=None, dest="build_quiet")
 
     parser_configure = sub_parser.add_parser('configure',
                                              help='Try "./ns3 configure --help" for more configuration options')
@@ -76,7 +82,7 @@ def parse_args(argv):
     parser_configure.add_argument('-d', '--build-profile',
                                   help='Build profile',
                                   dest='build_profile',
-                                  choices=["debug", "release", "optimized"],
+                                  choices=["debug", "default", "release", "optimized"],
                                   action="store", type=str, default=None)
 
     parser_configure.add_argument('-G',
@@ -162,6 +168,9 @@ def parse_args(argv):
     parser_configure.add_argument('--dry-run',
                                   help="Do not execute the commands",
                                   action="store_true", default=None, dest="configure_dry_run")
+    parser_configure.add_argument('--quiet',
+                                  help="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                                  action="store_true", default=None, dest="configure_quiet")
 
     parser_clean = sub_parser.add_parser('clean', help='Removes files created by ns3')
     parser_clean.add_argument('clean', action="store_true", default=False)
@@ -214,6 +223,9 @@ def parse_args(argv):
                             help='Print which commands were executed',
                             dest='run_verbose', action='store_true',
                             default=False)
+    parser_run.add_argument('--quiet',
+                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                             action="store_true", default=None, dest="run_quiet")
 
     parser_shell = sub_parser.add_parser('shell',
                                          help='Try "./ns3 shell --help" for more runtime options')
@@ -228,6 +240,9 @@ def parse_args(argv):
                              choices=["manual", "models", "tutorial", "contributing",
                                       "sphinx", "doxygen-no-build", "doxygen", "all"],
                              action="store", type=str, default=None)
+    parser_docs.add_argument('--quiet',
+                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                             action="store_true", default=None, dest="docs_quiet")
 
     parser.add_argument('-j', '--jobs',
                         help='Set number of parallel jobs',
@@ -235,23 +250,26 @@ def parse_args(argv):
     parser.add_argument('--dry-run',
                         help="Do not execute the commands",
                         action="store_true", default=None, dest="dry_run")
-    parser.add_argument('--check-config',
-                        help='Print the current configuration.',
-                        action="store_true", default=None)
 
     parser.add_argument('--quiet',
                         help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                        action="store_true", default=None)
+                        action="store_true", default=None, dest="quiet")
+    parser.add_argument('--help',
+                        help="Print a summary of available commands",
+                        action="store_true", default=None, dest="help")
 
-    parser.add_argument('--check',
-                        help='DEPRECATED (run ./test.py)',
-                        action='store_true', default=None)
-    parser.add_argument('--check-profile',
-                        help='Print out current build profile',
-                        action='store_true', default=None)
-    parser.add_argument('--check-version',
-                        help='Print the current build version',
-                        action='store_true', default=None)
+    parser_show = sub_parser.add_parser('show',
+                                        help='Try "./ns3 show --help" for more runtime options')
+    parser_show.add_argument('show',
+                             help='Print build profile type, ns-3 version or current configuration',
+                             choices=["profile", "version", "config"],
+                             action="store", type=str, default=None)
+    parser_show.add_argument('--dry-run',
+                             help="Do not execute the commands",
+                             action="store_true", default=None, dest="show_dry_run")
+    parser_show.add_argument('--quiet',
+                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                             action="store_true", default=None, dest="show_quiet")
 
     # parser.add_argument('--docset',
     #               help=(
@@ -263,13 +281,37 @@ def parse_args(argv):
     # Parse known arguments and separate from unknown arguments
     args, unknown_args = parser.parse_known_args(argv)
 
-    # Merge dry_runs
-    dry_run_args = [(args.__getattribute__(name) if name in args else None) for name in
-                    ["build_dry_run", "clean_dry_run", "configure_dry_run", "dry_run", "run_dry_run"]]
-    args.dry_run = dry_run_args.count(True) > 0
+    if args.help:
+        print(parser.description)
+        print("")
+        print(parser.format_usage())
+
+        # retrieve subparsers from parser
+        subparsers_actions = [
+            action for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)]
+        # there will probably only be one subparser_action,
+        # but better safe than sorry
+        for subparsers_action in subparsers_actions:
+            # get all subparsers and print help
+            for choice, subparser in subparsers_action.choices.items():
+                #print("Subparser '{}'".format(choice))
+                subcommand = subparser.format_usage()[:-1].replace("usage: ", "   or: ")
+                if len(subcommand) > 1:
+                    print(subcommand)
+
+        print(parser.format_help().replace(parser.description, "").replace(parser.format_usage(), ""))
+        exit(0)
+
+    # Merge attributes
+    attributes_to_merge = ["dry_run", "verbose", "quiet"]
+    filtered_attributes = list(filter(lambda x: x if ("disable" not in x and "enable" not in x) else None, args.__dir__()))
+    for attribute in attributes_to_merge:
+        merging_attributes = list(map(lambda x: args.__getattribute__(x) if attribute in x else None, filtered_attributes))
+        setattr(args, attribute, merging_attributes.count(True) > 0)
 
     # If some positional options are not in args, set them to false.
-    for option in ["clean", "configure", "docs", "install", "run", "shell", "uninstall"]:
+    for option in ["clean", "configure", "docs", "install", "run", "shell", "uninstall", "show"]:
         if option not in args:
             setattr(args, option, False)
 
@@ -445,7 +487,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
 
         # Set default build type to default if a previous cache doesn't exist
         if args.build_profile is None:
-            args.build_profile = "debug"
+            args.build_profile = "default"
 
         # Set generator if a previous cache doesn't exist
         if args.G is None:
@@ -458,13 +500,15 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         # Build type
         if args.build_profile is not None:
             args.build_profile = args.build_profile.lower()
-            if args.build_profile not in ["debug", "release", "optimized"]:
+            if args.build_profile not in ["debug", "default", "release", "optimized"]:
                 raise Exception("Unknown build type")
             else:
                 if args.build_profile == "debug":
-                    cmake_args.append("-DCMAKE_BUILD_TYPE=debug")
+                    cmake_args.extend("-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON".split())
+                elif args.build_profile == "default":
+                    cmake_args.extend("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
                 else:
-                    cmake_args.append("-DCMAKE_BUILD_TYPE=release")
+                    cmake_args.extend("-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split())
                 cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
     options = (("ASSERT", "asserts"),
@@ -652,7 +696,7 @@ def cmake_check_version():
     return cmake, version
 
 
-def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=False):
+def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=False, build_verbose=False):
     _, version = cmake_check_version()
 
     # Older CMake versions don't accept the number of jobs directly
@@ -672,6 +716,11 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
                       }
         else:
             kwargs = {"stdout": output}
+
+        proc_env = os.environ.copy()
+        if build_verbose:
+            proc_env.update({"VERBOSE": "1"})
+        kwargs["env"] = proc_env
 
         ret = subprocess.run(cmake_build_command.split(),
                              cwd=current_cmake_cache_folder,
@@ -815,12 +864,13 @@ def build_step(args,
                ns3_version,
                build_profile,
                output):
-    # There are two scenarios where we build everything: ./ns3 build and ./ns3 --check
-    if args.check or ("build" in args and len(args.build) == 0):
+    # There is one scenarios where we build everything: ./ns3 build
+    if "build" in args and len(args.build) == 0:
         cmake_build(current_cmake_cache_folder,
                     jobs=args.jobs,
                     output=output,
-                    dry_run=args.dry_run
+                    dry_run=args.dry_run,
+                    build_verbose=args.verbose
                     )
 
     # If we are building specific targets, we build them one by one
@@ -860,7 +910,8 @@ def build_step(args,
                         jobs=args.jobs,
                         target=target,
                         output=output,
-                        dry_run=args.dry_run)
+                        dry_run=args.dry_run,
+                        build_verbose=args.verbose)
 
     # The remaining case is when we want to build something to run
     if build_and_run:
@@ -868,7 +919,8 @@ def build_step(args,
                     jobs=args.jobs,
                     target=get_target_to_build(target_to_run, ns3_version, build_profile),
                     output=output,
-                    dry_run=args.dry_run
+                    dry_run=args.dry_run,
+                    build_verbose=args.verbose
                     )
 
 
@@ -894,11 +946,7 @@ def run_step(args, target_to_run, target_args):
     use_shell = False
     target_args += args.program_args
 
-    # running test.py/check?
-    if args.check:
-        target_to_run = os.sep.join([ns3_path, "test.py"])
-        target_args = ["--no-build", "--jobs=%d" % args.jobs]
-    elif args.shell:
+    if args.shell:
         target_to_run = "bash"
         use_shell = True
     else:
@@ -941,7 +989,7 @@ def run_step(args, target_to_run, target_args):
 
     program_arguments = [*debugging_software, target_to_run, *target_args]
 
-    if verbose or args.dry_run:
+    if run_verbose or args.dry_run:
         exported_variables = "export "
         for (variable, value) in custom_env.items():
             if variable == "PATH":
@@ -1045,7 +1093,7 @@ def refuse_run_as_root():
 
 
 def main():
-    global out_dir, verbose
+    global out_dir, run_verbose
 
     # Refuse to run with sudo
     refuse_run_as_root()
@@ -1090,24 +1138,24 @@ def main():
                   'Try "./ns3 docs doxygen-no-build" or enable examples and tests.')
             exit(1)
 
-    if args.check_profile:
+    if args.show == "profile":
         if build_profile:
             print("Build profile: %s" % build_profile)
         else:
             project_not_configured()
 
-    if args.check_version:
+    if args.show == "version":
         args.build = ["check-version"]
 
     # Check if running something or reconfiguring ns-3
     run_only = False
     build_and_run = False
     if args.run:
-        # When running, default to not verbose
-        verbose = args.run_verbose
+        # When running, default to not run_verbose
+        run_verbose = args.run_verbose
 
-        # If not verbose, silence the rest of the script
-        if not verbose:
+        # If not run_verbose, silence the rest of the script
+        if not run_verbose:
             output = subprocess.DEVNULL
 
         # Check whether we are only running or we need to build first
@@ -1118,7 +1166,7 @@ def main():
     target_to_run = None
     target_args = []
     current_cmake_cache_folder = None
-    if not args.check and (run_only or build_and_run):
+    if run_only or build_and_run:
         target_to_run = args.run
         if len(target_to_run) > 0:
             # While testing a weird case appeared where the target to run is between quotes,
@@ -1134,7 +1182,7 @@ def main():
         # Get current CMake cache folder and CMake generator (used when reconfiguring)
         current_cmake_cache_folder, current_cmake_generator = search_cmake_cache(build_profile)
 
-        if args.check_config:
+        if args.show == "config":
             check_config(current_cmake_cache_folder)
             # We end things earlier if only checking the current project configuration
             return
@@ -1217,7 +1265,7 @@ def main():
         target_path = os.sep.join(target_path)
         return target_path
 
-    if not args.check and not args.shell and target_to_run and ".py" not in target_to_run:
+    if not args.shell and target_to_run and ".py" not in target_to_run:
         target_to_run = remove_overlapping_path(out_dir, target_to_run)
 
         # Waf doesn't add version prefix and build type suffix to the scratches, so we remove them
@@ -1237,7 +1285,7 @@ def main():
         sudo_step(args, target_to_run, set(ns3_programs.values()[0]) if enable_sudo else set())
 
     # Finally, we try to run it
-    if args.check or args.shell or run_only or build_and_run:
+    if args.shell or run_only or build_and_run:
         run_step(args, target_to_run, target_args)
 
     return

@@ -720,6 +720,15 @@ Here is how it works:
     set(not_found_libraries)
     set(library_dirs)
     set(libraries)
+    # Paths and suffixes where libraries will be searched on
+    set(library_search_paths
+            ${search_paths}
+            ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
+            ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install directory (e.g. /usr/)
+            $ENV{LD_LIBRARY_PATH} # Search for libraries in LD_LIBRARY_PATH directories
+            $ENV{PATH} # Search for libraries in PATH directories
+            )
+    set(suffixes /build /lib /build/lib / /bin ${path_suffixes})
 
     # For each of the library names in LIBRARY_NAMES or LIBRARY_NAME
     foreach(library ${library_names})
@@ -731,17 +740,10 @@ Here is how it works:
       # ${name}_library_internal_${library}
       find_library(
         ${name}_library_internal_${library} ${library}
-        HINTS ${search_paths}
-              ${CMAKE_OUTPUT_DIRECTORY} # Search for libraries in ns-3-dev/build
-              ${CMAKE_INSTALL_PREFIX} # Search for libraries in the install
-              # directory (e.g. /usr/)
-              ENV
-              LD_LIBRARY_PATH # Search for libraries in LD_LIBRARY_PATH
-              # directories
-              ENV
-              PATH # Search for libraries in PATH directories
-        PATH_SUFFIXES /build /lib /build/lib / /bin ${path_suffixes}
+        HINTS ${library_search_paths}
+        PATH_SUFFIXES ${suffixes}
       )
+      # cmake-format: off
       # Note: the PATH_SUFFIXES above apply to *ALL* PATHS and HINTS Which
       # translates to CMake searching on standard library directories
       # CMAKE_SYSTEM_PREFIX_PATH, user-settable CMAKE_PREFIX_PATH or
@@ -753,21 +755,38 @@ Here is how it works:
       # Searched directories without suffixes
       #
       # ${CMAKE_SYSTEM_PREFIX_PATH}[0] = /usr/local/
-      # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
-      # ${CMAKE_SYSTEM_PREFIX_PATH}[3] = /usr/local ${CMAKE_SYSTEM_PREFIX_PATH}[4]
-      # = /usr/X11R6 ${CMAKE_SYSTEM_PREFIX_PATH}[5] = /usr/pkg
-      # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt ${search_paths}[0] ...
-      # ${search_paths}[n] ${CMAKE_OUTPUT_DIRECTORY} ${CMAKE_INSTALL_PREFIX}
-      # ${LD_LIBRARY_PATH}[0] ... ${LD_LIBRARY_PATH}[m] ${PATH}[0] ... ${PATH}[m]
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[1] = /usr
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[2] = /
+      # ...
+      # ${CMAKE_SYSTEM_PREFIX_PATH}[6] = /opt
+      # ${LD_LIBRARY_PATH}[0]
+      # ...
+      # ${LD_LIBRARY_PATH}[m]
+      # ...
       #
       # Searched directories with suffixes include all of the directories above
-      # plus all suffixes PATH_SUFFIXES /build /lib /build/lib / /bin
-      # ${path_suffixes}
+      # plus all suffixes
+      # PATH_SUFFIXES /build /lib /build/lib / /bin # ${path_suffixes}
       #
-      # /usr/local/build /usr/local/lib /usr/local/build/lib /usr/local/bin
-      # /usr/local/${path_suffixes}[0] ... /usr/local/${path_suffixes}[k]
+      # /usr/local/build
+      # /usr/local/lib
+      # /usr/local/build/lib
+      # /usr/local/bin
+      # ...
       #
-      # /usr/build /usr/lib /usr/build/lib ... ${PATH}[m]/${path_suffixes}[k]
+      # cmake-format: on
+      # Or enable NS3_VERBOSE to print the searched paths
+
+      # Print tested paths to the searched library and if it was found
+      if(${NS3_VERBOSE})
+        log_find_searched_paths(
+                TARGET_TYPE Library
+                TARGET_NAME ${library}
+                SEARCH_RESULT ${name}_library_internal_${library}
+                SEARCH_PATHS ${library_search_paths}
+                SEARCH_SUFFIXES ${suffixes}
+        )
+      endif()
 
       # After searching the library, the internal variable should have either the
       # absolute path to the library or the name of the variable appended with
@@ -798,41 +817,71 @@ Here is how it works:
       list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
     endforeach()
 
+    # If we already found a library somewhere, limit the search paths for the header
+    if(parent_dirs)
+      set(header_search_paths ${parent_dirs})
+      set(header_skip_system_prefix NO_CMAKE_SYSTEM_PATH)
+    else()
+      set(header_search_paths
+              ${search_paths}
+              ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
+              ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
+              )
+    endif()
+
     set(not_found_headers)
     set(include_dirs)
     foreach(header ${header_names})
       # The same way with libraries, we mark the internal variable as advanced not
       # to pollute ccmake configuration with variables used internally
       mark_as_advanced(${name}_header_internal_${header})
-
+      set(suffixes
+              /build
+              /include
+              /build/include
+              /build/include/${name}
+              /include/${name}
+              /${name}
+              /
+              ${path_suffixes}
+              )
+      # cmake-format: off
       # Here we search for the header file named ${header} and store the result in
       # ${name}_header_internal_${header}
-      find_file(
-        ${name}_header_internal_${header} ${header}
-        HINTS ${search_paths} ${parent_dirs}
-              ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in ns-3-dev/build
-              ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
-        # directory (e.g. /usr/)
-        PATH_SUFFIXES
-          /build
-          /include
-          /build/include
-          /build/include/${name}
-          /include/${name}
-          /${name}
-          /
-          ${path_suffixes}
-      )
+      #
       # The same way we did with libraries, here we search on
       # CMAKE_SYSTEM_PREFIX_PATH, along with user-settable ${search_paths}, the
       # parent directories from the libraries, CMAKE_OUTPUT_DIRECTORY and
       # CMAKE_INSTALL_PREFIX
       #
       # And again, for each of them, for every suffix listed /usr/local/build
-      # /usr/local/include /usr/local/build/include
-      # /usr/local/build/include/${name} /usr/local/include/${name}
-      # /usr/local/${name} /usr/local/ /usr/local/${path_suffixes}[0] ...
-      # /usr/local/${path_suffixes}[k] ...
+      # /usr/local/include
+      # /usr/local/build/include
+      # /usr/local/build/include/${name}
+      # /usr/local/include/${name}
+      # ...
+      #
+      # cmake-format: on
+      # Or enable NS3_VERBOSE to get the searched paths printed while configuring
+
+      find_file(
+        ${name}_header_internal_${header} ${header}
+        HINTS ${header_search_paths} # directory (e.g. /usr/)
+        ${header_skip_system_prefix}
+        PATH_SUFFIXES ${suffixes}
+      )
+
+      # Print tested paths to the searched header and if it was found
+      if(${NS3_VERBOSE})
+        log_find_searched_paths(
+                TARGET_TYPE Header
+                TARGET_NAME ${header}
+                SEARCH_RESULT ${name}_header_internal_${header}
+                SEARCH_PATHS ${header_search_paths}
+                SEARCH_SUFFIXES ${suffixes}
+                SEARCH_SYSTEM_PREFIX ${header_skip_system_prefix}
+        )
+      endif()
 
       # If the header file was not found, append to the not-found list
       if("${${name}_header_internal_${header}}" STREQUAL
@@ -878,6 +927,20 @@ Here is how it works:
       message(STATUS "${status_message}")
     endif()
   endfunction()
+
+Debugging why a header or a library cannot be found is fairly tricky.
+For ``find_external_library`` users, enabling the ``NS3_VERBOSE`` switch
+will enable the logging of search path directories for both headers and
+libraries.
+
+.. _CMAKE_FIND_DEBUG_MODE: https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_DEBUG_MODE.html
+
+Note: The logging provided by find_external_library is an alternative to
+CMake's own ``CMAKE_FIND_DEBUG_MODE=true`` introduced in CMake 3.17,
+which gets used by *ALL* ``find_file``, ``find_library``, ``find_header``,
+``find_package`` and ``find_path`` calls throughout CMake and its modules.
+If you are using a recent version of CMake, it is recommended to use
+`CMAKE_FIND_DEBUG_MODE`_ instead.
 
 A commented version of the Openflow module ``CMakeLists.txt`` has an 
 example of ``find_external_library`` usage.

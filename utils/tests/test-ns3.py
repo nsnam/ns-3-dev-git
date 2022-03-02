@@ -313,28 +313,28 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
 
     def test_03_CheckConfig(self):
         """!
-        Test only passing --check-config argument to ns3
+        Test only passing 'show config' argument to ns3
         @return None
         """
-        return_code, stdout, stderr = run_ns3("--check-config")
+        return_code, stdout, stderr = run_ns3("show config")
         self.assertEqual(return_code, 1)
         self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
     def test_04_CheckProfile(self):
         """!
-        Test only passing --check-profile argument to ns3
+        Test only passing 'show profile' argument to ns3
         @return None
         """
-        return_code, stdout, stderr = run_ns3("--check-profile")
+        return_code, stdout, stderr = run_ns3("show profile")
         self.assertEqual(return_code, 1)
         self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
     def test_05_CheckVersion(self):
         """!
-        Test only passing --check-version argument to ns3
+        Test only passing 'show version' argument to ns3
         @return None
         """
-        return_code, stdout, stderr = run_ns3("--check-version")
+        return_code, stdout, stderr = run_ns3("show version")
         self.assertEqual(return_code, 1)
         self.assertIn("You need to configure ns-3 first: try ./ns3 configure", stdout)
 
@@ -773,31 +773,31 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
     def test_10_CheckConfig(self):
         """!
-        Test passing --check-config argument to ns3 to get the configuration table
+        Test passing 'show config' argument to ns3 to get the configuration table
         @return None
         """
-        return_code, stdout, stderr = run_ns3("--check-config")
+        return_code, stdout, stderr = run_ns3("show config")
         self.assertEqual(return_code, 0)
         self.assertIn("Summary of optional NS-3 features", stdout)
 
     def test_11_CheckProfile(self):
         """!
-        Test passing --check-profile argument to ns3 to get the build profile
+        Test passing 'show profile' argument to ns3 to get the build profile
         @return None
         """
-        return_code, stdout, stderr = run_ns3("--check-profile")
+        return_code, stdout, stderr = run_ns3("show profile")
         self.assertEqual(return_code, 0)
-        self.assertIn("Build profile: debug", stdout)
+        self.assertIn("Build profile: default", stdout)
 
     def test_12_CheckVersion(self):
         """!
-        Test passing --check-version argument to ns3 to get the build version
+        Test passing 'show version' argument to ns3 to get the build version
         @return None
         """
         return_code, _, _ = run_ns3("configure -G \"Unix Makefiles\" --enable-build-version")
         self.assertEqual(return_code, 0)
 
-        return_code, stdout, stderr = run_ns3("--check-version")
+        return_code, stdout, stderr = run_ns3("show version")
         self.assertEqual(return_code, 0)
         self.assertIn("ns-3 version:", stdout)
 
@@ -1657,15 +1657,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertIn(cmake_build_target_command(target="doxygen"), stdout)
         self.assertIn("Built target doxygen", stdout)
 
-    def test_14_Check(self):
-        """!
-        Test if ns3 --check is working as expected
-        @return None
-        """
-        return_code, stdout, stderr = run_ns3("--check")
-        self.assertEqual(return_code, 0)
-
-    def test_15_EnableSudo(self):
+    def test_14_EnableSudo(self):
         """!
         Try to set ownership of scratch-simulator from current user to root,
         and change execution permissions
@@ -1742,7 +1734,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(fstat.st_uid, 0)  # check the file was correctly chown'ed by root
         self.assertEqual(fstat.st_mode & stat.S_ISUID, stat.S_ISUID)  # check if normal users can run as sudo
 
-    def test_16_CommandTemplate(self):
+    def test_15_CommandTemplate(self):
         """!
         Check if command template is working
         @return None
@@ -1768,7 +1760,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertIn("sample-simulator --PrintVersion", stdout4)
         self.assertIn("sample-simulator --PrintVersion", stdout5)
 
-    def test_17_ForwardArgumentsToRunTargets(self):
+    def test_16_ForwardArgumentsToRunTargets(self):
         """!
         Check if all flavors of different argument passing to
         executable targets are working
@@ -1825,7 +1817,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertIn("To forward configuration or runtime options, put them after '--'", stderr0)
         self.assertIn("To forward configuration or runtime options, put them after '--'", stderr1)
 
-    def test_18_RunNoBuildLldb(self):
+    def test_17_RunNoBuildLldb(self):
         """!
         Test if scratch simulator is executed through lldb
         @return None

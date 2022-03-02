@@ -279,7 +279,7 @@ function(build_lib)
     set(module_api_LP64 ${bindings_output_folder}/modulegen__gcc_LP64.py)
 
     set(modulescan_modular_command
-        ${Python_EXECUTABLE}
+        ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/bindings/python/ns3modulescan-modular.py
     )
 
@@ -305,7 +305,7 @@ function(build_lib)
     if("${arch}" STREQUAL "gcc_LP64")
       set(module_to_generate_api ${module_api_LP64})
       set(LP64toILP32
-          ${Python_EXECUTABLE}
+          ${Python3_EXECUTABLE}
           ${PROJECT_SOURCE_DIR}/build-support/pybindings-LP64-to-ILP32.py
           ${module_api_LP64} ${module_api_ILP32}
       )
@@ -316,7 +316,8 @@ function(build_lib)
       COMMAND
         ${modulescan_modular_command} ${CMAKE_OUTPUT_DIRECTORY} ${BLIB_LIBNAME}
         ${PROJECT_BINARY_DIR}/header_map.json ${module_to_generate_api}
-        \"${arch_flags} ${modulegen_include_dirs}\"
+        \"${arch_flags} ${modulegen_include_dirs}\" 2>
+        ${bindings_output_folder}/apiscan.log
       COMMAND ${LP64toILP32}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${lib${BLIB_LIBNAME}}
@@ -357,7 +358,7 @@ function(build_lib)
       )
       set(modulegen_modular_command
           GCC_RTTI_ABI_COMPLETE=True NS3_ENABLED_FEATURES="${ENABLED_FEATURES}"
-          ${Python_EXECUTABLE}
+          ${Python3_EXECUTABLE}
           ${PROJECT_SOURCE_DIR}/bindings/python/ns3modulegen-modular.py
       )
       execute_process(
@@ -394,7 +395,7 @@ function(build_lib)
     set(bindings-name lib${BLIB_LIBNAME}-bindings)
     add_library(${bindings-name} SHARED "${python_module_files}")
     target_include_directories(
-      ${bindings-name} PUBLIC ${PYTHON_INCLUDE_DIRS} ${bindings_output_folder}
+      ${bindings-name} PUBLIC ${Python3_INCLUDE_DIRS} ${bindings_output_folder}
     )
     target_compile_options(${bindings-name} PRIVATE -Wno-error)
 
@@ -410,7 +411,7 @@ function(build_lib)
       ${bindings-name}
       PUBLIC ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}} "${bindings_to_link}"
              "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
-      PRIVATE ${Python_LIBRARIES}
+      PRIVATE ${Python3_LIBRARIES}
     )
     target_include_directories(
       ${bindings-name} PRIVATE ${PROJECT_SOURCE_DIR}/src/core/bindings

@@ -19,7 +19,7 @@ find_external_library(
 if(NOT
    ${brite_FOUND}
 )
-  message(STATUS "Brite was not found")
+  message(STATUS "Skipping src/brite")
   return()
 endif()
 

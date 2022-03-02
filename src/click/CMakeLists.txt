@@ -20,7 +20,7 @@ find_external_library(
 if(NOT
    ${click_FOUND}
 )
-  message(STATUS "Click was not found")
+  message(STATUS "Skipping src/click")
   return()
 endif()
 
