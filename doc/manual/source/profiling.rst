@@ -1034,3 +1034,38 @@ Precompiled headers (``-DNS3_PRECOMPILE_HEADERS=ON``) can `drastically speed up 
 however, they can increase ccache misses, reducing the time of the first
 compilation at the cost of increasing recompilation times.
 
+
+CMake Profiler
+**************
+
+CMake has a built-in tracer that permits tracking hotspots in the CMake files slowing down the 
+project configuration. To use the tracer, call cmake directly from a clean CMake cache directory:
+
+.. sourcecode:: console
+
+  ~/ns-3-dev/cmake-cache$ cmake .. --profiling-format=google-trace --profiling-output=trace.log
+
+.. _Perfetto UI: https://ui.perfetto.dev/
+
+The ``trace.log`` file will be generated, and can be visualized using the ``about:tracing`` panel
+available in Chromium-based browsers or compatible trace viewer such as 
+`Perfetto UI`_.
+
+After opening the trace file, select the traced process and click on
+any of the blocks to inspect the different stacks and find hotspots.
+An auxiliary panel containing the function/macro name, arguments 
+and location can be shown, providing enough information to trace 
+back the location of each specific call.
+
+Just like in performance profilers, visual inspection makes it easier
+to identify hotspots and focus on trying to optimize what matters most.
+
+.. _issue #588: https://gitlab.com/nsnam/ns-3-dev/-/issues/588
+
+The trace below was generated during the discussion of `issue #588`_,
+while using a HDD, which adds significant overhead to the CMake 
+configuration step.
+
+.. image:: figures/perfetto-trace-cmake.png
+
+

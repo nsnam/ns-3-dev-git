@@ -479,9 +479,10 @@ It's not
 strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
 Probably the most useful configuration change you can make will be to 
-build the optimized version of the code.  By default you have configured
-your project to build the debug version.  Let's tell the project to 
-make an optimized build.
+build the optimized version of the code. The project will be configured
+by default using the ``default`` build profile, which is an optimized
+build with debug information (CMAKE_BUILD_TYPE=relwithdebinfo) version. 
+Let's tell the project to make an optimized build.
 
 To maintain a similar interface for command-line users, we include a
 wrapper script for CMake, |ns3|. To tell |ns3| that it should do optimized
@@ -500,187 +501,188 @@ below); it will remove the
 previously built libraries and object files found in directory ``build/``. 
 When the project is reconfigured and the build system checks for various 
 dependencies, you should see
-output that looks similar to the following::
+output that looks similar to the following:
 
 .. sourcecode:: console
 
-   -- CCache is enabled. Precompiled headers are disabled by default.
-   -- The CXX compiler identification is GNU 11.2.0
-   -- The C compiler identification is GNU 11.2.0
-   -- Detecting CXX compiler ABI info
-   -- Detecting CXX compiler ABI info - done
-   -- Check for working CXX compiler: /usr/bin/c++ - skipped
-   -- Detecting CXX compile features
-   -- Detecting CXX compile features - done
-   -- Detecting C compiler ABI info
-   -- Detecting C compiler ABI info - done
-   -- Check for working C compiler: /usr/bin/cc - skipped
-   -- Detecting C compile features
-   -- Detecting C compile features - done
-   -- Using default output directory /mnt/dev/tools/source/ns-3-dev/build
-   -- Found GTK3_GTK: /usr/lib/x86_64-linux-gnu/libgtk-3.so
-   -- GTK3 was found.
-   -- LibXML2 was found.
-   -- LibRT was found.
-   -- Visualizer requires Python bindings
-   -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0")
-   -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2")
-   -- GSL was found.
-   -- Found Sphinx: /usr/bin/sphinx-build
-   -- Looking for sys/types.h
-   -- Looking for sys/types.h - found
-   -- Looking for stdint.h
-   -- Looking for stdint.h - found
-   -- Looking for stddef.h
-   -- Looking for stddef.h - found
-   -- Check size of long long
-   -- Check size of long long - done
-   -- Check size of int128_t
-   -- Check size of int128_t - failed
-   -- Check size of __int128_t
-   -- Check size of __int128_t - done
-   -- Performing Test has_hash___int128_t
-   -- Performing Test has_hash___int128_t - Success
-   -- Check size of unsigned long long
-   -- Check size of unsigned long long - done
-   -- Check size of uint128_t
-   -- Check size of uint128_t - failed
-   -- Check size of __uint128_t
-   -- Check size of __uint128_t - done
-   -- Performing Test has_hash___uint128_t
-   -- Performing Test has_hash___uint128_t - Success
-   -- Looking for C++ include inttypes.h
-   -- Looking for C++ include inttypes.h - found
-   -- Looking for C++ include stat.h
-   -- Looking for C++ include stat.h - not found
-   -- Looking for C++ include dirent.h
-   -- Looking for C++ include dirent.h - found
-   -- Looking for C++ include stdlib.h
-   -- Looking for C++ include stdlib.h - found
-   -- Looking for C++ include signal.h
-   -- Looking for C++ include signal.h - found
-   -- Looking for C++ include netpacket/packet.h
-   -- Looking for C++ include netpacket/packet.h - found
-   -- Looking for C++ include semaphore.h
-   -- Looking for C++ include semaphore.h - found
-   -- Looking for getenv
-   -- Looking for getenv - found
-   -- Processing src/antenna
-   -- Processing src/aodv
-   -- Processing src/applications
-   -- Processing src/bridge
-   -- Processing src/brite
-   -- Brite was not found
-   -- Processing src/buildings
-   -- Processing src/click
-   -- Click was not found
-   -- Processing src/config-store
-   -- Processing src/core
-   -- Looking for C++ include boost/units/quantity.hpp
-   -- Looking for C++ include boost/units/quantity.hpp - found
-   -- Looking for C++ include boost/units/systems/si.hpp
-   -- Looking for C++ include boost/units/systems/si.hpp - found
-   -- Boost Units have been found.
-   -- Processing src/csma
-   -- Processing src/csma-layout
-   -- Processing src/dsdv
-   -- Processing src/dsr
-   -- Processing src/energy
-   -- Processing src/fd-net-device
-   -- Looking for C++ include net/ethernet.h
-   -- Looking for C++ include net/ethernet.h - found
-   -- Looking for C++ include netpacket/packet.h
-   -- Looking for C++ include netpacket/packet.h - found
-   -- Looking for C++ include net/if.h
-   -- Looking for C++ include net/if.h - found
-   -- Looking for C++ include linux/if_tun.h
-   -- Looking for C++ include linux/if_tun.h - found
-   -- Looking for C++ include net/netmap_user.h
-   -- Looking for C++ include net/netmap_user.h - not found
-   -- Looking for C++ include sys/ioctl.h
-   -- Looking for C++ include sys/ioctl.h - found
-   -- Checking for module 'libdpdk'
-   --   No package 'libdpdk' found
-   -- Processing src/flow-monitor
-   -- Processing src/internet
-   -- Processing src/internet-apps
-   -- Processing src/lr-wpan
-   -- Processing src/lte
-   -- Processing src/mesh
-   -- Processing src/mobility
-   -- Processing src/netanim
-   -- Processing src/network
-   -- Processing src/nix-vector-routing
-   -- Processing src/olsr
-   -- Processing src/openflow
-   -- Openflow was not found
-   -- Processing src/point-to-point
-   -- Processing src/point-to-point-layout
-   -- Processing src/propagation
-   -- Processing src/sixlowpan
-   -- Processing src/spectrum
-   -- Processing src/stats
-   -- Processing src/tap-bridge
-   -- Processing src/test
-   -- Processing src/topology-read
-   -- Processing src/traffic-control
-   -- Processing src/uan
-   -- Processing src/virtual-net-device
-   -- Processing src/wave
-   -- Processing src/wifi
-   -- Processing src/wimax
-   -- ---- Summary of optional NS-3 features:
-   Build profile                 : optimized
-   Build directory               : /mnt/dev/tools/source/ns-3-dev/build
-   BRITE Integration             : OFF (missing dependency)
-   DES Metrics event collection  : OFF (not requested)
-   DPDK NetDevice                : OFF (missing dependency)
-   Emulation FdNetDevice         : ON
-   Examples                      : ON
-   File descriptor NetDevice     : ON
-   GNU Scientific Library (GSL)  : ON
-   GtkConfigStore                : ON
-   MPI Support                   : OFF (not requested)
-   NS-3 Click Integration        : OFF (missing dependency)
-   NS-3 OpenFlow Integration     : OFF (missing dependency)
-   Netmap emulation FdNetDevice  : OFF (missing dependency)
-   PyViz visualizer              : OFF (missing dependency)
-   Python Bindings               : OFF (not requested)
-   Real Time Simulator           : ON
-   SQLite stats support          : ON
-   Tap Bridge                    : ON
-   Tap FdNetDevice               : ON
-   Tests                         : ON
-   Threading Primitives          : ON
-
-
-   Modules configured to be built:
-   antenna                   aodv                      applications
-   bridge                    buildings                 config-store
-   core                      csma                      csma-layout
-   dsdv                      dsr                       energy
-   fd-net-device             flow-monitor              internet
-   internet-apps             lr-wpan                   lte
-   mesh                      mobility                  netanim
-   network                   nix-vector-routing        olsr
-   point-to-point            point-to-point-layout     propagation
-   sixlowpan                 spectrum                  stats
-   tap-bridge                test                      topology-read
-   traffic-control           uan                       virtual-net-device
-   wave                      wifi                      wimax
-
-
-   Modules that cannot be built:
-   brite                     click                     mpi
-   openflow                  visualizer
-
-
-   -- Configuring done
-   -- Generating done
-   -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake-cache
-   Finished executing the following commands:
-   mkdir cmake-cache
-   cd cmake-cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=ON -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
+  $ ./ns3 configure --build-profile=optimized --enable-examples --enable-tests
+  -- CCache is enabled. Precompiled headers are disabled by default.
+  -- The CXX compiler identification is GNU 11.2.0
+  -- The C compiler identification is GNU 11.2.0
+  -- Detecting CXX compiler ABI info
+  -- Detecting CXX compiler ABI info - done
+  -- Check for working CXX compiler: /usr/bin/c++ - skipped
+  -- Detecting CXX compile features
+  -- Detecting CXX compile features - done
+  -- Detecting C compiler ABI info
+  -- Detecting C compiler ABI info - done
+  -- Check for working C compiler: /usr/bin/cc - skipped
+  -- Detecting C compile features
+  -- Detecting C compile features - done
+  -- Using default output directory /mnt/dev/tools/source/ns-3-dev/build
+  -- Found GTK3_GTK: /usr/lib/x86_64-linux-gnu/libgtk-3.so
+  -- GTK3 was found.
+  -- LibXML2 was found.
+  -- LibRT was found.
+  -- Visualizer requires Python bindings
+  -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0")
+  -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2")
+  -- GSL was found.
+  -- Found Sphinx: /usr/bin/sphinx-build
+  -- Looking for sys/types.h
+  -- Looking for sys/types.h - found
+  -- Looking for stdint.h
+  -- Looking for stdint.h - found
+  -- Looking for stddef.h
+  -- Looking for stddef.h - found
+  -- Check size of long long
+  -- Check size of long long - done
+  -- Check size of int128_t
+  -- Check size of int128_t - failed
+  -- Check size of __int128_t
+  -- Check size of __int128_t - done
+  -- Performing Test has_hash___int128_t
+  -- Performing Test has_hash___int128_t - Success
+  -- Check size of unsigned long long
+  -- Check size of unsigned long long - done
+  -- Check size of uint128_t
+  -- Check size of uint128_t - failed
+  -- Check size of __uint128_t
+  -- Check size of __uint128_t - done
+  -- Performing Test has_hash___uint128_t
+  -- Performing Test has_hash___uint128_t - Success
+  -- Looking for C++ include inttypes.h
+  -- Looking for C++ include inttypes.h - found
+  -- Looking for C++ include stat.h
+  -- Looking for C++ include stat.h - not found
+  -- Looking for C++ include dirent.h
+  -- Looking for C++ include dirent.h - found
+  -- Looking for C++ include stdlib.h
+  -- Looking for C++ include stdlib.h - found
+  -- Looking for C++ include signal.h
+  -- Looking for C++ include signal.h - found
+  -- Looking for C++ include netpacket/packet.h
+  -- Looking for C++ include netpacket/packet.h - found
+  -- Looking for C++ include semaphore.h
+  -- Looking for C++ include semaphore.h - found
+  -- Looking for getenv
+  -- Looking for getenv - found
+  -- Processing src/antenna
+  -- Processing src/aodv
+  -- Processing src/applications
+  -- Processing src/bridge
+  -- Processing src/brite
+  -- Brite was not found
+  -- Processing src/buildings
+  -- Processing src/click
+  -- Click was not found
+  -- Processing src/config-store
+  -- Processing src/core
+  -- Looking for C++ include boost/units/quantity.hpp
+  -- Looking for C++ include boost/units/quantity.hpp - found
+  -- Looking for C++ include boost/units/systems/si.hpp
+  -- Looking for C++ include boost/units/systems/si.hpp - found
+  -- Boost Units have been found.
+  -- Processing src/csma
+  -- Processing src/csma-layout
+  -- Processing src/dsdv
+  -- Processing src/dsr
+  -- Processing src/energy
+  -- Processing src/fd-net-device
+  -- Looking for C++ include net/ethernet.h
+  -- Looking for C++ include net/ethernet.h - found
+  -- Looking for C++ include netpacket/packet.h
+  -- Looking for C++ include netpacket/packet.h - found
+  -- Looking for C++ include net/if.h
+  -- Looking for C++ include net/if.h - found
+  -- Looking for C++ include linux/if_tun.h
+  -- Looking for C++ include linux/if_tun.h - found
+  -- Looking for C++ include net/netmap_user.h
+  -- Looking for C++ include net/netmap_user.h - not found
+  -- Looking for C++ include sys/ioctl.h
+  -- Looking for C++ include sys/ioctl.h - found
+  -- Checking for module 'libdpdk'
+  --   No package 'libdpdk' found
+  -- Processing src/flow-monitor
+  -- Processing src/internet
+  -- Processing src/internet-apps
+  -- Processing src/lr-wpan
+  -- Processing src/lte
+  -- Processing src/mesh
+  -- Processing src/mobility
+  -- Processing src/netanim
+  -- Processing src/network
+  -- Processing src/nix-vector-routing
+  -- Processing src/olsr
+  -- Processing src/openflow
+  -- Openflow was not found
+  -- Processing src/point-to-point
+  -- Processing src/point-to-point-layout
+  -- Processing src/propagation
+  -- Processing src/sixlowpan
+  -- Processing src/spectrum
+  -- Processing src/stats
+  -- Processing src/tap-bridge
+  -- Processing src/test
+  -- Processing src/topology-read
+  -- Processing src/traffic-control
+  -- Processing src/uan
+  -- Processing src/virtual-net-device
+  -- Processing src/wave
+  -- Processing src/wifi
+  -- Processing src/wimax
+  -- ---- Summary of optional NS-3 features:
+  Build profile                 : optimized
+  Build directory               : /mnt/dev/tools/source/ns-3-dev/build
+  BRITE Integration             : OFF (missing dependency)
+  DES Metrics event collection  : OFF (not requested)
+  DPDK NetDevice                : OFF (missing dependency)
+  Emulation FdNetDevice         : ON
+  Examples                      : ON
+  File descriptor NetDevice     : ON
+  GNU Scientific Library (GSL)  : ON
+  GtkConfigStore                : ON
+  MPI Support                   : OFF (not requested)
+  NS-3 Click Integration        : OFF (missing dependency)
+  NS-3 OpenFlow Integration     : OFF (missing dependency)
+  Netmap emulation FdNetDevice  : OFF (missing dependency)
+  PyViz visualizer              : OFF (missing dependency)
+  Python Bindings               : OFF (not requested)
+  Real Time Simulator           : ON
+  SQLite stats support          : ON
+  Tap Bridge                    : ON
+  Tap FdNetDevice               : ON
+  Tests                         : ON
+  Threading Primitives          : ON
+  
+  
+  Modules configured to be built:
+  antenna                   aodv                      applications
+  bridge                    buildings                 config-store
+  core                      csma                      csma-layout
+  dsdv                      dsr                       energy
+  fd-net-device             flow-monitor              internet
+  internet-apps             lr-wpan                   lte
+  mesh                      mobility                  netanim
+  network                   nix-vector-routing        olsr
+  point-to-point            point-to-point-layout     propagation
+  sixlowpan                 spectrum                  stats
+  tap-bridge                test                      topology-read
+  traffic-control           uan                       virtual-net-device
+  wave                      wifi                      wimax
+  
+  
+  Modules that cannot be built:
+  brite                     click                     mpi
+  openflow                  visualizer
+  
+  
+  -- Configuring done
+  -- Generating done
+  -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake-cache
+  Finished executing the following commands:
+  mkdir cmake-cache
+  cd cmake-cache; /usr/bin/cmake -DCMAKE_BUILD_TYPE=release -DNS3_NATIVE_OPTIMIZATIONS=ON -DNS3_EXAMPLES=ON -DNS3_TESTS=ON -G Unix Makefiles .. ; cd ..
 
 
 Note the last part of the above output.  Some |ns3| options are not enabled by
@@ -811,26 +813,25 @@ synonym for ``--build-profile``.
 The build profile controls the use of logging, assertions, and compiler optimization:
 
 .. table:: Build profiles
-    :widths: 10 28 30 32
+    :widths: 10 28 30 30 32
 
-    +----------+---------------------------------+-----------------------------------------------------------------+
-    | Feature  | Build Profile                                                                                     |
-    +          +---------------------------------+-------------------------------+---------------------------------+
-    |          | ``debug``                       | ``release``                   | ``optimized``                   |
-    +==========+=================================+===============================+=================================+
-    | Enabled  | |  ``NS3_BUILD_PROFILE_DEBUG``  | ``NS3_BUILD_PROFILE_RELEASE`` | ``NS3_BUILD_PROFILE_OPTIMIZED`` |
-    | Features | |  ``NS_LOG...``                |                               |                                 |
-    |          | |  ``NS_ASSERT...``             |                               |                                 |
-    +----------+---------------------------------+-------------------------------+---------------------------------+
-    | Code     | ``NS_BUILD_DEBUG(code)``        |  ``NS_BUILD_RELEASE(code)``   | ``NS_BUILD_OPTIMIZED(code)``    |
-    | Wrapper  |                                 |                               |                                 |
-    | Macro    |                                 |                               |                                 |
-    +----------+---------------------------------+-------------------------------+---------------------------------+
-    | Compiler | ``-O0 -ggdb -g3``               | ``-O3 -g0``                   | ``-O3 -g``                      |
-    | Flags    |                                 | ``-fomit-frame-pointer``      | ``-fstrict-overflow``           |
-    |          |                                 |                               | ``-march=native``               |
-    |          |                                 |                               | ``-mtune=native``               |
-    +----------+---------------------------------+-------------------------------+---------------------------------+
+    +----------+---------------------------------------------------------------------------------------------------------------------------------+
+    | Feature  | Build Profile                                                                                                                   |
+    +          +---------------------------------+-----------------------------+-------------------------------+---------------------------------+
+    |          | ``debug``                       | ``default``                 | ``release``                   | ``optimized``                   |
+    +==========+=================================+=============================+===============================+=================================+
+    | Enabled  | ``NS3_BUILD_PROFILE_DEBUG``     | ``NS3_BUILD_PROFILE_DEBUG`` | ``NS3_BUILD_PROFILE_RELEASE`` | ``NS3_BUILD_PROFILE_OPTIMIZED`` |
+    | Features | ``NS_LOG...``                   | ``NS_LOG...``               |                               |                                 |
+    |          | ``NS_ASSERT...``                | ``NS_ASSERT...``            |                               |                                 |
+    +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
+    | Code     | ``NS_BUILD_DEBUG(code)``        | ``NS_BUILD_DEBUG(code)``    | ``NS_BUILD_RELEASE(code)``    | ``NS_BUILD_OPTIMIZED(code)``    |
+    | Wrapper  |                                 |                             |                               |                                 |
+    | Macro    |                                 |                             |                               |                                 |
+    +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
+    | Compiler | ``-Og -g``                      | ``-O2 -g``                  | ``-O3``                       | ``-O3``                         |
+    | Flags    |                                 |                             |                               | ``-march=native``               |
+    |          |                                 |                             |                               | ``-mtune=native``               |
+    +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
     
 As you can see, logging and assertions are only configured
 by default in debug builds, although they can be selectively enabled
