@@ -100,7 +100,7 @@ namespace ns3 {{
 EXAMPLES_CMAKELISTS_TEMPLATE = '''\
 build_lib_example(
     NAME {MODULE}-example
-    SOURCE_FILES ${{name}}.cc
+    SOURCE_FILES {MODULE}-example.cc
     LIBRARIES_TO_LINK ${{lib{MODULE}}}
 )
 
