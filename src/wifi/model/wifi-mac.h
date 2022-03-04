@@ -134,10 +134,12 @@ public:
    */
   Ptr<QosTxop> GetQosTxop (uint8_t tid) const;
   /**
-   * Get the wifi MAC queue of the (Qos)Txop associated with the given AC.
+   * Get the wifi MAC queue of the (Qos)Txop associated with the given AC,
+   * if such (Qos)Txop is installed, or a null pointer, otherwise.
    *
    * \param ac the given Access Category
-   * \return the wifi MAC queue of the (Qos)Txop associated with the given AC
+   * \return the wifi MAC queue of the (Qos)Txop associated with the given AC,
+   *         if such (Qos)Txop is installed, or a null pointer, otherwise
    */
   virtual Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const;
 
