@@ -252,6 +252,25 @@ Submit work for review
 After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html
 to create a merge request. 
 
+GitLab CI (Continous Integration)
++++++++++++++++++++++++++++++++++
+
+GitLab provides a CI (Continous Integration) feature. Shortly put, after every push the code is built and tests are run in one of the GitLab servers.
+
+Merge requests are expected to pass the CI, as is to not generate errors or warings during compilation, to have all the tests pasing, and to not generate warnings on the documentation.
+Hence, the CI is very important for the workflow. However, sometimes running the Ci is superfluous, for example:
+
+- You are in the middle of some work (and perhaps you know that there are errors),
+- Your changes are not tested by the CI (e.g., changes to the AUTHORS),
+- Etc.
+
+In these cases it is useful to skip the CI to save time, CI runners quota, and energy. This is possible by using the ``-o ci.skip`` option:
+
+::
+
+    $ git push -o ci.skip
+
+
 Porting patches from mercurial repositories to git
 **************************************************
 
