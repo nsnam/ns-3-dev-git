@@ -1184,7 +1184,7 @@ StaWifiMac::SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8
   edca->SetMinCw (cwMin, SINGLE_LINK_OP_ID);
   edca->SetMaxCw (cwMax, SINGLE_LINK_OP_ID);
   edca->SetAifsn (aifsn, SINGLE_LINK_OP_ID);
-  edca->SetTxopLimit (txopLimit);
+  edca->SetTxopLimit (txopLimit, SINGLE_LINK_OP_ID);
 }
 
 void

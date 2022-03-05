@@ -605,11 +605,11 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
       if (isDsss)
         {
-          dcf->SetTxopLimit (MicroSeconds (3264));
+          dcf->SetTxopLimit (MicroSeconds (3264), SINGLE_LINK_OP_ID);
         }
       else
         {
-          dcf->SetTxopLimit (MicroSeconds (1504));
+          dcf->SetTxopLimit (MicroSeconds (1504), SINGLE_LINK_OP_ID);
         }
       break;
     case AC_VI:
@@ -618,30 +618,30 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
       if (isDsss)
         {
-          dcf->SetTxopLimit (MicroSeconds (6016));
+          dcf->SetTxopLimit (MicroSeconds (6016), SINGLE_LINK_OP_ID);
         }
       else
         {
-          dcf->SetTxopLimit (MicroSeconds (3008));
+          dcf->SetTxopLimit (MicroSeconds (3008), SINGLE_LINK_OP_ID);
         }
       break;
     case AC_BE:
       dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
       dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
       dcf->SetAifsn (3, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0));
+      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
       break;
     case AC_BK:
       dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
       dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
       dcf->SetAifsn (7, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0));
+      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
       break;
     case AC_BE_NQOS:
       dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
       dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
       dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0));
+      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
       break;
     case AC_BEACON:
       // done by ApWifiMac

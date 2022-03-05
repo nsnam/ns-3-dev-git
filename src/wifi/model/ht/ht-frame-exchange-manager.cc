@@ -584,7 +584,7 @@ HtFrameExchangeManager::TransmissionSucceeded (void)
 {
   NS_LOG_DEBUG (this);
 
-  if (m_edca != 0 && m_edca->GetTxopLimit ().IsZero () && m_edca->GetBaManager ()->GetBar (false) != 0)
+  if (m_edca != 0 && m_edca->GetTxopLimit (m_linkId).IsZero () && m_edca->GetBaManager ()->GetBar (false) != 0)
     {
       // A TXOP limit of 0 indicates that the TXOP holder may transmit or cause to
       // be transmitted (as responses) the following within the current TXOP:
@@ -692,7 +692,7 @@ HtFrameExchangeManager::GetPsduDurationId (Time txDuration, const WifiTxParamete
 
   NS_ASSERT (m_edca != 0);
 
-  if (m_edca->GetTxopLimit ().IsZero ())
+  if (m_edca->GetTxopLimit (m_linkId).IsZero ())
     {
       NS_ASSERT (txParams.m_acknowledgment && txParams.m_acknowledgment->acknowledgmentTime != Time::Min ());
       return txParams.m_acknowledgment->acknowledgmentTime;

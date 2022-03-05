@@ -90,11 +90,20 @@ Txop::GetTypeId (void)
                    MakeAttributeContainerAccessor <IntegerValue, std::list> (&Txop::SetAifsns,
                                                                              &Txop::GetAifsns),
                    MakeAttributeContainerChecker<UintegerValue> (MakeUintegerChecker<uint8_t> ()))
-    .AddAttribute ("TxopLimit", "The TXOP limit: the default value conforms to non-QoS.",
+    .AddAttribute ("TxopLimit", "The TXOP limit: the default value conforms to non-QoS "
+                   "(just for the first link, in case of 11be multi-link devices).",
+                   TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
                    TimeValue (MilliSeconds (0)),
-                   MakeTimeAccessor (&Txop::SetTxopLimit,
-                                     &Txop::GetTxopLimit),
+                   MakeTimeAccessor ((void (Txop::*) (Time)) &Txop::SetTxopLimit,
+                                     (Time (Txop::*) (void) const) &Txop::GetTxopLimit),
                    MakeTimeChecker ())
+    .AddAttribute ("TxopLimits",
+                   "The values of TXOP limit for all the links",
+                   TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
+                   AttributeContainerValue <TimeValue> (),
+                   MakeAttributeContainerAccessor <TimeValue, std::list> (&Txop::SetTxopLimits,
+                                                                          &Txop::GetTxopLimits),
+                   MakeAttributeContainerChecker<TimeValue> (MakeTimeChecker ()))
     .AddAttribute ("Queue", "The WifiMacQueue object",
                    PointerValue (),
                    MakePointerAccessor (&Txop::GetWifiMacQueue),
@@ -349,9 +358,27 @@ Txop::SetAifsn (uint8_t aifsn, uint8_t linkId)
 void
 Txop::SetTxopLimit (Time txopLimit)
 {
-  NS_LOG_FUNCTION (this << txopLimit);
+  SetTxopLimit (txopLimit, 0);
+}
+
+void
+Txop::SetTxopLimits (const std::vector<Time>& txopLimits)
+{
+  NS_ABORT_MSG_IF (txopLimits.size () != m_links.size (),
+                   "The size of the given vector (" << txopLimits.size () <<
+                   ") does not match the number of links (" << m_links.size () << ")");
+  for (uint8_t linkId = 0; linkId < txopLimits.size (); linkId++)
+    {
+      SetTxopLimit (txopLimits[linkId], linkId);
+    }
+}
+
+void
+Txop::SetTxopLimit (Time txopLimit, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << txopLimit << +linkId);
   NS_ASSERT_MSG ((txopLimit.GetMicroSeconds () % 32 == 0), "The TXOP limit must be expressed in multiple of 32 microseconds!");
-  m_txopLimit = txopLimit;
+  GetLink (linkId).txopLimit = txopLimit;
 }
 
 uint32_t
@@ -426,7 +453,24 @@ Txop::GetAifsn (uint8_t linkId) const
 Time
 Txop::GetTxopLimit (void) const
 {
-  return m_txopLimit;
+  return GetTxopLimit (0);
+}
+
+std::vector<Time>
+Txop::GetTxopLimits (void) const
+{
+  std::vector<Time> ret;
+  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+    {
+      ret.push_back (GetTxopLimit (linkId));
+    }
+  return ret;
+}
+
+Time
+Txop::GetTxopLimit (uint8_t linkId) const
+{
+  return GetLink (linkId).txopLimit;
 }
 
 bool

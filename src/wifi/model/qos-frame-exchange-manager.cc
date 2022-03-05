@@ -83,7 +83,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_edca != 0);
-  NS_ASSERT (m_edca->GetTxopLimit ().IsStrictlyPositive ());
+  NS_ASSERT (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ());
 
   WifiMacHeader cfEnd;
   cfEnd.SetType (WIFI_MAC_CTL_END);
@@ -167,7 +167,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca)
     }
 
   Ptr<QosTxop> qosTxop = StaticCast<QosTxop> (edca);
-  return StartTransmission (qosTxop, qosTxop->GetTxopLimit ());
+  return StartTransmission (qosTxop, qosTxop->GetTxopLimit (m_linkId));
 }
 
 bool
@@ -195,7 +195,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
 
   if (backingOff)
     {
-      NS_ASSERT (m_edca->GetTxopLimit ().IsStrictlyPositive ());
+      NS_ASSERT (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ());
       NS_ASSERT (m_edca->IsTxopStarted (m_linkId));
       NS_ASSERT (!m_pifsRecovery);
       NS_ASSERT (!m_initialFrame);
@@ -204,7 +204,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
       m_edcaBackingOff = 0;
     }
 
-  if (m_edca->GetTxopLimit ().IsStrictlyPositive ())
+  if (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ())
     {
       // TXOP limit is not null. We have to check if this EDCAF is starting a
       // new TXOP. This includes the case when the transmission of a non-initial
@@ -450,7 +450,7 @@ QosFrameExchangeManager::GetFrameDurationId (const WifiMacHeader& header, uint32
       return FrameExchangeManager::GetFrameDurationId (header, size, txParams, fragmentedPacket);
     }
 
-  if (m_edca->GetTxopLimit ().IsZero ())
+  if (m_edca->GetTxopLimit (m_linkId).IsZero ())
     {
       return FrameExchangeManager::GetFrameDurationId (header, size, txParams, fragmentedPacket);
     }
@@ -477,7 +477,7 @@ QosFrameExchangeManager::GetRtsDurationId (const WifiTxVector& rtsTxVector, Time
       return FrameExchangeManager::GetRtsDurationId (rtsTxVector, txDuration, response);
     }
 
-  if (m_edca->GetTxopLimit ().IsZero ())
+  if (m_edca->GetTxopLimit (m_linkId).IsZero ())
     {
       return FrameExchangeManager::GetRtsDurationId (rtsTxVector, txDuration, response);
     }
@@ -503,7 +503,7 @@ QosFrameExchangeManager::GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector
       return FrameExchangeManager::GetCtsToSelfDurationId (ctsTxVector, txDuration, response);
     }
 
-  if (m_edca->GetTxopLimit ().IsZero ())
+  if (m_edca->GetTxopLimit (m_linkId).IsZero ())
     {
       return FrameExchangeManager::GetCtsToSelfDurationId (ctsTxVector, txDuration, response);
     }
@@ -546,7 +546,7 @@ QosFrameExchangeManager::TransmissionSucceeded (void)
       return;
     }
 
-  if (m_edca->GetTxopLimit ().IsStrictlyPositive ()
+  if (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ()
       && m_edca->GetRemainingTxop (m_linkId) > m_phy->GetSifs ())
     {
       NS_LOG_DEBUG ("Schedule another transmission in a SIFS");
@@ -585,7 +585,7 @@ QosFrameExchangeManager::TransmissionFailed (void)
     }
   else
     {
-      NS_ASSERT_MSG (m_edca->GetTxopLimit ().IsStrictlyPositive (),
+      NS_ASSERT_MSG (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive (),
                      "Cannot transmit more than one frame if TXOP Limit is zero");
 
       // A STA can perform a PIFS recovery or perform a backoff as a response to

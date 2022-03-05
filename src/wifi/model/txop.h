@@ -204,6 +204,22 @@ public:
    */
   void SetTxopLimit (Time txopLimit);
   /**
+   * Set the TXOP limit for each link.
+   * Note that the size of <i>txopLimits</i> must match the number
+   * of links.
+   *
+   * \param txopLimits the TXOP limit for each link.
+   */
+  void SetTxopLimits (const std::vector<Time>& txopLimits);
+  /**
+   * Set the TXOP limit for the given link.
+   *
+   * \param txopLimit the TXOP limit.
+   *        Value zero corresponds to default Txop.
+   * \param linkId the ID of the given link
+   */
+  void SetTxopLimit (Time txopLimit, uint8_t linkId);
+  /**
    * Return the minimum contention window size. For 11be multi-link devices,
    * return the minimum contention window size on the first link.
    *
@@ -269,6 +285,19 @@ public:
    * \return the TXOP limit.
    */
   Time GetTxopLimit (void) const;
+  /**
+   * Return the TXOP limit for each link.
+   *
+   * \return the TXOP limit for each link.
+   */
+  std::vector<Time> GetTxopLimits (void) const;
+  /**
+   * Return the TXOP limit for the given link.
+   *
+   * \param linkId the ID of the given link
+   * \return the TXOP limit.
+   */
+  Time GetTxopLimit (uint8_t linkId) const;
   /**
    * Update the value of the CW variable for the given link to take into account
    * a transmission success or a transmission abort (stop transmission
@@ -451,6 +480,7 @@ protected:
     uint32_t cwMin {0};                             //!< the minimum contention window
     uint32_t cwMax {0};                             //!< the maximum contention window
     uint8_t aifsn {0};                              //!< the AIFSN
+    Time txopLimit {0};                             //!< the TXOP limit time
     ChannelAccessStatus access {NOT_REQUESTED};     //!< channel access status
   };
 
@@ -473,8 +503,6 @@ protected:
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
   Ptr<WifiMac> m_mac;                               //!< the wifi MAC
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
-
-  Time m_txopLimit;       //!< the TXOP limit time
 
   /// TracedCallback for backoff trace value typedef
   typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> BackoffValueTracedCallback;

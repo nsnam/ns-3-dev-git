@@ -480,7 +480,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       Time txopLimit;
 
       edca = GetQosTxop (AC_BE);
-      txopLimit = edca->GetTxopLimit ();
+      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
       edcaParameters.SetBeAci (0);
       edcaParameters.SetBeCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
       edcaParameters.SetBeCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
@@ -488,7 +488,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBeTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_BK);
-      txopLimit = edca->GetTxopLimit ();
+      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
       edcaParameters.SetBkAci (1);
       edcaParameters.SetBkCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
       edcaParameters.SetBkCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
@@ -496,7 +496,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBkTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VI);
-      txopLimit = edca->GetTxopLimit ();
+      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
       edcaParameters.SetViAci (2);
       edcaParameters.SetViCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
       edcaParameters.SetViCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
@@ -504,7 +504,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetViTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VO);
-      txopLimit = edca->GetTxopLimit ();
+      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
       edcaParameters.SetVoAci (3);
       edcaParameters.SetVoCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
       edcaParameters.SetVoCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
