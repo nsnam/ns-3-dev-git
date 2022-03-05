@@ -39,11 +39,11 @@ class AttributeChecker;
 // A = attribute value type, C = container type to return
 /**
  * A container for one type of attribute.
- * 
+ *
  * The container uses \p A to parse items into elements.
  * Internally the container is always a list but an instance
  * can return the items in a container specified by \p C.
- * 
+ *
  * @tparam A AttributeValue type to be contained.
  * @tparam C Possibly templated container class returned by Get.
  */
@@ -111,7 +111,7 @@ public:
   result_type Get (void) const;
   /**
    * Copy items from container c.
-   * 
+   *
    * This method assumes \p c has stl-style begin and end methods.
    * The AttributeContainerValue value is cleared before copying from \p c.
    * @tparam T type of container.
@@ -119,6 +119,17 @@ public:
    */
   template <class T>
   void Set (const T &c);
+  /**
+   * Set the given variable to the values stored by this TupleValue object.
+   *
+   * \tparam T \deduced the type of the given variable (normally, the argument type
+   *           of a set method or the type of a data member)
+   * \param value the given variable
+   * \return true if the given variable was set
+   */
+  template <typename T>
+  bool GetAccessor (T &value) const;
+
 
   // NS3 interface
   /**
@@ -166,8 +177,8 @@ public:
 
 private:
   /**
-   * Copy items from \ref begin to \ref end. 
-   * 
+   * Copy items from \ref begin to \ref end.
+   *
    * The internal container is cleared before values are copied
    * using the push_back method.
    * @tparam ITER \deduced iterator type
@@ -232,11 +243,30 @@ Ptr<AttributeChecker> MakeAttributeContainerChecker (void);
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam C Container type returned by Get.
- * \param[in] a1 AttributeContainer to be used.
+ * \tparam T1 \deduced The type of the class data member,
+ *            or the type of the class get functor or set method.
+ * \param [in] a1 The address of the data member,
+ *            or the get or set method.
  * \return AttributeContainerAccessor.
  */
 template <typename A, template <typename...> class C=std::list, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1);
+
+/**
+ * Make AttributeContainerAccessor  using explicit types.
+ * @tparam A AttributeValue type in container.
+ * @tparam C Container type returned by Get.
+ * \tparam T1 \deduced The type of the class data member,
+ *            or the type of the class get functor or set method.
+ *
+ * \tparam T2 \deduced The type of the getter class functor method.
+ * \param [in] a2 The address of the class method to set the attribute.
+ * \param [in] a1 The address of the data member,
+ *            or the get or set method.
+ * \return AttributeContainerAccessor.
+ */
+template <typename A, template <typename...> class C=std::list, typename T1, typename T2>
+Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1, T2 a2);
 
 } // namespace ns3
 
@@ -424,6 +454,17 @@ AttributeContainerValue<A, C>::Get (void) const
 }
 
 template <class A, template <class...> class C>
+template <typename T>
+bool
+AttributeContainerValue<A, C>::GetAccessor (T &value) const
+{
+  result_type src = Get ();
+  value.clear ();
+  std::copy (src.begin (), src.end (), std::inserter (value, value.end ()));
+  return true;
+}
+
+template <class A, template <class...> class C>
 template <class T>
 void
 AttributeContainerValue<A, C>::Set (const T &c)
@@ -504,6 +545,12 @@ template <typename A, template <typename...> class C, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1)
 {
   return MakeAccessorHelper<AttributeContainerValue<A, C> > (a1);
+}
+
+template <typename A, template <typename...> class C, typename T1, typename T2>
+Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1, T2 a2)
+{
+  return MakeAccessorHelper<AttributeContainerValue<A, C> > (a1, a2);
 }
 
 } // namespace ns3

@@ -231,7 +231,6 @@ set(header_files
     model/assert.h
     model/attribute-accessor-helper.h
     model/attribute-construction-list.h
-    model/attribute-container-accessor-helper.h
     model/attribute-container.h
     model/attribute-helper.h
     model/attribute.h

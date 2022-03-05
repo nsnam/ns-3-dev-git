@@ -21,7 +21,6 @@
 #include <ns3/test.h>
 #include <ns3/log.h>
 #include <ns3/attribute-container.h>
-#include <ns3/attribute-container-accessor-helper.h>
 #include <ns3/pair.h>
 #include <ns3/double.h>
 #include <ns3/integer.h>
@@ -66,9 +65,22 @@ public:
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
-   */  
+   */
   static
   TypeId GetTypeId ();
+
+  /**
+   * Set the vector of ints to the given vector
+   *
+   * \param vec the given vector
+   */
+  void SetIntVec (std::vector<int> vec);
+  /**
+   * Get the vector of ints
+   *
+   * \return the vector of ints
+   */
+  std::vector<int> GetIntVec (void) const;
 
   /**
    * \brief Stream insertion operator.
@@ -110,7 +122,9 @@ AttributeContainerObject::GetTypeId ()
     .AddAttribute ("IntegerVector", "Vector of integers",
                    // the container value container differs from the underlying object
                    AttributeContainerValue <IntegerValue> (),
-                   MakeAttributeContainerAccessor <IntegerValue> (&AttributeContainerObject::m_intvec),
+                   // the type of the underlying container cannot be deduced
+                   MakeAttributeContainerAccessor <IntegerValue, std::list> (&AttributeContainerObject::SetIntVec,
+                                                                  &AttributeContainerObject::GetIntVec),
                    MakeAttributeContainerChecker<IntegerValue> (MakeIntegerChecker<int> ()))
     .AddAttribute ("MapStringInt", "Map of strings to ints",
                    // the container value container differs from the underlying object
@@ -131,6 +145,18 @@ AttributeContainerObject::ReverseList ()
   m_intvec = tmp;
 }
 
+void
+AttributeContainerObject::SetIntVec (std::vector<int> vec)
+{
+  m_intvec = vec;
+}
+
+std::vector<int>
+AttributeContainerObject::GetIntVec (void) const
+{
+  return m_intvec;
+}
+
 std::ostream &
 operator << (std::ostream &os, const AttributeContainerObject &obj)
 {
@@ -147,7 +173,7 @@ operator << (std::ostream &os, const AttributeContainerObject &obj)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * This function handles mixed constness and compatible, yet
  * distinct numerical classes (like int and long)
  * \param x The left operand.
@@ -163,7 +189,7 @@ operator ==(const std::pair<A, B> &x, const std::pair<C, D> &y)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * Test AttributeContainer instantiation, initialization, access
  */
 class AttributeContainerTestCase : public TestCase
@@ -269,7 +295,7 @@ AttributeContainerTestCase::DoRun ()
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * Attribute serialization and deserialization TestCase.
  */
 class AttributeContainerSerializationTestCase : public TestCase
@@ -359,7 +385,7 @@ AttributeContainerSerializationTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * Attribute set and get TestCase.
  */
 class AttributeContainerSetGetTestCase : public TestCase
@@ -462,7 +488,7 @@ AttributeContainerSetGetTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * Attribute attribute container TestCase.
  */
 class AttributeContainerTestSuite : public TestSuite
