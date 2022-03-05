@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/attribute-container.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/socket.h"
@@ -54,6 +55,13 @@ Txop::GetTypeId (void)
                    MakeUintegerAccessor ((void (Txop::*) (uint32_t)) &Txop::SetMinCw,
                                          (uint32_t (Txop::*) (void) const) &Txop::GetMinCw),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MinCws",
+                   "The minimum values of the contention window for all the links",
+                   TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
+                   AttributeContainerValue <UintegerValue> (),
+                   MakeAttributeContainerAccessor <IntegerValue, std::list> (&Txop::SetMinCws,
+                                                                             &Txop::GetMinCws),
+                   MakeAttributeContainerChecker<UintegerValue> (MakeUintegerChecker<uint32_t> ()))
     .AddAttribute ("MaxCw", "The maximum value of the contention window (just for the first link, "
                    "in case of 11be multi-link devices).",
                    TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
@@ -61,6 +69,13 @@ Txop::GetTypeId (void)
                    MakeUintegerAccessor ((void (Txop::*) (uint32_t)) &Txop::SetMaxCw,
                                          (uint32_t (Txop::*) (void) const) &Txop::GetMaxCw),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxCws",
+                   "The maximum values of the contention window for all the links",
+                   TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
+                   AttributeContainerValue <UintegerValue> (),
+                   MakeAttributeContainerAccessor <IntegerValue, std::list> (&Txop::SetMaxCws,
+                                                                             &Txop::GetMaxCws),
+                   MakeAttributeContainerChecker<UintegerValue> (MakeUintegerChecker<uint32_t> ()))
     .AddAttribute ("Aifsn", "The AIFSN: the default value conforms to non-QOS (just for the first link, "
                    "in case of 11be multi-link devices).",
                    TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
@@ -68,6 +83,13 @@ Txop::GetTypeId (void)
                    MakeUintegerAccessor ((void (Txop::*) (uint8_t)) &Txop::SetAifsn,
                                          (uint8_t (Txop::*) (void) const) &Txop::GetAifsn),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("Aifsns",
+                   "The values of AIFSN for all the links",
+                   TypeId::ATTR_GET | TypeId::ATTR_SET,  // do not set at construction time
+                   AttributeContainerValue <UintegerValue> (),
+                   MakeAttributeContainerAccessor <IntegerValue, std::list> (&Txop::SetAifsns,
+                                                                             &Txop::GetAifsns),
+                   MakeAttributeContainerChecker<UintegerValue> (MakeUintegerChecker<uint8_t> ()))
     .AddAttribute ("TxopLimit", "The TXOP limit: the default value conforms to non-QoS.",
                    TimeValue (MilliSeconds (0)),
                    MakeTimeAccessor (&Txop::SetTxopLimit,
