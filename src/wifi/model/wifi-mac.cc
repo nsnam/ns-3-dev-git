@@ -44,9 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiMac");
 NS_OBJECT_ENSURE_REGISTERED (WifiMac);
 
 WifiMac::WifiMac ()
-  : m_qosSupported (false),
-    m_erpSupported (false),
-    m_dsssSupported (false)
+  : m_qosSupported (false)
 {
   NS_LOG_FUNCTION (this);
 
@@ -577,7 +575,12 @@ WifiMac::SetupEdcaQueue (AcIndex ac)
 void
 WifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 {
-  bool isDsssOnly = GetDsssSupported () && !GetErpSupported ();
+  std::list<bool> isDsssOnly;
+  for (const auto& link : m_links)
+    {
+      isDsssOnly.push_back (link->dsssSupported && !link->erpSupported);
+    }
+
   if (m_txop != nullptr)
     {
       //The special value of AC_BE_NQOS which exists in the Access
@@ -593,55 +596,53 @@ WifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
 }
 
 void
-WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
+WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax,
+                       std::list<bool> isDsss, AcIndex ac)
 {
-  NS_LOG_FUNCTION (this << dcf << cwmin << cwmax << isDsss << +ac);
-  /* see IEEE 802.11 section 7.3.2.29 */
+  NS_LOG_FUNCTION (this << dcf << cwmin << cwmax << +ac);
+
+  uint32_t cwMinValue = 0;
+  uint32_t cwMaxValue = 0;
+  uint8_t aifsnValue = 0;
+  Time txopLimitDsss (0);
+  Time txopLimitNoDsss (0);
+
+  /* see IEEE 802.11-2020 Table 9-155 "Default EDCA Parameter Set element parameter values" */
   switch (ac)
     {
     case AC_VO:
-      dcf->SetMinCw ((cwmin + 1) / 4 - 1, SINGLE_LINK_OP_ID);
-      dcf->SetMaxCw ((cwmin + 1) / 2 - 1, SINGLE_LINK_OP_ID);
-      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
-      if (isDsss)
-        {
-          dcf->SetTxopLimit (MicroSeconds (3264), SINGLE_LINK_OP_ID);
-        }
-      else
-        {
-          dcf->SetTxopLimit (MicroSeconds (1504), SINGLE_LINK_OP_ID);
-        }
+      cwMinValue = (cwmin + 1) / 4 - 1;
+      cwMaxValue = (cwmin + 1) / 2 - 1;
+      aifsnValue = 2;
+      txopLimitDsss = MicroSeconds (3264);
+      txopLimitNoDsss = MicroSeconds (1504);  // TODO should be MicroSeconds (2080)
       break;
     case AC_VI:
-      dcf->SetMinCw ((cwmin + 1) / 2 - 1, SINGLE_LINK_OP_ID);
-      dcf->SetMaxCw (cwmin, SINGLE_LINK_OP_ID);
-      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
-      if (isDsss)
-        {
-          dcf->SetTxopLimit (MicroSeconds (6016), SINGLE_LINK_OP_ID);
-        }
-      else
-        {
-          dcf->SetTxopLimit (MicroSeconds (3008), SINGLE_LINK_OP_ID);
-        }
+      cwMinValue = (cwmin + 1) / 2 - 1;
+      cwMaxValue = cwmin;
+      aifsnValue = 2;
+      txopLimitDsss = MicroSeconds (6016);
+      txopLimitNoDsss = MicroSeconds (3008);  // TODO should be MicroSeconds (4096)
       break;
     case AC_BE:
-      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
-      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
-      dcf->SetAifsn (3, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
+      cwMinValue = cwmin;
+      cwMaxValue = cwmax;
+      aifsnValue = 3;
+      txopLimitDsss = MicroSeconds (0);  // TODO should be MicroSeconds (3264)
+      txopLimitNoDsss = MicroSeconds (0);  // TODO should be MicroSeconds (2528)
       break;
     case AC_BK:
-      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
-      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
-      dcf->SetAifsn (7, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
+      cwMinValue = cwmin;
+      cwMaxValue = cwmax;
+      aifsnValue = 7;
+      txopLimitDsss = MicroSeconds (0);  // TODO should be MicroSeconds (3264)
+      txopLimitNoDsss = MicroSeconds (0);  // TODO should be MicroSeconds (2528)
       break;
     case AC_BE_NQOS:
-      dcf->SetMinCw (cwmin, SINGLE_LINK_OP_ID);
-      dcf->SetMaxCw (cwmax, SINGLE_LINK_OP_ID);
-      dcf->SetAifsn (2, SINGLE_LINK_OP_ID);
-      dcf->SetTxopLimit (MicroSeconds (0), SINGLE_LINK_OP_ID);
+      cwMinValue = cwmin;
+      cwMaxValue = cwmax;
+      aifsnValue = 2;
+      txopLimitDsss = txopLimitNoDsss = MicroSeconds (0);
       break;
     case AC_BEACON:
       // done by ApWifiMac
@@ -650,6 +651,21 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;
     }
+
+  std::vector<uint32_t> cwValues (m_links.size ());
+  std::vector<uint8_t> aifsnValues (m_links.size ());
+  std::vector<Time> txopLimitValues (m_links.size ());
+
+  std::fill (cwValues.begin (), cwValues.end (), cwMinValue);
+  dcf->SetMinCws (cwValues);
+  std::fill (cwValues.begin (), cwValues.end (), cwMaxValue);
+  dcf->SetMaxCws (cwValues);
+  std::fill (aifsnValues.begin (), aifsnValues.end (), aifsnValue);
+  dcf->SetAifsns (aifsnValues);
+  std::transform (isDsss.begin (), isDsss.end (), txopLimitValues.begin (),
+                  [&txopLimitDsss, &txopLimitNoDsss] (bool dsss)
+                  { return (dsss ? txopLimitDsss : txopLimitNoDsss); });
+  dcf->SetTxopLimits (txopLimitValues);
 }
 
 void
@@ -700,31 +716,18 @@ WifiMac::ConfigureStandard (WifiStandard standard)
 void
 WifiMac::ConfigurePhyDependentParameters (void)
 {
-  auto& link = GetLink (SINGLE_LINK_OP_ID);
-  NS_ASSERT (link.phy != nullptr);
-  WifiPhyBand band = link.phy->GetPhyBand ();
-  NS_LOG_FUNCTION (this << band);
+  NS_LOG_FUNCTION (this);
 
-  uint32_t cwmin = 0;
-  uint32_t cwmax = 0;
+  WifiStandard standard = GetLink (SINGLE_LINK_OP_ID).phy->GetStandard ();
 
-  WifiStandard standard = link.phy->GetStandard ();
+  uint32_t cwmin = (standard == WIFI_STANDARD_80211b ? 31 : 15);
+  uint32_t cwmax = 1023;
 
-  if (standard == WIFI_STANDARD_80211b)
+  for (uint8_t linkId = 0; linkId < m_links.size (); ++linkId)
     {
-      SetDsssSupported (true);
-      cwmin = 31;
-      cwmax = 1023;
-    }
-  else
-    {
-      if (standard >= WIFI_STANDARD_80211g && band == WIFI_PHY_BAND_2_4GHZ)
-        {
-          SetErpSupported (true);
-        }
-
-      cwmin = 15;
-      cwmax = 1023;
+      SetDsssSupported (standard == WIFI_STANDARD_80211b, linkId);
+      SetErpSupported (standard >= WIFI_STANDARD_80211g
+                       && m_links[linkId]->phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ, linkId);
     }
 
   ConfigureContentionWindow (cwmin, cwmax);
@@ -904,33 +907,33 @@ WifiMac::GetQosSupported () const
 }
 
 bool
-WifiMac::GetErpSupported () const
+WifiMac::GetErpSupported (uint8_t linkId) const
 {
-  return m_erpSupported;
+  return GetLink (linkId).erpSupported;
 }
 
 void
-WifiMac::SetErpSupported (bool enable)
+WifiMac::SetErpSupported (bool enable, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << enable << +linkId);
   if (enable)
     {
-      SetDsssSupported (true);
+      SetDsssSupported (true, linkId);
     }
-  m_erpSupported = enable;
+  GetLink (linkId).erpSupported = enable;
 }
 
 void
-WifiMac::SetDsssSupported (bool enable)
+WifiMac::SetDsssSupported (bool enable, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  m_dsssSupported = enable;
+  NS_LOG_FUNCTION (this << enable << +linkId);
+  GetLink (linkId).dsssSupported = enable;
 }
 
 bool
-WifiMac::GetDsssSupported () const
+WifiMac::GetDsssSupported (uint8_t linkId) const
 {
-  return m_dsssSupported;
+  return GetLink (linkId).dsssSupported;
 }
 
 void

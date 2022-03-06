@@ -225,7 +225,7 @@ void
 ApWifiMac::UpdateShortSlotTimeEnabled (void)
 {
   NS_LOG_FUNCTION (this);
-  if (GetErpSupported () && GetShortSlotTimeSupported () && (m_numNonErpStations == 0))
+  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetShortSlotTimeSupported () && (m_numNonErpStations == 0))
     {
       for (const auto& sta : m_staList)
         {
@@ -247,7 +247,7 @@ void
 ApWifiMac::UpdateShortPreambleEnabled (void)
 {
   NS_LOG_FUNCTION (this);
-  if (GetErpSupported () && GetWifiPhy ()->GetShortPhyPreambleSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiPhy ()->GetShortPhyPreambleSupported ())
     {
       for (const auto& sta : m_staList)
         {
@@ -427,7 +427,7 @@ ApWifiMac::GetDsssParameterSet (void) const
 {
   NS_LOG_FUNCTION (this);
   DsssParameterSet dsssParameters;
-  if (GetDsssSupported ())
+  if (GetDsssSupported (SINGLE_LINK_OP_ID))
     {
       dsssParameters.SetDsssSupported (1);
       dsssParameters.SetCurrentChannel (GetWifiPhy ()->GetChannelNumber ());
@@ -452,7 +452,7 @@ ApWifiMac::GetErpInformation (void) const
   NS_LOG_FUNCTION (this);
   ErpInformation information;
   information.SetErpSupported (1);
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       information.SetNonErpPresent (m_numNonErpStations > 0);
       information.SetUseProtection (GetUseNonErpProtection ());
@@ -751,11 +751,11 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   probe.SetCapabilities (GetCapabilities ());
   GetWifiRemoteStationManager ()->SetShortPreambleEnabled (m_shortPreambleEnabled);
   GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
-  if (GetDsssSupported ())
+  if (GetDsssSupported (SINGLE_LINK_OP_ID))
     {
       probe.SetDsssParameterSet (GetDsssParameterSet ());
     }
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       probe.SetErpInformation (GetErpInformation ());
     }
@@ -864,7 +864,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
   assoc.SetCapabilities (GetCapabilities ());
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       assoc.SetErpInformation (GetErpInformation ());
     }
@@ -935,11 +935,11 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetCapabilities (GetCapabilities ());
   GetWifiRemoteStationManager ()->SetShortPreambleEnabled (m_shortPreambleEnabled);
   GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
-  if (GetDsssSupported ())
+  if (GetDsssSupported (SINGLE_LINK_OP_ID))
     {
       beacon.SetDsssParameterSet (GetDsssParameterSet ());
     }
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       beacon.SetErpInformation (GetErpInformation ());
     }
@@ -977,7 +977,7 @@ ApWifiMac::SendOneBeacon (void)
   //If a STA that does not support Short Slot Time associates,
   //the AP shall use long slot time beginning at the first Beacon
   //subsequent to the association of the long slot time STA.
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       if (m_shortSlotTimeEnabled)
         {
@@ -1210,7 +1210,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                           GetWifiRemoteStationManager ()->AddSupportedMode (from, mode);
                         }
                     }
-                  if (GetErpSupported () && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
+                  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
                     {
                       GetWifiRemoteStationManager ()->AddSupportedErpSlotTime (from, true);
                     }
@@ -1366,7 +1366,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                           GetWifiRemoteStationManager ()->AddSupportedMode (from, mode);
                         }
                     }
-                  if (GetErpSupported () && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
+                  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
                     {
                       GetWifiRemoteStationManager ()->AddSupportedErpSlotTime (from, true);
                     }

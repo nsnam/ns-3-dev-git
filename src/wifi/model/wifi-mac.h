@@ -29,6 +29,7 @@
 #include "ssid.h"
 #include <memory>
 #include <vector>
+#include <list>
 
 namespace ns3 {
 
@@ -415,17 +416,19 @@ public:
    */
   bool GetQosSupported () const;
   /**
-   * Return whether the device supports ERP.
+   * Return whether the device supports ERP on the given link.
    *
+   * \param linkId the ID of the given link
    * \return true if ERP is supported, false otherwise
    */
-  bool GetErpSupported () const;
+  bool GetErpSupported (uint8_t linkId) const;
   /**
-   * Return whether the device supports DSSS.
+   * Return whether the device supports DSSS on the given link.
    *
+   * \param linkId the ID of the given link
    * \return true if DSSS is supported, false otherwise
    */
-  bool GetDsssSupported () const;
+  bool GetDsssSupported (uint8_t linkId) const;
   /**
    * Return whether the device supports HT.
    *
@@ -573,6 +576,10 @@ protected:
     Ptr<WifiPhy> phy;                               //!< Wifi PHY object
     Ptr<ChannelAccessManager> channelAccessManager; //!< channel access manager object
     Ptr<FrameExchangeManager> feManager;            //!< Frame Exchange Manager object
+    bool erpSupported {false};                      /**< set to \c true iff this WifiMac is
+                                                         to model 802.11g */
+    bool dsssSupported {false};                     /**< set to \c true iff this WifiMac is
+                                                         to model 802.11b */
   };
 
   /**
@@ -596,12 +603,13 @@ private:
    * \param dcf the DCF to be configured
    * \param cwmin the minimum contention window for the DCF
    * \param cwmax the maximum contention window for the DCF
-   * \param isDsss flag to indicate whether PHY is DSSS or HR/DSSS
+   * \param isDsss vector of flags to indicate whether PHY is DSSS or HR/DSSS for every link
    * \param ac the access category for the DCF
    *
    * Configure the DCF with appropriate values depending on the given access category.
    */
-  void ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac);
+  void ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax,
+                     std::list<bool> isDsss, AcIndex ac);
 
   /**
    * Configure PHY dependent parameters such as CWmin and CWmax.
@@ -633,17 +641,19 @@ private:
   virtual std::unique_ptr<LinkEntity> CreateLinkEntity (void) const;
 
   /**
-   * Enable or disable ERP support for the device.
+   * Enable or disable ERP support for the given link.
    *
    * \param enable whether ERP is supported
+   * \param linkId the ID of the given link
    */
-  void SetErpSupported (bool enable);
+  void SetErpSupported (bool enable, uint8_t linkId);
   /**
-   * Enable or disable DSSS support for the device.
+   * Enable or disable DSSS support for the given link.
    *
    * \param enable whether DSSS is supported
+   * \param linkId the ID of the given link
    */
-  void SetDsssSupported (bool enable);
+  void SetDsssSupported (bool enable, uint8_t linkId);
 
   /**
    * Set the block ack threshold for AC_VO.
@@ -709,16 +719,6 @@ private:
    * however.
    */
   bool m_qosSupported;
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11g. It is exposed through the attribute system.
-   */
-  bool m_erpSupported;
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11b. It is exposed through the attribute system.
-   */
-  bool m_dsssSupported;
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_ctsToSelfSupported;     ///< flag indicating whether CTS-To-Self is supported

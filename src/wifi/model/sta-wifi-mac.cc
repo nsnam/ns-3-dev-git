@@ -789,7 +789,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
         }
     }
   bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       const ErpInformation& erpInformation = beacon.GetErpInformation ();
       isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
@@ -925,7 +925,7 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
     }
 
   bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       bool isErpAllowed = false;
       for (const auto & mode : GetWifiPhy ()->GetModeList (WIFI_MOD_CLASS_ERP_OFDM))
@@ -971,7 +971,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   const CapabilityInformation& capabilities = assocResp.GetCapabilities ();
   const SupportedRates& rates = assocResp.GetSupportedRates ();
   bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-  if (GetErpSupported ())
+  if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
       bool isErpAllowed = false;
       for (const auto & mode : GetWifiPhy ()->GetModeList (WIFI_MOD_CLASS_ERP_OFDM))
@@ -1156,8 +1156,8 @@ CapabilityInformation
 StaWifiMac::GetCapabilities (void) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (GetWifiPhy ()->GetShortPhyPreambleSupported () || GetErpSupported ());
-  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
+  capabilities.SetShortPreamble (GetWifiPhy ()->GetShortPhyPreambleSupported () || GetErpSupported (SINGLE_LINK_OP_ID));
+  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported (SINGLE_LINK_OP_ID));
   return capabilities;
 }
 

@@ -2475,6 +2475,7 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_apPhyStateListener = std::make_unique<OfdmaTestPhyListener> ();
   m_phyAp->RegisterListener (m_apPhyStateListener.get ());
   apDev->SetPhy (m_phyAp);
+  apMac->SetWifiPhys ({m_phyAp});
   apNode->AggregateObject (apMobility);
   apNode->AddDevice (apDev);
 
@@ -3426,6 +3427,7 @@ TestPhyPaddingExclusion::DoSetup (void)
   apDev->SetPhy (m_phyAp);
   apDev->SetStandard (WIFI_STANDARD_80211ax);
   apDev->SetHeConfiguration (CreateObject<HeConfiguration> ());
+  apMac->SetWifiPhys ({m_phyAp});
   apNode->AggregateObject (apMobility);
   apNode->AddDevice (apDev);
 
