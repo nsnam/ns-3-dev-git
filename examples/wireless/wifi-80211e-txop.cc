@@ -49,8 +49,8 @@
 //
 // The configuration is the following on the 4 networks:
 // - STA A sends AC_BE traffic to AP A with default AC_BE TXOP value of 0 (1 MSDU);
-// - STA B sends AC_BE traffic to AP B with non-default AC_BE TXOP of 3.008 ms;
-// - STA C sends AC_VI traffic to AP C with default AC_VI TXOP of 3.008 ms;
+// - STA B sends AC_BE traffic to AP B with non-default AC_BE TXOP of 4096 us;
+// - STA C sends AC_VI traffic to AP C with default AC_VI TXOP of 4096 us;
 // - STA D sends AC_VI traffic to AP D with non-default AC_VI TXOP value of 0 (1 MSDU);
 //
 // The user can select the distance between the stations and the APs, can enable/disable the RTS/CTS mechanism
@@ -97,6 +97,7 @@ int main (int argc, char *argv[])
   double distance = 5; //meters
   bool enablePcap = 0;
   bool verifyResults = 0; //used for regression
+  Time txopLimit = MicroSeconds (4096);
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
@@ -161,7 +162,7 @@ int main (int argc, char *argv[])
   Ptr<QosTxop> edca;
   wifi_mac->GetAttribute ("BE_Txop", ptr);
   edca = ptr.Get<QosTxop> ();
-  edca->SetTxopLimit (MicroSeconds (3008));
+  edca->SetTxopLimit (txopLimit);
 
   // Trace TXOP duration for BE on STA1
   dev = wifiStaNodes.Get (1)->GetDevice (0);
@@ -378,30 +379,30 @@ int main (int argc, char *argv[])
     }
 
   throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
-  std::cout << "AC_BE with non-default TXOP limit (3.008ms): " << '\n'
+  std::cout << "AC_BE with non-default TXOP limit (4.096ms): " << '\n'
             << "  Throughput = " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 35 || throughput > 36))
+  if (verifyResults && (throughput < 36.5 || throughput > 37))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
   std::cout << "  Maximum TXOP duration = " << beTxopTracer.m_max.GetMicroSeconds () << " us" << '\n';
-  if (verifyResults && (beTxopTracer.m_max < MicroSeconds (2700) || beTxopTracer.m_max > MicroSeconds (3008)))
+  if (verifyResults && (beTxopTracer.m_max < MicroSeconds (3008) || beTxopTracer.m_max > txopLimit))
     {
       NS_LOG_ERROR ("Maximum TXOP duration " << beTxopTracer.m_max << " is not in the expected boundaries!");
       exit (1);
     }
 
   throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
-  std::cout << "AC_VI with default TXOP limit (3.008ms): " << '\n'
+  std::cout << "AC_VI with default TXOP limit (4.096ms): " << '\n'
             << "  Throughput = " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 35.5 || throughput > 36.5))
+  if (verifyResults && (throughput < 37.0 || throughput > 37.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
     }
   std::cout << "  Maximum TXOP duration = " << viTxopTracer.m_max.GetMicroSeconds () << " us" << '\n';
-  if (verifyResults && (viTxopTracer.m_max < MicroSeconds (2700) || viTxopTracer.m_max > MicroSeconds (3008)))
+  if (verifyResults && (viTxopTracer.m_max < MicroSeconds (3008) || viTxopTracer.m_max > txopLimit))
     {
       NS_LOG_ERROR ("Maximum TXOP duration " << viTxopTracer.m_max << " is not in the expected boundaries!");
       exit (1);

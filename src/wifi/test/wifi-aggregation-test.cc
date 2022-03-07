@@ -38,6 +38,7 @@
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/pointer.h"
+#include <ns3/attribute-container.h>
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
@@ -488,6 +489,8 @@ TwoLevelAggregationTest::DoRun (void)
 
   m_mac->SetAttribute ("VI_MaxAmsduSize", UintegerValue (3050));  // max 2 MSDUs per A-MSDU
   m_mac->SetAttribute ("VI_MaxAmpduSize", UintegerValue (65535));
+  m_mac->GetVIQueue ()->SetAttribute ("TxopLimits",
+                                      AttributeContainerValue<TimeValue> (std::vector<Time> {MicroSeconds (3008)}));
   m_manager->SetAttribute ("DataMode", StringValue ("HtMcs2"));  // 19.5Mbps
 
   hdr.SetQosTid (tid);
