@@ -44,8 +44,9 @@ NS_OBJECT_TEMPLATE_CLASS_DEFINE (NixVectorRouting, Ipv6RoutingProtocol);
 template <typename T>
 bool NixVectorRouting<T>::g_isCacheDirty = false;
 
+// Epoch starts from one to make it easier to spot an uninitialized NixVector during debug.
 template <typename T>
-uint32_t NixVectorRouting<T>::g_epoch = 0;
+uint32_t NixVectorRouting<T>::g_epoch = 1;
 
 template <typename T>
 typename NixVectorRouting<T>::IpAddressToNodeMap NixVectorRouting<T>::g_ipAddressToNodeMap;

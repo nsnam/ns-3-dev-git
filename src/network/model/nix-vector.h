@@ -170,8 +170,9 @@ private:
    * \brief Print the NixVector.
    *
    * \param os the output stream
+   * 
+   * \note: this could be greatly simplified by using std::format (but it's C++20).
    */
-  /* for printing of nix-vector */
   void DumpNixVector (std::ostream &os) const;
 
   /**
@@ -187,28 +188,12 @@ private:
   uint32_t m_used; //!< For tracking where we are in the nix-vector
 
   /**
-   * For tracking how many bits we
-   * have used in the current vector
-   * entry. need this in order to
-   * expand the vector passed 32bits
-   */
-  uint32_t m_currentVectorBitSize;
-
-  /**
    * A counter of how total bits are in
    * the nix-vector
    */
   uint32_t m_totalBitSize;
 
   uint32_t m_epoch; //!< Epoch of the Nix-vector creation
-
-  /**
-   * Internal for pretty printing of nix-vector (fill)
-   * \param decimalNum decimal divider
-   * \param bitCount bit counter
-   * \param os output stream
-   */
-  void PrintDec2BinNixFill (uint32_t decimalNum, uint32_t bitCount, std::ostream &os) const;
 
   /**
    * Internal for pretty printing of nix-vector (no fill)
