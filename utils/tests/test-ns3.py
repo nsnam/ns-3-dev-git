@@ -1364,11 +1364,18 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_program("./test.py", "-p src/core/examples/sample-simulator.py", python=True)
         self.assertEqual(return_code, 0)
 
+        NS3BuildBaseTestCase.cleaned_once = False
+
     def test_11_AmbiguityCheck(self):
         """!
         Test if ns3 can alert correctly in case a shortcut collision happens
         @return None
         """
+
+        # First enable examples
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples")
+        self.assertEqual(return_code, 0)
+
         # Copy second.cc from the tutorial examples to the scratch folder
         shutil.copy("./examples/tutorial/second.cc", "./scratch/second.cc")
 
