@@ -3326,7 +3326,7 @@ LteUeRrc::ResetRlfParams ()
   m_cphySapProvider.at (0)->ResetRlfParams ();
 }
 
-const std::string &
+const std::string
 LteUeRrc::ToString (LteUeRrc::State s)
 {
   return g_ueRrcStateName[s];

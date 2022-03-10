@@ -100,7 +100,7 @@ public:
 
   /**
    * The states of the UE RRC entity
-   * 
+   *
    */
   enum State
   {
@@ -177,26 +177,26 @@ public:
 
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    * \param index the index
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s, uint8_t index);
 
   /**
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
   /**
    * \brief This function is overloaded to maintain backward compatibility
-   * \param index the index  
+   * \param index the index
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser (uint8_t index);
@@ -225,16 +225,16 @@ public:
    */
   void SetLteMacSapProvider (LteMacSapProvider* s);
 
-  /** 
+  /**
    * Set the AS SAP user to interact with the NAS entity
-   * 
+   *
    * \param s the AS SAP user
    */
   void SetAsSapUser (LteAsSapUser* s);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the AS SAP provider exported by this RRC
    */
   LteAsSapProvider* GetAsSapProvider ();
@@ -253,8 +253,8 @@ public:
    */
   LteUeCcmRrcSapUser* GetLteCcmRrcSapUser ();
 
-  /** 
-   * 
+  /**
+   *
    * \param imsi the unique UE identifier
    */
   void SetImsi (uint64_t imsi);
@@ -290,12 +290,12 @@ public:
    */
   bool IsServingCell (uint16_t cellId) const;
 
-  /** 
+  /**
    * \return the uplink bandwidth in RBs
    */
   uint8_t GetUlBandwidth () const;
 
-  /** 
+  /**
    * \return the downlink bandwidth in RBs
    */
   uint8_t GetDlBandwidth () const;
@@ -305,7 +305,7 @@ public:
    */
   uint32_t GetDlEarfcn () const;
 
-  /** 
+  /**
    * \return the uplink carrier frequency (EARFCN)
    */
   uint32_t GetUlEarfcn () const;
@@ -323,9 +323,9 @@ public:
    */
   uint16_t GetPreviousCellId () const;
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
    */
   void SetUseRlcSm (bool val);
@@ -334,7 +334,7 @@ public:
    * \param s The UE RRC state.
    * \return The string representation of the given state.
    */
-  static const std::string & ToString (LteUeRrc::State s);
+  static const std::string ToString (LteUeRrc::State s);
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -437,7 +437,7 @@ private:
   void DoNotifyRandomAccessSuccessful ();
   /// Notify random access failed function
   void DoNotifyRandomAccessFailed ();
- 
+
   // LTE AS SAP methods
   /**
    * Set CSG white list function
@@ -543,7 +543,7 @@ private:
    */
   void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
- 
+
   // INTERNAL METHODS
 
   /**
@@ -1085,7 +1085,7 @@ private:
 
   /**
    * \brief Internal storage of the latest measurement results from all detected
-   *        detected Secondary carrier component, indexed by the carrier component ID 
+   *        detected Secondary carrier component, indexed by the carrier component ID
    *        where the measurement was taken from.
    *
    * Each *measurement result* comprises of RSRP (in dBm) and RSRQ (in dB).
@@ -1332,7 +1332,7 @@ private:
   void ResetRlfParams ();
 
 public:
-  /** 
+  /**
    * The number of component carriers.
    */
   uint16_t m_numberOfComponentCarriers;
