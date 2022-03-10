@@ -373,7 +373,7 @@ LteEnbRrcProtocolIdeal::DoSendSystemInformation (uint16_t cellId, LteRrcSap::Sys
               if (ueRrc->GetCellId () == cellId)
                 {       
                   NS_LOG_LOGIC ("sending SI to IMSI " << ueDev->GetImsi ());
-                  ueRrc->GetLteUeRrcSapProvider ()->RecvSystemInformation (msg);
+                  
                   Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
                                        &LteUeRrcSapProvider::RecvSystemInformation,
                                        ueRrc->GetLteUeRrcSapProvider (), 
