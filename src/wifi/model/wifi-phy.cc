@@ -1634,7 +1634,7 @@ WifiPhy::Reset (void)
 }
 
 void
-WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration)
+WifiPhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration)
 {
   WifiModulationClass modulation = ppdu->GetTxVector ().GetModulationClass ();
   auto it = m_phyEntities.find (modulation);

@@ -361,7 +361,7 @@ PhyEntity::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
 }
 
 void
-PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
+PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                                  Time rxDuration)
 {
   //The total RX power corresponds to the maximum over all the bands
@@ -1062,14 +1062,14 @@ PhyEntity::NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payload
 }
 
 void
-PhyEntity::StartTx (Ptr<WifiPpdu> ppdu)
+PhyEntity::StartTx (Ptr<const WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
   Transmit (ppdu->GetTxDuration (), ppdu, "transmission");
 }
 
 void
-PhyEntity::Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type)
+PhyEntity::Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, std::string type)
 {
   NS_LOG_FUNCTION (this << txDuration << ppdu << type);
   double txPowerWatts = DbmToW (m_wifiPhy->GetTxPowerForTransmission (ppdu) + m_wifiPhy->GetTxGain ());

@@ -104,7 +104,7 @@ public:
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
    */
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration);
+  void StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration);
 
   /**
    * Reset PHY at the end of the packet under reception after it has failed the PHY header.
@@ -153,7 +153,7 @@ public:
   /**
    * \param ppdu the PPDU to send
    */
-  virtual void StartTx (Ptr<WifiPpdu> ppdu) = 0;
+  virtual void StartTx (Ptr<const WifiPpdu> ppdu) = 0;
 
   /**
    * Put in sleep mode.

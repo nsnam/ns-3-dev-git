@@ -86,7 +86,7 @@ YansWifiPhy::SetChannel (const Ptr<YansWifiChannel> channel)
 }
 
 void
-YansWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
+YansWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (ppdu->GetTxVector ().GetTxPowerLevel ()) << "dBm");

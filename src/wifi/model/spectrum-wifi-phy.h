@@ -67,7 +67,7 @@ public:
   virtual ~SpectrumWifiPhy ();
 
   // Implementation of pure virtual method.
-  void StartTx (Ptr<WifiPpdu> ppdu) override;
+  void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Ptr<Channel> GetChannel (void) const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;

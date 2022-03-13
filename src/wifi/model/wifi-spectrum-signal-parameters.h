@@ -50,7 +50,7 @@ struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
    */
   WifiSpectrumSignalParameters (const WifiSpectrumSignalParameters& p);
 
-  Ptr<WifiPpdu> ppdu;                  ///< The PPDU being transmitted
+  Ptr<const WifiPpdu> ppdu;            ///< The PPDU being transmitted
   uint16_t txCenterFreq;               ///< the center frequency of the transmitted signal in MHz
 };
 

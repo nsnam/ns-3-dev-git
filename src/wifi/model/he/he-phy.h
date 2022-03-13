@@ -93,13 +93,13 @@ public:
                            const WifiTxVector& txVector,
                            Time ppduDuration) override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu,
+  void StartReceivePreamble (Ptr<const WifiPpdu> ppdu,
                              RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration) override;
   void CancelAllEvents (void) override;
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
-  void StartTx (Ptr<WifiPpdu> ppdu) override;
+  void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
 
   /**

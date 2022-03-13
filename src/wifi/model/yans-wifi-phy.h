@@ -57,7 +57,7 @@ public:
   virtual ~YansWifiPhy ();
 
   void SetInterferenceHelper (const Ptr<InterferenceHelper> helper) override;
-  void StartTx (Ptr<WifiPpdu> ppdu) override;
+  void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Ptr<Channel> GetChannel (void) const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;

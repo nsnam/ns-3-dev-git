@@ -358,8 +358,8 @@ public:
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
    */
-  virtual void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
-                                     Time rxDuration);
+  virtual void StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
+		                     Time rxDuration);
   /**
    * Start receiving a given field.
    *
@@ -447,7 +447,7 @@ public:
    *
    * \param ppdu the PPDU to send
    */
-  virtual void StartTx (Ptr<WifiPpdu> ppdu);
+  virtual void StartTx (Ptr<const WifiPpdu> ppdu);
 
   /**
    * This function prepares most of the WifiSpectrumSignalParameters
@@ -458,7 +458,7 @@ public:
    * \param ppdu the PPDU to send
    * \param type the type of transmission (for logging)
    */
-  void Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type);
+  void Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, std::string type);
 
   /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID

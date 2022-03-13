@@ -347,12 +347,12 @@ HePhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, 
 }
 
 void
-HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
+HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration)
 {
   NS_LOG_FUNCTION (this << ppdu << rxDuration);
   const WifiTxVector& txVector = ppdu->GetTxVector ();
-  auto hePpdu = DynamicCast<HePpdu> (ppdu);
+  auto hePpdu = DynamicCast<const HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag ();
   if (txVector.IsUlMu () && psdFlag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
@@ -1033,7 +1033,7 @@ HePhy::GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t
 }
 
 void
-HePhy::StartTx (Ptr<WifiPpdu> ppdu)
+HePhy::StartTx (Ptr<const WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
   if (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU)

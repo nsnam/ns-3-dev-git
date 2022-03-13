@@ -103,7 +103,6 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double
           double rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower=" << txPowerDbm << "dbm, rxPower=" << rxPowerDbm << "dbm, " <<
                         "distance=" << senderMobility->GetDistanceFrom (receiverMobility) << "m, delay=" << delay);
-          Ptr<WifiPpdu> copy = ppdu->Copy ();
           Ptr<NetDevice> dstNetDevice = (*i)->GetDevice ();
           uint32_t dstNode;
           if (dstNetDevice == 0)
@@ -117,13 +116,13 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double
 
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive,
-                                          (*i), copy, rxPowerDbm);
+                                          (*i), ppdu, rxPowerDbm);
         }
     }
 }
 
 void
-YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<WifiPpdu> ppdu, double rxPowerDbm)
+YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, double rxPowerDbm)
 {
   NS_LOG_FUNCTION (phy << ppdu << rxPowerDbm);
   // Do no further processing if signal is too weak
