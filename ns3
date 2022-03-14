@@ -1282,7 +1282,7 @@ def main():
 
     # Setup program as sudo
     if enable_sudo or (args.run and args.enable_sudo):
-        sudo_step(args, target_to_run, set(ns3_programs.values()[0]) if enable_sudo else set())
+        sudo_step(args, target_to_run, set(map(lambda x: x[0], ns3_programs.values())) if enable_sudo else set())
 
     # Finally, we try to run it
     if args.shell or run_only or build_and_run:
