@@ -38,6 +38,7 @@ build/
 
 version.cache
 
+.gitlab-ci-local/
 .idea/
 cmake-cache/
 cmake-build-debug/
