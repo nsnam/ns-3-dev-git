@@ -218,7 +218,7 @@ protected:
   void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu) override;
   void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu) override;
   void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const override;
-  void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const override;
+  void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const override;
   void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
   void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
   void TransmissionSucceeded (void) override;

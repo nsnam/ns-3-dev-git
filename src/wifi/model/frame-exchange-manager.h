@@ -329,11 +329,12 @@ protected:
   virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Retransmit an MPDU that was not sent because a CTS was not received.
+   * Make the sequence number of the given MPDU available again if the MPDU has
+   * never been transmitted.
    *
-   * \param mpdu the MPDU to retransmit
+   * \param mpdu the given MPDU
    */
-  virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const;
+  virtual void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
    * Pass the given MPDU, discarded because of the max retry limit was reached,

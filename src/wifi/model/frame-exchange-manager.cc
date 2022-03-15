@@ -824,15 +824,19 @@ FrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector&
   else
     {
       NS_LOG_DEBUG ("Missed CTS, retransmit RTS");
-      RetransmitMpduAfterMissedCts (m_mpdu);
       m_dcf->UpdateFailedCw ();
     }
+  // Make the sequence number of the MPDU available again if the MPDU has never
+  // been transmitted, both in case the MPDU has been discarded and in case the
+  // MPDU has to be transmitted (because a new sequence number is assigned to
+  // MPDUs that have never been transmitted and are selected for transmission)
+  ReleaseSequenceNumber (m_mpdu);
   m_mpdu = 0;
   TransmissionFailed ();
 }
 
 void
-FrameExchangeManager::RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const
+FrameExchangeManager::ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
