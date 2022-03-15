@@ -185,7 +185,12 @@ HtFrameExchangeManager::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16
   txParams.m_acknowledgment = GetAckManager ()->TryAddMpdu (mpdu, txParams);
 
   // Push the MPDU to the front of the queue and transmit it
-  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->PushFront (mpdu);
+  auto queue = m_mac->GetQosTxop (tid)->GetWifiMacQueue ();
+  if (!queue->PushFront (mpdu))
+    {
+      NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");
+      queue->Replace (queue->Peek (), mpdu);
+    }
   SendMpduWithProtection (mpdu, txParams);
 }
 
