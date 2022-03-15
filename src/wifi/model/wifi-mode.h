@@ -127,7 +127,7 @@ public:
    * \returns a human-readable representation of this WifiMode
    * instance.
    */
-  std::string GetUniqueName (void) const;
+  const std::string& GetUniqueName (void) const;
   /**
    * \returns true if this mode is a mandatory mode, false
    *          otherwise.
