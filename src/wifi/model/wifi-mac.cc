@@ -1025,9 +1025,9 @@ WifiMac::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to
 }
 
 void
-WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
+WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << *mpdu);
+  NS_LOG_FUNCTION (this << *mpdu << linkId);
 
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();

@@ -245,9 +245,9 @@ OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
  * here we only care about data packet and vsa management frame
  */
 void
-OcbWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
+OcbWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << *mpdu);
+  NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   // Create a copy of the MPDU payload because non-const operations like RemovePacketTag
   // and RemoveHeader may need to be performed.
@@ -331,7 +331,7 @@ OcbWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
   // Invoke the receive handler of our parent class to deal with any
   // other frames. Specifically, this will handle Block Ack-related
   // Management Action frames.
-  WifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr));
+  WifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr), linkId);
 }
 
 void

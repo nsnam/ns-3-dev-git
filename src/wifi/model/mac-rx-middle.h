@@ -44,7 +44,7 @@ public:
   /**
    * typedef for callback
    */
-  typedef Callback<void, Ptr<WifiMacQueueItem>> ForwardUpCallback;
+  typedef Callback<void, Ptr<WifiMacQueueItem>, uint8_t /* link ID */> ForwardUpCallback;
 
   MacRxMiddle ();
   ~MacRxMiddle ();
@@ -57,11 +57,12 @@ public:
   void SetForwardCallback (ForwardUpCallback callback);
 
   /**
-   * Receive a packet.
+   * Receive an MPDU on the given link.
    *
    * \param mpdu the MPDU
+   * \param linkId the ID of the given link
    */
-  void Receive (Ptr<WifiMacQueueItem> mpdu);
+  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
 
 
 private:

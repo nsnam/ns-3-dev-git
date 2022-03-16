@@ -973,7 +973,7 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
     {
       if (m_promisc && psdu->GetNMpdus () == 1 && psdu->GetHeader (0).IsData ())
         {
-          m_rxMiddle->Receive (*psdu->begin ());
+          m_rxMiddle->Receive (*psdu->begin (), m_linkId);
         }
       return;
     }
@@ -1154,7 +1154,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
                                this, hdr, txVector, rxSnr);
         }
 
-      m_rxMiddle->Receive (mpdu);
+      m_rxMiddle->Receive (mpdu, m_linkId);
     }
   else if (hdr.IsData () && !hdr.IsQosData ())
     {
@@ -1165,7 +1165,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
                                this, hdr, txVector, rxSnr);
         }
 
-      m_rxMiddle->Receive (mpdu);
+      m_rxMiddle->Receive (mpdu, m_linkId);
     }
 }
 

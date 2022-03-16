@@ -708,7 +708,7 @@ QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo r
       // Forward up the frame if it is not a QoS Null frame
       if (hdr.HasData ())
         {
-          m_rxMiddle->Receive (mpdu);
+          m_rxMiddle->Receive (mpdu, m_linkId);
         }
 
       // the received data frame has been processed

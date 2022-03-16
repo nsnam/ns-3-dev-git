@@ -413,7 +413,7 @@ MeshWifiInterfaceMac::SendBeacon ()
   ScheduleNextBeacon ();
 }
 void
-MeshWifiInterfaceMac::Receive (Ptr<WifiMacQueueItem> mpdu)
+MeshWifiInterfaceMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 {
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();

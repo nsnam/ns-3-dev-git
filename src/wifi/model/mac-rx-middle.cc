@@ -296,9 +296,9 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
 }
 
 void
-MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
+MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (*mpdu);
+  NS_LOG_FUNCTION (*mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   NS_ASSERT (hdr->IsData () || hdr->IsMgt ());
 
@@ -339,7 +339,7 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
     }
   if (aggregate == mpdu->GetPacket ())
     {
-      m_callback (mpdu);
+      m_callback (mpdu, linkId);
     }
   else
     {
@@ -347,7 +347,7 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
       // A-MSDUs saves us the time to deaggregate the A-MSDU in MSDUs (which are
       // kept separate in the received mpdu) and allows us to pass the originally
       // transmitted packets (i.e., with the same UID) to the receiver.
-      m_callback (Create<WifiMacQueueItem> (aggregate, *hdr));
+      m_callback (Create<WifiMacQueueItem> (aggregate, *hdr), linkId);
     }
 }
 

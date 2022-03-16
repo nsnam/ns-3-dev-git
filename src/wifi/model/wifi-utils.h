@@ -137,6 +137,9 @@ static constexpr uint16_t SEQNO_SPACE_HALF_SIZE = SEQNO_SPACE_SIZE / 2;
 /// ID is to be used to support multi-link operations)
 static constexpr uint8_t SINGLE_LINK_OP_ID = 0;
 
+/// Invalid link identifier
+static constexpr uint8_t WIFI_LINKID_UNDEFINED = 0xff;
+
 } // namespace ns3
 
 #endif /* WIFI_UTILS_H */

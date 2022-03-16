@@ -164,7 +164,7 @@ protected:
 private:
   std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
-  void Receive (Ptr<WifiMacQueueItem> mpdu)  override;
+  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)  override;
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet

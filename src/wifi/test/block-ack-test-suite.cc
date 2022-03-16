@@ -668,11 +668,12 @@ public:
   void DoRun (void) override;
 
   /**
-   * Keep track of MPDUs that are forwarded up.
+   * Keep track of MPDUs received on the given link that are forwarded up.
    *
    * \param mpdu an MPDU that is forwarded up
+   * \param linkId the ID of the given link
    */
-  void ForwardUp (Ptr<WifiMacQueueItem> mpdu);
+  void ForwardUp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
 
 private:
   uint16_t m_ssn;                          //!< the Starting Sequence Number used to initialize WinStartB
@@ -690,7 +691,7 @@ BlockAckRecipientBufferTest::~BlockAckRecipientBufferTest ()
 }
 
 void
-BlockAckRecipientBufferTest::ForwardUp (Ptr<WifiMacQueueItem> mpdu)
+BlockAckRecipientBufferTest::ForwardUp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 {
   m_fwup.push_back (mpdu);
 }

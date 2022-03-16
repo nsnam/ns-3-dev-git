@@ -180,12 +180,7 @@ private:
    */
   bool GetActiveProbing (void) const;
 
-  /**
-   * Handle a received packet.
-   *
-   * \param mpdu the received MPDU
-   */
-  void Receive (Ptr<WifiMacQueueItem> mpdu) override;
+  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
   /**
    * Update associated AP's information from beacon. If STA is not associated,
    * this information will used for the association process.

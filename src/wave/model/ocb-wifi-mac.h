@@ -186,7 +186,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
+  virtual void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
 
   VendorSpecificContentManager m_vscManager; ///< VSC manager
 };

@@ -536,8 +536,8 @@ protected:
 
   /**
    * This method acts as the MacRxMiddle receive callback and is
-   * invoked to notify us that a frame has been received. The
-   * implementation is intended to capture logic that is going to be
+   * invoked to notify us that a frame has been received on the given link.
+   * The implementation is intended to capture logic that is going to be
    * common to all (or most) derived classes. Specifically, handling
    * of Block Ack management frames is dealt with here.
    *
@@ -545,9 +545,16 @@ protected:
    * classes so that they can perform their data handling before
    * invoking the base version.
    *
+   * The given link may be undefined in some cases (e.g., in case of
+   * QoS Data frames received in the context of a Block Ack agreement --
+   * because the BlockAckManager does not have to record the link each
+   * buffered MPDU has been received on); in such a cases, the value
+   * of <i>linkId</i> should be WIFI_LINKID_UNDEFINED.
+   *
    * \param mpdu the MPDU that has been received.
+   * \param linkId the ID of the given link
    */
-  virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
+  virtual void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
   /**
    * Forward the packet up to the device.
    *
