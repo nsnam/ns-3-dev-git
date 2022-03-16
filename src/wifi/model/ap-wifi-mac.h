@@ -139,7 +139,31 @@ public:
    */
   uint8_t GetMaxBufferStatus (Mac48Address address) const;
 
+protected:
+  /**
+   * Structure holding information specific to a single link. Here, the meaning of
+   * "link" is that of the 11be amendment which introduced multi-link devices. For
+   * previous amendments, only one link can be created.
+   */
+  struct ApLinkEntity : public WifiMac::LinkEntity
+  {
+    /// Destructor (a virtual method is needed to make this struct polymorphic)
+    virtual ~ApLinkEntity ();
+
+    EventId beaconEvent;                     //!< Event to generate one beacon
+  };
+
+  /**
+   * Get a reference to the link associated with the given ID.
+   *
+   * \param linkId the given link ID
+   * \return a reference to the link associated with the given ID
+   */
+  ApLinkEntity& GetLink (uint8_t linkId) const;
+
 private:
+  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
+
   void Receive (Ptr<WifiMacQueueItem> mpdu)  override;
   /**
    * The packet we sent was successfully received by the receiver
@@ -206,9 +230,12 @@ private:
    */
   void SendAssocResp (Mac48Address to, bool success, bool isReassoc);
   /**
-   * Forward a beacon packet to the beacon special DCF.
+   * Forward a beacon packet to the beacon special DCF for transmission
+   * on the given link.
+   *
+   * \param linkId the ID of the given link
    */
-  void SendOneBeacon (void);
+  void SendOneBeacon (uint8_t linkId);
 
   /**
    * Return the Capability information of the current AP.
@@ -217,17 +244,19 @@ private:
    */
   CapabilityInformation GetCapabilities (void) const;
   /**
-   * Return the ERP information of the current AP.
+   * Return the ERP information of the current AP for the given link.
    *
-   * \return the ERP information that we support
+   * \param linkId the ID of the given link
+   * \return the ERP information that we support for the given link
    */
-  ErpInformation GetErpInformation (void) const;
+  ErpInformation GetErpInformation (uint8_t linkId) const;
   /**
-   * Return the EDCA Parameter Set of the current AP.
+   * Return the EDCA Parameter Set of the current AP for the given link.
    *
-   * \return the EDCA Parameter Set that we support
+   * \param linkId the ID of the given link
+   * \return the EDCA Parameter Set that we support for the given link
    */
-  EdcaParameterSet GetEdcaParameterSet (void) const;
+  EdcaParameterSet GetEdcaParameterSet (uint8_t linkId) const;
   /**
    * Return the MU EDCA Parameter Set of the current AP.
    *
@@ -260,11 +289,12 @@ private:
    */
   SupportedRates GetSupportedRates (void) const;
   /**
-   * Return the DSSS Parameter Set that we support.
+   * Return the DSSS Parameter Set that we support on the given link
    *
-   * \return the DSSS Parameter Set that we support
+   * \param linkId the ID of the given link
+   * \return the DSSS Parameter Set that we support on the given link
    */
-  DsssParameterSet GetDsssParameterSet (void) const;
+  DsssParameterSet GetDsssParameterSet (uint8_t linkId) const;
   /**
    * Enable or disable beacon generation of the AP.
    *
@@ -305,7 +335,6 @@ private:
   Ptr<Txop> m_beaconTxop;                    //!< Dedicated Txop for beacons
   bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
   Time m_beaconInterval;                     //!< Beacon interval
-  EventId m_beaconEvent;                     //!< Event to generate one beacon
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID

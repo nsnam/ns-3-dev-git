@@ -28,6 +28,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ap-wifi-mac.h"
 #include "channel-access-manager.h"
+#include "frame-exchange-manager.h"
 #include "mac-tx-middle.h"
 #include "mac-rx-middle.h"
 #include "mgt-headers.h"
@@ -125,8 +126,25 @@ ApWifiMac::DoDispose ()
   m_beaconTxop->Dispose ();
   m_beaconTxop = 0;
   m_enableBeaconGeneration = false;
-  m_beaconEvent.Cancel ();
   WifiMac::DoDispose ();
+}
+
+ApWifiMac::ApLinkEntity::~ApLinkEntity ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  beaconEvent.Cancel ();
+}
+
+std::unique_ptr<WifiMac::LinkEntity>
+ApWifiMac::CreateLinkEntity (void) const
+{
+  return std::make_unique<ApLinkEntity> ();
+}
+
+ApWifiMac::ApLinkEntity&
+ApWifiMac::GetLink (uint8_t linkId) const
+{
+  return static_cast<ApLinkEntity&> (WifiMac::GetLink (linkId));
 }
 
 void
@@ -168,13 +186,17 @@ void
 ApWifiMac::SetBeaconGeneration (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
-  if (!enable)
+  for (uint8_t linkId = 0; linkId < GetNLinks (); ++linkId)
     {
-      m_beaconEvent.Cancel ();
-    }
-  else if (enable && !m_enableBeaconGeneration)
-    {
-      m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+      if (!enable)
+        {
+          GetLink (linkId).beaconEvent.Cancel ();
+        }
+      else if (!m_enableBeaconGeneration)
+        {
+          GetLink (linkId).beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon,
+                                                                 this, linkId);
+        }
     }
   m_enableBeaconGeneration = enable;
 }
@@ -423,14 +445,14 @@ ApWifiMac::GetSupportedRates (void) const
 }
 
 DsssParameterSet
-ApWifiMac::GetDsssParameterSet (void) const
+ApWifiMac::GetDsssParameterSet (uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   DsssParameterSet dsssParameters;
-  if (GetDsssSupported (SINGLE_LINK_OP_ID))
+  if (GetDsssSupported (linkId))
     {
       dsssParameters.SetDsssSupported (1);
-      dsssParameters.SetCurrentChannel (GetWifiPhy ()->GetChannelNumber ());
+      dsssParameters.SetCurrentChannel (GetWifiPhy (linkId)->GetChannelNumber ());
     }
   return dsssParameters;
 }
@@ -447,12 +469,12 @@ ApWifiMac::GetCapabilities (void) const
 }
 
 ErpInformation
-ApWifiMac::GetErpInformation (void) const
+ApWifiMac::GetErpInformation (uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   ErpInformation information;
   information.SetErpSupported (1);
-  if (GetErpSupported (SINGLE_LINK_OP_ID))
+  if (GetErpSupported (linkId))
     {
       information.SetNonErpPresent (m_numNonErpStations > 0);
       information.SetUseProtection (GetUseNonErpProtection ());
@@ -469,9 +491,9 @@ ApWifiMac::GetErpInformation (void) const
 }
 
 EdcaParameterSet
-ApWifiMac::GetEdcaParameterSet (void) const
+ApWifiMac::GetEdcaParameterSet (uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   EdcaParameterSet edcaParameters;
   if (GetQosSupported ())
     {
@@ -480,35 +502,35 @@ ApWifiMac::GetEdcaParameterSet (void) const
       Time txopLimit;
 
       edca = GetQosTxop (AC_BE);
-      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
+      txopLimit = edca->GetTxopLimit (linkId);
       edcaParameters.SetBeAci (0);
-      edcaParameters.SetBeCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetBeCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetBeAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBeCWmin (edca->GetMinCw (linkId));
+      edcaParameters.SetBeCWmax (edca->GetMaxCw (linkId));
+      edcaParameters.SetBeAifsn (edca->GetAifsn (linkId));
       edcaParameters.SetBeTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_BK);
-      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
+      txopLimit = edca->GetTxopLimit (linkId);
       edcaParameters.SetBkAci (1);
-      edcaParameters.SetBkCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetBkCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetBkAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
+      edcaParameters.SetBkCWmin (edca->GetMinCw (linkId));
+      edcaParameters.SetBkCWmax (edca->GetMaxCw (linkId));
+      edcaParameters.SetBkAifsn (edca->GetAifsn (linkId));
       edcaParameters.SetBkTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VI);
-      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
+      txopLimit = edca->GetTxopLimit (linkId);
       edcaParameters.SetViAci (2);
-      edcaParameters.SetViCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetViCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetViAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
+      edcaParameters.SetViCWmin (edca->GetMinCw (linkId));
+      edcaParameters.SetViCWmax (edca->GetMaxCw (linkId));
+      edcaParameters.SetViAifsn (edca->GetAifsn (linkId));
       edcaParameters.SetViTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = GetQosTxop (AC_VO);
-      txopLimit = edca->GetTxopLimit (SINGLE_LINK_OP_ID);
+      txopLimit = edca->GetTxopLimit (linkId);
       edcaParameters.SetVoAci (3);
-      edcaParameters.SetVoCWmin (edca->GetMinCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetVoCWmax (edca->GetMaxCw (SINGLE_LINK_OP_ID));
-      edcaParameters.SetVoAifsn (edca->GetAifsn (SINGLE_LINK_OP_ID));
+      edcaParameters.SetVoCWmin (edca->GetMinCw (linkId));
+      edcaParameters.SetVoCWmax (edca->GetMaxCw (linkId));
+      edcaParameters.SetVoAifsn (edca->GetAifsn (linkId));
       edcaParameters.SetVoTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edcaParameters.SetQosInfo (0);
@@ -753,15 +775,15 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
   if (GetDsssSupported (SINGLE_LINK_OP_ID))
     {
-      probe.SetDsssParameterSet (GetDsssParameterSet ());
+      probe.SetDsssParameterSet (GetDsssParameterSet (SINGLE_LINK_OP_ID));
     }
   if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
-      probe.SetErpInformation (GetErpInformation ());
+      probe.SetErpInformation (GetErpInformation (SINGLE_LINK_OP_ID));
     }
   if (GetQosSupported ())
     {
-      probe.SetEdcaParameterSet (GetEdcaParameterSet ());
+      probe.SetEdcaParameterSet (GetEdcaParameterSet (SINGLE_LINK_OP_ID));
     }
   if (GetHtSupported ())
     {
@@ -866,11 +888,11 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   assoc.SetCapabilities (GetCapabilities ());
   if (GetErpSupported (SINGLE_LINK_OP_ID))
     {
-      assoc.SetErpInformation (GetErpInformation ());
+      assoc.SetErpInformation (GetErpInformation (SINGLE_LINK_OP_ID));
     }
   if (GetQosSupported ())
     {
-      assoc.SetEdcaParameterSet (GetEdcaParameterSet ());
+      assoc.SetEdcaParameterSet (GetEdcaParameterSet (SINGLE_LINK_OP_ID));
     }
   if (GetHtSupported ())
     {
@@ -917,14 +939,14 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
 }
 
 void
-ApWifiMac::SendOneBeacon (void)
+ApWifiMac::SendOneBeacon (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_MGT_BEACON);
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
-  hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetAddress ());
+  hdr.SetAddr2 (GetLink (linkId).feManager->GetAddress ());
+  hdr.SetAddr3 (GetLink (linkId).feManager->GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Ptr<Packet> packet = Create<Packet> ();
@@ -933,19 +955,19 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetSupportedRates (GetSupportedRates ());
   beacon.SetBeaconIntervalUs (GetBeaconInterval ().GetMicroSeconds ());
   beacon.SetCapabilities (GetCapabilities ());
-  GetWifiRemoteStationManager ()->SetShortPreambleEnabled (m_shortPreambleEnabled);
-  GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
-  if (GetDsssSupported (SINGLE_LINK_OP_ID))
+  GetWifiRemoteStationManager (linkId)->SetShortPreambleEnabled (m_shortPreambleEnabled);
+  GetWifiRemoteStationManager (linkId)->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
+  if (GetDsssSupported (linkId))
     {
-      beacon.SetDsssParameterSet (GetDsssParameterSet ());
+      beacon.SetDsssParameterSet (GetDsssParameterSet (linkId));
     }
-  if (GetErpSupported (SINGLE_LINK_OP_ID))
+  if (GetErpSupported (linkId))
     {
-      beacon.SetErpInformation (GetErpInformation ());
+      beacon.SetErpInformation (GetErpInformation (linkId));
     }
   if (GetQosSupported ())
     {
-      beacon.SetEdcaParameterSet (GetEdcaParameterSet ());
+      beacon.SetEdcaParameterSet (GetEdcaParameterSet (linkId));
     }
   if (GetHtSupported ())
     {
@@ -972,22 +994,22 @@ ApWifiMac::SendOneBeacon (void)
 
   //The beacon has it's own special queue, so we load it in there
   m_beaconTxop->Queue (packet, hdr);
-  m_beaconEvent = Simulator::Schedule (GetBeaconInterval (), &ApWifiMac::SendOneBeacon, this);
+  GetLink(linkId).beaconEvent = Simulator::Schedule (GetBeaconInterval (), &ApWifiMac::SendOneBeacon, this, linkId);
 
   //If a STA that does not support Short Slot Time associates,
   //the AP shall use long slot time beginning at the first Beacon
   //subsequent to the association of the long slot time STA.
-  if (GetErpSupported (SINGLE_LINK_OP_ID))
+  if (GetErpSupported (linkId))
     {
       if (m_shortSlotTimeEnabled)
         {
           //Enable short slot time
-          GetWifiPhy ()->SetSlot (MicroSeconds (9));
+          GetWifiPhy (linkId)->SetSlot (MicroSeconds (9));
         }
       else
         {
           //Disable short slot time
-          GetWifiPhy ()->SetSlot (MicroSeconds (20));
+          GetWifiPhy (linkId)->SetSlot (MicroSeconds (20));
         }
     }
 }
@@ -1494,21 +1516,23 @@ ApWifiMac::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop->Initialize ();
-  m_beaconEvent.Cancel ();
-  if (m_enableBeaconGeneration)
+
+  for (uint8_t linkId = 0; linkId < GetNLinks (); ++linkId)
     {
-      if (m_enableBeaconJitter)
+      GetLink (linkId).beaconEvent.Cancel ();
+      if (m_enableBeaconGeneration)
         {
-          Time jitter = MicroSeconds (static_cast<int64_t> (m_beaconJitter->GetValue (0, 1) * (GetBeaconInterval ().GetMicroSeconds ())));
-          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress () << " at time " << jitter);
-          m_beaconEvent = Simulator::Schedule (jitter, &ApWifiMac::SendOneBeacon, this);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress () << " at time 0");
-          m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+          uint64_t jitterUs = (m_enableBeaconJitter
+                              ? static_cast <uint64_t> (m_beaconJitter->GetValue (0, 1) * (GetBeaconInterval ().GetMicroSeconds ()))
+                              : 0);
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress ()
+                        << " at time " << jitterUs << "us");
+          GetLink (linkId).beaconEvent = Simulator::Schedule (MicroSeconds (jitterUs),
+                                                              &ApWifiMac::SendOneBeacon,
+                                                              this, linkId);
         }
     }
+
   NS_ABORT_IF (!TraceConnectWithoutContext ("AckedMpdu", MakeCallback (&ApWifiMac::TxOk, this)));
   NS_ABORT_IF (!TraceConnectWithoutContext ("DroppedMpdu", MakeCallback (&ApWifiMac::TxFailed, this)));
   WifiMac::DoInitialize ();
