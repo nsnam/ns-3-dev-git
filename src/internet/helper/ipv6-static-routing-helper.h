@@ -55,6 +55,9 @@ public:
    */
   Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &o);
 
+  // Delete assignment operator to avoid misuse
+  Ipv6StaticRoutingHelper &operator= (const Ipv6StaticRoutingHelper &) = delete;
+
   /**
    * \returns pointer to clone of this Ipv6StaticRoutingHelper
    *
@@ -142,14 +145,6 @@ public:
   void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 #endif
-private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \param o object to copy from
-   * \returns a reference to the new object
-   */
-  Ipv6StaticRoutingHelper &operator = (const Ipv6StaticRoutingHelper &o);
 };
 
 } // namespace ns3

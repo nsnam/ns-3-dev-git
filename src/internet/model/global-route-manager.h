@@ -40,6 +40,10 @@ namespace ns3 {
 class GlobalRouteManager
 {
 public:
+  // Delete copy constructor and assignment operator to avoid misuse
+  GlobalRouteManager (const GlobalRouteManager &) = delete;
+  GlobalRouteManager &operator= (const GlobalRouteManager &) = delete;
+
 /**
  * @brief Allocate a 32-bit router ID from monotonically increasing counter.
  * @returns A new new RouterId.
@@ -64,24 +68,6 @@ public:
  * per-node forwarding tables
  */
   static void InitializeRoutes ();
-
-private:
-/**
- * @brief Global Route Manager copy construction is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be wrong.
- *
- * @param srm object to copy from
- */
-  GlobalRouteManager (GlobalRouteManager& srm);
-
-/**
- * @brief Global Router copy assignment operator is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be wrong.
- *
- * @param srm object to copy from
- * @returns the copied object
- */
-  GlobalRouteManager& operator= (GlobalRouteManager& srm);
 };
 
 } // namespace ns3

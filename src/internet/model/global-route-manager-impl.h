@@ -122,6 +122,10 @@ public:
  */
   ~SPFVertex();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  SPFVertex (const SPFVertex &) = delete;
+  SPFVertex &operator= (const SPFVertex &) = delete;
+
 /**
  * @brief Get the Vertex Type field of a SPFVertex object.
  *
@@ -539,21 +543,6 @@ private:
   ListOfSPFVertex_t m_children; //!< Children list
   bool m_vertexProcessed; //!< Flag to note whether vertex has been processed in stage two of SPF computation
 
-/**
- * @brief The SPFVertex copy construction is disallowed.  There's no need for
- * it and a compiler provided shallow copy would be wrong.
- * @param v object to copy from
- */
-  SPFVertex (SPFVertex& v);
-
-/**
- * @brief The SPFVertex copy assignment operator is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be wrong.
- * @param v object to copy from
- * @returns the copied object
- */
-  SPFVertex& operator= (SPFVertex& v);
-
   /**
    * \brief Stream insertion operator.
    *
@@ -596,6 +585,10 @@ public:
  * release any remaining resources.
  */
   ~GlobalRouteManagerLSDB ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  GlobalRouteManagerLSDB (const GlobalRouteManagerLSDB &) = delete;
+  GlobalRouteManagerLSDB &operator= (const GlobalRouteManagerLSDB &) = delete;
 
 /**
  * @brief Insert an IP address / Link State Advertisement pair into the Link
@@ -681,21 +674,6 @@ private:
 
   LSDBMap_t m_database; //!< database of IPv4 addresses / Link State Advertisements
   std::vector<GlobalRoutingLSA*> m_extdatabase; //!< database of External Link State Advertisements
-
-/**
- * @brief GlobalRouteManagerLSDB copy construction is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be wrong.
- * @param lsdb object to copy from
- */
-  GlobalRouteManagerLSDB (GlobalRouteManagerLSDB& lsdb);
-
-/**
- * @brief The SPFVertex copy assignment operator is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be wrong.
- * @param lsdb object to copy from
- * @returns the copied object
- */
-  GlobalRouteManagerLSDB& operator= (GlobalRouteManagerLSDB& lsdb);
 };
 
 /**
@@ -714,6 +692,11 @@ class GlobalRouteManagerImpl
 public:
   GlobalRouteManagerImpl ();
   virtual ~GlobalRouteManagerImpl ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  GlobalRouteManagerImpl (const GlobalRouteManagerImpl &) = delete;
+  GlobalRouteManagerImpl &operator= (const GlobalRouteManagerImpl &) = delete;
+
 /**
  * @brief Delete all static routes on all nodes that have a
  * GlobalRouterInterface
@@ -748,25 +731,6 @@ public:
   void DebugSPFCalculate (Ipv4Address root);
 
 private:
-/**
- * @brief GlobalRouteManagerImpl copy construction is disallowed.
- * There's no  need for it and a compiler provided shallow copy would be 
- * wrong.
- *
- * @param srmi object to copy from
- */
-  GlobalRouteManagerImpl (GlobalRouteManagerImpl& srmi);
-
-/**
- * @brief Global Route Manager Implementation assignment operator is
- * disallowed.  There's no  need for it and a compiler provided shallow copy
- * would be hopelessly wrong.
- *
- * @param srmi object to copy from
- * @returns the copied object
- */
-  GlobalRouteManagerImpl& operator= (GlobalRouteManagerImpl& srmi);
-
   SPFVertex* m_spfroot; //!< the root node
   GlobalRouteManagerLSDB* m_lsdb; //!< the Link State DataBase (LSDB) of the Global Route Manager
 

@@ -55,6 +55,9 @@ public:
 
   virtual ~RipHelper ();
 
+  // Delete assignment operator to avoid misuse
+  RipHelper &operator= (const RipHelper &) = delete;
+
   /**
    * \returns pointer to clone of this RipHelper
    *
@@ -132,15 +135,6 @@ public:
   void SetInterfaceMetric (Ptr<Node> node, uint32_t interface, uint8_t metric);
 
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   *
-   * \param o The object to copy from.
-   * \returns pointer to clone of this RipNgHelper
-   */
-  RipHelper &operator = (const RipHelper &o);
-
   ObjectFactory m_factory; //!< Object Factory
 
   std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions; //!< Interface Exclusion set

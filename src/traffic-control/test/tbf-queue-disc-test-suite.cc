@@ -53,15 +53,13 @@ public:
   TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~TbfQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  TbfQueueDiscTestItem () = delete;
   TbfQueueDiscTestItem (const TbfQueueDiscTestItem &) = delete;
   TbfQueueDiscTestItem & operator = (const TbfQueueDiscTestItem &) = delete;
 
   virtual void AddHeader (void);
   virtual bool Mark (void);
-
-private:
-  TbfQueueDiscTestItem ();
 };
 
 TbfQueueDiscTestItem::TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr)

@@ -51,7 +51,8 @@ public:
   PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~PieQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  PieQueueDiscTestItem () = delete;
   PieQueueDiscTestItem (const PieQueueDiscTestItem &) = delete;
   PieQueueDiscTestItem & operator = (const PieQueueDiscTestItem &) = delete;
 
@@ -77,8 +78,6 @@ public:
   uint32_t m_expectedDrops = 0;     //!< Number of expected unforced drops
 
 private:
-  PieQueueDiscTestItem ();
-
   bool m_ecnCapablePacket; //!< ECN capable packet?
 };
 

@@ -121,12 +121,14 @@ public:
    * \param owner the owner class
    */
   MemberLteHandoverManagementSapProvider (C* owner);
+  
+  // Delete default constructor to avoid misuse
+  MemberLteHandoverManagementSapProvider () = delete;
 
-  // inherited from LteHandoverManagemenrSapProvider
+  // inherited from LteHandoverManagementSapProvider
   virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
 
 private:
-  MemberLteHandoverManagementSapProvider ();
   C* m_owner; ///< the owner class
 
 }; // end of class MemberLteHandoverManagementSapProvider
@@ -164,12 +166,14 @@ public:
    */
   MemberLteHandoverManagementSapUser (C* owner);
 
+  // Delete default constructor to avoid misuse
+  MemberLteHandoverManagementSapUser () = delete;
+
   // inherited from LteHandoverManagementSapUser
   virtual std::vector<uint8_t> AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
   virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
 
 private:
-  MemberLteHandoverManagementSapUser ();
   C* m_owner; ///< the owner class
 
 }; // end of class MemberLteAnrSapUser

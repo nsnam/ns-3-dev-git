@@ -66,6 +66,10 @@ public:
  */
   virtual ~CandidateQueue ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  CandidateQueue (const CandidateQueue &) = delete;
+  CandidateQueue &operator= (const CandidateQueue &) = delete;
+
 /**
  * @brief Empty the Candidate Queue and release all of the resources 
  * associated with the Shortest Path First Vertex pointers in the queue.
@@ -155,22 +159,6 @@ public:
   void Reorder (void);
 
 private:
-/**
- * Candidate Queue copy construction is disallowed (not implemented) to 
- * prevent the compiler from slipping in incorrect versions that don't
- * properly deal with deep copies.
- * \param sr object to copy
- */
-  CandidateQueue (CandidateQueue& sr);
-
-/**
- * Candidate Queue assignment operator is disallowed (not implemented) to
- * prevent the compiler from slipping in incorrect versions that don't
- * properly deal with deep copies.
- * \param sr object to assign
- * \return copied object
- */
-  CandidateQueue& operator= (CandidateQueue& sr);
 /**
  * \brief return true if v1 < v2
  *

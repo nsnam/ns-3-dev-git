@@ -68,6 +68,10 @@ class Scheduler;
 class Simulator
 {
 public:
+  // Delete copy constructor and assignment operator to avoid misuse
+  Simulator () = delete;
+  ~Simulator () = delete;
+
   /**
    * @param [in] impl A new simulator implementation.
    *
@@ -494,11 +498,6 @@ public:
   static uint32_t GetSystemId (void);
 
 private:
-  /** Default constructor. */
-  Simulator ();
-  /** Destructor. */
-  ~Simulator ();
-
   /**
    * Implementation of the various Schedule methods.
    * @param [in] delay Delay until the event should execute.

@@ -57,6 +57,10 @@ public:
   LteNetDevice (void);
   virtual ~LteNetDevice (void);
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  LteNetDevice (const LteNetDevice &) = delete;
+  LteNetDevice &operator= (const LteNetDevice &) = delete;
+
   virtual void DoDispose (void);
 
   // inherited from NetDevice
@@ -96,14 +100,6 @@ protected:
   NetDevice::ReceiveCallback m_rxCallback; ///< receive callback
   
 private:
-  /// type conversion operator
-  LteNetDevice (const LteNetDevice &);
-  /**
-   * assignment operator
-   * \returns LteNetDevice
-   */
-  LteNetDevice & operator= (const LteNetDevice &);
-
   Ptr<Node> m_node; ///< the node
 
   TracedCallback<> m_linkChangeCallbacks; ///< link change callback

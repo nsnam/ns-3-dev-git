@@ -85,6 +85,10 @@ public:
    */
   virtual ~PointToPointNetDevice ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  PointToPointNetDevice& operator = (const PointToPointNetDevice &) = delete;
+  PointToPointNetDevice (const PointToPointNetDevice &) = delete;
+
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -199,32 +203,10 @@ protected:
   void DoMpiReceive (Ptr<Packet> p);
 
 private:
-
-  /**
-   * \brief Assign operator
-   *
-   * The method is private, so it is DISABLED.
-   *
-   * \param o Other NetDevice
-   * \return New instance of the NetDevice
-   */
-  PointToPointNetDevice& operator = (const PointToPointNetDevice &o);
-
-  /**
-   * \brief Copy constructor
-   *
-   * The method is private, so it is DISABLED.
-
-   * \param o Other NetDevice
-   */
-  PointToPointNetDevice (const PointToPointNetDevice &o);
-
   /**
    * \brief Dispose of the object
    */
   virtual void DoDispose (void);
-
-private:
 
   /**
    * \returns the address of the remote device connected to this device

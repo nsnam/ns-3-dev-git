@@ -52,7 +52,8 @@ public:
   CobaltQueueDiscTestItem (Ptr<Packet> p, const Address & addr,uint16_t protocol, bool ecnCapable);
   virtual ~CobaltQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  CobaltQueueDiscTestItem () = delete;
   CobaltQueueDiscTestItem (const CobaltQueueDiscTestItem &) = delete;
   CobaltQueueDiscTestItem & operator = (const CobaltQueueDiscTestItem &) = delete;
 
@@ -60,8 +61,6 @@ public:
   virtual bool Mark (void);
 
 private:
-  CobaltQueueDiscTestItem ();
-
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 

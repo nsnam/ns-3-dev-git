@@ -55,6 +55,9 @@ public:
    */
   Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &o);
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Ipv4ListRoutingHelper &operator= (const Ipv4ListRoutingHelper &) = delete;
+
   /**
    * \returns pointer to clone of this Ipv4ListRoutingHelper 
    * 
@@ -82,13 +85,6 @@ public:
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \return
-   */
-  Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &);
-
   /**
    * \brief Container for pairs of Ipv4RoutingHelper pointer / priority.
    */

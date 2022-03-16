@@ -46,6 +46,9 @@ public:
    */
   Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &o);
 
+  // Delete assignment operator to avoid misuse
+  Ipv4GlobalRoutingHelper &operator= (const Ipv4GlobalRoutingHelper &) = delete;
+
   /**
    * \returns pointer to clone of this Ipv4GlobalRoutingHelper
    *
@@ -85,13 +88,6 @@ public:
    *
    */
   static void RecomputeRoutingTables (void);
-private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \return
-   */
-  Ipv4GlobalRoutingHelper &operator = (const Ipv4GlobalRoutingHelper &);
 };
 
 } // namespace ns3

@@ -149,14 +149,16 @@ public:
    */
   MemberLteFfrRrcSapProvider (C* owner);
 
-  // inherited from LteHandoverManagemenrSapProvider
+  // Delete default constructor to avoid misuse
+  MemberLteFfrRrcSapProvider () = delete;
+
+  // inherited from LteHandoverManagementSapProvider
   virtual void SetCellId (uint16_t cellId );
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
   virtual void RecvLoadInformation (EpcX2Sap::LoadInformationParams params);
 
 private:
-  MemberLteFfrRrcSapProvider ();
   C* m_owner; ///< the owner class
 
 }; // end of class MemberLteFfrRrcSapProvider
@@ -212,6 +214,9 @@ public:
    */
   MemberLteFfrRrcSapUser (C* owner);
 
+  // Delete default constructor to avoid misuse
+  MemberLteFfrRrcSapUser () = delete;
+
   // inherited from LteFfrRrcSapUser
   virtual uint8_t AddUeMeasReportConfigForFfr (LteRrcSap::ReportConfigEutra reportConfig);
 
@@ -219,7 +224,6 @@ public:
 
   virtual void  SendLoadInformation (EpcX2Sap::LoadInformationParams params);
 private:
-  MemberLteFfrRrcSapUser ();
   C* m_owner; ///< the owner class
 
 }; // end of class LteFfrRrcSapUser

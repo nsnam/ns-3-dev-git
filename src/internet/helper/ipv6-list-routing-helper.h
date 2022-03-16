@@ -57,6 +57,9 @@ public:
    */
   Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &o);
 
+  // Delete assignment operator to avoid misuse
+  Ipv6ListRoutingHelper &operator= (const Ipv6ListRoutingHelper &) = delete;
+
   /**
    * \returns pointer to clone of this Ipv6ListRoutingHelper 
    * 
@@ -84,14 +87,6 @@ public:
    */
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \param o object to copy from
-   * \returns a reference to the new object
-   */
-  Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
-
   /**
    * \brief Container for pairs of Ipv6RoutingHelper pointer / priority.
    */

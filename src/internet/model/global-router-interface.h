@@ -600,6 +600,10 @@ public:
  */
   GlobalRouter ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  GlobalRouter (const GlobalRouter &) = delete;
+  GlobalRouter &operator= (const GlobalRouter &) = delete;
+
   /**
    * \brief Set the specific Global Routing Protocol to be used
    * \param routing the routing protocol
@@ -894,19 +898,6 @@ private:
 
   // inherited from Object
   virtual void DoDispose (void);
-
-/**
- * @brief Global Router copy construction is disallowed.
- * @param sr object to copy from.
- */
-  GlobalRouter (GlobalRouter& sr);
-
-/**
- * @brief Global Router assignment operator is disallowed.
- * @param sr object to copy from.
- * @returns The object copied.
- */
-  GlobalRouter& operator= (GlobalRouter& sr);
 };
 
 } // namespace ns3

@@ -111,6 +111,10 @@ public:
    */
   virtual ~RandomVariableStream ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  RandomVariableStream (const RandomVariableStream &) = delete;
+  RandomVariableStream &operator= (const RandomVariableStream &) = delete;
+
   /**
    * \brief Specifies the stream number for the RngStream.
    * \param [in] stream The stream number for the RngStream.
@@ -157,27 +161,6 @@ protected:
   RngStream * Peek (void) const;
 
 private:
-  /**
-   * Copy constructor.  These objects are not copyable.
-   *
-   * \param [in] o The RandomVariableStream to copy in construction.
-   * \internal
-   * Theoretically, it is possible to give them good copy semantics
-   * but not enough time to iron out the details.
-   */
-  RandomVariableStream (const RandomVariableStream &o);
-  /**
-   * Assignment operator.  These objects can't be copied by assignment.
-   *
-   * \param [in] o The RandomVariableStream to copy.
-   * \return lvalue RandomVariableStream.
-   *
-   * \internal
-   * Theoretically, it is possible to give them good copy semantics
-   * but not enough time to iron out the details.
-   */
-  RandomVariableStream &operator = (const RandomVariableStream &o);
-
   /** Pointer to the underlying RngStream. */
   RngStream *m_rng;
 

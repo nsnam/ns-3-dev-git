@@ -68,6 +68,11 @@ public:
    */
   LrWpanCsmaCa (void);
   virtual ~LrWpanCsmaCa (void);
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  LrWpanCsmaCa (const LrWpanCsmaCa &) = delete;
+  LrWpanCsmaCa &operator= (const LrWpanCsmaCa &) = delete;
+
   /**
    * Set the MAC to which this CSMA/CA implementation is attached to.
    *
@@ -253,17 +258,6 @@ public:
   bool GetBatteryLifeExtension (void);
 
 private:
-  // Disable implicit copy constructors
-  /**
-   * \brief Copy constructor - defined and not implemented.
-   */
-  LrWpanCsmaCa (LrWpanCsmaCa const &);
-  /**
-   * \brief Copy constructor - defined and not implemented.
-   * \returns
-   */
-  LrWpanCsmaCa& operator= (LrWpanCsmaCa const &);
-
   virtual void DoDispose (void);
   /**
    *  \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.

@@ -72,6 +72,10 @@ public:
 
   virtual ~LrWpanHelper (void);
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  LrWpanHelper (const LrWpanHelper &) = delete;
+  LrWpanHelper &operator= (const LrWpanHelper &) = delete;
+
   /**
    * \brief Get the channel associated to this helper
    * \returns the channel
@@ -158,16 +162,6 @@ public:
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
-  // Disable implicit constructors
-  /**
-   * \brief Copy constructor - defined and not implemented.
-   */
-  LrWpanHelper (LrWpanHelper const &);
-  /**
-   * \brief Copy constructor - defined and not implemented.
-   * \returns
-   */
-  LrWpanHelper& operator= (LrWpanHelper const &);
   /**
    * \brief Enable pcap output on the indicated net device.
    *

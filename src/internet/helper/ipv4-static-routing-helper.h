@@ -55,6 +55,9 @@ public:
    */
   Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &o);
 
+  // Delete assignment operator to avoid misuse
+  Ipv4StaticRoutingHelper &operator= (const Ipv4StaticRoutingHelper &) = delete;
+
   /**
    * \returns pointer to clone of this Ipv4StaticRoutingHelper
    *
@@ -182,13 +185,6 @@ public:
    *        Object Name Service
    */
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
-private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \returns
-   */
-  Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &);
 };
 
 } // namespace ns3

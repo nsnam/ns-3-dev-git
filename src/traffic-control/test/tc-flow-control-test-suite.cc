@@ -56,15 +56,13 @@ public:
   QueueDiscTestItem (Ptr<Packet> p);
   virtual ~QueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  QueueDiscTestItem () = delete;
   QueueDiscTestItem (const QueueDiscTestItem &) = delete;
   QueueDiscTestItem & operator = (const QueueDiscTestItem &) = delete;
 
   virtual void AddHeader (void);
   virtual bool Mark(void);
-
-private:
-  QueueDiscTestItem ();
 };
 
 QueueDiscTestItem::QueueDiscTestItem (Ptr<Packet> p)
@@ -101,7 +99,7 @@ public:
    *
    * \param tt the test type
    * \param deviceQueueLength the queue length of the device
-   * \param totalTxPackets the toal number of packets to transmit
+   * \param totalTxPackets the total number of packets to transmit
    */
   TcFlowControlTestCase (QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets);
   virtual ~TcFlowControlTestCase ();

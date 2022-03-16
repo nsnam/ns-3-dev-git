@@ -135,6 +135,9 @@ public:
    */
   MemberLteAnrSapProvider (C* owner);
 
+  // Delete default constructor to avoid misuse
+  MemberLteAnrSapProvider () = delete;
+
   // inherited from LteAnrSapProvider
   virtual void ReportUeMeas (LteRrcSap::MeasResults measResults);
   virtual void AddNeighbourRelation (uint16_t cellId);
@@ -143,7 +146,6 @@ public:
   virtual bool GetNoX2 (uint16_t cellId) const;
 
 private:
-  MemberLteAnrSapProvider ();
   C* m_owner; ///< the owner class
 
 }; // end of class MemberLteAnrSapProvider
@@ -212,11 +214,13 @@ public:
    */
   MemberLteAnrSapUser (C* owner);
 
+  // Delete default constructor to avoid misuse
+  MemberLteAnrSapUser () = delete;
+
   // inherited from LteAnrSapUser
   virtual uint8_t AddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig);
 
 private:
-  MemberLteAnrSapUser ();
   C* m_owner; ///< the owner class
 
 }; // end of class MemberLteAnrSapUser

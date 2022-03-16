@@ -51,15 +51,13 @@ public:
   FifoQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~FifoQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  FifoQueueDiscTestItem () = delete;
   FifoQueueDiscTestItem (const FifoQueueDiscTestItem &) = delete;
   FifoQueueDiscTestItem & operator = (const FifoQueueDiscTestItem &) = delete;
 
   virtual void AddHeader (void);
   virtual bool Mark (void);
-
-private:
-  FifoQueueDiscTestItem ();
 };
 
 FifoQueueDiscTestItem::FifoQueueDiscTestItem (Ptr<Packet> p, const Address & addr)

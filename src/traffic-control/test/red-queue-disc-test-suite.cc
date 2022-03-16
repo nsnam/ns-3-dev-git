@@ -49,7 +49,8 @@ public:
   RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~RedQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  RedQueueDiscTestItem () = delete;
   RedQueueDiscTestItem (const RedQueueDiscTestItem &) = delete;
   RedQueueDiscTestItem & operator = (const RedQueueDiscTestItem &) = delete;
 
@@ -57,8 +58,6 @@ public:
   virtual bool Mark(void);
 
 private:
-  RedQueueDiscTestItem ();
-
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 

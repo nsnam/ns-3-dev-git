@@ -180,6 +180,9 @@ private:
   inline PacketMetadata &operator = (PacketMetadata const& o);
   inline ~PacketMetadata ();
 
+  // Delete default constructor to avoid misuse
+  PacketMetadata () = delete;
+
   /**
    * \brief Add an header
    * \param header header to add
@@ -499,15 +502,13 @@ private:
    */
   class DataFreeList : public std::vector<struct Data *>
   {
-public:
+  public:
     ~DataFreeList ();
   };
 
   friend DataFreeList::~DataFreeList ();
   /// Friend class
   friend class ItemIterator;
-
-  PacketMetadata ();
 
   /**
    * \brief Add a SmallItem

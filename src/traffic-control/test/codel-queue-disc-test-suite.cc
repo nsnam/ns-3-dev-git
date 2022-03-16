@@ -72,7 +72,8 @@ public:
   CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~CodelQueueDiscTestItem ();
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor, copy constructor and assignment operator to avoid misuse
+  CodelQueueDiscTestItem () = delete;
   CodelQueueDiscTestItem (const CodelQueueDiscTestItem &) = delete;
   CodelQueueDiscTestItem & operator = (const CodelQueueDiscTestItem &) = delete;
 
@@ -80,8 +81,6 @@ public:
   virtual bool Mark(void);
 
 private:
-  CodelQueueDiscTestItem ();
-  
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 
