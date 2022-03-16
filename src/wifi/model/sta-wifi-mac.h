@@ -49,6 +49,7 @@ struct ApInfo
   bool m_activeProbing;               ///< Flag whether active probing is used or not
   MgtBeaconHeader m_beacon;           ///< Beacon header
   MgtProbeResponseHeader m_probeResp; ///< Probe Response header
+  uint8_t m_linkId;                   ///< ID of the link used to communicate with the AP
 };
 
 /**
@@ -188,8 +189,10 @@ private:
    * \param beacon the beacon header
    * \param apAddr MAC address of the AP
    * \param bssid MAC address of BSSID
+   * \param linkId ID of the link the beacon was received over
    */
-  void UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr, Mac48Address bssid);
+  void UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr, Mac48Address bssid,
+                               uint8_t linkId);
   /**
    * Update AP's information from probe response. This information is required
    * for the association process.
@@ -197,8 +200,10 @@ private:
    * \param probeResp the probe response header
    * \param apAddr MAC address of the AP
    * \param bssid MAC address of BSSID
+   * \param linkId ID of the link the beacon was received over
    */
-  void UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr, Mac48Address bssid);
+  void UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr,
+                                  Mac48Address bssid, uint8_t linkId);
   /**
    * Update AP's information from association response.
    *
