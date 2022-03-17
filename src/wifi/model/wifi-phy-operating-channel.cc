@@ -432,4 +432,14 @@ WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency (uint16_t primaryChann
   return freq;
 }
 
+uint8_t
+WifiPhyOperatingChannel::GetPrimaryChannelNumber (uint16_t     primaryChannelWidth,
+                                                  WifiStandard standard) const
+{
+  auto frequency = GetPrimaryChannelCenterFrequency (primaryChannelWidth);
+  auto& [chanNumber, centerFreq, channelWidth, channelType, band] = *m_channelIt;
+  auto primaryChanIt = FindFirst (0, frequency, primaryChannelWidth, standard, band);
+  return std::get<0> (*primaryChanIt);
+}
+
 } //namespace ns3

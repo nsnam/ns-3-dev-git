@@ -1045,6 +1045,14 @@ public:
    */
   virtual std::tuple<double, double, double> GetTxMaskRejectionParams (void) const = 0;
 
+  /**
+   * Get channel number of the primary channel
+   * \param primaryChannelWidth the width of the primary channel (MHz)
+   *
+   * \return channel number of the primary channel
+   */
+  uint8_t GetPrimaryChannelNumber (uint16_t primaryChannelWidth) const;
+
 protected:
   virtual void DoDispose (void);
 

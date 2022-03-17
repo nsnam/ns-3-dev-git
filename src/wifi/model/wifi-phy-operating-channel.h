@@ -157,6 +157,15 @@ public:
                                   WifiStandard standard, WifiPhyBand band,
                                   ConstIterator start = m_frequencyChannels.begin ());
 
+  /**
+   * Get channel number of the primary channel
+   * \param primaryChannelWidth the width of the primary channel (MHz)
+   * \param standard the standard
+   *
+   * \return channel number of the primary channel
+   */
+  uint8_t GetPrimaryChannelNumber (uint16_t primaryChannelWidth, WifiStandard standard) const;
+
 private:
   ConstIterator m_channelIt;   //!< const iterator pointing to the configured frequency channel
   uint8_t m_primary20Index;    /**< index of the primary20 channel (0 indicates the 20 MHz

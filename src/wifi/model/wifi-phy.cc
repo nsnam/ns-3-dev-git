@@ -2008,4 +2008,10 @@ std::ostream& operator<< (std::ostream& os, RxSignalInfo rxSignalInfo)
   return os;
 }
 
+uint8_t
+WifiPhy::GetPrimaryChannelNumber (uint16_t primaryChannelWidth) const
+{
+  return m_operatingChannel.GetPrimaryChannelNumber (primaryChannelWidth, m_standard);
+}
+
 } //namespace ns3
