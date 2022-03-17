@@ -57,7 +57,7 @@ def run_ns3(args, env=None):
     @return tuple containing (error code, stdout and stderr)
     """
     if "clean" in args:
-        possible_leftovers = ["contrib/borked"]
+        possible_leftovers = ["contrib/borked", "contrib/calibre"]
         for leftover in possible_leftovers:
             if os.path.exists(leftover):
                 shutil.rmtree(leftover, ignore_errors=True)
@@ -246,7 +246,7 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
                     unused_sources.add(file)
 
         # Remove temporary exceptions
-        exceptions = ["win32-system-wall-clock-ms.cc", # Should be removed with MR784
+        exceptions = ["win32-system-wall-clock-ms.cc",  # Should be removed with MR784
                       ]
         for exception in exceptions:
             for unused_source in unused_sources:
@@ -285,6 +285,7 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
                     unused_sources.add(file)
 
         self.assertListEqual([], list(unused_sources))
+
 
 class NS3CommonSettingsTestCase(unittest.TestCase):
     """!
@@ -941,14 +942,14 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
             with open("contrib/borked/CMakeLists.txt", "w") as f:
                 f.write("""
-                    build_lib(
-                        LIBNAME borked
-                        SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
-                        LIBRARIES_TO_LINK ${libcore} %s
-                    )
-                """ % invalid_or_non_existant_library)
+                        build_lib(
+                            LIBNAME borked
+                            SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
+                            LIBRARIES_TO_LINK ${libcore} %s
+                        )
+                        """ % invalid_or_non_existant_library)
 
-            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples")
             if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
                 self.assertEqual(return_code, 0)
             elif invalid_or_non_existant_library in ["fee", "fi"]:
@@ -984,12 +985,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
             with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
                 f.write("""
-                build_lib_example(
-                    NAME borked-example
-                    SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
-                    LIBRARIES_TO_LINK ${libborked} %s
-                )
-                """ % invalid_or_non_existant_library)
+                        build_lib_example(
+                            NAME borked-example
+                            SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
+                            LIBRARIES_TO_LINK ${libborked} %s
+                        )
+                        """ % invalid_or_non_existant_library)
 
             return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
             if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
@@ -1013,6 +1014,48 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 pass
 
         shutil.rmtree("contrib/borked", ignore_errors=True)
+
+    def test_15_LibrariesContainingLib(self):
+        """!
+        Test if CMake can properly handle modules containing "lib",
+        which is used internally as a prefix for module libraries
+        @return None
+        """
+
+        os.makedirs("contrib/calibre", exist_ok=True)
+        os.makedirs("contrib/calibre/examples", exist_ok=True)
+
+        # Now test if we can have a library with "lib" in it
+        with open("contrib/calibre/examples/CMakeLists.txt", "w") as f:
+            f.write("")
+        with open("contrib/calibre/CMakeLists.txt", "w") as f:
+            f.write("""
+                build_lib(
+                    LIBNAME calibre
+                    SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
+                    LIBRARIES_TO_LINK ${libcore}
+                )
+                """)
+
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+
+        # This only checks if configuration passes
+        self.assertEqual(return_code, 0)
+
+        # This checks if the contrib modules were printed correctly
+        self.assertIn("calibre", stdout)
+
+        # This checks not only if "lib" from "calibre" was incorrectly removed,
+        # but also if the pkgconfig file was generated with the correct name
+        self.assertNotIn("care", stdout)
+        self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "pkgconfig", "ns3-calibre.pc")))
+
+        # Check if we can build this library
+        return_code, stdout, stderr = run_ns3("build calibre")
+        self.assertEqual(return_code, 0)
+        self.assertIn(cmake_build_target_command(target="libcalibre"), stdout)
+
+        shutil.rmtree("contrib/calibre", ignore_errors=True)
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):

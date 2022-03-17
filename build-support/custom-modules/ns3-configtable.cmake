@@ -72,7 +72,8 @@ function(print_formatted_table_with_modules table_name modules output)
   string(APPEND temp "${table_name}:\n")
   set(count 0) # Variable to count number of columns
   set(width 26) # Variable with column width
-  string(REPLACE "lib" "" modules_to_print "${modules}")
+  string(REPLACE ";lib" ";" modules_to_print ";${modules}")
+  string(SUBSTRING "${modules_to_print}" 1 -1 modules_to_print)
   list(SORT modules_to_print) # Sort for nice output
   set(modules_with_large_names)
   foreach(module ${modules_to_print})

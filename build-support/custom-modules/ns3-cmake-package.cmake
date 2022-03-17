@@ -23,7 +23,7 @@ function(build_required_and_libs_lists module_name visibility libraries
   foreach(lib ${libraries})
     if(${lib} IN_LIST all_ns3_libraries)
       get_target_property(lib_real_name ${lib} OUTPUT_NAME)
-      string(REPLACE "lib" "" required_module_name ${lib})
+      remove_lib_prefix(${lib} required_module_name)
       set(required_modules_list
           "${required_modules_list} ns3-${required_module_name}"
       )
@@ -55,7 +55,7 @@ function(pkgconfig_module libname)
   set(private_libs ${all_libs})
 
   # Create two lists of publicly and privately linked libraries to this module
-  string(REPLACE "lib" "" module_name ${libname})
+  remove_lib_prefix(${libname} module_name)
 
   # These filter out ns and non-ns libraries into public and private libraries
   # linked against module_name

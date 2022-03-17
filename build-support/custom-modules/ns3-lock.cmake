@@ -41,8 +41,7 @@ function(write_lock)
   string(APPEND lock_contents "NS3_ENABLED_MODULES = [")
   foreach(module_library ${ns3-libs}) # fetch core module libraries
     string(APPEND lock_contents "'")
-    string(REPLACE "lib" "" module_name ${module_library}) # lib${libname} into
-                                                           # libname
+    remove_lib_prefix("${module_library}" module_name)
     string(APPEND lock_contents "ns3-${module_name}', ")
   endforeach()
   string(APPEND lock_contents "]\n")
@@ -50,8 +49,7 @@ function(write_lock)
   string(APPEND lock_contents "NS3_ENABLED_CONTRIBUTED_MODULES = [")
   foreach(module_library ${ns3-contrib-libs}) # fetch core module libraries
     string(APPEND lock_contents "'")
-    string(REPLACE "lib" "" module_name ${module_library}) # lib${libname} into
-                                                           # libname
+    remove_lib_prefix("${module_library}" module_name)
     string(APPEND lock_contents "ns3-${module_name}', ")
   endforeach()
   string(APPEND lock_contents "]\n")

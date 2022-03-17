@@ -1588,8 +1588,10 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
     set(ns_libraries_to_link)
 
     foreach(library ${BLIB_LIBRARIES_TO_LINK})
-      # Remove lib prefix from module name (e.g. libcore -> core)
-      string(REPLACE "lib" "" module_name "${library}")
+      remove_lib_prefix("${library}" module_name)
+
+      # Check if the module exists in the ns-3 modules list
+      # or if it is a 3rd-party library
       if(${module_name} IN_LIST ns3-all-enabled-modules)
         list(APPEND ns_libraries_to_link ${library})
       else()
@@ -2065,29 +2067,6 @@ or the src folder.
   endfunction()
 
 Then we check if the ns-3 modules required by the example are enabled to be built. 
-The ``if(EXISTS ${lib})`` skip external libraries which are listed with their absolute paths.
-
-.. sourcecode:: cmake
-
-  function(build_lib_example)
-    # ...   
-    # cmake-format: on
-    set(missing_dependencies)
-    foreach(lib ${BLIB_EXAMPLE_LIBRARIES_TO_LINK})
-      # skip check for ns-3 modules if its a path to a library
-      if(EXISTS ${lib})
-        continue()
-      endif()
-
-      # check if the example depends on disabled modules
-      string(REPLACE "lib" "" lib ${lib})
-      if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
-        list(APPEND missing_dependencies ${lib})
-      endif()
-    endforeach()
-    # ... 
-  endfunction()
-
 If the list ``missing_dependencies`` is empty, we create the example. Otherwise, we skip it.
 The example can be linked to the current module (``${lib${BLIB_EXAMPLE_LIBNAME}}``) and 
 other libraries to link (``${BLIB_EXAMPLE_LIBRARIES_TO_LINK}``) and optionally to the visualizer
@@ -2100,7 +2079,8 @@ a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` 
 .. sourcecode:: cmake
 
   function(build_lib_example)
-    # ...   
+    # ...
+    check_for_missing_libraries(missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}")
     if(NOT missing_dependencies)
       # Create shared library with sources and headers
       add_executable(
