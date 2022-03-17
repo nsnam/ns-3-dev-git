@@ -282,6 +282,17 @@ endfunction()
 macro(process_options)
   clear_global_cached_variables()
 
+  # check if the include directory exists in the output directory
+  if((EXISTS ${CMAKE_OUTPUT_DIRECTORY}) AND (EXISTS ${CMAKE_OUTPUT_DIRECTORY}/include))
+    # if it does, delete it to make sure we only have relevant header stubs
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
+      set(delete_directory_cmd rm -R) # introduced in CMake 3.17
+    else()
+      set(delete_directory_cmd remove_directory) # deprecated in CMake 3.17
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} -E ${delete_directory_cmd} ${CMAKE_OUTPUT_DIRECTORY}/include)
+  endif()
+
   # make sure to default to RelWithDebInfo if no build type is specified
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "default" CACHE STRING "Choose the type of build."
@@ -1294,9 +1305,33 @@ endfunction()
 
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
+  set(batch_symlinks)
   foreach(header ${headers})
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/ COPYONLY)
+    # Copy header to output directory on changes -> too darn slow
+    #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/ COPYONLY)
+
+    get_filename_component(
+            header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header}
+            NAME
+    )
+    # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a fallback
+    if (WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))
+      # Create a stub header in the output directory, including the real header inside their
+      # respective module
+
+      file(WRITE ${outputdir}/${header_name} "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${header}\"\n")
+    else()
+      # Create a symlink in the output directory to the original header
+      # Calling execute_process for each symlink is too slow too, so we create a batch with all headers
+      #execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name})
+      set(batch_symlinks ${batch_symlinks} COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name})
+    endif()
   endforeach()
+
+  # Create all symlinks in a single call if there is a symlink to be done
+  if(batch_symlinks)
+    execute_process(${batch_symlinks})
+  endif()
 endfunction(copy_headers_before_building_lib)
 
 function(remove_lib_prefix prefixed_library library)

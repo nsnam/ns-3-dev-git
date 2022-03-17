@@ -23,13 +23,13 @@
 
 #include <vector>
 
-#include "internet-stack-helper.h"
-#include "point-to-point-helper.h"
-#include "ipv4-address-helper.h"
-#include "ipv6-address-helper.h"
-#include "ipv4-interface-container.h"
-#include "ipv6-interface-container.h"
-#include "net-device-container.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv6-address-helper.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/ipv6-interface-container.h"
+#include "ns3/net-device-container.h"
 
 namespace ns3 {
 
