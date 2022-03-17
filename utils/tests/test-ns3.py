@@ -56,6 +56,11 @@ def run_ns3(args, env=None):
     @param env: environment variables dictionary
     @return tuple containing (error code, stdout and stderr)
     """
+    if "clean" in args:
+        possible_leftovers = ["contrib/borked"]
+        for leftover in possible_leftovers:
+            if os.path.exists(leftover):
+                shutil.rmtree(leftover, ignore_errors=True)
     return run_program(ns3_script, args, python=True, env=env)
 
 
@@ -176,6 +181,8 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
         @return None
         """
         for root, dirs, files in os.walk(ns3_path):
+            if "gitlab-ci-local" in root:
+                continue
             for name in files:
                 if name.endswith(".cc"):
                     path = os.path.join(root, name)
@@ -914,6 +921,98 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3(non_mpi_command, env={"MPI_CI": "1"})
         self.assertEqual(return_code, 0)
         self.assertIn("echo %s" % sample_simulator_path, stdout)
+
+    def test_15_InvalidLibrariesToLink(self):
+        """!
+        Test if CMake and ns3 fail in the expected ways when:
+        - examples from modules or general examples fail if they depend on a
+        library with a name shorter than 4 characters or are disabled when
+        a library is non-existant
+        - a module library passes the configuration but fails to build due to
+        a missing library
+        @return None
+        """
+        os.makedirs("contrib/borked", exist_ok=True)
+        os.makedirs("contrib/borked/examples", exist_ok=True)
+
+        # Test if configuration succeeds and building the module library fails
+        with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
+            f.write("")
+        for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
+            with open("contrib/borked/CMakeLists.txt", "w") as f:
+                f.write("""
+                    build_lib(
+                        LIBNAME borked
+                        SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
+                        LIBRARIES_TO_LINK ${libcore} %s
+                    )
+                """ % invalid_or_non_existant_library)
+
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
+                self.assertEqual(return_code, 0)
+            elif invalid_or_non_existant_library in ["fee", "fi"]:
+                self.assertEqual(return_code, 1)
+                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+            else:
+                pass
+
+            return_code, stdout, stderr = run_ns3("build borked")
+            if invalid_or_non_existant_library in [""]:
+                self.assertEqual(return_code, 0)
+            elif invalid_or_non_existant_library in ["fee", "fi"]:
+                self.assertEqual(return_code, 2)  # should fail due to invalid library name
+                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+            elif invalid_or_non_existant_library in ["fogh", "calibre"]:
+                self.assertEqual(return_code, 2)  # should fail due to missing library
+                self.assertIn("cannot find -l%s" % invalid_or_non_existant_library, stderr)
+            else:
+                pass
+
+        # Now test if the example can be built with:
+        # - no additional library (should work)
+        # - invalid library names (should fail to configure)
+        # - valid library names but inexistent libraries (should not create a target)
+        with open("contrib/borked/CMakeLists.txt", "w") as f:
+            f.write("""
+                    build_lib(
+                        LIBNAME borked
+                        SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
+                        LIBRARIES_TO_LINK ${libcore}
+                    )
+                    """)
+        for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
+            with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
+                f.write("""
+                build_lib_example(
+                    NAME borked-example
+                    SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
+                    LIBRARIES_TO_LINK ${libborked} %s
+                )
+                """ % invalid_or_non_existant_library)
+
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
+                self.assertEqual(return_code, 0)  # should be able to configure
+            elif invalid_or_non_existant_library in ["fee", "fi"]:
+                self.assertEqual(return_code, 1)  # should fail to even configure
+                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+            else:
+                pass
+
+            return_code, stdout, stderr = run_ns3("build borked-example")
+            if invalid_or_non_existant_library in [""]:
+                self.assertEqual(return_code, 0)  # should be able to build
+            elif invalid_or_non_existant_library in ["fee", "fi"]:
+                self.assertEqual(return_code, 2)  # should fail due to missing configuration
+                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+            elif invalid_or_non_existant_library in ["fogh", "calibre"]:
+                self.assertEqual(return_code, 1)  # should fail to find target
+                self.assertIn("Target to build does not exist: borked-example", stdout)
+            else:
+                pass
+
+        shutil.rmtree("contrib/borked", ignore_errors=True)
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):

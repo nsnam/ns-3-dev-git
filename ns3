@@ -344,7 +344,8 @@ def check_lock_data(output_directory):
     ns3_modules_bindings = []
     ns3_modules = None
 
-    build_info = {"BUILD_PROFILE": None,
+    build_info = {"NS3_ENABLED_MODULES": None,
+                  "BUILD_PROFILE": None,
                   "VERSION": None,
                   "ENABLE_EXAMPLES": False,
                   "ENABLE_SUDO": False,
@@ -354,6 +355,7 @@ def check_lock_data(output_directory):
         exec(open(lock_file).read(), globals(), build_info)
         ns3_modules = build_info["NS3_ENABLED_MODULES"]
         if ns3_modules:
+            ns3_modules.extend(build_info["NS3_ENABLED_CONTRIBUTED_MODULES"])
             if build_info["ENABLE_TESTS"]:
                 ns3_modules_tests = [x + "-test" for x in ns3_modules]
             if build_info["ENABLE_PYTHON_BINDINGS"]:

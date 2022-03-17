@@ -1299,6 +1299,39 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
   endforeach()
 endfunction(copy_headers_before_building_lib)
 
+function(remove_lib_prefix prefixed_library library)
+  # Check if we still have something remaining
+  # after removing the "lib" prefix
+  string(LENGTH ${prefixed_library} len)
+  if(${len} LESS 4)
+    message(FATAL_ERROR "Invalid library name: ${prefixed_library}")
+  endif()
+
+  # Remove lib prefix from module name (e.g. libcore -> core)
+  string(SUBSTRING "${prefixed_library}" 3 -1 lib)
+  set(${library} ${lib} PARENT_SCOPE)
+endfunction()
+
+function(check_for_missing_libraries output_variable_name libraries)
+  set(missing_dependencies)
+  foreach(lib ${libraries})
+    # skip check for ns-3 modules if its a path to a library
+    if(EXISTS ${lib})
+      continue()
+    endif()
+
+    # check if the example depends on disabled modules
+    remove_lib_prefix("${lib}" lib)
+
+    # Check if the module exists in the ns-3 modules list
+    # or if it is a 3rd-party library
+    if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
+      list(APPEND missing_dependencies ${lib})
+    endif()
+  endforeach()
+  set(${output_variable_name} ${missing_dependencies} PARENT_SCOPE)
+endfunction()
+
 # Import macros used for modules and define specialized versions for src modules
 include(build-support/custom-modules/ns3-module-macros.cmake)
 
@@ -1314,19 +1347,7 @@ macro(build_example)
     "EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
   )
 
-  set(missing_dependencies)
-  foreach(lib ${EXAMPLE_LIBRARIES_TO_LINK})
-    # skip check for ns-3 modules if its a path to a library
-    if(EXISTS ${lib})
-      continue()
-    endif()
-
-    # check if the example depends on disabled modules
-    string(REPLACE "lib" "" lib ${lib})
-    if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
-      list(APPEND missing_dependencies ${lib})
-    endif()
-  endforeach()
+  check_for_missing_libraries(missing_dependencies "${EXAMPLE_LIBRARIES_TO_LINK}")
 
   if(NOT missing_dependencies)
     # Create shared library with sources and headers

@@ -114,8 +114,10 @@ function(build_lib)
   set(ns_libraries_to_link)
 
   foreach(library ${BLIB_LIBRARIES_TO_LINK})
-    # Remove lib prefix from module name (e.g. libcore -> core)
-    string(REPLACE "lib" "" module_name "${library}")
+    remove_lib_prefix("${library}" module_name)
+
+    # Check if the module exists in the ns-3 modules list
+    # or if it is a 3rd-party library
     if(${module_name} IN_LIST ns3-all-enabled-modules)
       list(APPEND ns_libraries_to_link ${library})
     else()
@@ -483,20 +485,7 @@ function(build_lib_example)
   get_filename_component(FOLDER ${FOLDER} DIRECTORY)
 
   # cmake-format: on
-  set(missing_dependencies)
-  foreach(lib ${BLIB_EXAMPLE_LIBRARIES_TO_LINK})
-    # skip check for ns-3 modules if its a path to a library
-    if(EXISTS ${lib})
-      continue()
-    endif()
-
-    # check if the example depends on disabled modules
-    string(REPLACE "lib" "" lib ${lib})
-    if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
-      list(APPEND missing_dependencies ${lib})
-    endif()
-  endforeach()
-
+  check_for_missing_libraries(missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}")
   if(NOT missing_dependencies)
     # Create shared library with sources and headers
     add_executable(
