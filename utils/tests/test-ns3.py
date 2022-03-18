@@ -939,7 +939,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Test if configuration succeeds and building the module library fails
         with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
             f.write("")
-        for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
+        for invalid_or_non_existant_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/CMakeLists.txt", "w") as f:
                 f.write("""
                         build_lib(
@@ -950,9 +950,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         """ % invalid_or_non_existant_library)
 
             return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples")
-            if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
+            if invalid_or_non_existant_library in ["", "gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 0)
-            elif invalid_or_non_existant_library in ["fee", "fi"]:
+            elif invalid_or_non_existant_library in ["lib"]:
                 self.assertEqual(return_code, 1)
                 self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
             else:
@@ -961,10 +961,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             return_code, stdout, stderr = run_ns3("build borked")
             if invalid_or_non_existant_library in [""]:
                 self.assertEqual(return_code, 0)
-            elif invalid_or_non_existant_library in ["fee", "fi"]:
+            elif invalid_or_non_existant_library in ["lib"]:
                 self.assertEqual(return_code, 2)  # should fail due to invalid library name
                 self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
-            elif invalid_or_non_existant_library in ["fogh", "calibre"]:
+            elif invalid_or_non_existant_library in ["gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 2)  # should fail due to missing library
                 self.assertIn("cannot find -l%s" % invalid_or_non_existant_library, stderr)
             else:
@@ -982,7 +982,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         LIBRARIES_TO_LINK ${libcore}
                     )
                     """)
-        for invalid_or_non_existant_library in ["", "fee", "fi", "fogh", "calibre"]:
+        for invalid_or_non_existant_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
                 f.write("""
                         build_lib_example(
@@ -993,9 +993,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         """ % invalid_or_non_existant_library)
 
             return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-            if invalid_or_non_existant_library in ["", "fogh", "calibre"]:
+            if invalid_or_non_existant_library in ["", "gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 0)  # should be able to configure
-            elif invalid_or_non_existant_library in ["fee", "fi"]:
+            elif invalid_or_non_existant_library in ["lib"]:
                 self.assertEqual(return_code, 1)  # should fail to even configure
                 self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
             else:
@@ -1004,10 +1004,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             return_code, stdout, stderr = run_ns3("build borked-example")
             if invalid_or_non_existant_library in [""]:
                 self.assertEqual(return_code, 0)  # should be able to build
-            elif invalid_or_non_existant_library in ["fee", "fi"]:
+            elif invalid_or_non_existant_library in ["libf"]:
                 self.assertEqual(return_code, 2)  # should fail due to missing configuration
                 self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
-            elif invalid_or_non_existant_library in ["fogh", "calibre"]:
+            elif invalid_or_non_existant_library in ["gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 1)  # should fail to find target
                 self.assertIn("Target to build does not exist: borked-example", stdout)
             else:
@@ -1015,7 +1015,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         shutil.rmtree("contrib/borked", ignore_errors=True)
 
-    def test_15_LibrariesContainingLib(self):
+    def test_16_LibrariesContainingLib(self):
         """!
         Test if CMake can properly handle modules containing "lib",
         which is used internally as a prefix for module libraries

@@ -1300,15 +1300,26 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
 endfunction(copy_headers_before_building_lib)
 
 function(remove_lib_prefix prefixed_library library)
-  # Check if we still have something remaining after removing the "lib" prefix
-  string(LENGTH ${prefixed_library} len)
-  if(${len} LESS 4)
-    message(FATAL_ERROR "Invalid library name: ${prefixed_library}")
+  # Check if there is a lib prefix
+  string(FIND "${prefixed_library}" "lib" lib_pos)
+
+  # If there is a lib prefix, try to remove it
+  if(${lib_pos} EQUAL 0)
+    # Check if we still have something remaining
+    # after removing the "lib" prefix
+    string(LENGTH ${prefixed_library} len)
+    if(${len} LESS 4)
+      message(FATAL_ERROR "Invalid library name: ${prefixed_library}")
+    endif()
+
+    # Remove lib prefix from module name (e.g. libcore -> core)
+    string(SUBSTRING "${prefixed_library}" 3 -1 unprefixed_library)
+  else()
+    set(unprefixed_library ${prefixed_library})
   endif()
 
-  # Remove lib prefix from module name (e.g. libcore -> core)
-  string(SUBSTRING "${prefixed_library}" 3 -1 lib)
-  set(${library} ${lib} PARENT_SCOPE)
+  # Save the unprefixed library name to the parent scope
+  set(${library} ${unprefixed_library} PARENT_SCOPE)
 endfunction()
 
 function(check_for_missing_libraries output_variable_name libraries)
