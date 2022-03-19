@@ -226,7 +226,8 @@ public:
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
    * \param width the channel width in MHz (use 0 to leave it unspecified)
-   * \param standard the standard
+   * \param standard the standard (use WIFI_STANDARD_UNSPECIFIED not to check whether a
+   *                 channel is suitable for a specific standard)
    * \param band the PHY band
    * \param start an iterator pointing to the channel to start the search with
    * \return an iterator pointing to the found channel, if any, or to past-the-end

@@ -347,7 +347,7 @@ WifiPhyOperatingChannel::FindFirst (uint8_t number, uint16_t frequency, uint16_t
         {
           return false;
         }
-      if (std::get<3> (channel) != GetFrequencyChannelType (standard))
+      if (standard != WIFI_STANDARD_UNSPECIFIED && std::get<3> (channel) != GetFrequencyChannelType (standard))
         {
           return false;
         }
@@ -359,12 +359,12 @@ WifiPhyOperatingChannel::FindFirst (uint8_t number, uint16_t frequency, uint16_t
     };
 
   // Do not search for a channel matching the specified criteria if the given PHY band
-  // is not allowed for the given standard or the given channel width is not allowed
-  // for the given standard
+  // is not allowed for the given standard (if any) or the given channel width is not
+  // allowed for the given standard (if any)
   if (const auto standardIt = wifiStandards.find (standard);
-      standardIt == wifiStandards.cend ()
-      || std::find (standardIt->second.cbegin (), standardIt->second.cend (), band) == standardIt->second.cend ()
-      || width > GetMaximumChannelWidth (standard))
+      standardIt != wifiStandards.cend ()
+      && (std::find (standardIt->second.cbegin (), standardIt->second.cend (), band) == standardIt->second.cend ()
+          || width > GetMaximumChannelWidth (standard)))
     {
       return m_frequencyChannels.cend ();
     }
