@@ -1043,13 +1043,21 @@ project configuration. To use the tracer, call cmake directly from a clean CMake
 
 .. sourcecode:: console
 
-  ~/ns-3-dev/cmake-cache$ cmake .. --profiling-format=google-trace --profiling-output=trace.log
+  ~/ns-3-dev/cmake-cache$ cmake .. --profiling-format=google-trace --profiling-output=../cmake_performance_trace.log
+
+
+Or using the ns3 wrapper:
+
+.. sourcecode:: console
+
+  ~/ns-3-dev$ ./ns3 configure --trace-performance
+
 
 .. _Perfetto UI: https://ui.perfetto.dev/
 
-The ``trace.log`` file will be generated, and can be visualized using the ``about:tracing`` panel
-available in Chromium-based browsers or compatible trace viewer such as 
-`Perfetto UI`_.
+A ``cmake_performance_trace.log`` file will be generated in the ns-3-dev directory. 
+The tracing results can be visualized using the ``about:tracing`` panel available
+in Chromium-based browsers or a compatible trace viewer such as `Perfetto UI`_.
 
 After opening the trace file, select the traced process and click on
 any of the blocks to inspect the different stacks and find hotspots.
@@ -1063,9 +1071,25 @@ to identify hotspots and focus on trying to optimize what matters most.
 .. _issue #588: https://gitlab.com/nsnam/ns-3-dev/-/issues/588
 
 The trace below was generated during the discussion of `issue #588`_,
-while using a HDD, which adds significant overhead to the CMake 
-configuration step.
+while investigating the long configuration times, especially when using HDDs.
+
+The single largest contributor was CMake's ``configure_file``, used to keeping
+up-to-date copies of headers in the output directory.
 
 .. image:: figures/perfetto-trace-cmake.png
 
+
+.. _MR911: https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/911
+
+In `MR911`_, alternatives such as stub headers that include the original header
+files, keeping them in their respective modules, and symlinking headers to the
+output directory were used to reduce the configuration overhead. 
+
+Note: when testing I/O bottlenecks, you may want to drop filesystem caches,
+otherwise the cache may hide the issues. In Linux, the caches can be cleared
+using the following command:
+
+.. sourcecode:: console
+
+  ~/ns-3-dev$ sudo sysctl vm.drop_caches=3
 

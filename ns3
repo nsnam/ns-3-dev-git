@@ -171,6 +171,9 @@ def parse_args(argv):
     parser_configure.add_argument('--quiet',
                                   help="Don't print task lines, i.e. messages saying which tasks are being executed.",
                                   action="store_true", default=None, dest="configure_quiet")
+    parser_configure.add_argument('--trace-performance',
+                                  help="Generate a performance trace log for the CMake configuration",
+                                  action="store_true", default=None, dest="trace_cmake_perf")
 
     parser_clean = sub_parser.add_parser('clean', help='Removes files created by ns3')
     parser_clean.add_argument('clean', action="store_true", default=False)
@@ -565,8 +568,13 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
 
     # Try to set specified generator (will probably fail if there is an old cache)
     if args.G:
-        cmake_args.append("-G")
-        cmake_args.append(args.G)
+        cmake_args.extend(["-G", args.G])
+
+    if args.trace_cmake_perf:
+        cmake_performance_trace = os.path.join(os.path.relpath(ns3_path, current_cmake_cache_folder),
+                                               "cmake_performance_trace.log")
+        cmake_args.extend(["--profiling-format=google-trace",
+                           "--profiling-output="+cmake_performance_trace])
 
     # Append CMake flags passed using the -- separator
     cmake_args.extend(args.program_args)

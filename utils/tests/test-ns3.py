@@ -1057,6 +1057,17 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         shutil.rmtree("contrib/calibre", ignore_errors=True)
 
+    def test_17_CMakePerformanceTracing(self):
+        """!
+        Test if CMake performance tracing works and produces the
+        cmake_performance_trace.log file
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("configure --trace-performance")
+        self.assertEqual(return_code, 0)
+        self.assertIn("--profiling-format=google-trace --profiling-output=../cmake_performance_trace.log", stdout)
+        self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake_performance_trace.log")))
+
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
