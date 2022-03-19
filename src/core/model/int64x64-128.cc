@@ -57,7 +57,7 @@ output_sign (const int128_t sa,
   bool negB = sb < 0;
   ua = negA ? -sa : sa;
   ub = negB ? -sb : sb;
-  return (negA && !negB) || (!negA && negB);
+  return negA != negB;
 }
 
 void
