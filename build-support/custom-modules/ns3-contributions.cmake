@@ -30,8 +30,8 @@ macro(process_contribution contribution_list)
       message(STATUS "Processing ${folder}")
       add_subdirectory(${folder})
     else()
-      message(
-        STATUS "Skipping ${folder} : it does not contain a CMakeLists.txt file"
+      message(${HIGHLIGHTED_STATUS}
+              "Skipping ${folder} : it does not contain a CMakeLists.txt file"
       )
     endif()
   endforeach()

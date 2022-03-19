@@ -22,7 +22,10 @@ if((NOT
    AND (NOT
         ${click_FOUND})
 )
-  message(STATUS "Skipping src/click")
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "Skipping src/click"
+  )
   return()
 endif()
 

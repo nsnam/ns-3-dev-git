@@ -21,7 +21,10 @@ if((NOT
    AND (NOT
         ${openflow_FOUND})
 )
-  message(STATUS "Skipping src/openflow")
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "Skipping src/openflow"
+  )
   return()
 endif()
 

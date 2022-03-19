@@ -1125,6 +1125,9 @@ def main():
     # Refuse to run with sudo
     refuse_run_as_root()
 
+    # Enable colorized output for CMake and GCC/Clang
+    os.environ["CLICOLOR"] = "1"
+
     # Parse arguments
     args = parse_args(sys.argv[1:])
     atexit.register(exit_handler, dry_run=args.dry_run)

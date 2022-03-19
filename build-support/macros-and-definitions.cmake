@@ -36,6 +36,10 @@ option(NS3_ENABLE_SUDO
        "Set executables ownership to root and enable the SUID flag" OFF
 )
 
+# Replace default CMake messages (logging) with custom colored messages as early
+# as possible
+include(${PROJECT_SOURCE_DIR}/build-support/3rd-party/colored-messages.cmake)
+
 # WSLv1 doesn't support tap features
 if(EXISTS "/proc/version")
   file(READ "/proc/version" CMAKE_LINUX_DISTRO)
@@ -171,6 +175,12 @@ if((NOT CLANG) AND ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
   set(CLANG TRUE)
 endif()
 
+if(CLANG)
+  if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")
+    add_definitions(-fcolor-diagnostics) # colorize clang++ output
+  endif()
+endif()
+
 set(GCC FALSE)
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${GNU_MinVersion})
@@ -181,6 +191,9 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
   endif()
   set(GCC TRUE)
   add_definitions(-fno-semantic-interposition)
+  if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")
+    add_definitions(-fdiagnostics-color=always) # colorize g++ output
+  endif()
 endif()
 unset(below_minimum_msg)
 
@@ -539,7 +552,7 @@ macro(process_options)
     if(${SQLite3_FOUND})
       set(ENABLE_SQLITE True)
     else()
-      message(STATUS "SQLite was not found")
+      message(${HIGHLIGHTED_STATUS} "SQLite was not found")
     endif()
   endif()
 
@@ -616,17 +629,23 @@ macro(process_options)
   if(${NS3_GTK3})
     find_package(HarfBuzz QUIET)
     if(NOT ${HarfBuzz_FOUND})
-      message(STATUS "Harfbuzz is required by GTK3 and was not found.")
+      message(${HIGHLIGHTED_STATUS}
+              "Harfbuzz is required by GTK3 and was not found."
+      )
     else()
       set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "")
       find_package(GTK3 QUIET)
       unset(CMAKE_SUPPRESS_DEVELOPER_WARNINGS CACHE)
       if(NOT ${GTK3_FOUND})
-        message(STATUS "GTK3 was not found. Continuing without it.")
+        message(${HIGHLIGHTED_STATUS}
+                "GTK3 was not found. Continuing without it."
+        )
       else()
         if(${GTK3_VERSION} VERSION_LESS 3.22)
           set(GTK3_FOUND FALSE)
-          message(STATUS "GTK3 found with incompatible version ${GTK3_VERSION}")
+          message(${HIGHLIGHTED_STATUS}
+                  "GTK3 found with incompatible version ${GTK3_VERSION}"
+          )
         else()
           message(STATUS "GTK3 was found.")
         endif()
@@ -648,7 +667,9 @@ macro(process_options)
   else()
     find_package(LibXml2 QUIET)
     if(NOT ${LIBXML2_FOUND})
-      message(STATUS "LibXML2 was not found. Continuing without it.")
+      message(${HIGHLIGHTED_STATUS}
+              "LibXML2 was not found. Continuing without it."
+      )
     else()
       message(STATUS "LibXML2 was found.")
       add_definitions(-DHAVE_LIBXML2)
@@ -719,12 +740,14 @@ macro(process_options)
     if(${Python3_Development_FOUND})
       set(Python3_FOUND TRUE)
     else()
-      message(STATUS "Python: development libraries were not found")
+      message(${HIGHLIGHTED_STATUS}
+              "Python: development libraries were not found"
+      )
     endif()
   else()
     message(
-      STATUS
-        "Python: an incompatible version of Python was found, python bindings will be disabled"
+      ${HIGHLIGHTED_STATUS}
+      "Python: an incompatible version of Python was found, python bindings will be disabled"
     )
   endif()
 
@@ -732,15 +755,15 @@ macro(process_options)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(
-        STATUS
-          "Bindings: python bindings require Python, but it could not be found"
+        ${HIGHLIGHTED_STATUS}
+        "Bindings: python bindings require Python, but it could not be found"
       )
     else()
       check_python_packages("pybindgen" missing_packages)
       if(missing_packages)
         message(
-          STATUS
-            "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
+          ${HIGHLIGHTED_STATUS}
+          "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
         )
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
@@ -757,8 +780,8 @@ macro(process_options)
   if(${NS3_SCAN_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(
-        STATUS
-          "Bindings: scanning python bindings require Python, but it could not be found"
+        ${HIGHLIGHTED_STATUS}
+        "Bindings: scanning python bindings require Python, but it could not be found"
       )
     else()
       # Check if pybindgen, pygccxml, cxxfilt and castxml are installed
@@ -779,8 +802,8 @@ macro(process_options)
       # If packages were not found, print message
       if(missing_packages)
         message(
-          STATUS
-            "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
+          ${HIGHLIGHTED_STATUS}
+          "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
         )
       else()
         set(ENABLE_SCAN_PYTHON_BINDINGS ON)
@@ -794,7 +817,7 @@ macro(process_options)
   set(ENABLE_VISUALIZER FALSE)
   if(${NS3_VISUALIZER})
     if((NOT ${ENABLE_PYTHON_BINDINGS}) OR (NOT ${Python3_FOUND}))
-      message(STATUS "Visualizer requires Python bindings")
+      message(${HIGHLIGHTED_STATUS} "Visualizer requires Python bindings")
     else()
       set(ENABLE_VISUALIZER TRUE)
     endif()
@@ -803,8 +826,7 @@ macro(process_options)
   if(${NS3_COVERAGE} AND (NOT ${ENABLE_TESTS} OR NOT ${ENABLE_EXAMPLES}))
     message(
       FATAL_ERROR
-        "Code coverage requires examples and tests.\n"
-        "Try reconfiguring CMake with -DNS3_TESTS=ON -DNS3_EXAMPLES=ON"
+        "Code coverage requires examples and tests.\nTry reconfiguring CMake with -DNS3_TESTS=ON -DNS3_EXAMPLES=ON"
     )
   endif()
 
@@ -834,7 +856,7 @@ macro(process_options)
   if(${NS3_MPI})
     find_package(MPI QUIET)
     if(NOT ${MPI_FOUND})
-      message(STATUS "MPI was not found. Continuing without it.")
+      message(${HIGHLIGHTED_STATUS} "MPI was not found. Continuing without it.")
     else()
       message(STATUS "MPI was found.")
       add_definitions(-DNS3_MPI)
@@ -862,7 +884,7 @@ macro(process_options)
   if(${NS3_GSL})
     find_package(GSL QUIET)
     if(NOT ${GSL_FOUND})
-      message(STATUS "GSL was not found. Continuing without it.")
+      message(${HIGHLIGHTED_STATUS} "GSL was not found. Continuing without it.")
     else()
       message(STATUS "GSL was found.")
       add_definitions(-DHAVE_GSL)
@@ -873,7 +895,9 @@ macro(process_options)
     find_package(Gnuplot-ios) # Not sure what package would contain the correct
                               # header/library
     if(NOT ${GNUPLOT_FOUND})
-      message(STATUS "GNUPLOT was not found. Continuing without it.")
+      message(${HIGHLIGHTED_STATUS}
+              "GNUPLOT was not found. Continuing without it."
+      )
     else()
       message(STATUS "GNUPLOT was found.")
       include_directories(${GNUPLOT_INCLUDE_DIRS})
@@ -888,8 +912,8 @@ macro(process_options)
   check_deps("" "doxygen;dot;dia" doxygen_docs_missing_deps)
   if(doxygen_docs_missing_deps)
     message(
-      STATUS
-        "docs: doxygen documentation not enabled due to missing dependencies: ${doxygen_docs_missing_deps}"
+      ${HIGHLIGHTED_STATUS}
+      "docs: doxygen documentation not enabled due to missing dependencies: ${doxygen_docs_missing_deps}"
     )
     # cmake-format: off
     set(doxygen_missing_msg
@@ -992,8 +1016,8 @@ macro(process_options)
   )
   if(sphinx_docs_missing_deps)
     message(
-      STATUS
-        "docs: sphinx documentation not enabled due to missing dependencies: ${sphinx_docs_missing_deps}"
+      ${HIGHLIGHTED_STATUS}
+      "docs: sphinx documentation not enabled due to missing dependencies: ${sphinx_docs_missing_deps}"
     )
     # cmake-format: off
     set(sphinx_missing_msg
@@ -1058,7 +1082,9 @@ macro(process_options)
     if(HAVE_UINT128_T OR HAVE___UINT128_T)
       set(INT64X64_USE_128 TRUE)
     else()
-      message(STATUS "Int128 was not found. Falling back to Cairo.")
+      message(${HIGHLIGHTED_STATUS}
+              "Int128 was not found. Falling back to Cairo."
+      )
       set(NS3_INT64X64 "CAIRO")
     endif()
   endif()
@@ -1328,23 +1354,36 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
   set(batch_symlinks)
   foreach(header ${headers})
     # Copy header to output directory on changes -> too darn slow
-    #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/ COPYONLY)
+    # configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/
+    # COPYONLY)
 
     get_filename_component(
-            header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-            NAME
+      header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
     )
-    # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a fallback
-    if (WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))
-      # Create a stub header in the output directory, including the real header inside their
-      # respective module
+    # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a
+    # fallback
+    if(WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))
+      # Create a stub header in the output directory, including the real header
+      # inside their respective module
 
-      file(WRITE ${outputdir}/${header_name} "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${header}\"\n")
+      file(WRITE ${outputdir}/${header_name}
+           "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${header}\"\n"
+      )
     else()
-      # Create a symlink in the output directory to the original header
-      # Calling execute_process for each symlink is too slow too, so we create a batch with all headers
-      #execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name})
-      set(batch_symlinks ${batch_symlinks} COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/${header_name})
+      # Create a symlink in the output directory to the original header Calling
+      # execute_process for each symlink is too slow too, so we create a batch
+      # with all headers execute_process(COMMAND ${CMAKE_COMMAND} -E
+      # create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header}
+      # ${outputdir}/${header_name})
+      set(batch_symlinks
+          ${batch_symlinks}
+          COMMAND
+          ${CMAKE_COMMAND}
+          -E
+          create_symlink
+          ${CMAKE_CURRENT_SOURCE_DIR}/${header}
+          ${outputdir}/${header_name}
+      )
     endif()
   endforeach()
 
@@ -1506,8 +1545,8 @@ function(recursive_dependency module_name)
     set(contrib TRUE)
   else()
     set(cmakelists_content "")
-    message(
-      STATUS "The CMakeLists.txt file for module ${module_name} was not found."
+    message(${HIGHLIGHTED_STATUS}
+            "The CMakeLists.txt file for module ${module_name} was not found."
     )
   endif()
 
@@ -1992,7 +2031,7 @@ function(find_external_library)
   endif()
 
   if(NOT ${FIND_LIB_QUIET})
-    message(STATUS "${status_message}")
+    message(${HIGHLIGHTED_STATUS} "${status_message}")
   endif()
 endfunction()
 

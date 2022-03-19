@@ -16,8 +16,8 @@ foreach(libname ${libs})
     add_subdirectory(${libname})
   else()
     message(
-      STATUS
-        "Skipping src/${libname} : it does not contain a CMakeLists.txt file"
+      ${HIGHLIGHTED_STATUS}
+      "Skipping src/${libname} : it does not contain a CMakeLists.txt file"
     )
   endif()
 endforeach()

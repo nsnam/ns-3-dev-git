@@ -21,7 +21,10 @@ if((NOT
    OR (NOT
        ${brite_FOUND})
 )
-  message(STATUS "Skipping src/brite")
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "Skipping src/brite"
+  )
   return()
 endif()
 

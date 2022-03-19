@@ -45,6 +45,7 @@ option(NS3_CLANG_TIDY "Use clang-tidy static analysis" OFF)
 option(NS3_CLANG_TIMETRACE
        "Collect compilation statistics to analyze the build process" OFF
 )
+option(NS3_COLORED_OUTPUT "Colorize CMake messages" OFF)
 option(NS3_COVERAGE "Enable code coverage measurements and report generation"
        OFF
 )
