@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
-import atexit
 import argparse
+import atexit
 import glob
 import os
 import re
@@ -13,6 +13,7 @@ ns3_path = os.path.dirname(os.path.abspath(__file__))
 out_dir = os.sep.join([ns3_path, "build"])
 lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
 
+max_cpu_threads = max(1, os.cpu_count() - 1)
 print_buffer = ""
 run_verbose = True
 
@@ -55,8 +56,36 @@ def on_off_condition(args, cmake_flag, option_name):
     return cmake_arg
 
 
+def add_argument_to_subparsers(parsers: list,
+                               arguments: list,
+                               help_msg: str,
+                               dest: str,
+                               action="store_true",
+                               default_value=None):
+    # Instead of copying and pasting repeated arguments for each parser, we add them here
+    for subparser in parsers:
+        subparser_name = subparser.prog.replace("ns3", "").strip()
+        destination = ("%s_%s" % (subparser_name, dest)) if subparser_name else dest
+        subparser.add_argument(*arguments,
+                               help=help_msg,
+                               action=action,
+                               default=default_value,
+                               dest=destination)
+
+
 def parse_args(argv):
     parser = argparse.ArgumentParser(description="ns-3 wrapper for the CMake build system", add_help=False)
+
+    parser.add_argument('--help',
+                        help="Print a summary of available commands",
+                        action="store_true", default=None, dest="help")
+    # parser.add_argument('--docset',
+    #               help=(
+    #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
+    #                   'See Bugzilla 2196 for more details.'),
+    #               action="store_true", default=None,
+    #               dest="docset_build")
+
     sub_parser = parser.add_subparsers()
 
     parser_build = sub_parser.add_parser('build',
@@ -65,15 +94,6 @@ def parse_args(argv):
     parser_build.add_argument('build',
                               help='Build the entire project or the specified target and dependencies',
                               action="store", nargs='*', default=None)
-    parser_build.add_argument('--dry-run',
-                              help="Do not execute the commands",
-                              action="store_true", default=None, dest="build_dry_run")
-    parser_build.add_argument('-v', '--verbose',
-                              help="Print verbose build commands",
-                              action="store_true", default=None, dest="build_verbose")
-    parser_build.add_argument('--quiet',
-                              help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                              action="store_true", default=None, dest="build_quiet")
 
     parser_configure = sub_parser.add_parser('configure',
                                              help='Try "./ns3 configure --help" for more configuration options')
@@ -97,8 +117,8 @@ def parse_args(argv):
     # On-Off options
     # First positional is transformed into --enable-option --disable-option
     # Second positional is used for description "Enable %s" % second positional/"Disable %s" % second positional
-    # When an optional third positional is given, the second is used as is as the enable description
-    # and the third is used as is as the disable description
+    # When an optional third positional is given, the second is used as is as the 'enable' description
+    # and the third is used as is as the 'disable' description
     on_off_options = [
         ("asserts", "the asserts regardless of the compile mode"),
         ("des-metrics", "Logging all events in a json file with the name of the executable "
@@ -116,13 +136,13 @@ def parse_args(argv):
         ("tests", "the ns-3 tests"),
         ("sanitizers", "address, memory leaks and undefined behavior sanitizers"),
         ("static", "Build a single static library with all ns-3",
-                   "Restore the shared libraries"
+         "Restore the shared libraries"
          ),
         ("sudo", "use of sudo to setup suid bits on ns3 executables."),
         ("verbose", "printing of additional build system messages"),
         ("warnings", "compiler warnings"),
         ("werror", "Treat compiler warnings as errors",
-                   "Treat compiler warnings as warnings"
+         "Treat compiler warnings as warnings"
          ),
     ]
     for on_off_option in on_off_options:
@@ -165,21 +185,12 @@ def parse_args(argv):
     parser_configure.add_argument('--prefix',
                                   help='Target output directory to install',
                                   action="store", default=None)
-    parser_configure.add_argument('--dry-run',
-                                  help="Do not execute the commands",
-                                  action="store_true", default=None, dest="configure_dry_run")
-    parser_configure.add_argument('--quiet',
-                                  help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                                  action="store_true", default=None, dest="configure_quiet")
     parser_configure.add_argument('--trace-performance',
                                   help="Generate a performance trace log for the CMake configuration",
                                   action="store_true", default=None, dest="trace_cmake_perf")
 
     parser_clean = sub_parser.add_parser('clean', help='Removes files created by ns3')
     parser_clean.add_argument('clean', action="store_true", default=False)
-    parser_clean.add_argument('--dry-run',
-                              help="Do not execute the commands",
-                              action="store_true", default=None, dest="clean_dry_run")
 
     parser_install = sub_parser.add_parser('install', help='Install ns-3')
     parser_install.add_argument('install', action="store_true", default=False)
@@ -215,20 +226,10 @@ def parse_args(argv):
     parser_run.add_argument('--vis', '--visualize',
                             help='Modify --run arguments to enable the visualizer',
                             action="store_true", dest="visualize", default=None)
-    parser_run.add_argument('--dry-run',
-                            help="Do not execute the commands",
-                            action="store_true", default=None, dest="run_dry_run")
     parser_run.add_argument('--enable-sudo',
                             help='Use sudo to setup suid bits on ns3 executables.',
                             dest='enable_sudo', action='store_true',
                             default=False)
-    parser_run.add_argument('-v', '--verbose',
-                            help='Print which commands were executed',
-                            dest='run_verbose', action='store_true',
-                            default=False)
-    parser_run.add_argument('--quiet',
-                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                             action="store_true", default=None, dest="run_quiet")
 
     parser_shell = sub_parser.add_parser('shell',
                                          help='Try "./ns3 shell --help" for more runtime options')
@@ -243,23 +244,6 @@ def parse_args(argv):
                              choices=["manual", "models", "tutorial", "contributing",
                                       "sphinx", "doxygen-no-build", "doxygen", "all"],
                              action="store", type=str, default=None)
-    parser_docs.add_argument('--quiet',
-                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                             action="store_true", default=None, dest="docs_quiet")
-
-    parser.add_argument('-j', '--jobs',
-                        help='Set number of parallel jobs',
-                        action='store', type=int, dest="jobs", default=max(1, os.cpu_count() - 1))
-    parser.add_argument('--dry-run',
-                        help="Do not execute the commands",
-                        action="store_true", default=None, dest="dry_run")
-
-    parser.add_argument('--quiet',
-                        help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                        action="store_true", default=None, dest="quiet")
-    parser.add_argument('--help',
-                        help="Print a summary of available commands",
-                        action="store_true", default=None, dest="help")
 
     parser_show = sub_parser.add_parser('show',
                                         help='Try "./ns3 show --help" for more runtime options')
@@ -267,19 +251,30 @@ def parse_args(argv):
                              help='Print build profile type, ns-3 version or current configuration',
                              choices=["profile", "version", "config"],
                              action="store", type=str, default=None)
-    parser_show.add_argument('--dry-run',
-                             help="Do not execute the commands",
-                             action="store_true", default=None, dest="show_dry_run")
-    parser_show.add_argument('--quiet',
-                             help="Don't print task lines, i.e. messages saying which tasks are being executed.",
-                             action="store_true", default=None, dest="show_quiet")
 
-    # parser.add_argument('--docset',
-    #               help=(
-    #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
-    #                   'See Bugzilla 2196 for more details.'),
-    #               action="store_true", default=None,
-    #               dest="docset_build")
+    add_argument_to_subparsers(
+        [parser, parser_build, parser_configure, parser_clean, parser_docs, parser_run, parser_show],
+        ["--dry-run"],
+        help_msg="Do not execute the commands.",
+        dest="dry_run")
+
+    add_argument_to_subparsers([parser, parser_build, parser_run],
+                               ['-j', '--jobs'],
+                               help_msg="Set number of parallel jobs.",
+                               dest="jobs",
+                               action="store",
+                               default_value=max_cpu_threads)
+
+    add_argument_to_subparsers([parser, parser_build, parser_configure, parser_run, parser_show],
+                               ["--quiet"],
+                               help_msg="Don't print task lines, i.e. messages saying which tasks are being executed.",
+                               dest="quiet")
+
+    add_argument_to_subparsers([parser, parser_build, parser_configure, parser_docs, parser_run],
+                               ['-v', '--verbose'],
+                               help_msg='Print which commands were executed',
+                               dest='verbose',
+                               default_value=False)
 
     # Parse known arguments and separate from unknown arguments
     args, unknown_args = parser.parse_known_args(argv)
@@ -298,7 +293,6 @@ def parse_args(argv):
         for subparsers_action in subparsers_actions:
             # get all subparsers and print help
             for choice, subparser in subparsers_action.choices.items():
-                #print("Subparser '{}'".format(choice))
                 subcommand = subparser.format_usage()[:-1].replace("usage: ", "   or: ")
                 if len(subcommand) > 1:
                     print(subcommand)
@@ -308,10 +302,19 @@ def parse_args(argv):
 
     # Merge attributes
     attributes_to_merge = ["dry_run", "verbose", "quiet"]
-    filtered_attributes = list(filter(lambda x: x if ("disable" not in x and "enable" not in x) else None, args.__dir__()))
+    filtered_attributes = list(
+        filter(lambda x: x if ("disable" not in x and "enable" not in x) else None, args.__dir__()))
     for attribute in attributes_to_merge:
-        merging_attributes = list(map(lambda x: args.__getattribute__(x) if attribute in x else None, filtered_attributes))
+        merging_attributes = list(
+            map(lambda x: args.__getattribute__(x) if attribute in x else None, filtered_attributes))
         setattr(args, attribute, merging_attributes.count(True) > 0)
+
+    attributes_to_merge = ["jobs"]
+    filtered_attributes = list(filter(lambda x: x if ("disable" not in x and "enable" not in x) else 0, args.__dir__()))
+    for attribute in attributes_to_merge:
+        merging_attributes = list(
+            map(lambda x: int(args.__getattribute__(x)) if attribute in x else max_cpu_threads, filtered_attributes))
+        setattr(args, attribute, min(merging_attributes))
 
     # If some positional options are not in args, set them to false.
     for option in ["clean", "configure", "docs", "install", "run", "shell", "uninstall", "show"]:
@@ -347,7 +350,7 @@ def check_lock_data(output_directory):
     ns3_modules_bindings = []
     ns3_modules = None
 
-    build_info = {"NS3_ENABLED_MODULES": None,
+    build_info = {"NS3_ENABLED_MODULES": [],
                   "BUILD_PROFILE": None,
                   "VERSION": None,
                   "ENABLE_EXAMPLES": False,
@@ -509,11 +512,15 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                 raise Exception("Unknown build type")
             else:
                 if args.build_profile == "debug":
-                    cmake_args.extend("-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON".split())
+                    cmake_args.extend(
+                        "-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON".split())
                 elif args.build_profile == "default":
-                    cmake_args.extend("-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
+                    cmake_args.extend(
+                        "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
                 else:
-                    cmake_args.extend("-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split())
+                    cmake_args.extend(
+                        "-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split()
+                    )
                 cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
     options = (("ASSERT", "asserts"),
@@ -720,21 +727,26 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
                                             )
                      )
     if not dry_run:
-        if output is not None:
-            kwargs = {"stdout": subprocess.PIPE,
-                      "stderr": subprocess.PIPE
-                      }
-        else:
-            kwargs = {"stdout": output}
+        # Assume quiet is not enabled, and print things normally
+        kwargs = {"stdout": None,
+                  "stderr": None}
 
         proc_env = os.environ.copy()
         if build_verbose:
+            # If verbose is enabled, we print everything to the terminal
+            # and set the environment variable
             proc_env.update({"VERBOSE": "1"})
-        kwargs["env"] = proc_env
+
+        if output is not None:
+            # If quiet is enabled, we pipe the output of the
+            # build and only print in case of failure
+            kwargs["stdout"] = subprocess.PIPE
+            kwargs["stderr"] = subprocess.PIPE
 
         ret = subprocess.run(cmake_build_command.split(),
                              cwd=current_cmake_cache_folder,
-                             **kwargs
+                             env=proc_env,
+                             **kwargs,
                              )
 
         # Print errors in case compilation fails and output != None (quiet)
@@ -874,7 +886,7 @@ def build_step(args,
                ns3_version,
                build_profile,
                output):
-    # There is one scenarios where we build everything: ./ns3 build
+    # There is one scenario where we build everything: ./ns3 build
     if "build" in args and len(args.build) == 0:
         cmake_build(current_cmake_cache_folder,
                     jobs=args.jobs,
@@ -1013,16 +1025,20 @@ def run_step(args, target_to_run, target_args):
 
     if not args.dry_run:
         try:
-            ret = subprocess.run(program_arguments, env=proc_env, cwd=working_dir, shell=use_shell)
-
-            # Forward POSIX signal error codes
-            if ret.returncode < 0:
-                os.kill(os.getpid(), -ret.returncode)
-
-            # Return in case of a positive error number
-            exit(ret.returncode)
+            subprocess.run(program_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True)
+        except subprocess.CalledProcessError as e:
+            # Replace full path to binary to relative path
+            e.cmd[0] = os.path.relpath(target_to_run, ns3_path)
+            # Replace list of arguments with a single string
+            e.cmd = " ".join(e.cmd)
+            # Print error message and forward the return code
+            print(e)
+            exit(e.returncode)
         except KeyboardInterrupt:
             print("Process was interrupted by the user")
+
+        # Exit normally
+        exit(0)
 
 
 # Debugging this with PyCharm is a no no. It refuses to work hanging indefinitely
@@ -1055,7 +1071,7 @@ def sudo_step(args, target_to_run, configure_post_build: set):
         raise Exception("Sudo is required by --enable-sudo, but it was not found")
 
     # We do this for specified targets if --enable-sudo was set in the run sub-parser
-    # And to all executables if set in the configure sub-parser
+    # And to all executables if set in the 'configure' sub-parser
     targets_to_sudo = configure_post_build
     if target_to_run:
         targets_to_sudo.add(target_to_run)
@@ -1139,7 +1155,7 @@ def main():
     enable_sudo = build_info["ENABLE_SUDO"]
     ns3_version = build_info["VERSION"]
 
-    # Docs options become cmake targets
+    # Docs subparser options become cmake targets
     if args.docs:
         args.build = [args.docs] if args.docs != "all" else ["sphinx", "doxygen"]
         if "doxygen" in args.build and (not build_info["ENABLE_EXAMPLES"] or not build_info["ENABLE_TESTS"]):
@@ -1161,18 +1177,14 @@ def main():
     run_only = False
     build_and_run = False
     if args.run:
-        # When running, default to not run_verbose
-        run_verbose = args.run_verbose
-
-        # If not run_verbose, silence the rest of the script
-        if not run_verbose:
-            output = subprocess.DEVNULL
+        # Only print "Finished running..." if verbose is set
+        run_verbose = not (args.run_verbose is not True)
 
         # Check whether we are only running or we need to build first
-        if not args.no_build:
-            build_and_run = True
-        else:
+        if args.no_build:
             run_only = True
+        else:
+            build_and_run = True
     target_to_run = None
     target_args = []
     current_cmake_cache_folder = None
@@ -1197,7 +1209,7 @@ def main():
             # We end things earlier if only checking the current project configuration
             return
 
-        # Check for changes in scratch sources and trigger a reconfigure if sources changed
+        # Check for changes in scratch sources and trigger a reconfiguration if sources changed
         if current_cmake_cache_folder:
             current_scratch_sources = glob.glob(os.path.join(ns3_path, "scratch", "**", "*.cc"),
                                                 recursive=True)

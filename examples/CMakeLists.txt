@@ -3,6 +3,9 @@ if(${ENABLE_EXAMPLES})
 
   # Process subdirectories
   foreach(examplefolder ${examples_to_build})
+    if(NOT (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${examplefolder}/CMakeLists.txt))
+      continue()
+    endif()
     add_subdirectory(${examplefolder})
 
     set(ns3-example-folders

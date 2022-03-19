@@ -949,6 +949,7 @@ macro(process_options)
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS update_doxygen_version run-print-introspected-doxygen
               assemble-introspected-command-line
+      USES_TERMINAL
     )
 
     add_custom_target(
@@ -956,6 +957,7 @@ macro(process_options)
       COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/doc/doxygen.conf
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS update_doxygen_version
+      USES_TERMINAL
     )
   endif()
 

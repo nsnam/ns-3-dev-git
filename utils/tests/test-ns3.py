@@ -723,7 +723,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Run all cases and then check outputs
         return_code0, stdout0, stderr0 = run_ns3("--dry-run run scratch-simulator")
-        return_code1, stdout1, stderr1 = run_ns3("run scratch-simulator --verbose")
+        return_code1, stdout1, stderr1 = run_ns3("run scratch-simulator")
         return_code2, stdout2, stderr2 = run_ns3("--dry-run run scratch-simulator --no-build")
         return_code3, stdout3, stderr3 = run_ns3("run scratch-simulator --no-build")
 
@@ -742,16 +742,18 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn(cmake_build_target_command(target="scratch_scratch-simulator"), stdout0)
         self.assertIn(scratch_path, stdout0)
 
-        # Case 1: run (should print all the commands of case 1 plus CMake output from build)
-        self.assertIn(cmake_build_target_command(target="scratch_scratch-simulator"), stdout1)
+        # Case 1: run (should print only make build message)
+        self.assertNotIn(cmake_build_target_command(target="scratch_scratch-simulator"), stdout1)
         self.assertIn("Built target", stdout1)
-        self.assertIn(scratch_path, stdout1)
+        self.assertNotIn(scratch_path, stdout1)
 
         # Case 2: dry-run + run-no-build (should print commands to run the target)
+        self.assertIn("The following commands would be executed:", stdout2)
         self.assertIn(scratch_path, stdout2)
 
         # Case 3: run-no-build (should print the target output only)
-        self.assertEqual("", stdout3)
+        self.assertNotIn("Finished executing the following commands:", stdout3)
+        self.assertNotIn(scratch_path, stdout3)
 
     def test_09_PropagationOfReturnCode(self):
         """!
@@ -778,6 +780,40 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                                               env={"NS_COMMANDLINE_INTROSPECTION": ".."}
                                               )
         self.assertNotEqual(return_code, 0)
+
+        # Cause a sigsegv
+        sigsegv_example = os.path.join(ns3_path, "scratch", "sigsegv.cc")
+        with open(sigsegv_example, "w") as f:
+            f.write("""
+                    int main (int argc, char *argv[])
+                    {
+                      char *s = "hello world"; *s = 'H';
+                      return 0;
+                    }
+                    """)
+        return_code, stdout, stderr = run_ns3("run sigsegv")
+        self.assertEqual(return_code, 245)
+        self.assertIn("sigsegv-default' died with <Signals.SIGSEGV: 11>", stdout)
+
+        # Cause an abort
+        abort_example = os.path.join(ns3_path, "scratch", "abort.cc")
+        with open(abort_example, "w") as f:
+            f.write("""
+                    #include "ns3/core-module.h"
+
+                    using namespace ns3;
+                    int main (int argc, char *argv[])
+                    {
+                      NS_ABORT_IF(true);
+                      return 0;
+                    }
+                    """)
+        return_code, stdout, stderr = run_ns3("run abort")
+        self.assertEqual(return_code, 250)
+        self.assertIn("abort-default' died with <Signals.SIGABRT: 6>", stdout)
+
+        os.remove(sigsegv_example)
+        os.remove(abort_example)
 
     def test_10_CheckConfig(self):
         """!
@@ -2002,6 +2038,16 @@ if __name__ == '__main__':
     suite.addTests(loader.loadTestsFromTestCase(NS3ConfigureTestCase))
     suite.addTests(loader.loadTestsFromTestCase(NS3BuildBaseTestCase))
     suite.addTests(loader.loadTestsFromTestCase(NS3ExpectedUseTestCase))
+
+    # Generate a dictionary of test names and their objects
+    tests = dict(map(lambda x: (x._testMethodName, x), suite._tests))
+
+    # Filter tests by name
+    # name_to_search = ""
+    # tests_to_run = set(map(lambda x: x if name_to_search in x else None, tests.keys()))
+    # tests_to_remove = set(tests) - set(tests_to_run)
+    # for test_to_remove in tests_to_remove:
+    #     suite._tests.remove(tests[test_to_remove])
 
     # Before running, check if ns3rc exists and save it
     ns3rc_script_bak = ns3rc_script + ".bak"
