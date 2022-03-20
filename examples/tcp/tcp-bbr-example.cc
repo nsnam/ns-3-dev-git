@@ -200,8 +200,9 @@ int main (int argc, char *argv [])
   BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress (ir1.GetAddress (1), port));
   source.SetAttribute ("MaxBytes", UintegerValue (0));
   ApplicationContainer sourceApps = source.Install (sender.Get (0));
-  sourceApps.Start (Seconds (0.0));
-  Simulator::Schedule (Seconds (0.2), &TraceCwnd, 0, 0);
+  sourceApps.Start (Seconds (0.1));
+  // Hook trace source after application starts
+  Simulator::Schedule (Seconds (0.1) + MilliSeconds (1), &TraceCwnd, 0, 0);
   sourceApps.Stop (stopTime);
 
   // Install application on the receiver
