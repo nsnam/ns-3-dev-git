@@ -845,6 +845,19 @@ WifiMac::GetNLinks (void) const
   return m_links.size ();
 }
 
+std::optional<uint8_t>
+WifiMac::GetLinkIdByAddress (const Mac48Address& address) const
+{
+  for (uint8_t ret = 0; ret < m_links.size (); ++ret)
+    {
+      if (m_links[ret]->feManager->GetAddress () == address)
+        {
+          return ret;
+        }
+    }
+  return std::nullopt;
+}
+
 void
 WifiMac::SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys)
 {

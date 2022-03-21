@@ -507,6 +507,12 @@ OcbWifiMac::EnableForWave (Ptr<WaveNetDevice> device)
   StaticCast<WaveFrameExchangeManager> (GetLink (SINGLE_LINK_OP_ID).feManager)->SetWaveNetDevice (device);
 }
 
+std::optional<uint8_t>
+OcbWifiMac::GetLinkIdByAddress (const Mac48Address& address) const
+{
+  return 0;
+}
+
 void
 OcbWifiMac::DoDispose (void)
 {

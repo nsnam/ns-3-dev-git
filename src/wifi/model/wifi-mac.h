@@ -21,15 +21,16 @@
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
-#include <set>
-#include <unordered_map>
 #include "wifi-standards.h"
 #include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
 #include "ssid.h"
-#include <memory>
-#include <vector>
 #include <list>
+#include <memory>
+#include <optional>
+#include <set>
+#include <unordered_map>
+#include <vector>
 
 namespace ns3 {
 
@@ -136,6 +137,13 @@ public:
    * \return the number of links used by this MAC
    */
   uint8_t GetNLinks (void) const;
+  /**
+   * Get the ID of the link having the given MAC address, if any.
+   *
+   * \param address the given MAC address
+   * \return the ID of the link having the given MAC address, if any
+   */
+  virtual std::optional<uint8_t> GetLinkIdByAddress (const Mac48Address& address) const;
 
   /**
    * Accessor for the Txop object
