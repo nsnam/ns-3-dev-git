@@ -451,12 +451,16 @@ WifiMac::GetTxop () const
 Ptr<QosTxop>
 WifiMac::GetQosTxop (AcIndex ac) const
 {
-  const auto it = m_edca.find (ac);
-  if (it == m_edca.cend ())
-    {
-      return nullptr;
-    }
-  return it->second;
+  // Use std::find_if() instead of std::map::find() because the latter compares
+  // the given AC index with the AC index of an element in the map by using the
+  // operator< defined for AcIndex, which aborts if an operand is not a QoS AC
+  // (the AC index passed to this method may not be a QoS AC).
+  // The performance penalty is limited because std::map::find() performs 3
+  // comparisons in the worst case, while std::find_if() performs 4 comparisons
+  // in the worst case.
+  const auto it = std::find_if (m_edca.cbegin (), m_edca.cend (),
+                                [ac](const auto& pair){ return pair.first == ac; });
+  return (it == m_edca.cend () ? nullptr : it->second);
 }
 
 Ptr<QosTxop>
