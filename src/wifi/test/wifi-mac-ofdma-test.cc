@@ -199,7 +199,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
 
       for (auto& sta : staList)
         {
-          Ptr<WifiMacQueueItem> peeked = m_apMac->GetQosTxop (AC_BE)->PeekNextMpdu (0, sta.second);
+          auto peeked = m_apMac->GetQosTxop (AC_BE)->PeekNextMpdu (SINGLE_LINK_OP_ID, 0, sta.second);
 
           if (!peeked)
             {

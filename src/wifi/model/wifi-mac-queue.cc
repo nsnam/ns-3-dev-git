@@ -255,7 +255,9 @@ WifiMacQueue::DequeueIfQueued (const std::list<Ptr<const WifiMacQueueItem>>& mpd
 Ptr<const WifiMacQueueItem>
 WifiMacQueue::Peek (void) const
 {
-  return Peek (0);
+  // Need to specify the link ID
+  NS_ABORT_MSG ("Not implemented by WifiMacQueue");
+  return nullptr;
 }
 
 Ptr<WifiMacQueueItem>
@@ -311,10 +313,11 @@ WifiMacQueue::PeekByQueueId (const WifiContainerQueueId& queueId,
 }
 
 Ptr<WifiMacQueueItem>
-WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets,
+WifiMacQueue::PeekFirstAvailable (uint8_t linkId,
+                                  const Ptr<QosBlockedDestinations> blockedPackets,
                                   Ptr<const WifiMacQueueItem> item) const
 {
-  NS_LOG_FUNCTION (this << item);
+  NS_LOG_FUNCTION (this << +linkId << item);
   NS_ASSERT (!item || item->IsQueued ());
 
   if (item)
@@ -336,11 +339,11 @@ WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPacke
 
   if (item)
     {
-      queueId = m_scheduler->GetNext (m_ac, 0, WifiMacQueueContainer::GetQueueId (item));
+      queueId = m_scheduler->GetNext (m_ac, linkId, WifiMacQueueContainer::GetQueueId (item));
     }
   else
     {
-      queueId = m_scheduler->GetNext (m_ac, 0);
+      queueId = m_scheduler->GetNext (m_ac, linkId);
     }
 
   while (queueId.has_value ()
@@ -349,7 +352,7 @@ WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPacke
          && blockedPackets->IsBlocked (std::get<1> (queueId.value ()),
                                        std::get<2> (queueId.value ())))
     {
-      queueId = m_scheduler->GetNext (m_ac, 0, queueId.value ());
+      queueId = m_scheduler->GetNext (m_ac, linkId, queueId.value ());
     }
 
   if (!queueId.has_value ())
@@ -364,7 +367,7 @@ WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPacke
 Ptr<WifiMacQueueItem>
 WifiMacQueue::Remove (void)
 {
-  return Remove (Peek ());
+  return Remove (Peek (0));
 }
 
 Ptr<WifiMacQueueItem>

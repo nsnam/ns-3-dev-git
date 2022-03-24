@@ -87,7 +87,7 @@ public:
   virtual ~QosTxop ();
 
   bool IsQosTxop (void) const override;
-  bool HasFramesToTransmit (void) override;
+  bool HasFramesToTransmit (uint8_t linkId) override;
   void NotifyChannelAccessed (uint8_t linkId, Time txopDuration) override;
   void NotifyChannelReleased (uint8_t linkId) override;
   void SetDroppedMpduCallback (DroppedMpdu callback) override;
@@ -287,20 +287,22 @@ public:
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
-   * Peek the next frame to transmit to the given receiver and of the given TID
+   * Peek the next frame to transmit on the given link to the given receiver and of the given TID
    * from the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
    * is the broadcast address, the first available frame is returned. If <i>item</i>
    * is not a null pointer, the search starts from the packet following <i>item</i>
    * in the queue; otherwise, the search starts from the head of the queue.
    * Note that A-MSDU aggregation is never attempted. If the frame has never been
    * transmitted, it is assigned a sequence number peeked from MacTxMiddle.
+   * Also note that multiple links are only available since 802.11be.
    *
+   * \param linkId the ID of the given link
    * \param tid traffic ID.
    * \param recipient the receiver station address.
    * \param item the item after which the search starts from
    * \returns the peeked frame.
    */
-  Ptr<WifiMacQueueItem> PeekNextMpdu (uint8_t tid = 8,
+  Ptr<WifiMacQueueItem> PeekNextMpdu (uint8_t linkId, uint8_t tid = 8,
                                       Mac48Address recipient = Mac48Address::GetBroadcast (),
                                       Ptr<WifiMacQueueItem> item = nullptr);
   /**

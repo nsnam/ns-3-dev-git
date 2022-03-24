@@ -264,7 +264,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
 {
   NS_LOG_FUNCTION (this << edca << availableTime << initialFrame);
 
-  Ptr<WifiMacQueueItem> mpdu = edca->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> mpdu = edca->PeekNextMpdu (m_linkId);
 
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be

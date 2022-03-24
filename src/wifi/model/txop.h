@@ -413,10 +413,11 @@ protected:
   virtual void NotifyAccessRequested (uint8_t linkId);
 
   /**
-   * Check if the Txop has frames to transmit.
+   * Check if the Txop has frames to transmit over the given link
+   * \param linkId the ID of the given link.
    * \return true if the Txop has frames to transmit.
    */
-  virtual bool HasFramesToTransmit (void);
+  virtual bool HasFramesToTransmit (uint8_t linkId);
   /**
    * Generate a new backoff for the given link now.
    *

@@ -137,7 +137,7 @@ RrMultiUserScheduler::SelectTxFormat (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
+  Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
 
   if (mpdu && !GetWifiRemoteStationManager ()->GetHeSupported (mpdu->GetHeader ().GetAddr1 ()))
     {
@@ -540,7 +540,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   uint8_t currTid = wifiAcList.at (primaryAc).GetHighTid ();
 
-  Ptr<WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
 
   if (mpdu && mpdu->GetHeader ().IsQosData ())
     {
@@ -599,7 +599,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
           // considered TID, since ack sequences for DL MU PPDUs require block ack
           if (m_apMac->GetQosTxop (ac)->GetBaAgreementEstablished (staIt->address, tid))
             {
-              mpdu = m_apMac->GetQosTxop (ac)->PeekNextMpdu (tid, staIt->address);
+              mpdu = m_apMac->GetQosTxop (ac)->PeekNextMpdu (SINGLE_LINK_OP_ID, tid, staIt->address);
 
               // we only check if the first frame of the current TID meets the size
               // and duration constraints. We do not explore the queues further.

@@ -298,7 +298,7 @@ QosTxop::UseExplicitBarAfterMissedBlockAck (void) const
 }
 
 bool
-QosTxop::HasFramesToTransmit (void)
+QosTxop::HasFramesToTransmit (uint8_t linkId)
 {
   // check if the BA manager has anything to send, so that expired
   // frames (if any) are removed and a BlockAckRequest is scheduled to advance
@@ -306,11 +306,10 @@ QosTxop::HasFramesToTransmit (void)
   bool baManagerHasPackets {m_baManager->GetBar (false)};
   // remove MSDUs with expired lifetime starting from the head of the queue
   m_queue->WipeAllExpiredMpdus ();
-  bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable (m_qosBlockedDestinations));
+  bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable (linkId, m_qosBlockedDestinations));
 
-  bool ret = (baManagerHasPackets || queueIsNotEmpty);
   NS_LOG_FUNCTION (this << baManagerHasPackets << queueIsNotEmpty);
-  return ret;
+  return baManagerHasPackets || queueIsNotEmpty;
 }
 
 uint16_t
@@ -352,16 +351,16 @@ QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 Ptr<WifiMacQueueItem>
-QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<WifiMacQueueItem> item)
+QosTxop::PeekNextMpdu (uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<WifiMacQueueItem> item)
 {
-  NS_LOG_FUNCTION (this << +tid << recipient << item);
+  NS_LOG_FUNCTION (this << +linkId << +tid << recipient << item);
 
   // lambda to peek the next frame
-  auto peek = [this, &tid, &recipient, &item] () -> Ptr<WifiMacQueueItem>
+  auto peek = [this, &linkId, &tid, &recipient, &item] () -> Ptr<WifiMacQueueItem>
     {
       if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
         {
-          return m_queue->PeekFirstAvailable (m_qosBlockedDestinations, item);
+          return m_queue->PeekFirstAvailable (linkId, m_qosBlockedDestinations, item);
         }
       if (m_qosBlockedDestinations->IsBlocked (recipient, tid))
         {
@@ -606,7 +605,7 @@ QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address r
       m_baManager->NotifyAgreementRejected (recipient, tid);
     }
 
-  if (HasFramesToTransmit () && GetLink (0).access == NOT_REQUESTED)  // TODO use appropriate linkId
+  if (HasFramesToTransmit (SINGLE_LINK_OP_ID) && GetLink (SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
     {
       m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
     }
@@ -669,7 +668,7 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
       m_baManager->NotifyAgreementNoReply (recipient, tid);
       Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
       GenerateBackoff (SINGLE_LINK_OP_ID);
-      if (HasFramesToTransmit () && GetLink (SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
+      if (HasFramesToTransmit (SINGLE_LINK_OP_ID) && GetLink (SINGLE_LINK_OP_ID).access == NOT_REQUESTED)
         {
           m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
         }

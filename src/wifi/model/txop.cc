@@ -30,6 +30,7 @@
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-mac-queue-scheduler.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_mac) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
@@ -474,11 +475,11 @@ Txop::GetTxopLimit (uint8_t linkId) const
 }
 
 bool
-Txop::HasFramesToTransmit (void)
+Txop::HasFramesToTransmit (uint8_t linkId)
 {
   m_queue->WipeAllExpiredMpdus ();
-  bool ret = (!m_queue->IsEmpty ());
-  NS_LOG_FUNCTION (this << ret);
+  bool ret = static_cast<bool> (m_queue->Peek (linkId));
+  NS_LOG_FUNCTION (this << +linkId << ret);
   return ret;
 }
 
@@ -496,12 +497,20 @@ void
 Txop::Queue (Ptr<WifiMacQueueItem> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
-  if (m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->NeedBackoffUponAccess (this))
+  const auto linkIds = m_mac->GetMacQueueScheduler ()->GetLinkIds (m_queue->GetAc (),
+                                                                   WifiMacQueueContainer::GetQueueId (mpdu));
+  for (const auto linkId : linkIds)
     {
-      GenerateBackoff (SINGLE_LINK_OP_ID);
+      if (m_mac->GetChannelAccessManager (linkId)->NeedBackoffUponAccess (this))
+        {
+          GenerateBackoff (linkId);
+        }
     }
   m_queue->Enqueue (mpdu);
-  StartAccessIfNeeded (0);  // TODO use appropriate linkId
+  for (const auto linkId : linkIds)
+    {
+      StartAccessIfNeeded (linkId);
+    }
 }
 
 int64_t
@@ -516,7 +525,7 @@ void
 Txop::StartAccessIfNeeded (uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << +linkId);
-  if (HasFramesToTransmit () && GetLink (linkId).access == NOT_REQUESTED)
+  if (HasFramesToTransmit (linkId) && GetLink (linkId).access == NOT_REQUESTED)
     {
       m_mac->GetChannelAccessManager (linkId)->RequestAccess (this);
     }
@@ -559,7 +568,7 @@ Txop::NotifyChannelReleased (uint8_t linkId)
   NS_LOG_FUNCTION (this << +linkId);
   GetLink (linkId).access = NOT_REQUESTED;
   GenerateBackoff (linkId);
-  if (HasFramesToTransmit ())
+  if (HasFramesToTransmit (linkId))
     {
       Simulator::ScheduleNow (&Txop::RequestAccess, this, linkId);
     }

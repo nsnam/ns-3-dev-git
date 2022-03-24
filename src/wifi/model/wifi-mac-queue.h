@@ -182,17 +182,19 @@ public:
                                        Ptr<const WifiMacQueueItem> item = nullptr) const;
 
   /**
-   * Return first available packet for transmission. If <i>item</i> is not a null
-   * pointer, the search starts from the packet following <i>item</i> in the queue;
-   * otherwise, the search starts from the head of the queue.
+   * Return first available packet for transmission on the given link. If <i>item</i>
+   * is not a null pointer, the search starts from the packet following <i>item</i>
+   * in the queue; otherwise, the search starts from the head of the queue.
    * The packet is not removed from queue.
    *
+   * \param linkId the ID of the given link
    * \param blockedPackets the destination address & TID pairs that are waiting for a BlockAck response
    * \param item the item after which the search starts from
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<WifiMacQueueItem> PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
+  Ptr<WifiMacQueueItem> PeekFirstAvailable (uint8_t linkId,
+                                            const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
                                             Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Remove the packet in the front of the queue.

@@ -304,7 +304,9 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   // expired and the queue might be empty.
   queue->WipeAllExpiredMpdus ();
 
-  if (queue->IsEmpty ())
+  Ptr<WifiMacQueueItem> mpdu = queue->Peek (m_linkId);
+
+  if (!mpdu)
     {
       NS_LOG_DEBUG ("Queue empty");
       m_dcf->NotifyChannelReleased (m_linkId);
@@ -313,8 +315,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
     }
 
   m_dcf->NotifyChannelAccessed (m_linkId);
-  Ptr<WifiMacQueueItem> mpdu = queue->PeekFirstAvailable ();
-  NS_ASSERT (mpdu);
+
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 
   // assign a sequence number if this is not a fragment nor a retransmission
@@ -910,8 +911,8 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
   // sent. As an approximation, we consider the frame peeked from the queues of the AC.
   Ptr<QosTxop> qosTxop = (txop->IsQosTxop () ? StaticCast<QosTxop> (txop) : nullptr);
 
-  auto mpdu = (qosTxop ? StaticCast<const WifiMacQueueItem> (qosTxop->PeekNextMpdu ())
-                       : txop->GetWifiMacQueue ()->Peek ());
+  auto mpdu = (qosTxop ? qosTxop->PeekNextMpdu (m_linkId)
+                       : txop->GetWifiMacQueue ()->Peek (m_linkId));
 
   if (mpdu)
     {

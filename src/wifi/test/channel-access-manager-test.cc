@@ -67,7 +67,7 @@ private:
   /// \copydoc ns3::Txop::NotifyChannelAccessed
   void NotifyChannelAccessed (uint8_t linkId, Time txopDuration = Seconds (0)) override;
   /// \copydoc ns3::Txop::HasFramesToTransmit
-  bool HasFramesToTransmit (void) override;
+  bool HasFramesToTransmit (uint8_t linkId) override;
   /// \copydoc ns3::Txop::NotifySleep
   void NotifySleep (uint8_t linkId) override;
   /// \copydoc ns3::Txop::NotifyWakeUp
@@ -436,7 +436,7 @@ TxopTest<TxopType>::GenerateBackoff (uint8_t linkId)
 
 template <typename TxopType>
 bool
-TxopTest<TxopType>::HasFramesToTransmit (void)
+TxopTest<TxopType>::HasFramesToTransmit (uint8_t linkId)
 {
   return !m_expectedGrants.empty ();
 }

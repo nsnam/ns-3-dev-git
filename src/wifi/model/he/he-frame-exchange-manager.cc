@@ -122,7 +122,7 @@ HeFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
    */
   if (m_muScheduler
       && !edca->GetBaManager ()->GetBar (false)
-      && (!(mpdu = edca->PeekNextMpdu ())
+      && (!(mpdu = edca->PeekNextMpdu (m_linkId))
           || (mpdu->GetHeader ().IsQosData ()
               && !mpdu->GetHeader ().GetAddr1 ().IsGroup ()
               && edca->GetBaAgreementEstablished (mpdu->GetHeader ().GetAddr1 (), mpdu->GetHeader ().GetQosTid ()))))
@@ -1313,7 +1313,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
 
       // otherwise, check if a suitable data frame is available
       if (Ptr<WifiMacQueueItem> mpdu;
-          (mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())))
+          (mpdu = edca->PeekNextMpdu (m_linkId, tid, hdr.GetAddr2 ())))
         {
           Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false);
 
