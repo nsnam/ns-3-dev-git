@@ -68,6 +68,11 @@ Changes from ns-3.36 to ns-3.37
 * Lr-wpan: **LrWpanPhy** now change to TRX_OFF after a CSMA-CA failure when the RxOnWhenIdle flag is set to false in the **LrWpanMac**.
 * The **Channel** attribute of `WifiNetDevice` is deprecated because it became ambiguous with the introduction of multiple links per device. The **Channel** attribute of `WifiPhy` can be used instead.
 * The O2I Low/High Building Penetration Losses will add losses in the pathloss calculation when buildings are present and a UE results to be in O2I state. In order to not consider these losses, they can be disabled by setting BuildingPenetrationLossesEnabled to false.
+* Support for four types of UE handover failure are now modeled:
+  * A HO failure is triggered if eNB cannot allocate non-contention-based preamble.
+  * Handover joining timeout is now handled.
+  * Handover leaving timeout is now handled.
+  * Upon RACH failure during HO, the UE will perform cell selection again.
 
 Changes from ns-3.36 to ns-3.36.1
 ---------------------------------

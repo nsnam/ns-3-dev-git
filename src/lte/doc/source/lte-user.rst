@@ -1617,14 +1617,36 @@ like this::
    Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
                     MakeCallback (&NotifyHandoverEndOkUe));
 
+Handover failure events can also be traced by trace sink functions with
+a similar signature as above (including IMSI, cell ID, and RNTI). Four
+different failure events are traced:
+
+1. HandoverFailureNoPreamble: Handover failure due to non allocation of 
+   non-contention-based preamble at eNB
+2. HandoverFailureMaxRach: Handover failure due to maximum RACH attempts
+3. HandoverFailureLeaving: Handover leaving timeout at source eNB
+4. HandoverFailureJoining: Handover joining timeout at target eNB 
+
+Similarly, one can hook up methods to the corresponding trace sources
+like this::
+
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureNoPreamble",
+                    MakeCallback (&NotifyHandoverFailureNoPreamble));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureMaxRach",
+                    MakeCallback (&NotifyHandoverFailureMaxRach));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureLeaving",
+                    MakeCallback (&NotifyHandoverFailureLeaving));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureJoining",
+                    MakeCallback (&NotifyHandoverFailureJoining));
+
 The example program ``src/lte/examples/lena-x2-handover.cc``
-illustrates how the all above instructions can be integrated in a
+illustrates how the above instructions can be integrated in a
 simulation program. You can run the program like this::
 
    ./ns3 run lena-x2-handover
 
 and it will output the messages printed by the custom handover trace
-hooks. In order additionally visualize some meaningful logging
+hooks. In order to additionally print out some meaningful logging
 information, you can run the program like this::
 
     NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./ns3 run lena-x2-handover

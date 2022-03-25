@@ -1422,6 +1422,23 @@ computation, utilizing the fact that the handover will be delayed when this
 computation is broken. In the default simulation configuration, the handover
 delay observed because of a broken RA-RNTI computation is typically 6 ms.
 
+Handover failure
+----------------
+
+The test suite ``lte-handover-failure`` tests the proper operation of a number
+of handover failure cases by inducing the conditions leading to the following
+eight failure modes:
+
+1. Maximum number of RACH transmissions exceeded from UE to target eNB 
+2. Non-allocation of non-contention-based preamble at the target eNB, due to the maximum number reached
+3. HANDOVER JOINING timeout before reception of RRC CONNECTION RECONFIGURATION at source eNB
+4. HANDOVER JOINING timeout before completion of non-contention RACH process to target eNB
+5. HANDOVER JOINING timeout before reception of RRC CONNECTION RECONFIGURATION COMPLETE at target eNB
+6. HANDOVER LEAVING timeout before reception of RRC CONNECTION RECONFIGURATION at source eNB
+7. HANDOVER LEAVING timeout before completion of non-contention RACH process to target eNB
+8. HANDOVER LEAVING timeout before reception of RRC CONNECTION RECONFIGURATION COMPLETE attarget eNB
+
+Both Ideal and Real RRC models are checked by this test suite.
 
 Selection of target cell in handover algorithm
 ----------------------------------------------

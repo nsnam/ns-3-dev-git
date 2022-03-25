@@ -29,6 +29,7 @@ Release 3-dev
 - (lr-wpan) Adds support for PAN Id compression (IEEE 802.15.4-2006 (7.5.6.1))
 - (utils) `utils/bench-simulator` has been moved to `utils/bench-scheduler` to better reflect what it actually tests
 - (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
+- (lte) LTE handover failure is now handled for joining and leaving timeouts, RACH failure, and preamble allocation failure.
 
 ### Bugs fixed
 
