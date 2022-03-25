@@ -163,6 +163,19 @@ NotifyHandoverEndOkEnb (std::string context,
             << std::endl;
 }
 
+void
+NotifyHandoverFailure (std::string context,
+                        uint64_t imsi,
+                        uint16_t cellid,
+                        uint16_t rnti)
+{
+  std::cout << Simulator::Now ().As (Time::S) << " " << context
+            << " eNB CellId " << cellid
+            << " IMSI " << imsi
+            << " RNTI " << rnti
+            << " handover failure"
+            << std::endl;
+}
 
 /**
  * Sample simulation script for a X2-based handover.
@@ -388,6 +401,15 @@ main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
                    MakeCallback (&NotifyHandoverEndOkUe));
 
+  // Hook a trace sink (the same one) to the four handover failure traces
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureNoPreamble",
+                   MakeCallback (&NotifyHandoverFailure));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureMaxRach",
+                   MakeCallback (&NotifyHandoverFailure));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureLeaving",
+                   MakeCallback (&NotifyHandoverFailure));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverFailureJoining",
+                   MakeCallback (&NotifyHandoverFailure));
 
   Simulator::Stop (simTime + MilliSeconds (20));
   Simulator::Run ();
