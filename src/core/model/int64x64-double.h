@@ -112,7 +112,7 @@ public:
     : _v (v)
   {}
   inline int64x64_t (long long int v)
-    : _v (static_cast<double> (v))
+    : _v (static_cast<long double> (v))
   {}
   inline int64x64_t (unsigned int v)
     : _v (v)
@@ -121,7 +121,7 @@ public:
     : _v (v)
   {}
   inline int64x64_t (unsigned long long int v)
-    : _v (static_cast<double> (v))
+    : _v (static_cast<long double> (v))
   {}
   /**@}*/
   /**
@@ -159,6 +159,12 @@ public:
   {
     _v = o._v;
     return *this;
+  }
+
+  /** Explicit bool conversion. */
+  inline explicit operator bool () const
+  {
+    return (_v != 0);
   }
 
   /**

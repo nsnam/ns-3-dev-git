@@ -198,6 +198,12 @@ public:
     return *this;
   }
 
+  /** Explicit bool conversion. */
+  inline explicit operator bool () const
+  {
+    return (_v != 0);
+  }
+
   /**
    * Get this value as a double.
    *
