@@ -16,8 +16,10 @@ find_external_library(
   SEARCH_PATHS ${NS3_WITH_BRITE}
 )
 
-if(NOT
-   ${brite_FOUND}
+if((NOT
+    brite_FOUND)
+   OR (NOT
+       ${brite_FOUND})
 )
   message(STATUS "Skipping src/brite")
   return()

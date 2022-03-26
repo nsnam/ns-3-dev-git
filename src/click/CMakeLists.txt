@@ -17,8 +17,10 @@ find_external_library(
   SEARCH_PATHS ${NS3_WITH_CLICK}
 )
 
-if(NOT
-   ${click_FOUND}
+if((NOT
+    click_FOUND)
+   AND (NOT
+        ${click_FOUND})
 )
   message(STATUS "Skipping src/click")
   return()

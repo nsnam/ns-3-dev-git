@@ -1305,8 +1305,7 @@ function(remove_lib_prefix prefixed_library library)
 
   # If there is a lib prefix, try to remove it
   if(${lib_pos} EQUAL 0)
-    # Check if we still have something remaining
-    # after removing the "lib" prefix
+    # Check if we still have something remaining after removing the "lib" prefix
     string(LENGTH ${prefixed_library} len)
     if(${len} LESS 4)
       message(FATAL_ERROR "Invalid library name: ${prefixed_library}")
@@ -1821,7 +1820,7 @@ function(find_external_library)
   foreach(libdir ${library_dirs})
     get_filename_component(parent_libdir ${libdir} DIRECTORY)
     get_filename_component(parent_parent_libdir ${parent_libdir} DIRECTORY)
-    list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
+    list(APPEND parent_dirs ${libdir} ${parent_libdir} ${parent_parent_libdir})
   endforeach()
 
   # If we already found a library somewhere, limit the search paths for the

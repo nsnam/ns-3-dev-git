@@ -16,8 +16,10 @@ find_external_library(
   SEARCH_PATHS ${NS3_WITH_OPENFLOW}
 )
 
-if(NOT
-   ${openflow_FOUND}
+if((NOT
+    openflow_FOUND)
+   AND (NOT
+        ${openflow_FOUND})
 )
   message(STATUS "Skipping src/openflow")
   return()

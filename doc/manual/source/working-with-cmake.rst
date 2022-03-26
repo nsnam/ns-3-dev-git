@@ -814,7 +814,7 @@ Here is how it works:
     foreach(libdir ${library_dirs})
       get_filename_component(parent_libdir ${libdir} DIRECTORY)
       get_filename_component(parent_parent_libdir ${parent_libdir} DIRECTORY)
-      list(APPEND parent_dirs ${parent_libdir} ${parent_parent_libdir})
+      list(APPEND parent_dirs ${libdir} ${parent_libdir} ${parent_parent_libdir})
     endforeach()
 
     # If we already found a library somewhere, limit the search paths for the header
@@ -986,10 +986,16 @@ example of ``find_external_library`` usage.
       SEARCH_PATHS ${NS3_WITH_OPENFLOW} # user-settable search path, empty by default
     )
 
-    # Check if header and library were found, 
-    # and stop processing the module in case they were not
-    if(NOT
-      ${openflow_FOUND}
+    # Before testing if the header and library were found ${openflow_FOUND},
+    # test if openflow_FOUND was defined
+    # If openflow_FOUND was not defined, the dependency name above doesn't match
+    # the tested values below
+    # If openflow_FOUND is set to FALSE, stop processing the module by returning
+    # to the parent directory with return()
+    if((NOT
+        openflow_FOUND)
+       AND (NOT
+            ${openflow_FOUND})
     )
       message(STATUS "Openflow was not found")
       return()
