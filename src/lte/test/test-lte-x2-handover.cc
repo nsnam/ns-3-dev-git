@@ -332,7 +332,7 @@ LteX2HandoverTestCase::DoRun ()
 
               ApplicationContainer clientApps;
               ApplicationContainer serverApps;
-              BearerData bearerData;
+              BearerData bearerData = BearerData ();
 
               // always true: if (epcDl)
               {

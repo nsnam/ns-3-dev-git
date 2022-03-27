@@ -412,7 +412,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
 
               ApplicationContainer clientApps;
               ApplicationContainer serverApps;
-              BearerData bearerData;
+              BearerData bearerData = BearerData ();
 
               if (m_useUdp)
                 {
