@@ -70,24 +70,11 @@ main (int argc, char *argv[])
   typedef std::vector<NetDeviceContainer> vectorOfNetDeviceContainer;
   typedef std::vector<vectorOfNetDeviceContainer> vectorOfVectorOfNetDeviceContainer;
 
-  // Enable parallel simulator with the command line arguments
-  MpiInterface::Enable (&argc, &argv);
-
-  SinkTracer::Init ();
-
   SystemWallClockMs t0;  // Total time
   SystemWallClockMs t1;  // Setup time
   SystemWallClockMs t2;  // Run time/
   t0.Start ();
   t1.Start ();
-
-  uint32_t systemId = MpiInterface::GetSystemId ();
-  uint32_t systemCount = MpiInterface::GetSize ();
-
-  RANK0COUT (" ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl);
-
-  GlobalValue::Bind ("SimulatorImplementationType",
-                     StringValue ("ns3::DistributedSimulatorImpl"));
 
   uint32_t nCN = 2;
   uint32_t nLANClients = 10;
@@ -109,6 +96,20 @@ main (int argc, char *argv[])
   cmd.AddValue ("test", "Enable regression test output", testing);
   
   cmd.Parse (argc,argv);
+
+  // Enable parallel simulator with the command line arguments
+  MpiInterface::Enable (&argc, &argv);
+
+  SinkTracer::Init ();
+
+  uint32_t systemId = MpiInterface::GetSystemId ();
+  uint32_t systemCount = MpiInterface::GetSize ();
+
+  RANK0COUT (" ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl);
+
+  GlobalValue::Bind ("SimulatorImplementationType",
+                     StringValue ("ns3::DistributedSimulatorImpl"));
+
 
   if (nCN < 2)
     {

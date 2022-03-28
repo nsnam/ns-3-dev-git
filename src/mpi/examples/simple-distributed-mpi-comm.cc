@@ -127,7 +127,7 @@ main (int argc, char *argv[])
   bool testing = false;
 
   // Parse command line
-  CommandLine cmd;
+  CommandLine cmd(__FILE__);
   cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
   cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization (instead of granted time window)", nullmsg);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
