@@ -189,7 +189,7 @@ IePrep::GetInformationFieldSize () const
 void
 IePrep::Print (std::ostream& os) const
 {
-  os << "PREP=(Flags=" << m_flags << ", Hopcount=" << m_hopcount << ", TTL=" << m_ttl
+  os << "PREP=(Flags=" << +m_flags << ", Hopcount=" << +m_hopcount << ", TTL=" << m_ttl
      << ",Destination=" << m_destinationAddress << ", Dest. seqnum=" << m_destSeqNumber
      << ", Lifetime=" << m_lifetime << ", Metric=" << m_metric << ", Originator="
      << m_originatorAddress << ", Orig. seqnum=" << m_originatorSeqNumber << ")";
