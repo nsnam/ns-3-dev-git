@@ -1473,7 +1473,13 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           mpdu->GetPacket ()->PeekPacketTag (tag);
           ReceivedNormalAck (*it->second->begin (), m_txParams.m_txVector, txVector, rxSignalInfo, tag.Get ());
         }
-      else if (hdr.IsBlockAck () && m_txTimer.IsRunning ()
+      // TODO the PHY should not pass us a non-TB PPDU if we are waiting for a
+      // TB PPDU. However, processing the PHY header is done by the PHY entity
+      // corresponding to the modulation class of the PPDU being received, hence
+      // it is not possible to check if a valid TRIGVECTOR is stored when receiving
+      // PPDUs of older modulation classes. Therefore, we check here that we are
+      // actually receiving a TB PPDU.
+      else if (hdr.IsBlockAck () && txVector.IsUlMu () && m_txTimer.IsRunning ()
                && m_txTimer.GetReason () == WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU)
         {
           Mac48Address sender = hdr.GetAddr2 ();
