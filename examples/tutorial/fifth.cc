@@ -79,6 +79,16 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
+
+  // In the following three lines, TCP NewReno is used as the congestion
+  // control algorithm, the initial congestion window of a TCP connection is
+  // set to 1 packet, and the classic fast recovery algorithm is used. Note
+  // that this configuration is used only to demonstrate how TCP parameters
+  // can be configured in ns-3. Otherwise, it is recommended to use the default
+  // settings of TCP in ns-3.
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpNewReno"));
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
+  Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType", TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
   
   NodeContainer nodes;
   nodes.Create (2);
