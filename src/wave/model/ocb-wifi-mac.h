@@ -103,7 +103,7 @@ public:
    * here it will overloaded to log warn message
    * \return An invalid BSSID.
    */
-  virtual Mac48Address GetBssid (void) const;
+  virtual Mac48Address GetBssid (uint8_t /* linkId */) const;
   /**
    * SetLinkUpCallback and SetLinkDownCallback will be overloaded
    * In OCB mode, stations can send packets directly whenever they want

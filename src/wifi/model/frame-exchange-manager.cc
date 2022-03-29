@@ -190,6 +190,9 @@ void
 FrameExchangeManager::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
+  // For APs, the BSSID is the MAC address. For STAs, the BSSID will be overwritten
+  // when receiving Beacon frames or Probe Response frames
+  SetBssid (address);
   m_self = address;
 }
 
@@ -204,6 +207,12 @@ FrameExchangeManager::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
   m_bssid = bssid;
+}
+
+Mac48Address
+FrameExchangeManager::GetBssid (void) const
+{
+  return m_bssid;
 }
 
 void

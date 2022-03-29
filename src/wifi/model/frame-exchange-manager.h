@@ -163,6 +163,12 @@ public:
    */
   virtual void SetBssid (Mac48Address bssid);
   /**
+   * Get the Basic Service Set Identification.
+   *
+   * \return the BSSID
+   */
+  Mac48Address GetBssid (void) const;
+  /**
    * Set the callback to invoke when an MPDU is dropped.
    *
    * \param callback the callback to invoke when an MPDU is dropped

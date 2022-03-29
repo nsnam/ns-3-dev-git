@@ -204,12 +204,12 @@ StaWifiMac::SendProbeRequest (void)
 void
 StaWifiMac::SendAssociationRequest (bool isReassoc)
 {
-  NS_LOG_FUNCTION (this << GetBssid () << isReassoc);
+  NS_LOG_FUNCTION (this << GetBssid (0) << isReassoc);  // TODO use appropriate linkId
   WifiMacHeader hdr;
   hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-  hdr.SetAddr1 (GetBssid ());
+  hdr.SetAddr1 (GetBssid (0));  // TODO use appropriate linkId
   hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetBssid ());
+  hdr.SetAddr3 (GetBssid (0));  // TODO use appropriate linkId
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Ptr<Packet> packet = Create<Packet> ();
@@ -242,7 +242,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   else
     {
       MgtReassocRequestHeader reassoc;
-      reassoc.SetCurrentApAddress (GetBssid ());
+      reassoc.SetCurrentApAddress (GetBssid (0));  // TODO use appropriate linkId
       reassoc.SetSsid (GetSsid ());
       reassoc.SetSupportedRates (GetSupportedRates ());
       reassoc.SetCapabilities (GetCapabilities ());
@@ -278,7 +278,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   //   AC_BE should be selected.
   // — If category AC_BE was not selected by the previous step, category AC_VO
   //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-  else if (!GetWifiRemoteStationManager ()->GetQosSupported (GetBssid ()))
+  else if (!GetWifiRemoteStationManager ()->GetQosSupported (GetBssid (0)))  // TODO use appropriate linkId
     {
       GetBEQueue ()->Queue (packet, hdr);
     }
@@ -531,7 +531,7 @@ StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
       hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT control field is not yet implemented (set it to 1 when implemented)
     }
 
-  hdr.SetAddr1 (GetBssid ());
+  hdr.SetAddr1 (GetBssid (0));  // TODO use appropriate linkId
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
@@ -582,7 +582,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           NotifyRxDrop (packet);
           return;
         }
-      if (hdr->GetAddr2 () != GetBssid ())
+      if (hdr->GetAddr2 () != GetBssid (0))  // TODO use appropriate linkId
         {
           NS_LOG_LOGIC ("Received data frame not from the BSS we are associated with: ignore");
           NotifyRxDrop (packet);
@@ -592,7 +592,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
         {
           if (hdr->IsQosAmsdu ())
             {
-              NS_ASSERT (hdr->GetAddr3 () == GetBssid ());
+              NS_ASSERT (hdr->GetAddr3 () == GetBssid (0));  // TODO use appropriate linkId
               DeaggregateAmsduAndForward (mpdu);
               packet = 0;
             }
@@ -646,7 +646,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           NS_LOG_LOGIC ("No match for BSS membership selector");
           goodBeacon = false;
         }
-      if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid ())
+      if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid (linkId))
         {
           NS_LOG_LOGIC ("Beacon is not for us");
           goodBeacon = false;
@@ -783,7 +783,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
                                     Mac48Address bssid, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << beacon << apAddr << bssid << +linkId);
-  SetBssid (bssid);
+  SetBssid (bssid, linkId);
   const CapabilityInformation& capabilities = beacon.GetCapabilities ();
   const SupportedRates& rates = beacon.GetSupportedRates ();
   for (const auto & mode : GetWifiPhy (linkId)->GetModeList ())
@@ -967,7 +967,7 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
     }
   GetWifiRemoteStationManager (linkId)->SetShortPreambleEnabled (isShortPreambleEnabled);
   GetWifiRemoteStationManager (linkId)->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
-  SetBssid (bssid);
+  SetBssid (bssid, linkId);
 }
 
 void
@@ -1173,12 +1173,12 @@ StaWifiMac::SetState (MacState value)
   if (value == ASSOCIATED
       && m_state != ASSOCIATED)
     {
-      m_assocLogger (GetBssid ());
+      m_assocLogger (GetBssid (0));  // TODO use appropriate linkId
     }
   else if (value != ASSOCIATED
            && m_state == ASSOCIATED)
     {
-      m_deAssocLogger (GetBssid ());
+      m_deAssocLogger (GetBssid (0));  // TODO use appropriate linkId
     }
   m_state = value;
 }

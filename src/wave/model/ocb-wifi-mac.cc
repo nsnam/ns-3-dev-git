@@ -58,8 +58,6 @@ OcbWifiMac::OcbWifiMac (void)
   NS_LOG_FUNCTION (this);
   // Let the lower layers know that we are acting as an OCB node
   SetTypeOfStation (OCB);
-  // BSSID is still needed in the low part of MAC
-  WifiMac::SetBssid (WILDCARD_BSSID);
 }
 
 OcbWifiMac::~OcbWifiMac (void)
@@ -130,7 +128,7 @@ OcbWifiMac::SetBssid (Mac48Address bssid)
 }
 
 Mac48Address
-OcbWifiMac::GetBssid (void) const
+OcbWifiMac::GetBssid (uint8_t /* linkId */) const
 {
   NS_LOG_WARN ("in OCB mode we should not call GetBssid");
   return WILDCARD_BSSID;

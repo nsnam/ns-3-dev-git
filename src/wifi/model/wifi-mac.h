@@ -223,13 +223,15 @@ public:
    */
   virtual void SetAddress (Mac48Address address);
   /**
-   * \return the BSSID of the network this device belongs to.
+   * \return the BSSID of the network the given link belongs to.
+   * \param linkId the ID of the given link
    */
-  Mac48Address GetBssid (void) const;
+  Mac48Address GetBssid (uint8_t linkId) const;
   /**
-   * \param bssid the BSSID of the network that this device belongs to.
+   * \param bssid the BSSID of the network that the given link belongs to.
+   * \param linkId the ID of the given link
    */
-  void SetBssid (Mac48Address bssid);
+  void SetBssid (Mac48Address bssid, uint8_t linkId);
 
   /**
    * Return true if packets can be forwarded to the given destination,
@@ -752,7 +754,6 @@ private:
 
   Mac48Address m_address; //!< MAC address of this station
   Ssid m_ssid;            //!< Service Set ID (SSID)
-  Mac48Address m_bssid;   //!< the BSSID
 
   /** This type defines a mapping between an Access Category index,
   and a pointer to the corresponding channel access function.

@@ -58,20 +58,6 @@ AdhocWifiMac::~AdhocWifiMac ()
   NS_LOG_FUNCTION (this);
 }
 
-void
-AdhocWifiMac::SetAddress (Mac48Address address)
-{
-  NS_LOG_FUNCTION (this << address);
-  //In an IBSS, the BSSID is supposed to be generated per Section
-  //11.1.3 of IEEE 802.11. We don't currently do this - instead we
-  //make an IBSS STA a bit like an AP, with the BSSID for frames
-  //transmitted by each STA set to that STA's address.
-  //
-  //This is why we're overriding this method.
-  WifiMac::SetAddress (address);
-  WifiMac::SetBssid (address);
-}
-
 bool
 AdhocWifiMac::CanForwardPacketsTo (Mac48Address to) const
 {
@@ -150,7 +136,7 @@ AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetBssid ());
+  hdr.SetAddr3 (GetBssid (0));
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
 

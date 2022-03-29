@@ -682,7 +682,7 @@ WifiPrimaryChannelsTest::SendDlSuPpdu (uint8_t bss, uint16_t txChannelWidth)
   hdr.SetQosTid (0);
   hdr.SetAddr1 (staDev->GetMac ()->GetAddress ());
   hdr.SetAddr2 (apDev->GetMac ()->GetAddress ());
-  hdr.SetAddr3 (apDev->GetMac ()->GetBssid ());
+  hdr.SetAddr3 (apDev->GetMac ()->GetBssid (0));
   hdr.SetSequenceNumber (1);
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (1000), hdr);
   apDev->GetPhy ()->Send (WifiConstPsduMap ({std::make_pair (SU_STA_ID, psdu)}), txVector);
@@ -703,7 +703,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu (uint8_t bss, uint16_t txChannelWidth, HeR
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
   hdr.SetAddr2 (apDev->GetMac ()->GetAddress ());
-  hdr.SetAddr3 (apDev->GetMac ()->GetBssid ());
+  hdr.SetAddr3 (apDev->GetMac ()->GetBssid (0));
   hdr.SetSequenceNumber (1);
 
   WifiConstPsduMap psduMap;
@@ -749,7 +749,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu (uint8_t bss, uint16_t txChannelWidth, H
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
   hdr.SetAddr1 (apDev->GetMac ()->GetAddress ());
-  hdr.SetAddr3 (apDev->GetMac ()->GetBssid ());
+  hdr.SetAddr3 (apDev->GetMac ()->GetBssid (0));
   hdr.SetSequenceNumber (1);
 
   Time duration = Seconds (0);

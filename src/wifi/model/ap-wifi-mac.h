@@ -65,7 +65,6 @@ public:
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
   bool SupportsSendFrom (void) const override;
-  void SetAddress (Mac48Address address) override;
   Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const override;
   void ConfigureStandard (WifiStandard standard) override;
 

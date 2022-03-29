@@ -422,20 +422,16 @@ WifiMac::GetSsid (void) const
 }
 
 void
-WifiMac::SetBssid (Mac48Address bssid)
+WifiMac::SetBssid (Mac48Address bssid, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << bssid);
-  m_bssid = bssid;
-  for (auto& link : m_links)
-    {
-      link->feManager->SetBssid (bssid);
-    }
+  NS_LOG_FUNCTION (this << bssid << +linkId);
+  GetLink (linkId).feManager->SetBssid (bssid);
 }
 
 Mac48Address
-WifiMac::GetBssid (void) const
+WifiMac::GetBssid (uint8_t linkId) const
 {
-  return m_bssid;
+  return GetLink (linkId).feManager->GetBssid ();
 }
 
 void
@@ -763,7 +759,6 @@ WifiMac::SetupFrameExchangeManager (WifiStandard standard)
   feManager->SetMacTxMiddle (m_txMiddle);
   feManager->SetMacRxMiddle (m_rxMiddle);
   feManager->SetAddress (GetAddress ());
-  feManager->SetBssid (GetBssid ());
   feManager->GetWifiTxTimer ().SetMpduResponseTimeoutCallback (MakeCallback (&MpduResponseTimeoutTracedCallback::operator(),
                                                                              &m_mpduResponseTimeoutCallback));
   feManager->GetWifiTxTimer ().SetPsduResponseTimeoutCallback (MakeCallback (&PsduResponseTimeoutTracedCallback::operator(),

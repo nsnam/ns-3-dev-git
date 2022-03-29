@@ -149,16 +149,6 @@ ApWifiMac::GetLink (uint8_t linkId) const
 }
 
 void
-ApWifiMac::SetAddress (Mac48Address address)
-{
-  NS_LOG_FUNCTION (this << address);
-  //As an AP, our MAC address is also the BSSID. Hence we are
-  //overriding this function and setting both in our parent class.
-  WifiMac::SetAddress (address);
-  WifiMac::SetBssid (address);
-}
-
-void
 ApWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
