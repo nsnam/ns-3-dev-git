@@ -1527,6 +1527,12 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           NS_LOG_DEBUG ("Received a Multi-STA BlockAck from=" << hdr.GetAddr2 ());
 
           NS_ASSERT (m_staMac != nullptr && m_staMac->IsAssociated ());
+          if (hdr.GetAddr2 () != m_bssid)
+            {
+              NS_LOG_DEBUG ("The sender is not the AP we are associated with");
+              return;
+            }
+
           uint16_t staId = m_staMac->GetAssociationId ();
           std::vector<uint32_t> indices = blockAck.FindPerAidTidInfoWithAid (staId);
 
