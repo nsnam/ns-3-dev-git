@@ -990,7 +990,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       NS_ASSERT (rateFound);
 
       return WifiTxVector (rtsRate, GetDefaultTxPowerLevel (), GetPreambleForTransmission (rtsRate.GetModulationClass (), GetShortPreambleEnabled ()),
-                           800, 1, 1, 0, GetChannelWidthForTransmission (rtsRate, GetChannelWidth (station)), GetAggregation (station));
+                           800, 1, 1, 0, GetChannelWidthForTransmission (rtsRate, GetPhy ()->GetChannelWidth (), GetChannelWidth (station)), GetAggregation (station));
     }
 }
 

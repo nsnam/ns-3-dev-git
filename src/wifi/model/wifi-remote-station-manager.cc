@@ -545,7 +545,17 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       txVector.SetMode (mgtMode);
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled ()));
       txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
-      txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
+      uint16_t channelWidth = m_wifiPhy->GetChannelWidth ();
+      if (!header.GetAddr1 ().IsGroup ())
+        {
+          if (uint16_t rxWidth = GetChannelWidthSupported (header.GetAddr1 ());
+              rxWidth < channelWidth)
+            {
+              channelWidth = rxWidth;
+            }
+        }
+
+      txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, channelWidth));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, m_wifiPhy->GetDevice ()));
     }
   else
