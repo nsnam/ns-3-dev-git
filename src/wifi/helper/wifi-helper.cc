@@ -104,7 +104,7 @@ AsciiPhyReceiveSinkWithContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << "" << context << " " << *p << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << context << " " << *p << std::endl;
 }
 
 /**
