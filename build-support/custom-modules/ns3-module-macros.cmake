@@ -399,7 +399,6 @@ function(build_lib)
     target_include_directories(
       ${bindings-name} PUBLIC ${Python3_INCLUDE_DIRS} ${bindings_output_folder}
     )
-    target_compile_options(${bindings-name} PRIVATE -Wno-error)
 
     # If there is any, remove the "lib" prefix of libraries (search for
     # "set(lib${BLIB_LIBNAME}")

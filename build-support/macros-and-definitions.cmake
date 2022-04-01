@@ -361,7 +361,7 @@ macro(process_options)
     else()
       add_compile_options(-Wall) # -Wextra
       if(${NS3_WARNINGS_AS_ERRORS})
-        add_compile_options(-Werror)
+        add_compile_options(-Werror -Wno-error=deprecated-declarations)
       endif()
     endif()
   endif()
