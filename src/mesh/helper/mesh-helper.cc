@@ -244,6 +244,7 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
       Ptr<MeshWifiInterfaceMac> mac;
       if (mpd)
         {
+          currentStream += mpd->AssignStreams (currentStream);
           // To access, we need the underlying WifiNetDevices
           std::vector<Ptr<NetDevice> > ifaces = mpd->GetInterfaces ();
           for (std::vector<Ptr<NetDevice> >::iterator i = ifaces.begin (); i != ifaces.end (); i++)

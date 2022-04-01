@@ -30,6 +30,8 @@
 
 namespace ns3 {
 
+class RandomVariableStream;
+
 /**
  * \ingroup mesh
  *
@@ -138,6 +140,24 @@ public:
   void ResetStats ();
   ///@}
 
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
+  /**
+   * Return a (random) forwarding delay value from the random variable
+   * ForwardingDelay attribute.
+   * 
+   * \return A Time value from the ForwardingDelay random variable
+   */
+  Time GetForwardingDelay () const;
+
 private:
   /**
    * Receive packet from interface
@@ -197,6 +217,8 @@ private:
   Ptr<BridgeChannel> m_channel;
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
+  /// Random variable used for forwarding delay and jitter
+  Ptr<RandomVariableStream> m_forwardingRandomVariable;
 
   /// statistics counters
   struct Statistics

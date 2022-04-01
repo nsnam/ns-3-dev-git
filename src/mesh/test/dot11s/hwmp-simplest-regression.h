@@ -34,27 +34,32 @@ using namespace ns3;
  * Initiate scenario with 2 stations. Procedure of opening peer link
  * is the following:
  * \verbatim
+ *           server       client
  * <-----------|----------->   Broadcast frame
  *             |----------->|  Unicast frame
  *
  *                                        !!! PMP routines:
  * <-----------|----------->|             Beacon
- *             |<-----------|             Peer Link Open frame 
  *             |----------->|             Peer Link Open frame
- *             |----------->|             Peer Link Confirm frame
  *             |<-----------|             Peer Link Confirm frame
+ *             |<-----------|             Peer Link Open frame 
+ *             |----------->|             Peer Link Confirm frame
  *             |............|             !!! Data started:
- *             |<-----------|-----------> Arp Request
- * <-----------|----------->|             Arp Request (fwd)
+ *             |<-----------|-----------> ARP Request (time 2)
  * <-----------|----------->|             PREQ
  *             |<-----------|             PREP
  *             |----------->|             ARP reply
- *             |<-----------|             Data
+ * <-----------|----------->|             ARP Request (reflooded after delay)
+ *             |<-----------|             Data (first UDP datagram)
+ * <-----------|----------->|             ARP Request
+ *             |<-----------|             ARP reply
  *             |----------->|             Data
+ *             |<-----------|-----------> ARP Request (reflooded after delay)
  *             |............|             Some other beacons
  *             |<-----------|             Data
  *             |----------->|             Data
  *             |............|             !!! Route expiration routines:
+ *             |............|             !!! (after time 7)
  *             |<-----------|-----------> PREQ (route expired)
  *             |----------->|             PREP
  *             |<-----------|             Data
@@ -62,10 +67,8 @@ using namespace ns3;
  *             |............|
  * \endverbatim
  * At 10 seconds stations become unreachable, so UDP client tries to
- * close peer link due to TX-fail, and UDP-srver tries to close link
+ * close peer link due to TX-fail, and UDP server tries to close peer link
  * due to beacon loss
-
-
  */
 class HwmpSimplestRegressionTest : public TestCase
 {

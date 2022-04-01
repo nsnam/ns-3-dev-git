@@ -21,6 +21,9 @@
 
 #include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/string.h"
 #include "ns3/pointer.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
@@ -50,7 +53,12 @@ MeshPointDevice::GetTypeId ()
                     MakePointerAccessor (
                       &MeshPointDevice::GetRoutingProtocol, &MeshPointDevice::SetRoutingProtocol),
                     MakePointerChecker<
-                      MeshL2RoutingProtocol> ());
+                      MeshL2RoutingProtocol> ())
+    .AddAttribute ("ForwardingDelay",
+                   "A random variable to account for processing time (microseconds) to forward a frame.",
+                   StringValue ("ns3::UniformRandomVariable[Min=300.0|Max=400.0]"),
+                   MakePointerAccessor (&MeshPointDevice::m_forwardingRandomVariable),
+                   MakePointerChecker<RandomVariableStream> ());
   return tid;
 }
 
@@ -109,11 +117,12 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
       if (m_routingProtocol->RemoveRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
         {
           m_rxCallback (this, packet_copy, realProtocol, src);
-          NS_LOG_DEBUG ("Forwarding from " << src48 << " to " << dst48 << " at " << m_address);
-          Forward (incomingPort, packet, protocol, src48, dst48);
-
           m_rxStats.broadcastData++;
           m_rxStats.broadcastDataBytes += packet->GetSize ();
+          Time forwardingDelay = GetForwardingDelay ();
+          NS_LOG_DEBUG ("Forwarding broadcast from " << src48 << " to " << dst48
+            << " with delay " << forwardingDelay.As (Time::US));
+          Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet, protocol, src48, dst48); 
         }
       return;
     }
@@ -129,7 +138,12 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
       return;
     }
   else
-    Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
+    {
+      Time forwardingDelay = GetForwardingDelay ();
+      Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet->Copy (), protocol, src48, dst48); 
+      NS_LOG_DEBUG ("Forwarding unicast from " << src48 << " to " << dst48 
+        << " with delay " << forwardingDelay.As (Time::US));
+    }
 }
 
 void
@@ -485,6 +499,20 @@ MeshPointDevice::ResetStats ()
   m_rxStats = Statistics ();
   m_txStats = Statistics ();
   m_fwdStats = Statistics ();
+}
+
+int64_t
+MeshPointDevice::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_forwardingRandomVariable->SetStream (stream);
+  return 1;
+}
+
+Time
+MeshPointDevice::GetForwardingDelay () const
+{
+    return MicroSeconds (m_forwardingRandomVariable->GetInteger ());
 }
 
 } // namespace ns3

@@ -56,8 +56,8 @@ HwmpProactiveRegressionTest::~HwmpProactiveRegressionTest ()
 void
 HwmpProactiveRegressionTest::DoRun ()
 {
-  RngSeedManager::SetSeed (12345);
-  RngSeedManager::SetRun (7);
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -113,19 +113,27 @@ HwmpProactiveRegressionTest::CreateDevices ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> chan = wifiChannel.Create ();
   wifiPhy.SetChannel (chan);
+  // This test was written prior to the preamble detection model
+  wifiPhy.DisablePreambleDetectionModel ();
 
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
+  // Due to the fact that MAC addresses are set by a local static variable
+  // that already allocates addresses to the previous tests in regression.cc,
+  // the first allocated address in this test will be 00:00:00:00:00:0b.
+  // (pmp allocates 2, simplest allocates 2, and reactive allocates 6)
+  // Therefore, the middle node will have address 00:00:00:00:00:0d,
+  // so we set this to the root as per the comment in the header file.
   mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:0d")));
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Five devices, 9 streams per device 
+  // Five devices, 10 streams per device 
   streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream mismatch");
-  // No streams used here, by default
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 10), "Stream mismatch");
+  // No streams used here, by default, so streamsUsed should not change
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 10), "Stream mismatch");
 
   // 3. setup TCP/IP
   InternetStackHelper internetStack;

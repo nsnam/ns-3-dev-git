@@ -104,6 +104,45 @@ Hybrid Wireless Mesh Protocol
 
 HWMP is implemented in both modes, reactive and proactive, although path maintenance is not implemented (so active routes may time out and need to be rebuilt, causing packet loss). Also the model implements an ability to transmit broadcast data and management frames as unicasts (see appropriate attributes). This feature is disabled at a station when the number of neighbors of the station is more than a threshold value.
 
+Forwarding delay
+~~~~~~~~~~~~~~~~
+
+Previous versions of this model have had issues with collisions due to
+the lack of a model for forwarding delay, and lack of clarity about whether
+backoff should be invoked when forwarding a broadcast frame.  These issues
+become problematic for mesh, because in a topology in which multiple nodes
+within radio range of the next hop node decide to forward a received
+frame at the same time, they will repeatedly collide (if no backoff is
+triggered).  Past contributors have argued for the triggering of backoff
+when forwarding a frame (e.g., [Hep16]_), but current wifi module maintainers
+concluded that the standard does not call for backoff in this case.  
+This was also privately confirmed with a Wi-Fi vendor.
+`Issue 478 <https://gitlab.com/nsnam/ns-3-dev/-/issues/478>`_ in the GitLab.com
+tracker has more discussion on this point.
+
+In practice, it is assumed that collisions can be avoided due to the fact
+that each mesh node will take slightly different times to process and
+forward the frame, and one will go first and trigger a channel busy detection
+on the other nodes.  To accomplish this in ns-3, we
+must include a model for forwarding delay that includes some randomness.
+
+The class :cpp:class:`ns3::MeshPointDevice` is responsible for forwarding
+unicast frames, and the class :cpp:class:`ns3::dot11s::HwmpProtocol` is
+responsible for forwarding management frames when HWMP is used.
+:cpp:class:`ns3::MeshPointDevice` has an attribute
+called `ForwardingDelay` that configures a random variable (units of
+microseconds) from which a forwarding delay value is drawn for each frame
+forwarding event.  The default configuration of this attribute
+is a uniform random variable between 300 and 400 microseconds.  The mean
+value was chosen based on the measurement results reported in [Hep16]_ which
+measured and derived an average 350 microsecond delay in forwarding frames
+on real mesh devices.  The range of this variable is somewhat arbitrary and
+determined by some simulation testing to provide a generally low
+probability of collision; the 100 microsecond range is roughly 11 slot times.
+The HWMP protocol can also access this random variable to create forwarding
+delay for the forwarding of management frames.
+Users may substitute other random variable configurations as desired.
+
 Scope and Limitations
 =====================
 
@@ -139,16 +178,28 @@ Models yet to be created
 Open issues
 ###########
 
-A bug exists in the Wi-Fi module that manifests itself as performance
+Users should be aware that the mesh module has not been actively maintained
+for several years and that there may be some performance and
+standards-alignment issues with the current code.  Below is a listing of
+possible (confirmed and unconfirmed) issues.
+
+A bug was previously reported in the Wi-Fi module that manifests itself as performance
 degradation in large mesh networks, due to incorrect duplicate frame
-detection for QoS data frames (bug 2326).
+detection for QoS data frames (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2326).
 
-Mesh does not work for 802.11n/ac stations (bug 2276).
+Mesh does not work for 802.11n/ac/ax stations (https://gitlab.com/nsnam/ns-3-dev/-/issues/176).
 
-Energy module can not be used on mesh devices (bug 2265).
+Mesh PCAP is not decoded properly by Wireshark (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2880).
+
+Energy module can not be used on mesh devices (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2265).
 
 IE11S_MESH_PEERING_PROTOCOL_VERSION should be removed as per standard. 
-Protocol ID should actually be part of the Mesh Peering Management IE (bug 2600).
+Protocol ID should actually be part of the Mesh Peering Management IE (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2600).
 
-Node packet processing times are not modeled; some evaluation of the impact
-of packet processing delays is discussed in [Hep16]_.
+MeshInformationElementVector printing error (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2728).
+
+Mesh is not compatible with IPv6 (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2881).
+
+Mesh is forwarding multicast frames as unicast rather than as group-addressed frames (https://gitlab.com/nsnam/ns-3-dev/-/issues/485).
+
+Mesh group addresses are not being set correctly for multicast frames (https://gitlab.com/nsnam/ns-3-dev/-/issues/476).

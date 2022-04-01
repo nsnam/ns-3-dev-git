@@ -39,6 +39,33 @@
  *  * --- * --- *                _
  *  ^ Ping source
  *
+ * By varying m_xSize and m_ySize, one can configure the route that is used.
+ * When the inter-nodal distance is small, the source can reach the sink
+ * directly.  When the inter-nodal distance is intermediate, the route
+ * selected is diagonal (two hop).  When the inter-nodal distance is a bit
+ * larger, the diagonals cannot be used and a four-hop route is selected.
+ * When the distance is a bit larger, the packets will fail to reach even the
+ * adjacent nodes.
+ *
+ * As of ns-3.36 release, with default configuration (mesh uses Wi-Fi 802.11a
+ * standard and the ArfWifiManager rate control by default), the maximum
+ * range is roughly 50m.  The default step size in this program is set to 50m,
+ * so any mesh packets in the above diagram depiction will not be received
+ * successfully on the diagonal hops between two nodes but only on the
+ * horizontal and vertical hops.  If the step size is reduced to 35m, then
+ * the shortest path will be on the diagonal hops.  If the step size is reduced
+ * to 17m or less, then the source will be able to reach the sink directly
+ * without any mesh hops (for the default 3x3 mesh depicted above). 
+ *
+ * The position allocator will lay out the nodes in the following order
+ * (corresponding to Node ID and to the diagram above):
+ *
+ * 6 - 7 - 8
+ * |   |   | 
+ * 3 - 4 - 5
+ * |   |   | 
+ * 0 - 1 - 2
+ *
  *  See also MeshTest::Configure to read more about configurable
  *  parameters.
  */
@@ -57,7 +84,26 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
+NS_LOG_COMPONENT_DEFINE ("MeshExample");
+
+// Declaring these variables outside of main() for use in trace sinks
+uint32_t g_udpTxCount = 0;
+uint32_t g_udpRxCount = 0;
+
+void
+TxTrace (Ptr<const Packet> p)
+{
+  NS_LOG_DEBUG ("Sent " << p->GetSize () << " bytes");  
+  g_udpTxCount++;
+}
+
+void
+RxTrace (Ptr<const Packet> p)
+{
+  NS_LOG_DEBUG ("Received " << p->GetSize () << " bytes");  
+  g_udpRxCount++;
+}
+
 
 /**
  * \ingroup mesh
@@ -115,10 +161,10 @@ private:
 MeshTest::MeshTest () :
   m_xSize (3),
   m_ySize (3),
-  m_step (100.0),
+  m_step (50.0),
   m_randomStart (0.1),
   m_totalTime (100.0),
-  m_packetInterval (0.1),
+  m_packetInterval (1),
   m_packetSize (1024),
   m_nIfaces (1),
   m_chan (true),
@@ -195,6 +241,8 @@ MeshTest::CreateNodes ()
   mesh.SetNumberOfInterfaces (m_nIfaces);
   // Install protocols and return container if MeshPointDevices
   meshDevices = mesh.Install (wifiPhy, nodes);
+  // AssignStreams can optionally be used to control random variable streams
+  mesh.AssignStreams (meshDevices, 0);
   // Setup mobility - static grid topology
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -207,7 +255,7 @@ MeshTest::CreateNodes ()
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
   if (m_pcap)
-    wifiPhy.EnablePcapAll (std::string ("mp-"));
+    wifiPhy.EnablePcapAll (std::string ("mp"));
   if (m_ascii)
     {
       AsciiTraceHelper ascii;
@@ -226,17 +274,22 @@ MeshTest::InstallInternetStack ()
 void
 MeshTest::InstallApplication ()
 {
-  UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
-  serverApps.Start (Seconds (0.0));
-  serverApps.Stop (Seconds (m_totalTime));
-  UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
+  uint16_t portNumber = 9;
+  UdpEchoServerHelper echoServer (portNumber);
+  uint16_t sinkNodeId = m_xSize * m_ySize - 1;
+  ApplicationContainer serverApps = echoServer.Install (nodes.Get (sinkNodeId));
+  serverApps.Start (Seconds (1.0));
+  serverApps.Stop (Seconds (m_totalTime + 1));
+  UdpEchoClientHelper echoClient (interfaces.GetAddress (sinkNodeId), portNumber);
   echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(m_totalTime*(1/m_packetInterval))));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (m_packetInterval)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (m_packetSize));
-  ApplicationContainer clientApps = echoClient.Install (nodes.Get (m_xSize*m_ySize-1));
-  clientApps.Start (Seconds (0.0));
-  clientApps.Stop (Seconds (m_totalTime));
+  ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
+  Ptr<UdpEchoClient> app = clientApps.Get (0)->GetObject<UdpEchoClient> ();
+  app->TraceConnectWithoutContext ("Tx", MakeCallback (&TxTrace));
+  app->TraceConnectWithoutContext ("Rx", MakeCallback (&RxTrace));
+  clientApps.Start (Seconds (1.0));
+  clientApps.Stop (Seconds (m_totalTime + 1.5));
 }
 int
 MeshTest::Run ()
@@ -245,9 +298,10 @@ MeshTest::Run ()
   InstallInternetStack ();
   InstallApplication ();
   Simulator::Schedule (Seconds (m_totalTime), &MeshTest::Report, this);
-  Simulator::Stop (Seconds (m_totalTime));
+  Simulator::Stop (Seconds (m_totalTime + 2));
   Simulator::Run ();
   Simulator::Destroy ();
+  std::cout << "UDP echo packets sent: " << g_udpTxCount << " received: " << g_udpRxCount << std::endl;
   return 0;
 }
 void

@@ -30,11 +30,13 @@ using namespace ns3;
  * \ingroup dot11s-test
  * \ingroup tests
  *
- * \brief There are 5 stations set into a column, the center station is root.
- * Regression test indicates, that traffic goes from the first to the
+ * \brief There are 5 stations set into a row, the center station is root.
+ * Regression test indicates that traffic goes from the first to the
  * last stations without reactive route discovery procedure
  * \verbatim
- * Src                Root                 Dst
+ *          Src                Root                 Dst
+ * (node ID) 0         1         2         3         4
+ * (MAC)   00:0b     00:0c     00:0d     00:0e     00:0f
  *           |         |<--------|-------->|         |          Proactive PREQ
  *           |         |-------->|         |         |          PREP
  *           |         |         |<--------|         |          PREP
@@ -45,14 +47,15 @@ using namespace ns3;
  *  <--------|-------->|         |         |<--------|--------> Proactive PREQ
  *  Note, that at this moment all routes are known, and no reactive
  *  path discovery procedure shall be initiated
- *  <--------|-------->|         |         |         |          ARP request
- *           |.........|.........|.........|.........|
  *           |         |         |<--------|-------->|          ARP request
- *           |         |         |         |<--------|          ARP reply
  *           |.........|.........|.........|.........|
- *           |<--------|         |         |         |          ARP reply
- *           |-------->|         |         |         |          DATA
- *             ^ Further data is forwarded by proactive path
+ *  <--------|-------->|         |         |         |          ARP request
+ *           |-------->|         |         |         |          ARP reply
+ *           |.........|.........|.........|.........|
+ *           |         |         |         |-------->|          ARP reply
+ *           |         |         |         |<--------|          DATA
+ *                                             ^
+ *               Further data is forwarded by proactive path
  * \endverbatim
  *
  */

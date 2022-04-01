@@ -35,7 +35,8 @@ using namespace ns3;
  * \verbatim
  *  <-----------|----------->   Broadcast frame
  *              |----------->|  Unicast frame
- *            10          11            12           13
+ * (Node ID)   0           1             2            3
+ * (MAC addr) 10           11           12           13
  *             |            |<-----------|----------->|             ARP request (12 asks who has 10)
  *             |            |            |<-----------|-----------> ARP request
  *             |<-----------|----------->|            |             ARP request

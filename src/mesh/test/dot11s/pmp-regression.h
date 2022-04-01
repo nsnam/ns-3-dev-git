@@ -35,10 +35,10 @@ using namespace ns3;
  * is the following:
  * \verbatim
  * |----------->|  Beacon
- * |<-----------|  Peer Link Open frame 
  * |----------->|  Peer Link Open frame
- * |----------->|  Peer Link Confirm frame
  * |<-----------|  Peer Link Confirm frame
+ * |<-----------|  Peer Link Open frame 
+ * |----------->|  Peer Link Confirm frame
  * |............|
  * |<---------->|  Other beacons
  * \endverbatim

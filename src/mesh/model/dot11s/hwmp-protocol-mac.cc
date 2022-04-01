@@ -90,6 +90,7 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   if ((destination == Mac48Address::GetBroadcast ()) && (m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (),
                                                                                     source)))
     {
+      NS_LOG_DEBUG ("Dropping frame; source " << source << " dest " << destination << " seqno " << meshHdr.GetMeshSeqno ()); 
       return false;
     }
   return true;
@@ -229,10 +230,10 @@ HwmpProtocolMac::SendPreq (IePreq preq)
   NS_LOG_FUNCTION (this);
   std::vector<IePreq> preq_vector;
   preq_vector.push_back (preq);
-  SendPreq (preq_vector);
+  SendPreqVector (preq_vector);
 }
 void
-HwmpProtocolMac::SendPreq (std::vector<IePreq> preq)
+HwmpProtocolMac::SendPreqVector (std::vector<IePreq> preq)
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> packet = Create<Packet> ();
@@ -300,7 +301,7 @@ HwmpProtocolMac::SendMyPreq ()
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning ());
   m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendMyPreq, this);
-  SendPreq (m_myPreq);
+  SendPreqVector (m_myPreq);
   m_myPreq.clear ();
 }
 void

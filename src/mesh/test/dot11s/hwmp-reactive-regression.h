@@ -34,33 +34,33 @@ using namespace ns3;
  * Initiate scenario with 6 stations. Procedure of opening peer link
  * is the following: (PMP routines are not shown)
  * \verbatim
- *      1    2    3    4    5    6
- *      |    |    |    |    |<---|--->  ARP request (first attempt has failed!)
- *      |....|....|....|....|....|      ARP request
+ *      0    1    2    3    4    5 
+ *      |    |    |    |    |<---|--->  ARP request (2.002s)
+ *      |....|....|....|....|....|      ARP requests (continued)
  *      |<---|--->|    |    |    |      ARP request
  *  <---|--->|    |    |    |    |      PREQ       } This order is broken
  *  <---|--->|    |    |    |    |      ARP request} due to BroadcastDca 
- *      |<---|--->|    |    |    |      PREQ
+ *      |<---|--->|    |    |    |      PREQ 2.00468s)
  *      |....|....|....|....|....|      ARP request
- *      |    |    |    |<---|--->|      PREQ
+ *      |    |    |    |<---|--->|      PREQ (2.00621s)
  *      |    |    |    |    |<---|      PREP
- *      |....|....|....|....|....|      PREP 
- *      |<---|    |    |    |    |      PREP
- *      |--->|    |    |    |    |      ARP response
- *      |....|....|....|....|....|      ARP response
- *      |    |    |    |    |--->|      ARP response
- *      |    |    |    |    |<---|      Data
- *      |....|....|....|....|....|      Data
+ *      |....|....|....|....|....|      PREP (continued)
+ *      |<---|    |    |    |    |      PREP (2.00808s)
+ *      |--->|    |    |    |    |      ARP reply (2.0084s)
+ *      |....|....|....|....|....|      ARP replies
+ *      |    |    |    |    |--->|      ARP reply (2.01049s)
+ *      |    |    |    |    |<---|      Data (2.01059s)
+ *      |....|....|....|....|....|      Data (continued)
  *      |<---|    |    |    |    |      Data
- *  <---|--->|    |    |    |    |      ARP request
- *      |....|....|....|....|....|      ARP request
+ *  <---|--->|    |    |    |    |      ARP request (2.02076s)
+ *      |....|....|....|....|....|      ARP requests (continued)
  *      |    |    |    |    |<---|--->  ARP request
- *      |    |    |    |    |<---|      ARP response
- *      |....|....|....|....|....|      ARP response
- *      |<---|    |    |    |    |      ARP response
+ *      |    |    |    |    |<---|      ARP reply (2.02281s)
+ *      |....|....|....|....|....|      ARP replies (continued)
+ *      |<---|    |    |    |    |      ARP reply
  *      |--->|    |    |    |    |      Data
- * At 5 station number 4 disappears, and PERR is forwarded from 3 to 1
- * and from 5 to 6, and station 6 starts path discovery procedure
+ * At 5s, station number 3 disappears, and PERR is forwarded from 2 to 0
+ * and from 4 to 5, and station 5 starts path discovery procedure
  * again:
  *      |    |<---|         |--->|      PERR (one due to beacon loss and one due to TX error)
  *      |<---|    |         |    |      PERR

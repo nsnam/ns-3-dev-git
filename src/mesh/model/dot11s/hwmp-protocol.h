@@ -33,6 +33,7 @@ class MeshPointDevice;
 class Packet;
 class Mac48Address;
 class UniformRandomVariable;
+class RandomVariableStream;
 namespace dot11s {
 class HwmpProtocolMac;
 class HwmpRtable;

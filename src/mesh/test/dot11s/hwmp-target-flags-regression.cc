@@ -59,8 +59,8 @@ HwmpDoRfRegressionTest::~HwmpDoRfRegressionTest ()
 void
 HwmpDoRfRegressionTest::DoRun ()
 {
-  RngSeedManager::SetSeed (12345);
-  RngSeedManager::SetRun (7);
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -140,6 +140,8 @@ HwmpDoRfRegressionTest::CreateDevices ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> chan = wifiChannel.Create ();
   wifiPhy.SetChannel (chan);
+  // This scenario setup predates the preamble detection model
+  wifiPhy.DisablePreambleDetectionModel ();
 
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
@@ -147,11 +149,11 @@ HwmpDoRfRegressionTest::CreateDevices ()
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Four devices, nine streams per mac
+  // Four devices, ten streams per mac
   streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 10), "Stream assignment mismatch");
   streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 9), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 10), "Stream assignment mismatch");
 
   // 3. setup TCP/IP
   InternetStackHelper internetStack;

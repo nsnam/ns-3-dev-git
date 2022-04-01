@@ -75,10 +75,10 @@ private:
    */
   void SendPreq (IePreq preq);
   /**
-   * Send PREQ function
+   * Send PREQ function for vector of PREQ
    * \param preq vector of PREQ information elements
    */
-  void SendPreq (std::vector<IePreq> preq);
+  void SendPreqVector (std::vector<IePreq> preq);
   /**
    * Send PREP function
    * \param prep the PREP information element
