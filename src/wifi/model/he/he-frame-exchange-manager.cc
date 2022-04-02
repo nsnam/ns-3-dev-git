@@ -1358,7 +1358,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                                      const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station
-  NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsBroadcast ()
+  NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsGroup ()
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
   const WifiMacHeader& hdr = mpdu->GetHeader ();
