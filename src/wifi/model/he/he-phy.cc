@@ -258,36 +258,39 @@ HePhy::GetSigBDuration (const WifiTxVector& txVector) const
     }
 }
 
-uint16_t
-HePhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band)
+Time
+HePhy::GetValidPpduDuration (Time ppduDuration, const WifiTxVector& txVector,
+                             WifiPhyBand band)
 {
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
+  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
+  Time preambleDuration = WifiPhy::GetStaticPhyEntity (WIFI_MOD_CLASS_HE)->CalculatePhyPreambleAndHeaderDuration (txVector); //this is quite convoluted but only way of keeping the method static
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
+  uint32_t nSymbols = floor (static_cast<double> ((ppduDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
+  return preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
+}
+
+std::pair<uint16_t, Time>
+HePhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, const WifiTxVector& txVector,
+                                            WifiPhyBand band)
+{
+  NS_ABORT_IF (!txVector.IsUlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE));
+  // update ppduDuration so that it is a valid PPDU duration
+  ppduDuration = GetValidPpduDuration (ppduDuration, txVector, band);
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
   uint8_t m = 2; //HE TB PPDU so m is set to 2
   uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
-  return length;
+  return {length, ppduDuration};
 }
 
 Time
 HePhy::ConvertLSigLengthToHeTbPpduDuration (uint16_t length, const WifiTxVector& txVector, WifiPhyBand band)
 {
   NS_ABORT_IF (!txVector.IsUlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE));
-  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
-  Time preambleDuration = WifiPhy::GetStaticPhyEntity (WIFI_MOD_CLASS_HE)->CalculatePhyPreambleAndHeaderDuration (txVector); //this is quite convoluted but only way of keeping the method static
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
   uint8_t m = 2; //HE TB PPDU so m is set to 2
   //Equation 27-11 of IEEE P802.11ax/D4.0
   Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (length + 3 + m) / 3)) * 4) + 20 + sigExtension);
-  uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
-  Time ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
-  return ppduDuration;
+  return GetValidPpduDuration (calculatedDuration, txVector, band);
 }
 
 Time

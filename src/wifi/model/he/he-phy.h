@@ -108,12 +108,19 @@ public:
   uint8_t GetBssColor (void) const;
 
   /**
+   * Compute the L-SIG length value corresponding to the given HE TB PPDU duration.
+   * If the latter is not a feasible duration (considering the selected guard interval),
+   * a proper duration is computed and returned along with the L-SIG length value.
+   *
    * \param ppduDuration the duration of the HE TB PPDU
+   * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
    * \param band the frequency band being used
    *
-   * \return the L-SIG length value corresponding to that HE TB PPDU duration.
+   * \return the L-SIG length value and the adjusted HE TB PPDU duration.
    */
-  static uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band);
+  static std::pair<uint16_t, Time> ConvertHeTbPpduDurationToLSigLength (Time ppduDuration,
+                                                                        const WifiTxVector& txVector,
+                                                                        WifiPhyBand band);
   /**
    * \param length the L-SIG length value
    * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
@@ -440,6 +447,19 @@ private:
    * \return an HE MCS
    */
   static WifiMode CreateHeMcs (uint8_t index);
+
+  /**
+   * Given a PPDU duration value, the TXVECTOR used to transmit the PPDU and
+   * the PHY band, compute a valid PPDU duration considering the number and
+   * duration of symbols, the preamble duration and the guard interval.
+   *
+   * \param ppduDuration the given PPDU duration
+   * \param txVector the given TXVECTOR
+   * \param band the PHY band
+   * \return a valid PPDU duration
+   */
+  static Time GetValidPpduDuration (Time ppduDuration, const WifiTxVector& txVector,
+                                    WifiPhyBand band);
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 }; //class HePhy

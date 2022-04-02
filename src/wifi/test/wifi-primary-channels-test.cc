@@ -778,8 +778,8 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu (uint8_t bss, uint16_t txChannelWidth, H
           // calculate just once
           duration = WifiPhy::CalculateTxDuration (psdu->GetSize (), txVector,
                                                    staDev->GetMac ()->GetWifiPhy ()->GetPhyBand (), staId);
-          length = HePhy::ConvertHeTbPpduDurationToLSigLength (duration,
-                                                               staDev->GetMac ()->GetWifiPhy ()->GetPhyBand ());
+          std::tie (length, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength (duration, txVector,
+                                                                                    staDev->GetMac ()->GetWifiPhy ()->GetPhyBand ());
         }
       txVector.SetLength (length);
 

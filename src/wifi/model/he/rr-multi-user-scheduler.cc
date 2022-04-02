@@ -230,9 +230,12 @@ RrMultiUserScheduler::TrySendingBsrpTf (void)
         }
     }
 
+  uint16_t ulLength;
+  std::tie (ulLength, qosNullTxDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (qosNullTxDuration,
+                                                                                       m_trigger.GetHeTbTxVector (m_trigger.begin ()->GetAid12 ()),
+                                                                                       m_apMac->GetWifiPhy ()->GetPhyBand ());
   NS_LOG_DEBUG ("Duration of QoS Null frames: " << qosNullTxDuration.As (Time::MS));
-  m_trigger.SetUlLength (HePhy::ConvertHeTbPpduDurationToLSigLength (qosNullTxDuration,
-                                                                     m_apMac->GetWifiPhy ()->GetPhyBand ()));
+  m_trigger.SetUlLength (ulLength);
 
   return UL_MU_TX;
 }
@@ -432,9 +435,12 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
         }
 
       // maxDuration is the time to grant to the stations. Finalize the Trigger Frame
+      uint16_t ulLength;
+      std::tie (ulLength, maxDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (maxDuration,
+                                                                                     txVector,
+                                                                                     m_apMac->GetWifiPhy ()->GetPhyBand ());
       NS_LOG_DEBUG ("TB PPDU duration: " << maxDuration.As (Time::MS));
-      m_trigger.SetUlLength (HePhy::ConvertHeTbPpduDurationToLSigLength (maxDuration,
-                                                                         m_apMac->GetWifiPhy ()->GetPhyBand ()));
+      m_trigger.SetUlLength (ulLength);
       // set Preferred AC to the AC that gained channel access
       for (auto& userInfo : m_trigger)
         {

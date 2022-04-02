@@ -773,10 +773,8 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowl
 
       // The computed duration may not be coded exactly in the L-SIG length, hence determine
       // the exact duration corresponding to the value that will be coded in this field.
-      dlMuTfMuBarAcknowledgment->ulLength = HePhy::ConvertHeTbPpduDurationToLSigLength (duration, m_phy->GetPhyBand ());
       WifiTxVector& txVector = dlMuTfMuBarAcknowledgment->stationsReplyingWithBlockAck.begin ()->second.blockAckTxVector;
-      duration = HePhy::ConvertLSigLengthToHeTbPpduDuration (dlMuTfMuBarAcknowledgment->ulLength,
-                                                             txVector, m_phy->GetPhyBand ());
+      std::tie (dlMuTfMuBarAcknowledgment->ulLength, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength (duration, txVector, m_phy->GetPhyBand ());
 
       uint32_t muBarSize = GetMuBarSize (dlMuTfMuBarAcknowledgment->barTypes);
       if (dlMuTfMuBarAcknowledgment->muBarTxVector.GetModulationClass () >= WIFI_MOD_CLASS_VHT)
@@ -818,11 +816,8 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowl
 
       // The computed duration may not be coded exactly in the L-SIG length, hence determine
       // the exact duration corresponding to the value that will be coded in this field.
-      dlMuAggrTfAcknowledgment->ulLength = HePhy::ConvertHeTbPpduDurationToLSigLength (duration, m_phy->GetPhyBand ());
       WifiTxVector& txVector = dlMuAggrTfAcknowledgment->stationsReplyingWithBlockAck.begin ()->second.blockAckTxVector;
-      duration = HePhy::ConvertLSigLengthToHeTbPpduDuration (dlMuAggrTfAcknowledgment->ulLength,
-                                                             txVector, m_phy->GetPhyBand ());
-
+      std::tie (dlMuAggrTfAcknowledgment->ulLength, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength (duration, txVector, m_phy->GetPhyBand ());
       dlMuAggrTfAcknowledgment->acknowledgmentTime = m_phy->GetSifs () + duration;
     }
   /*

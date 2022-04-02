@@ -55,7 +55,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiMacOfdmaTestSuite");
  * (when all BA agreements have been established). Afterwards, it cycles through UL_MU_TX
  * (with a BSRP Trigger Frame), UL_MU_TX (with a Basic Trigger Frame) and DL_MU_TX.
  * This scheduler requires that 4 stations are associated with the AP.
- * 
+ *
  */
 class TestMultiUserScheduler : public MultiUserScheduler
 {
@@ -147,8 +147,10 @@ TestMultiUserScheduler::SelectTxFormat (void)
                                                     m_apMac->GetWifiPhy ()->GetPhyBand (),
                                                     m_apMac->GetStaList ().begin ()->first);
 
-      uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (duration,
-                                                                    m_apMac->GetWifiPhy ()->GetPhyBand ());
+      uint16_t length;
+      std::tie (length, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength (duration,
+                                                                                m_trigger.GetHeTbTxVector (m_trigger.begin ()->GetAid12 ()),
+                                                                                m_apMac->GetWifiPhy ()->GetPhyBand ());
       m_trigger.SetUlLength (length);
 
       Ptr<Packet> packet = Create<Packet> ();
@@ -247,7 +249,7 @@ TestMultiUserScheduler::ComputeWifiTxVector (void)
 
   uint16_t bw = m_apMac->GetWifiPhy ()->GetChannelWidth ();
 
-  m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);  
+  m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
   m_txVector.SetChannelWidth (bw);
   m_txVector.SetGuardInterval (m_apMac->GetHeConfiguration ()->GetGuardInterval ().GetNanoSeconds ());
   m_txVector.SetTxPowerLevel (GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ());
@@ -832,7 +834,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       tStart = m_txPsdus[13].startTx;
       NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "First Block Ack Request sent too early");
       NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "First Block Ack Request sent too late");
-      
+
       // A second STA sends a Block Ack a SIFS after the reception of the Block Ack Request
       NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[14].psduMap.size () == 1
                               && m_txPsdus[14].psduMap[SU_STA_ID]->GetHeader (0).IsBlockAck ()),
@@ -850,7 +852,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       tStart = m_txPsdus[15].startTx;
       NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "Second Block Ack Request sent too early");
       NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "Second Block Ack Request sent too late");
-      
+
       // A third STA sends a Block Ack a SIFS after the reception of the Block Ack Request
       NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[16].psduMap.size () == 1
                               && m_txPsdus[16].psduMap[SU_STA_ID]->GetHeader (0).IsBlockAck ()),
@@ -868,7 +870,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
       tStart = m_txPsdus[17].startTx;
       NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "Third Block Ack Request sent too early");
       NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "Third Block Ack Request sent too late");
-      
+
       // A fourth STA sends a Block Ack a SIFS after the reception of the Block Ack Request
       NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[18].psduMap.size () == 1
                               && m_txPsdus[18].psduMap[SU_STA_ID]->GetHeader (0).IsBlockAck ()),

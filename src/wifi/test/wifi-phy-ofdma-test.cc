@@ -1244,8 +1244,8 @@ TestUlOfdmaPpduUid::SendTbPpdu (void)
                                                      m_phySta1->GetPhyBand (), rxStaId2);
   Time txDuration = std::max (txDuration1, txDuration2);
 
-  txVector1.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, m_phySta1->GetPhyBand ()));
-  txVector2.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, m_phySta2->GetPhyBand ()));
+  txVector1.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, txVector1, m_phySta1->GetPhyBand ()).first);
+  txVector2.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, txVector2, m_phySta2->GetPhyBand ()).first);
 
   m_phySta1->Send (psdus1, txVector1);
   m_phySta2->Send (psdus2, txVector2);
@@ -1482,7 +1482,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   rxParams->duration = nonOfdmaDuration;
   rxParams->ppdu = ppdu;
 
-  uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration, m_phy->GetPhyBand ());
+  uint16_t length;
+  std::tie (length, ppduDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration, txVector, m_phy->GetPhyBand ());
   txVector.SetLength (length);
   m_trigVector.SetLength (length);
   auto hePhy = DynamicCast<HePhy> (m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
@@ -2004,8 +2005,10 @@ TestUlOfdmaPhyTransmission::SetTrigVector (uint8_t bssColor, TrigVectorInfo erro
   txVector.SetMode ((error == MCS ? HePhy::GetHeMcs5 () : HePhy::GetHeMcs7 ()), aid2);
   txVector.SetNss (1, aid2);
 
-  uint16_t length = HePhy::ConvertHeTbPpduDurationToLSigLength (m_expectedPpduDuration,
-                                                                m_phyAp->GetPhyBand ());
+  uint16_t length;
+  std::tie (length, m_expectedPpduDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (m_expectedPpduDuration,
+                                                                                          txVector,
+                                                                                          m_phyAp->GetPhyBand ());
   if (error == UL_LENGTH)
     {
       ++length;
@@ -2049,7 +2052,7 @@ TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, s
     }
 
   Time txDuration = phy->CalculateTxDuration (psdu->GetSize (), txVector, phy->GetPhyBand (), txStaId);
-  txVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, phy->GetPhyBand ()));
+  txVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, txVector, phy->GetPhyBand ()).first);
 
   phy->SetPpduUid (uid);
   phy->Send (psdus, txVector);
@@ -2991,7 +2994,7 @@ TestPhyPaddingExclusion::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std:
       phy = m_phySta2;
     }
 
-  txVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, phy->GetPhyBand ()));
+  txVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (txDuration, txVector, phy->GetPhyBand ()).first);
 
   phy->SetPpduUid (0);
   phy->Send (psdus, txVector);
@@ -3210,8 +3213,11 @@ TestPhyPaddingExclusion::SetTrigVector (Time ppduDuration)
   trigVector.SetRu (HeRu::RuSpec (HeRu::RU_106_TONE, 2, false), 2);
   trigVector.SetMode (HePhy::GetHeMcs7 (), 2);
   trigVector.SetNss (1, 2);
-  trigVector.SetLength (HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration,
-                                                                    m_phyAp->GetPhyBand ()));
+  uint16_t length;
+  std::tie (length, ppduDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (ppduDuration,
+                                                                                trigVector,
+                                                                                m_phyAp->GetPhyBand ());
+  trigVector.SetLength (length);
   auto hePhyAp = DynamicCast<HePhy> (m_phyAp->GetPhyEntity (WIFI_MOD_CLASS_HE));
   hePhyAp->SetTrigVector (trigVector, ppduDuration);
 }
@@ -3406,7 +3412,6 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
   //Build MU-BAR trigger frame
   CtrlTriggerHeader muBar;
   muBar.SetType (MU_BAR_TRIGGER);
-  muBar.SetUlLength (HePhy::ConvertHeTbPpduDurationToLSigLength (MicroSeconds (128), WIFI_PHY_BAND_5GHZ));
   muBar.SetMoreTF (true);
   muBar.SetCsRequired (true);
   muBar.SetUlBandwidth (DEFAULT_CHANNEL_WIDTH);
@@ -3449,6 +3454,9 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
       ++index;
     }
 
+  WifiTxVector tbTxVector = muBar.GetHeTbTxVector (staIds.front ());
+  muBar.SetUlLength (HePhy::ConvertHeTbPpduDurationToLSigLength (MicroSeconds (128), tbTxVector, WIFI_PHY_BAND_5GHZ).first);
+
   WifiConstPsduMap psdus;
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0,
                                         DEFAULT_CHANNEL_WIDTH, false, false, false, m_bssColor);
@@ -3484,7 +3492,7 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 
   Time nav = m_apDev->GetPhy ()->GetSifs ();
   uint16_t staId = staIds.front (); //either will do
-  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_WIFI_BAND, staId);
+  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), tbTxVector, DEFAULT_WIFI_BAND, staId);
   psdu->SetDuration (nav);
   psdus.insert (std::make_pair (SU_STA_ID, psdu));
 
