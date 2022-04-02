@@ -202,7 +202,7 @@ Callback based tracing is not yet properly supported for Python, as new |ns3| AP
 
 Pcap file writing is supported via the normal API.
 
-ASCII tracing is supported since |ns3|.4 via the normal C++ API translated to Python.  However, ASCII tracing requires the creation of an ostream object to pass into the ASCII tracing methods.  In Python, the C++ std::ofstream has been minimally wrapped to allow this.  For example:
+ASCII tracing is supported via the normal C++ API translated to Python.  However, ASCII tracing requires the creation of an ostream object to pass into the ASCII tracing methods.  In Python, the C++ std::ofstream has been minimally wrapped to allow this.  For example:
 
 ::
 
@@ -274,7 +274,7 @@ Process Overview
 
 |ns3| has an automated process to regenerate Python bindings from the C++
 header files.  The process is only supported for Linux at the moment
-(ns-3.33) because the project has not found a contributor yet to test and
+because the project has not found a contributor yet to test and
 document the capability on macOS. In short, the process currently 
 requires the following steps on a Linux machine.
 
@@ -487,19 +487,37 @@ ILP32 bindings with some type substitutions automated by CMake scripts.
 Rescanning a module
 ###################
 
-To re-scan a module:
+To re-scan a module, it is recommended to clean the installation, and then
+to configure with Python scanning enabled:
 
 .. sourcecode:: bash
 
     $ cd source/ns-3-dev
+    $ ./ns3 clean
+    $ ./ns3 configure -- -DNS3_SCAN_PYTHON_BINDINGS=ON
+
+Ensure in the configure output that pygccxml and castxml were found.  To
+scan an individual module, such as wifi, append `-apiscan` to the module
+name:
+
+.. sourcecode:: bash
+
     $ ./ns3 build wifi-apiscan
 
-To re-scan all modules:
+To re-scan all modules (which can take some time):
 
 .. sourcecode:: bash
 
     $ cd source/ns-3-dev
     $ ./ns3 apiscan-all
+
+Then, to check whether the rescanned bindings can be compiled, enable
+the Python bindings in the build:
+
+.. sourcecode:: bash
+
+    $ ./ns3 configure --enable-python-bindings
+    $ ./ns3 build
 
 Generating bindings on MacOS
 ############################
