@@ -598,7 +598,8 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
 
     # Run cmake
     if not dry_run:
-        ret = subprocess.run(cmake_args, cwd=current_cmake_cache_folder, stdout=output)
+        proc_env = os.environ.copy()
+        ret = subprocess.run(cmake_args, cwd=current_cmake_cache_folder, stdout=output, env=proc_env)
         if ret.returncode != 0:
             exit(ret.returncode)
 

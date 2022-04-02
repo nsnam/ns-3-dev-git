@@ -283,14 +283,19 @@ macro(process_options)
   clear_global_cached_variables()
 
   # check if the include directory exists in the output directory
-  if((EXISTS ${CMAKE_OUTPUT_DIRECTORY}) AND (EXISTS ${CMAKE_OUTPUT_DIRECTORY}/include))
+  if((EXISTS ${CMAKE_OUTPUT_DIRECTORY}) AND (EXISTS
+                                             ${CMAKE_OUTPUT_DIRECTORY}/include)
+  )
     # if it does, delete it to make sure we only have relevant header stubs
     if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
       set(delete_directory_cmd rm -R) # introduced in CMake 3.17
     else()
       set(delete_directory_cmd remove_directory) # deprecated in CMake 3.17
     endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} -E ${delete_directory_cmd} ${CMAKE_OUTPUT_DIRECTORY}/include)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E ${delete_directory_cmd}
+              ${CMAKE_OUTPUT_DIRECTORY}/include
+    )
   endif()
 
   # make sure to default to RelWithDebInfo if no build type is specified
@@ -756,10 +761,22 @@ macro(process_options)
           "Bindings: scanning python bindings require Python, but it could not be found"
       )
     else()
-      # Check if pybindgen, pygccxml and cxxfilt are installed
+      # Check if pybindgen, pygccxml, cxxfilt and castxml are installed
       check_python_packages(
         "pybindgen;pygccxml;cxxfilt;castxml" missing_packages
       )
+
+      # If castxml has not been found via python import, fallback to searching
+      # the binary
+      if(castxml IN_LIST missing_packages)
+        mark_as_advanced(CASTXML)
+        find_program(CASTXML castxml)
+        if(${CASTXML})
+          list(REMOVE_ITEM missing_packages castxml)
+        endif()
+      endif()
+
+      # If packages were not found, print message
       if(missing_packages)
         message(
           STATUS
@@ -1307,6 +1324,7 @@ endfunction()
 
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
+  # cmake-format: off
   set(batch_symlinks)
   foreach(header ${headers})
     # Copy header to output directory on changes -> too darn slow
@@ -1334,6 +1352,7 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
   if(batch_symlinks)
     execute_process(${batch_symlinks})
   endif()
+  # cmake-format: on
 endfunction(copy_headers_before_building_lib)
 
 function(remove_lib_prefix prefixed_library library)
