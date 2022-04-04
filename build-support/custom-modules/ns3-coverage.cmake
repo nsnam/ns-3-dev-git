@@ -16,16 +16,16 @@
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
 if(${NS3_COVERAGE})
-  mark_as_advanced(GCOVp)
-  find_program(GCOVp gcov)
-  if(GCOVp)
+  mark_as_advanced(GCOV)
+  find_program(GCOV gcov)
+  if(NOT ("${GCOV}" STREQUAL "GCOV-NOTFOUND"))
     add_definitions(--coverage)
     link_libraries(-lgcov)
   endif()
 
-  mark_as_advanced(LCOVp)
-  find_program(LCOVp lcov)
-  if(NOT LCOVp)
+  mark_as_advanced(LCOV)
+  find_program(LCOV lcov)
+  if("${LCOV}" STREQUAL "LCOV-NOTFOUND")
     message(FATAL_ERROR "LCOV is required but it is not installed.")
   endif()
 

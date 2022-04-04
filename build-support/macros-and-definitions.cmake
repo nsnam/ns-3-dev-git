@@ -282,7 +282,7 @@ function(check_deps package_deps program_deps missing_deps)
     string(TOUPPER ${program} upper_${program})
     mark_as_advanced(${upper_${program}})
     find_program(${upper_${program}} ${program})
-    if(NOT ${upper_${program}})
+    if("${${upper_${program}}}" STREQUAL "${upper_${program}}-NOTFOUND")
       list(APPEND local_missing_deps ${program})
     endif()
   endforeach()
@@ -390,7 +390,9 @@ macro(process_options)
 
   if(${NS3_CLANG_FORMAT})
     find_program(CLANG_FORMAT clang-format)
-    if(CLANG_FORMAT)
+    if("${CLANG_FORMAT}" STREQUAL "CLANG_FORMAT-NOTFOUND")
+      message(${HIGHLIGHTED_STATUS} "Proceeding without clang-format")
+    else()
       file(
         GLOB_RECURSE
         ALL_CXX_SOURCE_FILES
@@ -408,17 +410,17 @@ macro(process_options)
                              ${ALL_CXX_SOURCE_FILES}
       )
       unset(ALL_CXX_SOURCE_FILES)
-    else()
-      message(STATUS "Proceeding without clang-format target")
     endif()
   endif()
 
   if(${NS3_CLANG_TIDY})
     find_program(CLANG_TIDY clang-tidy)
-    if(CLANG_TIDY)
-      set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+    if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
+      message(${HIGHLIGHTED_STATUS}
+              "Proceeding without clang-tidy static analysis"
+      )
     else()
-      message(STATUS "Proceeding without clang-tidy static analysis")
+      set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
     endif()
   endif()
 
@@ -457,7 +459,9 @@ macro(process_options)
 
   mark_as_advanced(CMAKE_FORMAT_PROGRAM)
   find_program(CMAKE_FORMAT_PROGRAM cmake-format HINTS ~/.local/bin)
-  if(CMAKE_FORMAT_PROGRAM)
+  if("${CMAKE_FORMAT_PROGRAM}" STREQUAL "CMAKE_FORMAT_PROGRAM-NOTFOUND")
+    message(${HIGHLIGHTED_STATUS} "Proceeding without cmake-format")
+  else()
     file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt
          contrib/**/CMakeLists.txt examples/**/CMakeLists.txt
     )
@@ -586,7 +590,9 @@ macro(process_options)
     # it will fail. Worse than that: it will fail silently. We use the wrapper
     # to get a iwyu.log file in the ns-3-dev folder.
     find_program(INCLUDE_WHAT_YOU_USE_PROG iwyu)
-    if(NOT INCLUDE_WHAT_YOU_USE_PROG)
+    if("${INCLUDE_WHAT_YOU_USE_PROG}" STREQUAL
+       "INCLUDE_WHAT_YOU_USE_PROG-NOTFOUND"
+    )
       message(FATAL_ERROR "iwyu (include-what-you-use) was not found.")
     endif()
     message(STATUS "iwyu is enabled")
@@ -794,7 +800,7 @@ macro(process_options)
       if(castxml IN_LIST missing_packages)
         mark_as_advanced(CASTXML)
         find_program(CASTXML castxml)
-        if(${CASTXML})
+        if(NOT ("${CASTXML}" STREQUAL "CASTXML-NOTFOUND"))
           list(REMOVE_ITEM missing_packages castxml)
         endif()
       endif()

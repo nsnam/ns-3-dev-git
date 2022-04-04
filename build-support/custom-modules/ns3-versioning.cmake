@@ -81,7 +81,7 @@ function(configure_embedded_version)
 
   mark_as_advanced(GIT)
   find_program(GIT git)
-  if(NOT GIT)
+  if("${GIT}" STREQUAL "GIT-NOTFOUND")
     message(
       STATUS "Git was not found. Version related targets won't be enabled"
     )

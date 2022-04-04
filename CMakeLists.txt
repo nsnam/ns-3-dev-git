@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.10..3.10)
 
 # Use ccache if available
 mark_as_advanced(CCACHE_FOUND)
-find_program(CCACHE_FOUND ccache)
-if(CCACHE_FOUND)
+find_program(CCACHE ccache)
+if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
   message(
     STATUS "CCache is enabled. Precompiled headers are disabled by default."
