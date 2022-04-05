@@ -139,7 +139,7 @@ def get_headers_list(outdir=usual_outdir):
     return glob.glob(outdir + '/**/*.h', recursive=True)
 
 
-def read_buildstatus_entry(entry):
+def read_lock_entry(entry):
     """!
     Read interesting entries from the .lock-ns3 file
     @param entry: entry to read from .lock-ns3
@@ -156,7 +156,7 @@ def get_test_enabled():
     Check if tests are enabled in the .lock-ns3
     @return bool.
     """
-    return read_buildstatus_entry("ENABLE_TESTS")
+    return read_lock_entry("ENABLE_TESTS")
 
 
 def get_enabled_modules():
@@ -164,7 +164,7 @@ def get_enabled_modules():
     Check if tests are enabled in the .lock-ns3
     @return list of enabled modules (prefixed with 'ns3-').
     """
-    return read_buildstatus_entry("NS3_ENABLED_MODULES")
+    return read_lock_entry("NS3_ENABLED_MODULES")
 
 
 class NS3UnusedSourcesTestCase(unittest.TestCase):
@@ -199,7 +199,7 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
         unused_sources = set()
         for example_directory in self.directory_and_files.keys():
             # Skip non-example directories
-            if os.sep+"examples" not in example_directory:
+            if os.sep + "examples" not in example_directory:
                 continue
 
             # Open the examples CMakeLists.txt and read it
@@ -265,7 +265,7 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
         for directory in self.directory_and_files.keys():
             # Skip directories that are not utils
             is_module = "src" in directory or "contrib" in directory
-            if os.sep+"utils" not in directory or is_module:
+            if os.sep + "utils" not in directory or is_module:
                 continue
 
             # We can be in one of the module subdirectories (helper, model, test, bindings, etc)
@@ -1376,7 +1376,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                pkg_check_modules(ns3 REQUIRED IMPORTED_TARGET ns3-core{version})
                                target_link_libraries(test PUBLIC PkgConfig::ns3)
                                """.format(lib=("lib64" if lib64 else "lib"),
-                                          version="="+version if version else ""
+                                          version="=" + version if version else ""
                                           )
 
             for import_type in [pkgconfig_import, find_package_import]:
@@ -1476,6 +1476,10 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         except Exception:
             self.skipTest("Pybindgen is not available")
 
+        # Check if the number of runnable python scripts is equal to 0
+        python_scripts = read_lock_entry("ns3_runnable_scripts")
+        self.assertEqual(len(python_scripts), 0)
+
         # First we enable python bindings
         return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --enable-tests --enable-python-bindings")
         self.assertEqual(return_code, 0)
@@ -1538,7 +1542,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Then check if it was built
         self.assertGreater(len(list(filter(lambda x: "_core" in x, os.listdir(core_bindings_path)))), 0)
 
-        # We are on python anyways, so we can just try to load it from here
+        # We are on python anyway, so we can just try to load it from here
         sys.path.insert(0, os.path.join(core_bindings_path, ".."))
         try:
             from ns import core
@@ -1551,6 +1555,19 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Check if test.py can find and run the python example
         return_code, stdout, stderr = run_program("./test.py", "-p src/core/examples/sample-simulator.py", python=True)
+        self.assertEqual(return_code, 0)
+
+        # Since python examples do not require recompilation,
+        # test if we still can run the python examples after disabling examples
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --disable-examples")
+        self.assertEqual(return_code, 0)
+
+        # Check if the lock file has python runnable python scripts (it should)
+        python_scripts = read_lock_entry("ns3_runnable_scripts")
+        self.assertGreater(len(python_scripts), 0)
+
+        # Try to run an example
+        return_code, stdout, stderr = run_ns3("run sample-simulator.py")
         self.assertEqual(return_code, 0)
 
         NS3BuildBaseTestCase.cleaned_once = False
@@ -1576,8 +1593,8 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("build second")
         self.assertEqual(return_code, 1)
         self.assertIn(
-           'Build target "second" is ambiguous. Try one of these: "scratch/second", "examples/tutorial/second"',
-           stdout
+            'Build target "second" is ambiguous. Try one of these: "scratch/second", "examples/tutorial/second"',
+            stdout
         )
 
         # Try to run scratch/second and succeed
@@ -1798,7 +1815,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         doc_folder = os.path.abspath(os.sep.join([".", "doc"]))
 
         # For each sphinx doc target.
-        for target in ["contributing", "manual",  "models", "tutorial"]:
+        for target in ["contributing", "manual", "models", "tutorial"]:
             # First we need to clean old docs, or it will not make any sense.
             doc_build_folder = os.sep.join([doc_folder, target, "build"])
             doc_temp_folder = os.sep.join([doc_folder, target, "source-temp"])
@@ -1867,7 +1884,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         if sudo_password is None:
             self.skipTest("SUDO_PASSWORD environment variable was not specified")
 
-        enable_sudo = read_buildstatus_entry("ENABLE_SUDO")
+        enable_sudo = read_lock_entry("ENABLE_SUDO")
         self.assertFalse(enable_sudo is True)
 
         # First we run to ensure the program was built
@@ -1907,7 +1924,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 0)
 
         # Check if it was properly set in the buildstatus file
-        enable_sudo = read_buildstatus_entry("ENABLE_SUDO")
+        enable_sudo = read_lock_entry("ENABLE_SUDO")
         self.assertTrue(enable_sudo)
 
         # Remove old executables
@@ -1936,7 +1953,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         @return None
         """
 
-        # Command templates that are empty or do not have a %s should fail
+        # Command templates that are empty or do not have a '%s' should fail
         return_code0, stdout0, stderr0 = run_ns3('run sample-simulator --command-template')
         self.assertEqual(return_code0, 2)
         self.assertIn("argument --command-template: expected one argument", stderr0)

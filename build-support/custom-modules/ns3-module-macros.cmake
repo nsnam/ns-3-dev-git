@@ -251,16 +251,16 @@ function(build_lib)
   endif()
 
   # Build lib examples if requested
-  if(${ENABLE_EXAMPLES})
-    foreach(example_folder example;examples)
-      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+  foreach(example_folder example;examples)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+      if(${ENABLE_EXAMPLES})
         if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder}/CMakeLists.txt)
           add_subdirectory(${example_folder})
         endif()
-        scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
       endif()
-    endforeach()
-  endif()
+      scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+    endif()
+  endforeach()
 
   # Get architecture pair for python bindings
   if((${CMAKE_SIZEOF_VOID_P} EQUAL 8) AND (NOT APPLE))
@@ -273,7 +273,8 @@ function(build_lib)
 
   # Add target to scan python bindings
   if(${ENABLE_SCAN_PYTHON_BINDINGS}
-     AND EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h
+     AND (EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h)
+     AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
   )
     set(bindings_output_folder ${PROJECT_SOURCE_DIR}/${FOLDER}/bindings)
     file(MAKE_DIRECTORY ${bindings_output_folder})
@@ -329,8 +330,8 @@ function(build_lib)
 
   # Build pybindings if requested and if bindings subfolder exists in
   # NS3/src/BLIB_LIBNAME
-  if(${ENABLE_PYTHON_BINDINGS} AND EXISTS
-                                   "${CMAKE_CURRENT_SOURCE_DIR}/bindings"
+  if(${ENABLE_PYTHON_BINDINGS} AND (EXISTS
+                                    "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
   )
     set(bindings_output_folder ${CMAKE_OUTPUT_DIRECTORY}/${FOLDER}/bindings)
     file(MAKE_DIRECTORY ${bindings_output_folder})
@@ -376,14 +377,19 @@ function(build_lib)
         RESULT_VARIABLE error_code
       )
       if(${error_code} OR NOT (EXISTS ${module_hdr}))
+        # Delete broken bindings to make sure we will his this error again if
+        # nothing changed
+        if(EXISTS ${module_src})
+          file(REMOVE ${module_src})
+        endif()
+        if(EXISTS ${module_hdr})
+          file(REMOVE ${module_hdr})
+        endif()
         message(
           FATAL_ERROR
             "Something went wrong during processing of the python bindings of module ${BLIB_LIBNAME}."
             " Make sure you have the latest version of Pybindgen."
         )
-        if(EXISTS ${module_src})
-          file(REMOVE ${module_src})
-        endif()
       endif()
     endif()
 

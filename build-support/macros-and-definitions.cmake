@@ -1344,6 +1344,12 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
 endfunction(set_runtime_outputdirectory)
 
 function(scan_python_examples path)
+  # Skip python examples search in case the bindings are disabled
+  if(NOT ${ENABLE_PYTHON_BINDINGS})
+    return()
+  endif()
+
+  # Search for python examples
   file(GLOB_RECURSE python_examples ${path}/*.py)
   foreach(python_example ${python_examples})
     if(NOT (${python_example} MATCHES "examples-to-run"))
@@ -2025,19 +2031,20 @@ function(find_external_library)
     set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
     set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
     set(${name}_FOUND TRUE PARENT_SCOPE)
-    set(status_message "find_external_library: ${name} was found.")
+    if(NOT ${FIND_LIB_QUIET})
+      message(STATUS "find_external_library: ${name} was found.")
+    endif()
   else()
     set(${name}_INCLUDE_DIRS PARENT_SCOPE)
     set(${name}_LIBRARIES PARENT_SCOPE)
     set(${name}_HEADER PARENT_SCOPE)
     set(${name}_FOUND FALSE PARENT_SCOPE)
-    set(status_message
+    if(NOT ${FIND_LIB_QUIET})
+      message(
+        ${HIGHLIGHTED_STATUS}
         "find_external_library: ${name} was not found. Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\"."
-    )
-  endif()
-
-  if(NOT ${FIND_LIB_QUIET})
-    message(${HIGHLIGHTED_STATUS} "${status_message}")
+      )
+    endif()
   endif()
 endfunction()
 
