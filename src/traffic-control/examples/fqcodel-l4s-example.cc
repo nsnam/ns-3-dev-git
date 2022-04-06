@@ -268,9 +268,11 @@
 * ---------------
 *    --n0TcpType:           First TCP type (bic, dctcp, or reno) [bic]
 *    --n1TcpType:           Second TCP type (cubic, dctcp, or reno) []
-*    --bottleneckQueueType: M3 queue type (fq or codel) [fq]
+*    --scenarioNum:         Scenario number from the scenarios avalaible in the file (1-9) [0]
+*    --bottleneckQueueType: n2 queue type (fq or codel) [fq]
 *    --baseRtt:             base RTT [80ms]
 *    --useCeThreshold:      use CE threshold [false]
+*    --useEcn:              use ECN [true]
 *    --ceThreshold:         CE threshold [1ms]
 *    --bottleneckRate       data rate of bottleneck [100Mbps]
 *    --linkrate:            data rate of edge link to bottleneck link [1Gbps]
@@ -851,9 +853,12 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (5) + MilliSeconds (100), &ScheduleN0PacketSinkConnection);
   Simulator::Schedule (throughputSamplingInterval, &TraceN0Throughput, &n0TcpThroughputOfStream, throughputSamplingInterval);
   // Setup scheduled traces; TCP traces must be hooked after socket creation
-  Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1TcpRttTraceConnection, &n1TcpRttOfStream);
-  Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1TcpCwndTraceConnection, &n1TcpCwndOfStream);
-  Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1PacketSinkConnection);
+  if (enableN1Tcp)
+    {
+      Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1TcpRttTraceConnection, &n1TcpRttOfStream);
+      Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1TcpCwndTraceConnection, &n1TcpCwndOfStream);
+      Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleN1PacketSinkConnection);
+    }
   Simulator::Schedule (throughputSamplingInterval, &TraceN1Throughput, &n1TcpThroughputOfStream, throughputSamplingInterval);
   Simulator::Schedule (marksSamplingInterval, &TraceMarksFrequency, &marksFrequencyOfStream, marksSamplingInterval);
   Simulator::Schedule (marksSamplingInterval, &TraceDropsFrequency, &dropsFrequencyOfStream, marksSamplingInterval);
