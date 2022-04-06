@@ -21,9 +21,11 @@
 #ifndef PTR_H
 #define PTR_H
 
+#include "assert.h"
+#include "deprecated.h"
+
 #include <iostream>
 #include <stdint.h>
-#include "assert.h"
 
 /**
  * \file
@@ -77,12 +79,17 @@ private:
   /** The pointer. */
   T *m_ptr;
 
-  /**
-   * Helper to test for null pointer.
+  /** 
+   * Helper to test for null pointer. 
+   * 
+   * \note This has been deprecated; \see operator bool() instead.
    *
    * This supports the "safe-bool" idiom, see `operator Tester * ()`
    */
-  class Tester
+  // Don't deprecate the class because the warning fires 
+  // every time ptr.h is merely included, masking the real uses of Tester
+  // Leave the macro here so we can find this later to actually remove it.
+  class /* NS_DEPRECATED_3_37 ("see operator bool") */ Tester
   {
   public:
     // Delete operator delete to avoid misuse
@@ -192,6 +199,8 @@ public:
   /**
    * Test for non-NULL Ptr.
    *
+   * \note This has been deprecated; \see operator bool() instead.
+   *
    * This enables simple pointer checks like
    * \code
    *   Ptr<...> p = ...;
@@ -201,6 +210,7 @@ public:
    *
    * This supports the "safe-bool" idiom; see [More C++ Idioms/Safe bool](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool)
    */
+  NS_DEPRECATED_3_37 ("see operator bool")
   operator Tester * () const;
   /**
    * Test for non-NULL pointer.
@@ -743,7 +753,7 @@ Ptr<T>::operator * ()
 }
 
 template <typename T>
-Ptr<T>::operator Tester * () const
+Ptr<T>::operator Tester * () const // NS_DEPRECATED_3_37
 {
   if (m_ptr == 0)
     {
