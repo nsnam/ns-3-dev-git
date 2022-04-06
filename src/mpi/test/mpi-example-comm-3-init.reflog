@@ -1,4 +1,4 @@
-TEST : 00000 : 
+TEST : 00000 : simple-distributed-mpi-comm
 TEST : 00001 : 
 TEST : 00002 : Configuration:
 TEST : 00003 : Routing:           nix-vector
