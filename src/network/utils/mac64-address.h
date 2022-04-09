@@ -88,6 +88,22 @@ public:
    * \returns newly allocated mac64Address
    */
   static Mac64Address Allocate (void);
+
+  /**
+   * Reset the Mac64Address allocation index.
+   *
+   * This function resets (to zero) the global integer
+   * that is used for unique address allocation.
+   * It is automatically called whenever
+   * \code
+   * SimulatorDestroy ();
+   * \endcode
+   * is called.  It may also be optionally called
+   * by user code if there is a need to force a reset
+   * of this allocation index.
+   */
+  static void ResetAllocationIndex ();
+
 private:
   /**
    * \returns a new Address instance
@@ -147,6 +163,7 @@ private:
    */
   friend std::istream& operator>> (std::istream& is, Mac64Address & address);
 
+  static uint64_t m_allocationIndex; //!< Address allocation index
   uint8_t m_address[8]; //!< address value
 };
 

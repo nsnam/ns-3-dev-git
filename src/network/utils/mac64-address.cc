@@ -21,6 +21,7 @@
 #include "ns3/address.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include <iomanip>
 #include <iostream>
 #include <cstring>
@@ -56,6 +57,7 @@ AsciiToLowCase (char c)
     }
 }
 
+uint64_t Mac64Address::m_allocationIndex = 0;
 
 Mac64Address::Mac64Address ()
 {
@@ -137,19 +139,32 @@ Mac64Address
 Mac64Address::Allocate (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static uint64_t id = 0;
-  id++;
+
+  if (m_allocationIndex == 0)
+    {
+      Simulator::ScheduleDestroy (Mac64Address::ResetAllocationIndex);
+    }
+
+  m_allocationIndex++;
   Mac64Address address;
-  address.m_address[0] = (id >> 56) & 0xff;
-  address.m_address[1] = (id >> 48) & 0xff;
-  address.m_address[2] = (id >> 40) & 0xff;
-  address.m_address[3] = (id >> 32) & 0xff;
-  address.m_address[4] = (id >> 24) & 0xff;
-  address.m_address[5] = (id >> 16) & 0xff;
-  address.m_address[6] = (id >> 8) & 0xff;
-  address.m_address[7] = (id >> 0) & 0xff;
+  address.m_address[0] = (m_allocationIndex >> 56) & 0xff;
+  address.m_address[1] = (m_allocationIndex >> 48) & 0xff;
+  address.m_address[2] = (m_allocationIndex >> 40) & 0xff;
+  address.m_address[3] = (m_allocationIndex >> 32) & 0xff;
+  address.m_address[4] = (m_allocationIndex >> 24) & 0xff;
+  address.m_address[5] = (m_allocationIndex >> 16) & 0xff;
+  address.m_address[6] = (m_allocationIndex >> 8) & 0xff;
+  address.m_address[7] = m_allocationIndex & 0xff;
   return address;
 }
+
+void
+Mac64Address::ResetAllocationIndex ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_allocationIndex = 0;
+}
+
 uint8_t
 Mac64Address::GetType (void)
 {

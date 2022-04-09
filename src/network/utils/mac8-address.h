@@ -107,8 +107,23 @@ public:
    */
   static Mac8Address Allocate ();
 
+  /**
+   * Reset the Mac8Address allocation index.
+   *
+   * This function resets (to zero) the global integer
+   * that is used for unique address allocation.
+   * It is automatically called whenever
+   * \code
+   * SimulatorDestroy ();
+   * \endcode
+   * is called.  It may also be optionally called
+   * by user code if there is a need to force a reset
+   * of this allocation index.
+   */
+  static void ResetAllocationIndex ();
 
 private:
+  static uint8_t m_allocationIndex; //!< Address allocation index
   uint8_t m_address;  //!< The address.
 
   /**

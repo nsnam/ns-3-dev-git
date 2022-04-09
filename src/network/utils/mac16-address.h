@@ -87,6 +87,21 @@ public:
   static Mac16Address Allocate (void);
 
   /**
+   * Reset the Mac16Address allocation index.
+   *
+   * This function resets (to zero) the global integer
+   * that is used for unique address allocation.
+   * It is automatically called whenever
+   * \code
+   * SimulatorDestroy ();
+   * \endcode
+   * is called.  It may also be optionally called
+   * by user code if there is a need to force a reset
+   * of this allocation index.
+   */
+  static void ResetAllocationIndex ();
+
+  /**
    * \returns the broadcast address (0xFFFF)
    */
   static Mac16Address GetBroadcast (void);
@@ -191,6 +206,7 @@ private:
    */
   friend std::istream& operator>> (std::istream& is, Mac16Address & address);
 
+  static uint64_t m_allocationIndex; //!< Address allocation index
   uint8_t m_address[2]; //!< address value
 };
 

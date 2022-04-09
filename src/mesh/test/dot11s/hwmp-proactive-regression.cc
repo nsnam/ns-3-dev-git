@@ -118,13 +118,9 @@ HwmpProactiveRegressionTest::CreateDevices ()
 
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
-  // Due to the fact that MAC addresses are set by a local static variable
-  // that already allocates addresses to the previous tests in regression.cc,
-  // the first allocated address in this test will be 00:00:00:00:00:0b.
-  // (pmp allocates 2, simplest allocates 2, and reactive allocates 6)
-  // Therefore, the middle node will have address 00:00:00:00:00:0d,
+  // The middle node will have address 00:00:00:00:00:03,
   // so we set this to the root as per the comment in the header file.
-  mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:0d")));
+  mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:03")));
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);

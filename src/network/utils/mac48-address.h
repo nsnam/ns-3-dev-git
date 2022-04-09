@@ -91,6 +91,21 @@ public:
   static Mac48Address Allocate (void);
 
   /**
+   * Reset the Mac48Address allocation index.
+   *
+   * This function resets (to zero) the global integer
+   * that is used for unique address allocation.
+   * It is automatically called whenever
+   * \code
+   * SimulatorDestroy ();
+   * \endcode
+   * is called.  It may also be optionally called
+   * by user code if there is a need to force a reset
+   * of this allocation index.
+   */
+  static void ResetAllocationIndex ();
+
+  /**
    * \returns true if this is a broadcast address, false otherwise.
    */
   bool IsBroadcast (void) const;
@@ -195,6 +210,7 @@ private:
    */
   friend std::istream& operator>> (std::istream& is, Mac48Address & address);
 
+  static uint64_t m_allocationIndex; //!< Address allocation index
   uint8_t m_address[6]; //!< address value
 };
 

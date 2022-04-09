@@ -36,7 +36,7 @@ using namespace ns3;
  * \verbatim
  *          Src                Root                 Dst
  * (node ID) 0         1         2         3         4
- * (MAC)   00:0b     00:0c     00:0d     00:0e     00:0f
+ * (MAC)   00:01     00:02     00:03     00:04     00:05
  *           |         |<--------|-------->|         |          Proactive PREQ
  *           |         |-------->|         |         |          PREP
  *           |         |         |<--------|         |          PREP

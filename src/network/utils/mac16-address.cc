@@ -22,6 +22,7 @@
 #include "ns3/address.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include <iomanip>
 #include <iostream>
 #include <cstring>
@@ -56,6 +57,7 @@ AsciiToLowCase (char c)
     }
 }
 
+uint64_t Mac16Address::m_allocationIndex = 0;
 
 Mac16Address::Mac16Address ()
 {
@@ -140,12 +142,24 @@ Mac16Address
 Mac16Address::Allocate (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static uint64_t id = 0;
-  id++;
+
+  if (m_allocationIndex == 0)
+    {
+      Simulator::ScheduleDestroy (Mac16Address::ResetAllocationIndex);
+    }
+
+  m_allocationIndex++;
   Mac16Address address;
-  address.m_address[0] = (id >> 8) & 0xff;
-  address.m_address[1] = (id >> 0) & 0xff;
+  address.m_address[0] = (m_allocationIndex >> 8) & 0xff;
+  address.m_address[1] = m_allocationIndex & 0xff;
   return address;
+}
+
+void
+Mac16Address::ResetAllocationIndex ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_allocationIndex = 0;
 }
 
 uint8_t
