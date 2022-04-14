@@ -38,7 +38,7 @@ stages:
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - export MPI_CI=1
-    - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
+    - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
     - ./ns3 build
     - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
   cache:
@@ -103,37 +103,6 @@ per-commit-compile-optimized:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
-# .cmake-build:
-#   stage: build
-#   script:
-#     - mkdir -p $CCACHE_BASEDIR_VALUE
-#     - export CCACHE_BASEDIR=${PWD}
-#     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-#     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests
-#     - ./ns3 build
-#     - ./test.py -n
-#   cache:
-#     paths:
-#       - $CCACHE_BASEDIR_VALUE/
-#   timeout: 9h
-#   variables:
-#     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-    
-# per-commit-compile-release-cmake:
-#   extends: .cmake-build
-#   except:
-#     variables:
-#       - $PYBINDGEN == "True"
-#       - $RELEASE == "weekly"
-#       - $RELEASE == "daily"
-#   image: archlinux
-#   variables:
-#     COMPILER: g++
-#     MODE: release
-#   before_script:
-#     - pacman -Syu --noconfirm
-#     - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
-
 # Weekly jobs for other distribution and compilers
 include:
   - 'utils/tests/gitlab-ci-ubuntu.yml'
@@ -142,4 +111,4 @@ include:
   - 'utils/tests/gitlab-ci-clang.yml'
   - 'utils/tests/gitlab-ci-test.yml'
   - 'utils/tests/gitlab-ci-doc.yml'
-#  - 'utils/tests/gitlab-ci-pybindgen.yml'
+  - 'utils/tests/gitlab-ci-pybindgen.yml'

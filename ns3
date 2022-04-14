@@ -1255,6 +1255,9 @@ def main():
     if run_only or build_and_run:
         if target_to_run in ns3_programs:
             target_to_run = check_ambiguous_target("Run", target_to_run, ns3_programs)
+        elif ".py" in target_to_run and os.path.exists(target_to_run):
+            # We let python scripts pass to be able to run ./utils/python-unit-tests.py
+            pass
         else:
             raise Exception("Couldn't find the specified program: %s" % target_to_run)
 
