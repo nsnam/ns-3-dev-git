@@ -101,6 +101,7 @@ protected:
   Time GetTxDuration (uint32_t ppduPayloadSize, Mac48Address receiver,
                       const WifiTxParameters& txParams) const override;
   bool SendMpduFromBaManager (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+  void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
 
   /**
    * Send a map of PSDUs as a DL MU PPDU.

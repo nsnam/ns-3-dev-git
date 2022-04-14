@@ -531,6 +531,13 @@ protected:
    * \param txVector the TXVECTOR used to transmit the RTS frame
    */
   virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector);
+  /**
+   * Take required actions when the CTS timer fired after sending an RTS to
+   * protect the given PSDU expires.
+   *
+   * \param psdu the PSDU protected by the failed RTS
+   */
+  void DoCtsTimeout (Ptr<WifiPsdu> psdu);
 
 private:
   /**

@@ -227,7 +227,12 @@ HeFrameExchangeManager::SendPsduMapWithProtection (WifiPsduMap psduMap, WifiTxPa
       WifiAckManager::SetQosAckPolicy (psdu.second, m_txParams.m_acknowledgment.get ());
     }
 
-  if (m_txParams.m_protection->method == WifiProtection::NONE)
+  if (m_txParams.m_protection->method == WifiProtection::RTS_CTS)
+    {
+      NS_ABORT_MSG_IF (m_psduMap.size () > 1, "Cannot use RTS/CTS with MU PPDUs");
+      SendRts (m_txParams);
+    }
+  else if (m_txParams.m_protection->method == WifiProtection::NONE)
     {
       SendPsduMap ();
     }
@@ -248,6 +253,24 @@ HeFrameExchangeManager::GetPsduTo (Mac48Address to, const WifiPsduMap& psduMap)
       return it->second;
     }
   return nullptr;
+}
+
+void
+HeFrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *rts << txVector);
+
+  if (m_psduMap.empty ())
+    {
+      // A CTS Timeout occurred when protecting a single PSDU that is not included
+      // in a DL MU PPDU is handled by the parent classes
+      VhtFrameExchangeManager::CtsTimeout (rts, txVector);
+      return;
+    }
+
+  NS_ABORT_MSG_IF (m_psduMap.size () > 1, "RTS/CTS cannot be used to protect an MU PPDU");
+  DoCtsTimeout (m_psduMap.begin ()->second);
+  m_psduMap.clear ();
 }
 
 void
@@ -1455,7 +1478,26 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
 
   if (hdr.IsCtl ())
     {
-      if (hdr.IsAck () && m_txTimer.IsRunning ()
+      if (hdr.IsCts () && m_txTimer.IsRunning () && m_txTimer.GetReason () == WifiTxTimer::WAIT_CTS
+          && m_psduMap.size () == 1)
+        {
+          NS_ABORT_MSG_IF (inAmpdu, "Received CTS as part of an A-MPDU");
+          NS_ASSERT (hdr.GetAddr1 () == m_self);
+
+          Mac48Address sender = m_psduMap.begin ()->second->GetAddr1 ();
+          NS_LOG_DEBUG ("Received CTS from=" << sender);
+
+          SnrTag tag;
+          mpdu->GetPacket ()->PeekPacketTag (tag);
+          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
+          m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_psduMap.begin ()->second->GetHeader (0),
+                                                              rxSignalInfo.snr, txVector.GetMode (), tag.Get ());
+
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyCtsTimeoutResetNow ();
+          Simulator::Schedule (m_phy->GetSifs (), &HeFrameExchangeManager::SendPsduMap, this);
+        }
+      else if (hdr.IsAck () && m_txTimer.IsRunning ()
           && m_txTimer.GetReason () == WifiTxTimer::WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU)
         {
           NS_ASSERT (hdr.GetAddr1 () == m_self);

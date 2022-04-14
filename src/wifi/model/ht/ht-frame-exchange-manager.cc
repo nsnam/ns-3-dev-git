@@ -768,36 +768,8 @@ HtFrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVecto
       return;
     }
 
-  NS_ASSERT (m_psdu->GetNMpdus () > 1);
-  m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (m_psdu->GetHeader (0));
-
-  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (*m_psdu->begin ()))
-    {
-      NS_LOG_DEBUG ("Missed CTS, discard MPDUs");
-      m_mac->GetWifiRemoteStationManager ()->ReportFinalRtsFailed (m_psdu->GetHeader (0));
-      // Dequeue the MPDUs if they are stored in a queue
-      DequeuePsdu (m_psdu);
-      for (const auto& mpdu : *PeekPointer (m_psdu))
-        {
-          NotifyPacketDiscarded (mpdu);
-        }
-      m_edca->ResetCw ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Missed CTS, retransmit MPDUs");
-      m_edca->UpdateFailedCw ();
-    }
-  // Make the sequence numbers of the MPDUs available again if the MPDUs have never
-  // been transmitted, both in case the MPDUs have been discarded and in case the
-  // MPDUs have to be transmitted (because a new sequence number is assigned to
-  // MPDUs that have never been transmitted and are selected for transmission)
-  for (const auto& mpdu : *PeekPointer (m_psdu))
-    {
-      ReleaseSequenceNumber (mpdu);
-    }
-  m_psdu = 0;
-  TransmissionFailed ();
+  DoCtsTimeout (m_psdu);
+  m_psdu = nullptr;
 }
 
 void

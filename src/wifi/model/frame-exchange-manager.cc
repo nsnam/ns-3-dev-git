@@ -810,28 +810,42 @@ FrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector&
 {
   NS_LOG_FUNCTION (this << *rts << txVector);
 
-  m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (m_mpdu->GetHeader ());
+  DoCtsTimeout (Create<WifiPsdu> (m_mpdu, true));
+  m_mpdu = nullptr;
+}
 
-  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (m_mpdu))
+void
+FrameExchangeManager::DoCtsTimeout (Ptr<WifiPsdu> psdu)
+{
+  NS_LOG_FUNCTION (this << *psdu);
+
+  m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (psdu->GetHeader (0));
+
+  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (*psdu->begin ()))
     {
-      NS_LOG_DEBUG ("Missed CTS, discard MPDU");
-      // Dequeue the MPDU if it is stored in a queue
-      DequeueMpdu (m_mpdu);
-      NotifyPacketDiscarded (m_mpdu);
-      m_mac->GetWifiRemoteStationManager ()->ReportFinalRtsFailed (m_mpdu->GetHeader ());
+      NS_LOG_DEBUG ("Missed CTS, discard MPDU(s)");
+      m_mac->GetWifiRemoteStationManager ()->ReportFinalRtsFailed (psdu->GetHeader (0));
+      for (const auto& mpdu : *PeekPointer (psdu))
+        {
+          // Dequeue the MPDU if it is stored in a queue
+          DequeueMpdu (mpdu);
+          NotifyPacketDiscarded (mpdu);
+        }
       m_dcf->ResetCw ();
     }
   else
     {
-      NS_LOG_DEBUG ("Missed CTS, retransmit RTS");
+      NS_LOG_DEBUG ("Missed CTS, retransmit MPDU(s)");
       m_dcf->UpdateFailedCw ();
     }
-  // Make the sequence number of the MPDU available again if the MPDU has never
-  // been transmitted, both in case the MPDU has been discarded and in case the
-  // MPDU has to be transmitted (because a new sequence number is assigned to
+  // Make the sequence numbers of the MPDUs available again if the MPDUs have never
+  // been transmitted, both in case the MPDUs have been discarded and in case the
+  // MPDUs have to be transmitted (because a new sequence number is assigned to
   // MPDUs that have never been transmitted and are selected for transmission)
-  ReleaseSequenceNumber (m_mpdu);
-  m_mpdu = 0;
+  for (const auto& mpdu : *PeekPointer (psdu))
+    {
+      ReleaseSequenceNumber (mpdu);
+    }
   TransmissionFailed ();
 }
 
