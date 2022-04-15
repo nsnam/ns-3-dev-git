@@ -286,6 +286,150 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
 
         self.assertListEqual([], list(unused_sources))
 
+    def test_04_CheckForDeadLinksInSources(self):
+        """!
+        Test if all urls in source files are alive
+        @return None
+        """
+
+        # Skip this test if Django is not available
+        try:
+            import django
+        except ImportError:
+            self.skipTest("Django URL validators are not available")
+
+        # Skip this test if requests library is not available
+        try:
+            import requests
+        except ImportError:
+            self.skipTest("Requests library is not available")
+
+        regex = re.compile(r'((http|https)://[^\ \n\)\"\'\}\>\<\]\;\`\\]*)')
+        skipped_files = []
+
+        whitelisted_urls = {"https://gitlab.com/your-user-name/ns-3-dev",
+                            "https://www.nsnam.org/release/ns-allinone-3.31.rc1.tar.bz2",
+                            "https://www.nsnam.org/release/ns-allinone-3.X.rcX.tar.bz2",
+                            "https://www.nsnam.org/releases/ns-3-x",
+                            "https://www.nsnam.org/releases/ns-allinone-3.(x-1",
+                            "https://www.nsnam.org/releases/ns-allinone-3.x.tar.bz2",
+                            # split due to command-line formatting
+                            "https://cmake.org/cmake/help/latest/manual/cmake-",
+                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_",
+                            # Dia placeholder xmlns address
+                            "http://www.lysator.liu.se/~alla/dia/",
+                            # Fails due to bad regex
+                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_Digital_Terrestrial_Television_Broadcasting_(DTTB",
+                            "http://en.wikipedia.org/wiki/Namespace_(computer_science",
+                            "http://en.wikipedia.org/wiki/Bonobo_(component_model",
+                            "http://msdn.microsoft.com/en-us/library/aa365247(v=vs.85",
+                            # historical links
+                            "http://www.research.att.com/info/kpv/",
+                            "http://www.research.att.com/~gsf/",
+                            }
+
+        # Scan for all URLs in all files we can parse
+        files_and_urls = set()
+        unique_urls = set()
+        for topdir in ["bindings", "doc", "examples", "src", "utils"]:
+            for root, dirs, files in os.walk(topdir):
+                # do not parse files in build directories
+                if "build" in root or "_static" in root or "source-temp" in root or 'html' in root:
+                    continue
+                for file in files:
+                    # skip svg files
+                    if file.endswith(".svg"):
+                        continue
+                    filepath = os.path.join(root, file)
+
+                    try:
+                        with open(filepath, "r") as f:
+                            matches = regex.findall(f.read())
+
+                            # Get first group for each match (containing the URL)
+                            # and strip final punctuation or commas in matched links
+                            # commonly found in the docs
+                            urls = list(map(lambda x: x[0][:-1] if x[0][-1] in ".," else x[0], matches))
+                    except UnicodeDecodeError:
+                        skipped_files.append(filepath)
+                        continue
+
+                    # Search for new unique URLs and add keep track of their associated source file
+                    for url in set(urls)-unique_urls-whitelisted_urls:
+                        unique_urls.add(url)
+                        files_and_urls.add((filepath, url))
+
+        # Instantiate the Django URL validator
+        from django.core.validators import URLValidator
+        from django.core.exceptions import ValidationError
+        validate_url = URLValidator()
+
+        # User agent string to make ACM and Elsevier let us check if links to papers are working
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+
+        def test_file_url(args):
+            filepath, url = args
+            dead_link_msg = None
+
+            # Skip invalid URLs
+            try:
+                validate_url(url)
+            except ValidationError:
+                dead_link_msg = "%s: URL %s, invalid URL" % (filepath, url)
+
+            # Check if valid URLs are alive
+            if dead_link_msg is None:
+                try:
+                    tries = 3
+                    while tries > 0:
+                        # Not verifying the certificate (verify=False) is potentially dangerous
+                        # HEAD checks are not as reliable as GET ones,
+                        # in some cases they may return bogus error codes and reasons
+                        response = requests.get(url, verify=False, headers=headers)
+
+                        # In case of success and redirection
+                        if response.status_code in [200, 301]:
+                            dead_link_msg = None
+                            break
+
+                        # People use the wrong code, but the reason
+                        # can still be correct
+                        if response.status_code in [302, 308, 500, 503]:
+                            if response.reason.lower() in ['found',
+                                                           'moved temporarily',
+                                                           'permanent redirect',
+                                                           'ok',
+                                                           'service temporarily unavailable'
+                                                           ]:
+                                dead_link_msg = None
+                                break
+                        # In case it didn't pass in any of the previous tests,
+                        # set dead_link_msg with the most recent error and try again
+                        dead_link_msg = "%s: URL %s: returned code %d" % (filepath, url, response.status_code)
+                        tries -= 1
+                except requests.exceptions.InvalidURL:
+                    dead_link_msg = "%s: URL %s: invalid URL" % (filepath, url)
+                except requests.exceptions.SSLError:
+                    dead_link_msg = "%s: URL %s: SSL error" % (filepath, url)
+                except requests.exceptions.TooManyRedirects:
+                    dead_link_msg = "%s: URL %s: too many redirects" % (filepath, url)
+                except Exception as e:
+                    try:
+                        error_msg = e.args[0].reason.__str__()
+                    except AttributeError:
+                        error_msg = e.args[0]
+                    dead_link_msg = "%s: URL %s: failed with exception: %s" % (filepath, url, error_msg)
+            return dead_link_msg
+
+        # Dispatch threads to test multiple URLs concurrently
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            dead_links = list(executor.map(test_file_url, list(files_and_urls)))
+
+        # Filter out None entries
+        dead_links = list(sorted(filter(lambda x: x is not None, dead_links)))
+        self.assertEqual(len(dead_links), 0, msg="\n".join(["Dead links found:", *dead_links]))
+
 
 class NS3CommonSettingsTestCase(unittest.TestCase):
     """!
