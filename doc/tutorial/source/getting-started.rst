@@ -76,7 +76,7 @@ are needed to get started with |ns3|:
 ============  ===========================================================
 Prerequisite  Package/version
 ============  ===========================================================
-C++ compiler  ``clang++`` or ``g++`` (g++ version 7 or greater)
+C++ compiler  ``clang++`` or ``g++`` (g++ version 8 or greater)
 Python        ``python3`` version >=3.6
 CMake         ``cmake`` version >=3.10
 Build system  ``make``, ``ninja``, ``xcodebuild`` (XCode)

@@ -112,16 +112,6 @@ reasons:
   Some limitations found in |ns2| (such as supporting multiple types of
   interfaces on nodes correctly) have been remedied in |ns3|.
 
-|ns2| has a more diverse set of contributed modules than does |ns3|, owing to
-its long history.  However, |ns3| has more detailed models in several
-popular areas of research (including sophisticated LTE and WiFi models),
-and its support of implementation code admits a very wide spectrum
-of high-fidelity models.  Users may be surprised to learn that the
-whole Linux networking stack can be encapsulated in an |ns3| node,
-using the Direct Code Execution (DCE) framework.  |ns2|
-models can sometimes be ported to |ns3|, particularly if they have been
-implemented in C++.  
-
 If in doubt, a good guideline would be to look at both simulators (as
 well as other simulators), and in particular the models available
 for your research, but keep in mind that your experience may be better

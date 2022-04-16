@@ -102,7 +102,7 @@ Once you have obtained the source either by downloading a release or by
 cloning a Git repository, the next step is to
 configure the build using the *CMake* build system.  There
 are several options to control the build, but enabling the example programs
-and the tests, for a default debug build profile (with debugging symbols
+and the tests, for a default build profile (with asserts enabled and
 and support for |ns3| logging) is what is usually done at first:
 
 ::
