@@ -761,15 +761,15 @@ macro(process_options)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(
-        ${HIGHLIGHTED_STATUS}
-        "Bindings: python bindings require Python, but it could not be found"
+        FATAL_ERROR
+          "Bindings: python bindings require Python, but it could not be found"
       )
     else()
       check_python_packages("pybindgen" missing_packages)
       if(missing_packages)
         message(
-          ${HIGHLIGHTED_STATUS}
-          "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
+          FATAL_ERROR
+            "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
         )
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
@@ -786,8 +786,8 @@ macro(process_options)
   if(${NS3_SCAN_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(
-        ${HIGHLIGHTED_STATUS}
-        "Bindings: scanning python bindings require Python, but it could not be found"
+        FATAL_ERROR
+          "Bindings: scanning python bindings require Python, but it could not be found"
       )
     else()
       # Check if pybindgen, pygccxml, cxxfilt and castxml are installed
@@ -808,8 +808,8 @@ macro(process_options)
       # If packages were not found, print message
       if(missing_packages)
         message(
-          ${HIGHLIGHTED_STATUS}
-          "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
+          FATAL_ERROR
+            "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
         )
       else()
         set(ENABLE_SCAN_PYTHON_BINDINGS ON)
@@ -862,7 +862,7 @@ macro(process_options)
   if(${NS3_MPI})
     find_package(MPI QUIET)
     if(NOT ${MPI_FOUND})
-      message(${HIGHLIGHTED_STATUS} "MPI was not found. Continuing without it.")
+      message(FATAL_ERROR "MPI was not found.")
     else()
       message(STATUS "MPI was found.")
       add_definitions(-DNS3_MPI)

@@ -86,15 +86,21 @@ if(${THREADS_ENABLED}
             ""
   )
 
-  if(${NS3_DPDK}
-     AND PKG_CONFIG_FOUND
-     AND DPDK_FOUND
-  )
-    set(ENABLE_DPDKDEVNET
-        True
-        CACHE INTERNAL
-              ""
-    )
+  if(${NS3_DPDK})
+    if(PKG_CONFIG_FOUND)
+      if(DPDK_FOUND)
+
+        set(ENABLE_DPDKDEVNET
+            True
+            CACHE INTERNAL
+                  ""
+        )
+      else()
+        message(FATAL_ERROR "DPDK not found.")
+      endif()
+    else()
+      message(FATAL_ERROR "Pkgconfig was not found and is required by DPDK.")
+    endif()
   endif()
 
   if(HAVE_IF_NETS_H
