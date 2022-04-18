@@ -534,34 +534,51 @@ In principle, this should work (and should generate the 32-bit bindings).
 However, maintainers have not been available to complete this port to date.
 We would welcome suggestions on how to enable scanning for MacOS. 
 
+Regenerating the Python bindings using gitlab-ci-local
+======================================================
+
+The |ns3| GitLab.com continuous integration (CI) system can be run on a
+local machine using
+`gitlab-ci-local < https://github.com/firecow/gitlab-ci-local>`_.
+From within the ns-3 directory:
+
+.. sourcecode:: bash
+
+    $ gitlab-ci-local --file ./utils/tests/gitlab-ci.yml pybindgen-21.04
+
+If everything works, the diff with the re-scanned bindings will be in
+``./gitlab-ci-local/artifacts/pybindgen-21.04``.
+
 Regenerating the Python bindings using Docker
 =============================================
 
-An alternative to the above Bake install is to use a Docker container.
+An alternative to the above Bake install or gitlab-ci-local is to use a
+Docker container.  Basically, the below steps are the low-level commands
+used by the gitlab-ci-local approach above.
 The following steps are used by the |ns3| CI system on an Ubuntu 20.04 image.
 
 As a prerequisite, install Docker using a package manager; on Ubuntu, use:
 
-.. sourcecode bash
+.. sourcecode:: bash
 
     $ apt install docker.io
 
 To allow an unprivileged user to use Docker, perform the following
 
-.. sourcecode bash
+.. sourcecode:: bash
 
     $ apt install docker.io
 
 Then execute the following steps to get a shell:
 
-.. sourcecode bash
+.. sourcecode:: bash
     
     $ docker run -it ubuntu:20.04
 
 If you prefer to work on your current directory from the container shell,
 instead do:
 
-.. sourcecode bash
+.. sourcecode:: bash
 
     $ docker run -it -v /path/to/your/current/directory:/path/to/container/mount ubuntu:20.04
     $ cd /path/to/container/mount
@@ -571,7 +588,7 @@ where ``/path/to/container/mount`` can be something like ``/ns-3-dev``.
 Then, from within a directory that contains ns-3, perform the following
 steps to rescan the APIs and test them:
 
-.. sourcecode bash
+.. sourcecode:: bash
 
     $ apt-get update
     $ apt-get install -y g++ cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git python3 python3-pip
