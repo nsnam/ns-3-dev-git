@@ -214,7 +214,7 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
         {
           Ptr<Node> node = GetNode (i, j);
           Ptr<ConstantPositionMobilityModel> loc = node->GetObject<ConstantPositionMobilityModel> ();
-          if (loc ==0)
+          if (!loc)
             {
               loc = CreateObject<ConstantPositionMobilityModel> ();
               node->AggregateObject (loc);

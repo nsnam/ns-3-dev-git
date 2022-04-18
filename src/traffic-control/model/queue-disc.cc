@@ -632,7 +632,7 @@ void
 QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
 {
   NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_IF (qdClass->GetQueueDisc () == 0, "Cannot add a class with no attached queue disc");
+  NS_ABORT_MSG_IF (!qdClass->GetQueueDisc (), "Cannot add a class with no attached queue disc");
   // the child queue disc cannot be one with wake mode equal to WAKE_CHILD because
   // such queue discs do not implement the enqueue/dequeue methods
   NS_ABORT_MSG_IF (qdClass->GetQueueDisc ()->GetWakeMode () == WAKE_CHILD,
@@ -995,7 +995,7 @@ QueueDisc::Restart (void)
 {
   NS_LOG_FUNCTION (this);
   Ptr<QueueDiscItem> item = DequeuePacket();
-  if (item == 0)
+  if (!item)
     {
       NS_LOG_LOGIC ("No packet to send");
       return false;
@@ -1012,7 +1012,7 @@ QueueDisc::DequeuePacket ()
   Ptr<QueueDiscItem> item;
 
   // First check if there is a requeued packet
-  if (m_requeued != 0)
+  if (m_requeued)
     {
         // If the queue where the requeued packet is destined to is not stopped, return
         // the requeued packet; otherwise, return an empty packet.
@@ -1043,7 +1043,7 @@ QueueDisc::DequeuePacket ()
         {
           item = Dequeue ();
           // If the item is not null, add the header to the packet.
-          if (item != 0)
+          if (item)
             {
               item->AddHeader ();
             }

@@ -136,7 +136,7 @@ YansWavePhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   // the system.  We can only deal with devices of type WaveNetDevice.
   //
   Ptr<WaveNetDevice> device = nd->GetObject<WaveNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("YansWavePhyHelper::EnablePcapInternal(): Device " << &device << " not of type ns3::WaveNetDevice");
       return;
@@ -181,7 +181,7 @@ YansWavePhyHelper::EnableAsciiInternal (
   // the system.  We can only deal with devices of type WaveNetDevice.
   //
   Ptr<WaveNetDevice> device = nd->GetObject<WaveNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("EnableAsciiInternal(): Device " << device << " not of type ns3::WaveNetDevice");
       return;
@@ -203,7 +203,7 @@ YansWavePhyHelper::EnableAsciiInternal (
   // without a context since there will be one file per context and therefore
   // the context would be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy

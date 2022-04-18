@@ -218,8 +218,8 @@ RoutingProtocol::~RoutingProtocol (void)
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_ASSERT (ipv4 != 0);
-  NS_ASSERT (m_ipv4 == 0);
+  NS_ASSERT (ipv4);
+  NS_ASSERT (!m_ipv4);
   NS_LOG_DEBUG ("Created olsr::RoutingProtocol");
   m_helloTimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
   m_tcTimer.SetFunction (&RoutingProtocol::TcTimerExpire, this);
@@ -369,7 +369,7 @@ void RoutingProtocol::DoInitialize ()
         }
 
       // Create a socket to listen on all the interfaces
-      if (m_recvSocket == 0)
+      if (!m_recvSocket)
         {
           m_recvSocket = Socket::CreateSocket (GetObject<Node> (),
                                                UdpSocketFactory::GetTypeId ());
@@ -1945,7 +1945,7 @@ RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable
 {
   // If a routing table has already been associated, remove
   // corresponding entries from the list of local HNA associations
-  if (m_routingTableAssociation != 0)
+  if (m_routingTableAssociation)
     {
       NS_LOG_INFO ("Removing HNA entries coming from the old routing table association.");
       for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)

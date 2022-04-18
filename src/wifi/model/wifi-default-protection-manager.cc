@@ -77,7 +77,7 @@ WifiDefaultProtectionManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
   // If we are adding a second PSDU to a DL MU PPDU, switch to no protection
   // (until MU-RTS is implemented)
   if (txParams.m_txVector.IsDlMu () && txParams.GetPsduInfoMap ().size () == 1
-      && txParams.GetPsduInfo (mpdu->GetHeader ().GetAddr1 ()) == nullptr)
+      && !txParams.GetPsduInfo (mpdu->GetHeader ().GetAddr1 ()))
     {
       return std::unique_ptr<WifiProtection> (new WifiNoProtection);
     }

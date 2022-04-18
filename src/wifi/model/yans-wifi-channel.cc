@@ -87,7 +87,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double
 {
   NS_LOG_FUNCTION (this << sender << ppdu << txPowerDbm);
   Ptr<MobilityModel> senderMobility = sender->GetMobility ();
-  NS_ASSERT (senderMobility != 0);
+  NS_ASSERT (senderMobility);
   for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
     {
       if (sender != (*i))
@@ -105,7 +105,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double
                         "distance=" << senderMobility->GetDistanceFrom (receiverMobility) << "m, delay=" << delay);
           Ptr<NetDevice> dstNetDevice = (*i)->GetDevice ();
           uint32_t dstNode;
-          if (dstNetDevice == 0)
+          if (!dstNetDevice)
             {
               dstNode = 0xffffffff;
             }

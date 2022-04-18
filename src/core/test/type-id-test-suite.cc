@@ -339,16 +339,16 @@ DeprecatedAttributeTestCase::DoRun (void)
   struct TypeId::TraceSourceInformation tinfo;
   Ptr<const TraceSourceAccessor> acc;
   acc = tid.LookupTraceSourceByName ("trace", &tinfo);
-  NS_TEST_ASSERT_MSG_NE (acc, 0, "lookup new trace source");
+  NS_TEST_ASSERT_MSG_NE (acc, nullptr, "lookup new trace source");
   std::cerr << suite << "lookup new trace source:"
-       << (tinfo.supportLevel == TypeId::SUPPORTED ? "supported" : "error")
-       << std::endl;
+            << (tinfo.supportLevel == TypeId::SUPPORTED ? "supported" : "error")
+            << std::endl;
 
   acc = tid.LookupTraceSourceByName ("oldTrace", &tinfo);
-  NS_TEST_ASSERT_MSG_NE (acc, 0, "lookup old trace source");
+  NS_TEST_ASSERT_MSG_NE (acc, nullptr, "lookup old trace source");
   std::cerr << suite << "lookup old trace source:"
-       << (tinfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error")
-       << std::endl;
+            << (tinfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error")
+            << std::endl;
 }
 
 

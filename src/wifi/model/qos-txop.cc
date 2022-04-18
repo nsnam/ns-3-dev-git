@@ -41,7 +41,7 @@
 #include "wifi-tx-parameters.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_mac != 0) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
+#define NS_LOG_APPEND_CONTEXT if (m_mac) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -112,7 +112,7 @@ void
 QosTxop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_baManager != 0)
+  if (m_baManager)
     {
       m_baManager->Dispose ();
     }
@@ -302,12 +302,12 @@ QosTxop::HasFramesToTransmit (void)
   // check if the BA manager has anything to send, so that expired
   // frames (if any) are removed and a BlockAckRequest is scheduled to advance
   // the starting sequence number of the transmit (and receiver) window
-  bool baManagerHasPackets = (m_baManager->GetBar (false) != 0);
+  bool baManagerHasPackets {m_baManager->GetBar (false)};
   // remove MSDUs with expired lifetime starting from the head of the queue
   // TODO Add a WifiMacQueue method that serves this purpose; IsEmpty () can
   // then reuse such method.
   m_queue->IsEmpty ();
-  bool queueIsNotEmpty = (m_queue->PeekFirstAvailable (m_qosBlockedDestinations) != nullptr);
+  bool queueIsNotEmpty {m_queue->PeekFirstAvailable (m_qosBlockedDestinations)};
 
   bool ret = (baManagerHasPackets || queueIsNotEmpty);
   NS_LOG_FUNCTION (this << baManagerHasPackets << queueIsNotEmpty);
@@ -374,7 +374,7 @@ QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQue
   item = peek ();
   // remove old packets (must be retransmissions or in flight, otherwise they did
   // not get a sequence number assigned)
-  while (item != nullptr && !item->IsFragment ())
+  while (item && !item->IsFragment ())
     {
       if ((item->GetHeader ().IsRetry () || item->IsInFlight ())
           && IsQosOldPacket (item))
@@ -404,7 +404,7 @@ QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQue
           break;
         }
     }
-  if (item != nullptr)
+  if (item)
     {
       NS_ASSERT (!item->IsInFlight ());
       WifiMacHeader& hdr = item->GetItem ()->GetHeader ();
@@ -442,7 +442,7 @@ Ptr<WifiMacQueueItem>
 QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
                       Time availableTime, bool initialFrame)
 {
-  NS_ASSERT (peekedItem != 0);
+  NS_ASSERT (peekedItem);
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime << initialFrame);
 
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
@@ -485,14 +485,14 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
           mpdu = htFem->GetMsduAggregator ()->GetNextAmsdu (peekedItem, txParams, availableTime);
         }
 
-      if (mpdu != 0)
+      if (mpdu)
         {
           NS_LOG_DEBUG ("Prepared an MPDU containing an A-MSDU");
         }
       // else aggregation was not attempted or failed
     }
 
-  if (mpdu == 0)
+  if (!mpdu)
     {
       mpdu = peekedItem->GetItem ();
     }
@@ -607,7 +607,7 @@ QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address r
       // shall be set equal to the sequence number of such packet.
       uint16_t startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
       auto peekedItem = m_queue->PeekByTidAndAddress (tid, recipient);
-      if (peekedItem != nullptr && peekedItem->GetHeader ().IsRetry ())
+      if (peekedItem && peekedItem->GetHeader ().IsRetry ())
         {
           startingSeq = peekedItem->GetHeader ().GetSequenceNumber ();
         }

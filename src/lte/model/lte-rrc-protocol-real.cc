@@ -275,7 +275,7 @@ LteUeRrcProtocolReal::SetEnbRrcSapProvider ()
            j++)
         {
           enbDev = node->GetDevice (j)->GetObject <LteEnbNetDevice> ();
-          if (enbDev == 0)
+          if (!enbDev)
             {
               continue;
             }
@@ -545,7 +545,7 @@ LteEnbRrcProtocolReal::DoSendSystemInformation (uint16_t cellId, LteRrcSap::Syst
       for (int j = 0; j < nDevs; ++j)
         {
           Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
-          if (ueDev != 0)
+          if (ueDev)
             {
               Ptr<LteUeRrc> ueRrc = ueDev->GetRrc ();
               NS_LOG_LOGIC ("considering UE IMSI " << ueDev->GetImsi () << " that has cellId " << ueRrc->GetCellId ());

@@ -30,7 +30,7 @@ TcpSocketFactoryImpl::TcpSocketFactoryImpl ()
 }
 TcpSocketFactoryImpl::~TcpSocketFactoryImpl ()
 {
-  NS_ASSERT (m_tcp == 0);
+  NS_ASSERT (!m_tcp);
 }
 
 void

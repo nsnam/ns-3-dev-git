@@ -214,7 +214,7 @@ ChannelAccessManager::InitLastBusyStructs (void)
   m_lastBusyEnd[WIFI_CHANLIST_PRIMARY] = now;
   m_lastIdle[WIFI_CHANLIST_PRIMARY] = {now, now};
 
-  if (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsOfdm ())
+  if (!m_phy || !m_phy->GetOperatingChannel ().IsOfdm ())
     {
       return;
     }
@@ -395,7 +395,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
            * could change the global state of the manager, and, thus, could change
            * the result of the calculations.
            */
-          NS_ASSERT (m_feManager != 0);
+          NS_ASSERT (m_feManager);
           // If we are operating on an OFDM channel wider than 20 MHz, find the largest
           // idle primary channel and pass its width to the FrameExchangeManager, so that
           // the latter can transmit PPDUs of the appropriate width (see Section 10.23.2.5

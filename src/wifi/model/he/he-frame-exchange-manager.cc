@@ -65,7 +65,7 @@ HeFrameExchangeManager::~HeFrameExchangeManager ()
 uint16_t
 HeFrameExchangeManager::GetSupportedBaBufferSize (void) const
 {
-  NS_ASSERT (m_mac->GetHeConfiguration () != 0);
+  NS_ASSERT (m_mac->GetHeConfiguration ());
   if (m_mac->GetHeConfiguration ()->GetMpduBufferSize () > 64)
     {
       return 256;
@@ -98,9 +98,9 @@ void
 HeFrameExchangeManager::SetMultiUserScheduler (const Ptr<MultiUserScheduler> muScheduler)
 {
   NS_ASSERT (m_mac);
-  NS_ABORT_MSG_IF (m_apMac == 0,
+  NS_ABORT_MSG_IF (!m_apMac,
                    "A Multi-User Scheduler can only be aggregated to an AP");
-  NS_ABORT_MSG_IF (m_apMac->GetHeConfiguration () == 0,
+  NS_ABORT_MSG_IF (!m_apMac->GetHeConfiguration (),
                    "A Multi-User Scheduler can only be aggregated to an HE AP");
   m_muScheduler = muScheduler;
 }
@@ -120,9 +120,9 @@ HeFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
    *   or the next frame in the AC queue is a non-broadcast QoS data frame addressed to
    *   a receiver with which a BA agreement has been already established
    */
-  if (m_muScheduler != 0
-      && edca->GetBaManager ()->GetBar (false) == nullptr
-      && (mpdu == 0
+  if (m_muScheduler
+      && !edca->GetBaManager ()->GetBar (false)
+      && (!mpdu
           || (mpdu->GetHeader ().IsQosData ()
               && !mpdu->GetHeader ().GetAddr1 ().IsGroup ()
               && edca->GetBaAgreementEstablished (mpdu->GetHeader ().GetAddr1 (), mpdu->GetHeader ().GetQosTid ()))))
@@ -170,7 +170,7 @@ HeFrameExchangeManager::SendMpduFromBaManager (Ptr<QosTxop> edca, Time available
   // First, check if there is a BAR to be transmitted
   Ptr<const WifiMacQueueItem> peekedItem = edca->GetBaManager ()->GetBar (false);
 
-  if (peekedItem == 0)
+  if (!peekedItem )
     {
       NS_LOG_DEBUG ("Block Ack Manager returned no frame to send");
       return false;
@@ -307,7 +307,7 @@ HeFrameExchangeManager::SendPsduMap (void)
               NS_ABORT_MSG_IF (tids.size () > 1, "Acknowledgment method incompatible with a Multi-TID A-MPDU");
               uint8_t tid = *tids.begin ();
 
-              NS_ASSERT (m_edca != 0);
+              NS_ASSERT (m_edca);
               m_edca->ScheduleBar (m_mac->GetQosTxop (tid)->PrepareBlockAckRequest (psdu.second->GetAddr1 (), tid));
             }
         }
@@ -337,7 +337,7 @@ HeFrameExchangeManager::SendPsduMap (void)
     {
       WifiDlMuTfMuBar* acknowledgment = static_cast<WifiDlMuTfMuBar*> (m_txParams.m_acknowledgment.get ());
 
-      if (m_triggerFrame == nullptr)
+      if (!m_triggerFrame)
         {
           // we are transmitting the DL MU PPDU and have to schedule the
           // transmission of a MU-BAR Trigger Frame.
@@ -349,7 +349,7 @@ HeFrameExchangeManager::SendPsduMap (void)
           m_trigVector = staIt->second.blockAckTxVector;
           while (staIt != acknowledgment->stationsReplyingWithBlockAck.end ())
             {
-              NS_ASSERT (m_apMac != 0);
+              NS_ASSERT (m_apMac);
               uint16_t staId = m_apMac->GetAssociationId (staIt->first);
 
               m_trigVector.SetHeMuUserInfo (staId, staIt->second.blockAckTxVector.GetHeMuUserInfo (staId));
@@ -361,7 +361,7 @@ HeFrameExchangeManager::SendPsduMap (void)
           // set the UL Length field of the MU-BAR Trigger Frame
           m_trigVector.SetLength (acknowledgment->ulLength);
 
-          NS_ASSERT (m_edca != 0);
+          NS_ASSERT (m_edca);
           m_edca->ScheduleBar (PrepareMuBar (m_trigVector, recipients));
         }
       else
@@ -466,7 +466,7 @@ HeFrameExchangeManager::SendPsduMap (void)
 
       // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
       // Trigger Frame, so that its Duration/ID is correctly computed
-      NS_ASSERT (m_muScheduler != 0);
+      NS_ASSERT (m_muScheduler);
       Time tbPpduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration (m_muScheduler->GetUlMuInfo ().trigger.GetUlLength (),
                                                                         acknowledgment->tbPpduTxVector,
                                                                         m_phy->GetPhyBand ());
@@ -487,7 +487,7 @@ HeFrameExchangeManager::SendPsduMap (void)
     {
       CtrlTriggerHeader& trigger = m_muScheduler->GetUlMuInfo ().trigger;
       NS_ASSERT (trigger.IsBsrp ());
-      NS_ASSERT (m_apMac != 0);
+      NS_ASSERT (m_apMac);
 
       // record the set of stations solicited by this Trigger Frame
       m_staExpectTbPpduFrom.clear ();
@@ -520,7 +520,7 @@ HeFrameExchangeManager::SendPsduMap (void)
     {
       NS_ASSERT (m_psduMap.size () == 1);
       timerType = WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU;
-      NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+      NS_ASSERT (m_staMac && m_staMac->IsAssociated ());
       txVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (m_psduMap.begin ()->second->GetAddr1 (),
                                                                              m_txParams.m_txVector);
       responseTxVector = &txVector;
@@ -582,12 +582,12 @@ HeFrameExchangeManager::SendPsduMap (void)
       switch (timerType)
         {
           case WifiTxTimer::WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU:
-            NS_ASSERT (mpdu != nullptr);
+            NS_ASSERT (mpdu);
             m_txTimer.Set (timerType, timeout, &HeFrameExchangeManager::NormalAckTimeout,
                           this, mpdu, m_txParams.m_txVector);
             break;
           case WifiTxTimer::WAIT_BLOCK_ACK:
-            NS_ASSERT (psdu != nullptr);
+            NS_ASSERT (psdu);
             m_txTimer.Set (timerType, timeout, &HeFrameExchangeManager::BlockAckTimeout,
                           this, psdu, m_txParams.m_txVector);
             break;
@@ -688,7 +688,7 @@ HeFrameExchangeManager::PrepareMuBar (const WifiTxVector& responseTxVector,
     }
   else
     {
-      NS_ASSERT (m_apMac != 0);
+      NS_ASSERT (m_apMac);
       rxAddress = m_apMac->GetStaList ().at (recipients.begin ()->first);
     }
 
@@ -708,7 +708,7 @@ void
 HeFrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const
 {
   NS_LOG_FUNCTION (this << acknowledgment);
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
 
   /*
    * Acknowledgment via a sequence of BlockAckReq and BlockAck frames
@@ -863,8 +863,8 @@ HeFrameExchangeManager::GetTxDuration (uint32_t ppduPayloadSize, Mac48Address re
       return VhtFrameExchangeManager::GetTxDuration (ppduPayloadSize, receiver, txParams);
     }
 
-  NS_ASSERT_MSG (!txParams.m_txVector.IsDlMu () || m_apMac != 0, "DL MU can be done by an AP");
-  NS_ASSERT_MSG (!txParams.m_txVector.IsUlMu () || m_staMac != 0, "UL MU can be done by a STA");
+  NS_ASSERT_MSG (!txParams.m_txVector.IsDlMu () || m_apMac, "DL MU can be done by an AP");
+  NS_ASSERT_MSG (!txParams.m_txVector.IsUlMu () || m_staMac, "UL MU can be done by a STA");
 
   if (txParams.m_acknowledgment
       && txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
@@ -893,13 +893,13 @@ HeFrameExchangeManager::TbPpduTimeout (WifiPsduMap* psduMap,
 {
   NS_LOG_FUNCTION (this << psduMap << staMissedTbPpduFrom->size () << nSolicitedStations);
 
-  NS_ASSERT (psduMap != nullptr);
+  NS_ASSERT (psduMap);
   NS_ASSERT (psduMap->size () == 1 && psduMap->begin ()->first == SU_STA_ID
               && psduMap->begin ()->second->GetHeader (0).IsTrigger ());
 
   // This method is called if some station(s) did not send a TB PPDU
   NS_ASSERT (!staMissedTbPpduFrom->empty ());
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
 
   if (staMissedTbPpduFrom->size () == nSolicitedStations)
     {
@@ -924,7 +924,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
 {
   NS_LOG_FUNCTION (this << psduMap << nSolicitedStations);
 
-  NS_ASSERT (psduMap != nullptr);
+  NS_ASSERT (psduMap);
   NS_ASSERT (m_txParams.m_acknowledgment
              && (m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF
                  || m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR));
@@ -952,7 +952,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
   for (const auto& sta : *staMissedBlockAckFrom)
     {
       Ptr<WifiPsdu> psdu = GetPsduTo (sta, *psduMap);
-      NS_ASSERT (psdu != nullptr);
+      NS_ASSERT (psdu);
       // If the QSRC[AC] or the QLRC[AC] has reached dot11ShortRetryLimit or dot11LongRetryLimit
       // respectively, CW[AC] shall be reset to CWmin[AC] (sec. 10.22.2.2 of 802.11-2016).
       // We should get that psduResetCw is the same for all PSDUs, but the handling of QSRC/QLRC
@@ -962,7 +962,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
       resetCw = resetCw || psduResetCw;
     }
 
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
 
   if (resetCw)
     {
@@ -1073,7 +1073,7 @@ WifiTxVector
 HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address triggerSender) const
 {
   NS_ASSERT (triggerSender != m_self); //TxPower information is used only by STAs, it is useless for the sending AP (which can directly use CtrlTriggerHeader::GetHeTbTxVector)
-  NS_ASSERT (m_staMac != nullptr);
+  NS_ASSERT (m_staMac);
   uint16_t staId = m_staMac->GetAssociationId ();
   auto userInfoIt = trigger.FindUserInfoWithAid (staId);
   NS_ASSERT (userInfoIt != trigger.end ());
@@ -1081,7 +1081,7 @@ HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address
   WifiTxVector v = trigger.GetHeTbTxVector (staId);
 
   Ptr<HeConfiguration> heConfiguration = m_mac->GetHeConfiguration ();
-  NS_ASSERT_MSG (heConfiguration != 0, "This STA has to be an HE station to send an HE TB PPDU");
+  NS_ASSERT_MSG (heConfiguration, "This STA has to be an HE station to send an HE TB PPDU");
   v.SetBssColor (heConfiguration->GetBssColor ());
 
   if (userInfoIt->IsUlTargetRssiMaxTxPower ())
@@ -1140,7 +1140,7 @@ void
 HeFrameExchangeManager::SetTargetRssi (CtrlTriggerHeader& trigger) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_apMac != 0);
+  NS_ASSERT (m_apMac);
 
   trigger.SetApTxPower (static_cast<int8_t> (m_phy->GetPowerDbm (m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ())));
   for (auto& userInfo : trigger)
@@ -1159,7 +1159,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck (const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << &txParams);
 
-  NS_ASSERT (m_apMac != 0);
+  NS_ASSERT (m_apMac);
   NS_ASSERT (txParams.m_acknowledgment
              && txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
   WifiUlMuMultiStaBa* acknowledgment = static_cast<WifiUlMuMultiStaBa*> (txParams.m_acknowledgment.get ());
@@ -1248,7 +1248,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
 {
   NS_LOG_FUNCTION (this << trigger << hdr);
   NS_ASSERT (trigger.IsBasic ());
-  NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+  NS_ASSERT (m_staMac && m_staMac->IsAssociated ());
 
   NS_LOG_DEBUG ("Received a Trigger Frame (basic variant) soliciting a transmission");
 
@@ -1303,7 +1303,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
       txParams.m_txVector = tbTxVector;
 
       // first, check if there is a pending BlockAckReq frame
-      if ((mpdu = edca->GetBaManager ()->GetBar (false, tid, hdr.GetAddr2 ())) != 0
+      if ((mpdu = edca->GetBaManager ()->GetBar (false, tid, hdr.GetAddr2 ()))
           && TryAddMpdu (mpdu, txParams, ppduDuration))
         {
           NS_LOG_DEBUG ("Sending a BAR within a TB PPDU");
@@ -1312,11 +1312,11 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
         }
 
       // otherwise, check if a suitable data frame is available
-      if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())) != 0)
+      if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())))
         {
           Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false);
 
-          if (item != 0)
+          if (item)
             {
               // try A-MPDU aggregation
               std::vector<Ptr<WifiMacQueueItem>> mpduList = m_mpduAggregator->GetNextAmpdu (item, txParams,
@@ -1328,7 +1328,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
         }
     }
 
-  if (psdu != 0)
+  if (psdu)
     {
       psdu->SetDuration (hdr.GetDuration () - m_phy->GetSifs () - ppduDuration);
       SendPsduMapWithProtection (WifiPsduMap {{staId, psdu}}, txParams);
@@ -1345,7 +1345,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trig
 {
   NS_LOG_FUNCTION (this << trigger << hdr);
   NS_ASSERT (trigger.IsBasic () || trigger.IsBsrp ());
-  NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+  NS_ASSERT (m_staMac && m_staMac->IsAssociated ());
 
   NS_LOG_DEBUG ("Requested to send QoS Null frames");
 
@@ -1565,7 +1565,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           m_txTimer.Cancel ();
           m_channelAccessManager->NotifyAckTimeoutResetNow ();
 
-          NS_ASSERT (m_edca != 0);
+          NS_ASSERT (m_edca);
           m_psduMap.clear ();
           m_edca->ResetCw (m_linkId);
           TransmissionSucceeded ();
@@ -1605,7 +1605,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
 
           WifiDlMuBarBaSequence* acknowledgment = static_cast<WifiDlMuBarBaSequence*> (m_txParams.m_acknowledgment.get ());
           NS_ASSERT (acknowledgment->stationsReplyingWithNormalAck.size () == 1);
-          NS_ASSERT (m_apMac != 0);
+          NS_ASSERT (m_apMac);
           uint16_t staId = m_apMac->GetAssociationId (acknowledgment->stationsReplyingWithNormalAck.begin ()->first);
           auto it = m_psduMap.find (staId);
           NS_ASSERT (it != m_psduMap.end ());
@@ -1668,7 +1668,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                            "A Multi-STA BlockAck is expected after a TB PPDU");
           NS_LOG_DEBUG ("Received a Multi-STA BlockAck from=" << hdr.GetAddr2 ());
 
-          NS_ASSERT (m_staMac != nullptr && m_staMac->IsAssociated ());
+          NS_ASSERT (m_staMac && m_staMac->IsAssociated ());
           if (hdr.GetAddr2 () != m_bssid)
             {
               NS_LOG_DEBUG ("The sender is not the AP we are associated with");
@@ -1752,7 +1752,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
       else if (hdr.IsTrigger ())
         {
           // Trigger Frames are only processed by STAs
-          if (m_staMac == nullptr)
+          if (!m_staMac)
             {
               return;
             }
@@ -1939,7 +1939,7 @@ HeFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSigna
           m_txTimer.Cancel ();
           m_channelAccessManager->NotifyAckTimeoutResetNow ();
 
-          NS_ASSERT (m_edca != 0);
+          NS_ASSERT (m_edca);
           m_psduMap.clear ();
           m_edca->ResetCw (m_linkId);
           TransmissionSucceeded ();

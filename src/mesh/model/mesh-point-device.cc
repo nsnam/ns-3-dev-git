@@ -388,12 +388,12 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
       m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
     }
   Ptr<WifiNetDevice> wifiNetDev = iface->GetObject<WifiNetDevice> ();
-  if (wifiNetDev == 0)
+  if (!wifiNetDev)
     {
       NS_FATAL_ERROR ("Device is not a WiFi NIC: cannot be used as a mesh point interface.");
     }
   Ptr<MeshWifiInterfaceMac> ifaceMac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
-  if (ifaceMac == 0)
+  if (!ifaceMac)
     {
       NS_FATAL_ERROR (
         "WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");

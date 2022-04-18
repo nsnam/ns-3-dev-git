@@ -445,7 +445,7 @@ CsmaNetDevice::TransmitStart (void)
   // This function is called to start the process of transmitting a packet.  We
   // expect that the packet to transmit will be found in m_currentPkt.
   //
-  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitStart(): m_currentPkt not set");
+  NS_ASSERT_MSG (m_currentPkt, "CsmaNetDevice::TransmitStart(): m_currentPkt not set");
 
   NS_LOG_LOGIC ("m_currentPkt = " << m_currentPkt);
   NS_LOG_LOGIC ("UID = " << m_currentPkt->GetUid ());
@@ -538,7 +538,7 @@ CsmaNetDevice::TransmitAbort (void)
   // When we started the process of transmitting the current packet, it was
   // placed in m_currentPkt.  So we had better find one there.
   //
-  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitAbort(): m_currentPkt zero");
+  NS_ASSERT_MSG (m_currentPkt, "CsmaNetDevice::TransmitAbort(): m_currentPkt zero");
   NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
@@ -566,7 +566,7 @@ CsmaNetDevice::TransmitAbort (void)
   else
     {
       Ptr<Packet> packet = m_queue->Dequeue ();
-      NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::TransmitAbort(): IsEmpty false but no Packet on queue?");
+      NS_ASSERT_MSG (packet, "CsmaNetDevice::TransmitAbort(): IsEmpty false but no Packet on queue?");
       m_currentPkt = packet;
       m_snifferTrace (m_currentPkt);
       m_promiscSnifferTrace (m_currentPkt);
@@ -593,7 +593,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
   // When we started transmitting the current packet, it was placed in
   // m_currentPkt.  So we had better find one there.
   //
-  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitCompleteEvent(): m_currentPkt zero");
+  NS_ASSERT_MSG (m_currentPkt, "CsmaNetDevice::TransmitCompleteEvent(): m_currentPkt zero");
   NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
@@ -623,7 +623,7 @@ CsmaNetDevice::TransmitReadyEvent (void)
   // We expect that the packet we had been transmitting was cleared when the
   // TransmitCompleteEvent() was executed.
   //
-  NS_ASSERT_MSG (m_currentPkt == 0, "CsmaNetDevice::TransmitReadyEvent(): m_currentPkt nonzero");
+  NS_ASSERT_MSG (!m_currentPkt, "CsmaNetDevice::TransmitReadyEvent(): m_currentPkt nonzero");
 
   //
   // Get the next packet from the queue for transmitting
@@ -635,7 +635,7 @@ CsmaNetDevice::TransmitReadyEvent (void)
   else
     {
       Ptr<Packet> packet = m_queue->Dequeue ();
-      NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::TransmitReadyEvent(): IsEmpty false but no Packet on queue?");
+      NS_ASSERT_MSG (packet, "CsmaNetDevice::TransmitReadyEvent(): IsEmpty false but no Packet on queue?");
       m_currentPkt = packet;
       m_snifferTrace (m_currentPkt);
       m_promiscSnifferTrace (m_currentPkt);
@@ -987,7 +987,7 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
       if (m_queue->IsEmpty () == false)
         {
           Ptr<Packet> packet = m_queue->Dequeue ();
-          NS_ASSERT_MSG (packet != 0, "CsmaNetDevice::SendFrom(): IsEmpty false but no Packet on queue?");
+          NS_ASSERT_MSG (packet, "CsmaNetDevice::SendFrom(): IsEmpty false but no Packet on queue?");
           m_currentPkt = packet;
           m_promiscSnifferTrace (m_currentPkt);
           m_snifferTrace (m_currentPkt);

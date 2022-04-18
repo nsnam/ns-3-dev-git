@@ -171,13 +171,13 @@ int64_t Icmpv6L4Protocol::AssignStreams (int64_t stream)
 void Icmpv6L4Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node> node = this->GetObject<Node> ();
-      if (node != 0)
+      if (node)
         {
           Ptr<Ipv6> ipv6 = this->GetObject<Ipv6> ();
-          if (ipv6 != 0 && m_downTarget.IsNull ())
+          if (ipv6 && m_downTarget.IsNull ())
             {
               SetNode (node);
               ipv6->Insert (this);
@@ -328,7 +328,7 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
   if (nextHeader != Icmpv6L4Protocol::PROT_NUMBER)
     {
       Ptr<IpL4Protocol> l4 = ipv6->GetProtocol (nextHeader);
-      if (l4 != 0)
+      if (l4)
         {
           l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
                            info, ipHeader.GetSource (), ipHeader.GetDestination (), payload);
@@ -994,7 +994,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Add
   NS_LOG_FUNCTION (this << packet << src << dst << (uint32_t)ttl);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
   SocketIpv6HopLimitTag tag;
-  NS_ASSERT (ipv6 != 0);
+  NS_ASSERT (ipv6);
 
   tag.SetHopLimit (ttl);
   packet->AddPacketTag (tag);
@@ -1011,7 +1011,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
 {
   NS_LOG_FUNCTION (this << packet << dst << icmpv6Hdr << (uint32_t)ttl);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  NS_ASSERT (ipv6 != 0 && ipv6->GetRoutingProtocol () != 0);
+  NS_ASSERT (ipv6 && ipv6->GetRoutingProtocol ());
   Ipv6Header header;
   SocketIpv6HopLimitTag tag;
   Socket::SocketErrno err;
@@ -1021,7 +1021,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   header.SetDestination (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);
 
-  if (route != 0)
+  if (route)
     {
       NS_LOG_LOGIC ("Route exists");
       tag.SetHopLimit (ttl);

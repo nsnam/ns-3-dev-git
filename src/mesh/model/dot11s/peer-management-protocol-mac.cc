@@ -82,7 +82,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE_BEACON_TIMING));
       Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE_MESH_ID));
 
-      if ((meshId != 0) && (m_protocol->GetMeshId ()->IsEqual (*meshId)))
+      if (meshId && (m_protocol->GetMeshId ()->IsEqual (*meshId)))
         {
           m_protocol->ReceiveBeacon (m_ifIndex, header.GetAddr2 (), MicroSeconds (
                                        beacon_hdr.GetBeaconIntervalUs ()), beaconTiming);
@@ -182,7 +182,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       packet->RemoveHeader (elements, packet->GetSize ());
       peerElement = DynamicCast<IePeerManagement>(elements.FindFirst (IE_MESH_PEERING_MANAGEMENT));
 
-      NS_ASSERT (peerElement != 0);
+      NS_ASSERT (peerElement);
       //Check that frame subtype corresponds to peer link subtype
       if (peerElement->SubtypeIsOpen ())
         {
@@ -327,7 +327,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
 Mac48Address
 PeerManagementProtocolMac::GetAddress () const
 {
-  if (m_parent != 0)
+  if (m_parent)
     {
       return m_parent->GetAddress ();
     }

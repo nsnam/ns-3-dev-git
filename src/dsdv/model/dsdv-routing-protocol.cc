@@ -309,11 +309,11 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p,
       if (rt.GetHop () == 1)
         {
           route = rt.GetRoute ();
-          NS_ASSERT (route != 0);
+          NS_ASSERT (route);
           NS_LOG_DEBUG ("A route exists from " << route->GetSource ()
                                                << " to neighboring destination "
                                                << route->GetDestination ());
-          if (oif != 0 && route->GetOutputDevice () != oif)
+          if (oif && route->GetOutputDevice () != oif)
             {
               NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
               sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -327,11 +327,11 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p,
           if (m_routingTable.LookupRoute (rt.GetNextHop (),newrt))
             {
               route = newrt.GetRoute ();
-              NS_ASSERT (route != 0);
+              NS_ASSERT (route);
               NS_LOG_DEBUG ("A route exists from " << route->GetSource ()
                                                    << " to destination " << dst << " via "
                                                    << rt.GetNextHop ());
-              if (oif != 0 && route->GetOutputDevice () != oif)
+              if (oif && route->GetOutputDevice () != oif)
                 {
                   NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
                   sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -361,7 +361,7 @@ RoutingProtocol::DeferredRouteOutput (Ptr<const Packet> p,
                                       ErrorCallback ecb)
 {
   NS_LOG_FUNCTION (this << p << header);
-  NS_ASSERT (p != 0 && p != Ptr<Packet> ());
+  NS_ASSERT (p && p != Ptr<Packet> ());
   QueueEntry newEntry (p,header,ucb,ecb);
   bool result = m_queue.Enqueue (newEntry);
   if (result)
@@ -388,7 +388,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
       NS_LOG_DEBUG ("No dsdv interfaces");
       return false;
     }
-  NS_ASSERT (m_ipv4 != 0);
+  NS_ASSERT (m_ipv4);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   int32_t iif = m_ipv4->GetInterfaceForDevice (idev);
@@ -507,7 +507,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
 Ptr<Ipv4Route>
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr, Ptr<NetDevice> oif) const
 {
-  NS_ASSERT (m_lo != 0);
+  NS_ASSERT (m_lo);
   Ptr<Ipv4Route> rt = Create<Ipv4Route> ();
   rt->SetDestination (hdr.GetDestination ());
   // rt->SetSource (hdr.GetSource ());
@@ -947,13 +947,13 @@ RoutingProtocol::SendPeriodicUpdate ()
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_ASSERT (ipv4 != 0);
-  NS_ASSERT (m_ipv4 == 0);
+  NS_ASSERT (ipv4);
+  NS_ASSERT (!m_ipv4);
   m_ipv4 = ipv4;
   // Create lo route. It is asserted that the only one interface up for now is loopback
   NS_ASSERT (m_ipv4->GetNInterfaces () == 1 && m_ipv4->GetAddress (0, 0).GetLocal () == Ipv4Address ("127.0.0.1"));
   m_lo = m_ipv4->GetNetDevice (0);
-  NS_ASSERT (m_lo != 0);
+  NS_ASSERT (m_lo);
   // Remember lo route
   RoutingTableEntry rt (
     /*device=*/ m_lo,  /*dst=*/
@@ -982,7 +982,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
     }
   // Create a socket to listen only on this interface
   Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
-  NS_ASSERT (socket != 0);
+  NS_ASSERT (socket);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvDsdv,this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), DSDV_PORT));
@@ -1039,7 +1039,7 @@ RoutingProtocol::NotifyAddAddress (uint32_t i,
           return;
         }
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
-      NS_ASSERT (socket != 0);
+      NS_ASSERT (socket);
       socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvDsdv,this));
       // Bind to any IP address so that broadcasts can be received
       socket->BindToNetDevice (l3->GetNetDevice (i));
@@ -1067,7 +1067,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i,
           Ipv4InterfaceAddress iface = l3->GetAddress (i,0);
           // Create a socket to listen only on this interface
           Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
-          NS_ASSERT (socket != 0);
+          NS_ASSERT (socket);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvDsdv,this));
           // Bind to any IP address so that broadcasts can be received
           socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), DSDV_PORT));
@@ -1100,7 +1100,7 @@ RoutingProtocol::Send (Ptr<Ipv4Route> route,
                        const Ipv4Header & header)
 {
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  NS_ASSERT (l3 != 0);
+  NS_ASSERT (l3);
   Ptr<Packet> p = packet->Copy ();
   l3->Send (p,route->GetSource (),header.GetDestination (),header.GetProtocol (),route);
 }
@@ -1133,7 +1133,7 @@ RoutingProtocol::LookForQueuedPackets ()
               NS_LOG_LOGIC ("A route exists from " << route->GetSource ()
                                                    << " to neighboring destination "
                                                    << route->GetDestination ());
-              NS_ASSERT (route != 0);
+              NS_ASSERT (route);
             }
           else
             {
@@ -1143,7 +1143,7 @@ RoutingProtocol::LookForQueuedPackets ()
               NS_LOG_LOGIC ("A route exists from " << route->GetSource ()
                                                    << " to destination " << route->GetDestination () << " via "
                                                    << rt.GetNextHop ());
-              NS_ASSERT (route != 0);
+              NS_ASSERT (route);
             }
           SendPacketFromQueue (rt.GetDestination (),route);
         }

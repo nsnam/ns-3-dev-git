@@ -131,7 +131,7 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
       if (m_useDataChannel)
         {
           Ptr<LteSpectrumSignalParametersDataFrame> lteDlDataRxParams = DynamicCast<LteSpectrumSignalParametersDataFrame> (params);
-          if (lteDlDataRxParams != 0)
+          if (lteDlDataRxParams)
             {
               NS_LOG_DEBUG ("StartRx data");
               double power = 0;
@@ -154,7 +154,7 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
       else
         {
           Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlCtrlRxParams = DynamicCast<LteSpectrumSignalParametersDlCtrlFrame> (params);
-          if (lteDlCtrlRxParams != 0)
+          if (lteDlCtrlRxParams)
             {
               NS_LOG_DEBUG ("StartRx control");
               double power = 0;

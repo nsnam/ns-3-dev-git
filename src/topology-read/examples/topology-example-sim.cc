@@ -111,7 +111,7 @@ int main (int argc, char *argv[])
 
   NodeContainer nodes;
 
-  if (inFile != 0)
+  if (inFile)
     {
       nodes = inFile->Read ();
     }

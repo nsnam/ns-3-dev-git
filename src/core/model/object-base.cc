@@ -182,7 +182,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
             {
               // Handle this attribute if it should not be
               // set here.
-              if (value == 0)
+              if (!value)
                 {
                   // Skip this attribute if it's not in the
                   // AttributeConstructionList.
@@ -244,7 +244,7 @@ ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor,
 {
   NS_LOG_FUNCTION (this << accessor << checker << &value);
   Ptr<AttributeValue> v = checker->CreateValidValue (value);
-  if (v == 0)
+  if (!v)
     {
       return false;
     }
@@ -366,7 +366,7 @@ ObjectBase::TraceConnectWithoutContext (std::string name, const CallbackBase &cb
   NS_LOG_FUNCTION (this << name << &cb);
   TypeId tid = GetInstanceTypeId ();
   Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
+  if (!accessor)
     {
       return false;
     }
@@ -379,7 +379,7 @@ ObjectBase::TraceConnect (std::string name, std::string context, const CallbackB
   NS_LOG_FUNCTION (this << name << context << &cb);
   TypeId tid = GetInstanceTypeId ();
   Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
+  if (!accessor)
     {
       return false;
     }
@@ -392,7 +392,7 @@ ObjectBase::TraceDisconnectWithoutContext (std::string name, const CallbackBase 
   NS_LOG_FUNCTION (this << name << &cb);
   TypeId tid = GetInstanceTypeId ();
   Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
+  if (!accessor)
     {
       return false;
     }
@@ -405,7 +405,7 @@ ObjectBase::TraceDisconnect (std::string name, std::string context, const Callba
   NS_LOG_FUNCTION (this << name << context << &cb);
   TypeId tid = GetInstanceTypeId ();
   Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
+  if (!accessor)
     {
       return false;
     }

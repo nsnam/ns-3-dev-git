@@ -60,7 +60,7 @@ Ipv6StaticRouting::~Ipv6StaticRouting ()
 void Ipv6StaticRouting::SetIpv6 (Ptr<Ipv6> ipv6)
 {
   NS_LOG_FUNCTION (this << ipv6);
-  NS_ASSERT (m_ipv6 == 0 && ipv6 != 0);
+  NS_ASSERT (!m_ipv6 && ipv6);
   uint32_t i = 0;
   m_ipv6 = ipv6;
 
@@ -626,7 +626,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
                                     LocalDeliverCallback lcb, ErrorCallback ecb)
 {
   NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
-  NS_ASSERT (m_ipv6 != 0);
+  NS_ASSERT (m_ipv6);
   // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
@@ -667,7 +667,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
   NS_LOG_LOGIC ("Unicast destination");
   Ptr<Ipv6Route> rtentry = LookupStatic (header.GetDestination ());
 
-  if (rtentry != 0)
+  if (rtentry)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
       ucb (idev, rtentry, p, header);  // unicast forwarding callback

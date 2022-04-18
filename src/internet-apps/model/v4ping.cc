@@ -250,7 +250,7 @@ V4Ping::StartApplication (void)
     }
 
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
-  NS_ASSERT (m_socket != 0);
+  NS_ASSERT (m_socket);
   m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
   m_socket->SetRecvCallback (MakeCallback (&V4Ping::Receive, this));
   InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);

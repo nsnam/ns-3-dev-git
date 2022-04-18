@@ -326,7 +326,7 @@ AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, doubl
 {
   NS_ASSERT (n);
   Ptr<ConstantPositionMobilityModel> loc =  n->GetObject<ConstantPositionMobilityModel> ();
-  if (loc == 0)
+  if (!loc)
     {
       loc = CreateObject<ConstantPositionMobilityModel> ();
       n->AggregateObject (loc);

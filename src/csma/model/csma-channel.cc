@@ -69,7 +69,7 @@ int32_t
 CsmaChannel::Attach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT (device != 0);
+  NS_ASSERT (device);
 
   CsmaDeviceRec rec (device);
 
@@ -81,7 +81,7 @@ bool
 CsmaChannel::Reattach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT (device != 0);
+  NS_ASSERT (device);
 
   std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin (); it < m_deviceList.end ( ); it++)
@@ -155,7 +155,7 @@ bool
 CsmaChannel::Detach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT (device != 0);
+  NS_ASSERT (device);
 
   std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin (); it < m_deviceList.end (); it++)

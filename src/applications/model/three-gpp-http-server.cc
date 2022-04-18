@@ -203,7 +203,7 @@ ThreeGppHttpServer::StartApplication ()
   if (m_state == NOT_STARTED)
     {
       m_httpVariables->Initialize ();
-      if (m_initialSocket == 0)
+      if (!m_initialSocket)
         {
           // Find the current default MTU value of TCP sockets.
           Ptr<const ns3::AttributeValue> previousSocketMtu;
@@ -259,7 +259,7 @@ ThreeGppHttpServer::StartApplication ()
 
         } // end of `if (m_initialSocket == 0)`
 
-      NS_ASSERT_MSG (m_initialSocket != 0, "Failed creating socket.");
+      NS_ASSERT_MSG (m_initialSocket, "Failed creating socket.");
       m_initialSocket->SetAcceptCallback (MakeCallback (&ThreeGppHttpServer::ConnectionRequestCallback,
                                                         this),
                                           MakeCallback (&ThreeGppHttpServer::NewConnectionCreatedCallback,
@@ -295,7 +295,7 @@ ThreeGppHttpServer::StopApplication ()
   m_txBuffer->CloseAllSockets ();
 
   // Stop listening.
-  if (m_initialSocket != 0)
+  if (m_initialSocket)
     {
       m_initialSocket->Close ();
       m_initialSocket->SetAcceptCallback (MakeNullCallback<bool, Ptr<Socket>, const Address &> (),

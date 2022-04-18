@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
       positionAlloc_n->Add (Vector (coord_array[m][0], coord_array[m][1], 0));
       Ptr<Node> n0 = nodes.Get (m);
       Ptr<ConstantPositionMobilityModel> nLoc =  n0->GetObject<ConstantPositionMobilityModel> ();
-      if (nLoc == 0)
+      if (!nLoc)
         {
           nLoc = CreateObject<ConstantPositionMobilityModel> ();
           n0->AggregateObject (nLoc);

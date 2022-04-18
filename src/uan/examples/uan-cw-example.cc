@@ -214,7 +214,7 @@ Experiment::Run (UanHelper &uan)
 
     Ptr<Node> sinkNode = sink.Get (0);
     TypeId psfid = TypeId::LookupByName ("ns3::PacketSocketFactory");
-    if (sinkNode->GetObject<SocketFactory> (psfid) == 0)
+    if (!sinkNode->GetObject<SocketFactory> (psfid))
       {
         Ptr<PacketSocketFactory> psf = CreateObject<PacketSocketFactory> ();
         sinkNode->AggregateObject (psf);

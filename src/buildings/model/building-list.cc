@@ -125,7 +125,7 @@ Ptr<BuildingListPriv> *
 BuildingListPriv::DoGet (void)
 {
   static Ptr<BuildingListPriv> ptr = 0;
-  if (ptr == 0)
+  if (!ptr)
     {
       ptr = CreateObject<BuildingListPriv> ();
       Config::RegisterRootNamespaceObject (ptr);

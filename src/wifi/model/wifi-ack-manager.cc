@@ -83,7 +83,7 @@ WifiAckManager::SetQosAckPolicy (Ptr<WifiMacQueueItem> item, const WifiAcknowled
     {
       return;
     }
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
 
   hdr.SetQosAckPolicy (acknowledgment->GetQosAckPolicy (hdr.GetAddr1 (), hdr.GetQosTid ()));
 }
@@ -99,7 +99,7 @@ WifiAckManager::SetQosAckPolicy (Ptr<WifiPsdu> psdu, const WifiAcknowledgment* a
       return;
     }
 
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
 
   for (const auto& tid : psdu->GetTids ())
     {

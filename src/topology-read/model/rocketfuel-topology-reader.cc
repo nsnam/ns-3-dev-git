@@ -202,7 +202,7 @@ RocketfuelTopologyReader::GenerateFromMapsFile (const std::vector<std::string> &
   // Create node and link
   if (!uid.empty ())
     {
-      if (m_nodeMap[uid] == nullptr)
+      if (!m_nodeMap[uid])
         {
           Ptr<Node> tmpNode = CreateObject<Node> ();
           m_nodeMap[uid] = tmpNode;
@@ -217,7 +217,7 @@ RocketfuelTopologyReader::GenerateFromMapsFile (const std::vector<std::string> &
               return nodes;
             }
 
-          if (m_nodeMap[nuid] == nullptr)
+          if (!m_nodeMap[nuid])
             {
               Ptr<Node> tmpNode = CreateObject<Node> ();
               m_nodeMap[nuid] = tmpNode;
@@ -258,7 +258,7 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (const std::vector<std::string
   // Create node and link
   if (!sname.empty () && !tname.empty ())
     {
-      if (m_nodeMap[sname] == nullptr)
+      if (!m_nodeMap[sname])
         {
           Ptr<Node> tmpNode = CreateObject<Node> ();
           m_nodeMap[sname] = tmpNode;
@@ -266,7 +266,7 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (const std::vector<std::string
           m_nodesNumber++;
         }
 
-      if (m_nodeMap[tname] == nullptr)
+      if (!m_nodeMap[tname])
         {
           Ptr<Node> tmpNode = CreateObject<Node> ();
           m_nodeMap[tname] = tmpNode;

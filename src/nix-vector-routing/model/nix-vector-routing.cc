@@ -92,8 +92,8 @@ template <typename T>
 void
 NixVectorRouting<T>::SetIpv4 (Ptr<Ip> ipv4)
 {
-  NS_ASSERT (ipv4 != 0);
-  NS_ASSERT (m_ip == 0);
+  NS_ASSERT (ipv4);
+  NS_ASSERT ( !m_ip );
   NS_LOG_DEBUG ("Created Ipv4NixVectorProtocol");
 
   m_ip = ipv4;
@@ -103,8 +103,8 @@ template <typename T>
 void
 NixVectorRouting<T>::SetIpv6 (Ptr<Ip> ipv6)
 {
-  NS_ASSERT (ipv6 != 0);
-  NS_ASSERT (m_ip == 0);
+  NS_ASSERT (ipv6);
+  NS_ASSERT ( !m_ip );
   NS_LOG_DEBUG ("Created Ipv6NixVectorProtocol");
 
   m_ip = ipv6;
@@ -200,7 +200,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
   // First, we have to figure out the nodes
   // associated with these IPs
   Ptr<Node> destNode = GetNodeByIp (dest);
-  if (destNode == 0)
+  if ( !destNode )
     {
       NS_LOG_ERROR ("No routing path exists");
       return 0;
@@ -292,7 +292,7 @@ NixVectorRouting<T>::BuildNixVector (const std::vector< Ptr<Node> > & parentVect
       return true;
     }
 
-  if (parentVector.at (dest) == 0)
+  if ( !parentVector.at (dest) )
     {
       return false;
     }
@@ -316,7 +316,7 @@ NixVectorRouting<T>::BuildNixVector (const std::vector< Ptr<Node> > & parentVect
           continue;
         }
       Ptr<Channel> channel = localNetDevice->GetChannel ();
-      if (channel == 0)
+      if ( !channel )
         {
           continue;
         }
@@ -362,7 +362,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
   NS_LOG_FUNCTION (this << netDevice << channel);
 
   Ptr<IpInterface> netDeviceInterface = GetInterfaceByNetDevice (netDevice);
-  if (netDeviceInterface == 0 || !netDeviceInterface->IsUp ())
+  if ( !netDeviceInterface || !netDeviceInterface->IsUp ())
     {
       NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
       return;
@@ -377,7 +377,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
         {
           // Compare if the remoteDevice shares a common subnet with remoteDevice
           Ptr<IpInterface> remoteDeviceInterface = GetInterfaceByNetDevice (remoteDevice);
-          if (remoteDeviceInterface == 0 || !remoteDeviceInterface->IsUp ())
+          if ( !remoteDeviceInterface || !remoteDeviceInterface->IsUp ())
             {
               NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
               continue;
@@ -439,7 +439,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
                       continue;
                     }
                   Ptr<Channel> chBridged = ndBridged->GetChannel ();
-                  if (chBridged == 0)
+                  if ( !chBridged )
                     {
                       continue;
                     }
@@ -574,7 +574,7 @@ NixVectorRouting<T>::FindTotalNeighbors (Ptr<Node> node) const
       // out the adjacent net devices
       Ptr<NetDevice> localNetDevice = node->GetDevice (i);
       Ptr<Channel> channel = localNetDevice->GetChannel ();
-      if (channel == 0)
+      if ( !channel )
         {
           continue;
         }
@@ -650,7 +650,7 @@ NixVectorRouting<T>::FindNetDeviceForNixIndex (Ptr<Node> node, uint32_t nodeInde
       // out the adjacent net devices
       Ptr<NetDevice> localNetDevice = node->GetDevice (i);
       Ptr<Channel> channel = localNetDevice->GetChannel ();
-      if (channel == 0)
+      if ( !channel )
         {
           continue;
         }
@@ -849,7 +849,7 @@ NixVectorRouting<T>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Pt
 
   CheckCacheStateAndFlush ();
 
-  NS_ASSERT (m_ip != 0);
+  NS_ASSERT (m_ip);
   // Check if input device supports IP
   NS_ASSERT (m_ip->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ip->GetInterfaceForDevice (idev);
@@ -1130,7 +1130,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
               return false;
             }
           Ptr<Channel> channel = oif->GetChannel ();
-          if (channel == 0)
+          if ( !channel )
             {
               return false;
             }
@@ -1148,7 +1148,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
             {
               Ptr<Node> remoteNode = (*iter)->GetNode ();
               Ptr<IpInterface> remoteIpInterface = GetInterfaceByNetDevice(*iter);
-              if (remoteIpInterface == 0 || !(remoteIpInterface->IsUp ()))
+              if ( !remoteIpInterface || !(remoteIpInterface->IsUp ()))
                 {
                   NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
                   continue;
@@ -1158,7 +1158,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
               // by checking to see if it has a parent
               // if it doesn't (null or 0), then set its parent and
               // push to the queue
-              if (parentVector.at (remoteNode->GetId ()) == 0)
+              if ( !parentVector.at (remoteNode->GetId ()) )
                 {
                   parentVector.at (remoteNode->GetId ()) = currNode;
                   greyNodeList.push (remoteNode);
@@ -1192,7 +1192,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                   continue;
                 }
               Ptr<Channel> channel = localNetDevice->GetChannel ();
-              if (channel == 0)
+              if ( !channel )
                 {
                   continue;
                 }
@@ -1210,7 +1210,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                 {
                   Ptr<Node> remoteNode = (*iter)->GetNode ();
                   Ptr<IpInterface> remoteIpInterface = GetInterfaceByNetDevice(*iter);
-                  if (remoteIpInterface == 0 || !(remoteIpInterface->IsUp ()))
+                  if ( !remoteIpInterface || !(remoteIpInterface->IsUp ()))
                     {
                       NS_LOG_LOGIC ("IpInterface either doesn't exist or is down");
                       continue;
@@ -1220,7 +1220,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                   // by checking to see if it has a parent
                   // if it doesn't (null or 0), then set its parent and
                   // push to the queue
-                  if (parentVector.at (remoteNode->GetId ()) == 0)
+                  if ( !parentVector.at (remoteNode->GetId ()) )
                     {
                       parentVector.at (remoteNode->GetId ()) = currNode;
                       greyNodeList.push (remoteNode);
@@ -1252,7 +1252,7 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
   CheckCacheStateAndFlush ();
 
   Ptr<Node> destNode = GetNodeByIp (dest);
-  if (destNode == 0)
+  if ( !destNode )
     {
       NS_LOG_ERROR ("No routing path exists");
       return;

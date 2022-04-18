@@ -131,10 +131,10 @@ MobilityHelper::Install (Ptr<Node> node) const
 {
   Ptr<Object> object = node;
   Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-  if (model == 0)
+  if (!model)
     {
       model = m_mobility.Create ()->GetObject<MobilityModel> ();
-      if (model == 0)
+      if (!model)
         {
           NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<<
                           m_mobility.GetTypeId ().GetName ()<<"\"");
@@ -276,10 +276,10 @@ MobilityHelper::GetDistanceSquaredBetween (Ptr<Node> n1, Ptr<Node> n2)
   double distSq = 0.0;
 
   Ptr<MobilityModel> rxPosition = n1->GetObject<MobilityModel> ();
-  NS_ASSERT (rxPosition != 0);
+  NS_ASSERT (rxPosition);
 
   Ptr<MobilityModel> txPosition = n2->GetObject<MobilityModel> ();
-  NS_ASSERT (txPosition != 0);
+  NS_ASSERT (txPosition);
 
   double dist = rxPosition -> GetDistanceFrom (txPosition);
   distSq = dist * dist;

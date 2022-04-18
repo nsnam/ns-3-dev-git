@@ -454,7 +454,7 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
   // the system.  We can only deal with devices of type CsmaNetDevice.
   //
   Ptr<WimaxNetDevice> device = nd->GetObject<WimaxNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("WimaxHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::WimaxNetDevice");
       return;
@@ -472,7 +472,7 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
   // since there will be one file per context and therefore the context would
   // be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy
@@ -606,7 +606,7 @@ WimaxHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool exp
   // the system.  We can only deal with devices of type WimaxNetDevice.
   //
   Ptr<WimaxNetDevice> device = nd->GetObject<WimaxNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("WimaxHelper::EnablePcapInternal(): Device " << &device << " not of type ns3::WimaxNetDevice");
       return;

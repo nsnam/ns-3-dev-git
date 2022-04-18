@@ -210,7 +210,7 @@ AttributeIterator::DoIterate (Ptr<Object> object)
               PointerValue ptr;
               object->GetAttribute (info.name, ptr);
               Ptr<Object> tmp = ptr.Get<Object> ();
-              if (tmp != 0)
+              if (tmp)
                 {
                   StartVisitPointerAttribute (object, info.name,
                                               tmp);

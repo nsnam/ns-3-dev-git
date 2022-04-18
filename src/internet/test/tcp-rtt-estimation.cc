@@ -127,7 +127,7 @@ TcpRttEstimationTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketW
         }
 
       Ptr<RttEstimator> rttEstimator = GetRttEstimator (SENDER);
-      NS_TEST_ASSERT_MSG_NE (rttEstimator, 0, "rtt is 0 (and should be different from zero)");
+      NS_TEST_ASSERT_MSG_NE (rttEstimator, nullptr, "rtt is 0 (and should be different from zero)");
       NS_LOG_DEBUG ("S Tx: seq=" << h.GetSequenceNumber () << " ack=" << h.GetAckNumber ());
       NS_TEST_ASSERT_MSG_NE (rttEstimator->GetEstimate (), Seconds (1),
                              "Default Estimate for the RTT");

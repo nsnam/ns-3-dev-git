@@ -284,7 +284,7 @@ FdNetDevice::StopDevice (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_fdReader != 0)
+  if (m_fdReader)
     {
       m_fdReader->Stop ();
       m_fdReader = 0;

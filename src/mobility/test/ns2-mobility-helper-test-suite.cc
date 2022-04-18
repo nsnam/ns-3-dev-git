@@ -216,9 +216,9 @@ private:
       {
         ReferencePoint const & rp = m_reference[m_nextRefPoint];
         Ptr<Node> node = Names::Find<Node> (rp.node);
-        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (node, 0, "Can't find node with id " << rp.node);
+        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (node, nullptr, "Can't find node with id " << rp.node);
         Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
-        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (mob, 0, "Can't find mobility for node " << rp.node);
+        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (mob, nullptr, "Can't find mobility for node " << rp.node);
 
         double tol = 0.001;
         NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (mob->GetPosition (), rp.pos, tol), true, "Initial position mismatch for node " << rp.node);

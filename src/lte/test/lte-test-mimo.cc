@@ -205,7 +205,7 @@ LenaMimoTestCase::DoRun (void)
   if (m_schedulerType.compare ("ns3::RrFfMacScheduler") == 0)
     {
       rrsched = ptrval.Get<RrFfMacScheduler> ();
-      if (rrsched == 0)
+      if (!rrsched)
         {
           NS_FATAL_ERROR ("No RR Scheduler available");
         }
@@ -215,7 +215,7 @@ LenaMimoTestCase::DoRun (void)
   else if (m_schedulerType.compare ("ns3::PfFfMacScheduler") == 0)
     {
       pfsched = ptrval.Get<PfFfMacScheduler> ();
-      if (pfsched == 0)
+      if (!pfsched)
         {
           NS_FATAL_ERROR ("No Pf Scheduler available");
         }

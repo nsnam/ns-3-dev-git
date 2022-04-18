@@ -324,7 +324,7 @@ template <typename QueueType>
 void
 NetDeviceQueue::ConnectQueueTraces (Ptr<QueueType> queue)
 {
-  NS_ASSERT (queue != 0);
+  NS_ASSERT (queue);
 
   queue->TraceConnectWithoutContext ("Enqueue",
                                      MakeCallback (&NetDeviceQueue::PacketEnqueued<QueueType>, this)

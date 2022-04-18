@@ -398,9 +398,9 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
   if (m_routingTable.LookupValidRoute (dst, rt))
     {
       route = rt.GetRoute ();
-      NS_ASSERT (route != 0);
+      NS_ASSERT (route);
       NS_LOG_DEBUG ("Exist route to " << route->GetDestination () << " from interface " << route->GetSource ());
-      if (oif != 0 && route->GetOutputDevice () != oif)
+      if (oif && route->GetOutputDevice () != oif)
         {
           NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
           sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -429,7 +429,7 @@ RoutingProtocol::DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & he
                                       UnicastForwardCallback ucb, ErrorCallback ecb)
 {
   NS_LOG_FUNCTION (this << p << header);
-  NS_ASSERT (p != 0 && p != Ptr<Packet> ());
+  NS_ASSERT (p && p != Ptr<Packet> ());
 
   QueueEntry newEntry (p, header, ucb, ecb);
   bool result = m_queue.Enqueue (newEntry);
@@ -457,8 +457,8 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
       NS_LOG_LOGIC ("No aodv interfaces");
       return false;
     }
-  NS_ASSERT (m_ipv4 != 0);
-  NS_ASSERT (p != 0);
+  NS_ASSERT (m_ipv4);
+  NS_ASSERT (p);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   int32_t iif = m_ipv4->GetInterfaceForDevice (idev);
@@ -647,15 +647,15 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header,
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_ASSERT (ipv4 != 0);
-  NS_ASSERT (m_ipv4 == 0);
+  NS_ASSERT (ipv4);
+  NS_ASSERT (!m_ipv4);
 
   m_ipv4 = ipv4;
 
   // Create lo route. It is asserted that the only one interface up for now is loopback
   NS_ASSERT (m_ipv4->GetNInterfaces () == 1 && m_ipv4->GetAddress (0, 0).GetLocal () == Ipv4Address ("127.0.0.1"));
   m_lo = m_ipv4->GetNetDevice (0);
-  NS_ASSERT (m_lo != 0);
+  NS_ASSERT (m_lo);
   // Remember lo route
   RoutingTableEntry rt (/*device=*/ m_lo, /*dst=*/ Ipv4Address::GetLoopback (), /*know seqno=*/ true, /*seqno=*/ 0,
                                     /*iface=*/ Ipv4InterfaceAddress (Ipv4Address::GetLoopback (), Ipv4Mask ("255.0.0.0")),
@@ -684,7 +684,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   // Create a socket to listen only on this interface
   Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),
                                              UdpSocketFactory::GetTypeId ());
-  NS_ASSERT (socket != 0);
+  NS_ASSERT (socket);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
@@ -695,7 +695,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   // create also a subnet broadcast socket
   socket = Socket::CreateSocket (GetObject<Node> (),
                                  UdpSocketFactory::GetTypeId ());
-  NS_ASSERT (socket != 0);
+  NS_ASSERT (socket);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
@@ -716,12 +716,12 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 
   // Allow neighbor manager use this interface for layer 2 feedback if possible
   Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
-  if (wifi == 0)
+  if (!wifi)
     {
       return;
     }
   Ptr<WifiMac> mac = wifi->GetMac ();
-  if (mac == 0)
+  if (!mac)
     {
       return;
     }
@@ -744,10 +744,10 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i)
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   Ptr<NetDevice> dev = l3->GetNetDevice (i);
   Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
-  if (wifi != 0)
+  if (wifi)
     {
       Ptr<WifiMac> mac = wifi->GetMac ()->GetObject<AdhocWifiMac> ();
-      if (mac != 0)
+      if (mac)
         {
           mac->TraceDisconnectWithoutContext ("DroppedMpdu",
                                               MakeCallback (&RoutingProtocol::NotifyTxError, this));
@@ -800,7 +800,7 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
           // Create a socket to listen only on this interface
           Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),
                                                      UdpSocketFactory::GetTypeId ());
-          NS_ASSERT (socket != 0);
+          NS_ASSERT (socket);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv,this));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
@@ -810,7 +810,7 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
           // create also a subnet directed broadcast socket
           socket = Socket::CreateSocket (GetObject<Node> (),
                                          UdpSocketFactory::GetTypeId ());
-          NS_ASSERT (socket != 0);
+          NS_ASSERT (socket);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
@@ -858,7 +858,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
           // Create a socket to listen only on this interface
           Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),
                                                      UdpSocketFactory::GetTypeId ());
-          NS_ASSERT (socket != 0);
+          NS_ASSERT (socket);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
           // Bind to any IP address so that broadcasts can be received
           socket->BindToNetDevice (l3->GetNetDevice (i));
@@ -870,7 +870,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
           // create also a unicast socket
           socket = Socket::CreateSocket (GetObject<Node> (),
                                          UdpSocketFactory::GetTypeId ());
-          NS_ASSERT (socket != 0);
+          NS_ASSERT (socket);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
           socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->Bind (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
@@ -919,7 +919,7 @@ Ptr<Ipv4Route>
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr, Ptr<NetDevice> oif) const
 {
   NS_LOG_FUNCTION (this << hdr);
-  NS_ASSERT (m_lo != 0);
+  NS_ASSERT (m_lo);
   Ptr<Ipv4Route> rt = Create<Ipv4Route> ();
   rt->SetDestination (hdr.GetDestination ());
   //

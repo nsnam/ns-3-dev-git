@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
     {
       Ptr<Node> object = *j;
       Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
-      NS_ASSERT (position != 0);
+      NS_ASSERT (position);
       Vector pos = position->GetPosition ();
       std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;
     }

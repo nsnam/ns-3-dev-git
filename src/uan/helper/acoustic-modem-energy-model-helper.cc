@@ -58,8 +58,8 @@ Ptr<DeviceEnergyModel>
 AcousticModemEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
                                            Ptr<EnergySource> source) const
 {
-  NS_ASSERT (device != NULL);
-  NS_ASSERT (source != NULL);
+  NS_ASSERT (device);
+  NS_ASSERT (source);
   // check if device is UanNetDevice
   std::string deviceName = device->GetInstanceTypeId ().GetName ();
   if (deviceName.compare ("ns3::UanNetDevice") != 0)
@@ -68,7 +68,7 @@ AcousticModemEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
     }
   Ptr<Node> node = device->GetNode ();
   Ptr<AcousticModemEnergyModel> model = m_modemEnergy.Create<AcousticModemEnergyModel> ();
-  NS_ASSERT (model != NULL);
+  NS_ASSERT (model);
   // set node pointer
   model->SetNode (node);
   // set energy source pointer

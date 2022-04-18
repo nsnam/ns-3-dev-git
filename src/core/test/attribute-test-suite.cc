@@ -535,7 +535,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // Set the default value of the BooleanValue and create an object.  The new
@@ -543,7 +543,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   //
   Config::SetDefault ("ns3::AttributeObjectTest::TestBoolName", StringValue ("true"));
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
@@ -569,7 +569,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   Config::SetDefaultFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false"));
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not et properly by default value");
@@ -596,7 +596,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   // Create an object using
   //
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // The previous object-based tests checked access directly.  Now check through
@@ -627,7 +627,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have the default
@@ -737,7 +737,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have the default
@@ -808,7 +808,7 @@ AttributeTestCase<DoubleValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have the default
@@ -834,7 +834,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have the default
@@ -905,7 +905,7 @@ AttributeTestCase<TimeValue>::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   // The test vectors assume ns resolution
   Time::SetResolution (Time::NS);
@@ -1025,7 +1025,7 @@ RandomVariableStreamAttributeTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // Try to set a UniformRandomVariable
@@ -1073,7 +1073,7 @@ ObjectVectorAttributeTestCase::DoRun (void)
   ObjectVectorValue vector;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have no items in
@@ -1098,7 +1098,7 @@ ObjectVectorAttributeTestCase::DoRun (void)
   // Get the Object pointer from the value.
   //
   Ptr<Object> a = vector.Get (0);
-  NS_TEST_ASSERT_MSG_NE (a, 0, "Ptr<Object> from VectorValue \"TestVector1\" is zero");
+  NS_TEST_ASSERT_MSG_NE (a, nullptr, "Ptr<Object> from VectorValue \"TestVector1\" is zero");
 
   //
   // Adding to the attribute shouldn't affect the value we already have.
@@ -1144,7 +1144,7 @@ ObjectMapAttributeTestCase::DoRun (void)
   ObjectMapValue map;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have no items in
@@ -1169,7 +1169,7 @@ ObjectMapAttributeTestCase::DoRun (void)
   // Get the Object pointer from the value.
   //
   Ptr<Object> a = map.Get (1);
-  NS_TEST_ASSERT_MSG_NE (a, 0, "Ptr<Object> from VectorValue \"TestMap1\" is zero");
+  NS_TEST_ASSERT_MSG_NE (a, nullptr, "Ptr<Object> from VectorValue \"TestMap1\" is zero");
 
   //
   // Adding to the attribute shouldn't affect the value we already have.
@@ -1217,7 +1217,7 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // When the object is first created, the Attribute should have the default
@@ -1325,7 +1325,7 @@ IntegerTraceSourceTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // Check to make sure changing an Attribute value triggers a trace callback
@@ -1413,7 +1413,7 @@ TracedCallbackTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // Initialize the
@@ -1502,7 +1502,7 @@ PointerAttributeTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // We have declared a PointerValue Attribute named "Pointer" with a pointer
@@ -1512,7 +1512,7 @@ PointerAttributeTestCase::DoRun (void)
   PointerValue ptr;
   p->GetAttribute ("Pointer", ptr);
   Ptr<Derived> derived = ptr.Get<Derived> ();
-  NS_TEST_ASSERT_MSG_EQ (derived, 0, "Unexpectedly found non-null pointer in newly initialized PointerValue Attribute");
+  NS_TEST_ASSERT_MSG_EQ ((bool)derived, false, "Unexpectedly found non-null pointer in newly initialized PointerValue Attribute");
 
   //
   // Now, lets create an Object of type Derived and set the local Ptr to point
@@ -1546,7 +1546,7 @@ PointerAttributeTestCase::DoRun (void)
   //
   p->GetAttribute ("Pointer", ptr);
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retrieved unrelated Ptr<type> from stored Ptr<Derived>");
+  NS_TEST_ASSERT_MSG_EQ ((bool)x, false, "Unexpectedly retrieved unrelated Ptr<type> from stored Ptr<Derived>");
 
   //
   // Test whether the initialized pointers from two different objects
@@ -1571,9 +1571,9 @@ PointerAttributeTestCase::DoRun (void)
   factory.SetTypeId ("ns3::AttributeObjectTest");
   factory.Set ("PointerInitialized", StringValue ("ns3::Derived"));
   Ptr<AttributeObjectTest> aotPtr = factory.Create ()->GetObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (aotPtr, 0, "Unable to factory.Create() a AttributeObjectTest");
+  NS_TEST_ASSERT_MSG_NE (aotPtr, nullptr, "Unable to factory.Create() a AttributeObjectTest");
   Ptr<AttributeObjectTest> aotPtr2 = factory.Create ()->GetObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (aotPtr2, 0, "Unable to factory.Create() a AttributeObjectTest");
+  NS_TEST_ASSERT_MSG_NE (aotPtr2, nullptr, "Unable to factory.Create() a AttributeObjectTest");
   NS_TEST_ASSERT_MSG_NE (aotPtr, aotPtr2, "factory object not creating unique objects");
   PointerValue ptr4;
   aotPtr->GetAttribute ("PointerInitialized", ptr4);
@@ -1640,7 +1640,7 @@ CallbackValueTestCase::DoRun (void)
   bool ok;
 
   p = CreateObject<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+  NS_TEST_ASSERT_MSG_NE (p, nullptr, "Unable to CreateObject");
 
   //
   // The member variable m_cbValue is declared as a Callback<void, int8_t>.  The

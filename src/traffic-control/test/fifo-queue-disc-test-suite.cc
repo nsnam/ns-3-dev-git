@@ -140,13 +140,13 @@ FifoQueueDiscTestCase::DoRunFifoTest (Ptr<FifoQueueDisc> q, uint32_t qSize, uint
   for (uint32_t i = 1; i <= numPackets; i++)
     {
       item = q->Dequeue ();
-      NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "A packet should have been dequeued");
+      NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet should have been dequeued");
       NS_TEST_ASSERT_MSG_EQ (q->GetCurrentSize ().GetValue (), (numPackets-i) * modeSize, "There should be " << numPackets-i << " packet(s) in there");
       NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), uids[i-1], "was this the right packet?");
     }
 
   item = q->Dequeue ();
-  NS_TEST_ASSERT_MSG_EQ ((item == 0), true, "There are really no packets in there");
+  NS_TEST_ASSERT_MSG_EQ (item, nullptr, "There are really no packets in there");
 }
 
 void

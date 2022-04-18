@@ -301,7 +301,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           uint16_t seqNumberValue = sn.GetValue ();
           NS_LOG_LOGIC ("SN = " << seqNumberValue << " m_pdu " << m_retxBuffer.at (seqNumberValue).m_pdu);
 
-          if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
+          if (m_retxBuffer.at (seqNumberValue).m_pdu)
             {
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
 
@@ -1063,7 +1063,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
               incrementVtA = false;
 
-              if (m_txedBuffer.at (seqNumberValue).m_pdu != 0)
+              if (m_txedBuffer.at (seqNumberValue).m_pdu)
                 {
                   NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
                   m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue).m_pdu->Copy ();
@@ -1077,7 +1077,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                 }
 
-              NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu != 0);
+              NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu);
 
             }
           else
@@ -1091,7 +1091,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_txedBuffer.at (seqNumberValue).m_pdu = 0;
                   m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
-                  NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu == 0);
+                  NS_ASSERT (!m_retxBuffer.at (seqNumberValue).m_pdu);
                 }
 
               if (m_retxBuffer.at (seqNumberValue).m_pdu)
@@ -1607,7 +1607,7 @@ LteRlcAm::DoReportBufferStatus (void)
   if ( m_retxBufferSize > 0 )
     {
       Time senderTimestamp;
-      if (m_retxBuffer.at (m_vtA.GetValue ()).m_pdu != 0)
+      if (m_retxBuffer.at (m_vtA.GetValue ()).m_pdu)
         {
           senderTimestamp = m_retxBuffer.at (m_vtA.GetValue ()).m_waitingSince;
         }
@@ -1717,7 +1717,7 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
       NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
       for (SequenceNumber10 sn = m_vtA; sn < m_vtS; sn++)
         {
-          bool pduAvailable = m_txedBuffer.at (sn.GetValue ()).m_pdu != 0;
+          bool pduAvailable = (bool)m_txedBuffer.at (sn.GetValue ()).m_pdu;
 
            if ( pduAvailable )
              {

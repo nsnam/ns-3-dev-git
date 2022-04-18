@@ -71,7 +71,7 @@ MeshHelper::SetStackInstaller (std::string type,
   m_stackFactory.Set (n7, v7);
 
   m_stack = m_stackFactory.Create<MeshStack> ();
-  if (m_stack == 0)
+  if (!m_stack)
     {
       NS_FATAL_ERROR ("Stack has not been created: " << type);
     }
@@ -86,7 +86,7 @@ NetDeviceContainer
 MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
 {
   NetDeviceContainer devices;
-  NS_ASSERT (m_stack != 0);
+  NS_ASSERT (m_stack);
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
@@ -188,17 +188,17 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   phys[0]->ConfigureStandard (m_standard);
   device->SetPhy (phys[0]);
   Ptr<MeshWifiInterfaceMac> mac = macObjectFactory.Create<MeshWifiInterfaceMac> ();
-  NS_ASSERT (mac != 0);
+  NS_ASSERT (mac);
   mac->SetSsid (Ssid ());
   mac->SetDevice (device);
   Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-  NS_ASSERT (manager != 0);
+  NS_ASSERT (manager);
   device->SetRemoteStationManager (manager);
   mac->SetAddress (Mac48Address::Allocate ());
   device->SetMac (mac);
   mac->ConfigureStandard (m_standard);
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
-  if (fem != nullptr)
+  if (fem)
     {
       Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
       protectionManager->SetWifiMac (mac);
@@ -215,9 +215,9 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
 void
 MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 {
-  NS_ASSERT (m_stack != 0);
+  NS_ASSERT (m_stack);
   Ptr<MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
-  NS_ASSERT (mp != 0);
+  NS_ASSERT (mp);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   os << "<MeshPointDevice time=\"" << Simulator::Now ().GetSeconds () << "\" address=\""
      << Mac48Address::ConvertFrom (mp->GetAddress ()) << "\">\n";
@@ -227,9 +227,9 @@ MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 void
 MeshHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
-  NS_ASSERT (m_stack != 0);
+  NS_ASSERT (m_stack);
   Ptr<MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
-  NS_ASSERT (mp != 0);
+  NS_ASSERT (mp);
   m_stack->ResetStats (mp);
 }
 int64_t

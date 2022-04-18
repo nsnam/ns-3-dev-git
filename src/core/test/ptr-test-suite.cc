@@ -277,13 +277,13 @@ PtrTestCase::DoRun (void)
     p4 = ConstCast<NoCount> (p5);
     p5 = p1;
     Ptr<NoCount> p;
-    if (p == 0)
+    if (!p)
       {}
-    if (p != 0)
+    if (p)
       {}
-    if (0 == p)
+    if (!p)
       {}
-    if (0 != p)
+    if (p)
       {}
     if (p)
       {}

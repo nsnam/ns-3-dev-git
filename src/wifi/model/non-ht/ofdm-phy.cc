@@ -619,7 +619,7 @@ OfdmPhy::GetMaxPsduSize (void) const
 uint16_t
 OfdmPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 {
-  if (ppdu == nullptr)
+  if (!ppdu)
     {
       return 20;
     }
@@ -629,7 +629,7 @@ OfdmPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 double
 OfdmPhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
-  if (ppdu != nullptr && ppdu->GetTxVector ().GetChannelWidth () < 20)
+  if (ppdu && ppdu->GetTxVector ().GetChannelWidth () < 20)
     {
       //scale CCA sensitivity threshold for BW of 5 and 10 MHz
       uint16_t bw = GetRxChannelWidth (ppdu->GetTxVector ());

@@ -99,7 +99,7 @@ DefaultChannelScheduler::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_coordinator = 0;
-  if (m_coordinationListener != 0)
+  if (m_coordinationListener)
     {
       m_coordinationListener = 0;
     }

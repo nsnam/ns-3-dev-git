@@ -270,7 +270,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
 
-  if (lrWpanRxParams == 0)
+  if (!lrWpanRxParams)
     {
       CheckInterference ();
       m_signal->AddSignal (spectrumRxParams->psd);
@@ -290,7 +290,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
     }
 
   Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
-  NS_ASSERT (p != 0);
+  NS_ASSERT (p);
 
   // Prevent PHY from receiving another packet while switching the transceiver state.
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsRunning ())
@@ -387,7 +387,7 @@ LrWpanPhy::CheckInterference (void)
       // NS_ASSERT (currentRxParams && !m_currentRxPacket.second);
 
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
-      if (m_errorModel != 0)
+      if (m_errorModel)
         {
           // How many bits did we receive since the last calculation?
           double t = (Simulator::Now () - m_rxLastUpdate).ToDouble (Time::MS);
@@ -444,7 +444,7 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
   // Update the interference.
   m_signal->RemoveSignal (par->psd);
 
-  if (params == 0)
+  if (!params)
     {
       NS_LOG_LOGIC ("Node: " << m_device->GetAddress () << " Removing interferent: " << *(par->psd));
       return;
@@ -454,7 +454,7 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
   if (currentRxParams == params)
     {
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
-      NS_ASSERT (currentPacket != 0);
+      NS_ASSERT (currentPacket);
 
       // If there is no error model attached to the PHY, we always report the maximum LQI value.
       LrWpanLqiTag tag (std::numeric_limits<uint8_t>::max ());

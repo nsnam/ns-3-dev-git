@@ -934,7 +934,7 @@ PbbPacket::Deserialize (Buffer::Iterator start)
   while (!start.IsEnd ())
     {
       Ptr<PbbMessage> newmsg = PbbMessage::DeserializeMessage (start);
-      if (newmsg == 0)
+      if (!newmsg)
         {
           return start.GetDistanceFrom (begin);
         }

@@ -58,7 +58,7 @@ WaveFrameExchangeManager::SetWaveNetDevice (Ptr<WaveNetDevice> device)
 {
   m_scheduler = device->GetChannelScheduler ();
   m_coordinator = device->GetChannelCoordinator ();
-  NS_ASSERT (m_scheduler != 0 && m_coordinator != 0);
+  NS_ASSERT (m_scheduler && m_coordinator);
 }
 
 WifiTxVector
@@ -114,7 +114,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
 
   uint32_t curChannel = m_phy->GetChannelNumber ();
   // if current channel access is not AlternatingAccess, just do as FrameExchangeManager.
-  if (m_scheduler == 0 || !m_scheduler->IsAlternatingAccessAssigned (curChannel))
+  if (!m_scheduler || !m_scheduler->IsAlternatingAccessAssigned (curChannel))
     {
       return FrameExchangeManager::StartTransmission (dcf, allowedWidth);
     }
@@ -135,7 +135,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
 
   m_dcf->NotifyChannelAccessed (0);
   Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
-  NS_ASSERT (mpdu != 0);
+  NS_ASSERT (mpdu);
 
   // assign a sequence number if this is not a fragment nor a retransmission
   if (!mpdu->IsFragment () && !mpdu->GetHeader ().IsRetry ())

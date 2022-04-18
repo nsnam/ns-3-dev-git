@@ -75,9 +75,9 @@ std::ofstream g_timeSeries;
 void
 PrintPosition (Ptr<Node> node)
 {
-  if (node == nullptr) return;
+  if (!node) return;
   Ptr<MobilityModel> model = node->GetObject<MobilityModel> ();
-  if (model == nullptr) return;
+  if (!model) return;
   NS_LOG_LOGIC ("Node: " << node->GetId () << " Position: " << model->GetPosition ());
   g_timeSeries << Simulator::Now ().GetSeconds () << " " << node->GetId () << " " << model->GetPosition () << std::endl;
 

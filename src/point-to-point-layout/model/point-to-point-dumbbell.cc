@@ -235,7 +235,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
   // Place the left router
   Ptr<Node> lr = GetLeft ();
   Ptr<ConstantPositionMobilityModel> loc = lr->GetObject<ConstantPositionMobilityModel> ();
-  if (loc == 0)
+  if (!loc)
     {
       loc = CreateObject<ConstantPositionMobilityModel> ();
       lr->AggregateObject (loc);
@@ -246,7 +246,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
   // Place the right router
   Ptr<Node> rr = GetRight ();
   loc = rr->GetObject<ConstantPositionMobilityModel> ();
-  if (loc == 0)
+  if (!loc)
     {
       loc = CreateObject<ConstantPositionMobilityModel> ();
       rr->AggregateObject (loc);
@@ -269,7 +269,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
         }
       Ptr<Node> ln = GetLeft (l);
       loc = ln->GetObject<ConstantPositionMobilityModel> ();
-      if (loc == 0)
+      if (!loc)
         {
           loc = CreateObject<ConstantPositionMobilityModel> ();
           ln->AggregateObject (loc);
@@ -302,7 +302,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
         }
       Ptr<Node> rn = GetRight (r);
       loc = rn->GetObject<ConstantPositionMobilityModel> ();
-      if (loc == 0)
+      if (!loc)
         {
           loc = CreateObject<ConstantPositionMobilityModel> ();
           rn->AggregateObject (loc);

@@ -479,7 +479,7 @@ PieQueueDisc::DoDequeue ()
     }
 
   Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
-  NS_ASSERT_MSG (item != nullptr, "Dequeue null, but internal queue not empty");
+  NS_ASSERT_MSG (item, "Dequeue null, but internal queue not empty");
 
   // If L4S is enabled and packet is ECT1, then check if delay is greater
   // than CE threshold and if it is then mark the packet,

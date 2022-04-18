@@ -100,12 +100,12 @@ Ipv4L3ClickProtocol::DoDispose (void)
 void
 Ipv4L3ClickProtocol::NotifyNewAggregate ()
 {
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node>node = this->GetObject<Node> ();
       // verify that it's a valid node and that
       // the node has not been set before
-      if (node != 0)
+      if (node)
         {
           this->SetNode (node);
         }
@@ -333,7 +333,7 @@ Ipv4L3ClickProtocol::SetupLoopback (void)
           break;
         }
     }
-  if (device == 0)
+  if (!device)
     {
       device = CreateObject<LoopbackNetDevice> ();
       m_node->AddDevice (device);
@@ -347,7 +347,7 @@ Ipv4L3ClickProtocol::SetupLoopback (void)
   node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
                                  Ipv4L3ClickProtocol::PROT_NUMBER, device);
   interface->SetUp ();
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyInterfaceUp (index);
     }
@@ -392,7 +392,7 @@ Ipv4L3ClickProtocol::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
   NS_LOG_FUNCTION (this << i << address);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   bool retVal = interface->AddAddress (address);
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyAddAddress (i, address);
     }
@@ -423,7 +423,7 @@ Ipv4L3ClickProtocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   Ipv4InterfaceAddress address = interface->RemoveAddress (addressIndex);
   if (address != Ipv4InterfaceAddress ())
     {
-      if (m_routingProtocol != 0)
+      if (m_routingProtocol)
         {
           m_routingProtocol->NotifyRemoveAddress (i, address);
         }
@@ -446,7 +446,7 @@ Ipv4L3ClickProtocol::RemoveAddress (uint32_t i, Ipv4Address address)
   Ipv4InterfaceAddress ifAddr = interface->RemoveAddress (address);
   if (ifAddr != Ipv4InterfaceAddress ())
     {
-      if (m_routingProtocol != 0)
+      if (m_routingProtocol)
         {
           m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
         }
@@ -491,7 +491,7 @@ Ipv4L3ClickProtocol::SelectSourceAddress (Ptr<const NetDevice> device,
   Ipv4InterfaceAddress iaddr;
   bool found = false;
 
-  if (device != 0)
+  if (device)
     {
       int32_t i = GetInterfaceForDevice (device);
       NS_ASSERT_MSG (i >= 0, "No device found on node");
@@ -583,7 +583,7 @@ Ipv4L3ClickProtocol::SetUp (uint32_t i)
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyInterfaceUp (i);
     }
@@ -596,7 +596,7 @@ Ipv4L3ClickProtocol::SetDown (uint32_t ifaceIndex)
   Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyInterfaceDown (ifaceIndex);
     }
@@ -837,7 +837,7 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
   m_localDeliverTrace (ip, packet, iif);
 
   Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
-  if (protocol != 0)
+  if (protocol)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
@@ -881,7 +881,7 @@ Ptr<Icmpv4L4Protocol>
 Ipv4L3ClickProtocol::GetIcmp (void) const
 {
   Ptr<IpL4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
-  if (prot != 0)
+  if (prot)
     {
       return prot->GetObject<Icmpv4L4Protocol> ();
     }

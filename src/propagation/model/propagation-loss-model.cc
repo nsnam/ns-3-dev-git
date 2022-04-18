@@ -75,7 +75,7 @@ PropagationLossModel::CalcRxPower (double txPowerDbm,
                                    Ptr<MobilityModel> b) const
 {
   double self = DoCalcRxPower (txPowerDbm, a, b);
-  if (m_next != 0)
+  if (m_next)
     {
       self = m_next->CalcRxPower (self, a, b);
     }
@@ -87,7 +87,7 @@ PropagationLossModel::AssignStreams (int64_t stream)
 {
   int64_t currentStream = stream;
   currentStream += DoAssignStreams (stream);
-  if (m_next != 0)
+  if (m_next)
     {
       currentStream += m_next->AssignStreams (currentStream);
     }
@@ -841,7 +841,7 @@ MatrixPropagationLossModel::SetDefaultLoss (double loss)
 void
 MatrixPropagationLossModel::SetLoss (Ptr<MobilityModel> ma, Ptr<MobilityModel> mb, double loss, bool symmetric)
 {
-  NS_ASSERT (ma != 0 && mb != 0);
+  NS_ASSERT (ma && mb);
 
   MobilityPair p = std::make_pair (ma, mb);
   std::map<MobilityPair, double>::iterator i = m_loss.find (p);

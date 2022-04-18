@@ -53,7 +53,7 @@ NetDeviceContainer SixLowPanHelper::Install (const NetDeviceContainer c)
   for (uint32_t i = 0; i < c.GetN (); ++i)
     {
       Ptr<NetDevice> device = c.Get (i);
-      NS_ASSERT_MSG (device != 0, "No NetDevice found in the node " << int(i) );
+      NS_ASSERT_MSG (device, "No NetDevice found in the node " << int(i) );
 
       Ptr<Node> node = device->GetNode ();
       NS_LOG_LOGIC ("**** Install 6LoWPAN on node " << node->GetId ());

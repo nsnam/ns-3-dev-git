@@ -301,12 +301,12 @@ FlameProtocol::Install (Ptr<MeshPointDevice> mp)
     {
       // Checking for compatible net device
       Ptr<WifiNetDevice> wifiNetDev = (*i)->GetObject<WifiNetDevice> ();
-      if (wifiNetDev == 0)
+      if (!wifiNetDev)
         {
           return false;
         }
       Ptr<MeshWifiInterfaceMac> mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
-      if (mac == 0)
+      if (!mac)
         {
           return false;
         }

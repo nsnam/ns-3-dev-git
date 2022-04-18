@@ -205,7 +205,7 @@ LteHandoverTargetTestCase::CellShutdownCallback ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_sourceEnbDev != 0)
+  if (m_sourceEnbDev)
     {
       // set the Tx power to 1 dBm
       NS_ASSERT (m_sourceEnbDev->GetCellId () == m_sourceCellId);
@@ -351,7 +351,7 @@ LteHandoverTargetTestCase::DoRun ()
   // Get the source eNodeB
   Ptr<NetDevice> sourceEnb = enbDevs.Get (m_sourceCellId - 1);
   m_sourceEnbDev = sourceEnb->GetObject<LteEnbNetDevice> ();
-  NS_ASSERT (m_sourceEnbDev != 0);
+  NS_ASSERT (m_sourceEnbDev);
   NS_ASSERT (m_sourceEnbDev->GetCellId () == m_sourceCellId);
 
   // Attach UE to the source eNodeB

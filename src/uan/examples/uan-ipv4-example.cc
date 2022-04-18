@@ -181,7 +181,7 @@ UanExperiment::SetupApplications ()
   while (node != m_nodes.End ())
     {
       m_sockets[*node] = Socket::CreateSocket (*node, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-      if((*node)->GetObject<Ipv4> () != NULL)
+      if((*node)->GetObject<Ipv4> ())
         {
           InetSocketAddress ipv4_local = InetSocketAddress (Ipv4Address::GetAny (), 9);
           m_sockets[*node]->Bind (ipv4_local);

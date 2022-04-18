@@ -780,12 +780,12 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
     {
       // Checking for compatible net device
       Ptr<WifiNetDevice> wifiNetDev = (*i)->GetObject<WifiNetDevice> ();
-      if (wifiNetDev == 0)
+      if (!wifiNetDev)
         {
           return false;
         }
       Ptr<MeshWifiInterfaceMac>  mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
-      if (mac == 0)
+      if (!mac)
         {
           return false;
         }
@@ -1039,7 +1039,7 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
   NS_ASSERT (result.retransmitter != Mac48Address::GetBroadcast ());
   //Send all packets stored for this destination
   QueuedPacket packet = DequeueFirstPacketByDst (dst);
-  while (packet.pkt != 0)
+  while (packet.pkt)
     {
       //set RA tag for retransmitter:
       HwmpTag tag;
@@ -1061,7 +1061,7 @@ HwmpProtocol::ProactivePathResolved ()
   HwmpRtable::LookupResult result = m_rtable->LookupProactive ();
   NS_ASSERT (result.retransmitter != Mac48Address::GetBroadcast ());
   QueuedPacket packet = DequeueFirstPacket ();
-  while (packet.pkt != 0)
+  while (packet.pkt)
     {
       //set RA tag for retransmitter:
       HwmpTag tag;
@@ -1114,7 +1114,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
     {
       QueuedPacket packet = DequeueFirstPacketByDst (dst);
       //purge queue and delete entry from retryDatabase
-      while (packet.pkt != 0)
+      while (packet.pkt)
         {
           m_stats.totalDropped++;
           packet.reply (false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);

@@ -59,7 +59,7 @@ bool
 Ipv6PacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 {
   NS_LOG_FUNCTION (this << item);
-  return (DynamicCast<Ipv6QueueDiscItem> (item) != 0);
+  return bool (DynamicCast<Ipv6QueueDiscItem> (item));
 }
 
 // ------------------------------------------------------------------------- //

@@ -241,7 +241,7 @@ Node::RegisterProtocolHandler (ProtocolHandler handler,
   // On demand enable promiscuous mode in netdevices
   if (promiscuous)
     {
-      if (device == 0)
+      if (!device)
         {
           for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
                i != m_devices.end (); i++)
@@ -315,8 +315,8 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
        i != m_handlers.end (); i++)
     {
-      if (i->device == 0 ||
-          (i->device != 0 && i->device == device))
+      if (!i->device ||
+          (i->device == device))
         {
           if (i->protocol == 0 ||
               i->protocol == protocol)

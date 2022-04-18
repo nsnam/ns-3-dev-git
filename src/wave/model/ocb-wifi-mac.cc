@@ -485,7 +485,7 @@ OcbWifiMac::CancleTx (enum AcIndex ac)
 {
   NS_LOG_FUNCTION (this << ac);
   Ptr<QosTxop> queue = GetQosTxop (ac);
-  NS_ASSERT (queue != 0);
+  NS_ASSERT (queue);
   // reset and flush queue
   queue->GetWifiMacQueue ()->Flush ();
 }

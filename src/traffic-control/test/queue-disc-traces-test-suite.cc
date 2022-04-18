@@ -418,7 +418,7 @@ QueueDiscTracesTestCase::DoRun (void)
 
   Ptr<QueueDisc> child = root->GetQueueDiscClass (0)->GetQueueDisc ();
 
-  NS_TEST_ASSERT_MSG_NE (child, 0, "The child queue disc has not been created");
+  NS_TEST_ASSERT_MSG_NE (child, nullptr, "The child queue disc has not been created");
 
   // Create counters and connect traces to the counters
   m_counter.emplace (root, TestCounter ());
@@ -464,7 +464,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // of the child queue disc.
   item = root->Peek ();
 
-  NS_TEST_ASSERT_MSG_NE (item, 0, "A packet must have been returned");
+  NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet must have been returned");
   NS_TEST_ASSERT_MSG_EQ (item->GetSize (), pktSizeUnit * 3, "The peeked packet has not the expected size");
 
   CheckQueued (root, 2, pktSizeUnit * 7);
@@ -478,7 +478,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // Peek again. Nothing changes.
   item = root->Peek ();
 
-  NS_TEST_ASSERT_MSG_NE (item, 0, "A packet must have been returned");
+  NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet must have been returned");
   NS_TEST_ASSERT_MSG_EQ (item->GetSize (), pktSizeUnit * 3, "The peeked packet has not the expected size");
 
   CheckQueued (root, 2, pktSizeUnit * 7);
@@ -492,7 +492,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // Dequeue one packet. The root queue disc returns the previously peeked packet.
   item = root->Dequeue ();
 
-  NS_TEST_ASSERT_MSG_NE (item, 0, "A packet must have been returned");
+  NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet must have been returned");
   NS_TEST_ASSERT_MSG_EQ (item->GetSize (), pktSizeUnit * 3, "The dequeued packet has not the expected size");
 
   CheckQueued (root, 1, pktSizeUnit * 4);
@@ -506,7 +506,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // Dequeue the last packet.
   item = root->Dequeue ();
 
-  NS_TEST_ASSERT_MSG_NE (item, 0, "A packet must have been returned");
+  NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet must have been returned");
   NS_TEST_ASSERT_MSG_EQ (item->GetSize (), pktSizeUnit * 4, "The dequeued packet has not the expected size");
 
   CheckQueued (root, 0, 0);
@@ -520,7 +520,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // Peek a packet. No packet is left.
   item = root->Peek ();
 
-  NS_TEST_ASSERT_MSG_EQ (item, 0, "No packet must have been returned");
+  NS_TEST_ASSERT_MSG_EQ (item, nullptr, "No packet must have been returned");
 
   CheckQueued (root, 0, 0);
   CheckDroppedBeforeEnqueue (root, 1, pktSizeUnit * 5);
@@ -544,7 +544,7 @@ QueueDiscTracesTestCase::DoRun (void)
   // Dequeue one packet.
   item = root->Dequeue ();
 
-  NS_TEST_ASSERT_MSG_NE (item, 0, "A packet must have been returned");
+  NS_TEST_ASSERT_MSG_NE (item, nullptr, "A packet must have been returned");
   NS_TEST_ASSERT_MSG_EQ (item->GetSize (), pktSizeUnit, "The dequeued packet has not the expected size");
 
   CheckQueued (root, 0, 0);

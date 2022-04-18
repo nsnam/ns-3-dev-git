@@ -49,7 +49,7 @@ uint32_t
 QueueItem::GetSize (void) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_packet != 0);
+  NS_ASSERT (m_packet);
   return m_packet->GetSize ();
 }
 

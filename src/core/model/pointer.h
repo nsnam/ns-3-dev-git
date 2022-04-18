@@ -136,7 +136,7 @@ class PointerChecker : public ns3::PointerChecker
       {
         return false;
       }
-    if (value->GetObject () == 0)
+    if (!value->GetObject ())
       {
         return true;
       }
@@ -215,7 +215,7 @@ bool
 PointerValue::GetAccessor (Ptr<T> &v) const
 {
   Ptr<T> ptr = dynamic_cast<T*> (PeekPointer (m_value));
-  if (ptr == 0)
+  if (!ptr)
     {
       return false;
     }

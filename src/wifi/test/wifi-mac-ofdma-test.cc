@@ -201,7 +201,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
         {
           Ptr<const WifiMacQueueItem> peeked = m_apMac->GetQosTxop (AC_BE)->PeekNextMpdu (0, sta.second);
 
-          if (peeked == 0)
+          if (!peeked)
             {
               NS_LOG_DEBUG ("No frame to send");
               return SU_TX;
@@ -210,7 +210,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
           Ptr<WifiMacQueueItem> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
                                                                                  m_availableTime,
                                                                                  m_initialFrame);
-          if (mpdu == 0)
+          if (!mpdu)
             {
               NS_LOG_DEBUG ("Not enough time to send frames to all the stations");
               return SU_TX;

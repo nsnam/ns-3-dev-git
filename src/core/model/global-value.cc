@@ -50,13 +50,13 @@ GlobalValue::GlobalValue (std::string name, std::string help,
     m_checker (checker)
 {
   NS_LOG_FUNCTION (name << help << &initialValue << checker);
-  if (m_checker == 0)
+  if (!m_checker)
     {
       NS_FATAL_ERROR ("Checker should not be zero on " << name );
     }
   m_initialValue = m_checker->CreateValidValue (initialValue);
   m_currentValue = m_initialValue;
-  if (m_initialValue == 0)
+  if (!m_initialValue)
     {
       NS_FATAL_ERROR ("Value set by user on " << name << " is invalid.");
     }
@@ -89,7 +89,7 @@ GlobalValue::InitializeFromEnv (void)
           if (name == m_name)
             {
               Ptr<AttributeValue> v = m_checker->CreateValidValue (StringValue (value));
-              if (v != 0)
+              if (v)
                 {
                   m_initialValue = v;
                   m_currentValue = v;
@@ -143,7 +143,7 @@ GlobalValue::SetValue (const AttributeValue &value)
   NS_LOG_FUNCTION (&value);
 
   Ptr<AttributeValue> v = m_checker->CreateValidValue (value);
-  if (v == 0)
+  if (!v)
     {
       return 0;
     }

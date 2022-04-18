@@ -42,13 +42,13 @@ Hasher& GetStaticHash (void)
 Hasher::Hasher ()
 {
   m_impl = Create <Hash::Function::Murmur3> ();
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
 }
 
 Hasher::Hasher (Ptr<Hash::Implementation> hp)
   : m_impl (hp)
 {
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
 }
 
 Hasher &

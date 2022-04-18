@@ -99,7 +99,7 @@ void Sender::StartApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (m_socket == 0) {
+  if (!m_socket) {
       Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory>
           (UdpSocketFactory::GetTypeId ());
       m_socket = socketFactory->CreateSocket ();
@@ -196,7 +196,7 @@ Receiver::StartApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (m_socket == 0) {
+  if (!m_socket) {
       Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory>
           (UdpSocketFactory::GetTypeId ());
       m_socket = socketFactory->CreateSocket ();
@@ -215,7 +215,7 @@ Receiver::StopApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (m_socket != 0) {
+  if (m_socket) {
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 
@@ -254,12 +254,12 @@ Receiver::Receive (Ptr<Socket> socket)
       if (packet->FindFirstMatchingByteTag (timestamp)) {
           Time tx = timestamp.GetTimestamp ();
 
-          if (m_delay != 0) {
+          if (m_delay) {
               m_delay->Update (Simulator::Now () - tx);
             }
         }
 
-      if (m_calc != 0) {
+      if (m_calc) {
           m_calc->Update ();
         }
 

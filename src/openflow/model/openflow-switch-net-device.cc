@@ -144,7 +144,7 @@ OpenFlowSwitchNetDevice::DoDispose ()
 void
 OpenFlowSwitchNetDevice::SetController (Ptr<ofi::Controller> c)
 {
-  if (m_controller != 0)
+  if (m_controller)
     {
       NS_LOG_ERROR ("Controller already set.");
       return;
@@ -736,7 +736,7 @@ OpenFlowSwitchNetDevice::OutputPacket (uint32_t packet_uid, int out_port)
   if (out_port >= 0 && out_port < DP_MAX_PORTS)
     {
       ofi::Port& p = m_ports[out_port];
-      if (p.netdev != 0 && !(p.config & OFPPC_PORT_DOWN))
+      if (p.netdev && !(p.config & OFPPC_PORT_DOWN))
         {
           ofi::SwitchPacketMetadata data = m_packetData.find (packet_uid)->second;
           size_t bufsize = data.buffer->size;
@@ -814,7 +814,7 @@ OpenFlowSwitchNetDevice::MakeOpenflowReply (size_t openflow_len, uint8_t type, o
 int
 OpenFlowSwitchNetDevice::SendOpenflowBuffer (ofpbuf *buffer)
 {
-  if (m_controller != 0)
+  if (m_controller)
     {
       update_openflow_length (buffer);
       m_controller->ReceiveFromSwitch (this, buffer);
@@ -1470,7 +1470,7 @@ OpenFlowSwitchNetDevice::ReceiveStatsRequest (const void *oh)
         }
     }
 
-  if (m_controller != 0)
+  if (m_controller)
     {
       m_controller->StartDump (&cb);
     }

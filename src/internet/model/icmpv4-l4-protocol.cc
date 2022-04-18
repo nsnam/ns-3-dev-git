@@ -58,7 +58,7 @@ Icmpv4L4Protocol::Icmpv4L4Protocol ()
 Icmpv4L4Protocol::~Icmpv4L4Protocol ()
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_node == 0);
+  NS_ASSERT (!m_node);
 }
 
 void
@@ -77,13 +77,13 @@ void
 Icmpv4L4Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node> node = this->GetObject<Node> ();
-      if (node != 0)
+      if (node)
         {
           Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
-          if (ipv4 != 0 && m_downTarget.IsNull ())
+          if (ipv4 && m_downTarget.IsNull ())
             {
               this->SetNode (node);
               ipv4->Insert (this);
@@ -114,7 +114,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
 {
   NS_LOG_FUNCTION (this << packet << dest << static_cast<uint32_t> (type) << static_cast<uint32_t> (code));
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-  NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
+  NS_ASSERT (ipv4 && ipv4->GetRoutingProtocol ());
   Ipv4Header header;
   header.SetDestination (dest);
   header.SetProtocol (PROT_NUMBER);
@@ -122,7 +122,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
   Ptr<Ipv4Route> route;
   Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
   route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
-  if (route != 0)
+  if (route)
     {
       NS_LOG_LOGIC ("Route exists");
       Ipv4Address source = route->GetSource ();
@@ -220,7 +220,7 @@ Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
 
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   Ptr<IpL4Protocol> l4 = ipv4->GetProtocol (ipHeader.GetProtocol ());
-  if (l4 != 0)
+  if (l4)
     {
       l4->ReceiveIcmp (source, ipHeader.GetTtl (), icmp.GetType (), icmp.GetCode (),
                        info, ipHeader.GetSource (), ipHeader.GetDestination (), payload);

@@ -300,7 +300,7 @@ LteUplinkDataSinrTestCase::DoRun (void)
   NS_LOG_INFO ("Data Frame - Theoretical SINR: " << *m_expectedSinr);
   NS_LOG_INFO ("Data Frame - Calculated SINR: " << *(actualSinrCatcher.GetValue ()));
 
-  NS_TEST_EXPECT_MSG_NE (actualSinrCatcher.GetValue (), 0, "no actual SINR reported");
+  NS_TEST_EXPECT_MSG_NE (actualSinrCatcher.GetValue (), nullptr, "no actual SINR reported");
 
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (*(actualSinrCatcher.GetValue ()), *m_expectedSinr, 0.0000001, "Data Frame - Wrong SINR !");
   ulPhy->Dispose ();
@@ -470,7 +470,7 @@ LteUplinkSrsSinrTestCase::DoRun (void)
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
 
-  NS_ASSERT_MSG (m_actualSinr != 0, "no actual SINR reported");
+  NS_ASSERT_MSG (m_actualSinr, "no actual SINR reported");
 
   NS_LOG_INFO ("SRS Frame - Theoretical SINR: " << *m_expectedSinr);
   NS_LOG_INFO ("SRS Frame - Calculated SINR: " << *m_actualSinr);

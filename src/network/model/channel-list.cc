@@ -129,7 +129,7 @@ ChannelListPriv::DoGet (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ptr<ChannelListPriv> ptr = 0;
-  if (ptr == 0)
+  if (!ptr)
     {
       ptr = CreateObject<ChannelListPriv> ();
       Config::RegisterRootNamespaceObject (ptr);

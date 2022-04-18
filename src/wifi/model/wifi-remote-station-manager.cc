@@ -232,25 +232,25 @@ WifiRemoteStationManager::GetShortPreambleEnabled (void) const
 bool
 WifiRemoteStationManager::GetHtSupported (void) const
 {
-  return m_wifiPhy->GetDevice ()->GetHtConfiguration () != nullptr;
+  return bool (m_wifiPhy->GetDevice ()->GetHtConfiguration ());
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (void) const
 {
-  return m_wifiPhy->GetDevice ()->GetVhtConfiguration () != nullptr;
+  return bool (m_wifiPhy->GetDevice ()->GetVhtConfiguration ());
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (void) const
 {
-  return m_wifiPhy->GetDevice ()->GetHeConfiguration () != nullptr;
+  return bool (m_wifiPhy->GetDevice ()->GetHeConfiguration ());
 }
 
 bool
 WifiRemoteStationManager::GetEhtSupported (void) const
 {
-  return m_wifiPhy->GetDevice ()->GetEhtConfiguration () != nullptr;
+  return bool (m_wifiPhy->GetDevice ()->GetEhtConfiguration ());
 }
 
 bool
@@ -1791,25 +1791,25 @@ WifiRemoteStationManager::GetQosSupported (const WifiRemoteStation *station) con
 bool
 WifiRemoteStationManager::GetHtSupported (const WifiRemoteStation *station) const
 {
-  return (station->m_state->m_htCapabilities != 0);
+  return bool (station->m_state->m_htCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (const WifiRemoteStation *station) const
 {
-  return (station->m_state->m_vhtCapabilities != 0);
+  return bool (station->m_state->m_vhtCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (const WifiRemoteStation *station) const
 {
-  return (station->m_state->m_heCapabilities != 0);
+  return bool (station->m_state->m_heCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetEhtSupported (const WifiRemoteStation *station) const
 {
-  return (station->m_state->m_ehtCapabilities != 0);
+  return (bool)(station->m_state->m_ehtCapabilities);
 }
 
 uint8_t
@@ -1890,25 +1890,25 @@ WifiRemoteStationManager::GetOfdmSupported (const Mac48Address& address) const
 bool
 WifiRemoteStationManager::GetHtSupported (Mac48Address address) const
 {
-  return (LookupState (address)->m_htCapabilities != 0);
+  return bool (LookupState (address)->m_htCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (Mac48Address address) const
 {
-  return (LookupState (address)->m_vhtCapabilities != 0);
+  return bool (LookupState (address)->m_vhtCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (Mac48Address address) const
 {
-  return (LookupState (address)->m_heCapabilities != 0);
+  return bool (LookupState (address)->m_heCapabilities);
 }
 
 bool
 WifiRemoteStationManager::GetEhtSupported (Mac48Address address) const
 {
-  return (LookupState (address)->m_ehtCapabilities != 0);
+  return (bool)(LookupState (address)->m_ehtCapabilities);
 }
 
 void

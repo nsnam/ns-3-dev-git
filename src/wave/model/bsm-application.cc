@@ -236,7 +236,7 @@ BsmApplication::GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
       int txNodeId = sendingNodeId;
       Ptr<Node> txNode = GetNode (txNodeId);
       Ptr<MobilityModel> txPosition = txNode->GetObject<MobilityModel> ();
-      NS_ASSERT (txPosition != 0);
+      NS_ASSERT (txPosition);
 
       int senderMoving = m_nodesMoving->at (txNodeId);
       if (senderMoving != 0)
@@ -263,7 +263,7 @@ BsmApplication::GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
               if (rxNodeId != txNodeId)
                 {
                   Ptr<MobilityModel> rxPosition = rxNode->GetObject<MobilityModel> ();
-                  NS_ASSERT (rxPosition != 0);
+                  NS_ASSERT (rxPosition);
                   // confirm that the receiving node
                   // has also started moving in the scenario
                   // if it has not started moving, then
@@ -348,7 +348,7 @@ void BsmApplication::HandleReceivedBsmPacket (Ptr<Node> txNode,
   m_waveBsmStats->IncRxPktCount ();
 
   Ptr<MobilityModel> rxPosition = rxNode->GetObject<MobilityModel> ();
-  NS_ASSERT (rxPosition != 0);
+  NS_ASSERT (rxPosition);
   // confirm that the receiving node
   // has also started moving in the scenario
   // if it has not started moving, then

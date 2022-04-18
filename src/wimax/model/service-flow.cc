@@ -324,7 +324,7 @@ ServiceFlow::GetSfid (void) const
 uint16_t
 ServiceFlow::GetCid (void) const
 {
-  if (m_connection == 0)
+  if (!m_connection)
     {
       return 0;
     }

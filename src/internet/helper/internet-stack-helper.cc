@@ -216,35 +216,35 @@ InternetStackHelper::AssignStreams (NodeContainer c, int64_t stream)
     {
       Ptr<Node> node = *i;
       Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-      if (router != 0)
+      if (router)
         {
           Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
-          if (gr != 0)
+          if (gr)
             {
               currentStream += gr->AssignStreams (currentStream);
             }
         }
       Ptr<Ipv6ExtensionDemux> demux = node->GetObject<Ipv6ExtensionDemux> ();
-      if (demux != 0)
+      if (demux)
         {
           Ptr<Ipv6Extension> fe = demux->GetExtension (Ipv6ExtensionFragment::EXT_NUMBER);
           NS_ASSERT (fe);  // should always exist in the demux
           currentStream += fe->AssignStreams (currentStream);
         }
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-      if (ipv4 != 0)
+      if (ipv4)
         {
           Ptr<ArpL3Protocol> arpL3Protocol = ipv4->GetObject<ArpL3Protocol> ();
-          if (arpL3Protocol != 0)
+          if (arpL3Protocol)
             {
               currentStream += arpL3Protocol->AssignStreams (currentStream);
             }
         }
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-      if (ipv6 != 0)
+      if (ipv6)
         {
           Ptr<Icmpv6L4Protocol> icmpv6L4Protocol = ipv6->GetObject<Icmpv6L4Protocol> ();
-          if (icmpv6L4Protocol != 0)
+          if (icmpv6L4Protocol)
             {
               currentStream += icmpv6L4Protocol->AssignStreams (currentStream);
             }
@@ -288,7 +288,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
 {
   if (m_ipv4Enabled)
     {
-      if (node->GetObject<Ipv4> () != 0)
+      if (node->GetObject<Ipv4> ())
         {
           NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating "
                           "an InternetStack to a node with an existing Ipv4 object");
@@ -313,7 +313,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
   if (m_ipv6Enabled)
     {
       /* IPv6 stack */
-      if (node->GetObject<Ipv6> () != 0)
+      if (node->GetObject<Ipv6> ())
         {
           NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating "
                           "an InternetStack to a node with an existing Ipv6 object");
@@ -790,7 +790,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
   // since there will be one file per context and therefore the context would
   // be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy
@@ -1128,7 +1128,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
   // since there will be one file per context and therefore the context would
   // be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy

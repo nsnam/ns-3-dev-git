@@ -109,7 +109,7 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
   // TODO Add support for the Max Number Of MSDUs In A-MSDU field in the Extended
   // Capabilities element sent by the recipient
 
-  NS_ASSERT (m_htFem != 0);
+  NS_ASSERT (m_htFem);
 
   if (GetMaxAmsduSize (recipient, tid, txParams.m_txVector.GetModulationClass ()) == 0)
     {
@@ -121,7 +121,7 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
   uint8_t nMsdu = 1;
   peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
 
-  while (peekedItem != nullptr
+  while (peekedItem
          && m_htFem->TryAggregateMsdu (peekedItem, txParams, availableTime))
     {
       // find the next MPDU before dequeuing the current one

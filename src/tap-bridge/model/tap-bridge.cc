@@ -232,7 +232,7 @@ TapBridge::StartTapDevice (void)
   //
   // Now spin up a read thread to read packets from the tap device.
   //
-  NS_ABORT_MSG_IF (m_fdReader != 0,"TapBridge::StartTapDevice(): Receive thread is already running");
+  NS_ABORT_MSG_IF (m_fdReader, "TapBridge::StartTapDevice(): Receive thread is already running");
   NS_LOG_LOGIC ("Spinning up read thread");
 
   m_fdReader = Create<TapBridgeFdReader> ();
@@ -244,7 +244,7 @@ TapBridge::StopTapDevice (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_fdReader != 0)
+  if (m_fdReader)
     {
       m_fdReader->Stop ();
       m_fdReader = 0;
@@ -394,7 +394,7 @@ TapBridge::CreateTap (void)
       bool wantIp = (m_mode == CONFIGURE_LOCAL);
 
       if (wantIp
-          && (ipv4 == 0)
+          && (!ipv4)
           && m_tapIp.IsBroadcast ()
           && m_tapNetmask == Ipv4Mask::GetOnes ())
         {
@@ -405,7 +405,7 @@ TapBridge::CreateTap (void)
       Ipv4Address ipv4Address ("255.255.255.255");
       Ipv4Mask ipv4Mask ("255.255.255.255");
 
-      if (ipv4 != 0)
+      if (ipv4)
         {
           uint32_t index = ipv4->GetInterfaceForDevice (nd);
           if (ipv4->GetNAddresses (index) > 1)
@@ -765,7 +765,7 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, ssize_t len)
   NS_LOG_LOGIC ("Received packet from tap device");
 
   Ptr<Packet> p = Filter (packet, &src, &dst, &type);
-  if (p == 0)
+  if (!p)
     {
       NS_LOG_LOGIC ("TapBridge::ForwardToBridgedDevice:  Discarding packet as unfit for ns-3 consumption");
       return;
@@ -918,9 +918,9 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
 {
   NS_LOG_FUNCTION (this << bridgedDevice);
 
-  NS_ASSERT_MSG (m_node != 0, "TapBridge::SetBridgedDevice:  Bridge not installed in a node");
+  NS_ASSERT_MSG (m_node, "TapBridge::SetBridgedDevice:  Bridge not installed in a node");
   NS_ASSERT_MSG (bridgedDevice != this, "TapBridge::SetBridgedDevice:  Cannot bridge to self");
-  NS_ASSERT_MSG (m_bridgedDevice == 0, "TapBridge::SetBridgedDevice:  Already bridged");
+  NS_ASSERT_MSG (!m_bridgedDevice, "TapBridge::SetBridgedDevice:  Already bridged");
 
   if (!Mac48Address::IsMatchingType (bridgedDevice->GetAddress ()))
     {

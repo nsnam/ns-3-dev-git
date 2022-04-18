@@ -147,7 +147,7 @@ RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
   {
     std::unique_lock lock {m_mutex};
 
-    if (m_events != 0)
+    if (m_events)
       {
         while (m_events->IsEmpty () == false)
           {

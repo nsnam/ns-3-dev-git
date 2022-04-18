@@ -93,7 +93,7 @@ PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, b
   // the system.  We can only deal with devices of type PointToPointNetDevice.
   //
   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("PointToPointHelper::EnablePcapInternal(): Device " << device << " not of type ns3::PointToPointNetDevice");
       return;
@@ -129,7 +129,7 @@ PointToPointHelper::EnableAsciiInternal (
   // the system.  We can only deal with devices of type PointToPointNetDevice.
   //
   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("PointToPointHelper::EnableAsciiInternal(): Device " << device <<
                    " not of type ns3::PointToPointNetDevice");
@@ -148,7 +148,7 @@ PointToPointHelper::EnableAsciiInternal (
   // since there will be one file per context and therefore the context would
   // be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy

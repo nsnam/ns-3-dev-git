@@ -150,7 +150,7 @@ HwmpReactiveRegressionTest::ResetPosition ()
 {
   Ptr<Object> object = m_nodes->Get (3);
   Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-  if (model == 0)
+  if (!model)
     {
       return;
     }

@@ -188,7 +188,7 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
                   continue;
                 }
               Ptr<Channel> channel = localNetDevice->GetChannel ();
-              if (channel == 0)
+              if (!channel)
                 {
                   continue;
                 }
@@ -291,7 +291,7 @@ DistributedSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 
   Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
-  if (m_events != 0)
+  if (m_events)
     {
       while (!m_events->IsEmpty ())
         {

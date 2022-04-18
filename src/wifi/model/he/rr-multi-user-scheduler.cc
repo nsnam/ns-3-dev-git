@@ -105,7 +105,7 @@ void
 RrMultiUserScheduler::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_apMac != nullptr);
+  NS_ASSERT (m_apMac);
   m_apMac->TraceConnectWithoutContext ("AssociatedSta",
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationAssociated, this));
   m_apMac->TraceConnectWithoutContext ("DeAssociatedSta",
@@ -139,12 +139,12 @@ RrMultiUserScheduler::SelectTxFormat (void)
 
   Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
 
-  if (mpdu != 0 && !GetWifiRemoteStationManager ()->GetHeSupported (mpdu->GetHeader ().GetAddr1 ()))
+  if (mpdu && !GetWifiRemoteStationManager ()->GetHeSupported (mpdu->GetHeader ().GetAddr1 ()))
     {
       return SU_TX;
     }
 
-  if (m_enableUlOfdma && m_enableBsrp && (GetLastTxFormat () == DL_MU_TX || mpdu == nullptr))
+  if (m_enableUlOfdma && m_enableBsrp && (GetLastTxFormat () == DL_MU_TX || !mpdu))
     {
       TxFormat txFormat = TrySendingBsrpTf ();
 
@@ -155,7 +155,7 @@ RrMultiUserScheduler::SelectTxFormat (void)
     }
   else if (m_enableUlOfdma && ((GetLastTxFormat () == DL_MU_TX)
                                || (m_trigger.GetType () == TriggerFrameType::BSRP_TRIGGER)
-                               || (mpdu == nullptr)))
+                               || !mpdu))
     {
       TxFormat txFormat = TrySendingBasicTf ();
 
@@ -186,7 +186,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
     }
 
   Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration ();
-  NS_ASSERT (heConfiguration != 0);
+  NS_ASSERT (heConfiguration);
 
   WifiTxVector txVector;
   txVector.SetPreambleType (WIFI_PREAMBLE_HE_TB);
@@ -542,7 +542,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
 
-  if (mpdu != nullptr && mpdu->GetHeader ().IsQosData ())
+  if (mpdu && mpdu->GetHeader ().IsQosData ())
     {
       currTid = mpdu->GetHeader ().GetQosTid ();
     }
@@ -565,7 +565,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
     }
 
   Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration ();
-  NS_ASSERT (heConfiguration != 0);
+  NS_ASSERT (heConfiguration);
 
   m_txParams.Clear ();
   m_txParams.m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
@@ -603,7 +603,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
               // we only check if the first frame of the current TID meets the size
               // and duration constraints. We do not explore the queues further.
-              if (mpdu != 0)
+              if (mpdu)
                 {
                   // Use a temporary TX vector including only the STA-ID of the
                   // candidate station to check if the MPDU meets the size and time limits.
@@ -774,7 +774,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
   for (const auto& candidate : m_candidates)
     {
       mpdu = candidate.second;
-      NS_ASSERT (mpdu != nullptr);
+      NS_ASSERT (mpdu);
 
       [[maybe_unused]] bool ret = m_heFem->TryAddMpdu (mpdu, dlMuInfo.txParams, actualAvailableTime);
       NS_ASSERT_MSG (ret, "Weird that an MPDU does not meet constraints when "
@@ -789,7 +789,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
     {
       // Let us try first A-MSDU aggregation if possible
       mpdu = candidate.second;
-      NS_ASSERT (mpdu != nullptr);
+      NS_ASSERT (mpdu);
       uint8_t tid = mpdu->GetHeader ().GetQosTid ();
       receiver = mpdu->GetHeader ().GetAddr1 ();
       NS_ASSERT (receiver == candidate.first->address);
@@ -803,7 +803,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
           // A-MSDU aggregation
           item = m_heFem->GetMsduAggregator ()->GetNextAmsdu (mpdu, dlMuInfo.txParams, m_availableTime);
 
-          if (item == nullptr)
+          if (!item)
             {
               // A-MSDU aggregation failed or disabled
               item = mpdu->GetItem ();

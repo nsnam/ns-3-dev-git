@@ -70,7 +70,7 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
   // get the MobilityBuildingInfo pointers
   Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
   Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
-  NS_ASSERT_MSG ((a1 != 0) && (b1 != 0), "OhBuildingsPropagationLossModel only works with MobilityBuildingInfo");
+  NS_ASSERT_MSG (a1 && b1, "OhBuildingsPropagationLossModel only works with MobilityBuildingInfo");
 
   double loss = 0.0;
 

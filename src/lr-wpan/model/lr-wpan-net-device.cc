@@ -120,10 +120,10 @@ void
 LrWpanNetDevice::CompleteConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_mac == 0
-      || m_phy == 0
-      || m_csmaca == 0
-      || m_node == 0
+  if (!m_mac
+      || !m_phy
+      || !m_csmaca
+      || !m_node
       || m_configComplete)
     {
       return;
@@ -317,7 +317,7 @@ bool
 LrWpanNetDevice::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_phy != 0 && m_linkUp;
+  return m_phy && m_linkUp;
 }
 
 void

@@ -56,7 +56,7 @@ void
 EnergySource::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (node != NULL);
+  NS_ASSERT (node);
   m_node = node;
 }
 
@@ -70,7 +70,7 @@ void
 EnergySource::AppendDeviceEnergyModel (Ptr<DeviceEnergyModel> deviceEnergyModelPtr)
 {
   NS_LOG_FUNCTION (this << deviceEnergyModelPtr);
-  NS_ASSERT (deviceEnergyModelPtr != NULL); // model must exist
+  NS_ASSERT (deviceEnergyModelPtr); // model must exist
   m_models.Add (deviceEnergyModelPtr);
 }
 
@@ -140,7 +140,7 @@ void
 EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
 {
   NS_LOG_FUNCTION (this << energyHarvesterPtr);
-  NS_ASSERT (energyHarvesterPtr != 0); // energy harvester must exist
+  NS_ASSERT (energyHarvesterPtr); // energy harvester must exist
   m_harvesters.push_back (energyHarvesterPtr);
 }
 

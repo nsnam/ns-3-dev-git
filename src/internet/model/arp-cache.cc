@@ -221,7 +221,7 @@ ArpCache::HandleWaitReplyTimeout (void)
               entry->MarkDead ();
               entry->ClearRetries ();
               Ipv4PayloadHeaderPair pending = entry->DequeuePending ();
-              while (pending.first != 0)
+              while (pending.first)
                 {
                   // add the Ipv4 header for tracing purposes
                   pending.first->AddHeader (pending.second);

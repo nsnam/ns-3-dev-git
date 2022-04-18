@@ -142,7 +142,7 @@ Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice,
           (*i)->GetLocalAddress () == localAddress &&
           (*i)->GetPeerPort () == peerPort &&
           (*i)->GetPeerAddress () == peerAddress &&
-          ((*i)->GetBoundNetDevice () == boundNetDevice || (*i)->GetBoundNetDevice () == 0))
+          ((*i)->GetBoundNetDevice () == boundNetDevice || !(*i)->GetBoundNetDevice ()))
         {
           NS_LOG_WARN ("Duplicated endpoint.");
           return 0;

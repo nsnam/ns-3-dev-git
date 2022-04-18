@@ -700,7 +700,7 @@ NamesPriv::Find (Ptr<Object> context, std::string name)
 
   NameNode *node = 0;
 
-  if (context == 0)
+  if (!context)
     {
       NS_LOG_LOGIC ("Zero context implies root NameNode");
       node = &m_root;

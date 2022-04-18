@@ -148,7 +148,7 @@ PrioQueueDisc::DoDequeue (void)
 
   for (uint32_t i = 0; i < GetNQueueDiscClasses (); i++)
     {
-      if ((item = GetQueueDiscClass (i)->GetQueueDisc ()->Dequeue ()) != 0)
+      if ((item = GetQueueDiscClass (i)->GetQueueDisc ()->Dequeue ()))
         {
           NS_LOG_LOGIC ("Popped from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets ());
@@ -169,7 +169,7 @@ PrioQueueDisc::DoPeek (void)
 
   for (uint32_t i = 0; i < GetNQueueDiscClasses (); i++)
     {
-      if ((item = GetQueueDiscClass (i)->GetQueueDisc ()->Peek ()) != 0)
+      if ((item = GetQueueDiscClass (i)->GetQueueDisc ()->Peek ()))
         {
           NS_LOG_LOGIC ("Peeked from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets ());

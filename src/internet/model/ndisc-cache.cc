@@ -307,7 +307,7 @@ void NdiscCache::Entry::FunctionRetransmitTimeout ()
   else
     {
       Ipv6PayloadHeaderPair malformedPacket = m_waiting.front ();
-      if (malformedPacket.first == 0)
+      if (!malformedPacket.first)
         {
           malformedPacket.first = Create<Packet> ();
         }

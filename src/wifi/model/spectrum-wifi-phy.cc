@@ -324,9 +324,9 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   Ptr<WifiSpectrumSignalParameters> wifiRxParams = DynamicCast<WifiSpectrumSignalParameters> (rxParams);
 
   // Log the signal arrival to the trace source
-  m_signalCb (wifiRxParams, senderNodeId, WToDbm (totalRxPowerW), rxDuration);
+  m_signalCb (bool (wifiRxParams), senderNodeId, WToDbm (totalRxPowerW), rxDuration);
 
-  if (wifiRxParams == 0)
+  if (!wifiRxParams)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");
       m_interference->AddForeignSignal (rxDuration, rxPowerW);
@@ -355,7 +355,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
   // does not overlap with the receiver's primary20 channel
-  if (wifiRxParams->txPhy != 0)
+  if (wifiRxParams->txPhy)
     {
       // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
       uint16_t width = (GetChannelWidth () % 20 == 0 ? 20 : GetChannelWidth ());

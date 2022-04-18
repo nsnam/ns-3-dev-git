@@ -109,7 +109,7 @@ DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
   NS_LOG_FUNCTION (this << schedulerFactory);
   Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
-  if (m_events != 0)
+  if (m_events)
     {
       while (!m_events->IsEmpty ())
         {

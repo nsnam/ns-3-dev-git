@@ -255,7 +255,7 @@ bool
 TupleValue<Args...>::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   auto tupleChecker = DynamicCast<const TupleChecker> (checker);
-  if (tupleChecker == nullptr)
+  if (!tupleChecker)
     {
       return false;
     }
@@ -286,7 +286,7 @@ TupleValue<Args...>::DeserializeFromString (std::string value, Ptr<const Attribu
           return false;
         }
       values.push_back (tupleChecker->GetCheckers ().at (i++)->CreateValidValue (StringValue (value)));
-      if (values.back () == nullptr)
+      if (!values.back ())
         {
           return false;
         }

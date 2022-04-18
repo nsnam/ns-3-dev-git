@@ -294,7 +294,7 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
               continue;
             }
           if (nextBar->skipIfNoDataQueued
-              && m_queue->PeekByTidAndAddress (nextBar->tid, recipient) == nullptr)
+              && !m_queue->PeekByTidAndAddress (nextBar->tid, recipient))
             {
               // skip this BAR as there is no data queued
               nextBar++;

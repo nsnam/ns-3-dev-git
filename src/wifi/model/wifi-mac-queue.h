@@ -404,7 +404,7 @@ WifiMacQueue::Transform (Ptr<const WifiMacQueueItem> item, CALLABLE func)
 
   auto pos = std::next (item->m_queueIt);
   Ptr<WifiMacQueueItem> mpdu = DoDequeue (item->m_queueIt);
-  NS_ASSERT (mpdu != nullptr);
+  NS_ASSERT (mpdu);
   func (mpdu);     // python bindings scanning does not like std::invoke (func, mpdu);
   bool ret = Insert (pos, mpdu);
   // The size of a WifiMacQueue is measured as number of packets. We dequeued

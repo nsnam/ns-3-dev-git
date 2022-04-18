@@ -73,7 +73,7 @@ RocketfuelTopologyReaderWeightsTest::DoRun (void)
   inFile = CreateObject<RocketfuelTopologyReader> ();
   inFile->SetFileName (input);
 
-  if (inFile != 0)
+  if (inFile)
     {
       nodes = inFile->Read ();
     }
@@ -117,7 +117,7 @@ RocketfuelTopologyReaderMapsTest::DoRun (void)
   inFile = CreateObject<RocketfuelTopologyReader> ();
   inFile->SetFileName (input);
 
-  if (inFile != 0)
+  if (inFile)
     {
       nodes = inFile->Read ();
     }

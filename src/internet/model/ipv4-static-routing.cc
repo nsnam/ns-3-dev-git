@@ -282,7 +282,7 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
       if (mask.IsMatch (dest, entry))
         {
           NS_LOG_LOGIC ("Found global network route " << j << ", mask length " << masklen << ", metric " << metric);
-          if (oif != 0)
+          if (oif)
             {
               if (oif != m_ipv4->GetNetDevice (j->GetInterface ()))
                 {
@@ -319,7 +319,7 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
             }
         }
     }
-  if (rtentry != 0)
+  if (rtentry)
     {
       NS_LOG_LOGIC ("Matching route via " << rtentry->GetGateway () << " at the end");
     }
@@ -522,7 +522,7 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
 {
   NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev << &ucb << &mcb << &lcb << &ecb);
 
-  NS_ASSERT (m_ipv4 != 0);
+  NS_ASSERT (m_ipv4);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
@@ -576,7 +576,7 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
     }
   // Next, try to find a route
   Ptr<Ipv4Route> rtentry = LookupStatic (ipHeader.GetDestination ());
-  if (rtentry != 0)
+  if (rtentry)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
       ucb (rtentry, p, ipHeader);  // unicast forwarding callback
@@ -703,7 +703,7 @@ void
 Ipv4StaticRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION (this << ipv4);
-  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
+  NS_ASSERT (!m_ipv4 && ipv4);
   m_ipv4 = ipv4;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {

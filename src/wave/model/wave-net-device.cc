@@ -243,7 +243,7 @@ WaveNetDevice::StartVsa (const VsaInfo & vsaInfo)
       NS_LOG_DEBUG ("there is no channel access assigned for channel " << vsaInfo.channelNumber);
       return false;
     }
-  if (vsaInfo.vsc == 0)
+  if (!vsaInfo.vsc)
     {
       NS_LOG_DEBUG ("vendor specific information shall not be null");
       return false;

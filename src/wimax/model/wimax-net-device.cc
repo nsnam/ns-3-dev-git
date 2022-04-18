@@ -254,7 +254,7 @@ bool
 WimaxNetDevice::IsLinkUp (void) const
 {
 
-  return m_phy != 0 && m_linkUp;
+  return m_phy && m_linkUp;
 
 }
 
@@ -374,7 +374,7 @@ WimaxNetDevice::GetPhy (void) const
 void
 WimaxNetDevice::SetChannel (Ptr<WimaxChannel> channel)
 {
-  if (m_phy != 0)
+  if (m_phy)
     {
       m_phy->Attach (channel);
     }

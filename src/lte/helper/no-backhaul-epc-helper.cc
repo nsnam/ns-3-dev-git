@@ -351,7 +351,7 @@ NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std:
   Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, cellIds.at (0));
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
-  NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
+  NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> (), "cannot retrieve EpcEnbApplication");
   NS_LOG_LOGIC ("enb: " << enb << ", enb->GetApplication (0): " << enb->GetApplication (0));
 
   NS_LOG_INFO ("Create EpcX2 entity");
@@ -409,8 +409,8 @@ NoBackhaulEpcHelper::DoAddX2Interface (const Ptr<EpcX2> &enb1X2, const Ptr<NetDe
   Ptr<LteEnbNetDevice> enb1LteDevice = enb1LteDev->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbNetDevice> enb2LteDevice = enb2LteDev->GetObject<LteEnbNetDevice> ();
 
-  NS_ABORT_MSG_IF (enb1LteDevice == nullptr , "Unable to find LteEnbNetDevice for the first eNB");
-  NS_ABORT_MSG_IF (enb2LteDevice == nullptr , "Unable to find LteEnbNetDevice for the second eNB");
+  NS_ABORT_MSG_IF (!enb1LteDevice, "Unable to find LteEnbNetDevice for the first eNB");
+  NS_ABORT_MSG_IF (!enb2LteDevice, "Unable to find LteEnbNetDevice for the second eNB");
 
   std::vector<uint16_t> enb1CellIds = enb1LteDevice->GetCellIds ();
   std::vector<uint16_t> enb2CellIds = enb2LteDevice->GetCellIds ();
@@ -450,7 +450,7 @@ NoBackhaulEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi,
   Ptr<Node> ueNode = ueDevice->GetNode ();
   Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
   Ptr<Ipv6> ueIpv6 = ueNode->GetObject<Ipv6> ();
-  NS_ASSERT_MSG (ueIpv4 != 0 || ueIpv6 != 0, "UEs need to have IPv4/IPv6 installed before EPS bearers can be activated");
+  NS_ASSERT_MSG (ueIpv4 || ueIpv6, "UEs need to have IPv4/IPv6 installed before EPS bearers can be activated");
 
   if (ueIpv4)
     {
@@ -485,7 +485,7 @@ NoBackhaulEpcHelper::DoActivateEpsBearerForUe (const Ptr<NetDevice> &ueDevice,
 {
   NS_LOG_FUNCTION (this);
   Ptr<LteUeNetDevice> ueLteDevice = DynamicCast<LteUeNetDevice> (ueDevice);
-  if (ueLteDevice == nullptr)
+  if (!ueLteDevice)
     {
       // You may wonder why this is not an assert. Well, take a look in epc-test-s1u-downlink
       // and -uplink: we are using CSMA to simulate UEs.
@@ -555,7 +555,7 @@ NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4
   NS_ASSERT (retval == 0);
 
   Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
-  NS_ASSERT_MSG (enbApp != 0, "EpcEnbApplication not available");
+  NS_ASSERT_MSG (enbApp, "EpcEnbApplication not available");
   enbApp->AddS1Interface (enbS1uSocket, enbAddress, sgwAddress);
 
   NS_LOG_INFO ("Connect S1-AP interface");

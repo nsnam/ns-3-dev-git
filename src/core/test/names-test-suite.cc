@@ -967,11 +967,11 @@ AlternateFindTestCase::DoRun (void)
 
 
   foundAlternateTestObject = Names::Find<AlternateTestObject> ("Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, 0,
+  NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, nullptr,
                          "Unexpectedly able to GetObject<AlternateTestObject> on a TestObject");
 
   foundTestObject = Names::Find<TestObject> ("Alternate Test Object");
-  NS_TEST_ASSERT_MSG_EQ (foundTestObject, 0,
+  NS_TEST_ASSERT_MSG_EQ (foundTestObject, nullptr,
                          "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
 }
 

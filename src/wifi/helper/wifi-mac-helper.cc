@@ -92,7 +92,7 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
   Ptr<ApWifiMac> apMac;
   if (standard >= WIFI_STANDARD_80211ax
       && m_muScheduler.IsTypeIdSet ()
-      && (apMac = DynamicCast<ApWifiMac> (mac)) != nullptr)
+      && (apMac = DynamicCast<ApWifiMac> (mac)))
     {
       Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();
       apMac->AggregateObject (muScheduler);

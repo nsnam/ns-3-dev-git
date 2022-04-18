@@ -257,7 +257,7 @@ LteCellSelectionTestCase::DoRun ()
 
       NetDeviceContainer devs = lteHelper->InstallUeDevice (*itNode);
       Ptr<LteUeNetDevice> ueDev = devs.Get (0)->GetObject<LteUeNetDevice> ();
-      NS_ASSERT (ueDev != 0);
+      NS_ASSERT (ueDev);
       ueDevs.Add (devs);
       Simulator::Schedule (itSetup->checkPoint,
                            &LteCellSelectionTestCase::CheckPoint,

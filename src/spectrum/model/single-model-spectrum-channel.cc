@@ -102,7 +102,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
   m_txSigParamsTrace (txParamsTrace);
 
   // just a sanity check routine. We might want to remove it to save some computational load -- one "if" statement  ;-)
-  if (m_spectrumModel == 0)
+  if (!m_spectrumModel)
     {
       // first pak, record SpectrumModel
       m_spectrumModel = txParams->psd->GetSpectrumModel ();
@@ -149,7 +149,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
               double rxAntennaGain = 0;
               double propagationGainDb = 0;
               double pathLossDb = 0;
-              if (rxParams->txAntenna != 0)
+              if (rxParams->txAntenna)
                 {
                   Angles txAngles (receiverMobility->GetPosition (), senderMobility->GetPosition ());
                   txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
@@ -157,7 +157,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   pathLossDb -= txAntennaGain;
                 }
               Ptr<AntennaModel> rxAntenna = DynamicCast<AntennaModel>((*rxPhyIterator)->GetAntenna ());
-              if (rxAntenna != 0)
+              if (rxAntenna)
                 {
                   Angles rxAngles (senderMobility->GetPosition (), receiverMobility->GetPosition ());
                   rxAntennaGain = rxAntenna->GetGainDb (rxAngles);

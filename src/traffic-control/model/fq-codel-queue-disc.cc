@@ -382,7 +382,7 @@ FqCoDelQueueDisc::DoDequeue (void)
         {
           NS_LOG_DEBUG ("Dequeued packet " << item->GetPacket ());
         }
-    } while (item == 0);
+    } while (!item);
 
   flow->IncreaseDeficit (item->GetSize () * -1);
 

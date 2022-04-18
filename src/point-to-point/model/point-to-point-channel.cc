@@ -67,7 +67,7 @@ PointToPointChannel::Attach (Ptr<PointToPointNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
   NS_ASSERT_MSG (m_nDevices < N_DEVICES, "Only two devices permitted");
-  NS_ASSERT (device != 0);
+  NS_ASSERT (device);
 
   m_link[m_nDevices++].m_src = device;
 //

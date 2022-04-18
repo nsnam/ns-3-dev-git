@@ -91,7 +91,7 @@ QueueDiscFactory::CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDis
                        "Cannot create a queue disc class with no attached queue disc");
 
       uint16_t handle = m_classIdChildHandleMap[i];
-      NS_ABORT_MSG_IF (handle >= queueDiscs.size () || queueDiscs[handle] == 0,
+      NS_ABORT_MSG_IF (handle >= queueDiscs.size () || !queueDiscs[handle],
                        "A queue disc with handle " << handle << " has not been created yet");
 
       m_queueDiscClassesFactory[i].Set ("QueueDisc", PointerValue (queueDiscs[handle]));
@@ -207,7 +207,7 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
   // A TrafficControlLayer object is aggregated by the InternetStackHelper, but check
   // anyway because a queue disc has no effect without a TrafficControlLayer object
   Ptr<TrafficControlLayer> tc = d->GetNode ()->GetObject<TrafficControlLayer> ();
-  NS_ASSERT (tc != 0);
+  NS_ASSERT (tc);
 
   // Start from an empty vector of queue discs
   m_queueDiscs.clear ();
@@ -261,7 +261,7 @@ void
 TrafficControlHelper::Uninstall (Ptr<NetDevice> d)
 {
   Ptr<TrafficControlLayer> tc = d->GetNode ()->GetObject<TrafficControlLayer> ();
-  NS_ASSERT (tc != 0);
+  NS_ASSERT (tc);
 
   tc->DeleteRootQueueDiscOnDevice (d);
   // remove the queue limits objects installed on the device transmission queues

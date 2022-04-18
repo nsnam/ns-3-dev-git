@@ -79,7 +79,7 @@ ObjectFactory::DoSet (const std::string &name, const AttributeValue &value)
       return;
     }
   Ptr<AttributeValue> v = info.checker->CreateValidValue (value);
-  if (v == 0)
+  if (!v)
     {
       NS_FATAL_ERROR ("Invalid value for attribute set (" << name << ") on " << m_tid.GetName ());
       return;

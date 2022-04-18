@@ -2351,9 +2351,9 @@ TestUlOfdmaPhyTransmission::CheckOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, Wi
 void
 TestUlOfdmaPhyTransmission::VerifyEventsCleared (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), 0, "m_currentEvent for AP was not cleared");
-  NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), 0, "m_currentEvent for STA 1 was not cleared");
-  NS_TEST_ASSERT_MSG_EQ (m_phySta2->GetCurrentEvent (), 0, "m_currentEvent for STA 2 was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), nullptr, "m_currentEvent for AP was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), nullptr, "m_currentEvent for STA 1 was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phySta2->GetCurrentEvent (), nullptr, "m_currentEvent for STA 2 was not cleared");
 }
 
 void
@@ -3348,9 +3348,9 @@ TestPhyPaddingExclusion::CheckRxFromSta2 (uint32_t expectedSuccess, uint32_t exp
 void
 TestPhyPaddingExclusion::VerifyEventsCleared (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), 0, "m_currentEvent for AP was not cleared");
-  NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), 0, "m_currentEvent for STA 1 was not cleared");
-  NS_TEST_ASSERT_MSG_EQ (m_phySta2->GetCurrentEvent (), 0, "m_currentEvent for STA 2 was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), nullptr, "m_currentEvent for AP was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phySta1->GetCurrentEvent (), nullptr, "m_currentEvent for STA 1 was not cleared");
+  NS_TEST_ASSERT_MSG_EQ (m_phySta2->GetCurrentEvent (), nullptr, "m_currentEvent for STA 2 was not cleared");
 }
 
 void

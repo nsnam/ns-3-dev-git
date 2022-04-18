@@ -145,7 +145,7 @@ void
 SixlowpanFragmentationTest::StartServer (Ptr<Node> serverNode)
 {
 
-  if (m_socketServer == 0)
+  if (!m_socketServer)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socketServer = Socket::CreateSocket (serverNode, tid);
@@ -178,7 +178,7 @@ void
 SixlowpanFragmentationTest::StartClient (Ptr<Node> clientNode)
 {
 
-  if (m_socketClient == 0)
+  if (!m_socketClient)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socketClient = Socket::CreateSocket (clientNode, tid);

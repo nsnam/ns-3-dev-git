@@ -58,7 +58,7 @@ ItuR1238PropagationLossModel::GetLoss (Ptr<MobilityModel> a1, Ptr<MobilityModel>
   NS_LOG_FUNCTION (this << a1 << b1);
   Ptr<MobilityBuildingInfo> a = a1->GetObject<MobilityBuildingInfo> ();
   Ptr<MobilityBuildingInfo> b = b1->GetObject<MobilityBuildingInfo> ();
-  NS_ASSERT_MSG ((a != 0) && (b != 0), "ItuR1238PropagationLossModel only works with MobilityBuildingInfo");
+  NS_ASSERT_MSG (a && b, "ItuR1238PropagationLossModel only works with MobilityBuildingInfo");
   NS_ASSERT_MSG (a->GetBuilding ()->GetId () == b->GetBuilding ()->GetId (), "ITU-R 1238 applies only to nodes that are in the same building");
   double N = 0.0;
   int n = std::abs (a->GetFloorNumber () - b->GetFloorNumber ());

@@ -58,7 +58,7 @@ BuildingsChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   NS_LOG_FUNCTION (this);
   Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
   Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
-  NS_ASSERT_MSG ((a1 != nullptr) && (b1 != nullptr),
+  NS_ASSERT_MSG (a1 && b1,
                  "BuildingsChannelConditionModel only works with MobilityBuildingInfo");
 
   Ptr<ChannelCondition> cond = CreateObject<ChannelCondition> ();

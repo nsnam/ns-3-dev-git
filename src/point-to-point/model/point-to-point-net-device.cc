@@ -276,13 +276,13 @@ PointToPointNetDevice::TransmitComplete (void)
   NS_ASSERT_MSG (m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
 
-  NS_ASSERT_MSG (m_currentPkt != 0, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
+  NS_ASSERT_MSG (m_currentPkt, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
 
   m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
   Ptr<Packet> p = m_queue->Dequeue ();
-  if (p == 0)
+  if (!p)
     {
       NS_LOG_LOGIC ("No pending packets in device queue after tx complete");
       return;

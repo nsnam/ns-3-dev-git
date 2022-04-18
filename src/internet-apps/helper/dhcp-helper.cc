@@ -76,7 +76,7 @@ ApplicationContainer DhcpHelper::InstallDhcpClient (NetDeviceContainer netDevice
 Ptr<Application> DhcpHelper::InstallDhcpClientPriv (Ptr<NetDevice> netDevice) const
 {
   Ptr<Node> node = netDevice->GetNode ();
-  NS_ASSERT_MSG (node != 0, "DhcpClientHelper: NetDevice is not not associated with any node -> fail");
+  NS_ASSERT_MSG (node, "DhcpClientHelper: NetDevice is not not associated with any node -> fail");
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT_MSG (ipv4, "DhcpHelper: NetDevice is associated"
@@ -97,7 +97,7 @@ Ptr<Application> DhcpHelper::InstallDhcpClientPriv (Ptr<NetDevice> netDevice) co
   // control layer has been aggregated, if this is not
   // a loopback interface, and there is no queue disc installed already
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-  if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
+  if (tc && !DynamicCast<LoopbackNetDevice> (netDevice) && !tc->GetRootQueueDiscOnDevice (netDevice))
     {
       Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
       // It is useless to install a queue disc if the device has no
@@ -133,7 +133,7 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
   m_serverFactory.Set ("Gateway", Ipv4AddressValue (gateway));
 
   Ptr<Node> node = netDevice->GetNode ();
-  NS_ASSERT_MSG (node != 0, "DhcpHelper: NetDevice is not not associated with any node -> fail");
+  NS_ASSERT_MSG (node, "DhcpHelper: NetDevice is not not associated with any node -> fail");
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT_MSG (ipv4, "DhcpHelper: NetDevice is associated"
@@ -156,7 +156,7 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
   // control layer has been aggregated, if this is not
   // a loopback interface, and there is no queue disc installed already
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-  if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
+  if (tc && !DynamicCast<LoopbackNetDevice> (netDevice) && !tc->GetRootQueueDiscOnDevice (netDevice))
     {
       Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
       // It is useless to install a queue disc if the device has no
@@ -194,7 +194,7 @@ Ipv4InterfaceContainer DhcpHelper::InstallFixedAddress (Ptr<NetDevice> netDevice
   Ipv4InterfaceContainer retval;
 
   Ptr<Node> node = netDevice->GetNode ();
-  NS_ASSERT_MSG (node != 0, "DhcpHelper: NetDevice is not not associated with any node -> fail");
+  NS_ASSERT_MSG (node, "DhcpHelper: NetDevice is not not associated with any node -> fail");
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT_MSG (ipv4, "DhcpHelper: NetDevice is associated"
@@ -218,7 +218,7 @@ Ipv4InterfaceContainer DhcpHelper::InstallFixedAddress (Ptr<NetDevice> netDevice
   // control layer has been aggregated, if this is not
   // a loopback interface, and there is no queue disc installed already
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-  if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
+  if (tc && !DynamicCast<LoopbackNetDevice> (netDevice) && !tc->GetRootQueueDiscOnDevice (netDevice))
     {
       Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
       // It is useless to install a queue disc if the device has no

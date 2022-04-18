@@ -573,7 +573,7 @@ GlobalRouteManagerImpl::DeleteGlobalRoutes ()
     {
       Ptr<Node> node = *i;
       Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-      if (router == 0)
+      if (!router)
         {
           continue;
         }
@@ -1575,7 +1575,7 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
 //
       Ptr<GlobalRouter> rtr = node->GetObject<GlobalRouter> ();
 
-      if (rtr == 0)
+      if (!rtr)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " << node->GetId ());
           continue;
@@ -1626,7 +1626,7 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
 // which the packets should be send for forwarding.
 //
           Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-          if (router == 0)
+          if (!router)
             {
               continue;
             }
@@ -1745,7 +1745,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
       Ptr<GlobalRouter> rtr =
         node->GetObject<GlobalRouter> ();
 
-      if (rtr == 0)
+      if (!rtr)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " <<
                         node->GetId ());
@@ -1797,7 +1797,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 //
 
           Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-          if (router == 0)
+          if (!router)
             {
               continue;
             }
@@ -1868,7 +1868,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // If the node doesn't have a GlobalRouter interface it can't be the one
 // we're interested in.
 //
-      if (rtr == 0)
+      if (!rtr)
         {
           continue;
         }
@@ -1960,7 +1960,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
       Ptr<GlobalRouter> rtr =
         node->GetObject<GlobalRouter> ();
 
-      if (rtr == 0)
+      if (!rtr)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " <<
                         node->GetId ());
@@ -2031,7 +2031,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // which the packets should be send for forwarding.
 //
               Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-              if (router == 0)
+              if (!router)
                 {
                   continue;
                 }
@@ -2105,7 +2105,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
       Ptr<GlobalRouter> rtr =
         node->GetObject<GlobalRouter> ();
 
-      if (rtr == 0)
+      if (!rtr)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " <<
                         node->GetId ());
@@ -2144,7 +2144,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
           Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
-          if (router == 0)
+          if (!router)
             {
               continue;
             }

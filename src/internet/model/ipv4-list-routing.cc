@@ -134,7 +134,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   bool retVal = false;
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv4->GetObject<Node> ()->GetId ());
 
-  NS_ASSERT (m_ipv4 != 0);
+  NS_ASSERT (m_ipv4);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
@@ -238,7 +238,7 @@ void
 Ipv4ListRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION (this << ipv4);
-  NS_ASSERT (m_ipv4 == 0);
+  NS_ASSERT (!m_ipv4);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
          m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
@@ -255,7 +255,7 @@ Ipv4ListRouting::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, i
   NS_LOG_FUNCTION (this << routingProtocol->GetInstanceTypeId () << priority);
   m_routingProtocols.push_back (std::make_pair (priority, routingProtocol));
   m_routingProtocols.sort ( Compare );
-  if (m_ipv4 != 0)
+  if (m_ipv4)
     {
       routingProtocol->SetIpv4 (m_ipv4);
     }

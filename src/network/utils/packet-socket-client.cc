@@ -124,7 +124,7 @@ PacketSocketClient::StartApplication (void)
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_peerAddressSet, "Peer address not set");
 
-  if (m_socket == 0)
+  if (!m_socket)
     {
       TypeId tid = TypeId::LookupByName ("ns3::PacketSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);

@@ -262,9 +262,9 @@ LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_IF (m_netDevice == nullptr, "LteEnbDevice is not available in LteEnbPhy");
+  NS_ABORT_MSG_IF (!m_netDevice, "LteEnbDevice is not available in LteEnbPhy");
   Ptr<Node> node = m_netDevice->GetNode ();
-  NS_ABORT_MSG_IF (node == nullptr, "Node is not available in the LteNetDevice of LteEnbPhy");
+  NS_ABORT_MSG_IF (!node, "Node is not available in the LteNetDevice of LteEnbPhy");
   uint32_t nodeId = node->GetId ();
 
   //ScheduleWithContext() is needed here to set context for logs,

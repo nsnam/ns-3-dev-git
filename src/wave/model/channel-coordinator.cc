@@ -299,7 +299,7 @@ void
 ChannelCoordinator::RegisterListener (Ptr<ChannelCoordinationListener> listener)
 {
   NS_LOG_FUNCTION (this << listener);
-  NS_ASSERT (listener != 0);
+  NS_ASSERT (listener);
   m_listeners.push_back (listener);
 }
 
@@ -307,7 +307,7 @@ void
 ChannelCoordinator::UnregisterListener (Ptr<ChannelCoordinationListener> listener)
 {
   NS_LOG_FUNCTION (this << listener);
-  NS_ASSERT (listener != 0);
+  NS_ASSERT (listener);
   for (ListenersI i = m_listeners.begin (); i != m_listeners.end (); ++i)
     {
       if ((*i) == listener)

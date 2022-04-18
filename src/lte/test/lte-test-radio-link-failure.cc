@@ -419,11 +419,11 @@ LteRadioLinkFailureTestCase::CheckConnected (Ptr<NetDevice> ueDevice, NetDeviceC
         }
     }
 
-  NS_TEST_ASSERT_MSG_NE (enbLteDevice, 0, "LTE eNB device not found");
+  NS_TEST_ASSERT_MSG_NE (enbLteDevice, nullptr, "LTE eNB device not found");
   Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
   Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-  NS_TEST_ASSERT_MSG_NE (ueManager, 0, "RNTI " << rnti << " not found in eNB");
+  NS_TEST_ASSERT_MSG_NE (ueManager, nullptr, "RNTI " << rnti << " not found in eNB");
 
   UeManager::State ueManagerState = ueManager->GetState ();
   NS_TEST_ASSERT_MSG_EQ (ueManagerState, UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
@@ -511,7 +511,7 @@ LteRadioLinkFailureTestCase::CheckUeExistAtEnb (uint16_t rnti, Ptr<NetDevice> en
 {
   NS_LOG_FUNCTION (this << rnti);
   Ptr<LteEnbNetDevice> enbLteDevice = DynamicCast<LteEnbNetDevice> (enbDevice);
-  NS_ABORT_MSG_IF (enbLteDevice == nullptr, "LTE eNB device not found");
+  NS_ABORT_MSG_IF (!enbLteDevice, "LTE eNB device not found");
   Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetRrc ();
   bool ueManagerFound = enbRrc->HasUeManager (rnti);
   return ueManagerFound;

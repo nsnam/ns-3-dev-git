@@ -546,7 +546,7 @@ ApWifiMac::GetMuEdcaParameterSet (void) const
   if (GetHeSupported ())
     {
       Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
-      NS_ASSERT (heConfiguration != 0);
+      NS_ASSERT (heConfiguration);
 
       muEdcaParameters.SetQosInfo (0);
 

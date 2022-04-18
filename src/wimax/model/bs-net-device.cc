@@ -661,7 +661,7 @@ BaseStationNetDevice::DoSend (Ptr<Packet> packet,
 bool
 BaseStationNetDevice::Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, Ptr<WimaxConnection> connection)
 {
-  NS_ASSERT_MSG (connection != 0,
+  NS_ASSERT_MSG (connection,
                  "BS: Can not enqueue packet on the selected connection: the connection is not initialized");
 
   GenericMacHeader hdr;
@@ -1163,7 +1163,7 @@ BaseStationNetDevice::GetConnection (Cid cid)
       connection = GetConnectionManager ()->GetConnection (cid);
     }
 
-  NS_ASSERT_MSG (connection != 0, "BS: Invalid connection=0");
+  NS_ASSERT_MSG (connection, "BS: Invalid connection=0");
   return connection;
 }
 

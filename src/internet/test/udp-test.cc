@@ -259,7 +259,7 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 void UdpSocketImplTest::SentPkt (Ptr<const QueueDiscItem> item)
 {
   Ptr<const Ipv4QueueDiscItem> ipv4Item = DynamicCast<const Ipv4QueueDiscItem> (item);
-  NS_TEST_EXPECT_MSG_NE (ipv4Item, 0, "no IPv4 packet");
+  NS_TEST_EXPECT_MSG_NE (ipv4Item, nullptr, "no IPv4 packet");
   Address addr;
   m_sentPacket = Create<Ipv4QueueDiscItem> (ipv4Item->GetPacket ()->Copy (), addr, 0, ipv4Item->GetHeader ());
 }

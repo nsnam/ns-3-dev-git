@@ -478,7 +478,7 @@ Object::GetObject () const
     }
   // if the cast does not work, we try to do a full type check.
   Ptr<Object> found = DoGetObject (T::GetTypeId ());
-  if (found != 0)
+  if (found)
     {
       return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
@@ -504,7 +504,7 @@ Ptr<T>
 Object::GetObject (TypeId tid) const
 {
   Ptr<Object> found = DoGetObject (tid);
-  if (found != 0)
+  if (found)
     {
       return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }

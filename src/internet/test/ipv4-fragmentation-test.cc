@@ -199,7 +199,7 @@ void
 Ipv4FragmentationTest::StartServer (Ptr<Node> ServerNode)
 {
 
-  if (m_socketServer == 0)
+  if (!m_socketServer)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socketServer = Socket::CreateSocket (ServerNode, tid);
@@ -234,7 +234,7 @@ void
 Ipv4FragmentationTest::StartClient (Ptr<Node> ClientNode)
 {
 
-  if (m_socketClient == 0)
+  if (!m_socketClient)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socketClient = Socket::CreateSocket (ClientNode, tid);

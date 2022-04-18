@@ -72,11 +72,11 @@ Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 {
   NS_LOG_FUNCTION (node << tid);
   Ptr<Socket> s;
-  NS_ASSERT (node != 0);
+  NS_ASSERT (node);
   Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
-  NS_ASSERT (socketFactory != 0);
+  NS_ASSERT (socketFactory);
   s = socketFactory->CreateSocket ();
-  NS_ASSERT (s != 0);
+  NS_ASSERT (s);
   return s;
 }
 
@@ -183,7 +183,7 @@ Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << &buf << size << flags);
   Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
-  if (p == 0)
+  if (!p)
     {
       return 0;
     }
@@ -204,7 +204,7 @@ Socket::RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
 {
   NS_LOG_FUNCTION (this << &buf << size << flags << &fromAddress);
   Ptr<Packet> p = RecvFrom (size, flags, fromAddress);
-  if (p == 0)
+  if (!p)
     {
       return 0;
     }
@@ -330,7 +330,7 @@ void
 Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (this << netdevice);
-  if (netdevice != 0)
+  if (netdevice)
     {
       bool found = false;
       for (uint32_t i = 0; i < GetNode ()->GetNDevices (); i++)

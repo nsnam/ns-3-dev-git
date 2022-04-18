@@ -154,7 +154,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       NS_ASSERT ((*i)->IsHost ());
       if ((*i)->GetDest () == dest)
         {
-          if (oif != 0)
+          if (oif)
             {
               if (oif != m_ipv4->GetNetDevice ((*i)->GetInterface ()))
                 {
@@ -177,7 +177,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
           Ipv4Address entry = (*j)->GetDestNetwork ();
           if (mask.IsMatch (dest, entry))
             {
-              if (oif != 0)
+              if (oif)
                 {
                   if (oif != m_ipv4->GetNetDevice ((*j)->GetInterface ()))
                     {
@@ -201,7 +201,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
           if (mask.IsMatch (dest, entry))
             {
               NS_LOG_LOGIC ("Found external route" << *k);
-              if (oif != 0)
+              if (oif)
                 {
                   if (oif != m_ipv4->GetNetDevice ((*k)->GetInterface ()))
                     {
@@ -525,7 +525,7 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination- looking up global route");
   Ptr<Ipv4Route> rtentry = LookupGlobal (header.GetDestination ());
-  if (rtentry != 0)
+  if (rtentry)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
       ucb (rtentry, p, header);
@@ -590,7 +590,7 @@ void
 Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION (this << ipv4);
-  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
+  NS_ASSERT (!m_ipv4 && ipv4);
   m_ipv4 = ipv4;
 }
 

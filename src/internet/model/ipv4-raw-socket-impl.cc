@@ -151,7 +151,7 @@ Ipv4RawSocketImpl::Close (void)
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-  if (ipv4 != 0)
+  if (ipv4)
     {
       ipv4->DeleteRawSocket (this);
     }
@@ -272,7 +272,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
         {
           boundNetDevice = ipv4->GetNetDevice (0);
         }
-      if (boundNetDevice == 0)
+      if (!boundNetDevice)
         {
           NS_LOG_DEBUG ("dropped because no outgoing route.");
           return -1;
@@ -335,7 +335,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
 
       // TBD-- we could cache the route and just check its validity
       route = ipv4->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_);
-      if (route != 0)
+      if (route)
         {
           NS_LOG_LOGIC ("Route exists");
           uint32_t pktSize = p->GetSize ();

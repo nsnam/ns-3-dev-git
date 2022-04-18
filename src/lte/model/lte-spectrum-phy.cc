@@ -640,7 +640,7 @@ LteSpectrumPhy::EndTxDlCtrl ()
   NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == TX_DL_CTRL);
-  NS_ASSERT (m_txPacketBurst == 0);
+  NS_ASSERT (!m_txPacketBurst);
   ChangeState (IDLE);
 }
 
@@ -651,7 +651,7 @@ LteSpectrumPhy::EndTxUlSrs ()
   NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == TX_UL_SRS);
-  NS_ASSERT (m_txPacketBurst == 0);
+  NS_ASSERT (!m_txPacketBurst);
   ChangeState (IDLE);
 }
 
@@ -672,17 +672,17 @@ LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   Ptr<LteSpectrumSignalParametersDataFrame> lteDataRxParams = DynamicCast<LteSpectrumSignalParametersDataFrame> (spectrumRxParams);
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlCtrlRxParams = DynamicCast<LteSpectrumSignalParametersDlCtrlFrame> (spectrumRxParams);
   Ptr<LteSpectrumSignalParametersUlSrsFrame> lteUlSrsRxParams = DynamicCast<LteSpectrumSignalParametersUlSrsFrame> (spectrumRxParams);
-  if (lteDataRxParams != 0)
+  if (lteDataRxParams)
     {
       m_interferenceData->AddSignal (rxPsd, duration);
       StartRxData (lteDataRxParams);
     }
-  else if (lteDlCtrlRxParams != 0)
+  else if (lteDlCtrlRxParams)
     {
       m_interferenceCtrl->AddSignal (rxPsd, duration);
       StartRxDlCtrl (lteDlCtrlRxParams);
     }
-  else if (lteUlSrsRxParams != 0)
+  else if (lteUlSrsRxParams)
     {
       m_interferenceCtrl->AddSignal (rxPsd, duration);
       StartRxUlSrs (lteUlSrsRxParams);
@@ -782,7 +782,7 @@ LteSpectrumPhy::StartRxDlCtrl (Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDl
   // for the CellId which is reported in the
   // LteSpectrumSignalParametersDlCtrlFrame
   uint16_t cellId;
-  NS_ASSERT (lteDlCtrlRxParams != 0);
+  NS_ASSERT (lteDlCtrlRxParams);
   cellId = lteDlCtrlRxParams->cellId;
 
   switch (m_state)

@@ -74,7 +74,7 @@ GroupMobilityHelper::SetReferencePositionAllocator (std::string type,
   pos.Set (n8, v8);
   pos.Set (n9, v9);
   m_referencePosition = pos.Create ()->GetObject<PositionAllocator> ();
-  NS_ABORT_MSG_IF (m_referencePosition == nullptr, "Unable to create allocator from TypeId " << type);
+  NS_ABORT_MSG_IF (!m_referencePosition, "Unable to create allocator from TypeId " << type);
 }
 
 void
@@ -107,7 +107,7 @@ GroupMobilityHelper::SetMemberPositionAllocator (std::string type,
   pos.Set (n8, v8);
   pos.Set (n9, v9);
   m_memberPosition = pos.Create ()->GetObject<PositionAllocator> ();
-  NS_ABORT_MSG_IF (m_memberPosition == nullptr, "Unable to create allocator from TypeId " << type);
+  NS_ABORT_MSG_IF (!m_memberPosition, "Unable to create allocator from TypeId " << type);
 }
 
 void
@@ -141,7 +141,7 @@ GroupMobilityHelper::SetReferenceMobilityModel (std::string type,
   mob.Set (n8, v8);
   mob.Set (n9, v9);
   m_referenceMobility = mob.Create ()->GetObject<MobilityModel> ();
-  NS_ABORT_MSG_IF (m_referenceMobility == nullptr, "Unable to create mobility from TypeId " << type);
+  NS_ABORT_MSG_IF (!m_referenceMobility, "Unable to create mobility from TypeId " << type);
 }
 
 void
@@ -172,8 +172,8 @@ GroupMobilityHelper::SetMemberMobilityModel (std::string type,
 void
 GroupMobilityHelper::Install (Ptr<Node> node)
 {
-  NS_ABORT_MSG_IF (node->GetObject<MobilityModel> () != nullptr, "Mobility model already installed");
-  NS_ABORT_MSG_IF (m_referenceMobility == nullptr, "Reference mobility model is empty");
+  NS_ABORT_MSG_IF (node->GetObject<MobilityModel> (), "Mobility model already installed");
+  NS_ABORT_MSG_IF (!m_referenceMobility, "Reference mobility model is empty");
   NS_ABORT_MSG_UNLESS (m_memberMobilityFactory.IsTypeIdSet (), "Member mobility factory is unset");
   if (m_referencePosition && !m_referencePositionSet)
     {
@@ -184,7 +184,7 @@ GroupMobilityHelper::Install (Ptr<Node> node)
   Ptr<HierarchicalMobilityModel> hierarchical = CreateObject<HierarchicalMobilityModel> ();
   hierarchical->SetParent (m_referenceMobility);
   Ptr<MobilityModel> child = m_memberMobilityFactory.Create ()->GetObject<MobilityModel> ();
-  NS_ABORT_MSG_IF (child == nullptr, "Member mobility factory did not produce a MobilityModel");
+  NS_ABORT_MSG_IF (!child, "Member mobility factory did not produce a MobilityModel");
   if (m_memberPosition)
     {
       Vector position = m_memberPosition->GetNext ();

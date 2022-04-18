@@ -236,12 +236,12 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
   uint32_t id (0);
   iss >> id;
   Ptr<Object> object = store.Get (id);
-  if (object == 0)
+  if (!object)
     {
       return 0;
     }
   Ptr<ConstantVelocityMobilityModel> model = object->GetObject<ConstantVelocityMobilityModel> ();
-  if (model == 0)
+  if (!model)
     {
       model = CreateObject<ConstantVelocityMobilityModel> ();
       object->AggregateObject (model);
@@ -301,7 +301,7 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
           Ptr<ConstantVelocityMobilityModel> model = GetMobilityModel (nodeId,store);
 
           // if model not exists, continue
-          if (model == 0)
+          if (!model)
             {
               NS_LOG_ERROR ("Unknown node ID (corrupted file?): " << nodeId << "\n");
               continue;
@@ -372,7 +372,7 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
           Ptr<ConstantVelocityMobilityModel> model = GetMobilityModel (nodeId,store);
 
           // if model not exists, continue
-          if (model == 0)
+          if (!model)
             {
               NS_LOG_ERROR ("Unknown node ID (corrupted file?): " << nodeId << "\n");
               continue;

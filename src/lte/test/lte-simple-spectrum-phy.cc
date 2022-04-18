@@ -136,7 +136,7 @@ LteSimpleSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   // the device might start RX only if the signal is of a type
   // understood by this device - in this case, an LTE signal.
   Ptr<LteSpectrumSignalParametersDataFrame> lteDataRxParams = DynamicCast<LteSpectrumSignalParametersDataFrame> (spectrumRxParams);
-  if (lteDataRxParams != 0)
+  if (lteDataRxParams)
     {
       if ( m_cellId > 0 )
         {

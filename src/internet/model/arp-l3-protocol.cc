@@ -113,12 +113,12 @@ void
 ArpL3Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node>node = this->GetObject<Node> ();
       //verify that it's a valid node and that
       //the node was not set before
-      if (node != 0)
+      if (node)
         {
           this->SetNode (node);
         }
@@ -244,7 +244,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
                   Address from_mac = arp.GetSourceHardwareAddress ();
                   entry->MarkAlive (from_mac);
                   ArpCache::Ipv4PayloadHeaderPair pending = entry->DequeuePending ();
-                  while (pending.first != 0)
+                  while (pending.first)
                     {
                       cache->GetInterface ()->Send (pending.first, pending.second,
                                                     arp.GetSourceIpv4Address ());
@@ -369,14 +369,14 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   // need to pick a source address; use routing implementation to select
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ptr<NetDevice> device = cache->GetDevice ();
-  NS_ASSERT (device != 0);
+  NS_ASSERT (device);
   Ptr<Packet> packet = Create<Packet> ();
   Ipv4Address source = ipv4->SelectSourceAddress (device,  to, Ipv4InterfaceAddress::GLOBAL);
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
                 " || src: " << device->GetAddress () << " / " << source <<
                 " || dst: " << device->GetBroadcast () << " / " << to);
   arp.SetRequest (device->GetAddress (), source, device->GetBroadcast (), to);
-  NS_ASSERT (m_tc != 0);
+  NS_ASSERT (m_tc);
   m_tc->Send (device, Create<ArpQueueDiscItem> (packet, device->GetBroadcast (), PROT_NUMBER, arp));
 }
 
@@ -391,7 +391,7 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Ad
                 " || dst: " << toMac << " / " << toIp);
   arp.SetReply (cache->GetDevice ()->GetAddress (), myIp, toMac, toIp);
   Ptr<Packet> packet = Create<Packet> ();
-  NS_ASSERT (m_tc != 0);
+  NS_ASSERT (m_tc);
   m_tc->Send (cache->GetDevice (), Create<ArpQueueDiscItem> (packet, toMac, PROT_NUMBER, arp));
 }
 

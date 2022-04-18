@@ -52,7 +52,7 @@ AttributeDefaultIterator::Iterate (void)
               continue;
             }
           //No accessor, go to next attribute
-          if (info.accessor == 0)
+          if (!info.accessor)
             {
               continue;
             }
@@ -61,30 +61,30 @@ AttributeDefaultIterator::Iterate (void)
               //skip this attribute it doesn't have an setter
               continue;
             }
-          if (info.checker == 0)
+          if (!info.checker)
             {
               //skip, it doesn't have a checker
               continue;
             }
-          if (info.initialValue == 0)
+          if (!info.initialValue)
             {
               //No value, check next attribute
               continue;
             }
           Ptr<const ObjectPtrContainerValue> vector = DynamicCast<const ObjectPtrContainerValue> (info.initialValue);
-          if (vector != 0)
+          if (vector)
             {
               //a vector value, won't take it
               continue;
             }
           Ptr<const PointerValue> pointer = DynamicCast<const PointerValue> (info.initialValue);
-          if (pointer != 0)
+          if (pointer)
             {
               //pointer value, won't take it
               continue;
             }
           Ptr<const CallbackValue> callback = DynamicCast<const CallbackValue> (info.initialValue);
-          if (callback != 0)
+          if (callback)
             {
               //callback value, won't take it
               continue;

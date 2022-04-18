@@ -132,12 +132,12 @@ UanNetDevice::GetTypeId ()
 void
 UanNetDevice::SetMac (Ptr<UanMac> mac)
 {
-  if (mac != 0)
+  if (mac)
     {
       m_mac = mac;
       NS_LOG_DEBUG ("Set MAC");
 
-      if (m_phy != 0)
+      if (m_phy)
         {
           m_phy->SetMac (mac);
           m_mac->AttachPhy (m_phy);
@@ -151,18 +151,18 @@ UanNetDevice::SetMac (Ptr<UanMac> mac)
 void
 UanNetDevice::SetPhy (Ptr<UanPhy> phy)
 {
-  if (phy != 0)
+  if (phy)
     {
       m_phy = phy;
       m_phy->SetDevice (Ptr<UanNetDevice> (this));
       NS_LOG_DEBUG ("Set PHY");
-      if (m_mac != 0)
+      if (m_mac)
         {
           m_mac->AttachPhy (phy);
           m_phy->SetMac (m_mac);
           NS_LOG_DEBUG ("Attached PHY to MAC");
         }
-      if (m_trans != 0)
+      if (m_trans)
         {
           m_phy->SetTransducer (m_trans);
           NS_LOG_DEBUG ("Added PHY to trans");
@@ -174,11 +174,11 @@ UanNetDevice::SetPhy (Ptr<UanPhy> phy)
 void
 UanNetDevice::SetChannel (Ptr<UanChannel> channel)
 {
-  if (channel != 0)
+  if (channel)
     {
       m_channel = channel;
       NS_LOG_DEBUG ("Set CHANNEL");
-      if (m_trans != 0)
+      if (m_trans)
         {
 
           m_channel->AddDevice (this, m_trans);
@@ -186,7 +186,7 @@ UanNetDevice::SetChannel (Ptr<UanChannel> channel)
           m_trans->SetChannel (m_channel);
           NS_LOG_DEBUG ("Set Transducer channel");
         }
-      if (m_phy != 0 )
+      if (m_phy)
         {
           m_phy->SetChannel (channel);
         }
@@ -253,7 +253,7 @@ UanNetDevice::GetMtu () const
 bool
 UanNetDevice::IsLinkUp () const
 {
-  return  (m_linkup && (m_phy != 0));
+  return  (m_linkup && m_phy);
 }
 
 bool
@@ -359,17 +359,17 @@ void
 UanNetDevice::SetTransducer (Ptr<UanTransducer> trans)
 {
 
-  if (trans != 0)
+  if (trans)
     {
       m_trans = trans;
       NS_LOG_DEBUG ("Set Transducer");
-      if (m_phy != 0)
+      if (m_phy)
         {
           m_phy->SetTransducer (m_trans);
           NS_LOG_DEBUG ("Attached Phy to transducer");
         }
 
-      if (m_channel != 0)
+      if (m_channel)
         {
           m_channel->AddDevice (this, m_trans);
           m_trans->SetChannel (m_channel);
@@ -402,7 +402,7 @@ UanNetDevice::SupportsSendFrom (void) const
 void
 UanNetDevice::SetAddress (Address address)
 {
-  NS_ASSERT_MSG (NULL != m_mac, "Tried to set MAC address with no MAC");
+  NS_ASSERT_MSG (m_mac, "Tried to set MAC address with no MAC");
   m_mac->SetAddress (Mac8Address::ConvertFrom (address));
 }
 

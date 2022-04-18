@@ -42,7 +42,7 @@ uint32_t Ipv4QueueDiscItem::GetSize (void) const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> p = GetPacket ();
-  NS_ASSERT (p != 0);
+  NS_ASSERT (p);
   uint32_t ret = p->GetSize ();
   if (!m_headerAdded)
     {
@@ -63,7 +63,7 @@ void Ipv4QueueDiscItem::AddHeader (void)
 
   NS_ASSERT_MSG (!m_headerAdded, "The header has been already added to the packet");
   Ptr<Packet> p = GetPacket ();
-  NS_ASSERT (p != 0);
+  NS_ASSERT (p);
   p->AddHeader (m_header);
   m_headerAdded = true;
 }

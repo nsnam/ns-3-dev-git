@@ -156,7 +156,7 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhyState state)
   Ptr<WifiRadioEnergyModel> devModel =
     DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
-  if ((devModel == 0))
+  if (!devModel)
     {
       std::cerr << "NULL pointer to device model!." << std::endl;
       return true;

@@ -195,7 +195,7 @@ EpcS1uDlTestCase::DoRun ()
 
       // Plug test RRC entity
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
-      NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
+      NS_ASSERT_MSG (enbApp, "cannot retrieve EpcEnbApplication");
       Ptr<EpcTestRrc> rrc = CreateObject<EpcTestRrc> ();
       enb->AggregateObject (rrc);
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());

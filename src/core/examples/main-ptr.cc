@@ -102,7 +102,7 @@ int main (int argc, char *argv[])
     Ptr<PtrExample> p = CreateObject<PtrExample> ();
     p->Method ();
     Ptr<PtrExample> prev = StorePtr (p);
-    NS_ASSERT (prev == 0);
+    NS_ASSERT (!prev);
   }
 
   {

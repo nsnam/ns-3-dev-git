@@ -94,9 +94,9 @@ UdpL4Protocol::NotifyNewAggregate ()
   Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
   Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
 
-  if (m_node == 0)
+  if (!m_node)
     {
-      if ((node != 0) && (ipv4 != 0 || ipv6 != 0))
+      if (node && (ipv4 || ipv6) )
         {
           this->SetNode (node);
           Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
@@ -110,12 +110,12 @@ UdpL4Protocol::NotifyNewAggregate ()
   // need to keep track of whether we are connected to an IPv4 or
   // IPv6 lower layer and call the appropriate one.
 
-  if (ipv4 != 0 && m_downTarget.IsNull())
+  if (ipv4 && m_downTarget.IsNull())
     {
       ipv4->Insert (this);
       this->SetDownTarget (MakeCallback (&Ipv4::Send, ipv4));
     }
-  if (ipv6 != 0 && m_downTarget6.IsNull())
+  if (ipv6 && m_downTarget6.IsNull())
     {
       ipv6->Insert (this);
       this->SetDownTarget6 (MakeCallback (&Ipv6::Send, ipv6));
@@ -347,7 +347,7 @@ UdpL4Protocol::Receive (Ptr<Packet> packet,
                          header.GetSource (), udpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
-      if (this->GetObject<Ipv6L3Protocol> () != 0)
+      if (this->GetObject<Ipv6L3Protocol> ())
         {
           NS_LOG_LOGIC ("  No Ipv4 endpoints matched on UdpL4Protocol, trying Ipv6 "<<this);
           Ptr<Ipv6Interface> fakeInterface;

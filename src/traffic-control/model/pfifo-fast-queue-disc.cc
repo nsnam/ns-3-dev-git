@@ -106,7 +106,7 @@ PfifoFastQueueDisc::DoDequeue (void)
 
   for (uint32_t i = 0; i < GetNInternalQueues (); i++)
     {
-      if ((item = GetInternalQueue (i)->Dequeue ()) != 0)
+      if ((item = GetInternalQueue (i)->Dequeue ()))
         {
           NS_LOG_LOGIC ("Popped from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetInternalQueue (i)->GetNPackets ());
@@ -127,7 +127,7 @@ PfifoFastQueueDisc::DoPeek (void)
 
   for (uint32_t i = 0; i < GetNInternalQueues (); i++)
     {
-      if ((item = GetInternalQueue (i)->Peek ()) != 0)
+      if ((item = GetInternalQueue (i)->Peek ()))
         {
           NS_LOG_LOGIC ("Peeked from band " << i << ": " << item);
           NS_LOG_LOGIC ("Number packets band " << i << ": " << GetInternalQueue (i)->GetNPackets ());

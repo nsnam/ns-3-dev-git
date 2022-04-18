@@ -795,7 +795,7 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
         ++drbIt)
     {
       // SN status transfer is only for AM RLC
-      if (0 != drbIt->second->m_rlc->GetObject<LteRlcAm> ())
+      if (drbIt->second->m_rlc->GetObject<LteRlcAm> ())
         {
           LtePdcp::Status status = drbIt->second->m_pdcp->GetStatus ();
           EpcX2Sap::ErabsSubjectToStatusTransferItem i;
@@ -875,7 +875,7 @@ UeManager::SendPacket (uint8_t bid, Ptr<Packet> p)
   if (it != m_drbMap.end ())
     {
       Ptr<LteDataRadioBearerInfo> bearerInfo = GetDataRadioBearerInfo (drbid);
-      if (bearerInfo != NULL)
+      if (bearerInfo)
         {
           LtePdcpSapProvider* pdcpSapProvider = bearerInfo->m_pdcp->GetLtePdcpSapProvider ();
           pdcpSapProvider->TransmitPdcpSdu (params);
@@ -1493,7 +1493,7 @@ UeManager::BuildRadioResourceConfigDedicated ()
   NS_LOG_FUNCTION (this);
   LteRrcSap::RadioResourceConfigDedicated rrcd;
 
-  if (m_srb1 != 0)
+  if (m_srb1)
     {
       LteRrcSap::SrbToAddMod stam;
       stam.srbIdentity = m_srb1->m_srbIdentity;
@@ -2839,7 +2839,7 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
   bool isHandoverAllowed = true;
 
   Ptr<UeManager> ueManager = GetUeManager (rnti);
-  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+  NS_ASSERT_MSG (ueManager, "Cannot find UE context with RNTI " << rnti);
 
   if (m_anrSapProvider != 0 && !HasCellId (targetCellId))
     {

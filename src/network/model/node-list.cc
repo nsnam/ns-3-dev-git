@@ -131,7 +131,7 @@ NodeListPriv::DoGet (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ptr<NodeListPriv> ptr = 0;
-  if (ptr == 0)
+  if (!ptr)
     {
       ptr = CreateObject<NodeListPriv> ();
       Config::RegisterRootNamespaceObject (ptr);

@@ -267,17 +267,17 @@ template<class T>
 Ptr<T> Ipv6RoutingHelper::GetRouting (Ptr<Ipv6RoutingProtocol> protocol)
 {
   Ptr<T> ret = DynamicCast<T> (protocol);
-  if (ret == 0)
+  if (!ret)
     {
       // trying to check if protocol is a list routing
       Ptr<Ipv6ListRouting> lrp = DynamicCast<Ipv6ListRouting> (protocol);
-      if (lrp != 0)
+      if (lrp)
         {
           for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
             {
               int16_t priority;
               ret = GetRouting<T> (lrp->GetRoutingProtocol (i, priority)); // potential recursion, if inside ListRouting is ListRouting
-              if (ret != 0)
+              if (ret)
                 break;
             }
         }

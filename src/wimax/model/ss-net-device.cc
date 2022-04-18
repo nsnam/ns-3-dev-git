@@ -706,7 +706,7 @@ SubscriberStationNetDevice::Enqueue (Ptr<Packet> packet,
                                      const MacHeaderType &hdrType,
                                      Ptr<WimaxConnection> connection)
 {
-  NS_ASSERT_MSG (connection != 0, "SS: Can not enqueue the packet: the selected connection is nor initialized");
+  NS_ASSERT_MSG (connection, "SS: Can not enqueue the packet: the selected connection is nor initialized");
 
   GenericMacHeader hdr;
 
@@ -960,7 +960,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               NS_FATAL_ERROR ("Invalid management message type");
             }
         }
-      else if (GetInitialRangingConnection () != 0 && cid == GetInitialRangingConnection ()->GetCid () && !fragmentation)
+      else if (GetInitialRangingConnection () && cid == GetInitialRangingConnection ()->GetCid () && !fragmentation)
         {
           m_traceSSRx (packet, GetMacAddress (), cid);
           packet->RemoveHeader (msgType);
@@ -979,7 +979,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               NS_LOG_ERROR ("Invalid management message type");
             }
         }
-      else if (m_basicConnection != 0 && cid == m_basicConnection->GetCid () && !fragmentation)
+      else if (m_basicConnection && cid == m_basicConnection->GetCid () && !fragmentation)
         {
           m_traceSSRx (packet, GetMacAddress (), cid);
           packet->RemoveHeader (msgType);
@@ -998,7 +998,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               NS_LOG_ERROR ("Invalid management message type");
             }
         }
-      else if (m_primaryConnection != 0 && cid == m_primaryConnection->GetCid () && !fragmentation)
+      else if (m_primaryConnection && cid == m_primaryConnection->GetCid () && !fragmentation)
         {
           m_traceSSRx (packet, GetMacAddress (), cid);
           packet->RemoveHeader (msgType);

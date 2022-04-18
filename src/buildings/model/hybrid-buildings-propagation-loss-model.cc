@@ -150,7 +150,7 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
   // get the MobilityBuildingInfo pointers
   Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
   Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
-  NS_ASSERT_MSG ((a1 != 0) && (b1 != 0), "HybridBuildingsPropagationLossModel only works with MobilityBuildingInfo");
+  NS_ASSERT_MSG (a1 && b1 , "HybridBuildingsPropagationLossModel only works with MobilityBuildingInfo");
 
   double loss = 0.0;
   bool isAIndoor = a1->IsIndoor ();

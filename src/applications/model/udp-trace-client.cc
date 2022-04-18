@@ -252,7 +252,7 @@ UdpTraceClient::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket == 0)
+  if (!m_socket)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);

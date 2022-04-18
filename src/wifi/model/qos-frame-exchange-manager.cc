@@ -82,7 +82,7 @@ bool
 QosFrameExchangeManager::SendCfEndIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
   NS_ASSERT (m_edca->GetTxopLimit (m_linkId).IsStrictlyPositive ());
 
   WifiMacHeader cfEnd;
@@ -118,7 +118,7 @@ void
 QosFrameExchangeManager::PifsRecovery (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
   NS_ASSERT (m_edca->IsTxopStarted (m_linkId));
 
   // Release the channel if it has not been idle for the last PIFS interval
@@ -140,7 +140,7 @@ QosFrameExchangeManager::CancelPifsRecovery (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_pifsRecoveryEvent.IsRunning ());
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
 
   NS_LOG_DEBUG ("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
   m_pifsRecoveryEvent.Cancel ();
@@ -269,7 +269,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be
   // expired and the queue might be empty.
-  if (mpdu == 0)
+  if (!mpdu)
     {
       NS_LOG_DEBUG ("Queue empty");
       return false;
@@ -280,7 +280,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
 
   Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
 
-  if (item == nullptr)
+  if (!item)
     {
       NS_LOG_DEBUG ("Not enough time to transmit a frame");
       return false;
@@ -298,7 +298,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
       WifiTxParameters fragmentTxParams;
       fragmentTxParams.m_txVector = txParams.m_txVector;
       txParams.m_protection = GetProtectionManager ()->TryAddMpdu (item, fragmentTxParams);
-      NS_ASSERT (txParams.m_protection != nullptr);
+      NS_ASSERT (txParams.m_protection);
     }
 
   SendMpduWithProtection (item, txParams);
@@ -310,7 +310,7 @@ bool
 QosFrameExchangeManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxParameters& txParams,
                                      Time availableTime) const
 {
-  NS_ASSERT (mpdu != 0);
+  NS_ASSERT (mpdu);
   NS_LOG_FUNCTION (this << *mpdu << &txParams << availableTime);
 
   // check if adding the given MPDU requires a different protection method
@@ -394,7 +394,7 @@ QosFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mp
                                                   const WifiTxParameters& txParams,
                                                   Time ppduDurationLimit) const
 {
-  NS_ASSERT (mpdu != 0);
+  NS_ASSERT (mpdu);
   NS_LOG_FUNCTION (this << *mpdu << &txParams << ppduDurationLimit);
 
   // A QoS station only has to check that the MPDU transmission time does not
@@ -446,7 +446,7 @@ QosFrameExchangeManager::GetFrameDurationId (const WifiMacHeader& header, uint32
   NS_LOG_FUNCTION (this << header << size << &txParams << fragmentedPacket);
 
   // TODO This will be removed once no Txop is installed on a QoS station
-  if (m_edca == 0)
+  if (!m_edca)
     {
       return FrameExchangeManager::GetFrameDurationId (header, size, txParams, fragmentedPacket);
     }
@@ -473,7 +473,7 @@ QosFrameExchangeManager::GetRtsDurationId (const WifiTxVector& rtsTxVector, Time
   NS_LOG_FUNCTION (this << rtsTxVector << txDuration << response);
 
   // TODO This will be removed once no Txop is installed on a QoS station
-  if (m_edca == 0)
+  if (!m_edca)
     {
       return FrameExchangeManager::GetRtsDurationId (rtsTxVector, txDuration, response);
     }
@@ -499,7 +499,7 @@ QosFrameExchangeManager::GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector
   NS_LOG_FUNCTION (this << ctsTxVector << txDuration << response);
 
   // TODO This will be removed once no Txop is installed on a QoS station
-  if (m_edca == 0)
+  if (!m_edca)
     {
       return FrameExchangeManager::GetCtsToSelfDurationId (ctsTxVector, txDuration, response);
     }
@@ -541,7 +541,7 @@ QosFrameExchangeManager::TransmissionSucceeded (void)
   NS_LOG_DEBUG (this);
 
   // TODO This will be removed once no Txop is installed on a QoS station
-  if (m_edca == 0)
+  if (!m_edca)
     {
       FrameExchangeManager::TransmissionSucceeded ();
       return;
@@ -570,7 +570,7 @@ QosFrameExchangeManager::TransmissionFailed (void)
   NS_LOG_FUNCTION (this);
 
   // TODO This will be removed once no Txop is installed on a QoS station
-  if (m_edca == 0)
+  if (!m_edca)
     {
       FrameExchangeManager::TransmissionFailed ();
       return;

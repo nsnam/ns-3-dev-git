@@ -222,7 +222,7 @@ bool Rip::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const N
 {
   NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
 
-  NS_ASSERT (m_ipv4 != 0);
+  NS_ASSERT (m_ipv4);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
@@ -277,7 +277,7 @@ bool Rip::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const N
   NS_LOG_LOGIC ("Unicast destination");
   Ptr<Ipv4Route> rtentry = Lookup (header.GetDestination (), false);
 
-  if (rtentry != 0)
+  if (rtentry)
     {
       NS_LOG_LOGIC ("Found unicast destination - calling unicast callback");
       ucb (rtentry, p, header);  // unicast forwarding callback
@@ -470,7 +470,7 @@ void Rip::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION (this << ipv4);
 
-  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
+  NS_ASSERT (!m_ipv4 && ipv4);
   uint32_t i = 0;
   m_ipv4 = ipv4;
 

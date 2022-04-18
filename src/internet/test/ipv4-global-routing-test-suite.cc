@@ -166,15 +166,15 @@ LinkTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip1 = m_nodes.Get (1)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip1, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip1, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing1 = ip1->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting1 = routing1->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting1, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting1, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -249,15 +249,15 @@ LanTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip1 = m_nodes.Get (1)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip1, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip1, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing1 = ip1->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting1 = routing1->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting1, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting1, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -340,20 +340,20 @@ TwoLinkTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip1 = m_nodes.Get (1)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip1, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip1, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip2 = m_nodes.Get (2)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip2, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip2, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing1 = ip1->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting1 = routing1->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting1, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting1, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing2 = ip2->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting2 = routing2->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting2, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting2, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // node n0
   // Test that the right number of routes found
@@ -457,20 +457,20 @@ TwoLanTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip1 = m_nodes.Get (1)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip1, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip1, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4L3Protocol> ip2 = m_nodes.Get (2)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip2, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip2, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing1 = ip1->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting1 = routing1->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting1, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting1, nullptr, "Error-- no Ipv4GlobalRouting object");
   Ptr<Ipv4RoutingProtocol> routing2 = ip2->GetRoutingProtocol ();
   Ptr<Ipv4GlobalRouting> globalRouting2 = routing2->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting2, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting2, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // Test that the right number of routes found
   uint32_t nRoutes0 = globalRouting0->GetNRoutes ();
@@ -592,26 +592,26 @@ BridgeTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
-  NS_TEST_ASSERT_MSG_NE (routing0, 0, "Error-- no Ipv4 routing protocol object");
+  NS_TEST_ASSERT_MSG_NE (routing0, nullptr, "Error-- no Ipv4 routing protocol object");
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   Ptr<Ipv4L3Protocol> ip1 = m_nodes.Get (1)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip1, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip1, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing1 = ip1->GetRoutingProtocol ();
-  NS_TEST_ASSERT_MSG_NE (routing1, 0, "Error-- no Ipv4 routing protocol object");
+  NS_TEST_ASSERT_MSG_NE (routing1, nullptr, "Error-- no Ipv4 routing protocol object");
   Ptr<Ipv4GlobalRouting> globalRouting1 = routing1->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting1, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting1, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // Skip to n4
   Ptr<Ipv4L3Protocol> ip4 = m_nodes.Get (4)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip4, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip4, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing4 = ip4->GetRoutingProtocol ();
-  NS_TEST_ASSERT_MSG_NE (routing4, 0, "Error-- no Ipv4 routing protocol object");
+  NS_TEST_ASSERT_MSG_NE (routing4, nullptr, "Error-- no Ipv4 routing protocol object");
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting4, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting4, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   Ipv4RoutingTableEntry* route = 0;
   // n0
@@ -768,19 +768,19 @@ TwoBridgeTest::DoRun ()
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Ptr<Ipv4L3Protocol> ip0 = m_nodes.Get (0)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip0, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip0, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing0 = ip0->GetRoutingProtocol ();
-  NS_TEST_ASSERT_MSG_NE (routing0, 0, "Error-- no Ipv4 routing protocol object");
+  NS_TEST_ASSERT_MSG_NE (routing0, nullptr, "Error-- no Ipv4 routing protocol object");
   Ptr<Ipv4GlobalRouting> globalRouting0 = routing0->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting0, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting0, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   // Skip to n4
   Ptr<Ipv4L3Protocol> ip4 = m_nodes.Get (4)->GetObject<Ipv4L3Protocol> ();
-  NS_TEST_ASSERT_MSG_NE (ip4, 0, "Error-- no Ipv4 object");
+  NS_TEST_ASSERT_MSG_NE (ip4, nullptr, "Error-- no Ipv4 object");
   Ptr<Ipv4RoutingProtocol> routing4 = ip4->GetRoutingProtocol ();
-  NS_TEST_ASSERT_MSG_NE (routing4, 0, "Error-- no Ipv4 routing protocol object");
+  NS_TEST_ASSERT_MSG_NE (routing4, nullptr, "Error-- no Ipv4 routing protocol object");
   Ptr<Ipv4GlobalRouting> globalRouting4 = routing4->GetObject <Ipv4GlobalRouting> ();
-  NS_TEST_ASSERT_MSG_NE (globalRouting4, 0, "Error-- no Ipv4GlobalRouting object");
+  NS_TEST_ASSERT_MSG_NE (globalRouting4, nullptr, "Error-- no Ipv4GlobalRouting object");
 
   Ipv4RoutingTableEntry* route = 0;
   // n0

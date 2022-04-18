@@ -113,7 +113,7 @@ InetTopologyReader::Read (void)
         {
           NS_LOG_INFO ( "Link " << linksNumber << " from: " << from << " to: " << to);
 
-          if ( nodeMap[from] == 0 )
+          if ( !nodeMap[from] )
             {
               NS_LOG_INFO ( "Node " << nodesNumber << " name: " << from);
               Ptr<Node> tmpNode = CreateObject<Node> ();
@@ -122,7 +122,7 @@ InetTopologyReader::Read (void)
               nodesNumber++;
             }
 
-          if (nodeMap[to] == 0)
+          if (!nodeMap[to])
             {
               NS_LOG_INFO ( "Node " << nodesNumber << " name: " << to);
               Ptr<Node> tmpNode = CreateObject<Node> ();

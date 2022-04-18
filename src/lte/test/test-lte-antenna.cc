@@ -218,7 +218,7 @@ LteEnbAntennaTestCase::DoRun (void)
   if (expectedSinrDl > 0)
     {
       double calculatedSinrDbDl = -INFINITY;
-      if (dlSinrCatcher.GetValue () != 0)
+      if (dlSinrCatcher.GetValue ())
         {
           calculatedSinrDbDl = 10.0 * std::log10 (dlSinrCatcher.GetValue ()->operator[] (0));
         }
@@ -231,7 +231,7 @@ LteEnbAntennaTestCase::DoRun (void)
   if (expectedSinrUl > 0)
     {
       double calculatedSinrDbUl = -INFINITY;
-      if (ulSinrCatcher.GetValue () != 0)
+      if (ulSinrCatcher.GetValue ())
         {
           calculatedSinrDbUl = 10.0 * std::log10 (ulSinrCatcher.GetValue ()->operator[] (0));
         }

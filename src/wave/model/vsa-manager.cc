@@ -128,7 +128,7 @@ VsaManager::DoSendVsa (enum VsaTransmitInterval  interval, uint32_t channel,
                        Ptr<Packet> vsc, OrganizationIdentifier oi, Mac48Address peer)
 {
   NS_LOG_FUNCTION (this << interval << channel << vsc << oi << peer);
-  NS_ASSERT (m_device != 0);
+  NS_ASSERT (m_device);
   Ptr<ChannelCoordinator> coordinator = m_device->GetChannelCoordinator ();
   Ptr<ChannelScheduler> scheduler = m_device->GetChannelScheduler ();
   Ptr<ChannelManager> manager = m_device->GetChannelManager ();

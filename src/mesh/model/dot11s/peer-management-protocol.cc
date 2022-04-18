@@ -121,12 +121,12 @@ PeerManagementProtocol::Install (Ptr<MeshPointDevice> mp)
   for (std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin (); i != interfaces.end (); i++)
     {
       Ptr<WifiNetDevice> wifiNetDev = (*i)->GetObject<WifiNetDevice> ();
-      if (wifiNetDev == 0)
+      if (!wifiNetDev)
         {
           return false;
         }
       Ptr<MeshWifiInterfaceMac> mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
-      if (mac == 0)
+      if (!mac)
         {
           return false;
         }
@@ -179,7 +179,7 @@ PeerManagementProtocol::ReceiveBeacon (uint32_t interface, Mac48Address peerAddr
         }
     }
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink == 0)
+  if (!peerLink)
     {
       if (ShouldSendOpen (interface, peerAddress))
         {
@@ -208,7 +208,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
     {
       PmpReasonCode reasonCode (REASON11S_RESERVED);
       bool reject = !(ShouldAcceptOpen (interface, peerAddress, reasonCode));
-      if (peerLink == 0)
+      if (!peerLink)
         {
           peerLink = InitiateLink (interface, peerAddress, peerMeshPointAddress);
         }
@@ -222,7 +222,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
                                 reasonCode);
         }
     }
-  if (peerLink == 0)
+  if (!peerLink)
     {
       return;
     }
@@ -241,7 +241,7 @@ void
 PeerManagementProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress)
 {
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink != 0)
+  if (peerLink)
     {
       peerLink->MLMECancelPeerLink (REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
     }
@@ -251,7 +251,7 @@ PeerManagementProtocol::TransmissionFailure (uint32_t interface, Mac48Address pe
 {
   NS_LOG_DEBUG ("transmission failed between "<<GetAddress () << " and " << peerAddress << " failed, link will be closed");
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink != 0)
+  if (peerLink)
     {
       peerLink->TransmissionFailure ();
     }
@@ -261,7 +261,7 @@ PeerManagementProtocol::TransmissionSuccess (uint32_t interface, Mac48Address pe
 {
   NS_LOG_DEBUG ("transmission success "<< GetAddress () << " and " << peerAddress);
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink != 0)
+  if (peerLink)
     {
       peerLink->TransmissionSuccess ();
     }
@@ -272,7 +272,7 @@ PeerManagementProtocol::InitiateLink (uint32_t interface, Mac48Address peerAddre
 {
   Ptr<PeerLink> new_link = CreateObject<PeerLink> ();
   //find a peer link  - it must not exist
-  if (FindPeerLink (interface, peerAddress) != 0)
+  if (FindPeerLink (interface, peerAddress))
     {
       NS_FATAL_ERROR ("Peer link must not exist.");
     }
@@ -356,7 +356,7 @@ bool
 PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)
 {
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink != 0)
+  if (peerLink)
     {
       return (peerLink->LinkIsEstab ());
     }
@@ -514,7 +514,7 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
   if (nstate == PeerLink::IDLE)
     {
       Ptr<PeerLink> link = FindPeerLink (interface, peerAddress);
-      NS_ASSERT (link == 0);
+      NS_ASSERT (!link);
     }
 }
 uint8_t
@@ -525,7 +525,7 @@ PeerManagementProtocol::GetNumberOfLinks ()
 Ptr<IeMeshId>
 PeerManagementProtocol::GetMeshId () const
 {
-  NS_ASSERT (m_meshId != 0);
+  NS_ASSERT (m_meshId);
   return m_meshId;
 }
 void

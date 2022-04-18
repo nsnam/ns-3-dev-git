@@ -547,7 +547,7 @@ Queue<Item, Container>::DoDequeue (ConstIterator pos)
 
   Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
 
-  if (item != 0)
+  if (item)
     {
       m_packets.erase (pos);
       NS_ASSERT (m_nBytes.Get () >= item->GetSize ());
@@ -576,7 +576,7 @@ Queue<Item, Container>::DoRemove (ConstIterator pos)
 
   Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
 
-  if (item != 0)
+  if (item)
     {
       m_packets.erase (pos);
       NS_ASSERT (m_nBytes.Get () >= item->GetSize ());

@@ -160,7 +160,7 @@ UanChannel::TxPacket (Ptr<UanTransducer> src, Ptr<Packet> packet,
           break;
         }
     }
-  NS_ASSERT (senderMobility != 0);
+  NS_ASSERT (senderMobility);
   uint32_t j = 0;
   UanDeviceList::const_iterator i = m_devList.begin ();
   for (; i != m_devList.end (); i++)

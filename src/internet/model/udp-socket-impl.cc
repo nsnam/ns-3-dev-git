@@ -103,7 +103,7 @@ UdpSocketImpl::~UdpSocketImpl ()
    */
   if (m_endPoint != 0)
     {
-      NS_ASSERT (m_udp != 0);
+      NS_ASSERT (m_udp);
       /**
        * Note that this piece of code is a bit tricky:
        * when DeAllocate is called, it will call into
@@ -118,7 +118,7 @@ UdpSocketImpl::~UdpSocketImpl ()
     }
   if (m_endPoint6 != 0)
     {
-      NS_ASSERT (m_udp != 0);
+      NS_ASSERT (m_udp);
       /**
        * Note that this piece of code is a bit tricky:
        * when DeAllocate is called, it will call into
@@ -330,7 +330,7 @@ UdpSocketImpl::Bind (const Address &address)
           Ptr<Ipv6L3Protocol> ipv6l3 = m_node->GetObject <Ipv6L3Protocol> ();
           if (ipv6l3)
             {
-              if (m_boundnetdevice == 0)
+              if (!m_boundnetdevice)
                 {
                   ipv6l3->AddMulticastAddress (ipv6);
                 }
@@ -609,7 +609,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
       NotifySend (GetTxAvailable ());
       return p->GetSize ();
     }
-  else if (ipv4->GetRoutingProtocol () != 0)
+  else if (ipv4->GetRoutingProtocol ())
     {
       Ipv4Header header;
       header.SetDestination (dest);
@@ -619,7 +619,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
       // TBD-- we could cache the route and just check its validity
       route = ipv4->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_);
-      if (route != 0)
+      if (route)
         {
           NS_LOG_LOGIC ("Route exists");
           if (!m_allowBroadcast)
@@ -747,7 +747,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
       NotifySend (GetTxAvailable ());
       return p->GetSize ();
     }
-  else if (ipv6->GetRoutingProtocol () != 0)
+  else if (ipv6->GetRoutingProtocol ())
     {
       Ipv6Header header;
       header.SetDestination (dest);
@@ -757,7 +757,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
       // TBD-- we could cache the route and just check its validity
       route = ipv6->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_);
-      if (route != 0)
+      if (route)
         {
           NS_LOG_LOGIC ("Route exists");
           header.SetSource (route->GetSource ());

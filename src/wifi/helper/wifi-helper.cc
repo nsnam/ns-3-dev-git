@@ -567,7 +567,7 @@ WifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool p
   //that are wandering through all of devices on perhaps all of the nodes in
   //the system. We can only deal with devices of type WifiNetDevice.
   Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("WifiHelper::EnablePcapInternal(): Device " << &device << " not of type ns3::WifiNetDevice");
       return;
@@ -618,7 +618,7 @@ WifiPhyHelper::EnableAsciiInternal (
   //that are wandering through all of devices on perhaps all of the nodes in
   //the system. We can only deal with devices of type WifiNetDevice.
   Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
-  if (device == 0)
+  if (!device)
     {
       NS_LOG_INFO ("WifiHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::WifiNetDevice");
       return;
@@ -636,7 +636,7 @@ WifiPhyHelper::EnableAsciiInternal (
   //one using the usual trace filename conventions and write our traces
   //without a context since there will be one file per context and therefore
   //the context would be redundant.
-  if (stream == 0)
+  if (!stream)
     {
       //Set up an output stream object to deal with private ofstream copy
       //constructor and lifetime issues. Let the helper decide the actual

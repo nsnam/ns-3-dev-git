@@ -42,12 +42,12 @@ BasicEnergyHarvesterHelper::Set (std::string name, const AttributeValue &v)
 Ptr<EnergyHarvester>
 BasicEnergyHarvesterHelper::DoInstall (Ptr<EnergySource> source) const
 {
-  NS_ASSERT (source != 0);
+  NS_ASSERT (source);
   Ptr<Node> node = source->GetNode ();
 
   // Create a new Basic Energy Harvester
   Ptr<EnergyHarvester> harvester = m_basicEnergyHarvester.Create<EnergyHarvester> ();
-  NS_ASSERT (harvester != 0);
+  NS_ASSERT (harvester);
 
   // Connect the Basic Energy Harvester to the Energy Source
   source->ConnectEnergyHarvester (harvester);

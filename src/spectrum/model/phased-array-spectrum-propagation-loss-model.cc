@@ -71,7 +71,7 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const S
   // PhasedArraySpectrumPropagationLossModel that provides the implementation of
   // this function, i.e. has phased array model of TX and RX as parameters
   Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (params, a, b, aPhasedArrayModel, bPhasedArrayModel);
-  if (m_next != 0)
+  if (m_next)
     {
       rxPsd = m_next->CalcRxPowerSpectralDensity (params, a, b, aPhasedArrayModel, bPhasedArrayModel);
     }

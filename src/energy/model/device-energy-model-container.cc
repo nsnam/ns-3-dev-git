@@ -36,7 +36,7 @@ DeviceEnergyModelContainer::DeviceEnergyModelContainer ()
 DeviceEnergyModelContainer::DeviceEnergyModelContainer (Ptr<DeviceEnergyModel> model)
 {
   NS_LOG_FUNCTION (this << model);
-  NS_ASSERT (model != NULL);
+  NS_ASSERT (model);
   m_models.push_back (model);
 }
 
@@ -44,7 +44,7 @@ DeviceEnergyModelContainer::DeviceEnergyModelContainer (std::string modelName)
 {
   NS_LOG_FUNCTION (this << modelName);
   Ptr<DeviceEnergyModel> model = Names::Find<DeviceEnergyModel> (modelName);
-  NS_ASSERT (model != NULL);
+  NS_ASSERT (model);
   m_models.push_back (model);
 }
 
@@ -98,7 +98,7 @@ void
 DeviceEnergyModelContainer::Add (Ptr<DeviceEnergyModel> model)
 {
   NS_LOG_FUNCTION (this << model);
-  NS_ASSERT (model != NULL);
+  NS_ASSERT (model);
   m_models.push_back (model);
 }
 
@@ -107,7 +107,7 @@ DeviceEnergyModelContainer::Add (std::string modelName)
 {
   NS_LOG_FUNCTION (this << modelName);
   Ptr<DeviceEnergyModel> model = Names::Find<DeviceEnergyModel> (modelName);
-  NS_ASSERT (model != NULL);
+  NS_ASSERT (model);
   m_models.push_back (model);
 }
 

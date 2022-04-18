@@ -159,7 +159,7 @@ PointToPointStarHelper::BoundingBox (double ulx, double uly,
   // Place the hub
   Ptr<Node> hub = m_hub.Get (0);
   Ptr<ConstantPositionMobilityModel> hubLoc =  hub->GetObject<ConstantPositionMobilityModel> ();
-  if (hubLoc == 0)
+  if (!hubLoc)
     {
       hubLoc = CreateObject<ConstantPositionMobilityModel> ();
       hub->AggregateObject (hubLoc);
@@ -182,7 +182,7 @@ PointToPointStarHelper::BoundingBox (double ulx, double uly,
     {
       Ptr<Node> spokeNode = m_spokes.Get (i);
       Ptr<ConstantPositionMobilityModel> spokeLoc = spokeNode->GetObject<ConstantPositionMobilityModel> ();
-      if (spokeLoc == 0)
+      if (!spokeLoc)
         {
           spokeLoc = CreateObject<ConstantPositionMobilityModel> ();
           spokeNode->AggregateObject (spokeLoc);

@@ -115,7 +115,7 @@ void
 Ipv4Interface::DoSetup (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_node == 0 || m_device == 0)
+  if (!m_node || !m_device)
     {
       return;
     }
@@ -229,7 +229,7 @@ Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
       return;
     }
 
-  NS_ASSERT (m_tc != 0);
+  NS_ASSERT (m_tc);
 
   // is this packet aimed at a local interface ?
   for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin (); i != m_ifaddrs.end (); ++i)

@@ -84,7 +84,7 @@ GnuplotHelper::ConfigurePlot (const std::string &outputFileNameWithoutExtension,
                         << xLegend << yLegend <<  terminalType);
 
   // See if an aggregator has already been constructed.
-  if (m_aggregator != 0)
+  if (m_aggregator)
     {
       NS_LOG_WARN ("An existing aggregator object " << m_aggregator <<
                    " may be destroyed if no references remain.");
@@ -219,7 +219,7 @@ GnuplotHelper::AddProbe (const std::string &typeId,
 
   // Create a base class object in order to validate the type.
   Ptr<Probe> probe = m_factory.Create ()->GetObject<Probe> ();
-  if (probe == 0)
+  if (!probe)
     {
       NS_ABORT_MSG ("The requested type is not a probe");
     }

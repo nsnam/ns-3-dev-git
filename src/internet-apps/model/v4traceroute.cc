@@ -127,7 +127,7 @@ V4TraceRoute::StartApplication (void)
                                      << m_size << " bytes of data.");
     }
 
-  if (m_printStream != NULL)
+  if (m_printStream)
     {
       *m_printStream->GetStream () << "Traceroute to " << m_remote << ", "
                                    << m_maxTtl << " hops Max, "
@@ -139,7 +139,7 @@ V4TraceRoute::StartApplication (void)
   m_socket->SetAttribute ("Protocol", UintegerValue (Icmpv4L4Protocol::PROT_NUMBER));
 
 
-  NS_ASSERT (m_socket != 0);
+  NS_ASSERT (m_socket);
   m_socket->SetRecvCallback (MakeCallback (&V4TraceRoute::Receive, this));
 
   InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);
@@ -170,6 +170,16 @@ V4TraceRoute::StopApplication (void)
   if (m_socket)
     {
       m_socket->Close ();
+    }
+
+  if (m_verbose)
+    {
+	  NS_LOG_UNCOND("\nTrace Complete");
+    }
+
+  if (m_printStream)
+    {
+      *m_printStream->GetStream () << "Trace Complete\n" << std::endl;
     }
 }
 
@@ -261,7 +271,7 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
                       NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
                     }
 
-                  if (m_printStream != NULL)
+                  if (m_printStream)
                     {
                       *m_printStream->GetStream () << m_ttl << " "
                                                    << m_routeIpv4.str () << " "
@@ -320,7 +330,7 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
                       if (m_probeCount == m_maxProbes)
                         {
                           NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
-                          if (m_printStream != NULL)
+                          if (m_printStream)
                             {
                               *m_printStream->GetStream () << m_ttl << " "
                                                            << m_routeIpv4.str () << " "
@@ -346,7 +356,7 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
                   NS_LOG_UNCOND ("\nTrace Complete");
                 }
 
-              if (m_printStream != NULL)
+              if (m_printStream)
                 {
                   *m_printStream->GetStream () << "Trace Complete\n" << std::endl;
                 }
@@ -445,7 +455,7 @@ V4TraceRoute::HandleWaitReplyTimeout (void)
           NS_LOG_UNCOND(m_ttl << " " << m_routeIpv4.str () << " " << m_osRoute.str ());
         }
 
-      if (m_printStream != NULL)
+      if (m_printStream)
         {
           *m_printStream->GetStream () << m_ttl
                                        << " " << m_routeIpv4.str () << " "

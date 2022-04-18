@@ -189,7 +189,7 @@ UanExperiment::SetupApplications ()
   while (node != m_nodes.End ())
     {
       m_sockets[*node] = Socket::CreateSocket (*node, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-      if((*node)->GetObject<Ipv6> () != NULL)
+      if((*node)->GetObject<Ipv6> ())
         {
           Inet6SocketAddress ipv6_local = Inet6SocketAddress (Ipv6Address::GetAny (), 9);
           m_sockets[*node]->Bind (ipv6_local);

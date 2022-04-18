@@ -322,7 +322,7 @@ WifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_txop != nullptr)
+  if (m_txop)
     {
       m_txop->Initialize ();
     }
@@ -342,7 +342,7 @@ WifiMac::DoDispose ()
   m_txMiddle = 0;
   m_links.clear ();
 
-  if (m_txop != nullptr)
+  if (m_txop)
     {
       m_txop->Dispose ();
     }
@@ -360,11 +360,11 @@ WifiMac::DoDispose ()
 WifiMac::LinkEntity::~LinkEntity ()
 {
   // WifiMac owns pointers to ChannelAccessManager and FrameExchangeManager
-  if (channelAccessManager != nullptr)
+  if (channelAccessManager)
     {
       channelAccessManager->Dispose ();
     }
-  if (feManager != nullptr)
+  if (feManager)
     {
       feManager->Dispose ();
     }
@@ -502,7 +502,7 @@ Ptr<WifiMacQueue>
 WifiMac::GetTxopQueue (AcIndex ac) const
 {
   Ptr<Txop> txop = (ac == AC_BE_NQOS ? m_txop : StaticCast<Txop> (GetQosTxop (ac)));
-  return (txop != nullptr ? txop->GetWifiMacQueue () : nullptr);
+  return (txop ? txop->GetWifiMacQueue () : nullptr);
 }
 
 void
@@ -580,7 +580,7 @@ WifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
       isDsssOnly.push_back (link->dsssSupported && !link->erpSupported);
     }
 
-  if (m_txop != nullptr)
+  if (m_txop)
     {
       //The special value of AC_BE_NQOS which exists in the Access
       //Category enumeration allows us to configure plain old DCF.
@@ -676,18 +676,18 @@ WifiMac::ConfigureStandard (WifiStandard standard)
 
   for (auto& link : m_links)
     {
-      NS_ABORT_MSG_IF (link->phy == nullptr || !link->phy->GetOperatingChannel ().IsSet (),
+      NS_ABORT_MSG_IF (!link->phy || !link->phy->GetOperatingChannel ().IsSet (),
                        "[LinkID " << link->id << "] PHY must have been set and an operating channel must have been set");
 
       // do not create a ChannelAccessManager and a FrameExchangeManager if they
       // already exist (this function may be called after ResetWifiPhys)
-      if (link->channelAccessManager == nullptr)
+      if (!link->channelAccessManager)
         {
           link->channelAccessManager = CreateObject<ChannelAccessManager> ();
         }
       link->channelAccessManager->SetupPhyListener (link->phy);
 
-      if (link->feManager == nullptr)
+      if (!link->feManager)
         {
           link->feManager = SetupFrameExchangeManager (standard);
         }
@@ -697,7 +697,7 @@ WifiMac::ConfigureStandard (WifiStandard standard)
       link->channelAccessManager->SetLinkId (link->id);
       link->channelAccessManager->SetupFrameExchangeManager (link->feManager);
 
-      if (m_txop != nullptr)
+      if (m_txop)
         {
           m_txop->SetWifiMac (this);
           link->channelAccessManager->Add (m_txop);
@@ -897,11 +897,11 @@ WifiMac::ResetWifiPhys (void)
   NS_LOG_FUNCTION (this);
   for (auto& link : m_links)
     {
-      if (link->feManager != nullptr)
+      if (link->feManager)
         {
           link->feManager->ResetPhy ();
         }
-      if (link->channelAccessManager != nullptr)
+      if (link->channelAccessManager)
         {
           link->channelAccessManager->RemovePhyListener (link->phy);
         }
@@ -1082,9 +1082,9 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
                 //We've received an ADDBA Request. Our policy here is
                 //to automatically accept it, so we get the ADDBA
                 //Response on it's way immediately.
-                NS_ASSERT (link.feManager != nullptr);
+                NS_ASSERT (link.feManager);
                 auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
-                if (htFem != 0)
+                if (htFem)
                   {
                     htFem->SendAddBaResponse (&reqHdr, from);
                   }
@@ -1104,7 +1104,7 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
                 //the appropriate queue.
                 GetQosTxop (respHdr.GetTid ())->GotAddBaResponse (&respHdr, from);
                 auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
-                if (htFem != 0)
+                if (htFem)
                   {
                     GetQosTxop (respHdr.GetTid ())->GetBaManager ()->SetBlockAckInactivityCallback (MakeCallback (&HtFrameExchangeManager::SendDelbaFrame, htFem));
                   }
@@ -1122,9 +1122,9 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
                     //this means that an ingoing established
                     //agreement exists in HtFrameExchangeManager and we need to
                     //destroy it.
-                    NS_ASSERT (link.feManager != nullptr);
+                    NS_ASSERT (link.feManager);
                     auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
-                    if (htFem != 0)
+                    if (htFem)
                       {
                         htFem->DestroyBlockAckAgreement (from, delBaHdr.GetTid ());
                       }

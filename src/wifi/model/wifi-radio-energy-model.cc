@@ -112,7 +112,7 @@ void
 WifiRadioEnergyModel::SetEnergySource (const Ptr<EnergySource> source)
 {
   NS_LOG_FUNCTION (this << source);
-  NS_ASSERT (source != NULL);
+  NS_ASSERT (source);
   m_source = source;
   m_switchToOffEvent.Cancel ();
   Time durationToOff = GetMaximumTimeInState (m_currentState);

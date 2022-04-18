@@ -397,13 +397,13 @@ void
 DsrRouting::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this << "NotifyNewAggregate");
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node> node = this->GetObject<Node> ();
-      if (node != 0)
+      if (node)
         {
           m_ipv4 = this->GetObject<Ipv4L3Protocol> ();
-          if (m_ipv4 != 0)
+          if (m_ipv4)
             {
               this->SetNode (node);
               m_ipv4->Insert (this);
@@ -411,7 +411,7 @@ DsrRouting::NotifyNewAggregate ()
             }
 
           m_ip = node->GetObject<Ipv4> ();
-          if (m_ip != 0)
+          if (m_ip)
             {
               NS_LOG_DEBUG ("Ipv4 started");
             }
@@ -499,12 +499,12 @@ void DsrRouting::Start ()
               // Allow neighbor manager use this interface for layer 2 feedback if possible
               Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (addr));
               Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
-              if (wifi == 0)
+              if (!wifi)
                 {
                   break;
                 }
               Ptr<WifiMac> mac = wifi->GetMac ();
-              if (mac == 0)
+              if (!mac)
                 {
                   break;
                 }
@@ -555,10 +555,10 @@ DsrRouting::DoDispose (void)
       // Disable layer 2 link state monitoring (if possible)
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (i);
       Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
-      if (wifi != 0)
+      if (wifi)
         {
           Ptr<WifiMac> mac = wifi->GetMac ();
-          if (mac != 0)
+          if (mac)
             {
               Ptr<AdhocWifiMac> adhoc = mac->GetObject<AdhocWifiMac> ();
               if (adhoc)
@@ -3421,7 +3421,7 @@ DsrRouting::Receive (Ptr<Packet> p,
               uint8_t nextHeader = dsrRoutingHeader.GetNextHeader ();
               Ptr<Ipv4L3Protocol> l3proto = m_node->GetObject<Ipv4L3Protocol> ();
               Ptr<IpL4Protocol> nextProto = l3proto->GetProtocol (nextHeader);
-              if (nextProto != 0)
+              if (nextProto)
                 {
                   // we need to make a copy in the unlikely event we hit the
                   // RX_ENDPOINT_UNREACH code path

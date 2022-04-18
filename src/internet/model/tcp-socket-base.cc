@@ -446,7 +446,7 @@ TcpSocketBase::~TcpSocketBase (void)
   m_node = nullptr;
   if (m_endPoint != nullptr)
     {
-      NS_ASSERT (m_tcp != nullptr);
+      NS_ASSERT (m_tcp);
       /*
        * Upon Bind, an Ipv4Endpoint is allocated and set to m_endPoint, and
        * DestroyCallback is set to TcpSocketBase::Destroy. If we called
@@ -460,7 +460,7 @@ TcpSocketBase::~TcpSocketBase (void)
     }
   if (m_endPoint6 != nullptr)
     {
-      NS_ASSERT (m_tcp != nullptr);
+      NS_ASSERT (m_tcp);
       NS_ASSERT (m_endPoint6 != nullptr);
       m_tcp->DeAllocate (m_endPoint6);
       NS_ASSERT (m_endPoint6 == nullptr);
@@ -887,7 +887,7 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
   // Null packet means no data to read, and an empty packet indicates EOF
-  if (packet != nullptr && packet->GetSize () != 0)
+  if (packet && packet->GetSize () != 0)
     {
       if (m_endPoint != nullptr)
         {
@@ -2635,7 +2635,7 @@ TcpSocketBase::Destroy (void)
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = nullptr;
-  if (m_tcp != nullptr)
+  if (m_tcp)
     {
       m_tcp->RemoveSocket (this);
     }
@@ -2651,7 +2651,7 @@ TcpSocketBase::Destroy6 (void)
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = nullptr;
-  if (m_tcp != nullptr)
+  if (m_tcp)
     {
       m_tcp->RemoveSocket (this);
     }
@@ -2826,8 +2826,8 @@ TcpSocketBase::SetupEndpoint ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-  NS_ASSERT (ipv4 != nullptr);
-  if (ipv4->GetRoutingProtocol () == nullptr)
+  NS_ASSERT (ipv4);
+  if (!ipv4->GetRoutingProtocol ())
     {
       NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
     }
@@ -2839,7 +2839,7 @@ TcpSocketBase::SetupEndpoint ()
   Ptr<Ipv4Route> route;
   Ptr<NetDevice> oif = m_boundnetdevice;
   route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
-  if (route == 0)
+  if (!route)
     {
       NS_LOG_LOGIC ("Route to " << m_endPoint->GetPeerAddress () << " does not exist");
       NS_LOG_ERROR (errno_);
@@ -2856,8 +2856,8 @@ TcpSocketBase::SetupEndpoint6 ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  NS_ASSERT (ipv6 != nullptr);
-  if (ipv6->GetRoutingProtocol () == nullptr)
+  NS_ASSERT (ipv6);
+  if (!ipv6->GetRoutingProtocol ())
     {
       NS_FATAL_ERROR ("No Ipv6RoutingProtocol in the node");
     }
@@ -2869,7 +2869,7 @@ TcpSocketBase::SetupEndpoint6 ()
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif = m_boundnetdevice;
   route = ipv6->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
-  if (route == nullptr)
+  if (!route)
     {
       NS_LOG_LOGIC ("Route to " << m_endPoint6->GetPeerAddress () << " does not exist");
       NS_LOG_ERROR (errno_);

@@ -81,7 +81,7 @@ V4TraceRouteHelper::PrintTraceRouteAt (Ptr<Node> node, Ptr<OutputStreamWrapper> 
   for (uint32_t i = 0; i < node->GetNApplications (); ++i)
     {
       trace = node->GetApplication (i)->GetObject <V4TraceRoute> ();
-      if (trace != NULL)
+      if (trace)
         {
           *stream->GetStream () << "Tracing Route from Node " << node->GetId () << "\n";
           trace->Print (stream);

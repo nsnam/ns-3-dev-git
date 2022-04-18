@@ -92,7 +92,7 @@ WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
 bool
 WifiMacQueue::TtlExceeded (Ptr<const WifiMacQueueItem> item, const Time& now)
 {
-  NS_ASSERT (item != nullptr && item->IsQueued ());
+  NS_ASSERT (item && item->IsQueued ());
   auto it = item->m_queueIt;
   return TtlExceeded (it, now);
 }
@@ -226,9 +226,9 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekByAddress (Mac48Address dest, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << dest << item);
-  NS_ASSERT (item == nullptr || item->IsQueued ());
+  NS_ASSERT ( !item || item->IsQueued ());
 
-  ConstIterator it = (item != nullptr ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
+  ConstIterator it = (item ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
   const Time now = Simulator::Now ();
   while (it != GetContainer ().cend ())
     {
@@ -252,9 +252,9 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekByTid (uint8_t tid, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << +tid << item);
-  NS_ASSERT (item == nullptr || item->IsQueued ());
+  NS_ASSERT ( !item || item->IsQueued ());
 
-  ConstIterator it = (item != nullptr ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
+  ConstIterator it = (item ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
   const Time now = Simulator::Now ();
   while (it != GetContainer ().cend ())
     {
@@ -277,9 +277,9 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << +tid << dest << item);
-  NS_ASSERT (item == nullptr || item->IsQueued ());
+  NS_ASSERT ( !item || item->IsQueued ());
 
-  ConstIterator it = (item != nullptr ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
+  ConstIterator it = (item ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
   const Time now = Simulator::Now ();
   while (it != GetContainer ().cend ())
     {
@@ -304,9 +304,9 @@ WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPacke
                                   Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << item);
-  NS_ASSERT (item == nullptr || item->IsQueued ());
+  NS_ASSERT ( !item || item->IsQueued ());
 
-  ConstIterator it = (item != nullptr ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
+  ConstIterator it = (item ? std::next (item->m_queueIt) : GetContainer ().cbegin ());
   const Time now = Simulator::Now ();
   while (it != GetContainer ().cend ())
     {
@@ -347,7 +347,7 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::Remove (Ptr<const WifiMacQueueItem> item, bool removeExpired)
 {
   NS_LOG_FUNCTION (this << item << removeExpired);
-  NS_ASSERT (item != 0 && item->IsQueued ());
+  NS_ASSERT (item && item->IsQueued ());
 
   if (!removeExpired)
     {
@@ -552,7 +552,7 @@ WifiMacQueue::DoDequeue (ConstIterator pos)
 
   Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoDequeue (pos);
 
-  if (item != 0 && item->GetHeader ().IsQosData ())
+  if (item && item->GetHeader ().IsQosData ())
     {
       WifiAddressTidPair addressTidPair (item->GetHeader ().GetAddr1 (), item->GetHeader ().GetQosTid ());
       NS_ASSERT (m_nQueuedPackets.find (addressTidPair) != m_nQueuedPackets.end ());
@@ -563,7 +563,7 @@ WifiMacQueue::DoDequeue (ConstIterator pos)
       m_nQueuedBytes[addressTidPair] -= item->GetSize ();
     }
 
-  if (item != 0)
+  if (item)
     {
       NS_ASSERT (item->IsQueued ());
       item->m_queueAc = AC_UNDEF;
@@ -577,7 +577,7 @@ WifiMacQueue::DoRemove (ConstIterator pos)
 {
   Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoRemove (pos);
 
-  if (item != 0 && item->GetHeader ().IsQosData ())
+  if (item && item->GetHeader ().IsQosData ())
     {
       WifiAddressTidPair addressTidPair (item->GetHeader ().GetAddr1 (), item->GetHeader ().GetQosTid ());
       NS_ASSERT (m_nQueuedPackets.find (addressTidPair) != m_nQueuedPackets.end ());
@@ -588,7 +588,7 @@ WifiMacQueue::DoRemove (ConstIterator pos)
       m_nQueuedBytes[addressTidPair] -= item->GetSize ();
     }
 
-  if (item != 0)
+  if (item)
     {
       NS_ASSERT (item->IsQueued ());
       item->m_queueAc = AC_UNDEF;

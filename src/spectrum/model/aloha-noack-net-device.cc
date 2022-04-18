@@ -410,7 +410,7 @@ AlohaNoackNetDevice::StartTransmission ()
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ASSERT (m_currentPkt != 0);
+  NS_ASSERT (m_currentPkt);
   NS_ASSERT (m_state == IDLE);
 
   if (m_phyMacTxStartCallback (m_currentPkt))

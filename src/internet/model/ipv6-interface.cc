@@ -84,7 +84,7 @@ void Ipv6Interface::DoSetup ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_node == 0 || m_device == 0)
+  if (!m_node || !m_device)
     {
       return;
     }
@@ -382,7 +382,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, const Ipv6Header & hdr, Ipv6Address des
       return;
     }
 
-  NS_ASSERT (m_tc != 0);
+  NS_ASSERT (m_tc);
 
   /* check if destination is for one of our interface */
   for (Ipv6InterfaceAddressListCI it = m_addresses.begin (); it != m_addresses.end (); ++it)

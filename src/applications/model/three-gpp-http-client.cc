@@ -414,7 +414,7 @@ ThreeGppHttpClient::OpenConnection ()
                              << " GetErrNo= " << m_socket->GetErrno () << ".");
         }
 
-      NS_ASSERT_MSG (m_socket != 0, "Failed creating socket.");
+      NS_ASSERT_MSG (m_socket, "Failed creating socket.");
 
       SwitchToState (CONNECTING);
 

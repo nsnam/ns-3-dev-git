@@ -350,7 +350,7 @@ HtFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be
   // expired and the queue might be empty.
-  if (peekedItem == 0)
+  if (!peekedItem)
     {
       NS_LOG_DEBUG ("No frames available for transmission");
       return false;
@@ -395,7 +395,7 @@ HtFrameExchangeManager::SendMpduFromBaManager (Ptr<QosTxop> edca, Time available
   // First, check if there is a BAR to be transmitted
   Ptr<const WifiMacQueueItem> peekedItem = edca->GetBaManager ()->GetBar (false);
 
-  if (peekedItem == 0)
+  if (!peekedItem)
     {
       NS_LOG_DEBUG ("Block Ack Manager returned no frame to send");
       return false;
@@ -443,7 +443,7 @@ bool
 HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
                                        Time availableTime, bool initialFrame)
 {
-  NS_ASSERT (peekedItem != 0 && peekedItem->GetHeader ().IsQosData ()
+  NS_ASSERT (peekedItem && peekedItem->GetHeader ().IsQosData ()
              && !peekedItem->GetHeader ().GetAddr1 ().IsBroadcast ()
              && !peekedItem->IsFragment ());
   NS_LOG_FUNCTION (this << *peekedItem << availableTime << initialFrame);
@@ -453,7 +453,7 @@ HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peekedItem->GetHeader (), m_allowedWidth);
   Ptr<WifiMacQueueItem> mpdu = edca->GetNextMpdu (peekedItem, txParams, availableTime, initialFrame);
 
-  if (mpdu == nullptr)
+  if (!mpdu)
     {
       NS_LOG_DEBUG ("Not enough time to transmit a frame");
       return false;
@@ -488,7 +488,7 @@ void
 HtFrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const
 {
   NS_LOG_FUNCTION (this << acknowledgment);
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
 
   if (acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
@@ -584,7 +584,7 @@ HtFrameExchangeManager::TransmissionSucceeded (void)
 {
   NS_LOG_DEBUG (this);
 
-  if (m_edca != 0 && m_edca->GetTxopLimit (m_linkId).IsZero () && m_edca->GetBaManager ()->GetBar (false) != 0)
+  if (m_edca && m_edca->GetTxopLimit (m_linkId).IsZero () && m_edca->GetBaManager ()->GetBar (false))
     {
       // A TXOP limit of 0 indicates that the TXOP holder may transmit or cause to
       // be transmitted (as responses) the following within the current TXOP:
@@ -690,7 +690,7 @@ HtFrameExchangeManager::GetPsduDurationId (Time txDuration, const WifiTxParamete
 {
   NS_LOG_FUNCTION (this << txDuration << &txParams);
 
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
 
   if (m_edca->GetTxopLimit (m_linkId).IsZero ())
     {
@@ -760,7 +760,7 @@ HtFrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVecto
 {
   NS_LOG_FUNCTION (this << *rts << txVector);
 
-  if (m_psdu == 0)
+  if (!m_psdu)
     {
       // A CTS Timeout occurred when protecting a single MPDU is handled by the
       // parent classes
@@ -919,7 +919,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpd
                                                  const WifiTxParameters& txParams,
                                                  Time ppduDurationLimit) const
 {
-  NS_ASSERT (mpdu != 0);
+  NS_ASSERT (mpdu);
   NS_LOG_FUNCTION (this << *mpdu << &txParams << ppduDurationLimit);
 
   Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
@@ -984,7 +984,7 @@ bool
 HtFrameExchangeManager::TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu, WifiTxParameters& txParams,
                                           Time availableTime) const
 {
-  NS_ASSERT (msdu != 0 && msdu->GetHeader ().IsQosData ());
+  NS_ASSERT (msdu && msdu->GetHeader ().IsQosData ());
   NS_LOG_FUNCTION (this << *msdu << &txParams << availableTime);
 
   // check if aggregating the given MSDU requires a different protection method
@@ -1060,7 +1060,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu (Ptr<const WifiMacQueueIte
                                                        const WifiTxParameters& txParams,
                                                        Time ppduDurationLimit) const
 {
-  NS_ASSERT (msdu != 0 && msdu->GetHeader ().IsQosData ());
+  NS_ASSERT (msdu && msdu->GetHeader ().IsQosData ());
   NS_LOG_FUNCTION (this << *msdu << &txParams << ppduDurationLimit);
 
   std::pair<uint16_t, uint32_t> ret = txParams.GetSizeIfAggregateMsdu (msdu);
@@ -1085,7 +1085,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu (Ptr<const WifiMacQueueIte
     }
 
   const WifiTxParameters::PsduInfo* info = txParams.GetPsduInfo (msdu->GetHeader ().GetAddr1 ());
-  NS_ASSERT (info != nullptr);
+  NS_ASSERT (info);
 
   if (info->ampduSize > 0)
     {
@@ -1110,7 +1110,7 @@ HtFrameExchangeManager::BlockAckTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector&
   bool resetCw;
   MissedBlockAck (psdu, txVector, resetCw);
 
-  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca);
 
   if (resetCw)
     {
@@ -1283,7 +1283,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
   if (hdr.IsCtl ())
     {
       if (hdr.IsCts () && m_txTimer.IsRunning () && m_txTimer.GetReason () == WifiTxTimer::WAIT_CTS
-          && m_psdu != 0)
+          && m_psdu)
         {
           NS_ABORT_MSG_IF (inAmpdu, "Received CTS as part of an A-MPDU");
           NS_ASSERT (hdr.GetAddr1 () == m_self);

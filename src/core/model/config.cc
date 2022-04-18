@@ -457,7 +457,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   // the root of the "/Names" namespace, so we just ignore it and move on to
   // the next segment.
   //
-  if (root == 0)
+  if (!root)
     {
       std::string::size_type offset = path.find ("/Names");
       if (offset == 0)
@@ -492,7 +492,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   // a path that is not in the "/Names" namespace.  We will have previously
   // found any matches, so we just bail out.
   //
-  if (root == 0)
+  if (!root)
     {
       return;
     }
@@ -504,7 +504,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
       NS_LOG_DEBUG ("GetObject=" << tidString << " on path=" << GetResolvedPath ());
       TypeId tid = TypeId::LookupByName (tidString);
       Ptr<Object> object = root->GetObject<Object> (tid);
-      if (object == 0)
+      if (!object)
         {
           NS_LOG_DEBUG ("GetObject (" << tidString << ") failed on path=" << GetResolvedPath ());
           return;
@@ -540,7 +540,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
                   PointerValue pValue;
                   root->GetAttribute (info.name, pValue);
                   Ptr<Object> object = pValue.Get<Object> ();
-                  if (object == 0)
+                  if (!object)
                     {
                       NS_LOG_ERROR ("Requested object name=\"" << item <<
                                     "\" exists on path=\"" << GetResolvedPath () << "\""
@@ -878,7 +878,7 @@ bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
       if (tmp.name == paramName)
         {
           Ptr<AttributeValue> v = tmp.checker->CreateValidValue (value);
-          if (v == 0)
+          if (!v)
             {
               return false;
             }

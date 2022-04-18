@@ -206,10 +206,10 @@ LteTestRrc::Start ()
 
   bool haveContext = false;
   Ptr<Node> node;
-  if (m_device != 0)
+  if (m_device)
     {
       node = m_device->GetNode ();
-      if (node != 0)
+      if (node)
         {
           haveContext = true;
         }
@@ -476,10 +476,10 @@ LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
   NS_LOG_FUNCTION (this << time << bytes);
   bool haveContext = false;
   Ptr<Node> node;
-  if (m_device != 0)
+  if (m_device)
     {
       node = m_device->GetNode ();
-      if (node != 0)
+      if (node)
         {
           haveContext = true;
         }

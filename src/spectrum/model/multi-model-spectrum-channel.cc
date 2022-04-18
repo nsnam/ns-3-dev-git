@@ -135,7 +135,7 @@ MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
 
   Ptr<const SpectrumModel> rxSpectrumModel = phy->GetRxSpectrumModel ();
 
-  NS_ASSERT_MSG ((0 != rxSpectrumModel), "phy->GetRxSpectrumModel () returned 0. Please check that the RxSpectrumModel is already set for the phy before calling MultiModelSpectrumChannel::AddRx (phy)");
+  NS_ASSERT_MSG (rxSpectrumModel, "phy->GetRxSpectrumModel () returned 0. Please check that the RxSpectrumModel is already set for the phy before calling MultiModelSpectrumChannel::AddRx (phy)");
 
   SpectrumModelUid_t rxSpectrumModelUid = rxSpectrumModel->GetUid ();
 
@@ -303,7 +303,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   double rxAntennaGain = 0;
                   double propagationGainDb = 0;
                   double pathLossDb = 0;
-                  if (rxParams->txAntenna != 0)
+                  if (rxParams->txAntenna)
                     {
                       Angles txAngles (receiverMobility->GetPosition (), txMobility->GetPosition ());
                       txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
@@ -311,7 +311,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                       pathLossDb -= txAntennaGain;
                     }
                   Ptr<AntennaModel> rxAntenna = DynamicCast<AntennaModel>((*rxPhyIterator)->GetAntenna ());
-                  if (rxAntenna != 0)
+                  if (rxAntenna)
                     {
                       Angles rxAngles (txMobility->GetPosition (), receiverMobility->GetPosition ());
                       rxAntennaGain = rxAntenna->GetGainDb (rxAngles);

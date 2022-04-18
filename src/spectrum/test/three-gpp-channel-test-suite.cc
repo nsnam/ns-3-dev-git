@@ -265,7 +265,7 @@ ThreeGppChannelMatrixUpdateTest::DoGetChannel (Ptr<ThreeGppChannelModel> channel
   // retrieve the channel matrix
   Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
 
-  if (m_currentChannel == 0)
+  if (!m_currentChannel)
   {
     // this is the first time we compute the channel matrix, we initialize
     // m_currentChannel

@@ -646,7 +646,7 @@ PeerLink::SendPeerLinkOpen ()
 {
   IePeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
-  NS_ASSERT (m_macPlugin != 0);
+  NS_ASSERT (m_macPlugin);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
                                             m_configuration);
 }

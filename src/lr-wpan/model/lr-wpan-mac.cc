@@ -215,7 +215,7 @@ LrWpanMac::DoInitialize ()
 void
 LrWpanMac::DoDispose ()
 {
-  if (m_csmaCa != 0)
+  if (m_csmaCa)
     {
       m_csmaCa->Dispose ();
       m_csmaCa = 0;

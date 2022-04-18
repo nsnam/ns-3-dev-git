@@ -326,7 +326,7 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
       return;
     }
   Ptr<const Packet> aggregate = HandleFragments (mpdu->GetPacket (), hdr, originator);
-  if (aggregate == 0)
+  if (!aggregate)
     {
       return;
     }

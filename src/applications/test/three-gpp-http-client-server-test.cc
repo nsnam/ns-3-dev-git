@@ -414,7 +414,7 @@ ThreeGppHttpObjectTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (serverApplications.GetN (), 1,
                          "Invalid number of HTTP servers has been installed");
   Ptr<ThreeGppHttpServer> httpServer = serverApplications.Get (0)->GetObject<ThreeGppHttpServer> ();
-  NS_TEST_ASSERT_MSG_NE (httpServer, 0,
+  NS_TEST_ASSERT_MSG_NE (httpServer, nullptr,
                          "HTTP server installation fails to produce a proper type");
   httpServer->SetMtuSize (m_mtuSize);
 
@@ -426,7 +426,7 @@ ThreeGppHttpObjectTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (clientApplications.GetN (), 1,
                          "Invalid number of HTTP clients has been installed");
   Ptr<ThreeGppHttpClient> httpClient = clientApplications.Get (0)->GetObject<ThreeGppHttpClient> ();
-  NS_TEST_ASSERT_MSG_NE (httpClient, 0,
+  NS_TEST_ASSERT_MSG_NE (httpClient, nullptr,
                          "HTTP client installation fails to produce a proper type");
 
   // Uplink (requests) trace sources.

@@ -51,7 +51,7 @@ EnergySourceHelper::Install (NodeContainer c) const
        */
       Ptr<EnergySourceContainer> EnergySourceContainerOnNode =
         (*i)->GetObject<EnergySourceContainer> ();
-      if (EnergySourceContainerOnNode == NULL)
+      if (!EnergySourceContainerOnNode)
         {
           ObjectFactory fac;
           fac.SetTypeId ("ns3::EnergySourceContainer");
@@ -91,8 +91,8 @@ DeviceEnergyModelContainer
 DeviceEnergyModelHelper::Install (Ptr<NetDevice> device,
                                   Ptr<EnergySource> source) const
 {
-  NS_ASSERT (device != NULL);
-  NS_ASSERT (source != NULL);
+  NS_ASSERT (device);
+  NS_ASSERT (source);
   // check to make sure source and net device are on the same node
   NS_ASSERT (device->GetNode () == source->GetNode ());
   DeviceEnergyModelContainer container (DoInstall (device, source));

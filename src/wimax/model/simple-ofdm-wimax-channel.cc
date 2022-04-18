@@ -168,7 +168,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
         {
           double distance = 0;
           receiverMobility = (*iter)->GetDevice ()->GetNode ()->GetObject<MobilityModel> ();
-          if (receiverMobility != 0 && senderMobility != 0 && m_loss != 0)
+          if (receiverMobility && senderMobility && m_loss)
             {
               distance = senderMobility->GetDistanceFrom (receiverMobility);
               delay =  Seconds (distance/300000000.0);
@@ -184,7 +184,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
                                            burst);
           Ptr<Object> dstNetDevice = (*iter)->GetDevice ();
           uint32_t dstNode;
-          if (dstNetDevice == 0)
+          if (!dstNetDevice)
             {
               dstNode = 0xffffffff;
             }

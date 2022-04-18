@@ -116,7 +116,7 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet,
       optionType = *(data + processedSize);
       ipv6Option = ipv6OptionDemux->GetOption (optionType);
 
-      if (ipv6Option == 0)
+      if (!ipv6Option)
         {
           optionType >>= 6;
           switch (optionType)
@@ -845,7 +845,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet,
   Ptr<Ipv6ExtensionRoutingDemux> ipv6ExtensionRoutingDemux = GetNode ()->GetObject<Ipv6ExtensionRoutingDemux> ();
   Ptr<Ipv6ExtensionRouting> ipv6ExtensionRouting = ipv6ExtensionRoutingDemux->GetExtensionRouting (routingTypeRouting);
 
-  if (ipv6ExtensionRouting == 0)
+  if (!ipv6ExtensionRouting)
     {
       if (routingSegmentsLeft == 0)
         {

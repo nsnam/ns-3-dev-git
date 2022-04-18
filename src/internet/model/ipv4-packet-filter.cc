@@ -59,7 +59,7 @@ bool
 Ipv4PacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 {
   NS_LOG_FUNCTION (this << item);
-  return (DynamicCast<Ipv4QueueDiscItem> (item) != 0);
+  return bool (DynamicCast<Ipv4QueueDiscItem> (item));
 }
 
 // ------------------------------------------------------------------------- //

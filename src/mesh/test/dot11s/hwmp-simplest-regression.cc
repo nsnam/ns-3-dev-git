@@ -91,7 +91,7 @@ HwmpSimplestRegressionTest::ResetPosition ()
 {
   Ptr<Object> object = m_nodes->Get (1);
   Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-  if (model == 0)
+  if (!model)
     {
       return;
     }

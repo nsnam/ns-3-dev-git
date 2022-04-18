@@ -190,7 +190,7 @@ void
 CreateObjectTestCase::DoRun (void)
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to CreateObject<BaseA>");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<BaseA>");
 
   //
   // Since baseA is a BaseA, we must be able to successfully ask for a BaseA.
@@ -200,16 +200,16 @@ CreateObjectTestCase::DoRun (void)
   //
   // Since BaseA is a BaseA and not a DerivedA, we must not find a DerivedA if we look.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<DerivedA> (), 0, "GetObject() of unrelated type returns nonzero pointer");
+  NS_TEST_ASSERT_MSG_NE (!baseA->GetObject<DerivedA> (), 0, "GetObject() of unrelated type returns nonzero pointer");
 
   //
   // Since baseA is not a BaseA, we must not be able to ask for a DerivedA even if we
   // try an implied cast back to a BaseA.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), 0, "GetObject() of unrelated returns nonzero Ptr");
+  NS_TEST_ASSERT_MSG_NE (!baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), 0, "GetObject() of unrelated returns nonzero Ptr");
 
   baseA = CreateObject<DerivedA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to CreateObject<DerivedA> with implicit cast to BaseA");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<DerivedA> with implicit cast to BaseA");
 
   //
   // If we create a DerivedA and cast it to a BaseA, then if we do a GetObject for
@@ -257,13 +257,13 @@ void
 AggregateObjectTestCase::DoRun (void)
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to CreateObject<BaseA>");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<BaseA>");
 
   Ptr<BaseB> baseB = CreateObject<BaseB> ();
-  NS_TEST_ASSERT_MSG_NE (baseB, 0, "Unable to CreateObject<BaseB>");
+  NS_TEST_ASSERT_MSG_NE (baseB, nullptr, "Unable to CreateObject<BaseB>");
 
   Ptr<BaseB> baseBCopy = baseB;
-  NS_TEST_ASSERT_MSG_NE (baseBCopy, 0, "Unable to copy BaseB");
+  NS_TEST_ASSERT_MSG_NE (baseBCopy, nullptr, "Unable to copy BaseB");
 
   //
   // Make an aggregation of a BaseA object and a BaseB object.
@@ -274,47 +274,47 @@ AggregateObjectTestCase::DoRun (void)
   // We should be able to ask the aggregation (through baseA) for the BaseA part
   // of the aggregation.
   //
-  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseA> (), 0, "Cannot GetObject (through baseA) for BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseA> (), nullptr, "Cannot GetObject (through baseA) for BaseA Object");
 
   //
   // There is no DerivedA in this picture, so we should not be able to GetObject
   // for that type.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<DerivedA> (), 0, "Unexpectedly found a DerivedA through baseA");
+  NS_TEST_ASSERT_MSG_NE (!baseA->GetObject<DerivedA> (), 0, "Unexpectedly found a DerivedA through baseA");
 
   //
   // We should be able to ask the aggregation (through baseA) for the BaseB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseB> (), 0, "Cannot GetObject (through baseA) for BaseB Object");
+  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseB> (), nullptr, "Cannot GetObject (through baseA) for BaseB Object");
 
   //
   // There is no DerivedB in this picture, so we should not be able to GetObject
   // for that type.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<DerivedB> (), 0, "Unexpectedly found a DerivedB through baseA");
+  NS_TEST_ASSERT_MSG_NE (!baseA->GetObject<DerivedB> (), 0, "Unexpectedly found a DerivedB through baseA");
 
   //
   // We should be able to ask the aggregation (through baseA) for the BaseB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseB> (), 0, "Cannot GetObject (through baseB) for BaseB Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseB> (), nullptr, "Cannot GetObject (through baseB) for BaseB Object");
 
   //
   // There is no DerivedB in this picture, so we should not be able to GetObject
   // for that type.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseB->GetObject<DerivedB> (), 0, "Unexpectedly found a DerivedB through baseB");
+  NS_TEST_ASSERT_MSG_NE (!baseB->GetObject<DerivedB> (), 0, "Unexpectedly found a DerivedB through baseB");
 
   //
   // We should be able to ask the aggregation (through baseB) for the BaseA part
   // of the aggregation.
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseA> (), 0, "Cannot GetObject (through baseB) for BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseA> (), nullptr, "Cannot GetObject (through baseB) for BaseA Object");
 
   //
   // There is no DerivedA in this picture, so we should not be able to GetObject
   // for that type.
   //
-  NS_TEST_ASSERT_MSG_EQ (baseB->GetObject<DerivedA> (), 0, "Unexpectedly found a DerivedA through baseB");
+  NS_TEST_ASSERT_MSG_NE (!baseB->GetObject<DerivedA> (), 0, "Unexpectedly found a DerivedA through baseB");
 
   //
   // baseBCopy is a copy of the original Ptr to the Object BaseB.  Even though
@@ -322,16 +322,16 @@ AggregateObjectTestCase::DoRun (void)
   // it points was used, therefore, we should be able to use baseBCopy as if
   // it were baseB and get a BaseA out of the aggregation.
   //
-  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<BaseA> (), 0, "Cannot GetObject (through baseBCopy) for a BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<BaseA> (), nullptr, "Cannot GetObject (through baseBCopy) for a BaseA Object");
 
   //
   // Now, change the underlying type of the objects to be the derived types.
   //
   baseA = CreateObject<DerivedA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to CreateObject<DerivedA> with implicit cast to BaseA");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<DerivedA> with implicit cast to BaseA");
 
   baseB = CreateObject<DerivedB> ();
-  NS_TEST_ASSERT_MSG_NE (baseB, 0, "Unable to CreateObject<DerivedB> with implicit cast to BaseB");
+  NS_TEST_ASSERT_MSG_NE (baseB, nullptr, "Unable to CreateObject<DerivedB> with implicit cast to BaseB");
 
   //
   // Create an aggregation of two objects, both of the derived types; and leave
@@ -343,24 +343,24 @@ AggregateObjectTestCase::DoRun (void)
   //
   // We should be able to ask the aggregation (through baseA) for the DerivedB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<DerivedB> (), 0, "Cannot GetObject (through baseA) for DerivedB Object");
+  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<DerivedB> (), nullptr, "Cannot GetObject (through baseA) for DerivedB Object");
 
   //
   // Since the DerivedB is also a BaseB, we should be able to ask the aggregation
   // (through baseA) for the BaseB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseB> (), 0, "Cannot GetObject (through baseA) for BaseB Object");
+  NS_TEST_ASSERT_MSG_NE (baseA->GetObject<BaseB> (), nullptr, "Cannot GetObject (through baseA) for BaseB Object");
 
   //
   // We should be able to ask the aggregation (through baseB) for the DerivedA part
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<DerivedA> (), 0, "Cannot GetObject (through baseB) for DerivedA Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<DerivedA> (), nullptr, "Cannot GetObject (through baseB) for DerivedA Object");
 
   //
   // Since the DerivedA is also a BaseA, we should be able to ask the aggregation
   // (through baseB) for the BaseA part
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseA> (), 0, "Cannot GetObject (through baseB) for BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseA> (), nullptr, "Cannot GetObject (through baseB) for BaseA Object");
 
   //
   // baseBCopy is a copy of the original Ptr to the Object BaseB.  Even though
@@ -369,20 +369,20 @@ AggregateObjectTestCase::DoRun (void)
   // it were baseB (same underlying Object) and get a BaseA and a DerivedA out
   // of the aggregation through baseBCopy.
   //
-  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<BaseA> (), 0, "Cannot GetObject (through baseBCopy) for a BaseA Object");
-  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<DerivedA> (), 0, "Cannot GetObject (through baseBCopy) for a BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<BaseA> (), nullptr, "Cannot GetObject (through baseBCopy) for a BaseA Object");
+  NS_TEST_ASSERT_MSG_NE (baseBCopy->GetObject<DerivedA> (), nullptr, "Cannot GetObject (through baseBCopy) for a BaseA Object");
 
   //
   // Since the Ptr<BaseB> is actually a DerivedB, we should be able to ask the
   // aggregation (through baseB) for the DerivedB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<DerivedB> (), 0, "Cannot GetObject (through baseB) for DerivedB Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<DerivedB> (), nullptr, "Cannot GetObject (through baseB) for DerivedB Object");
 
   //
   // Since the DerivedB was cast to a BaseB, we should be able to ask the
   // aggregation (through baseB) for the BaseB part
   //
-  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseB> (), 0, "Cannot GetObject (through baseB) for BaseB Object");
+  NS_TEST_ASSERT_MSG_NE (baseB->GetObject<BaseB> (), nullptr, "Cannot GetObject (through baseB) for BaseB Object");
 
   //
   // Make sure reference counting works in the aggregate.  Create two Objects
@@ -390,16 +390,16 @@ AggregateObjectTestCase::DoRun (void)
   // keep a reference to both and the Object we released should still be there.
   //
   baseA = CreateObject<BaseA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to CreateObject<BaseA>");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to CreateObject<BaseA>");
 
   baseB = CreateObject<BaseB> ();
-  NS_TEST_ASSERT_MSG_NE (baseB, 0, "Unable to CreateObject<BaseA>");
+  NS_TEST_ASSERT_MSG_NE (baseB, nullptr, "Unable to CreateObject<BaseA>");
 
   baseA->AggregateObject (baseB);
   baseA = 0;
 
   baseA = baseB->GetObject<BaseA> ();
-  NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to GetObject on released object");
+  NS_TEST_ASSERT_MSG_NE (baseA, nullptr, "Unable to GetObject on released object");
 }
 
 /**
@@ -435,17 +435,17 @@ ObjectFactoryTestCase::DoRun (void)
   //
   factory.SetTypeId (BaseA::GetTypeId ());
   Ptr<Object> a = factory.Create ();
-  NS_TEST_ASSERT_MSG_NE (a, 0, "Unable to factory.Create() a BaseA");
+  NS_TEST_ASSERT_MSG_EQ (!a, 0, "Unable to factory.Create() a BaseA");
 
   //
   // What we made should be a BaseA, not have anything to do with a DerivedA
   //
-  NS_TEST_ASSERT_MSG_EQ (a->GetObject<BaseA> (DerivedA::GetTypeId ()), 0, "BaseA is unexpectedly a DerivedA also");
+  NS_TEST_ASSERT_MSG_NE (!a->GetObject<BaseA> (DerivedA::GetTypeId ()), 0, "BaseA is unexpectedly a DerivedA also");
 
   //
   // The BaseA we got should not respond to a GetObject for DerivedA
   //
-  NS_TEST_ASSERT_MSG_EQ (a->GetObject<DerivedA> (), 0, "BaseA unexpectedly responds to GetObject for DerivedA");
+  NS_TEST_ASSERT_MSG_NE (!a->GetObject<DerivedA> (), 0, "BaseA unexpectedly responds to GetObject for DerivedA");
 
   //
   // Now tell the factory to make DerivedA Objects and create one with an
@@ -472,7 +472,7 @@ ObjectFactoryTestCase::DoRun (void)
   // be able to GetOBject for a DerivedA since this would break the type
   // declaration.
   //
-  NS_TEST_ASSERT_MSG_NE (a->GetObject<DerivedA> (), 0, "Unexpectedly able to work around C++ type system");
+  NS_TEST_ASSERT_MSG_EQ (!a->GetObject<DerivedA> (), 0, "Unexpectedly able to work around C++ type system");
 }
 
 /**

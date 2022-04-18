@@ -183,7 +183,7 @@ uint16_t
 MeshWifiInterfaceMac::GetFrequencyChannel () const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetWifiPhy () != 0); // need PHY to set/get channel
+  NS_ASSERT (GetWifiPhy ()); // need PHY to set/get channel
   return GetWifiPhy ()->GetChannelNumber ();
 }
 
@@ -191,7 +191,7 @@ void
 MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetWifiPhy () != 0); // need PHY to set/get channel
+  NS_ASSERT (GetWifiPhy ()); // need PHY to set/get channel
   /**
    * \todo
    * Correct channel switching is:

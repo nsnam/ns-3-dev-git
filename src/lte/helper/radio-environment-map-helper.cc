@@ -196,7 +196,7 @@ RadioEnvironmentMapHelper::Install ()
       NS_FATAL_ERROR ("only one REM supported per instance of RadioEnvironmentMapHelper");
     }
 
-  if (m_channel == nullptr) // if Channel attribute is not set, then use the ChannelPath attribute
+  if (!m_channel) // if Channel attribute is not set, then use the ChannelPath attribute
     {
       Config::MatchContainer match = Config::LookupMatches (m_channelPath);
       if (match.GetN () != 1)
@@ -204,7 +204,7 @@ RadioEnvironmentMapHelper::Install ()
           NS_FATAL_ERROR ("Lookup " << m_channelPath << " should have exactly one match");
         }
       m_channel = match.Get (0)->GetObject<SpectrumChannel> ();
-      NS_ABORT_MSG_IF (m_channel == 0, "object at " << m_channelPath << " is not of type SpectrumChannel");
+      NS_ABORT_MSG_IF (!m_channel, "object at " << m_channelPath << " is not of type SpectrumChannel");
     }
 
   m_outFile.open (m_outputFile.c_str ());

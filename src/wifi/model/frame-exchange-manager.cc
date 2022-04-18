@@ -93,7 +93,7 @@ FrameExchangeManager::DoDispose (void)
   m_channelAccessManager = 0;
   m_protectionManager = 0;
   m_ackManager = 0;
-  if (m_phy != 0)
+  if (m_phy)
     {
       m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
                                             MakeCallback (&FrameExchangeManager::RxStartIndication, this));
@@ -177,7 +177,7 @@ void
 FrameExchangeManager::ResetPhy (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_phy != nullptr)
+  if (m_phy)
     {
       m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
                                             MakeCallback (&FrameExchangeManager::RxStartIndication, this));
@@ -279,7 +279,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
 {
   NS_LOG_FUNCTION (this << dcf << allowedWidth);
 
-  NS_ASSERT (m_mpdu == 0);
+  NS_ASSERT (!m_mpdu);
   if (m_txTimer.IsRunning ())
     {
       m_txTimer.Cancel ();
@@ -302,7 +302,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
 
   m_dcf->NotifyChannelAccessed (m_linkId);
   Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
-  NS_ASSERT (mpdu != 0);
+  NS_ASSERT (mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 
   // assign a sequence number if this is not a fragment nor a retransmission
@@ -319,8 +319,8 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   // check if the MSDU needs to be fragmented
   mpdu = GetFirstFragmentIfNeeded (mpdu);
 
-  NS_ASSERT (m_protectionManager != 0);
-  NS_ASSERT (m_ackManager != 0);
+  NS_ASSERT (m_protectionManager);
+  NS_ASSERT (m_ackManager);
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
   txParams.m_protection = m_protectionManager->TryAddMpdu (mpdu, txParams);
@@ -341,7 +341,7 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
   if (mpdu->IsFragment ())
     {
       // a fragment cannot be further fragmented
-      NS_ASSERT (m_fragmentedPacket != 0);
+      NS_ASSERT (m_fragmentedPacket);
     }
   else if (m_mac->GetWifiRemoteStationManager ()->NeedFragmentation (mpdu))
     {
@@ -486,7 +486,7 @@ void
 FrameExchangeManager::CalculateProtectionTime (WifiProtection* protection) const
 {
   NS_LOG_FUNCTION (this << protection);
-  NS_ASSERT (protection != nullptr);
+  NS_ASSERT (protection);
 
   if (protection->method == WifiProtection::NONE)
     {
@@ -515,7 +515,7 @@ void
 FrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const
 {
   NS_LOG_FUNCTION (this << acknowledgment);
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
 
   if (acknowledgment->method == WifiAcknowledgment::NONE)
     {
@@ -898,10 +898,10 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
   // sent. As an approximation, we consider the frame peeked from the queues of the AC.
   Ptr<QosTxop> qosTxop = (txop->IsQosTxop () ? StaticCast<QosTxop> (txop) : nullptr);
 
-  Ptr<const WifiMacQueueItem> mpdu = (qosTxop != nullptr ? qosTxop->PeekNextMpdu ()
+  Ptr<const WifiMacQueueItem> mpdu = (qosTxop ? qosTxop->PeekNextMpdu ()
                                                          : txop->GetWifiMacQueue ()->Peek ());
 
-  if (mpdu != nullptr)
+  if (mpdu)
     {
       if (mpdu->GetHeader ().HasData ()
           && !mpdu->GetHeader ().GetAddr1 ().IsGroup ())
@@ -1108,7 +1108,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
             }
         }
       else if (hdr.IsCts () && m_txTimer.IsRunning () && m_txTimer.GetReason () == WifiTxTimer::WAIT_CTS
-               && m_mpdu != 0)
+               && m_mpdu)
         {
           NS_ABORT_MSG_IF (inAmpdu, "Received CTS as part of an A-MPDU");
           NS_ASSERT (hdr.GetAddr1 () == m_self);
@@ -1126,7 +1126,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
           m_channelAccessManager->NotifyCtsTimeoutResetNow ();
           Simulator::Schedule (m_phy->GetSifs (), &FrameExchangeManager::SendMpdu, this);
         }
-      else if (hdr.IsAck () && m_mpdu != 0 && m_txTimer.IsRunning ()
+      else if (hdr.IsAck () && m_mpdu && m_txTimer.IsRunning ()
                && m_txTimer.GetReason () == WifiTxTimer::WAIT_NORMAL_ACK)
         {
           NS_ASSERT (hdr.GetAddr1 () == m_self);

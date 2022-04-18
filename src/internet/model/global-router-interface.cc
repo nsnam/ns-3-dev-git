@@ -1095,7 +1095,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // interface aggregated.
   //
   Ptr<GlobalRouter> rtrRemote = nodeRemote->GetObject<GlobalRouter> ();
-  if (rtrRemote == 0)
+  if (!rtrRemote)
     {
       // This case is possible if the remote does not participate in global routing
       return;
@@ -1226,7 +1226,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
           // hardly be considered an attached router.
           //
           Ptr<GlobalRouter> rtr = tempNode->GetObject<GlobalRouter> ();
-          if (rtr == 0)
+          if (!rtr)
             {
               NS_LOG_LOGIC ("Node " << tempNode->GetId () << " does not have GlobalRouter interface--skipping");
               continue;
@@ -1737,7 +1737,7 @@ GlobalRouter::FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_
   NS_LOG_LOGIC ("For node " << node->GetId () << " for net device " << nd );
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  if (ipv4 == 0)
+  if (!ipv4)
     {
       NS_LOG_LOGIC ("No Ipv4 interface on node " << node->GetId ());
       return false;

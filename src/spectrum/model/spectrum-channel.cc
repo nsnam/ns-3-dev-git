@@ -150,7 +150,7 @@ SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel (Ptr<PhasedArraySpec
 void
 SpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 {
-  NS_ASSERT (m_propagationDelay == 0);
+  NS_ASSERT (!m_propagationDelay);
   m_propagationDelay = delay;
 }
 

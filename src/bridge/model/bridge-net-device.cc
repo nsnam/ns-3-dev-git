@@ -147,7 +147,7 @@ BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> 
 
   Learn (src, incomingPort);
   Ptr<NetDevice> outPort = GetLearnedState (dst);
-  if (outPort != NULL && outPort != incomingPort)
+  if (outPort && outPort != incomingPort)
     {
       NS_LOG_LOGIC ("Learning bridge state says to use port `" << outPort->GetInstanceTypeId ().GetName () << "'");
       outPort->SendFrom (packet->Copy (), src, dst, protocol);
@@ -398,7 +398,7 @@ BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
   if (!dst.IsGroup ())
     {
       Ptr<NetDevice> outPort = GetLearnedState (dst);
-      if (outPort != NULL)
+      if (outPort)
         {
           outPort->SendFrom (packet, src, dest, protocolNumber);
           return true;

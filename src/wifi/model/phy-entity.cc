@@ -373,7 +373,7 @@ PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannel
   NS_LOG_FUNCTION (this << ppdu << it->second);
 
   Ptr<Event> event = DoGetEvent (ppdu, rxPowersW);
-  if (event == nullptr)
+  if (!event)
     {
       //PPDU should be simply considered as interference (once it has been accounted for in InterferenceHelper)
       return;
@@ -417,7 +417,7 @@ PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannel
         DropPreambleEvent (ppdu, CHANNEL_SWITCHING, endRx);
         break;
       case WifiPhyState::RX:
-        if (m_wifiPhy->m_frameCaptureModel != 0
+        if (m_wifiPhy->m_frameCaptureModel
             && m_wifiPhy->m_frameCaptureModel->IsInCaptureWindow (m_wifiPhy->m_timeLastPreambleDetected)
             && m_wifiPhy->m_frameCaptureModel->CaptureNewFrame (m_wifiPhy->m_currentEvent, event))
           {
@@ -429,7 +429,7 @@ PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannel
           {
             NS_LOG_DEBUG ("Drop packet because already in Rx");
             DropPreambleEvent (ppdu, RXING, endRx);
-            if (m_wifiPhy->m_currentEvent == 0)
+            if (!m_wifiPhy->m_currentEvent)
               {
                 /*
                  * We are here because the non-legacy PHY header has not been successfully received.
@@ -446,9 +446,9 @@ PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannel
         DropPreambleEvent (ppdu, TXING, endRx);
         break;
       case WifiPhyState::CCA_BUSY:
-        if (m_wifiPhy->m_currentEvent != 0)
+        if (m_wifiPhy->m_currentEvent)
           {
-            if (m_wifiPhy->m_frameCaptureModel != 0
+            if (m_wifiPhy->m_frameCaptureModel
                 && m_wifiPhy->m_frameCaptureModel->IsInCaptureWindow (m_wifiPhy->m_timeLastPreambleDetected)
                 && m_wifiPhy->m_frameCaptureModel->CaptureNewFrame (m_wifiPhy->m_currentEvent, event))
               {
@@ -468,7 +468,7 @@ PhyEntity::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannel
           }
         break;
       case WifiPhyState::IDLE:
-        NS_ASSERT (m_wifiPhy->m_currentEvent == 0);
+        NS_ASSERT (!m_wifiPhy->m_currentEvent);
         StartPreambleDetectionPeriod (event);
         break;
       case WifiPhyState::SLEEP:
@@ -835,7 +835,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
         }
     }
 
-  NS_ASSERT (maxEvent != 0);
+  NS_ASSERT (maxEvent);
   if (maxEvent != event)
     {
       NS_LOG_DEBUG ("Receiver got a stronger packet with UID " << maxEvent->GetPpdu ()->GetUid () << " during preamble detection: drop packet with UID " << event->GetPpdu ()->GetUid ());
@@ -1059,7 +1059,7 @@ PhyEntity::GetRxChannelWidth (const WifiTxVector& txVector) const
 double
 PhyEntity::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType /*channelType*/) const
 {
-  return (ppdu == nullptr) ? m_wifiPhy->GetCcaEdThreshold () : m_wifiPhy->GetCcaSensitivityThreshold ();
+  return (!ppdu) ? m_wifiPhy->GetCcaEdThreshold () : m_wifiPhy->GetCcaSensitivityThreshold ();
 }
 
 Time
@@ -1082,7 +1082,7 @@ PhyEntity::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
       m_state->SwitchMaybeToCcaBusy (ccaIndication.value ().first, ccaIndication.value ().second, {});
       return;
     }
-  if (ppdu != nullptr)
+  if (ppdu)
     {
       SwitchMaybeToCcaBusy (nullptr);
     }

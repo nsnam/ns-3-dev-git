@@ -30,7 +30,7 @@ UdpSocketFactoryImpl::UdpSocketFactoryImpl ()
 }
 UdpSocketFactoryImpl::~UdpSocketFactoryImpl ()
 {
-  NS_ASSERT (m_udp == 0);
+  NS_ASSERT (!m_udp);
 }
 
 void

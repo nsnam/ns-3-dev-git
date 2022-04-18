@@ -364,7 +364,7 @@ HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand
     {
       NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
       if (m_currentHeTbPpduUid == ppdu->GetUid ()
-          && GetCurrentEvent () != 0)
+          && GetCurrentEvent ())
         {
           //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayload)
           bool ofdmaStarted = !m_beginOfdmaPayloadRxEvents.empty ();
@@ -483,7 +483,7 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowers
               UpdateInterferenceEvent (event, rxPowersW);
             }
 
-          if ((GetCurrentEvent () != 0) && (GetCurrentEvent ()->GetPpdu ()->GetUid () != ppdu->GetUid ()))
+          if (GetCurrentEvent () && (GetCurrentEvent ()->GetPpdu ()->GetUid () != ppdu->GetUid ()))
             {
               NS_LOG_DEBUG ("Drop packet because already receiving another HE TB PPDU");
               m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), RXING);
@@ -520,7 +520,7 @@ uint8_t
 HePhy::GetBssColor (void) const
 {
   uint8_t bssColor = 0;
-  if (m_wifiPhy->GetDevice () != nullptr)
+  if (m_wifiPhy->GetDevice ())
     {
       Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
       if (heConfiguration)
@@ -723,6 +723,7 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
   if (!txVector.IsUlMu ())
     {
+
       return PhyEntity::DoStartReceivePayload (event);
     }
 
@@ -742,7 +743,7 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
     }
   Time timeToEndRx = payloadDuration + maxOffset;
 
-  bool isAp = (DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()) != 0);
+  bool isAp = (bool)(DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()));
   if (!isAp)
     {
       NS_LOG_DEBUG ("Ignore HE TB PPDU payload received by STA but keep state in Rx");
@@ -861,7 +862,7 @@ HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
 
     }
   NS_LOG_FUNCTION (this << *event << it->second);
-  NS_ASSERT (GetCurrentEvent () != 0);
+  NS_ASSERT (GetCurrentEvent ());
   NS_ASSERT (m_rxHeTbPpdus == 0);
   auto itEvent = m_beginOfdmaPayloadRxEvents.find (GetStaId (ppdu));
   /**

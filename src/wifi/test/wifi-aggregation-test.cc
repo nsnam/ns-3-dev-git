@@ -431,7 +431,7 @@ TwoLevelAggregationTest::DoRun (void)
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
   Ptr<WifiMacQueueItem> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
-  bool result = (item != 0);
+  bool result {item};
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacketSize (), 3030, "wrong packet size");
 
@@ -453,7 +453,7 @@ TwoLevelAggregationTest::DoRun (void)
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
   item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
-  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "A-MSDU aggregation did not fail");
+  NS_TEST_EXPECT_MSG_EQ (item, nullptr, "A-MSDU aggregation did not fail");
 
   htFem->DequeueMpdu (peeked);
 

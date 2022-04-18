@@ -67,7 +67,7 @@ SpectrumPropagationLossModel::CalcRxPowerSpectralDensity (Ptr<const SpectrumSign
                                                           Ptr<const MobilityModel> b) const
 {
   Ptr<SpectrumValue> rxPsd = DoCalcRxPowerSpectralDensity (params, a, b);
-  if (m_next != 0)
+  if (m_next)
     {
       rxPsd = m_next->CalcRxPowerSpectralDensity (params, a, b);
     }

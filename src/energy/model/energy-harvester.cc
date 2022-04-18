@@ -52,7 +52,7 @@ void
 EnergyHarvester::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (node != 0);
+  NS_ASSERT (node);
   m_node = node;
 }
 
@@ -67,7 +67,7 @@ void
 EnergyHarvester::SetEnergySource (Ptr<EnergySource> source)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (source != 0);
+  NS_ASSERT (source);
   m_energySource = source;
 }
 

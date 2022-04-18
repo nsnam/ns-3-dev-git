@@ -166,7 +166,7 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
       // control layer has been aggregated, if this is not
       // a loopback interface, and there is no queue disc installed already
       Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-      if (tc && DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0)
+      if (tc && !DynamicCast<LoopbackNetDevice> (device) && !tc->GetRootQueueDiscOnDevice (device))
         {
           Ptr<NetDeviceQueueInterface> ndqi = device->GetObject<NetDeviceQueueInterface> ();
           // It is useless to install a queue disc if the device has no

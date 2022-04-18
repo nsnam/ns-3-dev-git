@@ -238,7 +238,7 @@ inline
 uint32_t
 Hasher::GetHash32  (const char * buffer, const std::size_t size)
 {
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
   return m_impl->GetHash32  (buffer, size);
 }
 
@@ -246,7 +246,7 @@ inline
 uint64_t
 Hasher::GetHash64  (const char * buffer, const std::size_t size)
 {
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
   return m_impl->GetHash64  (buffer, size);
 }
 
@@ -254,7 +254,7 @@ inline
 uint32_t
 Hasher::GetHash32  (const std::string s)
 {
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
   return m_impl->GetHash32  (s.c_str (), s.size ());
 }
 
@@ -262,7 +262,7 @@ inline
 uint64_t
 Hasher::GetHash64  (const std::string s)
 {
-  NS_ASSERT (m_impl != 0);
+  NS_ASSERT (m_impl);
   return m_impl->GetHash64  (s.c_str (), s.size ());
 }
 

@@ -183,7 +183,7 @@ ClickInternetStackHelper::Install (Ptr<Node> node) const
 {
   if (m_ipv4Enabled)
     {
-      if (node->GetObject<Ipv4> () != 0)
+      if (node->GetObject<Ipv4> ())
         {
           NS_FATAL_ERROR ("ClickInternetStackHelper::Install (): Aggregating "
                           "an InternetStack to a node with an existing Ipv4 object");
@@ -425,7 +425,7 @@ ClickInternetStackHelper::EnableAsciiIpv4Internal (
   // since there will be one file per context and therefore the context would
   // be redundant.
   //
-  if (stream == 0)
+  if (!stream)
     {
       //
       // Set up an output stream object to deal with private ofstream copy

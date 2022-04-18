@@ -131,7 +131,7 @@ WifiNetDevice::DoDispose (void)
     }
   for (auto& phy : m_phys)
     {
-      if (phy != nullptr)
+      if (phy)
         {
           phy->Dispose ();
           phy = nullptr;
@@ -140,7 +140,7 @@ WifiNetDevice::DoDispose (void)
   m_phys.clear ();
   for (auto& stationManager : m_stationManagers)
     {
-      if (stationManager != nullptr)
+      if (stationManager)
         {
           stationManager->Dispose ();
           stationManager = nullptr;
@@ -199,10 +199,10 @@ WifiNetDevice::DoInitialize (void)
 void
 WifiNetDevice::CompleteConfig (void)
 {
-  if (m_mac == 0
+  if (!m_mac
       || m_phys.empty ()
       || m_stationManagers.empty ()
-      || m_node == 0
+      || !m_node
       || m_configComplete)
     {
       return;
@@ -253,7 +253,7 @@ WifiNetDevice::SetPhy (const Ptr<WifiPhy> phy)
 void
 WifiNetDevice::SetPhys (const std::vector<Ptr<WifiPhy>>& phys)
 {
-  NS_ABORT_MSG_IF (phys.size () > 1 && m_ehtConfiguration == nullptr,
+  NS_ABORT_MSG_IF (phys.size () > 1 && !m_ehtConfiguration,
                    "Multiple PHYs only allowed for 11be multi-link devices");
   m_phys = phys;
   m_linkUp = true;
@@ -271,7 +271,7 @@ WifiNetDevice::SetRemoteStationManager (const Ptr<WifiRemoteStationManager> mana
 void
 WifiNetDevice::SetRemoteStationManagers (const std::vector<Ptr<WifiRemoteStationManager>>& managers)
 {
-  NS_ABORT_MSG_IF (managers.size () > 1 && m_ehtConfiguration == nullptr,
+  NS_ABORT_MSG_IF (managers.size () > 1 && !m_ehtConfiguration,
                    "Multiple remote station managers only allowed for 11be multi-link devices");
   m_stationManagers = managers;
   CompleteConfig ();

@@ -415,7 +415,7 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
   if (hasContext)
     {
       Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      NS_ASSERT (ueManager != 0);
+      NS_ASSERT (ueManager);
       NS_TEST_ASSERT_MSG_EQ (ueManager->GetState (),
                              UeManager::CONNECTED_NORMALLY,
                              "The context of RNTI " << rnti << " is in invalid state");
@@ -456,7 +456,7 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
   if (hasContext)
     {
       Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      NS_ASSERT (ueManager != 0);
+      NS_ASSERT (ueManager);
       UeManager::State state = ueManager->GetState ();
       uint16_t enbImsi = ueManager->GetImsi ();
       NS_TEST_ASSERT_MSG_EQ (ueImsi, enbImsi, "inconsistent Imsi");
@@ -514,7 +514,7 @@ LteRrcConnectionEstablishmentTestCase::CheckNotConnected (Ptr<NetDevice> ueDevic
   if (hasContext)
     {
       Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      NS_ASSERT (ueManager != 0);
+      NS_ASSERT (ueManager);
       contextStateIsConnectedNormally = (UeManager::CONNECTED_NORMALLY == ueManager->GetState ());
     }
   NS_TEST_ASSERT_MSG_EQ ((!m_isConnectionEstablished[imsi]

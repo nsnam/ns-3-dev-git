@@ -211,7 +211,7 @@ int main (int argc, char *argv[])
         {
           wnd = (*n)->GetDevice (i)->GetObject<WifiNetDevice> ();
           // if it is a WifiNetDevice
-          if (wnd != 0)
+          if (wnd)
             {
               // this device draws power from the last created energy source
               radioEnergyHelper.Install (wnd, eSources.Get (eSources.GetN () - 1));

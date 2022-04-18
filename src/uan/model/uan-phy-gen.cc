@@ -704,7 +704,7 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 
   UanTxMode txMode = GetMode (modeNum);
 
-  if (m_pktRx != 0)
+  if (m_pktRx)
     {
       m_minRxSinrDb = -1e30;
       m_pktRx = 0;

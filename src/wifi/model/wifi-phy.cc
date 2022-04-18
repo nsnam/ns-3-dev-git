@@ -367,7 +367,7 @@ WifiPhy::DoDispose (void)
   m_preambleDetectionModel = 0;
   m_wifiRadioEnergyModel = 0;
   m_postReceptionErrorModel = 0;
-  if (m_interference != nullptr)
+  if (m_interference)
     {
       m_interference->Dispose ();
     }
@@ -580,7 +580,7 @@ WifiPhy::SetMobility (const Ptr<MobilityModel> mobility)
 Ptr<MobilityModel>
 WifiPhy::GetMobility (void) const
 {
-  if (m_mobility != 0)
+  if (m_mobility)
     {
       return m_mobility;
     }
@@ -601,7 +601,7 @@ WifiPhy::SetInterferenceHelper (const Ptr<InterferenceHelper> helper)
 void
 WifiPhy::SetErrorRateModel (const Ptr<ErrorRateModel> model)
 {
-  NS_ASSERT (m_interference != nullptr);
+  NS_ASSERT (m_interference);
   m_interference->SetErrorRateModel (model);
 }
 
@@ -1093,17 +1093,17 @@ WifiPhy::DoChannelSwitch (void)
   // check that the channel width is supported
   uint16_t chWidth = std::get<1> (m_channelSettings);
 
-  if (m_device != nullptr)
+  if (m_device)
     {
       if (auto htConfig = m_device->GetHtConfiguration ();
-          htConfig != nullptr && !htConfig->Get40MHzOperationSupported () && chWidth > 20)
+          htConfig && !htConfig->Get40MHzOperationSupported () && chWidth > 20)
         {
           NS_ABORT_MSG ("Attempting to set a " << chWidth << " MHz channel on"
                         "a station only supporting 20 MHz operation");
         }
 
       if (auto vhtConfig = m_device->GetVhtConfiguration ();
-          vhtConfig != nullptr && !vhtConfig->Get160MHzOperationSupported () && chWidth > 80)
+          vhtConfig && !vhtConfig->Get160MHzOperationSupported () && chWidth > 80)
         {
           NS_ABORT_MSG ("Attempting to set a " << chWidth << " MHz channel on"
                         "a station supporting up to 80 MHz operation");
@@ -1585,7 +1585,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, const WifiTxVector& txVector)
     {
       noEndPreambleDetectionEvent &= it.second->NoEndPreambleDetectionEvents ();
     }
-  if (!noEndPreambleDetectionEvent || ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))))
+  if (!noEndPreambleDetectionEvent || (m_currentEvent && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))))
     {
       AbortCurrentReception (RECEPTION_ABORTED_BY_TX);
     }
@@ -1627,7 +1627,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, const WifiTxVector& txVector)
     }
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
-  if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
+  if (m_wifiRadioEnergyModel && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
       ppdu->SetTruncatedTx ();
     }
@@ -1953,7 +1953,7 @@ WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMa
   // different than the one of the receiver. The first time this method is called, the call
   // to AbortCurrentReception sets m_currentEvent to 0. Therefore, we need to check whether
   // m_currentEvent is not 0 before executing the instructions below.
-  if (m_currentEvent != 0)
+  if (m_currentEvent)
     {
       m_powerRestricted = powerRestricted;
       m_txPowerMaxSiso = txPowerMaxSiso;

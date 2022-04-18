@@ -199,7 +199,7 @@ uint32_t Ipv6L3Protocol::AddInterface (Ptr<NetDevice> device)
 
   Ptr<TrafficControlLayer> tc = m_node->GetObject<TrafficControlLayer> ();
 
-  NS_ASSERT (tc != 0);
+  NS_ASSERT (tc);
 
   m_node->RegisterProtocolHandler (MakeCallback (&TrafficControlLayer::Receive, tc),
                                    Ipv6L3Protocol::PROT_NUMBER, device);
@@ -395,7 +395,7 @@ bool Ipv6L3Protocol::AddAddress (uint32_t i, Ipv6InterfaceAddress address, bool 
   address.SetOnLink (addOnLinkRoute);
   bool ret = interface->AddAddress (address);
 
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyAddAddress (i, address);
     }
@@ -431,7 +431,7 @@ bool Ipv6L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
 
   if (address != Ipv6InterfaceAddress ())
     {
-      if (m_routingProtocol != 0)
+      if (m_routingProtocol)
         {
           m_routingProtocol->NotifyRemoveAddress (i, address);
         }
@@ -454,7 +454,7 @@ Ipv6L3Protocol::RemoveAddress (uint32_t i, Ipv6Address address)
   Ipv6InterfaceAddress ifAddr = interface->RemoveAddress (address);
   if (ifAddr != Ipv6InterfaceAddress ())
   {
-    if (m_routingProtocol != 0)
+    if (m_routingProtocol)
     {
       m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
     }
@@ -519,7 +519,7 @@ void Ipv6L3Protocol::SetUp (uint32_t i)
     {
       interface->SetUp ();
 
-      if (m_routingProtocol != 0)
+      if (m_routingProtocol)
         {
           m_routingProtocol->NotifyInterfaceUp (i);
         }
@@ -537,7 +537,7 @@ void Ipv6L3Protocol::SetDown (uint32_t i)
 
   interface->SetDown ();
 
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyInterfaceDown (i);
     }
@@ -559,7 +559,7 @@ void Ipv6L3Protocol::SetupLoopback ()
         }
     }
 
-  if (device == 0)
+  if (!device)
     {
       device = CreateObject<LoopbackNetDevice> ();
       m_node->AddDevice (device);
@@ -574,7 +574,7 @@ void Ipv6L3Protocol::SetupLoopback ()
   node->RegisterProtocolHandler (MakeCallback (&Ipv6L3Protocol::Receive, this), Ipv6L3Protocol::PROT_NUMBER, device);
   interface->SetUp ();
 
-  if (m_routingProtocol != 0)
+  if (m_routingProtocol)
     {
       m_routingProtocol->NotifyInterfaceUp (index);
     }
@@ -687,12 +687,12 @@ void Ipv6L3Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_node == 0)
+  if (!m_node)
     {
       Ptr<Node> node = this->GetObject<Node> ();
       // verify that it's a valid node and that
       // the node has not been set before
-      if (node != 0)
+      if (node)
         {
           this->SetNode (node);
         }

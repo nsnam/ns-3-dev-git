@@ -332,7 +332,7 @@ Stats::PortStatsDump (Ptr<OpenFlowSwitchNetDevice> swtch, PortStatsState *s, ofp
         {
           Port p = swtch->GetSwitchPort (port);
 
-          if (p.netdev == 0)
+          if (!p.netdev)
             {
               continue;
             }

@@ -41,9 +41,9 @@ RvBatteryModelHelper::Set (std::string name, const AttributeValue &v)
 Ptr<EnergySource>
 RvBatteryModelHelper::DoInstall (Ptr<Node> node) const
 {
-  NS_ASSERT (node != NULL);
+  NS_ASSERT (node);
   Ptr<EnergySource> source = m_rvBatteryModel.Create<EnergySource> ();
-  NS_ASSERT (source != NULL);
+  NS_ASSERT (source);
   source->SetNode (node);
   return source;
 }

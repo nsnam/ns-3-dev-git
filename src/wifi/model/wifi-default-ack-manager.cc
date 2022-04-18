@@ -108,7 +108,7 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq (Ptr<const WifiMacQueueItem> mp
 
   const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo (receiver);
 
-  if (psduInfo == nullptr || psduInfo->seqNumbers.find (tid) == psduInfo->seqNumbers.end ())
+  if (!psduInfo || psduInfo->seqNumbers.find (tid) == psduInfo->seqNumbers.end ())
     {
       // there are no aggregated MPDUs (so far)
       return maxDistFromStartingSeq;
@@ -366,10 +366,10 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mp
       acknowledgment = static_cast<WifiDlMuBarBaSequence*> (txParams.m_acknowledgment.get ());
     }
 
-  if (psduInfo != nullptr)
+  if (psduInfo)
     {
       // an MPDU addressed to the same receiver has been already added
-      NS_ASSERT (acknowledgment != nullptr);
+      NS_ASSERT (acknowledgment);
 
       if ((acknowledgment->stationsSendBlockAckReqTo.find (receiver)
             != acknowledgment->stationsSendBlockAckReqTo.end ())
@@ -407,15 +407,15 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mp
     }
 
   // we get here if this is the first MPDU for this receiver
-  if (edca->GetBaManager ()->GetBar (true, tid, receiver) != 0
-      || (acknowledgment != nullptr
+  if (edca->GetBaManager ()->GetBar (true, tid, receiver)
+      || (acknowledgment
           && (!acknowledgment->stationsReplyingWithNormalAck.empty ()
               || !acknowledgment->stationsReplyingWithBlockAck.empty ())))
     {
       // there is a pending BlockAckReq for this receiver or another receiver
       // was selected for immediate response.
       // Add this receiver to the list of stations receiving a BlockAckReq.
-      if (acknowledgment != nullptr)
+      if (acknowledgment)
         {
           // txParams.m_acknowledgment points to an existing WifiDlMuBarBaSequence object.
           // We have to return a copy of this object including the needed changes
@@ -443,7 +443,7 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mp
     }
 
   // Add the receiver as the station that will immediately reply with a Normal Ack
-  if (acknowledgment != nullptr)
+  if (acknowledgment)
     {
       // txParams.m_acknowledgment points to an existing WifiDlMuBarBaSequence object.
       // We have to return a copy of this object including the needed changes
@@ -489,11 +489,11 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
       acknowledgment = static_cast<WifiDlMuTfMuBar*> (txParams.m_acknowledgment.get ());
     }
 
-  if (psduInfo == nullptr)
+  if (!psduInfo)
     {
       // we get here if this is the first MPDU for this receiver.
       Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
-      NS_ABORT_MSG_IF (apMac == 0, "HE APs only can send DL MU PPDUs");
+      NS_ABORT_MSG_IF (!apMac, "HE APs only can send DL MU PPDUs");
       uint16_t staId = apMac->GetAssociationId (receiver);
 
       NS_ABORT_MSG_IF (!hdr.IsQosData (),
@@ -502,7 +502,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
       uint8_t tid = hdr.GetQosTid ();
 
       // Add the receiver to the list of stations that will reply with a Block Ack
-      if (acknowledgment != nullptr)
+      if (acknowledgment)
         {
           // txParams.m_acknowledgment points to an existing WifiDlMuTfMuBar object.
           // We have to return a copy of this object including the needed changes
@@ -543,7 +543,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
     }
 
   // an MPDU addressed to the same receiver has been already added
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
   NS_ABORT_MSG_IF (!hdr.IsQosData (),
                     "QoS data frames only can be aggregated when transmitting a DL MU PPDU");
 
@@ -573,11 +573,11 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> 
       acknowledgment = static_cast<WifiDlMuAggregateTf*> (txParams.m_acknowledgment.get ());
     }
 
-  if (psduInfo == nullptr)
+  if (!psduInfo)
     {
       // we get here if this is the first MPDU for this receiver.
       Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
-      NS_ABORT_MSG_IF (apMac == 0, "HE APs only can send DL MU PPDUs");
+      NS_ABORT_MSG_IF (!apMac, "HE APs only can send DL MU PPDUs");
       uint16_t staId = apMac->GetAssociationId (receiver);
 
       NS_ABORT_MSG_IF (!hdr.IsQosData (),
@@ -586,7 +586,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> 
       uint8_t tid = hdr.GetQosTid ();
 
       // Add the receiver to the list of stations that will reply with a Block Ack
-      if (acknowledgment != nullptr)
+      if (acknowledgment)
         {
           // txParams.m_acknowledgment points to an existing WifiDlMuAggregateTf object.
           // We have to return a copy of this object including the needed changes
@@ -626,7 +626,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> 
     }
 
   // an MPDU addressed to the same receiver has been already added
-  NS_ASSERT (acknowledgment != nullptr);
+  NS_ASSERT (acknowledgment);
   NS_ABORT_MSG_IF (!hdr.IsQosData (),
                    "QoS data and MU-BAR Trigger frames only can be aggregated when transmitting a DL MU PPDU");
 
@@ -642,10 +642,10 @@ WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
   NS_ASSERT (mpdu->GetHeader ().IsTrigger ());
 
   Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
-  NS_ABORT_MSG_IF (apMac == nullptr, "HE APs only can send Trigger Frames");
+  NS_ABORT_MSG_IF (!apMac, "HE APs only can send Trigger Frames");
 
   auto heFem = DynamicCast<HeFrameExchangeManager> (m_mac->GetFrameExchangeManager (m_linkId));
-  NS_ABORT_MSG_IF (heFem == nullptr, "HE APs only can send Trigger Frames");
+  NS_ABORT_MSG_IF (!heFem, "HE APs only can send Trigger Frames");
 
   CtrlTriggerHeader trigger;
   mpdu->GetPacket ()->PeekHeader (trigger);

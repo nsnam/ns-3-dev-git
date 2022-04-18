@@ -1558,12 +1558,12 @@ private:
    */
   bool DoCheckType (Ptr<const CallbackImplBase> other) const
   {
-    if (other != 0
+    if (other
         && dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *> (PeekPointer (other)) != 0)
       {
         return true;
       }
-    else if (other == 0)
+    else if (!other)
       {
         return true;
       }

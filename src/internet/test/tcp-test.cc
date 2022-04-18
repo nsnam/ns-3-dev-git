@@ -266,7 +266,7 @@ TcpTestCase::ServerHandleRecv (Ptr<Socket> sock)
     {
       uint32_t toRead = std::min (m_serverReadSize, sock->GetRxAvailable ());
       Ptr<Packet> p = sock->Recv (toRead, 0);
-      if (p == 0 && sock->GetErrno () != Socket::ERROR_NOTERROR)
+      if (!p && sock->GetErrno () != Socket::ERROR_NOTERROR)
         {
           NS_FATAL_ERROR ("Server could not read stream at byte " << m_currentServerRxBytes);
         }
@@ -322,7 +322,7 @@ TcpTestCase::SourceHandleRecv (Ptr<Socket> sock)
     {
       uint32_t toRead = std::min (m_sourceReadSize, sock->GetRxAvailable ());
       Ptr<Packet> p = sock->Recv (toRead, 0);
-      if (p == 0 && sock->GetErrno () != Socket::ERROR_NOTERROR)
+      if (!p && sock->GetErrno () != Socket::ERROR_NOTERROR)
         {
           NS_FATAL_ERROR ("Source could not read stream at byte " << m_currentSourceRxBytes);
         }

@@ -137,7 +137,7 @@ void
 HierarchicalMobilityModel::DoSetPosition (const Vector &position)
 {
   NS_LOG_FUNCTION (this << position);
-  if (m_child == 0)
+  if (!m_child)
     {
       return;
     }

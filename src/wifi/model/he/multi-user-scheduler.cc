@@ -99,12 +99,12 @@ void
 MultiUserScheduler::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_apMac == 0)
+  if (!m_apMac)
     {
       Ptr<ApWifiMac> apMac = this->GetObject<ApWifiMac> ();
       //verify that it's a valid AP mac and that
       //the AP mac was not set before
-      if (apMac != 0)
+      if (apMac)
         {
           this->SetWifiMac (apMac);
         }
@@ -131,7 +131,7 @@ MultiUserScheduler::SetWifiMac (Ptr<ApWifiMac> mac)
 
   // When VHT DL MU-MIMO will be supported, we will have to lower this requirement
   // and allow a Multi-user scheduler to be installed on a VHT AP.
-  NS_ABORT_MSG_IF (m_apMac == 0 || m_apMac->GetHeConfiguration () == 0,
+  NS_ABORT_MSG_IF (!m_apMac || !m_apMac->GetHeConfiguration (),
                    "MultiUserScheduler can only be installed on HE APs");
 
   m_heFem = DynamicCast<HeFrameExchangeManager> (m_apMac->GetFrameExchangeManager ());
@@ -188,7 +188,7 @@ MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, 
     }
   else if (txFormat == UL_MU_TX)
     {
-      NS_ABORT_MSG_IF (m_heFem == 0, "UL MU PPDUs are only supported by HE APs");
+      NS_ABORT_MSG_IF (!m_heFem, "UL MU PPDUs are only supported by HE APs");
       m_ulInfo = ComputeUlMuInfo ();
       CheckTriggerFrame ();
     }

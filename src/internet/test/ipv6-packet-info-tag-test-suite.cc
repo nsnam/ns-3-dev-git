@@ -125,7 +125,7 @@ void
 Ipv6PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
   Address realTo = Inet6SocketAddress (Ipv6Address (to.c_str ()), 200);
-  if (DynamicCast<UdpSocket> (socket) != 0)
+  if (DynamicCast<UdpSocket> (socket))
     {
       NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
                              123, "100");

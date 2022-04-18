@@ -53,7 +53,7 @@ EnergyHarvesterHelper::Install (EnergySourceContainer sourceContainer) const
      */
     Ptr<EnergyHarvesterContainer> EnergyHarvesterContainerOnNode =
     node->GetObject<EnergyHarvesterContainer> ();
-    if (EnergyHarvesterContainerOnNode == 0)
+    if (!EnergyHarvesterContainerOnNode)
     {
       ObjectFactory fac;
       fac.SetTypeId ("ns3::EnergyHarvesterContainer");
