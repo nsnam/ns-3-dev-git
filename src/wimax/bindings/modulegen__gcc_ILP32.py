@@ -358,25 +358,25 @@ def register_types(module):
     module.add_class('SfVectorTlvValue', parent=root_module['ns3::VectorTlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::SfVectorTlvValue::Type [enumeration]
     module.add_enum('Type', ['SFID', 'CID', 'Service_Class_Name', 'reserved1', 'QoS_Parameter_Set_Type', 'Traffic_Priority', 'Maximum_Sustained_Traffic_Rate', 'Maximum_Traffic_Burst', 'Minimum_Reserved_Traffic_Rate', 'Minimum_Tolerable_Traffic_Rate', 'Service_Flow_Scheduling_Type', 'Request_Transmission_Policy', 'Tolerated_Jitter', 'Maximum_Latency', 'Fixed_length_versus_Variable_length_SDU_Indicator', 'SDU_Size', 'Target_SAID', 'ARQ_Enable', 'ARQ_WINDOW_SIZE', 'ARQ_RETRY_TIMEOUT_Transmitter_Delay', 'ARQ_RETRY_TIMEOUT_Receiver_Delay', 'ARQ_BLOCK_LIFETIME', 'ARQ_SYNC_LOSS', 'ARQ_DELIVER_IN_ORDER', 'ARQ_PURGE_TIMEOUT', 'ARQ_BLOCK_SIZE', 'reserved2', 'CS_Specification', 'IPV4_CS_Parameters'], outer_class=root_module['ns3::SfVectorTlvValue'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
     ## ss-service-flow-manager.h (module 'wimax'): ns3::SsServiceFlowManager [class]
     module.add_class('SsServiceFlowManager', parent=root_module['ns3::ServiceFlowManager'])
@@ -658,7 +658,7 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< void, std::basic_string< char >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::SubscriberStationNetDevice::AsciiTraceCallback')
     typehandlers.add_type_alias('ns3::Callback< void, std::basic_string< char >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::SubscriberStationNetDevice::AsciiTraceCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, std::basic_string< char >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::SubscriberStationNetDevice::AsciiTraceCallback&')
-    module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
+    module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::basic_string< char, std::char_traits< char >, std::allocator< char > >', 'ns3::LogComponent *'), container_type='map')
     module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('ns3::bvec', 'bool', container_type='vector')
@@ -2976,6 +2976,8 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_constructor([param('ns3::ObjectFactory const &', 'arg0')])
     ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory() [constructor]
     cls.add_constructor([])
+    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string const & typeId) [constructor]
+    cls.add_constructor([param('std::string const &', 'typeId')])
     ## object-factory.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectFactory::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Object >', 
@@ -3897,7 +3899,7 @@ def register_Ns3SSRecord_methods(root_module, cls):
                    'ns3::WimaxNetDevice::RangingStatus', 
                    [], 
                    is_const=True)
-    ## ss-record.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *> > ns3::SSRecord::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
+    ## ss-record.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *>> ns3::SSRecord::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
     cls.add_method('GetServiceFlows', 
                    'std::vector< ns3::ServiceFlow * >', 
                    [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')], 
@@ -5037,8 +5039,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<')
-    ## type-id.h (module 'core'): ns3::TypeId::TypeId(char const * name) [constructor]
-    cls.add_constructor([param('char const *', 'name')])
+    ## type-id.h (module 'core'): ns3::TypeId::TypeId(std::string const & name) [constructor]
+    cls.add_constructor([param('std::string const &', 'name')])
     ## type-id.h (module 'core'): ns3::TypeId::TypeId() [constructor]
     cls.add_constructor([])
     ## type-id.h (module 'core'): ns3::TypeId::TypeId(ns3::TypeId const & o) [constructor]
@@ -6055,7 +6057,7 @@ def register_Ns3OfdmDownlinkFramePrefix_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## ofdm-downlink-frame-prefix.h (module 'wimax'): std::vector<ns3::DlFramePrefixIe, std::allocator<ns3::DlFramePrefixIe> > ns3::OfdmDownlinkFramePrefix::GetDlFramePrefixElements() const [member function]
+    ## ofdm-downlink-frame-prefix.h (module 'wimax'): std::vector<ns3::DlFramePrefixIe, std::allocator<ns3::DlFramePrefixIe>> ns3::OfdmDownlinkFramePrefix::GetDlFramePrefixElements() const [member function]
     cls.add_method('GetDlFramePrefixElements', 
                    'std::vector< ns3::DlFramePrefixIe >', 
                    [], 
@@ -6184,7 +6186,7 @@ def register_Ns3PacketBurst_methods(root_module, cls):
     cls.add_method('AddPacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet')])
-    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > >::const_iterator ns3::PacketBurst::Begin() const [member function]
+    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet>>>::const_iterator ns3::PacketBurst::Begin() const [member function]
     cls.add_method('Begin', 
                    'std::list< ns3::Ptr< ns3::Packet > > const_iterator', 
                    [], 
@@ -6194,7 +6196,7 @@ def register_Ns3PacketBurst_methods(root_module, cls):
                    'ns3::Ptr< ns3::PacketBurst >', 
                    [], 
                    is_const=True)
-    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > >::const_iterator ns3::PacketBurst::End() const [member function]
+    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet>>>::const_iterator ns3::PacketBurst::End() const [member function]
     cls.add_method('End', 
                    'std::list< ns3::Ptr< ns3::Packet > > const_iterator', 
                    [], 
@@ -6204,7 +6206,7 @@ def register_Ns3PacketBurst_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::PacketBurst::GetPackets() const [member function]
+    ## packet-burst.h (module 'network'): std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet>>> ns3::PacketBurst::GetPackets() const [member function]
     cls.add_method('GetPackets', 
                    'std::list< ns3::Ptr< ns3::Packet > >', 
                    [], 
@@ -6822,7 +6824,7 @@ def register_Ns3SSManager_methods(root_module, cls):
                    'ns3::SSRecord *', 
                    [param('ns3::Cid', 'cid')], 
                    is_const=True)
-    ## ss-manager.h (module 'wimax'): std::vector<ns3::SSRecord *, std::allocator<ns3::SSRecord *> > * ns3::SSManager::GetSSRecords() const [member function]
+    ## ss-manager.h (module 'wimax'): std::vector<ns3::SSRecord *, std::allocator<ns3::SSRecord *>> * ns3::SSManager::GetSSRecords() const [member function]
     cls.add_method('GetSSRecords', 
                    'std::vector< ns3::SSRecord * > *', 
                    [], 
@@ -6897,11 +6899,11 @@ def register_Ns3ServiceFlowManager_methods(root_module, cls):
     cls.add_method('AreServiceFlowsAllocated', 
                    'bool', 
                    [])
-    ## service-flow-manager.h (module 'wimax'): bool ns3::ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *> > * serviceFlows) [member function]
+    ## service-flow-manager.h (module 'wimax'): bool ns3::ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *>> * serviceFlows) [member function]
     cls.add_method('AreServiceFlowsAllocated', 
                    'bool', 
                    [param('std::vector< ns3::ServiceFlow * > *', 'serviceFlows')])
-    ## service-flow-manager.h (module 'wimax'): bool ns3::ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *> > serviceFlows) [member function]
+    ## service-flow-manager.h (module 'wimax'): bool ns3::ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *>> serviceFlows) [member function]
     cls.add_method('AreServiceFlowsAllocated', 
                    'bool', 
                    [param('std::vector< ns3::ServiceFlow * >', 'serviceFlows')])
@@ -6934,7 +6936,7 @@ def register_Ns3ServiceFlowManager_methods(root_module, cls):
                    'ns3::ServiceFlow *', 
                    [param('ns3::Cid', 'cid')], 
                    is_const=True)
-    ## service-flow-manager.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *> > ns3::ServiceFlowManager::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
+    ## service-flow-manager.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *>> ns3::ServiceFlowManager::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
     cls.add_method('GetServiceFlows', 
                    'std::vector< ns3::ServiceFlow * >', 
                    [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')], 
@@ -6964,72 +6966,72 @@ def register_Ns3SfVectorTlvValue_methods(root_module, cls):
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter< ns3::AttributeAccessor > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter< ns3::AttributeChecker > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter< ns3::AttributeValue > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>>::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter< ns3::CallbackImplBase > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >::SimpleRefCount(ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>>::SimpleRefCount(ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter< ns3::EventImpl > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>>::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter< ns3::Hash::Implementation > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount(ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector>>::SimpleRefCount(ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter< ns3::NixVector > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount(ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper>>::SimpleRefCount(ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter< ns3::OutputStreamWrapper > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet>>::SimpleRefCount(ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter< ns3::Packet > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter< ns3::TraceSourceAccessor > > const &', 'o')])
     return
 
@@ -7413,7 +7415,7 @@ def register_Ns3Ucd_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ul-mac-messages.h (module 'wimax'): std::vector<ns3::OfdmUlBurstProfile, std::allocator<ns3::OfdmUlBurstProfile> > ns3::Ucd::GetUlBurstProfiles() const [member function]
+    ## ul-mac-messages.h (module 'wimax'): std::vector<ns3::OfdmUlBurstProfile, std::allocator<ns3::OfdmUlBurstProfile>> ns3::Ucd::GetUlBurstProfiles() const [member function]
     cls.add_method('GetUlBurstProfiles', 
                    'std::vector< ns3::OfdmUlBurstProfile >', 
                    [], 
@@ -7574,7 +7576,7 @@ def register_Ns3UlMap_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## ul-mac-messages.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe> > ns3::UlMap::GetUlMapElements() const [member function]
+    ## ul-mac-messages.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe>> ns3::UlMap::GetUlMapElements() const [member function]
     cls.add_method('GetUlMapElements', 
                    'std::list< ns3::OfdmUlMapIe >', 
                    [], 
@@ -7704,7 +7706,7 @@ def register_Ns3UplinkScheduler_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bs-uplink-scheduler.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe> > ns3::UplinkScheduler::GetUplinkAllocations() const [member function]
+    ## bs-uplink-scheduler.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe>> ns3::UplinkScheduler::GetUplinkAllocations() const [member function]
     cls.add_method('GetUplinkAllocations', 
                    'std::list< ns3::OfdmUlMapIe >', 
                    [], 
@@ -7820,7 +7822,7 @@ def register_Ns3UplinkSchedulerMBQoS_methods(root_module, cls):
     cls.add_method('CountSymbolsJobs', 
                    'uint32_t', 
                    [param('ns3::Ptr< ns3::UlJob >', 'job')])
-    ## bs-uplink-scheduler-mbqos.h (module 'wimax'): uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<ns3::Ptr<ns3::UlJob>, std::allocator<ns3::Ptr<ns3::UlJob> > > jobs) [member function]
+    ## bs-uplink-scheduler-mbqos.h (module 'wimax'): uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<ns3::Ptr<ns3::UlJob>, std::allocator<ns3::Ptr<ns3::UlJob>>> jobs) [member function]
     cls.add_method('CountSymbolsQueue', 
                    'uint32_t', 
                    [param('std::list< ns3::Ptr< ns3::UlJob > >', 'jobs')])
@@ -7854,7 +7856,7 @@ def register_Ns3UplinkSchedulerMBQoS_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## bs-uplink-scheduler-mbqos.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe> > ns3::UplinkSchedulerMBQoS::GetUplinkAllocations() const [member function]
+    ## bs-uplink-scheduler-mbqos.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe>> ns3::UplinkSchedulerMBQoS::GetUplinkAllocations() const [member function]
     cls.add_method('GetUplinkAllocations', 
                    'std::list< ns3::OfdmUlMapIe >', 
                    [], 
@@ -7941,7 +7943,7 @@ def register_Ns3UplinkSchedulerRtps_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## bs-uplink-scheduler-rtps.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe> > ns3::UplinkSchedulerRtps::GetUplinkAllocations() const [member function]
+    ## bs-uplink-scheduler-rtps.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe>> ns3::UplinkSchedulerRtps::GetUplinkAllocations() const [member function]
     cls.add_method('GetUplinkAllocations', 
                    'std::list< ns3::OfdmUlMapIe >', 
                    [], 
@@ -8024,7 +8026,7 @@ def register_Ns3UplinkSchedulerSimple_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## bs-uplink-scheduler-simple.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe> > ns3::UplinkSchedulerSimple::GetUplinkAllocations() const [member function]
+    ## bs-uplink-scheduler-simple.h (module 'wimax'): std::list<ns3::OfdmUlMapIe, std::allocator<ns3::OfdmUlMapIe>> ns3::UplinkSchedulerSimple::GetUplinkAllocations() const [member function]
     cls.add_method('GetUplinkAllocations', 
                    'std::list< ns3::OfdmUlMapIe >', 
                    [], 
@@ -8933,7 +8935,7 @@ def register_Ns3BSScheduler_methods(root_module, cls):
                    'ns3::Ptr< ns3::BaseStationNetDevice >', 
                    [], 
                    is_virtual=True)
-    ## bs-scheduler.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> >, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> > > > * ns3::BSScheduler::GetDownlinkBursts() const [member function]
+    ## bs-scheduler.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>>> * ns3::BSScheduler::GetDownlinkBursts() const [member function]
     cls.add_method('GetDownlinkBursts', 
                    'std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > > *', 
                    [], 
@@ -9009,7 +9011,7 @@ def register_Ns3BSSchedulerRtps_methods(root_module, cls):
                    'ns3::Ptr< ns3::PacketBurst >', 
                    [param('ns3::ServiceFlow *', 'serviceFlow'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint32_t', 'availableSymbols')], 
                    is_virtual=True)
-    ## bs-scheduler-rtps.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> >, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> > > > * ns3::BSSchedulerRtps::GetDownlinkBursts() const [member function]
+    ## bs-scheduler-rtps.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>>> * ns3::BSSchedulerRtps::GetDownlinkBursts() const [member function]
     cls.add_method('GetDownlinkBursts', 
                    'std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > > *', 
                    [], 
@@ -9072,7 +9074,7 @@ def register_Ns3BSSchedulerSimple_methods(root_module, cls):
                    'ns3::Ptr< ns3::PacketBurst >', 
                    [param('ns3::ServiceFlow *', 'serviceFlow'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint32_t', 'availableSymbols')], 
                    is_virtual=True)
-    ## bs-scheduler-simple.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> >, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst> > > > * ns3::BSSchedulerSimple::GetDownlinkBursts() const [member function]
+    ## bs-scheduler-simple.h (module 'wimax'): std::list<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>, std::allocator<std::pair<ns3::OfdmDlMapIe *, ns3::Ptr<ns3::PacketBurst>>>> * ns3::BSSchedulerSimple::GetDownlinkBursts() const [member function]
     cls.add_method('GetDownlinkBursts', 
                    'std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > > *', 
                    [], 
@@ -9232,7 +9234,7 @@ def register_Ns3BsServiceFlowManager_methods(root_module, cls):
                    'ns3::ServiceFlow *', 
                    [param('ns3::Cid', 'cid')], 
                    is_const=True)
-    ## bs-service-flow-manager.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *> > ns3::BsServiceFlowManager::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
+    ## bs-service-flow-manager.h (module 'wimax'): std::vector<ns3::ServiceFlow *, std::allocator<ns3::ServiceFlow *>> ns3::BsServiceFlowManager::GetServiceFlows(ns3::ServiceFlow::SchedulingType schedulingType) const [member function]
     cls.add_method('GetServiceFlows', 
                    'std::vector< ns3::ServiceFlow * >', 
                    [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')], 
@@ -9297,7 +9299,27 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, template_parameters=['ns3::Ptr<ns3::NetDevice> '], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, template_parameters=['ns3::Ptr<ns3::Packet const> '], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['unsigned short'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::Address const&'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::NetDevice::PacketType'], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -9338,26 +9360,6 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, template_parameters=['ns3::Ptr<ns3::PacketBurst> '], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::NetDevice> '], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['unsigned short'], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['ns3::Address const&'], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['ns3::NetDevice::PacketType'], visibility='protected')
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -9441,7 +9443,7 @@ def register_Ns3ConnectionManager_methods(root_module, cls):
     cls.add_method('GetConnection', 
                    'ns3::Ptr< ns3::WimaxConnection >', 
                    [param('ns3::Cid', 'cid')])
-    ## connection-manager.h (module 'wimax'): std::vector<ns3::Ptr<ns3::WimaxConnection>, std::allocator<ns3::Ptr<ns3::WimaxConnection> > > ns3::ConnectionManager::GetConnections(ns3::Cid::Type type) const [member function]
+    ## connection-manager.h (module 'wimax'): std::vector<ns3::Ptr<ns3::WimaxConnection>, std::allocator<ns3::Ptr<ns3::WimaxConnection>>> ns3::ConnectionManager::GetConnections(ns3::Cid::Type type) const [member function]
     cls.add_method('GetConnections', 
                    'std::vector< ns3::Ptr< ns3::WimaxConnection > >', 
                    [param('ns3::Cid::Type', 'type')], 
@@ -9524,7 +9526,7 @@ def register_Ns3Dcd_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## dl-mac-messages.h (module 'wimax'): std::vector<ns3::OfdmDlBurstProfile, std::allocator<ns3::OfdmDlBurstProfile> > ns3::Dcd::GetDlBurstProfiles() const [member function]
+    ## dl-mac-messages.h (module 'wimax'): std::vector<ns3::OfdmDlBurstProfile, std::allocator<ns3::OfdmDlBurstProfile>> ns3::Dcd::GetDlBurstProfiles() const [member function]
     cls.add_method('GetDlBurstProfiles', 
                    'std::vector< ns3::OfdmDlBurstProfile >', 
                    [], 
@@ -9626,7 +9628,7 @@ def register_Ns3DlMap_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## dl-mac-messages.h (module 'wimax'): std::list<ns3::OfdmDlMapIe, std::allocator<ns3::OfdmDlMapIe> > ns3::DlMap::GetDlMapElements() const [member function]
+    ## dl-mac-messages.h (module 'wimax'): std::list<ns3::OfdmDlMapIe, std::allocator<ns3::OfdmDlMapIe>> ns3::DlMap::GetDlMapElements() const [member function]
     cls.add_method('GetDlMapElements', 
                    'std::list< ns3::OfdmDlMapIe >', 
                    [], 
@@ -10969,10 +10971,16 @@ def register_Ns3NixVector_methods(root_module, cls):
     cls.add_method('ExtractNeighborIndex', 
                    'uint32_t', 
                    [param('uint32_t', 'numberOfBits')])
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetRemainingBits() [member function]
+    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetEpoch() const [member function]
+    cls.add_method('GetEpoch', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetRemainingBits() const [member function]
     cls.add_method('GetRemainingBits', 
                    'uint32_t', 
-                   [])
+                   [], 
+                   is_const=True)
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -10983,6 +10991,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
+    ## nix-vector.h (module 'network'): void ns3::NixVector::SetEpoch(uint32_t epoch) [member function]
+    cls.add_method('SetEpoch', 
+                   'void', 
+                   [param('uint32_t', 'epoch')])
     return
 
 def register_Ns3Node_methods(root_module, cls):
@@ -11359,10 +11371,11 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
+    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) const [member function]
     cls.add_method('SetNixVector', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
+                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')], 
+                   is_const=True)
     ## packet.h (module 'network'): std::string ns3::Packet::ToString() const [member function]
     cls.add_method('ToString', 
                    'std::string', 

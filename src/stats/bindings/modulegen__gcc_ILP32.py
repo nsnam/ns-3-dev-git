@@ -45,8 +45,6 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::EventImpl'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Hash::Implementation> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation'])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SQLiteOutput> [struct]
-    module.add_class('DefaultDeleter', template_parameters=['ns3::SQLiteOutput'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
@@ -142,21 +140,19 @@ def register_types(module):
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SQLiteOutput', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SQLiteOutput>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
@@ -218,10 +214,6 @@ def register_types(module):
     module.add_class('OmnetDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## probe.h (module 'stats'): ns3::Probe [class]
     module.add_class('Probe', parent=root_module['ns3::DataCollectionObject'])
-    ## sqlite-output.h (module 'stats'): ns3::SQLiteOutput [class]
-    module.add_class('SQLiteOutput', parent=root_module['ns3::SimpleRefCount< ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> >'])
-    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput [class]
-    module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h (module 'stats'): ns3::TimeMinMaxAvgTotalCalculator [class]
     module.add_class('TimeMinMaxAvgTotalCalculator', parent=root_module['ns3::DataCalculator'])
     ## time-probe.h (module 'stats'): ns3::TimeProbe [class]
@@ -261,7 +253,7 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## double-probe.h (module 'stats'): ns3::DoubleProbe [class]
     module.add_class('DoubleProbe', parent=root_module['ns3::Probe'])
-    module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
+    module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::basic_string< char, std::char_traits< char >, std::allocator< char > >', 'ns3::LogComponent *'), container_type='map')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator > >', 'ns3::DataCalculatorList')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator > >*', 'ns3::DataCalculatorList*')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator > >&', 'ns3::DataCalculatorList&')
@@ -388,7 +380,6 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3CallbackImplBase_methods(root_module, root_module['ns3::DefaultDeleter< ns3::CallbackImplBase >'])
     register_Ns3DefaultDeleter__Ns3EventImpl_methods(root_module, root_module['ns3::DefaultDeleter< ns3::EventImpl >'])
     register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Hash::Implementation >'])
-    register_Ns3DefaultDeleter__Ns3SQLiteOutput_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SQLiteOutput >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3FileHelper_methods(root_module, root_module['ns3::FileHelper'])
@@ -430,7 +421,6 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
-    register_Ns3SimpleRefCount__Ns3SQLiteOutput_Ns3Empty_Ns3DefaultDeleter__lt__ns3SQLiteOutput__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
@@ -460,8 +450,6 @@ def register_methods(root_module):
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
     register_Ns3Probe_methods(root_module, root_module['ns3::Probe'])
-    register_Ns3SQLiteOutput_methods(root_module, root_module['ns3::SQLiteOutput'])
-    register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
     register_Ns3TimeProbe_methods(root_module, root_module['ns3::TimeProbe'])
     register_Ns3TimeSeriesAdaptor_methods(root_module, root_module['ns3::TimeSeriesAdaptor'])
@@ -647,18 +635,6 @@ def register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, cls):
     cls.add_method('Delete', 
                    'void', 
                    [param('ns3::Hash::Implementation *', 'object')], 
-                   is_static=True)
-    return
-
-def register_Ns3DefaultDeleter__Ns3SQLiteOutput_methods(root_module, cls):
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SQLiteOutput>::DefaultDeleter() [constructor]
-    cls.add_constructor([])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SQLiteOutput>::DefaultDeleter(ns3::DefaultDeleter<ns3::SQLiteOutput> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DefaultDeleter< ns3::SQLiteOutput > const &', 'arg0')])
-    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::SQLiteOutput>::Delete(ns3::SQLiteOutput * object) [member function]
-    cls.add_method('Delete', 
-                   'void', 
-                   [param('ns3::SQLiteOutput *', 'object')], 
                    is_static=True)
     return
 
@@ -1725,8 +1701,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<')
-    ## type-id.h (module 'core'): ns3::TypeId::TypeId(char const * name) [constructor]
-    cls.add_constructor([param('char const *', 'name')])
+    ## type-id.h (module 'core'): ns3::TypeId::TypeId(std::string const & name) [constructor]
+    cls.add_constructor([param('std::string const &', 'name')])
     ## type-id.h (module 'core'): ns3::TypeId::TypeId() [constructor]
     cls.add_constructor([])
     ## type-id.h (module 'core'): ns3::TypeId::TypeId(ns3::TypeId const & o) [constructor]
@@ -2193,58 +2169,51 @@ def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter< ns3::AttributeAccessor > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter< ns3::AttributeChecker > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter< ns3::AttributeValue > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>>::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter< ns3::CallbackImplBase > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >::SimpleRefCount(ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>>::SimpleRefCount(ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter< ns3::EventImpl > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>>::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter< ns3::Hash::Implementation > > const &', 'o')])
     return
 
-def register_Ns3SimpleRefCount__Ns3SQLiteOutput_Ns3Empty_Ns3DefaultDeleter__lt__ns3SQLiteOutput__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> >::SimpleRefCount() [constructor]
-    cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> >::SimpleRefCount(ns3::SimpleRefCount<ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> > const & o) [constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter< ns3::SQLiteOutput > > const &', 'o')])
-    return
-
 def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount() [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > const & o) [constructor]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter< ns3::TraceSourceAccessor > > const &', 'o')])
     return
 
@@ -2617,11 +2586,11 @@ def register_Ns3DataCollector_methods(root_module, cls):
     cls.add_method('AddMetadata', 
                    'void', 
                    [param('std::string', 'key'), param('uint32_t', 'value')])
-    ## data-collector.h (module 'stats'): std::list<ns3::Ptr<ns3::DataCalculator>, std::allocator<ns3::Ptr<ns3::DataCalculator> > >::iterator ns3::DataCollector::DataCalculatorBegin() [member function]
+    ## data-collector.h (module 'stats'): std::list<ns3::Ptr<ns3::DataCalculator>, std::allocator<ns3::Ptr<ns3::DataCalculator>>>::iterator ns3::DataCollector::DataCalculatorBegin() [member function]
     cls.add_method('DataCalculatorBegin', 
                    'std::list< ns3::Ptr< ns3::DataCalculator > > iterator', 
                    [])
-    ## data-collector.h (module 'stats'): std::list<ns3::Ptr<ns3::DataCalculator>, std::allocator<ns3::Ptr<ns3::DataCalculator> > >::iterator ns3::DataCollector::DataCalculatorEnd() [member function]
+    ## data-collector.h (module 'stats'): std::list<ns3::Ptr<ns3::DataCalculator>, std::allocator<ns3::Ptr<ns3::DataCalculator>>>::iterator ns3::DataCollector::DataCalculatorEnd() [member function]
     cls.add_method('DataCalculatorEnd', 
                    'std::list< ns3::Ptr< ns3::DataCalculator > > iterator', 
                    [])
@@ -2659,11 +2628,11 @@ def register_Ns3DataCollector_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## data-collector.h (module 'stats'): std::list<std::pair<std::basic_string<char>, std::basic_string<char> >, std::allocator<std::pair<std::basic_string<char>, std::basic_string<char> > > >::iterator ns3::DataCollector::MetadataBegin() [member function]
+    ## data-collector.h (module 'stats'): std::list<std::pair<std::basic_string<char>, std::basic_string<char>>, std::allocator<std::pair<std::basic_string<char>, std::basic_string<char>>>>::iterator ns3::DataCollector::MetadataBegin() [member function]
     cls.add_method('MetadataBegin', 
                    'std::list< std::pair< std::string, std::string > > iterator', 
                    [])
-    ## data-collector.h (module 'stats'): std::list<std::pair<std::basic_string<char>, std::basic_string<char> >, std::allocator<std::pair<std::basic_string<char>, std::basic_string<char> > > >::iterator ns3::DataCollector::MetadataEnd() [member function]
+    ## data-collector.h (module 'stats'): std::list<std::pair<std::basic_string<char>, std::basic_string<char>>, std::allocator<std::pair<std::basic_string<char>, std::basic_string<char>>>>::iterator ns3::DataCollector::MetadataEnd() [member function]
     cls.add_method('MetadataEnd', 
                    'std::list< std::pair< std::string, std::string > > iterator', 
                    [])
@@ -3311,119 +3280,6 @@ def register_Ns3Probe_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    return
-
-def register_Ns3SQLiteOutput_methods(root_module, cls):
-    ## sqlite-output.h (module 'stats'): ns3::SQLiteOutput::SQLiteOutput(ns3::SQLiteOutput const & arg0) [constructor]
-    cls.add_constructor([param('ns3::SQLiteOutput const &', 'arg0')])
-    ## sqlite-output.h (module 'stats'): ns3::SQLiteOutput::SQLiteOutput(std::string const & name, std::string const & semName) [constructor]
-    cls.add_constructor([param('std::string const &', 'name'), param('std::string const &', 'semName')])
-    ## sqlite-output.h (module 'stats'): void ns3::SQLiteOutput::SetJournalInMemory() [member function]
-    cls.add_method('SetJournalInMemory', 
-                   'void', 
-                   [])
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::SpinExec(std::string const & cmd) const [member function]
-    cls.add_method('SpinExec', 
-                   'bool', 
-                   [param('std::string const &', 'cmd')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::SpinExec(sqlite3_stmt * stmt) const [member function]
-    cls.add_method('SpinExec', 
-                   'bool', 
-                   [param('sqlite3_stmt *', 'stmt')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinFinalize(sqlite3_stmt * stmt) [member function]
-    cls.add_method('SpinFinalize', 
-                   'int', 
-                   [param('sqlite3_stmt *', 'stmt')], 
-                   is_static=True)
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::SpinPrepare(sqlite3_stmt * * stmt, std::string const & cmd) const [member function]
-    cls.add_method('SpinPrepare', 
-                   'bool', 
-                   [param('sqlite3_stmt * *', 'stmt'), param('std::string const &', 'cmd')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinReset(sqlite3_stmt * stmt) [member function]
-    cls.add_method('SpinReset', 
-                   'int', 
-                   [param('sqlite3_stmt *', 'stmt')], 
-                   is_static=True)
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinStep(sqlite3_stmt * stmt) [member function]
-    cls.add_method('SpinStep', 
-                   'int', 
-                   [param('sqlite3_stmt *', 'stmt')], 
-                   is_static=True)
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::WaitExec(std::string const & cmd) const [member function]
-    cls.add_method('WaitExec', 
-                   'bool', 
-                   [param('std::string const &', 'cmd')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::WaitExec(sqlite3_stmt * stmt) const [member function]
-    cls.add_method('WaitExec', 
-                   'bool', 
-                   [param('sqlite3_stmt *', 'stmt')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): bool ns3::SQLiteOutput::WaitPrepare(sqlite3_stmt * * stmt, std::string const & cmd) const [member function]
-    cls.add_method('WaitPrepare', 
-                   'bool', 
-                   [param('sqlite3_stmt * *', 'stmt'), param('std::string const &', 'cmd')], 
-                   is_const=True)
-    ## sqlite-output.h (module 'stats'): static bool ns3::SQLiteOutput::CheckError(sqlite3 * db, int rc, std::string const & cmd, sem_t * sem, bool hardExit) [member function]
-    cls.add_method('CheckError', 
-                   'bool', 
-                   [param('sqlite3 *', 'db'), param('int', 'rc'), param('std::string const &', 'cmd'), param('sem_t *', 'sem'), param('bool', 'hardExit')], 
-                   is_static=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): static void ns3::SQLiteOutput::Error(sqlite3 * db, std::string const & cmd) [member function]
-    cls.add_method('Error', 
-                   'void', 
-                   [param('sqlite3 *', 'db'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinExec(sqlite3 * db, std::string const & cmd) [member function]
-    cls.add_method('SpinExec', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinExec(sqlite3 * db, sqlite3_stmt * stmt) [member function]
-    cls.add_method('SpinExec', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('sqlite3_stmt *', 'stmt')], 
-                   is_static=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinPrepare(sqlite3 * db, sqlite3_stmt * * stmt, std::string const & cmd) [member function]
-    cls.add_method('SpinPrepare', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('sqlite3_stmt * *', 'stmt'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): int ns3::SQLiteOutput::WaitExec(sqlite3 * db, std::string const & cmd) const [member function]
-    cls.add_method('WaitExec', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('std::string const &', 'cmd')], 
-                   is_const=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): int ns3::SQLiteOutput::WaitExec(sqlite3 * db, sqlite3_stmt * stmt) const [member function]
-    cls.add_method('WaitExec', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('sqlite3_stmt *', 'stmt')], 
-                   is_const=True, visibility='protected')
-    ## sqlite-output.h (module 'stats'): int ns3::SQLiteOutput::WaitPrepare(sqlite3 * db, sqlite3_stmt * * stmt, std::string const & cmd) const [member function]
-    cls.add_method('WaitPrepare', 
-                   'int', 
-                   [param('sqlite3 *', 'db'), param('sqlite3_stmt * *', 'stmt'), param('std::string const &', 'cmd')], 
-                   is_const=True, visibility='protected')
-    return
-
-def register_Ns3SqliteDataOutput_methods(root_module, cls):
-    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput::SqliteDataOutput(ns3::SqliteDataOutput const & arg0) [constructor]
-    cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
-    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
-    cls.add_constructor([])
-    ## sqlite-data-output.h (module 'stats'): static ns3::TypeId ns3::SqliteDataOutput::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## sqlite-data-output.h (module 'stats'): void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
-    cls.add_method('Output', 
-                   'void', 
-                   [param('ns3::DataCollector &', 'dc')], 
-                   is_virtual=True)
     return
 
 def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
