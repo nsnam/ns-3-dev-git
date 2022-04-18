@@ -21,8 +21,11 @@
  */
 
 // This program conducts a Bianchi analysis of a wifi network.
-// It currently only supports 11a/b/g, and will be later extended
-// to support 11n/ac/ax, including frame aggregation settings.
+// Bianchi analysis involves saturating the network and observing how
+// the maximum achievable throughput is governed by the DCF or ECDA
+// channel access mechanisms.  This program offers many configurable
+// options, traces, and a validation option; the main output is a Gnuplot
+// plot file plotting throughput vs. number of nodes.
 
 #include <fstream>
 #include "ns3/log.h"

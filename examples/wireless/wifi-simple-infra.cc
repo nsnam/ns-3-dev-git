@@ -19,23 +19,47 @@
 
 // This script configures two nodes on an 802.11b physical layer, with
 // 802.11b NICs in infrastructure mode, and by default, the station sends
-// one packet of 1000 (application) bytes to the access point.  The
-// physical layer is configured
-// to receive at a fixed RSS (regardless of the distance and transmit
-// power); therefore, changing position of the nodes has no effect.
+// one packet of 1000 (application) bytes to the access point.  Unlike
+// the default physical layer configuration in which the path loss increases
+// (and the received signal strength decreases) as the distance between the
+// nodes increases, this example uses an artificial path loss model that
+// allows the configuration of the received signal strength (RSS) regardless
+// of other transmitter parameters (such as transmit power) or distance.
+// Therefore, changing position of the nodes has no effect.
 //
 // There are a number of command-line options available to control
 // the default behavior.  The list of available command-line options
 // can be listed with the following command:
 // ./ns3 run "wifi-simple-infra --help"
+// Additional command-line options are available via the generic attribute
+// configuration system.
 //
-// For instance, for this configuration, the physical layer will
-// stop successfully receiving packets when rss drops below -97 dBm.
+// For instance, for the default configuration, the physical layer will
+// stop successfully receiving packets when rss drops to -82 dBm or below.
 // To see this effect, try running:
 //
-// ./ns3 run "wifi-simple-infra --rss=-97 --numPackets=20"
-// ./ns3 run "wifi-simple-infra --rss=-98 --numPackets=20"
-// ./ns3 run "wifi-simple-infra --rss=-99 --numPackets=20"
+// ./ns3 run "wifi-simple-infra --rss=-80 --numPackets=20"
+// ./ns3 run "wifi-simple-infra --rss=-81 --numPackets=20"
+// ./ns3 run "wifi-simple-infra --rss=-82 --numPackets=20"
+//
+// The last command (and any RSS value lower than this) results in no
+// packets received.  This is due to the preamble detection model that
+// dominates the reception performance.  By default, the
+// ThresholdPreambleDetectionModel is added to all WifiPhy objects, and this
+// model prevents reception unless the incoming signal has a RSS above its
+// 'MinimumRssi' value (default of -82 dBm) and has a SNR above the 
+// 'Threshold' value (default of 4).
+//
+// If we relax these values, we can instead observe that signal reception
+// due to the 802.11b error model alone is much lower.  For instance,
+// setting the MinimumRssi to -101 (around the thermal noise floor).
+// and the SNR Threshold to -10 dB, shows that the DsssErrorRateModel can
+// successfully decode at RSS values of -97 or -98 dBm.
+//
+// ./ns3 run "wifi-simple-infra --rss=-97 --numPackets=20 --ns3::ThresholdPreambleDetectionModel::Threshold=-10 --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
+// ./ns3 run "wifi-simple-infra --rss=-98 --numPackets=20 --ns3::ThresholdPreambleDetectionModel::Threshold=-10 --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
+// ./ns3 run "wifi-simple-infra --rss=-99 --numPackets=20 --ns3::ThresholdPreambleDetectionModel::Threshold=-10 --ns3::ThresholdPreambleDetectionModel::MinimumRssi=-101"
+
 //
 // Note that all ns-3 attributes (not just the ones exposed in the below
 // script) can be changed at command line; see the documentation.
@@ -72,7 +96,7 @@ void ReceivePacket (Ptr<Socket> socket)
 {
   while (socket->Recv ())
     {
-      NS_LOG_UNCOND ("Received one packet!");
+      std::cout << "Received one packet!" << std::endl;
     }
 }
 
@@ -81,9 +105,10 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 {
   if (pktCount > 0)
     {
+      NS_LOG_INFO ("Generating one packet of size " << pktSize);
       socket->Send (Create<Packet> (pktSize));
       Simulator::Schedule (pktInterval, &GenerateTraffic,
-                           socket, pktSize,pktCount - 1, pktInterval);
+                           socket, pktSize, pktCount - 1, pktInterval);
     }
   else
     {
@@ -97,7 +122,7 @@ int main (int argc, char *argv[])
   double rss = -80;  // -dBm
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
-  double interval = 1.0; // seconds
+  Time interval = Seconds (1.0);
   bool verbose = false;
 
   CommandLine cmd (__FILE__);
@@ -105,11 +130,9 @@ int main (int argc, char *argv[])
   cmd.AddValue ("rss", "received signal strength", rss);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("numPackets", "number of packets generated", numPackets);
-  cmd.AddValue ("interval", "interval (seconds) between packets", interval);
+  cmd.AddValue ("interval", "interval between packets", interval);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
   cmd.Parse (argc, argv);
-  // Convert to time object
-  Time interPacketInterval = Seconds (interval);
 
   // Fix non-unicast data rate to be the same as that of unicast
   Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
@@ -143,17 +166,17 @@ int main (int argc, char *argv[])
   // Add a mac and disable rate control
   WifiMacHelper wifiMac;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue (phyMode),
-                                "ControlMode",StringValue (phyMode));
+                                "DataMode", StringValue (phyMode),
+                                "ControlMode", StringValue (phyMode));
 
-  // Setup the rest of the mac
+  // Setup the rest of the MAC
   Ssid ssid = Ssid ("wifi-default");
-  // setup sta.
+  // setup STA 
   wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid));
   NetDeviceContainer staDevice = wifi.Install (wifiPhy, wifiMac, c.Get (0));
   NetDeviceContainer devices = staDevice;
-  // setup ap.
+  // setup AP
   wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid));
   NetDeviceContainer apDevice = wifi.Install (wifiPhy, wifiMac, c.Get (1));
@@ -173,7 +196,6 @@ int main (int argc, char *argv[])
   internet.Install (c);
 
   Ipv4AddressHelper ipv4;
-  NS_LOG_INFO ("Assign IP Addresses.");
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i = ipv4.Assign (devices);
 
@@ -192,11 +214,11 @@ int main (int argc, char *argv[])
   wifiPhy.EnablePcap ("wifi-simple-infra", devices);
 
   // Output what we are doing
-  NS_LOG_UNCOND ("Testing " << numPackets  << " packets sent with receiver rss " << rss );
+  std::cout << "Testing " << numPackets  << " packets sent with receiver rss " << rss << std::endl;
 
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
                                   Seconds (1.0), &GenerateTraffic,
-                                  source, packetSize, numPackets, interPacketInterval);
+                                  source, packetSize, numPackets, interval);
 
   Simulator::Stop (Seconds (30.0));
   Simulator::Run ();

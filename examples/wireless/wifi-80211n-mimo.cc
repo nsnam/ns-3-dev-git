@@ -30,6 +30,12 @@
 //
 // The user can choose whether UDP or TCP should be used and can configure
 // some 802.11n parameters (frequency, channel width and guard interval).
+//
+// An important configuration parameter is preamble detection.  It is enabled
+// by default (to match the default ns-3 configuration) but will dominate
+// performance at low SNRs, causing the different MCS to appear to have
+// the same range (because regardless of the MCS, the preamble detection
+// thresholds do not change).
 
 #include "ns3/gnuplot.h"
 #include "ns3/command-line.h"
@@ -96,11 +102,13 @@ int main (int argc, char *argv[])
   double step = 5; //meters
   bool shortGuardInterval = false;
   bool channelBonding = false;
+  bool preambleDetection = true;
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("step", "Granularity of the results to be plotted in meters", step);
   cmd.AddValue ("simulationTime", "Simulation time per step (in seconds)", simulationTime);
   cmd.AddValue ("channelBonding", "Enable/disable channel bonding (channel width = 20 MHz if false, channel width = 40 MHz if true)", channelBonding);
+  cmd.AddValue ("preambleDetection", "Enable/disable preamble detection model", preambleDetection);
   cmd.AddValue ("shortGuardInterval", "Enable/disable short guard interval", shortGuardInterval);
   cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
@@ -136,6 +144,10 @@ int main (int argc, char *argv[])
           YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
           YansWifiPhyHelper phy;
           phy.SetChannel (channel.Create ());
+          if (!preambleDetection)
+            {
+              phy.DisablePreambleDetectionModel ();
+            }
 
           // Set MIMO capabilities
           phy.Set ("Antennas", UintegerValue (nStreams));
