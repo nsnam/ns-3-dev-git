@@ -147,11 +147,11 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   
   Address dest;
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Interval", StringValue ("50ms")), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Interval", StringValue ("50ms")), true,
                          "Verify that we can actually set the attribute Interval");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Target", StringValue ("4ms")), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Target", StringValue ("4ms")), true,
                          "Verify that we can actually set the attribute Target");
 
   if (m_mode == QueueSizeUnit::BYTES)
@@ -162,7 +162,7 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
     {
       modeSize = 1;
     }
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 1500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 1500))),
                          true, "Verify that we can actually set the attribute MaxSize");
   queue->Initialize ();
 
@@ -174,59 +174,59 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   p5 = Create<Packet> (pktSize);
   p6 = Create<Packet> (pktSize);
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 0 * modeSize, "There should be no packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 0 * modeSize, "There should be no packets in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 1 * modeSize, "There should be one packet in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 1 * modeSize, "There should be one packet in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 2 * modeSize, "There should be two packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 2 * modeSize, "There should be two packets in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 3 * modeSize, "There should be three packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 3 * modeSize, "There should be three packets in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p4, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 4 * modeSize, "There should be four packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 4 * modeSize, "There should be four packets in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p5, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 5 * modeSize, "There should be five packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 5 * modeSize, "There should be five packets in queue");
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p6, dest, false));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 6 * modeSize, "There should be six packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 6 * modeSize, "There should be six packets in queue");
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
+  NS_TEST_ASSERT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
                          0, "There should be no packets being dropped due to full queue");
 
   Ptr<QueueDiscItem> item;
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 5 * modeSize, "There should be five packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 5 * modeSize, "There should be five packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 4 * modeSize, "There should be four packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 4 * modeSize, "There should be four packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 3 * modeSize, "There should be three packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 3 * modeSize, "There should be three packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the forth packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 2 * modeSize, "There should be two packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the forth packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 2 * modeSize, "There should be two packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the fifth packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 1 * modeSize, "There should be one packet in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the fifth packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 1 * modeSize, "There should be one packet in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p5->GetUid (), "Was this the fifth packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the last packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 0 * modeSize, "There should be zero packet in queue");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the last packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 0 * modeSize, "There should be zero packet in queue");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p6->GetUid (), "Was this the sixth packet ?");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
+  NS_TEST_ASSERT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0,
+  NS_TEST_ASSERT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0,
                          "There should be no packet drops according to CoDel algorithm");
 }
 
@@ -287,9 +287,9 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   p2 = Create<Packet> (pktSize);
   p3 = Create<Packet> (pktSize);
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MinBytes");
 
   queue->Initialize ();
@@ -299,8 +299,8 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, false));
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, false));
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize().GetValue (), 500 * modeSize, "There should be 500 packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize().GetValue (), 500 * modeSize, "There should be 500 packets in queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
                          3, "There should be three packets being dropped due to full queue");
 }
 
@@ -403,7 +403,7 @@ CoDelQueueDiscControlLawTest::DoRun (void)
           codelTimeVal = queue->Time2CoDel (timeVal);
           uint32_t ns3Result = queue->ControlLaw (codelTimeVal, interval, recInvSqrt); 
           uint32_t linuxResult = _codel_control_law (codelTimeVal, interval, recInvSqrt); 
-          NS_TEST_EXPECT_MSG_EQ (ns3Result, linuxResult, "Linux result for ControlLaw should equal ns-3 result");
+          NS_TEST_ASSERT_MSG_EQ (ns3Result, linuxResult, "Linux result for ControlLaw should equal ns-3 result");
         }
     }
 }
@@ -477,13 +477,13 @@ CoDelQueueDiscBasicDrop::DoRun (void)
       modeSize = 1;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
 
   queue->Initialize ();
 
   Enqueue (queue, pktSize, 20);
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
 
   // Although the first dequeue occurs with a sojourn time above target
   // the dequeue should be successful in this interval
@@ -659,16 +659,16 @@ CoDelQueueDiscBasicMark::DoRun (void)
       modeSize = 1;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
                          true, "Verify that we can actually set the attribute UseEcn");
   
   queue->Initialize ();
 
   // Not-ECT traffic to induce packet drop
   Enqueue (queue, pktSize, 20, false);
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
 
   // Although the first dequeue occurs with a sojourn time above target
   // there should not be any dropped packets in this interval
@@ -684,16 +684,16 @@ CoDelQueueDiscBasicMark::DoRun (void)
 
   // Test case 2, queue with ECN capable traffic for marking of packets instead of dropping
   queue = CreateObject<CoDelQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
                          true, "Verify that we can actually set the attribute UseEcn");
 
   queue->Initialize ();
 
   // ECN capable traffic to induce packets to be marked
   Enqueue (queue, pktSize, 20, true);
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
 
   // Although the first dequeue occurs with a sojourn time above target
   // there should not be any target exceeded marked packets in this interval
@@ -715,11 +715,11 @@ CoDelQueueDiscBasicMark::DoRun (void)
 
   // Test case 3, some packets are ECN capable, with CE threshold set to 2ms
   queue = CreateObject<CoDelQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
                          true, "Verify that we can actually set the attribute UseEcn");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("CeThreshold", TimeValue (MilliSeconds (2))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("CeThreshold", TimeValue (MilliSeconds (2))),
                          true, "Verify that we can actually set the attribute CeThreshold");
   
   queue->Initialize ();
@@ -728,7 +728,7 @@ CoDelQueueDiscBasicMark::DoRun (void)
   Enqueue (queue, pktSize, 3, true);
   // Rest of the packet are not ecnCapable
   Enqueue (queue, pktSize, 17, false);
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
 
   // Although the first dequeue occurs with a sojourn time above target
   // there should not be any target exceeded marked packets in this interval
@@ -750,18 +750,18 @@ CoDelQueueDiscBasicMark::DoRun (void)
 
   // Test case 4, queue with ECN capable traffic and CeThreshold set for marking of packets instead of dropping
   queue = CreateObject<CoDelQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (m_mode, modeSize * 500))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
                          true, "Verify that we can actually set the attribute UseEcn");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("CeThreshold", TimeValue (MilliSeconds (2))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("CeThreshold", TimeValue (MilliSeconds (2))),
                          true, "Verify that we can actually set the attribute CeThreshold");
 
   queue->Initialize ();
 
   // ECN capable traffic to induce packets to be marked
   Enqueue (queue, pktSize, 20, true);
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 20 * modeSize, "There should be 20 packets in queue.");
 
   // The first dequeue occurs with a sojourn time below CE threshold
   // there should not any be CE threshold exceeded marked packets
@@ -827,8 +827,8 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
                   NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 0, "We are not in dropping state."
                                         "Sojourn time has just gone above target from below."
                                         "Hence, there should be no target exceeded marked packets");
@@ -841,11 +841,11 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   nPacketsBeforeFirstMark = initialQSize;
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "Sojourn time has been above target for at least interval."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "Sojourn time has been above target for at least interval."
                                         "We enter the dropping state and perform initial packet marking"
                                         "So there should be only 1 more packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 1, "There should be 1 target exceeded marked packet");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 1, "There should be 1 target exceeded marked packet");
                   NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 0, "There should not be any CE threshold exceeded marked packet");
                 }
             }
@@ -856,12 +856,12 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
                                         "Sojourn is still above target."
                                         "However, it's not time for next target exceeded mark."
                                         "So there should be only 1 more packet dequeued");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet from the last dequeue");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet from the last dequeue");
                   NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 0, "There should not be any CE threshold exceeded marked packet");
                 }
               else if (currentTime.GetMicroSeconds () >= initialDropNext)
@@ -869,12 +869,12 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
                                         "It's time for packet to be marked"
                                         "So there should be only 1 more packet dequeued");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 2, "There should 2 target exceeded marked packet");
-                  NS_TEST_EXPECT_MSG_EQ (nPacketsBeforeFirstDrop, nPacketsBeforeFirstMark, "Number of packets in the queue before drop should be equal"
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 2, "There should 2 target exceeded marked packet");
+                  NS_TEST_ASSERT_MSG_EQ (nPacketsBeforeFirstDrop, nPacketsBeforeFirstMark, "Number of packets in the queue before drop should be equal"
                                         "to number of packets in the queue before first mark as the behavior untill packet N should be the same.");
                   NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 0, "There should not be any CE threshold exceeded marked packet");
                 }
@@ -889,8 +889,8 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
                   NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 0, "We are not in dropping state."
                                         "Sojourn time has just gone above target from below."
                                         "Hence, there should be no target exceeded marked packets");
@@ -902,12 +902,12 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "Sojourn time has been above target for at least interval."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "Sojourn time has been above target for at least interval."
                                         "We enter the dropping state and perform initial packet marking"
                                         "So there should be only 1 more packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 1, "There should be 1 target exceeded marked packet");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 1, "There should be 1 CE threshold exceeded marked packets");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 1, "There should be 1 target exceeded marked packet");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 1, "There should be 1 CE threshold exceeded marked packets");
                 }
             }
           else if (initialTargetMarkCount > 0)
@@ -917,25 +917,25 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "We are in dropping state."
                                         "Sojourn is still above target."
                                         "However, it's not time for next target exceeded mark."
                                         "So there should be only 1 more packet dequeued");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet from the last dequeue");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 2, "There should be 2 CE threshold exceeded marked packets");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet from the last dequeue");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 2, "There should be 2 CE threshold exceeded marked packets");
                 }
               else if (currentTime.GetMicroSeconds () >= initialDropNext)
                 {
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentTargetMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - (m_dropNextCount + 1) * modeSize, "We are in dropping state."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - (m_dropNextCount + 1) * modeSize, "We are in dropping state."
                                         "It's time for packet to be dropped as packets are not ecnCapable"
                                         "The number of packets dequeued equals to the number of times m_dropNext is updated plus initial dequeue");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, m_dropNextCount, "The number of drops equals to the number of times m_dropNext is updated");
-                  NS_TEST_EXPECT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 2, "There should still be 2 CE threshold exceeded marked packet as packets are not ecnCapable");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, m_dropNextCount, "The number of drops equals to the number of times m_dropNext is updated");
+                  NS_TEST_ASSERT_MSG_EQ (currentTargetMarkCount, 1, "There should still be only 1 target exceeded marked packet");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 2, "There should still be 2 CE threshold exceeded marked packet as packets are not ecnCapable");
                 }
             }
         }
@@ -947,8 +947,8 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                 {
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be 1 packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
                   NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 0, "Sojourn time has not gone above CE threshold."
                                         "Hence, there should not be any CE threshold exceeded marked packet");
                 }
@@ -956,9 +956,9 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                 {
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 1, "Sojourn time has gone above CE threshold."
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 1, "Sojourn time has gone above CE threshold."
                                         "There should be 1 CE threshold exceeded marked packet");
                 }
             }
@@ -968,17 +968,17 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                 {
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 2, "There should be 2 CE threshold exceeded marked packets");
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 2, "There should be 2 CE threshold exceeded marked packets");
                 }
               else
                 { // In dropping state
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
                   currentCeThreshMarkCount = queue->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK);
-                  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
-                  NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
-                  NS_TEST_EXPECT_MSG_EQ (currentCeThreshMarkCount, 3, "There should be 3 CE threshold exceeded marked packet");
+                  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), initialQSize - modeSize, "There should be only 1 more packet dequeued.");
+                  NS_TEST_ASSERT_MSG_EQ (currentDropCount, 0, "There should not be any packet drops");
+                  NS_TEST_ASSERT_MSG_EQ (currentCeThreshMarkCount, 3, "There should be 3 CE threshold exceeded marked packet");
                 }
             }
         }

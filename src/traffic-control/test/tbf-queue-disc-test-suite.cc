@@ -152,15 +152,15 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
       qSize = qSize * modeSize;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
                          "Verify that we can actually set the attribute Burst");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
                          "Verify that we can actually set the attribute Mtu");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
                          "Verify that we can actually set the attribute Rate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
                          "Verify that we can actually set the attribute PeakRate");
 
   Address dest;
@@ -173,47 +173,47 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
   p5 = Create<Packet> (pktSize);
 
   queue->Initialize ();
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be no packets in there");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be no packets in there");
   queue->Enqueue (Create<TbfQueueDiscTestItem> (p1, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
   queue->Enqueue (Create<TbfQueueDiscTestItem> (p2, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
   queue->Enqueue (Create<TbfQueueDiscTestItem> (p3, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 3 * modeSize, "There should be three packets in there");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 3 * modeSize, "There should be three packets in there");
   queue->Enqueue (Create<TbfQueueDiscTestItem> (p4, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 4 * modeSize, "There should be four packets in there");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 4 * modeSize, "There should be four packets in there");
   queue->Enqueue (Create<TbfQueueDiscTestItem> (p5, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 4 * modeSize,
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 4 * modeSize,
                          "There should still be four packets in there as this enqueue cannot happen since QueueLimit will be exceeded");
 
   Ptr<QueueDiscItem> item;
-  NS_TEST_EXPECT_MSG_EQ (queue->GetFirstBucketTokens (), burst, "The first token bucket should be full");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetFirstBucketTokens (), burst, "The first token bucket should be full");
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 3 * modeSize, "There should be three packets in there");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (1 * pktSize),
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 3 * modeSize, "There should be three packets in there");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (1 * pktSize),
                          "The number of tokens in the first bucket should be one pktSize lesser");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (2 * pktSize),
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (2 * pktSize),
                          "The number of tokens in the first bucket should be two pktSizes lesser");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (3 * pktSize),
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (3 * pktSize),
                          "The number of tokens in the first bucket should be three pktSizes lesser");
 
   item = queue->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the fourth packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be zero packet in there");
-  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (4 * pktSize),
+  NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "I want to remove the fourth packet");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be zero packet in there");
+  NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), p4->GetUid (), "Was this the fourth packet ?");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetFirstBucketTokens (), burst - (4 * pktSize),
                          "The number of tokens in the first bucket should be four pktSizes lesser");
 
   // test 2 : When DataRate == FirstBucketTokenRate; packets should pass smoothly.
@@ -232,15 +232,15 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
       qSize = qSize * modeSize;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
                          "Verify that we can actually set the attribute Burst");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
                          "Verify that we can actually set the attribute Mtu");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
                          "Verify that we can actually set the attribute Rate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
                          "Verify that we can actually set the attribute PeakRate");
 
   queue->Initialize ();
@@ -295,15 +295,15 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
       qSize = qSize * modeSize;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
                          "Verify that we can actually set the attribute Burst");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
                          "Verify that we can actually set the attribute Mtu");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
                          "Verify that we can actually set the attribute Rate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
                          "Verify that we can actually set the attribute PeakRate");
 
   delay = 0.09;
@@ -369,15 +369,15 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
       qSize = qSize * modeSize;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Burst", UintegerValue (burst)), true,
                          "Verify that we can actually set the attribute Burst");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Mtu", UintegerValue (mtu)), true,
                          "Verify that we can actually set the attribute Mtu");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("Rate", DataRateValue (rate)), true,
                          "Verify that we can actually set the attribute Rate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("PeakRate", DataRateValue (peakRate)), true,
                          "Verify that we can actually set the attribute PeakRate");
 
   queue->Initialize ();

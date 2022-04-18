@@ -182,16 +182,16 @@ PrioQueueDiscTestCase::DoRun (void)
     }
   qdisc->Initialize ();
 
-  NS_TEST_EXPECT_MSG_EQ (qdisc->GetNQueueDiscClasses (), 4, "Verify that the queue disc has 4 child queue discs");
+  NS_TEST_ASSERT_MSG_EQ (qdisc->GetNQueueDiscClasses (), 4, "Verify that the queue disc has 4 child queue discs");
 
-  NS_TEST_EXPECT_MSG_EQ (qdisc->SetAttributeFailSafe ("Priomap", StringValue (priomap)),
+  NS_TEST_ASSERT_MSG_EQ (qdisc->SetAttributeFailSafe ("Priomap", StringValue (priomap)),
                          true, "Verify that we can actually set the attribute Priomap");
 
   StringValue sv;
-  NS_TEST_EXPECT_MSG_EQ (qdisc->GetAttributeFailSafe ("Priomap", sv),
+  NS_TEST_ASSERT_MSG_EQ (qdisc->GetAttributeFailSafe ("Priomap", sv),
                          true, "Verify that we can actually get the attribute Priomap");
 
-  NS_TEST_EXPECT_MSG_EQ (sv.Get (), priomap, "Verify that the priomap has been correctly set");
+  NS_TEST_ASSERT_MSG_EQ (sv.Get (), priomap, "Verify that the priomap has been correctly set");
 
   /*
    * Test 2: classify packets based on priomap because no packet filter is installed
@@ -200,7 +200,7 @@ PrioQueueDiscTestCase::DoRun (void)
   // create packets with priorities from 0 to 3
   for (uint16_t i = 0; i < 4; i++)
     {
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              0, "There should be no packets in the child queue disc " << i);
 
       item = Create<PrioQueueDiscTestItem> (Create<Packet> (100), dest, i);
@@ -208,7 +208,7 @@ PrioQueueDiscTestCase::DoRun (void)
       // packet is assigned band i
       uids[i].push (item->GetPacket ()->GetUid ());
 
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              1, "There should be one packet in the child queue disc " << i);
     }
 
@@ -223,7 +223,7 @@ PrioQueueDiscTestCase::DoRun (void)
   // create packets with priorities from 4 to 7
   for (uint16_t i = 0; i < 4; i++)
     {
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              1, "There should be one packet in the child queue disc " << i);
 
       item = Create<PrioQueueDiscTestItem> (Create<Packet> (100), dest, i+4);
@@ -231,7 +231,7 @@ PrioQueueDiscTestCase::DoRun (void)
       // packet is assigned band i
       uids[i].push (item->GetPacket ()->GetUid ());
 
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              2, "There should be two packets in the child queue disc " << i);
     }
 
@@ -246,7 +246,7 @@ PrioQueueDiscTestCase::DoRun (void)
   for (uint16_t i = 0; i < 4; i++)
     {
       pf2->SetReturnValue (i);
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              2, "There should be two packets in the child queue disc " << i);
 
       item = Create<PrioQueueDiscTestItem> (Create<Packet> (100), dest, 0);
@@ -254,7 +254,7 @@ PrioQueueDiscTestCase::DoRun (void)
       // packet is assigned band i
       uids[i].push (item->GetPacket ()->GetUid ());
 
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                              3, "There should be three packets in the child queue disc " << i);
     }
 
@@ -268,8 +268,8 @@ PrioQueueDiscTestCase::DoRun (void)
   for (uint16_t i = 0; i < 4; i++)
     {
       pf2->SetReturnValue (4+i);
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetBandForPriority (0), 0, "The band for priority 0 must be band 0");
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+3u,
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetBandForPriority (0), 0, "The band for priority 0 must be band 0");
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+3u,
                              "There should be " << i+3 << " packets in the child queue disc "
                              << qdisc->GetBandForPriority (0));
 
@@ -278,7 +278,7 @@ PrioQueueDiscTestCase::DoRun (void)
       // packet is assigned band 0
       uids[0].push (item->GetPacket ()->GetUid ());
 
-      NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+4u,
+      NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), i+4u,
                              "There should be " << i+4 << " packets in the child queue disc "
                              << qdisc->GetBandForPriority (0));
     }
@@ -293,11 +293,11 @@ PrioQueueDiscTestCase::DoRun (void)
         {
           if (uids[i].empty ())
             {
-              NS_TEST_EXPECT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
+              NS_TEST_ASSERT_MSG_EQ (qdisc->GetQueueDiscClass (i)->GetQueueDisc ()->GetNPackets (),
                                      0, "Band " << i << " should be empty");
               continue;
             }
-          NS_TEST_EXPECT_MSG_EQ (uids[i].front (), item->GetPacket ()->GetUid (),
+          NS_TEST_ASSERT_MSG_EQ (uids[i].front (), item->GetPacket ()->GetUid (),
                                  "The dequeued packet is not the one we expected");
           uids[i].pop ();
           break;

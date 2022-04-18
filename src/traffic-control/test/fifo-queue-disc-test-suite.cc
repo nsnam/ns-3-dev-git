@@ -123,7 +123,7 @@ FifoQueueDiscTestCase::DoRunFifoTest (Ptr<FifoQueueDisc> q, uint32_t qSize, uint
   uint32_t modeSize = (q->GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS ? 1 : pktSize);
   uint32_t numPackets = qSize / modeSize;
 
-  NS_TEST_EXPECT_MSG_EQ (q->GetCurrentSize ().GetValue (), 0, "The queue disc should be empty");
+  NS_TEST_ASSERT_MSG_EQ (q->GetCurrentSize ().GetValue (), 0, "The queue disc should be empty");
 
   // create and enqueue numPackets packets and store their UIDs; check they are all enqueued
   for (uint32_t i = 1; i <= numPackets; i++)
@@ -131,24 +131,24 @@ FifoQueueDiscTestCase::DoRunFifoTest (Ptr<FifoQueueDisc> q, uint32_t qSize, uint
       p = Create<Packet> (pktSize);
       uids.push_back (p->GetUid ());
       q->Enqueue (Create<FifoQueueDiscTestItem> (p, dest));
-      NS_TEST_EXPECT_MSG_EQ (q->GetCurrentSize ().GetValue (), i * modeSize, "There should be " << i << " packet(s) in there");
+      NS_TEST_ASSERT_MSG_EQ (q->GetCurrentSize ().GetValue (), i * modeSize, "There should be " << i << " packet(s) in there");
     }
 
   // no room for another packet
-  NS_TEST_EXPECT_MSG_EQ (q->Enqueue (Create<FifoQueueDiscTestItem> (p, dest)), 
+  NS_TEST_ASSERT_MSG_EQ (q->Enqueue (Create<FifoQueueDiscTestItem> (p, dest)), 
                          false, "There should be no room for another packet");
 
   // dequeue and check packet order
   for (uint32_t i = 1; i <= numPackets; i++)
     {
       item = q->Dequeue ();
-      NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "A packet should have been dequeued");
-      NS_TEST_EXPECT_MSG_EQ (q->GetCurrentSize ().GetValue (), (numPackets-i) * modeSize, "There should be " << numPackets-i << " packet(s) in there");
-      NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), uids[i-1], "was this the right packet?");
+      NS_TEST_ASSERT_MSG_EQ ((item != 0), true, "A packet should have been dequeued");
+      NS_TEST_ASSERT_MSG_EQ (q->GetCurrentSize ().GetValue (), (numPackets-i) * modeSize, "There should be " << numPackets-i << " packet(s) in there");
+      NS_TEST_ASSERT_MSG_EQ (item->GetPacket ()->GetUid (), uids[i-1], "was this the right packet?");
     }
 
   item = q->Dequeue ();
-  NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
+  NS_TEST_ASSERT_MSG_EQ ((item == 0), true, "There are really no packets in there");
 }
 
 void
@@ -162,9 +162,9 @@ FifoQueueDiscTestCase::RunFifoTest (QueueSizeUnit mode)
   // test 1: set the limit on the queue disc before initialization
   queue = CreateObject<FifoQueueDisc> ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize",
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize",
                                                       QueueSizeValue (QueueSize (mode, numPackets*modeSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
 
@@ -176,11 +176,11 @@ FifoQueueDiscTestCase::RunFifoTest (QueueSizeUnit mode)
   // test 2: set the limit on the queue disc after initialization
   queue = CreateObject<FifoQueueDisc> ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
 
   queue->Initialize ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize",
+  NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize",
                                                       QueueSizeValue (QueueSize (mode, numPackets*modeSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
 
@@ -190,7 +190,7 @@ FifoQueueDiscTestCase::RunFifoTest (QueueSizeUnit mode)
   // test 3: set the limit on the internal queue before initialization
   queue = CreateObject<FifoQueueDisc> ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
 
   ObjectFactory factory;
   factory.SetTypeId ("ns3::DropTailQueue<QueueDiscItem>");
@@ -212,23 +212,23 @@ FifoQueueDiscTestCase::RunFifoTest (QueueSizeUnit mode)
   // test 4: set the limit on the internal queue after initialization
   queue = CreateObject<FifoQueueDisc> ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetNInternalQueues (), 0, "Verify that the queue disc has no internal queue");
 
   queue->Initialize ();
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetNInternalQueues (), 1, "Verify that the queue disc got an internal queue");
+  NS_TEST_ASSERT_MSG_EQ (queue->GetNInternalQueues (), 1, "Verify that the queue disc got an internal queue");
 
   Ptr<QueueDisc::InternalQueue> iq = queue->GetInternalQueue (0);
 
   if (mode == QueueSizeUnit::PACKETS)
     {
-      NS_TEST_EXPECT_MSG_EQ (iq->SetAttributeFailSafe ("MaxSize",
+      NS_TEST_ASSERT_MSG_EQ (iq->SetAttributeFailSafe ("MaxSize",
                                                        QueueSizeValue (QueueSize  (QueueSizeUnit::PACKETS, numPackets))),
                              true, "Verify that we can actually set the attribute MaxSize on the internal queue");
     }
   else
     {
-      NS_TEST_EXPECT_MSG_EQ (iq->SetAttributeFailSafe ("MaxSize",
+      NS_TEST_ASSERT_MSG_EQ (iq->SetAttributeFailSafe ("MaxSize",
                                                        QueueSizeValue (QueueSize  (QueueSizeUnit::BYTES, numPackets*pktSize))),
                              true, "Verify that we can actually set the attribute MaxSize on the internal queue");
     }
