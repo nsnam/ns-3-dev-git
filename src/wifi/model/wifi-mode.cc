@@ -136,7 +136,7 @@ WifiMode::GetConstellationSize (void) const
   return item->GetConstellationSizeCallback ();
 }
 
-const std::string&
+std::string
 WifiMode::GetUniqueName (void) const
 {
   //needed for ostream printing of the invalid mode

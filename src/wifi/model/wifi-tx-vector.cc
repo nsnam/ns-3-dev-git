@@ -337,7 +337,7 @@ WifiTxVector::IsValid (void) const
     {
       return false;
     }
-  const std::string& modeName = m_mode.GetUniqueName ();
+  std::string modeName = m_mode.GetUniqueName ();
   if (m_channelWidth == 20)
     {
       if (m_nss != 3 && m_nss != 6)
