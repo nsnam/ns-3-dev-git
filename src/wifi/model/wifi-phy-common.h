@@ -327,7 +327,9 @@ enum WifiPhyRxfailureReason
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET,
   HE_TB_PPDU_TOO_LATE,
-  FILTERED
+  FILTERED,
+  DMG_HEADER_FAILURE,
+  DMG_ALLOCATION_ENDED
 };
 
 /**
@@ -383,6 +385,10 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
         return (os << "HE_TB_PPDU_TOO_LATE");
       case FILTERED:
         return (os << "FILTERED");
+      case DMG_HEADER_FAILURE:
+        return (os << "DMG_HEADER_FAILURE");
+      case DMG_ALLOCATION_ENDED:
+        return (os << "DMG_ALLOCATION_ENDED");
       case UNKNOWN:
       default:
         NS_FATAL_ERROR ("Unknown reason");
