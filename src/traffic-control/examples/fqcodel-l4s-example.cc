@@ -24,6 +24,11 @@
  */
 
 // The 9 configurations below test BIC and DCTCP under various scenarios.
+// Scenarios are numbered 1-9.  By default, scenario number 0 (i.e., no
+// scenario) is configured, which means that the user is free to set
+// any of the parameters freely; if scenarios 1 through 9 are selected,
+// the scenario parameters are fixed.
+//
 // The configuration of the scenarios starts from basic TCP BIC without ECN
 // with the base RTT of 80ms and then in the next scenario, ECN is enabled,
 // and gradually, the complexity of the scenario increases and the last scenario
