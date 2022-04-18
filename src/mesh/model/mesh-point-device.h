@@ -27,10 +27,9 @@
 #include "ns3/mac48-address.h"
 #include "ns3/bridge-channel.h"
 #include "ns3/mesh-l2-routing-protocol.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
-
-class RandomVariableStream;
 
 /**
  * \ingroup mesh
