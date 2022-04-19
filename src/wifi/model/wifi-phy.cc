@@ -1014,11 +1014,11 @@ WifiPhy::DoChannelSwitch (void)
         }
       if (width == 0 && number == 0)
         {
-          width = GetDefaultChannelWidth (m_standard, (WifiPhyBand)(band));
+          width = GetDefaultChannelWidth (m_standard, static_cast<WifiPhyBand> (band));
         }
       if (number == 0)
         {
-          number = WifiPhyOperatingChannel::GetDefaultChannelNumber (width, m_standard, (WifiPhyBand)(band));
+          number = WifiPhyOperatingChannel::GetDefaultChannelNumber (width, m_standard, static_cast<WifiPhyBand> (band));
         }
     }
 
