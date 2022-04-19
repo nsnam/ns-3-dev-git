@@ -26,6 +26,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-phy.h" //only used for static mode constructor
 #include "ns3/wifi-utils.h"
+#include "ns3/interference-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 

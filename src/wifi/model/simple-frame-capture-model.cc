@@ -23,7 +23,7 @@
 #include "ns3/double.h"
 #include "simple-frame-capture-model.h"
 #include "wifi-utils.h"
-#include "wifi-phy.h"
+#include "interference-helper.h"
 
 namespace ns3 {
 

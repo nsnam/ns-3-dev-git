@@ -24,7 +24,6 @@
 
 #include "ns3/error-model.h"
 #include "wifi-standards.h"
-#include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 #include "phy-entity.h"
 #include "wifi-phy-operating-channel.h"
@@ -39,6 +38,8 @@ class FrameCaptureModel;
 class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
+class InterferenceHelper;
+class ErrorRateModel;
 
 /**
  * \brief 802.11 PHY layer model
@@ -1131,7 +1132,8 @@ protected:
    */
   void AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
 
-  InterferenceHelper m_interference;   //!< the class handling interference computations
+  Ptr<InterferenceHelper> m_interference; //!< Pointer to a helper responsible for interference computations
+
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
 

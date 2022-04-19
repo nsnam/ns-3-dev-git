@@ -28,6 +28,7 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/table-based-error-rate-model.h"
 #include "ns3/he-phy.h" //includes HT and VHT
+#include "ns3/interference-helper.h"
 
 using namespace ns3;
 

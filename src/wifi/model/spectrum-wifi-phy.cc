@@ -32,6 +32,7 @@
 #include "spectrum-wifi-phy.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-spectrum-signal-parameters.h"
+#include "interference-helper.h"
 #include "wifi-utils.h"
 #include "wifi-psdu.h"
 
@@ -145,11 +146,11 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
 {
   NS_LOG_FUNCTION (this);
   uint16_t channelWidth = GetChannelWidth ();
-  m_interference.RemoveBands ();
+  m_interference->RemoveBands ();
   if (channelWidth < 20)
     {
       WifiSpectrumBand band = GetBand (channelWidth);
-      m_interference.AddBand (band);
+      m_interference->AddBand (band);
     }
   else
     {
@@ -157,7 +158,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
         {
           for (uint8_t i = 0; i < (channelWidth / bw); ++i)
             {
-              m_interference.AddBand (GetBand (bw, i));
+              m_interference->AddBand (GetBand (bw, i));
             }
         }
     }
@@ -204,7 +205,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
         }
       for (const auto& bandRuPair : m_ruBands[channelWidth])
         {
-          m_interference.AddBand (bandRuPair.first);
+          m_interference->AddBand (bandRuPair.first);
         }
     }
 }
@@ -328,14 +329,14 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   if (wifiRxParams == 0)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");
-      m_interference.AddForeignSignal (rxDuration, rxPowerW);
+      m_interference->AddForeignSignal (rxDuration, rxPowerW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
   if (wifiRxParams && m_disableWifiReception)
     {
       NS_LOG_INFO ("Received Wi-Fi signal but blocked from syncing");
-      m_interference.AddForeignSignal (rxDuration, rxPowerW);
+      m_interference->AddForeignSignal (rxDuration, rxPowerW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
@@ -346,7 +347,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   if (totalRxPowerW < DbmToW (GetRxSensitivity ()) * (txWidth / 20.0))
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
-      m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (), rxDuration,
+      m_interference->Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (), rxDuration,
                           rxPowerW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (wifiRxParams->ppdu));
       return;
@@ -366,7 +367,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       if (!wifiRxParams->ppdu->CanBeReceived (wifiRxParams->txCenterFreq, p20MinFreq, p20MaxFreq))
         {
           NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
-          m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),
+          m_interference->Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),
                               rxDuration, rxPowerW);
           SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (wifiRxParams->ppdu));
           return;

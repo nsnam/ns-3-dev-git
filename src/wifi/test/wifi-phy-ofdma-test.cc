@@ -33,6 +33,7 @@
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/nist-error-rate-model.h"
+#include "ns3/interference-helper.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
@@ -289,7 +290,7 @@ OfdmaSpectrumWifiPhy::GetCurrentEvent (void)
 Time
 OfdmaSpectrumWifiPhy::GetEnergyDuration (double energyW, WifiSpectrumBand band)
 {
-  return m_interference.GetEnergyDuration (energyW, band);
+  return m_interference->GetEnergyDuration (energyW, band);
 }
 
 Ptr<const HePhy>

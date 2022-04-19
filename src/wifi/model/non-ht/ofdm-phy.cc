@@ -25,6 +25,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-utils.h"
+#include "ns3/interference-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include <array>

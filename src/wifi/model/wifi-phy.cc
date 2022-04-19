@@ -31,6 +31,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 #include "wifi-utils.h"
+#include "interference-helper.h"
 #include "frame-capture-model.h"
 #include "preamble-detection-model.h"
 #include "wifi-radio-energy-model.h"
@@ -325,6 +326,7 @@ WifiPhy::WifiPhy ()
     m_timeLastPreambleDetected (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
+  m_interference = CreateObject<InterferenceHelper> ();
   m_random = CreateObject<UniformRandomVariable> ();
   m_state = CreateObject<WifiPhyStateHelper> ();
 }
@@ -440,8 +442,8 @@ void
 WifiPhy::SetRxNoiseFigure (double noiseFigureDb)
 {
   NS_LOG_FUNCTION (this << noiseFigureDb);
-  m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
-  m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
+  m_interference->SetNoiseFigure (DbToRatio (noiseFigureDb));
+  m_interference->SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
 }
 
 void
@@ -556,8 +558,8 @@ WifiPhy::GetMobility (void) const
 void
 WifiPhy::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
 {
-  m_interference.SetErrorRateModel (rate);
-  m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
+  m_interference->SetErrorRateModel (rate);
+  m_interference->SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
 }
 
 void
@@ -612,7 +614,7 @@ WifiPhy::GetChannelSwitchDelay (void) const
 double
 WifiPhy::CalculateSnr (const WifiTxVector& txVector, double ber) const
 {
-  return m_interference.GetErrorRateModel ()->CalculateSnr (txVector, ber);
+  return m_interference->GetErrorRateModel ()->CalculateSnr (txVector, ber);
 }
 
 const Ptr<const PhyEntity>
@@ -1045,7 +1047,7 @@ WifiPhy::DoChannelSwitch (void)
     {
       // notify channel switching
       m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
-      m_interference.EraseEvents ();
+      m_interference->EraseEvents ();
       /*
       * Needed here to be able to correctly sensed the medium for the first
       * time after the switching. The actual switching is not performed until
@@ -1061,7 +1063,7 @@ WifiPhy::SetNumberOfAntennas (uint8_t antennas)
 {
   NS_ASSERT_MSG (antennas > 0 && antennas <= 4, "unsupported number of antennas");
   m_numberOfAntennas = antennas;
-  m_interference.SetNumberOfReceiveAntennas (antennas);
+  m_interference->SetNumberOfReceiveAntennas (antennas);
 }
 
 uint8_t
@@ -1223,7 +1225,6 @@ WifiPhy::ResumeFromSleep (void)
     case WifiPhyState::SLEEP:
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
-
         m_state->SwitchFromSleep ();
         SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
         break;
@@ -1613,7 +1614,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rx
     {
       //TODO find a fallback PHY for receiving the PPDU (e.g. 11a for 11ax due to preamble structure)
       NS_LOG_DEBUG ("Unsupported modulation received (" << modulation << "), consider as noise");
-      m_interference.Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowersW);
+      m_interference->Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowersW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
     }
 }
@@ -1642,7 +1643,7 @@ WifiPhy::ResetReceive (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   NS_ASSERT (!IsStateRx ());
-  m_interference.NotifyRxEnd (Simulator::Now ());
+  m_interference->NotifyRxEnd (Simulator::Now ());
   m_currentEvent = 0;
   m_currentPreambleEvents.clear ();
   SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (event->GetPpdu ()));
@@ -1853,7 +1854,7 @@ WifiPhy::SwitchMaybeToCcaBusy (uint16_t channelWidth)
   //not going to be able to synchronize on it
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (channelWidth));
+  Time delayUntilCcaEnd = m_interference->GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (channelWidth));
   if (!delayUntilCcaEnd.IsZero ())
     {
       NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
@@ -1875,7 +1876,7 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
         {
           m_endPhyRxEvent.Cancel ();
         }
-      m_interference.NotifyRxEnd (Simulator::Now ());
+      m_interference->NotifyRxEnd (Simulator::Now ());
       if (!m_currentEvent)
         {
           return;
@@ -1994,7 +1995,7 @@ WifiPhy::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   int64_t currentStream = stream;
   m_random->SetStream (currentStream++);
-  currentStream += m_interference.GetErrorRateModel ()->AssignStreams (currentStream);
+  currentStream += m_interference->GetErrorRateModel ()->AssignStreams (currentStream);
   return (currentStream - stream);
 }
 
