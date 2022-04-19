@@ -229,9 +229,9 @@ void
 WifiPhyStateHelper::NotifyTxStart (Time duration, double txPowerDbm)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyTxStart (duration, txPowerDbm);
+      listener->NotifyTxStart (duration, txPowerDbm);
     }
 }
 
@@ -239,9 +239,9 @@ void
 WifiPhyStateHelper::NotifyRxStart (Time duration)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyRxStart (duration);
+      listener->NotifyRxStart (duration);
     }
 }
 
@@ -249,9 +249,9 @@ void
 WifiPhyStateHelper::NotifyRxEndOk (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyRxEndOk ();
+      listener->NotifyRxEndOk ();
     }
 }
 
@@ -259,9 +259,9 @@ void
 WifiPhyStateHelper::NotifyRxEndError (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyRxEndError ();
+      listener->NotifyRxEndError ();
     }
 }
 
@@ -269,9 +269,9 @@ void
 WifiPhyStateHelper::NotifyMaybeCcaBusyStart (Time duration)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyMaybeCcaBusyStart (duration);
+      listener->NotifyMaybeCcaBusyStart (duration);
     }
 }
 
@@ -279,9 +279,9 @@ void
 WifiPhyStateHelper::NotifySwitchingStart (Time duration)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifySwitchingStart (duration);
+      listener->NotifySwitchingStart (duration);
     }
 }
 
@@ -289,9 +289,9 @@ void
 WifiPhyStateHelper::NotifySleep (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifySleep ();
+      listener->NotifySleep ();
     }
 }
 
@@ -299,9 +299,9 @@ void
 WifiPhyStateHelper::NotifyOff (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyOff ();
+      listener->NotifyOff ();
     }
 }
 
@@ -309,9 +309,9 @@ void
 WifiPhyStateHelper::NotifyWakeup (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyWakeup ();
+      listener->NotifyWakeup ();
     }
 }
 
@@ -319,9 +319,9 @@ void
 WifiPhyStateHelper::NotifyOn (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+  for (const auto& listener : m_listeners)
     {
-      (*i)->NotifyOn ();
+      listener->NotifyOn ();
     }
 }
 
