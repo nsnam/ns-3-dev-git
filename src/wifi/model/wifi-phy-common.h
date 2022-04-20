@@ -349,6 +349,44 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
 }
 
 /**
+ * \ingroup wifi
+ * Enumeration of the possible channel-list parameter elements
+ * defined in Table 8-5 of IEEE 802.11-2016.
+ */
+enum WifiChannelListType : uint8_t
+{
+    WIFI_CHANLIST_PRIMARY = 0,
+    WIFI_CHANLIST_SECONDARY,
+    WIFI_CHANLIST_SECONDARY40,
+    WIFI_CHANLIST_SECONDARY80
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param type the wifi channel list type
+ * \returns a reference to the stream
+ */
+inline std::ostream& operator<< (std::ostream &os, WifiChannelListType type)
+{
+  switch (type)
+    {
+      case WIFI_CHANLIST_PRIMARY:
+        return (os << "PRIMARY");
+      case WIFI_CHANLIST_SECONDARY:
+        return (os << "SECONDARY");
+      case WIFI_CHANLIST_SECONDARY40:
+        return (os << "SECONDARY40");
+      case WIFI_CHANLIST_SECONDARY80:
+        return (os << "SECONDARY80");
+      default:
+        NS_FATAL_ERROR ("Unknown wifi channel type");
+        return (os << "UNKNOWN");
+    }
+}
+
+/**
  * Convert the guard interval to nanoseconds based on the WifiMode.
  *
  * \param mode the WifiMode
