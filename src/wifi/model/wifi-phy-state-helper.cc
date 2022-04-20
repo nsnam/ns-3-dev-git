@@ -266,12 +266,13 @@ WifiPhyStateHelper::NotifyRxEndError (void)
 }
 
 void
-WifiPhyStateHelper::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
+WifiPhyStateHelper::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                                        const std::vector<Time>& per20MhzDurations)
 {
   NS_LOG_FUNCTION (this);
   for (const auto& listener : m_listeners)
     {
-      listener->NotifyCcaBusyStart (duration, channelType);
+      listener->NotifyCcaBusyStart (duration, channelType, per20MhzDurations);
     }
 }
 

@@ -253,7 +253,8 @@ public:
   {
     NS_LOG_FUNCTION (this << duration << txPowerDbm);
   }
-  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType) override
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                           const std::vector<Time>& /*per20MhzDurations*/) override
   {
     NS_LOG_FUNCTION (this << duration << channelType);
     ++m_notifyMaybeCcaBusyStart;

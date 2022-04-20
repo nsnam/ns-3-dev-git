@@ -541,7 +541,8 @@ WifiRadioEnergyModelPhyListener::NotifyTxStart (Time duration, double txPowerDbm
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
+WifiRadioEnergyModelPhyListener::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                                                     const std::vector<Time>& /*per20MhzDurations*/)
 {
   NS_LOG_FUNCTION (this << duration << channelType);
   if (m_changeStateCallback.IsNull ())

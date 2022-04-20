@@ -68,7 +68,8 @@ public:
   void NotifyRxEndOk (void) override;
   void NotifyRxEndError (void) override;
   void NotifyTxStart (Time duration, double txPowerDbm) override;
-  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType) override;
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                           const std::vector<Time>& per20MhzDurations) override;
   void NotifySwitchingStart (Time duration) override;
   void NotifySleep (void) override;
   void NotifyOff (void) override;

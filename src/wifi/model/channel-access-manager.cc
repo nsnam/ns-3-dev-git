@@ -64,9 +64,10 @@ public:
   {
     m_cam->NotifyTxStartNow (duration);
   }
-  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                           const std::vector<Time>& per20MhzDurations)
   {
-    m_cam->NotifyCcaBusyStartNow (duration, channelType);
+    m_cam->NotifyCcaBusyStartNow (duration, channelType, per20MhzDurations);
   }
   void NotifySwitchingStart (Time duration)
   {
@@ -613,7 +614,9 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyCcaBusyStartNow (Time duration, WifiChannelListType channelType)
+ChannelAccessManager::NotifyCcaBusyStartNow (Time duration,
+                                             WifiChannelListType channelType,
+                                             const std::vector<Time>& /*per20MhzDurations*/)
 {
   NS_LOG_FUNCTION (this << duration << channelType);
   NS_LOG_DEBUG ("busy start for " << duration);

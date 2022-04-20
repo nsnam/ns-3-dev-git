@@ -21,6 +21,7 @@
 #ifndef WIFI_PHY_STATE_HELPER_H
 #define WIFI_PHY_STATE_HELPER_H
 
+#include <vector>
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/traced-callback.h"
@@ -312,11 +313,18 @@ private:
   void NotifyRxEndError (void);
   /**
    * Notify all WifiPhyListener that the CCA has started for the given duration.
+   * TODO: remove default values
    *
    * \param duration the duration of the CCA state
    * \param channelType the channel type for which the CCA busy state is reported.
+   * \param per20MhzDurations vector that indicates for how long each 20 MHz subchannel
+   *        (corresponding to the index of the element in the vector) is busy and where a zero duration
+   *        indicates that the subchannel is idle. The vector is non-empty if  the PHY supports 802.11ax
+   *        or later and if the operational channel width is larger than 20 MHz.
    */
-  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY);
+  void NotifyCcaBusyStart (Time duration,
+                           WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY,
+                           const std::vector<Time>& per20MhzDurations = std::vector<Time>{});
   /**
    * Notify all WifiPhyListener that we are switching channel with the given channel
    * switching delay.

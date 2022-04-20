@@ -154,10 +154,16 @@ public:
   /**
    * \param duration expected duration of CCA busy period
    * \param channelType the channel type for which the CCA busy state is reported.
+   * \param per20MhzDurations vector that indicates for how long each 20 MHz subchannel
+   *        (corresponding to the index of the element in the vector) is busy and where a zero duration
+   *        indicates that the subchannel is idle. The vector is non-empty if  the PHY supports 802.11ax
+   *        or later and if the operational channel width is larger than 20 MHz.
    *
    * Notify the Txop that a CCA busy period has just started.
    */
-  void NotifyCcaBusyStartNow (Time duration, WifiChannelListType channelType);
+  void NotifyCcaBusyStartNow (Time duration,
+                              WifiChannelListType channelType,
+                              const std::vector<Time>& per20MhzDurations);
   /**
    * \param duration expected duration of channel switching period
    *

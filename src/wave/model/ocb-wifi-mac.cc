@@ -443,7 +443,7 @@ void
 OcbWifiMac::MakeVirtualBusy (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  m_channelAccessManager->NotifyCcaBusyStartNow (duration, WIFI_CHANLIST_PRIMARY);
+  m_channelAccessManager->NotifyCcaBusyStartNow (duration, WIFI_CHANLIST_PRIMARY, {});
 }
 
 void

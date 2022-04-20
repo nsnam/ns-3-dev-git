@@ -364,8 +364,11 @@ private:
    * \param at the event time
    * \param duration the duration
    * \param channelType the channel type
+   * \param per20MhzDurations vector that indicates for how long each 20 MHz subchannel is busy
    */
-  void AddCcaBusyEvt (uint64_t at, uint64_t duration, WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY);
+  void AddCcaBusyEvt (uint64_t at, uint64_t duration,
+                      WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY,
+                      const std::vector<Time>& per20MhzDurations = {});
   /**
    * Add switching event function
    * \param at the event time
@@ -716,11 +719,13 @@ ChannelAccessManagerTest<TxopType>::DoAccessRequest (uint64_t txTime, uint64_t e
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt (uint64_t at, uint64_t duration, WifiChannelListType channelType)
+ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt (uint64_t at, uint64_t duration,
+                                                   WifiChannelListType channelType,
+                                                   const std::vector<Time>& per20MhzDurations)
 {
   Simulator::Schedule (MicroSeconds (at) - Now (),
                        &ChannelAccessManager::NotifyCcaBusyStartNow, m_ChannelAccessManager,
-                       MicroSeconds (duration), channelType);
+                       MicroSeconds (duration), channelType, per20MhzDurations);
 }
 
 template <typename TxopType>
