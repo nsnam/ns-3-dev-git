@@ -666,9 +666,9 @@ macro(process_options)
     set(ENABLE_REALTIME FALSE)
     set(HAVE_RT FALSE)
     message(
-      STATUS "Statically linking 3rd party libraries have not been tested.\n"
-             "Disable Brite, Click, Gtk, GSL, Mpi, Openflow and SQLite"
-             " if you want a standalone static ns-3 library."
+      WARNING "Statically linking 3rd party libraries have not been tested.\n"
+              "Disable Brite, Click, Gtk, GSL, Mpi, Openflow and SQLite"
+              " if you want a standalone static ns-3 library."
     )
   else()
     find_package(LibXml2 QUIET)
