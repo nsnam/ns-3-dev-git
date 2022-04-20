@@ -38,11 +38,6 @@ build_example(
     ${libapplications}
 )
 
-set(name
-    simple-global-routing
-)
-
-set(libraries_to_link)
 build_example(
   NAME simple-global-routing
   SOURCE_FILES simple-global-routing.cc

@@ -1,7 +1,3 @@
-set(name
-    test
-)
-
 set(dsr_sources)
 
 # cmake-format: off
@@ -91,7 +87,7 @@ if(traffic-control
 endif()
 
 add_library(
-  ${lib${name}}
+  ${libtest}
   OBJECT
   ${PROJECT_SOURCE_DIR}/build-support/empty.cc # empty source file if only
   # libcore is enabled
