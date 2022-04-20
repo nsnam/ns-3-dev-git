@@ -261,6 +261,11 @@ if(${ENABLE_FDNETDEV})
         helper/dpdk-net-device-helper.h
     )
     add_definitions(-DHAVE_DPDK_USER_H)
+    set(dpdk_libraries
+        ${LIB_AS_NEEDED_PRE}
+        ${DPDK_LIBRARIES}
+        ${LIB_AS_NEEDED_POST}
+    )
   endif()
 
   set(source_files
@@ -285,9 +290,7 @@ if(${ENABLE_FDNETDEV})
 
   set(libraries_to_link
       ${libnetwork}
-      ${LIB_AS_NEEDED_PRE}
-      ${DPDK_LIBRARIES}
-      ${LIB_AS_NEEDED_POST}
+      ${dpdk_libraries}
   )
 
   set(test_sources)
