@@ -541,7 +541,7 @@ WifiRadioEnergyModelPhyListener::NotifyTxStart (Time duration, double txPowerDbm
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyMaybeCcaBusyStart (Time duration)
+WifiRadioEnergyModelPhyListener::NotifyCcaBusyStart (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   if (m_changeStateCallback.IsNull ())

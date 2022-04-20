@@ -253,7 +253,7 @@ public:
   {
     NS_LOG_FUNCTION (this << duration << txPowerDbm);
   }
-  void NotifyMaybeCcaBusyStart (Time duration) override
+  void NotifyCcaBusyStart (Time duration) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyMaybeCcaBusyStart;
@@ -321,7 +321,7 @@ SpectrumWifiPhyListenerTest::DoRun (void)
   Simulator::Run ();
 
   NS_TEST_ASSERT_MSG_EQ (m_count, 1, "Didn't receive right number of packets");
-  NS_TEST_ASSERT_MSG_EQ (m_listener->m_notifyMaybeCcaBusyStart, 2, "Didn't receive NotifyMaybeCcaBusyStart (once preamble is detected + prolonged by L-SIG reception, then switched to Rx by at the beginning of data)");
+  NS_TEST_ASSERT_MSG_EQ (m_listener->m_notifyMaybeCcaBusyStart, 2, "Didn't receive NotifyCcaBusyStart (once preamble is detected + prolonged by L-SIG reception, then switched to Rx by at the beginning of data)");
   NS_TEST_ASSERT_MSG_EQ (m_listener->m_notifyRxStart, 1, "Didn't receive NotifyRxStart");
   NS_TEST_ASSERT_MSG_EQ (m_listener->m_notifyRxEndOk, 1, "Didn't receive NotifyRxEnd");
 

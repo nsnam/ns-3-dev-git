@@ -266,12 +266,12 @@ WifiPhyStateHelper::NotifyRxEndError (void)
 }
 
 void
-WifiPhyStateHelper::NotifyMaybeCcaBusyStart (Time duration)
+WifiPhyStateHelper::NotifyCcaBusyStart (Time duration)
 {
   NS_LOG_FUNCTION (this);
   for (const auto& listener : m_listeners)
     {
-      listener->NotifyMaybeCcaBusyStart (duration);
+      listener->NotifyCcaBusyStart (duration);
     }
 }
 
@@ -521,7 +521,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
   NS_LOG_FUNCTION (this << duration);
   if (GetState () != WifiPhyState::RX)
     {
-      NotifyMaybeCcaBusyStart (duration);
+      NotifyCcaBusyStart (duration);
     }
   Time now = Simulator::Now ();
   switch (GetState ())
@@ -584,7 +584,7 @@ WifiPhyStateHelper::SwitchFromRxAbort (void)
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   m_endCcaBusy = Simulator::Now ();
-  NotifyMaybeCcaBusyStart (Seconds (0));
+  NotifyCcaBusyStart (Seconds (0));
   NS_ASSERT (IsStateIdle ());
 }
 

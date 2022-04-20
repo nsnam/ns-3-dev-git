@@ -315,7 +315,7 @@ private:
    *
    * \param duration the duration of the CCA state
    */
-  void NotifyMaybeCcaBusyStart (Time duration);
+  void NotifyCcaBusyStart (Time duration);
   /**
    * Notify all WifiPhyListener that we are switching channel with the given channel
    * switching delay.

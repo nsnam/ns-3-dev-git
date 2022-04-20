@@ -155,7 +155,7 @@ public:
    *
    * Notify the Txop that a CCA busy period has just started.
    */
-  void NotifyMaybeCcaBusyStartNow (Time duration);
+  void NotifyCcaBusyStartNow (Time duration);
   /**
    * \param duration expected duration of channel switching period
    *

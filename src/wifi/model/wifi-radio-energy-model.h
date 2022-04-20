@@ -109,7 +109,7 @@ public:
    *
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyMaybeCcaBusyStart (Time duration) override;
+  void NotifyCcaBusyStart (Time duration) override;
 
   /**
    * \param duration the expected channel switching duration.

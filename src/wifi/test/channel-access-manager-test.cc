@@ -718,7 +718,7 @@ void
 ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt (uint64_t at, uint64_t duration)
 {
   Simulator::Schedule (MicroSeconds (at) - Now (),
-                       &ChannelAccessManager::NotifyMaybeCcaBusyStartNow, m_ChannelAccessManager,
+                       &ChannelAccessManager::NotifyCcaBusyStartNow, m_ChannelAccessManager,
                        MicroSeconds (duration));
 }
 

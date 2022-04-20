@@ -91,7 +91,7 @@ public:
    * which the last NotifyCcaBusyStart method is called and
    * what duration it reported.
    */
-  virtual void NotifyMaybeCcaBusyStart (Time duration) = 0;
+  virtual void NotifyCcaBusyStart (Time duration) = 0;
   /**
    * \param duration the expected channel switching duration.
    *

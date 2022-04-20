@@ -64,9 +64,9 @@ public:
   {
     m_cam->NotifyTxStartNow (duration);
   }
-  void NotifyMaybeCcaBusyStart (Time duration)
+  void NotifyCcaBusyStart (Time duration)
   {
-    m_cam->NotifyMaybeCcaBusyStartNow (duration);
+    m_cam->NotifyCcaBusyStartNow (duration);
   }
   void NotifySwitchingStart (Time duration)
   {
@@ -613,7 +613,7 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyMaybeCcaBusyStartNow (Time duration)
+ChannelAccessManager::NotifyCcaBusyStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_LOG_DEBUG ("busy start for " << duration);
