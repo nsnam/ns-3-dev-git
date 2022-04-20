@@ -22,9 +22,9 @@
 #ifndef WIFI_PHY_LISTENER_H
 #define WIFI_PHY_LISTENER_H
 
-namespace ns3 {
+#include "wifi-phy-common.h"
 
-class Time;
+namespace ns3 {
 
 /**
  * \brief receive notifications about PHY events.
@@ -78,6 +78,7 @@ public:
   virtual void NotifyTxStart (Time duration, double txPowerDbm) = 0;
   /**
    * \param duration the expected busy duration.
+   * \param channelType the channel type for which the CCA busy state is reported.
    *
    * This method does not really report a real state
    * change as opposed to the other methods in this class.
@@ -91,7 +92,7 @@ public:
    * which the last NotifyCcaBusyStart method is called and
    * what duration it reported.
    */
-  virtual void NotifyCcaBusyStart (Time duration) = 0;
+  virtual void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType) = 0;
   /**
    * \param duration the expected channel switching duration.
    *

@@ -363,8 +363,9 @@ private:
    * Add CCA busy event function
    * \param at the event time
    * \param duration the duration
+   * \param channelType the channel type
    */
-  void AddCcaBusyEvt (uint64_t at, uint64_t duration);
+  void AddCcaBusyEvt (uint64_t at, uint64_t duration, WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY);
   /**
    * Add switching event function
    * \param at the event time
@@ -715,11 +716,11 @@ ChannelAccessManagerTest<TxopType>::DoAccessRequest (uint64_t txTime, uint64_t e
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt (uint64_t at, uint64_t duration)
+ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt (uint64_t at, uint64_t duration, WifiChannelListType channelType)
 {
   Simulator::Schedule (MicroSeconds (at) - Now (),
                        &ChannelAccessManager::NotifyCcaBusyStartNow, m_ChannelAccessManager,
-                       MicroSeconds (duration));
+                       MicroSeconds (duration), channelType);
 }
 
 template <typename TxopType>

@@ -25,6 +25,7 @@
 #include <algorithm>
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
+#include "wifi-phy-common.h"
 
 namespace ns3 {
 
@@ -152,10 +153,11 @@ public:
   void NotifyTxStartNow (Time duration);
   /**
    * \param duration expected duration of CCA busy period
+   * \param channelType the channel type for which the CCA busy state is reported.
    *
    * Notify the Txop that a CCA busy period has just started.
    */
-  void NotifyCcaBusyStartNow (Time duration);
+  void NotifyCcaBusyStartNow (Time duration, WifiChannelListType channelType);
   /**
    * \param duration expected duration of channel switching period
    *

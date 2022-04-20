@@ -64,9 +64,9 @@ public:
   {
     m_cam->NotifyTxStartNow (duration);
   }
-  void NotifyCcaBusyStart (Time duration)
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
   {
-    m_cam->NotifyCcaBusyStartNow (duration);
+    m_cam->NotifyCcaBusyStartNow (duration, channelType);
   }
   void NotifySwitchingStart (Time duration)
   {
@@ -613,9 +613,9 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyCcaBusyStartNow (Time duration)
+ChannelAccessManager::NotifyCcaBusyStartNow (Time duration, WifiChannelListType channelType)
 {
-  NS_LOG_FUNCTION (this << duration);
+  NS_LOG_FUNCTION (this << duration << channelType);
   NS_LOG_DEBUG ("busy start for " << duration);
   UpdateBackoff ();
   m_lastBusyStart = Simulator::Now ();

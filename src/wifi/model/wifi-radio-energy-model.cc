@@ -541,9 +541,9 @@ WifiRadioEnergyModelPhyListener::NotifyTxStart (Time duration, double txPowerDbm
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyCcaBusyStart (Time duration)
+WifiRadioEnergyModelPhyListener::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
 {
-  NS_LOG_FUNCTION (this << duration);
+  NS_LOG_FUNCTION (this << duration << channelType);
   if (m_changeStateCallback.IsNull ())
     {
       NS_FATAL_ERROR ("WifiRadioEnergyModelPhyListener:Change state callback not set!");

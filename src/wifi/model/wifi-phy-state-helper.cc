@@ -266,12 +266,12 @@ WifiPhyStateHelper::NotifyRxEndError (void)
 }
 
 void
-WifiPhyStateHelper::NotifyCcaBusyStart (Time duration)
+WifiPhyStateHelper::NotifyCcaBusyStart (Time duration, WifiChannelListType channelType)
 {
   NS_LOG_FUNCTION (this);
   for (const auto& listener : m_listeners)
     {
-      listener->NotifyCcaBusyStart (duration);
+      listener->NotifyCcaBusyStart (duration, channelType);
     }
 }
 

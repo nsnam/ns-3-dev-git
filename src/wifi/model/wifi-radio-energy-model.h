@@ -64,78 +64,15 @@ public:
    */
   void SetUpdateTxCurrentCallback (UpdateTxCurrentCallback callback);
 
-  /**
-   * \brief Switches the WifiRadioEnergyModel to RX state.
-   *
-   * \param duration the expected duration of the packet reception.
-   *
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifyRxStart (Time duration) override;
-
-  /**
-   * \brief Switches the WifiRadioEnergyModel back to IDLE state.
-   *
-   * Defined in ns3::WifiPhyListener
-   *
-   * Note that for the WifiRadioEnergyModel, the behavior of the function is the
-   * same as NotifyRxEndError.
-   */
   void NotifyRxEndOk (void) override;
-
-  /**
-   * \brief Switches the WifiRadioEnergyModel back to IDLE state.
-   *
-   * Defined in ns3::WifiPhyListener
-   *
-   * Note that for the WifiRadioEnergyModel, the behavior of the function is the
-   * same as NotifyRxEndOk.
-   */
   void NotifyRxEndError (void) override;
-
-  /**
-   * \brief Switches the WifiRadioEnergyModel to TX state and switches back to
-   * IDLE after TX duration.
-   *
-   * \param duration the expected transmission duration.
-   * \param txPowerDbm the nominal TX power in dBm
-   *
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifyTxStart (Time duration, double txPowerDbm) override;
-
-  /**
-   * \param duration the expected busy duration.
-   *
-   * Defined in ns3::WifiPhyListener
-   */
-  void NotifyCcaBusyStart (Time duration) override;
-
-  /**
-   * \param duration the expected channel switching duration.
-   *
-   * Defined in ns3::WifiPhyListener
-   */
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType) override;
   void NotifySwitchingStart (Time duration) override;
-
-  /**
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifySleep (void) override;
-
-  /**
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifyOff (void) override;
-
-  /**
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifyWakeup (void) override;
-
-  /**
-   * Defined in ns3::WifiPhyListener
-   */
   void NotifyOn (void) override;
 
 
