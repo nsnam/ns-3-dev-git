@@ -26,6 +26,7 @@
 #include <ostream>
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
+#include "wifi-standards.h"
 
 /**
  * \file
@@ -487,6 +488,14 @@ bool IsDlMu (WifiPreamble preamble);
  * \return true if the provided preamble corresponds to a uplink multi-user transmission
  */
 bool IsUlMu (WifiPreamble preamble);
+
+/**
+ * Return the modulation class corresponding to a given standard.
+ *
+ * \param standard the standard
+ * \return the modulation class corresponding to the standard
+ */
+WifiModulationClass GetModulationClassForStandard (WifiStandard standard);
 
 } //namespace ns3
 

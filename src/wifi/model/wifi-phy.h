@@ -1008,13 +1008,19 @@ public:
   static const Ptr<const PhyEntity> GetStaticPhyEntity (WifiModulationClass modulation);
 
   /**
-   * Get the supported PHY entity corresponding to the modulation class, for
-   * the WifiPhy instance.
+   * Get the supported PHY entity corresponding to the modulation class.
    *
    * \param modulation the modulation class
    * \return the pointer to the supported PHY entity
    */
   Ptr<PhyEntity> GetPhyEntity (WifiModulationClass modulation) const;
+  /**
+   * Get the supported PHY entity corresponding to the wifi standard.
+   *
+   * \param standard the wifi standard
+   * \return the pointer to the supported PHY entity
+   */
+  Ptr<PhyEntity> GetPhyEntity (WifiStandard standard) const;
 
   /**
    * \return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)

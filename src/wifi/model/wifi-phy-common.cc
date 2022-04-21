@@ -187,4 +187,39 @@ IsUlMu (WifiPreamble preamble)
   return ((preamble == WIFI_PREAMBLE_HE_TB) || (preamble == WIFI_PREAMBLE_EHT_TB));
 }
 
+WifiModulationClass
+GetModulationClassForStandard (WifiStandard standard)
+{
+  WifiModulationClass modulationClass {WIFI_MOD_CLASS_UNKNOWN};
+  switch (standard)
+    {
+    case WIFI_STANDARD_80211a:
+      [[fallthrough]];
+    case WIFI_STANDARD_80211p:
+      modulationClass = WIFI_MOD_CLASS_OFDM;
+      break;
+    case WIFI_STANDARD_80211b:
+      modulationClass = WIFI_MOD_CLASS_DSSS;
+      break;
+    case WIFI_STANDARD_80211g:
+      modulationClass = WIFI_MOD_CLASS_ERP_OFDM;
+      break;
+    case WIFI_STANDARD_80211n:
+      modulationClass = WIFI_MOD_CLASS_HT;
+      break;
+    case WIFI_STANDARD_80211ac:
+      modulationClass = WIFI_MOD_CLASS_VHT;
+      break;
+    case WIFI_STANDARD_80211ax:
+      modulationClass = WIFI_MOD_CLASS_HE;
+      break;
+    case WIFI_STANDARD_UNSPECIFIED:
+      [[fallthrough]];
+    default:
+      NS_ASSERT_MSG (false, "Unsupported standard " << standard);
+      break;
+    }
+  return modulationClass;
+}
+
 } //namespace ns3

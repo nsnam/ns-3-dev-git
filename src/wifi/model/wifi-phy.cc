@@ -655,6 +655,12 @@ WifiPhy::GetPhyEntity (WifiModulationClass modulation) const
   return it->second;
 }
 
+Ptr<PhyEntity>
+WifiPhy::GetPhyEntity (WifiStandard standard) const
+{
+  return GetPhyEntity (GetModulationClassForStandard (standard));
+}
+
 void
 WifiPhy::AddStaticPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
