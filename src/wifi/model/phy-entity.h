@@ -441,6 +441,16 @@ public:
   virtual uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const;
 
   /**
+   * Check if PHY state should move to CCA busy state based on current
+   * state of interference tracker.  In this model, CCA becomes busy when
+   * the aggregation of all signals as tracked by the InterferenceHelper
+   * class is higher than the CcaEdThreshold
+   *
+   * \param channelWidth the channel width in MHz used for RSSI measurement
+   */
+  virtual void SwitchMaybeToCcaBusy (uint16_t channelWidth);
+
+  /**
    * This function is called by SpectrumWifiPhy to send
    * the PPDU while performing amendment-specific actions.
    * \see SpectrumWifiPhy::StartTx
