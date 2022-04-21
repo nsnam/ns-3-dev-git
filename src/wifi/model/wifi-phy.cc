@@ -1526,8 +1526,6 @@ WifiPhy::Send (WifiConstPsduMap psdus, const WifiTxVector& txVector)
   if (!noEndPreambleDetectionEvent || ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))))
     {
       AbortCurrentReception (RECEPTION_ABORTED_BY_TX);
-      //that packet will be noise _after_ the transmission.
-      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (m_currentEvent != 0 ? m_currentEvent->GetPpdu () : nullptr));
     }
 
   for (auto & it : m_phyEntities)
@@ -1598,6 +1596,7 @@ WifiPhy::Reset (void)
     {
       phyEntity.second->CancelAllEvents ();
     }
+  SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
 }
 
 void
