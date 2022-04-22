@@ -1,3 +1,25 @@
+if((NOT
+    ${ENABLE_REALTIME})
+   OR (NOT
+       ${ENABLE_EMU})
+)
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "tap-bridge requires emulation and realtime features"
+  )
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "Skipping src/tap-bridge"
+  )
+  list(
+    REMOVE_ITEM
+    libs_to_build
+    tap-bridge
+    PARENT_SCOPE
+  )
+  return()
+endif()
+
 build_lib(
   LIBNAME tap-bridge
   SOURCE_FILES

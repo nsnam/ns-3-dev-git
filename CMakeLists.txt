@@ -80,7 +80,6 @@ set(NS3_OUTPUT_DIRECTORY "" CACHE STRING "Directory to store built artifacts")
 option(NS3_PRECOMPILE_HEADERS
        "Precompile module headers to speed up compilation" ON
 )
-option(NS3_PTHREAD "Build with pthread support" ON)
 option(NS3_PYTHON_BINDINGS "Build ns-3 python bindings" OFF)
 option(NS3_REALTIME "Build with realtime support" ON)
 option(NS3_SQLITE "Build with SQLite support" ON)

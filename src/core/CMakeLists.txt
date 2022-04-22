@@ -63,15 +63,17 @@ else()
   )
 endif()
 
-set(rt_sources
-    model/realtime-simulator-impl.cc
-    model/wall-clock-synchronizer.cc
-)
-set(rt_headers
-    model/realtime-simulator-impl.h
-    model/wall-clock-synchronizer.h
-)
+set(rt_sources)
+set(rt_headers)
 if(${ENABLE_REALTIME})
+  set(rt_sources
+      model/realtime-simulator-impl.cc
+      model/wall-clock-synchronizer.cc
+  )
+  set(rt_headers
+      model/realtime-simulator-impl.h
+      model/wall-clock-synchronizer.h
+  )
   set(libraries_to_link
       ${libraries_to_link}
       ${LIBRT}
@@ -118,40 +120,25 @@ elseif(
   )
 endif()
 
-set(thread_sources)
-set(thread_headers)
-set(thread_test_sources)
-
-if(${NS3_PTHREAD})
-  if(${THREADS_FOUND})
-    set(thread_sources
-        model/unix-fd-reader.cc
-    )
-    set(thread_headers
-        model/unix-fd-reader.h
-    )
-    set(thread_sources
-        ${thread_sources}
-        model/system-thread.cc
-        model/unix-system-mutex.cc
-        model/unix-system-condition.cc
-    )
-
-    set(thread_headers
-        ${thread_headers}
-        model/system-mutex.h
-        model/system-thread.h
-        model/system-condition.h
-    )
-    set(libraries_to_link
-        ${libraries_to_link}
-        pthread
-    )
-    set(thread_test_sources
-        test/threaded-test-suite.cc
-    )
-  endif()
-endif()
+set(thread_sources
+    model/system-thread.cc
+    model/unix-fd-reader.cc
+    model/unix-system-condition.cc
+    model/unix-system-mutex.cc
+)
+set(thread_headers
+    model/system-condition.h
+    model/system-mutex.h
+    model/system-thread.h
+    model/unix-fd-reader.h
+)
+set(libraries_to_link
+    ${libraries_to_link}
+    pthread
+)
+set(thread_test_sources
+    test/threaded-test-suite.cc
+)
 
 if(${ENABLE_EXAMPLES})
   set(example_as_test_sources

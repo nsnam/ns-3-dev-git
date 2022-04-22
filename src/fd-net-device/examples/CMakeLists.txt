@@ -90,7 +90,7 @@ if(${ENABLE_EMU})
   )
 endif()
 
-if(${ENABLE_TAP})
+if(${ENABLE_TAPNETDEV})
   build_lib_example(
     NAME fd-tap-ping
     SOURCE_FILES fd-tap-ping.cc

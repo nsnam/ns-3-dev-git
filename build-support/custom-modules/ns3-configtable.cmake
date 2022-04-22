@@ -178,9 +178,6 @@ macro(write_configtable)
   string(APPEND out "Tests                         : ")
   check_on_or_off("${ENABLE_TESTS}" "${ENABLE_TESTS}")
 
-  string(APPEND out "Threading Primitives          : ")
-  check_on_or_off("${NS3_PTHREAD}" "${THREADS_ENABLED}")
-
   # string(APPEND out "Use sudo to set suid bit      : not enabled (option
   # --enable-sudo not selected) string(APPEND out "XmlIo : enabled
   string(APPEND out "\n\n")
