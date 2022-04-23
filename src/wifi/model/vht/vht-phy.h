@@ -70,6 +70,7 @@ public:
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus,
                            const WifiTxVector& txVector,
                            Time ppduDuration) override;
+  double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const override;
 
   /**
    * \return the WifiMode used for the SIG-A field

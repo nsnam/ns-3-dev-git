@@ -23,6 +23,10 @@
 #ifndef PHY_ENTITY_H
 #define PHY_ENTITY_H
 
+#include <list>
+#include <map>
+#include <tuple>
+#include <optional>
 #include "wifi-mpdu-type.h"
 #include "wifi-tx-vector.h"
 #include "wifi-phy-band.h"
@@ -33,9 +37,6 @@
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
 #include "ns3/wifi-spectrum-value-helper.h"
-#include <list>
-#include <map>
-#include <tuple>
 
 /**
  * \file
@@ -460,6 +461,15 @@ public:
    * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
    */
   virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const;
+  /**
+   * Return the CCA threshold in dBm for a given channel type.
+   * If the channel type is not provided, the default CCA threshold is returned.
+   *
+   * \param ppdu the PPDU that is being received
+   * \param channelType the channel type
+   * \return the CCA threshold in dBm
+   */
+  virtual double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const;
 
 protected:
   /**

@@ -1038,6 +1038,12 @@ PhyEntity::GetRxChannelWidth (const WifiTxVector& txVector) const
   return std::min (m_wifiPhy->GetChannelWidth (), txVector.GetChannelWidth ());
 }
 
+double
+PhyEntity::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType /*channelType*/) const
+{
+  return (ppdu == nullptr) ? m_wifiPhy->GetCcaEdThreshold () : m_wifiPhy->GetCcaSensitivityThreshold ();
+}
+
 void
 PhyEntity::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
 {
@@ -1047,7 +1053,7 @@ PhyEntity::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
   const uint16_t channelWidth = GetMeasurementChannelWidth (ppdu);
   NS_LOG_FUNCTION (this << channelWidth);
-  const Time delayUntilCcaEnd = m_wifiPhy->m_interference->GetEnergyDuration (m_wifiPhy->m_ccaEdThresholdW, m_wifiPhy->GetPrimaryBand (channelWidth));
+  const Time delayUntilCcaEnd = m_wifiPhy->m_interference->GetEnergyDuration (DbmToW (GetCcaThreshold (ppdu, WIFI_CHANLIST_PRIMARY)), m_wifiPhy->GetPrimaryBand (channelWidth));
   if (delayUntilCcaEnd.IsStrictlyPositive ())
     {
       NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));

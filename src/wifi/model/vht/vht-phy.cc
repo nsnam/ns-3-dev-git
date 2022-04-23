@@ -25,6 +25,8 @@
 #include "ns3/wifi-phy.h" //only used for static mode constructor
 #include "ns3/wifi-utils.h"
 #include "ns3/interference-helper.h"
+#include "ns3/wifi-net-device.h"
+#include "vht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -67,6 +69,14 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
   { std::make_tuple (160, 7, 8), 12 },   //instead of 9
   { std::make_tuple (160, 7, 9), 12 }    //instead of 10
 };
+
+const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm {
+  {WIFI_CHANLIST_PRIMARY, 0.0},
+  {WIFI_CHANLIST_SECONDARY, 0.0},
+  {WIFI_CHANLIST_SECONDARY40, 3.0},
+  {WIFI_CHANLIST_SECONDARY80, 6.0}
+};
+
 /* *NS_CHECK_STYLE_ON* */
 
 VhtPhy::VhtPhy (bool buildModeList /* = true */)
@@ -522,6 +532,46 @@ uint32_t
 VhtPhy::GetMaxPsduSize (void) const
 {
   return 4692480;
+}
+
+double
+VhtPhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
+{
+  if (ppdu != nullptr)
+    {
+      const uint16_t ppduBw = ppdu->GetTxVector ().GetChannelWidth ();
+      switch (channelType)
+        {
+          case WIFI_CHANLIST_PRIMARY:
+            {
+              //Start of a PPDU for which its power measured within the primary 20 MHz channel is at or above the CCA sensitivy threshold.
+              return m_wifiPhy->GetCcaSensitivityThreshold ();
+            }
+          case WIFI_CHANLIST_SECONDARY:
+              NS_ASSERT_MSG (ppduBw == 20, "Invalid channel width " << ppduBw);
+              break;
+          case WIFI_CHANLIST_SECONDARY40:
+              NS_ASSERT_MSG (ppduBw <= 40, "Invalid channel width " << ppduBw);
+              break;
+          case WIFI_CHANLIST_SECONDARY80:
+              NS_ASSERT_MSG (ppduBw <= 80, "Invalid channel width " << ppduBw);
+              break;
+          default:
+            NS_ASSERT_MSG (false, "Invalid channel list type");
+        }
+      auto vhtConfiguration = m_wifiPhy->GetDevice ()->GetVhtConfiguration ();
+      NS_ASSERT (vhtConfiguration);
+      const auto thresholds = vhtConfiguration->GetSecondaryCcaSensitivityThresholdsPerBw ();
+      const auto it = thresholds.find (ppduBw);
+      NS_ASSERT_MSG (it != std::end (thresholds), "Invalid channel width " << ppduBw);
+      return it->second;
+    }
+  else
+    {
+      const auto it = channelTypeToScalingFactorDbm.find (channelType);
+      NS_ASSERT_MSG (it != std::end (channelTypeToScalingFactorDbm), "Invalid channel list type");
+      return m_wifiPhy->GetCcaEdThreshold () + it->second;
+    }
 }
 
 } //namespace ns3
