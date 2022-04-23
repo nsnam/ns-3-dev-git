@@ -293,7 +293,7 @@ private:
   typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
-   * Log the ideal and CCA states.
+   * Log the idle and CCA busy states.
    */
   void LogPreviousIdleAndCcaBusyStates (void);
 
