@@ -107,13 +107,6 @@ public:
   void StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration);
 
   /**
-   * Reset PHY at the end of the packet under reception after it has failed the PHY header.
-   *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
-   */
-  void ResetReceive (Ptr<Event> event);
-
-  /**
    * For HE receptions only, check and possibly modify the transmit power restriction state at
    * the end of PPDU reception.
    */

@@ -998,9 +998,13 @@ PhyEntity::ResetReceive (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   DoResetReceive (event);
+  NS_ASSERT (!m_wifiPhy->IsStateRx ());
+  m_wifiPhy->m_interference->NotifyRxEnd (Simulator::Now ());
   NS_ASSERT (m_endRxPayloadEvents.size () == 1 && m_endRxPayloadEvents.front ().IsExpired ());
   m_endRxPayloadEvents.clear ();
-  m_wifiPhy->ResetReceive (event);
+  m_wifiPhy->m_currentEvent = 0;
+  m_wifiPhy->m_currentPreambleEvents.clear ();
+  m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (event->GetPpdu ()));
 }
 
 void

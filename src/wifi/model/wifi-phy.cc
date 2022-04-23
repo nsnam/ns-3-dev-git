@@ -1677,17 +1677,6 @@ WifiPhy::EndReceiveInterBss (void)
 }
 
 void
-WifiPhy::ResetReceive (Ptr<Event> event)
-{
-  NS_LOG_FUNCTION (this << *event);
-  NS_ASSERT (!IsStateRx ());
-  m_interference->NotifyRxEnd (Simulator::Now ());
-  m_currentEvent = 0;
-  m_currentPreambleEvents.clear ();
-  SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (event->GetPpdu ()));
-}
-
-void
 WifiPhy::NotifyChannelAccessRequested (void)
 {
   NS_LOG_FUNCTION (this);
