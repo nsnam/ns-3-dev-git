@@ -445,11 +445,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
       break;
     }
 
-  if (now < m_endCcaBusy)
-    {
-      m_endCcaBusy = now;
-    }
-
+  m_endCcaBusy = std::min (now, m_endCcaBusy);
   m_stateLogger (now, switchingDuration, WifiPhyState::SWITCHING);
   m_previousStateChangeTime = now;
   m_startSwitching = now;
