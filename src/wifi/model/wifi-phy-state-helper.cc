@@ -528,23 +528,24 @@ WifiPhyStateHelper::DoSwitchFromRx (void)
 }
 
 void
-WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
+WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration, WifiChannelListType channelType,
+                                          const std::vector<Time>& per20MhzDurations)
 {
-  NS_LOG_FUNCTION (this << duration);
-  if (GetState () != WifiPhyState::RX)
+  NS_LOG_FUNCTION (this << duration << channelType);
+  if (GetState () == WifiPhyState::RX)
     {
-      NotifyCcaBusyStart (duration);
+      return;
+    }
+  NotifyCcaBusyStart (duration, channelType, per20MhzDurations);
+  if (channelType != WIFI_CHANLIST_PRIMARY)
+    {
+      //WifiPhyStateHelper only updates CCA start and end durations for the primary channel
+      return;
     }
   Time now = Simulator::Now ();
-  switch (GetState ())
+  if (GetState () == WifiPhyState::IDLE)
     {
-    case WifiPhyState::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
-      break;
-    case WifiPhyState::RX:
-      return;
-    default:
-      break;
     }
   if (GetState () != WifiPhyState::CCA_BUSY)
     {
@@ -596,7 +597,7 @@ WifiPhyStateHelper::SwitchFromRxAbort (void)
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   m_endCcaBusy = Simulator::Now ();
-  NotifyCcaBusyStart (Seconds (0));
+  NotifyCcaBusyStart (Seconds (0), WIFI_CHANLIST_PRIMARY, {});
   NS_ASSERT (IsStateIdle ());
 }
 
