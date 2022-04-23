@@ -73,8 +73,8 @@ endfunction()
 function(configure_embedded_version)
   if(NOT ${NS3_ENABLE_BUILD_VERSION})
     add_custom_target(
-      check-version COMMAND echo Reconfigure ns-3 with
-                            NS3_ENABLE_BUILD_VERSION=ON
+      check-version COMMAND echo Build version feature disabled. Reconfigure
+                            ns-3 with NS3_ENABLE_BUILD_VERSION=ON
     )
     return()
   endif()

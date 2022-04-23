@@ -931,6 +931,10 @@ def build_step(args,
                     target = "sphinx"
                     args.build.append("doxygen")
 
+                if target == "check-version":
+                    global run_verbose
+                    run_verbose = False  # Do not print the equivalent cmake command
+
             cmake_build(current_cmake_cache_folder,
                         jobs=args.jobs,
                         target=target,
