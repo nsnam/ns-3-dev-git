@@ -380,7 +380,7 @@ HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPo
     }
   else
     {
-      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, rxDuration);
+      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, ppdu->GetTxDuration ()); // The actual duration of the PPDU should be used
     }
 }
 
