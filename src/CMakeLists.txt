@@ -34,6 +34,7 @@ if(${NS3_STATIC})
   set(ns3-external-static-libs)
   foreach(sharedlib ${ns3-external-libs})
     if(NOT (${sharedlib} MATCHES ".so"))
+      list(APPEND ns3-external-static-libs ${sharedlib})
       continue()
     endif()
 
