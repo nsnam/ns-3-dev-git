@@ -98,10 +98,10 @@ WifiPhyStateHelper::RegisterListener (WifiPhyListener *listener)
 void
 WifiPhyStateHelper::UnregisterListener (WifiPhyListener *listener)
 {
-  ListenersI i = find (m_listeners.begin (), m_listeners.end (), listener);
-  if (i != m_listeners.end ())
+  auto it = find (m_listeners.begin (), m_listeners.end (), listener);
+  if (it != m_listeners.end ())
     {
-      m_listeners.erase (i);
+      m_listeners.erase (it);
     }
 }
 

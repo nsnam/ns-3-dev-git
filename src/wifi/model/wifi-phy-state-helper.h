@@ -287,10 +287,6 @@ private:
    * typedef for a list of WifiPhyListeners
    */
   typedef std::vector<WifiPhyListener *> Listeners;
-  /**
-   * typedef for a list of WifiPhyListeners iterator
-   */
-  typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
    * Log the idle and CCA busy states.
