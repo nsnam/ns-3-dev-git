@@ -16,7 +16,7 @@ lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
 max_cpu_threads = max(1, os.cpu_count() - 1)
 print_buffer = ""
 run_verbose = True
-
+path_sep = ";" if sys.platform == "win32" else ":"
 
 # Prints everything in the print_buffer on exit
 def exit_handler(dry_run):
@@ -951,7 +951,6 @@ def build_step(args,
 
 def run_step(args, target_to_run, target_args):
     libdir = "%s/lib" % out_dir
-    path_sep = ";" if sys.platform == "win32" else ":"
 
     custom_env = {"PATH": libdir,
                   "PYTHONPATH": "%s/bindings/python" % out_dir,
@@ -1129,6 +1128,14 @@ def main():
 
     # Enable colorized output for CMake and GCC/Clang
     os.environ["CLICOLOR"] = "1"
+
+    # If pybindgen exists in the parent directory
+    # (e.g. ns3-all-in-one), add it to the PYTHONPATH
+    pybindgen_dir = glob.glob(os.path.abspath(os.path.join(ns3_path, "..", "pybindgen*")))
+    if pybindgen_dir:
+        if "PYTHONPATH" not in os.environ:
+            os.environ["PYTHONPATH"] = ""
+        os.environ["PYTHONPATH"] += path_sep + pybindgen_dir[0]
 
     # Parse arguments
     args = parse_args(sys.argv[1:])
