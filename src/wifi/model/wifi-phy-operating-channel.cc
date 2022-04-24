@@ -437,8 +437,18 @@ WifiPhyOperatingChannel::GetPrimaryChannelIndex (uint16_t primaryChannelWidth) c
       index /= 2;
       width *= 2;
     }
-  NS_LOG_LOGIC ("Return " << +index);
+  NS_LOG_LOGIC ("Return primary index " << +index);
   return index;
+}
+
+uint8_t
+WifiPhyOperatingChannel::GetSecondaryChannelIndex (uint16_t secondaryChannelWidth) const
+{
+  NS_LOG_FUNCTION (this << secondaryChannelWidth);
+  const uint8_t primaryIndex = GetPrimaryChannelIndex (secondaryChannelWidth);
+  const uint8_t secondaryIndex = (primaryIndex % 2 == 0) ? (primaryIndex + 1) : (primaryIndex - 1);
+  NS_LOG_LOGIC ("Return secondary index " << +secondaryIndex);
+  return secondaryIndex;
 }
 
 void

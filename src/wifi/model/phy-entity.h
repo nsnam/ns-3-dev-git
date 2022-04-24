@@ -805,6 +805,16 @@ protected:
    * \return a pair of start and stop indexes that defines the band
    */
   WifiSpectrumBand GetPrimaryBand (uint16_t bandWidth) const;
+  /**
+   * If the channel bonding is used, return the start band index and the stop band index
+   * for the secondary channel of the given bandwidth (which must be a multiple of 20 MHz
+   * and not exceed the operating channel width).
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  WifiSpectrumBand GetSecondaryBand (uint16_t bandWidth) const;
 
   /**
    * Return the channel width used to measure the RSSI.

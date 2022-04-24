@@ -141,6 +141,17 @@ public:
    * \return the index of the requested primary channel within the operating channel
    */
   uint8_t GetPrimaryChannelIndex (uint16_t primaryChannelWidth) const;
+
+  /**
+   * If the operating channel width is made of a multiple of 20 MHz, return the index of the
+   * secondary channel of the given width within the operating channel (0 indicates
+   * the 20 MHz subchannel with the lowest center frequency). Otherwise, return 0.
+   *
+   * \param secondaryChannelWidth the width of the secondary channel in MHz
+   * \return the index of the requested secondary channel within the operating channel
+   */
+  uint8_t GetSecondaryChannelIndex (uint16_t secondaryChannelWidth) const;
+
   /**
    * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
    * with the lowest center frequency).

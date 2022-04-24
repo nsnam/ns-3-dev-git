@@ -1042,6 +1042,13 @@ PhyEntity::GetPrimaryBand (uint16_t bandWidth) const
   return m_wifiPhy->GetBand (bandWidth, m_wifiPhy->m_operatingChannel.GetPrimaryChannelIndex (bandWidth));
 }
 
+WifiSpectrumBand
+PhyEntity::GetSecondaryBand (uint16_t bandWidth) const
+{
+  NS_ASSERT (m_wifiPhy->GetChannelWidth () >= 40);
+  return m_wifiPhy->GetBand (bandWidth, m_wifiPhy->m_operatingChannel.GetSecondaryChannelIndex (bandWidth));
+}
+
 uint16_t
 PhyEntity::GetRxChannelWidth (const WifiTxVector& txVector) const
 {
