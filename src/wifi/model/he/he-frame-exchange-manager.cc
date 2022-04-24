@@ -621,6 +621,12 @@ HeFrameExchangeManager::SendPsduMap (void)
       auto hePhy = StaticCast<HePhy> (m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
       hePhy->SetTrigVector (m_trigVector, m_txTimer.GetDelayLeft ());
     }
+  else if (timerType == WifiTxTimer::NOT_RUNNING
+           && m_txParams.m_txVector.IsUlMu ())
+    {
+      // clear m_psduMap after sending QoS Null frames following a BSRP Trigger Frame
+      Simulator::Schedule (txDuration, &WifiPsduMap::clear, &m_psduMap);
+    }
 }
 
 void
@@ -996,6 +1002,52 @@ HeFrameExchangeManager::BlockAckAfterTbPpduTimeout (Ptr<WifiPsdu> psdu, const Wi
   // transmission of an MPDU in a TB PPDU regardless of whether the STA has received
   // the corresponding acknowledgment frame in response to the MPDU sent in the TB PPDU
   // (Sec. 10.22.2.2 of 11ax Draft 3.0)
+  m_psduMap.clear ();
+}
+
+void
+HeFrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *mpdu << txVector);
+
+  VhtFrameExchangeManager::NormalAckTimeout (mpdu, txVector);
+
+  // If a Normal Ack is missed in response to a DL MU PPDU requiring acknowledgment
+  // in SU format, we have to set the Retry flag for all transmitted MPDUs that have
+  // not been acknowledged nor discarded and clear m_psduMap since the transmission failed.
+  for (auto& psdu : m_psduMap)
+    {
+      for (auto& mpdu : *PeekPointer (psdu.second))
+        {
+          if (mpdu->IsQueued ())
+            {
+              mpdu->GetHeader ().SetRetry ();
+            }
+        }
+    }
+  m_psduMap.clear ();
+}
+
+void
+HeFrameExchangeManager::BlockAckTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *psdu << txVector);
+
+  VhtFrameExchangeManager::BlockAckTimeout (psdu, txVector);
+
+  // If a Block Ack is missed in response to a DL MU PPDU requiring acknowledgment
+  // in SU format, we have to set the Retry flag for all transmitted MPDUs that have
+  // not been acknowledged nor discarded and clear m_psduMap since the transmission failed.
+  for (auto& psdu : m_psduMap)
+    {
+      for (auto& mpdu : *PeekPointer (psdu.second))
+        {
+          if (mpdu->IsQueued ())
+            {
+              mpdu->GetHeader ().SetRetry ();
+            }
+        }
+    }
   m_psduMap.clear ();
 }
 
@@ -1509,6 +1561,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
           ReceivedNormalAck (*it->second->begin (), m_txParams.m_txVector, txVector, rxSignalInfo, tag.Get ());
+          m_psduMap.clear ();
         }
       // TODO the PHY should not pass us a non-TB PPDU if we are waiting for a
       // TB PPDU. However, processing the PHY header is done by the PHY entity
@@ -1634,6 +1687,15 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           m_txTimer.Cancel ();
           m_channelAccessManager->NotifyAckTimeoutResetNow ();
           m_psduMap.clear ();
+        }
+      else if (hdr.IsBlockAck () && m_txTimer.IsRunning ()
+               && m_txTimer.GetReason () == WifiTxTimer::WAIT_BLOCK_ACK)
+        {
+          // this BlockAck frame may have been sent in response to a DL MU PPDU with
+          // acknowledgment in SU format or one of the consequent BlockAckReq frames.
+          // We clear the PSDU map and let parent classes continue processing this frame.
+          m_psduMap.clear ();
+          VhtFrameExchangeManager::ReceiveMpdu (mpdu, rxSignalInfo, txVector, inAmpdu);
         }
       else if (hdr.IsTrigger ())
         {
