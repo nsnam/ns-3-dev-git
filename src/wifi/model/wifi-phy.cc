@@ -2005,17 +2005,6 @@ WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
   return band;
 }
 
-WifiSpectrumBand
-WifiPhy::GetPrimaryBand (uint16_t bandWidth)
-{
-  if (GetChannelWidth () % 20 != 0)
-    {
-      return GetBand (bandWidth);
-    }
-
-  return GetBand (bandWidth, m_operatingChannel.GetPrimaryChannelIndex (bandWidth));
-}
-
 int64_t
 WifiPhy::AssignStreams (int64_t stream)
 {

@@ -794,6 +794,19 @@ protected:
   void NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payloadDuration);
 
   /**
+   * If the operating channel width is a multiple of 20 MHz, return the start
+   * band index and the stop band index for the primary channel of the given
+   * bandwidth (which must be a multiple of 20 MHz and not exceed the operating
+   * channel width). Otherwise, this call is equivalent to GetBand with
+   * <i>bandIndex</i> equal to zero.
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  WifiSpectrumBand GetPrimaryBand (uint16_t bandWidth) const;
+
+  /**
    * Return the channel width used to measure the RSSI.
    *
    * \param ppdu the PPDU that is being received
