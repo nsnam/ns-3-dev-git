@@ -1975,18 +1975,6 @@ WifiPhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
   return GetPhyEntity (ppdu->GetModulation ())->GetAddressedPsduInPpdu (ppdu);
 }
 
-uint16_t
-WifiPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
-{
-  if (ppdu == nullptr)
-    {
-      // Here because PHY was not receiving anything (e.g. resuming from OFF) nor expecting anything (e.g. sleep)
-      // nor processing a Wi-Fi signal.
-      return GetChannelWidth () >= 40 ? 20 : GetChannelWidth ();
-    }
-  return GetPhyEntity (ppdu->GetModulation ())->GetMeasurementChannelWidth (ppdu);
-}
-
 WifiSpectrumBand
 WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
 {

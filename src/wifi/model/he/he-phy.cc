@@ -942,7 +942,7 @@ HePhy::GetCurrentHeTbPpduUid (void) const
 uint16_t
 HePhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 {
-  uint16_t channelWidth = PhyEntity::GetMeasurementChannelWidth (ppdu);
+  uint16_t channelWidth = OfdmPhy::GetMeasurementChannelWidth (ppdu);
   /**
    * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does not overlap
    * the primary channel unless the PHY at an AP receives the HE TB PPDU solicited by the AP. For the HE

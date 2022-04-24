@@ -425,22 +425,6 @@ public:
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
 
   /**
-   * Return the channel width used to measure the RSSI.
-   *
-   * \param ppdu the PPDU that is being received
-   * \return the channel width (in MHz) used for RSSI measurement
-   */
-  virtual uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
-
-  /**
-   * Return the channel width used in the reception spectrum model.
-   *
-   * \param txVector the TXVECTOR of the PPDU that is being received
-   * \return the channel width (in MHz) used for RxSpectrumModel
-   */
-  virtual uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const;
-
-  /**
    * Check if PHY state should move to CCA busy state based on current
    * state of interference tracker.
    *
@@ -798,6 +782,22 @@ protected:
    * \param payloadDuration the TX duration of the PPDU payload
    */
   void NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payloadDuration);
+
+  /**
+   * Return the channel width used to measure the RSSI.
+   *
+   * \param ppdu the PPDU that is being received
+   * \return the channel width (in MHz) used for RSSI measurement
+   */
+  virtual uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const = 0;
+
+  /**
+   * Return the channel width used in the reception spectrum model.
+   *
+   * \param txVector the TXVECTOR of the PPDU that is being received
+   * \return the channel width (in MHz) used for RxSpectrumModel
+   */
+  virtual uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const;
 
   /**
    * \param currentChannelWidth channel width of the current transmission (MHz)

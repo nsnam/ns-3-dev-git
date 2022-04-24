@@ -605,6 +605,16 @@ OfdmPhy::GetMaxPsduSize (void) const
   return 4095;
 }
 
+uint16_t
+OfdmPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
+{
+  if (ppdu == nullptr)
+    {
+      return 20;
+    }
+  return GetRxChannelWidth (ppdu->GetTxVector ());
+}
+
 } //namespace ns3
 
 namespace {

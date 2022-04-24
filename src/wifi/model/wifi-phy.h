@@ -1084,16 +1084,6 @@ protected:
   void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
 
   /**
-   * Return the channel width used to measure the RSSI.
-   * This corresponds to the primary channel unless it corresponds to the
-   * HE TB PPDU solicited by the AP.
-   *
-   * \param ppdu the PPDU that is being received
-   * \return the channel width (in MHz) used for RSSI measurement
-   */
-  uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
-
-  /**
    * Get the start band index and the stop band index for a given band
    *
    * \param bandWidth the width of the band to be returned (MHz)

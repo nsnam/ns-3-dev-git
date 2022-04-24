@@ -237,6 +237,12 @@ DsssPhy::GetRxChannelWidth (const WifiTxVector& txVector) const
   return PhyEntity::GetRxChannelWidth (txVector);
 }
 
+uint16_t
+DsssPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
+{
+  return ppdu ? GetRxChannelWidth (ppdu->GetTxVector ()) : 22;
+}
+
 Ptr<SpectrumValue>
 DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
