@@ -1077,13 +1077,11 @@ protected:
 
   /**
    * Check if PHY state should move to CCA busy state based on current
-   * state of interference tracker.  In this model, CCA becomes busy when
-   * the aggregation of all signals as tracked by the InterferenceHelper
-   * class is higher than the CcaEdThreshold
+   * state of interference tracker.
    *
-   * \param channelWidth the channel width in MHz used for RSSI measurement
+   * \param ppdu the incoming PPDU or nullptr for any signal
    */
-  void SwitchMaybeToCcaBusy (uint16_t channelWidth);
+  void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
 
   /**
    * Return the channel width used to measure the RSSI.

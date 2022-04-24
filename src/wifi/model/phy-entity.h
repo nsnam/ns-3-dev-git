@@ -442,13 +442,11 @@ public:
 
   /**
    * Check if PHY state should move to CCA busy state based on current
-   * state of interference tracker.  In this model, CCA becomes busy when
-   * the aggregation of all signals as tracked by the InterferenceHelper
-   * class is higher than the CcaEdThreshold
+   * state of interference tracker.
    *
-   * \param channelWidth the channel width in MHz used for RSSI measurement
+   * \param ppdu the incoming PPDU or nullptr for any signal
    */
-  virtual void SwitchMaybeToCcaBusy (uint16_t channelWidth);
+  virtual void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
 
   /**
    * This function is called by SpectrumWifiPhy to send
@@ -606,9 +604,8 @@ protected:
    * \param ppdu the incoming PPDU
    * \param reason the reason the PPDU is dropped
    * \param endRx the end of the incoming PPDU's reception
-   * \param measurementChannelWidth the measurement width (in MHz) to consider for the PPDU
    */
-  void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth);
+  void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx);
 
   /**
    * Erase the event corresponding to the PPDU from the list of preamble events,

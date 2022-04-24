@@ -1264,7 +1264,7 @@ WifiPhy::ResumeFromSleep (void)
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
         m_state->SwitchFromSleep ();
-        SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
+        SwitchMaybeToCcaBusy (nullptr);
         break;
       }
     default:
@@ -1295,7 +1295,7 @@ WifiPhy::ResumeFromOff (void)
       {
         NS_LOG_DEBUG ("resuming from off mode");
         m_state->SwitchFromOff ();
-        SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
+        SwitchMaybeToCcaBusy (nullptr);
         break;
       }
     default:
@@ -1636,7 +1636,7 @@ WifiPhy::Reset (void)
     {
       phyEntity.second->CancelAllEvents ();
     }
-  SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
+  SwitchMaybeToCcaBusy (nullptr);
 }
 
 void
@@ -1653,7 +1653,7 @@ WifiPhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBa
       //TODO find a fallback PHY for receiving the PPDU (e.g. 11a for 11ax due to preamble structure)
       NS_LOG_DEBUG ("Unsupported modulation received (" << modulation << "), consider as noise");
       m_interference->Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowersW);
-      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
+      SwitchMaybeToCcaBusy (nullptr);
     }
 }
 
@@ -1874,10 +1874,10 @@ WifiPhy::GetLastRxEndTime (void) const
 }
 
 void
-WifiPhy::SwitchMaybeToCcaBusy (uint16_t channelWidth)
+WifiPhy::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
 {
-  NS_LOG_FUNCTION (this << channelWidth);
-  GetPhyEntity (m_standard)->SwitchMaybeToCcaBusy (channelWidth);
+  NS_LOG_FUNCTION (this);
+  GetPhyEntity (m_standard)->SwitchMaybeToCcaBusy (ppdu);
 }
 
 void
