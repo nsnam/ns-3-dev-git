@@ -1223,8 +1223,9 @@ WifiPhy::ResumeFromSleep (void)
     case WifiPhyState::SLEEP:
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (GetMeasurementChannelWidth (nullptr)));
-        m_state->SwitchFromSleep (delayUntilCcaEnd);
+
+        m_state->SwitchFromSleep ();
+        SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
         break;
       }
     default:
@@ -1254,8 +1255,8 @@ WifiPhy::ResumeFromOff (void)
     case WifiPhyState::OFF:
       {
         NS_LOG_DEBUG ("resuming from off mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (GetMeasurementChannelWidth (nullptr)));
-        m_state->SwitchFromOff (delayUntilCcaEnd);
+        m_state->SwitchFromOff ();
+        SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
         break;
       }
     default:

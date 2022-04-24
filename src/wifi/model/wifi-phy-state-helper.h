@@ -223,10 +223,8 @@ public:
   void SwitchToSleep (void);
   /**
    * Switch from sleep mode.
-   *
-   * \param duration the duration of CCA busy state
    */
-  void SwitchFromSleep (Time duration);
+  void SwitchFromSleep (void);
   /**
    * Abort current reception
    */
@@ -237,10 +235,8 @@ public:
   void SwitchToOff (void);
   /**
    * Switch from off mode.
-   *
-   * \param duration the duration of CCA busy state
    */
-  void SwitchFromOff (Time duration);
+  void SwitchFromOff (void);
 
   /**
    * TracedCallback signature for state changes.
