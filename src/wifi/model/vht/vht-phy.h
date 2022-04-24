@@ -271,6 +271,7 @@ protected:
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
   uint32_t GetMaxPsduSize (void) const override;
+  CcaIndication GetCcaIndication (const Ptr<const WifiPpdu> ppdu) override;
 
   /**
    * End receiving the SIG-A, perform VHT-specific actions, and

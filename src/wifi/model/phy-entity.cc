@@ -1062,6 +1062,12 @@ PhyEntity::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType 
   return (ppdu == nullptr) ? m_wifiPhy->GetCcaEdThreshold () : m_wifiPhy->GetCcaSensitivityThreshold ();
 }
 
+Time
+PhyEntity::GetDelayUntilCcaEnd (double thresholdDbm, WifiSpectrumBand band)
+{
+  return m_wifiPhy->m_interference->GetEnergyDuration (DbmToW (thresholdDbm), band);
+}
+
 void
 PhyEntity::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
 {
@@ -1069,15 +1075,31 @@ PhyEntity::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
   //not going to be able to synchronize on it
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
+  const auto ccaIndication = GetCcaIndication (ppdu);
+  if (ccaIndication.has_value ())
+    {
+      NS_LOG_DEBUG ("CCA busy for " << ccaIndication.value ().second << " during " << ccaIndication.value ().first.As (Time::S));
+      m_state->SwitchMaybeToCcaBusy (ccaIndication.value ().first, ccaIndication.value ().second, {});
+      return;
+    }
+  if (ppdu != nullptr)
+    {
+      SwitchMaybeToCcaBusy (nullptr);
+    }
+}
+
+PhyEntity::CcaIndication
+PhyEntity::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
+{
   const uint16_t channelWidth = GetMeasurementChannelWidth (ppdu);
   NS_LOG_FUNCTION (this << channelWidth);
-  double ccaThresholdW = DbmToW (GetCcaThreshold (ppdu, WIFI_CHANLIST_PRIMARY));
-  const Time delayUntilCcaEnd = m_wifiPhy->m_interference->GetEnergyDuration (ccaThresholdW, GetPrimaryBand (channelWidth));
+  const double ccaThresholdDbm = GetCcaThreshold (ppdu, WIFI_CHANLIST_PRIMARY);
+  const Time delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, GetPrimaryBand (channelWidth));
   if (delayUntilCcaEnd.IsStrictlyPositive ())
     {
-      NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
-      m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
+      return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY);
     }
+  return std::nullopt;
 }
 
 uint64_t

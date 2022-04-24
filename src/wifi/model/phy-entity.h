@@ -27,6 +27,7 @@
 #include <map>
 #include <tuple>
 #include <optional>
+#include <utility>
 #include "wifi-mpdu-type.h"
 #include "wifi-tx-vector.h"
 #include "wifi-phy-band.h"
@@ -833,6 +834,15 @@ protected:
   virtual uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const;
 
   /**
+   * Return the delay until CCA busy is ended for a given sensitivity threshold (in dBm) and a given band.
+   *
+   * \param thresholdDbm the CCA sensitivity threshold in dBm
+   * \param band identify the requested band
+   * \return the delay until CCA busy is ended
+   */
+  Time GetDelayUntilCcaEnd (double thresholdDbm, WifiSpectrumBand band);
+
+  /**
    * \param currentChannelWidth channel width of the current transmission (MHz)
    * \return the width of the guard band (MHz)
    *
@@ -849,6 +859,17 @@ protected:
    * Wrapper method used by child classes for PSD generation.
    */
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const;
+
+  using CcaIndication = std::optional<std::pair<Time, WifiChannelListType>>; //!< CCA end time and its corresponding channel list type (can be std::nullopt if IDLE)
+
+  /**
+   * Get CCA end time and its corresponding channel list type when a new signal has been received by the PHY.
+   *
+   * \param ppdu the incoming PPDU or nullptr for any signal
+   * \return CCA end time and its corresponding channel list type when a new signal has been received by the PHY,
+   *         or std::nullopt if all channel list types are IDLE.
+   */
+  virtual CcaIndication GetCcaIndication (const Ptr<const WifiPpdu> ppdu);
 
   Ptr<WifiPhy> m_wifiPhy;          //!< Pointer to the owning WifiPhy
   Ptr<WifiPhyStateHelper> m_state; //!< Pointer to WifiPhyStateHelper of the WifiPhy (to make it reachable for child classes)

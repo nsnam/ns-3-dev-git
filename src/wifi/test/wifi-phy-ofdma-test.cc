@@ -2887,7 +2887,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
 
   Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::GenerateInterference, this, interferencePsdRu2, MilliSeconds (100));
   ScheduleTest (delay, true,
-                WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY since measurement channel encompasses total channel width
+                (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY if interference is generated in its primary channel
                 1, 0, 1000, //One PSDU of 1000 bytes should have been successfully received from STA 1
                 0, 1, 0);   //Reception of the PSDU from STA 2 should have failed (since interference occupies RU 2)
   delay += Seconds (1.0);
@@ -2966,7 +2966,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
       bytes = 0;
     }
   ScheduleTest (delay, true,
-                WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE due to the interference on measurement channel width
+                (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY, //PHY should move to CCA_BUSY instead of IDLE if HE TB PPDU on primary channel
                 succ, fail, bytes,
                 0, 1, 0); //Reception of the PSDU from STA 2 should have failed (since interference from STA 3 on same 20 MHz channel)
   delay += Seconds (1.0);

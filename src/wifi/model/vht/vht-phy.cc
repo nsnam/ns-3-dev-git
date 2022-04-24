@@ -70,11 +70,23 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
   { std::make_tuple (160, 7, 9), 12 }    //instead of 10
 };
 
+/**
+ * \brief map a given channel list type to the corresponding scaling factor in dBm
+ */
 const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm {
   {WIFI_CHANLIST_PRIMARY, 0.0},
   {WIFI_CHANLIST_SECONDARY, 0.0},
   {WIFI_CHANLIST_SECONDARY40, 3.0},
   {WIFI_CHANLIST_SECONDARY80, 6.0}
+};
+
+/**
+ * \brief map a given secondary channel width to its channel list type
+ */
+const std::map<uint16_t, WifiChannelListType> secondaryChannels {
+  {20, WIFI_CHANLIST_SECONDARY},
+  {40, WIFI_CHANLIST_SECONDARY40},
+  {80, WIFI_CHANLIST_SECONDARY80}
 };
 
 /* *NS_CHECK_STYLE_ON* */
@@ -574,6 +586,80 @@ VhtPhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType cha
       NS_ASSERT_MSG (it != std::end (channelTypeToScalingFactorDbm), "Invalid channel list type");
       return m_wifiPhy->GetCcaEdThreshold () + it->second;
     }
+}
+
+PhyEntity::CcaIndication
+VhtPhy::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_wifiPhy->GetChannelWidth () < 80)
+    {
+      return HtPhy::GetCcaIndication (ppdu);
+    }
+
+  double ccaThresholdDbm = GetCcaThreshold (ppdu, WIFI_CHANLIST_PRIMARY);
+  Time delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, GetPrimaryBand (20));
+  if (delayUntilCcaEnd.IsStrictlyPositive ())
+    {
+      return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY); //if Primary is busy, ignore CCA for Secondary
+    }
+
+  if (ppdu != nullptr)
+    {
+      const uint16_t primaryWidth = 20;
+      uint16_t p20MinFreq =
+          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (primaryWidth) - (primaryWidth / 2);
+      uint16_t p20MaxFreq =
+          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (primaryWidth) + (primaryWidth / 2);
+      if (ppdu->DoesOverlapChannel (p20MinFreq, p20MaxFreq))
+        {
+          /*
+           * PPDU occupies primary 20 MHz channel, hence we skip CCA sensitivity rules
+           * for signals not occupying the primary 20 MHz channel.
+           */
+          return std::nullopt;
+        }
+    }
+
+  std::vector<uint16_t> secondaryWidthsToCheck;
+  if (ppdu != nullptr)
+    {
+      for (const auto& secondaryChannel : secondaryChannels)
+        {
+          uint16_t secondaryWidth = secondaryChannel.first;
+          uint16_t secondaryMinFreq =
+              m_wifiPhy->GetOperatingChannel ().GetSecondaryChannelCenterFrequency (secondaryWidth) - (secondaryWidth / 2);
+          uint16_t secondaryMaxFreq =
+              m_wifiPhy->GetOperatingChannel ().GetSecondaryChannelCenterFrequency (secondaryWidth) + (secondaryWidth / 2);
+          if ((m_wifiPhy->GetChannelWidth () > secondaryWidth) && ppdu->DoesOverlapChannel (secondaryMinFreq, secondaryMaxFreq))
+            {
+              secondaryWidthsToCheck.push_back (secondaryWidth);
+            }
+        }
+    }
+  else
+    {
+      secondaryWidthsToCheck.push_back (20);
+      secondaryWidthsToCheck.push_back (40);
+      if (m_wifiPhy->GetChannelWidth () > 80)
+        {
+          secondaryWidthsToCheck.push_back (80);
+        }
+    }
+
+  for (auto secondaryWidth : secondaryWidthsToCheck)
+    {
+      auto channelType = secondaryChannels.at (secondaryWidth);
+      ccaThresholdDbm = GetCcaThreshold (ppdu, channelType);
+      delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, GetSecondaryBand (secondaryWidth));
+      if (delayUntilCcaEnd.IsStrictlyPositive ())
+        {
+          return std::make_pair (delayUntilCcaEnd, channelType);
+        }
+    }
+
+  return std::nullopt;
 }
 
 } //namespace ns3
