@@ -563,20 +563,21 @@ As a prerequisite, install Docker using a package manager; on Ubuntu, use:
 
     $ apt install docker.io
 
-To allow an unprivileged user to use Docker, perform the following
+To allow an unprivileged user to use Docker, perform the following:
 
 .. sourcecode:: bash
 
-    $ apt install docker.io
+    $ sudo chmod 666 /var/run/docker.sock
 
-Then execute the following steps to get a shell:
+The following command will obtain a raw shell for an Ubuntu 20.04 image: 
 
 .. sourcecode:: bash
     
     $ docker run -it ubuntu:20.04
 
-If you prefer to work on your current directory from the container shell,
-instead do:
+However, if you prefer to work on your current directory from the container
+shell, use the ``-v`` option to request a bind mount of a host directory
+to a container directory, such as follows:
 
 .. sourcecode:: bash
 
@@ -599,6 +600,9 @@ steps to rescan the APIs and test them:
     $ ./ns3 configure --enable-python-bindings
     $ ./ns3 build
     $ ./ns3 run ./utils/python-unit-tests.py
+
+If you only want to scan one module, specify ``MODULENAME-apiscan``
+(such as ``wifi-apiscan``) instead of ``apiscan-all`` in the above.
 
 If you exit the container, the package state will be lost, but from another
 terminal window, you may be able to further test and evaluate the new bindings.
