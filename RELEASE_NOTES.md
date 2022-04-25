@@ -24,25 +24,72 @@ requirements (Note: not all ns-3 features are available on all systems):
 - Python 3.6 or later
 - (macOS only) Xcode 11 or later
 
+Python API scanning only works for Python versions 3.6 through 3.8, due to
+an upstream toolchain limitation.
+
+This release has discontinued support for g++-7 compilers.
+
 ### New user-visible features
 
+- (build system) The ns-3 build system has been changed to CMake from Waf.
+- (core) An attribute value type for a std::tuple has been added
+- (core) Simulation events can be created from lambda expressions
+- (core) TypeId constructors now accept std::string
+- (fd-net-device) Support for PlanetLab helper was removed.
+- (lte) Handover now works with carrier aggregation configurations.
+- (mesh) The mesh model now includes a randomized per-hop forwarding delay.
 - (spectrum) ThreeGppSpectrumPropagationLossModel and ThreeGppChannelModel now support multiple PhasedArrayModel instances per device. This feature can be used to implement MIMO.
+- (tcp) Support for Network Simulation Cradle was removed.
+- (traffic-control) Flow control features can be disabled from device helpers.
 - (wifi) The default Wi-Fi standard has been upgraded from 802.11a to 802.11ax.
 - (wifi) The default Wi-Fi rate control has been changed from ArfWifiManager to IdealWifiManager.
-- (mesh) The mesh model now includes a randomized per-hop forwarding delay.
+- (wifi) The framework for consistently configuring operating channel, standard, band, channel width, and primary channel was changed.
 
 ### Bugs fixed
 
-- (spectrum) Fix condition for channel matrix update in ThreeGppChannelModel (left and right operand were pointing to the same object)
-- (spectrum) Assign stream to random variable for doppler term in ThreeGppChannelModel (moved from ThreeGppSpectrumPropagationLossModel)
-- (wifi) #467 - WiFi: Failed association process
-- (wifi) #468 - WiFi: Wrong txDuration for trigger frame
+- (build): #461 - Avoid period character in executable names
+- (core) #141 - Print parent attributes from CommandLine --PrintAttributes
+- (core) #487 - Refactor double to int64x64 conversion test for platforms with less than 64 bit mantissa
+- (internet) #431 - ICMPv6 error messages carry packet metadata
+- (internet) - Fix RIPng address selection for intermediate nodes
+- (internet) - Fix source address selection for localhost
+- (internet) - Read correct bits when deserializing IPv6 flow label
+- (internet) -  Fix errors in IPv6 Path MTU discovery.
+- (internet-apps) #576 - Fix V4TraceRoute crash at application stop
+- (lte) #592 - Update lte-rrc-protocol-ideal.cc to solve SIB2 repeatedly reception issue
 - (mesh) #472 - mesh.cc example distance too large for preamble detect
-- (wifi) #475 - Wi-Fi: Assert when sending OFDMA DL to STAs with different TIDs
 - (mesh) #478 - Persistent collisions of forwarded broadcast frames
-- (wifi) #480 - wifi: 2.4GHz remote station manager issue
-- (wifi) #507 - wifi: Set CS Required field according to 802.11ax specs
-- (tcp) #531 - tcp: TcpWestwood divide-by-zero and floating point issues
+- (mpi) #607 - Call CommandLine correctly to generate docs
+- (nix-vector) - Remove unused BuildNixVectorLocal () function.
+- (nix-vector) #466 - Handle loopback IPv4/IPv6 addresses
+- (nix-vector) #567 - Rebuild NixVector if topology changes
+- (spectrum) Fix condition for channel matrix update in ThreeGppChannelModel (left and right operand were pointing to the same object)
+- (spectrum) Assign stream to random variable for Doppler term in ThreeGppChannelModel (moved from ThreeGppSpectrumPropagationLossModel)
+- (tcp) #531 - TcpWestwood divide-by-zero and floating point issues
+- (traffic-control) !844 - Fix value of MaxBurstAllowance in PIE
+- (wifi) - Mark MPDU as acknowledged before removing from the in-flight queue
+- (wifi) - Fix issue with setting of QosSupported attributes
+- (wifi) - Fix issue with installing QosTxop objects
+- (wifi) - Initialize WifiUlMuMultiStaBa as MULTI_STA
+- (wifi) - Fix misinterpretation of 802.11ax specs
+- (wifi) - Restore configuration of CWmin and CWmax for 802.11b
+- (wifi) - Set wifi-spatial-reuse.cc example to use 20 MHz BW
+- (wifi) - Fix assert condition in HeFEM::ReceiveMpdu()
+- (wifi) - Workaround to avoid a crash when expecting a TB PPDU and receiving a pre-11ax PPDU
+- (wifi) - Fix Duration/ID setting when TXOP Limit is exceeded
+- (wifi) - Enable protection for DL MU PPDUs including one PSDU, but disable for more than one PSDU until MU-RTS is implemented
+- (wifi) - Fix L-SIG length computation for HE TB PPDUs
+- (wifi) #459 - Fix HeCapabilities IEEE 802.11ax-compliance
+- (wifi) #467 - Fix recording of failed association process
+- (wifi) #468 - Fix wrong txDuration for trigger frame
+- (wifi) #473 - Discard preamble state for truncated TX or device in OFF
+- (wifi) #475 - Assert when sending OFDMA DL to STAs with different TIDs
+- (wifi) #480 - 2.4GHz remote station manager internal collision issue
+- (wifi) #483 - Cancel EndOfMpdu events when cancelling all events
+- (wifi) #500 - Clear PHY RX event if switching channel in IDLE and CCA_BUSY state
+- (wifi) #507 - Set CS Required field according to 802.11ax specs
+- (wifi) #600 - Fix HT Operation Primary Channel setting
+- (wifi) #609 - STA checks that a Multi-STA BA is sent by the AP it is associated with
 
 Release 3.35
 ------------

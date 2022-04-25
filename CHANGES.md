@@ -33,9 +33,11 @@ Changes from ns-3.35 to ns-3.36
 * **vScatt** attribute moved from ThreeGppSpectrumPropagationLossModel to ThreeGppChannelModel.
 * **ChannelCondition::IsEqual** now has LOS and O2I parameters instead of a pointer to ChannelCondition.
 * tcp: **TcpWestwood::EstimatedBW** trace source changed from **TracedValueCallback::Double** to **TracedValueCallback::DataRate**.
+* wifi: The API for making changes to channel number, band, standard, and primary channel has been changed to use a new ChannelSettings attribute.
     
 ### Changes to build system
 
+* The Waf build system has been replaced by CMake and a Python program that provides a Waf-like API.
 * g++ version 8 is now the minimum g++ compiler version supported.
 
 ### Changed behavior
