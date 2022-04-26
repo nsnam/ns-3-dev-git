@@ -17726,7 +17726,7 @@ def register_Ns3FrameExchangeManager_methods(root_module, cls):
     cls.add_method('NormalAckTimeout', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'mpdu'), param('ns3::WifiTxVector const &', 'txVector')], 
-                   visibility='protected')
+                   is_virtual=True, visibility='protected')
     ## frame-exchange-manager.h (module 'wifi'): void ns3::FrameExchangeManager::NotifyPacketDiscarded(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('NotifyPacketDiscarded', 
                    'void', 
@@ -26340,6 +26340,11 @@ def register_Ns3HeFrameExchangeManager_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector')], 
                    is_virtual=True, visibility='protected')
+    ## he-frame-exchange-manager.h (module 'wifi'): void ns3::HeFrameExchangeManager::BlockAckTimeout(ns3::Ptr<ns3::WifiPsdu> psdu, ns3::WifiTxVector const & txVector) [member function]
+    cls.add_method('BlockAckTimeout', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiPsdu >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector')], 
+                   is_virtual=True, visibility='protected')
     ## he-frame-exchange-manager.h (module 'wifi'): void ns3::HeFrameExchangeManager::BlockAcksInTbPpduTimeout(ns3::WifiPsduMap * psduMap, std::set<ns3::Mac48Address, std::less<ns3::Mac48Address>, std::allocator<ns3::Mac48Address>> const * staMissedBlockAckFrom, std::size_t nSolicitedStations) [member function]
     cls.add_method('BlockAcksInTbPpduTimeout', 
                    'void', 
@@ -26380,6 +26385,11 @@ def register_Ns3HeFrameExchangeManager_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint32_t', 'ppduPayloadSize'), param('ns3::Mac48Address', 'receiver'), param('ns3::WifiTxParameters const &', 'txParams')], 
                    is_const=True, is_virtual=True, visibility='protected')
+    ## he-frame-exchange-manager.h (module 'wifi'): void ns3::HeFrameExchangeManager::NormalAckTimeout(ns3::Ptr<ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector const & txVector) [member function]
+    cls.add_method('NormalAckTimeout', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'mpdu'), param('ns3::WifiTxVector const &', 'txVector')], 
+                   is_virtual=True, visibility='protected')
     ## he-frame-exchange-manager.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::HeFrameExchangeManager::PrepareMuBar(ns3::WifiTxVector const & responseTxVector, std::map<unsigned short, ns3::CtrlBAckRequestHeader, std::less<unsigned short>, std::allocator<std::pair<const unsigned short, ns3::CtrlBAckRequestHeader>>> recipients) const [member function]
     cls.add_method('PrepareMuBar', 
                    'ns3::Ptr< ns3::WifiMacQueueItem >', 
