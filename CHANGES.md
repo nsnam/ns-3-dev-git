@@ -22,18 +22,19 @@ Changes from ns-3.35 to ns-3.36
 * Added a new trace source **TcDrop** in TrafficControlLayer for tracing packets that have been dropped because no queue disc is installed on the device, the device supports flow control and the device queue is full.
 * Added a new class **PhasedArraySpectrumPropagationLossModel**, and its **DoCalcRxPowerSpectralDensity** function has two additional parameters: TX and RX antenna arrays. Should be inherited by models that need to know antenna arrays in order to calculate RX PSD.
 * It is now possible to detach a SpectrumPhy object from a SpectrumChannel by calling SpectrumChannel::RemoveRx ().
+* **PhasedArrayModel** has a new function GetId that returns a unique ID of each PhasedArrayModel instance. 
 
 ### Changes to existing API
 
-* internet: Support for Network Simulation Cradle (NSC) TCP has been removed.
-* fd-net-device: Support for PlanetLabFdNetDeviceHelper has been removed.
+* Support for Network Simulation Cradle (NSC) TCP has been removed.
+* Support for PlanetLabFdNetDeviceHelper has been removed.
 * **ThreeGppSpectrumPropagationLossModel** now inherits **PhasedArraySpectrumPropagationLossModel**. The modules that use **ThreeGppSpectrumPropagationLossModel** should implement **SpectrumPhy::GetAntenna** that will return the instance of **PhasedArrayModel**.
 * **AddDevice** function is removed from **ThreeGppSpectrumPropagationLossModel** to support multiple arrays per device.
 * **SpectrumPhy** function **GetRxAntenna** is renamed to **GetAntenna**, and its return value is changed to *Ptr\<Object>* instead of *Ptr\<AntennaModel>* to support also **PhasedArrayModel** type of antenna.
 * **vScatt** attribute moved from ThreeGppSpectrumPropagationLossModel to ThreeGppChannelModel.
 * **ChannelCondition::IsEqual** now has LOS and O2I parameters instead of a pointer to ChannelCondition.
-* tcp: **TcpWestwood::EstimatedBW** trace source changed from **TracedValueCallback::Double** to **TracedValueCallback::DataRate**.
-* wifi: The API for making changes to channel number, band, standard, and primary channel has been changed to use a new ChannelSettings attribute.
+* **TcpWestwood::EstimatedBW** trace source changed from **TracedValueCallback::Double** to **TracedValueCallback::DataRate**.
+* The API for making changes to channel number, band, standard, and primary channel has been changed to use a new ChannelSettings attribute.
     
 ### Changes to build system
 

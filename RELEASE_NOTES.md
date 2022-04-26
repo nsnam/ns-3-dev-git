@@ -39,6 +39,9 @@ This release has discontinued support for g++-7 compilers.
 - (lte) Handover now works with carrier aggregation configurations.
 - (mesh) The mesh model now includes a randomized per-hop forwarding delay.
 - (spectrum) ThreeGppSpectrumPropagationLossModel and ThreeGppChannelModel now support multiple PhasedArrayModel instances per device. This feature can be used to implement MIMO.
+- (spectrum) A new phased array spectrum propagation loss model, called PhasedArraySpectrumPropagationLossModel, has been added to better support different 4G/5G MIMO models that can exploit the multiple subarray concept.
+- (spectrum) ThreeGppSpectrumPropagationLossModel and ThreeGppChannelModel now support multiple PhasedArrayModel instances per device.
+- (spectrum) SpectrumPhy now also supports the new antenna arrays in addition to the previous antenna types.
 - (tcp) Support for Network Simulation Cradle was removed.
 - (traffic-control) Flow control features can be disabled from device helpers.
 - (wifi) The default Wi-Fi standard has been upgraded from 802.11a to 802.11ax.
@@ -79,6 +82,7 @@ This release has discontinued support for g++-7 compilers.
 - (wifi) - Fix Duration/ID setting when TXOP Limit is exceeded
 - (wifi) - Enable protection for DL MU PPDUs including one PSDU, but disable for more than one PSDU until MU-RTS is implemented
 - (wifi) - Fix L-SIG length computation for HE TB PPDUs
+- (wifi) - Clear PSDU map of HE FEM when needed
 - (wifi) #459 - Fix HeCapabilities IEEE 802.11ax-compliance
 - (wifi) #467 - Fix recording of failed association process
 - (wifi) #468 - Fix wrong txDuration for trigger frame
