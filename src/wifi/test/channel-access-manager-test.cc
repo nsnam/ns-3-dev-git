@@ -645,6 +645,9 @@ ChannelAccessManagerTest<TxopType>::AddRxErrorEvt (uint64_t at, uint64_t duratio
                        MicroSeconds (duration));
   Simulator::Schedule (MicroSeconds (at + timeUntilError) - Now (),
                        &ChannelAccessManager::NotifyRxEndErrorNow, m_ChannelAccessManager);
+  Simulator::Schedule (MicroSeconds (at + timeUntilError) - Now (),
+                       &ChannelAccessManager::NotifyCcaBusyStartNow, m_ChannelAccessManager,
+                       MicroSeconds (duration - timeUntilError), WIFI_CHANLIST_PRIMARY, std::vector<Time> {});
 }
 
 

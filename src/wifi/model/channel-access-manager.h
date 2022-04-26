@@ -299,6 +299,15 @@ private:
   virtual Time GetEifsNoDifs (void) const;
 
   /**
+   * Structure defining start time and end time for a given state.
+   */
+  struct Timespan
+  {
+    Time start {0};     //!< start time
+    Time end {0};       //!< end time
+  };
+
+  /**
    * typedef for a vector of Txops
    */
   typedef std::vector<Ptr<Txop>> Txops;
@@ -306,23 +315,16 @@ private:
   Txops m_txops;                         //!< the vector of managed Txops
   Time m_lastAckTimeoutEnd;              //!< the last Ack timeout end time
   Time m_lastCtsTimeoutEnd;              //!< the last CTS timeout end time
-  Time m_lastNavStart;                   //!< the last NAV start time
-  Time m_lastNavDuration;                //!< the last NAV duration time
-  Time m_lastRxStart;                    //!< the last receive start time
-  Time m_lastRxDuration;                 //!< the last receive duration time
+  Time m_lastNavEnd;                     //!< the last NAV end time
+  Timespan m_lastRx;                     //!< the last receive start and end time
   bool m_lastRxReceivedOk;               //!< the last receive OK
-  Time m_lastTxStart;                    //!< the last transmit start time
-  Time m_lastTxDuration;                 //!< the last transmit duration time
-  Time m_lastBusyStart;                  //!< the last busy start time
-  Time m_lastBusyDuration;               //!< the last busy duration time
-  Time m_lastSwitchingStart;             //!< the last switching start time
-  Time m_lastSwitchingDuration;          //!< the last switching duration time
+  Time m_lastTxEnd;                      //!< the last transmit end time
+  Time m_lastBusyEnd;                    //!< the last busy end time
+  Time m_lastSwitchingEnd;               //!< the last switching end time
   bool m_sleeping;                       //!< flag whether it is in sleeping state
   bool m_off;                            //!< flag whether it is in off state
   Time m_eifsNoDifs;                     //!< EIFS no DIFS time
   EventId m_accessTimeout;               //!< the access timeout ID
-  Time m_slot;                           //!< the slot time
-  Time m_sifs;                           //!< the SIFS time
   PhyListener* m_phyListener;            //!< the PHY listener
   Ptr<WifiPhy> m_phy;                    //!< pointer to the PHY
   Ptr<FrameExchangeManager> m_feManager; //!< pointer to the Frame Exchange Manager
