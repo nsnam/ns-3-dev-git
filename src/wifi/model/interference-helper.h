@@ -129,11 +129,17 @@ std::ostream& operator<< (std::ostream& os, const Event &event);
  * \ingroup wifi
  * \brief handles interference calculations
  */
-class InterferenceHelper
+class InterferenceHelper : public Object
 {
 public:
   InterferenceHelper ();
-  ~InterferenceHelper ();
+  virtual ~InterferenceHelper ();
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
 
   /**
    * Add a frequency band.
@@ -268,8 +274,9 @@ public:
    */
   void UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
 
-
 protected:
+  void DoDispose (void) override;
+
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
    *
@@ -313,7 +320,7 @@ private:
    */
   class NiChange
   {
-public:
+  public:
     /**
      * Create a NiChange at the given time and the amount of NI change.
      *
@@ -341,8 +348,7 @@ public:
      */
     Ptr<Event> GetEvent (void) const;
 
-
-private:
+  private:
     double m_power; ///< power in watts
     Ptr<Event> m_event; ///< event
   };

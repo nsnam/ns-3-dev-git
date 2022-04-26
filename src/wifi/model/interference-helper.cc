@@ -34,6 +34,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
 
+NS_OBJECT_ENSURE_REGISTERED (InterferenceHelper);
+
 /****************************************************************
  *       PHY event class
  ****************************************************************/
@@ -178,10 +180,29 @@ InterferenceHelper::InterferenceHelper ()
     m_numRxAntennas (1),
     m_rxing (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 InterferenceHelper::~InterferenceHelper ()
 {
+  NS_LOG_FUNCTION (this);
+}
+
+TypeId
+InterferenceHelper::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::InterferenceHelper")
+    .SetParent<ns3::Object> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<InterferenceHelper> ()
+  ;
+  return tid;
+}
+
+void
+InterferenceHelper::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
   RemoveBands ();
   m_errorRateModel = 0;
 }
