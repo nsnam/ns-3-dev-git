@@ -272,6 +272,16 @@ private:
    * \return the time when the backoff procedure ended (or will ended)
    */
   Time GetBackoffEndFor (Ptr<Txop> txop);
+  /**
+   * This method determines whether the medium has been idle during a period (of
+   * non-null duration) immediately preceding the time this method is called. If
+   * so, the last idle start time and end time for each channel type are updated.
+   * Otherwise, no change is made by this method.
+   * This method is normally called when we are notified of the start of a
+   * transmission, reception, CCA Busy or switching to correctly maintain the
+   * information about the last idle period.
+   */
+  void UpdateLastIdlePeriod (void);
 
   void DoRestartAccessTimeoutIfNeeded (void);
 
@@ -328,6 +338,7 @@ private:
   std::map<WifiChannelListType, Time> m_lastBusyEnd;  //!< the last busy end time for each channel type
   std::vector<Time> m_lastPer20MHzBusyEnd;            /**< the last busy end time per 20 MHz channel
                                                            (HE stations and channel width > 20 MHz only) */
+  std::map<WifiChannelListType, Timespan> m_lastIdle; //!< the last idle start and end time for each channel type
   Time m_lastSwitchingEnd;                            //!< the last switching end time
   bool m_sleeping;                                    //!< flag whether it is in sleeping state
   bool m_off;                                         //!< flag whether it is in off state

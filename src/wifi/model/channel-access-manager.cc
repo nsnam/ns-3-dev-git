@@ -206,7 +206,9 @@ ChannelAccessManager::InitLastBusyStructs (void)
   Time now = Simulator::Now ();
   m_lastBusyEnd.clear ();
   m_lastPer20MHzBusyEnd.clear ();
+  m_lastIdle.clear ();
   m_lastBusyEnd[WIFI_CHANLIST_PRIMARY] = now;
+  m_lastIdle[WIFI_CHANLIST_PRIMARY] = {now, now};
 
   if (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsOfdm ())
     {
@@ -218,14 +220,17 @@ ChannelAccessManager::InitLastBusyStructs (void)
   if (width >= 40)
     {
       m_lastBusyEnd[WIFI_CHANLIST_SECONDARY] = now;
+      m_lastIdle[WIFI_CHANLIST_SECONDARY] = {now, now};
     }
   if (width >= 80)
     {
       m_lastBusyEnd[WIFI_CHANLIST_SECONDARY40] = now;
+      m_lastIdle[WIFI_CHANLIST_SECONDARY40] = {now, now};
     }
   if (width >= 160)
     {
       m_lastBusyEnd[WIFI_CHANLIST_SECONDARY80] = now;
+      m_lastIdle[WIFI_CHANLIST_SECONDARY80] = {now, now};
     }
   // TODO Add conditions for new channel widths as they get supported
 
@@ -579,6 +584,7 @@ ChannelAccessManager::NotifyRxStartNow (Time duration)
   NS_LOG_FUNCTION (this << duration);
   NS_LOG_DEBUG ("rx start for=" << duration);
   UpdateBackoff ();
+  UpdateLastIdlePeriod ();
   m_lastRx.start = Simulator::Now ();
   m_lastRx.end = m_lastRx.start + duration;
   m_lastRxReceivedOk = true;
@@ -616,6 +622,10 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
       NS_ASSERT (now - m_lastRx.start <= GetSifs ());
       m_lastRx.end = now;
     }
+  else
+    {
+      UpdateLastIdlePeriod ();
+    }
   NS_LOG_DEBUG ("tx start for " << duration);
   UpdateBackoff ();
   m_lastTxEnd = now + duration;
@@ -628,6 +638,7 @@ ChannelAccessManager::NotifyCcaBusyStartNow (Time duration,
 {
   NS_LOG_FUNCTION (this << duration << channelType);
   UpdateBackoff ();
+  UpdateLastIdlePeriod ();
   auto lastBusyEndIt = m_lastBusyEnd.find (channelType);
   NS_ASSERT (lastBusyEndIt != m_lastBusyEnd.end ());
   Time now = Simulator::Now ();
@@ -652,6 +663,7 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   NS_ASSERT (m_lastSwitchingEnd <= now);
 
   m_lastRxReceivedOk = true;
+  UpdateLastIdlePeriod ();
   m_lastRx.end = std::min (m_lastRx.end, now);
   m_lastNavEnd = std::min (m_lastNavEnd, now);
   m_lastAckTimeoutEnd = std::min (m_lastAckTimeoutEnd, now);
@@ -814,6 +826,33 @@ ChannelAccessManager::NotifyCtsTimeoutResetNow (void)
   NS_LOG_FUNCTION (this);
   m_lastCtsTimeoutEnd = Simulator::Now ();
   DoRestartAccessTimeoutIfNeeded ();
+}
+
+void
+ChannelAccessManager::UpdateLastIdlePeriod (void)
+{
+  NS_LOG_FUNCTION (this);
+  Time idleStart = MostRecent ({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});
+  Time now = Simulator::Now ();
+
+  if (idleStart >= now)
+    {
+      // No new idle period
+      return;
+    }
+
+  for (const auto& busyEnd : m_lastBusyEnd)
+    {
+      if (busyEnd.second < now)
+        {
+          auto lastIdleIt = m_lastIdle.find (busyEnd.first);
+          NS_ASSERT (lastIdleIt != m_lastIdle.end ());
+          lastIdleIt->second = {std::max (idleStart, busyEnd.second), now};
+          NS_LOG_DEBUG ("New idle period (" << lastIdleIt->second.start.As (Time::S)
+                        << ", " << lastIdleIt->second.end.As (Time::S)
+                        << ") on channel " << lastIdleIt->first);
+        }
+    }
 }
 
 } //namespace ns3
