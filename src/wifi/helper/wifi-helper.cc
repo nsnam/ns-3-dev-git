@@ -37,6 +37,7 @@
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
 #include "ns3/obss-pd-algorithm.h"
+#include "ns3/wifi-mac-trailer.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -62,7 +63,10 @@ AsciiPhyTransmitSinkWithContext (
   uint8_t txLevel)
 {
   NS_LOG_FUNCTION (stream << context << p << mode << preamble << txLevel);
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -82,7 +86,10 @@ AsciiPhyTransmitSinkWithoutContext (
   uint8_t txLevel)
 {
   NS_LOG_FUNCTION (stream << p << mode << preamble << txLevel);
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -104,7 +111,10 @@ AsciiPhyReceiveSinkWithContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << context << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << context << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -124,7 +134,10 @@ AsciiPhyReceiveSinkWithoutContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 WifiPhyHelper::WifiPhyHelper ()
@@ -560,7 +573,7 @@ WifiPhyHelper::GetRadiotapHeader (
 
       header.SetHeFields (data1, data2, data3, data4, data5, 0);
     }
-  
+
   if (preamble == WIFI_PREAMBLE_HE_MU)
     {
       //TODO: fill in fields (everything is set to 0 so far)
