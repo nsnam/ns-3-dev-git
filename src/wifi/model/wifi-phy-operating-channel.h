@@ -113,6 +113,24 @@ public:
    * \return the width of the whole operating channel (in MHz)
    */
   uint16_t GetWidth (void) const;
+  /**
+   * Return whether the operating channel is an OFDM channel.
+   *
+   * \return whether the operating channel is an OFDM channel
+   */
+  bool IsOfdm (void) const;
+  /**
+   * Return whether the operating channel is a DSSS channel.
+   *
+   * \return whether the operating channel is a DSSS channel
+   */
+  bool IsDsss (void) const;
+  /**
+   * Return whether the operating channel is an 802.11p channel.
+   *
+   * \return whether the operating channel is an 802.11p channel
+   */
+  bool Is80211p (void) const;
 
   /**
    * If the operating channel width is a multiple of 20 MHz, return the index of the

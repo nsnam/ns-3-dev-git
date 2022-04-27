@@ -393,6 +393,27 @@ WifiPhyOperatingChannel::GetWidth (void) const
   return std::get<2> (*m_channelIt);
 }
 
+bool
+WifiPhyOperatingChannel::IsOfdm (void) const
+{
+  NS_ASSERT (IsSet ());
+  return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_OFDM_CHANNEL;
+}
+
+bool
+WifiPhyOperatingChannel::IsDsss (void) const
+{
+  NS_ASSERT (IsSet ());
+  return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_DSSS_CHANNEL;
+}
+
+bool
+WifiPhyOperatingChannel::Is80211p (void) const
+{
+  NS_ASSERT (IsSet ());
+  return std::get<FrequencyChannelType> (*m_channelIt) == WIFI_PHY_80211p_CHANNEL;
+}
+
 uint8_t
 WifiPhyOperatingChannel::GetPrimaryChannelIndex (uint16_t primaryChannelWidth) const
 {
