@@ -23,6 +23,7 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/interference-helper.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
@@ -231,6 +232,8 @@ WifiPhyThresholdsTest::DoSetup (void)
 {
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phy->SetInterferenceHelper (interferenceHelper);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});

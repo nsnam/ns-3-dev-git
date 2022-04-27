@@ -25,6 +25,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/interference-helper.h"
 #include "ns3/mac-tx-middle.h"
 #include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/msdu-aggregator.h"
@@ -102,6 +103,8 @@ AmpduAggregationTest::DoRun (void)
    * Create and configure phy layer.
    */
   m_phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phy->SetInterferenceHelper (interferenceHelper);
   m_phy->SetDevice (m_device);
   m_phy->ConfigureStandard (WIFI_STANDARD_80211n);
   m_device->SetPhy (m_phy);
@@ -351,6 +354,8 @@ TwoLevelAggregationTest::DoRun (void)
    * Create and configure phy layer.
    */
   m_phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phy->SetInterferenceHelper (interferenceHelper);
   m_phy->SetDevice (m_device);
   m_phy->ConfigureStandard (WIFI_STANDARD_80211n);
   m_device->SetPhy (m_phy);
@@ -585,6 +590,8 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
    * Create and configure phy layer.
    */
   m_phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phy->SetInterferenceHelper (interferenceHelper);
   m_phy->SetDevice (m_device);
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_device->SetPhy (m_phy);

@@ -326,7 +326,6 @@ WifiPhy::WifiPhy ()
     m_timeLastPreambleDetected (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
-  m_interference = CreateObject<InterferenceHelper> ();
   m_random = CreateObject<UniformRandomVariable> ();
   m_state = CreateObject<WifiPhyStateHelper> ();
 }
@@ -353,6 +352,11 @@ WifiPhy::DoDispose (void)
   m_wifiRadioEnergyModel = 0;
   m_postReceptionErrorModel = 0;
   m_supportedChannelWidthSet.clear ();
+  if (m_interference != nullptr)
+    {
+      m_interference->Dispose ();
+    }
+  m_interference = 0;
   m_random = 0;
   m_state = 0;
   m_currentEvent = 0;
@@ -442,8 +446,11 @@ void
 WifiPhy::SetRxNoiseFigure (double noiseFigureDb)
 {
   NS_LOG_FUNCTION (this << noiseFigureDb);
-  m_interference->SetNoiseFigure (DbToRatio (noiseFigureDb));
-  m_interference->SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
+  if (m_interference)
+    {
+      m_interference->SetNoiseFigure (DbToRatio (noiseFigureDb));
+    }
+  m_noiseFigureDb = noiseFigureDb;
 }
 
 void
@@ -556,10 +563,18 @@ WifiPhy::GetMobility (void) const
 }
 
 void
-WifiPhy::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
+WifiPhy::SetInterferenceHelper (const Ptr<InterferenceHelper> helper)
 {
-  m_interference->SetErrorRateModel (rate);
-  m_interference->SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
+  m_interference = helper;
+  m_interference->SetNoiseFigure (DbToRatio (m_noiseFigureDb));
+  m_interference->SetNumberOfReceiveAntennas (m_numberOfAntennas);
+}
+
+void
+WifiPhy::SetErrorRateModel (const Ptr<ErrorRateModel> model)
+{
+  NS_ASSERT (m_interference != nullptr);
+  m_interference->SetErrorRateModel (model);
 }
 
 void
@@ -1061,9 +1076,13 @@ WifiPhy::DoChannelSwitch (void)
 void
 WifiPhy::SetNumberOfAntennas (uint8_t antennas)
 {
+  NS_LOG_FUNCTION (this << +antennas);
   NS_ASSERT_MSG (antennas > 0 && antennas <= 4, "unsupported number of antennas");
   m_numberOfAntennas = antennas;
-  m_interference->SetNumberOfReceiveAntennas (antennas);
+  if (m_interference)
+    {
+      m_interference->SetNumberOfReceiveAntennas (antennas);
+    }
 }
 
 uint8_t

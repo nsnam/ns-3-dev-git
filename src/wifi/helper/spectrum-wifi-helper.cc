@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/interference-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/frame-capture-model.h"
 #include "ns3/preamble-detection-model.h"
@@ -37,6 +38,7 @@ SpectrumWifiPhyHelper::SpectrumWifiPhyHelper ()
   : m_channel (0)
 {
   m_phy.SetTypeId ("ns3::SpectrumWifiPhy");
+  SetInterferenceHelper ("ns3::InterferenceHelper");
   SetErrorRateModel ("ns3::TableBasedErrorRateModel");
 }
 
@@ -58,6 +60,8 @@ SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<SpectrumWifiPhy> phy = m_phy.Create<SpectrumWifiPhy> ();
   phy->CreateWifiSpectrumPhyInterface (device);
+  Ptr<InterferenceHelper> interference = m_interferenceHelper.Create<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interference);
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
   phy->SetErrorRateModel (error);
   if (m_frameCaptureModel.IsTypeIdSet ())

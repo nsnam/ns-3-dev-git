@@ -56,7 +56,7 @@ public:
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
 
-  // Implementation of pure virtual method.
+  void SetInterferenceHelper (const Ptr<InterferenceHelper> helper) override;
   void StartTx (Ptr<WifiPpdu> ppdu) override;
   Ptr<Channel> GetChannel (void) const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;

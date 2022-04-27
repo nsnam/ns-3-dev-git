@@ -23,6 +23,7 @@
 #include "ns3/names.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
+#include "ns3/interference-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/frame-capture-model.h"
 #include "ns3/preamble-detection-model.h"
@@ -128,6 +129,7 @@ YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0)
 {
   m_phy.SetTypeId ("ns3::YansWifiPhy");
+  SetInterferenceHelper ("ns3::InterferenceHelper");
   SetErrorRateModel ("ns3::TableBasedErrorRateModel");
 }
 
@@ -148,6 +150,8 @@ Ptr<WifiPhy>
 YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interference = m_interferenceHelper.Create<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interference);
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
   phy->SetErrorRateModel (error);
   if (m_frameCaptureModel.IsTypeIdSet ())

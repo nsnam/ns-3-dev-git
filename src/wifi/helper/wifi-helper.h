@@ -70,6 +70,16 @@ public:
   void Set (std::string name, const AttributeValue &v);
 
   /**
+   * Helper function used to set the interference helper.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of interference helper
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void SetInterferenceHelper (std::string type, Args&&... args);
+
+  /**
    * Helper function used to set the error rate model.
    *
    * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
@@ -174,6 +184,7 @@ protected:
                                 uint16_t staId = SU_STA_ID);
 
   ObjectFactory m_phy; ///< PHY object
+  ObjectFactory m_interferenceHelper; ///< interference helper
   ObjectFactory m_errorRateModel; ///< error rate model
   ObjectFactory m_frameCaptureModel; ///< frame capture model
   ObjectFactory m_preambleDetectionModel; ///< preamble detection model
@@ -415,6 +426,14 @@ protected:
  ***************************************************************/
 
 namespace ns3 {
+
+template <typename... Args>
+void
+WifiPhyHelper::SetInterferenceHelper (std::string type, Args&&... args)
+{
+  m_interferenceHelper.SetTypeId (type);
+  m_interferenceHelper.Set (args...);
+}
 
 template <typename... Args>
 void

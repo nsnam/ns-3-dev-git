@@ -60,6 +60,7 @@
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
+#include "ns3/interference-helper.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simple-frame-capture-model.h"
@@ -252,10 +253,18 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   rx->CreateWifiSpectrumPhyInterface (devRx);
   rx->SetDevice (devRx);
 
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_txA->SetErrorRateModel (error);
-  m_txB->SetErrorRateModel (error);
-  rx->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> interferenceTxA = CreateObject<InterferenceHelper> ();
+  m_txA->SetInterferenceHelper (interferenceTxA);
+  Ptr<ErrorRateModel> errorTxA = CreateObject<NistErrorRateModel> ();
+  m_txA->SetErrorRateModel (errorTxA);
+  Ptr<InterferenceHelper> interferenceTxB = CreateObject<InterferenceHelper> ();
+  m_txB->SetInterferenceHelper (interferenceTxB);
+  Ptr<ErrorRateModel> errorTxB = CreateObject<NistErrorRateModel> ();
+  m_txB->SetErrorRateModel (errorTxB);
+  Ptr<InterferenceHelper> interferenceRx = CreateObject<InterferenceHelper> ();
+  rx->SetInterferenceHelper (interferenceRx);
+  Ptr<ErrorRateModel> errorRx = CreateObject<NistErrorRateModel> ();
+  rx->SetErrorRateModel (errorRx);
   m_txA->SetChannel (channel);
   m_txB->SetChannel (channel);
   rx->SetChannel (channel);

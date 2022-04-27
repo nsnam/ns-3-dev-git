@@ -659,8 +659,10 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   m_phyAp = CreateObject<SpectrumWifiPhy> ();
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
   m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_phyAp->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phyAp->SetInterferenceHelper (apInterferenceHelper);
+  Ptr<ErrorRateModel> apErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phyAp->SetErrorRateModel (apErrorModel);
   m_phyAp->SetDevice (apDev);
   m_phyAp->SetChannel (spectrumChannel);
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -674,7 +676,10 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
   m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta1->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta1->SetInterferenceHelper (sta1InterferenceHelper);
+  Ptr<ErrorRateModel> sta1ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta1->SetErrorRateModel (sta1ErrorModel);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
   m_phySta1->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaPhyTransmission::RxSuccessSta1, this));
@@ -690,7 +695,10 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
   m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta2->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta2->SetInterferenceHelper (sta2InterferenceHelper);
+  Ptr<ErrorRateModel> sta2ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta2->SetErrorRateModel (sta2ErrorModel);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
   m_phySta2->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaPhyTransmission::RxSuccessSta2, this));
@@ -706,7 +714,10 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy> (3);
   m_phySta3->CreateWifiSpectrumPhyInterface (sta3Dev);
   m_phySta3->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta3->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta3InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta3->SetInterferenceHelper (sta3InterferenceHelper);
+  Ptr<ErrorRateModel> sta3ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta3->SetErrorRateModel (sta3ErrorModel);
   m_phySta3->SetDevice (sta3Dev);
   m_phySta3->SetChannel (spectrumChannel);
   m_phySta3->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaPhyTransmission::RxSuccessSta3, this));
@@ -1045,8 +1056,10 @@ TestUlOfdmaPpduUid::DoSetup (void)
   m_phyAp = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
   m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_phyAp->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phyAp->SetInterferenceHelper (apInterferenceHelper);
+  Ptr<ErrorRateModel> apErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phyAp->SetErrorRateModel (apErrorModel);
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, DEFAULT_FREQUENCY,
                                                                       DEFAULT_CHANNEL_WIDTH,
                                                                       WIFI_STANDARD_80211ax,
@@ -1067,7 +1080,10 @@ TestUlOfdmaPpduUid::DoSetup (void)
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
   m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta1->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta1->SetInterferenceHelper (sta1InterferenceHelper);
+  Ptr<ErrorRateModel> sta1ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta1->SetErrorRateModel (sta1ErrorModel);
   m_phySta1->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
                                                          (int)(WIFI_PHY_BAND_5GHZ), 0});
   m_phySta1->SetDevice (sta1Dev);
@@ -1084,7 +1100,10 @@ TestUlOfdmaPpduUid::DoSetup (void)
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
   m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta2->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta2->SetInterferenceHelper (sta2InterferenceHelper);
+  Ptr<ErrorRateModel> sta2ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta2->SetErrorRateModel (sta2ErrorModel);
   m_phySta2->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, DEFAULT_CHANNEL_WIDTH,
                                                          (int)(WIFI_PHY_BAND_5GHZ), 0});
   m_phySta2->SetDevice (sta2Dev);
@@ -1524,10 +1543,12 @@ TestMultipleHeTbPreambles::DoSetup (void)
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   m_phy = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   Ptr<ApWifiMac> mac = CreateObject<ApWifiMac> ();
   mac->SetAttribute ("BeaconGeneration", BooleanValue (false));
   dev->SetMac (mac);
+  m_phy->SetInterferenceHelper (interferenceHelper);
   m_phy->SetErrorRateModel (error);
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {DEFAULT_CHANNEL_NUMBER, DEFAULT_CHANNEL_WIDTH,
                                                      (int)(WIFI_PHY_BAND_5GHZ), 0});
@@ -2242,8 +2263,10 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
   apDev->SetHeConfiguration (heConfiguration);
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_phyAp->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phyAp->SetInterferenceHelper (apInterferenceHelper);
+  Ptr<ErrorRateModel> apErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phyAp->SetErrorRateModel (apErrorModel);
   m_phyAp->SetDevice (apDev);
   m_phyAp->SetChannel (spectrumChannel);
   m_phyAp->SetReceiveOkCallback (MakeCallback (&TestUlOfdmaPhyTransmission::RxSuccess, this));
@@ -2260,7 +2283,10 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
   m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta1->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta1->SetInterferenceHelper (sta1InterferenceHelper);
+  Ptr<ErrorRateModel> sta1ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta1->SetErrorRateModel (sta1ErrorModel);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
   m_phySta1->SetPreambleDetectionModel (preambleDetectionModel);
@@ -2275,7 +2301,10 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
   m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta2->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta2->SetInterferenceHelper (sta2InterferenceHelper);
+  Ptr<ErrorRateModel> sta2ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta2->SetErrorRateModel (sta2ErrorModel);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
   m_phySta2->SetPreambleDetectionModel (preambleDetectionModel);
@@ -2290,7 +2319,10 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy> (3);
   m_phySta3->CreateWifiSpectrumPhyInterface (sta3Dev);
   m_phySta3->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta3->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta3InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta3->SetInterferenceHelper (sta3InterferenceHelper);
+  Ptr<ErrorRateModel> sta3ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta3->SetErrorRateModel (sta3ErrorModel);
   m_phySta3->SetDevice (sta3Dev);
   m_phySta3->SetChannel (spectrumChannel);
   m_phySta3->SetPreambleDetectionModel (preambleDetectionModel);
@@ -3127,8 +3159,10 @@ TestPhyPaddingExclusion::DoSetup (void)
   m_phyAp->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
   apDev->SetHeConfiguration (heConfiguration);
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_phyAp->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phyAp->SetInterferenceHelper (apInterferenceHelper);
+  Ptr<ErrorRateModel> apErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phyAp->SetErrorRateModel (apErrorModel);
   m_phyAp->SetDevice (apDev);
   m_phyAp->SetChannel (spectrumChannel);
   m_phyAp->AssignStreams (streamNumber);
@@ -3152,7 +3186,10 @@ TestPhyPaddingExclusion::DoSetup (void)
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
   m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta1->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta1InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta1->SetInterferenceHelper (sta1InterferenceHelper);
+  Ptr<ErrorRateModel> sta1ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta1->SetErrorRateModel (sta1ErrorModel);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
   m_phySta1->AssignStreams (streamNumber);
@@ -3169,7 +3206,10 @@ TestPhyPaddingExclusion::DoSetup (void)
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
   m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_phySta2->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> sta2InterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phySta2->SetInterferenceHelper (sta2InterferenceHelper);
+  Ptr<ErrorRateModel> sta2ErrorModel = CreateObject<NistErrorRateModel> ();
+  m_phySta2->SetErrorRateModel (sta2ErrorModel);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
   m_phySta2->AssignStreams (streamNumber);

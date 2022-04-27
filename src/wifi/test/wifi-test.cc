@@ -28,6 +28,7 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/propagation-loss-model.h"
+#include "ns3/interference-helper.h"
 #include "ns3/yans-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/test.h"
@@ -154,6 +155,8 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
 
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interferenceHelper);
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
@@ -330,6 +333,8 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
 
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interferenceHelper);
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
@@ -538,6 +543,8 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
 
   Ptr<ConstantPositionMobilityModel> txMobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> txPhy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper> ();
+  txPhy->SetInterferenceHelper (txInterferenceHelper);
   Ptr<ErrorRateModel> txError = CreateObject<YansErrorRateModel> ();
   txPhy->SetErrorRateModel (txError);
   txPhy->SetChannel (channel);
@@ -1765,9 +1772,11 @@ Bug2831TestCase::DoRun (void)
   apMobility->SetPosition (Vector (0.0, 0.0, 0.0));
   apNode->AggregateObject (apMobility);
 
-  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   m_apPhy = CreateObject<YansWifiPhy> ();
-  m_apPhy->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_apPhy->SetInterferenceHelper (apInterferenceHelper);
+  Ptr<ErrorRateModel> apErrorModel = CreateObject<YansErrorRateModel> ();
+  m_apPhy->SetErrorRateModel (apErrorModel);
   m_apPhy->SetChannel (channel);
   m_apPhy->SetMobility (apMobility);
   m_apPhy->SetDevice (apDev);
@@ -1779,7 +1788,10 @@ Bug2831TestCase::DoRun (void)
   staNode->AggregateObject (staMobility);
 
   m_staPhy = CreateObject<YansWifiPhy> ();
-  m_staPhy->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> staInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_staPhy->SetInterferenceHelper (staInterferenceHelper);
+  Ptr<ErrorRateModel> staErrorModel = CreateObject<YansErrorRateModel> ();
+  m_staPhy->SetErrorRateModel (staErrorModel);
   m_staPhy->SetChannel (channel);
   m_staPhy->SetMobility (staMobility);
   m_staPhy->SetDevice (apDev);

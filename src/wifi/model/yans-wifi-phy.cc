@@ -45,6 +45,12 @@ YansWifiPhy::GetTypeId (void)
 YansWifiPhy::YansWifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+YansWifiPhy::SetInterferenceHelper (const Ptr<InterferenceHelper> helper)
+{
+  WifiPhy::SetInterferenceHelper (helper);
   //add dummy band for Yans
   WifiSpectrumBand band;
   band.first = 0;

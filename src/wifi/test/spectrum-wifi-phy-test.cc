@@ -22,6 +22,7 @@
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/interference-helper.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
@@ -177,6 +178,8 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   m_phy = CreateObject<SpectrumWifiPhy> ();
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
   m_phy->ConfigureStandard (WIFI_STANDARD_80211n);
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  m_phy->SetInterferenceHelper (interferenceHelper);
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phy->SetErrorRateModel (error);
   m_phy->SetReceiveOkCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
@@ -471,8 +474,10 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   m_txPhy = CreateObject<ExtSpectrumWifiPhy> ();
   m_txPhy->CreateWifiSpectrumPhyInterface (txDev);
   m_txPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
-  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
-  m_txPhy->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> txInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_txPhy->SetInterferenceHelper (txInterferenceHelper);
+  Ptr<ErrorRateModel> txErrorModel = CreateObject<NistErrorRateModel> ();
+  m_txPhy->SetErrorRateModel (txErrorModel);
   m_txPhy->SetDevice (txDev);
   m_txPhy->SetChannel (spectrumChannel);
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -486,7 +491,10 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   m_rxPhy = CreateObject<ExtSpectrumWifiPhy> ();
   m_rxPhy->CreateWifiSpectrumPhyInterface (rxDev);
   m_rxPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
-  m_rxPhy->SetErrorRateModel (error);
+  Ptr<InterferenceHelper> rxInterferenceHelper = CreateObject<InterferenceHelper> ();
+  m_rxPhy->SetInterferenceHelper (rxInterferenceHelper);
+  Ptr<ErrorRateModel> rxErrorModel = CreateObject<NistErrorRateModel> ();
+  m_rxPhy->SetErrorRateModel (rxErrorModel);
   m_rxPhy->SetChannel (spectrumChannel);
   Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel> ();
   m_rxPhy->SetMobility (sta1Mobility);

@@ -888,11 +888,18 @@ public:
   bool GetShortPhyPreambleSupported (void) const;
 
   /**
+   * Sets the interference helper.
+   *
+   * \param helper the interference helper
+   */
+  virtual void SetInterferenceHelper (const Ptr<InterferenceHelper> helper);
+
+  /**
    * Sets the error rate model.
    *
-   * \param rate the error rate model
+   * \param model the error rate model
    */
-  void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
+  void SetErrorRateModel (const Ptr<ErrorRateModel> model);
   /**
    * Attach a receive ErrorModel to the WifiPhy.
    *
@@ -1372,6 +1379,8 @@ private:
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
+
+  double m_noiseFigureDb; //!< The noise figure in dB
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
 
