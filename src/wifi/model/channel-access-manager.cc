@@ -106,13 +106,13 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastRx ({MicroSeconds (0), MicroSeconds (0)}),
     m_lastRxReceivedOk (true),
     m_lastTxEnd (MicroSeconds (0)),
-    m_lastBusyEnd (MicroSeconds (0)),
     m_lastSwitchingEnd (MicroSeconds (0)),
     m_sleeping (false),
     m_off (false),
     m_phyListener (0)
 {
   NS_LOG_FUNCTION (this);
+  InitLastBusyStructs ();
 }
 
 ChannelAccessManager::~ChannelAccessManager ()
@@ -143,6 +143,7 @@ ChannelAccessManager::SetupPhyListener (Ptr<WifiPhy> phy)
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
   m_phy = phy;
+  InitLastBusyStructs ();
 }
 
 void
@@ -198,6 +199,42 @@ ChannelAccessManager::MostRecent (std::initializer_list<Time> list) const
   return *std::max_element (list.begin (), list.end ());
 }
 
+void
+ChannelAccessManager::InitLastBusyStructs (void)
+{
+  NS_LOG_FUNCTION (this);
+  Time now = Simulator::Now ();
+  m_lastBusyEnd.clear ();
+  m_lastPer20MHzBusyEnd.clear ();
+  m_lastBusyEnd[WIFI_CHANLIST_PRIMARY] = now;
+
+  if (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsOfdm ())
+    {
+      return;
+    }
+
+  uint16_t width = m_phy->GetChannelWidth ();
+
+  if (width >= 40)
+    {
+      m_lastBusyEnd[WIFI_CHANLIST_SECONDARY] = now;
+    }
+  if (width >= 80)
+    {
+      m_lastBusyEnd[WIFI_CHANLIST_SECONDARY40] = now;
+    }
+  if (width >= 160)
+    {
+      m_lastBusyEnd[WIFI_CHANLIST_SECONDARY80] = now;
+    }
+  // TODO Add conditions for new channel widths as they get supported
+
+  if (m_phy->GetStandard () >= WIFI_STANDARD_80211ax && width > 20)
+    {
+      m_lastPer20MHzBusyEnd.assign (width / 20, now);
+    }
+}
+
 bool
 ChannelAccessManager::IsBusy (void) const
 {
@@ -206,7 +243,9 @@ ChannelAccessManager::IsBusy (void) const
   return (m_lastRx.end > now)       // RX
          || (m_lastTxEnd > now)     // TX
          || (m_lastNavEnd > now)    // NAV busy
-         || (m_lastBusyEnd > now);  // CCA busy
+  // an EDCA TXOP is obtained based solely on activity of the primary channel
+  // (Sec. 10.23.2.5 of IEEE 802.11-2020)
+         || (m_lastBusyEnd.at (WIFI_CHANLIST_PRIMARY) > now);  // CCA busy
 }
 
 bool
@@ -387,7 +426,9 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
     {
       rxAccessStart += GetEifsNoDifs ();
     }
-  Time busyAccessStart = m_lastBusyEnd + sifs;
+  // an EDCA TXOP is obtained based solely on activity of the primary channel
+  // (Sec. 10.23.2.5 of IEEE 802.11-2020)
+  Time busyAccessStart = m_lastBusyEnd.at (WIFI_CHANLIST_PRIMARY) + sifs;
   Time txAccessStart = m_lastTxEnd + sifs;
   Time navAccessStart = m_lastNavEnd + sifs;
   Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + sifs;
@@ -583,12 +624,23 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
 void
 ChannelAccessManager::NotifyCcaBusyStartNow (Time duration,
                                              WifiChannelListType channelType,
-                                             const std::vector<Time>& /*per20MhzDurations*/)
+                                             const std::vector<Time>& per20MhzDurations)
 {
   NS_LOG_FUNCTION (this << duration << channelType);
-  NS_LOG_DEBUG ("busy start for " << duration);
   UpdateBackoff ();
-  m_lastBusyEnd = Simulator::Now () + duration;
+  auto lastBusyEndIt = m_lastBusyEnd.find (channelType);
+  NS_ASSERT (lastBusyEndIt != m_lastBusyEnd.end ());
+  Time now = Simulator::Now ();
+  lastBusyEndIt->second = now + duration;
+  // TODO uncomment assert below when PHY passes correct parameters
+  // NS_ASSERT (per20MhzDurations.size () == m_lastPer20MHzBusyEnd.size ());
+  for (std::size_t chIdx = 0; chIdx < per20MhzDurations.size (); ++chIdx)
+    {
+      if (per20MhzDurations[chIdx].IsStrictlyPositive ())
+        {
+          m_lastPer20MHzBusyEnd[chIdx] =  now + per20MhzDurations[chIdx];
+        }
+    }
 }
 
 void
@@ -602,9 +654,11 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   m_lastRxReceivedOk = true;
   m_lastRx.end = std::min (m_lastRx.end, now);
   m_lastNavEnd = std::min (m_lastNavEnd, now);
-  m_lastBusyEnd = std::min (m_lastBusyEnd, now);
   m_lastAckTimeoutEnd = std::min (m_lastAckTimeoutEnd, now);
   m_lastCtsTimeoutEnd = std::min (m_lastCtsTimeoutEnd, now);
+
+  // the new operating channel may have a different width than the previous one
+  InitLastBusyStructs ();
 
   //Cancel timeout
   if (m_accessTimeout.IsRunning ())
