@@ -743,6 +743,22 @@ macro(process_options)
   if(${Python3_Interpreter_FOUND})
     if(${Python3_Development_FOUND})
       set(Python3_FOUND TRUE)
+      if(APPLE)
+        # Apple is very weird and there could be a lot of conflicting python
+        # versions which can generate conflicting rpaths preventing the python
+        # bindings from working
+
+        # To work around, we extract the /path/to/Frameworks from the library
+        # path
+        list(GET Python3_LIBRARIES 0 pylib)
+        string(REGEX REPLACE "(.*Frameworks)/Python(3.|.)framework.*" "\\1"
+                             DEVELOPER_DIR ${pylib}
+        )
+        if("${DEVELOPER_DIR}" MATCHES "Frameworks")
+          set(CMAKE_BUILD_RPATH "${DEVELOPER_DIR}" CACHE STRING "")
+          set(CMAKE_INSTALL_RPATH "${DEVELOPER_DIR}" CACHE STRING "")
+        endif()
+      endif()
     else()
       message(${HIGHLIGHTED_STATUS}
               "Python: development libraries were not found"
