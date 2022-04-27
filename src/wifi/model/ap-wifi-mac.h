@@ -77,13 +77,6 @@ public:
   Time GetBeaconInterval (void) const;
 
   /**
-   * Determine the VHT operational channel width (in MHz).
-   *
-   * \returns the VHT operational channel width (in MHz).
-   */
-  uint16_t GetVhtOperationalChannelWidth (void) const;
-
-  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
    * have been assigned.

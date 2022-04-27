@@ -256,23 +256,6 @@ ApWifiMac::UpdateShortPreambleEnabled (void)
     }
 }
 
-uint16_t
-ApWifiMac::GetVhtOperationalChannelWidth (void) const
-{
-  uint16_t channelWidth = GetWifiPhy ()->GetChannelWidth ();
-  for (const auto& sta : m_staList)
-    {
-      if (GetWifiRemoteStationManager ()->GetVhtSupported (sta.second))
-        {
-          if (GetWifiRemoteStationManager ()->GetChannelWidthSupported (sta.second) < channelWidth)
-            {
-              channelWidth = GetWifiRemoteStationManager ()->GetChannelWidthSupported (sta.second);
-            }
-        }
-    }
-  return channelWidth;
-}
-
 void
 ApWifiMac::ForwardDown (Ptr<Packet> packet, Mac48Address from,
                         Mac48Address to)
@@ -674,19 +657,23 @@ ApWifiMac::GetVhtOperation (void) const
   if (GetVhtSupported ())
     {
       operation.SetVhtSupported (1);
-      uint16_t channelWidth = GetVhtOperationalChannelWidth ();
-      if (channelWidth == 160)
-        {
-          operation.SetChannelWidth (2);
-        }
-      else if (channelWidth == 80)
-        {
-          operation.SetChannelWidth (1);
-        }
-      else
-        {
-          operation.SetChannelWidth (0);
-        }
+      const uint16_t bssBandwidth = GetWifiPhy ()->GetChannelWidth ();
+      // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
+      // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
+      operation.SetChannelWidth ((bssBandwidth > 40) ? 1 : 0);
+      // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
+      // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
+      // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+      // indicates the channel center frequency index of the 80 MHz channel
+      // segment that contains the primary channel.
+      operation.SetChannelCenterFrequencySegment0 ((bssBandwidth == 160) ?
+                                                   GetWifiPhy ()->GetOperatingChannel ().GetPrimaryChannelNumber (80, WIFI_STANDARD_80211ac) :
+                                                   GetWifiPhy ()->GetChannelNumber ());
+      // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
+      // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+      // indicates the channel center frequency index of the 160 MHz channel on
+      // which the VHT BSS operates.
+      operation.SetChannelCenterFrequencySegment1 ((bssBandwidth == 160) ? GetWifiPhy ()->GetChannelNumber () : 0);
       uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
       for (const auto& sta : m_staList)
         {
