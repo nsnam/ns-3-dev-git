@@ -157,75 +157,6 @@ WifiPhyHelper::Set (std::string name, const AttributeValue &v)
 }
 
 void
-WifiPhyHelper::SetErrorRateModel (std::string name,
-                                  std::string n0, const AttributeValue &v0,
-                                  std::string n1, const AttributeValue &v1,
-                                  std::string n2, const AttributeValue &v2,
-                                  std::string n3, const AttributeValue &v3,
-                                  std::string n4, const AttributeValue &v4,
-                                  std::string n5, const AttributeValue &v5,
-                                  std::string n6, const AttributeValue &v6,
-                                  std::string n7, const AttributeValue &v7)
-{
-  m_errorRateModel = ObjectFactory ();
-  m_errorRateModel.SetTypeId (name);
-  m_errorRateModel.Set (n0, v0);
-  m_errorRateModel.Set (n1, v1);
-  m_errorRateModel.Set (n2, v2);
-  m_errorRateModel.Set (n3, v3);
-  m_errorRateModel.Set (n4, v4);
-  m_errorRateModel.Set (n5, v5);
-  m_errorRateModel.Set (n6, v6);
-  m_errorRateModel.Set (n7, v7);
-}
-
-void
-WifiPhyHelper::SetFrameCaptureModel (std::string name,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_frameCaptureModel = ObjectFactory ();
-  m_frameCaptureModel.SetTypeId (name);
-  m_frameCaptureModel.Set (n0, v0);
-  m_frameCaptureModel.Set (n1, v1);
-  m_frameCaptureModel.Set (n2, v2);
-  m_frameCaptureModel.Set (n3, v3);
-  m_frameCaptureModel.Set (n4, v4);
-  m_frameCaptureModel.Set (n5, v5);
-  m_frameCaptureModel.Set (n6, v6);
-  m_frameCaptureModel.Set (n7, v7);
-}
-
-void
-WifiPhyHelper::SetPreambleDetectionModel (std::string name,
-                                          std::string n0, const AttributeValue &v0,
-                                          std::string n1, const AttributeValue &v1,
-                                          std::string n2, const AttributeValue &v2,
-                                          std::string n3, const AttributeValue &v3,
-                                          std::string n4, const AttributeValue &v4,
-                                          std::string n5, const AttributeValue &v5,
-                                          std::string n6, const AttributeValue &v6,
-                                          std::string n7, const AttributeValue &v7)
-{
-  m_preambleDetectionModel = ObjectFactory ();
-  m_preambleDetectionModel.SetTypeId (name);
-  m_preambleDetectionModel.Set (n0, v0);
-  m_preambleDetectionModel.Set (n1, v1);
-  m_preambleDetectionModel.Set (n2, v2);
-  m_preambleDetectionModel.Set (n3, v3);
-  m_preambleDetectionModel.Set (n4, v4);
-  m_preambleDetectionModel.Set (n5, v5);
-  m_preambleDetectionModel.Set (n6, v6);
-  m_preambleDetectionModel.Set (n7, v7);
-}
-
-void
 WifiPhyHelper::DisablePreambleDetectionModel ()
 {
     m_preambleDetectionModel.SetTypeId (TypeId ());
@@ -730,52 +661,6 @@ WifiHelper::WifiHelper ()
     m_enableFlowControl (true)
 {
   SetRemoteStationManager ("ns3::IdealWifiManager");
-}
-
-void
-WifiHelper::SetRemoteStationManager (std::string type,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_stationManager = ObjectFactory ();
-  m_stationManager.SetTypeId (type);
-  m_stationManager.Set (n0, v0);
-  m_stationManager.Set (n1, v1);
-  m_stationManager.Set (n2, v2);
-  m_stationManager.Set (n3, v3);
-  m_stationManager.Set (n4, v4);
-  m_stationManager.Set (n5, v5);
-  m_stationManager.Set (n6, v6);
-  m_stationManager.Set (n7, v7);
-}
-
-void
-WifiHelper::SetObssPdAlgorithm (std::string type,
-                                std::string n0, const AttributeValue &v0,
-                                std::string n1, const AttributeValue &v1,
-                                std::string n2, const AttributeValue &v2,
-                                std::string n3, const AttributeValue &v3,
-                                std::string n4, const AttributeValue &v4,
-                                std::string n5, const AttributeValue &v5,
-                                std::string n6, const AttributeValue &v6,
-                                std::string n7, const AttributeValue &v7)
-{
-  m_obssPdAlgorithm = ObjectFactory ();
-  m_obssPdAlgorithm.SetTypeId (type);
-  m_obssPdAlgorithm.Set (n0, v0);
-  m_obssPdAlgorithm.Set (n1, v1);
-  m_obssPdAlgorithm.Set (n2, v2);
-  m_obssPdAlgorithm.Set (n3, v3);
-  m_obssPdAlgorithm.Set (n4, v4);
-  m_obssPdAlgorithm.Set (n5, v5);
-  m_obssPdAlgorithm.Set (n6, v6);
-  m_obssPdAlgorithm.Set (n7, v7);
 }
 
 void

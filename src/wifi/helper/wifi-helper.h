@@ -68,96 +68,36 @@ public:
    * Set an attribute of the underlying PHY object.
    */
   void Set (std::string name, const AttributeValue &v);
+
   /**
-   * \param name the name of the error rate model to set.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Helper function used to set the error rate model.
    *
-   * Set the error rate model and its attributes to use when Install is called.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of error rate model
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetErrorRateModel (std::string name,
-                          std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                          std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                          std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                          std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                          std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                          std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                          std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                          std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetErrorRateModel (std::string type, Args&&... args);
+
   /**
-   * \param name the name of the frame capture model to set.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Helper function used to set the frame capture model.
    *
-   * Set the frame capture model and its attributes to use when Install is called.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of frame capture model
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetFrameCaptureModel (std::string name,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetFrameCaptureModel (std::string type, Args&&... args);
+
   /**
-   * \param name the name of the preamble detection model to set.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Helper function used to set the preamble detection model.
    *
-   * Set the preamble detection model and its attributes to use when Install is called.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of preamble detection model
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetPreambleDetectionModel (std::string name,
-                                  std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                                  std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                                  std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                                  std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                                  std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                                  std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                                  std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                                  std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetPreambleDetectionModel (std::string type, Args&&... args);
 
   /**
    * Disable the preamble detection model.
@@ -335,68 +275,24 @@ public:
   WifiHelper ();
 
   /**
-   * \param type the type of ns3::WifiRemoteStationManager to create.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Helper function used to set the station manager
    *
-   * All the attributes specified in this method should exist
-   * in the requested station manager.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of station manager
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetRemoteStationManager (std::string type,
-                                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetRemoteStationManager (std::string type, Args&&... args);
 
   /**
-   * \param type the type of ns3::ObssPdAlgorithm to create.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
+   * Helper function used to set the OBSS-PD algorithm
    *
-   * All the attributes specified in this method should exist
-   * in the requested algorithm.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of OBSS-PD algorithm
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetObssPdAlgorithm (std::string type,
-                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetObssPdAlgorithm (std::string type, Args&&... args);
 
   /// Callback invoked to determine the MAC queue selected for a given packet
   typedef std::function<std::size_t (Ptr<QueueItem>)> SelectQueueCallback;
@@ -513,5 +409,53 @@ protected:
 };
 
 } //namespace ns3
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
+
+template <typename... Args>
+void
+WifiPhyHelper::SetErrorRateModel (std::string type, Args&&... args)
+{
+  m_errorRateModel.SetTypeId (type);
+  m_errorRateModel.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiPhyHelper::SetFrameCaptureModel (std::string type, Args&&... args)
+{
+  m_frameCaptureModel.SetTypeId (type);
+  m_frameCaptureModel.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiPhyHelper::SetPreambleDetectionModel (std::string type, Args&&... args)
+{
+  m_preambleDetectionModel.SetTypeId (type);
+  m_preambleDetectionModel.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::SetRemoteStationManager (std::string type, Args&&... args)
+{
+  m_stationManager.SetTypeId (type);
+  m_stationManager.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::SetObssPdAlgorithm (std::string type, Args&&... args)
+{
+  m_obssPdAlgorithm.SetTypeId (type);
+  m_obssPdAlgorithm.Set (args...);
+}
+
+} // namespace ns3
 
 #endif /* WIFI_HELPER_H */
