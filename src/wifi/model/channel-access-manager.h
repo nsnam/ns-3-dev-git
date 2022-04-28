@@ -128,6 +128,19 @@ public:
   void DisableEdcaFor (Ptr<Txop> qosTxop, Time duration);
 
   /**
+   * Return the width of the largest primary channel that has been idle for the
+   * given time interval before the given time, if any primary channel has been
+   * idle, or zero, otherwise.
+   *
+   * \param interval the given time interval
+   * \param end the given end time
+   * \return the width of the largest primary channel that has been idle for the
+   *         given time interval before the given time, if any primary channel has
+   *         been idle, or zero, otherwise
+   */
+  uint16_t GetLargestIdlePrimaryChannel (Time interval, Time end);
+
+  /**
    * \param duration expected duration of reception
    *
    * Notify the Txop that a packet reception started

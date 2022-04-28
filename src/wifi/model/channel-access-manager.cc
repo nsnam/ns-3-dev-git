@@ -565,6 +565,40 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded (void)
     }
 }
 
+uint16_t
+ChannelAccessManager::GetLargestIdlePrimaryChannel (Time interval, Time end)
+{
+  NS_LOG_FUNCTION (this << interval.As (Time::US) << end.As (Time::S));
+
+  // If the medium is busy or it just became idle, UpdateLastIdlePeriod does
+  // nothing. This allows us to call this method, e.g., at the end of a frame
+  // reception and check the busy/idle status of the channel before the start
+  // of the frame reception (last idle period was last updated at the start of
+  // the frame reception).
+  // If the medium has been idle for some time, UpdateLastIdlePeriod updates
+  // the last idle period. This is normally what we want because this method may
+  // also be called before starting a TXOP gained through EDCA.
+  UpdateLastIdlePeriod ();
+
+  uint16_t width = 0;
+
+  // we iterate over the different types of channels in the same order as they
+  // are listed in WifiChannelListType
+  for (const auto& lastIdle : m_lastIdle)
+    {
+      if (lastIdle.second.start <= end -interval && lastIdle.second.end >= end)
+        {
+          // channel idle, update width
+          width = (width == 0) ? 20 : (2 * width);
+        }
+      else
+        {
+          break;
+        }
+    }
+  return width;
+}
+
 void
 ChannelAccessManager::DisableEdcaFor (Ptr<Txop> qosTxop, Time duration)
 {
