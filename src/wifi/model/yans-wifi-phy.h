@@ -35,9 +35,9 @@ class YansWifiChannel;
  *
  * This PHY implements a model of 802.11a. The model
  * implemented here is based on the model described
- * in "Yet Another Network Simulator",
- * (http://cutebugs.net/files/wns2-yans.pdf).
- *
+ * in "Yet Another Network Simulator" published in WNS2 2006;
+ * an author-prepared version of this paper is at:
+ * https://hal.inria.fr/file/index/docid/78318/filename/yans-rr.pdf
  *
  * This PHY model depends on a channel loss and delay
  * model as provided by the ns3::PropagationLossModel
