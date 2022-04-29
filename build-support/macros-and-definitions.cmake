@@ -796,6 +796,12 @@ macro(process_options)
     endif()
   endif()
 
+  # Disable the below warning from bindings built in debug mode with clang++:
+  # "expression with side effects will be evaluated despite being used as an operand to 'typeid'"
+  if(${ENABLE_PYTHON_BINDINGS} AND ${CLANG})
+    add_compile_options(-Wno-potentially-evaluated-expression)
+  endif()
+
   set(ENABLE_SCAN_PYTHON_BINDINGS OFF)
   if(${NS3_SCAN_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
