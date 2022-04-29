@@ -61,16 +61,17 @@ Downloading the Latest Release
 
    ::
 
-    $ tar xjf ns-allinone-3.35.tar.bz2
+    $ tar xjf ns-allinone-3.36.tar.bz2
 
 3) Change into the |ns3| directory directly; e.g.
 
    ::
 
-    $ cd ns-allinone-3.35/ns-3.35
+    $ cd ns-allinone-3.36/ns-3.36
 
 The ns-allinone directory has some additional components but we are skipping
 over them here; one can work directly from the |ns3| source code directory.
+The rest of the tutorial describes the additional components.
 
 Cloning ns-3 from GitLab.com
 ++++++++++++++++++++++++++++
@@ -88,19 +89,21 @@ only to `cd` into ns-3-dev; the `master` branch is checked out by default.
 
   $ cd ns-3-dev
 
-If instead you want to try the most recent release (version 3.35 as of this
+If instead you want to try the most recent release (version 3.36 as of this
 writing), you can checkout a branch corresponding to that git tag:
 
 ::
 
-  $ git checkout -b ns-3.35-branch ns-3.35
+  $ git checkout -b ns-3.36-branch ns-3.36
 
 Building and testing ns-3
 *************************
 
 Once you have obtained the source either by downloading a release or by
 cloning a Git repository, the next step is to
-configure the build using the *CMake* build system.  There
+configure the build using the *CMake* build system.  The below
+commands make use of a Python wrapper around CMake, called ``ns3``, that
+simplifies the command-line syntax, resembling *Waf* syntax.  There
 are several options to control the build, but enabling the example programs
 and the tests, for a default build profile (with asserts enabled and
 and support for |ns3| logging) is what is usually done at first:
@@ -109,7 +112,7 @@ and support for |ns3| logging) is what is usually done at first:
 
   $ ./ns3 configure --enable-examples --enable-tests
 
-Then, use ns3 to build |ns3|:
+Then, use ``ns3`` to build |ns3|:
 
 ::
 
