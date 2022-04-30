@@ -662,7 +662,7 @@ PhyEntity::EndReceivePayload (Ptr<Event> event)
     }
   else
     {
-      RxPayloadFailed (psdu, snr);
+      RxPayloadFailed (psdu, snr, txVector);
     }
 
   DoEndReceivePayload (ppdu);
@@ -674,13 +674,15 @@ PhyEntity::RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalIn
                                const WifiTxVector& txVector, uint16_t staId,
                                const std::vector<bool>& statusPerMpdu)
 {
+  NS_LOG_FUNCTION (this << *psdu << txVector);
   m_state->NotifyRxPsduSucceeded (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpdu);
   m_state->SwitchFromRxEndOk ();
 }
 
 void
-PhyEntity::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr)
+PhyEntity::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector)
 {
+  NS_LOG_FUNCTION (this << *psdu << txVector << snr);
   m_state->NotifyRxPsduFailed (Copy (psdu), snr);
   m_state->SwitchFromRxEndError ();
 }

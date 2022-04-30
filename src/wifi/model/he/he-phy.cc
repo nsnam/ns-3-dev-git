@@ -70,7 +70,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Exte
 
 HePhy::HePhy (bool buildModeList /* = true */)
   : VhtPhy (false), //don't add VHT modes to list
-    m_trigVectorExpirationTime (Seconds (0))
+    m_trigVectorExpirationTime (Seconds (0)),
+    m_rxHeTbPpdus (0)
 {
   NS_LOG_FUNCTION (this << buildModeList);
   m_bssMembershipSelector = HE_PHY;
@@ -721,6 +722,34 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
 }
 
 void
+HePhy::RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                           const WifiTxVector& txVector, uint16_t staId,
+                           const std::vector<bool>& statusPerMpdu)
+{
+  NS_LOG_FUNCTION (this << *psdu << txVector);
+  m_state->NotifyRxPsduSucceeded (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpdu);
+  if (!txVector.IsUlMu ())
+    {
+      m_state->SwitchFromRxEndOk ();
+    }
+  else
+    {
+      m_rxHeTbPpdus++;
+    }
+}
+
+void
+HePhy::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *psdu << txVector << snr);
+  m_state->NotifyRxPsduFailed (Copy (psdu), snr);
+  if (!txVector.IsUlMu ())
+    {
+      m_state->SwitchFromRxEndError ();
+    }
+}
+
+void
 HePhy::DoEndReceivePayload (Ptr<const WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
@@ -739,8 +768,19 @@ HePhy::DoEndReceivePayload (Ptr<const WifiPpdu> ppdu)
         }
       if (m_endRxPayloadEvents.empty ())
         {
-          //We've got the last PPDU of the UL-OFDMA transmission
+          //We've got the last PPDU of the UL-OFDMA transmission.
+          //Indicate a successfull reception is terminated if at least one HE TB PPDU
+          //has been successfully received, otherwise indicate a unsuccessfull reception is terminated.
+          if (m_rxHeTbPpdus > 0)
+            {
+              m_state->SwitchFromRxEndOk ();
+            }
+          else
+            {
+              m_state->SwitchFromRxEndError ();
+            }
           NotifyInterferenceRxEndAndClear (true); //reset WifiPhy
+          m_rxHeTbPpdus = 0;
         }
     }
   else
@@ -768,6 +808,7 @@ HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
     }
   NS_LOG_FUNCTION (this << *event << it->second);
   NS_ASSERT (GetCurrentEvent () != 0);
+  NS_ASSERT (m_rxHeTbPpdus == 0);
   auto itEvent = m_beginOfdmaPayloadRxEvents.find (GetStaId (ppdu));
   /**
    * m_beginOfdmaPayloadRxEvents should still be running only for APs, since canceled in StartReceivePayload for STAs.

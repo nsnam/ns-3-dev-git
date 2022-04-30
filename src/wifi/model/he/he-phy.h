@@ -388,6 +388,10 @@ protected:
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
   void DoStartReceivePayload (Ptr<Event> event) override;
   std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const override;
+  void RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                                   const WifiTxVector& txVector, uint16_t staId,
+                                   const std::vector<bool>& statusPerMpdu) override;
+  void RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector) override;
   void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu) override;
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
@@ -462,6 +466,8 @@ private:
                                     WifiPhyBand band);
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
+
+  std::size_t m_rxHeTbPpdus; //!< Number of successfully received HE TB PPDUS
 }; //class HePhy
 
 } //namespace ns3

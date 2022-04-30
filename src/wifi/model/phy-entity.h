@@ -658,8 +658,9 @@ protected:
    *
    * \param psdu the PSDU that we failed to received
    * \param snr the SNR of the received PSDU in linear scale
+   * \param txVector TXVECTOR of the PSDU
    */
-  virtual void RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr);
+  virtual void RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector);
 
   /**
    * Perform amendment-specific actions at the end of the reception of
