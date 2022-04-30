@@ -173,7 +173,7 @@ public:
    * \param txPowerDbm the nominal TX power in dBm
    * \param txVector the TX vector for the transmission
    */
-  void SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, WifiTxVector txVector);
+  void SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, const WifiTxVector& txVector);
   /**
    * Switch state to RX for the given duration.
    *
@@ -193,7 +193,7 @@ public:
    * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TXVECTOR of the PSDU
    */
-  void ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector);
+  void ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
   /**
    * Switch from RX after the reception was successful.
    *
@@ -203,8 +203,8 @@ public:
    * \param staId the station ID of the PSDU (only used for MU)
    * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector,
-                          uint16_t staId, std::vector<bool> statusPerMpdu);
+  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector,
+                          uint16_t staId, const std::vector<bool>& statusPerMpdu);
   /**
    * Switch from RX after the reception failed.
    *

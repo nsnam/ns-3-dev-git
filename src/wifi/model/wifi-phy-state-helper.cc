@@ -361,7 +361,7 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 }
 
 void
-WifiPhyStateHelper::SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, WifiTxVector txVector)
+WifiPhyStateHelper::SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << txDuration << psdus << txPowerDbm << txVector);
   if (!m_txTrace.IsEmpty ())
@@ -456,7 +456,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector)
+WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
   std::vector<bool> statusPerMpdu;
@@ -467,7 +467,9 @@ WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSigna
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                                       const WifiTxVector& txVector, uint16_t staId,
+                                       const std::vector<bool>& statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector << staId << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
