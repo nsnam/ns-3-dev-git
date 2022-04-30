@@ -642,6 +642,26 @@ protected:
   void ScheduleEndOfMpdus (Ptr<Event> event);
 
   /**
+   * Perform amendment-specific actions when the payload is successfully received.
+   *
+   * \param psdu the successfully received PSDU
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+   * \param txVector TXVECTOR of the PSDU
+   * \param staId the station ID of the PSDU (only used for MU)
+   * \param statusPerMpdu reception status per MPDU
+   */
+  virtual void RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                                   const WifiTxVector& txVector, uint16_t staId,
+                                   const std::vector<bool>& statusPerMpdu);
+  /**
+   * Perform amendment-specific actions when the payload is unsuccessfully received.
+   *
+   * \param psdu the PSDU that we failed to received
+   * \param snr the SNR of the received PSDU in linear scale
+   */
+  virtual void RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr);
+
+  /**
    * Perform amendment-specific actions at the end of the reception of
    * the payload.
    *

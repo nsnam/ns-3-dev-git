@@ -657,16 +657,30 @@ PhyEntity::EndReceivePayload (Ptr<Event> event)
       RxSignalInfo rxSignalInfo;
       rxSignalInfo.snr = snr;
       rxSignalInfo.rssi = signalNoiseIt->second.signal; //same information for all MPDUs
-      m_state->SwitchFromRxEndOk (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpduIt->second);
+      RxPayloadSucceeded (psdu, rxSignalInfo, txVector, staId, statusPerMpduIt->second);
       m_wifiPhy->m_previouslyRxPpduUid = ppdu->GetUid (); //store UID only if reception is successful (because otherwise trigger won't be read by MAC layer)
     }
   else
     {
-      m_state->SwitchFromRxEndError (Copy (psdu), snr);
+      RxPayloadFailed (psdu, snr);
     }
 
   DoEndReceivePayload (ppdu);
   m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
+}
+
+void
+PhyEntity::RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                               const WifiTxVector& txVector, uint16_t staId,
+                               const std::vector<bool>& statusPerMpdu)
+{
+  m_state->SwitchFromRxEndOk (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpdu);
+}
+
+void
+PhyEntity::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr)
+{
+  m_state->SwitchFromRxEndError (Copy (psdu), snr);
 }
 
 void
