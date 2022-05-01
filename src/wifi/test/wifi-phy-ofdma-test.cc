@@ -1796,7 +1796,6 @@ public:
     return m_lastRxSuccess;
   }
 
-
 private:
   uint32_t m_notifyRxStart {0};     ///< count number of RX start notifications
   uint32_t m_notifyRxEnd {0};       ///< count number of RX end notifications
@@ -1858,8 +1857,9 @@ private:
    * \param payloadSize the size of the payload in bytes
    * \param uid the UID of the trigger frame that is initiating this transmission
    * \param bssColor the BSS color of the TX STA
+   * \param incrementUid whether UID shall be incremented
    */
-  void SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor);
+  void SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor, bool incrementUid);
 
   /**
    * Send HE SU PPDU function
@@ -2202,10 +2202,15 @@ TestUlOfdmaPhyTransmission::SetTrigVector (uint8_t bssColor, TrigVectorInfo erro
 }
 
 void
-TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor)
+TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor, bool incrementUid)
 {
-  NS_LOG_FUNCTION (this << txStaId << index << payloadSize << uid << +bssColor);
+  NS_LOG_FUNCTION (this << txStaId << index << payloadSize << uid << +bssColor << (incrementUid));
   WifiConstPsduMap psdus;
+
+  if (incrementUid)
+    {
+      ++uid;
+    }
 
   WifiTxVector txVector = GetTxVectorForHeTbPpdu (txStaId, index, bssColor);
   Ptr<Packet> pkt = Create<Packet> (payloadSize);
@@ -2596,9 +2601,9 @@ TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhySta
   Simulator::Schedule (delay - MilliSeconds (1), &OfdmaTestPhyListener::Reset, m_apPhyStateListener.get ());
   if (scheduleTxSta1)
     {
-      Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 1, 1, 1000, uid, 0);
+      Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 1, 1, 1000, uid, 0, false);
     }
-  Simulator::Schedule (delay + ulTimeDifference, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, uid, 0);
+  Simulator::Schedule (delay + ulTimeDifference, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, uid, 0, false);
 
   //Verify it takes m_expectedPpduDuration to transmit the PPDUs
   Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phyAp, expectedStateBeforeEnd);
@@ -2914,7 +2919,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDUs with another HE TB PPDU arriving on RU 1 during PSDU reception");
   //Another HE TB PPDU arrives at AP on the same RU as STA 1 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 0);
+  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 0, false);
   //Expected figures from STA 2
   uint32_t succ, fail, bytes;
   if (m_channelWidth > 20)
@@ -2943,7 +2948,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Reception of solicited HE TB PPDUs with another HE TB PPDU arriving on RU 2 during PSDU reception");
   //Another HE TB PPDU arrives at AP on the same RU as STA 2 during PSDU reception
-  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 2, 1002, 1, 0);
+  Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 2, 1002, 1, 0, false);
   //Expected figures from STA 1
   if (m_channelWidth > 20)
     {
@@ -3051,17 +3056,30 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
-  //Verify that an HE SU PPDU from another BSS has been correctly received (no UL MU transmission ongoing)
+  //Verify that an HE TB PPDU from another BSS has been correctly received (no UL MU transmission ongoing)
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
-                       "Reception of an HE SU PPDU from another BSS");
-  //One HE SU from another BSS (BSS color 2) arrives at AP (BSS color 1)
+                       "Reception of an HE TB PPDU from another BSS");
+  //One HE TB from another BSS (BSS color 2) arrives at AP (BSS color 1)
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SetBssColor, this, m_phyAp, 1);
-  Simulator::Schedule (delay + MilliSeconds (100), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 2);
+  Simulator::Schedule (delay + MilliSeconds (100), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 2, false);
 
   //Verify events data have been cleared
   Simulator::Schedule (delay + MilliSeconds (200), &TestUlOfdmaPhyTransmission::VerifyEventsCleared, this);
 
   Simulator::Schedule (delay + MilliSeconds (500), &TestUlOfdmaPhyTransmission::Reset, this);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Verify that two solicited HE TB PPDUs with delay (< 400ns) between the two signals have been corrected received
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Reception of solicited HE TB PPDUs with delay (< 400ns) between the two signals and reception of an HE TB PPDU from another BSS between the ends of the two HE TB PPDUs");
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SetBssColor, this, m_phyAp, 1);
+  Simulator::Schedule (delay + m_expectedPpduDuration + NanoSeconds (100), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 2, true);
+  ScheduleTest (delay, true,
+                WifiPhyState::CCA_BUSY,
+                1, 0, 1000,  //One PSDU of 1000 bytes should have been successfully received from STA 1
+                1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
+                true, NanoSeconds (200));
   delay += Seconds (1.0);
 
   Simulator::Run ();
