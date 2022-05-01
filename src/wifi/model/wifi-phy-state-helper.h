@@ -187,15 +187,15 @@ public:
    */
   void SwitchToChannelSwitching (Time switchingDuration);
   /**
-   * Continue RX after the reception of an MPDU in an A-MPDU was successful.
+   * Notify the reception of an MPDU included in an A-MPDU.
    *
    * \param psdu the successfully received PSDU
    * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TXVECTOR of the PSDU
    */
-  void ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
+  void NotifyRxMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
   /**
-   * Switch from RX after the reception was successful.
+   * Handle the successful reception of a PSDU.
    *
    * \param psdu the successfully received PSDU
    * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
@@ -203,15 +203,24 @@ public:
    * \param staId the station ID of the PSDU (only used for MU)
    * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector,
-                          uint16_t staId, const std::vector<bool>& statusPerMpdu);
+  void NotifyRxPsduSucceeded (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                              const WifiTxVector& txVector, uint16_t staId,
+                              const std::vector<bool>& statusPerMpdu);
   /**
-   * Switch from RX after the reception failed.
+   * Handle the unsuccessful reception of a PSDU.
    *
    * \param psdu the PSDU that we failed to received
    * \param snr the SNR of the received PSDU in linear scale
    */
-  void SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr);
+  void NotifyRxPsduFailed (Ptr<WifiPsdu> psdu, double snr);
+  /**
+   * Switch from RX after the reception was successful.
+   */
+  void SwitchFromRxEndOk (void);
+  /**
+   * Switch from RX after the reception failed.
+   */
+  void SwitchFromRxEndError (void);
   /**
    * Switch to CCA busy.
    *

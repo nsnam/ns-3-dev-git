@@ -456,33 +456,28 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector)
+WifiPhyStateHelper::NotifyRxMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
-  std::vector<bool> statusPerMpdu;
   if (!m_rxOkCallback.IsNull ())
     {
-      m_rxOkCallback (psdu, rxSignalInfo, txVector, statusPerMpdu);
+      m_rxOkCallback (psdu, rxSignalInfo, txVector, {});
     }
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
-                                       const WifiTxVector& txVector, uint16_t staId,
-                                       const std::vector<bool>& statusPerMpdu)
+WifiPhyStateHelper::NotifyRxPsduSucceeded (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                                           const WifiTxVector& txVector, uint16_t staId,
+                                           const std::vector<bool>& statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector << staId << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
   NS_ASSERT (statusPerMpdu.size () != 0);
-  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
-  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
   if (!m_rxOkTrace.IsEmpty ())
     {
       m_rxOkTrace (psdu->GetPacket (), rxSignalInfo.snr, txVector.GetMode (staId),
                    txVector.GetPreambleType ());
     }
-  NotifyRxEndOk ();
-  DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())
     {
       m_rxOkCallback (psdu, rxSignalInfo, txVector, statusPerMpdu);
@@ -490,21 +485,37 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignal
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr)
+WifiPhyStateHelper::NotifyRxPsduFailed (Ptr<WifiPsdu> psdu, double snr)
 {
   NS_LOG_FUNCTION (this << *psdu << snr);
-  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
-  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
   if (!m_rxErrorTrace.IsEmpty ())
     {
       m_rxErrorTrace (psdu->GetPacket (), snr);
     }
-  NotifyRxEndError ();
-  DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
     {
       m_rxErrorCallback (psdu);
     }
+}
+
+void
+WifiPhyStateHelper::SwitchFromRxEndOk (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
+  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
+  NotifyRxEndOk ();
+  DoSwitchFromRx ();
+}
+
+void
+WifiPhyStateHelper::SwitchFromRxEndError (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
+  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
+  NotifyRxEndError ();
+  DoSwitchFromRx ();
 }
 
 void
