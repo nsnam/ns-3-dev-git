@@ -18,6 +18,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <memory>
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/node.h"
@@ -45,6 +46,7 @@
 #include "ns3/ctrl-headers.h"
 #include "ns3/threshold-preamble-detection-model.h"
 #include "ns3/he-phy.h"
+#include "ns3/wifi-phy-listener.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/non-communicating-net-device.h"
 #include "ns3/spectrum-wifi-helper.h"
@@ -1670,6 +1672,140 @@ TestMultipleHeTbPreambles::DoRun (void)
   Simulator::Destroy ();
 }
 
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief PHY listener for OFDMA tests
+ */
+class OfdmaTestPhyListener : public ns3::WifiPhyListener
+{
+public:
+  OfdmaTestPhyListener (void) = default;
+
+  void NotifyRxStart (Time duration) override
+  {
+    NS_LOG_FUNCTION (this << duration);
+    m_lastRxStart = Simulator::Now ();
+    ++m_notifyRxStart;
+    m_lastRxSuccess = false;
+  }
+
+  void NotifyRxEndOk (void) override
+  {
+    NS_LOG_FUNCTION (this);
+    m_lastRxEnd = Simulator::Now ();
+    ++m_notifyRxEnd;
+    m_lastRxSuccess = true;
+  }
+
+  void NotifyRxEndError (void) override
+  {
+    NS_LOG_FUNCTION (this);
+    m_lastRxEnd = Simulator::Now ();
+    ++m_notifyRxEnd;
+    m_lastRxSuccess = false;
+  }
+
+  void NotifyTxStart (Time duration, double txPowerDbm) override
+  {
+    NS_LOG_FUNCTION (this << duration << txPowerDbm);
+  }
+
+  void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
+                           const std::vector<Time>& /*per20MhzDurations*/) override
+  {
+    NS_LOG_FUNCTION (this << duration << channelType);
+  }
+
+  void NotifySwitchingStart (Time duration) override
+  {
+  }
+
+  void NotifySleep (void) override
+  {
+  }
+
+  void NotifyOff (void) override
+  {
+  }
+
+  void NotifyWakeup (void) override
+  {
+  }
+
+  void NotifyOn (void) override
+  {
+  }
+
+  /**
+   * Reset function.
+   */
+  void Reset (void)
+  {
+    m_notifyRxStart = 0;
+    m_notifyRxEnd = 0;
+    m_lastRxStart = Seconds (0);
+    m_lastRxEnd = Seconds (0);
+    m_lastRxSuccess = false;
+  }
+
+  /**
+   * Return the number of RX start notifications that has been received since the last reset.
+   * \return the number of RX start notifications that has been received
+   */
+  uint32_t GetNumRxStartNotifications (void) const
+  {
+    return m_notifyRxStart;
+  }
+
+  /**
+   * Return the number of RX end notifications that has been received since the last reset.
+   * \return the number of RX end notifications that has been received
+   */
+  uint32_t GetNumRxEndNotifications (void) const
+  {
+    return m_notifyRxEnd;
+  }
+
+  /**
+   * Return the time at which the last RX start notification has been received.
+   * \return the time at which the last RX start notification has been received
+   */
+  Time GetLastRxStartNotification (void) const
+  {
+    return m_lastRxStart;
+  }
+
+  /**
+   * Return the time at which the last RX end notification has been received.
+   * \return the time at which the last RX end notification has been received
+   */
+  Time GetLastRxEndNotification (void) const
+  {
+    return m_lastRxEnd;
+  }
+
+  /**
+   * Return whether last RX has been successfull.
+   * \return true if last RX has been successfull, false otherwise
+   */
+  bool IsLastRxSuccess (void) const
+  {
+    return m_lastRxSuccess;
+  }
+
+
+private:
+  uint32_t m_notifyRxStart {0};     ///< count number of RX start notifications
+  uint32_t m_notifyRxEnd {0};       ///< count number of RX end notifications
+  Time m_lastRxStart {Seconds (0)}; ///< last time a RX start notification has been received
+  Time m_lastRxEnd {Seconds (0)};   ///< last time a RX end notification has been received
+  bool m_lastRxSuccess {false};     ///< flag whether last RX has been successfull
+};
+
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -1810,6 +1946,20 @@ private:
   void DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
   /**
+   * Check the the number of RX start notifications at the AP as well as the last time a RX start has been notified
+   * \param expectedNotifications the expected number of RX start notifications at the AP
+   * \param expectedLastNotification the expected time of the last RX start notification at the AP
+   */
+  void CheckApRxStart (uint32_t expectedNotifications, Time expectedLastNotification);
+  /**
+   * Check the the number of RX end notifications at the AP as well as the last time a RX end has been notified
+   * \param expectedNotifications the expected number of RX end notifications at the AP
+   * \param expectedLastNotification the expected time of the last RX end notification at the AP
+   * \param expectedSuccess true if the last RX notification indicates a success, false otherwise
+   */
+  void CheckApRxEnd (uint32_t expectedNotifications, Time expectedLastNotification, bool expectedSuccess);
+
+  /**
    * Reset function
    */
   void Reset ();
@@ -1843,14 +1993,15 @@ private:
    * \param expectedFailuresFromSta2 the expected number of failures from STA 2
    * \param expectedBytesFromSta2 the expected number of bytes from STA 2
    * \param scheduleTxSta1 flag indicating to schedule a HE TB PPDU from STA 1
+   * \param ulTimeDifference delay between HE TB PPDU from STA 1 and HE TB PPDU from STA 2 are received
    * \param expectedStateBeforeEnd the expected state of the PHY before the end of the transmission
    * \param error the erroneous info (if any) in the TRIGVECTOR to set
    */
   void ScheduleTest (Time delay, bool solicited, WifiPhyState expectedStateAtEnd,
                      uint32_t expectedSuccessFromSta1, uint32_t expectedFailuresFromSta1, uint32_t expectedBytesFromSta1,
                      uint32_t expectedSuccessFromSta2, uint32_t expectedFailuresFromSta2, uint32_t expectedBytesFromSta2,
-                     bool scheduleTxSta1 = true, WifiPhyState expectedStateBeforeEnd = WifiPhyState::RX,
-                     TrigVectorInfo error = NONE);
+                     bool scheduleTxSta1 = true, Time ulTimeDifference = Seconds (0),
+                     WifiPhyState expectedStateBeforeEnd = WifiPhyState::RX, TrigVectorInfo error = NONE);
 
   /**
    * Schedule power measurement related checks.
@@ -1874,6 +2025,8 @@ private:
   Ptr<OfdmaSpectrumWifiPhy> m_phySta1; ///< PHY of STA 1
   Ptr<OfdmaSpectrumWifiPhy> m_phySta2; ///< PHY of STA 2
   Ptr<OfdmaSpectrumWifiPhy> m_phySta3; ///< PHY of STA 3
+
+  std::unique_ptr<OfdmaTestPhyListener> m_apPhyStateListener; ///< listener for AP PHY state transitions
 
   Ptr<WaveformGenerator> m_phyInterferer; ///< PHY of interferer
 
@@ -2217,6 +2370,36 @@ TestUlOfdmaPhyTransmission::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, Wifi
 }
 
 void
+TestUlOfdmaPhyTransmission::CheckApRxStart (uint32_t expectedNotifications, Time expectedLastNotification)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_apPhyStateListener->GetNumRxStartNotifications (), expectedNotifications,
+                         "Number of RX start notifications " << m_apPhyStateListener->GetNumRxStartNotifications () <<
+                         " does not match expected count " << expectedNotifications <<
+                         " for AP at " << Simulator::Now ());
+  NS_TEST_ASSERT_MSG_EQ (m_apPhyStateListener->GetLastRxStartNotification (), expectedLastNotification,
+                         "Last time RX start notification has been received " << m_apPhyStateListener->GetLastRxStartNotification () <<
+                         " does not match expected time " << expectedLastNotification <<
+                         " for AP at " << Simulator::Now ());
+}
+
+void
+TestUlOfdmaPhyTransmission::CheckApRxEnd (uint32_t expectedNotifications, Time expectedLastNotification, bool expectedSuccess)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_apPhyStateListener->GetNumRxEndNotifications (), expectedNotifications,
+                         "Number of RX end notifications " << m_apPhyStateListener->GetNumRxEndNotifications () <<
+                         " does not match expected count " << expectedNotifications <<
+                         " for AP at " << Simulator::Now ());
+  NS_TEST_ASSERT_MSG_EQ (m_apPhyStateListener->GetLastRxEndNotification (), expectedLastNotification,
+                         "Last time RX end notification has been received " << m_apPhyStateListener->GetLastRxEndNotification () <<
+                         " does not match expected time " << expectedLastNotification <<
+                         " for AP at " << Simulator::Now ());
+  NS_TEST_ASSERT_MSG_EQ (m_apPhyStateListener->IsLastRxSuccess (), expectedSuccess,
+                         "Last time RX end notification indicated a " << (m_apPhyStateListener->IsLastRxSuccess () ? "success" : "failure") <<
+                         " but expected a " << (expectedSuccess ? "success" : "failure") <<
+                         " for AP at " << Simulator::Now ());
+}
+
+void
 TestUlOfdmaPhyTransmission::Reset (void)
 {
   m_countRxSuccessFromSta1 = 0;
@@ -2229,6 +2412,7 @@ TestUlOfdmaPhyTransmission::Reset (void)
   m_phySta1->SetTriggerFrameUid (0);
   m_phySta2->SetTriggerFrameUid (0);
   SetBssColor (m_phyAp, 0);
+  m_apPhyStateListener->Reset ();
 }
 
 void
@@ -2282,6 +2466,8 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phyAp->SetPreambleDetectionModel (preambleDetectionModel);
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
   m_phyAp->SetMobility (apMobility);
+  m_apPhyStateListener = std::make_unique<OfdmaTestPhyListener> ();
+  m_phyAp->RegisterListener (m_apPhyStateListener.get ());
   apDev->SetPhy (m_phyAp);
   apNode->AggregateObject (apMobility);
   apNode->AddDevice (apDev);
@@ -2391,8 +2577,7 @@ void
 TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhyState expectedStateAtEnd,
                                           uint32_t expectedSuccessFromSta1, uint32_t expectedFailuresFromSta1, uint32_t expectedBytesFromSta1,
                                           uint32_t expectedSuccessFromSta2, uint32_t expectedFailuresFromSta2, uint32_t expectedBytesFromSta2,
-                                          bool scheduleTxSta1, WifiPhyState expectedStateBeforeEnd,
-                                          TrigVectorInfo error)
+                                          bool scheduleTxSta1, Time ulTimeDifference, WifiPhyState expectedStateBeforeEnd, TrigVectorInfo error)
 {
   static uint64_t uid = 0;
 
@@ -2408,16 +2593,33 @@ TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhySta
       Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SetTrigVector, this, 0, error);
     }
   //STA1 and STA2 send MU UL PPDUs addressed to AP
+  Simulator::Schedule (delay - MilliSeconds (1), &OfdmaTestPhyListener::Reset, m_apPhyStateListener.get ());
   if (scheduleTxSta1)
     {
       Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 1, 1, 1000, uid, 0);
     }
-  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, uid, 0);
+  Simulator::Schedule (delay + ulTimeDifference, &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 2, 2, 1001, uid, 0);
 
   //Verify it takes m_expectedPpduDuration to transmit the PPDUs
   Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phyAp, expectedStateBeforeEnd);
-  Simulator::Schedule (delay + m_expectedPpduDuration, &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phyAp, expectedStateAtEnd);
+  Simulator::Schedule (delay + m_expectedPpduDuration + ulTimeDifference, &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phyAp, expectedStateAtEnd);
   //TODO: add checks on TX stop for STAs
+
+  if (expectedSuccessFromSta1 + expectedFailuresFromSta1 + expectedSuccessFromSta2 + expectedFailuresFromSta2 > 0)
+    {
+      //RxEndOk if at least one HE TB PPDU has been successfully received, RxEndError otherwise
+      const bool isSuccess = (expectedSuccessFromSta1 > 0) || (expectedSuccessFromSta2 > 0);
+      //The expected time at which the reception is started corresponds to the time at which the test is started,
+      //plus the time to transmit the PHY preamble and the PHY headers.
+      const Time expectedPayloadStart = delay + MicroSeconds (48);
+      //The expected time at which the reception is terminated corresponds to the time at which the test is started,
+      //plus the time to transmit the PPDU, plus the delay between the first received HE TB PPDU and the last received HE TB PPDU.
+      const Time expectedPayloadEnd = delay + m_expectedPpduDuration + ulTimeDifference;
+      //At the end of the transmission, verify that a single RX start notification shall have been notified when the reception of the first HE RB PPDU starts.
+      Simulator::Schedule (expectedPayloadEnd, &TestUlOfdmaPhyTransmission::CheckApRxStart, this, 1, Simulator::Now () + expectedPayloadStart);
+      //After the reception (hence we add 1ns to expectedPayloadEnd), a single RX end notification shall have been notified when the reception of the last HE RB PPDU ends
+      Simulator::Schedule (expectedPayloadEnd + NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckApRxEnd, this, 1, Simulator::Now () + expectedPayloadEnd, isSuccess);
+    }
 
   delay += MilliSeconds (100);
   //Check reception state from STA 1
@@ -2562,6 +2764,17 @@ TestUlOfdmaPhyTransmission::RunOne (void)
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
+  //Verify that two solicited HE TB PPDUs with delay (< 400ns) between the two signals have been corrected received
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Reception of solicited HE TB PPDUs with delay (< 400ns) between the two signals");
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                1, 0, 1000,  //One PSDU of 1000 bytes should have been successfully received from STA 1
+                1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
+                true, NanoSeconds (100));
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
   //Verify that no unsolicited HE TB PPDU is received
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
                        "Dropping of unsolicited HE TB PPDUs");
@@ -2569,7 +2782,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY);
+                true, Seconds (0), WifiPhyState::CCA_BUSY);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2580,7 +2793,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY, CHANNEL_WIDTH);
+                true, Seconds (0), WifiPhyState::CCA_BUSY, CHANNEL_WIDTH);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2591,7 +2804,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY, UL_LENGTH);
+                true, Seconds (0), WifiPhyState::CCA_BUSY, UL_LENGTH);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2602,7 +2815,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY, AID);
+                true, Seconds (0), WifiPhyState::CCA_BUSY, AID);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2613,7 +2826,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY, RU_TYPE);
+                true, Seconds (0), WifiPhyState::CCA_BUSY, RU_TYPE);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2624,7 +2837,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,  //PSDU from STA 1 is not received (no TRIGVECTOR)
                 0, 0, 0,  //PSDU from STA 2 is not received (no TRIGVECTOR)
-                true, WifiPhyState::CCA_BUSY, MCS);
+                true, Seconds (0), WifiPhyState::CCA_BUSY, MCS);
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2775,7 +2988,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,    //No transmission scheduled for STA 1
                 1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
-                false, WifiPhyState::RX); //Measurement channel is total channel width
+                false, Seconds (0), WifiPhyState::RX); //Measurement channel is total channel width
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2790,7 +3003,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,    //No transmission scheduled for STA 1
                 1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
-                false, WifiPhyState::RX); //Measurement channel is total channel width
+                false, Seconds (0), WifiPhyState::RX); //Measurement channel is total channel width
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
@@ -2819,7 +3032,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 WifiPhyState::IDLE,
                 0, 0, 0,    //No transmission scheduled for STA 1
                 1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
-                false, WifiPhyState::RX); //Measurement channel is total channel width
+                false, Seconds (0), WifiPhyState::RX); //Measurement channel is total channel width
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
