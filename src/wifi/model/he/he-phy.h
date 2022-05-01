@@ -104,6 +104,7 @@ public:
   void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
   double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const override;
+  void NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration, WifiChannelListType channelType) override;
 
   /**
    * \return the BSS color of this PHY.
@@ -477,6 +478,18 @@ private:
   void BuildModeList (void) override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
   Time GetSymbolDuration (const WifiTxVector& txVector) const override;
+
+  /**
+   * Compute the per-20 MHz CCA durations vector that indicates
+   * for how long each 20 MHz subchannel (corresponding to the
+   * index of the element in the vector) is busy and where a zero duration
+   * indicates that the subchannel is idle. The vector is non-empty if the
+   * operational channel width is larger than 20 MHz.
+   *
+   * \param ppdu the incoming PPDU or nullptr for any signal
+   * \return the per-20 MHz CCA durations vector
+   */
+  std::vector<Time> GetPer20MHzDurations (const Ptr<const WifiPpdu> ppdu);
 
   /**
    * Create and return the HE MCS corresponding to

@@ -223,7 +223,6 @@ public:
   void SwitchFromRxEndError (void);
   /**
    * Switch to CCA busy.
-   * TODO: remove default values
    *
    * \param duration the duration of the CCA state
    * \param channelType the channel type for which the CCA busy state is reported.
@@ -232,9 +231,8 @@ public:
    *        indicates that the subchannel is idle. The vector is non-empty if the PHY supports 802.11ax
    *        or later and if the operational channel width is larger than 20 MHz.
    */
-  void SwitchMaybeToCcaBusy (Time duration,
-                             WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY,
-                             const std::vector<Time>& per20MhzDurations = std::vector<Time>{});
+  void SwitchMaybeToCcaBusy (Time duration, WifiChannelListType channelType,
+                             const std::vector<Time>& per20MhzDurations);
   /**
    * Switch to sleep mode.
    */

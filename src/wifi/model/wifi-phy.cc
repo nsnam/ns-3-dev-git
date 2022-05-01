@@ -1903,6 +1903,13 @@ WifiPhy::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
 }
 
 void
+WifiPhy::NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration)
+{
+  NS_LOG_FUNCTION (this << duration);
+  GetPhyEntity (m_standard)->NotifyCcaBusy (ppdu, duration, WIFI_CHANLIST_PRIMARY);
+}
+
+void
 WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
 {
   NS_LOG_FUNCTION (this << reason);

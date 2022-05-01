@@ -433,7 +433,14 @@ public:
    * \param ppdu the incoming PPDU or nullptr for any signal
    */
   virtual void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
-
+  /**
+   * Notify PHY state helper to switch to CCA busy state,
+   *
+   * \param ppdu the incoming PPDU or nullptr for any signal
+   * \param duration the duration of the CCA state
+   * \param channelType the channel type for which the CCA busy state is reported.
+   */
+  virtual void NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration, WifiChannelListType channelType);
   /**
    * This function is called by SpectrumWifiPhy to send
    * the PPDU while performing amendment-specific actions.

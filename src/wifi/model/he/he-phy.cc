@@ -1015,6 +1015,100 @@ HePhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
   return std::max (VhtPhy::GetCcaThreshold (ppdu, channelType), obssPdLevel);
 }
 
+void
+HePhy::NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration, WifiChannelListType channelType)
+{
+  NS_LOG_FUNCTION (this << duration << channelType);
+  NS_LOG_DEBUG ("CCA busy for " << channelType << " during " << duration.As (Time::S));
+  m_state->SwitchMaybeToCcaBusy (duration, channelType, GetPer20MHzDurations (ppdu));
+}
+
+std::vector<Time>
+HePhy::GetPer20MHzDurations (const Ptr<const WifiPpdu> ppdu)
+{
+  NS_LOG_FUNCTION (this);
+
+  /**
+   * 27.3.20.6.5 Per 20 MHz CCA sensitivity:
+   * If the operating channel width is greater than 20 MHz and the PHY issues a PHY-CCA.indication primitive,
+   * the PHY shall set the per20bitmap to indicate the busy/idle status of each 20 MHz subchannel.
+   */
+  if (m_wifiPhy->GetChannelWidth () < 40)
+    {
+      return {};
+    }
+
+  std::vector<Time> per20MhzDurations {};
+  const auto indices = m_wifiPhy->GetOperatingChannel ().GetAll20MHzChannelIndicesInPrimary (m_wifiPhy->GetChannelWidth ());
+  for (auto index : indices)
+    {
+      auto band = m_wifiPhy->GetBand (20, index);
+      /**
+       * A signal is present on the 20 MHz subchannel at or above a threshold of –62 dBm at the receiver's antenna(s).
+       * The PHY shall indicate that the 20 MHz subchannel is busy a period aCCATime after the signal starts and shall
+       * continue to indicate the 20 MHz subchannel is busy while the threshold continues to be exceeded.
+       */
+      double ccaThresholdDbm = -62;
+      Time delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, band);
+
+      if (ppdu)
+        {
+          const uint16_t subchannelMinFreq = m_wifiPhy->GetFrequency () - (m_wifiPhy->GetChannelWidth () / 2) + (index * 20);
+          const uint16_t subchannelMaxFreq = subchannelMinFreq + 20;
+          const uint16_t ppduBw = ppdu->GetTxVector ().GetChannelWidth ();
+
+          if (ppduBw <= m_wifiPhy->GetChannelWidth () && ppdu->DoesOverlapChannel (subchannelMinFreq, subchannelMaxFreq))
+            {
+              std::optional<double> obssPdLevel {std::nullopt};
+              if (m_obssPdAlgorithm)
+                {
+                  obssPdLevel = m_obssPdAlgorithm->GetObssPdLevel ();
+                }
+              switch (ppduBw)
+                {
+                  case 20:
+                  case 22:
+                    /**
+                     * A 20 MHz non-HT, HT_MF, HT_GF, VHT, or HE PPDU at or above max(–72 dBm, OBSS_ PDlevel) at the receiver's antenna(s) is present
+                     * on the 20 MHz subchannel. The PHY shall indicate that the 20 MHz subchannel is busy with > 90% probability within a period aCCAMidTime.
+                     */
+                    ccaThresholdDbm = obssPdLevel.has_value () ? std::max (-72.0, obssPdLevel.value ()) : -72.0;
+                    band = m_wifiPhy->GetBand (20, index);
+                    break;
+                  case 40:
+                    /**
+                     * The 20 MHz subchannel is in a channel on which a 40 MHz non-HT duplicate, HT_MF, HT_GF, VHT or HE PPDU at or above
+                     * max(–72 dBm, OBSS_PDlevel + 3 dB) at the receiver's antenna(s) is present. The PHY shall indicate that the 20 MHz
+                     * subchannel is busy with > 90% probability within a period aCCAMidTime.
+                     */
+                    ccaThresholdDbm = obssPdLevel.has_value () ? std::max (-72.0, obssPdLevel.value () + 3) : -72.0;
+                    band = m_wifiPhy->GetBand (40, std::floor (index / 2));
+                    break;
+                  case 80:
+                    /**
+                     * The 20 MHz subchannel is in a channel on which an 80 MHz non-HT duplicate, VHT or HE PPDU at or above
+                     * max(–69 dBm, OBSS_PDlevel + 6 dB) at the receiver's antenna(s) is present. The PHY shall indicate that
+                     * the 20 MHz subchannel is busy with > 90% probability within a period aCCAMidTime.
+                     */
+                    ccaThresholdDbm = obssPdLevel.has_value () ? std::max (-69.0, obssPdLevel.value () + 6) : -69.0;
+                    band = m_wifiPhy->GetBand (80, std::floor (index / 4));
+                    break;
+                  case 160:
+                    //Not defined in the standard: keep -62 dBm
+                    break;
+                  default:
+                    NS_ASSERT_MSG (false, "Invalid channel width: " << ppduBw);
+                }
+            }
+          Time ppduCcaDuration = GetDelayUntilCcaEnd (ccaThresholdDbm, band);
+          delayUntilCcaEnd = std::max (delayUntilCcaEnd, ppduCcaDuration);
+        }
+      per20MhzDurations.push_back (delayUntilCcaEnd);
+    }
+
+  return per20MhzDurations;
+}
+
 uint64_t
 HePhy::ObtainNextUid (const WifiTxVector& txVector)
 {

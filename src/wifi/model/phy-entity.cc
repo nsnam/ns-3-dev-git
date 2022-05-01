@@ -275,7 +275,7 @@ PhyEntity::StartReceiveField (WifiPpduField field, Ptr<Event> event)
   NS_ABORT_MSG_IF (!supported, "Unknown field " << field << " for this PHY entity"); //TODO see what to do if not supported
   Time duration = GetDuration (field, event->GetTxVector ());
   m_wifiPhy->m_endPhyRxEvent = Simulator::Schedule (duration, &PhyEntity::EndReceiveField, this, field, event);
-  m_state->SwitchMaybeToCcaBusy (duration); //keep in CCA busy state up to reception of Data (will then switch to RX)
+  m_wifiPhy->NotifyCcaBusy (event->GetPpdu (), duration); //keep in CCA busy state up to reception of Data (will then switch to RX)
 }
 
 void
@@ -311,7 +311,7 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
                 m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, NanoSeconds (0)); //this callback (equivalent to PHY-RXSTART primitive) is also triggered for filtered PPDUs
               }
             m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), status.reason);
-            m_state->SwitchMaybeToCcaBusy (GetRemainingDurationAfterField (ppdu, field)); //keep in CCA busy state till the end
+            m_wifiPhy->NotifyCcaBusy (ppdu, GetRemainingDurationAfterField (ppdu, field));
           //no break
           case IGNORE:
             //Keep in Rx state and reset at end
@@ -896,7 +896,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
 
       //Continue receiving preamble
       Time durationTillEnd = GetDuration (WIFI_PPDU_FIELD_PREAMBLE, event->GetTxVector ()) - m_wifiPhy->GetPreambleDetectionDuration ();
-      m_state->SwitchMaybeToCcaBusy (durationTillEnd); //will be prolonged by next field
+      m_wifiPhy->NotifyCcaBusy (event->GetPpdu (), durationTillEnd); //will be prolonged by next field
       m_wifiPhy->m_endPhyRxEvent = Simulator::Schedule (durationTillEnd, &PhyEntity::EndReceiveField, this, WIFI_PPDU_FIELD_PREAMBLE, event);
     }
   else
@@ -1100,6 +1100,14 @@ PhyEntity::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
       return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY);
     }
   return std::nullopt;
+}
+
+void
+PhyEntity::NotifyCcaBusy (const Ptr<const WifiPpdu> /*ppdu*/, Time duration, WifiChannelListType channelType)
+{
+  NS_LOG_FUNCTION (this << duration << channelType);
+  NS_LOG_DEBUG ("CCA busy for " << channelType << " during " << duration.As (Time::S));
+  m_state->SwitchMaybeToCcaBusy (duration, channelType, {});
 }
 
 uint64_t

@@ -1104,6 +1104,13 @@ protected:
    * \param ppdu the incoming PPDU or nullptr for any signal
    */
   void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
+  /**
+   * Notify PHY state helper to switch to CCA busy state,
+   *
+   * \param ppdu the incoming PPDU or nullptr for any signal
+   * \param duration the duration of the CCA state
+   */
+  void NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration);
 
   /**
    * Add the PHY entity to the map of supported PHY entities for the
