@@ -5,7 +5,7 @@
 # to True.
 
 # We support from 8 to the latest version. Check if everything builds fine
-# under debug, release, and optimized, on Linux.
+# under debug, default, and optimized, on Linux.
 
 .weekly-build-gcc:
   extends: .base-build
@@ -28,11 +28,11 @@
 #   variables:
 #     MODE: debug
 
-# weekly-build-gcc-8-release:
+# weekly-build-gcc-8-default:
 #   extends: .weekly-build-gcc
 #   image: gcc:8
 #   variables:
-#     MODE: release
+#     MODE: default
 
 # weekly-build-gcc-8-optimized:
 #   extends: .weekly-build-gcc
@@ -47,11 +47,11 @@ weekly-build-gcc-9-debug:
   variables:
     MODE: debug
 
-weekly-build-gcc-9-release:
+weekly-build-gcc-9-default:
   extends: .weekly-build-gcc
   image: gcc:9
   variables:
-    MODE: release
+    MODE: default
 
 weekly-build-gcc-9-optimized:
   extends: .weekly-build-gcc
@@ -66,11 +66,11 @@ weekly-build-gcc-10-debug:
   variables:
     MODE: debug
 
-weekly-build-gcc-10-release:
+weekly-build-gcc-10-default:
   extends: .weekly-build-gcc
   image: gcc:10
   variables:
-    MODE: release
+    MODE: default
 
 weekly-build-gcc-10-optimized:
   extends: .weekly-build-gcc
@@ -85,11 +85,11 @@ weekly-build-gcc-11-debug:
   variables:
     MODE: debug
 
-weekly-build-gcc-11-release:
+weekly-build-gcc-11-default:
   extends: .weekly-build-gcc
   image: gcc:11
   variables:
-    MODE: release
+    MODE: default
 
 weekly-build-gcc-11-optimized:
   extends: .weekly-build-gcc

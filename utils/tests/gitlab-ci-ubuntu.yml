@@ -39,7 +39,7 @@ weekly-build-ubuntu-18.04-debug:
     MODE: debug
     LIBGSL: libgsl23
 
-weekly-build-ubuntu-18.04-release:
+weekly-build-ubuntu-18.04-default:
   extends: .weekly-build-ubuntu
   image: ubuntu:18.04
   before_script:
@@ -52,7 +52,7 @@ weekly-build-ubuntu-18.04-release:
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
   variables:
-    MODE: release
+    MODE: default
     LIBGSL: libgsl23
 
 weekly-build-ubuntu-18.04-optimized:
@@ -79,11 +79,11 @@ weekly-build-ubuntu-18.04-optimized:
 #     MODE: debug
 #     LIBGSL: libgsl23
 
-# weekly-build-ubuntu-20.04-release:
+# weekly-build-ubuntu-20.04-default:
 #   extends: .weekly-build-ubuntu
 #   image: ubuntu:20.04
 #   variables:
-#     MODE: release
+#     MODE: default
 #     LIBGSL: libgsl23
 
 # weekly-build-ubuntu-20.04-optimized:
@@ -101,11 +101,11 @@ weekly-build-ubuntu-18.04-optimized:
 #     MODE: debug
 #     LIBGSL: libgsl25
 
-# weekly-build-ubuntu-21.04-release:
+# weekly-build-ubuntu-21.04-default:
 #   extends: .weekly-build-ubuntu
 #   image: ubuntu:21.04
 #   variables:
-#     MODE: release
+#     MODE: default
 #     LIBGSL: libgsl25
 
 # weekly-build-ubuntu-21.04-optimized:
@@ -123,11 +123,11 @@ weekly-build-ubuntu-22.04-debug:
     MODE: debug
     LIBGSL: libgsl27
 
-weekly-build-ubuntu-22.04-release:
+weekly-build-ubuntu-22.04-default:
   extends: .weekly-build-ubuntu
   image: ubuntu:22.04
   variables:
-    MODE: release
+    MODE: default
     LIBGSL: libgsl27
 
 weekly-build-ubuntu-22.04-optimized:
@@ -145,11 +145,11 @@ weekly-build-ubuntu-22.04-optimized:
 #     MODE: debug
 #     LIBGSL: libgsl27
 
-# weekly-build-ubuntu-rolling-release:
+# weekly-build-ubuntu-rolling-default:
 #   extends: .weekly-build-ubuntu
 #   image: ubuntu:rolling
 #   variables:
-#     MODE: release
+#     MODE: default
 #     LIBGSL: libgsl27
 
 # weekly-build-ubuntu-rolling-optimized:

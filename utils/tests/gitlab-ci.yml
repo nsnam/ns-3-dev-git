@@ -30,7 +30,7 @@ stages:
 # Defines the steps to run the tests
 # Inherit with "extends: .base-build" and remember to set
 # the following variables: COMPILER (g++, clang++, ...) and
-# MODE (debug, release, optimized)
+# MODE (debug, default, optimized)
 .base-build:
   stage: build
   script:
@@ -42,7 +42,7 @@ stages:
     - ./ns3 build
     - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
   cache:
-    # Use separate key for each (debug/optimized/release) jobs because
+    # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
     # cache when they upload the cache archive at the end of the job,
     # resulting in only the cache for the last finished configuration
@@ -73,7 +73,7 @@ per-commit-compile-debug:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
-per-commit-compile-release:
+per-commit-compile-default:
   extends: .base-build
   except:
     variables:
@@ -83,7 +83,7 @@ per-commit-compile-release:
   image: archlinux
   variables:
     COMPILER: g++
-    MODE: release
+    MODE: default
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm

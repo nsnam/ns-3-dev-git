@@ -32,11 +32,11 @@ weekly-build-clang-6-debug:
     CLANG: "6.0"
     MODE: debug
 
-weekly-build-clang-6-release:
+weekly-build-clang-6-default:
   extends: .weekly-build-clang
   variables:
     CLANG: "6.0"
-    MODE: release
+    MODE: default
 
 weekly-build-clang-6-optimized:
   extends: .weekly-build-clang
@@ -51,11 +51,11 @@ weekly-build-clang-8-debug:
     CLANG: 8
     MODE: debug
 
-weekly-build-clang-8-release:
+weekly-build-clang-8-default:
   extends: .weekly-build-clang
   variables:
     CLANG: 8
-    MODE: release
+    MODE: default
 
 weekly-build-clang-8-optimized:
   extends: .weekly-build-clang
@@ -70,11 +70,11 @@ weekly-build-clang-9-debug:
     CLANG: 9
     MODE: debug
 
-weekly-build-clang-9-release:
+weekly-build-clang-9-default:
   extends: .weekly-build-clang
   variables:
     CLANG: 9
-    MODE: release
+    MODE: default
 
 weekly-build-clang-9-optimized:
   extends: .weekly-build-clang
@@ -89,11 +89,11 @@ weekly-build-clang-10-debug:
     CLANG: 10
     MODE: debug
 
-weekly-build-clang-10-release:
+weekly-build-clang-10-default:
   extends: .weekly-build-clang
   variables:
     CLANG: 10
-    MODE: release
+    MODE: default
 
 weekly-build-clang-10-optimized:
   extends: .weekly-build-clang
@@ -108,11 +108,11 @@ weekly-build-clang-11-debug:
     CLANG: 11
     MODE: debug
 
-weekly-build-clang-11-release:
+weekly-build-clang-11-default:
   extends: .weekly-build-clang
   variables:
     CLANG: 11
-    MODE: release
+    MODE: default
 
 weekly-build-clang-11-optimized:
   extends: .weekly-build-clang

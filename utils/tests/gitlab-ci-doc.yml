@@ -23,7 +23,7 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d release
+    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d default
     - ./ns3 build
 #    - mkdir -p public/doxygen
 # The following four lines were needed when ns-3 had warnings, and
@@ -36,7 +36,7 @@ doxygen:
 #    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
   cache:
-    # Use separate key for each (debug/optimized/release) jobs because
+    # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
     # cache when they upload the cache archive at the end of the job,
     # resulting in only the cache for the last finished configuration

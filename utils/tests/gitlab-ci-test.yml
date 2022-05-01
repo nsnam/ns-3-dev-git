@@ -3,7 +3,7 @@
 # Defines the steps to run the tests
 # Inherit with "extends: .base-test" and remember to set
 # the following variables: COMPILER (g++, clang++, ...) and
-# MODE (debug, release, optimized)
+# MODE (debug, default, optimized)
 
 .base-test:
   stage: test
@@ -41,13 +41,13 @@ daily-test-debug:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl gtk3 boost valgrind ninja cmake --noconfirm
 
-# Run the test.py script with files compiled in release mode
-daily-test-release:
+# Run the test.py script with files compiled in default mode
+daily-test-default:
   extends: .base-test
   image: archlinux
   variables:
     COMPILER: g++
-    MODE: release
+    MODE: default
   only:
     variables:
       - $RELEASE == "daily"
@@ -106,13 +106,13 @@ weekly-test-debug-valgrind:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl gtk3 boost valgrind ninja cmake --noconfirm
 
-# Run the test.py script with files compiled in release mode
-weekly-test-release-valgrind:
+# Run the test.py script with files compiled in default mode
+weekly-test-default-valgrind:
   extends: .base-test
   image: archlinux
   variables:
     COMPILER: g++
-    MODE: release
+    MODE: default
     VALGRIND_FLAG: -g
   only:
     variables:

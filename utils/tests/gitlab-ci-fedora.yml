@@ -28,11 +28,11 @@
 #   variables:
 #     MODE: debug
 
-# weekly-build-fedora-33-release:
+# weekly-build-fedora-33-default:
 #   extends: .weekly-build-fedora
 #   image: fedora:33
 #   variables:
-#     MODE: release
+#     MODE: default
 
 # weekly-build-fedora-33-optimized:
 #   extends: .weekly-build-fedora
@@ -47,11 +47,11 @@ weekly-build-fedora-34-debug:
   variables:
     MODE: debug
 
-weekly-build-fedora-34-release:
+weekly-build-fedora-34-default:
   extends: .weekly-build-fedora
   image: fedora:34
   variables:
-    MODE: release
+    MODE: default
 
 weekly-build-fedora-34-optimized:
   extends: .weekly-build-fedora
@@ -66,11 +66,11 @@ weekly-build-fedora-35-debug:
   variables:
     MODE: debug
 
-weekly-build-fedora-35-release:
+weekly-build-fedora-35-default:
   extends: .weekly-build-fedora
   image: fedora:35
   variables:
-    MODE: release
+    MODE: default
 
 weekly-build-fedora-35-optimized:
   extends: .weekly-build-fedora
