@@ -32,7 +32,8 @@ This release has discontinued support for g++-7 compilers.
 
 ### New user-visible features
 
-- (build system) The ns-3 build system has been changed to CMake from Waf.
+- (build system) The ns-3 build system has been changed to CMake from Waf.  A wrapper script called 'ns3' provides a Waf-like command-line API.
+- (build system) The default build profile has been changed from 'debug' to a new 'default'.  Two key differences are that the new default has optimizations enabled (-O2 vs. previous -O0), and the -Werror flag is disabled.  Select the 'debug' profile to disable optimizations and enable warnings as errors.
 - (core) An attribute value type for a std::tuple has been added
 - (core) Simulation events can be created from lambda expressions
 - (core) TypeId constructors now accept std::string

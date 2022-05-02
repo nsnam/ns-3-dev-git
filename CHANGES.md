@@ -38,8 +38,9 @@ Changes from ns-3.35 to ns-3.36
     
 ### Changes to build system
 
-* The Waf build system has been replaced by CMake and a Python program that provides a Waf-like API.
+* The Waf build system has been replaced by CMake and a Python program called 'n3' that provides a Waf-like API.
 * g++ version 8 is now the minimum g++ compiler version supported.
+* The default build profile has been changed from 'debug' to a new 'default'.  Two key differences are that the new default has optimizations enabled (-O2 vs. previous -O0), and the -Werror flag is disabled.  Select the 'debug' profile to disable optimizations and enable warnings as errors.
 
 ### Changed behavior
 
