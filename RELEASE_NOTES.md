@@ -9,6 +9,13 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3-dev
+-------------
+
+### New user-visible features
+
+### Bugs fixed
+
 Release 3.36
 ------------
 
