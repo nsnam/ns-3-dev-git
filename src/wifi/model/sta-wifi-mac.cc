@@ -126,7 +126,7 @@ StaWifiMac::SetActiveProbing (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
   m_activeProbing = enable;
-  if (m_state == WAIT_PROBE_RESP || m_state == WAIT_BEACON)
+  if (m_state == SCANNING)
     {
       NS_LOG_DEBUG ("STA is still scanning, reset scanning process");
       StartScanning ();
@@ -304,16 +304,9 @@ StaWifiMac::TryToEnsureAssociated (void)
     case ASSOCIATED:
       return;
       break;
-    case WAIT_PROBE_RESP:
-      /* we have sent a probe request earlier so we
-         do not need to re-send a probe request immediately.
-         We just need to wait until probe-request-timeout
-         or until we get a probe response
-       */
-      break;
-    case WAIT_BEACON:
-      /* we have initiated passive scanning, continue to wait
-         and gather beacons
+    case SCANNING:
+      /* we have initiated active or passive scanning, continue to wait
+         and gather beacons or probe responses until the scanning timeout
        */
       break;
     case UNASSOCIATED:
@@ -355,7 +348,6 @@ StaWifiMac::StartScanning (void)
     }
   if (GetActiveProbing ())
     {
-      SetState (WAIT_PROBE_RESP);
       SendProbeRequest ();
       m_probeRequestEvent = Simulator::Schedule (m_probeRequestTimeout,
                                                  &StaWifiMac::ScanningTimeout,
@@ -363,11 +355,11 @@ StaWifiMac::StartScanning (void)
     }
   else
     {
-      SetState (WAIT_BEACON);
       m_waitBeaconEvent = Simulator::Schedule (m_waitBeaconTimeout,
                                                &StaWifiMac::ScanningTimeout,
                                                this);
     }
+  SetState (SCANNING);
 }
 
 void
@@ -658,7 +650,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           RestartBeaconWatchdog (delay);
           UpdateApInfoFromBeacon (beacon, hdr->GetAddr2 (), hdr->GetAddr3 (), linkId);
         }
-      if (goodBeacon && m_state == WAIT_BEACON)
+      if (goodBeacon && m_state == SCANNING)
         {
           NS_LOG_DEBUG ("Beacon received while scanning from " << hdr->GetAddr2 ());
           SnrTag snrTag;
@@ -677,7 +669,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
     }
   else if (hdr->IsProbeResp ())
     {
-      if (m_state == WAIT_PROBE_RESP)
+      if (m_state == SCANNING)
         {
           NS_LOG_DEBUG ("Probe response received while scanning from " << hdr->GetAddr2 ());
           MgtProbeResponseHeader probeResp;

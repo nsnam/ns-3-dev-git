@@ -64,32 +64,23 @@ struct ApInfo
    ---------       --------------                           |      /      -----------
       |              |   /------------------------------\   |     /
       \              v   v                              |   v    /
-       \    ----------------     ---------------     -----------------------------
-        \-> | Unassociated | --> | Wait Beacon | --> | Wait Association Response |
-            ----------------     ---------------     -----------------------------
-                  \                  ^     ^ |              ^    ^ |
-                   \                 |     | |              |    | |
-                    \                v      -               /     -
-                     \    -----------------------          /
-                      \-> | Wait Probe Response | --------/
-                          -----------------------
-                                  ^ |
-                                  | |
-                                   -
+       \    ----------------     ------------     -----------------------------
+        \-> | Unassociated | --> | Scanning | --> | Wait Association Response |
+            ----------------     ------------     -----------------------------
+                                      ^ |                  ^ |
+                                      | |                  | |
+                                       -                    -
    \endverbatim
  *
  * Notes:
  * 1. The state 'Start' is not included in #MacState and only used
  *    for illustration purpose.
  * 2. The Unassociated state is a transient state before STA starts the
- *    scanning procedure which moves it into either Wait Beacon or Wait
- *    Probe Response, based on whether passive or active scanning is
- *    selected.
- * 3. In Wait Beacon and Wait Probe Response, STA is gathering beacon or
- *    probe response packets from APs, resulted in a list of candidate AP.
- *    After the respective timeout, it then tries to associate to the best
- *    AP (i.e., best SNR). STA will switch between the two states and
- *    restart the scanning procedure if SetActiveProbing() called.
+ *    scanning procedure which moves it into the Scanning state.
+ * 3. In Scanning, STA is gathering beacon or probe response frames from APs,
+ *    resulted in a list of candidate AP. After the timeout, it then tries to
+ *    associate to the best AP, which is indicated by the Association Manager.
+ *    STA will restart the scanning procedure if SetActiveProbing() called.
  * 4. In the case when AP responded to STA's association request with a
  *    refusal, STA will try to associate to the next best AP until the list
  *    of candidate AP is exhausted which sends STA to Refused state.
@@ -161,8 +152,7 @@ private:
   enum MacState
   {
     ASSOCIATED,
-    WAIT_BEACON,
-    WAIT_PROBE_RESP,
+    SCANNING,
     WAIT_ASSOC_RESP,
     UNASSOCIATED,
     REFUSED
