@@ -295,22 +295,6 @@ endfunction()
 macro(process_options)
   clear_global_cached_variables()
 
-  # check if the include directory exists in the output directory
-  if((EXISTS ${CMAKE_OUTPUT_DIRECTORY}) AND (EXISTS
-                                             ${CMAKE_OUTPUT_DIRECTORY}/include)
-  )
-    # if it does, delete it to make sure we only have relevant header stubs
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
-      set(delete_directory_cmd rm -R) # introduced in CMake 3.17
-    else()
-      set(delete_directory_cmd remove_directory) # deprecated in CMake 3.17
-    endif()
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E ${delete_directory_cmd}
-              ${CMAKE_OUTPUT_DIRECTORY}/include
-    )
-  endif()
-
   # make sure to default to RelWithDebInfo if no build type is specified
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "default" CACHE STRING "Choose the type of build."
@@ -797,7 +781,8 @@ macro(process_options)
   endif()
 
   # Disable the below warning from bindings built in debug mode with clang++:
-  # "expression with side effects will be evaluated despite being used as an operand to 'typeid'"
+  # "expression with side effects will be evaluated despite being used as an
+  # operand to 'typeid'"
   if(${ENABLE_PYTHON_BINDINGS} AND ${CLANG})
     add_compile_options(-Wno-potentially-evaluated-expression)
   endif()
@@ -1392,6 +1377,12 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
     get_filename_component(
       header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
     )
+
+    # If header already exists, skip symlinking/stub header creation
+    if(EXISTS ${outputdir}/${header_name})
+      continue()
+    endif()
+
     # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a
     # fallback
     if(WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))

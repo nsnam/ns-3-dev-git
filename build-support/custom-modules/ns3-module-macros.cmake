@@ -567,5 +567,14 @@ function(write_module_header name header_files)
   list(APPEND contents "
 #endif "
   )
+  if(EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h)
+    file(READ ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h oldcontents)
+    string(REPLACE ";" "" contents "${contents}")
+    # If the header-module.h already exists and is the exact same, do not
+    # overwrite it to preserve timestamps
+    if("${contents}" STREQUAL "${oldcontents}")
+      return()
+    endif()
+  endif()
   file(WRITE ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h ${contents})
 endfunction()

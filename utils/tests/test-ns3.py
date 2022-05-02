@@ -838,6 +838,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         Test passing 'show version' argument to ns3 to get the build version
         @return None
         """
+        if shutil.which("git") is None:
+            self.skipTest("git is not available")
+
         return_code, _, _ = run_ns3("configure -G \"Unix Makefiles\" --enable-build-version")
         self.assertEqual(return_code, 0)
 
@@ -924,7 +927,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Skip test if mpi is not installed
         if shutil.which("mpiexec") is None:
-            return
+            self.skipTest("Mpi is not available")
 
         # Ensure sample simulator was built
         return_code, stdout, stderr = run_ns3("build sample-simulator")
