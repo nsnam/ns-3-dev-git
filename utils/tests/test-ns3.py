@@ -560,12 +560,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("ns3-wifi", enabled_modules)
 
         # Try enabling only core
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='core' --enable-python-bindings")
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='core'")
         self.config_ok(return_code, stdout)
         self.assertIn("ns3-core", get_enabled_modules())
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='' --disable-python-bindings")
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules=''")
         self.config_ok(return_code, stdout)
 
         # At this point we should have the same amount of modules that we had when we started.
@@ -1368,11 +1368,17 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # specifying ns3-01 (text version with 'dev' is not supported)
         # and specifying ns3-00 (a wrong version)
         for version in ["", "3.01", "3.00"]:
-            find_package_import = """
+            ns3_import_methods = []
+
+            # Import ns-3 libraries with as a CMake package
+            cmake_find_package_import = """
                                   list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
                                   find_package(ns3 {version} COMPONENTS libcore)
                                   target_link_libraries(test PRIVATE ns3::libcore)
                                   """.format(lib=("lib64" if lib64 else "lib"), version=version)
+            ns3_import_methods.append(cmake_find_package_import)
+
+            # Import ns-3 as pkg-config libraries
             pkgconfig_import = """
                                list(APPEND CMAKE_PREFIX_PATH ./)
                                include(FindPkgConfig)
@@ -1381,13 +1387,18 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                """.format(lib=("lib64" if lib64 else "lib"),
                                           version="=" + version if version else ""
                                           )
+            if shutil.which("pkg-config"):
+                ns3_import_methods.append(pkgconfig_import)
 
-            for import_type in [pkgconfig_import, find_package_import]:
+            # Test the multiple ways of importing ns-3 libraries
+            for import_method in ns3_import_methods:
                 test_cmake_project = """
                                      cmake_minimum_required(VERSION 3.10..3.10)
                                      project(ns3_consumer CXX)
+                                     set(CMAKE_CXX_STANDARD 17)
+                                     set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
-                                     """ + import_type
+                                     """ + import_method
 
                 test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
                 with open(test_cmake_project_file, "w") as f:
@@ -1400,10 +1411,10 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                                           cwd=install_prefix)
                 if version == "3.00":
                     self.assertEqual(return_code, 1)
-                    if import_type == find_package_import:
+                    if import_method == cmake_find_package_import:
                         self.assertIn('Could not find a configuration file for package "ns3" that is compatible',
                                       stderr.replace("\n", ""))
-                    elif import_type == pkgconfig_import:
+                    elif import_method == pkgconfig_import:
                         self.assertIn('A required package was not found',
                                       stderr.replace("\n", ""))
                     else:
