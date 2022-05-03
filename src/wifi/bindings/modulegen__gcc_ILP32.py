@@ -12694,10 +12694,10 @@ def register_Ns3WifiPhyStateHelper_methods(root_module, cls):
     cls.add_method('SetReceiveOkCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::WifiPsdu >, ns3::RxSignalInfo, ns3::WifiTxVector, std::vector< bool >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchFromOff(ns3::Time duration) [member function]
+    ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchFromOff() [member function]
     cls.add_method('SwitchFromOff', 
                    'void', 
-                   [param('ns3::Time', 'duration')])
+                   [])
     ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchFromRxAbort() [member function]
     cls.add_method('SwitchFromRxAbort', 
                    'void', 
@@ -12710,10 +12710,10 @@ def register_Ns3WifiPhyStateHelper_methods(root_module, cls):
     cls.add_method('SwitchFromRxEndOk', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu >', 'psdu'), param('ns3::RxSignalInfo', 'rxSignalInfo'), param('ns3::WifiTxVector', 'txVector'), param('uint16_t', 'staId'), param('std::vector< bool >', 'statusPerMpdu')])
-    ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchFromSleep(ns3::Time duration) [member function]
+    ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchFromSleep() [member function]
     cls.add_method('SwitchFromSleep', 
                    'void', 
-                   [param('ns3::Time', 'duration')])
+                   [])
     ## wifi-phy-state-helper.h (module 'wifi'): void ns3::WifiPhyStateHelper::SwitchMaybeToCcaBusy(ns3::Time duration) [member function]
     cls.add_method('SwitchMaybeToCcaBusy', 
                    'void', 
@@ -14267,11 +14267,6 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ap-wifi-mac.h (module 'wifi'): uint16_t ns3::ApWifiMac::GetVhtOperationalChannelWidth() const [member function]
-    cls.add_method('GetVhtOperationalChannelWidth', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
     ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetAddress(ns3::Mac48Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -27522,10 +27517,14 @@ def register_functions(root_module):
     module.add_function('GetBlockAckSize', 
                         'uint32_t', 
                         [param('ns3::BlockAckType', 'type')])
-    ## wifi-phy-common.h (module 'wifi'): uint16_t ns3::GetChannelWidthForTransmission(ns3::WifiMode mode, uint16_t maxSupportedChannelWidth) [free function]
+    ## wifi-phy-common.h (module 'wifi'): uint16_t ns3::GetChannelWidthForTransmission(ns3::WifiMode mode, uint16_t maxAllowedChannelWidth) [free function]
     module.add_function('GetChannelWidthForTransmission', 
                         'uint16_t', 
-                        [param('ns3::WifiMode', 'mode'), param('uint16_t', 'maxSupportedChannelWidth')])
+                        [param('ns3::WifiMode', 'mode'), param('uint16_t', 'maxAllowedChannelWidth')])
+    ## wifi-phy-common.h (module 'wifi'): uint16_t ns3::GetChannelWidthForTransmission(ns3::WifiMode mode, uint16_t operatingChannelWidth, uint16_t maxSupportedChannelWidth) [free function]
+    module.add_function('GetChannelWidthForTransmission', 
+                        'uint16_t', 
+                        [param('ns3::WifiMode', 'mode'), param('uint16_t', 'operatingChannelWidth'), param('uint16_t', 'maxSupportedChannelWidth')])
     ## wifi-utils.h (module 'wifi'): uint32_t ns3::GetCtsSize() [free function]
     module.add_function('GetCtsSize', 
                         'uint32_t', 
