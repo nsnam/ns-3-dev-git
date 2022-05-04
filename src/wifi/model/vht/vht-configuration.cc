@@ -18,6 +18,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "vht-configuration.h"
 
@@ -44,8 +45,27 @@ VhtConfiguration::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddConstructor<VhtConfiguration> ()
+    .AddAttribute ("Support160MHzOperation",
+                   "Whether or not 160 MHz operation is to be supported.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&VhtConfiguration::Get160MHzOperationSupported,
+                                        &VhtConfiguration::Set160MHzOperationSupported),
+                   MakeBooleanChecker ())
     ;
     return tid;
+}
+
+void
+VhtConfiguration::Set160MHzOperationSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_160MHzSupported = enable;
+}
+
+bool
+VhtConfiguration::Get160MHzOperationSupported (void) const
+{
+  return m_160MHzSupported;
 }
 
 } //namespace ns3

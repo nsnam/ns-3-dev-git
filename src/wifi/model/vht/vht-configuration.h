@@ -45,6 +45,22 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  /**
+   * Enable or disable 160 MHz operation support.
+   *
+   * \param enable true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is to be supported,
+   *               false if 20 MHz, 40 MHz and 80 MHz operation is to be supported
+   */
+  void Set160MHzOperationSupported (bool enable);
+  /**
+   * \return true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported,
+   *         false if 20 MHz, 40 MHz and 80 MHz operation is supported
+   */
+  bool Get160MHzOperationSupported (void) const;
+
+
+private:
+  bool m_160MHzSupported;     ///< whether 160 MHz operation is supported
 };
 
 } //namespace ns3

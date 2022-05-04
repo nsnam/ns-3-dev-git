@@ -58,6 +58,12 @@ HtConfiguration::GetTypeId (void)
                    MakeBooleanAccessor (&HtConfiguration::GetLdpcSupported,
                                         &HtConfiguration::SetLdpcSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("Support40MHzOperation",
+                   "Whether or not 40 MHz operation is to be supported.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&HtConfiguration::Get40MHzOperationSupported,
+                                        &HtConfiguration::Set40MHzOperationSupported),
+                   MakeBooleanChecker ())
     ;
     return tid;
 }
@@ -86,6 +92,19 @@ bool
 HtConfiguration::GetLdpcSupported (void) const
 {
   return m_ldpcSupported;
+}
+
+void
+HtConfiguration::Set40MHzOperationSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_40MHzSupported = enable;
+}
+
+bool
+HtConfiguration::Get40MHzOperationSupported (void) const
+{
+  return m_40MHzSupported;
 }
 
 } //namespace ns3

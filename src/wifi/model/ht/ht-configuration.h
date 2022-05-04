@@ -73,11 +73,24 @@ public:
    *         false otherwise.
    */
   bool GetLdpcSupported (void) const;
+  /**
+   * Enable or disable 40 MHz operation support.
+   *
+   * \param enable true if both 20 MHz and 40 MHz operation is to be supported,
+   *               false if only 20 MHz operation is to be supported
+   */
+  void Set40MHzOperationSupported (bool enable);
+  /**
+   * \return true if both 20 MHz and 40 MHz operation is supported, false if
+   *         only 20 MHz operation is supported
+   */
+  bool Get40MHzOperationSupported (void) const;
 
 
 private:
   bool m_sgiSupported;        ///< flag whether short guard interval is supported
   bool m_ldpcSupported;       ///< flag whether LDPC coding is supported
+  bool m_40MHzSupported;      ///< whether 40 MHz operation is supported
 };
 
 } //namespace ns3
