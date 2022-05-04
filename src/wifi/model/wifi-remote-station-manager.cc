@@ -1337,12 +1337,6 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
     {
       state->m_channelWidth = 80;
     }
-  //This is a workaround to enable users to force a 20 or 40 MHz channel for a VHT-compliant device,
-  //since IEEE 802.11ac standard says that 20, 40 and 80 MHz channels are mandatory.
-  if (m_wifiPhy->GetChannelWidth () < state->m_channelWidth)
-    {
-      state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
-    }
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
     {
       for (const auto & mcs : m_wifiPhy->GetMcsList (WIFI_MOD_CLASS_VHT))
