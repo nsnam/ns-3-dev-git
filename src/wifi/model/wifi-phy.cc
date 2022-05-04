@@ -351,7 +351,6 @@ WifiPhy::DoDispose (void)
   m_preambleDetectionModel = 0;
   m_wifiRadioEnergyModel = 0;
   m_postReceptionErrorModel = 0;
-  m_supportedChannelWidthSet.clear ();
   if (m_interference != nullptr)
     {
       m_interference->Dispose ();
@@ -1066,8 +1065,6 @@ WifiPhy::DoChannelSwitch (void)
       ConfigureStandard (m_standard);
     }
 
-  AddSupportedChannelWidth (GetChannelWidth ());
-
   if (IsInitialized ())
     {
       // notify channel switching
@@ -1163,27 +1160,6 @@ WifiPhy::GetBssMembershipSelectorList (void) const
         }
     }
   return list;
-}
-
-void
-WifiPhy::AddSupportedChannelWidth (uint16_t width)
-{
-  NS_LOG_FUNCTION (this << width);
-  for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
-    {
-      if (m_supportedChannelWidthSet[i] == width)
-        {
-          return;
-        }
-    }
-  NS_LOG_FUNCTION ("Adding " << width << " to supported channel width set");
-  m_supportedChannelWidthSet.push_back (width);
-}
-
-std::vector<uint16_t>
-WifiPhy::GetSupportedChannelWidthSet (void) const
-{
-  return m_supportedChannelWidthSet;
 }
 
 void

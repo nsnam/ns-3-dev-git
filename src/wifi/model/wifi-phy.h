@@ -935,14 +935,6 @@ public:
    * \return the channel width in MHz
    */
   uint16_t GetChannelWidth (void) const;
-  /**
-   * \param width the channel width (in MHz) to support
-   */
-  void AddSupportedChannelWidth (uint16_t width);
-  /**
-   * \return a vector containing the supported channel widths, values in MHz
-   */
-  std::vector<uint16_t> GetSupportedChannelWidthSet (void) const;
 
   /**
    * Get the power of the given power level in dBm.
@@ -1358,7 +1350,6 @@ private:
   WifiPhyBand m_band;                       //!< WifiPhyBand
   ChannelTuple m_channelSettings;           //!< Store operating channel settings until initialization
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
-  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
 
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slot;                              //!< Slot duration
