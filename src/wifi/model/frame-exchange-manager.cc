@@ -54,6 +54,7 @@ FrameExchangeManager::GetTypeId (void)
 FrameExchangeManager::FrameExchangeManager ()
   : m_navEnd (Seconds (0)),
     m_linkId (0),
+    m_allowedWidth (0),
     m_promisc (false),
     m_moreFragments (false)
 {
@@ -274,9 +275,9 @@ FrameExchangeManager::RxStartIndication (WifiTxVector txVector, Time psduDuratio
 }
 
 bool
-FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
+FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << dcf);
+  NS_LOG_FUNCTION (this << dcf << allowedWidth);
 
   NS_ASSERT (m_mpdu == 0);
   if (m_txTimer.IsRunning ())
@@ -284,6 +285,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
       m_txTimer.Cancel ();
     }
   m_dcf = dcf;
+  m_allowedWidth = allowedWidth;
 
   Ptr<WifiMacQueue> queue = dcf->GetWifiMacQueue ();
 
@@ -770,7 +772,8 @@ FrameExchangeManager::TransmissionSucceeded (void)
   if (m_moreFragments)
     {
       NS_LOG_DEBUG ("Schedule transmission of next fragment in a SIFS");
-      Simulator::Schedule (m_phy->GetSifs (), &FrameExchangeManager::StartTransmission, this, m_dcf);
+      Simulator::Schedule (m_phy->GetSifs (), &FrameExchangeManager::StartTransmission,
+                           this, m_dcf, m_allowedWidth);
       m_moreFragments = false;
     }
   else

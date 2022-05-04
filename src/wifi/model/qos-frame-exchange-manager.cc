@@ -148,9 +148,9 @@ QosFrameExchangeManager::CancelPifsRecovery (void)
 }
 
 bool
-QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca)
+QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << edca);
+  NS_LOG_FUNCTION (this << edca << allowedWidth);
 
   if (m_pifsRecoveryEvent.IsRunning ())
     {
@@ -163,10 +163,11 @@ QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca)
   if (!edca->IsQosTxop ())
     {
       m_edca = 0;
-      return FrameExchangeManager::StartTransmission (edca);
+      return FrameExchangeManager::StartTransmission (edca, allowedWidth);
     }
 
-  Ptr<QosTxop> qosTxop = StaticCast<QosTxop> (edca);
+  m_allowedWidth = allowedWidth;
+  auto qosTxop = StaticCast<QosTxop> (edca);
   return StartTransmission (qosTxop, qosTxop->GetTxopLimit (m_linkId));
 }
 

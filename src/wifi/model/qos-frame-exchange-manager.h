@@ -44,7 +44,7 @@ public:
   QosFrameExchangeManager ();
   virtual ~QosFrameExchangeManager ();
 
-  bool StartTransmission (Ptr<Txop> edca) override;
+  bool StartTransmission (Ptr<Txop> edca, uint16_t allowedWidth) override;
 
   /**
    * Recompute the protection and acknowledgment methods to use if the given MPDU

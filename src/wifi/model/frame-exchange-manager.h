@@ -73,9 +73,10 @@ public:
    *
    * \param dcf the channel access function that gained channel access. It is
    *            the DCF on non-QoS stations and an EDCA on QoS stations.
+   * \param allowedWidth the allowed width in MHz for the frame exchange sequence
    * \return true if a frame exchange sequence was started, false otherwise
    */
-  virtual bool StartTransmission (Ptr<Txop> dcf);
+  virtual bool StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth);
 
   /**
    * This method is intended to be called by the PHY layer every time an MPDU
@@ -411,6 +412,7 @@ protected:
   Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
   Time m_navEnd;                                    //!< NAV expiration time
   uint8_t m_linkId;                                 //!< the ID of the link this object is associated with
+  uint16_t m_allowedWidth;                          //!< the allowed width in MHz for the current transmission
   bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   AckedMpdu m_ackedMpduCallback;                    //!< the acknowledged MPDU callback

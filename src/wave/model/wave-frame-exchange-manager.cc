@@ -108,19 +108,20 @@ WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMacQueueItem> item) con
 }
 
 bool
-WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
+WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << dcf);
+  NS_LOG_FUNCTION (this << dcf << allowedWidth);
 
   uint32_t curChannel = m_phy->GetChannelNumber ();
   // if current channel access is not AlternatingAccess, just do as FrameExchangeManager.
   if (m_scheduler == 0 || !m_scheduler->IsAlternatingAccessAssigned (curChannel))
     {
-      return FrameExchangeManager::StartTransmission (dcf);
+      return FrameExchangeManager::StartTransmission (dcf, allowedWidth);
     }
 
   m_txTimer.Cancel ();
   m_dcf = dcf;
+  m_allowedWidth = allowedWidth;
 
   Ptr<WifiMacQueue> queue = dcf->GetWifiMacQueue ();
 

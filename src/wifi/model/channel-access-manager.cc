@@ -354,12 +354,13 @@ ChannelAccessManager::DoGrantDcfAccess (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
+  Time now = Simulator::Now ();
   for (Txops::iterator i = m_txops.begin (); i != m_txops.end (); k++)
     {
       Ptr<Txop> txop = *i;
       if (txop->GetAccessStatus (m_linkId) == Txop::REQUESTED
           && (!txop->IsQosTxop () || !StaticCast<QosTxop> (txop)->EdcaDisabled (m_linkId))
-          && GetBackoffEndFor (txop) <= Simulator::Now () )
+          && GetBackoffEndFor (txop) <= now)
         {
           /**
            * This is the first Txop we find with an expired backoff and which
@@ -373,7 +374,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
             {
               Ptr<Txop> otherTxop = *j;
               if (otherTxop->GetAccessStatus (m_linkId) == Txop::REQUESTED
-                  && GetBackoffEndFor (otherTxop) <= Simulator::Now ())
+                  && GetBackoffEndFor (otherTxop) <= now)
                 {
                   NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" <<
                                 otherTxop->GetBackoffSlots (m_linkId));
@@ -395,8 +396,15 @@ ChannelAccessManager::DoGrantDcfAccess (void)
            * the result of the calculations.
            */
           NS_ASSERT (m_feManager != 0);
-
-          if (m_feManager->StartTransmission (txop))
+          // If we are operating on an OFDM channel wider than 20 MHz, find the largest
+          // idle primary channel and pass its width to the FrameExchangeManager, so that
+          // the latter can transmit PPDUs of the appropriate width (see Section 10.23.2.5
+          // of IEEE 802.11-2020).
+          auto interval = (m_phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ)
+                          ? GetSifs () + 2 * GetSlot () : m_phy->GetPifs ();
+          auto width = (m_phy->GetOperatingChannel ().IsOfdm () && m_phy->GetChannelWidth () > 20)
+                       ? GetLargestIdlePrimaryChannel (interval, now) : m_phy->GetChannelWidth ();
+          if (m_feManager->StartTransmission (txop, width))
             {
               for (auto& collidingTxop : internalCollisionTxops)
                 {

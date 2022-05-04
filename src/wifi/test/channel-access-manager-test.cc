@@ -183,9 +183,10 @@ public:
    *
    * \param dcf the channel access function that gained channel access. It is
    *            the DCF on non-QoS stations and an EDCA on QoS stations.
+   * \param allowedWidth the maximum allowed TX width in MHz
    * \return true if a frame exchange sequence was started, false otherwise
    */
-  bool StartTransmission (Ptr<Txop> dcf) override
+  bool StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth) override
   {
     dcf->NotifyChannelAccessed (0);
     return true;

@@ -56,7 +56,7 @@ public:
   virtual ~WaveFrameExchangeManager ();
 
   // Overridden from FrameExchangeManager
-  virtual bool StartTransmission (Ptr<Txop> dcf);
+  virtual bool StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth);
 
   /**
    * \param device WaveNetDevice associated with WaveFrameExchangeManager
