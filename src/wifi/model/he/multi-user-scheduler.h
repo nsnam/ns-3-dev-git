@@ -92,9 +92,11 @@ public:
    * \param initialFrame true if the frame being transmitted is the initial frame
    *                     of the TXOP. This is used to determine whether the TXOP
    *                     limit can be exceeded
+   * \param allowedWidth the allowed width in MHz for the next transmission
    * \return the format of the next transmission
    */
-  TxFormat NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, bool initialFrame);
+  TxFormat NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, bool initialFrame,
+                                uint16_t allowedWidth);
 
   /**
    * Get the information required to perform a DL MU transmission. Note
@@ -158,6 +160,7 @@ protected:
   Ptr<QosTxop> m_edca;                   //!< the AC that gained channel access
   Time m_availableTime;                  //!< the time available for frame exchange
   bool m_initialFrame;                   //!< true if a TXOP is being started
+  uint16_t m_allowedWidth;               //!< the allowed width in MHz for the current transmission
 
 private:
   /**

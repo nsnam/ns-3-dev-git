@@ -177,8 +177,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
   // determine RUs to allocate to stations
   auto count = std::min<std::size_t> (m_nStations, m_staListUl.size ());
   std::size_t nCentral26TonesRus;
-  HeRu::GetEqualSizedRusForStations (m_apMac->GetWifiPhy ()->GetChannelWidth (), count,
-                                     nCentral26TonesRus);
+  HeRu::GetEqualSizedRusForStations (m_allowedWidth, count, nCentral26TonesRus);
   NS_ASSERT (count >= 1);
 
   if (!m_useCentral26TonesRus)
@@ -191,7 +190,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
 
   WifiTxVector txVector;
   txVector.SetPreambleType (WIFI_PREAMBLE_HE_TB);
-  txVector.SetChannelWidth (m_apMac->GetWifiPhy ()->GetChannelWidth ());
+  txVector.SetChannelWidth (m_allowedWidth);
   txVector.SetGuardInterval (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
   txVector.SetBssColor (heConfiguration->GetBssColor ());
 
@@ -530,7 +529,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   std::size_t count = std::min (static_cast<std::size_t> (m_nStations), m_staListDl[primaryAc].size ());
   std::size_t nCentral26TonesRus;
-  HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (m_apMac->GetWifiPhy ()->GetChannelWidth (), count,
+  HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (m_allowedWidth, count,
                                                            nCentral26TonesRus);
   NS_ASSERT (count >= 1);
 
@@ -570,7 +569,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   m_txParams.Clear ();
   m_txParams.m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
-  m_txParams.m_txVector.SetChannelWidth (m_apMac->GetWifiPhy ()->GetChannelWidth ());
+  m_txParams.m_txVector.SetChannelWidth (m_allowedWidth);
   m_txParams.m_txVector.SetGuardInterval (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
   m_txParams.m_txVector.SetBssColor (heConfiguration->GetBssColor ());
 
@@ -664,10 +663,10 @@ RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
   NS_ASSERT (txVector.GetHeMuUserInfoMap ().size () == m_candidates.size ());
 
   // compute how many stations can be granted an RU and the RU size
-  auto bw = m_apMac->GetWifiPhy ()->GetChannelWidth ();
   std::size_t nRusAssigned = m_candidates.size ();
   std::size_t nCentral26TonesRus;
-  HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (bw, nRusAssigned, nCentral26TonesRus);
+  HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (m_allowedWidth, nRusAssigned,
+                                                           nCentral26TonesRus);
 
   NS_LOG_DEBUG (nRusAssigned << " stations are being assigned a " << ruType << " RU");
 
@@ -686,9 +685,9 @@ RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
   std::swap (heMuUserInfoMap, txVector.GetHeMuUserInfoMap ());
 
   auto candidateIt = m_candidates.begin (); // iterator over the list of candidate receivers
-  auto ruSet = HeRu::GetRusOfType (bw, ruType);
+  auto ruSet = HeRu::GetRusOfType (m_allowedWidth, ruType);
   auto ruSetIt = ruSet.begin ();
-  auto central26TonesRus = HeRu::GetCentral26TonesRus (bw, ruType);
+  auto central26TonesRus = HeRu::GetCentral26TonesRus (m_allowedWidth, ruType);
   auto central26TonesRusIt = central26TonesRus.begin ();
 
   for (std::size_t i = 0; i < nRusAssigned + nCentral26TonesRus; i++)

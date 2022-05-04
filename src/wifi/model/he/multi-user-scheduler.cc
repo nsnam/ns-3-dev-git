@@ -162,13 +162,15 @@ MultiUserScheduler::AccessReqTimeout (void)
 }
 
 MultiUserScheduler::TxFormat
-MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, bool initialFrame,
+                                         uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << edca << availableTime << initialFrame);
+  NS_LOG_FUNCTION (this << edca << availableTime << initialFrame << allowedWidth);
 
   m_edca = edca;
   m_availableTime = availableTime;
   m_initialFrame = initialFrame;
+  m_allowedWidth = allowedWidth;
 
   if (m_accessReqTimer.IsRunning () && m_restartTimerUponAccess)
     {
