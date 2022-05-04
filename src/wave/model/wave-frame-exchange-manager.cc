@@ -72,7 +72,7 @@ WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMacQueueItem> item) con
   // will be determined by MAC layer itself.
   if (!found)
     {
-      return m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader ());
+      return m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader (), m_allowedWidth);
     }
 
   // if high layer has set the transmit parameters with non-adaption mode,
@@ -85,7 +85,7 @@ WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMacQueueItem> item) con
   // if high layer has set the transmit parameters with non-adaption mode,
   // the real transmit parameters are determined by both high layer and MAC layer.
   WifiTxVector txHigher = datatag.GetTxVector ();
-  WifiTxVector txMac = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader ());
+  WifiTxVector txMac = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader (), m_allowedWidth);
   WifiTxVector txAdapter;
   txAdapter.SetChannelWidth (10);
   // the DataRate set by higher layer is the minimum data rate

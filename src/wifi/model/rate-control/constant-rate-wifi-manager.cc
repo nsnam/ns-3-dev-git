@@ -116,15 +116,15 @@ ConstantRateWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 }
 
 WifiTxVector
-ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
+ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st);
+  NS_LOG_FUNCTION (this << st << allowedWidth);
   uint8_t nss = Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st));
   if (m_dataMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       nss = 1 + (m_dataMode.GetMcsValue () / 8);
     }
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, GetPhy ()->GetChannelWidth (), GetChannelWidth (st)), GetAggregation (st));
+  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, allowedWidth, GetChannelWidth (st)), GetAggregation (st));
 }
 
 WifiTxVector

@@ -233,7 +233,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
       WifiMacHeader hdr (WIFI_MAC_QOSDATA);
       hdr.SetAddr1 (staIt->address);
       hdr.SetAddr2 (m_apMac->GetAddress ());
-      WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (hdr);
+      WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (hdr, m_allowedWidth);
       txVector.SetHeMuUserInfo (staIt->aid,
                                 {HeRu::RuSpec (), // assigned later by FinalizeTxVector
                                 suTxVector.GetMode (),
@@ -609,7 +609,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
                   // candidate station to check if the MPDU meets the size and time limits.
                   // An RU of the computed size is tentatively assigned to the candidate
                   // station, so that the TX duration can be correctly computed.
-                  WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader ()),
+                  WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth),
                                txVectorCopy = m_txParams.m_txVector;
 
                   m_txParams.m_txVector.SetHeMuUserInfo (staIt->aid,

@@ -322,7 +322,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   NS_ASSERT (m_protectionManager != 0);
   NS_ASSERT (m_ackManager != 0);
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
   txParams.m_protection = m_protectionManager->TryAddMpdu (mpdu, txParams);
   txParams.m_acknowledgment = m_ackManager->TryAddMpdu (mpdu, txParams);
   txParams.AddMpdu (mpdu);

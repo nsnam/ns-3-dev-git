@@ -256,7 +256,7 @@ private:
                        double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
   void DoReportFinalRtsFailed (WifiRemoteStation *station) override;
   void DoReportFinalDataFailed (WifiRemoteStation *station) override;
-  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station) override;
+  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint16_t allowedWidth) override;
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) override;
   void DoReportAmpduTxStatus (WifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                               double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
@@ -598,6 +598,22 @@ private:
    * \returns the list of the HT MCS supported
    */
   WifiModeList GetHtDeviceMcsList (void) const;
+
+  /**
+   * Given the index of the current TX rate, check whether the channel width is
+   * not greater than the given allowed width. If so, the index of the current TX
+   * rate is returned. Otherwise, try halving the channel width and check if the
+   * MCS group with the same number of streams and same GI is supported. If a
+   * supported MCS group is found, return the index of the TX rate within such a
+   * group with the same MCS as the given TX rate. If no supported MCS group is
+   * found, the simulation aborts.
+   *
+   * \param txRate the index of the current TX rate
+   * \param allowedWidth the allowed width in MHz
+   * \return the index of a TX rate whose channel width is not greater than the
+   *         allowed width, if found (otherwise, the simulation aborts)
+   */
+  uint16_t UpdateRateAfterAllowedWidth (uint16_t txRate, uint16_t allowedWidth);
 
   Time m_updateStats;            //!< How frequent do we calculate the stats.
   Time m_legacyUpdateStats;      //!< How frequent do we calculate the stats for legacy MinstrelWifiManager.

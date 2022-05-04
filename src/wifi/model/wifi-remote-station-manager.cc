@@ -518,9 +518,9 @@ WifiRemoteStationManager::GetStaId (Mac48Address address, const WifiTxVector& tx
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
+WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << header);
+  NS_LOG_FUNCTION (this << header << allowedWidth);
   Mac48Address address = header.GetAddr1 ();
   if (!header.IsMgt () && address.IsGroup ())
     {
@@ -529,7 +529,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       v.SetMode (mode);
       v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()));
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
-      v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
+      v.SetChannelWidth (GetChannelWidthForTransmission (mode, allowedWidth));
       v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, m_wifiPhy->GetDevice ()));
       v.SetNTx (GetNumberOfAntennas ());
       v.SetNss (1);
@@ -552,7 +552,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       txVector.SetMode (mgtMode);
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled ()));
       txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
-      uint16_t channelWidth = m_wifiPhy->GetChannelWidth ();
+      uint16_t channelWidth = allowedWidth;
       if (!header.GetAddr1 ().IsGroup ())
         {
           if (uint16_t rxWidth = GetChannelWidthSupported (header.GetAddr1 ());
@@ -567,7 +567,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
     }
   else
     {
-      txVector = DoGetDataTxVector (Lookup (address));
+      txVector = DoGetDataTxVector (Lookup (address), allowedWidth);
       txVector.SetLdpc (txVector.GetMode ().GetModulationClass () < WIFI_MOD_CLASS_HT ? 0 : UseLdpcForDestination (address));
     }
   Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
@@ -575,6 +575,12 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
     {
       txVector.SetBssColor (heConfiguration->GetBssColor ());
     }
+  // If both the allowed width and the TXVECTOR channel width are integer multiple
+  // of 20 MHz, then the TXVECTOR channel width must not exceed the allowed width
+  NS_ASSERT_MSG ((txVector.GetChannelWidth () % 20 != 0) || (allowedWidth % 20 != 0)
+                 || (txVector.GetChannelWidth () <= allowedWidth),
+                 "TXVECTOR channel width (" << txVector.GetChannelWidth ()
+                 << " MHz) exceeds allowed width (" << allowedWidth << " MHz)");
   return txVector;
 }
 
@@ -957,7 +963,7 @@ WifiRemoteStationManager::NeedRts (const WifiMacHeader &header, uint32_t size)
 {
   NS_LOG_FUNCTION (this << header << size);
   Mac48Address address = header.GetAddr1 ();
-  WifiTxVector txVector = GetDataTxVector (header);
+  WifiTxVector txVector = GetDataTxVector (header, m_wifiPhy->GetChannelWidth ());
   WifiMode mode = txVector.GetMode ();
   if (address.IsGroup ())
     {

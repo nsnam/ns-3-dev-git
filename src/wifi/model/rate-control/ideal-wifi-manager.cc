@@ -312,9 +312,9 @@ IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 }
 
 WifiTxVector
-IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
+IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st);
+  NS_LOG_FUNCTION (this << st << allowedWidth);
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   //We search within the Supported rate set the mode with the
   //highest data rate for which the SNR threshold is smaller than m_lastSnr
@@ -325,7 +325,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   uint64_t bestRate = 0;
   uint8_t selectedNss = 1;
   uint16_t guardInterval;
-  uint16_t channelWidth = std::min (GetChannelWidth (station), GetPhy ()->GetChannelWidth ());
+  uint16_t channelWidth = std::min (GetChannelWidth (station), allowedWidth);
   txVector.SetChannelWidth (channelWidth);
   if ((station->m_lastSnrCached != CACHE_INITIAL_VALUE) && (station->m_lastSnrObserved == station->m_lastSnrCached) && (channelWidth == station->m_lastChannelWidth))
     {

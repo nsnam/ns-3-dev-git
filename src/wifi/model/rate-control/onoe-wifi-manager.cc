@@ -281,9 +281,9 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 }
 
 WifiTxVector
-OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
+OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st);
+  NS_LOG_FUNCTION (this << st << allowedWidth);
   OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));

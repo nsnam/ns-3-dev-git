@@ -196,7 +196,7 @@ AmpduAggregationTest::DoRun (void)
 
   Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
@@ -278,7 +278,7 @@ AmpduAggregationTest::DoRun (void)
 
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   txParams.Clear ();
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
@@ -289,7 +289,7 @@ AmpduAggregationTest::DoRun (void)
 
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   txParams.Clear ();
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
@@ -427,7 +427,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
   Ptr<WifiMacQueueItem> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
@@ -449,7 +449,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   txParams.Clear ();
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
   item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
@@ -503,7 +503,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   peeked = m_mac->GetVIQueue ()->PeekNextMpdu ();
   txParams.Clear ();
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   Time txopLimit = m_mac->GetVIQueue ()->GetTxopLimit ();   // 3.008 ms
 
   // Compute the first MPDU to be aggregated in an A-MPDU. It must contain an A-MSDU
@@ -691,7 +691,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
 
   Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader ());
+  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());

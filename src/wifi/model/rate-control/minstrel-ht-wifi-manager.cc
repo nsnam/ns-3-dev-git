@@ -861,10 +861,68 @@ MinstrelHtWifiManager::UpdatePacketCounters (MinstrelHtWifiRemoteStation *statio
     }
 }
 
-WifiTxVector
-MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
+uint16_t
+MinstrelHtWifiManager::UpdateRateAfterAllowedWidth (uint16_t txRate, uint16_t allowedWidth)
 {
-  NS_LOG_FUNCTION (this << st);
+  NS_LOG_FUNCTION (this << txRate << allowedWidth);
+
+  auto groupId = GetGroupId (txRate);
+  McsGroup group = m_minstrelGroups[groupId];
+
+  if (group.chWidth <= allowedWidth)
+    {
+      NS_LOG_DEBUG ("Channel width is not greater than allowed width, nothing to do");
+      return txRate;
+    }
+
+  NS_ASSERT (GetHtSupported ());
+  NS_ASSERT (group.chWidth % 20 == 0);
+  // try halving the channel width and check if the group with the same number of
+  // streams and same GI is supported, until either a supported group is found or
+  // the width becomes lower than 20 MHz
+  uint16_t width = group.chWidth / 2;
+
+  while (width >= 20)
+    {
+      if (width > allowedWidth)
+        {
+          width /= 2;
+          continue;
+        }
+
+      switch (group.type)
+        {
+          case GROUP_HT:
+            groupId = GetHtGroupId (group.streams, group.gi, width);
+            break;
+          case GROUP_VHT:
+            groupId = GetVhtGroupId (group.streams, group.gi, width);
+            break;
+          case GROUP_HE:
+            groupId = GetHeGroupId (group.streams, group.gi, width);
+            break;
+          default:
+            NS_ABORT_MSG ("Unknown group type: " << group.type);
+        }
+
+      group = m_minstrelGroups[groupId];
+      if (group.isSupported)
+        {
+          break;
+        }
+
+      width /= 2;
+    }
+
+  NS_ABORT_MSG_IF (width < 20, "No rate compatible with the allowed width found");
+
+  return GetIndex (groupId, GetRateId (txRate));
+}
+
+WifiTxVector
+MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint16_t allowedWidth)
+{
+  NS_LOG_FUNCTION (this << st << allowedWidth);
   MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   if (!station->m_initialized)
@@ -885,6 +943,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     }
   else
     {
+      station->m_txrate = UpdateRateAfterAllowedWidth (station->m_txrate, allowedWidth);
       NS_LOG_DEBUG ("DoGetDataMode m_txrate= " << station->m_txrate);
 
       uint8_t rateId = GetRateId (station->m_txrate);

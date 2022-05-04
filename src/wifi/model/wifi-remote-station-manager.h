@@ -710,10 +710,10 @@ public:
 
   /**
    * \param header MAC header
-   *
+   * \param allowedWidth the allowed width in MHz to send this packet
    * \return the TXVECTOR to use to send this packet
    */
-  WifiTxVector GetDataTxVector (const WifiMacHeader &header);
+  WifiTxVector GetDataTxVector (const WifiMacHeader &header, uint16_t allowedWidth);
   /**
    * \param address remote address
    *
@@ -1186,13 +1186,13 @@ private:
   virtual WifiRemoteStation* DoCreateStation (void) const = 0;
   /**
     * \param station the station that we need to communicate
-    *
+    * \param allowedWidth the allowed width in MHz to send a packet to the station
     * \return the TXVECTOR to use to send a packet to the station
     *
     * Note: This method is called before sending a unicast packet or a fragment
     *       of a unicast packet to decide which transmission mode to use.
     */
-  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station) = 0;
+  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station, uint16_t allowedWidth) = 0;
   /**
    * \param station the station that we need to communicate
    *
