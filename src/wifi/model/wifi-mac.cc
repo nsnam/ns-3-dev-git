@@ -1214,7 +1214,7 @@ WifiMac::GetHtCapabilities (void) const
       bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
       capabilities.SetHtSupported (1);
       capabilities.SetLdpc (htConfiguration->GetLdpcSupported ());
-      capabilities.SetSupportedChannelWidth (GetWifiPhy ()->GetChannelWidth () >= 40);
+      capabilities.SetSupportedChannelWidth (htConfiguration->Get40MHzOperationSupported () ? 1 : 0);
       capabilities.SetShortGuardInterval20 (sgiSupported);
       capabilities.SetShortGuardInterval40 (GetWifiPhy ()->GetChannelWidth () >= 40 && sgiSupported);
       // Set Maximum A-MSDU Length subfield
@@ -1267,17 +1267,12 @@ WifiMac::GetVhtCapabilities (void) const
   if (GetVhtSupported ())
     {
       Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
+      NS_ABORT_MSG_IF (!htConfiguration->Get40MHzOperationSupported (),
+                       "VHT stations have to support 40 MHz operation");
       Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration ();
       bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
       capabilities.SetVhtSupported (1);
-      if (GetWifiPhy ()->GetChannelWidth () == 160)
-        {
-          capabilities.SetSupportedChannelWidthSet (1);
-        }
-      else
-        {
-          capabilities.SetSupportedChannelWidthSet (0);
-        }
+      capabilities.SetSupportedChannelWidthSet (vhtConfiguration->Get160MHzOperationSupported () ? 1 : 0);
       // Set Maximum MPDU Length subfield
       uint16_t maxAmsduSize = std::max ({m_voMaxAmsduSize, m_viMaxAmsduSize,
                                          m_beMaxAmsduSize, m_bkMaxAmsduSize});
