@@ -53,8 +53,6 @@ def register_types(module):
     module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
-    ## system-mutex.h (module 'core'): ns3::CriticalSection [class]
-    module.add_class('CriticalSection', import_from_module='ns.core')
     ## data-rate.h (module 'network'): ns3::DataRate [class]
     module.add_class('DataRate', import_from_module='ns.network')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::AttributeAccessor> [struct]
@@ -77,8 +75,6 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::OutputStreamWrapper'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Packet'])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SystemThread> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::SystemThread'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
@@ -167,10 +163,6 @@ def register_types(module):
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
     module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
-    ## system-condition.h (module 'core'): ns3::SystemCondition [class]
-    module.add_class('SystemCondition', import_from_module='ns.core')
-    ## system-mutex.h (module 'core'): ns3::SystemMutex [class]
-    module.add_class('SystemMutex', import_from_module='ns.core')
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -235,15 +227,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread>> [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SystemThread', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SystemThread>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
-    ## system-thread.h (module 'core'): ns3::SystemThread [class]
-    module.add_class('SystemThread', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
-    typehandlers.add_type_alias('pthread_t', 'ns3::SystemThread::ThreadId')
-    typehandlers.add_type_alias('pthread_t*', 'ns3::SystemThread::ThreadId*')
-    typehandlers.add_type_alias('pthread_t&', 'ns3::SystemThread::ThreadId&')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
@@ -367,8 +352,6 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
-    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned char *', 'long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDevice [class]
     module.add_class('FdNetDevice', parent=root_module['ns3::NetDevice'])
     ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDevice::EncapsulationMode [enumeration]
@@ -459,7 +442,6 @@ def register_methods(root_module):
     register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
     register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
-    register_Ns3CriticalSection_methods(root_module, root_module['ns3::CriticalSection'])
     register_Ns3DataRate_methods(root_module, root_module['ns3::DataRate'])
     register_Ns3DefaultDeleter__Ns3AttributeAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::AttributeAccessor >'])
     register_Ns3DefaultDeleter__Ns3AttributeChecker_methods(root_module, root_module['ns3::DefaultDeleter< ns3::AttributeChecker >'])
@@ -471,7 +453,6 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, root_module['ns3::DefaultDeleter< ns3::NixVector >'])
     register_Ns3DefaultDeleter__Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::DefaultDeleter< ns3::OutputStreamWrapper >'])
     register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Packet >'])
-    register_Ns3DefaultDeleter__Ns3SystemThread_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SystemThread >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
@@ -502,8 +483,6 @@ def register_methods(root_module):
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
-    register_Ns3SystemCondition_methods(root_module, root_module['ns3::SystemCondition'])
-    register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
@@ -529,9 +508,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
-    register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_Ns3DefaultDeleter__lt__ns3SystemThread__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
-    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
@@ -576,7 +553,6 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
-    register_Ns3CallbackImpl__Void_Unsigned_char___star___Long_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3FdNetDevice_methods(root_module, root_module['ns3::FdNetDevice'])
     register_Ns3FdNetDeviceFdReader_methods(root_module, root_module['ns3::FdNetDeviceFdReader'])
     register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
@@ -1194,13 +1170,6 @@ def register_Ns3CallbackBase_methods(root_module, cls):
                         visibility='protected')
     return
 
-def register_Ns3CriticalSection_methods(root_module, cls):
-    ## system-mutex.h (module 'core'): ns3::CriticalSection::CriticalSection(ns3::SystemMutex & mutex) [constructor]
-    cls.add_constructor([param('ns3::SystemMutex &', 'mutex')])
-    ## system-mutex.h (module 'core'): ns3::CriticalSection::CriticalSection(ns3::CriticalSection const & arg0) [constructor]
-    cls.add_constructor([param('ns3::CriticalSection const &', 'arg0')])
-    return
-
 def register_Ns3DataRate_methods(root_module, cls):
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('!=')
@@ -1359,18 +1328,6 @@ def register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, cls):
     cls.add_method('Delete', 
                    'void', 
                    [param('ns3::Packet *', 'object')], 
-                   is_static=True)
-    return
-
-def register_Ns3DefaultDeleter__Ns3SystemThread_methods(root_module, cls):
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SystemThread>::DefaultDeleter() [constructor]
-    cls.add_constructor([])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SystemThread>::DefaultDeleter(ns3::DefaultDeleter<ns3::SystemThread> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DefaultDeleter< ns3::SystemThread > const &', 'arg0')])
-    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::SystemThread>::Delete(ns3::SystemThread * object) [member function]
-    cls.add_method('Delete', 
-                   'void', 
-                   [param('ns3::SystemThread *', 'object')], 
                    is_static=True)
     return
 
@@ -2807,52 +2764,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    is_static=True)
     return
 
-def register_Ns3SystemCondition_methods(root_module, cls):
-    ## system-condition.h (module 'core'): ns3::SystemCondition::SystemCondition(ns3::SystemCondition const & arg0) [constructor]
-    cls.add_constructor([param('ns3::SystemCondition const &', 'arg0')])
-    ## system-condition.h (module 'core'): ns3::SystemCondition::SystemCondition() [constructor]
-    cls.add_constructor([])
-    ## system-condition.h (module 'core'): void ns3::SystemCondition::Broadcast() [member function]
-    cls.add_method('Broadcast', 
-                   'void', 
-                   [])
-    ## system-condition.h (module 'core'): bool ns3::SystemCondition::GetCondition() [member function]
-    cls.add_method('GetCondition', 
-                   'bool', 
-                   [])
-    ## system-condition.h (module 'core'): void ns3::SystemCondition::SetCondition(bool condition) [member function]
-    cls.add_method('SetCondition', 
-                   'void', 
-                   [param('bool', 'condition')])
-    ## system-condition.h (module 'core'): void ns3::SystemCondition::Signal() [member function]
-    cls.add_method('Signal', 
-                   'void', 
-                   [])
-    ## system-condition.h (module 'core'): bool ns3::SystemCondition::TimedWait(uint64_t ns) [member function]
-    cls.add_method('TimedWait', 
-                   'bool', 
-                   [param('uint64_t', 'ns')])
-    ## system-condition.h (module 'core'): void ns3::SystemCondition::Wait() [member function]
-    cls.add_method('Wait', 
-                   'void', 
-                   [])
-    return
-
-def register_Ns3SystemMutex_methods(root_module, cls):
-    ## system-mutex.h (module 'core'): ns3::SystemMutex::SystemMutex(ns3::SystemMutex const & arg0) [constructor]
-    cls.add_constructor([param('ns3::SystemMutex const &', 'arg0')])
-    ## system-mutex.h (module 'core'): ns3::SystemMutex::SystemMutex() [constructor]
-    cls.add_constructor([])
-    ## system-mutex.h (module 'core'): void ns3::SystemMutex::Lock() [member function]
-    cls.add_method('Lock', 
-                   'void', 
-                   [])
-    ## system-mutex.h (module 'core'): void ns3::SystemMutex::Unlock() [member function]
-    cls.add_method('Unlock', 
-                   'void', 
-                   [])
-    return
-
 def register_Ns3Tag_methods(root_module, cls):
     ## tag.h (module 'network'): ns3::Tag::Tag() [constructor]
     cls.add_constructor([])
@@ -3795,43 +3706,11 @@ def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Pac
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter< ns3::Packet > > const &', 'o')])
     return
 
-def register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_Ns3DefaultDeleter__lt__ns3SystemThread__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread>>::SimpleRefCount() [constructor]
-    cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread>>::SimpleRefCount(ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread>> const & o) [constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter< ns3::SystemThread > > const &', 'o')])
-    return
-
 def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount() [constructor]
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>>::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor>> const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter< ns3::TraceSourceAccessor > > const &', 'o')])
-    return
-
-def register_Ns3SystemThread_methods(root_module, cls):
-    ## system-thread.h (module 'core'): ns3::SystemThread::SystemThread(ns3::SystemThread const & arg0) [constructor]
-    cls.add_constructor([param('ns3::SystemThread const &', 'arg0')])
-    ## system-thread.h (module 'core'): ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
-    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## system-thread.h (module 'core'): static bool ns3::SystemThread::Equals(ns3::SystemThread::ThreadId id) [member function]
-    cls.add_method('Equals', 
-                   'bool', 
-                   [param('pthread_t', 'id')], 
-                   is_static=True)
-    ## system-thread.h (module 'core'): void ns3::SystemThread::Join() [member function]
-    cls.add_method('Join', 
-                   'void', 
-                   [])
-    ## system-thread.h (module 'core'): static ns3::SystemThread::ThreadId ns3::SystemThread::Self() [member function]
-    cls.add_method('Self', 
-                   'ns3::SystemThread::ThreadId', 
-                   [], 
-                   is_static=True)
-    ## system-thread.h (module 'core'): void ns3::SystemThread::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
@@ -4052,16 +3931,6 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, template_parameters=['ns3::NetDevice::PacketType'], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['unsigned char*'], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['long'], visibility='protected')
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -4277,8 +4146,6 @@ def register_Ns3EventImpl_methods(root_module, cls):
     return
 
 def register_Ns3FdReader_methods(root_module, cls):
-    ## unix-fd-reader.h (module 'core'): ns3::FdReader::FdReader(ns3::FdReader const & arg0) [constructor]
-    cls.add_constructor([param('ns3::FdReader const &', 'arg0')])
     ## unix-fd-reader.h (module 'core'): ns3::FdReader::FdReader() [constructor]
     cls.add_constructor([])
     ## unix-fd-reader.h (module 'core'): void ns3::FdReader::Start(int fd, ns3::Callback<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> readCallback) [member function]
@@ -5292,44 +5159,43 @@ def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_
                    custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3CallbackImpl__Void_Unsigned_char___star___Long_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
-    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
-    cls.add_constructor([])
-    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
-    cls.add_method('DoGetTypeid', 
-                   'std::string', 
+def register_Ns3FdNetDevice_methods(root_module, cls):
+    ## fd-net-device.h (module 'fd-net-device'): static ns3::TypeId ns3::FdNetDevice::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
-    cls.add_method('GetTypeid', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(unsigned char * arg0, long int arg1) [member operator]
-    cls.add_method('operator()', 
-                   'void', 
-                   [param('unsigned char *', 'arg0'), param('long int', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
-    return
-
-def register_Ns3FdNetDevice_methods(root_module, cls):
     ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDevice::FdNetDevice() [constructor]
     cls.add_constructor([])
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('AddLinkChangeCallback', 
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetEncapsulationMode(ns3::FdNetDevice::EncapsulationMode mode) [member function]
+    cls.add_method('SetEncapsulationMode', 
                    'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Address', 
+                   [param('ns3::FdNetDevice::EncapsulationMode', 'mode')])
+    ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDevice::EncapsulationMode ns3::FdNetDevice::GetEncapsulationMode() const [member function]
+    cls.add_method('GetEncapsulationMode', 
+                   'ns3::FdNetDevice::EncapsulationMode', 
                    [], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetBroadcast() const [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Address', 
+                   is_const=True)
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetFileDescriptor(int fd) [member function]
+    cls.add_method('SetFileDescriptor', 
+                   'void', 
+                   [param('int', 'fd')])
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::Start(ns3::Time tStart) [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [param('ns3::Time', 'tStart')])
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::Stop(ns3::Time tStop) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time', 'tStop')])
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetIfIndex(uint32_t const index) [member function]
+    cls.add_method('SetIfIndex', 
+                   'void', 
+                   [param('uint32_t const', 'index')], 
+                   is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): uint32_t ns3::FdNetDevice::GetIfIndex() const [member function]
+    cls.add_method('GetIfIndex', 
+                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): ns3::Ptr<ns3::Channel> ns3::FdNetDevice::GetChannel() const [member function]
@@ -5337,49 +5203,24 @@ def register_Ns3FdNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDevice::EncapsulationMode ns3::FdNetDevice::GetEncapsulationMode() const [member function]
-    cls.add_method('GetEncapsulationMode', 
-                   'ns3::FdNetDevice::EncapsulationMode', 
-                   [], 
-                   is_const=True)
-    ## fd-net-device.h (module 'fd-net-device'): uint32_t ns3::FdNetDevice::GetIfIndex() const [member function]
-    cls.add_method('GetIfIndex', 
-                   'uint32_t', 
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::SetMtu(uint16_t const mtu) [member function]
+    cls.add_method('SetMtu', 
+                   'bool', 
+                   [param('uint16_t const', 'mtu')], 
+                   is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): uint16_t ns3::FdNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [param('ns3::Ipv4Address', 'multicastGroup')], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [param('ns3::Ipv6Address', 'addr')], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): ns3::Ptr<ns3::Node> ns3::FdNetDevice::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): static ns3::TypeId ns3::FdNetDevice::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsBridge() const [member function]
-    cls.add_method('IsBridge', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
                    [], 
                    is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsLinkUp() const [member function]
@@ -5387,18 +5228,38 @@ def register_Ns3FdNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetBroadcast() const [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsMulticast() const [member function]
     cls.add_method('IsMulticast', 
                    'bool', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::NeedsArp() const [member function]
-    cls.add_method('NeedsArp', 
+    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -5412,24 +5273,41 @@ def register_Ns3FdNetDevice_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetAddress(ns3::Address address) [member function]
-    cls.add_method('SetAddress', 
+    ## fd-net-device.h (module 'fd-net-device'): ns3::Ptr<ns3::Node> ns3::FdNetDevice::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
                    'void', 
-                   [param('ns3::Address', 'address')], 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetEncapsulationMode(ns3::FdNetDevice::EncapsulationMode mode) [member function]
-    cls.add_method('SetEncapsulationMode', 
+    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::NeedsArp() const [member function]
+    cls.add_method('NeedsArp', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetReceiveCallback(ns3::NetDevice::ReceiveCallback cb) [member function]
+    cls.add_method('SetReceiveCallback', 
                    'void', 
-                   [param('ns3::FdNetDevice::EncapsulationMode', 'mode')])
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetFileDescriptor(int fd) [member function]
-    cls.add_method('SetFileDescriptor', 
-                   'void', 
-                   [param('int', 'fd')])
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetIfIndex(uint32_t const index) [member function]
-    cls.add_method('SetIfIndex', 
-                   'void', 
-                   [param('uint32_t const', 'index')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetPromiscReceiveCallback(ns3::NetDevice::PromiscReceiveCallback cb) [member function]
+    cls.add_method('SetPromiscReceiveCallback', 
+                   'void', 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
+                   is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::SupportsSendFrom() const [member function]
+    cls.add_method('SupportsSendFrom', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## fd-net-device.h (module 'fd-net-device'): ns3::Address ns3::FdNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv6Address', 'addr')], 
+                   is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetIsBroadcast(bool broadcast) [member function]
     cls.add_method('SetIsBroadcast', 
                    'void', 
@@ -5440,69 +5318,36 @@ def register_Ns3FdNetDevice_methods(root_module, cls):
                    'void', 
                    [param('bool', 'multicast')], 
                    is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::SetMtu(uint16_t const mtu) [member function]
-    cls.add_method('SetMtu', 
-                   'bool', 
-                   [param('uint16_t const', 'mtu')], 
-                   is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetPromiscReceiveCallback(ns3::NetDevice::PromiscReceiveCallback cb) [member function]
-    cls.add_method('SetPromiscReceiveCallback', 
-                   'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::SetReceiveCallback(ns3::NetDevice::ReceiveCallback cb) [member function]
-    cls.add_method('SetReceiveCallback', 
-                   'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::Start(ns3::Time tStart) [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [param('ns3::Time', 'tStart')])
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::Stop(ns3::Time tStop) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time', 'tStop')])
-    ## fd-net-device.h (module 'fd-net-device'): bool ns3::FdNetDevice::SupportsSendFrom() const [member function]
-    cls.add_method('SupportsSendFrom', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## fd-net-device.h (module 'fd-net-device'): ssize_t ns3::FdNetDevice::Write(uint8_t * buffer, size_t length) [member function]
     cls.add_method('Write', 
                    'ssize_t', 
                    [param('uint8_t *', 'buffer'), param('size_t', 'length')], 
                    is_virtual=True)
-    ## fd-net-device.h (module 'fd-net-device'): uint8_t * ns3::FdNetDevice::AllocateBuffer(size_t len) [member function]
-    cls.add_method('AllocateBuffer', 
-                   'uint8_t *', 
-                   [param('size_t', 'len')], 
+    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
                    is_virtual=True, visibility='protected')
     ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
-    ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
+    ## fd-net-device.h (module 'fd-net-device'): int ns3::FdNetDevice::GetFileDescriptor() const [member function]
+    cls.add_method('GetFileDescriptor', 
+                   'int', 
                    [], 
+                   is_const=True, visibility='protected')
+    ## fd-net-device.h (module 'fd-net-device'): uint8_t * ns3::FdNetDevice::AllocateBuffer(size_t len) [member function]
+    cls.add_method('AllocateBuffer', 
+                   'uint8_t *', 
+                   [param('size_t', 'len')], 
                    is_virtual=True, visibility='protected')
     ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::FreeBuffer(uint8_t * buf) [member function]
     cls.add_method('FreeBuffer', 
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_virtual=True, visibility='protected')
-    ## fd-net-device.h (module 'fd-net-device'): int ns3::FdNetDevice::GetFileDescriptor() const [member function]
-    cls.add_method('GetFileDescriptor', 
-                   'int', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDevice::ReceiveCallback(uint8_t * buf, ssize_t len) [member function]
     cls.add_method('ReceiveCallback', 
                    'void', 
@@ -5526,8 +5371,6 @@ def register_Ns3FdNetDevice_methods(root_module, cls):
     return
 
 def register_Ns3FdNetDeviceFdReader_methods(root_module, cls):
-    ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDeviceFdReader::FdNetDeviceFdReader(ns3::FdNetDeviceFdReader const & arg0) [constructor]
-    cls.add_constructor([param('ns3::FdNetDeviceFdReader const &', 'arg0')])
     ## fd-net-device.h (module 'fd-net-device'): ns3::FdNetDeviceFdReader::FdNetDeviceFdReader() [constructor]
     cls.add_constructor([])
     ## fd-net-device.h (module 'fd-net-device'): void ns3::FdNetDeviceFdReader::SetBufferSize(uint32_t bufferSize) [member function]

@@ -161,11 +161,6 @@ def post_register_types(root_module):
 
     enabled_features = os.environ['NS3_ENABLED_FEATURES'].split(',')    
 
-    if 'Threading' not in enabled_features:
-        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection',
-                        'SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >']:
-            root_module.classes.remove(root_module['ns3::%s' % clsname])
-
     if 'RealTime' not in enabled_features:
         for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
