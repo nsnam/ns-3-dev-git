@@ -20,6 +20,8 @@
  */
 
 #include <algorithm>
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
@@ -1055,8 +1057,28 @@ WifiPhy::DoChannelSwitch (void)
 
   m_band = static_cast<WifiPhyBand> (std::get<2> (m_channelSettings));
 
+  // check that the channel width is supported
+  uint16_t chWidth = std::get<1> (m_channelSettings);
+
+  if (m_device != nullptr)
+    {
+      if (auto htConfig = m_device->GetHtConfiguration ();
+          htConfig != nullptr && !htConfig->Get40MHzOperationSupported () && chWidth > 20)
+        {
+          NS_ABORT_MSG ("Attempting to set a " << chWidth << " MHz channel on"
+                        "a station only supporting 20 MHz operation");
+        }
+
+      if (auto vhtConfig = m_device->GetVhtConfiguration ();
+          vhtConfig != nullptr && !vhtConfig->Get160MHzOperationSupported () && chWidth > 80)
+        {
+          NS_ABORT_MSG ("Attempting to set a " << chWidth << " MHz channel on"
+                        "a station supporting up to 80 MHz operation");
+        }
+    }
+
   NS_LOG_DEBUG ("switching channel");
-  m_operatingChannel.Set (std::get<0> (m_channelSettings), 0, std::get<1> (m_channelSettings),
+  m_operatingChannel.Set (std::get<0> (m_channelSettings), 0, chWidth,
                           m_standard, m_band);
   m_operatingChannel.SetPrimary20Index (std::get<3> (m_channelSettings));
 

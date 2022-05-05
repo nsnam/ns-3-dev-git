@@ -726,8 +726,8 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-      phy->ConfigureStandard (m_standard);
       device->SetPhy (phy);
+      phy->ConfigureStandard (m_standard);
       Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       device->SetMac (mac);
       device->SetRemoteStationManager (manager);

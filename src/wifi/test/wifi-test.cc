@@ -1780,6 +1780,7 @@ Bug2831TestCase::DoRun (void)
   m_apPhy->SetChannel (channel);
   m_apPhy->SetMobility (apMobility);
   m_apPhy->SetDevice (apDev);
+  apDev->SetPhy (m_apPhy);
   m_apPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_apPhy->SetOperatingChannel (WifiPhy::ChannelTuple {36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
 
@@ -1795,18 +1796,17 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannel (channel);
   m_staPhy->SetMobility (staMobility);
   m_staPhy->SetDevice (apDev);
+  staDev->SetPhy (m_staPhy);
   m_staPhy->ConfigureStandard (WIFI_STANDARD_80211ax);
   m_staPhy->SetOperatingChannel (WifiPhy::ChannelTuple {36, 20, (int)(WIFI_PHY_BAND_5GHZ), 0});
 
   apDev->SetMac (apMac);
-  apDev->SetPhy (m_apPhy);
   ObjectFactory manager;
   manager.SetTypeId ("ns3::ConstantRateWifiManager");
   apDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
   apNode->AddDevice (apDev);
 
   staDev->SetMac (staMac);
-  staDev->SetPhy (m_staPhy);
   staDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
   staNode->AddDevice (staDev);
 
@@ -2444,7 +2444,7 @@ Issue40TestCase::RunOne (bool useAmpdu)
 
   Config::Connect ("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxFinalDataFailed", MakeCallback (&Issue40TestCase::TxFinalDataFailedCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/MacRx", MakeCallback (&Issue40TestCase::RxSuccessCallback, this));
-              
+
   Ptr<WaypointMobilityModel> staWaypointMobility = DynamicCast<WaypointMobilityModel>(wifiStaNode.Get(0)->GetObject<MobilityModel>());
   staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.0), Vector (10.0, 0.0, 0.0)));
   staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.5), Vector (50.0, 0.0, 0.0)));
