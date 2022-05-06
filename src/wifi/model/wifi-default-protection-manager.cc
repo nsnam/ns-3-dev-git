@@ -124,8 +124,9 @@ WifiDefaultProtectionManager::TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu
 
   NS_ASSERT (txParams.m_protection->method == WifiProtection::NONE);
 
-  // No protection for TB PPDUs
-  if (txParams.m_txVector.IsUlMu ())
+  // No protection for TB PPDUs and DL MU PPDUs containing more than one PSDU
+  if (txParams.m_txVector.IsUlMu ()
+      || (txParams.m_txVector.IsDlMu () && txParams.GetPsduInfoMap ().size () > 1))
     {
       return nullptr;
     }
