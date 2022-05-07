@@ -319,7 +319,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   //We search within the Supported rate set the mode with the
   //highest data rate for which the SNR threshold is smaller than m_lastSnr
   //to ensure correct packet delivery.
-  WifiMode maxMode = GetDefaultMode ();
+  WifiMode maxMode = GetDefaultModeForSta (st);
   WifiTxVector txVector;
   WifiMode mode;
   uint64_t bestRate = 0;
