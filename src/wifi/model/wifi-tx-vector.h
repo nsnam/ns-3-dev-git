@@ -371,6 +371,18 @@ class WifiTxVector
      */
     bool IsUlMu() const;
     /**
+     * Return true if this TX vector is used for a downlink multi-user transmission using OFDMA.
+     *
+     * \return true if this TX vector is used for a downlink multi-user transmission using OFDMA
+     */
+    bool IsDlOfdma() const;
+    /**
+     * Return true if this TX vector is used for a downlink multi-user transmission using MU-MIMO.
+     *
+     * \return true if this TX vector is used for a downlink multi-user transmission using MU-MIMO
+     */
+    bool IsDlMuMimo() const;
+    /**
      * Check if STA ID is allocated
      * \param staId STA ID
      * \return true if allocated, false otherwise
@@ -522,6 +534,14 @@ class WifiTxVector
      * \return the CENTER_26_TONE_RU field
      */
     Center26ToneRuIndication DeriveCenter26ToneRuIndication() const;
+
+    /**
+     * Get the number of STAs in a given RU.
+     *
+     * \param ru the RU specification
+     * \return the number of STAs in the RU
+     */
+    uint8_t GetNumStasInRu(const HeRu::RuSpec& ru) const;
 
     WifiMode m_mode;          /**< The DATARATE parameter in Table 15-4.
                               It is the value that will be passed

@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <set>
 
 namespace ns3
 {
@@ -480,6 +481,52 @@ bool
 WifiTxVector::IsUlMu() const
 {
     return ns3::IsUlMu(m_preamble);
+}
+
+bool
+WifiTxVector::IsDlOfdma() const
+{
+    if (!IsDlMu())
+    {
+        return false;
+    }
+    if (m_muUserInfos.size() == 1)
+    {
+        return true;
+    }
+    std::set<HeRu::RuSpec> rus{};
+    for (const auto& userInfo : m_muUserInfos)
+    {
+        rus.insert(userInfo.second.ru);
+        if (rus.size() > 1)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool
+WifiTxVector::IsDlMuMimo() const
+{
+    if (!IsDlMu())
+    {
+        return false;
+    }
+    if (m_muUserInfos.size() < 2)
+    {
+        return false;
+    }
+    // TODO: mixed OFDMA and MU-MIMO is not supported
+    return !IsDlOfdma();
+}
+
+uint8_t
+WifiTxVector::GetNumStasInRu(const HeRu::RuSpec& ru) const
+{
+    return std::count_if(m_muUserInfos.cbegin(),
+                         m_muUserInfos.cend(),
+                         [&ru](const auto& info) -> bool { return (ru == info.second.ru); });
 }
 
 bool

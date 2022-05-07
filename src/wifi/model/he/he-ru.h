@@ -119,6 +119,13 @@ class HeRu
          * \return true if this RU differs from the given RU, false otherwise
          */
         bool operator!=(const RuSpec& other) const;
+        /**
+         * Compare this RU to the given RU.
+         *
+         * \param other the given RU
+         * \return true if this RU is smaller than the given RU, false otherwise
+         */
+        bool operator<(const RuSpec& other) const;
 
       private:
         RuType m_ruType;     //!< RU type
