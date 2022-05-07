@@ -447,6 +447,13 @@ class WifiTxVector
     UserInfoMapOrderedByRus GetUserInfoMapOrderedByRus(uint8_t p20Index) const;
 
     /**
+     * Indicate whether the Common field is present in the HE-SIG-B field.
+     *
+     * \return true if the Common field is present in the HE-SIG-B, false otherwise
+     */
+    bool IsSigBCompression() const;
+
+    /**
      * Set the 20 MHz subchannels that are punctured.
      *
      * \param inactiveSubchannels the bitmap indexed by the 20 MHz subchannels in ascending order,

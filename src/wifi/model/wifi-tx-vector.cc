@@ -583,6 +583,12 @@ WifiTxVector::GetHeMuUserInfoMap()
     return m_muUserInfos;
 }
 
+bool
+WifiTxVector::IsSigBCompression() const
+{
+    return IsDlMuMimo() && !IsDlOfdma();
+}
+
 void
 WifiTxVector::SetInactiveSubchannels(const std::vector<bool>& inactiveSubchannels)
 {
