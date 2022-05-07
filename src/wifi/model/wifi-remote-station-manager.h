@@ -452,6 +452,13 @@ public:
    */
   WifiMode GetDefaultMcs (void) const;
   /**
+   * Return the default MCS to use to transmit frames to the given station.
+   *
+   * \param st the given station
+   * \return the default MCS to use to transmit frames to the given station
+   */
+  WifiMode GetDefaultModeForSta (const WifiRemoteStation *st) const;
+  /**
    * Return the number of basic MCS index.
    *
    * \return the number of basic MCS index

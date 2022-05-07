@@ -1451,6 +1451,31 @@ WifiRemoteStationManager::GetDefaultMcs (void) const
   return m_defaultTxMcs;
 }
 
+WifiMode
+WifiRemoteStationManager::GetDefaultModeForSta (const WifiRemoteStation *st) const
+{
+  NS_LOG_FUNCTION (this << st);
+
+  if (!GetHtSupported () || !GetHtSupported (st))
+    {
+      return GetDefaultMode ();
+    }
+
+  // find the highest modulation class supported by both stations
+  WifiModulationClass modClass = WIFI_MOD_CLASS_HT;
+  if (GetHeSupported () && GetHeSupported (st))
+    {
+      modClass = WIFI_MOD_CLASS_HE;
+    }
+  else if (GetVhtSupported () && GetVhtSupported (st))
+    {
+      modClass = WIFI_MOD_CLASS_VHT;
+    }
+
+  // return the MCS with lowest index
+  return *m_wifiPhy->GetPhyEntity (modClass)->begin ();
+}
+
 void
 WifiRemoteStationManager::Reset (void)
 {
