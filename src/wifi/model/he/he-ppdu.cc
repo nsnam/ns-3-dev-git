@@ -481,16 +481,36 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
 }
 
 std::pair<std::size_t, std::size_t>
-HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth, const RuAllocation& ruAllocation)
+HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth,
+                                         const RuAllocation& ruAllocation,
+                                         bool sigBCompression,
+                                         uint8_t numMuMimoUsers)
 {
-    // MU-MIMO is not handled for now, i.e. one station per RU
-    NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
-    NS_ASSERT_MSG(ruAllocation.size() == channelWidth / 20,
-                  "RU allocation is not consistent with packet bandwidth");
-
     std::pair<std::size_t /* number of RUs in content channel 1 */,
               std::size_t /* number of RUs in content channel 2 */>
         chSize{0, 0};
+
+    if (sigBCompression)
+    {
+        // If the HE-SIG-B Compression field in the HE-SIG-A field of an HE MU PPDU is 1,
+        // for bandwidths larger than 20 MHz, the AP performs an equitable split of
+        // the User fields between two HE-SIG-B content channels
+        if (channelWidth == 20)
+        {
+            return {numMuMimoUsers, 0};
+        }
+        chSize.first = numMuMimoUsers / 2;
+        chSize.second = numMuMimoUsers / 2;
+        if (numMuMimoUsers != (chSize.first + chSize.second))
+        {
+            chSize.first++;
+        }
+        return chSize;
+    }
+
+    NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
+    NS_ASSERT_MSG(ruAllocation.size() == channelWidth / 20,
+                  "RU allocation is not consistent with packet bandwidth");
 
     switch (channelWidth)
     {
@@ -540,19 +560,20 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
     }
 
     const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
-    for (const auto& [ru, staId] : orderedMap)
+    for (const auto& [ru, staIds] : orderedMap)
     {
-        auto ruType = ru.GetRuType();
-        auto ruIdx = ru.GetIndex();
-        const auto& userInfo = txVector.GetHeMuUserInfo(staId);
-        NS_ASSERT(ru == userInfo.ru);
-
-        if (ruType > HeRu::RU_242_TONE)
+        const auto ruType = ru.GetRuType();
+        if ((ruType > HeRu::RU_242_TONE) && !txVector.IsSigBCompression())
         {
             for (auto i = 0; i < ((ruType == HeRu::RU_2x996_TONE) ? 2 : 1); ++i)
             {
-                contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
-                contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
+                for (auto staId : staIds)
+                {
+                    const auto& userInfo = txVector.GetHeMuUserInfo(staId);
+                    NS_ASSERT(ru == userInfo.ru);
+                    contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
+                    contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
+                }
             }
             continue;
         }
@@ -560,55 +581,84 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
                                  ? 1
                                  : HeRu::m_heRuSubcarrierGroups.at({20, ruType}).size();
-        if (((ruIdx - 1) / numRus) % 2 == 0)
+        const auto ruIdx = ru.GetIndex();
+        for (auto staId : staIds)
         {
-            contentChannels.at(0).push_back({staId, userInfo.nss, userInfo.mcs});
-        }
-        else
-        {
-            contentChannels.at(1).push_back({staId, userInfo.nss, userInfo.mcs});
+            const auto& userInfo = txVector.GetHeMuUserInfo(staId);
+            NS_ASSERT(ru == userInfo.ru);
+            std::size_t ccIndex{0};
+            if (channelWidth < 40)
+            {
+                // only one content channel
+                ccIndex = 0;
+            }
+            else if (txVector.IsSigBCompression())
+            {
+                // equal split
+                ccIndex = (contentChannels.at(0).size() <= contentChannels.at(1).size()) ? 0 : 1;
+            }
+            else // MU-MIMO
+            {
+                ccIndex = (((ruIdx - 1) / numRus) % 2 == 0) ? 0 : 1;
+            }
+            contentChannels.at(ccIndex).push_back({staId, userInfo.nss, userInfo.mcs});
         }
     }
 
-    // Add unassigned RUs
-    auto numNumRusPerHeSigBContentChannel =
-        GetNumRusPerHeSigBContentChannel(channelWidth, txVector.GetRuAllocation(p20Index));
-    std::size_t contentChannelIndex = 1;
-    for (auto& contentChannel : contentChannels)
+    const auto isSigBCompression = txVector.IsSigBCompression();
+    if (!isSigBCompression)
     {
-        const auto totalUsersInContentChannel = (contentChannelIndex == 1)
-                                                    ? numNumRusPerHeSigBContentChannel.first
-                                                    : numNumRusPerHeSigBContentChannel.second;
-        NS_ASSERT(contentChannel.size() <= totalUsersInContentChannel);
-        std::size_t unallocatedRus = totalUsersInContentChannel - contentChannel.size();
-        for (std::size_t i = 0; i < unallocatedRus; i++)
+        // Add unassigned RUs
+        auto numNumRusPerHeSigBContentChannel = GetNumRusPerHeSigBContentChannel(
+            channelWidth,
+            txVector.GetRuAllocation(p20Index),
+            isSigBCompression,
+            isSigBCompression ? txVector.GetHeMuUserInfoMap().size() : 0);
+        std::size_t contentChannelIndex = 1;
+        for (auto& contentChannel : contentChannels)
         {
-            contentChannel.push_back({NO_USER_STA_ID, 0, 0});
+            const auto totalUsersInContentChannel = (contentChannelIndex == 1)
+                                                        ? numNumRusPerHeSigBContentChannel.first
+                                                        : numNumRusPerHeSigBContentChannel.second;
+            NS_ASSERT(contentChannel.size() <= totalUsersInContentChannel);
+            std::size_t unallocatedRus = totalUsersInContentChannel - contentChannel.size();
+            for (std::size_t i = 0; i < unallocatedRus; i++)
+            {
+                contentChannel.push_back({NO_USER_STA_ID, 0, 0});
+            }
+            contentChannelIndex++;
         }
-        contentChannelIndex++;
     }
 
     return contentChannels;
 }
 
 uint32_t
-HePpdu::GetSigBFieldSize(uint16_t channelWidth, const RuAllocation& ruAllocation)
+HePpdu::GetSigBFieldSize(uint16_t channelWidth,
+                         const RuAllocation& ruAllocation,
+                         bool sigBCompression,
+                         std::size_t numMuMimoUsers)
 {
     // Compute the number of bits used by common field.
-    // Assume that compression bit in HE-SIG-A is not set (i.e. not
-    // full band MU-MIMO); the field is present.
-    auto commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-    if (channelWidth <= 40)
+    uint32_t commonFieldSize = 0;
+    if (!sigBCompression)
     {
-        commonFieldSize += 8; // only one allocation subfield
-    }
-    else
-    {
-        commonFieldSize +=
-            8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+        commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+        if (channelWidth <= 40)
+        {
+            commonFieldSize += 8; // only one allocation subfield
+        }
+        else
+        {
+            commonFieldSize +=
+                8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+        }
     }
 
-    auto numRusPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
+    auto numRusPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth,
+                                                                    ruAllocation,
+                                                                    sigBCompression,
+                                                                    numMuMimoUsers);
     auto maxNumRusPerContentChannel =
         std::max(numRusPerContentChannel.first, numRusPerContentChannel.second);
     auto maxNumUserBlockFields = maxNumRusPerContentChannel /

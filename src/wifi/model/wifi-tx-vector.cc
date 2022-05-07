@@ -752,11 +752,18 @@ WifiTxVector::GetUserInfoMapOrderedByRus(uint8_t p20Index) const
 {
     auto heRuComparator = HeRu::RuSpecCompare(m_channelWidth, p20Index);
     UserInfoMapOrderedByRus orderedMap{heRuComparator};
-    std::transform(
-        m_muUserInfos.cbegin(),
-        m_muUserInfos.cend(),
-        std::inserter(orderedMap, orderedMap.end()),
-        [](auto&& userInfo) { return std::make_pair(userInfo.second.ru, userInfo.first); });
+    for (const auto& userInfo : m_muUserInfos)
+    {
+        const auto ru = userInfo.second.ru;
+        if (auto it = orderedMap.find(ru); it != orderedMap.end())
+        {
+            it->second.emplace(userInfo.first);
+        }
+        else
+        {
+            orderedMap.emplace(userInfo.second.ru, std::set<uint16_t>{userInfo.first});
+        }
+    }
     return orderedMap;
 }
 
@@ -767,7 +774,7 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
     std::vector<HeRu::RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
     const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
-    for (const auto& [ru, staId] : orderedMap)
+    for (const auto& [ru, staIds] : orderedMap)
     {
         const auto ruType = ru.GetRuType();
         const auto ruBw = HeRu::GetBandwidth(ruType);

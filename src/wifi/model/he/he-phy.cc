@@ -225,7 +225,9 @@ HePhy::GetSigBSize(const WifiTxVector& txVector) const
         return HePpdu::GetSigBFieldSize(
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
-                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0));
+                m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0),
+            txVector.IsSigBCompression(),
+            txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     }
     return 0;
 }

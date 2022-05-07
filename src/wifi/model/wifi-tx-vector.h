@@ -28,6 +28,7 @@
 
 #include <list>
 #include <optional>
+#include <set>
 #include <vector>
 
 namespace ns3
@@ -436,7 +437,7 @@ class WifiTxVector
     HeMuUserInfoMap& GetHeMuUserInfoMap();
 
     /// map of specific user info parameters ordered per increasing frequency RUs
-    using UserInfoMapOrderedByRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
+    using UserInfoMapOrderedByRus = std::map<HeRu::RuSpec, std::set<uint16_t>, HeRu::RuSpecCompare>;
 
     /**
      * Get the map of specific user info parameters ordered per increasing frequency RUs.

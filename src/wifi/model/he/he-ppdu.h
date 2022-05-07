@@ -189,18 +189,21 @@ class HePpdu : public OfdmPpdu
     void UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) const;
 
     /**
-     * Get the number of RUs per HE-SIG-B content channel.
-     * This is applicable only for MU. MU-MIMO (i.e. multiple stations
-     * per RU) is not supported yet.
+     * Get the number of STAs per HE-SIG-B content channel.
+     * This is applicable only for MU.
      * See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0.
      *
      * \param channelWidth the channel width occupied by the PPDU (in MHz)
      * \param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * \param sigBCompression flag whether SIG-B compression is used by the PPDU
+     * \param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * \return a pair containing the number of RUs in each HE-SIG-B content channel (resp. 1 and 2)
      */
     static std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel(
         uint16_t channelWidth,
-        const RuAllocation& ruAllocation);
+        const RuAllocation& ruAllocation,
+        bool sigBCompression,
+        uint8_t numMuMimoUsers);
 
     /**
      * Get the HE SIG-B content channels for a given PPDU
@@ -217,9 +220,14 @@ class HePpdu : public OfdmPpdu
      * Get variable length HE SIG-B field size
      * \param channelWidth the channel width occupied by the PPDU (in MHz)
      * \param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
+     * \param sigBCompression flag whether SIG-B compression is used by the PPDU
+     * \param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      * \return field size in bytes
      */
-    static uint32_t GetSigBFieldSize(uint16_t channelWidth, const RuAllocation& ruAllocation);
+    static uint32_t GetSigBFieldSize(uint16_t channelWidth,
+                                     const RuAllocation& ruAllocation,
+                                     bool sigBCompression,
+                                     std::size_t numMuMimoUsers);
 
   protected:
     /**

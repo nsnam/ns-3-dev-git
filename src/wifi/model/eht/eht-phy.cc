@@ -138,7 +138,9 @@ EhtPhy::GetSigBSize(const WifiTxVector& txVector) const
             txVector.GetChannelWidth(),
             txVector.GetRuAllocation(
                 m_wifiPhy ? m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20) : 0),
-            txVector.GetEhtPpduType());
+            txVector.GetEhtPpduType(),
+            txVector.IsSigBCompression(),
+            txVector.IsSigBCompression() ? txVector.GetHeMuUserInfoMap().size() : 0);
     }
     return HePhy::GetSigBSize(txVector);
 }
