@@ -887,13 +887,13 @@ Ptr<Event>
 PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                    Time duration,
                                    RxPowerWattPerChannelBand& rxPower,
-                                   bool isStartOfdmaRxing /* = false */)
+                                   bool isStartHePortionRxing /* = false */)
 {
     return m_wifiPhy->m_interference->Add(ppdu,
                                           ppdu->GetTxVector(),
                                           duration,
                                           rxPower,
-                                          isStartOfdmaRxing);
+                                          isStartHePortionRxing);
 }
 
 void

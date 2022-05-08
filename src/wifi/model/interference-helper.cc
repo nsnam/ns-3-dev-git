@@ -222,10 +222,10 @@ InterferenceHelper::Add(Ptr<const WifiPpdu> ppdu,
                         const WifiTxVector& txVector,
                         Time duration,
                         RxPowerWattPerChannelBand& rxPowerW,
-                        bool isStartOfdmaRxing)
+                        bool isStartHePortionRxing)
 {
     Ptr<Event> event = Create<Event>(ppdu, txVector, duration, std::move(rxPowerW));
-    AppendEvent(event, isStartOfdmaRxing);
+    AppendEvent(event, isStartHePortionRxing);
     return event;
 }
 
@@ -354,9 +354,9 @@ InterferenceHelper::GetEnergyDuration(double energyW, const WifiSpectrumBandInfo
 }
 
 void
-InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartOfdmaRxing)
+InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartHePortionRxing)
 {
-    NS_LOG_FUNCTION(this << event << isStartOfdmaRxing);
+    NS_LOG_FUNCTION(this << event << isStartHePortionRxing);
     for (const auto& [band, power] : event->GetRxPowerWPerBand())
     {
         auto niIt = m_niChanges.find(band);
@@ -372,11 +372,11 @@ InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartOfdmaRxing)
             // Always leave the first zero power noise event in the list
             niIt->second.erase(++(niIt->second.begin()), ++previousPowerPosition);
         }
-        else if (isStartOfdmaRxing)
+        else if (isStartHePortionRxing)
         {
-            // When the first UL-OFDMA payload is received, we need to set m_firstPowers
+            // When the first HE portion is received, we need to set m_firstPowerPerBand
             // so that it takes into account interferences that arrived between the start of the
-            // UL MU transmission and the start of UL-OFDMA payload.
+            // HE TB PPDU transmission and the start of HE TB payload.
             m_firstPowers.find(band)->second = previousPowerStart;
         }
         auto first =
@@ -535,7 +535,7 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
     Time phyPayloadStart = j->first;
     if (event->GetPpdu()->GetType() != WIFI_PPDU_TYPE_UL_MU &&
         event->GetPpdu()->GetType() !=
-            WIFI_PPDU_TYPE_DL_MU) // j->first corresponds to the start of the OFDMA payload
+            WIFI_PPDU_TYPE_DL_MU) // j->first corresponds to the start of the MU payload
     {
         phyPayloadStart =
             j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration(event->GetTxVector());

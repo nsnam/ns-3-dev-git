@@ -2430,9 +2430,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
                                       HePpdu::PSD_NON_HE_PORTION);
 
     // Send non-OFDMA part
-    Time nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonOfdmaDurationForHeTb(txVector);
-    uint32_t centerFrequency =
-        m_phy->GetHePhy()->GetCenterFrequencyForNonOfdmaPart(txVector, staId);
+    Time nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonHeDurationForHeTb(txVector);
+    uint32_t centerFrequency = m_phy->GetHePhy()->GetCenterFrequencyForNonHePart(txVector, staId);
     uint16_t ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     uint16_t channelWidth = ruWidth < 20 ? 20 : ruWidth;
     Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
@@ -3982,8 +3981,8 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
     WifiTxVector txVectorSta1 = GetTxVectorForHeTbPpdu(1, 1, 0);
     WifiTxVector txVectorSta2 = GetTxVectorForHeTbPpdu(2, 2, 0);
     Ptr<const HePhy> hePhy = m_phyAp->GetHePhy();
-    Time nonOfdmaDuration = hePhy->CalculateNonOfdmaDurationForHeTb(txVectorSta2);
-    NS_ASSERT(nonOfdmaDuration == hePhy->CalculateNonOfdmaDurationForHeTb(txVectorSta1));
+    Time nonOfdmaDuration = hePhy->CalculateNonHeDurationForHeTb(txVectorSta2);
+    NS_ASSERT(nonOfdmaDuration == hePhy->CalculateNonHeDurationForHeTb(txVectorSta1));
 
     std::vector<double> rxPowerNonOfdma{rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2};
     std::vector<WifiSpectrumBandInfo> nonOfdmaBand{hePhy->GetNonOfdmaBand(txVectorSta1, 1),

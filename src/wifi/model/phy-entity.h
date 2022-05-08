@@ -839,14 +839,13 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param ppdu the PPDU
      * \param duration the PPDU duration
      * \param rxPower received power per band (W)
-     * \param isStartOfdmaRxing flag whether the event corresponds to the start of the OFDMA payload
-     * reception (only used for UL-OFDMA)
-     * \return the created event
+     * \param isStartHePortionRxing flag whether the event corresponds to the start of the OFDMA
+     * payload reception (only used for UL-OFDMA) \return the created event
      */
     Ptr<Event> CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                        Time duration,
                                        RxPowerWattPerChannelBand& rxPower,
-                                       bool isStartOfdmaRxing = false);
+                                       bool isStartHePortionRxing = false);
     /**
      * Update an event in WifiPhy's InterferenceHelper class.
      * Wrapper used by child classes.
