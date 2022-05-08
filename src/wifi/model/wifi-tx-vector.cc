@@ -441,25 +441,64 @@ WifiTxVector::IsValid() const
     {
         if (m_nss != 3 && m_nss != 6)
         {
-            return (modeName != "VhtMcs9");
+            if (modeName == "VhtMcs9")
+            {
+                return false;
+            }
         }
     }
     else if (m_channelWidth == 80)
     {
         if (m_nss == 3 || m_nss == 7)
         {
-            return (modeName != "VhtMcs6");
+            if (modeName == "VhtMcs6")
+            {
+                return false;
+            }
         }
         else if (m_nss == 6)
         {
-            return (modeName != "VhtMcs9");
+            if (modeName == "VhtMcs9")
+            {
+                return false;
+            }
         }
     }
     else if (m_channelWidth == 160)
     {
         if (m_nss == 3)
         {
-            return (modeName != "VhtMcs9");
+            if (modeName == "VhtMcs9")
+            {
+                return false;
+            }
+        }
+    }
+    for (const auto& userInfo : m_muUserInfos)
+    {
+        if (GetNumStasInRu(userInfo.second.ru) > 8)
+        {
+            return false;
+        }
+    }
+    std::map<HeRu::RuSpec, uint8_t> streamsPerRu{};
+    for (const auto& info : m_muUserInfos)
+    {
+        auto it = streamsPerRu.find(info.second.ru);
+        if (it == streamsPerRu.end())
+        {
+            streamsPerRu[info.second.ru] = info.second.nss;
+        }
+        else
+        {
+            it->second += info.second.nss;
+        }
+    }
+    for (auto& streams : streamsPerRu)
+    {
+        if (streams.second > 8)
+        {
+            return false;
         }
     }
     return true;
