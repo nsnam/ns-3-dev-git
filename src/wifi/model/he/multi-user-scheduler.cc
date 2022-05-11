@@ -40,6 +40,34 @@ MultiUserScheduler::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MultiUserScheduler")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("AccessReqInterval",
+                   "Duration of the interval between two consecutive requests for "
+                   "channel access made by the MultiUserScheduler. Such requests are "
+                   "made independently of the presence of frames in the queues of the "
+                   "AP and are intended to allow the AP to coordinate UL MU transmissions "
+                   "even without DL traffic. A null duration indicates that such "
+                   "requests shall not be made.",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&MultiUserScheduler::m_accessReqInterval),
+                   MakeTimeChecker ())
+    .AddAttribute ("AccessReqAc",
+                   "The Access Category for which the MultiUserScheduler makes requests "
+                   "for channel access.",
+                   EnumValue (AcIndex::AC_BE),
+                   MakeEnumAccessor (&MultiUserScheduler::m_accessReqAc),
+                   MakeEnumChecker (AcIndex::AC_BE, "AC_BE",
+                                    AcIndex::AC_VI, "AC_VI",
+                                    AcIndex::AC_VO, "AC_VO",
+                                    AcIndex::AC_BK, "AC_BK"))
+    .AddAttribute ("DelayAccessReqUponAccess",
+                   "If enabled, the access request interval is measured starting "
+                   "from the last time an EDCA function obtained channel access. "
+                   "Otherwise, the access request interval is measured starting "
+                   "from the last time the MultiUserScheduler made a request for "
+                   "channel access.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&MultiUserScheduler::m_restartTimerUponAccess),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -63,6 +91,7 @@ MultiUserScheduler::DoDispose (void)
   m_dlInfo.psduMap.clear ();
   m_dlInfo.txParams.Clear ();
   m_ulInfo.txParams.Clear ();
+  m_accessReqTimer.Cancel ();
   Object::DoDispose ();
 }
 
@@ -99,6 +128,11 @@ MultiUserScheduler::DoInitialize (void)
     {
       m_sizeOf8QosNull = MpduAggregator::GetSizeIfAggregated (headerSize + WIFI_MAC_FCS_LENGTH, m_sizeOf8QosNull);
     }
+
+  if (m_accessReqInterval.IsStrictlyPositive ())
+    {
+      m_accessReqTimer = Simulator::Schedule (m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+    }
 }
 
 void
@@ -122,6 +156,23 @@ MultiUserScheduler::GetWifiRemoteStationManager (void) const
   return m_apMac->GetWifiRemoteStationManager ();
 }
 
+void
+MultiUserScheduler::AccessReqTimeout (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // request channel access if not requested yet
+  auto edca = m_apMac->GetQosTxop (m_accessReqAc);
+
+  if (edca->GetAccessStatus () == Txop::NOT_REQUESTED)
+    {
+      m_apMac->GetChannelAccessManager ()->RequestAccess (edca);
+    }
+
+  // restart timer
+  m_accessReqTimer = Simulator::Schedule (m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+}
+
 MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
 {
@@ -130,6 +181,14 @@ MultiUserScheduler::NotifyAccessGranted (Ptr<QosTxop> edca, Time availableTime, 
   m_edca = edca;
   m_availableTime = availableTime;
   m_initialFrame = initialFrame;
+
+  if (m_accessReqTimer.IsRunning () && m_restartTimerUponAccess)
+    {
+      // restart access timer
+      m_accessReqTimer.Cancel ();
+      m_accessReqTimer = Simulator::Schedule (m_accessReqInterval,
+                                              &MultiUserScheduler::AccessReqTimeout, this);
+    }
 
   TxFormat txFormat = SelectTxFormat ();
 

@@ -156,6 +156,13 @@ private:
   void SetWifiMac (Ptr<ApWifiMac> mac);
 
   /**
+   * Perform actions required on expiration of the channel access request timer,
+   * such as requesting channel access (if not requested already) and restarting
+   * the channel access request timer.
+   */
+  void AccessReqTimeout (void);
+
+  /**
    * Select the format of the next transmission.
    *
    * \return the format of the next transmission
@@ -183,9 +190,14 @@ private:
    */
   void CheckTriggerFrame (void);
 
-  TxFormat m_lastTxFormat {NO_TX};       //!< the format of last transmission
-  DlMuInfo m_dlInfo;                     //!< information required to perform a DL MU transmission
-  UlMuInfo m_ulInfo;                     //!< information required to solicit an UL MU transmission
+  TxFormat m_lastTxFormat {NO_TX};       ///< the format of last transmission
+  DlMuInfo m_dlInfo;                     ///< information required to perform a DL MU transmission
+  UlMuInfo m_ulInfo;                     ///< information required to solicit an UL MU transmission
+  EventId m_accessReqTimer;              ///< the timer controlling additional channel access requests
+  Time m_accessReqInterval;              ///< duration of the interval between channel access requests
+  AcIndex m_accessReqAc;                 ///< AC we request channel access for
+  bool m_restartTimerUponAccess;         ///< whether the channel access timer has to be restarted
+                                         ///< upon channel access
 };
 
 } //namespace ns3
