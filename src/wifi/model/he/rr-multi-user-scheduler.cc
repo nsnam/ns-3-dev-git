@@ -144,7 +144,7 @@ RrMultiUserScheduler::SelectTxFormat (void)
       return SU_TX;
     }
 
-  if (m_enableUlOfdma && m_enableBsrp && GetLastTxFormat () == DL_MU_TX)
+  if (m_enableUlOfdma && m_enableBsrp && (GetLastTxFormat () == DL_MU_TX || mpdu == nullptr))
     {
       TxFormat txFormat = TrySendingBsrpTf ();
 
@@ -153,8 +153,9 @@ RrMultiUserScheduler::SelectTxFormat (void)
           return txFormat;
         }
     }
-  else if (m_enableUlOfdma && (GetLastTxFormat () == DL_MU_TX
-                               || m_trigger.GetType () == TriggerFrameType::BSRP_TRIGGER))
+  else if (m_enableUlOfdma && ((GetLastTxFormat () == DL_MU_TX)
+                               || (m_trigger.GetType () == TriggerFrameType::BSRP_TRIGGER)
+                               || (mpdu == nullptr)))
     {
       TxFormat txFormat = TrySendingBasicTf ();
 
