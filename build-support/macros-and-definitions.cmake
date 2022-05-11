@@ -311,9 +311,6 @@ macro(process_options)
   string(TOLOWER ${CMAKE_BUILD_TYPE} cmakeBuildType)
   set(build_profile "${cmakeBuildType}" CACHE INTERNAL "")
   if(${cmakeBuildType} STREQUAL "debug")
-    string(REPLACE "-g" "-Og -g" CMAKE_CXX_FLAGS_DEBUG
-                   "${CMAKE_CXX_FLAGS_DEBUG}"
-    )
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "relwithdebinfo" OR ${cmakeBuildType}
                                                         STREQUAL "default"
