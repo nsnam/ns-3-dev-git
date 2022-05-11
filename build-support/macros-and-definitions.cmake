@@ -2040,7 +2040,7 @@ function(find_external_library)
   endif()
 
   # If we find both library and header, we export their values
-  if((NOT not_found_libraries}) AND (NOT not_found_headers))
+  if((NOT not_found_libraries) AND (NOT not_found_headers))
     set(${name}_INCLUDE_DIRS "${include_dirs}" PARENT_SCOPE)
     set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
     set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
