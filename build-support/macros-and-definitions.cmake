@@ -1733,8 +1733,20 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
         string(REPLACE "'" "" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE "\"" "" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE " " "" ${enabled_modules} "${${enabled_modules}}")
+        string(REPLACE "\n" ";" ${enabled_modules} "${${enabled_modules}}")
+        list(SORT ${enabled_modules})
+
+        # Remove possibly empty entry
+        list(REMOVE_ITEM ${enabled_modules} "")
+        foreach(element ${${enabled_modules}})
+          # Inspect each element for comments
+          if(${element} MATCHES "#.*")
+            list(REMOVE_ITEM ${enabled_modules} ${element})
+          endif()
+        endforeach()
       endif()
     endif()
+
     # Match examples_enabled flag
     if(ns3rc_contents MATCHES "examples_enabled = (True|False)")
       set(${examples_enabled} ${CMAKE_MATCH_1})

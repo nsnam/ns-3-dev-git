@@ -672,7 +672,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertTrue(get_test_enabled())
         self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
 
-        # Replace the ns3rc file
+        # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
         with open(ns3rc_script, "w") as f:
             f.write(ns3rc_template.format(modules="'wifi'", examples="True", tests="False"))
 
@@ -685,6 +685,45 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
         self.assertIn("ns3-wifi", enabled_modules)
         self.assertFalse(get_test_enabled())
+        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+        # Replace the ns3rc file with multiple modules
+        with open(ns3rc_script, "w") as f:
+            f.write(ns3rc_template.format(modules="'core','network'", examples="True", tests="False"))
+
+        # Reconfigure
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+        self.config_ok(return_code, stdout)
+
+        # Check
+        enabled_modules = get_enabled_modules()
+        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+        self.assertIn("ns3-core", enabled_modules)
+        self.assertIn("ns3-network", enabled_modules)
+        self.assertFalse(get_test_enabled())
+        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+        # Replace the ns3rc file with multiple modules,
+        # in various different ways and with comments
+        with open(ns3rc_script, "w") as f:
+            f.write(ns3rc_template.format(modules="""'core', #comment
+            'lte',
+            #comment2,
+            #comment3
+            'network', 'internet','wimax'""", examples="True", tests="True"))
+
+        # Reconfigure
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+        self.config_ok(return_code, stdout)
+
+        # Check
+        enabled_modules = get_enabled_modules()
+        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+        self.assertIn("ns3-core", enabled_modules)
+        self.assertIn("ns3-internet", enabled_modules)
+        self.assertIn("ns3-lte", enabled_modules)
+        self.assertIn("ns3-wimax", enabled_modules)
+        self.assertTrue(get_test_enabled())
         self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
 
         # Then we roll back by removing the ns3rc config file
