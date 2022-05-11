@@ -117,6 +117,12 @@ public:
    * \return the Frame Exchange Manager
    */
   Ptr<FrameExchangeManager> GetFrameExchangeManager (void) const;
+  /**
+   * Get the Channel Access Manager
+   *
+   * \return the Channel Access Manager
+   */
+  Ptr<ChannelAccessManager> GetChannelAccessManager (void) const;
 
   /**
    * Accessor for the Txop object

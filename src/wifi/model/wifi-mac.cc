@@ -751,6 +751,12 @@ WifiMac::GetFrameExchangeManager (void) const
   return m_feManager;
 }
 
+Ptr<ChannelAccessManager>
+WifiMac::GetChannelAccessManager (void) const
+{
+  return m_channelAccessManager;
+}
+
 void
 WifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
 {
