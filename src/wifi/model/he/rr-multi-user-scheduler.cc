@@ -112,7 +112,7 @@ RrMultiUserScheduler::DoInitialize (void)
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationDeassociated, this));
   for (const auto& ac : wifiAcList)
     {
-      m_staList.insert ({ac.first, {}});
+      m_staListDl.insert ({ac.first, {}});
     }
   MultiUserScheduler::DoInitialize ();
 }
@@ -121,7 +121,8 @@ void
 RrMultiUserScheduler::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_staList.clear ();
+  m_staListDl.clear ();
+  m_staListUl.clear ();
   m_candidates.clear ();
   m_txParams.Clear ();
   m_apMac->TraceDisconnectWithoutContext ("AssociatedSta",
@@ -145,11 +146,15 @@ RrMultiUserScheduler::SelectTxFormat (void)
 
   if (m_enableUlOfdma && m_enableBsrp && GetLastTxFormat () == DL_MU_TX)
     {
-      return TrySendingBsrpTf ();
-    }
+      TxFormat txFormat = TrySendingBsrpTf ();
 
-  if (m_enableUlOfdma && (GetLastTxFormat () == DL_MU_TX
-                          || m_trigger.GetType () == TriggerFrameType::BSRP_TRIGGER))
+      if (txFormat != DL_MU_TX)
+        {
+          return txFormat;
+        }
+    }
+  else if (m_enableUlOfdma && (GetLastTxFormat () == DL_MU_TX
+                               || m_trigger.GetType () == TriggerFrameType::BSRP_TRIGGER))
     {
       TxFormat txFormat = TrySendingBasicTf ();
 
@@ -162,14 +167,113 @@ RrMultiUserScheduler::SelectTxFormat (void)
   return TrySendingDlMuPpdu ();
 }
 
+template <class Func>
+WifiTxVector
+RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
+{
+  NS_LOG_FUNCTION (this);
+
+  // determine RUs to allocate to stations
+  auto count = std::min<std::size_t> (m_nStations, m_staListUl.size ());
+  std::size_t nCentral26TonesRus;
+  HeRu::GetEqualSizedRusForStations (m_apMac->GetWifiPhy ()->GetChannelWidth (), count,
+                                     nCentral26TonesRus);
+  NS_ASSERT (count >= 1);
+
+  if (!m_useCentral26TonesRus)
+    {
+      nCentral26TonesRus = 0;
+    }
+
+  Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration ();
+  NS_ASSERT (heConfiguration != 0);
+
+  WifiTxVector txVector;
+  txVector.SetPreambleType (WIFI_PREAMBLE_HE_TB);
+  txVector.SetChannelWidth (m_apMac->GetWifiPhy ()->GetChannelWidth ());
+  txVector.SetGuardInterval (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
+  txVector.SetBssColor (heConfiguration->GetBssColor ());
+
+  // iterate over the associated stations until an enough number of stations is identified
+  auto staIt = m_staListUl.begin ();
+  m_candidates.clear ();
+
+  while (staIt != m_staListUl.end ()
+         && txVector.GetHeMuUserInfoMap ().size () < std::min<std::size_t> (m_nStations, count + nCentral26TonesRus))
+    {
+      NS_LOG_DEBUG ("Next candidate STA (MAC=" << staIt->address << ", AID=" << staIt->aid << ")");
+
+      if (!canbeSolicited (*staIt))
+        {
+          NS_LOG_DEBUG ("Skipping station based on provided function object");
+          staIt++;
+          continue;
+        }
+
+      uint8_t tid = 0;
+      while (tid < 8)
+        {
+          // check that a BA agreement is established with the receiver for the
+          // considered TID, since ack sequences for UL MU require block ack
+          if (m_heFem->GetBaAgreementEstablished (staIt->address, tid))
+            {
+              break;
+            }
+          ++tid;
+        }
+      if (tid == 8)
+        {
+          NS_LOG_DEBUG ("No Block Ack agreement established with " << staIt->address);
+          staIt++;
+          continue;
+        }
+
+      // prepare the MAC header of a frame that would be sent to the candidate station,
+      // just for the purpose of retrieving the TXVECTOR used to transmit to that station
+      WifiMacHeader hdr (WIFI_MAC_QOSDATA);
+      hdr.SetAddr1 (staIt->address);
+      hdr.SetAddr2 (m_apMac->GetAddress ());
+      WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (hdr);
+      txVector.SetHeMuUserInfo (staIt->aid,
+                                {HeRu::RuSpec (), // assigned later by FinalizeTxVector
+                                suTxVector.GetMode (),
+                                suTxVector.GetNss ()});
+      m_candidates.push_back ({staIt, nullptr});
+
+      // move to the next station in the list
+      staIt++;
+    }
+
+  if (txVector.GetHeMuUserInfoMap ().empty ())
+    {
+      // No suitable station
+      return txVector;
+    }
+
+  FinalizeTxVector (txVector);
+  return txVector;
+}
+
 MultiUserScheduler::TxFormat
 RrMultiUserScheduler::TrySendingBsrpTf (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_trigger = CtrlTriggerHeader (TriggerFrameType::BSRP_TRIGGER, GetDlMuInfo ().txParams.m_txVector);
+  if (m_staListUl.empty ())
+    {
+      NS_LOG_DEBUG ("No HE stations associated: return SU_TX");
+      return TxFormat::SU_TX;
+    }
 
-  WifiTxVector txVector = GetDlMuInfo ().txParams.m_txVector;
+  WifiTxVector txVector = GetTxVectorForUlMu ([](const MasterInfo&){ return true; });
+
+  if (txVector.GetHeMuUserInfoMap ().empty ())
+    {
+      NS_LOG_DEBUG ("No suitable station found");
+      return TxFormat::DL_MU_TX;
+    }
+
+  m_trigger = CtrlTriggerHeader (TriggerFrameType::BSRP_TRIGGER, txVector);
   txVector.SetGuardInterval (m_trigger.GetGuardInterval ());
 
   auto item = GetTriggerFrame (m_trigger);
@@ -231,197 +335,150 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
 {
   NS_LOG_FUNCTION (this);
 
+  if (m_staListUl.empty ())
+    {
+      NS_LOG_DEBUG ("No HE stations associated: return SU_TX");
+      return TxFormat::SU_TX;
+    }
+
   // check if an UL OFDMA transmission is possible after a DL OFDMA transmission
   NS_ABORT_MSG_IF (m_ulPsduSize == 0, "The UlPsduSize attribute must be set to a non-null value");
 
-  // determine which of the stations served in DL have UL traffic
-  uint32_t maxBufferSize = 0;
-  // candidates sorted in decreasing order of queue size
-  std::multimap<uint8_t, CandidateInfo, std::greater<uint8_t>> ulCandidates;
+  // only consider stations that do not have reported a null queue size
+  WifiTxVector txVector = GetTxVectorForUlMu ([this](const MasterInfo& info)
+                                              { return m_apMac->GetMaxBufferStatus (info.address) > 0; });
 
-  for (const auto& candidate : m_candidates)
+  if (txVector.GetHeMuUserInfoMap ().empty ())
     {
-      uint8_t queueSize = m_apMac->GetMaxBufferStatus (candidate.first->address);
+      NS_LOG_DEBUG ("No suitable station found");
+      return TxFormat::DL_MU_TX;
+    }
+
+  uint32_t maxBufferSize = 0;
+
+  for (const auto& candidate : txVector.GetHeMuUserInfoMap ())
+    {
+      auto staIt = m_apMac->GetStaList ().find (candidate.first);
+      NS_ASSERT (staIt != m_apMac->GetStaList ().end ());
+      uint8_t queueSize = m_apMac->GetMaxBufferStatus (staIt->second);
       if (queueSize == 255)
         {
-          NS_LOG_DEBUG ("Buffer status of station " << candidate.first->address << " is unknown");
+          NS_LOG_DEBUG ("Buffer status of station " << staIt->second << " is unknown");
           maxBufferSize = std::max (maxBufferSize, m_ulPsduSize);
         }
       else if (queueSize == 254)
         {
-          NS_LOG_DEBUG ("Buffer status of station " << candidate.first->address << " is not limited");
+          NS_LOG_DEBUG ("Buffer status of station " << staIt->second << " is not limited");
           maxBufferSize = 0xffffffff;
         }
       else
         {
-          NS_LOG_DEBUG ("Buffer status of station " << candidate.first->address << " is " << +queueSize);
+          NS_LOG_DEBUG ("Buffer status of station " << staIt->second << " is " << +queueSize);
           maxBufferSize = std::max (maxBufferSize, static_cast<uint32_t> (queueSize * 256));
-        }
-      // serve the station if its queue size is not null
-      if (queueSize > 0)
-        {
-          ulCandidates.emplace (queueSize, candidate);
         }
     }
 
-  // if the maximum buffer size is 0, skip UL OFDMA and proceed with trying DL OFDMA
-  if (maxBufferSize > 0)
+  if (maxBufferSize == 0)
     {
-      NS_ASSERT (!ulCandidates.empty ());
-      std::size_t count = ulCandidates.size ();
-      std::size_t nCentral26TonesRus;
-      HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (m_apMac->GetWifiPhy ()->GetChannelWidth (),
-                                                               count, nCentral26TonesRus);
-      if (!m_useCentral26TonesRus || ulCandidates.size () == count)
+      return DL_MU_TX;
+    }
+
+  m_trigger = CtrlTriggerHeader (TriggerFrameType::BASIC_TRIGGER, txVector);
+  txVector.SetGuardInterval (m_trigger.GetGuardInterval ());
+
+  auto item = GetTriggerFrame (m_trigger);
+  m_triggerMacHdr = item->GetHeader ();
+
+  // compute the maximum amount of time that can be granted to stations.
+  // This value is limited by the max PPDU duration
+  Time maxDuration = GetPpduMaxTime (txVector.GetPreambleType ());
+
+  m_txParams.Clear ();
+  // set the TXVECTOR used to send the Trigger Frame
+  m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (m_triggerMacHdr.GetAddr1 ());
+
+  if (!m_heFem->TryAddMpdu (item, m_txParams, m_availableTime))
+    {
+      // an UL OFDMA transmission is not possible, hence return NO_TX. In
+      // this way, no transmission will occur now and the next time we will
+      // try again performing an UL OFDMA transmission.
+      NS_LOG_DEBUG ("Remaining TXOP duration is not enough for UL MU exchange");
+      return NO_TX;
+    }
+
+  if (m_availableTime != Time::Min ())
+    {
+      // TryAddMpdu only considers the time to transmit the Trigger Frame
+      NS_ASSERT (m_txParams.m_protection && m_txParams.m_protection->protectionTime != Time::Min ());
+      NS_ASSERT (m_txParams.m_acknowledgment && m_txParams.m_acknowledgment->acknowledgmentTime != Time::Min ());
+      NS_ASSERT (m_txParams.m_txDuration != Time::Min ());
+
+      maxDuration = Min (maxDuration, m_availableTime
+                                      - m_txParams.m_protection->protectionTime
+                                      - m_txParams.m_txDuration
+                                      - m_apMac->GetWifiPhy ()->GetSifs ()
+                                      - m_txParams.m_acknowledgment->acknowledgmentTime);
+      if (maxDuration.IsNegative ())
         {
-          nCentral26TonesRus = 0;
-        }
-      else
-        {
-          nCentral26TonesRus = std::min (ulCandidates.size () - count, nCentral26TonesRus);
-        }
-
-      WifiTxVector txVector;
-      txVector.SetPreambleType (WIFI_PREAMBLE_HE_TB);
-      auto candidateIt = ulCandidates.begin ();
-
-      if (GetLastTxFormat () == DL_MU_TX)
-        {
-          txVector.SetChannelWidth (GetDlMuInfo ().txParams.m_txVector.GetChannelWidth ());
-          txVector.SetGuardInterval (CtrlTriggerHeader ().GetGuardInterval ());
-
-          for (std::size_t i = 0; i < count + nCentral26TonesRus; i++)
-            {
-              NS_ASSERT (candidateIt != ulCandidates.end ());
-              uint16_t staId = candidateIt->second.first->aid;
-              // AssignRuIndices will be called below to set RuSpec
-              txVector.SetHeMuUserInfo (staId,
-                                        {{(i < count ? ruType : HeRu::RU_26_TONE), 1, false},
-                                        GetDlMuInfo ().txParams.m_txVector.GetMode (staId),
-                                        GetDlMuInfo ().txParams.m_txVector.GetNss (staId)});
-
-              candidateIt++;
-            }
-        }
-      else
-        {
-          txVector.SetChannelWidth (GetUlMuInfo ().trigger.GetUlBandwidth ());
-          txVector.SetGuardInterval (GetUlMuInfo ().trigger.GetGuardInterval ());
-
-          for (std::size_t i = 0; i < count + nCentral26TonesRus; i++)
-            {
-              NS_ASSERT (candidateIt != ulCandidates.end ());
-              uint16_t staId = candidateIt->second.first->aid;
-              auto userInfoIt = GetUlMuInfo ().trigger.FindUserInfoWithAid (staId);
-              NS_ASSERT (userInfoIt != GetUlMuInfo ().trigger.end ());
-              // AssignRuIndices will be called below to set RuSpec
-              txVector.SetHeMuUserInfo (staId,
-                                        {{(i < count ? ruType : HeRu::RU_26_TONE), 1, false},
-                                        HePhy::GetHeMcs (userInfoIt->GetUlMcs ()),
-                                        userInfoIt->GetNss ()});
-
-              candidateIt++;
-            }
-        }
-
-      // remove candidates that will not be served
-      ulCandidates.erase (candidateIt, ulCandidates.end ());
-      AssignRuIndices (txVector);
-
-      m_trigger = CtrlTriggerHeader (TriggerFrameType::BASIC_TRIGGER, txVector);
-      auto item = GetTriggerFrame (m_trigger);
-      m_triggerMacHdr = item->GetHeader ();
-
-      // compute the maximum amount of time that can be granted to stations.
-      // This value is limited by the max PPDU duration
-      Time maxDuration = GetPpduMaxTime (txVector.GetPreambleType ());
-
-      m_txParams.Clear ();
-      // set the TXVECTOR used to send the Trigger Frame
-      m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (m_triggerMacHdr.GetAddr1 ());
-
-      if (!m_heFem->TryAddMpdu (item, m_txParams, m_availableTime))
-        {
-          // an UL OFDMA transmission is not possible, hence return NO_TX. In
-          // this way, no transmission will occur now and the next time we will
-          // try again performing an UL OFDMA transmission.
           NS_LOG_DEBUG ("Remaining TXOP duration is not enough for UL MU exchange");
           return NO_TX;
         }
+    }
 
-      if (m_availableTime != Time::Min ())
-        {
-          // TryAddMpdu only considers the time to transmit the Trigger Frame
-          NS_ASSERT (m_txParams.m_protection && m_txParams.m_protection->protectionTime != Time::Min ());
-          NS_ASSERT (m_txParams.m_acknowledgment && m_txParams.m_acknowledgment->acknowledgmentTime != Time::Min ());
-          NS_ASSERT (m_txParams.m_txDuration != Time::Min ());
+  // Compute the time taken by each station to transmit a frame of maxBufferSize size
+  Time bufferTxTime = Seconds (0);
+  for (const auto& userInfo : m_trigger)
+    {
+      Time duration = WifiPhy::CalculateTxDuration (maxBufferSize, txVector,
+                                                    m_apMac->GetWifiPhy ()->GetPhyBand (),
+                                                    userInfo.GetAid12 ());
+      bufferTxTime = Max (bufferTxTime, duration);
+    }
 
-          maxDuration = Min (maxDuration, m_availableTime
-                                          - m_txParams.m_protection->protectionTime
-                                          - m_txParams.m_txDuration
-                                          - m_apMac->GetWifiPhy ()->GetSifs ()
-                                          - m_txParams.m_acknowledgment->acknowledgmentTime);
-          if (maxDuration.IsNegative ())
-            {
-              NS_LOG_DEBUG ("Remaining TXOP duration is not enough for UL MU exchange");
-              return NO_TX;
-            }
-        }
-
-      // Compute the time taken by each station to transmit a frame of maxBufferSize size
-      Time bufferTxTime = Seconds (0);
+  if (bufferTxTime < maxDuration)
+    {
+      // the maximum buffer size can be transmitted within the allowed time
+      maxDuration = bufferTxTime;
+    }
+  else
+    {
+      // maxDuration may be a too short time. If it does not allow any station to
+      // transmit at least m_ulPsduSize bytes, give up the UL MU transmission for now
+      Time minDuration = Seconds (0);
       for (const auto& userInfo : m_trigger)
         {
-          Time duration = WifiPhy::CalculateTxDuration (maxBufferSize, txVector,
+          Time duration = WifiPhy::CalculateTxDuration (m_ulPsduSize, txVector,
                                                         m_apMac->GetWifiPhy ()->GetPhyBand (),
                                                         userInfo.GetAid12 ());
-          bufferTxTime = Max (bufferTxTime, duration);
+          minDuration = (minDuration.IsZero () ? duration : Min (minDuration, duration));
         }
 
-      if (bufferTxTime < maxDuration)
+      if (maxDuration < minDuration)
         {
-          // the maximum buffer size can be transmitted within the allowed time
-          maxDuration = bufferTxTime;
+          // maxDuration is a too short time, hence return NO_TX. In this way,
+          // no transmission will occur now and the next time we will try again
+          // performing an UL OFDMA transmission.
+          NS_LOG_DEBUG ("Available time " << maxDuration.As (Time::MS) << " is too short");
+          return NO_TX;
         }
-      else
-        {
-          // maxDuration may be a too short time. If it does not allow any station to
-          // transmit at least m_ulPsduSize bytes, give up the UL MU transmission for now
-          Time minDuration = Seconds (0);
-          for (const auto& userInfo : m_trigger)
-            {
-              Time duration = WifiPhy::CalculateTxDuration (m_ulPsduSize, txVector,
-                                                            m_apMac->GetWifiPhy ()->GetPhyBand (),
-                                                            userInfo.GetAid12 ());
-              minDuration = (minDuration.IsZero () ? duration : Min (minDuration, duration));
-            }
-
-          if (maxDuration < minDuration)
-            {
-              // maxDuration is a too short time, hence return NO_TX. In this way,
-              // no transmission will occur now and the next time we will try again
-              // performing an UL OFDMA transmission.
-              NS_LOG_DEBUG ("Available time " << maxDuration.As (Time::MS) << " is too short");
-              return NO_TX;
-            }
-        }
-
-      // maxDuration is the time to grant to the stations. Finalize the Trigger Frame
-      uint16_t ulLength;
-      std::tie (ulLength, maxDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (maxDuration,
-                                                                                     txVector,
-                                                                                     m_apMac->GetWifiPhy ()->GetPhyBand ());
-      NS_LOG_DEBUG ("TB PPDU duration: " << maxDuration.As (Time::MS));
-      m_trigger.SetUlLength (ulLength);
-      // set Preferred AC to the AC that gained channel access
-      for (auto& userInfo : m_trigger)
-        {
-          userInfo.SetBasicTriggerDepUserInfo (0, 0, m_edca->GetAccessCategory ());
-        }
-
-      return UL_MU_TX;
     }
-  return DL_MU_TX;
+
+  // maxDuration is the time to grant to the stations. Finalize the Trigger Frame
+  uint16_t ulLength;
+  std::tie (ulLength, maxDuration) = HePhy::ConvertHeTbPpduDurationToLSigLength (maxDuration,
+                                                                                  txVector,
+                                                                                  m_apMac->GetWifiPhy ()->GetPhyBand ());
+  NS_LOG_DEBUG ("TB PPDU duration: " << maxDuration.As (Time::MS));
+  m_trigger.SetUlLength (ulLength);
+  // set Preferred AC to the AC that gained channel access
+  for (auto& userInfo : m_trigger)
+    {
+      userInfo.SetBasicTriggerDepUserInfo (0, 0, m_edca->GetAccessCategory ());
+    }
+
+  UpdateCredits (m_staListUl, maxDuration, txVector);
+
+  return UL_MU_TX;
 }
 
 void
@@ -431,10 +488,11 @@ RrMultiUserScheduler::NotifyStationAssociated (uint16_t aid, Mac48Address addres
 
   if (GetWifiRemoteStationManager ()->GetHeSupported (address))
     {
-      for (auto& staList : m_staList)
+      for (auto& staList : m_staListDl)
         {
           staList.second.push_back (MasterInfo {aid, address, 0.0});
         }
+      m_staListUl.push_back (MasterInfo {aid, address, 0.0});
     }
 }
 
@@ -445,11 +503,13 @@ RrMultiUserScheduler::NotifyStationDeassociated (uint16_t aid, Mac48Address addr
 
   if (GetWifiRemoteStationManager ()->GetHeSupported (address))
     {
-      for (auto& staList : m_staList)
+      for (auto& staList : m_staListDl)
         {
           staList.second.remove_if ([&aid, &address] (const MasterInfo& info)
                                     { return info.aid == aid && info.address == address; });
         }
+      m_staListUl.remove_if ([&aid, &address] (const MasterInfo& info)
+                             { return info.aid == aid && info.address == address; });
     }
 }
 
@@ -460,13 +520,13 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   AcIndex primaryAc = m_edca->GetAccessCategory ();
 
-  if (m_staList[primaryAc].empty ())
+  if (m_staListDl[primaryAc].empty ())
     {
       NS_LOG_DEBUG ("No HE stations associated: return SU_TX");
       return TxFormat::SU_TX;
     }
 
-  std::size_t count = std::min (static_cast<std::size_t> (m_nStations), m_staList[primaryAc].size ());
+  std::size_t count = std::min (static_cast<std::size_t> (m_nStations), m_staListDl[primaryAc].size ());
   std::size_t nCentral26TonesRus;
   HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (m_apMac->GetWifiPhy ()->GetChannelWidth (), count,
                                                            nCentral26TonesRus);
@@ -519,10 +579,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
   Time actualAvailableTime = (m_initialFrame ? Time::Min () : m_availableTime);
 
   // iterate over the associated stations until an enough number of stations is identified
-  auto staIt = m_staList[primaryAc].begin ();
+  auto staIt = m_staListDl[primaryAc].begin ();
   m_candidates.clear ();
 
-  while (staIt != m_staList[primaryAc].end ()
+  while (staIt != m_staListDl[primaryAc].end ()
          && m_candidates.size () < std::min (static_cast<std::size_t> (m_nStations), count + nCentral26TonesRus))
     {
       NS_LOG_DEBUG ("Next candidate STA (MAC=" << staIt->address << ", AID=" << staIt->aid << ")");
@@ -765,60 +825,11 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
     }
 
   AcIndex primaryAc = m_edca->GetAccessCategory ();
-  UpdateCredits (m_staList[primaryAc], dlMuInfo.txParams.m_txDuration, dlMuInfo.txParams.m_txVector);
+  UpdateCredits (m_staListDl[primaryAc], dlMuInfo.txParams.m_txDuration, dlMuInfo.txParams.m_txVector);
 
-  NS_LOG_DEBUG ("Next station to serve has AID=" << m_staList[primaryAc].front ().aid);
+  NS_LOG_DEBUG ("Next station to serve has AID=" << m_staListDl[primaryAc].front ().aid);
 
   return dlMuInfo;
-}
-
-void
-RrMultiUserScheduler::AssignRuIndices (WifiTxVector& txVector)
-{
-  NS_LOG_FUNCTION (this << txVector);
-
-  uint8_t bw = txVector.GetChannelWidth ();
-
-  // find the RU types allocated in the TXVECTOR
-  std::set<HeRu::RuType> ruTypeSet;
-  for (const auto& userInfo : txVector.GetHeMuUserInfoMap ())
-    {
-      ruTypeSet.insert (userInfo.second.ru.GetRuType ());
-    }
-
-  std::vector<HeRu::RuSpec> ruSet, central26TonesRus;
-
-  // This scheduler allocates equal sized RUs and optionally the remaining 26-tone RUs
-  if (ruTypeSet.size () == 2)
-    {
-      // central 26-tone RUs have been allocated
-      NS_ASSERT (ruTypeSet.find (HeRu::RU_26_TONE) != ruTypeSet.end ());
-      ruTypeSet.erase (HeRu::RU_26_TONE);
-      NS_ASSERT (ruTypeSet.size () == 1);
-      central26TonesRus = HeRu::GetCentral26TonesRus (bw, *ruTypeSet.begin ());
-    }
-
-  NS_ASSERT (ruTypeSet.size () == 1);
-  ruSet = HeRu::GetRusOfType (bw, *ruTypeSet.begin ());
-
-  auto ruSetIt = ruSet.begin ();
-  auto central26TonesRusIt = central26TonesRus.begin ();
-
-  for (const auto& userInfo : txVector.GetHeMuUserInfoMap ())
-    {
-      if (userInfo.second.ru.GetRuType () == *ruTypeSet.begin ())
-        {
-          NS_ASSERT (ruSetIt != ruSet.end ());
-          txVector.SetRu (*ruSetIt, userInfo.first);
-          ruSetIt++;
-        }
-      else
-        {
-          NS_ASSERT (central26TonesRusIt != central26TonesRus.end ());
-          txVector.SetRu (*central26TonesRusIt, userInfo.first);
-          central26TonesRusIt++;
-        }
-    }
 }
 
 MultiUserScheduler::UlMuInfo
