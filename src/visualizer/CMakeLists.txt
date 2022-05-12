@@ -1,12 +1,9 @@
-include_directories(${Python3_INCLUDE_DIRS})
-
 build_lib(
   LIBNAME visualizer
   SOURCE_FILES model/pyviz.cc
                model/visual-simulator-impl.cc
   HEADER_FILES model/pyviz.h
   LIBRARIES_TO_LINK
-    ${Python3_LIBRARIES}
     ${libcore}
     ${libinternet}
     ${libwifi}

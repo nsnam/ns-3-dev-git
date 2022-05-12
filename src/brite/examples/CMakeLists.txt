@@ -20,10 +20,5 @@ if(${ENABLE_MPI})
       ${libnix-vector-routing}
       ${libapplications}
       ${libmpi}
-      ${MPI_CXX_LIBRARIES}
-  )
-  target_include_directories(
-    brite-MPI-example
-    PUBLIC ${MPI_CXX_INCLUDE_DIRS}
   )
 endif()

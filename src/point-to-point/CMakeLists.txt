@@ -11,9 +11,7 @@ if(${ENABLE_MPI})
   )
   set(mpi_libraries
       ${libmpi}
-      ${MPI_CXX_LIBRARIES}
   )
-  include_directories(${MPI_CXX_INCLUDE_DIRS})
 endif()
 
 build_lib(

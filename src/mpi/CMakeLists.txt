@@ -1,5 +1,3 @@
-include_directories(${MPI_CXX_INCLUDE_DIRS})
-
 set(example_as_test_suite)
 if(${ENABLE_EXAMPLES})
   set(example_as_test_suite
@@ -23,9 +21,7 @@ build_lib(
     model/mpi-interface.h
     model/mpi-receiver.h
     model/parallel-communication-interface.h
-  LIBRARIES_TO_LINK
-    ${libcore}
-    ${libnetwork}
-    ${MPI_CXX_LIBRARIES}
+  LIBRARIES_TO_LINK ${libcore}
+                    ${libnetwork}
   TEST_SOURCES ${example_as_test_suite}
 )

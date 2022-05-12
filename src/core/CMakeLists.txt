@@ -3,11 +3,6 @@ set(libraries_to_link)
 
 set(gsl_test_sources)
 if(${GSL_FOUND})
-  include_directories(${GSL_INCLUDE_DIRS})
-  set(libraries_to_link
-      ${libraries_to_link}
-      ${GSL_LIBRARIES}
-  )
   set(gsl_test_sources
       test/rng-test-suite.cc
       test/random-variable-stream-test-suite.cc
@@ -74,13 +69,8 @@ if(${ENABLE_REALTIME})
       model/realtime-simulator-impl.h
       model/wall-clock-synchronizer.h
   )
-  set(libraries_to_link
-      ${libraries_to_link}
-      ${LIBRT}
-  )
 endif()
 
-set(osclock_sources)
 set(osclock_sources
     model/unix-system-wall-clock-ms.cc
 )

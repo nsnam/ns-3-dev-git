@@ -1,11 +1,3 @@
-set(gsl_libraries)
-if(${GSL_FOUND})
-  include_directories(${GSL_INCLUDE_DIRS})
-  set(gsl_libraries
-      ${GSL_LIBRARIES}
-  )
-endif()
-
 set(source_files
     helper/athstats-helper.cc
     helper/spectrum-wifi-helper.cc
@@ -291,7 +283,6 @@ build_lib(
     ${libspectrum}
     ${libantenna}
     ${libmobility}
-    ${gsl_libraries}
   TEST_SOURCES
     test/block-ack-test-suite.cc
     test/channel-access-manager-test.cc

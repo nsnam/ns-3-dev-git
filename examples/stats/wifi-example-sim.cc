@@ -94,7 +94,7 @@ int main (int argc, char *argv[]) {
       return -1;
     }
 
-  #ifndef STATS_HAS_SQLITE3
+  #ifndef HAVE_SQLITE3
   if (format == "db") {
       NS_LOG_ERROR ("sqlite support not compiled in.");
       return -1;
@@ -300,7 +300,7 @@ int main (int argc, char *argv[]) {
       NS_LOG_INFO ("Creating omnet formatted data output.");
       output = CreateObject<OmnetDataOutput>();
     } else if (format == "db") {
-    #ifdef STATS_HAS_SQLITE3
+    #ifdef HAVE_SQLITE3
       NS_LOG_INFO ("Creating sqlite formatted data output.");
       output = CreateObject<SqliteDataOutput>();
     #endif

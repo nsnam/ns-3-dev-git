@@ -1,6 +1,5 @@
 set(sqlite_sources)
 set(sqlite_header)
-set(sqlite_libraries)
 if(${ENABLE_SQLITE})
   set(sqlite_sources
       model/sqlite-data-output.cc
@@ -9,10 +8,6 @@ if(${ENABLE_SQLITE})
   set(sqlite_headers
       model/sqlite-data-output.h
       model/sqlite-output.h
-  )
-  include_directories(${SQLite3_INCLUDE_DIRS})
-  set(sqlite_libraries
-      ${SQLite3_LIBRARIES}
   )
 endif()
 
@@ -74,7 +69,6 @@ build_lib(
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
   LIBRARIES_TO_LINK ${libcore}
-                    ${sqlite_libraries}
   TEST_SOURCES
     test/average-test-suite.cc
     test/basic-data-calculators-test-suite.cc
