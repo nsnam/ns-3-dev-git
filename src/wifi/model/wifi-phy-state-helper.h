@@ -222,6 +222,11 @@ public:
    */
   void SwitchFromRxEndError (void);
   /**
+   * Abort current reception following a CCA reset request.
+   * \param operatingWidth the channel width the PHY is operating on (in MHz)
+   */
+  void SwitchFromRxAbort (uint16_t operatingWidth);
+  /**
    * Switch to CCA busy.
    *
    * \param duration the duration of the CCA state
@@ -241,10 +246,6 @@ public:
    * Switch from sleep mode.
    */
   void SwitchFromSleep (void);
-  /**
-   * Abort current reception
-   */
-  void SwitchFromRxAbort (void);
   /**
    * Switch to off mode.
    */

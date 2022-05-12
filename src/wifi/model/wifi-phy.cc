@@ -1931,7 +1931,7 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
       NotifyRxDrop (GetAddressedPsduInPpdu (m_currentEvent->GetPpdu ()), reason);
       if (reason == OBSS_PD_CCA_RESET)
         {
-          m_state->SwitchFromRxAbort ();
+          m_state->SwitchFromRxAbort (GetChannelWidth ());
         }
       for (auto it = m_currentPreambleEvents.begin (); it != m_currentPreambleEvents.end (); ++it)
         {

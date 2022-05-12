@@ -19,6 +19,7 @@
  */
 
 #include <algorithm>
+#include <iterator>
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -590,14 +591,19 @@ WifiPhyStateHelper::SwitchFromSleep (void)
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxAbort (void)
+WifiPhyStateHelper::SwitchFromRxAbort (uint16_t operatingWidth)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << operatingWidth);
   NS_ASSERT (IsStateCcaBusy ()); //abort is called (with OBSS_PD_CCA_RESET reason) before RX is set by payload start
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   m_endCcaBusy = Simulator::Now ();
-  NotifyCcaBusyStart (Seconds (0), WIFI_CHANLIST_PRIMARY, {});
+  std::vector<Time> per20MhzDurations;
+  if (operatingWidth >= 40)
+    {
+      std::fill_n (std::back_inserter (per20MhzDurations), (operatingWidth / 20), Seconds (0));
+    }
+  NotifyCcaBusyStart (Seconds (0), WIFI_CHANLIST_PRIMARY, per20MhzDurations);
   NS_ASSERT (IsStateIdle ());
 }
 
