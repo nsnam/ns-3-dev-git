@@ -2,7 +2,7 @@
 #
 # A sample of what Waf produced
 
-# ---- Summary of optional NS-3 features:
+# ---- Summary of optional ns-3 features:
 # Build profile                 : debug
 # Build directory               :
 # BRITE Integration             : not enabled (BRITE not enabled (see option --with-brite))
@@ -14,8 +14,8 @@
 # GNU Scientific Library (GSL)  : enabled
 # GtkConfigStore                : enabled
 # MPI Support                   : not enabled (option --enable-mpi not selected)
-# NS-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
-# NS-3 OpenFlow Integration     : not enabled (OpenFlow not enabled (see option --with-openflow))
+# ns-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
+# ns-3 OpenFlow Integration     : not enabled (OpenFlow not enabled (see option --with-openflow))
 # Netmap emulation FdNetDevice  : not enabled (needs net/netmap_user.h)
 # PyViz visualizer              : not enabled (Missing python modules: pygraphviz, gi.repository.GooCanvas)
 # Python API Scanning Support   : not enabled (castxml too old)
@@ -113,7 +113,7 @@ function(print_formatted_table_with_modules table_name modules output)
 endfunction()
 
 macro(write_configtable)
-  set(out "---- Summary of optional NS-3 features:\n")
+  set(out "---- Summary of optional ns-3 features:\n")
   string(APPEND out "Build profile                 : ${build_profile}\n")
   string(APPEND out
          "Build directory               : ${CMAKE_OUTPUT_DIRECTORY}\n"
@@ -142,13 +142,16 @@ macro(write_configtable)
   string(APPEND out "GtkConfigStore                : ")
   check_on_or_off("${NS3_GTK3}" "${GTK3_FOUND}")
 
+  string(APPEND out "LibXml2 support               : ")
+  check_on_or_off("ON" "${LIBXML2_FOUND}")
+
   string(APPEND out "MPI Support                   : ")
   check_on_or_off("${NS3_MPI}" "${MPI_FOUND}")
 
-  string(APPEND out "NS-3 Click Integration        : ")
+  string(APPEND out "ns-3 Click Integration        : ")
   check_on_or_off("ON" "${NS3_CLICK}")
 
-  string(APPEND out "NS-3 OpenFlow Integration     : ")
+  string(APPEND out "ns-3 OpenFlow Integration     : ")
   check_on_or_off("ON" "${NS3_OPENFLOW}")
 
   string(APPEND out "Netmap emulation FdNetDevice  : ")
@@ -157,15 +160,18 @@ macro(write_configtable)
   string(APPEND out "PyViz visualizer              : ")
   check_on_or_off("${NS3_VISUALIZER}" "${ENABLE_VISUALIZER}")
 
-  # string(APPEND out "Python API Scanning Support   : not enabled (castxml too
-  # old)
+  string(APPEND out "Python API Scanning Support   : ")
+  check_on_or_off(
+    "${NS3_SCAN_PYTHON_BINDINGS}" "${ENABLE_SCAN_PYTHON_BINDINGS}"
+  )
+
   string(APPEND out "Python Bindings               : ")
   check_on_or_off("${NS3_PYTHON_BINDINGS}" "${ENABLE_PYTHON_BINDINGS}")
 
   string(APPEND out "Real Time Simulator           : ")
   check_on_or_off("${NS3_REALTIME}" "${ENABLE_REALTIME}")
 
-  string(APPEND out "SQLite stats support          : ")
+  string(APPEND out "SQLite support                : ")
   check_on_or_off("${NS3_SQLITE}" "${ENABLE_SQLITE}")
 
   string(APPEND out "Tap Bridge                    : ")

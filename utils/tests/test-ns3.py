@@ -861,7 +861,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         return_code, stdout, stderr = run_ns3("show config")
         self.assertEqual(return_code, 0)
-        self.assertIn("Summary of optional NS-3 features", stdout)
+        self.assertIn("Summary of optional ns-3 features", stdout)
 
     def test_11_CheckProfile(self):
         """!
