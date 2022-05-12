@@ -317,4 +317,5 @@ int main (int argc, char *argv[]) {
   Simulator::Destroy ();
 
   // end main
+  return 0;
 }

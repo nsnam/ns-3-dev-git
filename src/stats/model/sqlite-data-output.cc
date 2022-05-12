@@ -76,21 +76,31 @@ SqliteDataOutput::Output (DataCollector &dc)
                                   "values (?, ?, ?, ?, ?)");
   NS_ASSERT (res);
 
+  // Create temporary strings to hold their value
+  // throughout the lifetime of the Bind and Step
+  // procedures
+  //
+  // DataCollector could return const std::string&,
+  // but that could break the python bindings
   res = m_sqliteOut->Bind (stmt, 1, run);
   NS_ASSERT (res);
-  res = m_sqliteOut->Bind (stmt, 2, dc.GetExperimentLabel ());
+  std::string experimentLabel = dc.GetExperimentLabel ();
+  res = m_sqliteOut->Bind (stmt, 2, experimentLabel);
   NS_ASSERT (res);
-  res = m_sqliteOut->Bind (stmt, 3, dc.GetStrategyLabel ());
+  std::string strategyLabel = dc.GetStrategyLabel ();
+  res = m_sqliteOut->Bind (stmt, 3, strategyLabel);
   NS_ASSERT (res);
-  res = m_sqliteOut->Bind (stmt, 4, dc.GetInputLabel ());
+  std::string inputLabel = dc.GetInputLabel();
+  res = m_sqliteOut->Bind (stmt, 4, inputLabel);
   NS_ASSERT (res);
-  res = m_sqliteOut->Bind (stmt, 5, dc.GetDescription ());
+  std::string description = dc.GetDescription ();
+  res = m_sqliteOut->Bind (stmt, 5, description);
   NS_ASSERT (res);
 
   res = m_sqliteOut->SpinStep (stmt);
   NS_ASSERT (res);
   res = m_sqliteOut->SpinFinalize (stmt);
-  NS_ASSERT (res);
+  NS_ASSERT (res == 0);
 
   res = m_sqliteOut->WaitExec ("CREATE TABLE IF NOT EXISTS " \
                                "Metadata ( run text, key text, value)");
@@ -124,6 +134,7 @@ SqliteDataOutput::Output (DataCollector &dc)
     }
   m_sqliteOut->SpinExec ("COMMIT");
   // end SqliteDataOutput::Output
+  m_sqliteOut->Unref();
 }
 
 SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
