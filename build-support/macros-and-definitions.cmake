@@ -1123,20 +1123,21 @@ macro(process_options)
     set(INT64X64_USE_CAIRO TRUE)
   endif()
 
-  include(CheckIncludeFileCXX) # Used to check a single header at a time
+  include(CheckIncludeFile)  # Used to check a single C header at a time
+  include(CheckIncludeFileCXX) # Used to check a single C++ header at a time
   include(CheckIncludeFiles) # Used to check multiple headers at once
   include(CheckFunctionExists)
 
   # Check for required headers and functions, set flags if they're found or warn
   # if they're not found
-  check_include_file_cxx("stdint.h" "HAVE_STDINT_H")
-  check_include_file_cxx("inttypes.h" "HAVE_INTTYPES_H")
-  check_include_file_cxx("sys/types.h" "HAVE_SYS_TYPES_H")
-  check_include_file_cxx("sys/stat.h" "HAVE_SYS_STAT_H")
-  check_include_file_cxx("dirent.h" "HAVE_DIRENT_H")
-  check_include_file_cxx("stdlib.h" "HAVE_STDLIB_H")
-  check_include_file_cxx("signal.h" "HAVE_SIGNAL_H")
-  check_include_file_cxx("netpacket/packet.h" "HAVE_PACKETH")
+  check_include_file("stdint.h" "HAVE_STDINT_H")
+  check_include_file("inttypes.h" "HAVE_INTTYPES_H")
+  check_include_file("sys/types.h" "HAVE_SYS_TYPES_H")
+  check_include_file("sys/stat.h" "HAVE_SYS_STAT_H")
+  check_include_file("dirent.h" "HAVE_DIRENT_H")
+  check_include_file("stdlib.h" "HAVE_STDLIB_H")
+  check_include_file("signal.h" "HAVE_SIGNAL_H")
+  check_include_file("netpacket/packet.h" "HAVE_PACKETH")
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(
