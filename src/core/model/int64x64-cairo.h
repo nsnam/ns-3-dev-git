@@ -201,7 +201,7 @@ public:
   /** Explicit bool conversion. */
   inline explicit operator bool () const
   {
-    return (_v != 0);
+    return (_v.hi != 0 || _v.lo != 0);
   }
 
   /**
