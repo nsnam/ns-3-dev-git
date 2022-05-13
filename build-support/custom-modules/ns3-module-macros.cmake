@@ -488,7 +488,6 @@ function(build_lib_example)
 
   # Get path src/module or contrib/module
   string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER "${CMAKE_CURRENT_SOURCE_DIR}")
-  get_filename_component(FOLDER ${FOLDER} DIRECTORY)
 
   # cmake-format: on
   check_for_missing_libraries(
@@ -524,7 +523,7 @@ function(build_lib_example)
 
     set_runtime_outputdirectory(
       ${BLIB_EXAMPLE_NAME}
-      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/ ""
     )
   endif()
 endfunction()
