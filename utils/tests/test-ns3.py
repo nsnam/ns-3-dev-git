@@ -1679,6 +1679,27 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Remove second
         os.remove("./scratch/second.cc")
 
+        NS3BuildBaseTestCase.cleaned_once = False
+
+    def test_12_StaticBuilds(self):
+        """!
+        Test if we can build a static ns-3 library and link it to static programs
+        @return None
+        """
+        # First enable examples and static build
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --disable-gtk --enable-static")
+
+        # If configuration passes, we are half way done
+        self.assertEqual(return_code, 0)
+
+        # Then try to build one example
+        return_code, stdout, stderr = run_ns3('build sample-simulator')
+        self.assertEqual(return_code, 0)
+        self.assertIn("Built target", stdout)
+
+        # Maybe check the built binary for shared library references? Using objdump, otool, etc
+        NS3BuildBaseTestCase.cleaned_once = False
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!

@@ -22,6 +22,10 @@ foreach(libname ${libs})
   endif()
 endforeach()
 
+# Prevents link errors due to symbol collisions if the same library is linked
+# multiple times
+list(REMOVE_DUPLICATES ns3-external-libs)
+
 # Build the lib-ns3-static (ns3.x-static-buildtype.a/.lib) with all sublibraries
 if(${NS3_STATIC})
   add_library(
@@ -47,6 +51,11 @@ if(${NS3_STATIC})
       )
     endif()
   endforeach()
+
+  # Required by some static libraries, such as sqlite, for some odd reason
+  if(LINUX)
+    list(APPEND ns3-external-static-libs -ldl)
+  endif()
 
   target_link_libraries(
     ${lib-ns3-static}

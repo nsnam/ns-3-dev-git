@@ -47,6 +47,7 @@ if(${ENABLE_REALTIME})
     NAME main-test-sync
     SOURCE_FILES main-test-sync.cc
     LIBRARIES_TO_LINK ${libnetwork}
+                      ${CMAKE_THREAD_LIBS_INIT}
   )
 endif()
 

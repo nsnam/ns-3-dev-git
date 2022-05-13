@@ -20,5 +20,6 @@ if(${ENABLE_MPI})
       ${libnix-vector-routing}
       ${libapplications}
       ${libmpi}
+      ${MPI_CXX_LIBRARIES}
   )
 endif()

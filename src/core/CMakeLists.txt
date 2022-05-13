@@ -1,8 +1,14 @@
 # Set lib core link dependencies
-set(libraries_to_link)
+set(libraries_to_link
+    ${CMAKE_THREAD_LIBS_INIT}
+)
 
 set(gsl_test_sources)
 if(${GSL_FOUND})
+  set(libraries_to_link
+      ${libraries_to_link}
+      ${GSL_LIBRARIES}
+  )
   set(gsl_test_sources
       test/rng-test-suite.cc
       test/random-variable-stream-test-suite.cc
@@ -68,6 +74,10 @@ if(${ENABLE_REALTIME})
   set(rt_headers
       model/realtime-simulator-impl.h
       model/wall-clock-synchronizer.h
+  )
+  set(libraries_to_link
+      ${libraries_to_link}
+      ${LIBRT}
   )
 endif()
 

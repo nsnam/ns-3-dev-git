@@ -11,6 +11,7 @@ if(${ENABLE_MPI})
   )
   set(mpi_libraries
       ${libmpi}
+      ${MPI_CXX_LIBRARIES}
   )
 endif()
 
