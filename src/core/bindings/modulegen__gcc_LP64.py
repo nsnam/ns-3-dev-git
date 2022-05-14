@@ -1215,9 +1215,9 @@ def register_Ns3Length_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Length const &', 'other'), param('double', 'tolerance', default_value='ns3::Length::DEFAULT_TOLERANCE')], 
                    is_const=True)
-    ## length.h (module 'core'): static std::tuple<bool, ns3::Length> ns3::Length::TryParse(double value, std::string const & unit) [member function]
+    ## length.h (module 'core'): static std::optional<ns3::Length> ns3::Length::TryParse(double value, std::string const & unit) [member function]
     cls.add_method('TryParse', 
-                   'std::tuple< bool, ns3::Length >', 
+                   'std::optional< ns3::Length >', 
                    [param('double', 'value'), param('std::string const &', 'unit')], 
                    is_static=True)
     ## length.h (module 'core'): void ns3::Length::swap(ns3::Length & other) [member function]
@@ -5379,9 +5379,9 @@ def register_functions(root_module):
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'value')])
-    ## length.h (module 'core'): std::tuple<bool, ns3::Length::Unit> ns3::FromString(std::string unitString) [free function]
+    ## length.h (module 'core'): std::optional<ns3::Length::Unit> ns3::FromString(std::string unitString) [free function]
     module.add_function('FromString', 
-                        'std::tuple< bool, ns3::Length::Unit >', 
+                        'std::optional< ns3::Length::Unit >', 
                         [param('std::string', 'unitString')])
     ## log.h (module 'core'): ns3::LogComponent & ns3::GetLogComponent(std::string const name) [free function]
     module.add_function('GetLogComponent', 
