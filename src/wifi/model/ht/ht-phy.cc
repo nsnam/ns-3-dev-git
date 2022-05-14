@@ -60,7 +60,7 @@ HtPhy::HtPhy(uint8_t maxNss /* = 1 */, bool buildModeList /* = true */)
     m_maxSupportedMcsIndexPerSs = m_maxMcsIndexPerSs;
     if (buildModeList)
     {
-        NS_ABORT_MSG_IF(maxNss == 0 || maxNss > 4,
+        NS_ABORT_MSG_IF(maxNss == 0 || maxNss > HT_MAX_NSS,
                         "Unsupported max Nss " << +maxNss << " for HT PHY");
         BuildModeList();
     }
@@ -196,7 +196,7 @@ HtPhy::SetMaxSupportedNss(uint8_t maxNss)
 {
     NS_LOG_FUNCTION(this << +maxNss);
     NS_ASSERT(m_bssMembershipSelector == HT_PHY);
-    NS_ABORT_MSG_IF(maxNss == 0 || maxNss > 4, "Unsupported max Nss " << +maxNss << " for HT PHY");
+    maxNss = std::min(HT_MAX_NSS, maxNss);
     if (maxNss != m_maxSupportedNss)
     {
         NS_LOG_LOGIC("Rebuild mode list since max number of spatial streams has changed");

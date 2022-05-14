@@ -37,6 +37,9 @@ namespace ns3
  */
 #define HT_PHY 127
 
+/// Maximum number of supported NSS by HT PHY
+constexpr uint8_t HT_MAX_NSS = 4;
+
 /**
  * \brief PHY entity for HT (11n)
  * \ingroup wifi

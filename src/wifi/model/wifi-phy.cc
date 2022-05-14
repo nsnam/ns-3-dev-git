@@ -1249,7 +1249,7 @@ void
 WifiPhy::SetNumberOfAntennas(uint8_t antennas)
 {
     NS_LOG_FUNCTION(this << +antennas);
-    NS_ASSERT_MSG(antennas > 0 && antennas <= 4, "unsupported number of antennas");
+    NS_ASSERT_MSG(antennas > 0 && antennas <= 8, "unsupported number of antennas");
     m_numberOfAntennas = antennas;
     if (m_interference)
     {
