@@ -1725,6 +1725,11 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     NS_ASSERT(!m_state->IsStateTx() && !m_state->IsStateSwitching());
     NS_ASSERT(m_endTxEvent.IsExpired());
 
+    if (!txVector.IsValid())
+    {
+        NS_FATAL_ERROR("TX-VECTOR is invalid!");
+    }
+
     if (txVector.GetNssMax() > GetMaxSupportedTxSpatialStreams())
     {
         NS_FATAL_ERROR("Unsupported number of spatial streams!");
