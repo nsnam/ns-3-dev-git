@@ -17,8 +17,11 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/ap-wifi-mac.h"
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/he-configuration.h"
 #include "ns3/he-phy.h"
-#include "ns3/he-ppdu.h"
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/multi-model-spectrum-channel.h"
@@ -30,14 +33,15 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/test.h"
+#include "ns3/uinteger.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/wifi-utils.h"
 
 #include <list>
+#include <tuple>
 
 using namespace ns3;
 
@@ -199,6 +203,13 @@ class MuMimoTestHePhy : public HePhy
      */
     uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const override;
 
+    /**
+     * Set the global PPDU UID counter.
+     *
+     * \param uid the value to which the global PPDU UID counter should be set
+     */
+    void SetGlobalPpduUid(uint64_t uid);
+
   private:
     uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
 };                    // class MuMimoTestHePhy
@@ -217,6 +228,12 @@ MuMimoTestHePhy::GetStaId(const Ptr<const WifiPpdu> ppdu) const
         return m_staId;
     }
     return HePhy::GetStaId(ppdu);
+}
+
+void
+MuMimoTestHePhy::SetGlobalPpduUid(uint64_t uid)
+{
+    m_globalPpduUid = uid;
 }
 
 /**
@@ -238,10 +255,29 @@ class MuMimoSpectrumWifiPhy : public SpectrumWifiPhy
     MuMimoSpectrumWifiPhy(uint16_t staId);
     ~MuMimoSpectrumWifiPhy() override;
 
+    /**
+     * Set the global PPDU UID counter.
+     *
+     * \param uid the value to which the global PPDU UID counter should be set
+     */
+    void SetPpduUid(uint64_t uid);
+
+    /**
+     * Since we assume trigger frame was previously received from AP, this is used to set its UID
+     *
+     * \param uid the PPDU UID of the trigger frame
+     */
+    void SetTriggerFrameUid(uint64_t uid);
+
+    /**
+     * \return the current event
+     */
+    Ptr<Event> GetCurrentEvent();
+
+  private:
     void DoInitialize() override;
     void DoDispose() override;
 
-  private:
     Ptr<MuMimoTestHePhy> m_ofdmTestHePhy; ///< Pointer to HE PHY instance used for MU-MIMO test
 };                                        // class MuMimoSpectrumWifiPhy
 
@@ -277,6 +313,25 @@ MuMimoSpectrumWifiPhy::DoDispose()
 {
     m_ofdmTestHePhy = nullptr;
     SpectrumWifiPhy::DoDispose();
+}
+
+void
+MuMimoSpectrumWifiPhy::SetPpduUid(uint64_t uid)
+{
+    m_ofdmTestHePhy->SetGlobalPpduUid(uid);
+    m_previouslyRxPpduUid = uid;
+}
+
+void
+MuMimoSpectrumWifiPhy::SetTriggerFrameUid(uint64_t uid)
+{
+    m_previouslyRxPpduUid = uid;
+}
+
+Ptr<Event>
+MuMimoSpectrumWifiPhy::GetCurrentEvent()
+{
+    return m_currentEvent;
 }
 
 /**
@@ -1067,6 +1122,735 @@ TestDlMuMimoPhyTransmission::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief UL MU-MIMO PHY test
+ */
+class TestUlMuMimoPhyTransmission : public TestCase
+{
+  public:
+    TestUlMuMimoPhyTransmission();
+
+  private:
+    void DoSetup() override;
+    void DoTeardown() override;
+    void DoRun() override;
+
+    /**
+     * Get TXVECTOR for HE TB PPDU.
+     * \param txStaId the ID of the TX STA
+     * \param nss the number of spatial streams used for the transmission
+     * \param bssColor the BSS color of the TX STA
+     * \return the TXVECTOR for HE TB PPDU
+     */
+    WifiTxVector GetTxVectorForHeTbPpdu(uint16_t txStaId, uint8_t nss, uint8_t bssColor) const;
+    /**
+     * Set TRIGVECTOR for HE TB PPDU
+     *
+     * \param staIds the IDs of the STAs sollicited for the HE TB transmission
+     * \param bssColor the BSS color of the TX STA
+     */
+    void SetTrigVector(const std::vector<uint16_t>& staIds, uint8_t bssColor);
+    /**
+     * Send HE TB PPDU function
+     * \param txStaId the ID of the TX STA
+     * \param nss the number of spatial streams used for the transmission
+     * \param payloadSize the size of the payload in bytes
+     * \param uid the UID of the trigger frame that is initiating this transmission
+     * \param bssColor the BSS color of the TX STA
+     */
+    void SendHeTbPpdu(uint16_t txStaId,
+                      uint8_t nss,
+                      std::size_t payloadSize,
+                      uint64_t uid,
+                      uint8_t bssColor);
+
+    /**
+     * Send HE SU PPDU function
+     * \param txStaId the ID of the TX STA
+     * \param payloadSize the size of the payload in bytes
+     * \param uid the UID of the trigger frame that is initiating this transmission
+     * \param bssColor the BSS color of the TX STA
+     */
+    void SendHeSuPpdu(uint16_t txStaId, std::size_t payloadSize, uint64_t uid, uint8_t bssColor);
+
+    /**
+     * Set the BSS color
+     * \param phy the PHY
+     * \param bssColor the BSS color
+     */
+    void SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor);
+
+    /**
+     * Run one function
+     */
+    void RunOne();
+
+    /**
+     * Check the received PSDUs from a given STA
+     * \param staId the ID of the STA to check
+     * \param expectedSuccess the expected number of success
+     * \param expectedFailures the expected number of failures
+     * \param expectedBytes the expected number of bytes
+     */
+    void CheckRxFromSta(uint16_t staId,
+                        uint32_t expectedSuccess,
+                        uint32_t expectedFailures,
+                        uint32_t expectedBytes);
+
+    /**
+     * Verify all events are cleared at end of TX or RX
+     */
+    void VerifyEventsCleared();
+
+    /**
+     * Check the PHY state
+     * \param phy the PHY
+     * \param expectedState the expected state of the PHY
+     */
+    void CheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
+    /// \copydoc CheckPhyState
+    void DoCheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy, WifiPhyState expectedState);
+
+    /**
+     * Reset function
+     */
+    void Reset();
+
+    /**
+     * Receive success function
+     * \param psdu the PSDU
+     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * \param txVector the transmit vector
+     * \param statusPerMpdu reception status per MPDU
+     */
+    void RxSuccess(Ptr<const WifiPsdu> psdu,
+                   RxSignalInfo rxSignalInfo,
+                   WifiTxVector txVector,
+                   std::vector<bool> statusPerMpdu);
+
+    /**
+     * Receive failure function
+     * \param psdu the PSDU
+     */
+    void RxFailure(Ptr<const WifiPsdu> psdu);
+
+    /**
+     * Schedule test to perform.
+     * The interference generation should be scheduled apart.
+     *
+     * \param delay the reference delay to schedule the events
+     * \param txStaIds the IDs of the STAs planned to transmit an HE TB PPDU
+     * \param expectedStateAtEnd the expected state of the PHY at the end of the reception
+     * \param expectedCountersPerSta the expected counters per STA
+     */
+    void ScheduleTest(
+        Time delay,
+        const std::vector<uint16_t>& txStaIds,
+        WifiPhyState expectedStateAtEnd,
+        const std::vector<std::tuple<uint32_t, uint32_t, uint32_t>>& expectedCountersPerSta);
+
+    /**
+     * Log scenario description
+     *
+     * \param log the scenario description to add to log
+     */
+    void LogScenario(const std::string& log) const;
+
+    Ptr<MuMimoSpectrumWifiPhy> m_phyAp;                ///< PHY of AP
+    std::vector<Ptr<MuMimoSpectrumWifiPhy>> m_phyStas; ///< PHYs of STAs
+
+    std::vector<uint32_t> m_countRxSuccessFromStas; ///< count RX success from STAs
+    std::vector<uint32_t> m_countRxFailureFromStas; ///< count RX failure from STAs
+    std::vector<uint32_t> m_countRxBytesFromStas;   ///< count RX bytes from STAs
+
+    Time m_delayStart;           ///< delay between the start of each HE TB PPDUs
+    uint16_t m_frequency;        ///< frequency in MHz
+    uint16_t m_channelWidth;     ///< channel width in MHz
+    Time m_expectedPpduDuration; ///< expected duration to send MU PPDU
+};
+
+TestUlMuMimoPhyTransmission::TestUlMuMimoPhyTransmission()
+    : TestCase("UL MU-MIMO PHY test"),
+      m_countRxSuccessFromStas{},
+      m_countRxFailureFromStas{},
+      m_countRxBytesFromStas{},
+      m_delayStart{Seconds(0)},
+      m_frequency{DEFAULT_FREQUENCY},
+      m_channelWidth{DEFAULT_CHANNEL_WIDTH},
+      m_expectedPpduDuration{NanoSeconds(271200)}
+{
+}
+
+void
+TestUlMuMimoPhyTransmission::SendHeSuPpdu(uint16_t txStaId,
+                                          std::size_t payloadSize,
+                                          uint64_t uid,
+                                          uint8_t bssColor)
+{
+    NS_LOG_FUNCTION(this << txStaId << payloadSize << uid << +bssColor);
+    WifiConstPsduMap psdus;
+
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         800,
+                                         1,
+                                         1,
+                                         0,
+                                         m_channelWidth,
+                                         false,
+                                         false,
+                                         false,
+                                         bssColor);
+
+    Ptr<Packet> pkt = Create<Packet>(payloadSize);
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    hdr.SetQosTid(0);
+    hdr.SetAddr1(Mac48Address("00:00:00:00:00:00"));
+    std::ostringstream addr;
+    addr << "00:00:00:00:00:0" << txStaId;
+    hdr.SetAddr2(Mac48Address(addr.str().c_str()));
+    hdr.SetSequenceNumber(1);
+    Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
+    psdus.insert(std::make_pair(SU_STA_ID, psdu));
+
+    Ptr<MuMimoSpectrumWifiPhy> phy = (txStaId == 0) ? m_phyAp : m_phyStas.at(txStaId - 1);
+    phy->SetPpduUid(uid);
+    phy->Send(psdus, txVector);
+}
+
+WifiTxVector
+TestUlMuMimoPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
+                                                    uint8_t nss,
+                                                    uint8_t bssColor) const
+{
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_TB,
+                                         1600,
+                                         1,
+                                         nss,
+                                         0,
+                                         m_channelWidth,
+                                         false,
+                                         false,
+                                         false,
+                                         bssColor);
+
+    HeRu::RuSpec ru(HeRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
+    txVector.SetRu(ru, txStaId);
+    txVector.SetMode(HePhy::GetHeMcs7(), txStaId);
+    txVector.SetNss(nss, txStaId);
+
+    return txVector;
+}
+
+void
+TestUlMuMimoPhyTransmission::SetTrigVector(const std::vector<uint16_t>& staIds, uint8_t bssColor)
+{
+    WifiTxVector txVector(HePhy::GetHeMcs7(),
+                          0,
+                          WIFI_PREAMBLE_HE_TB,
+                          1600,
+                          1,
+                          1,
+                          0,
+                          m_channelWidth,
+                          false,
+                          false,
+                          false,
+                          bssColor);
+
+    HeRu::RuSpec ru(HeRu::GetRuType(m_channelWidth), 1, true); // full BW MU-MIMO
+    for (auto staId : staIds)
+    {
+        txVector.SetRu(ru, staId);
+        txVector.SetMode(HePhy::GetHeMcs7(), staId);
+        txVector.SetNss(1, staId);
+    }
+
+    uint16_t length;
+    std::tie(length, m_expectedPpduDuration) =
+        HePhy::ConvertHeTbPpduDurationToLSigLength(m_expectedPpduDuration,
+                                                   txVector,
+                                                   m_phyAp->GetPhyBand());
+    txVector.SetLength(length);
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    hePhyAp->SetTrigVector(txVector, m_expectedPpduDuration);
+}
+
+void
+TestUlMuMimoPhyTransmission::SendHeTbPpdu(uint16_t txStaId,
+                                          uint8_t nss,
+                                          std::size_t payloadSize,
+                                          uint64_t uid,
+                                          uint8_t bssColor)
+{
+    NS_LOG_FUNCTION(this << txStaId << +nss << payloadSize << uid << +bssColor);
+    WifiConstPsduMap psdus;
+
+    WifiTxVector txVector = GetTxVectorForHeTbPpdu(txStaId, nss, bssColor);
+    Ptr<Packet> pkt = Create<Packet>(payloadSize);
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    hdr.SetQosTid(0);
+    hdr.SetAddr1(Mac48Address("00:00:00:00:00:00"));
+    std::ostringstream addr;
+    addr << "00:00:00:00:00:0" << txStaId;
+    hdr.SetAddr2(Mac48Address(addr.str().c_str()));
+    hdr.SetSequenceNumber(1);
+    Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
+    psdus.insert(std::make_pair(txStaId, psdu));
+
+    Ptr<MuMimoSpectrumWifiPhy> phy = m_phyStas.at(txStaId - 1);
+    Time txDuration =
+        phy->CalculateTxDuration(psdu->GetSize(), txVector, phy->GetPhyBand(), txStaId);
+    txVector.SetLength(
+        HePhy::ConvertHeTbPpduDurationToLSigLength(txDuration, txVector, phy->GetPhyBand()).first);
+
+    phy->SetPpduUid(uid);
+    phy->Send(psdus, txVector);
+}
+
+void
+TestUlMuMimoPhyTransmission::RxSuccess(Ptr<const WifiPsdu> psdu,
+                                       RxSignalInfo rxSignalInfo,
+                                       WifiTxVector txVector,
+                                       std::vector<bool> /*statusPerMpdu*/)
+{
+    NS_LOG_FUNCTION(this << *psdu << psdu->GetAddr2() << RatioToDb(rxSignalInfo.snr) << txVector);
+    NS_TEST_ASSERT_MSG_EQ((RatioToDb(rxSignalInfo.snr) > 0), true, "Incorrect SNR value");
+    for (std::size_t index = 0; index < m_countRxSuccessFromStas.size(); ++index)
+    {
+        std::ostringstream addr;
+        addr << "00:00:00:00:00:0" << index + 1;
+        if (psdu->GetAddr2() == Mac48Address(addr.str().c_str()))
+        {
+            m_countRxSuccessFromStas.at(index)++;
+            m_countRxBytesFromStas.at(index) += (psdu->GetSize() - 30);
+            break;
+        }
+    }
+}
+
+void
+TestUlMuMimoPhyTransmission::RxFailure(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu << psdu->GetAddr2());
+    for (std::size_t index = 0; index < m_countRxFailureFromStas.size(); ++index)
+    {
+        std::ostringstream addr;
+        addr << "00:00:00:00:00:0" << index + 1;
+        if (psdu->GetAddr2() == Mac48Address(addr.str().c_str()))
+        {
+            m_countRxFailureFromStas.at(index)++;
+            break;
+        }
+    }
+}
+
+void
+TestUlMuMimoPhyTransmission::CheckRxFromSta(uint16_t staId,
+                                            uint32_t expectedSuccess,
+                                            uint32_t expectedFailures,
+                                            uint32_t expectedBytes)
+{
+    NS_LOG_FUNCTION(this << staId << expectedSuccess << expectedFailures << expectedBytes);
+    NS_TEST_ASSERT_MSG_EQ(m_countRxSuccessFromStas[staId - 1],
+                          expectedSuccess,
+                          "The number of successfully received packets from STA "
+                              << staId << " is not correct!");
+    NS_TEST_ASSERT_MSG_EQ(m_countRxFailureFromStas[staId - 1],
+                          expectedFailures,
+                          "The number of unsuccessfully received packets from STA "
+                              << staId << " is not correct!");
+    NS_TEST_ASSERT_MSG_EQ(m_countRxBytesFromStas[staId - 1],
+                          expectedBytes,
+                          "The number of bytes received from STA " << staId << " is not correct!");
+}
+
+void
+TestUlMuMimoPhyTransmission::VerifyEventsCleared()
+{
+    NS_TEST_ASSERT_MSG_EQ(m_phyAp->GetCurrentEvent(),
+                          nullptr,
+                          "m_currentEvent for AP was not cleared");
+    std::size_t sta = 1;
+    for (auto& phy : m_phyStas)
+    {
+        NS_TEST_ASSERT_MSG_EQ(phy->GetCurrentEvent(),
+                              nullptr,
+                              "m_currentEvent for STA " << sta << " was not cleared");
+        sta++;
+    }
+}
+
+void
+TestUlMuMimoPhyTransmission::CheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy,
+                                           WifiPhyState expectedState)
+{
+    // This is needed to make sure PHY state will be checked as the last event if a state change
+    // occurred at the exact same time as the check
+    Simulator::ScheduleNow(&TestUlMuMimoPhyTransmission::DoCheckPhyState, this, phy, expectedState);
+}
+
+void
+TestUlMuMimoPhyTransmission::DoCheckPhyState(Ptr<MuMimoSpectrumWifiPhy> phy,
+                                             WifiPhyState expectedState)
+{
+    WifiPhyState currentState;
+    PointerValue ptr;
+    phy->GetAttribute("State", ptr);
+    Ptr<WifiPhyStateHelper> state = DynamicCast<WifiPhyStateHelper>(ptr.Get<WifiPhyStateHelper>());
+    currentState = state->GetState();
+    NS_LOG_FUNCTION(this << currentState << expectedState);
+    NS_TEST_ASSERT_MSG_EQ(currentState,
+                          expectedState,
+                          "PHY State " << currentState << " does not match expected state "
+                                       << expectedState << " at " << Simulator::Now());
+}
+
+void
+TestUlMuMimoPhyTransmission::Reset()
+{
+    for (auto& counter : m_countRxSuccessFromStas)
+    {
+        counter = 0;
+    }
+    for (auto& counter : m_countRxFailureFromStas)
+    {
+        counter = 0;
+    }
+    for (auto& counter : m_countRxBytesFromStas)
+    {
+        counter = 0;
+    }
+    for (auto& phy : m_phyStas)
+    {
+        phy->SetPpduUid(0);
+        phy->SetTriggerFrameUid(0);
+    }
+    SetBssColor(m_phyAp, 0);
+}
+
+void
+TestUlMuMimoPhyTransmission::SetBssColor(Ptr<WifiPhy> phy, uint8_t bssColor)
+{
+    Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice>(phy->GetDevice());
+    Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration();
+    heConfiguration->SetAttribute("BssColor", UintegerValue(bssColor));
+}
+
+void
+TestUlMuMimoPhyTransmission::DoSetup()
+{
+    // WifiHelper::EnableLogComponents();
+    // LogComponentEnable("WifiPhyMuMimoTest", LOG_LEVEL_ALL);
+
+    Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
+        CreateObject<ConstantSpeedPropagationDelayModel>();
+    spectrumChannel->SetPropagationDelayModel(delayModel);
+
+    Ptr<Node> apNode = CreateObject<Node>();
+    Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
+    apDev->SetStandard(WIFI_STANDARD_80211ax);
+    Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac>();
+    apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+    apDev->SetMac(apMac);
+    m_phyAp = CreateObject<MuMimoSpectrumWifiPhy>(0);
+    Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration>();
+    apDev->SetHeConfiguration(heConfiguration);
+    Ptr<InterferenceHelper> apInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_phyAp->SetInterferenceHelper(apInterferenceHelper);
+    Ptr<ErrorRateModel> apErrorModel = CreateObject<NistErrorRateModel>();
+    m_phyAp->SetErrorRateModel(apErrorModel);
+    m_phyAp->SetDevice(apDev);
+    m_phyAp->AddChannel(spectrumChannel);
+    m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_phyAp->SetReceiveOkCallback(MakeCallback(&TestUlMuMimoPhyTransmission::RxSuccess, this));
+    m_phyAp->SetReceiveErrorCallback(MakeCallback(&TestUlMuMimoPhyTransmission::RxFailure, this));
+    apDev->SetPhy(m_phyAp);
+    apNode->AddDevice(apDev);
+
+    for (std::size_t i = 1; i <= 4; ++i)
+    {
+        Ptr<Node> staNode = CreateObject<Node>();
+        Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice>();
+        staDev->SetStandard(WIFI_STANDARD_80211ax);
+        Ptr<MuMimoSpectrumWifiPhy> phy = CreateObject<MuMimoSpectrumWifiPhy>(i);
+        staDev->SetHeConfiguration(CreateObject<HeConfiguration>());
+        Ptr<InterferenceHelper> staInterferenceHelper = CreateObject<InterferenceHelper>();
+        phy->SetInterferenceHelper(staInterferenceHelper);
+        Ptr<ErrorRateModel> staErrorModel = CreateObject<NistErrorRateModel>();
+        phy->SetErrorRateModel(staErrorModel);
+        phy->SetDevice(staDev);
+        phy->AddChannel(spectrumChannel);
+        phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+        phy->SetAttribute("TxGain", DoubleValue(1.0));
+        phy->SetAttribute("TxPowerStart", DoubleValue(16.0));
+        phy->SetAttribute("TxPowerEnd", DoubleValue(16.0));
+        phy->SetAttribute("PowerDensityLimit", DoubleValue(100.0)); // no impact by default
+        phy->SetAttribute("RxGain", DoubleValue(2.0));
+        staDev->SetPhy(phy);
+        staNode->AddDevice(staDev);
+        m_phyStas.push_back(phy);
+        m_countRxSuccessFromStas.push_back(0);
+        m_countRxFailureFromStas.push_back(0);
+        m_countRxBytesFromStas.push_back(0);
+    }
+}
+
+void
+TestUlMuMimoPhyTransmission::DoTeardown()
+{
+    for (auto& phy : m_phyStas)
+    {
+        phy->Dispose();
+        phy = nullptr;
+    }
+}
+
+void
+TestUlMuMimoPhyTransmission::LogScenario(const std::string& log) const
+{
+    NS_LOG_INFO(log);
+}
+
+void
+TestUlMuMimoPhyTransmission::ScheduleTest(
+    Time delay,
+    const std::vector<uint16_t>& txStaIds,
+    WifiPhyState expectedStateAtEnd,
+    const std::vector<std::tuple<uint32_t, uint32_t, uint32_t>>& expectedCountersPerSta)
+{
+    static uint64_t uid = 0;
+
+    // AP sends an SU packet preceding HE TB PPDUs
+    Simulator::Schedule(delay - MilliSeconds(10),
+                        &TestUlMuMimoPhyTransmission::SendHeSuPpdu,
+                        this,
+                        0,
+                        50,
+                        ++uid,
+                        0);
+
+    Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::SetTrigVector, this, txStaIds, 0);
+
+    // STAs send MU UL PPDUs addressed to AP
+    uint16_t payloadSize = 1000;
+    std::size_t index = 0;
+    for (auto txStaId : txStaIds)
+    {
+        Simulator::Schedule(delay + (index * m_delayStart),
+                            &TestUlMuMimoPhyTransmission::SendHeTbPpdu,
+                            this,
+                            txStaId,
+                            1,
+                            payloadSize,
+                            uid,
+                            0);
+        payloadSize++;
+        index++;
+    }
+
+    // Verify it takes m_expectedPpduDuration to transmit the PPDUs
+    Simulator::Schedule(delay + m_expectedPpduDuration - NanoSeconds(1),
+                        &TestUlMuMimoPhyTransmission::CheckPhyState,
+                        this,
+                        m_phyAp,
+                        WifiPhyState::RX);
+    Simulator::Schedule(delay + m_expectedPpduDuration +
+                            (m_delayStart * expectedCountersPerSta.size()),
+                        &TestUlMuMimoPhyTransmission::CheckPhyState,
+                        this,
+                        m_phyAp,
+                        expectedStateAtEnd);
+
+    delay += MilliSeconds(100);
+    // Check reception state from STAs
+    uint16_t staId = 1;
+    for (const auto& expectedCounters : expectedCountersPerSta)
+    {
+        uint16_t expectedSuccessFromSta = std::get<0>(expectedCounters);
+        uint16_t expectedFailuresFromSta = std::get<1>(expectedCounters);
+        uint16_t expectedBytesFromSta = std::get<2>(expectedCounters);
+        Simulator::Schedule(delay + (m_delayStart * (staId - 1)),
+                            &TestUlMuMimoPhyTransmission::CheckRxFromSta,
+                            this,
+                            staId,
+                            expectedSuccessFromSta,
+                            expectedFailuresFromSta,
+                            expectedBytesFromSta);
+        staId++;
+    }
+
+    // Verify events data have been cleared
+    Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::VerifyEventsCleared, this);
+
+    delay += MilliSeconds(100);
+    Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::Reset, this);
+}
+
+void
+TestUlMuMimoPhyTransmission::RunOne()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    int64_t streamNumber = 0;
+    m_phyAp->AssignStreams(streamNumber);
+    for (auto& phy : m_phyStas)
+    {
+        phy->AssignStreams(streamNumber);
+    }
+
+    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
+                                                                      m_frequency,
+                                                                      m_channelWidth,
+                                                                      WIFI_STANDARD_80211ax,
+                                                                      WIFI_PHY_BAND_5GHZ));
+
+    m_phyAp->SetOperatingChannel(
+        WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
+    for (auto& phy : m_phyStas)
+    {
+        phy->SetOperatingChannel(
+            WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
+    }
+
+    Time delay = Seconds(0.0);
+    Simulator::Schedule(delay, &TestUlMuMimoPhyTransmission::Reset, this);
+    delay += Seconds(1.0);
+
+    //---------------------------------------------------------------------------
+    // Verify that all HE TB PPDUs using full BW MU-MIMO have been corrected received
+    Simulator::Schedule(delay,
+                        &TestUlMuMimoPhyTransmission::LogScenario,
+                        this,
+                        "Reception of HE TB PPDUs using full BW MU-MIMO");
+    ScheduleTest(delay,
+                 {1, 2, 3},
+                 WifiPhyState::IDLE,
+                 {
+                     std::make_tuple(1, 0, 1000), // One PSDU of 1000 bytes should have been
+                                                  // successfully received from STA 1
+                     std::make_tuple(1, 0, 1001), // One PSDU of 1001 bytes should have been
+                                                  // successfully received from STA 2
+                     std::make_tuple(1, 0, 1002)  // One PSDU of 1002 bytes should have been
+                                                  // successfully received from STA 3
+                 });
+    delay += Seconds(1.0);
+
+    //---------------------------------------------------------------------------
+    // Send an HE SU PPDU during 400 ns window and verify that all HE TB PPDUs using full BW MU-MIMO
+    // have been impacted
+    Simulator::Schedule(delay,
+                        &TestUlMuMimoPhyTransmission::LogScenario,
+                        this,
+                        "Reception of HE TB PPDUs HE TB PPDUs using full BW MU-MIMO with an HE SU "
+                        "PPDU arriving during the 400 ns window");
+    // One HE SU arrives at AP during the 400ns window
+    Simulator::Schedule(delay + NanoSeconds(150),
+                        &TestUlMuMimoPhyTransmission::SendHeSuPpdu,
+                        this,
+                        4,
+                        1002,
+                        2,
+                        0);
+    ScheduleTest(delay,
+                 {1, 2, 3},
+                 WifiPhyState::IDLE,
+                 {
+                     std::make_tuple(0, 1, 0), // Reception of the PSDU from STA 1 should have
+                                               // failed (since interference from STA 4)
+                     std::make_tuple(0, 1, 0), // Reception of the PSDU from STA 2 should have
+                                               // failed (since interference from STA 4)
+                     std::make_tuple(0, 1, 0) // Reception of the PSDU from STA 3 should have failed
+                                              // (since interference from STA 4)
+                 });
+    delay += Seconds(1.0);
+
+    //---------------------------------------------------------------------------
+    // Send an HE SU PPDU during HE portion reception and verify that all HE TB PPDUs have been
+    // impacted
+    Simulator::Schedule(delay,
+                        &TestUlMuMimoPhyTransmission::LogScenario,
+                        this,
+                        "Reception of HE TB PPDUs using full BW MU-MIMO with an HE SU PPDU "
+                        "arriving during the HE portion");
+    // One HE SU arrives at AP during the HE portion
+    Simulator::Schedule(delay + MicroSeconds(40),
+                        &TestUlMuMimoPhyTransmission::SendHeSuPpdu,
+                        this,
+                        4,
+                        1002,
+                        2,
+                        0);
+    ScheduleTest(delay,
+                 {1, 2, 3},
+                 WifiPhyState::CCA_BUSY,
+                 {
+                     std::make_tuple(0, 1, 0), // Reception of the PSDU from STA 1 should have
+                                               // failed (since interference from STA 4)
+                     std::make_tuple(0, 1, 0), // Reception of the PSDU from STA 2 should have
+                                               // failed (since interference from STA 4)
+                     std::make_tuple(0, 1, 0) // Reception of the PSDU from STA 3 should have failed
+                                              // (since interference from STA 4)
+                 });
+    delay += Seconds(1.0);
+
+    Simulator::Run();
+}
+
+void
+TestUlMuMimoPhyTransmission::DoRun()
+{
+    std::vector<Time> startDelays{NanoSeconds(0), NanoSeconds(100)};
+
+    for (const auto& delayStart : startDelays)
+    {
+        m_delayStart = delayStart;
+
+        m_frequency = 5180;
+        m_channelWidth = 20;
+        m_expectedPpduDuration = NanoSeconds(163200);
+        NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
+                     << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
+                     << m_delayStart);
+        RunOne();
+
+        m_frequency = 5190;
+        m_channelWidth = 40;
+        m_expectedPpduDuration = NanoSeconds(105600);
+        NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
+                     << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
+                     << m_delayStart);
+        RunOne();
+
+        m_frequency = 5210;
+        m_channelWidth = 80;
+        m_expectedPpduDuration = NanoSeconds(76800);
+        NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
+                     << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
+                     << m_delayStart);
+        RunOne();
+
+        m_frequency = 5250;
+        m_channelWidth = 160;
+        m_expectedPpduDuration = NanoSeconds(62400);
+        NS_LOG_DEBUG("Run UL MU-MIMO PHY transmission test for "
+                     << m_channelWidth << " MHz with delay between each HE TB PPDUs of "
+                     << m_delayStart);
+        RunOne();
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY MU-MIMO Test Suite
  */
 class WifiPhyMuMimoTestSuite : public TestSuite
@@ -1080,6 +1864,7 @@ WifiPhyMuMimoTestSuite::WifiPhyMuMimoTestSuite()
 {
     AddTestCase(new TestDlMuTxVector, TestCase::QUICK);
     AddTestCase(new TestDlMuMimoPhyTransmission, TestCase::QUICK);
+    AddTestCase(new TestUlMuMimoPhyTransmission, TestCase::QUICK);
 }
 
 static WifiPhyMuMimoTestSuite WifiPhyMuMimoTestSuite; ///< the test suite
