@@ -39,7 +39,6 @@
 #include <map>
 #include <sstream>
 #include <string>
-#include <tuple>
 
 /**
  * \file
@@ -443,7 +442,7 @@ LengthTestCase::TestConstructLengthFromMeterString ()
 {
   const double value = 5;
 
-  TestConstructLengthFromString (value, value, 0, 
+  TestConstructLengthFromString (value, value, 0,
                                  {"m", "meter", "meters", "metre", "metres"});
 }
 
@@ -651,12 +650,9 @@ LengthTestCase::TestBuilderFreeFunctions ()
 void
 LengthTestCase::TestTryParseReturnsFalse ()
 {
-  bool result;
-  Length l;
+  auto l = Length::TryParse (1, "");
 
-  std::tie (result, l) = Length::TryParse (1, "");
-
-  AssertFalse (result, "TryParse returned true on bad input");
+  AssertFalse (l.has_value (), "TryParse returned true on bad input");
 }
 
 void
@@ -676,18 +672,15 @@ LengthTestCase::TestTryParseReturnsTrue ()
       TestInput input = entry.first;
       TestArgs args = entry.second;
 
-      bool result;
-      Length l;
+      auto l = Length::TryParse (input.first, input.second);
 
-      std::tie (result, l) = Length::TryParse (input.first, input.second);
-
-      AssertTrue (result, "TryParse returned false when expecting true");
+      AssertTrue (l.has_value (), "TryParse returned false when expecting true");
 
       std::stringstream stream;
       stream << "Parsing input (" << input.first << ", " << input.second
              << ") returned the wrong value";
 
-      NS_TEST_ASSERT_MSG_EQ_TOL (l.GetDouble (), args.first, args.second, stream.str ());
+      NS_TEST_ASSERT_MSG_EQ_TOL (l->GetDouble (), args.first, args.second, stream.str ());
     }
 
 }

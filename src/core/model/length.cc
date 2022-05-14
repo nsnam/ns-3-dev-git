@@ -32,7 +32,6 @@
 #include <ratio>
 #include <sstream>
 #include <string>
-#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -235,24 +234,19 @@ NS_LOG_COMPONENT_DEFINE ("Length");
 // Implement the attribute helper
 ATTRIBUTE_HELPER_CPP (Length);
 
-std::tuple<bool, Length>
+std::optional<Length>
 Length::TryParse (double value, const std::string& unitString)
 {
   NS_LOG_FUNCTION (value << unitString);
 
-  bool validUnit = false;
-  Length::Unit unit;
+  auto unit = FromString (unitString);
 
-  std::tie (validUnit, unit) = FromString (unitString);
-
-  Length length;
-
-  if (validUnit)
+  if (unit.has_value ())
     {
-      length = Length (value, unit);
+      return Length (value, *unit);
     }
 
-  return std::make_tuple (validUnit, length);
+  return std::nullopt;
 }
 
 Length::Length ()
@@ -276,19 +270,16 @@ Length::Length (double value, const std::string& unitString)
 {
   NS_LOG_FUNCTION (this << value << unitString);
 
-  bool validUnit;
-  Length::Unit unit;
+  auto unit = FromString (unitString);
 
-  std::tie (validUnit, unit) = FromString (unitString);
-
-  if (!validUnit)
+  if (!unit.has_value ())
     {
       NS_FATAL_ERROR ("A Length object could not be constructed from the unit "
                       "string '" << unitString << "', because the string is not associated "
                       "with a Length::Unit entry");
     }
 
-  m_value = Convert (value, unit, Length::Unit::Meter);
+  m_value = Convert (value, *unit, Length::Unit::Meter);
 }
 
 Length::Length (double value, Length::Unit unit)
@@ -577,7 +568,7 @@ ToName (Length::Unit unit, bool plural /*=false*/)
   return std::get<0> (iter->second);
 }
 
-std::tuple<bool, Length::Unit>
+std::optional<Length::Unit>
 FromString (std::string unitString)
 {
   using UnitTable = std::unordered_map<std::string, Length::Unit>;
@@ -654,16 +645,12 @@ FromString (std::string unitString)
 
   auto iter = UNITS.find (unitString);
 
-  bool valid = false;
-  Length::Unit unit;
-
   if (iter != UNITS.end ())
     {
-      valid = true;
-      unit = iter->second;
+      return iter->second;
     }
 
-  return std::make_tuple (valid, unit);
+  return std::nullopt;
 }
 
 std::ostream&

@@ -31,9 +31,9 @@
 
 #include <istream>
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <string>
-#include <tuple>
 
 /**
  * \file
@@ -161,7 +161,7 @@ namespace ns3 {
  *   Addition is between two Length instances
  *
  * \code
- *   std::cout << Length(1, Length::Unit::Meter) + Length (2, Length::Unit::Meter);  
+ *   std::cout << Length(1, Length::Unit::Meter) + Length (2, Length::Unit::Meter);
  *   // output: "3 m"
  * \endcode
  *
@@ -170,7 +170,7 @@ namespace ns3 {
  *   Subtraction is between two Length instances
  *
  * \code
- *   std::cout << Length(3, Length::Unit::Meter) - Length (2, Length::Unit::Meter);  
+ *   std::cout << Length(3, Length::Unit::Meter) - Length (2, Length::Unit::Meter);
  *   // output: "1 m"
  * \endcode
  *
@@ -234,8 +234,8 @@ namespace ns3 {
  * \code
  *   Length m(5, Length::Unit::Meter);
  *
- *   std::cout << m << ", " 
- *             << m.As(Length::Unit::Kilometer) << ", " 
+ *   std::cout << m << ", "
+ *             << m.As(Length::Unit::Kilometer) << ", "
  *             << m.As(Length::Unit::Foot);
  *   //output: 5 m, 0.005 km, 16.4042 ft
  * \endcode
@@ -356,12 +356,11 @@ private:
    * \param value Numeric value of the new length
    * \param unit Unit that the value represents
    *
-   * \return A tuple containing the success or failure of the parsing and a Length
-   * object. If the boolean element is true, then the Length element contains the
-   * parsed result.  If the boolean element is false, the value of the Length
-   * element is undefined.
+   * \return A std::optional object containing the Length object constructed from
+   * the given value and unit, if the attempt to construct the Length object was
+   * successful.
    */
-  static std::tuple<bool, Length> TryParse (double value, const std::string& unit);
+  static std::optional<Length> TryParse (double value, const std::string& unit);
 
   /**
    * Default Constructor
@@ -667,12 +666,10 @@ std::string ToName (Length::Unit unit, bool plural = false);
  *
  * \param unitString String containing the symbol or name of a length unit
  *
- * \return A tuple containing a boolean and a Length::Unit.  When the boolean
- * is true, the Length::Unit contains a valid value. When the boolean is false,
- * a match for the string could not be found and the Length::Unit value is
- * undefined
+ * \return A std::optional object containing a Length::Unit if a match for the
+ * string could be found
  */
-std::tuple<bool, Length::Unit> FromString (std::string unitString);
+std::optional<Length::Unit> FromString (std::string unitString);
 
 /**
  * \ingroup length
