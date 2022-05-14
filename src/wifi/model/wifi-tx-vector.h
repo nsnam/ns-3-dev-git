@@ -249,9 +249,13 @@ class WifiTxVector
      */
     uint8_t GetNss(uint16_t staId = SU_STA_ID) const;
     /**
-     * \returns the maximum number of Nss (namely if MU)
+     * \returns the maximum number of Nss over all RUs of an HE MU (used for OFDMA)
      */
     uint8_t GetNssMax() const;
+    /**
+     * \returns the total number of Nss for a given RU of an HE MU (used for full bandwidth MU-MIMO)
+     */
+    uint8_t GetNssTotal() const;
     /**
      * Sets the number of Nss
      *

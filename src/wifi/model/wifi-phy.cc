@@ -1730,7 +1730,25 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         NS_FATAL_ERROR("TX-VECTOR is invalid!");
     }
 
-    if (txVector.GetNssMax() > GetMaxSupportedTxSpatialStreams())
+    uint8_t nss = 0;
+    if (txVector.IsMu())
+    {
+        // We do not support mixed OFDMA and MU-MIMO
+        if (txVector.IsDlMuMimo())
+        {
+            nss = txVector.GetNssTotal();
+        }
+        else
+        {
+            nss = txVector.GetNssMax();
+        }
+    }
+    else
+    {
+        nss = txVector.GetNss();
+    }
+
+    if (nss > GetMaxSupportedTxSpatialStreams())
     {
         NS_FATAL_ERROR("Unsupported number of spatial streams!");
     }
@@ -2151,7 +2169,7 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
     }
     else
     {
-        if (txVector.GetNssMax() > 1)
+        if (txVector.GetNssMax() > 1 || txVector.GetNssTotal() > 1)
         {
             txPowerDbm = std::min(m_txPowerMaxMimo, GetPowerDbm(txVector.GetTxPowerLevel()));
         }
