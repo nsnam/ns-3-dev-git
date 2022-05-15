@@ -24,6 +24,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-phy.h"
 #include "he-configuration.h"
+#include "obss-pd-algorithm.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
@@ -639,6 +640,12 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
         }
     }
   return status;
+}
+
+void
+HePhy::SetObssPdAlgorithm (const Ptr<ObssPdAlgorithm> algorithm)
+{
+  m_obssPdAlgorithm = algorithm;
 }
 
 void

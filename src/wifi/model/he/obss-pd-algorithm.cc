@@ -81,6 +81,9 @@ ObssPdAlgorithm::ConnectWifiNetDevice (const Ptr<WifiNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
   m_device = device;
+  auto hePhy = DynamicCast<HePhy> (device->GetPhy ()->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  NS_ASSERT (hePhy);
+  hePhy->SetObssPdAlgorithm (this);
 }
 
 void

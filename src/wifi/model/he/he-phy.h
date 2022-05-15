@@ -35,6 +35,8 @@
 
 namespace ns3 {
 
+class ObssPdAlgorithm;
+
 /**
  * This defines the BSS membership value for HE PHY.
  */
@@ -197,6 +199,13 @@ public:
    * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
    */
   uint16_t GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t staId) const;
+
+  /**
+   * Sets the OBSS-PD algorithm.
+   *
+   * \param algorithm the OBSS-PD algorithm
+   */
+  void SetObssPdAlgorithm (const Ptr<ObssPdAlgorithm> algorithm);
 
   /**
    * Set a callback for a end of HE-SIG-A.
@@ -494,6 +503,7 @@ private:
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 
   std::size_t m_rxHeTbPpdus; //!< Number of successfully received HE TB PPDUS
+  Ptr<ObssPdAlgorithm> m_obssPdAlgorithm; //!< OBSS-PD algorithm
 }; //class HePhy
 
 } //namespace ns3
