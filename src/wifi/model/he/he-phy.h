@@ -103,6 +103,7 @@ public:
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
+  double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const override;
 
   /**
    * \return the BSS color of this PHY.

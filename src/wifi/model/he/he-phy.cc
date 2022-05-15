@@ -23,6 +23,7 @@
 #include "he-ppdu.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-phy.h"
+#include "ns3/vht-configuration.h"
 #include "he-configuration.h"
 #include "obss-pd-algorithm.h"
 #include "ns3/wifi-net-device.h"
@@ -982,6 +983,36 @@ HePhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
       channelWidth = 20;
     }
   return channelWidth;
+}
+
+double
+HePhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
+{
+  if (!ppdu)
+    {
+      return VhtPhy::GetCcaThreshold (ppdu, channelType);
+    }
+
+  if (!m_obssPdAlgorithm)
+    {
+      return VhtPhy::GetCcaThreshold (ppdu, channelType);
+    }
+
+  if (channelType == WIFI_CHANLIST_PRIMARY)
+    {
+      return VhtPhy::GetCcaThreshold (ppdu, channelType);
+    }
+
+  const uint16_t ppduBw = ppdu->GetTxVector ().GetChannelWidth ();
+  double obssPdLevel = m_obssPdAlgorithm->GetObssPdLevel ();
+  uint16_t bw = ppduBw;
+  while (bw > 20)
+    {
+      obssPdLevel += 3;
+      bw /= 2;
+    }
+
+  return std::max (VhtPhy::GetCcaThreshold (ppdu, channelType), obssPdLevel);
 }
 
 uint64_t
