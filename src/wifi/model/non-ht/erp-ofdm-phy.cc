@@ -106,8 +106,9 @@ Ptr<WifiPpdu>
 ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
-  return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
-                              ObtainNextUid (txVector));
+  return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector,
+                              m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
+                              m_wifiPhy->GetPhyBand (), ObtainNextUid (txVector));
 }
 
 void

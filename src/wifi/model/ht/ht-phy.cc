@@ -358,7 +358,9 @@ Ptr<WifiPpdu>
 HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
-  return Create<HtPpdu> (psdus.begin ()->second, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
+  return Create<HtPpdu> (psdus.begin ()->second, txVector,
+                         m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
+                         ppduDuration, m_wifiPhy->GetPhyBand (),
                          ObtainNextUid (txVector));
 }
 

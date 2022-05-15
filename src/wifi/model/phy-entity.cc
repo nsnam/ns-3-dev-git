@@ -231,7 +231,8 @@ PhyEntity::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVect
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
   NS_FATAL_ERROR ("This method is unsupported for the base PhyEntity class. Use the overloaded version in the amendment-specific subclasses instead!");
-  return Create<WifiPpdu> (psdus.begin ()->second, txVector); //should be overloaded
+  return Create<WifiPpdu> (psdus.begin ()->second, txVector,
+                           m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ())); //should be overloaded
 }
 
 Time

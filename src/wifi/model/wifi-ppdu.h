@@ -56,17 +56,19 @@ public:
    *
    * \param psdu the PHY payload (PSDU)
    * \param txVector the TXVECTOR that was used for this PPDU
+   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
    * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint64_t uid = UINT64_MAX);
+  WifiPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint16_t txCenterFreq, uint64_t uid = UINT64_MAX);
   /**
    * Create a PPDU storing a map of PSDUs.
    *
    * \param psdus the PHY payloads (PSDUs)
    * \param txVector the TXVECTOR that was used for this PPDU
+   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
    * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint64_t uid);
+  WifiPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint16_t txCenterFreq, uint64_t uid);
   /**
    * Destructor for WifiPpdu.
    */
@@ -116,14 +118,11 @@ public:
    * channel. Normally, a PPDU can be received if it is transmitted over a
    * channel that overlaps the primary20 channel of a PHY entity.
    *
-   * \param txCenterFreq the center frequency (MHz) of the channel over which the
-   *        PPDU is transmitted
    * \param p20MinFreq the minimum frequency (MHz) of the primary channel
    * \param p20MaxFreq the maximum frequency (MHz) of the primary channel
    * \return true if this PPDU can be received, false otherwise
    */
-  virtual bool CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq,
-                              uint16_t p20MaxFreq) const;
+  virtual bool CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const;
 
   /**
    * Get the modulation used for the PPDU.
@@ -177,6 +176,7 @@ protected:
   WifiPreamble m_preamble;          //!< the PHY preamble
   WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
   WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
+  uint16_t m_txCenterFreq;          //!< the center frequency (MHz) used for the transmission of this PPDU
   uint64_t m_uid;                   //!< the unique ID of this PPDU
 
 private:

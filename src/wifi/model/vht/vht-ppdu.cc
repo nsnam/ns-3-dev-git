@@ -30,11 +30,11 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("VhtPpdu");
 
-VhtPpdu::VhtPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
-                  WifiPhyBand band, uint64_t uid)
-  : OfdmPpdu (psdu, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
+VhtPpdu::VhtPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint16_t txCenterFreq,
+                  Time ppduDuration, WifiPhyBand band, uint64_t uid)
+  : OfdmPpdu (psdu, txVector, txCenterFreq, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band << uid);
+  NS_LOG_FUNCTION (this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
   uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3);
   m_lSig.SetLength (length);
   m_vhtSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_VHT_MU);
@@ -86,7 +86,7 @@ VhtPpdu::GetTxDuration (void) const
 Ptr<WifiPpdu>
 VhtPpdu::Copy (void) const
 {
-  return Create<VhtPpdu> (GetPsdu (), GetTxVector (), GetTxDuration (), m_band, m_uid);
+  return Create<VhtPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, GetTxDuration (), m_band, m_uid);
 }
 
 WifiPpduType

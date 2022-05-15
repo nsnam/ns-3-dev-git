@@ -47,11 +47,11 @@ std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag)
     }
 }
 
-HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration,
-                WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index)
-  : OfdmPpdu (psdus.begin ()->second, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
+HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint16_t txCenterFreq,
+                Time ppduDuration, WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index)
+  : OfdmPpdu (psdus.begin ()->second, txVector, txCenterFreq, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
-  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band << uid << flag);
+  NS_LOG_FUNCTION (this << psdus << txVector << txCenterFreq << ppduDuration << band << uid << flag);
 
   //overwrite with map (since only first element used by OfdmPpdu)
   m_psdus.begin ()->second = 0;
@@ -72,11 +72,11 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Ti
   SetTxPsdFlag (flag);
 }
 
-HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
-                WifiPhyBand band, uint64_t uid)
-  : OfdmPpdu (psdu, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
+HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint16_t txCenterFreq,
+                Time ppduDuration, WifiPhyBand band, uint64_t uid)
+  : OfdmPpdu (psdu, txVector, txCenterFreq, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band << uid);
+  NS_LOG_FUNCTION (this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
   NS_ASSERT (!IsMu ());
   SetPhyHeaders (txVector, ppduDuration);
   SetTxPsdFlag (PSD_NON_HE_TB);
@@ -259,16 +259,15 @@ HePpdu::GetTransmissionChannelWidth (void) const
 }
 
 bool
-HePpdu::CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20MaxFreq) const
+HePpdu::CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const
 {
-  NS_LOG_FUNCTION (this << txCenterFreq << p20MinFreq << p20MaxFreq);
-
+  NS_LOG_FUNCTION (this << p20MinFreq << p20MaxFreq);
   if (IsUlMu ())
     {
       // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
       return true;
     }
-  return OfdmPpdu::CanBeReceived (txCenterFreq, p20MinFreq, p20MaxFreq);
+  return OfdmPpdu::CanBeReceived (p20MinFreq, p20MaxFreq);
 }
 
 HePpdu::TxPsdFlag

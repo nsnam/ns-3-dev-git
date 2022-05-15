@@ -29,10 +29,10 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("ErpOfdmPpdu");
 
 ErpOfdmPpdu::ErpOfdmPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector,
-                          WifiPhyBand band, uint64_t uid)
-  : OfdmPpdu (psdu, txVector, band, uid, true) //instantiate LSigHeader of OfdmPpdu
+                          uint16_t txCenterFreq, WifiPhyBand band, uint64_t uid)
+  : OfdmPpdu (psdu, txVector, txCenterFreq, band, uid, true) //instantiate LSigHeader of OfdmPpdu
 {
-  NS_LOG_FUNCTION (this << psdu << txVector << band << uid);
+  NS_LOG_FUNCTION (this << psdu << txVector << txCenterFreq << band << uid);
 }
 
 ErpOfdmPpdu::~ErpOfdmPpdu ()
@@ -53,7 +53,7 @@ ErpOfdmPpdu::DoGetTxVector (void) const
 Ptr<WifiPpdu>
 ErpOfdmPpdu::Copy (void) const
 {
-  return Create<ErpOfdmPpdu> (GetPsdu (), GetTxVector (), m_band, m_uid);
+  return Create<ErpOfdmPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, m_band, m_uid);
 }
 
 } //namespace ns3

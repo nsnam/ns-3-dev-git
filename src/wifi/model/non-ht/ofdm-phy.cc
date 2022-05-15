@@ -275,8 +275,9 @@ Ptr<WifiPpdu>
 OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
-  return Create<OfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
-                           ObtainNextUid (txVector));
+  return Create<OfdmPpdu> (psdus.begin ()->second, txVector,
+                           m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
+                           m_wifiPhy->GetPhyBand (), ObtainNextUid (txVector));
 }
 
 PhyEntity::PhyFieldRxStatus

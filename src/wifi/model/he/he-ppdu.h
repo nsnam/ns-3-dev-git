@@ -167,12 +167,13 @@ public:
    *
    * \param psdu the PHY payload (PSDU)
    * \param txVector the TXVECTOR that was used for this PPDU
+   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU
    */
-  HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
-          WifiPhyBand band, uint64_t uid);
+  HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint16_t txCenterFreq,
+          Time ppduDuration, WifiPhyBand band, uint64_t uid);
   /**
    * Create an MU HE PPDU, storing a map of PSDUs.
    *
@@ -180,14 +181,15 @@ public:
    *
    * \param psdus the PHY payloads (PSDUs)
    * \param txVector the TXVECTOR that was used for this PPDU
+   * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
    * \param flag the flag indicating the type of Tx PSD to build
    * \param p20Index the index of the primary 20 MHz channel
    */
-  HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration,
-          WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index);
+  HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint16_t txCenterFreq,
+          Time ppduDuration, WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index);
   /**
    * Destructor for HePpdu.
    */
@@ -198,8 +200,7 @@ public:
   WifiPpduType GetType (void) const override;
   uint16_t GetStaId (void) const override;
   uint16_t GetTransmissionChannelWidth (void) const override;
-  bool CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq,
-                      uint16_t p20MaxFreq) const override;
+  bool CanBeReceived (uint16_t p20MinFreq, uint16_t p20MaxFreq) const override;
 
   /**
    * Get the payload of the PPDU.

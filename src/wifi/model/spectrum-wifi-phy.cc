@@ -364,7 +364,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       uint16_t p20MaxFreq =
           GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) + width / 2;
 
-      if (!wifiRxParams->ppdu->CanBeReceived (wifiRxParams->txCenterFreq, p20MinFreq, p20MaxFreq))
+      if (!wifiRxParams->ppdu->CanBeReceived (p20MinFreq, p20MaxFreq))
         {
           NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
           m_interference->Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),

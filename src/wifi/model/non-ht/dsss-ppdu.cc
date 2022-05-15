@@ -30,10 +30,11 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsssPpdu");
 
-DsssPpdu::DsssPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration, uint64_t uid)
-  : WifiPpdu (psdu, txVector, uid)
+DsssPpdu::DsssPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector,
+                    uint16_t txCenterFreq, Time ppduDuration, uint64_t uid)
+  : WifiPpdu (psdu, txVector, txCenterFreq, uid)
 {
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << uid);
+  NS_LOG_FUNCTION (this << psdu << txVector << txCenterFreq << ppduDuration << uid);
   m_dsssSig.SetRate (txVector.GetMode ().GetDataRate (22));
   Time psduDuration = ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
   m_dsssSig.SetLength (psduDuration.GetMicroSeconds ());
@@ -65,7 +66,7 @@ DsssPpdu::GetTxDuration (void) const
 Ptr<WifiPpdu>
 DsssPpdu::Copy (void) const
 {
-  return Create<DsssPpdu> (GetPsdu (), GetTxVector (), GetTxDuration (), m_uid);
+  return Create<DsssPpdu> (GetPsdu (), GetTxVector (), m_txCenterFreq, GetTxDuration (), m_uid);
 }
 
 DsssPpdu::DsssSigHeader::DsssSigHeader ()
