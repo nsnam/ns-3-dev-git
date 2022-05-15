@@ -587,6 +587,7 @@ TestRunnerImpl::GetTopLevelSourceDir (void) const
       elements.pop_back ();
     }
   NS_FATAL_ERROR ("Could not find source directory from self=" << self);
+  return self;
 }
 
 //
