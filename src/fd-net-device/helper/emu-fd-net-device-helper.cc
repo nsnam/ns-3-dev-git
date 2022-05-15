@@ -430,6 +430,8 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
         }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
+  NS_FATAL_ERROR ("Should be unreachable");
+  return 0; // Silence compiler warning about lack of return value
 }
 
 } // namespace ns3

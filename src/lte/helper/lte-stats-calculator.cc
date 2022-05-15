@@ -158,6 +158,7 @@ LteStatsCalculator::FindImsiFromEnbRlcPath (std::string path)
     {
       NS_FATAL_ERROR ("Lookup " << ueMapPath << " got no matches");
     }
+  return 0; // Silence compiler warning about lack of return value
 }
 
 uint64_t
@@ -205,6 +206,7 @@ LteStatsCalculator::FindImsiFromLteNetDevice (std::string path)
     {
       NS_FATAL_ERROR ("Lookup " << path << " got no matches");
     }
+  return 0; // Silence compiler warning about lack of return value
 }
 
 uint16_t
@@ -227,6 +229,7 @@ LteStatsCalculator::FindCellIdFromEnbRlcPath (std::string path)
     {
       NS_FATAL_ERROR ("Lookup " << enbNetDevicePath << " got no matches");
     }
+  return 0; // Silence compiler warning about lack of return value
 }
 
 uint64_t

@@ -171,6 +171,7 @@ PhyEntity::GetNextField (WifiPpduField currentField, WifiPreamble preamble) cons
     {
       NS_FATAL_ERROR ("Unsupported preamble " << preamble << " for the provided PPDU formats");
     }
+  return WifiPpduField::WIFI_PPDU_FIELD_PREAMBLE; // Silence compiler warning
 }
 
 Time

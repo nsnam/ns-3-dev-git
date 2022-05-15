@@ -246,6 +246,7 @@ GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
     {
       NS_FATAL_ERROR ("Packet has no Traffic ID");
     }
+  return 0; // Silence compiler warning about lack of return value
 }
 
 uint8_t

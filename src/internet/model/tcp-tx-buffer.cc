@@ -580,6 +580,7 @@ TcpTxBuffer::GetPacketFromList (PacketList &list, const SequenceNumber32 &listSt
     }
 
   NS_FATAL_ERROR ("This point is not reachable");
+  return nullptr; // Silence compiler warning about lack of return value
 }
 
 void
