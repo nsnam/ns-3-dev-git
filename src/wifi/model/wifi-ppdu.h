@@ -114,6 +114,15 @@ public:
   virtual uint16_t GetTransmissionChannelWidth (void) const;
 
   /**
+   * Check whether the given PPDU overlaps a given channel.
+   *
+   * \param minFreq the minimum frequency (MHz) of the channel
+   * \param maxFreq the maximum frequency (MHz) of the channel
+   * \return true if this PPDU overlaps the channel, false otherwise
+   */
+  bool DoesOverlapChannel (uint16_t minFreq, uint16_t maxFreq) const;
+
+  /**
    * Check whether the given PPDU can be received on the specified primary
    * channel. Normally, a PPDU can be received if it is transmitted over a
    * channel that overlaps the primary20 channel of a PHY entity.
