@@ -50,7 +50,11 @@ set(NS3_OPENFLOW
           "ON if Openflow is found in NS3_WITH_OPENFLOW"
 )
 
-add_compile_options(-Wno-stringop-truncation)
+if(${GCC})
+  add_compile_options(-Wno-stringop-truncation) # This option does not exist in CLANG
+elseif(${CLANG})
+  add_compile_options(-Wno-reserved-user-defined-literal)
+endif()
 
 build_lib(
   LIBNAME openflow

@@ -146,8 +146,8 @@ To do this:
 
    From the "openflow" directory, run::
      
-     $ ./ns3 configure
-     $ ./ns3 build
+     $ ./waf configure
+     $ ./waf build
 
 2. Your OFSID is now built into a libopenflow.a library!
    To link to an ns-3 build with this OpenFlow switch module, run from the ns-3-dev
