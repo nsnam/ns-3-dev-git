@@ -449,8 +449,24 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowers
           NS_LOG_DEBUG ("Received another HE TB PPDU for UID " << ppdu->GetUid () << " from STA-ID " << ppdu->GetStaId () << " and BSS color " << +txVector.GetBssColor ());
           event = it->second;
 
-          //Update received power of the event associated to that UL MU transmission
-          UpdateInterferenceEvent (event, rxPowersW);
+          auto heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
+          NS_ASSERT (heConfiguration);
+          Time maxDelay = heConfiguration->GetMaxTbPpduDelay ();
+
+          if (maxDelay.IsStrictlyPositive ()
+              && Simulator::Now () - event->GetStartTime () > maxDelay)
+            {
+              // This HE TB PPDU arrived too late to be decoded properly. The HE TB PPDU
+              // is dropped and added as interference
+              event = CreateInterferenceEvent (ppdu, txVector, rxDuration, rxPowersW);
+              NS_LOG_DEBUG ("Drop HE TB PPDU that arrived too late");
+              m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), HE_TB_PPDU_TOO_LATE);
+            }
+          else
+            {
+              //Update received power of the event associated to that UL MU transmission
+              UpdateInterferenceEvent (event, rxPowersW);
+            }
 
           if ((GetCurrentEvent () != 0) && (GetCurrentEvent ()->GetPpdu ()->GetUid () != ppdu->GetUid ()))
             {

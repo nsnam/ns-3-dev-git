@@ -61,6 +61,14 @@ public:
    */
   uint8_t GetBssColor (void) const;
   /**
+   * \param maxTbPpduDelay the maximum TB PPDU delay
+   */
+  void SetMaxTbPpduDelay (Time maxTbPpduDelay);
+  /**
+   * \return the maximum TB PPDU delay
+   */
+  Time GetMaxTbPpduDelay (void) const;
+  /**
    * \param size the MPDU buffer size to receive A-MPDUs
    */
   void SetMpduBufferSize (uint16_t size);
@@ -73,6 +81,7 @@ public:
 private:
   Time m_guardInterval;      //!< Supported HE guard interval
   uint8_t m_bssColor;        //!< BSS color
+  Time m_maxTbPpduDelay;     //!< Max TB PPDU delay
   uint16_t m_mpduBufferSize; //!< MPDU buffer size
   uint8_t m_muBeAifsn;       //!< AIFSN for BE in MU EDCA Parameter Set
   uint8_t m_muBkAifsn;       //!< AIFSN for BK in MU EDCA Parameter Set

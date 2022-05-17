@@ -1074,6 +1074,8 @@ TestUlOfdmaPpduUid::DoSetup (void)
   apDev->SetPhy (m_phyAp);
   apNode->AggregateObject (apMobility);
   apNode->AddDevice (apDev);
+  apDev->SetStandard (WIFI_STANDARD_80211ax);
+  apDev->SetHeConfiguration (CreateObject<HeConfiguration> ());
 
   Ptr<Node> sta1Node = CreateObject<Node> ();
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
@@ -1541,6 +1543,7 @@ void
 TestMultipleHeTbPreambles::DoSetup (void)
 {
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
+  dev->SetStandard (WIFI_STANDARD_80211ax);
   m_phy = CreateObject<OfdmaSpectrumWifiPhy> (0);
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
   Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
@@ -1558,6 +1561,9 @@ TestMultipleHeTbPreambles::DoSetup (void)
   preambleDetectionModel->SetAttribute ("Threshold", DoubleValue (4));
   preambleDetectionModel->SetAttribute ("MinimumRssi", DoubleValue (-82));
   m_phy->SetPreambleDetectionModel (preambleDetectionModel);
+  Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
+  heConfiguration->SetMaxTbPpduDelay (NanoSeconds (400));
+  dev->SetHeConfiguration (heConfiguration);
 }
 
 void
@@ -1647,14 +1653,16 @@ TestMultipleHeTbPreambles::DoRun (void)
 
   {
     //Verify the correct reception of a single UL MU transmission with two stations belonging to the same BSS,
-    //and the second PPDU arrives 500ns after the first PPDU
+    //and the second PPDU arrives 500ns after the first PPDU, i.e. it exceeds the configured delay spread of 400ns
     std::vector<uint64_t> uids {9};
     Simulator::Schedule (Seconds (6), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
     Simulator::Schedule (Seconds (6) + NanoSeconds (500), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
     //Check that we received a single UL MU transmission with the corresponding UID
     Simulator::Schedule (Seconds (6.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, uids);
-    //No packet is dropped (we check after 5us to verify that PD is successful)
-    Simulator::Schedule (Seconds (6.0) + MicroSeconds (5), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 0);
+    //The first packet of 1001 bytes should be dropped because preamble is not detected after 4us (because the PPDU that arrived at 500ns is interfering):
+    //the second HE TB PPDU is acting as interference since it arrived after the maximum allowed 400ns.
+    //Obviously, that second packet of 1002 bytes is dropped as well.
+    Simulator::Schedule (Seconds (6.0) + MicroSeconds (5), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 1001 + 1002);
     Simulator::Schedule (Seconds (6.5), &TestMultipleHeTbPreambles::Reset, this);
   }
 
@@ -2280,6 +2288,8 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 
   Ptr<Node> sta1Node = CreateObject<Node> ();
   Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
+  sta1Dev->SetStandard (WIFI_STANDARD_80211ax);
+  sta1Dev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
   m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
   m_phySta1->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -2298,6 +2308,8 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 
   Ptr<Node> sta2Node = CreateObject<Node> ();
   Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
+  sta2Dev->SetStandard (WIFI_STANDARD_80211ax);
+  sta2Dev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
   m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
   m_phySta2->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -2316,6 +2328,8 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
 
   Ptr<Node> sta3Node = CreateObject<Node> ();
   Ptr<WifiNetDevice> sta3Dev = CreateObject<WifiNetDevice> ();
+  sta3Dev->SetStandard (WIFI_STANDARD_80211ax);
+  sta3Dev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   m_phySta3 = CreateObject<OfdmaSpectrumWifiPhy> (3);
   m_phySta3->CreateWifiSpectrumPhyInterface (sta3Dev);
   m_phySta3->ConfigureStandard (WIFI_STANDARD_80211ax);
@@ -3178,6 +3192,8 @@ TestPhyPaddingExclusion::DoSetup (void)
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
   m_phyAp->SetMobility (apMobility);
   apDev->SetPhy (m_phyAp);
+  apDev->SetStandard (WIFI_STANDARD_80211ax);
+  apDev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   apNode->AggregateObject (apMobility);
   apNode->AddDevice (apDev);
 
@@ -3198,6 +3214,8 @@ TestPhyPaddingExclusion::DoSetup (void)
   Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel> ();
   m_phySta1->SetMobility (sta1Mobility);
   sta1Dev->SetPhy (m_phySta1);
+  sta1Dev->SetStandard (WIFI_STANDARD_80211ax);
+  sta1Dev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   sta1Node->AggregateObject (sta1Mobility);
   sta1Node->AddDevice (sta1Dev);
 
@@ -3218,6 +3236,8 @@ TestPhyPaddingExclusion::DoSetup (void)
   Ptr<ConstantPositionMobilityModel> sta2Mobility = CreateObject<ConstantPositionMobilityModel> ();
   m_phySta2->SetMobility (sta2Mobility);
   sta2Dev->SetPhy (m_phySta2);
+  sta2Dev->SetStandard (WIFI_STANDARD_80211ax);
+  sta2Dev->SetHeConfiguration (CreateObject<HeConfiguration> ());
   sta2Node->AggregateObject (sta2Mobility);
   sta2Node->AddDevice (sta2Dev);
 
