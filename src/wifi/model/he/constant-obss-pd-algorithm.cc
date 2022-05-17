@@ -93,9 +93,10 @@ ConstantObssPdAlgorithm::ReceiveHeSigA (HeSigAParameters params)
   bool isObss = (bssColor != params.bssColor);
   if (isObss)
     {
-      if (WToDbm (params.rssiW) < m_obssPdLevel)
+      const double obssPdLevel = GetObssPdLevel ();
+      if (WToDbm (params.rssiW) < obssPdLevel)
         {
-          NS_LOG_DEBUG ("Frame is OBSS and RSSI " << WToDbm(params.rssiW) << " is below OBSS-PD level of " << m_obssPdLevel << "; reset PHY to IDLE");
+          NS_LOG_DEBUG ("Frame is OBSS and RSSI " << WToDbm(params.rssiW) << " is below OBSS-PD level of " << obssPdLevel << "; reset PHY to IDLE");
           ResetPhy (params);
         }
       else

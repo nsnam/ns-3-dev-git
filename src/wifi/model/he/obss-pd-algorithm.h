@@ -82,15 +82,23 @@ public:
    */
   typedef void (* ResetTracedCallback)(uint8_t bssColor, double rssiDbm, bool powerRestricted, double txPowerMaxDbmSiso, double txPowerMaxDbmMimo);
 
+  /**
+   * \param level the current OBSS PD level in dBm
+   */
+  void SetObssPdLevel (double level);
+  /**
+   * \return the current OBSS PD level in dBm.
+   */
+  double GetObssPdLevel (void) const;
+
 
 protected:
   void DoDispose (void) override;
 
   Ptr<WifiNetDevice> m_device; ///< Pointer to the WifiNetDevice
-  double m_obssPdLevel;        ///< Current OBSS PD level (dBm)
-
 
 private:
+  double m_obssPdLevel;    ///< Current OBSS PD level (dBm)
   double m_obssPdLevelMin; ///< Minimum OBSS PD level (dBm)
   double m_obssPdLevelMax; ///< Maximum OBSS PD level (dBm)
   double m_txPowerRefSiso; ///< SISO reference TX power level (dBm)
