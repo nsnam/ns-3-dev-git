@@ -34,12 +34,12 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
-#include <linux/if_tun.h>
 #include <memory>
 #include <net/ethernet.h>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <netpacket/packet.h>
+#include <linux/if_tun.h>
 
 #include <stdlib.h>
 #include <string.h>
