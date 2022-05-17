@@ -1,0 +1,25 @@
+# NS3 CI script for Alpine
+
+# Any scheduled pipeline for Alpine should define a variable, named
+# "RELEASE", that has a value "weekly". Also, the variale "ALPINE" should be
+# set to True.
+
+# Alpine base
+.weekly-build-alpine:
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $ALPINE == "True"
+  variables:
+    COMPILER: g++
+
+weekly-build-alpine-latest-default:
+  extends: .weekly-build-alpine
+  image: alpine:latest
+  before_script:
+    - apk update
+    - apk upgrade
+    - apk add bash ccache cmake g++ iproute2 ninja python3 linux-headers
+  variables:
+    MODE: default

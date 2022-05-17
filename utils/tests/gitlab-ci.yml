@@ -105,6 +105,7 @@ per-commit-compile-optimized:
 
 # Weekly jobs for other distribution and compilers
 include:
+  - 'utils/tests/gitlab-ci-alpine.yml'
   - 'utils/tests/gitlab-ci-ubuntu.yml'
   - 'utils/tests/gitlab-ci-fedora.yml'
   - 'utils/tests/gitlab-ci-gcc.yml'
