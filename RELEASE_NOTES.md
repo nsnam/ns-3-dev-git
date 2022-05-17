@@ -1,5 +1,5 @@
 ns-3 RELEASE NOTES
-===================
+==================
 
 This file contains ns-3 release notes (most recent releases first).
 
@@ -9,14 +9,44 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
--------------
+Release 3.36.1
+--------------
+
+### Availability
+
+This release is not yet available.
+
+### Supported platforms
+
+The supported platforms are the same as for the ns-3.36 release.  Linux
+systems based on musl libc may also work with this release, although this
+has not been completely tested.
 
 ### New user-visible features
 
 - (core) Remove PTHREAD-dependent classes (`ns-3::SystemMutex`, `ns-3::CriticalSection`, `ns-3::SystemThread` and `ns-3::SystemCondition`) and replace them with C++ STL libraries, respectively `std::mutex`, `std::thread` and `std::condition_variable`.
 
 ### Bugs fixed
+
+- Various small changes were made to suppress new g++-12 compiler warnings
+- (build) - Fixed issue in which localized changes to modules or scratch directory were causing a global reconfiguration and rebuild
+- (build) - The optimization and debug compiler flags for the 'debug' build profile were reverted to the Waf settings, to improve the debugging experience
+- (build) - .ns3rc file parsing was fixed to support multiline lists and to skip comments
+- (build) - Allow module examples in subdirectories other than 'examples'
+- (build) - Report more supported features in the configuration message
+- (build) - Fix and improve generated pkgconfig files
+- (build) - Let ns3 change the configured build profile and C++ standard
+- (energy) #658 - Update energy source after updating the current drain
+- (openflow) - Update documentation and add compilation flag required by Clang
+- (sixlowpan) #659 - Fix UDP_NHC port decompression
+- (stats) - Fix missing macro definition (STATS_HAS_SQLITE3) for sqlite3 support
+- (wifi) - Check that PHY band is allowed before setting channel
+- (wifi) - Fix computation of maximum allowed channel width
+- (wifi) - Fix VHT Operation Channel Width encoding
+- (wifi) - Always add PPDU received with unsupported modulation as interference
+- (wifi) #639 - Remove FCS before deserializing Wi-Fi frames
+- (wifi) - Do not change protection when aggregating MSDU to DL MU PPDU
+- (wifi) - IdealWifiManager was not using the appropriate default mode
 
 Release 3.36
 ------------

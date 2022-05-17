@@ -13,10 +13,12 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
-Changes from ns-3.36 to ns-3.37
--------------------------------
+Changes from ns-3.36 to ns-3.36.1
+---------------------------------
 
 ### New API
+
+None.
 
 ### Changes to existing API
 
@@ -25,10 +27,15 @@ Changes from ns-3.36 to ns-3.37
   * `ns-3::CriticalSection cs (m_mutex)` should be refactored to `std::unique_lock lock {m_mutex}`.
   * `ns-3::SystemThread` should be refactored to `std::thread`, which, unlike SystemThread, starts the thread immediately.
   * `ns-3::SystemCondition` should be refactored to `std::condition_variable`, which relies on a companion `std::mutex`.
+* The macro for optionally including sqlite3-dependent code has been changed from STATS_HAVE_SQLITE3 to HAVE_SQLITE3, and is now defined globally.  
 
 ### Changes to build system
 
+The build system API has not changed since ns-3.36.  Several bugs were fixed and behavioral improvements were made; see the RELEASE_NOTES for details.
+
 ### Changed behavior
+
+Apart from the bugs fixed (listed in the RELEASE_NOTES), the simulation model behavior should not have changed since ns-3.36.
 
 Changes from ns-3.35 to ns-3.36
 -------------------------------
