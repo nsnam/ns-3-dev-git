@@ -1064,6 +1064,16 @@ public:
    */
   uint8_t GetPrimaryChannelNumber (uint16_t primaryChannelWidth) const;
 
+  /**
+   * Get the start band index and the stop band index for a given band
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   * \param bandIndex the index of the band to be returned
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
+
 protected:
   virtual void DoDispose (void);
 
@@ -1094,16 +1104,6 @@ protected:
    * \param ppdu the incoming PPDU or nullptr for any signal
    */
   void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu);
-
-  /**
-   * Get the start band index and the stop band index for a given band
-   *
-   * \param bandWidth the width of the band to be returned (MHz)
-   * \param bandIndex the index of the band to be returned
-   *
-   * \return a pair of start and stop indexes that defines the band
-   */
-  virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
   /**
    * Add the PHY entity to the map of supported PHY entities for the
