@@ -121,6 +121,14 @@ protected:
   Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   /**
+   * Get an MPDU containing the given Trigger Frame.
+   *
+   * \param trigger the given Trigger Frame
+   * \return an MPDU containing the given Trigger Frame
+   */
+  Ptr<WifiMacQueueItem> GetTriggerFrame (const CtrlTriggerHeader& trigger) const;
+
+  /**
    * Get the format of the last transmission, as determined by the last call
    * to NotifyAccessGranted that did not return NO_TX.
    *

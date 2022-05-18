@@ -182,6 +182,32 @@ MultiUserScheduler::GetUlMuInfo (void)
   return m_ulInfo;
 }
 
+Ptr<WifiMacQueueItem>
+MultiUserScheduler::GetTriggerFrame (const CtrlTriggerHeader& trigger) const
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (trigger);
+
+  Mac48Address receiver = Mac48Address::GetBroadcast ();
+  if (trigger.GetNUserInfoFields () == 1)
+    {
+      auto aid = trigger.begin ()->GetAid12 ();
+      auto aidAddrMapIt = m_apMac->GetStaList ().find (aid);
+      NS_ASSERT (aidAddrMapIt != m_apMac->GetStaList ().end ());
+      receiver = aidAddrMapIt->second;
+    }
+
+  WifiMacHeader hdr (WIFI_MAC_CTL_TRIGGER);
+  hdr.SetAddr1 (receiver);
+  hdr.SetAddr2 (m_apMac->GetAddress ());
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+
+  return Create<WifiMacQueueItem> (packet, hdr);
+}
+
 void
 MultiUserScheduler::CheckTriggerFrame (void)
 {

@@ -27,6 +27,7 @@
 #include "he-configuration.h"
 #include "he-phy.h"
 #include <algorithm>
+#include <numeric>
 
 namespace ns3 {
 
@@ -171,27 +172,12 @@ RrMultiUserScheduler::TrySendingBsrpTf (void)
   WifiTxVector txVector = GetDlMuInfo ().txParams.m_txVector;
   txVector.SetGuardInterval (m_trigger.GetGuardInterval ());
 
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (m_trigger);
-
-  Mac48Address receiver = Mac48Address::GetBroadcast ();
-  if (m_trigger.GetNUserInfoFields () == 1)
-    {
-      NS_ASSERT (m_apMac->GetStaList ().find (m_trigger.begin ()->GetAid12 ()) != m_apMac->GetStaList ().end ());
-      receiver = m_apMac->GetStaList ().at (m_trigger.begin ()->GetAid12 ());
-    }
-
-  m_triggerMacHdr = WifiMacHeader (WIFI_MAC_CTL_TRIGGER);
-  m_triggerMacHdr.SetAddr1 (receiver);
-  m_triggerMacHdr.SetAddr2 (m_apMac->GetAddress ());
-  m_triggerMacHdr.SetDsNotTo ();
-  m_triggerMacHdr.SetDsNotFrom ();
-
-  Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (packet, m_triggerMacHdr);
+  auto item = GetTriggerFrame (m_trigger);
+  m_triggerMacHdr = item->GetHeader ();
 
   m_txParams.Clear ();
   // set the TXVECTOR used to send the Trigger Frame
-  m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (receiver);
+  m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (m_triggerMacHdr.GetAddr1 ());
 
   if (!m_heFem->TryAddMpdu (item, m_txParams, m_availableTime))
     {
@@ -343,22 +329,8 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
       AssignRuIndices (txVector);
 
       m_trigger = CtrlTriggerHeader (TriggerFrameType::BASIC_TRIGGER, txVector);
-      Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader (m_trigger);
-
-      Mac48Address receiver = Mac48Address::GetBroadcast ();
-      if (ulCandidates.size () == 1)
-        {
-          receiver = ulCandidates.begin ()->second.first->address;
-        }
-
-      m_triggerMacHdr = WifiMacHeader (WIFI_MAC_CTL_TRIGGER);
-      m_triggerMacHdr.SetAddr1 (receiver);
-      m_triggerMacHdr.SetAddr2 (m_apMac->GetAddress ());
-      m_triggerMacHdr.SetDsNotTo ();
-      m_triggerMacHdr.SetDsNotFrom ();
-
-      Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (packet, m_triggerMacHdr);
+      auto item = GetTriggerFrame (m_trigger);
+      m_triggerMacHdr = item->GetHeader ();
 
       // compute the maximum amount of time that can be granted to stations.
       // This value is limited by the max PPDU duration
@@ -366,7 +338,7 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
 
       m_txParams.Clear ();
       // set the TXVECTOR used to send the Trigger Frame
-      m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (receiver);
+      m_txParams.m_txVector = m_apMac->GetWifiRemoteStationManager ()->GetRtsTxVector (m_triggerMacHdr.GetAddr1 ());
 
       if (!m_heFem->TryAddMpdu (item, m_txParams, m_availableTime))
         {
@@ -623,20 +595,15 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
   return TxFormat::DL_MU_TX;
 }
 
-MultiUserScheduler::DlMuInfo
-RrMultiUserScheduler::ComputeDlMuInfo (void)
+void
+RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this);
-
-  if (m_candidates.empty ())
-    {
-      return DlMuInfo ();
-    }
-
-  uint16_t bw = m_apMac->GetWifiPhy ()->GetChannelWidth ();
+  NS_LOG_FUNCTION (this << txVector);
+  NS_ASSERT (txVector.GetHeMuUserInfoMap ().size () == m_candidates.size ());
 
   // compute how many stations can be granted an RU and the RU size
-  std::size_t nRusAssigned = m_txParams.GetPsduInfoMap ().size ();
+  auto bw = m_apMac->GetWifiPhy ()->GetChannelWidth ();
+  std::size_t nRusAssigned = m_candidates.size ();
   std::size_t nCentral26TonesRus;
   HeRu::RuType ruType = HeRu::GetEqualSizedRusForStations (bw, nRusAssigned, nCentral26TonesRus);
 
@@ -652,35 +619,92 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       NS_LOG_DEBUG (nCentral26TonesRus << " stations are being assigned a 26-tones RU");
     }
 
-  DlMuInfo dlMuInfo;
-
-  // We have to update the TXVECTOR
-  dlMuInfo.txParams.m_txVector.SetPreambleType (m_txParams.m_txVector.GetPreambleType ());
-  dlMuInfo.txParams.m_txVector.SetChannelWidth (m_txParams.m_txVector.GetChannelWidth ());
-  dlMuInfo.txParams.m_txVector.SetGuardInterval (m_txParams.m_txVector.GetGuardInterval ());
-  dlMuInfo.txParams.m_txVector.SetBssColor (m_txParams.m_txVector.GetBssColor ());
+  // re-allocate RUs based on the actual number of candidate stations
+  WifiTxVector::HeMuUserInfoMap heMuUserInfoMap;
+  std::swap (heMuUserInfoMap, txVector.GetHeMuUserInfoMap ());
 
   auto candidateIt = m_candidates.begin (); // iterator over the list of candidate receivers
+  auto ruSet = HeRu::GetRusOfType (bw, ruType);
+  auto ruSetIt = ruSet.begin ();
+  auto central26TonesRus = HeRu::GetCentral26TonesRus (bw, ruType);
+  auto central26TonesRusIt = central26TonesRus.begin ();
 
   for (std::size_t i = 0; i < nRusAssigned + nCentral26TonesRus; i++)
     {
       NS_ASSERT (candidateIt != m_candidates.end ());
+      auto mapIt = heMuUserInfoMap.find (candidateIt->first->aid);
+      NS_ASSERT (mapIt != heMuUserInfoMap.end ());
 
-      uint16_t staId = candidateIt->first->aid;
-      // AssignRuIndices will be called below to set RuSpec
-      dlMuInfo.txParams.m_txVector.SetHeMuUserInfo (staId,
-                                                    {{(i < nRusAssigned ? ruType : HeRu::RU_26_TONE), 1, false},
-                                                      m_txParams.m_txVector.GetMode (staId),
-                                                      m_txParams.m_txVector.GetNss (staId)});
+      txVector.SetHeMuUserInfo (mapIt->first,
+                                {(i < nRusAssigned ? *ruSetIt++ : *central26TonesRusIt++),
+                                 mapIt->second.mcs, mapIt->second.nss});
       candidateIt++;
     }
 
   // remove candidates that will not be served
   m_candidates.erase (candidateIt, m_candidates.end ());
+}
 
-  AssignRuIndices (dlMuInfo.txParams.m_txVector);
+void
+RrMultiUserScheduler::UpdateCredits (std::list<MasterInfo>& staList, Time txDuration,
+                                     const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << txDuration.As (Time::US) << txVector);
+
+  // find how many RUs have been allocated for each RU type
+  std::map<HeRu::RuType, std::size_t> ruMap;
+  for (const auto& userInfo : txVector.GetHeMuUserInfoMap ())
+    {
+      ruMap.insert ({userInfo.second.ru.GetRuType (), 0}).first->second++;
+    }
+
+  // The amount of credits received by each station equals the TX duration (in
+  // microseconds) divided by the number of stations.
+  double creditsPerSta = txDuration.ToDouble (Time::US) / staList.size ();
+  // Transmitting stations have to pay a number of credits equal to the TX duration
+  // (in microseconds) times the allocated bandwidth share.
+  double debitsPerMhz = txDuration.ToDouble (Time::US)
+                        / std::accumulate (ruMap.begin (), ruMap.end (), 0,
+                                           [](uint16_t sum, auto pair)
+                                           { return sum + pair.second * HeRu::GetBandwidth (pair.first); });
+
+  // assign credits to all stations
+  for (auto& sta : staList)
+    {
+      sta.credits += creditsPerSta;
+      sta.credits = std::min (sta.credits, m_maxCredits.ToDouble (Time::US));
+    }
+
+  // subtract debits to the selected stations
+  for (auto& candidate : m_candidates)
+    {
+      auto mapIt = txVector.GetHeMuUserInfoMap ().find (candidate.first->aid);
+      NS_ASSERT (mapIt != txVector.GetHeMuUserInfoMap ().end ());
+
+      candidate.first->credits -= debitsPerMhz * HeRu::GetBandwidth (mapIt->second.ru.GetRuType ());
+    }
+
+  // sort the list in decreasing order of credits
+  staList.sort ([] (const MasterInfo& a, const MasterInfo& b)
+                { return a.credits > b.credits; });
+
+}
+
+MultiUserScheduler::DlMuInfo
+RrMultiUserScheduler::ComputeDlMuInfo (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_candidates.empty ())
+    {
+      return DlMuInfo ();
+    }
+
+  DlMuInfo dlMuInfo;
+  std::swap (dlMuInfo.txParams.m_txVector, m_txParams.m_txVector);
+  FinalizeTxVector (dlMuInfo.txParams.m_txVector);
+
   m_txParams.Clear ();
-
   Ptr<const WifiMacQueueItem> mpdu;
 
   // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
@@ -741,39 +765,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
     }
 
   AcIndex primaryAc = m_edca->GetAccessCategory ();
-
-  // The amount of credits received by each station equals the TX duration (in
-  // microseconds) divided by the number of stations.
-  double creditsPerSta = dlMuInfo.txParams.m_txDuration.ToDouble (Time::US)
-                        / m_staList[primaryAc].size ();
-  // Transmitting stations have to pay a number of credits equal to the TX duration
-  // (in microseconds) times the allocated bandwidth share.
-  double debitsPerMhz = dlMuInfo.txParams.m_txDuration.ToDouble (Time::US)
-                        / (nRusAssigned * HeRu::GetBandwidth (ruType)
-                          + nCentral26TonesRus * HeRu::GetBandwidth (HeRu::RU_26_TONE));
-
-  // assign credits to all stations
-  for (auto& sta : m_staList[primaryAc])
-    {
-      sta.credits += creditsPerSta;
-      sta.credits = std::min (sta.credits, m_maxCredits.ToDouble (Time::US));
-    }
-
-  // subtract debits to the selected stations
-  candidateIt = m_candidates.begin ();
-
-  for (std::size_t i = 0; i < nRusAssigned + nCentral26TonesRus; i++)
-    {
-      NS_ASSERT (candidateIt != m_candidates.end ());
-
-      candidateIt->first->credits -= debitsPerMhz * HeRu::GetBandwidth (i < nRusAssigned ? ruType : HeRu::RU_26_TONE);
-
-      candidateIt++;
-    }
-
-  // sort the list in decreasing order of credits
-  m_staList[primaryAc].sort ([] (const MasterInfo& a, const MasterInfo& b)
-                              { return a.credits > b.credits; });
+  UpdateCredits (m_staList[primaryAc], dlMuInfo.txParams.m_txDuration, dlMuInfo.txParams.m_txVector);
 
   NS_LOG_DEBUG ("Next station to serve has AID=" << m_staList[primaryAc].front ().aid);
 

@@ -120,6 +120,28 @@ private:
   };
 
   /**
+   * Finalize the given TXVECTOR by only including the largest subset of the
+   * current set of candidate stations that can be allocated equal-sized RUs
+   * (with the possible exception of using central 26-tone RUs) without
+   * leaving RUs unallocated. The given TXVECTOR must be a MU TXVECTOR and must
+   * contain an HeMuUserInfo entry for each candidate station. The finalized
+   * TXVECTOR contains a subset of such HeMuUserInfo entries. The set of candidate
+   * stations is also updated by removing stations that are not allocated an RU.
+   *
+   * \param txVector the given TXVECTOR
+   */
+  void FinalizeTxVector (WifiTxVector& txVector);
+  /**
+   * Update credits of the stations in the given list considering that a PPDU having
+   * the given duration is being transmitted or solicited by using the given TXVECTOR.
+   *
+   * \param staList the list of stations
+   * \param txDuration the TX duration of the PPDU being transmitted or solicited
+   * \param txVector the TXVECTOR for the PPDU being transmitted or solicited
+   */
+  void UpdateCredits (std::list<MasterInfo>& staList, Time txDuration, const WifiTxVector& txVector);
+
+  /**
    * Information stored for candidate stations
    */
   typedef std::pair<std::list<MasterInfo>::iterator, Ptr<const WifiMacQueueItem>> CandidateInfo;
