@@ -110,10 +110,10 @@ SimpleDeviceEnergyModel::SetCurrentA (double current)
   m_totalEnergyConsumption += energyToDecrease;
   // update last update time stamp
   m_lastUpdateTime = Simulator::Now ();
-  // notify energy source
-  m_source->UpdateEnergySource ();
   // update the current drain
   m_actualCurrentA = current;
+  // notify energy source
+  m_source->UpdateEnergySource ();
 }
 
 void
