@@ -16,6 +16,8 @@ Release 3-dev
 
 ### Bugs fixed
 
+- (wifi) Fix setting of stations' max supported channel width
+
 Release 3.36.1
 --------------
 

@@ -799,12 +799,24 @@ attributes for 802.11ax devices.
  Ptr<HeConfiguration> heConfiguration = wnd->GetHeConfiguration ();
  heConfiguration->SetGuardInterval (NanoSeconds (1600));
 
- 802.11ax allows extended compressed Block ACKs containing a 256-bits bitmap, making possible transmissions of A-MPDUs containing up to 256 MPDUs,
- depending on the negotiated buffer size. In order to configure the buffer size of an 802.11ax device, the following line of code could be used::
+802.11ax allows extended compressed Block ACKs containing a 256-bits bitmap, making
+possible transmissions of A-MPDUs containing up to 256 MPDUs, depending on the
+negotiated buffer size. In order to configure the buffer size of an 802.11ax device,
+the following line of code could be used::
 
  heConfiguration->SetMpduBufferSize (256);
 
- For transmitting large MPDUs, it might also be needed to increase the maximum aggregation size (see above).
+For transmitting large MPDUs, it might also be needed to increase the maximum
+aggregation size (see above).
+
+When using UL MU transmissions, solicited TB PPDUs can arrive at the AP with a
+different delay, due to the different propagation delay from the various stations.
+In real systems, late TB PPDUs cause a variable amount of interference depending on
+the receiver's sensitivity. This phenomenon can be modeled through the
+``ns3::HeConfiguration::MaxTbPpduDelay`` attribute, which defines the maximum delay
+with which a TB PPDU can arrive with respect to the first TB PPDU in order to be
+decoded properly. TB PPDUs arriving after more than ``MaxTbPpduDelay`` since the
+first TB PPDU are discarded and considered as interference.
 
 Mobility configuration
 ======================
