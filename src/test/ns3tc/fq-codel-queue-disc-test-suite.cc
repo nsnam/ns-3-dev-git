@@ -42,7 +42,7 @@ static int32_t g_hash;
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * Simple test packet filter able to classify IPv4 packets.
  */
 class Ipv4TestPacketFilter : public Ipv4PacketFilter {
@@ -105,7 +105,7 @@ Ipv4TestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests packets for which there is no suitable filter.
  */
 class FqCoDelQueueDiscNoSuitableFilter : public TestCase
@@ -158,7 +158,7 @@ FqCoDelQueueDiscNoSuitableFilter::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the IP flows separation and the packet limit.
  */
 class FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
@@ -234,7 +234,7 @@ FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the deficit per flow.
  */
 class FqCoDelQueueDiscDeficit : public TestCase
@@ -383,7 +383,7 @@ FqCoDelQueueDiscDeficit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the TCP flows separation.
  */
 class FqCoDelQueueDiscTCPFlowsSeparation : public TestCase
@@ -477,7 +477,7 @@ FqCoDelQueueDiscTCPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the UDP flows separation
  */
 class FqCoDelQueueDiscUDPFlowsSeparation : public TestCase
@@ -571,9 +571,9 @@ FqCoDelQueueDiscUDPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests ECN marking.
- * 
+ *
  * Any future classifier options (e.g. SetAssociativeHash) should be
  * disabled to prevent a hash collision on this test case.
  */
@@ -593,7 +593,7 @@ private:
    * \param nPktEnqueued The expected number of queue disc classes.
    * \param nQueueFlows The expected number of flows in the queue.
    */
-  void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows);
+  void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt, uint32_t nPktEnqueued, uint32_t nQueueFlows);
   /**
    * Dequeue some packets.
    * \param queue The queue disc.
@@ -619,7 +619,7 @@ FqCoDelQueueDiscECNMarking::~FqCoDelQueueDiscECNMarking ()
 }
 
 void
-FqCoDelQueueDiscECNMarking::AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows)
+FqCoDelQueueDiscECNMarking::AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt, uint32_t nPktEnqueued, uint32_t nQueueFlows)
 {
   Address dest;
   Ptr<Packet> p = Create<Packet> (100);
@@ -903,10 +903,10 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqCodel.
- * 
+ *
  * We modified DoClassify () and CheckProtocol () so that we could control
  * the hash returned for each packet. In the beginning, we use flow hashes
  * ranging from 0 to 7. These must go into different queues in the same set. 
@@ -1027,7 +1027,7 @@ FqCoDelQueueDiscSetLinearProbing::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests L4S mode.
  * Any future classifier options (e.g. SetAssociativeHash) should be
  * disabled to prevent a hash collision on this test case.
@@ -1047,7 +1047,7 @@ private:
    * \param hdr The IPv4 header.
    * \param nPkt The number of packets to enqueue.
    */
-  void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+  void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt);
 
   /**
    * Enqueue some packets with delay.
@@ -1214,7 +1214,7 @@ FqCoDelQueueDiscL4sMode::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * FQ-CoDel queue disc test suite.
  */
 class FqCoDelQueueDiscTestSuite : public TestSuite

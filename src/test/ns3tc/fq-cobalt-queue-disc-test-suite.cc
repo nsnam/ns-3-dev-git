@@ -606,7 +606,7 @@ private:
    * \param nPktEnqueued The expected number of enqueued packets.
    * \param nQueueFlows The expected number of flow queues.
    */
-  void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows);
+  void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt, uint32_t nPktEnqueued, uint32_t nQueueFlows);
   /**
    * Dequeue the given number of packets.
    * \param queue The queue disc.
@@ -640,7 +640,7 @@ FqCobaltQueueDiscEcnMarking::~FqCobaltQueueDiscEcnMarking ()
 }
 
 void
-FqCobaltQueueDiscEcnMarking::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt, u_int32_t nPktEnqueued, u_int32_t nQueueFlows)
+FqCobaltQueueDiscEcnMarking::AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt, uint32_t nPktEnqueued, uint32_t nQueueFlows)
 {
   Address dest;
   Ptr<Packet> p = Create<Packet> (100);
@@ -1042,7 +1042,7 @@ private:
    * \param hdr The IPv4 header.
    * \param nPkt The number of packets.
    */
-  void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+  void AddPacket (Ptr<FqCobaltQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt);
   /**
    * Enqueue the given number of packets at different times.
    * \param queue The queue disc.

@@ -720,7 +720,7 @@ private:
    * \param hdr The IPv4 header.
    * \param nPkt The number of packets.
    */
-  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+  void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt);
   /**
    * Enqueue the given number of packets at different times.
    * \param queue The queue disc.
