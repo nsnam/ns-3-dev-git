@@ -192,13 +192,6 @@ ChannelAccessManager::Add (Ptr<Txop> txop)
   m_txops.push_back (txop);
 }
 
-Time
-ChannelAccessManager::MostRecent (std::initializer_list<Time> list) const
-{
-  NS_ASSERT (list.size () > 0);
-  return *std::max_element (list.begin (), list.end ());
-}
-
 void
 ChannelAccessManager::InitLastBusyStructs (void)
 {
@@ -442,24 +435,24 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
   Time accessGrantedStart;
   if (ignoreNav)
     {
-      accessGrantedStart = MostRecent ({rxAccessStart,
-                                        busyAccessStart,
-                                        txAccessStart,
-                                        ackTimeoutAccessStart,
-                                        ctsTimeoutAccessStart,
-                                        switchingAccessStart}
-                                       );
+      accessGrantedStart = std::max ({rxAccessStart,
+                                      busyAccessStart,
+                                      txAccessStart,
+                                      ackTimeoutAccessStart,
+                                      ctsTimeoutAccessStart,
+                                      switchingAccessStart}
+                                     );
     }
   else
     {
-      accessGrantedStart = MostRecent ({rxAccessStart,
-                                        busyAccessStart,
-                                        txAccessStart,
-                                        navAccessStart,
-                                        ackTimeoutAccessStart,
-                                        ctsTimeoutAccessStart,
-                                        switchingAccessStart}
-                                       );
+      accessGrantedStart = std::max ({rxAccessStart,
+                                      busyAccessStart,
+                                      txAccessStart,
+                                      navAccessStart,
+                                      ackTimeoutAccessStart,
+                                      ctsTimeoutAccessStart,
+                                      switchingAccessStart}
+                                     );
     }
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
                ", rx access start=" << rxAccessStart <<
@@ -473,8 +466,8 @@ Time
 ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
-  Time mostRecentEvent = MostRecent ({txop->GetBackoffStart (),
-                                     GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ())});
+  Time mostRecentEvent = std::max ({txop->GetBackoffStart (),
+                                    GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ())});
   NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
   return mostRecentEvent;
@@ -866,7 +859,7 @@ void
 ChannelAccessManager::UpdateLastIdlePeriod (void)
 {
   NS_LOG_FUNCTION (this);
-  Time idleStart = MostRecent ({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});
+  Time idleStart = std::max ({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});
   Time now = Simulator::Now ();
 
   if (idleStart >= now)

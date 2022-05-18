@@ -260,14 +260,6 @@ private:
    */
   void UpdateBackoff (void);
   /**
-   * Return the most recent time.
-   *
-   * \param list the initializer list including the times to compare
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (std::initializer_list<Time> list) const;
-  /**
    * Return the time when the backoff procedure
    * started for the given Txop.
    *
