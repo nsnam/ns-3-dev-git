@@ -52,7 +52,6 @@
 #include <vector>
 
 using namespace ns3;
-using namespace std;
 
 static uint32_t g_received = 0; //!< number of packets received
 

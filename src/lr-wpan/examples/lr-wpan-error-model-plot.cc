@@ -33,7 +33,6 @@
 #include <vector>
 
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanErrorModelPlot");
 
@@ -81,4 +80,3 @@ set style increment user");
 
   return 0;
 }
-

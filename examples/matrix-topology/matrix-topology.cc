@@ -56,15 +56,14 @@
 #include "ns3/assert.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
-using namespace std;
 using namespace ns3;
 
 // ---------- Prototypes ------------------------------------------------------
 
-vector<vector<bool> > readNxNMatrix (std::string adj_mat_file_name);
-vector<vector<double> > readCordinatesFile (std::string node_coordinates_file_name);
-void printCoordinateArray (const char* description, vector<vector<double> > coord_array);
-void printMatrix (const char* description, vector<vector<bool> > array);
+std::vector<std::vector<bool>> readNxNMatrix (std::string adj_mat_file_name);
+std::vector<std::vector<double>> readCordinatesFile (std::string node_coordinates_file_name);
+void printCoordinateArray (const char* description, std::vector<std::vector<double>> coord_array);
+void printMatrix (const char* description, std::vector<std::vector<bool>> array);
 
 NS_LOG_COMPONENT_DEFINE ("GenericTopologyCreation");
 
@@ -106,7 +105,7 @@ int main (int argc, char *argv[])
 
   // ---------- Read Adjacency Matrix ----------------------------------------
 
-  vector<vector<bool> > Adj_Matrix;
+  std::vector<std::vector<bool>> Adj_Matrix;
   Adj_Matrix = readNxNMatrix (adj_mat_file_name);
 
   // Optionally display 2-dimensional adjacency matrix (Adj_Matrix) array
@@ -116,7 +115,7 @@ int main (int argc, char *argv[])
 
   // ---------- Read Node Coordinates File -----------------------------------
 
-  vector<vector<double> > coord_array;
+  std::vector<std::vector<double>> coord_array;
   coord_array = readCordinatesFile (node_coordinates_file_name);
 
   // Optionally display node co-ordinates file
@@ -294,21 +293,21 @@ int main (int argc, char *argv[])
 
 // ---------- Function Definitions -------------------------------------------
 
-vector<vector<bool> > readNxNMatrix (std::string adj_mat_file_name)
+std::vector<std::vector<bool>> readNxNMatrix (std::string adj_mat_file_name)
 {
-  ifstream adj_mat_file;
-  adj_mat_file.open (adj_mat_file_name.c_str (), ios::in);
+  std::ifstream adj_mat_file;
+  adj_mat_file.open (adj_mat_file_name.c_str (), std::ios::in);
   if (adj_mat_file.fail ())
     {
       NS_FATAL_ERROR ("File " << adj_mat_file_name.c_str () << " not found");
     }
-  vector<vector<bool> > array;
+  std::vector<std::vector<bool>> array;
   int i = 0;
   int n_nodes = 0;
 
   while (!adj_mat_file.eof ())
     {
-      string line;
+      std::string line;
       getline (adj_mat_file, line);
       if (line == "")
         {
@@ -316,9 +315,9 @@ vector<vector<bool> > readNxNMatrix (std::string adj_mat_file_name)
           break;
         }
 
-      istringstream iss (line);
+      std::istringstream iss (line);
       bool element;
-      vector<bool> row;
+      std::vector<bool> row;
       int j = 0;
 
       while (iss >> element)
@@ -355,20 +354,20 @@ vector<vector<bool> > readNxNMatrix (std::string adj_mat_file_name)
 
 }
 
-vector<vector<double> > readCordinatesFile (std::string node_coordinates_file_name)
+std::vector<std::vector<double>> readCordinatesFile (std::string node_coordinates_file_name)
 {
-  ifstream node_coordinates_file;
-  node_coordinates_file.open (node_coordinates_file_name.c_str (), ios::in);
+  std::ifstream node_coordinates_file;
+  node_coordinates_file.open (node_coordinates_file_name.c_str (), std::ios::in);
   if (node_coordinates_file.fail ())
     {
       NS_FATAL_ERROR ("File " << node_coordinates_file_name.c_str () << " not found");
     }
-  vector<vector<double> > coord_array;
+  std::vector<std::vector<double>> coord_array;
   int m = 0;
 
   while (!node_coordinates_file.eof ())
     {
-      string line;
+      std::string line;
       getline (node_coordinates_file, line);
 
       if (line == "")
@@ -377,9 +376,9 @@ vector<vector<double> > readCordinatesFile (std::string node_coordinates_file_na
           break;
         }
 
-      istringstream iss (line);
+      std::istringstream iss (line);
       double coordinate;
-      vector<double> row;
+      std::vector<double> row;
       int n = 0;
       while (iss >> coordinate)
         {
@@ -404,33 +403,33 @@ vector<vector<double> > readCordinatesFile (std::string node_coordinates_file_na
 
 }
 
-void printMatrix (const char* description, vector<vector<bool> > array)
+void printMatrix (const char* description, std::vector<std::vector<bool>> array)
 {
-  cout << "**** Start " << description << "********" << endl;
+  std::cout << "**** Start " << description << "********" << std::endl;
   for (size_t m = 0; m < array.size (); m++)
     {
       for (size_t n = 0; n < array[m].size (); n++)
         {
-          cout << array[m][n] << ' ';
+          std::cout << array[m][n] << ' ';
         }
-      cout << endl;
+      std::cout << std::endl;
     }
-  cout << "**** End " << description << "********" << endl;
+  std::cout << "**** End " << description << "********" << std::endl;
 
 }
 
-void printCoordinateArray (const char* description, vector<vector<double> > coord_array)
+void printCoordinateArray (const char* description, std::vector<std::vector<double>> coord_array)
 {
-  cout << "**** Start " << description << "********" << endl;
+  std::cout << "**** Start " << description << "********" << std::endl;
   for (size_t m = 0; m < coord_array.size (); m++)
     {
       for (size_t n = 0; n < coord_array[m].size (); n++)
         {
-          cout << coord_array[m][n] << ' ';
+          std::cout << coord_array[m][n] << ' ';
         }
-      cout << endl;
+      std::cout << std::endl;
     }
-  cout << "**** End " << description << "********" << endl;
+  std::cout << "**** End " << description << "********" << std::endl;
 
 }
 

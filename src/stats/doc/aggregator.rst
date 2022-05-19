@@ -140,14 +140,12 @@ GnuplotAggregator as was discussed above.
 
   void Create2dPlot ()
   {
-    using namespace std;
-  
-    string fileNameWithoutExtension = "gnuplot-aggregator";
-    string plotTitle                = "Gnuplot Aggregator Plot";
-    string plotXAxisHeading         = "Time (seconds)";
-    string plotYAxisHeading         = "Double Values";
-    string plotDatasetLabel         = "Data Values";
-    string datasetContext           = "Dataset/Context/String";
+    std::string fileNameWithoutExtension = "gnuplot-aggregator";
+    std::string plotTitle                = "Gnuplot Aggregator Plot";
+    std::string plotXAxisHeading         = "Time (seconds)";
+    std::string plotYAxisHeading         = "Double Values";
+    std::string plotDatasetLabel         = "Data Values";
+    std::string datasetContext           = "Dataset/Context/String";
   
     // Create an aggregator.
     Ptr<GnuplotAggregator> aggregator =
@@ -285,10 +283,8 @@ FileAggregator as was discussed above.
 
   void CreateCommaSeparatedFile ()
   {
-    using namespace std;
-  
-    string fileName       = "file-aggregator-comma-separated.txt";
-    string datasetContext = "Dataset/Context/String";
+    std::string fileName       = "file-aggregator-comma-separated.txt";
+    std::string datasetContext = "Dataset/Context/String";
   
     // Create an aggregator.
     Ptr<FileAggregator> aggregator =
@@ -351,10 +347,8 @@ FileAggregator as was discussed above.
 
   void CreateFormattedFile ()
   {
-    using namespace std;
-  
-    string fileName       = "file-aggregator-formatted-values.txt";
-    string datasetContext = "Dataset/Context/String";
+    std::string fileName       = "file-aggregator-formatted-values.txt";
+    std::string datasetContext = "Dataset/Context/String";
   
     // Create an aggregator that will have formatted values.
     Ptr<FileAggregator> aggregator =

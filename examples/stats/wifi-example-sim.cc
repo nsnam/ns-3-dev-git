@@ -41,7 +41,6 @@
 #include "wifi-example-apps.h"
 
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("WiFiDistanceExperiment");
 
@@ -62,15 +61,15 @@ void TxCallback (Ptr<CounterCalculator<uint32_t> > datac,
 int main (int argc, char *argv[]) {
 
   double distance = 50.0;
-  string format ("omnet");
+  std::string format ("omnet");
 
-  string experiment ("wifi-distance-test");
-  string strategy ("wifi-default");
-  string input;
-  string runID;
+  std::string experiment ("wifi-distance-test");
+  std::string strategy ("wifi-default");
+  std::string input;
+  std::string runID;
 
   {
-    stringstream sstr;
+    std::stringstream sstr;
     sstr << "run-" << time (NULL);
     runID = sstr.str ();
   }
@@ -102,7 +101,7 @@ int main (int argc, char *argv[]) {
   #endif
 
   {
-    stringstream sstr ("");
+    std::stringstream sstr ("");
     sstr << distance;
     input = sstr.str ();
   }

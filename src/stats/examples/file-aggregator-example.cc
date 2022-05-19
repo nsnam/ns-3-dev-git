@@ -31,10 +31,8 @@ namespace {
  */
 void CreateCommaSeparatedFile ()
 {
-  using namespace std;
-
-  string fileName       = "file-aggregator-comma-separated.txt";
-  string datasetContext = "Dataset/Context/String";
+  std::string fileName       = "file-aggregator-comma-separated.txt";
+  std::string datasetContext = "Dataset/Context/String";
 
   // Create an aggregator.
   Ptr<FileAggregator> aggregator =
@@ -71,10 +69,8 @@ void CreateCommaSeparatedFile ()
  */
 void CreateSpaceSeparatedFile ()
 {
-  using namespace std;
-
-  string fileName       = "file-aggregator-space-separated.txt";
-  string datasetContext = "Dataset/Context/String";
+  std::string fileName       = "file-aggregator-space-separated.txt";
+  std::string datasetContext = "Dataset/Context/String";
 
   // Create an aggregator.  Note that the default type is space
   // separated.
@@ -111,10 +107,8 @@ void CreateSpaceSeparatedFile ()
  */
 void CreateFormattedFile ()
 {
-  using namespace std;
-
-  string fileName       = "file-aggregator-formatted-values.txt";
-  string datasetContext = "Dataset/Context/String";
+  std::string fileName       = "file-aggregator-formatted-values.txt";
+  std::string datasetContext = "Dataset/Context/String";
 
   // Create an aggregator that will have formatted values.
   Ptr<FileAggregator> aggregator =

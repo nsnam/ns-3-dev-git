@@ -76,7 +76,6 @@
 #include "ns3/ipv4-flow-classifier.h"
 
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("PowerAdaptationInterference");
 

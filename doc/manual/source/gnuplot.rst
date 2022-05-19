@@ -81,13 +81,11 @@ The following 2-Dimensional plot
 
 was created using the following code from gnuplot-example.cc: ::
 
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-2d";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "2-D Plot";
-  string dataTitle               = "2-D Data";
+  std::string fileNameWithNoExtension = "plot-2d";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "2-D Plot";
+  std::string dataTitle               = "2-D Data";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -130,7 +128,7 @@ was created using the following code from gnuplot-example.cc: ::
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);
@@ -149,13 +147,11 @@ The following 2-Dimensional plot with error bars in the x and y directions
 
 was created using the following code from gnuplot-example.cc: ::
 
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-2d-with-error-bars";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "2-D Plot With Error Bars";
-  string dataTitle               = "2-D Data With Error Bars";
+  std::string fileNameWithNoExtension = "plot-2d-with-error-bars";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "2-D Plot With Error Bars";
+  std::string dataTitle               = "2-D Data With Error Bars";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -210,7 +206,7 @@ was created using the following code from gnuplot-example.cc: ::
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);
@@ -229,13 +225,11 @@ The following 3-Dimensional plot
 
 was created using the following code from gnuplot-example.cc: ::
 
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-3d";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "3-D Plot";
-  string dataTitle               = "3-D Data";
+  std::string fileNameWithNoExtension = "plot-3d";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "3-D Plot";
+  std::string dataTitle               = "3-D Data";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -296,7 +290,7 @@ was created using the following code from gnuplot-example.cc: ::
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);
