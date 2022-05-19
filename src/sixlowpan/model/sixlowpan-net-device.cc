@@ -2199,22 +2199,18 @@ SixLowPanNetDevice::DecompressLowPanUdpNhc (Ptr<Packet> packet, Ipv6Address sadd
       break;
     case SixLowPanUdpNhcExtension::PORTS_ALL_SRC_LAST_DST:
       udpHeader.SetSourcePort (encoding.GetSrcPort ());
-      temp = 0xf0;
-      temp |= (temp << 8) | encoding.GetDstPort ();
+      temp = (0xf0 << 8) | encoding.GetDstPort ();
       udpHeader.SetDestinationPort (temp);
       break;
     case SixLowPanUdpNhcExtension::PORTS_LAST_SRC_ALL_DST:
-      temp = 0xf0;
-      temp |= (temp << 8) | encoding.GetSrcPort ();
+      temp = (0xf0 << 8) | encoding.GetSrcPort ();
       udpHeader.SetSourcePort (temp);
       udpHeader.SetDestinationPort (encoding.GetDstPort ());
       break;
     case SixLowPanUdpNhcExtension::PORTS_LAST_SRC_LAST_DST:
-      temp = 0xf0b;
-      temp |= (temp << 4) | encoding.GetSrcPort ();
+      temp = (0xf0b << 4) | encoding.GetSrcPort ();
       udpHeader.SetSourcePort (temp);
-      temp = 0xf0b;
-      temp |= (temp << 4) | encoding.GetDstPort ();
+      temp = (0xf0b << 4) | encoding.GetDstPort ();
       udpHeader.SetDestinationPort (temp);
       break;
     }
