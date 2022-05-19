@@ -245,8 +245,9 @@ private:
    * \param sifs the SIFS
    * \param eifsNoDifsNoSifs the EIFS no DIFS no SIFS
    * \param ackTimeoutValue the Ack timeout value
+   * \param chWidth the channel width in MHz
    */
-  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue = 20);
+  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue = 20, uint16_t chWidth = 20);
   /**
    * Add Txop function
    * \param aifsn the AIFSN
@@ -389,6 +390,7 @@ private:
 
   Ptr<FrameExchangeManagerStub<TxopType>> m_feManager; //!< the Frame Exchange Manager stubbed
   Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
+  Ptr<WifiPhy> m_phy; //!< the PHY object
   TxopTests m_txop; //!< the vector of Txop test instances
   uint32_t m_ackTimeoutValue; //!< the Ack timeout value
 };
@@ -564,7 +566,7 @@ ChannelAccessManagerTest<TxopType>::DoCheckBusy (bool busy)
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
+ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue, uint16_t chWidth)
 {
   m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub> ();
   m_feManager = CreateObject<FrameExchangeManagerStub<TxopType>> (this);
@@ -573,6 +575,15 @@ ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs,
   m_ChannelAccessManager->SetSifs (MicroSeconds (sifs));
   m_ChannelAccessManager->SetEifsNoDifs (MicroSeconds (eifsNoDifsNoSifs + sifs));
   m_ackTimeoutValue = ackTimeoutValue;
+  // the purpose of the following operations is to initialize the last busy struct
+  // of the ChannelAccessManager. Indeed, InitLastBusyStructs(), which is called by
+  // SetupPhyListener(), requires an attached PHY to determine the channel types
+  // to initialize
+  m_phy = CreateObject<SpectrumWifiPhy> ();
+  m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {0, chWidth,
+                                                     WIFI_PHY_BAND_UNSPECIFIED, 0});
+  m_phy->ConfigureStandard (WIFI_STANDARD_80211ac); // required to use 160 MHz channels
+  m_ChannelAccessManager->SetupPhyListener (m_phy);
 }
 
 template <typename TxopType>
@@ -602,6 +613,8 @@ ChannelAccessManagerTest<TxopType>::EndTest (void)
     }
   m_txop.clear ();
 
+  m_ChannelAccessManager->RemovePhyListener (m_phy);
+  m_phy->Dispose ();
   m_ChannelAccessManager->Dispose ();
   m_ChannelAccessManager = 0;
   m_feManager = 0;
@@ -1101,72 +1114,90 @@ template <>
 void
 ChannelAccessManagerTest<QosTxop>::DoRun (void)
 {
-  // Check alignment at slot boundary after successful reception (backoff = 0):
+  // Check alignment at slot boundary after successful reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //    20     50     56      60     80
+  //            |   cca_busy   |
   //     |  rx  | sifs | aifsn |  tx  |
   //                |
   //               52 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 40);
   AddTxop (1);
   AddRxOkEvt (20, 30);
+  AddCcaBusyEvt (50, 10, WIFI_CHANLIST_SECONDARY);
   AddAccessRequest (52, 20, 60, 0);
   EndTest ();
 
-  // Check alignment at slot boundary after successful reception (backoff = 0):
+  // Check alignment at slot boundary after successful reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //    20     50     56      60     80
+  //            |   cca_busy   |
   //     |  rx  | sifs | aifsn |  tx  |
   //                       |
   //                      58 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 80);
   AddTxop (1);
   AddRxOkEvt (20, 30);
+  AddCcaBusyEvt (50, 10, WIFI_CHANLIST_SECONDARY);
   AddAccessRequest (58, 20, 60, 0);
   EndTest ();
 
-  // Check alignment at slot boundary after successful reception (backoff = 0):
+  // Check alignment at slot boundary after successful reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //    20     50     56      60     64     84
+  //            |      cca_busy       |
   //     |  rx  | sifs | aifsn | idle |  tx  |
   //                               |
   //                              62 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 80);
   AddTxop (1);
   AddRxOkEvt (20, 30);
+  AddCcaBusyEvt (50, 14, WIFI_CHANLIST_SECONDARY40);
   AddAccessRequest (62, 20, 64, 0);
   EndTest ();
 
-  // Check alignment at slot boundary after failed reception (backoff = 0):
+  // Check alignment at slot boundary after failed reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //  20         50     56           66             76     96
+  //              |             cca_busy             |
   //   |          | <------eifs------>|              |      |
   //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
   //                   |
   //                  55 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 160);
   AddTxop (1);
   AddRxErrorEvt (20, 30);
+  AddCcaBusyEvt (50, 26, WIFI_CHANLIST_SECONDARY);
   AddAccessRequest (55, 20, 76, 0);
   EndTest ();
 
-  // Check alignment at slot boundary after failed reception (backoff = 0):
+  // Check alignment at slot boundary after failed reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //  20         50     56           66             76     96
+  //              |             cca_busy             |
   //   |          | <------eifs------>|              |      |
   //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
   //                                        |
   //                                       70 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 160);
   AddTxop (1);
   AddRxErrorEvt (20, 30);
+  AddCcaBusyEvt (50, 26, WIFI_CHANLIST_SECONDARY40);
   AddAccessRequest (70, 20, 76, 0);
   EndTest ();
 
-  // Check alignment at slot boundary after failed reception (backoff = 0):
+  // Check alignment at slot boundary after failed reception (backoff = 0).
+  // Also, check that CCA BUSY on a secondary channel does not affect channel access:
   //  20         50     56           66             76     84
+  //              |             cca_busy                    |
   //   |          | <------eifs------>|              |      |
   //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
   //                                                     |
   //                                                    82 request access
-  StartTest (4, 6, 10);
+  StartTest (4, 6, 10, 20, 160);
   AddTxop (1);
   AddRxErrorEvt (20, 30);
+  AddCcaBusyEvt (50, 34, WIFI_CHANLIST_SECONDARY80);
   AddAccessRequest (82, 20, 84, 0);
   EndTest ();
 
