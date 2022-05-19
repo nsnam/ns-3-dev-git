@@ -268,22 +268,22 @@ was created using the following code from gnuplot-example.cc: ::
   // Create the 3-D dataset.
   for (x = -5.0; x <= +5.0; x += 1.0)
     {
-    for (y = -5.0; y <= +5.0; y += 1.0)
-	{
-	  // Calculate the 3-D surface
-	  // 
-	  //            2      2
-	  //     z  =  x   *  y   .
-	  //  
-	  z = x * x * y * y;
+      for (y = -5.0; y <= +5.0; y += 1.0)
+        {
+          // Calculate the 3-D surface
+          // 
+          //            2      2
+          //     z  =  x   *  y   .
+          //  
+          z = x * x * y * y;
 
-	  // Add this point.
-	  dataset.Add (x, y, z);
-	}
+          // Add this point.
+          dataset.Add (x, y, z);
+        }
 
-    // The blank line is necessary at the end of each x value's data
-    // points for the 3-D surface grid to work.
-    dataset.AddEmptyLine ();
+      // The blank line is necessary at the end of each x value's data
+      // points for the 3-D surface grid to work.
+      dataset.AddEmptyLine ();
     }
 
   // Add the dataset to the plot.
