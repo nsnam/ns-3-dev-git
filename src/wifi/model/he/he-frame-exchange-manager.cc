@@ -1084,6 +1084,13 @@ HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address
   NS_ASSERT_MSG (heConfiguration != 0, "This STA has to be an HE station to send an HE TB PPDU");
   v.SetBssColor (heConfiguration->GetBssColor ());
 
+  if (userInfoIt->IsUlTargetRssiMaxTxPower ())
+    {
+      NS_LOG_LOGIC ("AP requested using the max transmit power (" << m_phy->GetTxPowerEnd () << " dBm)");
+      v.SetTxPowerLevel (m_phy->GetNTxPower ());
+      return v;
+    }
+
   uint8_t powerLevel = m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ();
   /**
    * Get the transmit power to use for an HE TB PPDU

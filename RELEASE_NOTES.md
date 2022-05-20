@@ -17,6 +17,7 @@ Release 3-dev
 ### Bugs fixed
 
 - (wifi) Fix setting of stations' max supported channel width
+- (wifi) Fix setting TX power for HE TB PPDUs in case AP requested using the max TX power
 
 Release 3.36.1
 --------------
