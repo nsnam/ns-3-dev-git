@@ -27,10 +27,15 @@ function(build_required_and_libs_lists module_name visibility libraries
       set(required_modules_list
           "${required_modules_list} ns3-${required_module_name}"
       )
+      set(lib_real_name "-l${lib_real_name}")
     else()
-      set(lib_real_name ${lib})
+      if(IS_ABSOLUTE ${lib})
+        set(lib_real_name ${lib})
+      else()
+        set(lib_real_name "-l${lib}")
+      endif()
     endif()
-    set(linked_libs_list "${linked_libs_list} -l${lib_real_name}")
+    set(linked_libs_list "${linked_libs_list} ${lib_real_name}")
   endforeach()
   set(pkgconfig_${visibility}_libs ${linked_libs_list} PARENT_SCOPE)
   set(pkgconfig_${visibility}_required ${required_modules_list} PARENT_SCOPE)

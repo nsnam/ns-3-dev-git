@@ -2086,6 +2086,7 @@ endfunction()
 function(get_target_includes target output)
   set(include_directories)
   get_target_property(include_dirs ${target} INCLUDE_DIRECTORIES)
+  list(REMOVE_DUPLICATES include_dirs)
   foreach(include_dir ${include_dirs})
     if(include_dir MATCHES "<")
       # Skip CMake build and install interface includes
