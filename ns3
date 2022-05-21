@@ -502,27 +502,27 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         if args.G is None:
             args.G = current_cmake_generator
 
-        # C++ standard
-        if args.cxx_standard is not None:
-            cmake_args.append("-DCMAKE_CXX_STANDARD=%s" % args.cxx_standard)
+    # C++ standard
+    if args.cxx_standard is not None:
+        cmake_args.append("-DCMAKE_CXX_STANDARD=%s" % args.cxx_standard)
 
-        # Build type
-        if args.build_profile is not None:
-            args.build_profile = args.build_profile.lower()
-            if args.build_profile not in ["debug", "default", "release", "optimized"]:
-                raise Exception("Unknown build type")
+    # Build type
+    if args.build_profile is not None:
+        args.build_profile = args.build_profile.lower()
+        if args.build_profile not in ["debug", "default", "release", "optimized"]:
+            raise Exception("Unknown build type")
+        else:
+            if args.build_profile == "debug":
+                cmake_args.extend(
+                    "-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON".split())
+            elif args.build_profile == "default":
+                cmake_args.extend(
+                    "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
             else:
-                if args.build_profile == "debug":
-                    cmake_args.extend(
-                        "-DCMAKE_BUILD_TYPE=debug -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON".split())
-                elif args.build_profile == "default":
-                    cmake_args.extend(
-                        "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF".split())
-                else:
-                    cmake_args.extend(
-                        "-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split()
-                    )
-                cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
+                cmake_args.extend(
+                    "-DCMAKE_BUILD_TYPE=release -DNS3_ASSERT=OFF -DNS3_LOG=OFF -DNS3_WARNINGS_AS_ERRORS=OFF".split()
+                )
+            cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
     options = (("ASSERT", "asserts"),
                ("COVERAGE", "gcov"),
