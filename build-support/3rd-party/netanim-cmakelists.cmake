@@ -18,6 +18,8 @@
 find_package(Qt4 COMPONENTS QtGui QUIET)
 find_package(Qt5 COMPONENTS Core Widgets PrintSupport Gui QUIET)
 
+add_definitions(-Wno-error=misleading-indentation)
+
 if((NOT ${Qt4_FOUND}) AND (NOT ${Qt5_FOUND}))
   message(FATAL_ERROR "You need Qt installed to build NetAnim")
 endif()
@@ -188,4 +190,4 @@ else()
 endif()
 
 target_include_directories(netanim PUBLIC qtpropertybrowser/src)
-set_runtime_outputdirectory(netanim ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/bin "")
+set_runtime_outputdirectory(netanim ${CMAKE_OUTPUT_DIRECTORY}/bin/ "")
