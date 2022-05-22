@@ -1,0 +1,12 @@
+# ns-3 CI/CD script with the coding-style stage
+#
+# Contains jobs to check the coding style of the codebase.
+
+.base-coding-style:
+  stage: coding-style
+
+trailing-whitespace:
+  extends: .base-coding-style
+  image: python:slim
+  script:
+    - python3 utils/trim-trailing-whitespace.py --check .
