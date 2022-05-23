@@ -11,6 +11,8 @@
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    # workaround for Valgrind on Archlinux https://bbs.archlinux.org/viewtopic.php?pid=2036171#p2036171
+    - export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
     # missing the flag --disable-python
     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
     - ./ns3 build
