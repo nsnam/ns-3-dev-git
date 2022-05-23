@@ -14,7 +14,8 @@ Release 3.36.1
 
 ### Availability
 
-This release is not yet available.
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.36.1.tar.bz2
 
 ### Supported platforms
 
