@@ -18,8 +18,8 @@ CMake for the ns-3.36 release.
 
 CMake is very verbose and commands can be very long for basic operations.
 
-The wrapper script ``ns3`` hides most of verbosity from CMake and provide a 
-Waf-like interface for command-line users. 
+The wrapper script ``ns3`` hides most of verbosity from CMake and provide a
+Waf-like interface for command-line users.
 
 .. _CLion : https://www.jetbrains.com/clion/
 .. _Visual Studio : https://visualstudio.microsoft.com/
@@ -30,23 +30,23 @@ Waf-like interface for command-line users.
 .. _CMake generated : https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 .. _generator options : https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
-It is the recommended way to work on ns-3, except if you are using an 
+It is the recommended way to work on ns-3, except if you are using an
 IDE that supports projects that can be generated with CMake or CMake projects.
 
 Here is a non-exhaustive list of IDEs that can be used:
 
 * Support CMake projects:
-  
+
   * JetBrains's `CLion`_
   * Microsoft `Visual Studio`_ and Visual Studio `Code`_
 
 * Supported IDEs via `CMake generated`_ projects:
-  
+
   * Apple's `XCode`_ : ``ns3 configure -G Xcode``
   * `CodeBlocks`_ : ``ns3 configure -G "CodeBlocks - Ninja"``
-  * `Eclipse`_ CDT4 : ``ns3 configure -G "Eclipse CDT4 - Ninja"`` 
+  * `Eclipse`_ CDT4 : ``ns3 configure -G "Eclipse CDT4 - Ninja"``
 
-Note: Ninja was used for brevity. 
+Note: Ninja was used for brevity.
 Both CodeBlocks and Eclipse have additional `generator options`_.
 
 General instructions on how to setup and use IDEs are available
@@ -55,17 +55,17 @@ in the Tutorial and will not be detailed here.
 Configuring the project
 ***********************
 
-After getting the code, either cloning the ns-3-dev repository or 
-downloading the release tarball, you will need to configure the 
+After getting the code, either cloning the ns-3-dev repository or
+downloading the release tarball, you will need to configure the
 project to work on it.
 
-There are two ways to configure the project: the easiest way 
+There are two ways to configure the project: the easiest way
 is using the ``ns3`` script and the other way directly with CMake.
 
 Configuring the project with ns3
 ++++++++++++++++++++++++++++++++
 
-Navigate to the ns-3-dev directory, then run ``./ns3 configure --help`` to 
+Navigate to the ns-3-dev directory, then run ``./ns3 configure --help`` to
 print the configuration options:
 
 .. sourcecode:: console
@@ -76,8 +76,8 @@ print the configuration options:
                      [--cxx-standard CXX_STANDARD] [--enable-asserts]
                      [--disable-asserts] [--enable-examples]
                      [--disable-examples] [--enable-logs]
-                     [--disable-logs] [--enable-tests] 
-                     [--disable-tests] [--enable-verbose] 
+                     [--disable-logs] [--enable-tests]
+                     [--disable-tests] [--enable-verbose]
                      [--disable-verbose]
                      ...
 
@@ -97,7 +97,7 @@ Note: the command output was trimmed to the most used options.
 
 To configure ns-3 in release mode, while enabling examples and tests,
 run ``./ns3 configure -d release --enable-examples --enable-tests``.
-To check what underlying commands dare being executed, add the 
+To check what underlying commands dare being executed, add the
 ``--dry-run`` option:
 
 .. sourcecode:: console
@@ -134,15 +134,15 @@ Now we run it for real:
 
 
   Modules configured to be built:
-  antenna                   aodv                      applications              
-  bridge                    buildings                 config-store              
-  core                      csma                      csma-layout               
+  antenna                   aodv                      applications
+  bridge                    buildings                 config-store
+  core                      csma                      csma-layout
   ...
-  wifi                      wimax                     
+  wifi                      wimax
 
   Modules that cannot be built:
-  brite                     click                     openflow                  
-  visualizer               
+  brite                     click                     openflow
+  visualizer
 
 
   -- Configuring done
@@ -167,11 +167,11 @@ The mapping of the ns3 build profiles into the CMake build types is the followin
 +---------------------------+------------------------------------------------------------------------------------------+
 | Equivalent build profiles                                                                                            |
 +---------------------------+--------------------------------------------------------+---------------------------------+
-| ns3                       | CMake                                                  | Equivalent GCC compiler flags   |  
+| ns3                       | CMake                                                  | Equivalent GCC compiler flags   |
 |                           +------------------------+-------------------------------+---------------------------------+
 |                           | CMAKE_BUILD_TYPE       | Additional flags              |                                 |
 +===========================+========================+===============================+=================================+
-| debug                     | debug                  |                               | -Og -g                          |
+| debug                     | debug                  |                               | -g                              |
 +---------------------------+------------------------+-------------------------------+---------------------------------+
 | default                   | default|relwithdebinfo |                               | -O2 -g                          |
 +---------------------------+------------------------+-------------------------------+---------------------------------+
@@ -188,7 +188,7 @@ Configuring the project with CMake
 .. _Effects (g++): https://github.com/Kitware/CMake/blob/master/Modules/Compiler/GNU.cmake
 .. _generator: https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 
-Navigate to the ns-3-dev directory, create a CMake cache folder, 
+Navigate to the ns-3-dev directory, create a CMake cache folder,
 navigate to it and run `CMake`_ pointing to the ns-3-dev folder.
 
 .. sourcecode:: console
@@ -201,7 +201,7 @@ navigate to it and run `CMake`_ pointing to the ns-3-dev folder.
 You can pass additional arguments to the CMake command, to configure it. To change variable values,
 you should use the -D option followed by the variable name.
 
-As an example, the build type is stored in the variable named `CMAKE_BUILD_TYPE`_. Setting it to one 
+As an example, the build type is stored in the variable named `CMAKE_BUILD_TYPE`_. Setting it to one
 of the CMake build types shown in the table below will change compiler settings associated with those
 build types and output executable and libraries names, which will receive a suffix.
 
@@ -245,7 +245,7 @@ There are many generators supported by CMake, including the ones listed in the t
 | Xcode                                          |
 +------------------------------------------------+
 
-To change the generator, you will need to pass one of these generators with the -G option. For example, if we 
+To change the generator, you will need to pass one of these generators with the -G option. For example, if we
 prefer Ninja to Makefiles, which are the default, we need to run the following command:
 
 .. sourcecode:: console
@@ -278,7 +278,7 @@ default values, and then you can use the ``ccmake`` command to manually change t
   NS3_VERBOSE                      OFF
   ...
 
-  CMAKE_BUILD_TYPE: Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ...                                                       
+  CMAKE_BUILD_TYPE: Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ...
   Keys: [enter] Edit an entry [d] Delete an entry                                                                                             CMake Version 3.22.1
         [l] Show log output   [c] Configure
         [h] Help              [q] Quit without generating
@@ -300,12 +300,12 @@ To enable both examples and tests, run:
 Manually refresh the CMake cache
 ********************************
 
-After the project has been configured, calling ``CMake`` will 
-:ref:`refresh the CMake cache<Manually refresh the CMake cache>`. 
+After the project has been configured, calling ``CMake`` will
+:ref:`refresh the CMake cache<Manually refresh the CMake cache>`.
 The refresh is required to discover new targets: libraries, executables and/or modules
 that were created since the last run.
 
-The refresh is done by running the CMake command from the CMake cache folder. 
+The refresh is done by running the CMake command from the CMake cache folder.
 
 .. sourcecode:: console
 
@@ -324,22 +324,22 @@ The cache can also be refreshed with the ns3 wrapper script:
 Building the project
 ********************
 
-There are three ways of building the project: 
-using the ``ns3`` script, calling ``CMake`` and 
+There are three ways of building the project:
+using the ``ns3`` script, calling ``CMake`` and
 calling the underlying build system (e.g. Ninja) directly.
-The last way is omitted, since each underlying build system 
+The last way is omitted, since each underlying build system
 has its own unique command-line syntax.
 
 Building the project with ns3
 +++++++++++++++++++++++++++++
 
 The ns3 wrapper script makes life easier for command line users, accepting module names without
-the ``lib`` prefix and scratch files without the ``scratch_`` prefix. The following command can 
+the ``lib`` prefix and scratch files without the ``scratch_`` prefix. The following command can
 be used to build the entire project:
 
 .. sourcecode:: console
 
-  ~/ns-3-dev$ ./ns3 build 
+  ~/ns-3-dev$ ./ns3 build
 
 
 To build specific targets, run:
@@ -360,7 +360,7 @@ invoking CMake build. To build all the targets, run:
   ~/ns-3-dev/cmake-cache$ cmake --build .
 
 Notice the single dot now refers to the ``cmake-cache`` directory, where the underlying
-build system files are stored (referred inside CMake as ``PROJECT_BINARY_DIR`` or 
+build system files are stored (referred inside CMake as ``PROJECT_BINARY_DIR`` or
 ``CMAKE_BINARY_DIR``, which have slightly different uses if working with sub-projects).
 
 .. _PROJECT_BINARY_DIR: https://cmake.org/cmake/help/latest/variable/PROJECT_BINARY_DIR.html
@@ -374,15 +374,15 @@ To build specific targets, run:
 
 Where target_name is a valid target name. Module libraries are prefixed with ``lib`` (e.g. libcore),
 executables from the scratch folder are prefixed with ``scratch_`` (e.g. scratch_scratch-simulator).
-Executables targets have their source file name without the ".cc" prefix 
+Executables targets have their source file name without the ".cc" prefix
 (e.g. sample-simulator.cc => sample-simulator).
 
 
 Adding a new module
 *******************
 
-Adding a module is the only case where 
-:ref:`manually refreshing the CMake cache<Manually refresh the CMake cache>` is required. 
+Adding a module is the only case where
+:ref:`manually refreshing the CMake cache<Manually refresh the CMake cache>` is required.
 
 More information on how to create a new module are provided in :ref:`Adding a New Module to ns3`.
 
@@ -426,7 +426,7 @@ We are going to use the aodv module as an example:
         aodv_test.source.extend([
         #   'test/aodv-examples-test-suite.cc',
             ])
-    
+
     headers = bld(features='ns3header')
     headers.module = 'aodv'
     headers.source = [
@@ -446,7 +446,7 @@ We are going to use the aodv module as an example:
     bld.ns3_python_bindings()
 
 
-We can see the module name is ``aodv`` and it depends on the ``internet`` and the ``wifi`` libraries, 
+We can see the module name is ``aodv`` and it depends on the ``internet`` and the ``wifi`` libraries,
 plus the lists of files (``module.source``, ``headers.source`` and ``module_test.source``).
 
 This translates to the following CMake lines:
@@ -483,10 +483,10 @@ This translates to the following CMake lines:
       test/bug-772.cc
   )
 
-If your module depends on external libraries, check the section 
+If your module depends on external libraries, check the section
 `Linking third-party libraries`_.
 
-Python bindings will be picked up if there is a subdirectory bindings 
+Python bindings will be picked up if there is a subdirectory bindings
 and NS3_PYTHON_BINDINGS is enabled.
 
 Next, we need to port the examples wscript. Repeat the copy, rename and open
@@ -521,7 +521,7 @@ This translates into the following CMake:
 Running programs
 ****************
 
-Running programs with the ns3 wrapper script is pretty simple. To run the 
+Running programs with the ns3 wrapper script is pretty simple. To run the
 scratch program produced by ``scratch/scratch-simulator.cc``, you need the following:
 
 .. sourcecode:: console
@@ -529,11 +529,11 @@ scratch program produced by ``scratch/scratch-simulator.cc``, you need the follo
   ~/ns-3-dev$ ./ns3 run scratch-simulator --no-build
 
 Notice the ``--no-build`` indicates that the program should only be executed, and not built
-before execution. 
+before execution.
 
 To familiarize users with CMake, ns3 can also print the underlying CMake
-and command line commands used by adding the ``--dry-run`` flag. 
-Removing the ``--no-build`` flag and adding ``--dry-run`` to the same example, 
+and command line commands used by adding the ``--dry-run`` flag.
+Removing the ``--no-build`` flag and adding ``--dry-run`` to the same example,
 produces the following:
 
 .. sourcecode:: console
@@ -541,9 +541,9 @@ produces the following:
   ~/ns-3-dev$ ./ns3 --dry-run run scratch-simulator
   The following commands would be executed:
   cd cmake-cache; cmake --build . -j 15 --target scratch_scratch-simulator ; cd ..
-  export PATH=$PATH:~/ns-3-dev/build/lib 
+  export PATH=$PATH:~/ns-3-dev/build/lib
   export PYTHONPATH=~/ns-3-dev/build/bindings/python
-  export LD_LIBRARY_PATH=~/ns-3-dev/build/lib 
+  export LD_LIBRARY_PATH=~/ns-3-dev/build/lib
   ./build/scratch/ns3-dev-scratch-simulator
 
 
@@ -554,12 +554,12 @@ Similarly, library-related targets have ``lib`` as a prefix (e.g. ``libcore``, `
 .. _RPATH: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_RPATH.html
 
 The next few lines exporting variables guarantee the executable can find python dependencies
-(``PYTHONPATH``) and linked libraries (``LD_LIBRARY_PATH`` and ``PATH`` on Unix-like, and 
+(``PYTHONPATH``) and linked libraries (``LD_LIBRARY_PATH`` and ``PATH`` on Unix-like, and
 ``PATH`` on Windows). This is not necessary in platforms that support `RPATH`_.
 
 Notice that when the scratch-simulator program is called on the last line, it has
-a ns3-version prefix and could also have a build type suffix. 
-This is valid for all libraries and executables, but ommited in ns-3 for simplicity.
+a ns3-version prefix and could also have a build type suffix.
+This is valid for all libraries and executables, but omitted in ns-3 for simplicity.
 
 Debugging can be done with GDB. Again, we have the two ways to run the program.
 Using the ns-3 wrapper:
@@ -581,7 +581,7 @@ Or directly:
 Modifying files
 ***************
 
-As CMake is not a build system on itself, but a meta build system, it requires 
+As CMake is not a build system on itself, but a meta build system, it requires
 frequent refreshes, also known as reconfigurations. Those refreshes are triggered
 automatically in the following cases:
 
@@ -601,7 +601,7 @@ options and external libraries checking are optional.
       LIBNAME hypothetical
       SOURCE_FILES  helper/hypothetical-helper.cc
                     model/hypothetical.cc
-      HEADER_FILES 
+      HEADER_FILES
         helper/hypothetical-helper.h
         model/hypothetical.h
         model/colliding-header.h
@@ -613,18 +613,18 @@ Module name changes
 +++++++++++++++++++
 
 Changing the module name requires changing the value of ``LIBNAME``.
-In the following example the name of the module seen previously is 
+In the following example the name of the module seen previously is
 changed from ``hypothetical`` to ``new-hypothetical-name``:
 
 .. sourcecode:: cmake
 
     build_lib(
       LIBNAME new-hypothetical-name
-      # ... 
+      # ...
     )
 
 If the module was already scanned, saving the changes and trying to build will trigger the
-automatic CMake refresh. Otherwise, reconfigure the project to 
+automatic CMake refresh. Otherwise, reconfigure the project to
 :ref:`manually refresh it<Manually refresh the CMake cache>`.
 
 
@@ -634,7 +634,7 @@ Header/source file name changes
 Assuming the hypothetical module defined previously has a header name that collides
 with a header of a different module.
 
-The name of the ``colliding-header.h`` can be changed via the filesystem to 
+The name of the ``colliding-header.h`` can be changed via the filesystem to
 ``non-colliding-header.h``, and the ``CMakeLists.txt`` path needs to be updated to match
 the new name. Some IDEs can do this automatically through refactoring tools.
 
@@ -642,12 +642,12 @@ the new name. Some IDEs can do this automatically through refactoring tools.
 
     build_lib(
       LIBNAME new-hypothetical-name
-      # ... 
+      # ...
       HEADER_FILES
           helper/hypothetical-helper.h
           model/hypothetical.h
           model/non-colliding-header.h
-      # ... 
+      # ...
     )
 
 
@@ -655,8 +655,8 @@ Linking ns-3 modules
 ++++++++++++++++++++
 
 Adding a dependency to another ns-3 module just requires adding ``${lib${modulename}}``
-to the ``LIBRARIES_TO_LINK`` list, where modulename contains the value of the ns-3 
-module which will be depended upon. 
+to the ``LIBRARIES_TO_LINK`` list, where modulename contains the value of the ns-3
+module which will be depended upon.
 
 Note: All ns-3 module libraries are prefixed with ``lib``,
 as CMake requires unique global target names.
@@ -666,10 +666,10 @@ as CMake requires unique global target names.
     # now ${libnew-hypothetical-name} will depend on both core and internet modules
     build_lib(
       LIBNAME new-hypothetical-name
-      # ... 
-      LIBRARIES_TO_LINK ${libcore} 
+      # ...
+      LIBRARIES_TO_LINK ${libcore}
                         ${libinternet}
-      # ... 
+      # ...
     )
 
 
@@ -687,7 +687,7 @@ Linking third-party libraries without CMake or PkgConfig support
 ================================================================
 
 When the third-party library you want to use do not export CMake files to use
-``find_package`` or PkgConfig files to use ``pkg_check_modules``, we need to 
+``find_package`` or PkgConfig files to use ``pkg_check_modules``, we need to
 search for the headers and libraries manually. To simplify this process,
 we include the macro ``find_external_library`` that searches for libraries and
 header include directories, exporting results similarly to ``find_package``.
@@ -942,7 +942,7 @@ which gets used by *ALL* ``find_file``, ``find_library``, ``find_header``,
 If you are using a recent version of CMake, it is recommended to use
 `CMAKE_FIND_DEBUG_MODE`_ instead.
 
-A commented version of the Openflow module ``CMakeLists.txt`` has an 
+A commented version of the Openflow module ``CMakeLists.txt`` has an
 example of ``find_external_library`` usage.
 
 .. sourcecode:: cmake
@@ -954,8 +954,8 @@ example of ``find_external_library`` usage.
         CACHE PATH
               "Build with Openflow support"
     )
-    # We use this variable later in the ns-3-dev scope, but 
-    # the value would be lost if we saved it to the 
+    # We use this variable later in the ns-3-dev scope, but
+    # the value would be lost if we saved it to the
     # parent scope ns-3-dev/src or ns-3-dev/contrib.
     # We set it as an INTERNAL CACHE variable to make it globally available.
     set(NS3_OPENFLOW
@@ -969,7 +969,7 @@ example of ``find_external_library`` usage.
     # Resulting variables will be prefixed with DEPENDENCY_NAME.
     # - openflow_FOUND will be set to True if both headers and libraries
     #     were found and False otherwise
-    # - openflow_LIBRARIES will contain a list of absolute paths to the 
+    # - openflow_LIBRARIES will contain a list of absolute paths to the
     #     libraries named in LIBRARY_NAME|LIBRARY_NAMES
     # - openflow_INCLUDE_DIRS will contain a list of include directories that contain
     #     headers named in HEADER_NAME|HEADER_NAMES and directories that contain
@@ -1015,7 +1015,7 @@ example of ``find_external_library`` usage.
       return()
     endif()
 
-    # Here we consume the include directories found by 
+    # Here we consume the include directories found by
     # find_external_library
     #
     # This will make the following work:
@@ -1052,9 +1052,9 @@ example of ``find_external_library`` usage.
         model/openflow-interface.h
         model/openflow-switch-net-device.h
       LIBRARIES_TO_LINK ${libinternet}
-                        # Here we consume the list of libraries 
+                        # Here we consume the list of libraries
                         # exported by find_external_library
-                        ${openflow_LIBRARIES} 
+                        ${openflow_LIBRARIES}
       TEST_SOURCES test/openflow-switch-test-suite.cc
     )
 
@@ -1064,7 +1064,7 @@ Linking third-party libraries using CMake's find_package
 
 Assume we have a module with optional features that rely on a third-party library
 that provides a FindThirdPartyPackage.cmake. This ``Find${Package}.cmake`` file can be distributed
-by `CMake itself`_, via library/package managers (APT, Pacman, 
+by `CMake itself`_, via library/package managers (APT, Pacman,
 `VcPkg`_), or included to the project tree in the build-support/3rd-party directory.
 
 .. _CMake itself: https://github.com/Kitware/CMake/tree/master/Modules
@@ -1072,16 +1072,16 @@ by `CMake itself`_, via library/package managers (APT, Pacman,
 
 When ``find_package(${Package})`` is called, the ``Find${Package}.cmake`` file gets processed,
 and multiple variables are set. There is no hard standard in the name of those variables, nor if
-they should follow the modern CMake usage, where just linking to the library will include 
-associated header directories, forward compile flags and so on. 
+they should follow the modern CMake usage, where just linking to the library will include
+associated header directories, forward compile flags and so on.
 
 We assume the old CMake style is the one being used, which means we need to include the include
-directories provided by the ``Find${Package}.cmake module``, usually exported as a variable 
-``${Package}_INCLUDE_DIRS``, and get a list of libraries for that module so that they can be 
+directories provided by the ``Find${Package}.cmake module``, usually exported as a variable
+``${Package}_INCLUDE_DIRS``, and get a list of libraries for that module so that they can be
 added to the list of libraries to link of the ns-3 modules. Libraries are usually exported as
 the variable ``${Package}_LIBRARIES``.
 
-As an example for the above, we use the Boost library 
+As an example for the above, we use the Boost library
 (excerpt from ``macros-and-definitions.cmake`` and ``src/core/CMakeLists.txt``):
 
 .. sourcecode:: cmake
@@ -1128,7 +1128,7 @@ As an example for the above, we use the Boost library
       -DHAVE_BOOST
       -DHAVE_BOOST_UNITS
     )
-    # In this case, the Boost libraries are header-only, 
+    # In this case, the Boost libraries are header-only,
     # but in case we needed real libraries, we could add
     # boost_libraries to either the auxiliary libraries_to_link list
     # or the build_lib's LIBRARIES_TO_LINK list
@@ -1142,11 +1142,11 @@ As an example for the above, we use the Boost library
 
 
 If ``Find${Package}.cmake`` does not exist in your module path, CMake will warn you that is the case.
-If ``${Package_FOUND}`` is set to False, other variables such as the ones related to libraries and 
+If ``${Package_FOUND}`` is set to False, other variables such as the ones related to libraries and
 include directories might not be set, and can result in CMake failures to configure if used.
 
-In case the ``Find${Package}.cmake`` you need is not distributed by the upstream CMake project, 
-you can create your own and add it to ``build-support/3rd-party``. This directory is included 
+In case the ``Find${Package}.cmake`` you need is not distributed by the upstream CMake project,
+you can create your own and add it to ``build-support/3rd-party``. This directory is included
 to the ``CMAKE_MODULE_PATH`` variable, making it available for calls without needing to include
 the file with the absolute path to it. To add more directories to the ``CMAKE_MODULE_PATH``,
 use the following:
@@ -1161,12 +1161,12 @@ use the following:
   # Add the 3rd-party modules to the module path
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
 
-  # Add your new modules directory to the module path 
+  # Add your new modules directory to the module path
   # (${PROJECT_SOURCE_DIR} is /path/to/ns-3-dev/)
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/new-modules")
 
 
-One of the custom Find files currently shipped by ns-3 is the ``FindGTK3.cmake`` file. 
+One of the custom Find files currently shipped by ns-3 is the ``FindGTK3.cmake`` file.
 GTK3 requires Harfbuzz, which has its own ``FindHarfBuzz.cmake`` file. Both of them
 are in the ``build-support/3rd-party`` directory.
 
@@ -1213,9 +1213,9 @@ are in the ``build-support/3rd-party`` directory.
 
 The Stats module can use the same ``find_package`` macro to search for SQLite3.
 
-Note: we currently use a custom macro to find Python3 and SQLite3 since  
+Note: we currently use a custom macro to find Python3 and SQLite3 since
 ``FindPython3.cmake`` and ``FindSQLite3.cmake`` were included in CMake 3.12 and 3.14.
-More details on how to use the macro are listed in 
+More details on how to use the macro are listed in
 `Linking third-party libraries without CMake or PkgConfig support`_.
 
 .. sourcecode:: cmake
@@ -1252,13 +1252,13 @@ More details on how to use the macro are listed in
       )
       # Include the include directories containing the sqlite3.h header
       include_directories(${SQLite3_INCLUDE_DIRS})
-      # Copy the list of sqlite3 libraries 
+      # Copy the list of sqlite3 libraries
       set(sqlite_libraries
           ${SQLite3_LIBRARIES}
       )
 
-      # If the semaphore header is also found, 
-      # append additional optional source files to 
+      # If the semaphore header is also found,
+      # append additional optional source files to
       # the sqlite sources and headers lists
       if(HAVE_SEMAPHORE_H)
         list(
@@ -1275,17 +1275,17 @@ More details on how to use the macro are listed in
     endif()
 
     # Sources and headers file lists for stats are quite long,
-    # so we use these auxiliary lists 
+    # so we use these auxiliary lists
     # The optional sqlite_sources and sqlite_headers can be empty or not
     set(source_files
         ${sqlite_sources}
-        # ... 
+        # ...
         model/uinteger-8-probe.cc
     )
 
     set(header_files
         ${sqlite_headers}
-        # ... 
+        # ...
         model/uinteger-8-probe.h
     )
 
@@ -1295,9 +1295,9 @@ More details on how to use the macro are listed in
       SOURCE_FILES ${source_files}
       HEADER_FILES ${header_files}
       LIBRARIES_TO_LINK ${libcore}
-                        # Here we either have an empty list or 
+                        # Here we either have an empty list or
                         # a list with the sqlite library
-                        ${sqlite_libraries} 
+                        ${sqlite_libraries}
       TEST_SOURCES
         test/average-test-suite.cc
         test/basic-data-calculators-test-suite.cc
@@ -1328,7 +1328,7 @@ source files similarly to the previous cases, as shown in the example below:
     set(third_party_libs)
     # Set cached variable if both pkg-config and libthird-party are found
     if(PKG_CONFIG_FOUND AND THIRD_PARTY)
-      # Include third-party include directories for 
+      # Include third-party include directories for
       # consumption of the current module and its examples
       include_directories(${THIRD_PARTY_INCLUDE_DIRS})
 
@@ -1345,24 +1345,24 @@ source files similarly to the previous cases, as shown in the example below:
     # Create module using the optional source files and libraries
     build_lib(
       LIBNAME hypothetical
-      SOURCE_FILES model/hypothetical.cc 
+      SOURCE_FILES model/hypothetical.cc
                    ${third_party_sources}
       HEADER_FILES model/hypothetical.h
       LIBRARIES_TO_LINK ${libcore}
-                        # Here we either have an empty list or 
+                        # Here we either have an empty list or
                         # a list with the third-party library
-                        ${third_party_libs} 
+                        ${third_party_libs}
       TEST_SOURCES
         test/hypothetical.cc
     )
-    
-    
+
+
 
 Inclusion of options
 ++++++++++++++++++++
 
 There are two ways of managing module options: option switches or cached variables.
-Both are present in the main CMakeLists.txt in the ns-3-dev directory and the 
+Both are present in the main CMakeLists.txt in the ns-3-dev directory and the
 build-support/macros-and-definitions.cmake file.
 
 
@@ -1371,7 +1371,7 @@ build-support/macros-and-definitions.cmake file.
     # Here are examples of ON and OFF switches
     # option(
     #        NS3_SWITCH # option switch prefixed with NS3\_
-    #        "followed by the description of what the option does" 
+    #        "followed by the description of what the option does"
     #        ON # and the default value for that option
     #        )
     option(NS3_EXAMPLES "Enable examples to be built" OFF)
@@ -1391,7 +1391,7 @@ build-support/macros-and-definitions.cmake file.
     # First we cache the default option
     set(NS3_INT64X64 "INT128" CACHE STRING "Int64x64 implementation")
 
-    # Then set a cache property for the variable indicating it can assume 
+    # Then set a cache property for the variable indicating it can assume
     # specific values
     set_property(CACHE NS3_INT64X64 PROPERTY STRINGS INT128 CAIRO DOUBLE)
 
@@ -1408,12 +1408,12 @@ Changes in CMake macros and functions
 +++++++++++++++++++++++++++++++++++++
 
 In order for CMake to feel more familiar to Waf users, a few macros and functions
-were created. 
+were created.
 
-The most frequently used macros them can be found in 
+The most frequently used macros them can be found in
 ``build-support/macros-and-definitions.cmake``. This file includes build type checking,
 compiler family and version checking, enabling and disabling features based
-on user options, checking for dependencies of enabled features, 
+on user options, checking for dependencies of enabled features,
 pre-compiling headers, filtering enabled/disabled modules and dependencies,
 and more.
 
@@ -1422,7 +1422,7 @@ Module macros
 
 Module macros are located in ``build-support/custom-modules/ns3-module-macros.cmake``.
 This file contains macros defining a library (``build_lib``), the associated test library,
-examples (``build_lib_example``) and more. It also contains the macro that builds the 
+examples (``build_lib_example``) and more. It also contains the macro that builds the
 module header (``write_module_header``) that includes all headers from the module
 for user scripts.
 
@@ -1436,18 +1436,18 @@ block by block.
 
 The first block declares the arguments received by the macro (in CMake, the
 only difference is that a function has its own scope). Notice that there are
-different types of arguments. Options that can only be set to true/false 
-(``IGNORE_PCH``). 
+different types of arguments. Options that can only be set to true/false
+(``IGNORE_PCH``).
 
-One value arguments that receive a single value 
+One value arguments that receive a single value
 (usually a string) and in this case used to receive the module name (``LIBNAME``).
 
 Multiple value arguments receive a list of values, which we use to parse lists
-of source (for the module itself and for the module tests) and 
+of source (for the module itself and for the module tests) and
 header files, plus libraries that should be linked and module features.
 
 The call to ``cmake_parse_arguments`` will parse ``${ARGN}`` into these values.
-The variables containing the parsing results will be prefixed with ``BLIB_`` 
+The variables containing the parsing results will be prefixed with ``BLIB_``
 (e.g. ``LIBNAME`` -> ``BLIB_LIBNAME``).
 
 .. sourcecode:: cmake
@@ -1462,7 +1462,7 @@ The variables containing the parsing results will be prefixed with ``BLIB_``
     cmake_parse_arguments(
       "BLIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
     )
-    # ... 
+    # ...
   endfunction()
 
 In the following block, we add modules in the src folder to a list
@@ -1471,7 +1471,7 @@ and modules in the contrib folder to a different list.
 .. sourcecode:: cmake
 
   function(build_lib)
-    # ... 
+    # ...
     # Get path src/module or contrib/module
     string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER
                   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -1489,25 +1489,25 @@ and modules in the contrib folder to a different list.
     endif()
 
 In the following block, we check if we are working with Xcode, which does
-not handle correctly CMake object libraries (.o files). 
+not handle correctly CMake object libraries (.o files).
 
 In other platforms,
 we build an object file ``add_library(${lib${BLIB_LIBNAME}-obj} OBJECT "${BLIB_SOURCE_FILES}...)``
 and a shared library ``add_library(${lib${BLIB_LIBNAME}} SHARED ...)``.
 
-The object library contains the actual source files (``${BLIB_SOURCE_FILES}``), 
+The object library contains the actual source files (``${BLIB_SOURCE_FILES}``),
 but is not linked, which mean we can reuse the object to build the static version of the libraries.
-Notice the shared library uses the object file as its source files 
+Notice the shared library uses the object file as its source files
 ``$<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}``.
 
-Notice that we can also reuse precompiled headers created previously to speed up the 
+Notice that we can also reuse precompiled headers created previously to speed up the
 parsing phase of the compilation.
 
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     if(NOT ${XCODE})
       # Create object library with sources and headers, that will be used in
       # lib-ns3-static and the shared library
@@ -1534,7 +1534,7 @@ parsing phase of the compilation.
         target_precompile_headers(${lib${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
       endif()
     endif()
-    # ... 
+    # ...
   endfunction()
 
 In the next code block, we create an alias to ``libmodule``, ``ns3::libmodule``,
@@ -1543,13 +1543,13 @@ which can later be used when importing ns-3 with CMake's ``find_package(ns3)``.
 Then, we associate configured headers (``config-store-config``, ``core-config.h`` and
 ``version-defines.h``) to the core module.
 
-And finally associate all of the public headers of the module to that library, 
+And finally associate all of the public headers of the module to that library,
 to make sure CMake will be refreshed in case one of them changes.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     add_library(ns3::${lib${BLIB_LIBNAME}} ALIAS ${lib${BLIB_LIBNAME}})
 
     # Associate public headers with library for installation purposes
@@ -1569,7 +1569,7 @@ to make sure CMake will be refreshed in case one of them changes.
         PUBLIC_HEADER
         "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
     )
-    # ... 
+    # ...
   endfunction()
 
 In the next code block, we make the library a dependency to the ClangAnalyzer's time trace report,
@@ -1579,12 +1579,12 @@ Then, the ns-3 libraries are separated from non-ns-3 libraries, that can be prop
 for libraries/executables linked to the current ns-3 module being processed.
 
 The default is propagating these third-party libraries and their include directories, but this
-can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF`` 
+can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     if(${NS3_CLANG_TIMETRACE})
       add_dependencies(timeTraceReport ${lib${BLIB_LIBNAME}})
     endif()
@@ -1635,23 +1635,23 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
       string(REPLACE "-I" "" exported_include_directories
                     "${exported_include_directories}"
       )
-      string(REPLACE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/include" ""
+      string(REPLACE "${CMAKE_OUTPUT_DIRECTORY}/include" ""
                     exported_include_directories
                     "${exported_include_directories}"
       )
     endif()
-    # ... 
+    # ...
   endfunction()
 
-After the lists of libraries to link that should be exported (``PUBLIC``) and 
+After the lists of libraries to link that should be exported (``PUBLIC``) and
 not exported (``PRIVATE``) are built, we can link them with ``target_link_libraries``.
 
 Next, we set the output name of the module library to n3version-modulename(optional build suffix).
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     target_link_libraries(
       ${lib${BLIB_LIBNAME}} ${exported_libraries} ${private_libraries}
     )
@@ -1661,16 +1661,16 @@ Next, we set the output name of the module library to n3version-modulename(optio
       ${lib${BLIB_LIBNAME}}
       PROPERTIES OUTPUT_NAME ns${NS3_VER}-${BLIB_LIBNAME}${build_profile_suffix}
     )
-    # ... 
+    # ...
   endfunction()
 
 Next we export include directories, to let library consumers importing ns-3 via CMake
 use them just by linking to one of the ns-3 modules.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     # export include directories used by this library so that it can be used by
     # 3rd-party consumers of ns-3 using find_package(ns3) this will automatically
     # add the build/include path to them, so that they can ns-3 headers with
@@ -1681,16 +1681,16 @@ use them just by linking to one of the ns-3 modules.
             $<INSTALL_INTERFACE:include>
       INTERFACE ${exported_include_directories}
     )
-    # ... 
+    # ...
   endfunction()
 
 We append the list of third-party/external libraries for each processed module,
 and append a list of object libraries that can be later used for the static ns-3 build.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ...   
+    # ...
     set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
         CACHE INTERNAL
               "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"
@@ -1703,16 +1703,16 @@ and append a list of object libraries that can be later used for the static ns-3
             "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
       )
     endif()
-    # ... 
+    # ...
   endfunction()
 
-The following block creates the ``${BLIB_LIBNAME}-module.h`` header for user scripts, 
+The following block creates the ``${BLIB_LIBNAME}-module.h`` header for user scripts,
 and copies header files from src/module and contrib/module to the include/ns3 directory.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     # Write a module header that includes all headers from that module
     write_module_header("${BLIB_LIBNAME}" "${BLIB_HEADER_FILES}")
 
@@ -1727,15 +1727,15 @@ and copies header files from src/module and contrib/module to the include/ns3 di
         "${BLIB_DEPRECATED_HEADER_FILES}" deprecated
       )
     endif()
-    # ... 
+    # ...
   endfunction()
 
 The following block creates the test library for the module currently being processed.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     # Build tests if requested
     if(${ENABLE_TESTS})
       list(LENGTH BLIB_TEST_SOURCES test_source_len)
@@ -1775,16 +1775,16 @@ The following block creates the test library for the module currently being proc
         endif()
       endif()
     endif()
-    # ... 
+    # ...
   endfunction()
 
-The following block checks for examples subdirectories and add them to parse their 
-CMakeLists.txt file, creating the examples. It also scans for python examples. 
+The following block checks for examples subdirectories and add them to parse their
+CMakeLists.txt file, creating the examples. It also scans for python examples.
 
 .. sourcecode:: cmake
 
   function(build_lib)
-    # ... 
+    # ...
     # Build lib examples if requested
     if(${ENABLE_EXAMPLES})
       foreach(example_folder example;examples)
@@ -1796,17 +1796,17 @@ CMakeLists.txt file, creating the examples. It also scans for python examples.
         endif()
       endforeach()
     endif()
-    # ... 
+    # ...
   endfunction()
 
 The following block creates the ``lib${BLIB_LIBNAME}-apiscan`` CMake target.
-When the target is built, it runs modulescan-modular to extract the python 
-bindings for the module using pybindgen. 
+When the target is built, it runs modulescan-modular to extract the python
+bindings for the module using pybindgen.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     # Get architecture pair for python bindings
     if((${CMAKE_SIZEOF_VOID_P} EQUAL 8) AND (NOT APPLE))
       set(arch gcc_LP64)
@@ -1870,8 +1870,8 @@ bindings for the module using pybindgen.
       )
       add_dependencies(apiscan-all ${lib${BLIB_LIBNAME}}-apiscan)
     endif()
-    
-    # ... 
+
+    # ...
   endfunction()
 
 The targets can be built to execute the scanning using one of the following commands:
@@ -1880,18 +1880,18 @@ The targets can be built to execute the scanning using one of the following comm
 
   ~/cmake-cache$ cmake --build . --target libcore-apiscan
   ~/ns-3-dev/$ ./ns3 build core-apiscan
-  
-To re-scan all bindings, use ``./ns3 build apiscan-all``. 
+
+To re-scan all bindings, use ``./ns3 build apiscan-all``.
 
 The next block runs the ``modulegen-modular`` and consumes the results of the previous step.
 However, this step runs at configuration time, while the previous runs at build time.
-This means the output directory needs to be cleared after running ``apiscan``, to regenerate 
+This means the output directory needs to be cleared after running ``apiscan``, to regenerate
 up-to-date bindings source files.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ... 
+    # ...
     # Build pybindings if requested and if bindings subfolder exists in
     # NS3/src/BLIB_LIBNAME
     if(${ENABLE_PYTHON_BINDINGS} AND EXISTS
@@ -2005,7 +2005,7 @@ up-to-date bindings source files.
           "${bindings-name};${ns3-python-bindings-modules}"
           CACHE INTERNAL "list of modules python bindings"
       )
-      
+
       # Make sure all bindings are built before building the visualizer module
       # that makes use of them
       if(${ENABLE_VISUALIZER} AND (visualizer IN_LIST libs_to_build))
@@ -2014,7 +2014,7 @@ up-to-date bindings source files.
         endif()
       endif()
     endif()
-    # ... 
+    # ...
   endfunction()
 
 The recommended steps to scan the bindings and then use them is the following:
@@ -2032,9 +2032,9 @@ In the next code block we add the library to the ns3ExportTargets, later used fo
 We also print an additional message the folder just finished being processed if NS3_VERBOSE is set to ON.
 
 .. sourcecode:: cmake
-    
+
   function(build_lib)
-    # ...   
+    # ...
     # Handle package export
     install(
       TARGETS ${lib${BLIB_LIBNAME}}
@@ -2054,7 +2054,7 @@ Module macros: build_lib_example
 The second most important macro from a module author perspective is the ``build_lib_example``, which
 builds the examples for their module. As with ``build_lib`` we explain what it does block-by-block.
 
-In the first block, arguments are parsed and we check wether the current module is in the contrib 
+In the first block, arguments are parsed and we check wether the current module is in the contrib
 or the src folder.
 
 .. sourcecode:: cmake
@@ -2069,17 +2069,17 @@ or the src folder.
     # Get path src/module or contrib/module
     string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER "${CMAKE_CURRENT_SOURCE_DIR}")
     get_filename_component(FOLDER ${FOLDER} DIRECTORY)
-    # ... 
+    # ...
   endfunction()
 
-Then we check if the ns-3 modules required by the example are enabled to be built. 
+Then we check if the ns-3 modules required by the example are enabled to be built.
 If the list ``missing_dependencies`` is empty, we create the example. Otherwise, we skip it.
-The example can be linked to the current module (``${lib${BLIB_EXAMPLE_LIBNAME}}``) and 
+The example can be linked to the current module (``${lib${BLIB_EXAMPLE_LIBNAME}}``) and
 other libraries to link (``${BLIB_EXAMPLE_LIBRARIES_TO_LINK}``) and optionally to the visualizer
-module (``${optional_visualizer_lib}``). 
+module (``${optional_visualizer_lib}``).
 If the visualizer module is not enabled, ``optional_visualizer_lib`` is empty.
 
-The example can also be linked to a single ns-3 shared library (``lib-ns3-monolib``) or 
+The example can also be linked to a single ns-3 shared library (``lib-ns3-monolib``) or
 a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` or ``NS3_STATIC=ON``.
 
 .. sourcecode:: cmake
@@ -2110,30 +2110,30 @@ a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` 
           ${LIB_AS_NEEDED_POST}
         )
       endif()
-      # ... 
+      # ...
     endif()
   endfunction()
 
-As with the module libraries, we can also reuse precompiled headers here to speed up 
+As with the module libraries, we can also reuse precompiled headers here to speed up
 the parsing step of compilation.
 
-Finally, we call another macro ``set_runtime_outputdirectory``, which indicates the 
+Finally, we call another macro ``set_runtime_outputdirectory``, which indicates the
 resulting folder where the example will end up after built (e.g. build/src/module/examples)
 and adds the proper ns-3 version prefix and build type suffix to the executable.
 
 .. sourcecode:: cmake
 
   function(build_lib_example)
-    # ... 
+    # ...
     if(NOT missing_dependencies)
-      # ...   
+      # ...
       if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_EXAMPLE_IGNORE_PCH}))
         target_precompile_headers(${BLIB_EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
       endif()
 
       set_runtime_outputdirectory(
         ${BLIB_EXAMPLE_NAME}
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
+        ${CMAKE_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
       )
     endif()
   endfunction()
@@ -2170,7 +2170,7 @@ following example demonstrates this pattern:
     message(STATUS "GSL features were not requested by the user")
   endif()
 
-  # Now the module can check for ENABLE_GSL before being processed 
+  # Now the module can check for ENABLE_GSL before being processed
   if(NOT ${ENABLE_GSL})
     return()
   endif()
@@ -2181,7 +2181,7 @@ following example demonstrates this pattern:
     set(gsl_sources model/gsl_features.cc)
   endif()
 
-Here are examples of how to do the options and header checking, 
+Here are examples of how to do the options and header checking,
 followed by a header configuration:
 
 .. sourcecode:: cmake
@@ -2189,7 +2189,7 @@ followed by a header configuration:
   # We always set the ENABLE\_ counterpart of NS3\_ option to FALSE before checking
   #
   # If this variable is created inside your module, use
-  # set(ENABLE_MPI FALSE CACHE INTERNAL "") 
+  # set(ENABLE_MPI FALSE CACHE INTERNAL "")
   # instead, to make it globally available
   set(ENABLE_MPI FALSE)
 
@@ -2207,23 +2207,23 @@ followed by a header configuration:
       message(STATUS "MPI was found.")
       add_definitions(-DNS3_MPI)
 
-      # Then set ENABLE_MPI to TRUE, which can be used to check 
+      # Then set ENABLE_MPI to TRUE, which can be used to check
       # if NS3_MPI is enabled AND MPI was found
       #
       # If this variable is created inside your module, use
-      # set(ENABLE_MPI TRUE CACHE INTERNAL "") 
+      # set(ENABLE_MPI TRUE CACHE INTERNAL "")
       # instead, to make it globally available
       set(ENABLE_MPI TRUE)
     endif()
   endif()
 
-  # ... 
+  # ...
 
   # These two standard CMake modules allow for header and function checking
   include(CheckIncludeFileCXX)
   include(CheckFunctionExists)
 
-  # Check for required headers and functions, 
+  # Check for required headers and functions,
   # set flags on the right argument if header in the first argument is found
   # if they are not found, a warning is emitted
   check_include_file_cxx("stdint.h" "HAVE_STDINT_H")
@@ -2237,8 +2237,8 @@ followed by a header configuration:
   check_function_exists("getenv" "HAVE_GETENV")
 
   # This is the CMake command to open up a file template (in this case a header
-  # passed as the first argument), then fill its fields with values stored in 
-  # CMake variables and save the resulting file to the target destination 
+  # passed as the first argument), then fill its fields with values stored in
+  # CMake variables and save the resulting file to the target destination
   # (in the second argument)
   configure_file(
     build-support/core-config-template.h
@@ -2254,9 +2254,9 @@ values are being used. So we need to check the template.
     #define NS3_CORE_CONFIG_H
 
     // Defined if HAVE_UINT128_T is defined in CMake
-    #cmakedefine   HAVE_UINT128_T 
+    #cmakedefine   HAVE_UINT128_T
     // Set to 1 if HAVE__UINT128_T is defined in CMake, 0 otherwise
-    #cmakedefine01 HAVE___UINT128_T 
+    #cmakedefine01 HAVE___UINT128_T
     #cmakedefine   INT64X64_USE_128
     #cmakedefine   INT64X64_USE_DOUBLE
     #cmakedefine   INT64X64_USE_CAIRO
@@ -2295,7 +2295,7 @@ manage dependencies. Here is an example for Doxygen:
   # This command hides DOXYGEN from some CMake cache interfaces
   mark_as_advanced(DOXYGEN)
 
-  # This custom macro checks for dependencies CMake find_package and program 
+  # This custom macro checks for dependencies CMake find_package and program
   # dependencies and return the missing dependencies in the third argument
   check_deps("" "doxygen;dot;dia" doxygen_docs_missing_deps)
 
@@ -2321,7 +2321,7 @@ manage dependencies. Here is an example for Doxygen:
       DEPENDS print-introspected-doxygen
     )
 
-    # Run test.py with NS_COMMANDLINE_INTROSPECTION=.. to print examples 
+    # Run test.py with NS_COMMANDLINE_INTROSPECTION=.. to print examples
     # introspected commandline
     add_custom_target(
       run-introspected-command-line
@@ -2363,7 +2363,7 @@ manage dependencies. Here is an example for Doxygen:
     )
 
     # Create a doxygen target that builds the documentation and only runs
-    # after the version target above was executed, the introspected doxygen 
+    # after the version target above was executed, the introspected doxygen
     # and command line were extracted
     add_custom_target(
       doxygen
@@ -2388,7 +2388,7 @@ manage dependencies. Here is an example for Doxygen:
 Project-wide compiler and linker flags
 ======================================
 
-Different compilers and links accept different flags, which must be 
+Different compilers and links accept different flags, which must be
 known during configuration time. Some of these flags are
 handled directly by CMake:
 
@@ -2407,8 +2407,8 @@ handled directly by CMake:
   add_library(static_lib STATIC) # equivalent to -static flag
   add_library(shared_lib SHARED) # equivalent to -shared flags
 
-Other flags need to be handled manually and change based on 
-the compiler used. The most commonly used are handled in 
+Other flags need to be handled manually and change based on
+the compiler used. The most commonly used are handled in
 ``build-support/macros-and-definitions.cmake``.
 
 .. sourcecode:: cmake
@@ -2465,18 +2465,18 @@ Other project-wide compiler-dependent flags can be set during compiler checking.
 
 .. _disables semantic interposition: https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/777
 
-The ``-fno-semantic-interposition`` flag `disables semantic interposition`_, which can 
+The ``-fno-semantic-interposition`` flag `disables semantic interposition`_, which can
 reduce overhead of function calls in shared libraries built with ``-fPIC``.
-This is the default behaviour for Clang. The inlined ns-3 calls will not be 
-correctly interposed by the ``LD_PRELOAD`` trick, which is not know to be used by ns-3 users. 
+This is the default behaviour for Clang. The inlined ns-3 calls will not be
+correctly interposed by the ``LD_PRELOAD`` trick, which is not know to be used by ns-3 users.
 To re-enable semantic interposition, comment out the line and reconfigure the project.
 
 Note: the most common use of the ``LD_PRELOAD`` trick is to use custom memory allocators,
 and this continues to work since the interposed symbols are from the standard libraries,
-which are compiled with semantic interposition. 
+which are compiled with semantic interposition.
 
-Some modules may require special flags. The Openflow module for example 
-may require ``-Wno-stringop-truncation`` flag to prevent an warning that 
+Some modules may require special flags. The Openflow module for example
+may require ``-Wno-stringop-truncation`` flag to prevent an warning that
 is treated as error to prevent the compilation from proceeding. The flag
 can be passed to the entire module with the following:
 
@@ -2500,7 +2500,7 @@ can be passed to the entire module with the following:
   )
 
 If a flag prevents your compiler from compiling, wrap the flag inside a
-compiler check. The currently checked compilers are ``GCC`` and ``CLANG`` 
+compiler check. The currently checked compilers are ``GCC`` and ``CLANG``
 (includes both upstream LLVM Clang and Apple Clang).
 
 .. sourcecode:: cmake
@@ -2509,7 +2509,7 @@ compiler check. The currently checked compilers are ``GCC`` and ``CLANG``
     add_compile_options(-Wno-stringop-truncation)
   endif()
 
-  # or 
+  # or
 
   if(${ONLY_COMPILER_THAT_SUPPORTS_UNIQUE_FLAG})
     add_compile_options(-unique_flag)

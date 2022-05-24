@@ -537,9 +537,10 @@ We would welcome suggestions on how to enable scanning for MacOS.
 Regenerating the Python bindings using gitlab-ci-local
 ======================================================
 
+.. _gitlab-ci-local: https://github.com/firecow/gitlab-ci-local
+
 The |ns3| GitLab.com continuous integration (CI) system can be run on a
-local machine using
-`gitlab-ci-local < https://github.com/firecow/gitlab-ci-local>`_.
+local machine using `gitlab-ci-local`_.
 From within the ns-3 directory:
 
 .. sourcecode:: bash
