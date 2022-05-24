@@ -313,7 +313,7 @@ Following are a few examples to clarify these rules:
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ac);
   YansWifiPhyHelper phyHelper;
-  phyHelper.Set ("ChannelSettings", StringValue ("{58, 0, WIFI_PHY_BAND_5GHZ, 0}"));
+  phyHelper.Set ("ChannelSettings", StringValue ("{58, 0, BAND_5GHZ, 0}"));
   // channel width unspecified
   // -> it is set to 80 MHz (width of channel 58)
 
@@ -322,7 +322,7 @@ Following are a few examples to clarify these rules:
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211n);
   YansWifiPhyHelper phyHelper;
-  phyHelper.Set ("ChannelSettings", StringValue ("{0, 40, WIFI_PHY_BAND_5GHZ, 0}"));
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 40, BAND_5GHZ, 0}"));
   // channel number unspecified
   // -> it is set to channel 38 (first 40 MHz channel in the 5GHz band)
 
@@ -331,7 +331,7 @@ Following are a few examples to clarify these rules:
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ax);
   YansWifiPhyHelper phyHelper;
-  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_2_4GHZ, 0}"));
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, BAND_2_4GHZ, 0}"));
   // both channel number and width unspecified
   // -> width set to 20 MHz (default width for 802.11ax in the 2.4 GHZ band)
   // -> channel number set to 1 (first 20 MHz channel in the 2.4 GHz band)
@@ -341,7 +341,7 @@ Following are a few examples to clarify these rules:
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211a);
   YansWifiPhyHelper phyHelper;
-  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_UNSPECIFIED, 0}"));
+  phyHelper.Set ("ChannelSettings", StringValue ("{0, 0, BAND_UNSPECIFIED, 0}"));
   // band, channel number and width unspecified
   // -> band is set to WIFI_PHY_BAND_5GHZ (default band for 802.11a)
   // -> width set to 20 MHz (default width for 802.11a in the 5 GHZ band)
