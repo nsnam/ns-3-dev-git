@@ -141,7 +141,9 @@ TestMultiUserScheduler::SelectTxFormat (void)
       WifiTxVector txVector = m_txVector;
       txVector.SetGuardInterval (m_trigger.GetGuardInterval ());
 
-      uint32_t ampduSize = (ulTriggerType == TriggerFrameType::BSRP_TRIGGER ? m_sizeOf8QosNull : 3500);
+      uint32_t ampduSize = (ulTriggerType == TriggerFrameType::BSRP_TRIGGER)
+                           ? GetMaxSizeOfQosNullAmpdu (m_trigger)
+                           : 3500;  // allows aggregation of 2 MPDUs in TB PPDUs
 
       Time duration = WifiPhy::CalculateTxDuration (ampduSize, txVector,
                                                     m_apMac->GetWifiPhy ()->GetPhyBand (),
@@ -662,8 +664,10 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   // A first STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[6].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[6].psduMap.size () == 1
-                          && m_txPsdus[6].psduMap.begin ()->second->GetHeader (0).IsQosData ()),
-                         true, "Expected QoS data frames in an HE TB PPDU");
+                          && m_txPsdus[6].psduMap.begin ()->second->GetNMpdus () == 2
+                          && m_txPsdus[6].psduMap.begin ()->second->GetHeader (0).IsQosData ()
+                          && m_txPsdus[6].psduMap.begin ()->second->GetHeader (1).IsQosData ()),
+                         true, "Expected 2 QoS data frames in an HE TB PPDU");
   tEnd = m_txPsdus[5].endTx;
   tStart = m_txPsdus[6].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
@@ -672,8 +676,10 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   // A second STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[7].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[7].psduMap.size () == 1
-                          && m_txPsdus[7].psduMap.begin ()->second->GetHeader (0).IsQosData ()),
-                         true, "Expected QoS data frames in an HE TB PPDU");
+                          && m_txPsdus[7].psduMap.begin ()->second->GetNMpdus () == 2
+                          && m_txPsdus[7].psduMap.begin ()->second->GetHeader (0).IsQosData ()
+                          && m_txPsdus[7].psduMap.begin ()->second->GetHeader (1).IsQosData ()),
+                         true, "Expected 2 QoS data frames in an HE TB PPDU");
   tEnd = m_txPsdus[5].endTx;
   tStart = m_txPsdus[7].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
@@ -682,8 +688,10 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   // A third STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[8].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[8].psduMap.size () == 1
-                          && m_txPsdus[8].psduMap.begin ()->second->GetHeader (0).IsQosData ()),
-                         true, "Expected QoS data frames in an HE TB PPDU");
+                          && m_txPsdus[8].psduMap.begin ()->second->GetNMpdus () == 2
+                          && m_txPsdus[8].psduMap.begin ()->second->GetHeader (0).IsQosData ()
+                          && m_txPsdus[8].psduMap.begin ()->second->GetHeader (1).IsQosData ()),
+                         true, "Expected 2 QoS data frames in an HE TB PPDU");
   tEnd = m_txPsdus[5].endTx;
   tStart = m_txPsdus[8].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");
@@ -692,8 +700,10 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   // A fourth STA sends QoS data frames in an HE TB PPDU a SIFS after the reception of the Basic TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[9].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[9].psduMap.size () == 1
-                          && m_txPsdus[9].psduMap.begin ()->second->GetHeader (0).IsQosData ()),
-                         true, "Expected QoS data frames in an HE TB PPDU");
+                          && m_txPsdus[9].psduMap.begin ()->second->GetNMpdus () == 2
+                          && m_txPsdus[9].psduMap.begin ()->second->GetHeader (0).IsQosData ()
+                          && m_txPsdus[9].psduMap.begin ()->second->GetHeader (1).IsQosData ()),
+                         true, "Expected 2 QoS data frames in an HE TB PPDU");
   tEnd = m_txPsdus[5].endTx;
   tStart = m_txPsdus[9].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS data frames in HE TB PPDU sent too early");

@@ -297,7 +297,8 @@ RrMultiUserScheduler::TrySendingBsrpTf (void)
   Time qosNullTxDuration = Seconds (0);
   for (const auto& userInfo : m_trigger)
     {
-      Time duration = WifiPhy::CalculateTxDuration (m_sizeOf8QosNull, txVector,
+      Time duration = WifiPhy::CalculateTxDuration (GetMaxSizeOfQosNullAmpdu (m_trigger),
+                                                    txVector,
                                                     m_apMac->GetWifiPhy ()->GetPhyBand (),
                                                     userInfo.GetAid12 ());
       qosNullTxDuration = Max (qosNullTxDuration, duration);

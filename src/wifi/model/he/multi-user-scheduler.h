@@ -136,6 +136,19 @@ protected:
    */
   TxFormat GetLastTxFormat (void) const;
 
+  /**
+   * Get the maximum size in bytes among the A-MPDUs containing QoS Null frames
+   * and solicited by the given (BSRP) Trigger Frame. For each station addressed
+   * by the Trigger Frame, the expected response is an A-MPDU containing as many
+   * QoS Null frames as the number of TIDs for which a BlockAck agreement has
+   * been established between the station and the AP.
+   *
+   * \param trigger the given Trigger Frame
+   * \return the maximum size in bytes among the A-MPDUs containing QoS Null frames
+   *         and solicited by the given Trigger Frame
+   */
+  uint32_t GetMaxSizeOfQosNullAmpdu (const CtrlTriggerHeader& trigger) const;
+
   void DoDispose (void) override;
   void NotifyNewAggregate (void) override;
   void DoInitialize (void) override;
@@ -145,7 +158,6 @@ protected:
   Ptr<QosTxop> m_edca;                   //!< the AC that gained channel access
   Time m_availableTime;                  //!< the time available for frame exchange
   bool m_initialFrame;                   //!< true if a TXOP is being started
-  uint32_t m_sizeOf8QosNull;             //!< size in bytes of 8 QoS Null frames
 
 private:
   /**

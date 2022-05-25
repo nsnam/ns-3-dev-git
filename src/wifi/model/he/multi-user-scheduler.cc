@@ -115,19 +115,7 @@ MultiUserScheduler::NotifyNewAggregate ()
 void
 MultiUserScheduler::DoInitialize (void)
 {
-  // compute the size in bytes of 8 QoS Null frames. It can be used by subclasses
-  // when responding to a BSRP Trigger Frame
-  WifiMacHeader header;
-  header.SetType (WIFI_MAC_QOSDATA_NULL);
-  header.SetDsTo ();
-  header.SetDsNotFrom ();
-  uint32_t headerSize = header.GetSerializedSize ();
-
-  m_sizeOf8QosNull = 0;
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      m_sizeOf8QosNull = MpduAggregator::GetSizeIfAggregated (headerSize + WIFI_MAC_FCS_LENGTH, m_sizeOf8QosNull);
-    }
+  NS_LOG_FUNCTION (this);
 
   if (m_accessReqInterval.IsStrictlyPositive ())
     {
@@ -277,6 +265,42 @@ MultiUserScheduler::CheckTriggerFrame (void)
   m_ulInfo.trigger.SetCsRequired (m_ulInfo.trigger.GetUlLength () > 76);
 
   m_heFem->SetTargetRssi (m_ulInfo.trigger);
+}
+
+uint32_t
+MultiUserScheduler::GetMaxSizeOfQosNullAmpdu (const CtrlTriggerHeader& trigger) const
+{
+  // find the maximum number of TIDs for which a BlockAck agreement has been established
+  // with an STA, among all the STAs solicited by the given Trigger Frame
+  uint8_t maxNTids = 0;
+  for (const auto& userInfo : trigger)
+    {
+      const auto staIt = m_apMac->GetStaList ().find (userInfo.GetAid12 ());
+      NS_ASSERT (staIt != m_apMac->GetStaList ().cend ());
+      uint8_t staNTids = 0;
+      for (uint8_t tid = 0; tid < 8; tid++)
+        {
+          if (m_heFem->GetBaAgreementEstablished (staIt->second, tid))
+            {
+              staNTids++;
+            }
+        }
+      maxNTids = std::max (maxNTids, staNTids);
+    }
+
+  // compute the size in bytes of maxNTids QoS Null frames
+  WifiMacHeader header (WIFI_MAC_QOSDATA_NULL);
+  header.SetDsTo ();
+  header.SetDsNotFrom ();
+  uint32_t headerSize = header.GetSerializedSize ();
+  uint32_t maxSize = 0;
+
+  for (uint8_t i = 0; i < maxNTids; i++)
+    {
+      maxSize = MpduAggregator::GetSizeIfAggregated (headerSize + WIFI_MAC_FCS_LENGTH, maxSize);
+    }
+
+  return maxSize;
 }
 
 } //namespace ns3
