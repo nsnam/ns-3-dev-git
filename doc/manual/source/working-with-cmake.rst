@@ -681,6 +681,78 @@ Linking third-party libraries
 Depending on a third-party library is a bit more complicated as we have multiple
 ways to handle that within CMake.
 
+Here is a short version on how to find and use third-party libraries
+that should work in most cases:
+
+.. sourcecode:: cmake
+
+    # DEPENDENCY_NAME is used as a prefix to variables set by the find_external_library macro
+    # HEADER_NAME(S) is(are) the name(s) of the header(s) you want to include
+    # LIBRARY_NAME(S) is(are) the name(s) of the library(ies) you want to link
+    # SEARCH_PATHS are the custom paths you can give if your library is not on a system path
+    find_external_library(DEPENDENCY_NAME SQLite3
+                          HEADER_NAME sqlite3.h
+                          LIBRARY_NAME sqlite3
+                          SEARCH_PATHS /optional/search/path/to/custom/sqlite3/library)
+
+    # If the header(s) and library(ies) are not found, a message will be printed during the configuration
+    # If the header(s) and the library(ies) are found, we can use the information found by the buildsystem
+    if(${SQLite3_FOUND}) # Notice that the contents of DEPENDENCY_NAME became a prefix for the _FOUND variable
+        # The compiler will not be able to find the include that is not on
+        # a system include path, unless we explicitly inform it
+
+        # This is the equivalent of -I/optional/search/path/to/custom/sqlite3/include
+        # and AFFECTS ALL the targets in the CURRENT DIRECTORY and ITS SUBDIRECTORIES
+        include_directories(${SQLite3_INCLUDE_DIRS})
+
+        # The compiler should be able to locate the headers, but it still needs to be
+        # informed of the libraries that should be linked
+
+        # This is the equivalent of -l/optional/search/path/to/custom/sqlite3/library/libsqlite3.so
+        # and AFFECTS ALL the targets in the CURRENT DIRECTORY and ITS SUBDIRECTORIES
+        link_libraries(${SQLite3_LIBRARIES})
+    endif()
+
+If you do not want to link the library against all the targets
+(executables and other libraries) use one of the following patterns.
+
+**If the third-party library is required**
+
+.. sourcecode:: cmake
+
+    # if the third-party library is required
+    if(${SQLite3_FOUND})
+        # define your target
+        build_lib(
+            LIBNAME example
+            LIBRARIES_TO_LINK ${SQLite3_LIBRARIES}
+            ...
+        )
+
+        # The LIBRARIES_TO_LINK will be translated into CMake's
+        # target_link_libraries(${libexample} PUBLIC ${SQLite3_LIBRARIES})
+        # which is equivalent to -l${SQLite3_LIBRARIES}
+    endif()
+
+**If the third-party library is optional**
+
+.. sourcecode:: cmake
+
+    set(sqlite_libraries)
+    if(${SQLite3_FOUND})
+        set(sqlite_libraries ${SQLite3_LIBRARIES})
+    endif()
+
+    # And then define your target
+    build_lib(
+        LIBNAME example
+        LIBRARIES_TO_LINK ${sqlite_libraries} # variable can be empty
+        ...
+    )
+
+More details on how find_external_library works and the other
+ways to import third-party libraries are presented next.
+
 .. _Linking third-party libraries without CMake or PkgConfig support:
 
 Linking third-party libraries without CMake or PkgConfig support
