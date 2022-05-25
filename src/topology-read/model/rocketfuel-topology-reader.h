@@ -80,11 +80,10 @@ private:
    * Parser for the *.cch file available at:
    * http://www.cs.washington.edu/research/networking/rocketfuel/maps/rocketfuel_maps_cch.tar.gz
    *
-   * \param [in] argc Argument counter.
    * \param [in] argv Argument vector.
    * \return The container of the nodes created (or empty container if there was an error).
    */
-  NodeContainer GenerateFromMapsFile (int argc, char *argv[]);
+  NodeContainer GenerateFromMapsFile (const std::vector<std::string>& argv);
 
   /**
    * \brief Topology read function from a file containing the nodes weights.
@@ -92,11 +91,10 @@ private:
    * Parser for the weights.* file available at:
    * http://www.cs.washington.edu/research/networking/rocketfuel/maps/weights-dist.tar.gz
    *
-   * \param [in] argc Argument counter.
    * \param [in] argv Argument vector.
    * \return The container of the nodes created (or empty container if there was an error).
    */
-  NodeContainer GenerateFromWeightsFile (int argc, char *argv[]);
+  NodeContainer GenerateFromWeightsFile (const std::vector<std::string>& argv);
 
   /**
    * \brief Enum of the possible file types.
@@ -115,7 +113,7 @@ private:
    * \param buf the first line of the file being read
    * \return The file type (RF_MAPS, RF_WEIGHTS, or RF_UNKNOWN)
    */
-  enum RF_FileType GetFileType (const char *buf);
+  enum RF_FileType GetFileType (const std::string& buf);
 
   int m_linksNumber; //!< Number of links.
   int m_nodesNumber; //!< Number of nodes.
