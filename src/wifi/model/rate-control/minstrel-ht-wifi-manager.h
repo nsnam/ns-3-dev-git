@@ -43,9 +43,9 @@ typedef std::map<WifiMode, Time> TxTime;
  */
 enum McsGroupType
   {
-    GROUP_HT = 0,
-    GROUP_VHT,
-    GROUP_HE
+    WIFI_MINSTREL_GROUP_HT = 0,
+    WIFI_MINSTREL_GROUP_VHT,
+    WIFI_MINSTREL_GROUP_HE
   };
 
 /**
@@ -59,11 +59,11 @@ inline std::ostream& operator<< (std::ostream& os, McsGroupType type)
 {
   switch (type)
     {
-      case GROUP_HT:
+      case WIFI_MINSTREL_GROUP_HT:
         return (os << "HT");
-      case GROUP_VHT:
+      case WIFI_MINSTREL_GROUP_VHT:
         return (os << "VHT");
-      case GROUP_HE:
+      case WIFI_MINSTREL_GROUP_HE:
         return (os << "HE");
       default:
         return (os << "INVALID");
