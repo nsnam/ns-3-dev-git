@@ -4,30 +4,26 @@
 
 The following is a set of guidelines for contributing to ns-3, which are hosted in the [nsnam organization](https://gitlab.com/nsnam) on GitLab.com. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a merge request.
 
-#### Table Of Contents
+## Table Of Contents
 
-[I do not want to read this whole thing, I just have a question!!!](#i-do-not-want-to-read-this-whole-thing-i-just-have-a-question)
-
-[What should I know before I get started?](#what-should-i-know-before-i-get-started)
+* [I do not want to read this whole thing, I just have a question](#i-do-not-want-to-read-this-whole-thing-i-just-have-a-question)
+* [What should I know before I get started?](#what-should-i-know-before-i-get-started)
   * [ns-3 Documentation](#ns-3-documentation)
-  * [ns-3 modules](#ns-3-modules)
-
-[How Can I Contribute?](#how-can-i-contribute)
+  * [ns-3 Modules](#ns-3-modules)
+  * [Design Decisions](#design-decisions)
+* [How Can I Contribute?](#how-can-i-contribute)
   * [Reporting Bugs](#reporting-bugs)
   * [Suggesting Enhancements](#suggesting-enhancements)
   * [Your First Code Contribution](#your-first-code-contribution)
   * [Merge Requests](#merge-requests)
-
-[Styleguides](#styleguides)
+* [Styleguides](#styleguides)
   * [Git Commit Messages](#git-commit-messages)
   * [C++ Styleguide](#c-styleguide)
   * [Documentation Styleguide](#documentation-styleguide)
-
-[Additional Notes](#additional-notes)
+* [Additional Notes](#additional-notes)
   * [Issue and Merge Request Labels](#issue-and-merge-request-labels)
 
-
-## I do not want to read this whole thing I just have a question!!!
+## I do not want to read this whole thing, I just have a question
 
 > **Note:** Please don't file an issue to ask a question.
             You'll get faster results by using the resources below.
@@ -40,24 +36,24 @@ We have an official message board where the community chimes in with helpful adv
 If chat is more your speed, you can join the ns-3 Zulip channel:
 
 * [Join the ns-3 Zulip chat](https://ns-3.zulipchat.com/)
-    * Even though Zulip is a chat service, sometimes it takes several hours
+  * Even though Zulip is a chat service, sometimes it takes several hours
       for community members to respond &mdash; please be patient!
-    * Use the `#general` channel for general questions or discussion about ns-3
-    * Use the `#GSoC` channel for questions about GSoC
-    * There are many other channels available, check the channel list
+  * Use the `#general` channel for general questions or discussion about ns-3
+  * Use the `#GSoC` channel for questions about GSoC
+  * There are many other channels available, check the channel list
 
 ## What should I know before I get started?
 
 ### ns-3 Documentation
 
-The ns-3 project maintains the documentation in different places, dependings on the need. The documentation that is current with the development tree is the following:
+The ns-3 project maintains the documentation in different places, depending on the need. The documentation that is current with the development tree is the following:
 
 * [Tutorial](https://www.nsnam.org/docs/tutorial/html/index.html): Its purpose is to get you started, with simple examples, into the ns-3 world.
 * [Manual](https://www.nsnam.org/docs/manual/html/index.html) is a descriptive documentation of the ns-3 core capabilities, as well as shared development practices.
 * [Model library](https://www.nsnam.org/docs/models/html/index.html), contains a list of manuals, one for each module we officially ship.
 * [Doxygen](https://www.nsnam.org/docs/doxygen/index.html), contains the programming interface of ns-3, as well as description of classes, methods, and functions that permit the interaction between different modules, as well as with the user code.
 
-### ns-3 modules
+### ns-3 Modules
 
 ns-3 is an open source project &mdash; it's made up of [49 modules](https://gitlab.com/nsnam/ns-3-dev/tree/master/src). When you initially consider contributing to ns-3, you might be unsure about which of those 49 modules implements the functionality you want to change or report a bug for. This section should help you with that.
 
@@ -144,10 +140,10 @@ ns-3 and all packages can be developed locally. For instructions on how to do th
 
 The process described here has several goals:
 
-- Maintain ns-3's quality
-- Fix problems that are important to users
-- Engage the community in working toward the best possible ns-3
-- Enable a sustainable system for ns-3's maintainers to review contributions
+* Maintain ns-3's quality
+* Fix problems that are important to users
+* Engage the community in working toward the best possible ns-3
+* Enable a sustainable system for ns-3's maintainers to review contributions
 
 Please follow these steps to have your contribution considered by the maintainers:
 
