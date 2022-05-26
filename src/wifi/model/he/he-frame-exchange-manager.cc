@@ -1390,6 +1390,13 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trig
                                                                                                    header)),
                                        hdr.GetAddr2 (), txParams, ppduDuration))
     {
+      if (!m_mac->GetQosTxop (tid)->GetBaAgreementEstablished (hdr.GetAddr2 (), tid))
+        {
+          NS_LOG_DEBUG ("Skipping tid=" << +tid << " because no agreement established");
+          ++tid;
+          continue;
+        }
+
       NS_LOG_DEBUG ("Aggregating a QoS Null frame with tid=" << +tid);
       // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits above in order to
       // get the TX parameters updated automatically. However, aggregating the QoS Null

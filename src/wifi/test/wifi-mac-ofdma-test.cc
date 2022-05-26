@@ -576,106 +576,74 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   NS_TEST_EXPECT_MSG_EQ (trigger.IsBsrp (), true, "Expected a BSRP Trigger Frame");
   NS_TEST_EXPECT_MSG_EQ (trigger.GetNUserInfoFields (), 4, "Expected one User Info field per station");
 
-  // A first STA sends 8 QoS Null frames in an HE TB PPDU a SIFS after the reception of the BSRP TF
+  // A first STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[1].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[1].psduMap.size () == 1
-                          && m_txPsdus[1].psduMap.begin ()->second->GetNMpdus () == 8),
-                         true, "Expected 8 QoS Null frames in an HE TB PPDU");
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      const WifiMacHeader& hdr = m_txPsdus[1].psduMap.begin ()->second->GetHeader (i);
-      NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-      uint8_t tid = hdr.GetQosTid ();
-      if (tid == 0)
-        {
-          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
-        }
-      else
-        {
-          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
-        }
-    }
+                          && m_txPsdus[1].psduMap.begin ()->second->GetNMpdus () == 1),
+                         true, "Expected a QoS Null frame in an HE TB PPDU");
+  {
+    const WifiMacHeader& hdr = m_txPsdus[1].psduMap.begin ()->second->GetHeader (0);
+    NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
+    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+  }
   tEnd = m_txPsdus[0].endTx;
   navEnd = tEnd + m_txPsdus[0].psduMap[SU_STA_ID]->GetDuration ();
   tStart = m_txPsdus[1].startTx;
-  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frames in HE TB PPDU sent too early");
-  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frames in HE TB PPDU sent too late");
+  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frame in HE TB PPDU sent too late");
   NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[1].endTx, "Duration/ID in BSRP Trigger Frame is too short");
 
-  // A second STA sends 8 QoS Null frames in an HE TB PPDU a SIFS after the reception of the BSRP TF
+  // A second STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[2].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[2].psduMap.size () == 1
-                          && m_txPsdus[2].psduMap.begin ()->second->GetNMpdus () == 8),
-                         true, "Expected 8 QoS Null frames in an HE TB PPDU");
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      const WifiMacHeader& hdr = m_txPsdus[2].psduMap.begin ()->second->GetHeader (i);
-      NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-      uint8_t tid = hdr.GetQosTid ();
-      if (tid == 0)
-        {
-          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
-        }
-      else
-        {
-          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
-        }
-    }
+                          && m_txPsdus[2].psduMap.begin ()->second->GetNMpdus () == 1),
+                         true, "Expected a QoS Null frame in an HE TB PPDU");
+  {
+    const WifiMacHeader& hdr = m_txPsdus[2].psduMap.begin ()->second->GetHeader (0);
+    NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
+    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+  }
   tStart = m_txPsdus[2].startTx;
-  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frames in HE TB PPDU sent too early");
-  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frames in HE TB PPDU sent too late");
+  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frame in HE TB PPDU sent too late");
   NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[2].endTx, "Duration/ID in BSRP Trigger Frame is too short");
 
-  // A third STA sends 8 QoS Null frames in an HE TB PPDU a SIFS after the reception of the BSRP TF
+  // A third STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[3].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[3].psduMap.size () == 1
-                          && m_txPsdus[3].psduMap.begin ()->second->GetNMpdus () == 8),
-                         true, "Expected 8 QoS Null frames in an HE TB PPDU");
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      const WifiMacHeader& hdr = m_txPsdus[3].psduMap.begin ()->second->GetHeader (i);
-      NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-      uint8_t tid = hdr.GetQosTid ();
-      if (tid == 0)
-        {
-          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
-        }
-      else
-        {
-          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
-        }
-    }
+                          && m_txPsdus[3].psduMap.begin ()->second->GetNMpdus () == 1),
+                         true, "Expected a QoS Null frame in an HE TB PPDU");
+  {
+    const WifiMacHeader& hdr = m_txPsdus[3].psduMap.begin ()->second->GetHeader (0);
+    NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
+    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+  }
   tStart = m_txPsdus[3].startTx;
-  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frames in HE TB PPDU sent too early");
-  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frames in HE TB PPDU sent too late");
+  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frame in HE TB PPDU sent too late");
   NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[3].endTx, "Duration/ID in BSRP Trigger Frame is too short");
 
-  // A fourth STA sends 8 QoS Null frames in an HE TB PPDU a SIFS after the reception of the BSRP TF
+  // A fourth STA sends a QoS Null frame in an HE TB PPDU a SIFS after the reception of the BSRP TF
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[4].txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
                           && m_txPsdus[4].psduMap.size () == 1
-                          && m_txPsdus[4].psduMap.begin ()->second->GetNMpdus () == 8),
-                         true, "Expected 8 QoS Null frames in an HE TB PPDU");
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      const WifiMacHeader& hdr = m_txPsdus[4].psduMap.begin ()->second->GetHeader (i);
-      NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-      uint8_t tid = hdr.GetQosTid ();
-      if (tid == 0)
-        {
-          NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID " << +tid);
-        }
-      else
-        {
-          NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosQueueSize (), 0, "Expected a null queue size for TID " << +tid);
-        }
-    }
+                          && m_txPsdus[4].psduMap.begin ()->second->GetNMpdus () == 1),
+                         true, "Expected a QoS Null frame in an HE TB PPDU");
+  {
+    const WifiMacHeader& hdr = m_txPsdus[4].psduMap.begin ()->second->GetHeader (0);
+    NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
+    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+  }
   tStart = m_txPsdus[4].startTx;
-  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frames in HE TB PPDU sent too early");
-  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frames in HE TB PPDU sent too late");
+  NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
+  NS_TEST_EXPECT_MSG_LT (tStart, tEnd + sifs + tolerance, "QoS Null frame in HE TB PPDU sent too late");
   NS_TEST_EXPECT_MSG_GT_OR_EQ (navEnd + tolerance, m_txPsdus[4].endTx, "Duration/ID in BSRP Trigger Frame is too short");
 
   // the AP sends a Basic Trigger Frame to solicit QoS data frames
-  NS_TEST_EXPECT_MSG_GT_OR_EQ (m_txPsdus.size (), 11, "Expected at least 11 transmitted packet");
+  NS_TEST_EXPECT_MSG_GT_OR_EQ (m_txPsdus.size (), 11, "Expected at least 11 transmitted packets");
   NS_TEST_EXPECT_MSG_EQ ((m_txPsdus[5].psduMap.size () == 1
                           && m_txPsdus[5].psduMap[SU_STA_ID]->GetHeader (0).IsTrigger ()
                           && m_txPsdus[5].psduMap[SU_STA_ID]->GetHeader (0).GetAddr1 ().IsBroadcast ()),
