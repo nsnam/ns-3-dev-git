@@ -1530,6 +1530,44 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
       return;
     }
 
+  if (txVector.IsUlMu () && m_txTimer.IsRunning ()
+      && m_txTimer.GetReason () == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF
+      && !inAmpdu) // if in A-MPDU, processing is done at the end of A-MPDU reception
+    {
+      Mac48Address sender = hdr.GetAddr2 ();
+
+      if (m_staExpectTbPpduFrom.find (sender) == m_staExpectTbPpduFrom.end ())
+        {
+          NS_LOG_WARN ("Received a TB PPDU from an unexpected station: " << sender);
+          return;
+        }
+      if (!(hdr.IsQosData () && !hdr.HasData ()))
+        {
+          NS_LOG_WARN ("No QoS Null frame in the received MPDU");
+          return;
+        }
+
+      NS_LOG_DEBUG ("Received a QoS Null frame in a TB PPDU from " << sender);
+
+      // remove the sender from the set of stations that are expected to send a TB PPDU
+      m_staExpectTbPpduFrom.erase (sender);
+
+      if (m_staExpectTbPpduFrom.empty ())
+        {
+          // we do not expect any other response
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyAckTimeoutResetNow ();
+
+          NS_ASSERT (m_edca != 0);
+          m_psduMap.clear ();
+          m_edca->ResetCw ();
+          TransmissionSucceeded ();
+        }
+
+      // the received TB PPDU has been processed
+      return;
+    }
+
   if (hdr.IsCtl ())
     {
       if (hdr.IsCts () && m_txTimer.IsRunning () && m_txTimer.GetReason () == WifiTxTimer::WAIT_CTS
