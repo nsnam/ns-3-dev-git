@@ -517,7 +517,7 @@ To re-scan all modules (which can take some time):
 .. sourcecode:: bash
 
     $ cd source/ns-3-dev
-    $ ./ns3 apiscan-all
+    $ ./ns3 build apiscan-all
 
 Then, to check whether the rescanned bindings can be compiled, enable
 the Python bindings in the build:
