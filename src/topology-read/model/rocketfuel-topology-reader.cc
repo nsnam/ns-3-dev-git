@@ -75,7 +75,7 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 
 /// Regex expression matching a MAP line
 #define ROCKETFUEL_MAPS_LINE \
-  START "(-*[0-9]+)" SPACE "(@[?A-Za-z0-9,+]+)" SPACE \
+  START "(-*[0-9]+)" SPACE "(@[?A-Za-z0-9,+-]+)" SPACE \
   "(\\+)*" MAYSPACE "(bb)*" MAYSPACE \
   "\\(([0-9]+)\\)" SPACE "(&[0-9]+)*" MAYSPACE \
   "->" MAYSPACE "(<[0-9 \t<>]+>)*" MAYSPACE \

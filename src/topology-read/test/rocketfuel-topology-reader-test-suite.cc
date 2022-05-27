@@ -47,24 +47,23 @@ using namespace ns3;
  * \ingroup topology-test
  * \ingroup tests
 
- * \brief Rocketfuel Topology Reader Test
+ * \brief Rocketfuel Topology Reader Weights Test
  */
-class RocketfuelTopologyReaderTest : public TestCase
+class RocketfuelTopologyReaderWeightsTest : public TestCase
 {
 public:
-  RocketfuelTopologyReaderTest ();
+  RocketfuelTopologyReaderWeightsTest ();
+
 private:
   virtual void DoRun (void);
 };
 
-RocketfuelTopologyReaderTest::RocketfuelTopologyReaderTest ()
-  : TestCase ("RocketfuelTopologyReaderTest")
-{
-}
-
+RocketfuelTopologyReaderWeightsTest::RocketfuelTopologyReaderWeightsTest ()
+  : TestCase ("RocketfuelTopologyReaderWeightsTest")
+{}
 
 void
-RocketfuelTopologyReaderTest::DoRun (void)
+RocketfuelTopologyReaderWeightsTest::DoRun (void)
 {
   Ptr<RocketfuelTopologyReader> inFile;
   NodeContainer nodes;
@@ -83,8 +82,52 @@ RocketfuelTopologyReaderTest::DoRun (void)
 
   NS_TEST_ASSERT_MSG_NE (inFile->LinksSize (), 0, "Problems reading the topology file.");
 
-  NS_TEST_EXPECT_MSG_EQ (nodes.GetN (),315, "noes");
-  NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (),972, "links");
+  NS_TEST_EXPECT_MSG_EQ (nodes.GetN (), 315, "nodes");
+  NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (), 972, "links");
+  Simulator::Destroy ();
+}
+
+/**
+ * \ingroup topology-test
+ * \ingroup tests
+
+ * \brief Rocketfuel Topology Reader Maps Test
+ */
+class RocketfuelTopologyReaderMapsTest : public TestCase
+{
+public:
+  RocketfuelTopologyReaderMapsTest ();
+
+private:
+  virtual void DoRun (void);
+};
+
+RocketfuelTopologyReaderMapsTest::RocketfuelTopologyReaderMapsTest ()
+  : TestCase ("RocketfuelTopologyReaderMapsTest")
+{}
+
+void
+RocketfuelTopologyReaderMapsTest::DoRun (void)
+{
+  Ptr<RocketfuelTopologyReader> inFile;
+  NodeContainer nodes;
+
+  std::string input ("./src/topology-read/examples/RocketFuel_sample_4755.r0.cch_maps.txt");
+
+  inFile = CreateObject<RocketfuelTopologyReader> ();
+  inFile->SetFileName (input);
+
+  if (inFile != 0)
+    {
+      nodes = inFile->Read ();
+    }
+
+  NS_TEST_ASSERT_MSG_NE (nodes.GetN (), 0, "Problems reading node information the topology file..");
+
+  NS_TEST_ASSERT_MSG_NE (inFile->LinksSize (), 0, "Problems reading the topology file.");
+
+  NS_TEST_EXPECT_MSG_EQ (nodes.GetN (), 12, "nodes");
+  NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (), 24, "links");
   Simulator::Destroy ();
 }
 
@@ -98,13 +141,15 @@ class RocketfuelTopologyReaderTestSuite : public TestSuite
 {
 public:
   RocketfuelTopologyReaderTestSuite ();
+
 private:
 };
 
 RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   : TestSuite ("rocketfuel-topology-reader", UNIT)
 {
-  AddTestCase (new RocketfuelTopologyReaderTest (), TestCase::QUICK);
+  AddTestCase (new RocketfuelTopologyReaderWeightsTest (), TestCase::QUICK);
+  AddTestCase (new RocketfuelTopologyReaderMapsTest (), TestCase::QUICK);
 }
 
 static RocketfuelTopologyReaderTestSuite g_rocketfuelTopologyReaderTestSuite; //!< Static variable for test initialization

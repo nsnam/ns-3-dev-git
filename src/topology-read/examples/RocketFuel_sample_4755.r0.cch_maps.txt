@@ -1,0 +1,12 @@
+112 @Mumbai-VSB,+IN + bb	(14) &5 -> <468> <471> <472>  =203.197.33.209 r0
+456 @Mumbai,+IN + bb	(8) &12 -> <463> <471> <472> <473>  =gsrmumbai.vsnl.net.in r0
+462 @Bangalore,+IN + 	(6) &1 -> <463>  =blr-chn-stm-1.bbone.vsnl.net.in! r0
+463 @Bangalore,+IN + bb	(7) &41 -> <456> <462> <473>  =ekm-blr-stm1.bng.vsnl.net.in r0
+464 @Madras,+IN + bb	(1) &1 ->   =chn-blr-stm-1.bbone.vsnl.net.in! r0
+467 @Mumbai-LVSB,+IN + bb	(2) &1 -> <472>  =lvsb-hyd-1mb.bbone.vsnl.net.in r0
+468 @Mumbai-LVSB,+IN + bb	(1) &11 -> <112>  =lvsb-vsb-stm-1.bbone.vsnl.net.in r0
+469 @Mumbai,+IN + bb	(2) &4 -> <471>  =mum-bgl-e1.bbone.vsnl.net.in r0
+470 @Mumbai-VSB,+IN + bb	(2) &2 -> <471>  =vsb-cal-e1.bbone.vsnl.net.in r0
+471 @Mumbai-VSB,+IN + bb	(6) &7 -> <112> <456> <469> <470>  =vsb-lvsb-e3.bbone.vsnl.net.in r0
+472 @Mumbai-VSB,+IN + bb	(18) &6 -> <112> <456> <467>  =vsb-lvsb-stm1.bbone.vsnl.net.in r0
+473 @Bangalore,+IN + bb	(2) &7 -> <456> <463>  =blr-ekm-stm1.bng.vsnl.net.in r0
