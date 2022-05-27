@@ -33,6 +33,7 @@
 #include "ns3/queue-fwd.h"
 #include <string>
 #include <sstream>
+#include <type_traits>
 
 namespace ns3 {
 
@@ -242,8 +243,14 @@ protected:
  * methods in doing so, to ensure that appropriate trace sources are called
  * and statistics are maintained. The template parameter specifies the type of
  * container used internally to store queue items. The container type must provide
- * the methods insert(), erase() and clear() following the usual syntax of C++
- * containers. The default container type is std::list (as defined in queue-fwd.h).
+ * the methods insert(), erase() and clear() and define the iterator and const_iterator
+ * types, following the usual syntax of C++ containers. The default container type
+ * is std::list (as defined in queue-fwd.h). In case the container is such that
+ * an object stored within the queue is obtained from a container element through
+ * an operation other than dereferencing an iterator pointing to the container
+ * element, the container has to provide a public method named GetItem that
+ * returns the object stored within the queue that is included in the container
+ * element pointed to by a given const iterator.
  *
  * Users of the Queue template class usually hold a queue through a smart pointer,
  * hence forward declaration is recommended to avoid pulling the implementation
@@ -381,6 +388,46 @@ protected:
   void DoDispose (void) override;
 
 private:
+  /**
+   * Struct providing a static method returning the object stored within the queue
+   * that is included in the container element pointed to by the given const iterator.
+   * This method is used when the container does not define a GetItem method and
+   * assumes that an object stored in the queue can be obtained by dereferencing the
+   * iterator pointing to the container element that includes such an object.
+   */
+  template <class, class = void>
+  struct MakeGetItem
+  {
+    /**
+     * \param it the given const iterator
+     * \return the item included in the element pointed to by the given iterator
+     */
+    static Ptr<Item> GetItem (const Container&, const ConstIterator it)
+    {
+      return *it;
+    }
+  };
+
+  /**
+   * Struct providing a static method returning the object stored within the queue
+   * that is included in the container element pointed to by the given const iterator.
+   * This method is used when the container defines a GetItem method and is simply a
+   * wrapper to invoke such a method.
+   */
+  template <class T>
+  struct MakeGetItem<T, std::void_t<decltype (std::declval<T> ().GetItem (std::declval<ConstIterator> ()))> >
+  {
+    /**
+     * \param container the container
+     * \param it the given const iterator
+     * \return the item included in the element pointed to by the given iterator
+     */
+    static Ptr<Item> GetItem (const Container& container, const ConstIterator it)
+    {
+      return container.GetItem (it);
+    }
+  };
+
   Container m_packets;                      //!< the items in the queue
   NS_LOG_TEMPLATE_DECLARE;                  //!< the log component
 
@@ -498,11 +545,11 @@ Queue<Item, Container>::DoDequeue (ConstIterator pos)
       return 0;
     }
 
-  Ptr<Item> item = *pos;
-  m_packets.erase (pos);
+  Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
 
   if (item != 0)
     {
+      m_packets.erase (pos);
       NS_ASSERT (m_nBytes.Get () >= item->GetSize ());
       NS_ASSERT (m_nPackets.Get () > 0);
 
@@ -527,11 +574,11 @@ Queue<Item, Container>::DoRemove (ConstIterator pos)
       return 0;
     }
 
-  Ptr<Item> item = *pos;
-  m_packets.erase (pos);
+  Ptr<Item> item = MakeGetItem<Container>::GetItem (m_packets, pos);
 
   if (item != 0)
     {
+      m_packets.erase (pos);
       NS_ASSERT (m_nBytes.Get () >= item->GetSize ());
       NS_ASSERT (m_nPackets.Get () > 0);
 
@@ -579,7 +626,7 @@ Queue<Item, Container>::DoPeek (ConstIterator pos) const
       return 0;
     }
 
-  return *pos;
+  return MakeGetItem<Container>::GetItem (m_packets, pos);
 }
 
 template <typename Item, typename Container>
