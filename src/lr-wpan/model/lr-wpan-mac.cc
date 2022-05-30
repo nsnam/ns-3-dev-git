@@ -1777,11 +1777,27 @@ LrWpanMac::SetLrWpanMacState (LrWpanMacState macState)
       // remove the copy of the packet that was just sent
       RemoveFirstTxQElement ();
       ChangeMacState (MAC_IDLE);
+      if (m_macRxOnWhenIdle)
+         {
+           m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_RX_ON);
+         }
+       else
+         {
+           m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_TRX_OFF);
+         }
     }
   else if (m_lrWpanMacState == MAC_CSMA && macState == MAC_CSMA_DEFERRED)
     {
       ChangeMacState (MAC_IDLE);
       m_txPkt = 0;
+      if (m_macRxOnWhenIdle)
+         {
+           m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_RX_ON);
+         }
+       else
+         {
+           m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_TRX_OFF);
+         }
       NS_LOG_DEBUG ("****** PACKET DEFERRED to the next superframe *****");
     }
 }

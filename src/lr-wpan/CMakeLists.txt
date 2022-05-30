@@ -47,4 +47,5 @@ build_lib(
     test/lr-wpan-spectrum-value-helper-test.cc
     test/lr-wpan-ifs-test.cc
     test/lr-wpan-slotted-csmaca-test.cc
+    test/lr-wpan-mac-test.cc
 )

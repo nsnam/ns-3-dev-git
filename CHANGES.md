@@ -31,6 +31,8 @@ Changes from ns-3.36 to ns-3.37
 
 ### Changed behavior
 
+* Lr-wpan: **LrWpanPhy** now change to TRX_OFF after a CSMA-CA failure when the RxOnWhenIdle flag is set to false in the **LrWpanMac**.
+
 Changes from ns-3.36 to ns-3.36.1
 ---------------------------------
 
