@@ -68,7 +68,7 @@ class Scheduler;
 class Simulator
 {
 public:
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete default constructor and destructor to avoid misuse
   Simulator () = delete;
   ~Simulator () = delete;
 

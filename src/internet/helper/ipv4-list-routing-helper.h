@@ -55,7 +55,7 @@ public:
    */
   Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &o);
 
-  // Delete copy constructor and assignment operator to avoid misuse
+  // Delete assignment operator to avoid misuse
   Ipv4ListRoutingHelper &operator= (const Ipv4ListRoutingHelper &) = delete;
 
   /**
