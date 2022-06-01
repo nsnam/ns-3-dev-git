@@ -68,8 +68,14 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
+
   HwmpProtocol ();
   ~HwmpProtocol ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  HwmpProtocol (const HwmpProtocol &) = delete;
+  HwmpProtocol &operator= (const HwmpProtocol &) = delete;
+
   void DoDispose ();
 
   /**
@@ -170,18 +176,6 @@ private:
   friend class HwmpProtocolMac;
 
   virtual void DoInitialize ();
-
-  /**
-   * assignment operator
-   * \param hwmp the HWMP protocol to assign
-   * \returns the assigned value
-   */
-  HwmpProtocol& operator= (const HwmpProtocol & hwmp);
-  /**
-   * Copy constructor - defined but not implemented (on purpose)
-   * \param hwmp the HWMP protocol
-   */
-  HwmpProtocol (const HwmpProtocol & hwmp);
 
   /**
    * \brief Structure of path error: IePerr and list of receivers:

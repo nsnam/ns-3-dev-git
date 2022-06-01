@@ -66,6 +66,11 @@ public:
    */
   BandwidthManager (Ptr<WimaxNetDevice> device);
   ~BandwidthManager (void);
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  BandwidthManager (const BandwidthManager &) = delete;
+  BandwidthManager &operator= (const BandwidthManager &) = delete;
+
   void DoDispose (void);
 
   /**
@@ -100,14 +105,6 @@ public:
    */
   uint32_t GetSymbolsPerFrameAllocated (void);
 private:
-  /// Bandwidth manager type conversion operator
-  BandwidthManager (const BandwidthManager &);
-  /**
-   * Bandwidth manager assignment operator
-   * \returns the bandwidth manager
-   */
-  BandwidthManager& operator= (const BandwidthManager &);
-
   Ptr<WimaxNetDevice> m_device; ///< the device
   uint16_t m_nrBwReqsSent; ///< bandwidth requests sent
 };

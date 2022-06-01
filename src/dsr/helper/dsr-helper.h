@@ -58,6 +58,10 @@ public:
    */
   DsrHelper ();
   ~DsrHelper ();
+
+  // Delete assignment operator to avoid misuse
+  DsrHelper &operator= (const DsrHelper &) = delete;
+
   /**
    * \brief Construct an DsrHelper from another previously initialized instance
    * (Copy Constructor).
@@ -83,13 +87,6 @@ public:
    */
   void Set (std::string name, const AttributeValue &value);
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \param o source object
-   * \return DsrHelper object
-   */
-  DsrHelper & operator = (const DsrHelper &o);
   ObjectFactory m_agentFactory; ///< DSR factory
 };
 

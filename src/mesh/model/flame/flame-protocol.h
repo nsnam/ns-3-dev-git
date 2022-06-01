@@ -93,8 +93,14 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
+  
   FlameProtocol ();
   ~FlameProtocol ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FlameProtocol (const FlameProtocol &) = delete;
+  FlameProtocol &operator= (const FlameProtocol &) = delete;
+
   void DoDispose ();
 
   /**
@@ -146,16 +152,6 @@ public:
   /// Reset statistics function
   void ResetStats ();
 private:
-  /**
-   * assignment operator
-   *
-   * \param flame the object to assign
-   * \returns the assigned value
-   */
-  FlameProtocol& operator= (const FlameProtocol & flame);
-  /// type conversion operator
-  FlameProtocol (const FlameProtocol &);
-
   /// LLC protocol number reserved by flame
   static const uint16_t FLAME_PROTOCOL = 0x4040;
   /**

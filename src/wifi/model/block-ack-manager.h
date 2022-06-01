@@ -69,15 +69,6 @@ struct Bar
 class BlockAckManager : public Object
 {
 private:
-  /// type conversion operator
-  BlockAckManager (const BlockAckManager&);
-  /**
-   * assignment operator
-   * \param block BlockAckManager to assign
-   * \returns the assigned BlockAckManager
-   */
-  BlockAckManager& operator= (const BlockAckManager& block);
-
   /**
    * Enumeration for the statuses of a buffered MPDU
    */
@@ -97,6 +88,10 @@ public:
 
   BlockAckManager ();
   ~BlockAckManager ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  BlockAckManager (const BlockAckManager &) = delete;
+  BlockAckManager &operator= (const BlockAckManager &) = delete;
 
   /**
    * \param recipient Address of peer station involved in block ack mechanism.

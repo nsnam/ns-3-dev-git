@@ -55,6 +55,10 @@ public:
   SSScheduler (Ptr<SubscriberStationNetDevice> ss);
   ~SSScheduler (void);
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  SSScheduler (const SSScheduler &) = delete;
+  SSScheduler &operator= (const SSScheduler &) = delete;
+
   /**
    * Set poll me value
    * \param pollMe the poll me flag
@@ -78,16 +82,7 @@ public:
 
 
   void DoDispose (void);
-protected:
 private:
-  /// type conversion operator
-  SSScheduler (const SSScheduler &);
-  /**
-   * assignment operator
-   * \returns the SS scheduler
-   */
-  SSScheduler & operator= (const SSScheduler &);
-
   /**
    * Select connection
    * \returns pointer to the wimax connection

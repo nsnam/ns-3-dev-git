@@ -218,9 +218,12 @@ public:
    */
   virtual ~ChannelConditionModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ChannelConditionModel (const ChannelConditionModel &) = delete;
+  ChannelConditionModel &operator= (const ChannelConditionModel &) = delete;
+
   /**
    * Computes the condition of the channel between a and b
-
    *
    * \param a mobility model
    * \param b mobility model
@@ -238,21 +241,6 @@ public:
    * \return the number of stream indices assigned by this model
    */
   virtual int64_t AssignStreams (int64_t stream) = 0;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  */
-  ChannelConditionModel (const ChannelConditionModel&) = delete;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  * \returns the ChannelConditionModel instance
-  */
-  ChannelConditionModel &operator = (const ChannelConditionModel &) = delete;
 };
 
 /**
@@ -280,6 +268,10 @@ public:
    */
   virtual ~AlwaysLosChannelConditionModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  AlwaysLosChannelConditionModel (const AlwaysLosChannelConditionModel &) = delete;
+  AlwaysLosChannelConditionModel &operator= (const AlwaysLosChannelConditionModel &) = delete;
+
   /**
    * Computes the condition of the channel between a and b, that will be always LoS
    *
@@ -288,21 +280,6 @@ public:
    * \return the condition of the channel between a and b, that will be always LoS
    */
   virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  */
-  AlwaysLosChannelConditionModel (const AlwaysLosChannelConditionModel&) = delete;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  * \returns a copy of the object
-  */
-  AlwaysLosChannelConditionModel &operator = (const AlwaysLosChannelConditionModel &) = delete;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -341,6 +318,10 @@ public:
    */
   virtual ~NeverLosChannelConditionModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  NeverLosChannelConditionModel (const NeverLosChannelConditionModel &) = delete;
+  NeverLosChannelConditionModel &operator= (const NeverLosChannelConditionModel &) = delete;
+
   /**
    * Computes the condition of the channel between a and b, that will be always non-LoS
    *
@@ -349,21 +330,6 @@ public:
    * \return the condition of the channel between a and b, that will be always non-LoS
    */
   virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  */
-  NeverLosChannelConditionModel (const NeverLosChannelConditionModel&) = delete;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  * \returns a copy of the object
-  */
-  NeverLosChannelConditionModel &operator = (const NeverLosChannelConditionModel &) = delete;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -402,6 +368,10 @@ public:
    */
   virtual ~NeverLosVehicleChannelConditionModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  NeverLosVehicleChannelConditionModel (const NeverLosVehicleChannelConditionModel &) = delete;
+  NeverLosVehicleChannelConditionModel &operator= (const NeverLosVehicleChannelConditionModel &) = delete;
+
   /**
    * Computes the condition of the channel between a and b, that will be always NLOSv
    *
@@ -410,21 +380,6 @@ public:
    * \return the condition of the channel between a and b, that will be always NLOSv
    */
   virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  */
-  NeverLosVehicleChannelConditionModel (const NeverLosVehicleChannelConditionModel&) = delete;
-
-  /**
-  * \brief Copy constructor
-  *
-  * Defined and unimplemented to avoid misuse
-  * \returns a copy of the object
-  */
-  NeverLosVehicleChannelConditionModel &operator = (const NeverLosVehicleChannelConditionModel &) = delete;
 
   /**
    * If this  model uses objects of type RandomVariableStream,

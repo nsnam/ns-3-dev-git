@@ -49,21 +49,10 @@ public:
    */
   virtual ~ThreeGppV2vUrbanPropagationLossModel () override;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
+  // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppV2vUrbanPropagationLossModel (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
+  ThreeGppV2vUrbanPropagationLossModel &operator= (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns the ThreeGppRmaPropagationLossModel instance
-   */
-  ThreeGppV2vUrbanPropagationLossModel & operator = (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
-  
 private:
   /**
    * \brief Computes the pathloss between a and b considering that the line of

@@ -45,6 +45,11 @@ class PeerLinkOpenStart : public Header
 {
 public:
   PeerLinkOpenStart ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PeerLinkOpenStart (const PeerLinkOpenStart &) = delete;
+  PeerLinkOpenStart &operator= (const PeerLinkOpenStart &) = delete;
+
   ///\brief fields:
   struct PlinkOpenStartFields
   {
@@ -91,19 +96,6 @@ private:
    * \returns true if equal
    */
   friend bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
-
-  /**
-   * assignment operator
-   * \param peer the peer link open start
-   * \returns the assigned value
-   */
-  PeerLinkOpenStart& operator= (const PeerLinkOpenStart & peer);
-  /**
-   * constructor
-   * \param peer the peer link open start
-   */
-  PeerLinkOpenStart (const PeerLinkOpenStart & peer);
-
 };
 
 bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
@@ -120,6 +112,11 @@ class PeerLinkCloseStart : public Header
 {
 public:
   PeerLinkCloseStart ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PeerLinkCloseStart (const PeerLinkCloseStart &) = delete;
+  PeerLinkCloseStart &operator= (const PeerLinkCloseStart &) = delete;
+
   ///\brief fields:
   struct PlinkCloseStartFields
   {
@@ -160,17 +157,6 @@ private:
    * \returns true if equal
    */
   friend bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
-
-  /**
-   * assignment operator
-   *
-   * \param peer the value to assign
-   * \returns the assigned value
-   */
-  PeerLinkCloseStart& operator= (const PeerLinkCloseStart & peer);
-  /// type conversion operator
-  PeerLinkCloseStart (const PeerLinkCloseStart &);
-
 };
 bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
 
@@ -188,6 +174,11 @@ class PeerLinkConfirmStart : public Header
 {
 public:
   PeerLinkConfirmStart ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PeerLinkConfirmStart (const PeerLinkConfirmStart &) = delete;
+  PeerLinkConfirmStart &operator= (const PeerLinkConfirmStart &) = delete;
+
   ///\brief fields:
   struct PlinkConfirmStartFields
   {
@@ -234,19 +225,6 @@ private:
    * \returns true if equal
    */
   friend bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
-
-  /**
-   * assignment operator
-   * \param peer the peer link confirm start
-   * \returns the assigned value
-   */
-  PeerLinkConfirmStart& operator= (const PeerLinkConfirmStart & peer);
-  /**
-   * constructor
-   * \param peer the peer link confirm start
-   */
-  PeerLinkConfirmStart (const PeerLinkConfirmStart & peer);
-
 };
 bool operator== (const PeerLinkConfirmStart & a, const PeerLinkConfirmStart & b);
 } // namespace dot11s

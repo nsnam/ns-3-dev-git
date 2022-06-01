@@ -52,6 +52,11 @@ public:
    */
   BSLinkManager (Ptr<BaseStationNetDevice> bs);
   ~BSLinkManager (void);
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  BSLinkManager (const BSLinkManager &) = delete;
+  BSLinkManager &operator= (const BSLinkManager &) = delete;
+
   /**
    * \return the ranging opportunities to allocate
    */
@@ -74,14 +79,6 @@ public:
    */
   void VerifyInvitedRanging (Cid cid, uint8_t uiuc);
 private:
-  /// copy constructor (disabled)
-  BSLinkManager (const BSLinkManager &);
-  /**
-   * assignment operator (disabled)
-   * \returns the BS link manager
-   */
-  BSLinkManager & operator= (const BSLinkManager &);
-
   /**
    * Perform ranging function
    * \param cid the CID

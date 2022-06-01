@@ -72,6 +72,9 @@ public:
    */
   NixVectorHelper (const NixVectorHelper<T> &o);
 
+  // Delete assignment operator to avoid misuse
+  NixVectorHelper &operator= (const NixVectorHelper &) = delete;
+
   /**
    * \returns pointer to clone of this NixVectorHelper
    * 
@@ -105,13 +108,6 @@ public:
   void PrintRoutingPathAt (Time printTime, Ptr<Node> source, IpAddress dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \return Nothing useful.
-   */
-  NixVectorHelper &operator = (const NixVectorHelper &);
-
   ObjectFactory m_agentFactory; //!< Object factory
 
   /**

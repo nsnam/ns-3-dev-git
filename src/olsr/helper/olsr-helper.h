@@ -54,6 +54,9 @@ public:
    */
   OlsrHelper (const OlsrHelper &o);
 
+  // Delete assignment operator to avoid misuse
+  OlsrHelper &operator= (const OlsrHelper &) = delete;
+
   /**
    * \returns pointer to clone of this OlsrHelper
    *
@@ -100,12 +103,6 @@ public:
   int64_t AssignStreams (NodeContainer c, int64_t stream);
 
 private:
-  /**
-   * \brief Assignment operator declared private and not implemented to disallow
-   * assignment and prevent the compiler from happily inserting its own.
-   * \return nothing
-   */
-  OlsrHelper &operator = (const OlsrHelper &);
   ObjectFactory m_agentFactory; //!< Object factory
 
   std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions; //!< container of interfaces excluded from OLSR operations

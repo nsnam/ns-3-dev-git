@@ -51,6 +51,11 @@ class PeerManagementProtocol : public Object
 public:
   PeerManagementProtocol ();
   ~PeerManagementProtocol ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PeerManagementProtocol (const PeerManagementProtocol &) = delete;
+  PeerManagementProtocol &operator= (const PeerManagementProtocol &) = delete;
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -253,17 +258,6 @@ private:
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   ///\brief this vector keeps pointers to MAC-plugins
   typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
-
-private:
-  /**
-   * assignment operator
-   *
-   * \param peer the value to assign
-   * \returns the assigned value
-   */
-  PeerManagementProtocol& operator= (const PeerManagementProtocol & peer);
-  /// type conversion operator
-  PeerManagementProtocol (const PeerManagementProtocol &);
 
   /**
    * Initiate link function

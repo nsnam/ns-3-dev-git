@@ -49,6 +49,10 @@ public:
    */
   virtual ~ThreeGppPropagationLossModel () override;
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ThreeGppPropagationLossModel (const ThreeGppPropagationLossModel &) = delete;
+  ThreeGppPropagationLossModel &operator= (const ThreeGppPropagationLossModel &) = delete;
+
   /**
    * \brief Set the channel condition model used to determine the channel
    *        state (e.g., the LOS/NLOS condition)
@@ -73,21 +77,6 @@ public:
    * \return The current central frequency
    */
   double GetFrequency (void) const;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ThreeGppPropagationLossModel (const ThreeGppPropagationLossModel &) = delete;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns the ThreeGppPropagationLossModel instance
-   */
-  ThreeGppPropagationLossModel & operator = (const ThreeGppPropagationLossModel &) = delete;
 
 private:
   /**
@@ -266,20 +255,9 @@ public:
    */
   virtual ~ThreeGppRmaPropagationLossModel () override;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
+  // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppRmaPropagationLossModel (const ThreeGppRmaPropagationLossModel &) = delete;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns the ThreeGppRmaPropagationLossModel instance
-   */
-  ThreeGppRmaPropagationLossModel & operator = (const ThreeGppRmaPropagationLossModel &) = delete;
+  ThreeGppRmaPropagationLossModel &operator= (const ThreeGppRmaPropagationLossModel &) = delete;
 
 private:
   /**
@@ -368,20 +346,9 @@ public:
    */
   virtual ~ThreeGppUmaPropagationLossModel () override;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
+  // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppUmaPropagationLossModel (const ThreeGppUmaPropagationLossModel &) = delete;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \return the ThreeGppUmaPropagationLossModel instance
-   */
-  ThreeGppUmaPropagationLossModel & operator = (const ThreeGppUmaPropagationLossModel &) = delete;
+  ThreeGppUmaPropagationLossModel &operator= (const ThreeGppUmaPropagationLossModel &) = delete;
 
 private:
   virtual int64_t DoAssignStreams (int64_t stream) override;
@@ -461,20 +428,9 @@ public:
    */
   virtual ~ThreeGppUmiStreetCanyonPropagationLossModel () override;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
+  // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppUmiStreetCanyonPropagationLossModel (const ThreeGppUmiStreetCanyonPropagationLossModel &) = delete;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \return the ThreeGppUmiStreetCanyonPropagationLossModel instance
-   */
-  ThreeGppUmiStreetCanyonPropagationLossModel & operator = (const ThreeGppUmiStreetCanyonPropagationLossModel &) = delete;
+  ThreeGppUmiStreetCanyonPropagationLossModel &operator= (const ThreeGppUmiStreetCanyonPropagationLossModel &) = delete;
 
 private:
   /**
@@ -558,20 +514,9 @@ public:
    */
   virtual ~ThreeGppIndoorOfficePropagationLossModel () override;
 
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
+  // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppIndoorOfficePropagationLossModel (const ThreeGppIndoorOfficePropagationLossModel &) = delete;
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \return the ThreeGppIndoorOfficePropagationLossModel instance
-   */
-  ThreeGppIndoorOfficePropagationLossModel & operator = (const ThreeGppIndoorOfficePropagationLossModel &) = delete;
+  ThreeGppIndoorOfficePropagationLossModel &operator= (const ThreeGppIndoorOfficePropagationLossModel &) = delete;
 
 private:
   /**

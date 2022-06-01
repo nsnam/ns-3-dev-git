@@ -80,9 +80,9 @@ private:
   /** Helper to test for null pointer. */
   class Tester
   {
-  private:
-    /** Disable delete (by virtue that this is unimplemented). */
-    void operator delete (void *);
+  public:
+    // Delete operator delete to avoid misuse
+    void operator delete (void *) = delete;
   };
 
   /** Interoperate with const instances. */

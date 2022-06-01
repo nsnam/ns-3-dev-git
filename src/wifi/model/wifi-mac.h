@@ -94,6 +94,10 @@ public:
   WifiMac ();
   virtual ~WifiMac ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  WifiMac (const WifiMac &) = delete;
+  WifiMac &operator= (const WifiMac &) = delete;
+
   /**
    * Sets the device this PHY is associated with.
    *
@@ -544,16 +548,6 @@ protected:
 
 
 private:
-  /// type conversion operator
-  WifiMac (const WifiMac&);
-  /**
-   * assignment operator
-   *
-   * \param mac the WifiMac to assign
-   * \returns the assigned value
-   */
-  WifiMac & operator= (const WifiMac& mac);
-
   /**
    * \param dcf the DCF to be configured
    * \param cwmin the minimum contention window for the DCF

@@ -53,6 +53,11 @@ public:
   /// C-tor create empty link
   PeerLink ();
   ~PeerLink ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PeerLink (const PeerLink &) = delete;
+  PeerLink &operator= (const PeerLink &) = delete;
+
   void DoDispose ();
   /// Peer Link state:
   enum  PeerState {
@@ -327,19 +332,6 @@ private:
   /// Several successive beacons were lost, close link
   void BeaconLoss ();
 private:
-
-  /**
-   * assignment operator
-   * \param link the peer link
-   * \returns the peer link assigned
-   */
-  PeerLink& operator= (const PeerLink & link);
-  /**
-   * Copy constructor. Intentionally unimplemented
-   * \param o object to copy
-   */
-  PeerLink (const PeerLink & o);
-
   /// The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to MAC plugin, which is responsible for peer management
