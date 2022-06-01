@@ -140,7 +140,7 @@ void
 LrWpanCsmaCa::SetMacMaxBE (uint8_t macMaxBE)
 {
   NS_LOG_FUNCTION (this << macMaxBE);
-  m_macMinBE = macMaxBE;
+  m_macMaxBE = macMaxBE;
 }
 
 uint8_t
