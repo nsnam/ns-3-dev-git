@@ -14,6 +14,15 @@ When writing code to be contributed to the |ns3| open source project, we
 ask that you follow the coding standards, guidelines, and recommendations
 found below.
 
+Coding style checks
+*******************
+
+The |ns3| project maintains Python scripts that check and enforce the adopted
+coding style. The following subsections explain them in detail.
+
+check-style.py
+==============
+
 A lot of the syntactical rules described can be easily enforced with the
 help of the ``utils/check-style.py`` script which relies on a working version
 of `uncrustify <http://uncrustify.sourceforge.net/>`_.  We recommend to
@@ -34,6 +43,41 @@ suggested:
 The ``-i`` flag tells check-style.py to make modifications in-place.  The
 ``-l 3`` argument asks to apply the highest level of whitespace compliance
 changes to the code.
+
+trim_trailing_whitespace.py
+===========================
+
+The |ns3| coding style states that text files must not have trailing whitespace.
+This rule can be easily checked and enforced with the help of the Python script
+``utils/trim_trailing_whitespace.py``.
+
+The ``trim_trailing_whitespace.py`` script can be run with the following commands:
+
+::
+  # Entire codebase (using paths relative to the ns-3 root)
+  ./utils/trim-trailing-whitespace.py [--check] .
+
+  # Entire codebase (using absolute paths)
+  /path/to/utils/trim-trailing-whitespace.py [--check] /path/to/ns3/root
+
+  # Specific directory
+  /path/to/utils/trim-trailing-whitespace.py [--check] absolute_or_relative/path/to/directory
+
+  # Individual file
+  /path/to/utils/trim-trailing-whitespace.py [--check] absolute_or_relative/path/to/file
+
+
+The script has two modes of operation. When no flags are present, the script will
+detect and trim trailing whitespace in all text files in the given path.
+If the ``--check`` flag is present, the script will only check if there are files
+with trailing whitespace, and exit with a non-zero exit code.
+This mode is useful for developers editing their code locally and
+the GitLab CI/CD pipeline to check if the codebase has trailing whitespace.
+
+The complete API of the script can be obtained with the following command:
+
+::
+  $ ./utils/trim-trailing-whitespace.py --help
 
 Code layout
 ***********

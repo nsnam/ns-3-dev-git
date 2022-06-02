@@ -197,6 +197,11 @@ utility with configuration set to the conventions used by |ns3|, and
 can be used to quickly format new source code files proposed for the
 mainline. 
 
+Additionally, the project also maintains a Python program called
+``trim_trailing_whitespace.py``, found in the ``utils/`` directory.
+This program checks and trims trailing whitespace in text files, in order to
+comply with the |ns3| coding style.
+
 Creating a patch
 ****************
 Patches are preferably submitted as a GitLab.com
