@@ -48,27 +48,33 @@ NS_OBJECT_ENSURE_REGISTERED (LrWpanPhy);
 const uint32_t LrWpanPhy::aMaxPhyPacketSize = 127; // max PSDU in octets
 const uint32_t LrWpanPhy::aTurnaroundTime = 12;  // RX-to-TX or TX-to-RX in symbol periods
 
-// IEEE802.15.4-2006 Table 2 in section 6.1.2 (kb/s and ksymbol/s)
-// The index follows LrWpanPhyOption
+// IEEE802.15.4-2006 Table 1 in section 6.1.1. and IEEE 802.15.4c-2009, IEEE 802.15.4d-2009
+// The index follows LrWpanPhyOption (kb/s and ksymbol/s)
 const LrWpanPhyDataAndSymbolRates
-LrWpanPhy::dataSymbolRates[7] = { { 20.0, 20.0},
-                                  { 40.0, 40.0},
-                                  { 250.0, 12.5},
-                                  { 250.0, 50.0},
-                                  { 100.0, 25.0},
-                                  { 250.0, 62.5},
-                                  { 250.0, 62.5}};
-// IEEE802.15.4-2006 Table 19 and Table 20 in section 6.3.
+LrWpanPhy::dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION] = {
+  { 20.0, 20.0},
+  { 40.0, 40.0},
+  { 20.0, 20.0},
+  { 250.0, 12.5},
+  { 250.0, 50.0},
+  { 250.0, 62.5},
+  { 100.0, 25.0},
+  { 250.0, 62.5},
+  { 250.0, 62.5}};
+// IEEE802.15.4-2006,IEEE 802.15.4c-2009, IEEE 802.15.4d-2009  Table 19 and Table 20 in section 6.3.
 // The PHR is 1 octet and it follows phySymbolsPerOctet in Table 23
 // The index follows LrWpanPhyOption
 const LrWpanPhyPpduHeaderSymbolNumber
-LrWpanPhy::ppduHeaderSymbolNumbers[7] = { { 32.0, 8.0, 8.0},
-                                          { 32.0, 8.0, 8.0},
-                                          { 2.0, 1.0, 0.4},
-                                          { 6.0, 1.0, 1.6},
-                                          { 8.0, 2.0, 2.0},
-                                          { 8.0, 2.0, 2.0},
-                                          { 8.0, 2.0, 2.0}};
+LrWpanPhy::ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION] = {
+  { 32.0, 8.0, 8.0},
+  { 32.0, 8.0, 8.0},
+  { 32.0, 8.0, 8.0},
+  { 2.0, 1.0, 0.4},
+  { 6.0, 1.0, 1.6},
+  { 8.0, 2.0, 2.0},
+  { 8.0, 2.0, 2.0},
+  { 8.0, 2.0, 2.0},
+  { 8.0, 2.0, 2.0}};
 
 TypeId
 LrWpanPhy::GetTypeId (void)
@@ -122,40 +128,16 @@ LrWpanPhy::GetTypeId (void)
 
 LrWpanPhy::LrWpanPhy (void)
   : m_edRequest (),
-  m_setTRXState ()
+    m_setTRXState ()
 {
   m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
   m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
 
   // default PHY PIB attributes
-  m_phyPIBAttributes.phyCurrentChannel = 11;
   m_phyPIBAttributes.phyTransmitPower = 0;
-  m_phyPIBAttributes.phyCurrentPage = 0;
-  for (uint32_t i = 0; i < 32; i++)
-    {
-      m_phyPIBAttributes.phyChannelsSupported[i] = 0x07ffffff;
-    }
   m_phyPIBAttributes.phyCCAMode = 1;
 
-  SetMyPhyOption ();
-
-  m_edPower.averagePower = 0.0;
-  m_edPower.lastUpdate = Seconds (0.0);
-  m_edPower.measurementLength = Seconds (0.0);
-
-  // default -110 dBm in W for 2.4 GHz
-  m_rxSensitivity = pow (10.0, -106.58 / 10.0) / 1000.0;
-  LrWpanSpectrumValueHelper psdHelper;
-  m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
-                                                    m_phyPIBAttributes.phyCurrentChannel);
-  m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
-  m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
-  m_rxLastUpdate = Seconds (0);
-  Ptr<Packet> none_packet = 0;
-  Ptr<LrWpanSpectrumSignalParameters> none_params = 0;
-  m_currentRxPacket = std::make_pair (none_params, true);
-  m_currentTxPacket = std::make_pair (none_packet, true);
-  m_errorModel = 0;
+  SetPhyOption (IEEE_802_15_4_2_4GHZ_OQPSK);
 
   m_random = CreateObject<UniformRandomVariable> ();
   m_random->SetAttribute ("Min", DoubleValue (0.0));
@@ -166,8 +148,7 @@ LrWpanPhy::LrWpanPhy (void)
 }
 
 LrWpanPhy::~LrWpanPhy (void)
-{
-}
+{}
 
 void
 LrWpanPhy::DoDispose (void)
@@ -656,23 +637,23 @@ LrWpanPhy::PlmeGetAttributeRequest (LrWpanPibAttributeIdentifier id)
 
   switch (id)
     {
-    case phyCurrentChannel:
-    case phyChannelsSupported:
-    case phyTransmitPower:
-    case phyCCAMode:
-    case phyCurrentPage:
-    case phyMaxFrameDuration:
-    case phySHRDuration:
-    case phySymbolsPerOctet:
-      {
-        status = IEEE_802_15_4_PHY_SUCCESS;
-        break;
-      }
-    default:
-      {
-        status = IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE;
-        break;
-      }
+      case phyCurrentChannel:
+      case phyChannelsSupported:
+      case phyTransmitPower:
+      case phyCCAMode:
+      case phyCurrentPage:
+      case phyMaxFrameDuration:
+      case phySHRDuration:
+      case phySymbolsPerOctet:
+        {
+          status = IEEE_802_15_4_PHY_SUCCESS;
+          break;
+        }
+      default:
+        {
+          status = IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE;
+          break;
+        }
     }
   if (!m_plmeGetAttributeConfirmCallback.IsNull ())
     {
@@ -877,16 +858,39 @@ LrWpanPhy::ChannelSupported (uint8_t channel)
   NS_LOG_FUNCTION (this << channel);
   bool retValue = false;
 
-  for (uint32_t i = 0; i < 32; i++)
+  // Bits 0-26 (27 LSB)
+  if ((m_phyPIBAttributes.phyChannelsSupported[m_phyPIBAttributes.phyCurrentPage] & (1 << channel)) != 0)
     {
-      if ((m_phyPIBAttributes.phyChannelsSupported[i] & (1 << channel)) != 0)
-        {
-          retValue = true;
-          break;
-        }
+      return retValue = true;
+    }
+  else
+    {
+      return retValue;
+    }
+}
+
+bool
+LrWpanPhy::PageSupported (uint8_t page)
+{
+  NS_LOG_FUNCTION (this << +page);
+  bool retValue = false;
+
+  // TODO: Only O-QPSK 2.4GHz is supported in the LrWpanSpectrumModel
+  //       we must limit the page until support for other modulation is added to the spectrum model.
+  //
+  NS_ABORT_MSG_UNLESS (page == 0," Only Page 0 (2.4Ghz O-QPSK supported).");
+
+
+  // IEEE 802.15.4-2006, Table 23 phyChannelsSupported   Bits 27-31  (5 MSB)
+  uint8_t supportedPage = (m_phyPIBAttributes.phyChannelsSupported[page] >> 27) & (0x1F);
+
+  if (page == supportedPage)
+    {
+      retValue = true;
     }
 
   return retValue;
+
 }
 
 void
@@ -899,95 +903,274 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
 
   switch (id)
     {
-    case phyCurrentChannel:
-      {
-        if (!ChannelSupported (attribute->phyCurrentChannel))
-          {
-            status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
-          }
-        if (m_phyPIBAttributes.phyCurrentChannel != attribute->phyCurrentChannel)
-          {
-            // Cancel a pending transceiver state change.
-            // Switch off the transceiver.
-            // TODO: Is switching off the transceiver the right choice?
-            m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
-            if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
-              {
-                m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
-                m_setTRXState.Cancel ();
-                if (!m_plmeSetTRXStateConfirmCallback.IsNull ())
-                  {
-                    m_plmeSetTRXStateConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
-                  }
-              }
+      case phyCurrentPage:
+        {
+          if (!PageSupported (attribute->phyCurrentPage))
+            {
+              status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
+            }
+          else if (m_phyPIBAttributes.phyCurrentPage != attribute->phyCurrentPage)
+            {
 
-            // Any packet in transmission or reception will be corrupted.
-            if (m_currentRxPacket.first)
-              {
-                m_currentRxPacket.second = true;
-              }
-            if (PhyIsBusy ())
-              {
-                m_currentTxPacket.second = true;
-                m_pdDataRequest.Cancel ();
-                m_currentTxPacket.first = 0;
-                if (!m_pdDataConfirmCallback.IsNull ())
-                  {
-                    m_pdDataConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
-                  }
-              }
-            m_phyPIBAttributes.phyCurrentChannel = attribute->phyCurrentChannel;
-            LrWpanSpectrumValueHelper psdHelper;
-            m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
-                                                                                        m_phyPIBAttributes.phyCurrentChannel);
-          }
-        break;
-      }
-    case phyChannelsSupported:
-      {   // only the first element is considered in the array
-        if ((attribute->phyChannelsSupported[0] & 0xf8000000) != 0)
-          {    //5 MSBs reserved
-            status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
-          }
-        else
-          {
-            m_phyPIBAttributes.phyChannelsSupported[0] = attribute->phyChannelsSupported[0];
-          }
-        break;
-      }
-    case phyTransmitPower:
-      {
-        if (attribute->phyTransmitPower & 0xC0)
-          {
-            NS_LOG_LOGIC ("LrWpanPhy::PlmeSetAttributeRequest error - can not change read-only attribute bits.");
-            status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
-          }
-        else
-          {
-            m_phyPIBAttributes.phyTransmitPower = attribute->phyTransmitPower;
-            LrWpanSpectrumValueHelper psdHelper;
-            m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
-                                                              m_phyPIBAttributes.phyCurrentChannel);
-          }
-        break;
-      }
-    case phyCCAMode:
-      {
-        if ((attribute->phyCCAMode < 1) || (attribute->phyCCAMode > 3))
-          {
-            status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
-          }
-        else
-          {
-            m_phyPIBAttributes.phyCCAMode = attribute->phyCCAMode;
-          }
-        break;
-      }
-    default:
-      {
-        status = IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE;
-        break;
-      }
+              // Cancel a pending transceiver state change.
+              // Switch off the transceiver.
+              // TODO: Is switching off the transceiver the right choice?
+              m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
+              if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
+                {
+                  m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
+                  m_setTRXState.Cancel ();
+                  if (!m_plmeSetTRXStateConfirmCallback.IsNull ())
+                    {
+                      m_plmeSetTRXStateConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
+                    }
+                }
+
+              // Any packet in transmission or reception will be corrupted.
+              if (m_currentRxPacket.first)
+                {
+                  m_currentRxPacket.second = true;
+                }
+              if (PhyIsBusy ())
+                {
+                  m_currentTxPacket.second = true;
+                  m_pdDataRequest.Cancel ();
+                  m_currentTxPacket.first = 0;
+                  if (!m_pdDataConfirmCallback.IsNull ())
+                    {
+                      m_pdDataConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
+                    }
+                }
+
+              // Changing the Page can change they current PHY in use
+              // Set the correct PHY according to the Page
+              if (attribute->phyCurrentPage == 0)
+                {
+                  if (m_phyPIBAttributes.phyCurrentChannel == 0)
+                    {
+                      // 868 MHz BPSK
+                      m_phyOption = IEEE_802_15_4_868MHZ_BPSK;
+                      NS_LOG_INFO ("Page 0, 868 MHz BPSK PHY SET");
+                    }
+                  else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
+                    {
+                      // 915 MHz BPSK
+                      m_phyOption = IEEE_802_15_4_915MHZ_BPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ",915 MHz BPSK PHY SET");
+                    }
+                  else if (m_phyPIBAttributes.phyCurrentChannel <= 26)
+                    {
+                      // 2.4 GHz MHz O-QPSK
+                      m_phyOption = IEEE_802_15_4_2_4GHZ_OQPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 2.4 Ghz O-QPSK PHY SET");
+                    }
+                }
+              else if (attribute->phyCurrentPage == 1)
+                {
+                  if (m_phyPIBAttributes.phyCurrentChannel == 0)
+                    {
+                      // 868 MHz ASK
+                      m_phyOption = IEEE_802_15_4_868MHZ_ASK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 868 MHz ASK PHY SET");
+
+                    }
+                  else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
+                    {
+                      // 915 MHz ASK
+                      m_phyOption = IEEE_802_15_4_915MHZ_ASK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 915 MHz ASK PHY SET");
+                    }
+                  else
+                    {
+                      // No longer valid channel
+                      m_phyOption = IEEE_802_15_4_868MHZ_ASK;
+                      m_phyPIBAttributes.phyCurrentChannel = 0;
+                      NS_LOG_INFO ("Channel no longer valid in new page "
+                                   << (uint32_t) attribute->phyCurrentPage
+                                   << ", setting new default channel "
+                                   << (uint32_t) m_phyPIBAttributes.phyCurrentChannel);
+                      NS_LOG_INFO ("868 MHz ASK PHY SET");
+                    }
+                }
+              else if (attribute->phyCurrentPage == 2)
+                {
+                  if (m_phyPIBAttributes.phyCurrentChannel == 0)
+                    {
+                      // 868 MHz O-QPSK
+                      m_phyOption = IEEE_802_15_4_868MHZ_OQPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 868 MHz O-QPSK PHY SET");
+                    }
+                  else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
+                    {
+                      // 915 MHz O-QPSK
+                      m_phyOption = IEEE_802_15_4_915MHZ_OQPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 915 MHz O-QPSK PHY SET");
+                    }
+                  else
+                    {
+                      // No longer valid channel
+                      m_phyOption = IEEE_802_15_4_868MHZ_OQPSK;
+                      m_phyPIBAttributes.phyCurrentChannel = 0;
+                      NS_LOG_INFO ("Channel no longer valid in new page "
+                                   << (uint32_t) attribute->phyCurrentPage
+                                   << ", setting new default channel "
+                                   << (uint32_t) m_phyPIBAttributes.phyCurrentChannel);
+                      NS_LOG_INFO ("868 MHz O-QPSK PHY SET");
+                    }
+                }
+              else if (attribute->phyCurrentPage == 5)
+                {
+                  if (m_phyPIBAttributes.phyCurrentChannel <= 3)
+                    {
+                      // 780 MHz O-QPSK
+                      m_phyOption = IEEE_802_15_4_780MHZ_OQPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 915 MHz O-QPSK PHY SET");
+                    }
+                  else
+                    {
+                      // No longer valid channel
+                      m_phyOption = IEEE_802_15_4_780MHZ_OQPSK;
+                      m_phyPIBAttributes.phyCurrentChannel = 0;
+                      NS_LOG_INFO ("Channel no longer valid in new page "
+                                   << (uint32_t) attribute->phyCurrentPage
+                                   << ", setting new default channel "
+                                   << (uint32_t) m_phyPIBAttributes.phyCurrentChannel);
+                      NS_LOG_INFO ("780 MHz O-QPSK PHY SET");
+                    }
+                }
+              else if (attribute->phyCurrentPage == 6)
+                {
+                  if (m_phyPIBAttributes.phyCurrentChannel <= 9)
+                    {
+                      // 950 MHz BPSK
+                      m_phyOption = IEEE_802_15_4_950MHZ_BPSK;
+                      NS_LOG_INFO ("Page " << (uint32_t) attribute->phyCurrentPage
+                                           << ", 950 MHz BPSK PHY SET");
+                    }
+                  else
+                    {
+                      m_phyOption = IEEE_802_15_4_950MHZ_BPSK;
+                      m_phyPIBAttributes.phyCurrentChannel = 0;
+                      NS_LOG_INFO ("Channel no longer valid in new page "
+                                   << (uint32_t) attribute->phyCurrentPage
+                                   << ", setting new default channel "
+                                   << (uint32_t) m_phyPIBAttributes.phyCurrentChannel);
+                      NS_LOG_INFO ("950 MHz BPSK PHY SET");
+                    }
+                }
+
+              m_phyPIBAttributes.phyCurrentPage = attribute->phyCurrentPage;
+
+              LrWpanSpectrumValueHelper psdHelper;
+              m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
+                                                                m_phyPIBAttributes.phyCurrentChannel);
+              // if the page is changed we need to also update the Noise Power Spectral Density
+              m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
+              m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
+            }
+          break;
+        }
+      case phyCurrentChannel:
+        {
+          if (!ChannelSupported (attribute->phyCurrentChannel))
+            {
+              status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
+            }
+          if (m_phyPIBAttributes.phyCurrentChannel != attribute->phyCurrentChannel)
+            {
+              // Cancel a pending transceiver state change.
+              // Switch off the transceiver.
+              // TODO: Is switching off the transceiver the right choice?
+              m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
+              if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
+                {
+                  m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
+                  m_setTRXState.Cancel ();
+                  if (!m_plmeSetTRXStateConfirmCallback.IsNull ())
+                    {
+                      m_plmeSetTRXStateConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
+                    }
+                }
+
+              // Any packet in transmission or reception will be corrupted.
+              if (m_currentRxPacket.first)
+                {
+                  m_currentRxPacket.second = true;
+                }
+              if (PhyIsBusy ())
+                {
+                  m_currentTxPacket.second = true;
+                  m_pdDataRequest.Cancel ();
+                  m_currentTxPacket.first = 0;
+                  if (!m_pdDataConfirmCallback.IsNull ())
+                    {
+                      m_pdDataConfirmCallback (IEEE_802_15_4_PHY_TRX_OFF);
+                    }
+                }
+
+              m_phyPIBAttributes.phyCurrentChannel = attribute->phyCurrentChannel;
+
+              LrWpanSpectrumValueHelper psdHelper;
+              m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
+                                                                m_phyPIBAttributes.phyCurrentChannel);
+              // if the channel is changed we need to also update the Noise Power Spectral Density
+              m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
+              m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
+            }
+          break;
+        }
+      case phyChannelsSupported:
+        { // only the first element is considered in the array
+          if ((attribute->phyChannelsSupported[0] & 0xf8000000) != 0)
+            {  //5 MSBs reserved
+              status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
+            }
+          else
+            {
+              m_phyPIBAttributes.phyChannelsSupported[0] = attribute->phyChannelsSupported[0];
+            }
+          break;
+        }
+      case phyTransmitPower:
+        {
+          if (attribute->phyTransmitPower & 0xC0)
+            {
+              NS_LOG_LOGIC ("LrWpanPhy::PlmeSetAttributeRequest error - can not change read-only attribute bits.");
+              status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
+            }
+          else
+            {
+              m_phyPIBAttributes.phyTransmitPower = attribute->phyTransmitPower;
+              LrWpanSpectrumValueHelper psdHelper;
+              m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
+                                                                m_phyPIBAttributes.phyCurrentChannel);
+            }
+          break;
+        }
+      case phyCCAMode:
+        {
+          if ((attribute->phyCCAMode < 1) || (attribute->phyCCAMode > 3))
+            {
+              status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
+            }
+          else
+            {
+              m_phyPIBAttributes.phyCCAMode = attribute->phyCCAMode;
+            }
+          break;
+        }
+      default:
+        {
+          status = IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE;
+          break;
+        }
     }
 
   if (!m_plmeSetAttributeConfirmCallback.IsNull ())
@@ -1268,6 +1451,18 @@ LrWpanPhy::CalculateTxTime (Ptr<const Packet> packet)
   return txTime;
 }
 
+uint8_t
+LrWpanPhy::GetCurrentPage (void) const
+{
+  return m_phyPIBAttributes.phyCurrentPage;
+}
+
+uint8_t
+LrWpanPhy::GetCurrentChannelNum (void) const
+{
+  return m_phyPIBAttributes.phyCurrentChannel;
+}
+
 double
 LrWpanPhy::GetDataOrSymbolRate (bool isData)
 {
@@ -1306,51 +1501,112 @@ LrWpanPhy::GetPpduHeaderTxTime (void)
   return Seconds (totalPpduHdrSymbols / GetDataOrSymbolRate (isData));
 }
 
-// IEEE802.15.4-2006 Table 2 in section 6.1.2
 void
-LrWpanPhy::SetMyPhyOption (void)
+LrWpanPhy::SetPhyOption (LrWpanPhyOption phyOption)
 {
   NS_LOG_FUNCTION (this);
 
   m_phyOption = IEEE_802_15_4_INVALID_PHY_OPTION;
 
-  if (m_phyPIBAttributes.phyCurrentPage == 0)
+  // TODO: Only O-QPSK 2.4GHz is supported in the LrWpanSpectrumModel
+  //       we must limit the page until support for other modulations is added to the spectrum model.
+  NS_ABORT_MSG_UNLESS (phyOption == IEEE_802_15_4_2_4GHZ_OQPSK," Only 2.4Ghz O-QPSK supported.");
+
+  // Set default Channel and Page
+  // IEEE 802.15.4-2006 Table 2, section 6.1.1
+  // IEEE 802.15.4c-2009 Table 2, section 6.1.2.2
+  // IEEE 802.15.4d-2009 Table 2, section 6.1.2.2
+  switch (phyOption)
     {
-      if (m_phyPIBAttributes.phyCurrentChannel == 0)
-        {  // 868 MHz BPSK
-          m_phyOption = IEEE_802_15_4_868MHZ_BPSK;
-        }
-      else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
-        {  // 915 MHz BPSK
-          m_phyOption = IEEE_802_15_4_915MHZ_BPSK;
-        }
-      else if (m_phyPIBAttributes.phyCurrentChannel <= 26)
-        {  // 2.4 GHz MHz O-QPSK
-          m_phyOption = IEEE_802_15_4_2_4GHZ_OQPSK;
-        }
+      case IEEE_802_15_4_868MHZ_BPSK:
+        // IEEE 802.15.4-2006 868 MHz BPSK (Page 0, Channel 0)
+        m_phyPIBAttributes.phyCurrentPage = 0;
+        m_phyPIBAttributes.phyCurrentChannel = 0;
+        break;
+      case IEEE_802_15_4_915MHZ_BPSK:
+        // IEEE 802.15.4-2006 915 MHz BPSK (Page 0, Channels 1 to 10)
+        m_phyPIBAttributes.phyCurrentPage = 0;
+        m_phyPIBAttributes.phyCurrentChannel = 1;
+        break;
+      case IEEE_802_15_4_950MHZ_BPSK:
+        // IEEE 802.15.4d-2009 950 MHz BPSK (Page 6, Channels 0 to 9)
+        m_phyPIBAttributes.phyCurrentPage = 6;
+        m_phyPIBAttributes.phyCurrentChannel = 0;
+        break;
+      case IEEE_802_15_4_868MHZ_ASK:
+        // IEEE 802.15.4-2006 868 MHz ASK (Page 1, Channel 0)
+        m_phyPIBAttributes.phyCurrentPage = 1;
+        m_phyPIBAttributes.phyCurrentChannel = 0;
+        break;
+      case IEEE_802_15_4_915MHZ_ASK:
+        // IEEE 802.15.4-2006 915 MHz ASK (Page 1, Channel 1 to 10)
+        m_phyPIBAttributes.phyCurrentPage = 1;
+        m_phyPIBAttributes.phyCurrentChannel = 1;
+        break;
+      case IEEE_802_15_4_780MHZ_OQPSK:
+        // IEEE 802.15.4c-2009 780 MHz O-QPSK (Page 5, Channel 0 to 3)
+        m_phyPIBAttributes.phyCurrentPage = 5;
+        m_phyPIBAttributes.phyCurrentChannel = 0;
+        break;
+      case IEEE_802_15_4_868MHZ_OQPSK:
+        // IEEE 802.15.4-2006 868 MHz O-QPSK (Page 2, Channel 0)
+        m_phyPIBAttributes.phyCurrentPage = 2;
+        m_phyPIBAttributes.phyCurrentChannel = 0;
+        break;
+      case IEEE_802_15_4_915MHZ_OQPSK:
+        // IEEE 802.15.4-2006 915 MHz O-QPSK (Page 2, Channels 1 to 10)
+        m_phyPIBAttributes.phyCurrentPage = 2;
+        m_phyPIBAttributes.phyCurrentChannel = 1;
+        break;
+      case IEEE_802_15_4_2_4GHZ_OQPSK:
+        // IEEE 802.15.4-2009 2.4 GHz O-QPSK (Page 0, Channels 11 to 26)
+        m_phyPIBAttributes.phyCurrentPage = 0;
+        m_phyPIBAttributes.phyCurrentChannel = 11;
+        break;
+      case IEEE_802_15_4_INVALID_PHY_OPTION:
+        // IEEE 802.15.4-2006 Use Non-Registered Page and channel
+        m_phyPIBAttributes.phyCurrentPage = 31;
+        m_phyPIBAttributes.phyCurrentChannel = 26;
+        break;
     }
-  else if (m_phyPIBAttributes.phyCurrentPage == 1)
+
+
+  NS_ASSERT (phyOption != IEEE_802_15_4_INVALID_PHY_OPTION);
+
+  m_phyOption = phyOption;
+  // TODO: Fix/Update list when more modulations are supported.
+  // IEEE 802.15.4-2006, Table 23
+  // 5 MSB = Page number, 27 LSB = Supported Channels (1= supported, 0 Not supported)
+  // Currently only page 0, channels 11-26 supported.
+  m_phyPIBAttributes.phyChannelsSupported[0] = 0x7FFF800;   // Page 0 should support, Channels 0 to 26 (0x07FFFFFF)
+
+  for (int i = 1; i <= 31; i++)
     {
-      if (m_phyPIBAttributes.phyCurrentChannel == 0)
-        {  // 868 MHz ASK
-          m_phyOption = IEEE_802_15_4_868MHZ_ASK;
-        }
-      else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
-        {  // 915 MHz ASK
-          m_phyOption = IEEE_802_15_4_915MHZ_ASK;
-        }
+      // Page 1 to 31, No support (Page set to 31, all channels 0)
+      m_phyPIBAttributes.phyChannelsSupported[i] = 0xF8000000;
     }
-  else if (m_phyPIBAttributes.phyCurrentPage == 2)
-    {
-      if (m_phyPIBAttributes.phyCurrentChannel == 0)
-        {  // 868 MHz O-QPSK
-          m_phyOption = IEEE_802_15_4_868MHZ_OQPSK;
-        }
-      else if (m_phyPIBAttributes.phyCurrentChannel <= 10)
-        {  // 915 MHz O-QPSK
-          m_phyOption = IEEE_802_15_4_915MHZ_OQPSK;
-        }
-    }
+
+
+  m_edPower.averagePower = 0.0;
+  m_edPower.lastUpdate = Seconds (0.0);
+  m_edPower.measurementLength = Seconds (0.0);
+
+
+  // TODO: What is the RX sensibility that should be set for other frequencies?
+  // default -110 dBm in W for 2.4 GHz
+  m_rxSensitivity = pow (10.0, -106.58 / 10.0) / 1000.0;
+  LrWpanSpectrumValueHelper psdHelper;
+  m_txPsd = psdHelper.CreateTxPowerSpectralDensity (GetNominalTxPowerFromPib (m_phyPIBAttributes.phyTransmitPower),
+                                                    m_phyPIBAttributes.phyCurrentChannel);
+  m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
+  m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
+  m_rxLastUpdate = Seconds (0);
+  Ptr<Packet> none_packet = 0;
+  Ptr<LrWpanSpectrumSignalParameters> none_params = 0;
+  m_currentRxPacket = std::make_pair (none_params, true);
+  m_currentTxPacket = std::make_pair (none_packet, true);
+  m_errorModel = 0;
+
 }
 
 LrWpanPhyOption

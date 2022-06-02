@@ -14,6 +14,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (lr-wpan) !959 - Add PHY channel page support
+
 ### Bugs fixed
 
 - (wifi) Fix setting of stations' max supported channel width

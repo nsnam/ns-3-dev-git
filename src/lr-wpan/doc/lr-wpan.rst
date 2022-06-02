@@ -9,7 +9,7 @@ Low-Rate Wireless Personal Area Network (LR-WPAN)
 
 This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by
-IEEE standard 802.15.4 (2006).
+IEEE standard 802.15.4 (2003,2006,2011).
 
 Model Description
 *****************
@@ -112,7 +112,16 @@ PHY
 ###
 
 The physical layer components consist of a Phy model, an error rate model, 
-and a loss model.  The error rate model presently models the error rate 
+and a loss model. The PHY state transitions are roughly model after 
+ATMEL's AT86RF233.
+
+.. _fig-lr-wpan-phy:
+
+.. figure:: figures/lr-wpan-phy.*
+
+    Ns-3 lr-wpan PHY basic operating mode state diagram  
+
+The error rate model presently models the error rate 
 for IEEE 802.15.4 2.4 GHz AWGN channel for OQPSK; the model description can 
 be found in IEEE Std 802.15.4-2006, section E.4.1.7.   The Phy model is 
 based on SpectrumPhy and it follows specification described in section 6 
@@ -217,6 +226,8 @@ capabilities. Association with PAN coordinators is not yet supported, nor the
 use of extended addressing. Interference is modeled as AWGN but this is
 currently not thoroughly tested.
 
+The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
+
 The NetDevice Tx queue is not limited, i.e., packets are never dropped
 due to queue becoming full. They may be dropped due to excessive transmission 
 retries or channel access failure.
@@ -298,6 +309,7 @@ The following tests have been written, which can be found in ``src/lr-wpan/tests
 * ``lr-wpan-packet-test.cc``:  Test the 802.15.4 MAC header/trailer classes
 * ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD SAP per IEEE 802.15.4
 * ``lr-wpan-spectrum-value-helper-test.cc``:  Test that the conversion between power (expressed as a scalar quantity) and spectral power, and back again, falls within a 25% tolerance across the range of possible channels and input powers.
+* ``lr-wpan-ifs-test.cc``:  Check that the Intraframe Spaces (IFS) are being used and issued in the correct order.
 
 Validation
 **********

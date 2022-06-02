@@ -22,6 +22,8 @@ Changes from ns-3.36 to ns-3.37
 
 ### Changes to existing API
 
+ * Adds support for channel paging to the **LrWpanPhy** (only placeholder,  a single modulation/band is currently supported).
+ 
 ### Changes to build system
 
 ### Changed behavior

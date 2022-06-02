@@ -82,18 +82,20 @@ typedef  struct
 /**
  * \ingroup lr-wpan
  *
- * This Phy option will be used to index various Tables in IEEE802.15.4-2006
+ * This Phy option will be used to index various Tables in IEEE802.15.4-2011
  */
 typedef enum
 {
-  IEEE_802_15_4_868MHZ_BPSK         = 0,
-  IEEE_802_15_4_915MHZ_BPSK         = 1,
-  IEEE_802_15_4_868MHZ_ASK          = 2,
-  IEEE_802_15_4_915MHZ_ASK          = 3,
-  IEEE_802_15_4_868MHZ_OQPSK        = 4,
-  IEEE_802_15_4_915MHZ_OQPSK        = 5,
-  IEEE_802_15_4_2_4GHZ_OQPSK        = 6,
-  IEEE_802_15_4_INVALID_PHY_OPTION  = 7
+  IEEE_802_15_4_868MHZ_BPSK,
+  IEEE_802_15_4_915MHZ_BPSK,
+  IEEE_802_15_4_950MHZ_BPSK,
+  IEEE_802_15_4_868MHZ_ASK,
+  IEEE_802_15_4_915MHZ_ASK,
+  IEEE_802_15_4_780MHZ_OQPSK,
+  IEEE_802_15_4_868MHZ_OQPSK,
+  IEEE_802_15_4_915MHZ_OQPSK,
+  IEEE_802_15_4_2_4GHZ_OQPSK,
+  IEEE_802_15_4_INVALID_PHY_OPTION
 } LrWpanPhyOption;
 
 /**
@@ -160,7 +162,7 @@ typedef struct
   uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported by a channel page.
   uint8_t phyTransmitPower;          //!< 2 MSB: tolerance on the transmit power, 6 LSB: Tx power in dBm relative to 1mW (signed int in 2-complement format)
   uint8_t phyCCAMode;                //!< CCA mode
-  uint32_t phyCurrentPage;           //!< Current channel page
+  uint8_t phyCurrentPage;           //!< Current channel page
   uint32_t phyMaxFrameDuration;      //!< The maximum number of symbols in a frame
   uint32_t phySHRDuration;           //!< The duration of the synchronization header (SHR) in symbols
   double phySymbolsPerOctet;         //!< The number of symbols per octet
@@ -320,6 +322,14 @@ public:
   Ptr<const SpectrumValue> GetNoisePowerSpectralDensity (void);
 
   /**
+   * Set the modulation option used by this PHY.
+   * See IEEE 802.15.4-2011, section 8, Table 66.
+   *
+   * @param phyOption The phy modulation option used by the model.
+   */
+  void SetPhyOption (LrWpanPhyOption phyOption);
+
+  /**
     * Notify the SpectrumPhy instance of an incoming waveform.
     *
     * @param params the SpectrumSignalParameters associated with the incoming waveform
@@ -431,6 +441,20 @@ public:
   void SetPlmeSetAttributeConfirmCallback (PlmeSetAttributeConfirmCallback c);
 
   /**
+   * Get The current channel page number in use in this PHY from the PIB attributes.
+   *
+   * @return The current page number
+   */
+  uint8_t GetCurrentPage (void) const;
+
+  /**
+   * Get The current channel number in use in this PHY from the PIB attributes.
+   *
+   * @return The current channel number
+   */
+  uint8_t GetCurrentChannelNum (void) const;
+
+  /**
    * implement PLME SetAttribute confirm SAP
    * bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
    * @param isData is true for data rate or false for symbol rate
@@ -493,15 +517,15 @@ public:
 protected:
   /**
    * The data and symbol rates for the different PHY options.
-   * See Table 2 in section 6.1.2 IEEE 802.15.4-2006.
+   * See Table 1 in section 6.1.1 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
    * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
    */
-  static const LrWpanPhyDataAndSymbolRates dataSymbolRates[7];
+  static const LrWpanPhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION];
   /**
    * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
-   * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006
+   * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
    */
-  static const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[7];
+  static const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION];
 
 private:
   /**
@@ -518,12 +542,6 @@ private:
    * \param newState the new state
    */
   void ChangeTrxState (LrWpanPhyEnumeration newState);
-
-  /**
-   * Configure the PHY option according to the current channel and channel page.
-   * See IEEE 802.15.4-2006, section 6.1.2, Table 2.
-   */
-  void SetMyPhyOption (void);
 
   /**
    * Get the currently configured PHY option.
@@ -608,6 +626,14 @@ private:
    * \return true, if the channel is supported, false otherwise
    */
   bool ChannelSupported (uint8_t channel);
+
+  /**
+   * Check if the given page is supported by the PHY.
+   *
+   * \param page the page to check
+   * \return true, if the page is supported, false otherwise
+   */
+  bool PageSupported (uint8_t page);
 
   /**
    * Check if the PHY is busy, which is the case if the PHY is currently sending
