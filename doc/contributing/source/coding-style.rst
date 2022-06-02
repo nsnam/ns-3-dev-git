@@ -40,7 +40,7 @@ suggested:
 
   $ /path/to/utils/check-style.py -i -l 3 -f new-file.cc
 
-The ``-i`` flag tells check-style.py to make modifications in-place.  The
+The ``-i`` flag tells ``check-style.py`` to make modifications in-place.  The
 ``-l 3`` argument asks to apply the highest level of whitespace compliance
 changes to the code.
 
@@ -89,32 +89,32 @@ extends it to C++.  Do not use tabs for indentation.  Indentation spacing is
 
 ::
 
-   Foo (void)
-   {
-     if (test)
-       {
-         // do stuff here
-       }
-     else
-       {
-         // do other stuff here
-       }
-   
-     for (int i = 0; i < 100; i++)
-       {
-         // do loop
-       }
-   
-     while (test)
-       {
-         // do while
-       }
-   
-     do
-       {
-         // do stuff
-       } while ();
-   }
+  Foo (void)
+  {
+    if (test)
+      {
+        // do stuff here
+      }
+    else
+      {
+        // do other stuff here
+      }
+
+    for (int i = 0; i < 100; i++)
+      {
+        // do loop
+      }
+
+    while (test)
+      {
+        // do while
+      }
+
+    do
+      {
+        // do stuff
+      } while ();
+  }
 
 Each statement should be put on a separate line to increase readability, and
 multi-statement blocks following conditional or looping statements are always
@@ -497,7 +497,7 @@ Miscellaneous items
   ::
     void
     TcpSocketBase::CompleteFork (Ptr<Packet> p [[maybe_unused]], const TcpHeader& h,
-                             const Address& fromAddress, const Address& toAddress)
+                                 const Address& fromAddress, const Address& toAddress)
     {
     NS_LOG_FUNCTION (this << p << h << fromAddress << toAddress);
     ...
