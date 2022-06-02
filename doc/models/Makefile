@@ -348,6 +348,7 @@ SOURCEFIGS = \
 	$(SRC)/traffic-control/doc/figures/overlapped.jpeg \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
+	$(SRC)/lr-wpan/doc/lr-wpan-phy.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
 	$(SRC)/lr-wpan/doc/802-15-4-ber.eps \
 	$(SRC)/lr-wpan/doc/802-15-4-per-sens.eps \
@@ -440,6 +441,7 @@ IMAGES_EPS = \
 	$(FIGURES)/spectrum-tv-rand-geo-points.eps \
 	$(FIGURES)/classful-queue-disc.eps \
 	$(FIGURES)/multi-queue-aware-queue-disc.eps \
+	$(FIGURES)/lr-wpan-phy.eps \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \
@@ -517,6 +519,7 @@ $(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/spectrum-analyzer-example.pdf_width = 15cm
 $(FIGURES)/spectrum-tv-rand-geo-points.pdf_width = 8cm
+$(FIGURES)/lr-wpan-phy.pdf_width = 3in
 $(FIGURES)/lr-wpan-primitives.pdf_width = 3in
 $(FIGURES)/lr-wpan-arch.pdf_width = 2in
 $(FIGURES)/clear-channel.pdf_width = 12cm
