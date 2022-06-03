@@ -1236,6 +1236,17 @@ macro(process_options)
   endif()
 
   if(${PRECOMPILE_HEADERS_ENABLED})
+    if(CLANG)
+      # Clang adds a timestamp to the PCH, which prevents ccache from working
+      # correctly
+      # https://github.com/ccache/ccache/issues/539#issuecomment-664198545
+      add_definitions(-Xclang -fno-pch-timestamp)
+    endif()
+    if(${XCODE})
+      # XCode is weird and messes up with the PCH, requiring this flag
+      # https://github.com/ccache/ccache/issues/156
+      add_definitions(-Xclang -fno-validate-pch)
+    endif()
     set(precompiled_header_libraries
         <algorithm>
         <cstdlib>
@@ -1247,6 +1258,7 @@ macro(process_options)
         <list>
         <map>
         <math.h>
+        <ostream>
         <set>
         <sstream>
         <stdint.h>

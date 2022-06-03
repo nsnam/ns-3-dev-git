@@ -4,15 +4,15 @@
 cmake_minimum_required(VERSION 3.10..3.10)
 
 # Use ccache if available
-mark_as_advanced(CCACHE_FOUND)
+mark_as_advanced(CCACHE)
 find_program(CCACHE ccache)
 if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  message(
-    STATUS "CCache is enabled. Precompiled headers are disabled by default."
-  )
-  set(NS3_PRECOMPILE_HEADERS OFF
-      CACHE BOOL "Precompile module headers to speed up compilation" FORCE
+  message(STATUS "CCache is enabled.")
+  execute_process(
+    COMMAND
+      ${CCACHE} --set-config
+      sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
   )
 endif()
 
