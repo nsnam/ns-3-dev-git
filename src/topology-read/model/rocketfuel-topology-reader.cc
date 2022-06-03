@@ -88,13 +88,15 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
   START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
 
 /**
-  * Regex object for RocketFuel topology maps file type
-  */
+ * Build a Regex object for RocketFuel topology maps file type
+ * \return a static regex object for maps file type
+ */
 static const std::regex rocketfuel_maps_regex (ROCKETFUEL_MAPS_LINE, std::regex::extended);
 
 /**
-  * Regex object for RocketFuel topology weights file type
-  */
+ * Build a Regex object for RocketFuel topology weights file type
+ * \return a static regex object for weights file type
+ */
 static const std::regex rocketfuel_weights_regex (ROCKETFUEL_WEIGHTS_LINE, std::regex::extended);
 
 /**
