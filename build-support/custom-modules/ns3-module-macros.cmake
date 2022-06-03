@@ -66,7 +66,7 @@ function(build_lib)
                                        "${BLIB_HEADER_FILES}"
     )
 
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
       target_precompile_headers(${lib${BLIB_LIBNAME}-obj} REUSE_FROM stdlib_pch)
     endif()
 
@@ -80,7 +80,7 @@ function(build_lib)
     # specific path for that
     add_library(${lib${BLIB_LIBNAME}} SHARED "${BLIB_SOURCE_FILES}")
 
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
       target_precompile_headers(${lib${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
     endif()
   endif()
@@ -245,7 +245,7 @@ function(build_lib)
       target_compile_definitions(
         ${test${BLIB_LIBNAME}} PRIVATE NS_TEST_SOURCEDIR="${FOLDER}/test"
       )
-      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
         target_precompile_headers(${test${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
       endif()
     endif()

@@ -1237,23 +1237,23 @@ macro(process_options)
 
   if(${PRECOMPILE_HEADERS_ENABLED})
     set(precompiled_header_libraries
-        <iostream>
-        <stdint.h>
-        <stdlib.h>
-        <map>
-        <unordered_map>
-        <vector>
-        <list>
         <algorithm>
-        <string>
+        <cstdlib>
+        <cstring>
+        <exception>
+        <fstream>
+        <iostream>
+        <limits>
+        <list>
+        <map>
+        <math.h>
         <set>
         <sstream>
-        <fstream>
-        <cstdlib>
-        <exception>
-        <cstring>
-        <limits>
-        <math.h>
+        <stdint.h>
+        <stdlib.h>
+        <string>
+        <unordered_map>
+        <vector>
     )
     add_library(stdlib_pch OBJECT ${PROJECT_SOURCE_DIR}/build-support/empty.cc)
     target_precompile_headers(
