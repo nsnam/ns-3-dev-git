@@ -438,7 +438,7 @@ class InterferenceHelper : public Object
      * \return noise and interference power
      */
     double CalculateNoiseInterferenceW(Ptr<Event> event,
-                                       NiChangesPerBand* nis,
+                                       NiChangesPerBand& nis,
                                        const WifiSpectrumBandInfo& band) const;
     /**
      * Calculate the error rate of the given PHY payload only in the provided time

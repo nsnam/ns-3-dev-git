@@ -437,7 +437,7 @@ InterferenceHelper::CalculateSnr(double signal,
 
 double
 InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
-                                                NiChangesPerBand* nis,
+                                                NiChangesPerBand& nis,
                                                 const WifiSpectrumBandInfo& band) const
 {
     NS_LOG_FUNCTION(this << band);
@@ -464,7 +464,7 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
         ni.insert(*it);
     }
     ni.emplace(event->GetEndTime(), NiChange(0, event));
-    nis->insert({band, ni});
+    nis.insert({band, ni});
     NS_ASSERT_MSG(noiseInterferenceW >= 0,
                   "CalculateNoiseInterferenceW returns negative value " << noiseInterferenceW);
     return noiseInterferenceW;
@@ -687,7 +687,7 @@ InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
     NS_LOG_FUNCTION(this << channelWidth << band << staId << relativeMpduStartStop.first
                          << relativeMpduStartStop.second);
     NiChangesPerBand ni;
-    double noiseInterferenceW = CalculateNoiseInterferenceW(event, &ni, band);
+    double noiseInterferenceW = CalculateNoiseInterferenceW(event, ni, band);
     double snr = CalculateSnr(event->GetRxPowerW(band),
                               noiseInterferenceW,
                               channelWidth,
@@ -708,7 +708,7 @@ InterferenceHelper::CalculateSnr(Ptr<Event> event,
                                  const WifiSpectrumBandInfo& band) const
 {
     NiChangesPerBand ni;
-    double noiseInterferenceW = CalculateNoiseInterferenceW(event, &ni, band);
+    double noiseInterferenceW = CalculateNoiseInterferenceW(event, ni, band);
     double snr = CalculateSnr(event->GetRxPowerW(band), noiseInterferenceW, channelWidth, nss);
     return snr;
 }
@@ -721,7 +721,7 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
 {
     NS_LOG_FUNCTION(this << band << header);
     NiChangesPerBand ni;
-    double noiseInterferenceW = CalculateNoiseInterferenceW(event, &ni, band);
+    double noiseInterferenceW = CalculateNoiseInterferenceW(event, ni, band);
     double snr = CalculateSnr(event->GetRxPowerW(band), noiseInterferenceW, channelWidth, 1);
 
     /* calculate the SNIR at the start of the PHY header and accumulate
