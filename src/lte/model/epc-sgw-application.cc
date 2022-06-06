@@ -236,7 +236,7 @@ EpcSgwApplication::DoRecvCreateSessionRequest (Ptr<Packet> packet)
   NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
-  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
+  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId);
   Ipv4Address enbAddr = enbit->second.enbAddr;
   NS_LOG_DEBUG ("eNB " << enbAddr);
 
@@ -303,7 +303,7 @@ EpcSgwApplication::DoRecvModifyBearerRequest (Ptr<Packet> packet)
   NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
-  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
+  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId);
   Ipv4Address enbAddr = enbit->second.enbAddr;
   NS_LOG_DEBUG ("eNB " << enbAddr);
 

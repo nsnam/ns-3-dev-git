@@ -199,7 +199,7 @@ struct TvSpectrumModelId
 };
 
 TvSpectrumModelId::TvSpectrumModelId (double stFreq, double bwidth)
-  : startFrequency (stFreq), 
+  : startFrequency (stFreq),
     bandwidth (bwidth)
 {
 }
@@ -214,26 +214,26 @@ TvSpectrumModelId::TvSpectrumModelId (double stFreq, double bwidth)
 bool
 operator < (const TvSpectrumModelId& a, const TvSpectrumModelId& b)
 {
-  return ( (a.startFrequency < b.startFrequency) || 
+  return ( (a.startFrequency < b.startFrequency) ||
            ( (a.startFrequency == b.startFrequency) && (a.bandwidth < b.bandwidth) ) );
 }
 
 /// Stores created spectrum models
 static std::map<TvSpectrumModelId, Ptr<SpectrumModel> > g_tvSpectrumModelMap;
 
-/** 
+/**
  * 8-VSB PSD approximated from Figure 3 of the following article:
- * Baron, Stanley. "First-Hand:Digital Television: The Digital Terrestrial 
+ * Baron, Stanley. "First-Hand:Digital Television: The Digital Terrestrial
  * Television Broadcasting (DTTB) Standard." IEEE Global History Network.
  * <http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_
  * Digital_Terrestrial_Television_Broadcasting_(DTTB)_Standard>.
  *
  * COFDM PSD approximated from Figure 12 (8k mode) of the following article:
- * Kopp, Carlo. "High Definition Television." High Definition Television. Air 
+ * Kopp, Carlo. "High Definition Television." High Definition Television. Air
  * Power Australia. <http://www.ausairpower.net/AC-1100.html>.
  *
  * Analog PSD approximated from Figure 4 of the following paper:
- * Stephen Shellhammer, Ahmed Sadek, and Wenyi Zhang. "Technical Challenges for 
+ * Stephen Shellhammer, Ahmed Sadek, and Wenyi Zhang. "Technical Challenges for
  * Cognitive Radio in the TV White Space Spectrum." Qualcomm Incorporated.
  */
 void
@@ -252,7 +252,7 @@ TvSpectrumTransmitter::CreateTvPsd ()
     {
       Bands bands;
       double halfSubBand = 0.5 * (m_channelBandwidth / 100);
-      for (double fl = m_startFrequency - halfSubBand; fl <= (m_startFrequency - 
+      for (double fl = m_startFrequency - halfSubBand; fl <= (m_startFrequency -
            halfSubBand) + m_channelBandwidth; fl += m_channelBandwidth / 100)
         {
           BandInfo bi;
@@ -271,55 +271,55 @@ TvSpectrumTransmitter::CreateTvPsd ()
       case TVTYPE_8VSB:
         {
           for (int i = 0; i <= 100; i++)
-            {     
+            {
               switch (i)
-                {  
-                  case 0: 
-                  case 100: 
+                {
+                  case 0:
+                  case 100:
                     (*psd) [i] = 0.015 * basePsdWattsHz;
                     break;
-                  case 1: 
-                  case 99: 
+                  case 1:
+                  case 99:
                     (*psd) [i] = 0.019 * basePsdWattsHz;
                     break;
-                  case 2: 
-                  case 98: 
+                  case 2:
+                  case 98:
                     (*psd) [i] = 0.034 * basePsdWattsHz;
                     break;
-                  case 3: 
-                  case 97: 
+                  case 3:
+                  case 97:
                     (*psd) [i] = 0.116 * basePsdWattsHz;
                     break;
-                  case 4: 
-                  case 96: 
+                  case 4:
+                  case 96:
                     (*psd) [i] = 0.309 * basePsdWattsHz;
                     break;
-                  case 5: 
+                  case 5:
                     (*psd) [i] = (0.502 * basePsdWattsHz) + (21.577 * basePsdWattsHz); //pilot
                     break;
-                  case 6: 
-                  case 94: 
+                  case 6:
+                  case 94:
                     (*psd) [i] = 0.696 * basePsdWattsHz;
                     break;
-                  case 7: 
-                  case 93: 
+                  case 7:
+                  case 93:
                     (*psd) [i] = 0.913 * basePsdWattsHz;
                     break;
-                  case 8: 
-                  case 92: 
+                  case 8:
+                  case 92:
                     (*psd) [i] = 0.978 * basePsdWattsHz;
                     break;
                   case 9:
-                  case 91:  
+                  case 91:
                     (*psd) [i] = 0.990 * basePsdWattsHz;
                     break;
-                  case 95: 
+                  case 95:
                     (*psd) [i] = 0.502 * basePsdWattsHz;
                     break;
-                  default: 
+                  default:
                     (*psd) [i] = basePsdWattsHz;
                     break;
-                }  
+                }
             }
           break;
         }
@@ -329,23 +329,23 @@ TvSpectrumTransmitter::CreateTvPsd ()
             {
               switch (i)
                 {
-                  case 0: 
-                  case 100: 
+                  case 0:
+                  case 100:
                     (*psd) [i] = 1.52e-4 * basePsdWattsHz;
                     break;
-                  case 1: 
-                  case 99: 
+                  case 1:
+                  case 99:
                     (*psd) [i] = 2.93e-4 * basePsdWattsHz;
                     break;
-                  case 2: 
-                  case 98: 
+                  case 2:
+                  case 98:
                     (*psd) [i] = 8.26e-4 * basePsdWattsHz;
                     break;
                   case 3:
-                  case 97:  
+                  case 97:
                     (*psd) [i] = 0.0927 * basePsdWattsHz;
                     break;
-                  default: 
+                  default:
                     (*psd) [i] = basePsdWattsHz;
                     break;
                 }

@@ -382,7 +382,7 @@ private:
   typedef std::map<uint32_t, Ptr<OcbWifiMac> >::const_iterator MacEntitiesI;
   MacEntities m_macEntities; ///< MAC entities
   /// PhyEntities typedef
-  typedef std::vector<Ptr<WifiPhy> > PhyEntities; 
+  typedef std::vector<Ptr<WifiPhy> > PhyEntities;
   /// PhyEntities iterator typedef
   typedef std::vector<Ptr<WifiPhy> >::const_iterator PhyEntitiesI;
   PhyEntities m_phyEntities; ///< Phy entities
@@ -390,7 +390,7 @@ private:
   Ptr<ChannelManager> m_channelManager; ///< the channel manager
   Ptr<ChannelScheduler> m_channelScheduler; ///< the channel scheduler
   Ptr<ChannelCoordinator> m_channelCoordinator; ///< the channel coordinator
-  Ptr<VsaManager> m_vsaManager; ///< the VSA manager 
+  Ptr<VsaManager> m_vsaManager; ///< the VSA manager
   TxProfile *m_txProfile; ///< transmit profile
   /**
    * \todo The Address arguments should be passed

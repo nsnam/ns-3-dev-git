@@ -468,7 +468,7 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   spectrumChannel->AddPropagationLossModel (lossModel);
   Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
   spectrumChannel->SetPropagationDelayModel (delayModel);
-  
+
   Ptr<Node> txNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
   m_txPhy = CreateObject<ExtSpectrumWifiPhy> ();
@@ -583,7 +583,7 @@ SpectrumWifiPhyFilterTest::RunOne (void)
     }
 
   Simulator::Schedule (Seconds (1), &SpectrumWifiPhyFilterTest::SendPpdu, this);
-  
+
   Simulator::Run ();
 }
 

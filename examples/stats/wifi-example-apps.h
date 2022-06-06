@@ -126,8 +126,8 @@ private:
 
 /**
  * Timestamp tag - it carries when the packet has been sent.
- * 
- * It would have been more realistic to include this info in 
+ *
+ * It would have been more realistic to include this info in
  * a header. Here we show how to avoid the extra overhead in
  * a simulation.
  */

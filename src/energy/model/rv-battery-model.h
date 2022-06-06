@@ -256,7 +256,7 @@ private:
    * Sampling interval.
    * (1 / sampling interval) = sampling frequency
    */
-  Time m_samplingInterval; 
+  Time m_samplingInterval;
   EventId m_currentSampleEvent; //!< Current sample event
 
   TracedValue<Time> m_lifetime;   //!< time of death of the battery

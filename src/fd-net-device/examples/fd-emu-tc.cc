@@ -31,11 +31,11 @@
  *   1 Gbps access incoming link     |             |           100 Mbps bottleneck outgoing link
  * -----------------------------------             -----------------------------------
  *
- * This example builds a node with two interfaces in emulation mode in 
- * either {raw, netmap}. The aim is to explore different qdiscs behaviours 
+ * This example builds a node with two interfaces in emulation mode in
+ * either {raw, netmap}. The aim is to explore different qdiscs behaviours
  * on the backlog of a device emulated bottleneck side.
  *
- * If you run emulation in netmap mode, you need before to load the 
+ * If you run emulation in netmap mode, you need before to load the
  * netmap.ko module.  The user is responsible for configuring and building
  * netmap separately.
  */

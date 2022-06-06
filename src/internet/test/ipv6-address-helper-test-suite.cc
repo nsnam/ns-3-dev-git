@@ -129,7 +129,7 @@ IpAddressHelperTestCasev6::DoRun (void)
   n.Get (1)->AddDevice (s2);
   d.Add (s1);
   d.Add (s2);
-  
+
   ip1.SetBase (Ipv6Address ("2001:00aa::"), Ipv6Prefix (56));
   Ipv6InterfaceContainer ic;
   ic = ip1.Assign (d);
@@ -137,13 +137,13 @@ IpAddressHelperTestCasev6::DoRun (void)
   // Check that d got intended addresses
   Ipv6InterfaceAddress d1addr;
   Ipv6InterfaceAddress d2addr;
-  // Interface 0 is loopback, interface 1 is s1, and the 0th addr is linklocal 
+  // Interface 0 is loopback, interface 1 is s1, and the 0th addr is linklocal
   // so we look at address (1,1)
-  d1addr = n.Get (0)->GetObject <Ipv6> ()->GetAddress (1, 1); 
+  d1addr = n.Get (0)->GetObject <Ipv6> ()->GetAddress (1, 1);
   NS_TEST_ASSERT_MSG_EQ (d1addr.GetAddress (), Ipv6Address ("2001:00aa:0000:0000:0200:00ff:fe00:0001"), "Ipv6AddressHelper failure");
   // Look also at the interface container (device 0, address 1)
   NS_TEST_ASSERT_MSG_EQ (ic.GetAddress (0,1), Ipv6Address ("2001:00aa:0000:0000:0200:00ff:fe00:0001"), "Ipv6AddressHelper failure");
-  d2addr = n.Get (1)->GetObject <Ipv6> ()->GetAddress (1, 1); 
+  d2addr = n.Get (1)->GetObject <Ipv6> ()->GetAddress (1, 1);
   // Look at second container
   NS_TEST_ASSERT_MSG_EQ (d2addr.GetAddress (), Ipv6Address ("2001:00aa:0000:0000:0200:00ff:fe00:0002"), "Ipv6AddressHelper failure");
   // Look also at the interface container (device 0, address 1)

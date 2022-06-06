@@ -27,9 +27,9 @@ import ns.wifi
 def main(argv):
 
     ns.core.CommandLine().Parse(argv)
-    
+
     #
-    # We are interacting with the outside, real, world.  This means we have to 
+    # We are interacting with the outside, real, world.  This means we have to
     # interact in real-time and therefore we have to use the real-time simulator
     # and take the time to calculate checksums.
     #
@@ -38,7 +38,7 @@ def main(argv):
 
     #
     # Create two ghost nodes.  The first will represent the virtual machine host
-    # on the left side of the network; and the second will represent the VM on 
+    # on the left side of the network; and the second will represent the VM on
     # the right side.
     #
     nodes = ns.network.NodeContainer()
@@ -82,7 +82,7 @@ def main(argv):
     mobility.Install(nodes)
 
     #
-    # Use the TapBridgeHelper to connect to the pre-configured tap devices for 
+    # Use the TapBridgeHelper to connect to the pre-configured tap devices for
     # the left side.  We go with "UseLocal" mode since the wifi devices do not
     # support promiscuous mode (because of their natures0.  This is a special
     # case mode that allows us to extend a linux bridge into ns-3 IFF we will

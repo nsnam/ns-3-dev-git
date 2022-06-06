@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSink");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
-TypeId 
+TypeId
 PacketSink::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSink")
@@ -181,7 +181,7 @@ void PacketSink::StopApplication ()     // Called at time specified by Stop
       m_socketList.pop_front ();
       acceptedSocket->Close ();
     }
-  if (m_socket) 
+  if (m_socket)
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
@@ -292,7 +292,7 @@ void PacketSink::HandlePeerClose (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 }
- 
+
 void PacketSink::HandlePeerError (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);

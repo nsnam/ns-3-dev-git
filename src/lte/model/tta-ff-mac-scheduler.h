@@ -342,7 +342,7 @@ private:
   // FFR SAPs
   LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
   LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
- 
+
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig; ///< CSched cell config
 
@@ -366,7 +366,7 @@ private:
   std::map <uint16_t, DlHarqProcessesTimer_t> m_dlHarqProcessesTimer; ///< DL HARQ process timer
   std::map <uint16_t, DlHarqProcessesDciBuffer_t> m_dlHarqProcessesDciBuffer; ///< DL HARQ process DCI buffer
   std::map <uint16_t, DlHarqRlcPduListBuffer_t> m_dlHarqProcessesRlcPduListBuffer; ///< DL HARQ process RLC PDU list buffer
-  std::vector <DlInfoListElement_s> m_dlInfoListBuffered; ///< HARQ retx buffered 
+  std::vector <DlInfoListElement_s> m_dlInfoListBuffered; ///< HARQ retx buffered
 
   std::map <uint16_t, uint8_t> m_ulHarqCurrentProcessId; ///< UL HARQ current process ID
   //HARQ status

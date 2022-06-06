@@ -43,16 +43,16 @@
  * Please follow these two guidelines to ease future maintenance
  * (primarily the eventual removal of the deprecated code):
  *
- * 1.  Please use the versioned form `NS_DEPRECATED_3_XX`, 
+ * 1.  Please use the versioned form `NS_DEPRECATED_3_XX`,
  *     not the generic `NS_DEPRECATED`.
  *
- * 2.  Typically only the declaration needs to be deprecated, 
+ * 2.  Typically only the declaration needs to be deprecated,
  *
  *     \code
  *     NS_DEPRECATED_3_XX ("see TheNewWay") void SomethingUseful ();
  *     \endcode
  *
- *     but it's helpful to put the same macro as a comment 
+ *     but it's helpful to put the same macro as a comment
  *     at the site of the definition, to make it easier to find
  *     all the bits which eventually have to be removed:
  *

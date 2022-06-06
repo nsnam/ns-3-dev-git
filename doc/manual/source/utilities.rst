@@ -69,7 +69,7 @@ This will output the following::
     * HelloInterval: HELLO messages emission interval.
 
 
-    
+
 Bench-simulator
 ***************
 
@@ -95,18 +95,18 @@ Command-line Arguments
 	--prec:   printed output precision [6]
 
 You can change the Scheduler being benchmarked by passing
-the appropriate flags, for example if you want to 
+the appropriate flags, for example if you want to
 benchmark the CalendarScheduler pass `--cal` to the program.
 
 The default total number of events, runs or population size
-can be overridden by passing `--total=value`, `--runs=value`  
-and `--pop=value` respectively. 
+can be overridden by passing `--total=value`, `--runs=value`
+and `--pop=value` respectively.
 
 If you want to use event distribution which is stored in a file,
-you can pass the file option by `--file=FILE_NAME`. 
+you can pass the file option by `--file=FILE_NAME`.
 
 `--prec` can be used to change the output precision value and
-`--debug` as the name suggests enables debugging. 
+`--debug` as the name suggests enables debugging.
 
 Invocation
 ++++++++++
@@ -116,7 +116,7 @@ To run it, simply open the terminal and type
 .. sourcecode:: bash
 
     $ ./ns3 run bench-simulator
-    
+
 It will show something like this depending upon the scheduler being benchmarked::
 
     ns3-dev-bench-simulator-debug:
@@ -138,7 +138,7 @@ Suppose we had to benchmark `CalendarScheduler` instead, we would have written
 .. sourcecode:: bash
 
     $ ./ns3 run "bench-simulator --cal"
- 
+
 And the output would look something like this::
 
     ns3-dev-bench-simulator-debug:

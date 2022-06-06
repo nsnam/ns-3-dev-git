@@ -36,6 +36,6 @@ printf ("Test #11: the value of COST231 for large cities is: %f\n", g);
 
 %%snr = txPsd + g - kT - nf ; % dB
 
-      
+
 
 

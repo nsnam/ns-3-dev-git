@@ -100,7 +100,7 @@ RandomWalk2dMobilityModel::DoInitializePrivate (void)
     }
   else
     {
-      delayLeft = Seconds (m_modeDistance / speed); 
+      delayLeft = Seconds (m_modeDistance / speed);
     }
   DoWalk (delayLeft);
 }

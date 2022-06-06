@@ -50,7 +50,7 @@ XmlConfigSave::SetFilename (std::string filename)
 
   /* Create a new XmlWriter for uri, with no compression. */
   m_writer = xmlNewTextWriterFilename (filename.c_str (), 0);
-  if (m_writer == NULL) 
+  if (m_writer == NULL)
     {
       NS_FATAL_ERROR ("Error creating the XML writer");
     }
@@ -63,7 +63,7 @@ XmlConfigSave::SetFilename (std::string filename)
    * encoding utf-8 and the default for the standalone
    * declaration. */
   rc = xmlTextWriterStartDocument (m_writer, NULL, "utf-8", NULL);
-  if (rc < 0) 
+  if (rc < 0)
     {
       NS_FATAL_ERROR ("Error at xmlTextWriterStartDocument");
     }
@@ -71,7 +71,7 @@ XmlConfigSave::SetFilename (std::string filename)
   /* Start an element named "ns3". Since this is the first
    * element, this will be the root element of the document. */
   rc = xmlTextWriterStartElement (m_writer, BAD_CAST "ns3");
-  if (rc < 0) 
+  if (rc < 0)
     {
       NS_FATAL_ERROR ("Error at xmlTextWriterStartElement\n");
     }
@@ -89,7 +89,7 @@ XmlConfigSave::~XmlConfigSave ()
    * write any other elements, we simply call xmlTextWriterEndDocument,
    * which will do all the work. */
   rc = xmlTextWriterEndDocument (m_writer);
-  if (rc < 0) 
+  if (rc < 0)
     {
       NS_FATAL_ERROR ("Error at xmlTextWriterEndDocument\n");
     }
@@ -97,7 +97,7 @@ XmlConfigSave::~XmlConfigSave ()
   xmlFreeTextWriter (m_writer);
   m_writer = 0;
 }
-void 
+void
 XmlConfigSave::Default (void)
 {
   class XmlDefaultIterator : public AttributeDefaultIterator
@@ -162,7 +162,7 @@ private:
           NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
         }
       rc = xmlTextWriterEndElement (m_writer);
-      if (rc < 0) 
+      if (rc < 0)
         {
           NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
         }
@@ -219,24 +219,24 @@ public:
       object->GetAttribute (name, str);
       int rc;
       rc = xmlTextWriterStartElement (m_writer, BAD_CAST "value");
-      if (rc < 0) 
+      if (rc < 0)
         {
           NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
         }
       rc = xmlTextWriterWriteAttribute (m_writer, BAD_CAST "path",
                                         BAD_CAST GetCurrentPath ().c_str ());
-      if (rc < 0) 
+      if (rc < 0)
         {
           NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
         }
       rc = xmlTextWriterWriteAttribute (m_writer, BAD_CAST "value",
                                         BAD_CAST str.Get ().c_str ());
-      if (rc < 0) 
+      if (rc < 0)
         {
           NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
         }
       rc = xmlTextWriterEndElement (m_writer);
-      if (rc < 0) 
+      if (rc < 0)
         {
           NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
         }
@@ -299,7 +299,7 @@ XmlConfigLoad::SetFilename (std::string filename)
   NS_LOG_FUNCTION (filename);
   m_filename = filename;
 }
-void 
+void
 XmlConfigLoad::Default (void)
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
@@ -337,7 +337,7 @@ XmlConfigLoad::Default (void)
     }
   xmlFreeTextReader (reader);
 }
-void 
+void
 XmlConfigLoad::Global (void)
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());
@@ -375,7 +375,7 @@ XmlConfigLoad::Global (void)
     }
   xmlFreeTextReader (reader);
 }
-void 
+void
 XmlConfigLoad::Attributes (void)
 {
   xmlTextReaderPtr reader = xmlNewTextReaderFilename (m_filename.c_str ());

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
@@ -26,7 +26,7 @@
 namespace ns3 {
 /**
  * This function includes the name of the attribute or the editable value
- * in the second column 
+ * in the second column
  *
  * \param col Pointer to the GtkTreeViewColumn
  * \param renderer Pointer to the GtkCellRenderer
@@ -81,10 +81,10 @@ get_col_number_from_tree_view_column (GtkTreeViewColumn *col);
  * \return false if the tooltip is not displayed
  */
 gboolean
-cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip, 
+cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
                        GtkTooltip *tooltip, gpointer user_data);
 /**
- * This is the main view opening the widget, getting tooltips and drawing the 
+ * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes...
  * \param model the GtkTreeStore model
  * \returns a GtkWidget on success
@@ -133,7 +133,7 @@ clean_model_callback (GtkTreeModel *model, GtkTreePath *path,
  * \param user_data Pointer to the data to be displayed (or modified)
  */
 void
-cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
+cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer,
                                          GtkTreeModel *model, GtkTreeIter *iter,
                                          gpointer user_data);
 /**
@@ -145,7 +145,7 @@ cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer
  * \param user_data Pointer to the data to be displayed (or modified)
  */
 void
-cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, 
+cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model,
                                          GtkTreeIter *iter, gpointer user_data);
 /**
  * This is the action done when the user presses on the save button for the Default attributes.
@@ -197,8 +197,8 @@ cell_edited_callback_config_default (GtkCellRendererText *cell, gchar *path_stri
 /**
  * This function is used to display a tooltip whenever the user puts the mouse
  * over a type ID or an attribute. It will give the type and the possible values of
- * an attribute value and the type of the object for an attribute object or a 
- * typeID object 
+ * an attribute value and the type of the object for an attribute object or a
+ * typeID object
  *
  * \param widget is the display object
  * \param x is the x position
@@ -212,7 +212,7 @@ gboolean
 cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
                                       gboolean keyboard_tip, GtkTooltip *tooltip, gpointer user_data);
 /**
- * This is the main view opening the widget, getting tooltips and drawing the 
+ * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes
  * \param model the GtkTreeStore model
  * \returns a GtkWidget on success

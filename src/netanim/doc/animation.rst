@@ -14,7 +14,7 @@ We will describe the NetAnim method briefly here.
 NetAnim
 *******
 
-NetAnim is a standalone, Qt4-based software executable that uses a trace file generated during 
+NetAnim is a standalone, Qt4-based software executable that uses a trace file generated during
 an |ns3| simulation to display the topology and animate the packet flow between nodes.
 
 .. figure:: figures/NetAnim_3_105.*
@@ -67,10 +67,10 @@ Methodology
 The class ns3::AnimationInterface is responsible for the creation the trace XML file.
 AnimationInterface uses the tracing infrastructure to track packet flows between nodes.
 AnimationInterface registers itself as a trace hook for tx and rx events before the simulation
-begins. When a packet is scheduled for transmission or reception, the corresponding tx and rx 
+begins. When a packet is scheduled for transmission or reception, the corresponding tx and rx
 trace hooks in AnimationInterface are called. When the rx hooks are called, AnimationInterface will be aware of the two endpoints between which a packet has flowed, and adds this information
-to the trace file, in XML format along with the corresponding tx and rx timestamps. The XML format 
-will be discussed in a later section. It is important to note that AnimationInterface records a 
+to the trace file, in XML format along with the corresponding tx and rx timestamps. The XML format
+will be discussed in a later section. It is important to note that AnimationInterface records a
 packet only if the rx trace hooks are called. Every tx event must be matched by an rx event.
 
 Downloading NetAnim
@@ -137,7 +137,7 @@ Step 2:Load the XML trace file generated in Step 1 with the offline Qt4-based an
 
 Step 1: Generate XML animation trace file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The class "AnimationInterface" under "src/netanim" uses underlying |ns3| trace sources 
+The class "AnimationInterface" under "src/netanim" uses underlying |ns3| trace sources
 to construct a timestamped ASCII file in XML format.
 
 Examples are found under src/netanim/examples
@@ -174,8 +174,8 @@ The following are optional but useful steps::
   // Step 1
   anim.SetMobilityPollInterval (Seconds (1));
 
-AnimationInterface records the position of all nodes every 250 ms by default. The statement above sets 
-the periodic interval at which AnimationInterface records the position of all nodes. If the nodes are 
+AnimationInterface records the position of all nodes every 250 ms by default. The statement above sets
+the periodic interval at which AnimationInterface records the position of all nodes. If the nodes are
 expected to move very little, it is useful to set a high mobility poll interval to avoid large XML files.
 
 ::
@@ -201,9 +201,9 @@ Using the above constructor ensures that each animation XML trace file has only 
 
 * animation.xml - containing the packet range 1-50000
 
-* animation.xml-1 - containing the packet range 50001-100000 
+* animation.xml-1 - containing the packet range 50001-100000
 
-* animation.xml-2 - containing the packet range 100001-150000 
+* animation.xml-2 - containing the packet range 100001-150000
 
 ::
 
@@ -229,7 +229,7 @@ With the above statement, AnimationInterface assigns the text "Access-point" to 
 
 With the above statement, AnimationInterface sets the node size to scale by 1.5. NetAnim automatically scales the graphics view to fit the oboundaries of the topology. This means that NetAnim, can abnormally scale a node's size too high or too low. Using AnimationInterface::UpdateNodeSize allows you to overwrite the default scaling in NetAnim and use your own custom scale.
 
-:: 
+::
 
   // Step 8
   anim.UpdateNodeCounter (89, 7, 3.4);
@@ -250,6 +250,6 @@ http://www.youtube.com/watch?v=tz_hUuNwFDs
 
 Wiki
 ====
-For detailed instructions on installing "NetAnim", F.A.Qs and loading the XML trace file 
+For detailed instructions on installing "NetAnim", F.A.Qs and loading the XML trace file
 (mentioned earlier) using NetAnim please refer:
 http://www.nsnam.org/wiki/NetAnim

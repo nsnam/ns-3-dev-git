@@ -53,7 +53,7 @@ using namespace ns3;
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA Bridge mode test.
  */
 class CsmaBridgeTestCase : public TestCase
@@ -84,7 +84,7 @@ CsmaBridgeTestCase::~CsmaBridgeTestCase ()
 {
 }
 
-void 
+void
 CsmaBridgeTestCase::SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   m_count++;
@@ -93,14 +93,14 @@ CsmaBridgeTestCase::SinkRx (Ptr<const Packet> p, const Address &ad)
 // Network topology
 //
 //        n0     n1
-//        |      | 
+//        |      |
 //       ----------
 //       | Switch |
 //       ----------
-//        |      | 
+//        |      |
 //        n2     n3
 //
-// - CBR/UDP test flow from n0 to n1; test that packets received on n1 
+// - CBR/UDP test flow from n0 to n1; test that packets received on n1
 //
 void
 CsmaBridgeTestCase::DoRun (void)
@@ -141,9 +141,9 @@ CsmaBridgeTestCase::DoRun (void)
 
   // Create the OnOff application to send UDP datagrams from n0 to n1.
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
   onoff.SetConstantRate (DataRate (5000));
 
@@ -168,7 +168,7 @@ CsmaBridgeTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA Broadcast mode test.
  */
 class CsmaBroadcastTestCase : public TestCase
@@ -211,19 +211,19 @@ CsmaBroadcastTestCase::~CsmaBroadcastTestCase ()
 {
 }
 
-void 
+void
 CsmaBroadcastTestCase::SinkRxNode1 (Ptr<const Packet> p, const Address &ad)
 {
   m_countNode1++;
 }
 
-void 
+void
 CsmaBroadcastTestCase::SinkRxNode2 (Ptr<const Packet> p, const Address &ad)
 {
   m_countNode2++;
 }
 
-void 
+void
 CsmaBroadcastTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -239,7 +239,7 @@ CsmaBroadcastTestCase::DropEvent (Ptr<const Packet> p)
 //       |     |
 //     ==========
 //
-//   n0 originates UDP broadcast to 255.255.255.255/discard port, which 
+//   n0 originates UDP broadcast to 255.255.255.255/discard port, which
 //   is replicated and received on both n1 and n2
 //
 void
@@ -274,9 +274,9 @@ CsmaBroadcastTestCase::DoRun (void)
 
   // Create the OnOff application to send UDP datagrams from n0.
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
   onoff.SetConstantRate (DataRate (5000));
 
@@ -307,7 +307,7 @@ CsmaBroadcastTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA Multicast mode test.
  */
 class CsmaMulticastTestCase : public TestCase
@@ -346,13 +346,13 @@ CsmaMulticastTestCase::~CsmaMulticastTestCase ()
 {
 }
 
-void 
+void
 CsmaMulticastTestCase::SinkRx (Ptr<const Packet> p, const Address& ad)
 {
   m_count++;
 }
 
-void 
+void
 CsmaMulticastTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -362,7 +362,7 @@ CsmaMulticastTestCase::DropEvent (Ptr<const Packet> p)
 //
 //                     Lan1
 //                 ===========
-//                 |    |    | 
+//                 |    |    |
 //       n0   n1   n2   n3   n4
 //       |    |    |
 //       ===========
@@ -371,7 +371,7 @@ CsmaMulticastTestCase::DropEvent (Ptr<const Packet> p)
 // - Multicast source is at node n0;
 // - Multicast forwarded by node n2 onto LAN1;
 // - Nodes n0, n1, n2, n3, and n4 receive the multicast frame.
-// - Node n4 listens for the data 
+// - Node n4 listens for the data
 //
 void
 CsmaMulticastTestCase::DoRun (void)
@@ -391,7 +391,7 @@ CsmaMulticastTestCase::DoRun (void)
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
- 
+
   // We will use these NetDevice containers later, for IP addressing
   NetDeviceContainer nd0 = csma.Install (c0);  // First LAN
   NetDeviceContainer nd1 = csma.Install (c1);  // Second LAN
@@ -406,8 +406,8 @@ CsmaMulticastTestCase::DoRun (void)
   ipv4Addr.Assign (nd1);
 
   //
-  // Now we can configure multicasting.  As described above, the multicast 
-  // source is at node zero, which we assigned the IP address of 10.1.1.1 
+  // Now we can configure multicasting.  As described above, the multicast
+  // source is at node zero, which we assigned the IP address of 10.1.1.1
   // earlier.  We need to define a multicast group to send packets to.  This
   // can be any multicast address from 224.0.0.0 through 239.255.255.255
   // (avoiding the reserved routing protocol addresses).
@@ -418,7 +418,7 @@ CsmaMulticastTestCase::DoRun (void)
 
   // Now, we will set up multicast routing.  We need to do three things:
   // 1) Configure a (static) multicast route on node n2
-  // 2) Set up a default multicast route on the sender n0 
+  // 2) Set up a default multicast route on the sender n0
   // 3) Have node n4 join the multicast group
   // We have a helper that can help us with static multicast
   Ipv4StaticRoutingHelper multicast;
@@ -429,10 +429,10 @@ CsmaMulticastTestCase::DoRun (void)
   NetDeviceContainer outputDevices;  // A container of output NetDevices
   outputDevices.Add (nd1.Get (0));  // (we only need one NetDevice here)
 
-  multicast.AddMulticastRoute (multicastRouter, multicastSource, 
+  multicast.AddMulticastRoute (multicastRouter, multicastSource,
                                multicastGroup, inputIf, outputDevices);
 
-  // 2) Set up a default multicast route on the sender n0 
+  // 2) Set up a default multicast route on the sender n0
   Ptr<Node> sender = c.Get (0);
   Ptr<NetDevice> senderIf = nd0.Get (0);
   multicast.SetDefaultMulticastRoute (sender, senderIf);
@@ -446,9 +446,9 @@ CsmaMulticastTestCase::DoRun (void)
 
   // Configure a multicast packet generator.
   //
-  // Make packets be sent about every defaultPacketSize / dataRate = 
+  // Make packets be sent about every defaultPacketSize / dataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (multicastGroup, multicastPort)));
   onoff.SetConstantRate (DataRate (5000));
 
@@ -464,7 +464,7 @@ CsmaMulticastTestCase::DoRun (void)
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          InetSocketAddress (Ipv4Address::GetAny (), multicastPort));
 
-  ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
+  ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4
   // Start the sink
   sinkC.Start (Seconds (1.0));
   sinkC.Stop (Seconds (10.0));
@@ -484,7 +484,7 @@ CsmaMulticastTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA One Subnet mode test.
  */
 class CsmaOneSubnetTestCase : public TestCase
@@ -526,19 +526,19 @@ CsmaOneSubnetTestCase::~CsmaOneSubnetTestCase ()
 {
 }
 
-void 
+void
 CsmaOneSubnetTestCase::SinkRxNode0 (Ptr<const Packet> p, const Address &ad)
 {
   m_countNode0++;
 }
 
-void 
+void
 CsmaOneSubnetTestCase::SinkRxNode1 (Ptr<const Packet> p, const Address &ad)
 {
   m_countNode1++;
 }
 
-void 
+void
 CsmaOneSubnetTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -552,7 +552,7 @@ CsmaOneSubnetTestCase::DropEvent (Ptr<const Packet> p)
 //              LAN
 //
 // - CBR/UDP flows from n0 to n1 and from n3 to n0
-// - DropTail queues 
+// - DropTail queues
 //
 void
 CsmaOneSubnetTestCase::DoRun (void)
@@ -584,9 +584,9 @@ CsmaOneSubnetTestCase::DoRun (void)
   // Create an OnOff application to send UDP datagrams from node zero
   // to node 1.
   //
-  // Make packets be sent about every defaultPacketSize / dataRate = 
+  // Make packets be sent about every defaultPacketSize / dataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (interfaces.GetAddress (1), port)));
   onoff.SetConstantRate (DataRate (5000));
 
@@ -601,10 +601,10 @@ CsmaOneSubnetTestCase::DoRun (void)
   app = sink.Install (nodes.Get (1));
   app.Start (Seconds (0.0));
 
-  // 
+  //
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   //
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (interfaces.GetAddress (0), port)));
   app = onoff.Install (nodes.Get (3));
   app.Start (Seconds (1.1));
@@ -630,7 +630,7 @@ CsmaOneSubnetTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA PacketSocket test.
  */
 class CsmaPacketSocketTestCase : public TestCase
@@ -669,13 +669,13 @@ CsmaPacketSocketTestCase::~CsmaPacketSocketTestCase ()
 {
 }
 
-void 
+void
 CsmaPacketSocketTestCase::SinkRx (std::string path, Ptr<const Packet> p, const Address& address)
 {
   m_count++;
 }
 
-void 
+void
 CsmaPacketSocketTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -714,7 +714,7 @@ CsmaPacketSocketTestCase::DoRun (void)
 
   // Create the OnOff application to send raw datagrams
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
   PacketSocketAddress socket;
   socket.SetSingleDevice (devs.Get (0)->GetIfIndex ());
@@ -743,7 +743,7 @@ CsmaPacketSocketTestCase::DoRun (void)
   // Trace receptions
   Config::Connect ("/NodeList/0/ApplicationList/*/$ns3::PacketSink/Rx",
                    MakeCallback (&CsmaPacketSocketTestCase::SinkRx, this));
- 
+
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -753,7 +753,7 @@ CsmaPacketSocketTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA PING test.
  */
 class CsmaPingTestCase : public TestCase
@@ -799,19 +799,19 @@ CsmaPingTestCase::~CsmaPingTestCase ()
 {
 }
 
-void 
+void
 CsmaPingTestCase::SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   m_countSinkRx++;
 }
 
-void 
+void
 CsmaPingTestCase::PingRtt (std::string context, Time rtt)
 {
   m_countPingRtt++;
 }
 
-void 
+void
 CsmaPingTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -851,7 +851,7 @@ CsmaPingTestCase::DoRun (void)
 
   // Create the OnOff application to send UDP datagrams from n0 to n1.
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
@@ -877,7 +877,7 @@ CsmaPingTestCase::DoRun (void)
   apps.Stop (Seconds (5.0));
 
   // Trace receptions
-  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx", 
+  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
                                  MakeCallback (&CsmaPingTestCase::SinkRx, this));
 
   // Trace pings
@@ -896,7 +896,7 @@ CsmaPingTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA Raw IP test.
  */
 class CsmaRawIpSocketTestCase : public TestCase
@@ -935,13 +935,13 @@ CsmaRawIpSocketTestCase::~CsmaRawIpSocketTestCase ()
 {
 }
 
-void 
+void
 CsmaRawIpSocketTestCase::SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   m_count++;
 }
 
-void 
+void
 CsmaRawIpSocketTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -982,7 +982,7 @@ CsmaRawIpSocketTestCase::DoRun (void)
 
   // IP protocol configuration
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
@@ -999,7 +999,7 @@ CsmaRawIpSocketTestCase::DoRun (void)
   apps.Stop (Seconds (12.0));
 
   // Trace receptions
-  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx", 
+  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
                                  MakeCallback (&CsmaRawIpSocketTestCase::SinkRx, this));
 
   Simulator::Run ();
@@ -1011,7 +1011,7 @@ CsmaRawIpSocketTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA star mode test.
  */
 class CsmaStarTestCase : public TestCase
@@ -1050,13 +1050,13 @@ CsmaStarTestCase::~CsmaStarTestCase ()
 {
 }
 
-void 
+void
 CsmaStarTestCase::SinkRx (Ptr<const Packet> p, const Address& ad)
 {
   m_count++;
 }
 
-void 
+void
 CsmaStarTestCase::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -1119,9 +1119,9 @@ CsmaStarTestCase::DoRun (void)
   star.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.0.0", "255.255.255.0"));
 
   //
-  // We assigned addresses to the logical hub and the first "drop" of the 
+  // We assigned addresses to the logical hub and the first "drop" of the
   // CSMA network that acts as the spoke, but we also have a number of fill
-  // devices (nFill) also hanging off the CSMA network.  We have got to 
+  // devices (nFill) also hanging off the CSMA network.  We have got to
   // assign addresses to them as well.  We put all of the fill devices into
   // a single device container, so the first nFill devices are associated
   // with the channel connected to spokeDevices.Get (0), the second nFill
@@ -1143,7 +1143,7 @@ CsmaStarTestCase::DoRun (void)
 
   //
   // Create a packet sink on the star "hub" to receive packets.
-  // 
+  //
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", hubLocalAddress);
@@ -1154,7 +1154,7 @@ CsmaStarTestCase::DoRun (void)
   //
   // Create OnOff applications to send TCP to the hub, one on each spoke node.
   //
-  // Make packets be sent about every DefaultPacketSize / DataRate = 
+  // Make packets be sent about every DefaultPacketSize / DataRate =
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onOffHelper ("ns3::TcpSocketFactory", Address ());
   onOffHelper.SetConstantRate (DataRate (5000));
@@ -1172,8 +1172,8 @@ CsmaStarTestCase::DoRun (void)
   spokeApps.Stop (Seconds (10.0));
 
   //
-  // Because we are evil, we also add OnOff applications to send TCP to the hub 
-  // from the fill devices on each CSMA link.  The first nFill nodes in the 
+  // Because we are evil, we also add OnOff applications to send TCP to the hub
+  // from the fill devices on each CSMA link.  The first nFill nodes in the
   // fillNodes container are on the CSMA network talking to the zeroth device
   // on the hub node.  The next nFill nodes are on the CSMA network talking to
   // the first device on the hub node, etc.  So the ith fillNode is associated
@@ -1197,7 +1197,7 @@ CsmaStarTestCase::DoRun (void)
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Trace receptions
-  Config::ConnectWithoutContext ("/NodeList/0/ApplicationList/*/$ns3::PacketSink/Rx", 
+  Config::ConnectWithoutContext ("/NodeList/0/ApplicationList/*/$ns3::PacketSink/Rx",
                                  MakeCallback (&CsmaStarTestCase::SinkRx, this));
 
   Simulator::Run ();
@@ -1210,7 +1210,7 @@ CsmaStarTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-csma
- * 
+ *
  * \brief CSMA TestSuite.
  */
 class CsmaSystemTestSuite : public TestSuite

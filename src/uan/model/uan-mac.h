@@ -82,7 +82,7 @@ public:
   virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest) = 0;
   /**
    * Set the callback to forward packets up to higher layers.
-   * 
+   *
    * \param cb The callback.
    * \pname{packet} The packet.
    * \pname{address} The source address.

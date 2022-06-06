@@ -172,7 +172,7 @@ private:
    * \param code the ICMP code
    * \param nextHopMtu the next hop MTU
    */
-  void SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData, 
+  void SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData,
                         uint8_t code, uint16_t nextHopMtu);
   /**
    * \brief Send a generic ICMP packet

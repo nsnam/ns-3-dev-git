@@ -45,7 +45,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaStar");
 
-int 
+int
 main (int argc, char *argv[])
 {
 
@@ -112,9 +112,9 @@ main (int argc, char *argv[])
     }
 
   //
-  // We assigned addresses to the logical hub and the first "drop" of the 
+  // We assigned addresses to the logical hub and the first "drop" of the
   // CSMA network that acts as the spoke, but we also have a number of fill
-  // devices (nFill) also hanging off the CSMA network.  We have got to 
+  // devices (nFill) also hanging off the CSMA network.  We have got to
   // assign addresses to them as well.  We put all of the fill devices into
   // a single device container, so the first nFill devices are associated
   // with the channel connected to spokeDevices.Get (0), the second nFill
@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create applications.");
   //
   // Create a packet sink on the star "hub" to receive packets.
-  // 
+  //
   uint16_t port = 50000;
 
   if (useIpv6 == 0)
@@ -164,7 +164,7 @@ main (int argc, char *argv[])
       hubApp.Start (Seconds (1.0));
       hubApp.Stop (Seconds (10.0));
     }
-  else 
+  else
     {
       Address hubLocalAddress6 (Inet6SocketAddress (Ipv6Address::GetAny (), port));
       PacketSinkHelper packetSinkHelper6 ("ns3::TcpSocketFactory", hubLocalAddress6);
@@ -201,8 +201,8 @@ main (int argc, char *argv[])
   spokeApps.Stop (Seconds (10.0));
 
   //
-  // Because we are evil, we also add OnOff applications to send TCP to the hub 
-  // from the fill devices on each CSMA link.  The first nFill nodes in the 
+  // Because we are evil, we also add OnOff applications to send TCP to the hub
+  // from the fill devices on each CSMA link.  The first nFill nodes in the
   // fillNodes container are on the CSMA network talking to the zeroth device
   // on the hub node.  The next nFill nodes are on the CSMA network talking to
   // the first device on the hub node, etc.  So the ith fillNode is associated

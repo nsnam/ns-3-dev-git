@@ -50,7 +50,7 @@ HistogramTestCase::DoRun (void)
   // Testing floating-point bin widths
   {
     for (int i=1; i <= 10; i++)
-      { 
+      {
         h0.AddValue (3.4);
       }
 

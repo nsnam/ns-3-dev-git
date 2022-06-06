@@ -2,7 +2,7 @@
 /*
  * Copyright 2007 University of Washington
  * Copyright (C) 1999, 2000 Kunihiro Ishiguro, Toshiaki Takada
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors:  Tom Henderson (tomhend@u.washington.edu)
- * 
+ *
  * Kunihiro Ishigura, Toshiaki Takada (GNU Zebra) are attributed authors
  * of the quagga 0.99.7/src/ospfd/ospf_spf.c code which was ported here
  */
@@ -127,7 +127,7 @@ GlobalRouteManagerImplTestCase::DoRun (void)
   lsa1->AddLinkRecord (lr2);
   lsa1->AddLinkRecord (lr3);
 
-  // Router 2 
+  // Router 2
   GlobalRoutingLinkRecord* lr4 = new GlobalRoutingLinkRecord (
       GlobalRoutingLinkRecord::PointToPoint,
       "0.0.0.0",
@@ -195,7 +195,7 @@ GlobalRouteManagerImplTestCase::DoRun (void)
   lsa3->AddLinkRecord (lr10);
   lsa3->AddLinkRecord (lr11);
 
-  // Test the database 
+  // Test the database
   GlobalRouteManagerLSDB* srmlsdb = new GlobalRouteManagerLSDB ();
   srmlsdb->Insert (lsa0->GetLinkStateId (), lsa0);
   srmlsdb->Insert (lsa1->GetLinkStateId (), lsa1);
@@ -216,7 +216,7 @@ GlobalRouteManagerImplTestCase::DoRun (void)
 
   Simulator::Destroy ();
 
-  // This delete clears the srm, which deletes the LSDB, which clears 
+  // This delete clears the srm, which deletes the LSDB, which clears
   // all of the LSAs, which each destroys the attached LinkRecords.
   delete srm;
 

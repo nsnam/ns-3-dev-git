@@ -289,7 +289,7 @@ Ipv4ClickRouting::GetTimevalFromNow () const
   curtime.tv_sec = Simulator::Now ().GetSeconds ();
   curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
 
-  switch (Simulator::Now ().GetResolution()) 
+  switch (Simulator::Now ().GetResolution())
     {
       case Time::NS:
         remainder = Simulator::Now ().GetNanoSeconds () % 1000;
@@ -322,7 +322,7 @@ Ipv4ClickRouting::RunClickEvent ()
 {
   m_simNode->curtime = GetTimevalFromNow ();
 
-  NS_LOG_DEBUG ("RunClickEvent at " << m_simNode->curtime.tv_sec << " " << 
+  NS_LOG_DEBUG ("RunClickEvent at " << m_simNode->curtime.tv_sec << " " <<
                                        m_simNode->curtime.tv_usec << " " << Simulator::Now ());
   simclick_click_run (m_simNode);
 }

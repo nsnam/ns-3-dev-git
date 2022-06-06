@@ -100,7 +100,7 @@ public:
   /// Decrement TTL function
   void DecrementTtl ();
   /**
-   * Increment metric 
+   * Increment metric
    * \param metric the value to increment
    */
   void IncrementMetric (uint32_t metric);

@@ -172,7 +172,7 @@ Ipv4StaticRoutingSlash32TestCase::DoRun (void)
   ipv4C->AddAddress (ifIndexC, ifInAddrC);
   ipv4C->SetMetric (ifIndexC, 1);
   ipv4C->SetUp (ifIndexC);
- 
+
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   // Create static routes from A to C
   Ptr<Ipv4StaticRouting> staticRoutingA = ipv4RoutingHelper.GetStaticRouting (ipv4A);

@@ -10,7 +10,7 @@ adding WimaxNetDevice objects to |ns3| nodes, one can create models of
 the |ns3| WiMAX models cover but, in summary, the most important features
 of the |ns3| model are:
 
-* a scalable and realistic physical layer and channel model 
+* a scalable and realistic physical layer and channel model
 * a packet classifier for the IP convergence sublayer
 * efficient uplink and downlink schedulers
 * support for Multicast and Broadcast Service (MBS), and
@@ -24,7 +24,7 @@ There have been two academic papers published on this model:
 * M.A. Ismail, G. Piro, L.A. Grieco, and T. Turletti, "An Improved IEEE 802.16
   WiMAX Module for the NS-3 Simulator", SIMUTools 2010 Conference, March 2010.
 * J. Farooq and T. Turletti, "An IEEE 802.16 WiMAX module for the NS-3
-  Simulator," SIMUTools 2009 Conference, March 2009. 
+  Simulator," SIMUTools 2009 Conference, March 2009.
 
 
 Scope of the model
@@ -176,7 +176,7 @@ Wimax Tracing
 *************
 
 |ns3| has a sophisticated tracing infrastructure that allows users to hook into
-existing trace sources, or to define and export new ones.  
+existing trace sources, or to define and export new ones.
 
 Many |ns3| users use the built-in Pcap or Ascii tracing, and the
 WimaxHelper has similar APIs::
@@ -216,10 +216,10 @@ models.
 .. figure:: figures/WimaxArchitecture.*
 
   WiMAX architecture
-   
-Convergence Sublayer 
+
+Convergence Sublayer
 ++++++++++++++++++++
- 
+
 The Convergence sublayer (CS) provided with this module implements the Packet
 CS, designed to work with the packet-based protocols at higher layers. The CS is
 responsible of receiving packet from the higher layer and from peer stations,
@@ -228,10 +228,10 @@ packets. It keeps a mapping of transport connections to service flows. This
 enables the MAC CPS identifying the Quality of Service (QoS) parameters
 associated to a transport connection and ensuring the QoS requirements. The CS
 currently employs an IP classifier.
- 
-IP Packet Classifier 
+
+IP Packet Classifier
 ++++++++++++++++++++
- 
+
 An IP packet classifier is used to map incoming packets to appropriate
 connections based on a set of criteria. The classifier maintains a list of
 mapping rules which associate an IP flow (src IP address and mask, dst IP
@@ -241,10 +241,10 @@ append the incoming packet (from the upper layer) to the queue of the
 appropriate WiMAX connection. Class :cpp:class:`IpcsClassifier` and class
 :cpp:class:`IpcsClassifierRecord` implement the classifier module for both SS
 and BS
- 
+
 MAC Common Part Sublayer
 ++++++++++++++++++++++++
- 
+
 The MAC Common Part Sublayer (CPS) is the main sublayer of the IEEE 802.16 MAC
 and performs the fundamental functions of the MAC. The module implements the
 Point-Multi-Point (PMP) mode. In PMP mode BS is responsible of managing
@@ -262,7 +262,7 @@ distributed to several other classes.
 
 Framing and Management Messages
 +++++++++++++++++++++++++++++++
- 
+
 The module implements a frame as a fixed duration of time, i.e., frame
 boundaries are defined with respect to time. Each frame is further subdivided
 into downlink (DL) and uplink (UL) subframes. The module implements the Time
@@ -282,10 +282,10 @@ frame is divided into integer number of symbols and Physical Slots (PS) which
 helps in managing bandwidth more effectively. The number of symbols per frame
 depends on the  underlying implementation of the PHY layer. The size of a DL or
 UL burst is specified in units of symbols.
- 
+
 Network Entry and Initialization
 ++++++++++++++++++++++++++++++++
- 
+
 The network entry and initialization phase is basically divided into two
 sub-phases, (1) scanning and synchronization and (2) initial ranging. The entire
 phase is performed by the LinkManager component of SS and BS. Once an SS wants
@@ -305,7 +305,7 @@ to modify its value from the simulation script.
 
 Connections and Addressing
 ++++++++++++++++++++++++++
- 
+
 All communication at the MAC layer is carried in terms of connections. The
 standard defines a connection as a unidirectional mapping between the SS and
 BS's MAC entities for the transmission of traffic. The standard defines two
@@ -332,7 +332,7 @@ with the same CID.
 
 Scheduling Services
 +++++++++++++++++++
- 
+
 The module supports the four scheduling services defined by the 802.16-2004
 standard:
 
@@ -340,17 +340,17 @@ standard:
 * Real-Time Polling Services (rtPS)
 * Non Real-Time Polling Services (nrtPS)
 * Best Effort (BE)
- 
+
 These scheduling services behave differently with respect to how they request
 bandwidth as well as how the it is granted. Each service flow is associated to
 exactly one scheduling service, and the QoS parameter set associated to a
 service flow actually defines the scheduling service it belongs to. When a
 service flow is created the UplinkScheduler calculates necessary parameters such
 as grant size and grant interval based on QoS parameters associated to it.
- 
+
 WiMAX Uplink Scheduler Model
 ++++++++++++++++++++++++++++
- 
+
 Uplink Scheduler at the BS decides which of the SSs will be assigned uplink
 allocations based on the QoS parameters associated to a service flow (or
 scheduling service) and bandwidth requests from the SSs. Uplink scheduler
@@ -406,7 +406,7 @@ The current WiMAX module provides three different versions of schedulers.
 
 WiMAX Outbound Schedulers Model
 +++++++++++++++++++++++++++++++
- 
+
 Besides the uplink scheduler these are the outbound schedulers at BS and SS side
 (BSScheduler and SSScheduler). The outbound schedulers decide which of the
 packets from the outbound queues will be transmitted in a given allocation. The
@@ -444,7 +444,7 @@ propagation delay, the path loss according to a given propagation model and
 eventually forwards the packet to the receiver device.  The channel class uses
 the method `GetDistanceFrom()` to calculate the distance between two physical
 entities according to their 3D coordinates. The delay is
-computed as `delay = distance/C`, where `C` is the speed of the light. 
+computed as `delay = distance/C`, where `C` is the speed of the light.
 
 Physical model
 **************
@@ -469,7 +469,7 @@ Reception Process: The reception process includes the following operations:
 #. Determine if a FEC block can be correctly decoded.
 #. Concatenate received FEC blocks to reconstruct the original burst.
 #. Forward the burst to the upper layer.
- 
+
 The developed process to evaluate if a FEC block can be correctly received or
 not uses pre-generated traces.  The trace files are generated by an external
 OFDM simulator (described later). A class named SNRToBlockErrorRateManager

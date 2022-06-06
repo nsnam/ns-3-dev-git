@@ -61,9 +61,9 @@ public:
    *
    * This method is used by Packet::AddTrailer to
    * store a header into the byte buffer of a packet.
-   * The data written is expected to match bit-for-bit the 
+   * The data written is expected to match bit-for-bit the
    * representation of this trailer in real networks.
-   * The input iterator points to the end of the area where the 
+   * The input iterator points to the end of the area where the
    * data shall be written. This method is thus expected to call
    * Buffer::Iterator::Prev prior to actually writing any data.
    */
@@ -74,10 +74,10 @@ public:
    * \returns the number of bytes read.
    *
    * This method is used by Packet::RemoveTrailer to
-   * re-create a trailer from the byte buffer of a packet. 
-   * The data read is expected to match bit-for-bit the 
+   * re-create a trailer from the byte buffer of a packet.
+   * The data read is expected to match bit-for-bit the
    * representation of this trailer in real networks.
-   * The input iterator points to the end of the area where the 
+   * The input iterator points to the end of the area where the
    * data shall be written. This method is thus expected to call
    * Buffer::Iterator::Prev prior to actually reading any data.
    */
@@ -90,25 +90,25 @@ public:
    * \returns the number of bytes read.
    *
    * This method is used by Packet::RemoveTrailer to
-   * re-create a trailer from the byte buffer of a packet. 
-   * The data read is expected to match bit-for-bit the 
+   * re-create a trailer from the byte buffer of a packet.
+   * The data read is expected to match bit-for-bit the
    * representation of this trailer in real networks.
-   * The input iterator end points to the end of the area where the 
-   * data shall be written. 
+   * The input iterator end points to the end of the area where the
+   * data shall be written.
    *
    * This variant should be provided by any variable-sized trailer subclass
-   * (i.e. if GetSerializedSize () does not return a constant). 
+   * (i.e. if GetSerializedSize () does not return a constant).
    */
   virtual uint32_t Deserialize (Buffer::Iterator start, Buffer::Iterator end);
   /**
    * \param os output stream
-   * This method is used by Packet::Print to print the 
+   * This method is used by Packet::Print to print the
    * content of a trailer as ascii data to a c++ output stream.
    * Although the trailer is free to format its output as it
    * wishes, it is recommended to follow a few rules to integrate
-   * with the packet pretty printer: start with flags, small field 
-   * values located between a pair of parens. Values should be separated 
-   * by whitespace. Follow the parens with the important fields, 
+   * with the packet pretty printer: start with flags, small field
+   * values located between a pair of parens. Values should be separated
+   * by whitespace. Follow the parens with the important fields,
    * separated by whitespace.
    * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */

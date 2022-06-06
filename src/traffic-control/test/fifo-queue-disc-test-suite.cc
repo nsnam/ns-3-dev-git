@@ -133,7 +133,7 @@ FifoQueueDiscTestCase::DoRunFifoTest (Ptr<FifoQueueDisc> q, uint32_t qSize, uint
     }
 
   // no room for another packet
-  NS_TEST_ASSERT_MSG_EQ (q->Enqueue (Create<FifoQueueDiscTestItem> (p, dest)), 
+  NS_TEST_ASSERT_MSG_EQ (q->Enqueue (Create<FifoQueueDiscTestItem> (p, dest)),
                          false, "There should be no room for another packet");
 
   // dequeue and check packet order

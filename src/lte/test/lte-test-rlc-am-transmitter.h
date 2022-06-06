@@ -50,9 +50,9 @@ class LteRlcAmTransmitterTestSuite : public TestSuite
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test case used by LteRlcAmTransmitterOneSduTestCase to create topology 
- * and to implement functionalities and check if data received corresponds to 
- * data sent. 
+ * \brief Test case used by LteRlcAmTransmitterOneSduTestCase to create topology
+ * and to implement functionalities and check if data received corresponds to
+ * data sent.
  */
 class LteRlcAmTransmitterTestCase : public TestCase
 {
@@ -95,7 +95,7 @@ class LteRlcAmTransmitterTestCase : public TestCase
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test 4.1.1.1 Test that SDU transmitted at PDCP corresponds to PDU 
+ * \brief Test 4.1.1.1 Test that SDU transmitted at PDCP corresponds to PDU
  * received by MAC.
  */
 class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
@@ -119,7 +119,7 @@ class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test 4.1.1.2 Test the correct functionality of the Segmentation. 
+ * \brief Test 4.1.1.2 Test the correct functionality of the Segmentation.
  * Test check that single SDU is properly segmented to n PDUs.
  */
 class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCase
@@ -167,7 +167,7 @@ class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestC
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test 4.1.1.4 Test checks functionality of Report Buffer Status by 
+ * \brief Test 4.1.1.4 Test checks functionality of Report Buffer Status by
  * testing primitive parameters.
  */
 class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitterTestCase

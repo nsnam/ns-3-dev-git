@@ -199,7 +199,7 @@ public:
   bool Enqueue (QueueEntry & entry);
   /**
    * Return first found (the earliest) entry for given destination
-   * 
+   *
    * \param dst the destination IP address
    * \param entry the queue entry
    * \returns true if the entry is dequeued
@@ -212,7 +212,7 @@ public:
   void DropPacketWithDst (Ipv4Address dst);
   /**
    * Finds whether a packet with destination dst exists in the queue
-   * 
+   *
    * \param dst the destination IP address
    * \returns true if an entry with the IP address is found
    */

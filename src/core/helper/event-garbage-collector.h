@@ -69,9 +69,9 @@ private:
    * in the cleanup frequency.
    */
   const typename EventList::size_type CHUNK_MAX_SIZE = 128;
-  
+
   EventList::size_type m_nextCleanupSize;      //!< Batch size for cleanup
-  EventList m_events;                          //!< The tracked event list 
+  EventList m_events;                          //!< The tracked event list
 
   /**
    * \brief Called when a new event was added and the cleanup limit was

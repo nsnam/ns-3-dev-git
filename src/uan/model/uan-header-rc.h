@@ -75,13 +75,13 @@ public:
   void SetPropDelay (Time propDelay);
   /**
    * Get the frame number of the reservation being transmitted.
-   * 
+   *
    * \return The data frame number.
    */
   uint8_t GetFrameNo (void) const;
   /**
    * Get the propagation delay found in handshaking.
-   * 
+   *
    * \return The measured propagation delay.
    * \note Prop. delay is transmitted with 16 bits and ms accuracy
    */
@@ -411,7 +411,7 @@ public:
    * Get the time delay from TX time of CTS packet until
    * arrival of first data frame.
    *
-   * \return The delay time. 
+   * \return The delay time.
    */
   Time GetDelayToTx (void) const;
   /**

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * This is an example script for AODV manet routing protocol. 
+ * This is an example script for AODV manet routing protocol.
  *
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
@@ -37,11 +37,11 @@ using namespace ns3;
  * \ingroup aodv-examples
  * \ingroup examples
  * \brief Test script.
- * 
+ *
  * This script creates 1-dimensional grid topology and then ping last node from the first one:
- * 
+ *
  * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.0.4]
- * 
+ *
  * ping 10.0.0.4
  *
  * When 1/3 of simulation time has elapsed, one of the nodes is moved out of
@@ -49,7 +49,7 @@ using namespace ns3;
  * only 34 of 100 pings being received.  If the step size is reduced
  * to cover the gap, then all pings can be received.
  */
-class AodvExample 
+class AodvExample
 {
 public:
   AodvExample ();
@@ -159,7 +159,7 @@ AodvExample::Run ()
 
 void
 AodvExample::Report (std::ostream &)
-{ 
+{
 }
 
 void
@@ -197,7 +197,7 @@ AodvExample::CreateDevices ()
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
-  devices = wifi.Install (wifiPhy, wifiMac, nodes); 
+  devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
   if (pcap)
     {

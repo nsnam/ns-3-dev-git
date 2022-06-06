@@ -54,14 +54,14 @@ public:
   /**
    * Add UE function
    *
-   * \param rnti 
+   * \param rnti
    */
   virtual void AddUe (uint16_t rnti) = 0;
 
-  /** 
+  /**
    * remove the UE, e.g., after handover or termination of the RRC connection
-   * 
-   * \param rnti 
+   *
+   * \param rnti
    */
   virtual void RemoveUe (uint16_t rnti) = 0;
 
@@ -106,9 +106,9 @@ public:
    * \param lcid
    */
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid) = 0;
-  
+
   /**
-   * \brief Parameters for [re]configuring the UE 
+   * \brief Parameters for [re]configuring the UE
    */
   struct UeConfig
   {
@@ -122,17 +122,17 @@ public:
     uint8_t   m_transmissionMode;
   };
 
-  /** 
+  /**
    * update the configuration of the UE
-   * 
-   * \param params 
+   *
+   * \param params
    */
   virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
 
   /**
    * struct defining the RACH configuration of the MAC
-   * 
+   *
    */
   struct RachConfig
   {
@@ -142,15 +142,15 @@ public:
     uint8_t connEstFailCount; ///< the counter value for T300 timer expiration
   };
 
-  /** 
-   * 
+  /**
+   *
    * \return the current RACH configuration of the MAC
    */
   virtual RachConfig GetRachConfig () = 0;
 
   /**
    * \brief AllocateNcRaPreambleReturnValue structure
-   * 
+   *
    */
   struct AllocateNcRaPreambleReturnValue
   {
@@ -159,12 +159,12 @@ public:
     uint8_t raPrachMaskIndex; ///< PRACH mask index
   };
 
-  /** 
+  /**
    * Allocate a random access preamble for non-contention based random access (e.g., for handover).
-   * 
+   *
    * \param rnti the RNTI of the UE who will perform non-contention based random access
-   * 
-   * \return  the newly allocated random access preamble 
+   *
+   * \return  the newly allocated random access preamble
    */
   virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti) = 0;
 
@@ -183,8 +183,8 @@ class LteEnbCmacSapUser
 public:
   virtual ~LteEnbCmacSapUser ();
 
-  /** 
-   * request the allocation of a Temporary C-RNTI 
+  /**
+   * request the allocation of a Temporary C-RNTI
    *
    * \return the T-C-RNTI
    */
@@ -200,7 +200,7 @@ public:
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success) = 0;
 
   /**
-   * \brief Parameters for [re]configuring the UE 
+   * \brief Parameters for [re]configuring the UE
    */
   struct UeConfig
   {
@@ -214,10 +214,10 @@ public:
     uint8_t   m_transmissionMode;
   };
 
-  /** 
+  /**
    * Notify the RRC of a UE config updated requested by the MAC (normally, by the scheduler)
-   * 
-   * \param params 
+   *
+   * \param params
    */
   virtual void RrcConfigurationUpdateInd (UeConfig params) = 0;
 

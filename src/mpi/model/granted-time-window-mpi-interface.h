@@ -119,7 +119,7 @@ private:
    * It is not intended for state to be shared.
    */
   friend ns3::DistributedSimulatorImpl;
-  
+
   /**
    * Check for received messages complete
    */
@@ -136,7 +136,7 @@ private:
    * \return transmitted count in packets
    */
   static uint32_t GetTxCount ();
-  
+
   /** System ID (rank) for this task. */
   static uint32_t g_sid;
   /** Size of the MPI COM_WORLD group. */

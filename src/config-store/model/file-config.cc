@@ -38,13 +38,13 @@ NoneFileConfig::NoneFileConfig ()
 NoneFileConfig::~NoneFileConfig ()
 {
 }
-void 
+void
 NoneFileConfig::SetFilename (std::string filename)
 {}
-void 
+void
 NoneFileConfig::Default (void)
 {}
-void 
+void
 NoneFileConfig::Global (void)
 {}
 void

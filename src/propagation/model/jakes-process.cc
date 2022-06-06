@@ -70,10 +70,10 @@ JakesProcess::SetPropagationLossModel (Ptr<const PropagationLossModel> propagati
   Ptr<const JakesPropagationLossModel> jakes = propagationModel->GetObject<JakesPropagationLossModel> ();
   NS_ASSERT_MSG (jakes != 0, "Jakes Process can work only with JakesPropagationLossModel!");
   m_jakes = jakes;
-  
+
   NS_ASSERT (m_nOscillators != 0);
   NS_ASSERT (m_omegaDopplerMax != 0);
-  
+
   ConstructOscillators ();
 }
 
@@ -109,7 +109,7 @@ JakesProcess::ConstructOscillators ()
       double psi = m_jakes->GetUniformRandomVariable ()->GetValue ();
       std::complex<double> amplitude = std::complex<double> (std::cos (psi), std::sin (psi)) * 2.0 / std::sqrt (m_nOscillators);
       /// 3. Construct oscillator:
-      m_oscillators.push_back (Oscillator (amplitude, phi, omega)); 
+      m_oscillators.push_back (Oscillator (amplitude, phi, omega));
     }
 }
 

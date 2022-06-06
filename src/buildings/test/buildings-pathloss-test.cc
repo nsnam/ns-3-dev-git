@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
  * Test 1.1 BuildingsPathlossModel Pathloss compound test
  *
  * This TestSuite tests the BuildingPathlossModel by reproducing
- * several communication scenarios 
+ * several communication scenarios
  */
 BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
   : TestSuite ("buildings-pathloss-test", SYSTEM)
@@ -152,13 +152,13 @@ BuildingsPathlossTestCase::DoRun (void)
   NS_LOG_FUNCTION (this);
 
   // the building basically occupies the negative x plane, so any node
-  // in this area will fall in the building 
+  // in this area will fall in the building
   Ptr<Building> building1 = CreateObject<Building> ();
   building1->SetBoundaries (Box (-3000, -1, -4000, 4000.0, 0.0, 12));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   building1->SetNFloors (3);
-  
+
   Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
   Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
 
@@ -175,7 +175,7 @@ BuildingsPathlossTestCase::DoRun (void)
 
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
- 
+
   NS_TEST_ASSERT_MSG_EQ_TOL (loss, m_lossRef, 0.1, "Wrong loss !");
   Simulator::Destroy ();
 }
@@ -191,7 +191,7 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
    * constructor of the test suite, which caused subtle bugs due to
    * "static initialization order fiasco". An example of such a subtle
    * bug is that logging via NS_LOG failed for some modules.
-   * 
+   *
    */
 
   double hm = 1;
@@ -199,7 +199,7 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
   double henbHeight = 10.0;
 
   Ptr<MobilityModel> mm;
-  
+
   switch (index)
     {
     case 1:

@@ -44,7 +44,7 @@ class SequenceNumberTestObj : public Object
 
 public:
 
-  SequenceNumberTestObj () 
+  SequenceNumberTestObj ()
   {
     m_testTracedSequenceNumber = SequenceNumber32 (0);
   }
@@ -218,7 +218,7 @@ class SequenceNumberTestSuite : public TestSuite
 {
 public:
   SequenceNumberTestSuite ()
-    : TestSuite ("sequence-number", UNIT) 
+    : TestSuite ("sequence-number", UNIT)
   {
     AddTestCase (new SequenceNumberTestCase (), TestCase::QUICK);
   }

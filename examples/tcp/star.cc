@@ -39,7 +39,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Star");
 
-int 
+int
 main (int argc, char *argv[])
 {
 
@@ -76,7 +76,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create applications.");
   //
   // Create a packet sink on the star "hub" to receive packets.
-  // 
+  //
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", hubLocalAddress);

@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * Room coordinates
  */
 struct Room
@@ -71,8 +71,8 @@ Room::Room (uint32_t xx, uint32_t yy, uint32_t zz)
 bool
 operator < (const Room& a, const Room& b)
 {
-  return ( (a.x < b.x) 
-           || ( (a.x == b.x) && (a.y < b.y) ) 
+  return ( (a.x < b.x)
+           || ( (a.x == b.x) && (a.y < b.y) )
            || ( (a.x == b.x) && (a.y == b.y) && (a.z < b.z) ));
 }
 
@@ -80,7 +80,7 @@ operator < (const Room& a, const Room& b)
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * RandomRoomPositionAllocator test
  */
 class RandomRoomPositionAllocatorTestCase : public TestCase
@@ -104,7 +104,7 @@ RandomRoomPositionAllocatorTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 
- 
+
 
   NS_LOG_LOGIC ("create building");
   Ptr<Building> b = CreateObject<Building> ();
@@ -164,7 +164,7 @@ RandomRoomPositionAllocatorTestCase::DoRun ()
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * SameRoomPositionAllocator test
  */
 class SameRoomPositionAllocatorTestCase : public TestCase
@@ -188,7 +188,7 @@ SameRoomPositionAllocatorTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this);
 
- 
+
 
   NS_LOG_LOGIC ("create building");
   Ptr<Building> b = CreateObject<Building> ();
@@ -243,7 +243,7 @@ SameRoomPositionAllocatorTestCase::DoRun ()
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * \brief RandomRoomPositionAllocator TestSuite
  */
 class BuildingPositionAllocatorTestSuite : public TestSuite
@@ -263,4 +263,4 @@ BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
 }
 
 /// Static variable for test initialization
-static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance; 
+static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance;

@@ -135,7 +135,7 @@ EnergySource::DisposeDeviceModels (void)
       (*i)->Dispose ();
     }
 }
-  
+
 void
 EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
 {
@@ -169,22 +169,22 @@ EnergySource::CalculateTotalCurrent (void)
     {
       totalCurrentA += (*i)->GetCurrentA ();
     }
-  
+
   double totalHarvestedPower = 0.0;
-  
+
   std::vector< Ptr<EnergyHarvester> >::const_iterator harvester;
   for (harvester = m_harvesters.begin (); harvester != m_harvesters.end (); harvester++)
   {
     totalHarvestedPower += (*harvester)->GetPower ();
   }
-  
+
   NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Total harvested power = " << totalHarvestedPower);
 
   double currentHarvestersA = totalHarvestedPower / GetSupplyVoltage ();
   NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Current from harvesters = " << currentHarvestersA);
-  
+
   totalCurrentA -= currentHarvestersA;
-  
+
   return totalCurrentA;
 }
 

@@ -100,7 +100,7 @@ private:
      * \returns \c true if the event was found, false otherwise.
      */
     bool remove(const Scheduler::Event &ev);
-    
+
   };  // class EventPriorityQueue
 
   /** The event queue. */

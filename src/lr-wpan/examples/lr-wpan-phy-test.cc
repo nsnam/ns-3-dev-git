@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   LogComponentEnableAll (LOG_PREFIX_FUNC);
   LogComponentEnable ("LrWpanPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);

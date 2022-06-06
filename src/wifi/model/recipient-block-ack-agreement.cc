@@ -80,7 +80,7 @@ RecipientBlockAckAgreement::PassBufferedMpdusUntilFirstLost (void)
   // highest sequence number)
   NS_ASSERT (m_bufferedMpdus.empty () ||
              GetDistance (m_bufferedMpdus.rbegin ()->first.first, m_winStartB) < SEQNO_SPACE_HALF_SIZE);
-  
+
   auto it = m_bufferedMpdus.begin ();
 
   while (it != m_bufferedMpdus.end () && it->first.first == m_winStartB)
@@ -101,7 +101,7 @@ RecipientBlockAckAgreement::PassBufferedMpdusWithSeqNumberLessThan (uint16_t new
   // highest sequence number)
   NS_ASSERT (m_bufferedMpdus.empty () ||
              GetDistance (m_bufferedMpdus.rbegin ()->first.first, m_winStartB) < SEQNO_SPACE_HALF_SIZE);
-  
+
   auto it = m_bufferedMpdus.begin ();
 
   while (it != m_bufferedMpdus.end ()

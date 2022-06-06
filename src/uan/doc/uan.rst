@@ -15,7 +15,7 @@ Model Description
 *****************
 
 The source code for the UAN Framework lives in the directory
-``src/uan`` and in ``src/energy`` for the contribution on 
+``src/uan`` and in ``src/energy`` for the contribution on
 the li-ion battery model.
 
 The UAN Framework is composed of two main parts:
@@ -213,7 +213,7 @@ An :cpp:class:`ns3::AuvMobilityModel` interface has been designed to give users 
 The AuvMobilityModel interface is implemented by the RemusMobilityModel and the GliderMobilityModel classes. The AUV's mobility models organization it is shown in :ref:`auvmobilitymodel`.
 Both models use a constant velocity movement, thus the AuvMobilityModel interface derives from the ConstantVelocityMobilityModel. The two classes hold the navigation parameters for the two different AUVs, like maximum pitch angles, maximum operating depth, maximum and minimum speed values. The Glider model holds also some extra parameters like maximum buoyancy values, and maximum and minimum glide slopes.
 Both classes, RemusMobilityModel and GliderMobilityModel, handle also the AUV power consumption, utilizing the relative power models.
-Has been modified the WaypointMobilityModel to let it use a generic underlying ConstantVelocityModel to validate the waypoints and, to keep trace of the node's position. The default model is the classic ConstantVelocityModel but, for example in case of REMUS mobility model, the user can install the AUV mobility model into the waypoint model and then validating the waypoints against REMUS navigation constraints. 
+Has been modified the WaypointMobilityModel to let it use a generic underlying ConstantVelocityModel to validate the waypoints and, to keep trace of the node's position. The default model is the classic ConstantVelocityModel but, for example in case of REMUS mobility model, the user can install the AUV mobility model into the waypoint model and then validating the waypoints against REMUS navigation constraints.
 
 
 Energy models
@@ -325,17 +325,17 @@ References
 .. [2] AUVfest2008: Underwater mines; URL: http://oceanexplorer.noaa.gov/explorations/08auvfest/background/mines/mines.html
 .. [3] Hydroinc Products; URL: http://www.hydroidinc.com/products.html
 .. [4] WHOI, Autonomous Underwater Vehicle, REMUS; URL: http://www.whoi.edu/page.do?pid=29856
-.. [5] Eriksen, C.C., T.J. Osse, R.D. Light, T. Wen, T.W. Lehman, P.L. Sabin, J.W. Ballard, and A.M. 
-       Chiodi. Seaglider: A Long-Range Autonomous Underwater Vehicle for Oceanographic Research, 
-       IEEE Journal of Oceanic Engineering, 26, 4, October 2001. 
+.. [5] Eriksen, C.C., T.J. Osse, R.D. Light, T. Wen, T.W. Lehman, P.L. Sabin, J.W. Ballard, and A.M.
+       Chiodi. Seaglider: A Long-Range Autonomous Underwater Vehicle for Oceanographic Research,
+       IEEE Journal of Oceanic Engineering, 26, 4, October 2001.
        URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=972073&userType=inst
-.. [6] L. Freitag, M. Grund, I. Singh, J. Partan, P. Koski, K. Ball, and W. Hole, The whoi 
-       micro-modem: an acoustic communications and navigation system for multiple platforms, 
+.. [6] L. Freitag, M. Grund, I. Singh, J. Partan, P. Koski, K. Ball, and W. Hole, The whoi
+       micro-modem: an acoustic communications and navigation system for multiple platforms,
        In Proc. IEEE OCEANS05 Conf, 2005. URL: http://ieeexplore.ieee.org/iel5/10918/34367/01639901.pdf
-.. [7] C. M. Shepherd, "Design of Primary and Secondary Cells - Part 3. 
+.. [7] C. M. Shepherd, "Design of Primary and Secondary Cells - Part 3.
        Battery discharge equation," U.S. Naval Research Laboratory, 1963
-.. [8] Tremblay, O.; Dessaint, L.-A.; Dekkiche, A.-I., "A Generic Battery Model for the 
-       Dynamic Simulation of Hybrid Electric Vehicles," Ecole de Technologie Superieure, 
+.. [8] Tremblay, O.; Dessaint, L.-A.; Dekkiche, A.-I., "A Generic Battery Model for the
+       Dynamic Simulation of Hybrid Electric Vehicles," Ecole de Technologie Superieure,
        Universite du Quebec, 2007 URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4544139
 .. [9] Panasonic CGR18650DA Datasheet, URL: http://www.panasonic.com/industrial/includes/pdf/Panasonic_LiIon_CGR18650DA.pdf
 .. [10] Electrochem 3B36 Datasheet, URL: http://www.electrochem.com.cn/products/Primary/HighRate/CSC/3B36.pdf
@@ -362,8 +362,8 @@ Mobility Model Examples
 
 * ``auv-energy-model``:
     In this example we show the basic usage of an AUV energy model.
-    Specifically, we show how to create a generic node, adding to it a basic energy source 
-    and consuming energy from the energy source. In this example we show the basic usage of 
+    Specifically, we show how to create a generic node, adding to it a basic energy source
+    and consuming energy from the energy source. In this example we show the basic usage of
     an AUV energy model.
 
     The Seaglider AUV power consumption depends on buoyancy and vertical speed values, so we simulate a 20 seconds movement at 0.3 m/s of vertical speed and 138g of buoyancy. Then a 20 seconds movement at 0.2 m/s of vertical speed and 138g of buoyancy and then a stop of 5 seconds.

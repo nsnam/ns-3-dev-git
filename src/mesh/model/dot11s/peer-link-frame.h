@@ -34,7 +34,7 @@ namespace dot11s
  * \ingroup dot11s
  *
  * \brief 802.11s Peer link open management frame
- * 
+ *
  * Peer link open start frame includes the following:
  * - Capability
  * - Supported rates
@@ -104,7 +104,7 @@ bool operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b);
  * \ingroup dot11s
  *
  * \brief 802.11s Peer link close management frame
- * 
+ *
  * Peer link close frame includes the following:
  * - Mesh ID of mesh
  */
@@ -129,7 +129,7 @@ public:
    */
   void SetPlinkCloseStart (PlinkCloseStartFields fields);
   /**
-   * Get peer link close start fields 
+   * Get peer link close start fields
    * \return PlinkOpenStartFields
    */
   PlinkCloseStartFields GetFields () const;
@@ -164,7 +164,7 @@ bool operator== (const PeerLinkCloseStart & a, const PeerLinkCloseStart & b);
  * \ingroup dot11s
  *
  * \brief 802.11s Peer link confirm management frame
- * 
+ *
  * Peer link confirm frame includes the following:
  * - Association ID field
  * - Supported rates

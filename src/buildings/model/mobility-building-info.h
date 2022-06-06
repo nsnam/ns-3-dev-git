@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
- * 
+ *
  */
 #ifndef MOBILITY_BUILDING_INFO_H
 #define MOBILITY_BUILDING_INFO_H
@@ -43,7 +43,7 @@ namespace ns3 {
  *
  * This model implements the management of scenarios where users might be
  * either indoor (e.g., houses, offices, etc.) and outdoor.
- * 
+ *
  */
 class MobilityBuildingInfo : public Object
 {
@@ -63,16 +63,16 @@ public:
    */
   MobilityBuildingInfo (Ptr<Building> building);
 
-  /** 
+  /**
    * \brief Is indoor method.
    *
    * \return true if the MobilityBuildingInfo instance is indoor, false otherwise
    */
   bool IsIndoor (void);
 
-  /** 
+  /**
    * \brief Mark this MobilityBuildingInfo instance as indoor
-   * 
+   *
    * \param building the building into which the MobilityBuildingInfo instance is located
    * \param nfloor the floor number 1...nFloors at which the  MobilityBuildingInfo instance is located
    * \param nroomx the X room number 1...nRoomsX at which the  MobilityBuildingInfo instance is located
@@ -90,35 +90,35 @@ public:
 
   void SetIndoor (uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
 
-  /** 
+  /**
    * \brief Mark this MobilityBuildingInfo instance as outdoor
    */
   void SetOutdoor ();
 
-  /** 
+  /**
    * \brief Get the floor number at which the MobilityBuildingInfo instance is located
    *
    * \return The floor number
    */
   uint8_t GetFloorNumber (void);
 
-  /** 
+  /**
    * \brief Get the room number along x-axis at which the MobilityBuildingInfo instance is located
-   * 
+   *
    * \return The room number
    */
   uint8_t GetRoomNumberX (void);
 
-  /** 
+  /**
    * \brief Get the room number along y-axis at which the MobilityBuildingInfo instance is located
-   * 
+   *
    * \return The room number
    */
   uint8_t GetRoomNumberY (void);
 
-  /** 
+  /**
    * \brief Get the building in which the MobilityBuildingInfo instance is located
-   * 
+   *
    * \return The building in which the MobilityBuildingInfo instance is located
    */
   Ptr<Building> GetBuilding ();

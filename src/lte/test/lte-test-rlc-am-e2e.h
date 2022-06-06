@@ -45,7 +45,7 @@ public:
  * \ingroup tests
  *
  * Test cases used for the test suite lte-rlc-am-e2e. See the testing section of
- * the LTE module documentation for details.  
+ * the LTE module documentation for details.
  */
 class LteRlcAmE2eTestCase : public TestCase
 {

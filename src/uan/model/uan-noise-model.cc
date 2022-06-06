@@ -33,12 +33,12 @@ TypeId UanNoiseModel::GetTypeId (void)
   return tid;
 }
 
-void 
+void
 UanNoiseModel::Clear (void)
 {
 }
 
-void 
+void
 UanNoiseModel::DoDispose (void)
 {
   Clear ();

@@ -27,16 +27,16 @@ NS_LOG_COMPONENT_DEFINE ("GeographicPositions");
 namespace ns3 {
 
 /// Earth's radius in meters if modeled as a perfect sphere
-static constexpr double EARTH_RADIUS = 6371e3; 
+static constexpr double EARTH_RADIUS = 6371e3;
 
 /**
  * GRS80 and WGS84 sources
- * 
- * Moritz, H. "Geodetic Reference System 1980." GEODETIC REFERENCE SYSTEM 1980. 
+ *
+ * Moritz, H. "Geodetic Reference System 1980." GEODETIC REFERENCE SYSTEM 1980.
  * <http://www.gfy.ku.dk/~iag/HB2000/part4/grs80_corr.htm>.
- * 
- * "Department of Defense World Geodetic System 1984." National Imagery and 
- * Mapping Agency, 1 Jan. 2000. 
+ *
+ * "Department of Defense World Geodetic System 1984." National Imagery and
+ * Mapping Agency, 1 Jan. 2000.
  * <http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
  */
 
@@ -56,8 +56,8 @@ static constexpr double DEG2RAD = M_PI / 180.0;
 static constexpr double RAD2DEG = 180.0 * M_1_PI;
 
 Vector
-GeographicPositions::GeographicToCartesianCoordinates (double latitude, 
-                                                       double longitude, 
+GeographicPositions::GeographicToCartesianCoordinates (double latitude,
+                                                       double longitude,
                                                        double altitude,
                                                        EarthSpheroidType sphType)
 {
@@ -160,10 +160,10 @@ GeographicPositions::CartesianToGeographicCoordinates (Vector pos, EarthSpheroid
 }
 
 std::list<Vector>
-GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLatitude, 
-                                                               double originLongitude, 
+GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLatitude,
+                                                               double originLongitude,
                                                                double maxAltitude,
-                                                               int numPoints, 
+                                                               int numPoints,
                                                                double maxDistFromOrigin,
                                                                Ptr<UniformRandomVariable> uniRand)
 {
@@ -192,57 +192,57 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
   double originLongitudeRadians = originLongitude * DEG2RAD;
   double originColatitude = (M_PI_2) - originLatitudeRadians;
 
-  double a = maxDistFromOrigin / EARTH_RADIUS; // maximum alpha allowed 
+  double a = maxDistFromOrigin / EARTH_RADIUS; // maximum alpha allowed
                                                // (arc length formula)
   if (a > M_PI)
     {
-      a = M_PI; // pi is largest alpha possible (polar angle from origin that 
+      a = M_PI; // pi is largest alpha possible (polar angle from origin that
                 // points can be generated within)
     }
-  
+
   std::list<Vector> generatedPoints;
   for (int i = 0; i < numPoints; i++)
     {
       // random distance from North Pole (towards center of earth)
-      double d = uniRand->GetValue (0, EARTH_RADIUS - EARTH_RADIUS * cos (a)); 
+      double d = uniRand->GetValue (0, EARTH_RADIUS - EARTH_RADIUS * cos (a));
       // random angle in latitude slice (wrt Prime Meridian), radians
-      double phi = uniRand->GetValue (0, M_PI * 2); 
+      double phi = uniRand->GetValue (0, M_PI * 2);
       // random angle from Center of Earth (wrt North Pole), radians
-      double alpha = acos((EARTH_RADIUS - d) / EARTH_RADIUS); 
+      double alpha = acos((EARTH_RADIUS - d) / EARTH_RADIUS);
 
       // shift coordinate system from North Pole referred to origin point referred
       // reference: http://en.wikibooks.org/wiki/General_Astronomy/Coordinate_Systems
-      double theta = M_PI_2 - alpha;   // angle of elevation of new point wrt 
-                                       // origin point (latitude in coordinate 
+      double theta = M_PI_2 - alpha;   // angle of elevation of new point wrt
+                                       // origin point (latitude in coordinate
                                        // system referred to origin point)
-      double randPointLatitude = asin(sin(theta)*cos(originColatitude) + 
-                                 cos(theta)*sin(originColatitude)*sin(phi)); 
+      double randPointLatitude = asin(sin(theta)*cos(originColatitude) +
+                                 cos(theta)*sin(originColatitude)*sin(phi));
                                  // declination
-      double intermedLong = asin((sin(randPointLatitude)*cos(originColatitude) - 
-                            sin(theta)) / (cos(randPointLatitude)*sin(originColatitude))); 
+      double intermedLong = asin((sin(randPointLatitude)*cos(originColatitude) -
+                            sin(theta)) / (cos(randPointLatitude)*sin(originColatitude)));
                             // right ascension
       intermedLong = intermedLong + M_PI_2; // shift to longitude 0
 
-      //flip / mirror point if it has phi in quadrant II or III (wasn't 
+      //flip / mirror point if it has phi in quadrant II or III (wasn't
       //resolved correctly by arcsin) across longitude 0
       if (phi > (M_PI_2) && phi <= (3 * M_PI_2))
         intermedLong = -intermedLong;
 
       // shift longitude to be referenced to origin
-      double randPointLongitude = intermedLong + originLongitudeRadians; 
+      double randPointLongitude = intermedLong + originLongitudeRadians;
 
       // random altitude above earth's surface
       double randAltitude = uniRand->GetValue (0, maxAltitude);
 
-      Vector pointPosition = GeographicPositions::GeographicToCartesianCoordinates 
-                             (randPointLatitude * RAD2DEG, 
+      Vector pointPosition = GeographicPositions::GeographicToCartesianCoordinates
+                             (randPointLatitude * RAD2DEG,
                               randPointLongitude * RAD2DEG,
                               randAltitude,
                               SPHERE);
-                              // convert coordinates 
+                              // convert coordinates
                               // from geographic to cartesian
 
-      generatedPoints.push_back (pointPosition); //add generated coordinate 
+      generatedPoints.push_back (pointPosition); //add generated coordinate
                                                       //points to list
     }
   return generatedPoints;

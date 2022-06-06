@@ -43,7 +43,7 @@ public:
 
   /**
    * Constructor
-   * 
+   *
    * \param value the value
    */
   explicit SequenceNumber10 (uint16_t value)
@@ -53,7 +53,7 @@ public:
 
   /**
    * Constructor
-   * 
+   *
    * \param value the value
    */
   SequenceNumber10 (SequenceNumber10 const &value)
@@ -62,8 +62,8 @@ public:
   {}
 
   /**
-   * Assignment operator 
-   * 
+   * Assignment operator
+   *
    * \param value the value
    * \returns SequenceNumber10
    */

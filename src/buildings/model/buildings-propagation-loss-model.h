@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 
 #ifndef BUILDINGS_PROPAGATION_LOSS_MODEL_H_
@@ -40,15 +40,15 @@ class JakesFadingLossModel;
  * \ingroup propagation
  *
  *  This model provides means for simulating the following propagation
- *  phenomena in the presence of buildings: 
+ *  phenomena in the presence of buildings:
  *
  *   - shadowing (indoor, outdoor)
  *   - external wall penetration loss
  *   - internal wall penetration loss
- *  
+ *
  *  The distance-dependent component of propagation loss is deferred
  *  to derived classes which are expected to implement the GetLoss method.
- *  
+ *
  *  \warning This model works only when MobilityBuildingInfo is aggreegated
  *  to the mobility model
  *
@@ -95,7 +95,7 @@ protected:
    * \returns the propagation loss (in dBm)
    */
   double InternalWallsLoss (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
-  
+
   /**
    * Calculate the shadowing loss
    * \param a Room A data
@@ -108,7 +108,7 @@ protected:
 
   /**
    * \ingroup propagation
-   * 
+   *
    * This model allows the computation of shadowing loss
    */
   class ShadowingLoss

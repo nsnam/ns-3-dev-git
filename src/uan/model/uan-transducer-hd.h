@@ -53,7 +53,7 @@ public:
   virtual bool IsTx (void) const;
   virtual const ArrivalList &GetArrivalList (void) const;
   virtual double ApplyRxGainDb (double rxPowerDb, UanTxMode mode);
-  virtual void SetRxGainDb (double gainDb);  
+  virtual void SetRxGainDb (double gainDb);
   virtual double GetRxGainDb (void);
   virtual void Receive (Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
   virtual void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);

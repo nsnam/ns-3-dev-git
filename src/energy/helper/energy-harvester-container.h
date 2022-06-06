@@ -28,7 +28,7 @@
 #include <stdint.h>
 
 namespace ns3 {
-    
+
 class EnergyHarvester;
 
 /**
@@ -188,7 +188,7 @@ private:
   std::vector< Ptr<EnergyHarvester> > m_harvesters; //!< Harvester container
 
 };
-    
+
 } // namespace ns3
 
 

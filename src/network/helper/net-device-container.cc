@@ -42,28 +42,28 @@ NetDeviceContainer::NetDeviceContainer (const NetDeviceContainer &a, const NetDe
 }
 
 
-NetDeviceContainer::Iterator 
+NetDeviceContainer::Iterator
 NetDeviceContainer::Begin (void) const
 {
   return m_devices.begin ();
 }
-NetDeviceContainer::Iterator 
+NetDeviceContainer::Iterator
 NetDeviceContainer::End (void) const
 {
   return m_devices.end ();
 }
 
-uint32_t 
+uint32_t
 NetDeviceContainer::GetN (void) const
 {
   return m_devices.size ();
 }
-Ptr<NetDevice> 
+Ptr<NetDevice>
 NetDeviceContainer::Get (uint32_t i) const
 {
   return m_devices[i];
 }
-void 
+void
 NetDeviceContainer::Add (NetDeviceContainer other)
 {
   for (Iterator i = other.Begin (); i != other.End (); i++)
@@ -71,12 +71,12 @@ NetDeviceContainer::Add (NetDeviceContainer other)
       m_devices.push_back (*i);
     }
 }
-void 
+void
 NetDeviceContainer::Add (Ptr<NetDevice> device)
 {
   m_devices.push_back (device);
 }
-void 
+void
 NetDeviceContainer::Add (std::string deviceName)
 {
   Ptr<NetDevice> device = Names::Find<NetDevice> (deviceName);

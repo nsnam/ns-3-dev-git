@@ -102,9 +102,9 @@ SOURCES = \
 	$(SRC)/sixlowpan/doc/sixlowpan.rst \
 	$(SRC)/lr-wpan/doc/lr-wpan.rst \
 
-# list all model library figure files that need to be copied to 
+# list all model library figure files that need to be copied to
 # $SOURCETEMP/figures.  For each figure to be included in all
-# documentation formats (html, latex...) the following formats are supported: 
+# documentation formats (html, latex...) the following formats are supported:
 #  1) a single .dia file (preferred option, because it can be edited)
 #  2) a single .eps file
 #  3) both a .pdf and .png file
@@ -472,7 +472,7 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
-$(FIGURES)/antenna-coordinate-system.pdf_width = 7cm	
+$(FIGURES)/antenna-coordinate-system.pdf_width = 7cm
 $(FIGURES)/node.pdf_width = 5in
 $(FIGURES)/packet.pdf_width = 4in
 $(FIGURES)/buffer.pdf_width = 15cm
@@ -501,7 +501,7 @@ $(FIGURES)/fr-soft-frequency-reuse-scheme-v1.pdf_width = 8cm
 $(FIGURES)/fr-soft-frequency-reuse-scheme-v2.pdf_width = 8cm
 $(FIGURES)/fr-strict-frequency-reuse-scheme.pdf_width = 8cm
 $(FIGURES)/ffr-distributed-scheme.pdf_width = 8cm
-$(FIGURES)/lte-arch-enb-data.pdf_width = 6cm 
+$(FIGURES)/lte-arch-enb-data.pdf_width = 6cm
 $(FIGURES)/lte-arch-enb-ctrl.pdf_width = 10cm
 $(FIGURES)/lte-arch-ue-data.pdf_width = 6cm
 $(FIGURES)/lte-arch-ue-ctrl.pdf_width = 10cm
@@ -561,7 +561,7 @@ BUILDDIR      = build
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCETEMP) 
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCETEMP)
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
@@ -587,8 +587,8 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 copy-sources:  $(SOURCES)
-	@mkdir -p $(SOURCETEMP) 
-	@mkdir -p $(FIGURES) 
+	@mkdir -p $(SOURCETEMP)
+	@mkdir -p $(FIGURES)
 	@cp -r -p $(SOURCES) $(SOURCETEMP)
 	@cp -r -p $(SOURCEFIGS) $(FIGURES)
 
@@ -601,7 +601,7 @@ frag: pickle
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html: copy-sources $(IMAGES) 
+html: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

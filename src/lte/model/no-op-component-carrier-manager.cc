@@ -29,7 +29,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NoOpComponentCarrierManager");
 NS_OBJECT_ENSURE_REGISTERED (NoOpComponentCarrierManager);
-  
+
 NoOpComponentCarrierManager::NoOpComponentCarrierManager ()
 {
   NS_LOG_FUNCTION (this);
@@ -246,7 +246,7 @@ std::vector<uint8_t>
 NoOpComponentCarrierManager::DoReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << rnti << +lcid);
-  
+
   // Here we receive directly the RNTI and the LCID, instead of only DRB ID
   // DRB ID are mapped as DRBID = LCID + 2
   auto rntiIt = m_ueInfo.find (rnti);

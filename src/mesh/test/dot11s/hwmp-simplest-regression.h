@@ -42,7 +42,7 @@ using namespace ns3;
  * <-----------|----------->|             Beacon
  *             |----------->|             Peer Link Open frame
  *             |<-----------|             Peer Link Confirm frame
- *             |<-----------|             Peer Link Open frame 
+ *             |<-----------|             Peer Link Open frame
  *             |----------->|             Peer Link Confirm frame
  *             |............|             !!! Data started:
  *             |<-----------|-----------> ARP Request (time 2)

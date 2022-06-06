@@ -87,7 +87,7 @@ public:
   void AddPgw (Ipv4Address pgwAddr);
 
   /**
-   * Let the SGW be aware of a new eNB 
+   * Let the SGW be aware of a new eNB
    *
    * \param cellId the cell identifier
    * \param enbAddr the address of the eNB

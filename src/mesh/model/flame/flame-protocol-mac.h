@@ -36,17 +36,17 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 public:
   /**
    * Constructor
-   * 
+   *
    * \param protocol flame protocol object
    */
   FlameProtocolMac (Ptr<FlameProtocol> protocol);
   ~FlameProtocolMac ();
-  
+
   // Inherited from MAC plugin
   /**
    * Set parent of this instance
    * \param parent pointer to the parent MeshWifiInterfaceMac
-   */ 
+   */
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   /**
    * Receive and process a packet; packets are given a FlameTag packet tag
@@ -91,7 +91,7 @@ public:
   void ResetStats ();
 
 private:
-  
+
   // MeshPointDevice parameters:
   Ptr<FlameProtocol> m_protocol; ///< protocol
   Ptr<MeshWifiInterfaceMac> m_parent; ///< parent

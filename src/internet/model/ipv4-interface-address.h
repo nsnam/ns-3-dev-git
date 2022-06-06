@@ -34,13 +34,13 @@ namespace ns3 {
  *
  * Corresponds to Linux struct in_ifaddr.  A list of these addresses
  * is stored in Ipv4Interface.  This class is modelled after how current
- * Linux handles IP aliasing for IPv4.  Notably, aliasing of IPv4 
+ * Linux handles IP aliasing for IPv4.  Notably, aliasing of IPv4
  * interfaces (e.g., "eth0:1") is not used, and instead an interface
  * is assigned possibly multiple addresses, with each address being
- * classified as being primary and secondary.  See the iproute2 
+ * classified as being primary and secondary.  See the iproute2
  * documentation for this distinction.
  */
-class Ipv4InterfaceAddress 
+class Ipv4InterfaceAddress
 {
 public:
   /**
@@ -125,7 +125,7 @@ public:
    * \returns the broadcast address
    */
   Ipv4Address GetBroadcast (void) const;
- 
+
   /**
    * \brief Set the scope.
    * \param scope the scope of address

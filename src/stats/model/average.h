@@ -113,8 +113,8 @@ public:
   /**
    * \brief Margin of error of the mean for 90% confidence level
    *
-   * Note that estimates are valid for 
-   *   - uncorrelated measurements, 
+   * Note that estimates are valid for
+   *   - uncorrelated measurements,
    *   - normal distribution and
    *   - large enough sample size.
    *
@@ -122,10 +122,10 @@ public:
    */
   double   Error90 () const { return 1.645 * std::sqrt (Var () / Count ()); }
   /**
-   * \brief Margin of error of the mean for 95% confidence level 
+   * \brief Margin of error of the mean for 95% confidence level
    *
-   * Note that estimates are valid for 
-   *   - uncorrelated measurements, 
+   * Note that estimates are valid for
+   *   - uncorrelated measurements,
    *   - normal distribution and
    *   - large enough sample size.
    *
@@ -133,10 +133,10 @@ public:
    */
   double   Error95 () const { return 1.960 * std::sqrt (Var () / Count ()); }
   /**
-   * \brief Margin of error of the mean for 99% confidence level 
+   * \brief Margin of error of the mean for 99% confidence level
    *
-   * Note that estimates are valid for 
-   *   - uncorrelated measurements, 
+   * Note that estimates are valid for
+   *   - uncorrelated measurements,
    *   - normal distribution and
    *   - large enough sample size.
    *

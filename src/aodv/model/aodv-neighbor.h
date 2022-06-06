@@ -161,7 +161,7 @@ private:
 
   /**
    * Find MAC address by IP using list of ARP caches
-   * 
+   *
    * \param addr the IP address to lookup
    * \returns the MAC address for the IP address
    */

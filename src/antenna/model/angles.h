@@ -28,72 +28,72 @@
 namespace ns3 {
 
 
-/** 
+/**
  * \brief converts degrees to radians
- * 
+ *
  * \param degrees the angle in degrees
  * \return the angle in radians
  */
 double DegreesToRadians (double degrees);
 
-/** 
+/**
  * \brief converts degrees to radians
- * 
+ *
  * \param degrees the angles in degrees
  * \return the angles in radians
  */
 std::vector<double> DegreesToRadians (const std::vector<double> &degrees);
 
-/** 
+/**
  * \brief converts radians to degrees
- * 
+ *
  * \param radians the angle in radians
  * \return the angle in degrees
  */
 double RadiansToDegrees (double radians);
 
-/** 
+/**
  * \brief converts radians to degrees
- * 
+ *
  * \param radians the angles in radians
  * \return the angles in degrees
  */
 std::vector<double> RadiansToDegrees (const std::vector<double> &radians);
 
-/** 
+/**
  * \brief Wrap angle in [0, 360)
- * 
+ *
  * \param a the angle in degrees
  * \return the wrapped angle in degrees
  */
 double WrapTo360 (double a);
 
-/** 
+/**
  * \brief Wrap angle in [-180, 180)
- * 
+ *
  * \param a the angle in degrees
  * \return the wrapped angle in degrees
  */
 double WrapTo180 (double a);
 
-/** 
+/**
  * \brief Wrap angle in [0, 2*M_PI)
- * 
+ *
  * \param a the angle in radians
  * \return the wrapped angle in radians
  */
 double WrapTo2Pi (double a);
 
-/** 
+/**
  * \brief Wrap angle in [-M_PI, M_PI)
- * 
+ *
  * \param a the angle in radians
  * \return the wrapped angle in radians
  */
 double WrapToPi (double a);
 
-/** 
- * 
+/**
+ *
  * Class holding the azimuth and inclination angles of spherical coordinates.
  * The notation is the one used in  "Antenna Theory - Analysis
  * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation pattern".
@@ -101,9 +101,9 @@ double WrapToPi (double a);
  * measured counterclockwise in the x-y plane off the x-axis, and
  * inclination measured off the z-axis.
  * Azimuth is consistently normalized to be in [-M_PI, M_PI).
- * 
+ *
  *          ^
- *        z | 
+ *        z |
  *          |_ inclination
  *          | \
  *          | /|
@@ -118,34 +118,34 @@ double WrapToPi (double a);
 class Angles
 {
 public:
-  /** 
+  /**
    * This constructor allows to specify azimuth and inclination.
    * Inclination must be in [0, M_PI], while azimuth is
    * automatically notmalized in [-M_PI, M_PI)
-   * 
+   *
    * \param azimuth the azimuth angle in radians
    * \param inclination the inclination angle in radians
    */
   Angles (double azimuth, double inclination);
 
-  /** 
+  /**
    * This constructor will initialize azimuth and inclination by converting the
    * given 3D vector from cartesian coordinates to spherical coordinates
    * Note: azimuth and inclination angles for a zero-length vector are not defined
    * and are thus initialized to NAN
-   * 
+   *
    * \param v the 3D vector in cartesian coordinates
-   * 
+   *
    */
   Angles (Vector v);
 
-  /** 
+  /**
    * This constructor initializes an Angles instance with the angles
-   * of the spherical coordinates of point v respect to point o 
-   * 
+   * of the spherical coordinates of point v respect to point o
+   *
    * \param v the point (in cartesian coordinates) for which the angles are determined
    * \param o the origin (in cartesian coordinates) of the spherical coordinate system
-   * 
+   *
    */
   Angles (Vector v, Vector o);
 
@@ -198,7 +198,7 @@ public:
   static bool m_printDeg; //!< flag for printing in radians or degrees units
 
 private:
-  /** 
+  /**
    * Default constructor is disabled
    */
   Angles ();
@@ -207,7 +207,7 @@ private:
     * Normalize the angle azimuth angle range between in [-M_PI, M_PI)
     * while checking if the angle is valid, i.e., finite and within
     * the bounds.
-    * 
+    *
     * Note: while an arbitrary value for the azimuth angle is valid
     * and can be wrapped in [-M_PI, M_PI), an inclination angle outside
     * the [0, M_PI] range can be ambiguos and is thus not valid.

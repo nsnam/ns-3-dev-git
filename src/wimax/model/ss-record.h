@@ -218,7 +218,7 @@ public:
   /**
    * Set DSA response
    * \param dsaRsp the DSA response
-   */ 
+   */
   void SetDsaRsp (DsaRsp dsaRsp);
   /**
    * Get DSA response

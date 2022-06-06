@@ -35,7 +35,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SecondScriptExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   bool verbose = true;

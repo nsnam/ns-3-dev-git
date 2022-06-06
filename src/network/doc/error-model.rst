@@ -17,8 +17,8 @@ NetDevice models, that are maintained as part of the ``network`` module:
 * BurstErrorModel
 
 Error models are used to indicate that a packet should be considered to
-be errored, according to the underlying (possibly stochastic or 
-empirical) error model.  
+be errored, according to the underlying (possibly stochastic or
+empirical) error model.
 
 Model Description
 *****************
@@ -26,7 +26,7 @@ Model Description
 The source code for error models live in the directory ``src/packet/utils``.
 
 Two types of error models are generally provided.  The first are stochastic
-models.  In this case, packets are errored according to underlying 
+models.  In this case, packets are errored according to underlying
 random variable distributions.  An example of this is the ``RateErrorModel``.
 The other type of model is a deterministic or empirical model, in which
 packets are errored according to a particular prescribed pattern.
@@ -48,7 +48,7 @@ Error models are |ns3| objects and can be created using the typical
 pattern of ``CreateObject<>()``.  They have configuration attributes.
 
 An ErrorModel can be applied anywhere, but are commonly deployed on
-NetDevice models so that artificial losses (mimicking channel losses) 
+NetDevice models so that artificial losses (mimicking channel losses)
 can be induced.
 
 Scope and Limitations
@@ -60,7 +60,7 @@ This type of operation will likely be performance-expensive, and existing
 Packet APIs may not easily support it.
 
 The |ns3| spectrum model and devices that derive from it (e.g. LTE) have
-their own error model base class, found in 
+their own error model base class, found in
 
 References
 ==========
@@ -77,15 +77,15 @@ The base class API is as follows:
   Some models could potentially alter the contents of the packet bit buffer.
 * ``void ErrorModel::Reset (void)``:  Reset any state.
 * ``void ErrorModel::Enable (void)``:  Enable the model
-* ``void ErrorModel::Disble (void)``:  Disable the model; IsCorrupt() will 
+* ``void ErrorModel::Disble (void)``:  Disable the model; IsCorrupt() will
   always return false.
 * ``bool ErrorModel::IsEnabled (void) const``:  Return the enabled state
 
 
 Many |ns3| NetDevices contain attributes holding pointers to error
-models.  The error model is applied in the notional physical layer 
+models.  The error model is applied in the notional physical layer
 processing chain of the device, and drops should show up on the ``PhyRxDrop``
-trace source of the device.  The following are known to include an attribute 
+trace source of the device.  The following are known to include an attribute
 with a pointer available to hold this type of error model:
 
 * ``SimpleNetDevice``
@@ -117,7 +117,7 @@ Examples
 
 Error models are used in the tutorial ``fifth`` and ``sixth`` programs.
 
-The directory ``examples/error-model/`` contains an example 
+The directory ``examples/error-model/`` contains an example
 ``simple-error-model.cc`` that exercises the Rate and List error models.
 
 The TCP example ``examples/tcp/tcp-nsc-lfn.cc`` uses the Rate error model.
@@ -130,9 +130,9 @@ No known issues.
 Validation
 **********
 
-The ``error-model`` unit test suite provides a single test case of 
-of a particular combination of ErrorRate and ErrorUnit for the 
-``RateErrorModel`` applied to a ``SimpleNetDevice``. 
+The ``error-model`` unit test suite provides a single test case of
+of a particular combination of ErrorRate and ErrorUnit for the
+``RateErrorModel`` applied to a ``SimpleNetDevice``.
 
 Acknowledgements
 ****************
@@ -142,12 +142,12 @@ from |ns2| to |ns3| in 2007.  The ReceiveListErrorModel was added at that
 time.
 
 The burst error model is due to Truc Anh N. Nguyen at the University of
-Kansas (James P.G. Sterbenz <jpgs@ittc.ku.edu>, director, ResiliNets 
-Research Group (http://wiki.ittc.ku.edu/resilinets), Information and 
-Telecommunication Technology Center (ITTC) and Department of Electrical 
+Kansas (James P.G. Sterbenz <jpgs@ittc.ku.edu>, director, ResiliNets
+Research Group (http://wiki.ittc.ku.edu/resilinets), Information and
+Telecommunication Technology Center (ITTC) and Department of Electrical
 Engineering and Computer Science, The University of Kansas Lawrence, KS USA).
 Work supported in part by NSF FIND (Future Internet Design) Program
 under grant CNS-0626918 (Postmodern Internet Architecture),
-NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and 
-Experimentation on GENI), US Department of Defense (DoD), and ITTC at 
+NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and
+Experimentation on GENI), US Department of Defense (DoD), and ITTC at
 The University of Kansas.

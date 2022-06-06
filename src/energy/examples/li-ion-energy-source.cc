@@ -63,7 +63,7 @@ main (int argc, char **argv)
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
     // uncomment below to see the energy consumption details
   // LogComponentEnable ("LiIonEnergySource", LOG_LEVEL_DEBUG);
 

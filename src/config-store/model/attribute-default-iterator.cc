@@ -12,11 +12,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
- 
+
 #include "attribute-default-iterator.h"
 #include "ns3/attribute.h"
 #include "ns3/pointer.h"
@@ -31,7 +31,7 @@ namespace ns3
 AttributeDefaultIterator::~AttributeDefaultIterator ()
 {
 }
-void 
+void
 AttributeDefaultIterator::Iterate (void)
 {
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
@@ -104,21 +104,21 @@ AttributeDefaultIterator::Iterate (void)
     }
 }
 
-void 
+void
 AttributeDefaultIterator::StartVisitTypeId (std::string name)
 {
 }
-void 
+void
 AttributeDefaultIterator::EndVisitTypeId (void)
 {
 }
 
-void 
+void
 AttributeDefaultIterator::DoVisitAttribute (std::string name, std::string defaultValue)
 {
 }
 
-void 
+void
 AttributeDefaultIterator::VisitAttribute (TypeId tid, std::string name, std::string defaultValue, uint32_t index)
 {
   DoVisitAttribute (name, defaultValue);

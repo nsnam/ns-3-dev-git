@@ -94,7 +94,7 @@ public:
   void SendBandwidthRequest (uint8_t uiuc, uint16_t allocationSize);
   /**
    * Process bandwidth request
-   * \param bwRequestHdr the bandwidth request 
+   * \param bwRequestHdr the bandwidth request
    */
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
   /// Set subframe ratio

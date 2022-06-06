@@ -134,7 +134,7 @@ MpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t node, uint
   g_parallelCommunicationInterface->SendPacket (p, rxTime, node, dev);
 }
 
-MPI_Comm 
+MPI_Comm
 MpiInterface::GetCommunicator()
 {
   NS_ASSERT (g_parallelCommunicationInterface);

@@ -81,9 +81,9 @@ private:
    */
   friend ns3::RemoteChannelBundle;
   friend ns3::NullMessageSimulatorImpl;
-  
+
   /**
-   * \brief Send a Null Message to across the specified bundle.  
+   * \brief Send a Null Message to across the specified bundle.
    *
    * Null Messages are sent when a packet has not been sent across
    * this bundle in order to allow time advancement on the remote
@@ -128,7 +128,7 @@ private:
    * Check for received messages complete.  Will block until message
    * has been received if blocking flag is true.  When blocking will
    * return after the first message is received.   Non-blocking mode will
-   * only check for received messages complete, and return 
+   * only check for received messages complete, and return
    * all messages that are queued up locally.
    *
    * \param [in] blocking Whether this call should block.

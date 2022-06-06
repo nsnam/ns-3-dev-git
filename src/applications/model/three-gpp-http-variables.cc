@@ -414,7 +414,7 @@ ThreeGppHttpVariables::SetMainObjectSizeStdDev (uint32_t stdDev)
 {
   NS_LOG_FUNCTION (this << stdDev);
   m_mainObjectSizeStdDev = stdDev;
-  
+
   if (IsInitialized ())
     {
       UpdateMainObjectMuAndSigma ();

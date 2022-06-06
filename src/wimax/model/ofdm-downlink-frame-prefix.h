@@ -145,7 +145,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Set base station ID field
    * \param baseStationId the base station ID

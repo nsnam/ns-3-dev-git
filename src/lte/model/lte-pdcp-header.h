@@ -77,7 +77,7 @@ public:
   enum {
     CONTROL_PDU   = 0,
     DATA_PDU      = 1
-  } DcBit_t; ///< DcBit_t typedef 
+  } DcBit_t; ///< DcBit_t typedef
 
   /**
    * \brief Get the type ID.

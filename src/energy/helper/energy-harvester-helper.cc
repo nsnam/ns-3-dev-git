@@ -24,7 +24,7 @@
 #include "ns3/names.h"
 
 namespace ns3 {
-  
+
 /*
  * EnergyHarvesterHelper
  */
@@ -75,5 +75,5 @@ EnergyHarvesterHelper::Install (std::string sourceName) const
   Ptr<EnergySource> source  = Names::Find<EnergySource> (sourceName);
   return Install (source);
 }
-    
+
 } // namespace ns3

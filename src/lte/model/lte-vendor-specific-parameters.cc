@@ -24,16 +24,16 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteVendorSpecificParameters");
-  
+
 SrsCqiRntiVsp::SrsCqiRntiVsp (uint16_t rnti)
 :  m_rnti (rnti)
 {
-  
+
 }
 
 SrsCqiRntiVsp::~SrsCqiRntiVsp ()
 {
-  
+
 }
 
 uint16_t

@@ -219,14 +219,14 @@ TcFlowControlTestCase::DoRun (void)
        * When the device queue is in packet mode, all the packets enqueued in the
        * queue disc are correctly transmitted, even if the device queue is stopped
        * when the last packet is received from the upper layers
-       * 
+       *
        * We have the following invariants:
        *  - totalPackets = txPackets + deviceQueuePackets + qdiscPackets
        *  - deviceQueuePackets = MIN(totalPackets - txPackets, deviceQueueLen)
        *  - qdiscPackets = MAX(totalPackets - txPackets - deviceQueuePackets, 0)
-       * 
+       *
        * The transmission of each packet takes 1000B/1Mbps = 8ms
-       * 
+       *
        * We check the values of deviceQueuePackets and qdiscPackets 1ms after each
        * packet is transmitted (i.e. at 1ms, 9ms, 17ms, ...), as well as verifying
        * that the device queue is stopped or not, as appropriate.

@@ -58,11 +58,11 @@ namespace {
   long double
   Scale (Time::Unit u)
   {
-    return UNIT_COEFF[u] * std::pow (10L, UNIT_POWER[u]); 
+    return UNIT_COEFF[u] * std::pow (10L, UNIT_POWER[u]);
   }
 
-  /** 
-   * Initializer for \c UNIT_VALUE 
+  /**
+   * Initializer for \c UNIT_VALUE
    * \returns The array of scale factors between units.
    */
   long double *

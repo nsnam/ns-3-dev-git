@@ -34,12 +34,12 @@ class Node;
 
 /**
  * The X2 SAP defines the service between the X2 entity and the RRC entity.
- * 
+ *
  * The X2 SAP follows the specification 3GPP TS 36.423: "X2 application protocol (X2AP)"
- * 
- * The service primitives corresponds to the X2AP procedures and messages and 
+ *
+ * The service primitives corresponds to the X2AP procedures and messages and
  * the service parameters corresponds to the Information Elements
- * 
+ *
  * Note: Any reference in this file refers to the 3GPP TS 36.423 specification
  */
 
@@ -50,7 +50,7 @@ class EpcX2Sap
 {
 public:
   virtual ~EpcX2Sap ();
-  
+
   /**
    * E-RABs to be setup item as
    * it is used in the HANDOVER REQUEST message.
@@ -135,7 +135,7 @@ public:
    * Relative Narrowband Tx Power (RNTP) as
    * it is used in the LOAD INFORMATION message.
    * See section 9.2.19 for further info about the parameters
-   * 
+   *
    * Note: You can use INT16_MIN value for -infinite value
    *       in the rntpThreshold field
    */
@@ -233,7 +233,7 @@ public:
     uint16_t            targetCellId; ///< target cell ID
     uint32_t            mmeUeS1apId; ///< MME UE S1 AP ID
     uint64_t            ueAggregateMaxBitRateDownlink; ///< UE aggregrate max bit rate downlink
-    uint64_t            ueAggregateMaxBitRateUplink; ///< UE aggregrate max bit rate uplink 
+    uint64_t            ueAggregateMaxBitRateUplink; ///< UE aggregrate max bit rate uplink
     std::vector <ErabToBeSetupItem> bearers; ///< bearers
     Ptr<Packet>         rrcContext; ///< RRC context
   };
@@ -427,7 +427,7 @@ public:
   /**
    * Receive handover preparation failure function
    * \param params the handover preparation failure parameters
-   */ 
+   */
   virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params) = 0;
 
   /**
@@ -447,7 +447,7 @@ public:
    * \param params the load information parameters
    */
   virtual void RecvLoadInformation (LoadInformationParams params) = 0;
-  
+
   /**
    * Receive resource status update function
    * \param params the resource status update parameters

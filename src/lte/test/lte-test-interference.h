@@ -45,7 +45,7 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that SINR calculation and MCS selection works fine in a 
+ * \brief Test that SINR calculation and MCS selection works fine in a
  * multi-cell interference scenario.
  */
 class LteInterferenceTestCase : public TestCase

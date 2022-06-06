@@ -65,15 +65,15 @@ public:
   /**
    * Set LteUePhy
    * \param s a pointer to the LteUePhy
-   */  
+   */
   void SetPhy (Ptr<LteUePhy> s);
 
   /**
    * Set the LteEnbMac
    * \param s a pointer to the LteEnbMac
-   */ 
+   */
   void SetMac (Ptr<LteUeMac> s);
-  
+
 protected:
   // inherited from Object
   virtual void DoInitialize (void);

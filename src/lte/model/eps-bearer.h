@@ -34,7 +34,7 @@ namespace ns3 {
  */
 struct GbrQosInformation
 {
-  /** 
+  /**
    * Default constructor, initializes member variables to zero or equivalent
    */
   GbrQosInformation ();
@@ -52,7 +52,7 @@ struct GbrQosInformation
  */
 struct AllocationRetentionPriority
 {
-  /** 
+  /**
    * Default constructor, initializes member variables to zero or equivalent
    */
   AllocationRetentionPriority ();
@@ -133,7 +133,7 @@ public:
 
   /**
    * Default constructor. QCI will be initialized to NGBR_VIDEO_TCP_DEFAULT
-   * 
+   *
    */
   EpsBearer ();
 

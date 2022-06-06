@@ -3,67 +3,67 @@
 DSR Routing
 -----------
 
-Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed specifically 
+Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed specifically
 for use in multi-hop wireless ad hoc networks of mobile nodes.
 
-This model was developed by 
+This model was developed by
 `the ResiliNets research group <http://www.ittc.ku.edu/resilinets>`_
-at the University of Kansas.  
+at the University of Kansas.
 
 DSR Routing Overview
 ********************
- 
-This model implements the base specification of the Dynamic Source Routing 
+
+This model implements the base specification of the Dynamic Source Routing
 (DSR) protocol. Implementation is based on :rfc:`4728`, with some extensions
 and modifications to the RFC specifications.
 
-DSR operates on a on-demand behavior. Therefore, our DSR model buffers all 
-packets while a route request packet (RREQ) is disseminated. We implement 
-a packet buffer in dsr-rsendbuff.cc. The packet queue implements 
-garbage collection of old packets and a queue size limit. When the packet 
-is sent out from the send buffer, it will be queued in maintenance buffer 
+DSR operates on a on-demand behavior. Therefore, our DSR model buffers all
+packets while a route request packet (RREQ) is disseminated. We implement
+a packet buffer in dsr-rsendbuff.cc. The packet queue implements
+garbage collection of old packets and a queue size limit. When the packet
+is sent out from the send buffer, it will be queued in maintenance buffer
 for next hop acknowledgment.
 
-The maintenance buffer then buffers the already sent out packets and waits 
-for the notification of packet delivery.  Protocol operation strongly 
-depends on broken link detection mechanism. We implement the three heuristics 
+The maintenance buffer then buffers the already sent out packets and waits
+for the notification of packet delivery.  Protocol operation strongly
+depends on broken link detection mechanism. We implement the three heuristics
 recommended based the RFC as follows:
 
-First, we use link layer feedback when possible, which is also the fastest 
-mechanism of these three to detect link errors. A link is considered to be 
-broken if frame transmission results in a transmission failure for all 
-retries. This mechanism is meant for active links and works much faster 
-than in its absence.  DSR is able to 
-detect the link layer transmission failure and notify that as broken.  
+First, we use link layer feedback when possible, which is also the fastest
+mechanism of these three to detect link errors. A link is considered to be
+broken if frame transmission results in a transmission failure for all
+retries. This mechanism is meant for active links and works much faster
+than in its absence.  DSR is able to
+detect the link layer transmission failure and notify that as broken.
 Recalculation of routes will be triggered
-when needed.  If user does not want to use link layer acknowledgment, 
-it can be tuned by setting "LinkAcknowledgment" attribute to false in 
+when needed.  If user does not want to use link layer acknowledgment,
+it can be tuned by setting "LinkAcknowledgment" attribute to false in
 "dsr-routing.cc".
 
-Second, passive acknowledgment should be used whenever possible. The node 
-turns on "promiscuous" receive mode, in which it can receive packets not 
-destined for itself, and when the node assures the delivery of that data 
+Second, passive acknowledgment should be used whenever possible. The node
+turns on "promiscuous" receive mode, in which it can receive packets not
+destined for itself, and when the node assures the delivery of that data
 packet to its destination, it cancels the passive acknowledgment timer.
 
-Last, we use a network layer acknowledge scheme to notify the receipt of 
+Last, we use a network layer acknowledge scheme to notify the receipt of
 a packet. Route request packet will not be acknowledged or retransmitted.
 
-The Route Cache implementation support garbage collection of old entries 
-and state machine, as defined in the 
-standard.  It implements as a STL map container. The key is the 
+The Route Cache implementation support garbage collection of old entries
+and state machine, as defined in the
+standard.  It implements as a STL map container. The key is the
 destination IP address.
 
-DSR operates with direct access to IP header, and operates between network 
-and transport layer.  When packet is sent out from transport layer, it 
+DSR operates with direct access to IP header, and operates between network
+and transport layer.  When packet is sent out from transport layer, it
 passes itself to DSR and DSR header is appended.
 
-We have two caching mechanisms: path cache and link cache.  The path cache 
-saves the whole path in the cache.  The paths are sorted based on the 
-hop count, and whenever one path is not able to be used, we change to the 
-next path.  The link cache is a slightly better design in the sense that it 
-uses different subpaths and uses Implemented Link Cache using 
-Dijkstra algorithm, and this part is implemented by 
-Song Luan <lsuper@mail.ustc.edu.cn>. 
+We have two caching mechanisms: path cache and link cache.  The path cache
+saves the whole path in the cache.  The paths are sorted based on the
+hop count, and whenever one path is not able to be used, we change to the
+next path.  The link cache is a slightly better design in the sense that it
+uses different subpaths and uses Implemented Link Cache using
+Dijkstra algorithm, and this part is implemented by
+Song Luan <lsuper@mail.ustc.edu.cn>.
 
 The following optional protocol optimizations aren't implemented:
 
@@ -77,24 +77,24 @@ The following optional protocol optimizations aren't implemented:
 DSR update in ns-3.17
 =====================
 
-We originally used "TxErrHeader" in Ptr<WifiMac> to indicate the transmission 
-error of a specific packet in link layer, however, it was not working 
-quite correctly since even when the packet was dropped, this header was 
-not recorded in the trace file.  We used to a different path on implementing 
-the link layer notification mechanism.  We look into the trace file by 
-finding packet receive event.  If we find one receive event for the 
+We originally used "TxErrHeader" in Ptr<WifiMac> to indicate the transmission
+error of a specific packet in link layer, however, it was not working
+quite correctly since even when the packet was dropped, this header was
+not recorded in the trace file.  We used to a different path on implementing
+the link layer notification mechanism.  We look into the trace file by
+finding packet receive event.  If we find one receive event for the
 data packet, we count that as the indicator for successful data delivery.
 
 Useful parameters
 =================
 
-:: 
+::
 
    +------------------------- +------------------------------------+-------------+
    | Parameter                | Description                        | Default     |
    +==========================+====================================+=============+
    | MaxSendBuffLen           | Maximum number of packets that can | 64          |
-   |                          | be stored in send buffer           |             | 
+   |                          | be stored in send buffer           |             |
    +------------------------- +------------------------------------+-------------+
    | MaxSendBuffTime          | Maximum time packets can be queued | Seconds(30) |
    |                          | in the send buffer                 |             |
@@ -118,7 +118,7 @@ Useful parameters
    |                          |                                    |             |
    +------------------------- +------------------------------------+-------------+
    | LinkAcknowledgment       | Enable Link layer acknowledgment   | True        |
-   |                          | mechanism                          |             | 
+   |                          | mechanism                          |             |
    +------------------------- +------------------------------------+-------------+
 
 Implementation modification
@@ -151,7 +151,7 @@ The following should be kept in mind when running DSR as routing protocol:
 * NodeTraversalTime is the time it takes to traverse two neighboring nodes and should be chosen to fit the transmission range
 * PassiveAckTimeout is the time a packet in maintenance buffer wait for passive acknowledgment, normally set as two times of NodeTraversalTime
 * RouteCacheTimeout should be set smaller value when the nodes' velocity become higher. The default value is 300s.
-   
+
 Helper
 ******
 
@@ -164,8 +164,8 @@ and DsrMainHelpers in your simulation script. For instance:
   DsrMainHelper dsrMain;
   dsrMain.Install (dsr, adhocNodes);
 
-The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodes in different scenarios. 
-The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}`` 
+The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodes in different scenarios.
+The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}``
 and ``src/dsr/helper/dsr-helper.{h,cc}``
 
 Examples

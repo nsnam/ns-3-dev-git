@@ -64,10 +64,10 @@ void Create2DPlotFile ()
   for (x = -5.0; x <= +5.0; x += 1.0)
     {
       // Calculate the 2-D curve
-      // 
+      //
       //            2
       //     y  =  x   .
-      //  
+      //
       y = x * x;
 
       // Add this point.
@@ -131,10 +131,10 @@ void Create2DPlotWithErrorBarsFile ()
   for (x = -5.0; x <= +5.0; x += 1.0)
     {
       // Calculate the 2-D curve
-      // 
+      //
       //            2
       //     y  =  x   .
-      //  
+      //
       y = x * x;
 
       // Make the uncertainty in the x direction be constant and make
@@ -213,10 +213,10 @@ void Create3DPlotFile ()
     for (y = -5.0; y <= +5.0; y += 1.0)
 	{
 	  // Calculate the 3-D surface
-	  // 
+	  //
 	  //            2      2
 	  //     z  =  x   *  y   .
-	  //  
+	  //
 	  z = x * x * y * y;
 
 	  // Add this point.

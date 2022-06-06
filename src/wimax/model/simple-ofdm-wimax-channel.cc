@@ -36,7 +36,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("simpleOfdmWimaxChannel");
-  
+
 // NS_OBJECT_ENSURE_REGISTERED (simpleOfdmWimaxChannel);
 
 

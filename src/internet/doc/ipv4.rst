@@ -44,8 +44,8 @@ This is probably the easiest and most used method. As an example:
     Ptr<Node> n1 = CreateObject<Node> ();
     NodeContainer net (n0, n1);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net); 
-    
+    NetDeviceContainer ndc = csma.Install (net);
+
     NS_LOG_INFO ("Assign IPv4 Addresses.");
     Ipv4AddressHelper ipv4;
     ipv4.SetBase (Ipv4Address ("192.168.1.0"), NetMask ("/24"));
@@ -53,7 +53,7 @@ This is probably the easiest and most used method. As an example:
 
 This method will add two global IPv4 addresses to the nodes.
 
-Note that the addresses are assigned in sequence. As a consequence, the first Node / NetDevice 
+Note that the addresses are assigned in sequence. As a consequence, the first Node / NetDevice
 will have "192.168.1.1", the second "192.168.1.2" and so on.
 
 It is possible to repeat the above to assign more than one address to a node.
@@ -67,7 +67,7 @@ Alternatively, it is possible to assign a specific address to a node:
     Ptr<Node> n0 = CreateObject<Node> ();
     NodeContainer net (n0);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net); 
+    NetDeviceContainer ndc = csma.Install (net);
 
     NS_LOG_INFO ("Specifically Assign an IPv4 Address.");
     Ipv4AddressHelper ipv4;
@@ -83,7 +83,7 @@ Alternatively, it is possible to assign a specific address to a node:
 DHCP assigned IPv4 addresses
 ============================
 
-DHCP is available in the internet-apps module. In order to use DHCP you have to have a 
+DHCP is available in the internet-apps module. In order to use DHCP you have to have a
 :cpp:class:`DhcpServer` application in a node (the DHC server node) and a :cpp:class:`DhcpClient` application in
 each of the nodes. Note that it not necessary that all the nodes in a subnet use DHCP. Some
 nodes can have static addresses.
@@ -222,14 +222,14 @@ it successfully sets the CE bit in the IPv4 header. The ``Mark ()`` method
 will return false, however, if the IPv4 header indicates the ``ECN_NotECT``
 codepoint.
 
-RFC 6621 duplicate packet detection 
+RFC 6621 duplicate packet detection
 ***********************************
 To support mesh network protocols over broadcast-capable networks (e.g. Wi-Fi),
 it is useful to have support for duplicate packet detection and filtering,
 since nodes in a network may receive multiple copies of flooded multicast
-packets arriving on different paths.  The ``Ipv4L3Protocol`` model in |ns3| 
-has a model for hash-based duplicate packet detection (DPD) based on 
+packets arriving on different paths.  The ``Ipv4L3Protocol`` model in |ns3|
+has a model for hash-based duplicate packet detection (DPD) based on
 Section 6.2.2 of (:rfc:`6621`).  The model, disabled by default, must be
-enabled by setting ``EnableRFC6621`` to true.  A second attribute, 
+enabled by setting ``EnableRFC6621`` to true.  A second attribute,
 ``DuplicateExpire``, sets the expiration delay for erasing the cache entry
-of a packet in the duplicate cache; the delay value defaults to 1ms. 
+of a packet in the duplicate cache; the delay value defaults to 1ms.

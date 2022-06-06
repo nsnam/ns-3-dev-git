@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 
 #ifndef PROPAGATION_ENVIRONMENT_H
@@ -31,7 +31,7 @@ namespace ns3 {
  * \ingroup propagation
  *
  * The type of propagation environment
- * 
+ *
  */
 enum EnvironmentType
   {
@@ -43,7 +43,7 @@ enum EnvironmentType
  * \ingroup propagation
  *
  * The size of the city in which propagation takes place
- * 
+ *
  */
 enum CitySize
   {

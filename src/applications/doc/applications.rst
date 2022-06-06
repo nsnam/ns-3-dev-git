@@ -6,8 +6,8 @@
 Model Description
 *****************
 
-The model is a part of the applications library. The HTTP model is based on a commonly 
-used 3GPP model in standardization `[4]`_. 
+The model is a part of the applications library. The HTTP model is based on a commonly
+used 3GPP model in standardization `[4]`_.
 
 Design
 ======
@@ -49,7 +49,7 @@ and :ref:`fig-http-embedded-object-size`.
 A major portion of the traffic pattern is *reading time*, which does not
 generate any traffic. Because of this, one may need to simulate a good
 number of clients and/or sufficiently long simulation duration in order to
-generate any significant traffic in the system. Reading time is illustrated in 
+generate any significant traffic in the system. Reading time is illustrated in
 :ref:`fig-http-reading-time`.
 
 .. _fig-http-reading-time:
@@ -83,12 +83,12 @@ served and the number of bytes left to be sent.
 The application accepts connection request from clients. Every connection is
 kept open until the client disconnects.
 
-Maximum transmission unit (MTU) size is configurable in ``ThreeGppHttpServer`` or in 
-``ThreeGppHttpVariables``. By default, the low variant is 536 bytes and high variant is 1460 bytes. 
-The default values are set with the intention of having a TCP header (size of which is 40 bytes) added 
-in the packet in such way that lower layers can avoid splitting packets. The change of MTU sizes 
-affects all TCP sockets after the server application has started. It is mainly visible in sizes of 
-packets received by ``ThreeGppHttpClient`` applications. 
+Maximum transmission unit (MTU) size is configurable in ``ThreeGppHttpServer`` or in
+``ThreeGppHttpVariables``. By default, the low variant is 536 bytes and high variant is 1460 bytes.
+The default values are set with the intention of having a TCP header (size of which is 40 bytes) added
+in the packet in such way that lower layers can avoid splitting packets. The change of MTU sizes
+affects all TCP sockets after the server application has started. It is mainly visible in sizes of
+packets received by ``ThreeGppHttpClient`` applications.
 
 3GPP HTTP client description
 ############################
@@ -103,19 +103,19 @@ In summary, the application works as follows.
 2. After the connection is established, the application immediately requests
    a *main object* from the server by sending a request packet.
 3. After receiving a main object (which can take some time if it consists of
-   several packets), the application "parses" the main object. Parsing time 
+   several packets), the application "parses" the main object. Parsing time
    is illustrated in figure :ref:`fig-http-parsing-time`.
 4. The parsing takes a short time (randomly determined) to determine the
-   number of *embedded objects* (also randomly determined) in the web page. 
+   number of *embedded objects* (also randomly determined) in the web page.
    Number of embedded object is illustrated in :ref:`fig-http-num-of-embedded-objects`.
-   
+
     * If at least one embedded object is determined, the application requests
        the first embedded object from the server. The request for the next
        embedded object follows after the previous embedded object has been
        completely received.
     * If there is no more embedded object to request, the application enters
        the *reading time*.
-       
+
 5. Reading time is a long delay (again, randomly determined) where the
    application does not induce any network traffic, thus simulating the user
    reading the downloaded web page.
@@ -128,7 +128,7 @@ In summary, the application works as follows.
 
    3GPP HTTP parsing time histogram
 
-.. _fig-http-num-of-embedded-objects: 
+.. _fig-http-num-of-embedded-objects:
 
 .. figure:: figures/http-num-of-embedded-objects.*
    :figwidth: 15cm
@@ -149,8 +149,8 @@ compute the delay and RTT of the packet).
 References
 ==========
 
-Many aspects of the traffic are randomly determined by ``ThreeGppHttpVariables``. 
-A separate instance of this object is used by the HTTP server and client applications. 
+Many aspects of the traffic are randomly determined by ``ThreeGppHttpVariables``.
+A separate instance of this object is used by the HTTP server and client applications.
 These characteristics are based on a legacy 3GPP specification. The description
 can be found in the following references:
 
@@ -160,7 +160,7 @@ can be found in the following references:
 
 [1] 3GPP TR 25.892, "Feasibility Study for Orthogonal Frequency Division Multiplexing (OFDM) for UTRAN enhancement"
 
-\ 
+\
 
 .. _`[2]`:
 
@@ -183,27 +183,27 @@ can be found in the following references:
 Usage
 *****
 
-The three-gpp-http-example can be referenced to see basic usage of the HTTP applications. 
-In summary, using the ``ThreeGppHttpServerHelper`` and ``ThreeGppHttpClientHelper`` allow the 
+The three-gpp-http-example can be referenced to see basic usage of the HTTP applications.
+In summary, using the ``ThreeGppHttpServerHelper`` and ``ThreeGppHttpClientHelper`` allow the
 user to easily install ``ThreeGppHttpServer`` and ``ThreeGppHttpClient`` applications to nodes.
 The helper objects can be used to configure attribute values for the client
-and server objects, but not for the ``ThreeGppHttpVariables`` object. Configuration of variables 
-is done by modifying attributes of ``ThreeGppHttpVariables``, which should be done prior to helpers 
-installing applications to nodes. 
+and server objects, but not for the ``ThreeGppHttpVariables`` object. Configuration of variables
+is done by modifying attributes of ``ThreeGppHttpVariables``, which should be done prior to helpers
+installing applications to nodes.
 
 The client and server provide a number of ns-3 trace sources such as
 "Tx", "Rx", "RxDelay", and "StateTransition" on the server side, and a large
 number on the client side ("ConnectionEstablished",
 "ConnectionClosed","TxMainObjectRequest", "TxEmbeddedObjectRequest",
 "RxMainObjectPacket", "RxMainObject", "RxEmbeddedObjectPacket",
-"RxEmbeddedObject", "Rx", "RxDelay", "RxRtt", "StateTransition"). 
+"RxEmbeddedObject", "Rx", "RxDelay", "RxRtt", "StateTransition").
 
 
-Building the 3GPP HTTP applications 
+Building the 3GPP HTTP applications
 ===================================
 
-Building the applications does not require any special steps to be taken. It suffices to enable 
-the applications module. 
+Building the applications does not require any special steps to be taken. It suffices to enable
+the applications module.
 
 Examples
 ========
@@ -213,8 +213,8 @@ run::
 
   $ ./ns3 run 'three-gpp-http-example'
 
-By default, the example will print out the web page requests of the client and responses of the 
-server and client receiving content packets by using LOG_INFO of ``ThreeGppHttpServer`` and ``ThreeGppHttpClient``. 
+By default, the example will print out the web page requests of the client and responses of the
+server and client receiving content packets by using LOG_INFO of ``ThreeGppHttpServer`` and ``ThreeGppHttpClient``.
 
 Tests
 =====
@@ -222,13 +222,13 @@ Tests
 For testing HTTP applications, three-gpp-http-client-server-test is provided. Run::
 
   $ ./test.py -s three-gpp-http-client-server-test
-  
-The test consists of simple Internet nodes having HTTP server and client applications installed. 
-Multiple variant scenarios are tested: delay is 3ms, 30ms or 300ms, bit error rate 0 or 5.0*10^(-6), 
-MTU size 536 or 1460 bytes and either IPV4 or IPV6 is used. A simulation with each combination of 
-these parameters is run multiple times to verify functionality with different random variables. 
 
-Test cases themselves are rather simple: test verifies that HTTP object packet bytes sent match 
+The test consists of simple Internet nodes having HTTP server and client applications installed.
+Multiple variant scenarios are tested: delay is 3ms, 30ms or 300ms, bit error rate 0 or 5.0*10^(-6),
+MTU size 536 or 1460 bytes and either IPV4 or IPV6 is used. A simulation with each combination of
+these parameters is run multiple times to verify functionality with different random variables.
+
+Test cases themselves are rather simple: test verifies that HTTP object packet bytes sent match
 total bytes received by the client, and that ``ThreeGppHttpHeader`` matches the expected packet.
 
 

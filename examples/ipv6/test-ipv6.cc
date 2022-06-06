@@ -29,7 +29,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestIpv6");
 
-int 
+int
 main (int argc, char *argv[])
 {
   LogComponentEnable ("TestIpv6", LOG_LEVEL_ALL);

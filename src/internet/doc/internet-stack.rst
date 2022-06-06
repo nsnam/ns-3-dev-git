@@ -27,7 +27,7 @@ which does the following to all nodes passed in as arguments::
           /* IPv4 stack */
           if (node->GetObject<Ipv4> () != 0)
             {
-              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating "
                               "an InternetStack to a node with an existing Ipv4 object");
               return;
             }
@@ -46,7 +46,7 @@ which does the following to all nodes passed in as arguments::
           /* IPv6 stack */
           if (node->GetObject<Ipv6> () != 0)
             {
-              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating "
                               "an InternetStack to a node with an existing Ipv6 object");
               return;
             }
@@ -120,7 +120,7 @@ In class Ipv4L3Protocol, one method described below is ``Receive ()``::
        *    - implement a per-NetDevice ARP cache
        *    - send back arp replies on the right device
        */
-     void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, 
+     void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol,
      const Address &from, const Address &to, NetDevice::PacketType packetType);
 
 First, note that the ``Receive ()`` function has a matching signature to the
@@ -185,7 +185,7 @@ Layer-4 protocols and sockets
 
 We next describe how the transport protocols, sockets, and applications tie
 together. In summary, each transport protocol implementation is a socket
-factory. An application that needs a new socket 
+factory. An application that needs a new socket
 
 For instance, to create a UDP socket, an application would use a code snippet
 such as the following::
@@ -205,7 +205,7 @@ a :cpp:class:`Ipv4Address` or :cpp:class:`Ipv6Address`, these functions will
 return an error.  The ``Bind (void)`` and ``Bind6 (void)`` functions bind to
 "0.0.0.0" and "::" respectively.
 
-The socket can also be bound to a specific NetDevice though the 
+The socket can also be bound to a specific NetDevice though the
 ``BindToNetDevice (Ptr<NetDevice> netdevice)`` function.
 ``BindToNetDevice (Ptr<NetDevice> netdevice)`` will bind the socket
 to "0.0.0.0" and "::" (equivalent to calling ``Bind ()`` and ``Bind6 ()``,
@@ -233,7 +233,7 @@ The following raises an error::
       m_socket->Bind (m_local_address);
       ...
 
-See the chapter on |ns3| sockets for more information.  
+See the chapter on |ns3| sockets for more information.
 
 We have described so far a socket factory (e.g. ``class Udp``) and a socket,
 which may be specialized (e.g., class :cpp:class:`UdpSocket`).  There are a few
@@ -250,14 +250,14 @@ Ipv4EndPoint and calls its ``ForwardUp ()`` method, which then calls the
 ``Receive ()`` function registered by the socket.
 
 An issue that arises when working with the sockets API on real
-systems is the need to manage the reading from a socket, using 
+systems is the need to manage the reading from a socket, using
 some type of I/O (e.g., blocking, non-blocking, asynchronous, ...).
 |ns3| implements an asynchronous model for socket I/O; the application
-sets a callback to be notified of received data ready to be read, and the 
+sets a callback to be notified of received data ready to be read, and the
 callback is invoked by the transport protocol when data is available.
 This callback is specified as follows::
 
-  void Socket::SetRecvCallback (Callback<void, Ptr<Socket>, 
+  void Socket::SetRecvCallback (Callback<void, Ptr<Socket>,
                                 Ptr<Packet>,
                                 const Address&> receivedData);
 
@@ -271,7 +271,7 @@ To summarize, internally, the UDP implementation is organized as follows:
 * a ``UdpImpl`` class that implements the UDP socket factory functionality
 
 * a ``UdpL4Protocol`` class that implements the protocol logic that is
-  socket-independent 
+  socket-independent
 * a ``UdpSocketImpl`` class that implements socket-specific aspects of UDP
 * a class called ``Ipv4EndPoint`` that stores the addressing tuple (local port,
   local address, destination port, destination address) associated with the
@@ -283,8 +283,8 @@ IP-capable node interfaces
 Many of the implementation details, or internal objects themselves, of
 IP-capable Node objects are not exposed at the simulator public API. This
 allows for different implementations; for instance, replacing the native |ns3|
-models with ported TCP/IP stack code. 
- 
+models with ported TCP/IP stack code.
+
 The C++ public APIs of all of these objects is found in the ``src/network``
 directory, including principally:
 
@@ -307,11 +307,11 @@ Internet Node objects.
 .. _internet-node-send:
 
 .. figure:: figures/internet-node-send.*
-   
+
    Send path of a packet.
 
 .. _internet-node-recv:
 
 .. figure:: figures/internet-node-recv.*
-   
+
    Receive path of a packet.

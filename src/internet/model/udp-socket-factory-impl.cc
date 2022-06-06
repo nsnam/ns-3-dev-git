@@ -45,7 +45,7 @@ UdpSocketFactoryImpl::CreateSocket (void)
   return m_udp->CreateSocket ();
 }
 
-void 
+void
 UdpSocketFactoryImpl::DoDispose (void)
 {
   m_udp = 0;

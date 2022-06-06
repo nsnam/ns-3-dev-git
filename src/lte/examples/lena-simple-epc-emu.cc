@@ -37,9 +37,9 @@ using namespace ns3;
  * Simple simulation program using the emulated EPC.
  * For the LTE radio part, it simulates a simple linear topology with
  * a fixed number of eNBs spaced at equal distance, and a fixed number
- * of UEs per each eNB, located at the same position of the eNB. 
+ * of UEs per each eNB, located at the same position of the eNB.
  * For the EPC, it uses EmuEpcHelper to realize the S1-U connection
- * via a real link. 
+ * via a real link.
  */
 
 NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
@@ -68,12 +68,12 @@ main (int argc, char *argv[])
   // --ns3::RealtimeSimulatorImpl::SynchronizationMode=HardLimit
   // I've seen that if BestEffort is used things can break
   // (even simple stuff such as ARP)
-  //GlobalValue::Bind ("SimulatorImplementationType", 
+  //GlobalValue::Bind ("SimulatorImplementationType",
   //                 StringValue ("ns3::RealtimeSimulatorImpl"));
 
  // let's speed things up, we don't need these details for this scenario
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
@@ -149,12 +149,12 @@ main (int argc, char *argv[])
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
 
-  lteHelper->Attach (ueLteDevs); 
+  lteHelper->Attach (ueLteDevs);
   // side effects: 1) use idle mode cell selection, 2) activate default EPS bearer
 
   // randomize a bit start times to avoid simulation artifacts
   // (e.g., buffer overflows due to packet transmissions happening
-  // exactly at the same time) 
+  // exactly at the same time)
   Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
   startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
   startTimeSeconds->SetAttribute ("Max", DoubleValue (interPacketInterval/1000.0));
@@ -186,7 +186,7 @@ main (int argc, char *argv[])
       clientApps.Add (ulClient.Install (ueNodes.Get(u)));
 
       serverApps.Start (Seconds (startTimeSeconds->GetValue ()));
-      clientApps.Start (Seconds (startTimeSeconds->GetValue ()));  
+      clientApps.Start (Seconds (startTimeSeconds->GetValue ()));
     }
 
   Simulator::Stop(Seconds(simTime));

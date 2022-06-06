@@ -47,18 +47,18 @@ public:
    *
    * \param nLeftLeaf number of left side leaf nodes in the dumbbell
    *
-   * \param leftHelper PointToPointHelper used to install the links 
-   *                   between the left leaf nodes and the left-most 
+   * \param leftHelper PointToPointHelper used to install the links
+   *                   between the left leaf nodes and the left-most
    *                   router
    *
    * \param nRightLeaf number of right side leaf nodes in the dumbbell
    *
-   * \param rightHelper PointToPointHelper used to install the links 
-   *                    between the right leaf nodes and the right-most 
+   * \param rightHelper PointToPointHelper used to install the links
+   *                    between the right leaf nodes and the right-most
    *                    router
    *
-   * \param bottleneckHelper PointToPointHelper used to install the link 
-   *                         between the inner-routers, usually known as 
+   * \param bottleneckHelper PointToPointHelper used to install the link
+   *                         between the inner-routers, usually known as
    *                         the bottleneck link
    */
   PointToPointDumbbellHelper (uint32_t nLeftLeaf,
@@ -129,7 +129,7 @@ public:
   uint32_t  RightCount () const;
 
   /**
-   * \param stack an InternetStackHelper which is used to install 
+   * \param stack an InternetStackHelper which is used to install
    *              on every node in the dumbbell
    */
   void      InstallStack (InternetStackHelper stack);
@@ -141,7 +141,7 @@ public:
    * \param rightIp Ipv4AddressHelper to assign Ipv4 addresses to the
    *                interfaces on the right side of the dumbbell
    *
-   * \param routerIp Ipv4AddressHelper to assign Ipv4 addresses to the 
+   * \param routerIp Ipv4AddressHelper to assign Ipv4 addresses to the
    *                 interfaces on the bottleneck link
    */
   void      AssignIpv4Addresses (Ipv4AddressHelper leftIp,

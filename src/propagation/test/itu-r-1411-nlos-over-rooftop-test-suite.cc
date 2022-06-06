@@ -37,14 +37,14 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModelTest");
  * \ingroup propagation-tests
  *
  * \brief ItuR1411NlosOverRooftopPropagationLossModel Test Case
- * 
+ *
  */
 class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase
 {
 public:
   /**
    * Constructor
-   * 
+   *
    * \param freq carrier frequency in Hz
    * \param dist 2D distance between UT and BS in meters
    * \param hb height of BS in meters
@@ -53,7 +53,7 @@ public:
    * \param city city type
    * \param refValue reference loss value
    * \param name TestCase name
-   */ 
+   */
   ItuR1411NlosOverRooftopPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name);
   virtual ~ItuR1411NlosOverRooftopPropagationLossModelTestCase ();
 
@@ -115,7 +115,7 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun (void)
 
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
- 
+
   NS_TEST_ASSERT_MSG_EQ_TOL (loss, m_lossRef, 0.1, "Wrong loss!");
 
 }
@@ -125,7 +125,7 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun (void)
  * \ingroup propagation-tests
  *
  * \brief ItuR1411NlosOverRooftopPropagationLossModel TestSuite
- * 
+ *
  */
 class ItuR1411NlosOverRooftopPropagationLossModelTestSuite : public TestSuite
 {

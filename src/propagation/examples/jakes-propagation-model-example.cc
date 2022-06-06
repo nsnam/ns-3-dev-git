@@ -36,11 +36,11 @@ public:
   JakesPropagationExample ();
   ~JakesPropagationExample ();
 private:
-  Ptr<PropagationLossModel> m_loss; //!< loss 
+  Ptr<PropagationLossModel> m_loss; //!< loss
   Ptr<MobilityModel> m_firstMobility; //!< first Mobility
   Ptr<MobilityModel> m_secondMobility; //!<second Mobility
   Time m_step;  //!< step
-  EventId m_nextEvent; //!< next event 
+  EventId m_nextEvent; //!< next event
   /**
    * Next function
    * */

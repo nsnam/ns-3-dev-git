@@ -2269,7 +2269,7 @@ void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
   uint32_t size;
   NS_ASSERT_MSG ( l2Mtu > frag1Hdr.GetSerializedSize (),
                   "6LoWPAN: can not fragment, 6LoWPAN headers are bigger than MTU");
-  
+
   // All the headers are substracted to get remaining units for data
   size = l2Mtu - frag1Hdr.GetSerializedSize () - compressedHeaderSize - extraHdrSize;
   size -= size % 8;

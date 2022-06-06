@@ -50,7 +50,7 @@ TypeId PieQueueDisc::GetTypeId (void)
                    "Average of packet size",
                    UintegerValue (1000),
                    MakeUintegerAccessor (&PieQueueDisc::m_meanPktSize),
-                   MakeUintegerChecker<uint32_t> ()) 
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("A",
                    "Value of alpha",
                    DoubleValue (0.125),
@@ -190,11 +190,11 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
             {
               NS_LOG_DEBUG ("Enqueueing ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
             }
-          else 
+          else
             {
               NS_LOG_DEBUG ("Enqueueing CE packet " << static_cast<uint16_t> (tosByte & 0x3));
             }
-          isEct1 = true; 
+          isEct1 = true;
         }
     }
 
@@ -493,7 +493,7 @@ PieQueueDisc::DoDequeue ()
             {
               NS_LOG_DEBUG ("ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
             }
-          else 
+          else
             {
               NS_LOG_DEBUG ("CE packet " << static_cast<uint16_t> (tosByte & 0x3));
             }
@@ -503,7 +503,7 @@ PieQueueDisc::DoDequeue ()
             }
           return item;
         }
-    }  
+    }
 
   // if not in a measurement cycle and the queue has built up to dq_threshold,
   // start the measurement cycle

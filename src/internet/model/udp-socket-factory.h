@@ -30,12 +30,12 @@ class Socket;
  * \ingroup socket
  * \ingroup udp
  *
- * \brief API to create UDP socket instances 
+ * \brief API to create UDP socket instances
  *
  * This abstract class defines the API for UDP socket factory.
  * All UDP implementations must provide an implementation of CreateSocket
  * below.
- * 
+ *
  * \see UdpSocketFactoryImpl
  */
 class UdpSocketFactory : public SocketFactory

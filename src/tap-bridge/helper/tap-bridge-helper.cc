@@ -41,7 +41,7 @@ TapBridgeHelper::TapBridgeHelper (Ipv4Address gateway)
   SetAttribute ("Mode", EnumValue (TapBridge::CONFIGURE_LOCAL));
 }
 
-void 
+void
 TapBridgeHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 {
   NS_LOG_FUNCTION (n1 << &v1);

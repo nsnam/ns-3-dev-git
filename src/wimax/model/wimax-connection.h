@@ -103,7 +103,7 @@ public:
   Ptr<Packet> Dequeue (MacHeaderType::HeaderType packetType = MacHeaderType::HEADER_TYPE_GENERIC);
   /**
    * \brief dequeue a packet from the queue of the connection
-   * Dequeue the first packet in the queue if its size is lower than 
+   * Dequeue the first packet in the queue if its size is lower than
    * availableByte, the first availableByte of the first packet otherwise
    *
    * \param packetType the type of the packet to dequeue

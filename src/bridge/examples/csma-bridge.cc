@@ -17,16 +17,16 @@
 // Network topology
 //
 //        n0     n1
-//        |      | 
+//        |      |
 //       ----------
 //       | Switch |
 //       ----------
-//        |      | 
+//        |      |
 //        n2     n3
 //
 //
 // - CBR/UDP flows from n0 to n1 and from n3 to n0
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "csma-bridge.tr"
 
 #include <iostream>
@@ -50,14 +50,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaBridgeExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   //
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
   //
-#if 0 
+#if 0
   LogComponentEnable ("CsmaBridgeExample", LOG_LEVEL_INFO);
 #endif
 
@@ -117,7 +117,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
   onoff.SetConstantRate (DataRate ("500kb/s"));
 
@@ -132,10 +132,10 @@ main (int argc, char *argv[])
   app = sink.Install (terminals.Get (1));
   app.Start (Seconds (0.0));
 
-  // 
+  //
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   //
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
   app = onoff.Install (terminals.Get (3));
   app.Start (Seconds (1.1));

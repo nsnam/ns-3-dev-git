@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -56,7 +56,7 @@ public:
  * @enum LinkType
  * @brief Enumeration of the possible types of Global Routing Link Records.
  *
- * These values are defined in the OSPF spec.  We currently only use 
+ * These values are defined in the OSPF spec.  We currently only use
  * PointToPoint and StubNetwork types.
  */
   enum LinkType {
@@ -88,9 +88,9 @@ public:
  * @see SetLinkData
  */
   GlobalRoutingLinkRecord (
-    LinkType    linkType, 
-    Ipv4Address linkId, 
-    Ipv4Address linkData, 
+    LinkType    linkType,
+    Ipv4Address linkId,
+    Ipv4Address linkData,
     uint16_t    metric);
 
 /**
@@ -202,11 +202,11 @@ public:
 
 private:
 /**
- * m_linkId and m_linkData are defined by OSPF to have different meanings 
+ * m_linkId and m_linkData are defined by OSPF to have different meanings
  * depending on the type of link a given link records represents.  They work
  * together.
  *
- * For Type 1 link (PointToPoint), set m_linkId to Router ID of 
+ * For Type 1 link (PointToPoint), set m_linkId to Router ID of
  * neighboring router.
  *
  * For Type 3 link (Stub), set m_linkId to neighbor's IP address
@@ -214,7 +214,7 @@ private:
   Ipv4Address m_linkId;
 
 /**
- * m_linkId and m_linkData are defined by OSPF to have different meanings 
+ * m_linkId and m_linkData are defined by OSPF to have different meanings
  * depending on the type of link a given link records represents.  They work
  * together.
  *
@@ -222,7 +222,7 @@ private:
  *
  * For Type 3 link (Stub), set m_linkData to mask
  */
-  Ipv4Address m_linkData;    // for links to RouterLSA, 
+  Ipv4Address m_linkData;    // for links to RouterLSA,
 
 /**
  * The type of the Global Routing Link Record.  Defined in the OSPF spec.
@@ -233,9 +233,9 @@ private:
 /**
  * The metric for a given link.
  *
- * A metric is abstract cost associated with forwarding a packet across a 
- * link.  A sum of metrics must have a well-defined meaning.  That is, you 
- * shouldn't use bandwidth as a metric (how does the sum of the bandwidth 
+ * A metric is abstract cost associated with forwarding a packet across a
+ * link.  A sum of metrics must have a well-defined meaning.  That is, you
+ * shouldn't use bandwidth as a metric (how does the sum of the bandwidth
  * of two hops relate to the cost of sending a packet); rather you should
  * use something like delay.
  */
@@ -243,9 +243,9 @@ private:
 };
 
 /**
- * @brief a Link State Advertisement (LSA) for a router, used in global 
+ * @brief a Link State Advertisement (LSA) for a router, used in global
  * routing.
- * 
+ *
  * Roughly equivalent to a global incarnation of the OSPF link state header
  * combined with a list of Link Records.  Since it's global, there's
  * no need for age or sequence number.  See \RFC{2328}, Appendix A.
@@ -267,7 +267,7 @@ public:
   };
 /**
  * @enum SPFStatus
- * @brief Enumeration of the possible values of the status flag in the Routing 
+ * @brief Enumeration of the possible values of the status flag in the Routing
  * Link State Advertisements.
  */
   enum SPFStatus {
@@ -278,7 +278,7 @@ public:
 /**
  * @brief Create a blank Global Routing Link State Advertisement.
  *
- * On completion Ipv4Address variables initialized to 0.0.0.0 and the 
+ * On completion Ipv4Address variables initialized to 0.0.0.0 and the
  * list of Link State Records is empty.
  */
   GlobalRoutingLSA();
@@ -292,7 +292,7 @@ public:
  * @param linkStateId The Ipv4Address for the link state ID field.
  * @param advertisingRtr The Ipv4Address for the advertising router field.
  */
-  GlobalRoutingLSA(SPFStatus status, Ipv4Address linkStateId, 
+  GlobalRoutingLSA(SPFStatus status, Ipv4Address linkStateId,
                    Ipv4Address advertisingRtr);
 
 /**
@@ -318,7 +318,7 @@ public:
  * Takes an existing Global Routing Link State Advertisement and overwrites
  * it to make a semantically identical copy of a given prototype LSA.
  *
- * If there are any Global Routing Link Records present in the existing 
+ * If there are any Global Routing Link Records present in the existing
  * LSA, they are freed before the assignment happens.
  *
  * @param lsa The existing LSA to be used as the source.
@@ -329,8 +329,8 @@ public:
 /**
  * @brief Copy any Global Routing Link Records in a given Global Routing Link
  * State Advertisement to the current LSA.
- * 
- * Existing Link Records are not deleted -- this is a concatenation of Link 
+ *
+ * Existing Link Records are not deleted -- this is a concatenation of Link
  * Records.
  *
  * @see ClearLinkRecords ()
@@ -383,7 +383,7 @@ public:
   void Print (std::ostream &os) const;
 
 /**
- * @brief Return the LSType field of the LSA 
+ * @brief Return the LSType field of the LSA
  * @returns The LS Type.
  */
   LSType GetLSType (void) const;
@@ -442,8 +442,8 @@ public:
 /**
  * @brief For a Network LSA, get the Network Mask field that precedes
  * the list of attached routers.
- * 
- * @returns the NetworkLSANetworkMask 
+ *
+ * @returns the NetworkLSANetworkMask
  */
   Ipv4Mask GetNetworkLSANetworkMask (void) const;
 
@@ -513,7 +513,7 @@ private:
   Ipv4Address  m_linkStateId;
 
 /**
- * The Advertising Router is defined by the OSPF spec.  We always set it to 
+ * The Advertising Router is defined by the OSPF spec.  We always set it to
  * the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
@@ -528,7 +528,7 @@ private:
 
 /**
  * Each Link State Advertisement contains a number of Link Records that
- * describe the kinds of links that are attached to a given node.  We 
+ * describe the kinds of links that are attached to a given node.  We
  * consider PointToPoint and StubNetwork links.
  *
  * m_linkRecords is an STL list container to hold the Link Records that have
@@ -583,7 +583,7 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa);
  * An interface aggregated to a node that provides global routing information
  * to a global route manager.  The presence of the interface indicates that
  * the node is a router.  The interface is the mechanism by which the router
- * advertises its connections to neighboring routers.  We're basically 
+ * advertises its connections to neighboring routers.  We're basically
  * allowing the route manager to query for link state advertisements.
  */
 class GlobalRouter : public Object
@@ -596,7 +596,7 @@ public:
   static TypeId GetTypeId (void);
 
 /**
- * @brief Create a Global Router class 
+ * @brief Create a Global Router class
  */
   GlobalRouter ();
 
@@ -619,7 +619,7 @@ public:
 /**
  * @brief Get the Router ID associated with this Global Router.
  *
- * The Router IDs are allocated in the RoutingEnvironment -- one per Router, 
+ * The Router IDs are allocated in the RoutingEnvironment -- one per Router,
  * starting at 0.0.0.1 and incrementing with each instantiation of a router.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
@@ -629,15 +629,15 @@ public:
 
 /**
  * @brief Walk the connected channels, discover the adjacent routers and build
- * the associated number of Global Routing Link State Advertisements that 
+ * the associated number of Global Routing Link State Advertisements that
  * this router can export.
  *
  * This is a fairly expensive operation in that every time it is called
  * the current list of LSAs is built by walking connected point-to-point
  * channels and peeking into adjacent IPV4 stacks to get address information.
- * This is done to allow for limited dynamics of the Global Routing 
- * environment.  By that we mean that you can discover new link state 
- * advertisements after a network topology change by calling DiscoverLSAs 
+ * This is done to allow for limited dynamics of the Global Routing
+ * environment.  By that we mean that you can discover new link state
+ * advertisements after a network topology change by calling DiscoverLSAs
  * and then by reading those advertisements.
  *
  * @see GlobalRoutingLSA
@@ -651,7 +651,7 @@ public:
  * router can export.
  *
  * To get meaningful information you must have previously called DiscoverLSAs.
- * After you know how many LSAs are present in the router, you may call 
+ * After you know how many LSAs are present in the router, you may call
  * GetLSA () to retrieve the actual advertisement.
  *
  * @see GlobalRouterLSA
@@ -662,17 +662,17 @@ public:
   uint32_t GetNumLSAs (void) const;
 
 /**
- * @brief Get a Global Routing Link State Advertisements that this router has 
+ * @brief Get a Global Routing Link State Advertisements that this router has
  * said that it can export.
  *
  * This is a fairly inexpensive expensive operation in that the hard work
  * was done in GetNumLSAs.  We just copy the indicated Global Routing Link
  * State Advertisement into the requested GlobalRoutingLSA object.
  *
- * You must call GlobalRouter::GetNumLSAs before calling this method in 
+ * You must call GlobalRouter::GetNumLSAs before calling this method in
  * order to discover the adjacent routers and build the advertisements.
  * GetNumLSAs will return the number of LSAs this router advertises.
- * The parameter n (requested LSA number) must be in the range 0 to 
+ * The parameter n (requested LSA number) must be in the range 0 to
  * GetNumLSAs() - 1.
  *
  * @see GlobalRoutingLSA
@@ -784,7 +784,7 @@ private:
    *
    * Given a node and an attached net device, take a look off in the channel to
    * which the net device is attached and look for a node on the other side
-   * that has a GlobalRouter interface aggregated.  
+   * that has a GlobalRouter interface aggregated.
    *
    * \param nd NetDevice to scan
    * \returns true if a router is found
@@ -840,8 +840,8 @@ private:
    * This method will recursively find all of the 'edge' devices in an
    * L2 broadcast domain.  If there are no bridged devices, then the
    * container returned is simply the set of devices on the channel
-   * passed in as an argument.  If the link has bridges on it 
-   * (and therefore multiple ns3::Channel objects interconnected by 
+   * passed in as an argument.  If the link has bridges on it
+   * (and therefore multiple ns3::Channel objects interconnected by
    * bridges), the method will find all of the non-bridged devices
    * in the L2 broadcast domain.
    *
@@ -871,13 +871,13 @@ private:
   InjectedRoutes m_injectedRoutes; //!< Routes we are exporting
 
   // Declared mutable so that const member functions can clear it
-  // (supporting the logical constness of the search methods of this class) 
+  // (supporting the logical constness of the search methods of this class)
   /**
    * Container of bridges visited.
    */
   mutable std::vector<Ptr<BridgeNetDevice> > m_bridgesVisited;
   /**
-   * Clear the list of bridges visited on the link 
+   * Clear the list of bridges visited on the link
    */
   void ClearBridgesVisited (void) const;
   /**
@@ -885,11 +885,11 @@ private:
    * given device has already been visited.
    *
    * \param device the bridge device to check
-   * \return true if bridge has already been visited 
+   * \return true if bridge has already been visited
    */
   bool BridgeHasAlreadyBeenVisited (Ptr<BridgeNetDevice> device) const;
   /**
-   * When recursively checking for devices on the link, mark a given device 
+   * When recursively checking for devices on the link, mark a given device
    * as having been visited.
    *
    * \param device the bridge device to mark

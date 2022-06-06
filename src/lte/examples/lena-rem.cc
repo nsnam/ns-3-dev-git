@@ -32,10 +32,10 @@
 using namespace ns3;
 
 int main (int argc, char *argv[])
-{	
+{
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-	
+
   // to save a template default attribute file run it like this:
   // ./ns3 run src/lte/examples/lena-first-sim --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText"
   //
@@ -99,7 +99,7 @@ int main (int argc, char *argv[])
   remHelper->Install ();
 
   // here's a minimal gnuplot script that will plot the above:
-  // 
+  //
   // set view map;
   // set term x11;
   // set xlabel "X"

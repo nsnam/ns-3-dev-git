@@ -120,7 +120,7 @@ int main (int argc, char *argv[])
   Simulator::Schedule (Seconds (25.0),
     [] ()
     {
-      std::cout << "Code within a lambda expression at time " 
+      std::cout << "Code within a lambda expression at time "
                 << Simulator::Now ().As (Time::S)
                 << std::endl;
     });

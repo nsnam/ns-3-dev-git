@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
- * 
+ *
  */
 #ifndef BUILDING_H
 #define BUILDING_H
@@ -59,10 +59,10 @@ public:
     {
       Wood, ConcreteWithWindows, ConcreteWithoutWindows, StoneBlocks
     };
-  
+
   /**
    * Construct a simple building with 1 room and 1 floor
-   * 
+   *
    * \param xMin x coordinates of left boundary.
    * \param xMax x coordinates of right boundary.
    * \param yMin y coordinates of bottom boundary.
@@ -71,11 +71,11 @@ public:
    * \param zMax z coordinates of up boundary.
    *
    */
-  Building (double xMin, 
+  Building (double xMin,
             double xMax,
-            double yMin, 
+            double yMin,
             double yMax,
-            double zMin, 
+            double zMin,
             double zMax);
 
   /**
@@ -84,21 +84,21 @@ public:
    */
   Building ();
 
-  /** 
+  /**
    * Destructor
-   * 
+   *
    */
   virtual ~Building ();
 
   /**
    * \return the unique id of this Building. This unique id happens to
-   * be also the index of the Building into the BuildingList. 
+   * be also the index of the Building into the BuildingList.
    */
   uint32_t GetId (void) const;
 
-  /** 
+  /**
    * Set the boundaries of the building
-   * 
+   *
    * \param box the Box defining the boundaries of the building
    */
   void SetBoundaries (Box box);
@@ -141,8 +141,8 @@ public:
    */
   void SetNRoomsY (uint16_t nroomy);
 
-  /** 
-   * 
+  /**
+   *
    * \return the boundaries of the building
    */
   Box GetBoundaries () const;
@@ -171,40 +171,40 @@ public:
    * \return the number of rooms along the y-axis
    */
   uint16_t GetNRoomsY () const;
-  
-  /** 
-   * 
-   * 
+
+  /**
+   *
+   *
    * \param position some position
-   * 
+   *
    * \return true if the position fall inside the building, false otherwise
    */
   bool IsInside (Vector position) const;
- 
-  /** 
-   * 
-   * 
+
+  /**
+   *
+   *
    * \param position a position inside the building
-   * 
+   *
    * \return the number of the room along the X axis where the
    * position falls
    */
   uint16_t GetRoomX (Vector position) const;
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param position a position inside the building
-   * 
+   *
    * \return  the number of the room along the Y axis where the
    * position falls
    */
   uint16_t GetRoomY (Vector position) const;
 
-  /** 
-   * 
-   * \param position a position inside the building 
-   * 
+  /**
+   *
+   * \param position a position inside the building
+   *
    * \return  the floor where the position falls
    */
   uint16_t GetFloor (Vector position) const;

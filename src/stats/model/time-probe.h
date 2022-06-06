@@ -38,8 +38,8 @@ namespace ns3 {
  * \ingroup probes
  *
  * This class is designed to probe an underlying ns3 TraceSource exporting
- * an ns3::Time.  This probe exports a trace source "Output" of type 
- * double, in units of seconds. The Output trace source emits a value when 
+ * an ns3::Time.  This probe exports a trace source "Output" of type
+ * double, in units of seconds. The Output trace source emits a value when
  * either the trace source emits a new value, or when SetValue () is called.
  *
  * The current value of the probe can be polled with the GetValue ()
@@ -95,10 +95,10 @@ public:
 
 private:
   /**
-   * \brief Method to connect to an underlying ns3::TraceSource of type Time 
+   * \brief Method to connect to an underlying ns3::TraceSource of type Time
    *
-   * \param oldData previous value of the Time 
-   * \param newData new value of the Time 
+   * \param oldData previous value of the Time
+   * \param newData new value of the Time
    */
   void TraceSink (Time oldData, Time newData);
 

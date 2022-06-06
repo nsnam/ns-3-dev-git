@@ -47,7 +47,7 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test frequency reuse algorithm. Test fails if the muted frequencies 
+ * \brief Test frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteFrTestCase : public TestCase
@@ -98,7 +98,7 @@ protected:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test hard frequency reuse algorithm. Test fails if the muted 
+ * \brief Test hard frequency reuse algorithm. Test fails if the muted
  *  frequencies are being used.
  */
 class LteHardFrTestCase : public LteFrTestCase
@@ -143,7 +143,7 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test stric frequency reuse algorithm. Test fails if the muted frequencies 
+ * \brief Test stric frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteStrictFrTestCase : public LteFrTestCase
@@ -192,9 +192,9 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test frequency reuse algorithm by teleporing UEs to different 
- * parts of area and checking if the frequency is used according to the 
- * frequency pattern for different parts of area. Test fails if the muted 
+ * \brief Test frequency reuse algorithm by teleporing UEs to different
+ * parts of area and checking if the frequency is used according to the
+ * frequency pattern for different parts of area. Test fails if the muted
  * frequencies for a given part of area are being used by UE.
  */
 class LteFrAreaTestCase : public TestCase
@@ -262,7 +262,7 @@ protected:
   virtual void DoRun (void);
 
   std::string m_schedulerType; ///< the scheduler type
- 
+
   uint16_t m_dlBandwidth; ///< the DL bandwidth
   uint16_t m_ulBandwidth; ///< the UL bandwidth
 

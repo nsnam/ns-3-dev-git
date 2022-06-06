@@ -109,10 +109,10 @@ RemoteChannelBundle::GetSize (void) const
   return m_channels.size ();
 }
 
-void 
+void
 RemoteChannelBundle::Send(Time time)
 {
-  NullMessageMpiInterface::SendNullMessage (time, this);  
+  NullMessageMpiInterface::SendNullMessage (time, this);
 }
 
 std::ostream& operator<< (std::ostream& out, ns3::RemoteChannelBundle& bundle )
@@ -125,7 +125,7 @@ std::ostream& operator<< (std::ostream& out, ns3::RemoteChannelBundle& bundle )
     {
       out << "\t" << element.second << std::endl;
     }
-  
+
   return out;
 }
 

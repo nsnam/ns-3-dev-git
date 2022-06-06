@@ -150,7 +150,7 @@ OfdmDownlinkFramePrefix::GetTypeId (void)
     ;
   return tid;
 }
-   
+
 void
 OfdmDownlinkFramePrefix::SetBaseStationId (Mac48Address baseStationId)
 {

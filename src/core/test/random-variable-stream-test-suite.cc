@@ -272,7 +272,7 @@ public:
                         std::size_t nRuns) const
   {
     NS_LOG_FUNCTION (this << generator << nRuns);
-    
+
     double sum = 0.;
     for (std::size_t i = 0; i < nRuns; ++i)
       {
@@ -292,7 +292,7 @@ public:
    * for basic regression testing; random values can be used to more
    * exhaustively test the generated streams, with the side effect of
    * occasional test failures.
-   * 
+   *
    * By default, this test suite will use the default values of RngSeed = 1
    * and RngRun = 1.  Users can configure any other seed and run number
    * in the usual way, but the special value of RngRun = 0 results in
@@ -311,7 +311,7 @@ public:
    *   NS_LOG="RandomVariableStreamGenerators" NS_GLOBAL_VALUE="RngSeed=3" ./ns3 run "test-runner --suite=random-variable-stream-generators"
    *
    * Conversely, this command will cause this test suite to use a seed
-   * based on time-of-day, and run number=0: 
+   * based on time-of-day, and run number=0:
    *   NS_GLOBAL_VALUE="RngRun=0" ./test.py -s random-variable-stream-generators
    */
   void
@@ -603,7 +603,7 @@ public:
 private:
   // Inherited
   virtual void DoRun (void);
-  
+
   /** Tolerance for testing rng values against expectation. */
   static constexpr double TOLERANCE {1e-8};
 };
@@ -665,7 +665,7 @@ private:
   virtual void DoRun (void);
 
   /** Tolerance for testing rng values against expectation, in rms. */
-  static constexpr double TOLERANCE {5};  
+  static constexpr double TOLERANCE {5};
 };
 
 NormalTestCase::NormalTestCase ()
@@ -704,7 +704,7 @@ NormalTestCase::DoRun (void)
 
   auto generator = RngGenerator<NormalRandomVariable> ();
   auto rng = generator.Create ();
-  
+
   double sum = ChiSquaredsAverage (&generator, N_RUNS);
   double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
@@ -747,7 +747,7 @@ private:
   virtual void DoRun (void);
 
   /** Tolerance for testing rng values against expectation, in rms. */
-  static constexpr double TOLERANCE {5};  
+  static constexpr double TOLERANCE {5};
 };
 
 NormalAntitheticTestCase::NormalAntitheticTestCase ()
@@ -831,7 +831,7 @@ private:
   virtual void DoRun (void);
 
   /** Tolerance for testing rng values against expectation, in rms. */
-  static constexpr double TOLERANCE {5};  
+  static constexpr double TOLERANCE {5};
 };
 
 ExponentialTestCase::ExponentialTestCase ()
@@ -991,7 +991,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ParetoTestCase::ParetoTestCase ()
@@ -1079,7 +1079,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ParetoAntitheticTestCase::ParetoAntitheticTestCase ()
@@ -1171,7 +1171,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 WeibullTestCase::WeibullTestCase ()
@@ -1276,7 +1276,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 WeibullAntitheticTestCase::WeibullAntitheticTestCase ()
@@ -1383,7 +1383,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {3e-2};  
+  static constexpr double TOLERANCE {3e-2};
 };
 
 LogNormalTestCase::LogNormalTestCase ()
@@ -1480,7 +1480,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {3e-2};  
+  static constexpr double TOLERANCE {3e-2};
 };
 
 LogNormalAntitheticTestCase::LogNormalAntitheticTestCase ()
@@ -1579,7 +1579,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 GammaTestCase::GammaTestCase ()
@@ -1666,7 +1666,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 GammaAntitheticTestCase::GammaAntitheticTestCase ()
@@ -1757,7 +1757,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ErlangTestCase::ErlangTestCase ()
@@ -1847,7 +1847,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ErlangAntitheticTestCase::ErlangAntitheticTestCase ()
@@ -1938,7 +1938,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ZipfTestCase::ZipfTestCase ()
@@ -2014,7 +2014,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ZipfAntitheticTestCase::ZipfAntitheticTestCase ()
@@ -2093,7 +2093,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ZetaTestCase::ZetaTestCase ()
@@ -2153,7 +2153,7 @@ private:
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
    */
-  static constexpr double TOLERANCE {1e-2};  
+  static constexpr double TOLERANCE {1e-2};
 };
 
 ZetaAntitheticTestCase::ZetaAntitheticTestCase ()
@@ -2211,7 +2211,7 @@ public:
 private:
   // Inherited
   virtual void DoRun (void);
-  
+
   /** Tolerance for testing rng values against expectation. */
   static constexpr double TOLERANCE {1e-8};
 };
@@ -2285,7 +2285,7 @@ public:
 private:
   // Inherited
   virtual void DoRun (void);
-  
+
   /**
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
@@ -2333,12 +2333,12 @@ EmpiricalTestCase::DoRun (void)
   // Test that values have approximately the right mean value.
   double expectedMean = 8.75;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, expectedMean * TOLERANCE, "Wrong mean value.");
- 
+
 
   // Calculate the mean of the interpolated values.
   x->SetInterpolate (true);
   valueMean = Average (x);
- 
+
   // The expected distribution (with interpolation) is
   //     Bin     Probability
   //     [0, 5)     25%
@@ -2355,7 +2355,7 @@ EmpiricalTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, expectedMean * TOLERANCE, "Wrong mean value.");
- 
+
   // Bug 2082: Create the RNG with a uniform distribution between -1 and 1.
   Ptr<EmpiricalRandomVariable> y = CreateObject<EmpiricalRandomVariable> ();
   y->SetInterpolate (false);
@@ -2378,7 +2378,7 @@ public:
 private:
   // Inherited
   virtual void DoRun (void);
-  
+
   /**
    * Tolerance for testing rng values against expectation,
    * as a fraction of mean value.
@@ -2424,7 +2424,7 @@ EmpiricalAntitheticTestCase::DoRun (void)
   // Check interpolated sampling
   x->SetInterpolate (true);
   valueMean = Average (x);
-  
+
   // The expected value for the mean of the values returned by this
   // empirical distribution with interpolation is
   //
@@ -2473,7 +2473,7 @@ NormalCachingTestCase::DoRun (void)
  * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
- */ 
+ */
 class RandomVariableSuite : public TestSuite
 {
 public:

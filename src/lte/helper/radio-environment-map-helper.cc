@@ -140,7 +140,7 @@ RadioEnvironmentMapHelper::GetTypeId (void)
     .AddAttribute ("Bandwidth",
                    "Transmission Bandwidth Configuration (in number of RBs) over which the SINR will be calculated",
                    UintegerValue (25),
-                   MakeUintegerAccessor (&RadioEnvironmentMapHelper::SetBandwidth, 
+                   MakeUintegerAccessor (&RadioEnvironmentMapHelper::SetBandwidth,
                                          &RadioEnvironmentMapHelper::GetBandwidth),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("UseDataChannel",
@@ -165,11 +165,11 @@ RadioEnvironmentMapHelper::GetBandwidth () const
   return m_bandwidth;
 }
 
-void 
+void
 RadioEnvironmentMapHelper::SetBandwidth (uint16_t bw)
 {
   switch (bw)
-    { 
+    {
     case 6:
     case 15:
     case 25:
@@ -187,7 +187,7 @@ RadioEnvironmentMapHelper::SetBandwidth (uint16_t bw)
 
 
 
-void 
+void
 RadioEnvironmentMapHelper::Install ()
 {
   NS_LOG_FUNCTION (this);
@@ -213,7 +213,7 @@ RadioEnvironmentMapHelper::Install ()
       NS_FATAL_ERROR ("Can't open file " << (m_outputFile));
       return;
     }
-  
+
   double startDelay = 0.0026;
 
   if (m_useDataChannel)
@@ -228,18 +228,18 @@ RadioEnvironmentMapHelper::Install ()
 }
 
 
-void 
+void
 RadioEnvironmentMapHelper::DelayedInstall ()
 {
   NS_LOG_FUNCTION (this);
   m_xStep = (m_xMax - m_xMin)/(m_xRes-1);
   m_yStep = (m_yMax - m_yMin)/(m_yRes-1);
-  
+
   if ((double)m_xRes * (double) m_yRes < (double) m_maxPointsPerIteration)
     {
       m_maxPointsPerIteration = m_xRes * m_yRes;
     }
-  
+
   for (uint32_t i = 0; i < m_maxPointsPerIteration; ++i)
     {
       RemPoint p;
@@ -270,28 +270,28 @@ RadioEnvironmentMapHelper::DelayedInstall ()
               yMinNext = y;
               justScheduled = false;
             }
-          
+
           ++numPointsCurrentIteration;
           if ((numPointsCurrentIteration == m_maxPointsPerIteration)
               || ((x > m_xMax - 0.5*m_xStep) && (y > m_yMax - 0.5*m_yStep)) )
             {
-              Simulator::Schedule (Seconds (remIterationStartTime), 
+              Simulator::Schedule (Seconds (remIterationStartTime),
                                    &RadioEnvironmentMapHelper::RunOneIteration,
                                    this, xMinNext, x, yMinNext, y);
               remIterationStartTime += 0.001;
               justScheduled = true;
               numPointsCurrentIteration = 0;
             }
-        }      
+        }
     }
 
-  Simulator::Schedule (Seconds (remIterationStartTime), 
+  Simulator::Schedule (Seconds (remIterationStartTime),
                        &RadioEnvironmentMapHelper::Finalize,
                        this);
 }
 
-  
-void 
+
+void
 RadioEnvironmentMapHelper::RunOneIteration (double xMin, double xMax, double yMin, double yMax)
 {
   NS_LOG_FUNCTION (this << xMin << xMax << yMin << yMax);
@@ -309,7 +309,7 @@ RadioEnvironmentMapHelper::RunOneIteration (double xMin, double xMax, double yMi
           Ptr <MobilityBuildingInfo> buildingInfo = (remIt->bmm)->GetObject <MobilityBuildingInfo> ();
           buildingInfo->MakeConsistent (remIt->bmm);
           ++remIt;
-        }      
+        }
     }
 
   if (remIt != m_rem.end ())
@@ -323,14 +323,14 @@ RadioEnvironmentMapHelper::RunOneIteration (double xMin, double xMax, double yMi
         }
     }
 
-  Simulator::Schedule (Seconds (0.0005), &RadioEnvironmentMapHelper::PrintAndReset, this);  
+  Simulator::Schedule (Seconds (0.0005), &RadioEnvironmentMapHelper::PrintAndReset, this);
 }
 
-void 
+void
 RadioEnvironmentMapHelper::PrintAndReset ()
 {
   NS_LOG_FUNCTION (this);
-  
+
   for (std::list<RemPoint>::iterator it = m_rem.begin ();
        it != m_rem.end ();
        ++it)
@@ -342,20 +342,20 @@ RadioEnvironmentMapHelper::PrintAndReset ()
           break;
         }
       Vector pos = it->bmm->GetPosition ();
-      NS_LOG_LOGIC ("output: " << pos.x << "\t" 
-                    << pos.y << "\t" 
-                    << pos.z << "\t" 
+      NS_LOG_LOGIC ("output: " << pos.x << "\t"
+                    << pos.y << "\t"
+                    << pos.z << "\t"
                     << it->phy->GetSinr (m_noisePower));
-      m_outFile << pos.x << "\t" 
-                << pos.y << "\t" 
-                << pos.z << "\t" 
+      m_outFile << pos.x << "\t"
+                << pos.y << "\t"
+                << pos.z << "\t"
                 << it->phy->GetSinr (m_noisePower)
                 << std::endl;
       it->phy->Reset ();
     }
 }
 
-void 
+void
 RadioEnvironmentMapHelper::Finalize ()
 {
   NS_LOG_FUNCTION (this);

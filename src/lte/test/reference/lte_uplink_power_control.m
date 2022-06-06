@@ -34,7 +34,7 @@ accumulatedMode = false;
 %%    3    |          3          |       4
 %%------------------------------------------------
 
-%%Absolute Mode 
+%%Absolute Mode
 d1 = 100;
 fc = -4;
 
@@ -46,8 +46,8 @@ fc = -4;
 
 stepNumToExecute = 12;
 fcValueSequence = [
-		[0, 0]; 
-		[-1, 20]; 
+		[0, 0];
+		[-1, 20];
 		[-1, 20];
 		[1, 1];
 		[3, 10];
@@ -61,14 +61,14 @@ fcValueSequence = [
                 ];
 
 %% distances
-%%                d1  
+%%                d1
 %%  eNB1---------------------UE1
 %%
 
 %% pathloss
-%%             pathloss  
+%%             pathloss
 %%  eNB1---------------------UE1
-%%         
+%%
 %%
 
 pathloss = path_loss (d1, fdl);
@@ -79,7 +79,7 @@ pathlossdB = -pathlossdB;
 rsrqdB = dlpdBm - pathlossdB;
 rsrqdBm = rsrqdB;
 
-if (accumulatedMode) 
+if (accumulatedMode)
   for i = 1:stepNumToExecute
     curFcValue = fcValueSequence(i,1);
     curFcNum = fcValueSequence(i,2);
@@ -101,26 +101,26 @@ printf("PathLoss: %f \n",pathlossdB)
 printf("RSRP [dBm]: %f \n", rsrqdBm)
 printf("fc: %f \n", fc)
 
-%% PUSCH TX POWER 
+%% PUSCH TX POWER
 PuschPower = 10*log10(MPusch) + PoPusch + alpha * pathlossdB + deltaTF + fc;
 
 if (PuschPower > Pcmax)
   PuschPower = Pcmax;
 endif
 
-if (PuschPower < Pcmin) 
+if (PuschPower < Pcmin)
   PuschPower = Pcmin;
 endif
 
 printf("PuschPower: %f \n", PuschPower)
 
 
-%% PUCCH TX POWER 
+%% PUCCH TX POWER
 PucchPower = PuschPower;
 printf("PucchPower: %f \n", PucchPower)
 
 
-%% SRS TX POWER 
+%% SRS TX POWER
 PsrsOffsetValue = -10.5 + PsrsOffset * 1.5;
 SrsPower = PsrsOffsetValue + 10*log10(nrbs) + PoPusch + alpha * pathlossdB + fc;
 
@@ -128,7 +128,7 @@ if (SrsPower > Pcmax)
   SrsPower = Pcmax;
 endif
 
-if (SrsPower < Pcmin) 
+if (SrsPower < Pcmin)
   SrsPower = Pcmin;
 endif
 printf("SrsPower: %f \n", SrsPower)

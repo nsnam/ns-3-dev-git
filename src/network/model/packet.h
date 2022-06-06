@@ -39,7 +39,7 @@ namespace ns3 {
 
 // Forward declaration
 class Address;
-  
+
 /**
  * \ingroup network
  * \defgroup packet Packet
@@ -134,7 +134,7 @@ public:
   /**
    * Identifies a packet tag within a packet.
    */
-  class Item 
+  class Item
   {
 public:
     /**
@@ -186,7 +186,7 @@ private:
  * Each network packet contains a byte buffer, a set of byte tags, a set of
  * packet tags, and metadata.
  *
- * - The byte buffer stores the serialized content of the headers and trailers 
+ * - The byte buffer stores the serialized content of the headers and trailers
  * added to a packet. The serialized representation of these headers is expected
  * to match that of real network packets bit for bit (although nothing
  * forces you to do this) which means that the content of a packet buffer
@@ -211,14 +211,14 @@ private:
  * follow packets. Another important difference between these two kinds of tags
  * is that byte tags cannot be removed and are expected to be written once,
  * and read many times, while packet tags are expected to be written once,
- * read many times, and removed exactly once. An example of a 'byte' 
+ * read many times, and removed exactly once. An example of a 'byte'
  * tag is a FlowIdTag which contains a flow id and is set by the application
- * generating traffic. An example of a 'packet' tag is a cross-layer 
- * qos class id set by an application and processed by a lower-level MAC 
+ * generating traffic. An example of a 'packet' tag is a cross-layer
+ * qos class id set by an application and processed by a lower-level MAC
  * layer.
  *
- * Implementing a new type of Header or Trailer for a new protocol is 
- * pretty easy and is a matter of creating a subclass of the ns3::Header 
+ * Implementing a new type of Header or Trailer for a new protocol is
+ * pretty easy and is a matter of creating a subclass of the ns3::Header
  * or of the ns3::Trailer base class, and implementing the methods
  * described in their respective API documentation.
  *
@@ -254,9 +254,9 @@ public:
    * The memory necessary for the payload is not allocated:
    * it will be allocated at any later point if you attempt
    * to fragment this packet or to access the zero-filled
-   * bytes. The packet is allocated with a new uid (as 
+   * bytes. The packet is allocated with a new uid (as
    * returned by getUid).
-   * 
+   *
    * \param size the size of the zero-filled payload
    */
   Packet (uint32_t size);
@@ -264,12 +264,12 @@ public:
    * \brief Create a new packet from the serialized buffer.
    *
    * This new packet
-   * is identical to the serialized packet contained in the buffer 
+   * is identical to the serialized packet contained in the buffer
    * and is magically deserialized for you
-   * 
+   *
    * \param buffer the serialized packet to be created
    * \param size the size of the packet for deserialization
-   * \param magic allows packet deserialization; 
+   * \param magic allows packet deserialization;
    *        asserts when set to false
    */
   Packet (uint8_t const*buffer, uint32_t size, bool magic);
@@ -307,7 +307,7 @@ public:
    *
    * This method invokes the
    * Header::GetSerializedSize and Header::Serialize
-   * methods to reserve space in the buffer and request the 
+   * methods to reserve space in the buffer and request the
    * header to serialize itself in the packet buffer.
    *
    * \param header a reference to the header to add to this packet.
@@ -326,7 +326,7 @@ public:
   /**
    * \brief Deserialize and remove the header from the internal buffer.
    *
-   * This method invokes Header::Deserialize (begin, end) and should be 
+   * This method invokes Header::Deserialize (begin, end) and should be
    * used for variable-length headers (where the size is determined somehow
    * by the caller).
    *
@@ -361,7 +361,7 @@ public:
    *
    * This method invokes the
    * Trailer::GetSerializedSize and Trailer::Serialize
-   * methods to reserve space in the buffer and request the trailer 
+   * methods to reserve space in the buffer and request the trailer
    * to serialize itself in the packet buffer.
    *
    * \param trailer a reference to the trailer to add to this packet.
@@ -401,7 +401,7 @@ public:
    * \param size number of padding bytes to add.
    */
   void AddPaddingAtEnd (uint32_t size);
-  /** 
+  /**
    * \brief Remove size bytes from the end of the current packet.
    *
    * It is safe to remove more bytes than are present in
@@ -410,7 +410,7 @@ public:
    * \param size number of bytes from remove
    */
   void RemoveAtEnd (uint32_t size);
-  /** 
+  /**
    * \brief Remove size bytes from the start of the current packet.
    *
    * It is safe to remove more bytes than are present in
@@ -423,9 +423,9 @@ public:
   /**
    * \brief Copy the packet contents to a byte buffer.
    *
-   * \param buffer a pointer to a byte buffer where the packet data 
+   * \param buffer a pointer to a byte buffer where the packet data
    *        should be copied.
-   * \param size the size of the byte buffer. 
+   * \param size the size of the byte buffer.
    * \returns the number of bytes read from the packet
    *
    * No more than \b size bytes will be copied by this function.
@@ -479,9 +479,9 @@ public:
    *
    * \param os output stream in which the data should be printed.
    *
-   * Iterate over the headers and trailers present in this packet, 
+   * Iterate over the headers and trailers present in this packet,
    * from the first header to the last trailer and invoke, for
-   * each of them, the user-provided method Header::DoPrint or 
+   * each of them, the user-provided method Header::DoPrint or
    * Trailer::DoPrint methods.
    */
   void Print (std::ostream &os) const;
@@ -514,8 +514,8 @@ public:
    *
    * By default, packets do not keep around enough metadata to
    * perform the operations requested by the Print methods. If you
-   * want to be able the Packet::Print method, 
-   * you need to invoke this method at least once during the 
+   * want to be able the Packet::Print method,
+   * you need to invoke this method at least once during the
    * simulation setup and before any packet is created.
    */
   static void EnablePrinting (void);
@@ -523,7 +523,7 @@ public:
    * \brief Enable packets metadata checking.
    *
    * The packet metadata is also used to perform extensive
-   * sanity checks at runtime when performing operations on a 
+   * sanity checks at runtime when performing operations on a
    * Packet. For example, this metadata is used to verify that
    * when you remove a header from a packet, this same header
    * was actually present at the front of the packet. These
@@ -539,7 +539,7 @@ public:
    * serialization
    *
    * For packet serialization, the total size is checked
-   * in order to determine the size of the buffer 
+   * in order to determine the size of the buffer
    * required for serialization
    */
   uint32_t GetSerializedSize (void) const;
@@ -559,7 +559,7 @@ public:
    *
    * \param tag the new tag to add to this packet
    *
-   * Note that adding a tag is a const operation which is pretty 
+   * Note that adding a tag is a const operation which is pretty
    * un-intuitive. The rationale is that the content and behavior of
    * a packet is _not_ changed when a tag is added to a packet: any
    * code which was not aware of the new tag is going to work just
@@ -604,7 +604,7 @@ public:
    * \param tag the byte tag type to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
    *
-   * If the requested tag type is found, it is copied in the user's 
+   * If the requested tag type is found, it is copied in the user's
    * provided tag instance.
    */
   bool FindFirstMatchingByteTag (Tag &tag) const;
@@ -688,16 +688,16 @@ public:
    * \brief Set the packet nix-vector.
    *
    * \note Note: This function supports a temporary solution
-   * to a specific problem in this generic class, i.e. 
-   * how to associate something specific like nix-vector 
-   * with a packet.  This design methodology 
-   * should _not_ be followed, and is only here as an 
+   * to a specific problem in this generic class, i.e.
+   * how to associate something specific like nix-vector
+   * with a packet.  This design methodology
+   * should _not_ be followed, and is only here as an
    * impetus to fix this general issue.
    *
    * \warning For real this function is not const, as it is the
    * setter for a mutable variable member. The const qualifier
    * is needed to set a private mutable variable of const objects.
-   * 
+   *
    * \param nixVector the nix vector
    */
   void SetNixVector (Ptr<NixVector> nixVector) const;
@@ -708,7 +708,7 @@ public:
    *
    * \returns the Nix vector
    */
-  Ptr<NixVector> GetNixVector (void) const; 
+  Ptr<NixVector> GetNixVector (void) const;
 
   /**
    * TracedCallback signature for Ptr<Packet>
@@ -716,7 +716,7 @@ public:
    * \param [in] packet The packet.
    */
   typedef void (* TracedCallback) (Ptr<const Packet> packet);
-  
+
   /**
    * TracedCallback signature for packet and Address.
    *
@@ -725,7 +725,7 @@ public:
    */
   typedef void (* AddressTracedCallback)
     (Ptr<const Packet> packet, const Address &address);
-  
+
    /**
     * TracedCallback signature for packet and source/destination addresses.
     *
@@ -744,7 +744,7 @@ public:
    */
   typedef void (* Mac48AddressTracedCallback)
     (Ptr<const Packet> packet, Mac48Address mac);
-  
+
   /**
    * TracedCallback signature for changes in packet size.
    *
@@ -762,8 +762,8 @@ public:
    */
   typedef void (* SinrTracedCallback)
     (Ptr<const Packet> packet, double sinr);
-    
-  
+
+
 private:
   /**
    * \brief Constructor
@@ -772,7 +772,7 @@ private:
    * \param packetTagList the packet's Tag list
    * \param metadata the packet's metadata
    */
-  Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
+  Packet (const Buffer &buffer, const ByteTagList &byteTagList,
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
 
   /**
@@ -807,10 +807,10 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  * \ingroup network
  * \defgroup packetperf Packet Performance
  * The current implementation of the byte buffers and tag list is based
- * on COW (Copy On Write. An introduction to COW can be found in Scott 
+ * on COW (Copy On Write. An introduction to COW can be found in Scott
  * Meyer's "More Effective C++", items 17 and 29). What this means is that
  * copying packets without modifying them is very cheap (in terms of cpu
- * and memory usage) and modifying them can be also very cheap. What is 
+ * and memory usage) and modifying them can be also very cheap. What is
  * key for proper COW implementations is being
  * able to detect when a given modification of the state of a packet triggers
  * a full copy of the data prior to the modification: COW systems need
@@ -852,7 +852,7 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
 
 namespace ns3 {
 
-uint32_t 
+uint32_t
 Packet::GetSize (void) const
 {
   return m_buffer.GetSize ();

@@ -29,7 +29,7 @@
 //
 // this is a modification of simple-global-routing to allow for
 // a single hop but higher-cost path between n1 and n3
-// 
+//
 // - Tracing of queues and packet receptions to file "simple-rerouting.tr"
 
 #include <iostream>
@@ -48,12 +48,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleAlternateRoutingExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   LogComponentEnable ("GlobalRoutingHelper", LOG_LOGIC);
   LogComponentEnable ("GlobalRouter", LOG_LOGIC);
 #endif
@@ -66,15 +66,15 @@ main (int argc, char *argv[])
   // n1 and n3 to take the 2-hop route through n2
 
   CommandLine cmd (__FILE__);
-  // 
-  // Additionally, we plumb this metric into the default value / command 
-  // line argument system as well, for exemplary purposes.  This means 
-  // that it can be resettable at the command-line to the program, 
+  //
+  // Additionally, we plumb this metric into the default value / command
+  // line argument system as well, for exemplary purposes.  This means
+  // that it can be resettable at the command-line to the program,
   // rather than recompiling
   // e.g. ns3 --run "simple-alternate-routing --AlternateCost=5"
   uint16_t sampleMetric = 1;
   cmd.AddValue ("AlternateCost",
-                "This metric is used in the example script between n3 and n1 ", 
+                "This metric is used in the example script between n3 and n1 ",
                 sampleMetric);
 
   // Allow the user to override any of the defaults and the above
@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   InternetStackHelper internet;
   internet.Install (c);
 
-  // Later, we add IP addresses.  The middle two octets correspond to 
+  // Later, we add IP addresses.  The middle two octets correspond to
   // the channel number.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   // tables in the nodes.
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  // Create the OnOff application to send UDP datagrams 
+  // Create the OnOff application to send UDP datagrams
   NS_LOG_INFO ("Create Application.");
   uint16_t port = 9;   // Discard port (RFC 863)
 

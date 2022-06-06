@@ -36,7 +36,7 @@ class ServiceFlow;
 
 /**
  * \ingroup wimax
- * 
+ *
  * Uplink Scheduler - simplified
  */
 class UplinkSchedulerSimple : public UplinkScheduler

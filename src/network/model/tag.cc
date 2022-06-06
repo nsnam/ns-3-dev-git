@@ -23,7 +23,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Tag);
 
-TypeId 
+TypeId
 Tag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Tag")

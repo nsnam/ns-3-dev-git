@@ -12,11 +12,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
- 
+
 #include "model-node-creator.h"
 namespace ns3 {
 
@@ -54,7 +54,7 @@ ModelCreator::Remove (void)
   m_iters.pop_back ();
 }
 
-void 
+void
 ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
 {
   ModelNode *node = new ModelNode ();
@@ -64,7 +64,7 @@ ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
   Add (node);
   Remove ();
 }
-void 
+void
 ModelCreator::DoStartVisitObject (Ptr<Object> object)
 {
   ModelNode *node = new ModelNode ();
@@ -72,12 +72,12 @@ ModelCreator::DoStartVisitObject (Ptr<Object> object)
   node->object = object;
   Add (node);
 }
-void 
+void
 ModelCreator::DoEndVisitObject (void)
 {
   Remove ();
 }
-void 
+void
 ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
 {
   ModelNode *node = new ModelNode ();
@@ -86,12 +86,12 @@ ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name
   node->name = name;
   Add (node);
 }
-void 
+void
 ModelCreator::DoEndVisitPointerAttribute (void)
 {
   Remove ();
 }
-void 
+void
 ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
 {
   ModelNode *node = new ModelNode ();
@@ -100,12 +100,12 @@ ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, 
   node->name = name;
   Add (node);
 }
-void 
+void
 ModelCreator::DoEndVisitArrayAttribute (void)
 {
   Remove ();
 }
-void 
+void
 ModelCreator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
 {
   GtkTreeIter *parent = m_iters.back ();
@@ -120,7 +120,7 @@ ModelCreator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint
                       -1);
   m_iters.push_back (current);
 }
-void 
+void
 ModelCreator::DoEndVisitArrayItem (void)
 {
   GtkTreeIter *iter = m_iters.back ();

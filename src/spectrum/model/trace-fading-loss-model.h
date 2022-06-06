@@ -52,7 +52,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  
+
   virtual void DoInitialize (void);
 
   /**
@@ -70,7 +70,7 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
-  
+
 private:
   /**
    * \param txPsd set of values vs frequency representing the
@@ -83,7 +83,7 @@ private:
   Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                    Ptr<const MobilityModel> a,
                                                    Ptr<const MobilityModel> b) const;
-                                                   
+
   /**
   * \brief Get the value for a particular sub channel and a given speed
   * \param subChannel the sub channel for which a value is requested
@@ -91,7 +91,7 @@ private:
   * \return the loss for a particular sub channel
   */
   double GetValue (int subChannel, double speed);
-  
+
   /**
   * \brief Set the trace file name
   * \param fileName the trace file
@@ -102,16 +102,16 @@ private:
   * \param t the trace time
   */
   void SetTraceLength (Time t);
-  
+
   /// Load trace function
   void LoadTrace ();
 
 
-   
+
   mutable std::map <ChannelRealizationId_t, int > m_windowOffsetsMap; ///< windows offsets map
-  
+
   mutable std::map <ChannelRealizationId_t, Ptr<UniformRandomVariable> > m_startVariableMap; ///< start variable map
-  
+
   /**
    * Vector with fading samples in time domain (for a fixed RB)
    */
@@ -122,12 +122,12 @@ private:
   typedef std::vector<FadingTraceSample> FadingTrace;
 
 
-  
+
   std::string m_traceFile; ///< the trace file name
-  
+
   FadingTrace m_fadingTrace; ///< fading trace
 
-  
+
   Time m_traceLength; ///< the trace time
   uint32_t m_samplesNum; ///< number of samples
   Time m_windowSize; ///< window size
@@ -138,7 +138,7 @@ private:
   mutable uint64_t m_lastStream; ///< the last stream
   uint64_t m_streamSetSize; ///< stream set size
   mutable bool m_streamsAssigned; ///< is streams assigned?
-  
+
 };
 
 

@@ -136,7 +136,7 @@ public:
   void SetCsgIndication (bool csgIndication);
 
   /**
-   * \brief Set as primary carrier 
+   * \brief Set as primary carrier
    * \param primaryCarrier true to set as primary carrier
    */
   void SetAsPrimary (bool primaryCarrier);

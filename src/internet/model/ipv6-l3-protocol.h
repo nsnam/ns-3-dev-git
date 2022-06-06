@@ -62,7 +62,7 @@ class Ipv6AutoconfiguredPrefix;
 class Ipv6L3Protocol : public Ipv6
 {
 public:
-  /** 
+  /**
    * \brief Get the type ID of this class.
    * \return type ID
    */
@@ -77,7 +77,7 @@ public:
    * \enum DropReason
    * \brief Reason why a packet has been dropped.
    */
-  enum DropReason 
+  enum DropReason
   {
     DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
     DROP_NO_ROUTE, /**< No route to host */
@@ -454,17 +454,17 @@ public:
 
   /**
    * Provides reachability hint for Neighbor Cache Entries from L4-L7 protocols.
-   * 
+   *
    * This function shall be called by L4-L7 protocols when an address is confirmed
    * to be reachable (i.e., at least a packet send and a reply received).
    * The net effect is to extend the NCE reachability time if the NCE is in
    * REACHABLE state, and to mark the NCE as REACHABLE if it is in STALE, PROBE, or
    * DELAY states. NCEs in INCOMPLETE state are not changed.
-   * 
+   *
    * Note that the IP interface index might not be the same as the NetDevice index.
-   * The correct way to check the IP interface index is by using 
+   * The correct way to check the IP interface index is by using
    * Ipv6::GetInterfaceForDevice ().
-   * 
+   *
    * \param ipInterfaceIndex IP interface index
    * \param address reachable address
    * \return true if the NCE has been successfully updated.
@@ -547,21 +547,21 @@ private:
    * \brief Callback to trace TX (transmission) packets.
    * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
    * and will be changed to \c Ptr<const Ipv6> in a future release.
-   */ 
+   */
   TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_txTrace;
 
   /**
    * \brief Callback to trace RX (reception) packets.
    * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
    * and will be changed to \c Ptr<const Ipv6> in a future release.
-   */ 
+   */
   TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_rxTrace;
 
   /**
    * \brief Callback to trace drop packets.
    * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
    * and will be changed to \c Ptr<const Ipv6> in a future release.
-   */ 
+   */
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, Ptr<Ipv6>, uint32_t> m_dropTrace;
 
   /// Trace of sent packets
@@ -586,7 +586,7 @@ private:
 
   /**
    * \brief Send packet with route.
-   * \param route route 
+   * \param route route
    * \param packet packet to send
    * \param ipHeader IPv6 header to add to the packet
    */
@@ -595,7 +595,7 @@ private:
   /**
    * \brief Forward a packet.
    * \param idev Pointer to ingress network device
-   * \param rtentry route 
+   * \param rtentry route
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */
@@ -604,7 +604,7 @@ private:
   /**
    * \brief Forward a multicast packet.
    * \param idev Pointer to ingress network device
-   * \param mrtentry route 
+   * \param mrtentry route
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */

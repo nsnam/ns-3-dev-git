@@ -36,7 +36,7 @@ namespace ns3 {
  * (port numbers, payload size, checksum) as well as methods for serialization
  * to and deserialization from a byte buffer.
  */
-class UdpHeader : public Header 
+class UdpHeader : public Header
 {
 public:
 
@@ -49,7 +49,7 @@ public:
   ~UdpHeader ();
 
   /**
-   * \brief Enable checksum calculation for UDP 
+   * \brief Enable checksum calculation for UDP
    */
   void EnableChecksums (void);
   /**
@@ -80,7 +80,7 @@ public:
    * If you want to use udp checksums, you should call this
    * method prior to adding the header to a packet.
    */
-  void InitializeChecksum (Address source, 
+  void InitializeChecksum (Address source,
                            Address destination,
                            uint8_t protocol);
 
@@ -95,7 +95,7 @@ public:
    * If you want to use udp checksums, you should call this
    * method prior to adding the header to a packet.
    */
-  void InitializeChecksum (Ipv4Address source, 
+  void InitializeChecksum (Ipv4Address source,
                            Ipv4Address destination,
                            uint8_t protocol);
 
@@ -110,7 +110,7 @@ public:
    * If you want to use udp checksums, you should call this
    * method prior to adding the header to a packet.
    */
-  void InitializeChecksum (Ipv6Address source, 
+  void InitializeChecksum (Ipv6Address source,
                            Ipv6Address destination,
                            uint8_t protocol);
 

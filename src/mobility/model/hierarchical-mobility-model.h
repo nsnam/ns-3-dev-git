@@ -27,10 +27,10 @@ namespace ns3 {
 /**
  * \ingroup mobility
  * \brief Hierarchical mobility model.
- * 
+ *
  * This model allows you to specify the position of a child object
  * relative to a parent object.
- * 
+ *
  * Basically this is a mobility model that combines two other mobility
  * models: a "parent" model and a "child" model.  The position of the
  * hierarchical model is always the vector sum of the parent + child

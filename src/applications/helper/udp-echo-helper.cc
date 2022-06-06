@@ -31,9 +31,9 @@ UdpEchoServerHelper::UdpEchoServerHelper (uint16_t port)
   SetAttribute ("Port", UintegerValue (port));
 }
 
-void 
+void
 UdpEchoServerHelper::SetAttribute (
-  std::string name, 
+  std::string name,
   const AttributeValue &value)
 {
   m_factory.Set (name, value);
@@ -86,9 +86,9 @@ UdpEchoClientHelper::UdpEchoClientHelper (Address address)
   SetAttribute ("RemoteAddress", AddressValue (address));
 }
 
-void 
+void
 UdpEchoClientHelper::SetAttribute (
-  std::string name, 
+  std::string name,
   const AttributeValue &value)
 {
   m_factory.Set (name, value);

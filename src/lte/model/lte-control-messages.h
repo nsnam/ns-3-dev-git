@@ -46,7 +46,7 @@ public:
   /**
    * The type of the message
    * NOTE: The messages sent by UE are filtered by the
-   *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones 
+   *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones
    *  that has been already handoff by the eNB for avoiding propagation of
    *  spurious messages. When new messaged have to been added, consider to
    *  update the switch statement implementing the filtering.
@@ -245,16 +245,16 @@ class RachPreambleLteControlMessage : public LteControlMessage
 {
 public:
   RachPreambleLteControlMessage (void);
-  
-  /** 
+
+  /**
    * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
    *
    * \param rapid the RAPID
    */
   void SetRapId (uint32_t rapid);
-  
-  /** 
-   * 
+
+  /**
+   *
    * \return the RAPID
    */
   uint32_t GetRapId () const;
@@ -277,21 +277,21 @@ class RarLteControlMessage : public LteControlMessage
 public:
   RarLteControlMessage (void);
 
-  /** 
-   * 
+  /**
+   *
    * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
    */
   void SetRaRnti (uint16_t raRnti);
 
-  /** 
-   * 
+  /**
+   *
    * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
    */
   uint16_t GetRaRnti () const;
 
   /**
-   * a MAC RAR and the corresponding RAPID subheader 
-   * 
+   * a MAC RAR and the corresponding RAPID subheader
+   *
    */
   struct Rar
   {
@@ -299,21 +299,21 @@ public:
     BuildRarListElement_s rarPayload; ///< RAR payload
   };
 
-  /** 
+  /**
    * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
-   * 
+   *
    * \param rar the rar
    */
   void AddRar (Rar rar);
 
-  /** 
-   * 
+  /**
+   *
    * \return a const iterator to the beginning of the RAR list
    */
   std::list<Rar>::const_iterator RarListBegin () const;
-  
-  /** 
-   * 
+
+  /**
+   *
    * \return a const iterator to the end of the RAR list
    */
   std::list<Rar>::const_iterator RarListEnd () const;

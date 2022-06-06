@@ -91,7 +91,7 @@ QueueDiscFactory::CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDis
                        "Cannot create a queue disc class with no attached queue disc");
 
       uint16_t handle = m_classIdChildHandleMap[i];
-      NS_ABORT_MSG_IF (handle >= queueDiscs.size () || queueDiscs[handle] == 0, 
+      NS_ABORT_MSG_IF (handle >= queueDiscs.size () || queueDiscs[handle] == 0,
                        "A queue disc with handle " << handle << " has not been created yet");
 
       m_queueDiscClassesFactory[i].Set ("QueueDisc", PointerValue (queueDiscs[handle]));

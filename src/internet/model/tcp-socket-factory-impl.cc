@@ -45,7 +45,7 @@ TcpSocketFactoryImpl::CreateSocket (void)
   return m_tcp->CreateSocket ();
 }
 
-void 
+void
 TcpSocketFactoryImpl::DoDispose (void)
 {
   m_tcp = 0;

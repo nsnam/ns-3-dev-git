@@ -22,7 +22,7 @@
 //              LAN
 //
 // - UDP flows from n0 to n1 and back
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "udp-echo.tr"
 
 #include <fstream>
@@ -35,7 +35,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
 //

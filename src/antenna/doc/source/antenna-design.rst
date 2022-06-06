@@ -170,7 +170,7 @@ The slant angle is instead fixed and assumed to be 0.
 The number of antenna elements in the vertical and horizontal directions can be configured
 through the attributes "NumRows" and "NumColumns", while the spacing between the horizontal
 and vertical elements can be configured through the attributes "AntennaHorizontalSpacing"
-and "AntennaVerticalSpacing". 
+and "AntennaVerticalSpacing".
 
 The polarization of each antenna element in the array is determined by the polarization
 slant angle through the attribute "PolSlantAngle", as described in [38901]_ (i.e., :math:`{\zeta}`).

@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
- 
+
 #include "attribute-iterator.h"
 #include "ns3/config.h"
 #include "ns3/log.h"
@@ -37,7 +37,7 @@ AttributeIterator::~AttributeIterator ()
 {
 }
 
-void 
+void
 AttributeIterator::Iterate (void)
 {
   for (uint32_t i = 0; i < Config::GetRootNamespaceObjectN (); ++i)
@@ -91,40 +91,40 @@ AttributeIterator::GetCurrentPath (void) const
   return oss.str ();
 }
 
-void 
+void
 AttributeIterator::DoStartVisitObject (Ptr<Object> object)
 {
 }
-void 
+void
 AttributeIterator::DoEndVisitObject (void)
 {
 }
-void 
+void
 AttributeIterator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> item)
 {
 }
-void 
+void
 AttributeIterator::DoEndVisitPointerAttribute (void)
 {
 }
-void 
+void
 AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
 {
 }
-void 
+void
 AttributeIterator::DoEndVisitArrayAttribute (void)
 {
 }
-void 
+void
 AttributeIterator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
 {
 }
-void 
+void
 AttributeIterator::DoEndVisitArrayItem (void)
 {
 }
 
-void 
+void
 AttributeIterator::VisitAttribute (Ptr<Object> object, std::string name)
 {
   m_currentPath.push_back (name);
@@ -132,46 +132,46 @@ AttributeIterator::VisitAttribute (Ptr<Object> object, std::string name)
   m_currentPath.pop_back ();
 }
 
-void 
+void
 AttributeIterator::StartVisitObject (Ptr<Object> object)
 {
   m_currentPath.push_back ("$" + object->GetInstanceTypeId ().GetName ());
   DoStartVisitObject (object);
 }
-void 
+void
 AttributeIterator::EndVisitObject (void)
 {
   m_currentPath.pop_back ();
   DoEndVisitObject ();
 }
-void 
+void
 AttributeIterator::StartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
 {
   m_currentPath.push_back (name);
   m_currentPath.push_back ("$" + value->GetInstanceTypeId ().GetName ());
   DoStartVisitPointerAttribute (object, name, value);
 }
-void 
+void
 AttributeIterator::EndVisitPointerAttribute (void)
 {
   m_currentPath.pop_back ();
   m_currentPath.pop_back ();
   DoEndVisitPointerAttribute ();
 }
-void 
+void
 AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
 {
   m_currentPath.push_back (name);
   DoStartVisitArrayAttribute (object, name, vector);
 }
-void 
+void
 AttributeIterator::EndVisitArrayAttribute (void)
 {
   m_currentPath.pop_back ();
   DoEndVisitArrayAttribute ();
 }
 
-void 
+void
 AttributeIterator::StartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
 {
   std::ostringstream oss;
@@ -180,7 +180,7 @@ AttributeIterator::StartVisitArrayItem (const ObjectPtrContainerValue &vector, u
   m_currentPath.push_back ("$" + item->GetInstanceTypeId ().GetName ());
   DoStartVisitArrayItem (vector, index, item);
 }
-void 
+void
 AttributeIterator::EndVisitArrayItem (void)
 {
   m_currentPath.pop_back ();
@@ -247,7 +247,7 @@ AttributeIterator::DoIterate (Ptr<Object> object)
               EndVisitArrayAttribute ();
               continue;
             }
-          if ((info.flags & TypeId::ATTR_GET) && info.accessor->HasGetter () && 
+          if ((info.flags & TypeId::ATTR_GET) && info.accessor->HasGetter () &&
               (info.flags & TypeId::ATTR_SET) && info.accessor->HasSetter ())
             {
               VisitAttribute (object, info.name);

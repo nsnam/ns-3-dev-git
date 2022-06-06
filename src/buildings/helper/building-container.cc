@@ -39,28 +39,28 @@ BuildingContainer::BuildingContainer (std::string buildingName)
   m_buildings.push_back (building);
 }
 
-BuildingContainer::Iterator 
+BuildingContainer::Iterator
 BuildingContainer::Begin (void) const
 {
   return m_buildings.begin ();
 }
-BuildingContainer::Iterator 
+BuildingContainer::Iterator
 BuildingContainer::End (void) const
 {
   return m_buildings.end ();
 }
 
-uint32_t 
+uint32_t
 BuildingContainer::GetN (void) const
 {
   return m_buildings.size ();
 }
-Ptr<Building> 
+Ptr<Building>
 BuildingContainer::Get (uint32_t i) const
 {
   return m_buildings[i];
 }
-void 
+void
 BuildingContainer::Create (uint32_t n)
 {
   for (uint32_t i = 0; i < n; i++)
@@ -68,7 +68,7 @@ BuildingContainer::Create (uint32_t n)
       m_buildings.push_back (CreateObject<Building> ());
     }
 }
-void 
+void
 BuildingContainer::Add (BuildingContainer other)
 {
   for (Iterator i = other.Begin (); i != other.End (); i++)
@@ -76,19 +76,19 @@ BuildingContainer::Add (BuildingContainer other)
       m_buildings.push_back (*i);
     }
 }
-void 
+void
 BuildingContainer::Add (Ptr<Building> building)
 {
   m_buildings.push_back (building);
 }
-void 
+void
 BuildingContainer::Add (std::string buildingName)
 {
   Ptr<Building> building = Names::Find<Building> (buildingName);
   m_buildings.push_back (building);
 }
 
-BuildingContainer 
+BuildingContainer
 BuildingContainer::GetGlobal (void)
 {
   BuildingContainer c;

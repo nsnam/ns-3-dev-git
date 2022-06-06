@@ -135,7 +135,7 @@ void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
 {
   // Assign the router network
   m_routerInterfaces = routerIp.Assign (m_routerDevices);
-  // Assign to left side 
+  // Assign to left side
   for (uint32_t i = 0; i < LeftCount (); ++i)
     {
       NetDeviceContainer ndc;
@@ -165,7 +165,7 @@ void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6
   Ipv6AddressGenerator::Init (addrBase, prefix);
   Ipv6Address v6network;
   Ipv6AddressHelper addressHelper;
-  
+
   v6network = Ipv6AddressGenerator::GetNetwork (prefix);
   addressHelper.SetBase (v6network, prefix);
   m_routerInterfaces6 = addressHelper.Assign (m_routerDevices);
@@ -277,11 +277,11 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
       Vector lnl (lrl.x - std::cos (theta) * xAdder,
                   lrl.y + std::sin (theta) * xAdder, 0);   // Left Node Location
       // Insure did not exceed bounding box
-      if (lnl.y < uly) 
+      if (lnl.y < uly)
         {
           lnl.y = uly; // Set to upper left y
         }
-      if (lnl.y > lry) 
+      if (lnl.y > lry)
         {
           lnl.y = lry; // Set to lower right y
         }
@@ -310,11 +310,11 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
       Vector rnl (rrl.x + std::cos (theta) * xAdder, // Right node location
                   rrl.y + std::sin (theta) * xAdder, 0);
       // Insure did not exceed bounding box
-      if (rnl.y < uly) 
+      if (rnl.y < uly)
         {
           rnl.y = uly; // Set to upper left y
         }
-      if (rnl.y > lry) 
+      if (rnl.y > lry)
         {
           rnl.y = lry; // Set to lower right y
         }

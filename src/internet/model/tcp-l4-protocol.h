@@ -58,7 +58,7 @@ class NetDevice;
 /**
  * \ingroup tcp
  * \brief TCP socket creation and multiplexing/demultiplexing
- * 
+ *
  * A single instance of this class is held by one instance of class Node.
  *
  * The creation of TcpSocket are handled in the method CreateSocket, which is

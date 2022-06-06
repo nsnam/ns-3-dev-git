@@ -66,7 +66,7 @@ RandomBuildingPositionAllocator::GetTypeId (void)
   return tid;
 }
 
-Vector 
+Vector
 RandomBuildingPositionAllocator::GetNext () const
 {
   NS_ASSERT_MSG (BuildingList::GetNBuildings () > 0, "no building found");
@@ -240,12 +240,12 @@ RandomRoomPositionAllocator::GetTypeId (void)
   return tid;
 }
 
-Vector 
+Vector
 RandomRoomPositionAllocator::GetNext () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (BuildingList::GetNBuildings () > 0, "no building found");
- 
+
   if (m_roomListWithoutReplacement.empty ())
     {
       for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
@@ -260,7 +260,7 @@ RandomRoomPositionAllocator::GetNext () const
                       RoomInfo i;
                       i.roomx = rx;
                       i.roomy = ry;
-                      i.floor = f; 
+                      i.floor = f;
                       i.b = *bit;
                       NS_LOG_LOGIC ("adding room (" << rx << ", " << ry << ", " << f << ")");
                       m_roomListWithoutReplacement.push_back (i);
@@ -344,7 +344,7 @@ SameRoomPositionAllocator::GetTypeId (void)
   return tid;
 }
 
-Vector 
+Vector
 SameRoomPositionAllocator::GetNext () const
 {
   NS_LOG_FUNCTION (this);

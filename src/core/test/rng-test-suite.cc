@@ -41,7 +41,7 @@ using namespace ns3;
 
 /**
  * \ingroup rng-tests
- * 
+ *
  * Fill an array with increasing values, in the [start, end] range.
  * \param array The array to fill.
  * \param n The size of the array.
@@ -63,7 +63,7 @@ FillHistoRangeUniformly (double *array, uint32_t n, double start, double end)
 
 /**
  * \ingroup core-tests
- * 
+ *
  * Test case for uniform distribution random number generator.
  */
 class RngUniformTestCase : public TestCase
@@ -154,7 +154,7 @@ RngUniformTestCase::DoRun (void)
 
 /**
  * \ingroup rng-tests
- * 
+ *
  * Test case for normal distribution random number generator.
  */
 class RngNormalTestCase : public TestCase
@@ -259,7 +259,7 @@ RngNormalTestCase::DoRun (void)
 
 /**
  * \ingroup rng-tests
- * 
+ *
  * Test case for exponential distribution random number generator.
  */
 class RngExponentialTestCase : public TestCase
@@ -363,7 +363,7 @@ RngExponentialTestCase::DoRun (void)
 
 /**
  * \ingroup rng-tests
- * 
+ *
  * Test case for pareto distribution random number generator.
  */
 class RngParetoTestCase : public TestCase
@@ -472,7 +472,7 @@ RngParetoTestCase::DoRun (void)
 
 /**
  * \ingroup rng-tests
- *  
+ *
  * \brief The random number generators Test Suite.
  */
 class RngTestSuite : public TestSuite

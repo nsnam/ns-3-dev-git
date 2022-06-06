@@ -54,9 +54,9 @@ public:
 
   /**
    * \returns the unique id of this channel
-   * 
+   *
    * This unique id happens to be also the index of the Channel into
-   * the ChannelList. 
+   * the ChannelList.
    */
   uint32_t GetId (void) const;
 

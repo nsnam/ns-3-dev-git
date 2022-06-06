@@ -89,8 +89,8 @@ public:
 
   /**
    * Get the stored values as a std::tuple.
-   * 
-   * This differs from the actual value stored in the object which is 
+   *
+   * This differs from the actual value stored in the object which is
    * a tuple of Ptr<AV> where AV is a class derived from AttributeValue.
    * \return stored values as a std::tuple
    */
@@ -167,7 +167,7 @@ public:
 
 /**
  * Create a TupleChecker from AttributeCheckers associated with TupleValue elements.
- * 
+ *
  * \tparam Args \explicit Attribute value types
  * \tparam Ts \deduced Attribute checker types
  * \param checkers attribute checkers

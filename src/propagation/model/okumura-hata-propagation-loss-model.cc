@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -77,10 +77,10 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
 {
   double loss = 0.0;
   double fmhz = m_frequency / 1e6;
-  double dist = a->GetDistanceFrom (b) / 1000.0; 
+  double dist = a->GetDistanceFrom (b) / 1000.0;
   if (m_frequency <= 1.500e9)
     {
-      // standard Okumura Hata 
+      // standard Okumura Hata
       // see eq. (4.4.1) in the COST 231 final report
       double log_f = std::log10 (fmhz);
       double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
@@ -144,7 +144,7 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
   return loss;
 }
 
-double 
+double
 OkumuraHataPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 						Ptr<MobilityModel> a,
 						Ptr<MobilityModel> b) const

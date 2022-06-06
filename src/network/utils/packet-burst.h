@@ -82,7 +82,7 @@ public:
    */
   typedef void (* TracedCallback)(Ptr<const PacketBurst> burst);
 
-  
+
 private:
   void DoDispose (void);
   std::list<Ptr<Packet> > m_packets; //!< the list of packets in the burst

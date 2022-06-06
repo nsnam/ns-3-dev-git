@@ -231,7 +231,7 @@ void
 RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this << " Release RNTI " << params.m_rnti);
-  
+
   m_uesTxMode.erase (params.m_rnti);
   m_dlHarqCurrentProcessId.erase (params.m_rnti);
   m_dlHarqProcessesStatus.erase  (params.m_rnti);
@@ -264,7 +264,7 @@ RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::Csc
     {
       m_nextRntiDl = 0;
     }
-    
+
   return;
 }
 
@@ -1078,7 +1078,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
     }
   while ((*it).m_rnti != m_nextRntiDl);
 
-  ret.m_nrOfPdcchOfdmSymbols = 1;   /// \todo check correct value according the DCIs txed  
+  ret.m_nrOfPdcchOfdmSymbols = 1;   /// \todo check correct value according the DCIs txed
 
   m_schedSapUser->SchedDlConfigInd (ret);
   return;
@@ -1088,7 +1088,7 @@ void
 RrFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_rachList = params.m_rachList;
 
   return;
@@ -1313,7 +1313,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           if (rbPerFlow < 3)
             {
               // terminate allocation
-              rbPerFlow = 0;      
+              rbPerFlow = 0;
             }
         }
       NS_LOG_INFO (this << " try to allocate " << (*it).first);
@@ -1358,7 +1358,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               if (rbPerFlow < 3)
                 {
                   // terminate allocation
-                  rbPerFlow = 0;                 
+                  rbPerFlow = 0;
                 }
             }
         }
@@ -1459,7 +1459,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           (*itStat).second.at (harqId) = 0;
         }
-        
+
       NS_LOG_INFO (this << " UL Allocation - UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize << " harqId " << (uint16_t)harqId);
 
       it++;
@@ -1776,8 +1776,8 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
                     // for SRB1 (using RLC AM) it's better to
                     // overestimate RLC overhead rather than
                     // underestimate it and risk unneeded
-                    // segmentation which increases delay 
-                    rlcOverhead = 4;                                  
+                    // segmentation which increases delay
+                    rlcOverhead = 4;
                   }
                 else
                   {
@@ -1790,7 +1790,7 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
                     (*it).m_rlcTransmissionQueueSize = 0;
                   }
                 else
-                  {                    
+                  {
                     (*it).m_rlcTransmissionQueueSize -= size - rlcOverhead;
                   }
               }

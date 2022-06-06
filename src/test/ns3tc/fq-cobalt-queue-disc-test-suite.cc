@@ -44,7 +44,7 @@ static int32_t g_hash;
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * Simple test packet filter able to classify IPv4 packets.
  */
 class Ipv4FqCobaltTestPacketFilter : public Ipv4PacketFilter {
@@ -107,7 +107,7 @@ Ipv4FqCobaltTestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests packets for which there is no suitable filter.
  */
 class FqCobaltQueueDiscNoSuitableFilter : public TestCase
@@ -160,7 +160,7 @@ FqCobaltQueueDiscNoSuitableFilter::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the IP flows separation and the packet limit.
  */
 class FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
@@ -236,7 +236,7 @@ FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the deficit per flow.
  */
 class FqCobaltQueueDiscDeficit : public TestCase
@@ -385,7 +385,7 @@ FqCobaltQueueDiscDeficit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the TCP flows separation.
  */
 class FqCobaltQueueDiscTCPFlowsSeparation : public TestCase
@@ -479,7 +479,7 @@ FqCobaltQueueDiscTCPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the UDP flows separation
  */
 class FqCobaltQueueDiscUDPFlowsSeparation : public TestCase
@@ -573,18 +573,18 @@ FqCobaltQueueDiscUDPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests ECN marking.
- * 
+ *
  * The test is divided into 3 sub test cases.
  * 1) CE threshold disabled
  * This test enqueues 100 packets in the beginning of the test and dequeues 60 (some packets are dropped too) packets with the
  * delay of 110ms. This test checks that ECT0 packets are marked and are marked appropriately and NotECT packets are dropped.
- * 
+ *
  * 2) CE threshold enabled.
  * This test enqueues 100 packets in the beginning of the test and dequeues 60 packets with delay of 1ms. This test checks that
  * the ECT0 packets are marked appropriately at CE threshold.
- * 
+ *
  * 3) CE threshold enabled with higher queue delay.
  * This test is similar to the 2nd sub test cases just with higher queue delay and aims to test that the packets are not
  * marked twice
@@ -750,7 +750,7 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
                         "Each packet size is 120 bytes and the quantum is 1500 bytes so in the first turn (1514/120 = 12.61) 13 packets are"
                         "dequeued and apart from the first one, all the packets are marked.");
   NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNDroppedPackets (CobaltQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  
+
   // As packets in flow queues are not ECN capable
   NS_TEST_EXPECT_MSG_EQ (q3->GetStats ().GetNDroppedPackets (CobaltQueueDisc::TARGET_EXCEEDED_DROP), m_dropNextCount, "The number of drops should"
                         "be equal to the number of times m_dropNext is updated");
@@ -766,7 +766,7 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
                                                                                    "CeThreshold", TimeValue (MilliSeconds (2)));
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
-  
+
   // Add 20 ECT0 (ECN capable) packets from first flow
   hdr.SetDestination (Ipv4Address ("10.10.1.2"));
   hdr.SetEcn (Ipv4Header::ECN_ECT0);
@@ -827,7 +827,7 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
     "CeThreshold", TimeValue (MilliSeconds (2)), "BlueThreshold", TimeValue (Time::Max()));
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
-  
+
   // Add 20 ECT0 (ECN capable) packets from first flow
   hdr.SetDestination (Ipv4Address ("10.10.1.2"));
   hdr.SetEcn (Ipv4Header::ECN_ECT0);
@@ -865,15 +865,15 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
 
   // As packets in flow queues are ECN capable
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (CobaltQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q0->GetStats ().GetNMarkedPackets (CobaltQueueDisc::FORCED_MARK), 20 - q0->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
   NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (CobaltQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q1->GetStats ().GetNMarkedPackets (CobaltQueueDisc::FORCED_MARK), 20 - q1->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
   NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNDroppedPackets (CobaltQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNMarkedPackets (CobaltQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q2->GetStats ().GetNMarkedPackets (CobaltQueueDisc::FORCED_MARK), 20 - q2->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
 
@@ -890,20 +890,20 @@ FqCobaltQueueDiscEcnMarking::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqCobalt.
- * 
+ *
  * We modified DoClassify () and CheckProtocol () so that we could control
  * the hash returned for each packet. In the beginning, we use flow hashes
- * ranging from 0 to 7. These must go into different queues in the same set. 
- * The set number for these is obtained using outerhash, which is 0.  
+ * ranging from 0 to 7. These must go into different queues in the same set.
+ * The set number for these is obtained using outerhash, which is 0.
  * When a new packet arrives with flow hash 1024, outerhash = 0 is obtained
  * and the first set is iteratively searched.
- * The packet is eventually added to queue 0 since the tags of queues 
- * in the set do not match with the hash of the flow. The tag of queue 0 is 
+ * The packet is eventually added to queue 0 since the tags of queues
+ * in the set do not match with the hash of the flow. The tag of queue 0 is
  * updated as 1024. When a packet with hash 1025 arrives, outerhash = 0
- * is obtained and the first set is iteratively searched. 
+ * is obtained and the first set is iteratively searched.
  * Since there is no match, it is added to queue 0 and the tag of queue 0 is
  * updated to 1025.
  *
@@ -1014,14 +1014,14 @@ FqCobaltQueueDiscSetLinearProbing::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
- * \brief This class tests L4S mode. 
- * 
+ *
+ * \brief This class tests L4S mode.
+ *
  * This test is divided to sub test one without hash collisions and so ECT0 and ECT1 flows are
  * classified into different flows.
- * 
+ *
  * Sub Test 1
- * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and dequeued with the delay of 
+ * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and dequeued with the delay of
  * 1ms between two dequeues.
  * Sub Test 2
  * 140(70 ECT0 + 70 ECT1) packets are enqueued such that ECT1 packets are enqueued at 0.5ms, 1.5ms, 2.5ms and so on, and ECT0 packets are
@@ -1210,7 +1210,7 @@ FqCobaltQueueDiscL4sMode::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * FQ-COBALT queue disc test suite.
  */
 class FqCobaltQueueDiscTestSuite : public TestSuite

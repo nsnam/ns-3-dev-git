@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("ThreeGppPropagationLossModelsTest");
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppRmaPropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 38.901, Table 7.4.1-1.
@@ -196,7 +196,7 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppUmaPropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 38.901, Table 7.4.1-1.
@@ -355,7 +355,7 @@ ThreeGppUmaPropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppUmiStreetCanyonPropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 38.901, Table 7.4.1-1.
@@ -508,7 +508,7 @@ ThreeGppUmiPropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppIndoorOfficePropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 38.901, Table 7.4.1-1.
@@ -667,7 +667,7 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppV2vUrbanPropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 37.885 Table 6.2.1-1 for v2v
@@ -822,7 +822,7 @@ ThreeGppV2vUrbanPropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test case for the class ThreeGppV2vHighwayPropagationLossModel.
  * It computes the pathloss between two nodes and compares it with the value
  * obtained using the formula in 3GPP TR 37.885 Table 6.2.1-1 for v2v
@@ -977,7 +977,7 @@ ThreeGppV2vHighwayPropagationLossModelTestCase::DoRun (void)
 
 /**
  * \ingroup propagation-tests
- * 
+ *
  * Test to check if the shadowing fading is correctly computed
  */
 class ThreeGppShadowingTestCase : public TestCase
@@ -1161,7 +1161,7 @@ ThreeGppShadowingTestCase::DoRun (void)
   testVector.m_shadowingStdLos = 3;
   testVector.m_shadowingStdNlos = 8.03;
   m_testVectors.Add (testVector);
-  
+
   testVector.m_propagationLossModelType = "ns3::ThreeGppV2vUrbanPropagationLossModel";
   testVector.m_hBs = 1.6;
   testVector.m_hUt = 1.6;
@@ -1169,7 +1169,7 @@ ThreeGppShadowingTestCase::DoRun (void)
   testVector.m_shadowingStdLos = 3;
   testVector.m_shadowingStdNlos = 4;
   m_testVectors.Add (testVector);
-  
+
   testVector.m_propagationLossModelType = "ns3::ThreeGppV2vHighwayPropagationLossModel";
   testVector.m_hBs = 1.6;
   testVector.m_hUt = 1.6;
@@ -1232,7 +1232,7 @@ ThreeGppShadowingTestCase::DoRun (void)
  * \ingroup propagation-tests
  *
  * \brief 3GPP Propagation models TestSuite
- * 
+ *
  * This TestSuite tests the following models:
  *   - ThreeGppRmaPropagationLossModel
  *   - ThreeGppUmaPropagationLossModel

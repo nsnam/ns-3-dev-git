@@ -36,15 +36,15 @@
 #
 # $ convert -delay 10 -loop 0 *.png rpgm-animation.gif
 #
-# and the output file 'rpgm-animation.gif' can be viewed by an image viewer. 
+# and the output file 'rpgm-animation.gif' can be viewed by an image viewer.
 #
 # Because this file generates many PNG files, it is recommended to move
-# this script and the generated time-series mobility file 
+# this script and the generated time-series mobility file
 # named 'reference-point-time-series.mob' to a subdirectory, and then
 # run:
 # $ ./reference-point-group-mobility-animation.sh
 # $ convert -delay 10 -loop 0 *.png rpgm-animation.gif
-#  
+#
 
 # The script first checks and enforces that only three nodes are present
 num_nodes=`cat reference-point-time-series.mob | awk '{ print $2 }' | sort -n | uniq | wc -l`

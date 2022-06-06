@@ -37,16 +37,16 @@
 #
 # $ convert -delay 10 -loop 0 *.png outdoor-animation.gif
 #
-# and the output file 'outdoor-animation.gif' can be viewed by an image viewer. 
+# and the output file 'outdoor-animation.gif' can be viewed by an image viewer.
 #
 # Because this file generates many PNG files, it is recommended to move
-# this script, the generated time-series mobility file named 
+# this script, the generated time-series mobility file named
 # 'outdoor-group-mobility-time-series.mob', and the generated buildings file
 # 'outdoor-group-mobility-buildings.txt' to a subdirectory, and then
 # run:
 # $ ./outdoor-group-mobility-animation.sh
 # $ convert -delay 10 -loop 0 *.png outdoor-animation.gif
-#  
+#
 
 # The script first checks and enforces that only three nodes are present
 num_nodes=`cat outdoor-group-mobility-time-series.mob | awk '{ print $2 }' | sort -n | uniq | wc -l`

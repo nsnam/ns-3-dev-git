@@ -75,7 +75,7 @@ private:
    * \return pathloss value in dB
    */
   virtual double GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const override;
-  
+
   /**
    * \brief Computes the pathloss between a and b considering that the line of
    *        sight is obstructed by a building
@@ -86,7 +86,7 @@ private:
    * \return pathloss value in dB
    */
   virtual double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const override;
-  
+
   /**
    * \brief Computes the additional loss due to an obstruction caused by a vehicle
    * \param distance3D the 3D distance between tx and rx in meters
@@ -111,7 +111,7 @@ private:
    * \return shadowing correlation distance in meters
    */
   virtual double GetShadowingCorrelationDistance (ChannelCondition::LosConditionValue cond) const override;
-  
+
   double m_percType3Vehicles; //!< percentage of Type 3 vehicles in the scenario (i.e., trucks)
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
   Ptr<LogNormalRandomVariable> m_logNorVar; //!< log normal random variable
@@ -124,7 +124,7 @@ private:
  *        for the Highway scenario.
  */
 class ThreeGppV2vHighwayPropagationLossModel : public ThreeGppV2vUrbanPropagationLossModel
-{ 
+{
 public:
   /**
    * \brief Get the type ID.

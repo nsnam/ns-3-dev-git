@@ -688,7 +688,7 @@ OpenFlowSwitchNetDevice::ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Pac
         for (int i = 0; i < 6; i++)
           str << (i!=0 ? ":" : "") << std::hex << f->key.flow.dl_dst[i]/16 << f->key.flow.dl_dst[i]%16;
         str <<  "] expired.";
-	
+
         NS_LOG_INFO (str.str ());
         SendFlowExpired (f, (ofp_flow_expired_reason)f->reason);
         list_remove (&f->node);

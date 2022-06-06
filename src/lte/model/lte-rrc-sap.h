@@ -726,7 +726,7 @@ public:
   {
     uint16_t alpha; ///< alpha value
   };
-  
+
   /// PrachConfigSCell structure
   struct PrachConfigSCell
   {
@@ -750,10 +750,10 @@ public:
   };
 
   /// UlConfiguration structure
-  struct UlConfiguration 
-  { 
+  struct UlConfiguration
+  {
     FreqInfo ulFreqInfo; ///< UL frequency info
-    UlPowerControlCommonSCell ulPowerControlCommonSCell; ///< 3GPP TS 36.331 v.11.10 R11 pag.223 
+    UlPowerControlCommonSCell ulPowerControlCommonSCell; ///< 3GPP TS 36.331 v.11.10 R11 pag.223
     SoundingRsUlConfigCommon soundingRsUlConfigCommon; ///< sounding RS UL config common
     PrachConfigSCell prachConfigSCell; ///< PRACH config SCell
     //PushConfigCommon pushConfigCommon; //NOT IMPLEMENTED!

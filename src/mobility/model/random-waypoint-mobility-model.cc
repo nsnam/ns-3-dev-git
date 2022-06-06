@@ -100,7 +100,7 @@ RandomWaypointMobilityModel::DoGetPosition (void) const
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
 }
-void 
+void
 RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);

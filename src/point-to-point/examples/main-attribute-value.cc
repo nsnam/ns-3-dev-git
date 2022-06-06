@@ -42,12 +42,12 @@ NS_LOG_COMPONENT_DEFINE ("AttributeValueSample");
 // size of the FIFO queue in the PointToPointNetDevice
 //
 
-int 
+int
 main (int argc, char *argv[])
 {
   LogComponentEnable ("AttributeValueSample", LOG_LEVEL_INFO);
 
-  // Queues in ns-3 are objects that hold items (other objects) in 
+  // Queues in ns-3 are objects that hold items (other objects) in
   // a queue structure.  The C++ implementation uses templates to
   // allow queues to hold various types of items, but the most
   // common is a pointer to a packet (Ptr<Packet>).
@@ -60,7 +60,7 @@ main (int argc, char *argv[])
 
   // By default, the MaxSize attribute has a value of 100 packets ('100p')
   // (this default can be observed in the function DropTail<Item>::GetTypeId)
-  // 
+  //
   // Here, we set it to 80 packets.  We could use one of two value types:
   // a string-based value or a QueueSizeValue value
   Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize", StringValue ("80p"));
@@ -84,24 +84,24 @@ main (int argc, char *argv[])
   Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> > ();
   net0->SetQueue (q);
 
-  // At this point, we have created a single node (Node 0) and a 
-  // single PointToPointNetDevice (NetDevice 0) and added a 
+  // At this point, we have created a single node (Node 0) and a
+  // single PointToPointNetDevice (NetDevice 0) and added a
   // DropTailQueue to it.
 
-  // Now, we can manipulate the MaxSize value of the already 
+  // Now, we can manipulate the MaxSize value of the already
   // instantiated DropTailQueue.  Here are various ways to do that.
 
   // We assume that a smart pointer (Ptr) to a relevant network device
-  // is in hand; here, it is the net0 pointer. 
+  // is in hand; here, it is the net0 pointer.
 
   // 1.  Pointer-based access
   //
   // One way to change the value is to access a pointer to the
   // underlying queue and modify its attribute.
-  // 
+  //
   // First, we observe that we can get a pointer to the (base class)
   // queue via the PointToPointNetDevice attributes, where it is called
-  // TxQueue 
+  // TxQueue
   PointerValue ptr;
   net0->GetAttribute ("TxQueue", ptr);
   Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> > ();
@@ -143,16 +143,16 @@ main (int argc, char *argv[])
   // the underlying pointers and would like to configure a specific
   // attribute with a single statement.
   Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxSize", StringValue ("25p"));
-  txQueue->GetAttribute ("MaxSize", limit); 
-  NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 
+  txQueue->GetAttribute ("MaxSize", limit);
+  NS_LOG_INFO ("4.  txQueue limit changed through namespace: " <<
                limit.Get ());
 
   // we could have also used wildcards to set this value for all nodes
   // and all net devices (which in this simple example has the same
   // effect as the previous Set())
   Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxSize", StringValue ("15p"));
-  txQueue->GetAttribute ("MaxSize", limit); 
-  NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
+  txQueue->GetAttribute ("MaxSize", limit);
+  NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " <<
                limit.Get ());
 
   Simulator::Destroy ();

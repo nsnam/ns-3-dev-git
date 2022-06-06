@@ -144,7 +144,7 @@ public:
   /**
    * \param title the title to be associated to this dataset (default "Untitled").
    *
-   * Create an empty dataset. Usually, the dataset's title is 
+   * Create an empty dataset. Usually, the dataset's title is
    * displayed in the legend box.
    */
   Gnuplot2dDataset (const std::string& title = "Untitled");
@@ -170,8 +170,8 @@ public:
    * \param errorBars the style of errorbars to display.
    *
    * If you use any style other than none, you need
-   * to make sure you store the delta information in 
-   * this dataset with the right GnuplotDataset::Add 
+   * to make sure you store the delta information in
+   * this dataset with the right GnuplotDataset::Add
    * method.
    */
   void SetErrorBars (enum ErrorBars errorBars);
@@ -196,8 +196,8 @@ public:
   /**
    * \param x x coord to new data point
    * \param y y coord to new data point
-   * \param xErrorDelta x data point uncertainty 
-   * \param yErrorDelta y data point uncertainty 
+   * \param xErrorDelta x data point uncertainty
+   * \param yErrorDelta y data point uncertainty
    *
    * Use this method with error bar style XY.
    */
@@ -275,7 +275,7 @@ public:
   /**
    * \param title the title to be associated to this dataset.
    *
-   * Create an empty dataset. Usually, the dataset's title is 
+   * Create an empty dataset. Usually, the dataset's title is
    * displayed in the legend box.
    */
   Gnuplot3dDataset (const std::string& title = "Untitled");
@@ -375,7 +375,7 @@ public:
    * \param outputFilename the name of the file where the rendering of the
    *        graph will be generated if you feed the command stream output by
    *        Gnuplot::GenerateOutput to the gnuplot program.
-   * \param title title line of the plot page 
+   * \param title title line of the plot page
    */
   Gnuplot (const std::string& outputFilename="", const std::string& title = "");
 
@@ -517,7 +517,7 @@ public:
    * be generated.
    */
   void GenerateOutput (std::ostream &os);
- 
+
   /**
    * \param osControl the output stream on which the relevant gnuplot
    * control commands should be generated. Including output file and

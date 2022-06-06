@@ -26,7 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("FlowIdTag");
 
 NS_OBJECT_ENSURE_REGISTERED (FlowIdTag);
 
-TypeId 
+TypeId
 FlowIdTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FlowIdTag")
@@ -36,37 +36,37 @@ FlowIdTag::GetTypeId (void)
   ;
   return tid;
 }
-TypeId 
+TypeId
 FlowIdTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t 
+uint32_t
 FlowIdTag::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return 4;
 }
-void 
+void
 FlowIdTag::Serialize (TagBuffer buf) const
 {
   NS_LOG_FUNCTION (this << &buf);
   buf.WriteU32 (m_flowId);
 }
-void 
+void
 FlowIdTag::Deserialize (TagBuffer buf)
 {
   NS_LOG_FUNCTION (this << &buf);
   m_flowId = buf.ReadU32 ();
 }
-void 
+void
 FlowIdTag::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << "FlowId=" << m_flowId;
 }
 FlowIdTag::FlowIdTag ()
-  : Tag () 
+  : Tag ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -91,7 +91,7 @@ FlowIdTag::GetFlowId (void) const
   return m_flowId;
 }
 
-uint32_t 
+uint32_t
 FlowIdTag::AllocateFlowId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

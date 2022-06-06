@@ -107,7 +107,7 @@ struct DestinationPoint
  */
 static ParseResult ParseNs2Line (const std::string& str);
 
-/** 
+/**
  * Put out blank spaces at the start and end of a line
  * \param str input line
  * \returns the line trimmed
@@ -134,24 +134,24 @@ static bool IsVal (const std::string& str, T& ret);
  * Checks if the value between brackets is a correct nodeId number
  * \param str string to check
  * \returns true if the string represents a nodeId number
- */ 
+ */
 static bool HasNodeIdNumber (std::string str);
 
-/** 
+/**
  * Gets nodeId number in string format from the string like $node_(4)
  * \param str string to de-tokenize
  * \returns A string with the nodeId number
  */
 static std::string GetNodeIdFromToken (std::string str);
 
-/** 
+/**
  * Get node id number in int format
  * \param pr the ParseResult to analyze
  * \returns the node ID (as an int)
  */
 static int GetNodeIdInt (ParseResult pr);
 
-/**  
+/**
  * Get node id number in string format
  * \param pr the ParseResult to analyze
  * \returns the node ID (as a string)
@@ -167,14 +167,14 @@ static std::string GetNodeIdString (ParseResult pr);
  */
 static Vector SetOneInitialCoord (Vector actPos, std::string& coord, double value);
 
-/** 
+/**
  * Check if this corresponds to a line like this: $node_(0) set X_ 123
  * \param pr the ParseResult to analyze
  * \returns true if the ParseResult looks like a coordinate without a scheduled time
  */
 static bool IsSetInitialPos (ParseResult pr);
 
-/** 
+/**
  * Check if this corresponds to a line like this: $ns_ at 1 "$node_(0) setdest 2 3 4"
  * \param pr the ParseResult to analyze
  * \returns true if the ParseResult looks like a coordinate with a scheduled time and destionation
@@ -210,7 +210,7 @@ static DestinationPoint SetMovement (Ptr<ConstantVelocityMobilityModel> model, V
  */
 static Vector SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, std::string coord, double coordVal);
 
-/** 
+/**
  * Schedule a set of position for a node
  * \param model mobility model
  * \param at initial movement time
@@ -225,7 +225,7 @@ Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
   : m_filename (filename)
 {
   std::ifstream file (m_filename.c_str (), std::ios::in);
-  if (!(file.is_open ())) NS_FATAL_ERROR("Could not open trace file " << m_filename.c_str() << " for reading, aborting here \n"); 
+  if (!(file.is_open ())) NS_FATAL_ERROR("Could not open trace file " << m_filename.c_str() << " for reading, aborting here \n");
 }
 
 Ptr<ConstantVelocityMobilityModel>

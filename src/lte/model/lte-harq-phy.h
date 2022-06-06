@@ -45,7 +45,7 @@ struct HarqProcessInfoElement_t
    uint16_t m_codeBits; ///< code bits
 };
 
-typedef std::vector <HarqProcessInfoElement_t> HarqProcessInfoList_t; ///< HarqProcessInfoList_t typedef 
+typedef std::vector <HarqProcessInfoElement_t> HarqProcessInfoList_t; ///< HarqProcessInfoList_t typedef
 
 /**
  * \ingroup lte
@@ -136,7 +136,7 @@ public:
   * \param id the HARQ proc id
   */
   void ResetUlHarqProcessStatus(uint16_t rnti, uint8_t id);
-  
+
   /**
    * \brief Clear the downlink HARQ buffer
    *
@@ -144,15 +144,15 @@ public:
    */
   void ClearDlHarqBuffer (uint16_t rnti);
 
-  
-  
+
+
 
 
 private:
 
   std::vector <std::vector <HarqProcessInfoList_t> > m_miDlHarqProcessesInfoMap; ///< MI DL HARQ processes info map
   std::map <uint16_t, std::vector <HarqProcessInfoList_t> > m_miUlHarqProcessesInfoMap; ///< MI UL HARQ processes info map
-  
+
 
 };
 

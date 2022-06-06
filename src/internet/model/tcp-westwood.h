@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas 
+ * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -48,11 +48,11 @@ class Time;
  *
  * \brief An implementation of TCP Westwood and Westwood+.
  *
- * Westwood and Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease) 
- * congestion control paradigm. When a congestion episode happens, 
+ * Westwood and Westwood+ employ the AIAD (Additive Increase/Adaptive Decrease)
+ * congestion control paradigm. When a congestion episode happens,
  * instead of halving the cwnd, these protocols try to estimate the network's
- * bandwidth and use the estimated value to adjust the cwnd. 
- * While Westwood performs the bandwidth sampling every ACK reception, 
+ * bandwidth and use the estimated value to adjust the cwnd.
+ * While Westwood performs the bandwidth sampling every ACK reception,
  * Westwood+ samples the bandwidth every RTT.
  *
  * The two main methods in the implementation are the CountAck (const TCPHeader&)
@@ -83,7 +83,7 @@ public:
   /**
    * \brief Protocol variant (Westwood or Westwood+)
    */
-  enum ProtocolType 
+  enum ProtocolType
   {
     WESTWOOD,
     WESTWOODPLUS
@@ -92,7 +92,7 @@ public:
   /**
    * \brief Filter type (None or Tustin)
    */
-  enum FilterType 
+  enum FilterType
   {
     NONE,
     TUSTIN

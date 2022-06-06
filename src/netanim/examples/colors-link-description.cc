@@ -58,7 +58,7 @@ void modify ()
   pAnim->UpdateLinkDescription (1, 9, oss.str ());
   pAnim->UpdateLinkDescription (1, 10, oss.str ());
   pAnim->UpdateLinkDescription (1, 11, oss.str ());
-  
+
   // Every update change the node description for node 2
   std::ostringstream node0Oss;
   node0Oss << "-----Node:" << Simulator::Now ().GetSeconds ();
@@ -67,11 +67,11 @@ void modify ()
   // Every update change the color for node 4
   static uint32_t index = 0;
   index++;
-  if (index == 3) 
+  if (index == 3)
     index = 0;
   struct rgb color = colors[index];
   for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
-    pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b); 
+    pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b);
 
 
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
@@ -127,9 +127,9 @@ int main (int argc, char *argv[])
   d.BoundingBox (1, 1, 100, 100);
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
-  clientHelper.SetAttribute 
+  clientHelper.SetAttribute
     ("OnTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
-  clientHelper.SetAttribute 
+  clientHelper.SetAttribute
     ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   ApplicationContainer clientApps;
 
@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
   // Create the animation object and configure for specified output
   pAnim = new AnimationInterface (animFile);
   Simulator::Schedule (Seconds (1), modify);
-  
+
   // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

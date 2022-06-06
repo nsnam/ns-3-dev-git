@@ -31,7 +31,7 @@
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "simple-global-routing.tr"
 
 #include <iostream>
@@ -51,16 +51,16 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleGlobalRoutingExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
 #endif
 
-  // Set up some default values for the simulation.  Use the 
+  // Set up some default values for the simulation.  Use the
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
@@ -118,7 +118,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (i3i2.GetAddress (0), port)));
   onoff.SetConstantRate (DataRate ("448kb/s"));
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));

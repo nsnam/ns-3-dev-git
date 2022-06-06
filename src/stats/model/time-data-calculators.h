@@ -49,7 +49,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Updates all variables of TimeMinMaxAvgTotalCalculator
    * \param i value of type Time to use for updating the calculator

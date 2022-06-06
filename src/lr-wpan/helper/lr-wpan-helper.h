@@ -52,7 +52,7 @@ class LrWpanHelper : public PcapHelperForDevice,
 public:
   /**
    * \brief Create a LrWpan helper in an empty state.  By default, a
-   * SingleModelSpectrumChannel is created, with a 
+   * SingleModelSpectrumChannel is created, with a
    * LogDistancePropagationLossModel and a ConstantSpeedPropagationDelayModel.
    *
    * To change the channel type, loss model, or delay model, the Get/Set
@@ -65,7 +65,7 @@ public:
    * SingleModelSpectrumChannel or a MultiModelSpectrumChannel.
    * \param useMultiModelSpectrumChannel use a MultiModelSpectrumChannel if true, a SingleModelSpectrumChannel otherwise
    *
-   * A LogDistancePropagationLossModel and a 
+   * A LogDistancePropagationLossModel and a
    * ConstantSpeedPropagationDelayModel are added to the channel.
    */
   LrWpanHelper (bool useMultiModelSpectrumChannel);

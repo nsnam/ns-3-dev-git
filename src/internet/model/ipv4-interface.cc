@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Interface);
 
-TypeId 
+TypeId
 Ipv4Interface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4Interface")
@@ -47,7 +47,7 @@ Ipv4Interface::GetTypeId (void)
     .AddAttribute ("ArpCache",
                    "The arp cache for this ipv4 interface",
                    PointerValue (0),
-                   MakePointerAccessor (&Ipv4Interface::SetArpCache, 
+                   MakePointerAccessor (&Ipv4Interface::SetArpCache,
                                         &Ipv4Interface::GetArpCache),
                    MakePointerChecker<ArpCache> ())
   ;
@@ -55,16 +55,16 @@ Ipv4Interface::GetTypeId (void)
   return tid;
 }
 
-/** 
+/**
  * By default, Ipv4 interface are created in the "down" state
- *  with no IP addresses.  Before becoming usable, the user must 
+ *  with no IP addresses.  Before becoming usable, the user must
  * invoke SetUp on them once an Ipv4 address and mask have been set.
  */
-Ipv4Interface::Ipv4Interface () 
+Ipv4Interface::Ipv4Interface ()
   : m_ifup (false),
     m_forwarding (true),
     m_metric (1),
-    m_node (0), 
+    m_node (0),
     m_device (0),
     m_tc (0),
     m_cache (0)
@@ -88,7 +88,7 @@ Ipv4Interface::DoDispose (void)
   Object::DoDispose ();
 }
 
-void 
+void
 Ipv4Interface::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
@@ -96,7 +96,7 @@ Ipv4Interface::SetNode (Ptr<Node> node)
   DoSetup ();
 }
 
-void 
+void
 Ipv4Interface::SetDevice (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
@@ -163,46 +163,46 @@ Ipv4Interface::GetArpCache () const
 }
 
 /**
- * These are IP interface states and may be distinct from 
+ * These are IP interface states and may be distinct from
  * NetDevice states, such as found in real implementations
  * (where the device may be down but IP interface state is still up).
  */
-bool 
+bool
 Ipv4Interface::IsUp (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_ifup;
 }
 
-bool 
+bool
 Ipv4Interface::IsDown (void) const
 {
   NS_LOG_FUNCTION (this);
   return !m_ifup;
 }
 
-void 
+void
 Ipv4Interface::SetUp (void)
 {
   NS_LOG_FUNCTION (this);
   m_ifup = true;
 }
 
-void 
+void
 Ipv4Interface::SetDown (void)
 {
   NS_LOG_FUNCTION (this);
   m_ifup = false;
 }
 
-bool 
+bool
 Ipv4Interface::IsForwarding (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_forwarding;
 }
 
-void 
+void
 Ipv4Interface::SetForwarding (bool val)
 {
   NS_LOG_FUNCTION (this << val);
@@ -227,7 +227,7 @@ Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
       p->AddHeader (hdr);
       m_device->Send (p, m_device->GetBroadcast (), Ipv4L3Protocol::PROT_NUMBER);
       return;
-    } 
+    }
 
   NS_ASSERT (m_tc != 0);
 
@@ -331,7 +331,7 @@ Ipv4Interface::GetAddress (uint32_t index) const
     }
   else
     {
-      NS_FATAL_ERROR ("index " << index << " out of bounds");  
+      NS_FATAL_ERROR ("index " << index << " out of bounds");
     }
   Ipv4InterfaceAddress addr;
   return (addr);  // quiet compiler

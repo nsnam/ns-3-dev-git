@@ -66,7 +66,7 @@ public:
    * Create a new pcap file or open an existing pcap file.  Semantics are
    * similar to the stdc++ io stream classes.
    *
-   * Since a pcap file is always a binary file, the file type is automatically 
+   * Since a pcap file is always a binary file, the file type is automatically
    * selected as a binary file (fstream::binary is automatically ored with the mode
    * field).
    *
@@ -87,7 +87,7 @@ public:
    * been previously opened with write permissions.
    *
    * \param dataLinkType A data link type as defined in the pcap library.  If
-   * you want to make resulting pcap files visible in existing tools, the 
+   * you want to make resulting pcap files visible in existing tools, the
    * data link type must match existing definitions, such as PCAP_ETHERNET,
    * PCAP_PPP, PCAP_80211, etc.  If you are storing different kinds of packet
    * data, such as naked TCP headers, you are at liberty to locally define your
@@ -105,16 +105,16 @@ public:
    * \warning Calling this method on an existing file will result in the loss
    * any existing data.
    */
-  void Init (uint32_t dataLinkType, 
-             uint32_t snapLen = std::numeric_limits<uint32_t>::max (), 
+  void Init (uint32_t dataLinkType,
+             uint32_t snapLen = std::numeric_limits<uint32_t>::max (),
              int32_t tzCorrection = PcapFile::ZONE_DEFAULT);
 
   /**
    * \brief Write the next packet to file
-   * 
+   *
    * \param t Packet timestamp as ns3::Time.
    * \param p Packet to write to the pcap file.
-   * 
+   *
    */
   void Write (Time t, Ptr<const Packet> p);
 
@@ -124,11 +124,11 @@ public:
    * It is the case that adding a header to a packet prior to writing it to a
    * file must trigger a deep copy in the Packet.  By providing the header
    * separately, we can avoid that copy.
-   * 
+   *
    * \param t Packet timestamp as ns3::Time.
    * \param header The Header to prepend to the packet.
    * \param p Packet to write to the pcap file.
-   * 
+   *
    */
   void Write (Time t, const Header &header, Ptr<const Packet> p);
 
@@ -138,13 +138,13 @@ public:
    * \param t Packet timestamp as ns3::Time.
    * \param buffer The buffer to write.
    * \param length The size of the buffer.
-   * 
+   *
    */
   void Write (Time t, uint8_t const *buffer, uint32_t length);
 
   /**
    * \brief Read the next packet from the file.
-   * 
+   *
    * \param t Reference to packet timestamp as ns3::Time.
    * \returns a pointer to ns3::Packet.
    */
@@ -157,7 +157,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns magic number
-   */ 
+   */
   uint32_t GetMagic (void);
 
   /**
@@ -167,7 +167,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns major version
-   */ 
+   */
   uint16_t GetVersionMajor (void);
 
   /**
@@ -177,7 +177,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns minor version
-   */ 
+   */
   uint16_t GetVersionMinor (void);
 
   /**
@@ -187,7 +187,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns time zone offset
-   */ 
+   */
   int32_t GetTimeZoneOffset (void);
 
   /**
@@ -197,27 +197,27 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns accuracy of timestamps
-   */ 
+   */
   uint32_t GetSigFigs (void);
 
   /**
-   * \brief Returns the max length of saved packets field of the pcap file as 
+   * \brief Returns the max length of saved packets field of the pcap file as
    * defined by the snaplen field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns max length of saved packets field
-   */ 
+   */
   uint32_t GetSnapLen (void);
 
   /**
-   * \brief Returns the data link type field of the pcap file as defined by the 
+   * \brief Returns the data link type field of the pcap file as defined by the
    * network field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns data link type field
-   */ 
+   */
   uint32_t GetDataLinkType (void);
 
 private:

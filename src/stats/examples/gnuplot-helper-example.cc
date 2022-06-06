@@ -126,7 +126,7 @@ int main (int argc, char *argv[])
                             "Emitter Count",
                             "png");
 
-  // Create a probe.  Because the trace source we are interested in is 
+  // Create a probe.  Because the trace source we are interested in is
   // of type uint32_t, we specify the type of probe to use by the first
   // argument specifying its ns3 TypeId.
   plotHelper.PlotProbe ("ns3::Uinteger32Probe",

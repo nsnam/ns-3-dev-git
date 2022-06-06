@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Dan Broyles <dbroyl01@ku.edu>
- * Thanks to Kevin Peters, faculty advisor James P.G. Sterbenz, and the ResiliNets 
+ * Thanks to Kevin Peters, faculty advisor James P.G. Sterbenz, and the ResiliNets
  * initiative at The University of Kansas, https://wiki.ittc.ku.edu/resilinets
  */
 #ifndef GAUSS_MARKOV_MOBILITY_MODEL_H
@@ -38,19 +38,19 @@ namespace ns3 {
  * \ingroup mobility
  * \brief Gauss-Markov mobility model
  *
- * This is a 3D version of the Gauss-Markov mobility model described in [1]. 
+ * This is a 3D version of the Gauss-Markov mobility model described in [1].
  * Unlike the other mobility models in ns-3, which are memoryless, the Gauss
  * Markov model has both memory and variability. The tunable alpha parameter
  * determines the how much memory and randomness you want to model.
- * Each object starts with a specific velocity, direction (radians), and pitch 
- * angle (radians) equivalent to the mean velocity, direction, and pitch. 
- * At each timestep, a new velocity, direction, and pitch angle are generated 
- * based upon the previous value, the mean value, and a gaussian random variable. 
+ * Each object starts with a specific velocity, direction (radians), and pitch
+ * angle (radians) equivalent to the mean velocity, direction, and pitch.
+ * At each timestep, a new velocity, direction, and pitch angle are generated
+ * based upon the previous value, the mean value, and a gaussian random variable.
  * This version is suited for simple airplane flight, where direction, velocity,
  * and pitch are the key variables.
  * The motion field is limited by a 3D bounding box (called "box") which is a 3D
  * version of the "rectangle" field that is used in 2-dimensional ns-3 mobility models.
- * 
+ *
  * Here is an example of how to implement the model and set the initial node positions:
  * \code
     MobilityHelper mobility;
@@ -70,7 +70,7 @@ namespace ns3 {
       "X", StringValue ("ns3::UniformRandomVariable[Min=0|Max=150000]"),
       "Y", StringValue ("ns3::UniformRandomVariable[Min=0|Max=150000]"),
       "Z", StringValue ("ns3::UniformRandomVariable[Min=0|Max=10000]"));
- 
+
     mobility.Install (wifiStaNodes);
  * \endcode
  * [1] Tracy Camp, Jeff Boleng, Vanessa Davies, "A Survey of Mobility Models
@@ -114,7 +114,7 @@ private:
   Ptr<NormalRandomVariable> m_normalVelocity; //!< Gaussian rv used to for next velocity
   Ptr<RandomVariableStream> m_rndMeanDirection; //!< rv used to assign avg direction
   Ptr<NormalRandomVariable> m_normalDirection; //!< Gaussian rv for next direction value
-  Ptr<RandomVariableStream> m_rndMeanPitch; //!< rv used to assign avg. pitch 
+  Ptr<RandomVariableStream> m_rndMeanPitch; //!< rv used to assign avg. pitch
   Ptr<NormalRandomVariable> m_normalPitch; //!< Gaussian rv for next pitch
   EventId m_event; //!< event id of scheduled start
   Box m_bounds; //!< bounding box

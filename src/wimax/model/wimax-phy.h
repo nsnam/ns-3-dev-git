@@ -41,7 +41,7 @@ class Packet;
 
 /**
  * \ingroup wimax
- * 
+ *
  * WiMAX PHY entity
  */
 class WimaxPhy : public Object
@@ -375,7 +375,7 @@ public:
 
 private:
   /**
-   * Get modulation FEC parameters 
+   * Get modulation FEC parameters
    * \param modulationType the modultion type
    * \param bitsPerSymbol the number of bits per symbol page
    * \param fecCode the FEC code

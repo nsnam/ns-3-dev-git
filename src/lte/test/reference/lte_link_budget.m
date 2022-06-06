@@ -28,6 +28,6 @@ title ("LTE link budget");
 
 grid on;
 print ("lte_link_budget.png", "-dpng");
-      
+
 
 

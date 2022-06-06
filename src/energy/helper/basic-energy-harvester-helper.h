@@ -27,7 +27,7 @@
 #include "ns3/node.h"
 
 namespace ns3 {
-  
+
 /**
  * \ingroup energy
  * \brief Creates a BasicEnergyHarvester object.
@@ -47,7 +47,7 @@ private:
   ObjectFactory m_basicEnergyHarvester; //!< Energy source factory
 
 };
-  
+
 } // namespace ns3
 
 #endif /* defined(BASIC_ENERGY_HARVESTER_HELPER_H) */

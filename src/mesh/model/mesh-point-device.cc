@@ -121,7 +121,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
           Time forwardingDelay = GetForwardingDelay ();
           NS_LOG_DEBUG ("Forwarding broadcast from " << src48 << " to " << dst48
             << " with delay " << forwardingDelay.As (Time::US));
-          Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet, protocol, src48, dst48); 
+          Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet, protocol, src48, dst48);
         }
       return;
     }
@@ -139,8 +139,8 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   else
     {
       Time forwardingDelay = GetForwardingDelay ();
-      Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet->Copy (), protocol, src48, dst48); 
-      NS_LOG_DEBUG ("Forwarding unicast from " << src48 << " to " << dst48 
+      Simulator::Schedule (forwardingDelay, &MeshPointDevice::Forward, this, incomingPort, packet->Copy (), protocol, src48, dst48);
+      NS_LOG_DEBUG ("Forwarding unicast from " << src48 << " to " << dst48
         << " with delay " << forwardingDelay.As (Time::US));
     }
 }

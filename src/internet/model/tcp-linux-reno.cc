@@ -78,7 +78,7 @@ TcpLinuxReno::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAck
 
   uint32_t w = tcb->m_cWnd / tcb->m_segmentSize;
 
-  // Floor w to 1 if w == 0 
+  // Floor w to 1 if w == 0
   if (w == 0)
     {
       w = 1;

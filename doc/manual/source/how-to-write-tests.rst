@@ -4,7 +4,7 @@
 How to write tests
 ------------------
 
-A primary goal of the ns-3 project is to help users to improve the 
+A primary goal of the ns-3 project is to help users to improve the
 validity and credibility of their results.  There are many elements
 to obtaining valid models and simulations, and testing is a major
 component.  If you contribute models or examples to ns-3, you may
@@ -26,7 +26,7 @@ Sample TestSuite skeleton
 When starting from scratch (i.e. not adding a TestCase to an existing
 TestSuite), these things need to be decided up front:
 
-* What the test suite will be called 
+* What the test suite will be called
 * What type of test it will be (Build Verification Test, Unit Test,
   System Test, or Performance Test)
 * Where the test code will live (either in an existing ns-3 module or
@@ -36,13 +36,13 @@ TestSuite), these things need to be decided up front:
 A program called ``utils/create-module.py`` is a good starting point.
 This program can be invoked such as ``create-module.py router`` for
 a hypothetical new module called ``router``.  Once you do this, you
-will see a ``router`` directory, and a ``test/router-test-suite.cc`` 
+will see a ``router`` directory, and a ``test/router-test-suite.cc``
 test suite.  This file can be a starting point for your initial test.
 This is a working test suite, although the actual tests performed are
 trivial.  Copy it over to your module's test directory, and do a global
 substitution of "Router" in that file for something pertaining to
 the model that you want to test.  You can also edit things such as a
-more descriptive test case name. 
+more descriptive test case name.
 
 You also need to add a block into your wscript to get this test to
 compile:
@@ -82,7 +82,7 @@ Test macros
 ***********
 
 There are a number of macros available for checking test program
-output with expected output.  These macros are defined in 
+output with expected output.  These macros are defined in
 ``src/core/model/test.h``.
 
 The main set of macros that are used include the following:
@@ -93,7 +93,7 @@ The main set of macros that are used include the following:
   NS_TEST_ASSERT_MSG_NE(actual, limit, msg)
   NS_TEST_ASSERT_MSG_LT(actual, limit, msg)
   NS_TEST_ASSERT_MSG_GT(actual, limit, msg)
-  NS_TEST_ASSERT_MSG_EQ_TOL(actual, limit, tol, msg)  
+  NS_TEST_ASSERT_MSG_EQ_TOL(actual, limit, tol, msg)
 
 The first argument ``actual`` is the value under test, the second value
 ``limit`` is the expected value (or the value to test against), and the

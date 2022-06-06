@@ -32,14 +32,14 @@ NS_LOG_COMPONENT_DEFINE ("V4Ping");
 
 NS_OBJECT_ENSURE_REGISTERED (V4Ping);
 
-TypeId 
+TypeId
 V4Ping::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::V4Ping")
     .SetParent<Application> ()
     .SetGroupName("Internet-Apps")
     .AddConstructor<V4Ping> ()
-    .AddAttribute ("Remote", 
+    .AddAttribute ("Remote",
                    "The address of the machine we want to ping.",
                    Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&V4Ping::m_remote),
@@ -193,7 +193,7 @@ V4Ping::Read32 (const uint8_t *buffer, uint32_t &data)
   data = (buffer[3] << 24) + (buffer[2] << 16) + (buffer[1] << 8) + buffer[0];
 }
 
-void 
+void
 V4Ping::Send ()
 {
   NS_LOG_FUNCTION (this);
@@ -238,7 +238,7 @@ V4Ping::Send ()
   delete[] data;
 }
 
-void 
+void
 V4Ping::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -263,7 +263,7 @@ V4Ping::StartApplication (void)
 
   Send ();
 }
-void 
+void
 V4Ping::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -281,7 +281,7 @@ V4Ping::StopApplication (void)
     {
       std::ostringstream os;
       os.precision (4);
-      os << "--- " << m_remote << " ping statistics ---\n" 
+      os << "--- " << m_remote << " ping statistics ---\n"
          << m_seq << " packets transmitted, " << m_recv << " received, "
          << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
          << "time " << (Simulator::Now () - m_started).As (Time::MS) << "\n";

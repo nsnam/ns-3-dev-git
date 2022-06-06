@@ -96,7 +96,7 @@ for d2 = [10000]
   %% SINR (dB)
   dlsinrdB = 10.*log10(dlsinr);
 %    ulsinrdB = 10.*log10(ulsinr);
-  
+
   printf("AddTestCase (new LteUeMeasurementsTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f));\n", \
    d1, d2, d1, d2, rsrp1dBm, rsrp2dBm, rsrq1dB, rsrq2dB)
 
@@ -105,7 +105,7 @@ for d2 = [10000]
   rsrqdBv1 = [rsrqdBv1 rsrq1dB];
   sinrdBv1 = [sinrdBv1 dlsinrdB];
 
-  
+
 endfor
 
 

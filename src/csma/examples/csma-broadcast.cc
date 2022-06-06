@@ -24,7 +24,7 @@
 //       |     |
 //     ==========
 //
-//   n0 originates UDP broadcast to 255.255.255.255/discard port, which 
+//   n0 originates UDP broadcast to 255.255.255.255/discard port, which
 //   is replicated and received on both n1 and n2
 
 #include <iostream>
@@ -42,7 +42,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaBroadcastExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
@@ -90,7 +90,7 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
   onoff.SetConstantRate (DataRate ("500kb/s"));
 
@@ -107,16 +107,16 @@ main (int argc, char *argv[])
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
 
-  // Configure ascii tracing of all enqueue, dequeue, and NetDevice receive 
-  // events on all devices.  Trace output will be sent to the file 
+  // Configure ascii tracing of all enqueue, dequeue, and NetDevice receive
+  // events on all devices.  Trace output will be sent to the file
   // "csma-one-subnet.tr"
   AsciiTraceHelper ascii;
   csma.EnableAsciiAll (ascii.CreateFileStream ("csma-broadcast.tr"));
 
   // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
+  // The output files will be named
   // csma-broadcast-<nodeId>-<interfaceId>.pcap
-  // and can be read by the "tcpdump -tt -r" command 
+  // and can be read by the "tcpdump -tt -r" command
   csma.EnablePcapAll ("csma-broadcast", false);
 
   NS_LOG_INFO ("Run Simulation.");

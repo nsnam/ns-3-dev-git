@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 
-TypeId 
+TypeId
 PacketSocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSocketFactory")
@@ -49,5 +49,5 @@ Ptr<Socket> PacketSocketFactory::CreateSocket (void)
   Ptr<PacketSocket> socket = CreateObject<PacketSocket> ();
   socket->SetNode (node);
   return socket;
-} 
+}
 } // namespace ns3

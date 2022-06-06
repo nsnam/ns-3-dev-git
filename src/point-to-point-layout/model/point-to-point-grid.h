@@ -39,9 +39,9 @@ namespace ns3 {
  * \brief A helper to make it easier to create a grid topology
  * with p2p links
  */
-class PointToPointGridHelper 
+class PointToPointGridHelper
 {
-public: 
+public:
   /**
    * Create a PointToPointGridHelper in order to easily create
    * grid topologies using p2p links
@@ -50,12 +50,12 @@ public:
    *
    * \param nCols total number of columns in the grid
    *
-   * \param pointToPoint the PointToPointHelper which is used 
-   *                     to connect all of the nodes together 
+   * \param pointToPoint the PointToPointHelper which is used
+   *                     to connect all of the nodes together
    *                     in the grid
    */
-  PointToPointGridHelper (uint32_t nRows, 
-                          uint32_t nCols, 
+  PointToPointGridHelper (uint32_t nRows,
+                          uint32_t nCols,
                           PointToPointHelper pointToPoint);
 
   ~PointToPointGridHelper ();
@@ -65,49 +65,49 @@ public:
    *
    * \param col the column address of the node desired
    *
-   * \returns a pointer to the node specified by the 
+   * \returns a pointer to the node specified by the
    *          (row, col) address
    */
   Ptr<Node> GetNode (uint32_t row, uint32_t col);
 
   /**
-   * This returns an Ipv4 address at the node specified by 
-   * the (row, col) address.  Technically, a node will have 
-   * multiple interfaces in the grid; therefore, it also has 
-   * multiple Ipv4 addresses.  This method only returns one of 
-   * the addresses. If you picture the grid, the address returned 
-   * is the left row device of all the nodes, except the left-most 
+   * This returns an Ipv4 address at the node specified by
+   * the (row, col) address.  Technically, a node will have
+   * multiple interfaces in the grid; therefore, it also has
+   * multiple Ipv4 addresses.  This method only returns one of
+   * the addresses. If you picture the grid, the address returned
+   * is the left row device of all the nodes, except the left-most
    * grid nodes, which returns the right row device.
    *
    * \param row the row address of the node desired
    *
    * \param col the column address of the node desired
    *
-   * \returns Ipv4Address of one of the interfaces of the node 
+   * \returns Ipv4Address of one of the interfaces of the node
    *          specified by the (row, col) address
    */
   Ipv4Address GetIpv4Address (uint32_t row, uint32_t col);
 
   /**
-   * This returns an Ipv6 address at the node specified by 
-   * the (row, col) address.  Technically, a node will have 
-   * multiple interfaces in the grid; therefore, it also has 
-   * multiple Ipv6 addresses.  This method only returns one of 
-   * the addresses. If you picture the grid, the address returned 
-   * is the left row device of all the nodes, except the left-most 
+   * This returns an Ipv6 address at the node specified by
+   * the (row, col) address.  Technically, a node will have
+   * multiple interfaces in the grid; therefore, it also has
+   * multiple Ipv6 addresses.  This method only returns one of
+   * the addresses. If you picture the grid, the address returned
+   * is the left row device of all the nodes, except the left-most
    * grid nodes, which returns the right row device.
    *
    * \param row the row address of the node desired
    *
    * \param col the column address of the node desired
    *
-   * \returns Ipv6Address of one of the interfaces of the node 
+   * \returns Ipv6Address of one of the interfaces of the node
    *          specified by the (row, col) address
    */
   Ipv6Address GetIpv6Address (uint32_t row, uint32_t col);
 
   /**
-   * \param stack an InternetStackHelper which is used to install 
+   * \param stack an InternetStackHelper which is used to install
    *              on every node in the grid
    */
   void InstallStack (InternetStackHelper stack);
@@ -115,10 +115,10 @@ public:
   /**
    * Assigns Ipv4 addresses to all the row and column interfaces
    *
-   * \param rowIp the Ipv4AddressHelper used to assign Ipv4 addresses 
+   * \param rowIp the Ipv4AddressHelper used to assign Ipv4 addresses
    *              to all of the row interfaces in the grid
    *
-   * \param colIp the Ipv4AddressHelper used to assign Ipv4 addresses 
+   * \param colIp the Ipv4AddressHelper used to assign Ipv4 addresses
    *              to all of the column interfaces in the grid
    */
   void AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);

@@ -17,7 +17,7 @@
  *
  * Authors: Marco Miozzo  <marco.miozzo@cttc.es>
  *          Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 
 #include "building.h"
@@ -81,18 +81,18 @@ Building::GetTypeId (void)
   return tid;
 }
 
-Building::Building (double xMin, 
+Building::Building (double xMin,
                     double xMax,
-                    double yMin, 
+                    double yMin,
                     double yMax,
-                    double zMin, 
+                    double zMin,
                     double zMax)
 {
   NS_FATAL_ERROR (std::endl << "this function is not supported any more:" << std::endl
                   << " Building::Building (double xMin, double xMax, double yMin, " << std::endl
                   << "                     double yMax, double zMin, double zMax)\n" << std::endl
                   << "so you can't do any more stuff like:" << std::endl
-                  << "Ptr<Building> b = CreateObject<Building> (" 
+                  << "Ptr<Building> b = CreateObject<Building> ("
                   << xMin << ", "
                   << xMax << ", "
                   << yMin << ", "
@@ -111,19 +111,19 @@ Building::Building (double xMin,
 }
 
 
-Building::Building () 
+Building::Building ()
 {
   NS_LOG_FUNCTION (this);
   m_buildingId = BuildingList::Add(this);
 }
 
-Building::~Building () 
+Building::~Building ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-Building::DoDispose () 
+Building::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -149,7 +149,7 @@ Building::SetBuildingType (Building::BuildingType_t t)
   m_buildingType = t;
 }
 
-void 
+void
 Building::SetExtWallsType (Building::ExtWallsType_t t)
 {
   NS_LOG_FUNCTION (this << t);
@@ -184,7 +184,7 @@ Building::GetBoundaries () const
   return m_buildingBounds;
 }
 
-Building::BuildingType_t 
+Building::BuildingType_t
 Building::GetBuildingType () const
 {
   return (m_buildingType);
@@ -196,32 +196,32 @@ Building::GetExtWallsType () const
   return (m_externalWalls);
 }
 
-uint16_t 
+uint16_t
 Building::GetNFloors () const
 {
   return (m_floors);
 }
 
-uint16_t 
+uint16_t
 Building::GetNRoomsX () const
 {
   return (m_roomsX);
 }
 
-uint16_t 
+uint16_t
 Building::GetNRoomsY () const
 {
   return (m_roomsY);
 }
 
-bool 
+bool
 Building::IsInside (Vector position) const
 {
   return m_buildingBounds.IsInside (position);
 }
 
 
-uint16_t 
+uint16_t
 Building::GetRoomX (Vector position) const
 {
   NS_ASSERT (IsInside (position));
@@ -230,7 +230,7 @@ Building::GetRoomX (Vector position) const
   if (position.x ==  m_buildingBounds.xMax)
     {
       n = m_roomsX;
-    }                                                                   
+    }
   else
     {
       double xLength = m_buildingBounds.xMax - m_buildingBounds.xMin;
@@ -242,7 +242,7 @@ Building::GetRoomX (Vector position) const
   return n;
 }
 
-uint16_t 
+uint16_t
 Building::GetRoomY (Vector position) const
 {
   NS_ASSERT (IsInside (position));
@@ -251,7 +251,7 @@ Building::GetRoomY (Vector position) const
   if (position.y ==  m_buildingBounds.yMax)
     {
       n = m_roomsY;
-    }                                                                   
+    }
   else
     {
       double yLength = m_buildingBounds.yMax - m_buildingBounds.yMin;
@@ -263,7 +263,7 @@ Building::GetRoomY (Vector position) const
   return n;
 }
 
-uint16_t 
+uint16_t
 Building::GetFloor (Vector position) const
 {
   NS_ASSERT (IsInside (position));
@@ -272,7 +272,7 @@ Building::GetFloor (Vector position) const
   if (position.z ==  m_buildingBounds.zMax)
     {
       n = m_floors;
-    }                                                                   
+    }
   else
     {
       double zLength = m_buildingBounds.zMax - m_buildingBounds.zMin;

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 The Georgia Institute of Technology 
+ * Copyright (c) 2009 The Georgia Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -123,17 +123,17 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
   else
     {
       // Shift over the newbits by the
-      // number of current bits.  This allows 
-      // us to logically OR with the present 
-      // NixVector, resulting in the new 
+      // number of current bits.  This allows
+      // us to logically OR with the present
+      // NixVector, resulting in the new
       // NixVector
       newBits = newBits << currentVectorBitSize;
       newBits |= m_nixVector.back ();
 
-      // Now insert the new NixVector and 
+      // Now insert the new NixVector and
       // increment number of bits for
       // currentVectorBitSize and m_totalBitSize
-      // accordingly 
+      // accordingly
       m_nixVector.back () = newBits;
     }
   m_totalBitSize += numberOfBits;
@@ -155,7 +155,7 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
 
   if (numberOfBits > totalRemainingBits)
     {
-      NS_FATAL_ERROR ("You've tried to extract too many bits of the Nix-vector, " << this << ". NumberBits: " 
+      NS_FATAL_ERROR ("You've tried to extract too many bits of the Nix-vector, " << this << ". NumberBits: "
                       << numberOfBits << " Remaining: " << totalRemainingBits);
     }
 
@@ -164,7 +164,7 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
       NS_FATAL_ERROR ("You've specified a number of bits for Nix-vector <= 0!");
     }
 
-  // First determine where in the NixVector 
+  // First determine where in the NixVector
   // vector we need to extract which depends
   // on the number of used bits and the total
   // number of bits
@@ -177,9 +177,9 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
       if ((numberOfBits-1) > ((totalRemainingBits-1) % 32)) // we do span more than one
         {
           extractedBits = m_nixVector.at (vectorIndex) << (32 - (totalRemainingBits % 32));
-          extractedBits = extractedBits >> ((32 - (totalRemainingBits % 32)) 
+          extractedBits = extractedBits >> ((32 - (totalRemainingBits % 32))
                                             - (numberOfBits - (totalRemainingBits % 32)));
-          extractedBits |= (m_nixVector.at (vectorIndex-1) 
+          extractedBits |= (m_nixVector.at (vectorIndex-1)
                             >> (32 - (numberOfBits - (totalRemainingBits % 32))));
           m_used += numberOfBits;
           return extractedBits;
@@ -330,11 +330,11 @@ NixVector::BitCount (uint32_t numberOfNeighbors) const
 {
   NS_LOG_FUNCTION (this << numberOfNeighbors);
 
-  // Given the numberOfNeighbors, return the number 
+  // Given the numberOfNeighbors, return the number
   // of bits needed (essentially, log2(numberOfNeighbors-1)
   uint32_t bitCount = 0;
 
-  if (numberOfNeighbors < 2) 
+  if (numberOfNeighbors < 2)
     {
       return 1;
     }

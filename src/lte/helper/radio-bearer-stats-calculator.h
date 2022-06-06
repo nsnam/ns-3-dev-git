@@ -52,10 +52,10 @@ typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
  *
  * This class is an ns-3 trace sink that performs the calculation of
  * PDU statistics for uplink and downlink. Statistics are generated
- * on a per radio bearer basis. This class can be used for 
+ * on a per radio bearer basis. This class can be used for
  * RLC PDU stats or PDCP PDU stats by connecting to the appropriate
  * trace sources at the RLC or PDCP layer.
- * 
+ *
  * The statistics are calculated at consecutive time windows and
  * periodically written to a file. The calculated statistics are:
  *
@@ -134,26 +134,26 @@ public:
   std::string GetDlPdcpOutputFilename (void);
 
 
-  /** 
-   * 
+  /**
+   *
    * \param t the value of the StartTime attribute
    */
   void SetStartTime (Time t);
 
-  /** 
-   * 
+  /**
+   *
    * \return the value of the StartTime attribute
    */
   Time GetStartTime () const;
 
-  /** 
-   * 
+  /**
+   *
    * \param e the epoch duration
    */
   void SetEpoch (Time e);
 
-  /** 
-   * 
+  /**
+   *
    * \return the epoch duration
    */
   Time GetEpoch () const;

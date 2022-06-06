@@ -65,7 +65,7 @@ if nWifi > 18:
 if verbose == "True":
 	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
-	
+
 p2pNodes = ns.network.NodeContainer()
 p2pNodes.Create(2)
 
@@ -105,10 +105,10 @@ mac.SetType("ns3::ApWifiMac","Ssid", ns.wifi.SsidValue (ssid))
 apDevices = wifi.Install(phy, mac, wifiApNode)
 
 mobility = ns.mobility.MobilityHelper()
-mobility.SetPositionAllocator ("ns3::GridPositionAllocator", "MinX", ns.core.DoubleValue(0.0), 
-								"MinY", ns.core.DoubleValue (0.0), "DeltaX", ns.core.DoubleValue(5.0), "DeltaY", ns.core.DoubleValue(10.0), 
+mobility.SetPositionAllocator ("ns3::GridPositionAllocator", "MinX", ns.core.DoubleValue(0.0),
+								"MinY", ns.core.DoubleValue (0.0), "DeltaX", ns.core.DoubleValue(5.0), "DeltaY", ns.core.DoubleValue(10.0),
                                  "GridWidth", ns.core.UintegerValue(3), "LayoutType", ns.core.StringValue("RowFirst"))
-                                 
+
 mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle (-50, 50, -50, 50)))
 mobility.Install(wifiStaNodes)
 

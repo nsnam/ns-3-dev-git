@@ -56,7 +56,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdExampleDistributed");
 
-int 
+int
 main (int argc, char *argv[])
 {
   bool verbose = false;
@@ -96,12 +96,12 @@ main (int argc, char *argv[])
   uint32_t systemCount = 1;
 
   // Distributed simulation setup; by default use granted time window algorithm.
-  if(nullmsg) 
+  if(nullmsg)
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::NullMessageSimulatorImpl"));
-    } 
-  else 
+    }
+  else
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::DistributedSimulatorImpl"));
@@ -124,10 +124,10 @@ main (int argc, char *argv[])
 
   // System id of Wifi side
   uint32_t systemWifi = 0;
-  
+
   // System id of CSMA side
   uint32_t systemCsma = systemCount - 1;
-  
+
   NodeContainer p2pNodes;
   // Create each end of the P2P link on a separate system (rank)
   Ptr<Node> p2pNode1 = CreateObject<Node> (systemWifi);
@@ -215,8 +215,8 @@ main (int argc, char *argv[])
   address.Assign (staDevices);
   address.Assign (apDevices);
 
-  // If this rank is systemCsma, 
-  // it should contain the server application, 
+  // If this rank is systemCsma,
+  // it should contain the server application,
   // since it is on one of the csma nodes
   if (systemId == systemCsma)
     {
@@ -233,7 +233,7 @@ main (int argc, char *argv[])
     }
 
   // If this rank is systemWifi
-  // it should contain the client application, 
+  // it should contain the client application,
   // since it is on one of the wifi nodes
   if (systemId == systemWifi)
     {
@@ -242,7 +242,7 @@ main (int argc, char *argv[])
       echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
       echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
-      ApplicationContainer clientApps = 
+      ApplicationContainer clientApps =
         echoClient.Install (wifiStaNodes.Get (nWifi - 1));
       clientApps.Start (Seconds (2.0));
       clientApps.Stop (Seconds (10.0));
@@ -252,16 +252,16 @@ main (int argc, char *argv[])
           clientApps.Get (0)->TraceConnectWithoutContext ("RxWithAddresses", MakeCallback (&SinkTracer::SinkTrace));
         }
     }
- 
+
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (10.0));
 
   if (tracing == true)
     {
-      // Depending on the system Id (rank), the pcap information 
+      // Depending on the system Id (rank), the pcap information
       // traced will be different.  For example, the ethernet pcap
-      // will be empty for rank0, since these nodes are placed on 
+      // will be empty for rank0, since these nodes are placed on
       // on rank 1.  All ethernet traffic will take place on rank 1.
       // Similar differences are seen in the p2p and wireless pcaps.
       if (systemId == systemCsma)
@@ -288,6 +288,6 @@ main (int argc, char *argv[])
 
   // Exit the MPI execution environment
   MpiInterface::Disable ();
-  
+
   return 0;
 }

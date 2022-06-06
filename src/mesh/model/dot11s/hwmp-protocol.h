@@ -448,7 +448,7 @@ private:
     /// constructor
     Statistics ();
   };
-  Statistics m_stats;  ///< statistics 
+  Statistics m_stats;  ///< statistics
 
   HwmpProtocolMacMap m_interfaces; ///< interfaces
   Mac48Address m_address; ///< address
@@ -478,7 +478,7 @@ private:
   Time m_randomStart;
   /// Packet Queue
   std::vector<QueuedPacket> m_rqueue;
-  
+
   /// \name HWMP-protocol parameters
   /// These are all Attributes
   ///@{
@@ -499,7 +499,7 @@ private:
   bool m_doFlag;                                  //!< Destination only HWMP flag
   bool m_rfFlag;                                  //!< Reply and forward flag
   ///@}
-  
+
   /// Random variable for random start time
   Ptr<UniformRandomVariable> m_coefficient; ///< coefficient
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback; ///< neighbors callback

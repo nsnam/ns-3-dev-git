@@ -62,7 +62,7 @@ By default ``create-module.py`` creates the module skeleton in the
 .. sourcecode:: bash
 
   $ ./utils/create-module.py contrib/new-contrib
-  
+
 Let's assume we've created our new module in ``src``.
 ``cd`` into ``src/new-module``; you will find this directory layout:
 
@@ -113,10 +113,10 @@ like this (before editing):
 .. sourcecode:: cmake
 
   build_lib(
-    LIBNAME new-module 
-    SOURCE_FILES helper/new-module-helper.cc 
+    LIBNAME new-module
+    SOURCE_FILES helper/new-module-helper.cc
                  model/new-module.cc
-    HEADER_FILES helper/new-module-helper.h 
+    HEADER_FILES helper/new-module-helper.h
                  model/new-module.h
     LIBRARIES_TO_LINK ${libcore}
     TEST_SOURCES test/new-module-test-suite.cc
@@ -129,12 +129,12 @@ should look like:
 .. sourcecode:: cmake
 
     build_lib(
-      LIBNAME new-module 
-      SOURCE_FILES helper/new-module-helper.cc 
+      LIBNAME new-module
+      SOURCE_FILES helper/new-module-helper.cc
                    model/new-module.cc
-      HEADER_FILES helper/new-module-helper.h 
+      HEADER_FILES helper/new-module-helper.h
                    model/new-module.h
-      LIBRARIES_TO_LINK 
+      LIBRARIES_TO_LINK
         ${libinternet}
         ${libmobility}
         ${libaodv}
@@ -147,7 +147,7 @@ is why we removed ``core``; the ``internet`` module in turn depends on
 
 Your module will most likely have model source files.  Initial skeletons
 (which will compile successfully) are created in ``model/new-module.cc``
-and ``model/new-module.h``.  
+and ``model/new-module.h``.
 
 If your module will have helper source files, then they will go into
 the ``helper/`` directory; again, initial skeletons are created
@@ -213,7 +213,7 @@ with the following:
 
 Note: the ``source_files`` and ``header_files`` lists are not necessary.
 They are used keep the ``build_lib`` macro readable for modules with many
-source files. 
+source files.
 
 The objects resulting from compiling these sources will be assembled
 into a link library, which will be linked to any programs relying on this
@@ -257,7 +257,7 @@ If the list of headers is short, use the following instead:
     build_lib(
       LIBNAME spectrum
       ...
-      HEADER_FILES 
+      HEADER_FILES
         helper/adhoc-aloha-noack-ideal-phy-helper.h
         helper/spectrum-analyzer-helper.h
         ...
@@ -266,7 +266,7 @@ If the list of headers is short, use the following instead:
         model/wifi-spectrum-value-helper.h
       ...
     )
-    
+
 
 Headers made public in this way will be accessible to users of your model
 with include statements like
@@ -274,7 +274,7 @@ with include statements like
 .. sourcecode:: cpp
 
     #include "ns3/spectrum-model.h"
-    	
+
 Headers used strictly internally in your implementation should not
 be included here.  They are still accessible to your implementation by
 include statements like
@@ -307,7 +307,7 @@ The ``spectrum`` model tests are specified with the following stanza:
       test/tv-spectrum-transmitter-test.cc
   )
 
-See :doc:`Tests <tests>` for more information on how to write test cases.	
+See :doc:`Tests <tests>` for more information on how to write test cases.
 
 Step 6 - Declare Examples
 *************************
@@ -325,7 +325,7 @@ The ``spectrum`` model defines it's first example in
   build_lib_example(
     NAME adhoc-aloha-ideal-phy
     SOURCE_FILES adhoc-aloha-ideal-phy.cc
-    LIBRARIES_TO_LINK 
+    LIBRARIES_TO_LINK
       ${libspectrum}
       ${libmobility}
       ${libinternet}
@@ -335,7 +335,7 @@ The ``spectrum`` model defines it's first example in
 
 Note that the variable ``libraries_to_link`` is the list of modules that
 the program being created depends on; again, don't forget to include
-``new-module`` in the list.  It's best practice to list only the direct 
+``new-module`` in the list.  It's best practice to list only the direct
 module dependencies, and let ``CMake`` deduce the full dependency tree.
 
 Occasionally, for clarity, you may want to split the implementation
@@ -343,13 +343,13 @@ for your example among several source files.  In this case, just
 include those files as additional explicit sources of the example:
 
 .. sourcecode:: cmake
- 
+
   build_lib_example(
     NAME new-module-example
     SOURCE_FILES new-module-example.cc
-    LIBRARIES_TO_LINK 
-      ${libspectrum} 
-      ${libmobility} 
+    LIBRARIES_TO_LINK
+      ${libspectrum}
+      ${libmobility}
       ${libinternet}
       ${libapplications}
   )
@@ -380,7 +380,7 @@ two lists of C++ and Python examples:
       ("adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
       ("adhoc-aloha-ideal-phy-matrix-propagation-loss-model", "True", "True"),
   ]
-  
+
   # A list of Python examples to run in order to ensure that they remain
   # runnable over time.  Each tuple in the list contains
   #
@@ -447,6 +447,6 @@ Adding Python bindings to your module is optional.
 
 If you want to include Python bindings (needed only if you want
 to write Python ns-3 programs instead of C++ ns-3 programs), you
-should scan your module to generate new bindings for the Python 
-API (covered elsewhere in this manual), and they will be used 
+should scan your module to generate new bindings for the Python
+API (covered elsewhere in this manual), and they will be used
 if NS3_PYTHON_BINDINGS is set to ON.

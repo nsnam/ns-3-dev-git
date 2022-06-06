@@ -163,7 +163,7 @@ DataRateTestCase1::DoRun ()
 class DataRateTestCase2 : public DataRateTestCase
 {
 public:
-  DataRateTestCase2 (); 
+  DataRateTestCase2 ();
   /**
    * Checks data rate addition
    * \param rate1 first data rate
@@ -194,7 +194,7 @@ public:
   void MultiplicationDoubleTest (std::string rate1, double factor, std::string rate2);
 
 private:
-  virtual void DoRun (void); 
+  virtual void DoRun (void);
 };
 
 DataRateTestCase2::DataRateTestCase2 ()
@@ -210,7 +210,7 @@ DataRateTestCase2::AdditionTest (std::string rate1, std::string rate2, std::stri
   DataRate dr3 (rate3);
 
   CheckDataRateEqual(dr1 + dr2, dr3, "DataRate Addition returned incorrect value");
-  
+
   dr1 += dr2;
   CheckDataRateEqual(dr1, dr3, "DataRate Addition returned incorrect value");
 }

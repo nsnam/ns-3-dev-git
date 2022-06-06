@@ -158,7 +158,7 @@ public:
    * \param modulationType the modulation type
    * \param symbolsToAllocation the symbols to allocation
    * \param availableSymbols the available symbols
-   * \returns true if successful 
+   * \returns true if successful
    */
   bool ServiceBandwidthRequests (ServiceFlow *serviceFlow,
                                  enum ServiceFlow::SchedulingType schedulingType,
@@ -273,7 +273,7 @@ public:
   CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::SchedulingType schedType, ReqType reqType);
 
   /**
-   * \param serviceFlow ServiceFlow 
+   * \param serviceFlow ServiceFlow
    * \return Ptr<UlJob>
    *
    * Get pending size.

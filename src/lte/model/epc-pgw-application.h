@@ -146,9 +146,9 @@ public:
    */
   void SetUeAddress (uint64_t imsi, Ipv4Address ueAddr);
 
-  /** 
+  /**
    * set the address of a previously added UE
-   * 
+   *
    * \param imsi the unique identifier of the UE
    * \param ueAddr the IPv6 address of the UE
    */
@@ -235,7 +235,7 @@ private:
 
     /**
      * Set the address of the eNB to which the UE is connected
-     * 
+     *
      * \param addr the address of the SGW
      */
     void SetSgwAddr (Ipv4Address addr);

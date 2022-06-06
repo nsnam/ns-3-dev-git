@@ -133,12 +133,12 @@ TcpHtcpIncrementTest::DoRun ()
  * \brief TCP Htcp TestSuite.
  *
  * The following tests simulate conditions after a congestion event and
- * return to 1/2 ssthresh. After that, two acks are scheduled and the 
+ * return to 1/2 ssthresh. After that, two acks are scheduled and the
  * value of the cWnd is compared at the end of the event.
- * The values in each test have been chosen randomly. The first test 
- * simulates receiving acks for 38 packets with segmentSize=536, 
+ * The values in each test have been chosen randomly. The first test
+ * simulates receiving acks for 38 packets with segmentSize=536,
  * the second one receives ack for 100 packets with segmentSize=1 and
- * the third one receives ack for 50 segment with segmentSize=1446. 
+ * the third one receives ack for 50 segment with segmentSize=1446.
  * The cWnd values of 20383, 40 and 76671 have been
  * calculated manually from the algorithm.
  */

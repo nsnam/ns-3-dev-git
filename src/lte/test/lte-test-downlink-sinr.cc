@@ -97,7 +97,7 @@ LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite ()
 
   AddTestCase (new LteDownlinkDataSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"), TestCase::QUICK);
   AddTestCase (new LteDownlinkCtrlSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"), TestCase::QUICK);
-  
+
 
 }
 
@@ -142,10 +142,10 @@ LteDownlinkDataSinrTestCase::DoRun (void)
   dlPhy->AddDataSinrChunkProcessor (chunkProcessor);
 
   /**
-   * Generate several calls to LteSpectrumPhy::StartRx corresponding to 
+   * Generate several calls to LteSpectrumPhy::StartRx corresponding to
    * several signals. One will be the signal of interest, i.e., the
    *  LteSpectrumSignalParametersDataFrame of the Packet burst
-   * will have the same CellId of the receiving PHY; the others will have 
+   * will have the same CellId of the receiving PHY; the others will have
    * a different CellId and hence will be the interfering signals
    */
 
@@ -160,7 +160,7 @@ LteDownlinkDataSinrTestCase::DoRun (void)
 
   // Packets
   Ptr<Packet> pkt[numOfPbs][numOfPkts];
-  
+
   // Packet bursts cellId
   uint16_t pbCellId[numOfPbs];
 
@@ -265,7 +265,7 @@ LteDownlinkDataSinrTestCase::DoRun (void)
 
   NS_LOG_INFO ("Data Frame - Theoretical SINR: " << *m_expectedSinr);
   NS_LOG_INFO ("Data Frame - Calculated SINR: " << *(actualSinrCatcher.GetValue ()));
- 
+
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(*(actualSinrCatcher.GetValue ()), *m_expectedSinr, 0.0000001, "Data Frame - Wrong SINR !");
   dlPhy->Dispose ();
   Simulator::Destroy ();
@@ -303,7 +303,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   uint16_t cellId = 100;
   dlPhy->SetCellId (cellId);
   ulPhy->SetCellId (cellId);
-  
+
   Ptr<LteChunkProcessor> chunkProcessor = Create<LteChunkProcessor> ();
   LteSpectrumValueCatcher actualSinrCatcher;
   chunkProcessor->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &actualSinrCatcher));
@@ -312,29 +312,29 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   /**
   * Generate several calls to LteSpectrumPhy::StartRx corresponding to several signals. One will be the signal of interest, i.e., the
   *  LteSpectrumSignalParametersDlCtrlFrame of the first signal will have the
-  *  same CellId of the receiving PHY; the others will have a different 
+  *  same CellId of the receiving PHY; the others will have a different
   *  CellId and hence will be the interfering signals
   */
-  
+
   // Number of ctrl bursts (1 data + 4 interferences)
   const int numOfUes = 5;
-  
+
   // Number of control messages in the list
   const int numOfCtrlMsgs = 10;
-  
+
   // control messages in the list
   std::list<Ptr<LteControlMessage> > ctrlMsgList[numOfUes];
-  
+
   // signals cellId
   uint16_t pbCellId[numOfUes];
-  
+
   /**
   * Build ctrl msg lists
   */
   for ( int pb = 0 ; pb < numOfUes ; pb++ )
   {
     pbCellId[pb] = cellId * (pb + 1);
-    
+
     // Create ctrl msg and add them to the list
     for ( int i = 0 ; i < numOfCtrlMsgs ; i++ )
       {
@@ -344,17 +344,17 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
         ctrlMsgList[pb].push_back (msg);
       }
   }
-  
-  
+
+
   Ptr<SpectrumValue> noisePsd = Create<SpectrumValue> (m_sm);
   Ptr<SpectrumValue> i1 = Create<SpectrumValue> (m_sm);
   Ptr<SpectrumValue> i2 = Create<SpectrumValue> (m_sm);
   Ptr<SpectrumValue> i3 = Create<SpectrumValue> (m_sm);
   Ptr<SpectrumValue> i4 = Create<SpectrumValue> (m_sm);
-  
+
   (*noisePsd)[0] = 5.000000000000e-19;
   (*noisePsd)[1] = 4.545454545455e-19;
-  
+
   (*i1)[0] = 5.000000000000e-18;
   (*i2)[0] = 5.000000000000e-16;
   (*i3)[0] = 1.581138830084e-16;
@@ -363,7 +363,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   (*i2)[1] = 5.722388235428e-16;
   (*i3)[1] = 7.204059965732e-17;
   (*i4)[1] = 5.722388235428e-17;
-  
+
   Time ts  = Seconds (1);
   Time ds  = Seconds (1);
   Time ti1 = Seconds (0);
@@ -374,13 +374,13 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   Time di3 = Seconds (1);
   Time ti4 = Seconds (1.5);
   Time di4 = Seconds (0.1);
-  
+
   dlPhy->SetNoisePowerSpectralDensity (noisePsd);
-  
+
   /**
   * Schedule the reception of the data signal plus the interference signals
   */
-  
+
   // eNB sends data to 2 UEs through 2 subcarriers
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> sp1 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
   sp1->psd = m_sv;
@@ -390,8 +390,8 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   sp1->cellId = pbCellId[0];
   sp1->pss = false;
   Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, sp1);
-  
-  
+
+
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip1 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
   ip1->psd = i1;
   ip1->txPhy = 0;
@@ -400,7 +400,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip1->cellId = pbCellId[1];
   ip1->pss = false;
   Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, ip1);
-  
+
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip2 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
   ip2->psd = i2;
   ip2->txPhy = 0;
@@ -409,7 +409,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip2->cellId = pbCellId[2];
   ip2->pss = false;
   Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, ip2);
-  
+
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip3 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
   ip3->psd = i3;
   ip3->txPhy = 0;
@@ -418,7 +418,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip3->cellId = pbCellId[3];
   ip3->pss = false;
   Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, ip3);
-  
+
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip4 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
   ip4->psd = i4;
   ip4->txPhy = 0;
@@ -427,13 +427,13 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip4->cellId = pbCellId[4];
   ip4->pss = false;
   Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, ip4);
-  
+
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
-  
+
   NS_LOG_INFO ("Ctrl Frame - Theoretical SINR: " << *m_expectedSinr);
   NS_LOG_INFO ("Ctrl Frame - Calculated SINR: " << *(actualSinrCatcher.GetValue ()));
-  
+
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(*(actualSinrCatcher.GetValue ()), *m_expectedSinr, 0.0000001, "Data Frame - Wrong SINR !");
   dlPhy->Dispose ();
   Simulator::Destroy ();

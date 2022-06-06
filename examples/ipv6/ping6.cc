@@ -26,7 +26,7 @@
 //              LAN
 //
 // - ICMPv6 echo request flows from n0 to n1 and back with ICMPv6 echo reply
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "ping6.tr"
 
 #include <fstream>
@@ -90,7 +90,7 @@ int main (int argc, char **argv)
   Ping6Helper ping6;
 
   /*
-     ping6.SetLocal (i.GetAddress (0, 1)); 
+     ping6.SetLocal (i.GetAddress (0, 1));
      ping6.SetRemote (i.GetAddress (1, 1));
      */
   ping6.SetIfIndex (i.GetInterfaceIndex (0));

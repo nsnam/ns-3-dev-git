@@ -8,7 +8,7 @@ diagram {
 	SimProgramOrHelper ->> SpectrumChannel [label="AddRx (BSpectrumPhy)"];
 	SimProgramOrHelper ->> SpectrumChannel [label="AddRx (CSpectrumPhy)"];
 
-	=== A transmits; both B and C receive === 
+	=== A transmits; both B and C receive ===
 
 	ASpectrumPhy ->> SpectrumChannel [label="StartTx (SpectrumSignalParameters)"]
 
@@ -25,9 +25,9 @@ diagram {
 	SpectrumChannel ->> SpectrumChannel [label="evaluate propagation between A and C"]
 	CSpectrumPhy  <<- SpectrumChannel[label="StartRx (SpectrumSignalParameters)"]
 
-	=== B transmits; only C receives  (A is not in the set of receivers) === 
-		
-	BSpectrumPhy ->> SpectrumChannel [label="StartTx (SpectrumSignalParameters)"]	
+	=== B transmits; only C receives  (A is not in the set of receivers) ===
+
+	BSpectrumPhy ->> SpectrumChannel [label="StartTx (SpectrumSignalParameters)"]
 
 	CSpectrumPhy  <<- SpectrumChannel[label="GetMobility ()"]
 	CSpectrumPhy  <<- SpectrumChannel[label="GetRxSpectrumModel ()"]
@@ -36,7 +36,7 @@ diagram {
 	SpectrumChannel ->> SpectrumChannel [label="evaluate propagation between B and C"]
 	CSpectrumPhy  <<- SpectrumChannel[label="StartRx (SpectrumSignalParameters)"]
 
-	
+
 }
 
 

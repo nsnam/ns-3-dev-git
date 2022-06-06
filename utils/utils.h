@@ -1,10 +1,10 @@
 /**
- * \ingroup utils 
+ * \ingroup utils
  * \defgroup CheckStyle check-style.py
  *
  * The check-style.py script will test and reformat code according to the
  * ns-3 coding style posted at https://www.nsnam.org/developers/contributing-code/coding-style/
- * It requires that you install 'uncrustify' 
+ * It requires that you install 'uncrustify'
  *
  * It has multiple levels of conformance:
  *   - level=0: the default: merely checks indentation
@@ -13,17 +13,17 @@
  *   - level=3: checks also for missing trailing whitespaces
  *
  * Examples:
- * 
+ *
  * check a single file (level 0 by default):
 \verbatim
 ./check-style.py -f src/core/object.h
 \endverbatim
- *  
+ *
  * fix the style of a single file:
 \verbatim
 ./check-style.py --level=2 --in-place -f src/core/object.h
 \endverbatim
- * 
+ *
  * look at the changes needed for a single file:
 \verbatim
 ./check-style.py --diff --level=1 -f src/core/object.h | less
@@ -33,23 +33,23 @@
 \verbatim
 ./check-style.py --check-hg
 \endverbatim
- * 
+ *
  * look at the changes needed for all modified files in your mercurial
  * repository:
 \verbatim
 ./check-style.py --check-hg --diff |less
 \endverbatim
- * 
+ *
  * Enable this script to run as a 'commit' hook in your repository and
  * disallow commits which contain files with invalid style:
- * 
+ *
 \verbatim
 cat hgrc (can be appended to .hg/hgrc or ~/.hg/hgrc or /etc/hg/hgrc
 [hooks]
 # uncomment below line to enable: works only with mercurial >= 1.3
 #pretxncommit.indent = path-to-binary/check-indent.py --check-hg-hook
-# uncomment below line to enable: works with all (?) versions 
-# of mercurial but requires that PYTHONPATH is defined to point to 
+# uncomment below line to enable: works with all (?) versions
+# of mercurial but requires that PYTHONPATH is defined to point to
 # the directory which contains check-indent.py
 #pretxncommit.indent = python:check-indent.run_as_hg_hook
 \endverbatim

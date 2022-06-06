@@ -48,14 +48,14 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NullMessageMpiInterface");
-  
+
 NS_OBJECT_ENSURE_REGISTERED (NullMessageMpiInterface);
 
 /**
  * \ingroup mpi
  *
  * \brief Non-blocking send buffers for Null Message implementation.
- * 
+ *
  * One buffer is allocated for each non-blocking send.
  */
 class NullMessageSentBuffer
@@ -138,7 +138,7 @@ bool         NullMessageMpiInterface::g_freeCommunicator = false;
 MPI_Request* NullMessageMpiInterface::g_requests;
 char**       NullMessageMpiInterface::g_pRxBuffers;
 
-TypeId 
+TypeId
 NullMessageMpiInterface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NullMessageMpiInterface")
@@ -178,8 +178,8 @@ NullMessageMpiInterface::GetSize ()
   return g_size;
 }
 
-MPI_Comm 
-NullMessageMpiInterface::GetCommunicator() 
+MPI_Comm
+NullMessageMpiInterface::GetCommunicator()
 {
   NS_ASSERT (g_enabled);
   return g_communicator;
@@ -204,7 +204,7 @@ NullMessageMpiInterface::Enable (int* pargc, char*** pargv)
   g_mpiInitCalled = true;
 }
 
-void 
+void
 NullMessageMpiInterface::Enable (MPI_Comm communicator)
 {
   NS_LOG_FUNCTION (this);
@@ -222,7 +222,7 @@ NullMessageMpiInterface::Enable (MPI_Comm communicator)
   int mpiSize;
   MPI_Comm_rank (g_communicator, &mpiSystemId);
   MPI_Comm_size (g_communicator, &mpiSize);
-  
+
   g_sid = mpiSystemId;
   g_size = mpiSize;
 
@@ -231,7 +231,7 @@ NullMessageMpiInterface::Enable (MPI_Comm communicator)
   MPI_Barrier(g_communicator);
 }
 
-void 
+void
 NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -246,7 +246,7 @@ NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
   for (uint32_t rank = 0; rank < g_size; ++rank)
     {
       Ptr<RemoteChannelBundle> bundle = RemoteChannelBundleManager::Find(rank);
-      if (bundle) 
+      if (bundle)
         {
           g_pRxBuffers[index] = new char[NULL_MESSAGE_MAX_MPI_MSG_SIZE];
           MPI_Irecv (g_pRxBuffers[index], NULL_MESSAGE_MAX_MPI_MSG_SIZE, MPI_CHAR, rank, 0,
@@ -498,7 +498,7 @@ NullMessageMpiInterface::Disable ()
           MPI_Comm_free (&g_communicator);
           g_freeCommunicator = false;
         }
-  
+
       if (g_mpiInitCalled)
         {
           int flag = 0;

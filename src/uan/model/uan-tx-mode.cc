@@ -77,7 +77,7 @@ UanTxMode::GetName (void) const
   return UanTxModeFactory::GetFactory ().GetModeItem (m_uid).m_name;
 }
 
-uint32_t 
+uint32_t
 UanTxMode::GetUid (void) const
 {
   return m_uid;

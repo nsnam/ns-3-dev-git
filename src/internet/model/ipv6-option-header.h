@@ -33,7 +33,7 @@ namespace ns3
  *
  * \brief Header for IPv6 Option.
  */
-class Ipv6OptionHeader : public Header 
+class Ipv6OptionHeader : public Header
 {
 public:
 

@@ -36,7 +36,7 @@ class Node;
 /**
  * \brief Build a set of PointToPointNetDevice objects
  *
- * Normally we eschew multiple inheritance, however, the classes 
+ * Normally we eschew multiple inheritance, however, the classes
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
  * "mixins".
  */
@@ -115,9 +115,9 @@ public:
    *
    * This method creates a ns3::PointToPointChannel with the
    * attributes configured by PointToPointHelper::SetChannelAttribute,
-   * then, for each node in the input container, we create a 
-   * ns3::PointToPointNetDevice with the requested attributes, 
-   * a queue for this ns3::NetDevice, and associate the resulting 
+   * then, for each node in the input container, we create a
+   * ns3::PointToPointNetDevice with the requested attributes,
+   * a queue for this ns3::NetDevice, and associate the resulting
    * ns3::NetDevice with the ns3::Node and ns3::PointToPointChannel.
    */
   NetDeviceContainer Install (NodeContainer c);
@@ -127,8 +127,8 @@ public:
    * \param b second node
    * \return a NetDeviceContainer for nodes
    *
-   * Saves you from having to construct a temporary NodeContainer. 
-   * Also, if MPI is enabled, for distributed simulations, 
+   * Saves you from having to construct a temporary NodeContainer.
+   * Also, if MPI is enabled, for distributed simulations,
    * appropriate remote point-to-point channels are created.
    */
   NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);

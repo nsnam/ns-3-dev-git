@@ -6,7 +6,7 @@
 ns-3 LTE module documentation
 =============================
 
-This is the stand-alone version of the ns-3 LTE module documentation. 
+This is the stand-alone version of the ns-3 LTE module documentation.
 
 .. toctree::
    :maxdepth: 2
@@ -16,4 +16,4 @@ This is the stand-alone version of the ns-3 LTE module documentation.
    lte-testing
    lte-profiling
    lte-references
-   
+

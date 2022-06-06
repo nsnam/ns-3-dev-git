@@ -608,12 +608,12 @@ InterferenceHelper::CalculatePhyHeaderSnrPer (Ptr<Event> event, uint16_t channel
                              noiseInterferenceW,
                              channelWidth,
                              1);
-  
+
   /* calculate the SNIR at the start of the PHY header and accumulate
    * all SNIR changes in the SNIR vector.
    */
   double per = CalculatePhyHeaderPer (event, &ni, channelWidth, band, header);
-  
+
   return PhyEntity::SnrPer (snr, per);
 }
 

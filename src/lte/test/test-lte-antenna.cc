@@ -49,9 +49,9 @@ NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Tests that the propagation model and the antenna parameters are 
- * generate the correct values. Different test cases are created by specifying different 
- * antenna configurations and it is tested if for the given information the pathloss 
+ * \brief Tests that the propagation model and the antenna parameters are
+ * generate the correct values. Different test cases are created by specifying different
+ * antenna configurations and it is tested if for the given information the pathloss
  * value is as expected.
  */
 class LteEnbAntennaTestCase : public TestCase
@@ -73,7 +73,7 @@ public:
    * \param beamwidthDegrees the beam width in degrees
    * \param x position of UE
    * \param y position of UE
-   * \param antennaGainDb the antenna gain in dB 
+   * \param antennaGainDb the antenna gain in dB
    */
   LteEnbAntennaTestCase (double orientationDegrees, double beamwidthDegrees, double x, double y, double antennaGainDb);
   LteEnbAntennaTestCase ();
@@ -96,8 +96,8 @@ std::string LteEnbAntennaTestCase::BuildNameString (double orientationDegrees, d
 {
   std::ostringstream oss;
   oss <<  "o=" << orientationDegrees
-      << ", bw=" << beamwidthDegrees  
-      << ", x=" << x 
+      << ", bw=" << beamwidthDegrees
+      << ", x=" << x
       << ", y=" << y;
   return oss.str ();
 }
@@ -161,7 +161,7 @@ LteEnbAntennaTestCase::DoRun (void)
   lteHelper->SetEnbAntennaModelAttribute ("HorizontalBeamwidth", DoubleValue (m_beamwidthDegrees));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain", DoubleValue (0.0));
 
-  // set DL and UL bandwidth. 
+  // set DL and UL bandwidth.
   lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
   lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
 
@@ -199,7 +199,7 @@ LteEnbAntennaTestCase::DoRun (void)
   Config::Connect ("/ChannelList/0/PathLoss",
                    MakeCallback (&DownlinkLteGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
   Config::Connect ("/ChannelList/1/PathLoss",
-                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
+                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb));
 
   Simulator::Stop (Seconds (0.035));
   Simulator::Run ();
@@ -221,20 +221,20 @@ LteEnbAntennaTestCase::DoRun (void)
       if (dlSinrCatcher.GetValue () != 0)
         {
           calculatedSinrDbDl = 10.0 * std::log10 (dlSinrCatcher.GetValue ()->operator[] (0));
-        }      
+        }
       // remember that propagation loss is 0dB
-      double calculatedAntennaGainDbDl = - (enbTxPowerDbm - calculatedSinrDbDl - noisePowerDbm - ueNoiseFigureDb);      
+      double calculatedAntennaGainDbDl = - (enbTxPowerDbm - calculatedSinrDbDl - noisePowerDbm - ueNoiseFigureDb);
       NS_LOG_INFO ("expected " << m_antennaGainDb << " actual " << calculatedAntennaGainDbDl << " tol " << tolerance);
       NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbDl, m_antennaGainDb, tolerance, "Wrong DL antenna gain!");
     }
   double expectedSinrUl = ueTxPowerDbm + m_antennaGainDb - noisePowerDbm + enbNoiseFigureDb;
   if (expectedSinrUl > 0)
-    {      
+    {
       double calculatedSinrDbUl = -INFINITY;
       if (ulSinrCatcher.GetValue () != 0)
         {
           calculatedSinrDbUl = 10.0 * std::log10 (ulSinrCatcher.GetValue ()->operator[] (0));
-        }  
+        }
       double calculatedAntennaGainDbUl = - (ueTxPowerDbm - calculatedSinrDbUl - noisePowerDbm - enbNoiseFigureDb);
       NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbUl, m_antennaGainDb, tolerance, "Wrong UL antenna gain!");
     }
@@ -246,7 +246,7 @@ LteEnbAntennaTestCase::DoRun (void)
   double measuredLossUl = ulPathlossDb.GetPathloss (1, 1);
   NS_TEST_ASSERT_MSG_EQ_TOL (measuredLossUl, -m_antennaGainDb, tolerance, "Wrong UL loss!");
 
-  
+
   Simulator::Destroy ();
 }
 
@@ -269,7 +269,7 @@ LteAntennaTestSuite::LteAntennaTestSuite ()
 {
   NS_LOG_FUNCTION (this);
 
-  //                                      orientation beamwidth     x            y         gain 
+  //                                      orientation beamwidth     x            y         gain
   AddTestCase (new LteEnbAntennaTestCase (       0.0,     90.0,    1.0,          0.0,       0.0), TestCase::QUICK);
   AddTestCase (new LteEnbAntennaTestCase (       0.0,     90.0,    1.0,          1.0,      -3.0), TestCase::QUICK);
   AddTestCase (new LteEnbAntennaTestCase (       0.0,     90.0,    1.0,         -1.0,      -3.0), TestCase::QUICK);
@@ -279,7 +279,7 @@ LteAntennaTestSuite::LteAntennaTestSuite ()
   AddTestCase (new LteEnbAntennaTestCase (      45.0,     90.0,    1.0,          1.0,       0.0), TestCase::QUICK);
   AddTestCase (new LteEnbAntennaTestCase (     -45.0,     90.0,    1.0,         -1.0,       0.0), TestCase::QUICK);
   AddTestCase (new LteEnbAntennaTestCase (      90.0,     90.0,    1.0,          1.0,      -3.0), TestCase::QUICK);
-  AddTestCase (new LteEnbAntennaTestCase (     -90.0,     90.0,    1.0,         -1.0,      -3.0), TestCase::QUICK); 
+  AddTestCase (new LteEnbAntennaTestCase (     -90.0,     90.0,    1.0,         -1.0,      -3.0), TestCase::QUICK);
 
   AddTestCase (new LteEnbAntennaTestCase (       0.0,    120.0,    1.0,          0.0,       0.0), TestCase::QUICK);
   AddTestCase (new LteEnbAntennaTestCase (       0.0,    120.0,    0.5,  sin(M_PI/3),      -3.0), TestCase::QUICK);

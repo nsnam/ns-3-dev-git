@@ -35,14 +35,14 @@ NS_LOG_COMPONENT_DEFINE ("ObjectNamesExample");
 
 uint32_t bytesReceived = 0;
 
-void 
+void
 RxEvent (std::string context, Ptr<const Packet> packet)
 {
   std::cout << Simulator::Now ().GetSeconds () << "s " << context << " packet size " << packet->GetSize () << std::endl;
   bytesReceived += packet->GetSize ();
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
   bool outputValidated = true;
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   // It is possible to rename a node that has been previously named.  This is
   // useful in automatic name generation.  You can automatically generate node
   // names such as, "node-0", "node-1", etc., and then go back and change
-  // the name of some distinguished node to another value --  "access-point" 
+  // the name of some distinguished node to another value --  "access-point"
   // for example.  We illustrate this by just changing the client's name.
   // As is typical of the object name service, you can either provide or elide
   // the "/Names" prefix as you choose.
@@ -101,9 +101,9 @@ main (int argc, char *argv[])
 
   //
   // You can use the object names that you've assigned in calls to the Config
-  // system to set Object Attributes.  For example, you can set the Mtu 
-  // Attribute of a Csma devices using the object naming service.  Note that 
-  // in this case, the "/Names" prefix is always required since the _Config_ 
+  // system to set Object Attributes.  For example, you can set the Mtu
+  // Attribute of a Csma devices using the object naming service.  Note that
+  // in this case, the "/Names" prefix is always required since the _Config_
   // system always expects to see a fully qualified path name.
   //
 
@@ -111,7 +111,7 @@ main (int argc, char *argv[])
   UintegerValue val;
   csmaNetDevice->GetAttribute ("Mtu", val);
   std::cout << "MTU on device 0 before configuration is " << val.Get () << std::endl;
-  
+
   Config::Set ("/Names/client/eth0/Mtu", UintegerValue (1234));
 
   // Check the attribute again
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
   // to get to the server node, and then continue seamlessly adding named objects
   // in the path. This is not nearly as readable as the previous version, but it
   // illustrates how you can mix and match object names and Attribute names.
-  // Note that the config path now begins with a path in the "/NodeList" 
+  // Note that the config path now begins with a path in the "/NodeList"
   // namespace.
   //
   Config::Set ("/NodeList/1/eth0/Mtu", UintegerValue (1234));
@@ -167,13 +167,13 @@ main (int argc, char *argv[])
   //
   // Use the Config system to connect a trace source using the object name
   // service to specify the path.  Note that in this case, the "/Names"
-  // prefix is always required since the _Config_ system always expects to 
-  // see a fully qualified path name 
+  // prefix is always required since the _Config_ system always expects to
+  // see a fully qualified path name
   //
   Config::Connect ("/Names/client/eth0/MacRx", MakeCallback (&RxEvent));
 
   //
-  // Set up some pcap tracing on the CSMA devices.  The names of the trace 
+  // Set up some pcap tracing on the CSMA devices.  The names of the trace
   // files will automatically correspond to the object names if present.
   // In this case, you will find trace files called:
   //
@@ -209,7 +209,7 @@ main (int argc, char *argv[])
 
   if (outputValidated == false)
     {
-      std::cerr << "Program internal checking failed; returning with error" << std::endl; 
+      std::cerr << "Program internal checking failed; returning with error" << std::endl;
       return (1);
     }
 }

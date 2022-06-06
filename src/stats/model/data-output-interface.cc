@@ -47,7 +47,7 @@ DataOutputInterface::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void
 DataOutputInterface::DoDispose ()
 {

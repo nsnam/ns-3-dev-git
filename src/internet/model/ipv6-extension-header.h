@@ -37,7 +37,7 @@ namespace ns3
  *
  * \brief Header for IPv6 Extension.
  */
-class Ipv6ExtensionHeader : public Header 
+class Ipv6ExtensionHeader : public Header
 {
 public:
   /**
@@ -578,7 +578,7 @@ public:
   /**
    * \brief Get a Router IPv6 Address.
    * \param index the index of the IPv6 Address
-   * \return the router IPv6 Address 
+   * \return the router IPv6 Address
    */
   Ipv6Address GetRouterAddress (uint8_t index) const;
 

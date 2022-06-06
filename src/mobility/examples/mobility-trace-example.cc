@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   NodeContainer sta;
   sta.Create (4);
   MobilityHelper mobility;

@@ -11,15 +11,15 @@
 
 {% set reldelim1 = '<span class="navelem">&nbsp;</span>' %}
 {# set reldelim1 = ' @' #}
-  
+
 {%- block extrahead %}
   {%- if theme_customstylesheet %}
   <link rel="stylesheet" type="text/css"
     href="{{ pathto('_static/'+theme_customstylesheet, 1) }}" />
   {%- endif %}
-    
+
   {%- if theme_favicon %}
-    <link rel="icon" type="image/ico" 
+    <link rel="icon" type="image/ico"
       href="{{ pathto('_static/'+theme_favicon, 1) }}" />
   {%- endif %}
 
@@ -27,9 +27,9 @@
   <script type="text/javascript" src="_static/ns3_version.js"></script>
   <script type="text/javascript">var ns3_builder="{{builder}}";</script>
   <script type="text/javascript" src="_static/ns3_links.js"></script>
-      
+
 {% endblock %}
-      
+
 {% block header %}
     <div id="titlearea">
       <table cellspacing="0" cellpadding="0" width="100%">
@@ -56,11 +56,11 @@
                          >&nbsp;&nbsp;Home</a>
                   </li>
                   <li><span
-                        onmouseover="mopen('mTuts')" 
+                        onmouseover="mopen('mTuts')"
                         onmouseout="mclosetime()"
                           >Tutorials &nbsp;&#x25BC;</span>
-                      <div id="mTuts" 
-                          onmouseover="mcancelclosetime()" 
+                      <div id="mTuts"
+                          onmouseover="mcancelclosetime()"
                           onmouseout="mclosetime()">
                         <a id="ns3_tut"
                            href="/docs/tutorial/html/index.html"
@@ -68,11 +68,11 @@
                       </div>
                   </li>
                   <li><span
-                        onmouseover="mopen('mDocs')" 
+                        onmouseover="mopen('mDocs')"
                         onmouseout="mclosetime()"
                           >Documentation &nbsp;&#x25BC;</span>
                       <div id="mDocs"
-                          onmouseover="mcancelclosetime()" 
+                          onmouseover="mcancelclosetime()"
                           onmouseout="mclosetime()">
                         <a id="ns3_man"
                            href="/docs/manual/html/index.html"
@@ -89,11 +89,11 @@
                       </div>
                   </li>
                   <li><span
-                        onmouseover="mopen('mDev')" 
+                        onmouseover="mopen('mDev')"
                         onmouseout="mclosetime()"
                           >Development &nbsp;&#x25BC;</span>
                       <div id="mDev"
-                          onmouseover="mcancelclosetime()" 
+                          onmouseover="mcancelclosetime()"
                           onmouseout="mclosetime()">
                         <a id="ns3_api"
                            href="/docs/doxygen/html/index.html"
@@ -119,12 +119,12 @@
       <script  type="text/javascript">ns3_write_links()</script>
     </div>
 {% endblock %}
-      
+
 {% block rootrellink %}
     <li class="navelem"><a href="{{ theme_homepage }}">{{ theme_projectname }}</a><span class="navelem">&nbsp;</span></li>
     {{ super() }}
 {% endblock %}
-      
+
 {% if theme_collapsiblesidebar|tobool %}
   {% set script_files = script_files + ['_static/sidebar.js'] %}
 {% endif %}

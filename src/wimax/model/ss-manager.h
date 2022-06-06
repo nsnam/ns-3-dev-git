@@ -99,7 +99,7 @@ public:
    */
   uint32_t GetNSSs (void) const;
   /**
-   * Get number of registered SSs 
+   * Get number of registered SSs
    * \returns the number of registered SSs
    */
   uint32_t GetNRegisteredSSs (void) const;

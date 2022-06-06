@@ -67,9 +67,9 @@ private:
    */
 
   /**
-   * Helper to assign addresses to S1-U NetDevices 
+   * Helper to assign addresses to S1-U NetDevices
    */
-  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
+  Ipv4AddressHelper m_s1uIpv4AddressHelper;
 
   /**
    * The data rate to be used for the next S1-U link to be created

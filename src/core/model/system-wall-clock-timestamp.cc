@@ -35,14 +35,14 @@ SystemWallClockTimestamp::SystemWallClockTimestamp (void)
   Stamp ();
 }
 
-void  
+void
 SystemWallClockTimestamp::Stamp (void)
 {
   std::time_t seconds  = std::time (NULL);
   m_diff = seconds - m_last;
   m_last = seconds;
 }
-  
+
 std::string
 SystemWallClockTimestamp::ToString (void) const
 {
@@ -63,7 +63,7 @@ SystemWallClockTimestamp::GetInterval (void) const
   return m_diff;
 }
 
-  
+
 
 }  // namespace ns3
 

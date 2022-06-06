@@ -71,7 +71,7 @@ private:
 
 };  // class Tap
 
-  
+
 /**
  * \ingroup uan
  *
@@ -173,7 +173,7 @@ public:
   const Tap &GetTap (uint32_t i) const;
   /**
    * Get the delay time resolution (time duration between arrivals).
-   * 
+   *
    * \return Resolution of PDP.
    */
   Time GetResolution (void) const;
@@ -243,13 +243,13 @@ public:
    * Get a unit impulse PDP at time 0.
    *
    * \return The unit impulse.
-   */ 
+   */
   static UanPdp CreateImpulsePdp (void);
-  
+
 private:
   friend std::ostream &operator<< (std::ostream &os, const UanPdp &pdp);
   friend std::istream &operator>> (std::istream &is, UanPdp &pdp);
-  
+
   std::vector<Tap> m_taps;  //!< The vector of Taps.
   Time m_resolution;        //!< The time resolution.
 
@@ -275,9 +275,9 @@ std::ostream &operator<< (std::ostream &os, const UanPdp &pdp);
  * \param pdp The PDP variable to set.
  * \return The input stream.
  */
-std::istream &operator>> (std::istream &is, UanPdp &pdp);  
+std::istream &operator>> (std::istream &is, UanPdp &pdp);
 
-  
+
 /**
  * \ingroup uan
  *

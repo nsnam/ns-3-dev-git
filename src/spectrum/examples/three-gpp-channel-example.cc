@@ -103,7 +103,7 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<PhasedArrayModel> thisAntenna, Ptr
   // compute the azimuth and the elevation angles
   Angles completeAngle (bPos,aPos);
   double hAngleRadian = completeAngle.GetAzimuth ();
-  
+
   double vAngleRadian = completeAngle.GetInclination (); // the elevation angle
 
   // retrieve the number of antenna elements

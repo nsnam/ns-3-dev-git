@@ -159,7 +159,7 @@ LteFfConverter::fpS11dot3toDouble (uint16_t val)
   return (valD);
 }
 
-double 
+double
 LteFfConverter::getMinFpS11dot3Value ()
 {
   return (-4096);        // -4096 = 0x8000 = 1000 0000 0000 0000 b
@@ -171,8 +171,8 @@ LteFfConverter::getMinFpS11dot3Value ()
 /// Buffer size level BSR table
 static const uint32_t BufferSizeLevelBsrTable[64] = {
 
-  0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 
-  107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603, 
+  0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91,
+  107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603,
   706, 826, 967, 1132, 1326, 1552, 1817, 2127, 2490, 2915, 3413,
   3995, 4677, 5476, 6411, 7505, 8787, 10287, 12043, 14099, 16507,
   19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
@@ -240,7 +240,7 @@ TransmissionModesLayers::TxMode2LayerNum (uint8_t txMode)
 }
 
 
-double 
+double
 EutranMeasurementMapping::RsrpRange2Dbm (uint8_t range)
 {
   // 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
@@ -248,7 +248,7 @@ EutranMeasurementMapping::RsrpRange2Dbm (uint8_t range)
   return (double) range - 141.0;
 }
 
-uint8_t 
+uint8_t
 EutranMeasurementMapping::Dbm2RsrpRange (double dbm)
 {
   // 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
@@ -256,7 +256,7 @@ EutranMeasurementMapping::Dbm2RsrpRange (double dbm)
   return (uint8_t) range;
 }
 
-double 
+double
 EutranMeasurementMapping::RsrqRange2Db (uint8_t range)
 {
   // 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
@@ -264,7 +264,7 @@ EutranMeasurementMapping::RsrqRange2Db (uint8_t range)
   return ((double) range - 40.0)*0.5;
 }
 
-uint8_t 
+uint8_t
 EutranMeasurementMapping::Db2RsrqRange (double db)
 {
   // 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
@@ -272,13 +272,13 @@ EutranMeasurementMapping::Db2RsrqRange (double db)
   return (uint8_t) range;
 }
 
-double 
+double
 EutranMeasurementMapping::QuantizeRsrp (double v)
 {
   return RsrpRange2Dbm (Dbm2RsrpRange (v));
 }
 
-double 
+double
 EutranMeasurementMapping::QuantizeRsrq (double v)
 {
   return RsrqRange2Db (Db2RsrqRange (v));

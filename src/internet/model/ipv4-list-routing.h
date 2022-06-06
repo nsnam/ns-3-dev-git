@@ -31,15 +31,15 @@ namespace ns3 {
  *
  * \brief IPv4 list routing.
  *
- * This class is a specialization of Ipv4RoutingProtocol that allows 
- * other instances of Ipv4RoutingProtocol to be inserted in a 
+ * This class is a specialization of Ipv4RoutingProtocol that allows
+ * other instances of Ipv4RoutingProtocol to be inserted in a
  * prioritized list.  Routing protocols in the list are consulted one
  * by one, from highest to lowest priority, until a routing protocol
  * is found that will take the packet (this corresponds to a non-zero
  * return value to RouteOutput, or a return value of true to RouteInput).
- * The order by which routing protocols with the same priority value 
+ * The order by which routing protocols with the same priority value
  * are consulted is undefined.
- * 
+ *
  */
 class Ipv4ListRouting : public Ipv4RoutingProtocol
 {
@@ -70,8 +70,8 @@ public:
    * first protocol (index 0) the highest priority, the next one (index 1)
    * the second highest priority, and so on.  The priority parameter is an
    * output parameter and it returns the integer priority of the protocol.
-   * 
-   * \return pointer to routing protocol indexed by 
+   *
+   * \return pointer to routing protocol indexed by
    * \param index index of protocol to return
    * \param priority output parameter, set to the priority of the protocol
             being returned

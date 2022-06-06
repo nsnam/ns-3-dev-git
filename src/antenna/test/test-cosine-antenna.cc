@@ -85,9 +85,9 @@ private:
 std::string CosineAntennaModelTestCase::BuildNameString (Angles a, double b, double o, double g)
 {
   std::ostringstream oss;
-  oss <<  "theta=" << a.GetInclination () << " , phi=" << a.GetAzimuth () 
+  oss <<  "theta=" << a.GetInclination () << " , phi=" << a.GetAzimuth ()
       << ", beamdwidth=" << b << "deg"
-      << ", orientation=" << o 
+      << ", orientation=" << o
       << ", maxGain=" << g << " dB";
   return oss.str ();
 }
@@ -115,7 +115,7 @@ CosineAntennaModelTestCase::DoRun ()
   a->SetAttribute ("Orientation", DoubleValue (m_o));
   a->SetAttribute ("MaxGain", DoubleValue (m_g));
   double actualGain = a->GetGainDb (m_a);
-  switch (m_cond) 
+  switch (m_cond)
     {
     case EQUAL:
       NS_TEST_EXPECT_MSG_EQ_TOL (actualGain, m_expectedGain, 0.001, "wrong value of the radiation pattern");
@@ -144,7 +144,7 @@ public:
 
 CosineAntennaModelTestSuite::CosineAntennaModelTestSuite ()
   : TestSuite ("cosine-antenna-model", UNIT)
-{ 
+{
   // to calculate the azimut angle offset for a given gain in db:
   // phideg = (2*acos(10^(targetgaindb/(20*n))))*180/pi
   // e.g., with a 60 deg beamwidth, gain is -20dB at +- 74.945 degrees from boresight
@@ -203,7 +203,7 @@ CosineAntennaModelTestSuite::CosineAntennaModelTestSuite ()
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians (-180),   DegreesToRadians (90)),       360,           0,        0,             0,     EQUAL), TestCase::QUICK);
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians    (0),   DegreesToRadians  (0)),       360,           0,        0,             0,     EQUAL), TestCase::QUICK);
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians    (0),   DegreesToRadians(180)),       360,           0,        0,             0,     EQUAL), TestCase::QUICK);
-  
+
   // test maxGain
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians    (0),   DegreesToRadians (90)),        60,           0,       10,            10,     EQUAL), TestCase::QUICK);
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians   (30),   DegreesToRadians (90)),        60,           0,       22,            19,     EQUAL), TestCase::QUICK);

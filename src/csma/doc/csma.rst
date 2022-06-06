@@ -116,7 +116,7 @@ The channel always goes through a three state process::
 The ``TRANSMITTING`` state models the time during which the source net device is
 actually wiggling the signals on the wire. The ``PROPAGATING`` state models the
 time after the last bit was sent, when the signal is propagating down the wire
-to the "far end."  
+to the "far end."
 
 The transition to the ``TRANSMITTING`` state is  driven by a call to
 CsmaChannel::TransmitStart which is called by the net device that transmits the
@@ -179,14 +179,14 @@ EtherType, Data, CRC format.
 
 If the "EncapsulationMode" attribute is set to "Llc", the encapsulation is by
 LLC SNAP. In this case, a SNAP header is added that contains the EtherType (IP
-or ARP).  
+or ARP).
 
 The other implemented encapsulation modes are IP_ARP (set "EncapsulationMode" to
 "IpArp") in which the length type of the Ethernet header receives the protocol
 number of the packet; or ETHERNET_V1 (set "EncapsulationMode" to "EthernetV1")
 in which the length type of the Ethernet header receives the length of the
 packet.  A "Raw" encapsulation mode is defined but not implemented -- use of the
-RAW mode results in an assertion.  
+RAW mode results in an assertion.
 
 Note that all net devices on a channel must be set to the same encapsulation
 mode for correct results. The encapsulation mode is not sensed at the receiver.
@@ -221,7 +221,7 @@ attributes you may want to change.::
 
   csma.SetDeviceAttribute ("EncapsulationMode", StringValue ("Dix"));
   csma.SetDeviceAttribute ("FrameSize", UintegerValue (2000));
- 
+
 Once the attributes are set, all that remains is to create the devices and
 install them on the required nodes, and to connect the devices together using a
 CSMA channel. When we create the net devices, we add them to a container to
@@ -298,7 +298,7 @@ from Queue, and therefore inherits three trace sources:
 * A Drop operation source (see Queue::m_traceDrop).
 
 The upper-level (MAC) trace hooks for the CsmaNetDevice are, in fact, exactly
-these three trace sources on the single transmit queue of the device.  
+these three trace sources on the single transmit queue of the device.
 
 The m_traceEnqueue event is triggered when a packet is placed on the transmit
 queue. This happens at the time that CsmaNetDevice::Send or

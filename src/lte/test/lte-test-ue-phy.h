@@ -71,7 +71,7 @@ public:
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
-  
+
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
   virtual void ReportInterference (const SpectrumValue& interf);

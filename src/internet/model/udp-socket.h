@@ -53,7 +53,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
- 
+
   UdpSocket (void);
   virtual ~UdpSocket (void);
 
@@ -78,7 +78,7 @@ public:
    * This function may be called repeatedly on a given socket but each
    * join must be for a different multicast address, or for the same
    * multicast address but on a different interface from previous joins.
-   * This enables host multihoming, and the ability to join the same 
+   * This enables host multihoming, and the ability to join the same
    * group on different interfaces.
    */
   virtual int MulticastJoinGroup (uint32_t interface, const Address &groupAddress) = 0;

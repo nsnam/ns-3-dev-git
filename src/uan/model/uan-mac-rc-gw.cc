@@ -171,8 +171,8 @@ UanMacRcGw::GetTypeId (void)
 }
 
 bool
-UanMacRcGw::Enqueue (Ptr<Packet> packet, 
-                     [[maybe_unused]] uint16_t protocolNumber, 
+UanMacRcGw::Enqueue (Ptr<Packet> packet,
+                     [[maybe_unused]] uint16_t protocolNumber,
                      [[maybe_unused]] const Address &dest)
 {
   NS_LOG_WARN ("RCMAC Gateway transmission to acoustic nodes is not yet implemented");
@@ -351,17 +351,17 @@ UanMacRcGw::StartCycle (void)
   uint32_t ctlRate =  m_phy->GetMode (m_currentRateNum + m_numRates).GetDataRateBps ();
 
 
-  Time winSize = Seconds (totalBytes * 8.0 / dataRate) + m_sifs * totalFrames + pDelay; 
+  Time winSize = Seconds (totalBytes * 8.0 / dataRate) + m_sifs * totalFrames + pDelay;
   if (numRts == 0)
     {
-      winSize = Seconds ((optA * std::exp (1.0) + 0.5) * 2.0 * 8.0 * m_rtsSize / (thAlpha * m_totalRate)) + (2 * m_maxDelta); 
+      winSize = Seconds ((optA * std::exp (1.0) + 0.5) * 2.0 * 8.0 * m_rtsSize / (thAlpha * m_totalRate)) + (2 * m_maxDelta);
     }
   Time effWinSize = winSize - Seconds (m_rtsSize * 8.0 / ctlRate)  - (2 * m_maxDelta);
 
   // Before fast CTS/ACK(below)
   Time ctsTxTimeG = Seconds (m_ctsSizeG * 8.0 / dataRate);
   Time cycleSeconds = winSize + ((totalFrames + 1.0) * m_sifs) +
-    ctsTxTimeG + Seconds ((m_ctsSizeN + m_ackSize) * 8.0 / dataRate);    
+    ctsTxTimeG + Seconds ((m_ctsSizeN + m_ackSize) * 8.0 / dataRate);
 
 
   Time ctsTxTimeTotal = Seconds (m_ctsSizeN * 8.0 * numRts / dataRate) + ctsTxTimeG;
@@ -534,7 +534,7 @@ UanMacRcGw::SendPacket (Ptr<Packet> pkt, uint32_t rate)
 
 
 double
-UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes, 
+UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes,
                           [[maybe_unused]] uint32_t n, uint32_t a, double deltaK)
 {
   double alpha;

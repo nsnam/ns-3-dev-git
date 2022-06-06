@@ -57,7 +57,7 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test SINR calculation in the downlink when power control is used. 
+ * \brief Test SINR calculation in the downlink when power control is used.
  * Test if the difference in power levels are corresponding to the estamated values.
  */
 class LteDownlinkPowerControlSpectrumValueTestCase : public TestCase
@@ -69,7 +69,7 @@ public:
  * \param name the reference name
  * \param earfcn the EARFCN
  * \param bw the bandwidth
- * \param powerTx 
+ * \param powerTx
  * \param powerTxMap
  * \param activeRbs
  * \param expected the expected Tx Power Spectral Density
@@ -92,7 +92,7 @@ private:
  * \ingroup tests
  *
  * \brief Test SINR calculation in the downlink when the power control is used.
- * Test the power control by comparing the downlink data and ctrl power 
+ * Test the power control by comparing the downlink data and ctrl power
  * difference with the estimated value based on the specified change in power.
  */
 class LteDownlinkPowerControlTestCase : public TestCase
@@ -121,9 +121,9 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test if RRC connection reconfiguration messages are properly 
+ * \brief Test if RRC connection reconfiguration messages are properly
  * generated upon the change in the downlink power.
- * 
+ *
  */
 class LteDownlinkPowerControlRrcConnectionReconfigurationTestCase : public TestCase
 {

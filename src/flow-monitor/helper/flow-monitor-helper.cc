@@ -49,7 +49,7 @@ FlowMonitorHelper::~FlowMonitorHelper ()
     }
 }
 
-void 
+void
 FlowMonitorHelper::SetMonitorAttribute (std::string n1, const AttributeValue &v1)
 {
   m_monitorFactory.Set (n1, v1);

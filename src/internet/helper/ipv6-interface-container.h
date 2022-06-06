@@ -53,7 +53,7 @@ public:
   Ipv6InterfaceContainer ();
 
   /**
-   * \returns the number of Ptr<Ipv6> and interface pairs stored in this 
+   * \returns the number of Ptr<Ipv6> and interface pairs stored in this
    * Ipv4InterfaceContainer.
    *
    * Pairs can be retrieved from the container in two ways.  First,
@@ -110,12 +110,12 @@ public:
   void Add (Ptr<Ipv6> ipv6, uint32_t interface);
 
   /**
-   * \brief Get an iterator which refers to the first pair in the 
+   * \brief Get an iterator which refers to the first pair in the
    * container.
    *
    * Pairs can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the pairs
    *
    * \code
@@ -132,12 +132,12 @@ public:
   Iterator Begin (void) const;
 
   /**
-   * \brief Get an iterator which indicates past-the-last Node in the 
+   * \brief Get an iterator which indicates past-the-last Node in the
    * container.
    *
    * Nodes can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the Nodes
    *
    * \code

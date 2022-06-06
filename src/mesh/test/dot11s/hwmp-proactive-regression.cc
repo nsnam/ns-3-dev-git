@@ -128,7 +128,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Five devices, 10 streams per device 
+  // Five devices, 10 streams per device
   streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
   NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 10), "Stream mismatch");
   // No streams used here, by default, so streamsUsed should not change

@@ -104,16 +104,16 @@ public:
     uint16_t rxSn; ///< RX sequence number
   };
 
-  /** 
-   * 
+  /**
+   *
    * \return the current status of the PDCP
    */
   Status GetStatus ();
 
   /**
    * Set the status of the PDCP
-   * 
-   * \param s 
+   *
+   * \param s
    */
   void SetStatus (Status s);
 
@@ -159,7 +159,7 @@ protected:
    */
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user 
+  LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user
   LteRlcSapProvider* m_rlcSapProvider; ///< RLC SAP provider
 
   uint16_t m_rnti; ///< RNTI
@@ -172,7 +172,7 @@ protected:
   TracedCallback<uint16_t, uint8_t, uint32_t> m_txPdu;
   /**
    * Used to inform of a PDU reception from the RLC SAP user.
-   * The parameters are RNTI, LCID, bytes delivered and delivery delay in nanoseconds. 
+   * The parameters are RNTI, LCID, bytes delivered and delivery delay in nanoseconds.
    */
   TracedCallback<uint16_t, uint8_t, uint32_t, uint64_t> m_rxPdu;
 

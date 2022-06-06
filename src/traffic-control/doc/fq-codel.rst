@@ -31,17 +31,17 @@ The source code for the FqCoDel queue disc is located in the directory
 and `fq-codel-queue-disc.cc` defining a FqCoDelQueueDisc class and a helper
 FqCoDelFlow class. The code was ported to |ns3| based on Linux kernel code
 implemented by Eric Dumazet.
-Set associative hashing is also based on the Linux kernel `CAKE <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8475045>`_ queue management code. 
-Set associative hashing is used to reduce the number of hash collisions in 
-comparison to choosing queues normally with a simple hash. For a given number of 
-queues, set associative hashing has fewer collisions than a traditional 
-hash, as long as the number of flows is lesser than the number of queues. 
-Essentially, it makes the queue management system more efficient. Set associative 
-hashing is a vital component of CAKE, which is another popular flow management 
+Set associative hashing is also based on the Linux kernel `CAKE <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8475045>`_ queue management code.
+Set associative hashing is used to reduce the number of hash collisions in
+comparison to choosing queues normally with a simple hash. For a given number of
+queues, set associative hashing has fewer collisions than a traditional
+hash, as long as the number of flows is lesser than the number of queues.
+Essentially, it makes the queue management system more efficient. Set associative
+hashing is a vital component of CAKE, which is another popular flow management
 algorithm that is implemented in Linux and is being tested for FqCoDel.
-Furthermore, this module can be directly used with CAKE when its other 
-components are implemented in ns-3. The only changes needed to incorporate this 
-new hashing scheme are in the SetAssociativeHash and DoEnqueue methods, 
+Furthermore, this module can be directly used with CAKE when its other
+components are implemented in ns-3. The only changes needed to incorporate this
+new hashing scheme are in the SetAssociativeHash and DoEnqueue methods,
 as described below.
 
 * class :cpp:class:`FqCoDelQueueDisc`: This class implements the main FqCoDel algorithm:
@@ -164,9 +164,9 @@ or:
 
    $ NS_LOG="FqCoDelQueueDisc" ./ns3 run "test-runner --suite=fq-codel-queue-disc"
 
-Set associative hashing is tested by generating a probability collision graph. 
-This graph is then overlapped with the theoretical graph provided in the original 
-CAKE paper (refer to Figure 1 from `CAKE <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8475045>`_). 
+Set associative hashing is tested by generating a probability collision graph.
+This graph is then overlapped with the theoretical graph provided in the original
+CAKE paper (refer to Figure 1 from `CAKE <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8475045>`_).
 The generated graph is linked below:
 
 .. image:: figures/collision_prob.jpeg

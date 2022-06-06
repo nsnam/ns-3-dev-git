@@ -60,7 +60,7 @@ NS_LOG_COMPONENT_DEFINE ("VirtualNetDeviceExample");
 
 /**
  * \ingroup virtual-net-device
- * 
+ *
  * Tunnel class - its goal is to create and manage the tunnels between endpoints.
  */
 class Tunnel
@@ -124,7 +124,7 @@ class Tunnel
         NS_LOG_DEBUG ("Send to " << m_n0Address << ": " << *packet);
         m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n0Address, 667));
       }
-    else 
+    else
       {
         NS_LOG_DEBUG ("Send to " << m_n1Address << ": " << *packet);
         m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n1Address, 667));
@@ -230,18 +230,18 @@ public:
 
 
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit logging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   LogComponentEnable ("VirtualNetDeviceExample", LOG_LEVEL_INFO);
 #endif
   Packet::EnablePrinting ();
 
 
-  // Set up some default values for the simulation.  Use the 
+  // Set up some default values for the simulation.  Use the
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
@@ -297,7 +297,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("11.0.0.254"), port)));
   onoff.SetConstantRate (DataRate ("448kb/s"));
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -312,7 +312,7 @@ main (int argc, char *argv[])
   //apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (Ipv4Address ("11.0.0.1"), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));

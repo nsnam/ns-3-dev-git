@@ -33,7 +33,7 @@ class Address;
 
 /**
  * \ingroup address
- * 
+ *
  * \brief an EUI-48 address
  *
  * This class can contain 48 bit IEEE addresses.
@@ -73,7 +73,7 @@ public:
   /**
    * \param address a polymorphic address
    * \returns a new Mac48Address from the polymorphic address
-   * 
+   *
    * This function performs a type check and asserts if the
    * type of the input address is not compatible with an
    * Mac48Address.
@@ -135,7 +135,7 @@ public:
    * \param [in] value Current value of the Mac48Address
    */
   typedef void (* TracedCallback)(Mac48Address value);
-  
+
 private:
   /**
    * \returns a new Address instance

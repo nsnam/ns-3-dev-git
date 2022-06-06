@@ -123,7 +123,7 @@ ComponentCarrierEnb::GetPhy ()
 }
 
 
-void 
+void
 ComponentCarrierEnb::SetPhy (Ptr<LteEnbPhy> s)
 {
   NS_LOG_FUNCTION (this);
@@ -136,7 +136,7 @@ ComponentCarrierEnb::GetMac ()
   NS_LOG_FUNCTION (this);
   return m_mac;
 }
-void 
+void
 ComponentCarrierEnb::SetMac (Ptr<LteEnbMac> s)
 {
   NS_LOG_FUNCTION (this);
@@ -150,7 +150,7 @@ ComponentCarrierEnb::GetFfrAlgorithm ()
   return m_ffrAlgorithm;
 }
 
-void 
+void
 ComponentCarrierEnb::SetFfrAlgorithm (Ptr<LteFfrAlgorithm> s)
 {
   NS_LOG_FUNCTION (this);

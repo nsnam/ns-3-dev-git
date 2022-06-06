@@ -36,7 +36,7 @@ namespace ns3 {
  * \brief Random direction mobility model.
  *
  * The movement of objects is based on random directions: each object
- * pauses for a specific delay, chooses a random direction and speed and 
+ * pauses for a specific delay, chooses a random direction and speed and
  * then travels in the specific direction until it reaches one of
  * the boundaries of the model. When it reaches the boundary, it pauses,
  * selects a new direction and speed, aso.
@@ -61,7 +61,7 @@ private:
    */
   void BeginPause (void);
   /**
-   * Set new velocity and direction, and schedule next pause event  
+   * Set new velocity and direction, and schedule next pause event
    * \param direction (radians)
    */
   void SetDirectionAndSpeed (double direction);
@@ -79,7 +79,7 @@ private:
   Ptr<UniformRandomVariable> m_direction; //!< rv to control direction
   Rectangle m_bounds; //!< the 2D bounding area
   Ptr<RandomVariableStream> m_speed; //!< a random variable to control speed
-  Ptr<RandomVariableStream> m_pause; //!< a random variable to control pause 
+  Ptr<RandomVariableStream> m_pause; //!< a random variable to control pause
   EventId m_event; //!< event ID of next scheduled event
   ConstantVelocityHelper m_helper; //!< helper for velocity computations
 };

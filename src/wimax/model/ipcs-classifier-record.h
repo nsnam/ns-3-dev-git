@@ -30,7 +30,7 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
- * \brief IpcsClassifierRecord class 
+ * \brief IpcsClassifierRecord class
  */
 class IpcsClassifierRecord
 {
@@ -181,7 +181,7 @@ private:
     Ipv4Mask Mask; ///< net mask
   };
 
-  uint8_t m_priority; ///< priority 
+  uint8_t m_priority; ///< priority
   uint16_t m_index; ///< index
   uint8_t m_tosLow; ///< TOS low
   uint8_t m_tosHigh; ///< TOS high

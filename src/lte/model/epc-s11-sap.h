@@ -49,9 +49,9 @@ public:
 
   /**
    * Fully-qualified TEID, see 3GPP TS 29.274 section 8.22
-   * 
+   *
    */
-  struct Fteid 
+  struct Fteid
   {
     uint32_t teid; ///< TEID
     Ipv4Address address; ///< IP address
@@ -59,29 +59,29 @@ public:
 
   /**
    * TS 29.274 8.21  User Location Information (ULI)
-   * 
+   *
    */
   struct Uli
   {
     uint16_t gci; ///< GCI
   };
-  
- 
+
+
 };
 
 /**
  * \ingroup lte
  *
  * MME side of the S11 Service Access Point (SAP), provides the MME
- * methods to be called when an S11 message is received by the MME. 
+ * methods to be called when an S11 message is received by the MME.
  */
 class EpcS11SapMme : public EpcS11Sap
 {
 public:
-  
+
  /**
    * 3GPP TS 29.274 version 8.3.1 Release 8 section 8.28
-   * 
+   *
    */
   struct BearerContextCreated
   {
@@ -93,7 +93,7 @@ public:
   };
 
 
-  /**     
+  /**
    * Create Session Response message, see 3GPP TS 29.274 7.2.2
    */
   struct CreateSessionResponseMessage : public GtpcMessage
@@ -102,9 +102,9 @@ public:
   };
 
 
-  /** 
+  /**
    * send a Create Session Response message
-   * 
+   *
    * \param msg the message
    */
   virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
@@ -134,7 +134,7 @@ public:
 
 
 
-  /**     
+  /**
    * Modify Bearer Response message, see 3GPP TS 29.274 7.2.7
    */
   struct ModifyBearerResponseMessage : public GtpcMessage
@@ -148,9 +148,9 @@ public:
     } cause; ///< the cause
   };
 
-  /** 
+  /**
    * send a Modify Bearer Response message
-   * 
+   *
    * \param msg the message
    */
   virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg) = 0;
@@ -161,7 +161,7 @@ public:
  * \ingroup lte
  *
  * SGW side of the S11 Service Access Point (SAP), provides the SGW
- * methods to be called when an S11 message is received by the SGW. 
+ * methods to be called when an S11 message is received by the SGW.
  */
 class EpcS11SapSgw : public EpcS11Sap
 {
@@ -169,27 +169,27 @@ public:
 
   /// BearerContextToBeCreated structure
   struct BearerContextToBeCreated
-  {    
+  {
     EpcS11Sap::Fteid sgwFteid; ///< FTEID
     uint8_t epsBearerId; ///< EPS bearer ID
     EpsBearer bearerLevelQos; ///< bearer QOS level
     Ptr<EpcTft> tft; ///< traffic flow template
   };
 
-  
-  /**     
+
+  /**
    * Create Session Request message, see 3GPP TS 29.274 7.2.1
    */
   struct CreateSessionRequestMessage : public GtpcMessage
   {
     uint64_t imsi; ///< IMSI
     Uli uli; ///< ULI
-    std::list<BearerContextToBeCreated> bearerContextsToBeCreated; ///< list of bearer contexts to be created    
+    std::list<BearerContextToBeCreated> bearerContextsToBeCreated; ///< list of bearer contexts to be created
   };
 
-  /** 
+  /**
    * send a Create Session Request message
-   * 
+   *
    * \param msg the message
    */
   virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
@@ -205,7 +205,7 @@ public:
    */
   struct DeleteBearerCommandMessage : public GtpcMessage
   {
-    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;  ///< list of bearer contexts to be removed    
+    std::list<BearerContextToBeRemoved> bearerContextsToBeRemoved;  ///< list of bearer contexts to be removed
   };
 
   /**
@@ -225,7 +225,7 @@ public:
    */
   struct DeleteBearerResponseMessage : public GtpcMessage
   {
-    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;   ///< list of bearer contexts removed    
+    std::list<BearerContextRemovedSgwPgw> bearerContextsRemoved;   ///< list of bearer contexts removed
   };
 
   /**
@@ -234,7 +234,7 @@ public:
     */
   virtual void DeleteBearerResponse (DeleteBearerResponseMessage msg) = 0;
 
-  /**     
+  /**
    * Modify Bearer Request message, see 3GPP TS 29.274 7.2.7
    */
   struct ModifyBearerRequestMessage : public GtpcMessage
@@ -242,9 +242,9 @@ public:
     Uli uli; ///< ULI
   };
 
-  /** 
+  /**
    * send a Modify Bearer Request message
-   * 
+   *
    * \param msg the message
    */
   virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg) = 0;
@@ -260,7 +260,7 @@ public:
 /**
  * Template for the implementation of the EpcS11SapMme as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberEpcS11SapMme : public EpcS11SapMme
@@ -324,7 +324,7 @@ void MemberEpcS11SapMme<C>::ModifyBearerResponse (ModifyBearerResponseMessage ms
 /**
  * Template for the implementation of the EpcS11SapSgw as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberEpcS11SapSgw : public EpcS11SapSgw

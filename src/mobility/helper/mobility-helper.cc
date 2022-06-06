@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 
 MobilityHelper::MobilityHelper ()
 {
-  m_position = CreateObjectWithAttributes<RandomRectanglePositionAllocator> 
+  m_position = CreateObjectWithAttributes<RandomRectanglePositionAllocator>
       ("X", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"),
       "Y", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   m_mobility.SetTypeId ("ns3::ConstantPositionMobilityModel");
@@ -75,7 +75,7 @@ MobilityHelper::SetPositionAllocator (std::string type,
   m_position = pos.Create ()->GetObject<PositionAllocator> ();
 }
 
-void 
+void
 MobilityHelper::SetMobilityModel (std::string type,
                                   std::string n1, const AttributeValue &v1,
                                   std::string n2, const AttributeValue &v2,
@@ -99,28 +99,28 @@ MobilityHelper::SetMobilityModel (std::string type,
   m_mobility.Set (n9, v9);
 }
 
-void 
+void
 MobilityHelper::PushReferenceMobilityModel (Ptr<Object> reference)
 {
   Ptr<MobilityModel> mobility = reference->GetObject<MobilityModel> ();
   m_mobilityStack.push_back (mobility);
 }
 
-void 
+void
 MobilityHelper::PushReferenceMobilityModel (std::string referenceName)
 {
   Ptr<MobilityModel> mobility = Names::Find<MobilityModel> (referenceName);
   m_mobilityStack.push_back (mobility);
 }
 
-void 
+void
 MobilityHelper::PopReferenceMobilityModel (void)
 {
   m_mobilityStack.pop_back ();
 }
 
 
-std::string 
+std::string
 MobilityHelper::GetMobilityModelType (void) const
 {
   return m_mobility.GetTypeId ().GetName ();
@@ -136,7 +136,7 @@ MobilityHelper::Install (Ptr<Node> node) const
       model = m_mobility.Create ()->GetObject<MobilityModel> ();
       if (model == 0)
         {
-          NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
+          NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<<
                           m_mobility.GetTypeId ().GetName ()<<"\"");
         }
       if (m_mobilityStack.empty ())
@@ -148,7 +148,7 @@ MobilityHelper::Install (Ptr<Node> node) const
         {
           // we need to setup a hierarchical mobility model
           Ptr<MobilityModel> parent = m_mobilityStack.back ();
-          Ptr<MobilityModel> hierarchical = 
+          Ptr<MobilityModel> hierarchical =
             CreateObjectWithAttributes<HierarchicalMobilityModel> ("Child", PointerValue (model),
                                                                    "Parent", PointerValue (parent));
           object->AggregateObject (hierarchical);
@@ -165,7 +165,7 @@ MobilityHelper::Install (std::string nodeName) const
   Ptr<Node> node = Names::Find<Node> (nodeName);
   Install (node);
 }
-void 
+void
 MobilityHelper::Install (NodeContainer c) const
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -174,7 +174,7 @@ MobilityHelper::Install (NodeContainer c) const
     }
 }
 
-void 
+void
 MobilityHelper::InstallAll (void)
 {
   Install (NodeContainer::GetGlobal ());
@@ -230,15 +230,15 @@ MobilityHelper::CourseChanged (Ptr<OutputStreamWrapper> stream, Ptr<const Mobili
   os->precision (saved_precision);
 }
 
-void 
+void
 MobilityHelper::EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid)
 {
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/$ns3::MobilityModel/CourseChange";
-  Config::ConnectWithoutContextFailSafe (oss.str (), 
+  Config::ConnectWithoutContextFailSafe (oss.str (),
                                          MakeBoundCallback (&MobilityHelper::CourseChanged, stream));
 }
-void 
+void
 MobilityHelper::EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n)
 {
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
@@ -246,7 +246,7 @@ MobilityHelper::EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n)
       EnableAscii (stream, (*i)->GetId ());
     }
 }
-void 
+void
 MobilityHelper::EnableAsciiAll (Ptr<OutputStreamWrapper> stream)
 {
   EnableAscii (stream, NodeContainer::GetGlobal ());

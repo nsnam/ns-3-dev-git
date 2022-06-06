@@ -54,7 +54,7 @@ public:
   ~MobilityHelper ();
 
   /**
-   * Set the position allocator which will be used to allocate the initial 
+   * Set the position allocator which will be used to allocate the initial
    * position of every node initialized during MobilityModel::Install.
    *
    * \param allocator allocate initial node positions
@@ -114,7 +114,7 @@ public:
    * \param n9 the name of the attribute to set in the mobility model.
    * \param v9 the value of the attribute to set in the mobility model.
    *
-   * Calls to MobilityHelper::Install will create an instance of a matching 
+   * Calls to MobilityHelper::Install will create an instance of a matching
    * mobility model for each node.
    */
   void SetMobilityModel (std::string type,
@@ -181,10 +181,10 @@ public:
   /**
    * \brief "Layout" a single node according to the current position allocator type.
    *
-   * This method creates an instance of a ns3::MobilityModel subclass (the 
+   * This method creates an instance of a ns3::MobilityModel subclass (the
    * type of which was set with MobilityHelper::SetMobilityModel), aggregates
    * it to the provided node, and sets an initial position based on the current
-   * position allocator (set through MobilityHelper::SetPositionAllocator). 
+   * position allocator (set through MobilityHelper::SetPositionAllocator).
    *
    * \param node The node to "layout."
    */
@@ -192,10 +192,10 @@ public:
   /**
    * \brief "Layout" a single node according to the current position allocator type.
    *
-   * This method creates an instance of a ns3::MobilityModel subclass (the 
+   * This method creates an instance of a ns3::MobilityModel subclass (the
    * type of which was set with MobilityHelper::SetMobilityModel), aggregates
    * it to the provided node, and sets an initial position based on the current
-   * position allocator (set through MobilityHelper::SetPositionAllocator). 
+   * position allocator (set through MobilityHelper::SetPositionAllocator).
    *
    * \param nodeName The name of the node to "layout."
    */
@@ -204,11 +204,11 @@ public:
   /**
    * \brief Layout a collection of nodes according to the current position allocator type.
    *
-   * For each node in the provided NodeContainer, this method creates an instance 
-   * of a ns3::MobilityModel subclass (the type of which was set with 
-   * MobilityHelper::SetMobilityModel), aggregates it to the node, and sets an 
-   * initial position based on the current position allocator (set through 
-   * MobilityHelper::SetPositionAllocator). 
+   * For each node in the provided NodeContainer, this method creates an instance
+   * of a ns3::MobilityModel subclass (the type of which was set with
+   * MobilityHelper::SetMobilityModel), aggregates it to the node, and sets an
+   * initial position based on the current position allocator (set through
+   * MobilityHelper::SetPositionAllocator).
    *
    * \param container The set of nodes to layout.
    */
@@ -225,7 +225,7 @@ public:
    * \param nodeid the id of the node to generate ascii output for.
    *
    * Enable ascii output to record course changes from the mobility model
-   * associated with the specified nodeid and dump that to the specified output 
+   * associated with the specified nodeid and dump that to the specified output
    * stream.  If the Node does not have a MobilityModel aggregated,
    * this method will not produce any output.
    */
@@ -235,7 +235,7 @@ public:
    * \param n node container
    *
    * Enable ascii output to record course changes from the mobility models
-   * associated to the the nodes in the input container and dump that to the 
+   * associated to the the nodes in the input container and dump that to the
    * specified output stream.  Nodes that do not have a MobilityModel
    * aggregated will not result in any output.
    */
@@ -244,15 +244,15 @@ public:
    * \param stream an output stream wrapper
    *
    * Enable ascii output to record course changes from the mobility models
-   * associated to every node in the system and dump that to the specified 
+   * associated to every node in the system and dump that to the specified
    * output stream.  Nodes that do not have a MobilityModel aggregated
    * will not result in any output.
    */
   static void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by the mobility models on these nodes. Return the number of 
-   * streams (possibly zero) that have been assigned. The Install() 
+   * used by the mobility models on these nodes. Return the number of
+   * streams (possibly zero) that have been assigned. The Install()
    * method should have previously been called by the user.
    *
    * \note If the PositionAllocator used contains random variables, they

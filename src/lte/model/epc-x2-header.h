@@ -180,7 +180,7 @@ public:
   /**
    * Set bearers function
    * \param bearers std::vector <EpcX2Sap::ErabToBeSetupItem>
-   */ 
+   */
   void SetBearers (std::vector <EpcX2Sap::ErabToBeSetupItem> bearers);
 
   /**
@@ -460,7 +460,7 @@ private:
   uint32_t          m_numberOfIes; ///< number of IEs
   uint32_t          m_headerLength; ///< header length
 
-  uint16_t          m_oldEnbUeX2apId; ///< old ENB UE X2 AP ID 
+  uint16_t          m_oldEnbUeX2apId; ///< old ENB UE X2 AP ID
   uint16_t          m_newEnbUeX2apId; ///< new ENB UE X2 AP ID
   std::vector <EpcX2Sap::ErabsSubjectToStatusTransferItem> m_erabsSubjectToStatusTransferList; ///< ERABs subject to status transfer list
 };
@@ -556,7 +556,7 @@ public:
   std::vector <EpcX2Sap::CellInformationItem> GetCellInformationList () const;
   /**
    * Set cell information list function
-   * \param cellInformationList std::vector <EpcX2Sap::CellInformationItem> 
+   * \param cellInformationList std::vector <EpcX2Sap::CellInformationItem>
    */
   void SetCellInformationList (std::vector <EpcX2Sap::CellInformationItem> cellInformationList);
 
@@ -625,7 +625,7 @@ public:
   /**
    * Get cell measurement results list function
    * \returns the cell measurement results list
-   */ 
+   */
   std::vector <EpcX2Sap::CellMeasurementResultItem> GetCellMeasurementResultList () const;
   /**
    * Set cell measurement results list function

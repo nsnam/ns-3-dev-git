@@ -133,7 +133,7 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
   // Variable names from
   // RFC 1889 Appendix A.8 ,p. 71,
   // RFC 3550 Appendix A.8, p. 94
-  
+
   Time r_ts = tag.GetTxTime ();
   Time arrival = Simulator::Now ();
   Time transit = arrival - r_ts;
@@ -142,12 +142,12 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 
   // floating jitter version
   //  m_jitter += (Abs (delta) - m_jitter) / 16;
-  
+
   // int variant
   m_jitter += Abs (delta) - ( (m_jitter + TimeStep (8)) / 16 );
 }
 
-Time 
+Time
 DelayJitterEstimation::GetLastDelay (void) const
 {
   return m_transit;

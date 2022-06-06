@@ -45,7 +45,7 @@ namespace ns3 {
  *
  *   11111111111111111111111111000000000000
  *   <---prefix of length n--->
- * 
+ *
  * This class handles the following quantities.
  * 1) The "network" which covers the 64 bit union of the global routing
  *    prefix and the subnet ID
@@ -53,25 +53,25 @@ namespace ns3 {
  *    and the subnet ID
  * 3) the "base" which is the initial 64-bit interface ID.
  *
- * The names "network", "prefix" and "base" are chosen to be consistent 
- * with a similar address helper for IPv4. 
+ * The names "network", "prefix" and "base" are chosen to be consistent
+ * with a similar address helper for IPv4.
  *
  * This helper class allows users to set or reset the network and
  * interface components, and call "NewAddress ()" to sequentially increment
  * the interface ID, and call "NewNetwork ()" to allocate a new subnet
  * (until the subnet ID quantity rolls over).  A call to NewNetwork ()
- * that causes the subnet ID to roll over will trigger an assertion.  
- * 
+ * that causes the subnet ID to roll over will trigger an assertion.
+ *
  * By default, the prefix is 32 bits and the network is '2001:db8::/32'
  * (\RFC{5156} section 2.6 Documentation prefix).  The prefix may range
  * from length 0 to 64, with the value 64 having a special meaning that
  * no subnet ID boundary is enforced (equivalent to value 0).
- * 
+ *
  * There are two variants of interface ID supported (\RFC{4291}, Sec. 2.5.1)
  * The default is a "local" scope, but a "universal" scoped ID may be
  * formed by calling "NewAddress (Address addr)" with a 48-bit MAC address.
  * If this method is called, the addressed returned will include a
- * modified EUI-64-format identifier created from the MAC address as 
+ * modified EUI-64-format identifier created from the MAC address as
  * specified in \RFC{4291}.
  *
  * BEWARE: the underlying implementation acts as a Singleton.
@@ -93,7 +93,7 @@ public:
    * \param prefix The prefix
    * \param base The base interface ID
    */
-  Ipv6AddressHelper (Ipv6Address network, Ipv6Prefix prefix,  
+  Ipv6AddressHelper (Ipv6Address network, Ipv6Prefix prefix,
                      Ipv6Address base = Ipv6Address ("::1"));
 
   /**
@@ -143,12 +143,12 @@ public:
   Ipv6InterfaceContainer Assign (const NetDeviceContainer &c);
 
   /**
-   * \brief Allocate an Ipv6InterfaceContainer, and control whether the 
+   * \brief Allocate an Ipv6InterfaceContainer, and control whether the
    *        interfaces have addresses auto-assigned to them
    *
    * \param c netdevice container
-   * \param withConfiguration a vector of values for which, for a 
-   *        given device, true : interface automatically addressed, 
+   * \param withConfiguration a vector of values for which, for a
+   *        given device, true : interface automatically addressed,
    *        false : no automatic address
    * \return newly created Ipv6InterfaceContainer
    */

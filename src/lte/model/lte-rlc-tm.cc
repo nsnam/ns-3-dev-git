@@ -110,7 +110,7 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << txOpParams.bytes  << (uint32_t) txOpParams.layer << (uint32_t) txOpParams.harqId);
 
-  // 5.1.1.1 Transmit operations 
+  // 5.1.1.1 Transmit operations
   // 5.1.1.1.1 General
   // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
   // - submit a RLC SDU without any modification to lower layer.
@@ -167,7 +167,7 @@ LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
   m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), 0);
 
-  // 5.1.1.2 Receive operations 
+  // 5.1.1.2 Receive operations
   // 5.1.1.2.1  General
   // When receiving a new TMD PDU from lower layer, the receiving TM RLC entity shall:
   // - deliver the TMD PDU without any modification to upper layer.

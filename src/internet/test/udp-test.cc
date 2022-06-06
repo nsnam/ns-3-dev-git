@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -18,7 +18,7 @@
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
 /**
- * This is the test code for udp-socket-impl.cc, it was moved out of udp-socket-impl.cc to 
+ * This is the test code for udp-socket-impl.cc, it was moved out of udp-socket-impl.cc to
  * be in an independent file for clarity purposes.
  */
 
@@ -80,7 +80,7 @@ public:
 };
 
 UdpSocketLoopbackTest::UdpSocketLoopbackTest ()
-  : TestCase ("UDP loopback test") 
+  : TestCase ("UDP loopback test")
 {
 }
 
@@ -132,7 +132,7 @@ public:
 };
 
 Udp6SocketLoopbackTest::Udp6SocketLoopbackTest ()
-  : TestCase ("UDP6 loopback test") 
+  : TestCase ("UDP6 loopback test")
 {
 }
 
@@ -236,7 +236,7 @@ public:
 };
 
 UdpSocketImplTest::UdpSocketImplTest ()
-  : TestCase ("UDP socket implementation") 
+  : TestCase ("UDP socket implementation")
 {
 }
 

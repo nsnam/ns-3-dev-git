@@ -97,7 +97,7 @@ EpcTft::PacketFilter::PacketFilter ()
   NS_LOG_FUNCTION (this);
 }
 
-bool 
+bool
 EpcTft::PacketFilter::Matches (Direction d,
                                Ipv4Address ra,
                                Ipv4Address la,
@@ -158,7 +158,7 @@ EpcTft::PacketFilter::Matches (Direction d,
   return false;
 }
 
-bool 
+bool
 EpcTft::PacketFilter::Matches (Direction d,
                                Ipv6Address ra,
                                Ipv6Address la,
@@ -220,7 +220,7 @@ EpcTft::PacketFilter::Matches (Direction d,
 }
 
 
-Ptr<EpcTft> 
+Ptr<EpcTft>
 EpcTft::Default ()
 {
   Ptr<EpcTft> tft = Create<EpcTft> ();
@@ -236,7 +236,7 @@ EpcTft::EpcTft ()
   NS_LOG_FUNCTION (this);
 }
 
-uint8_t 
+uint8_t
 EpcTft::Add (PacketFilter f)
 {
   NS_LOG_FUNCTION (this << f);
@@ -247,13 +247,13 @@ EpcTft::Add (PacketFilter f)
       (it != m_filters.end ()) && (it->precedence <= f.precedence);
       ++it)
     {
-    }  
-  m_filters.insert (it, f);  
+    }
+  m_filters.insert (it, f);
   ++m_numFilters;
   return (m_numFilters - 1);
 }
 
-bool 
+bool
 EpcTft::Matches (Direction direction,
                  Ipv4Address remoteAddress,
                  Ipv4Address localAddress,
@@ -270,11 +270,11 @@ EpcTft::Matches (Direction direction,
         {
           return true;
         }
-    }  
+    }
   return false;
 }
 
-bool 
+bool
 EpcTft::Matches (Direction direction,
                  Ipv6Address remoteAddress,
                  Ipv6Address localAddress,
@@ -291,7 +291,7 @@ EpcTft::Matches (Direction direction,
         {
           return true;
         }
-    }  
+    }
   return false;
 }
 

@@ -74,7 +74,7 @@ public:
   static const char* const PeerStateNames[6];
   /**
    * Process beacon received from peer
-   * 
+   *
    * \param lastBeacon the last beacon
    * \param BeaconInterval the beacon interval
    */
@@ -83,7 +83,7 @@ public:
    * \brief Method used to detect peer link changes
    *
    * \param cb is a callback, which notifies, that on interface (uint32_t), peer link
-   * with address (Mac48Address) was opened (bool is true) or closed (bool is false) 
+   * with address (Mac48Address) was opened (bool is true) or closed (bool is false)
    */
   void  SetLinkStatusCallback (Callback<void, uint32_t, Mac48Address, bool> cb);
   /// \name Peer link getters/setters

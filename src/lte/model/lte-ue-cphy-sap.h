@@ -42,14 +42,14 @@ class LteUeCphySapProvider
 {
 public:
 
-  /** 
+  /**
    * destructor
    */
   virtual ~LteUeCphySapProvider ();
 
-  /** 
+  /**
    * reset the PHY
-   * 
+   *
    */
   virtual void Reset () = 0;
 
@@ -120,9 +120,9 @@ public:
    */
   virtual void SetDlBandwidth (uint16_t dlBandwidth) = 0;
 
-  /** 
+  /**
    * \brief Configure uplink (normally done after reception of SIB2)
-   * 
+   *
    * \param ulEarfcn the uplink carrier frequency (EARFCN)
    * \param ulBandwidth the UL bandwidth in number of PRBs
    */
@@ -135,9 +135,9 @@ public:
    */
   virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower) = 0;
 
-  /** 
+  /**
    * \brief Set Rnti function
-   * 
+   *
    * \param rnti the cell-specific UE identifier
    */
   virtual void SetRnti (uint16_t rnti) = 0;
@@ -221,7 +221,7 @@ class LteUeCphySapUser
 {
 public:
 
-  /** 
+  /**
    * destructor
    */
   virtual ~LteUeCphySapUser ();
@@ -248,7 +248,7 @@ public:
 
   /**
    * \brief Relay an MIB message from the PHY entity to the RRC layer.
-   * 
+   *
    * This function is typically called after PHY receives an MIB message over
    * the BCH.
    *
@@ -310,7 +310,7 @@ public:
 /**
  * Template for the implementation of the LteUeCphySapProvider as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberLteUeCphySapProvider : public LteUeCphySapProvider
@@ -360,7 +360,7 @@ MemberLteUeCphySapProvider<C>::MemberLteUeCphySapProvider ()
 }
 
 template <class C>
-void 
+void
 MemberLteUeCphySapProvider<C>::Reset ()
 {
   m_owner->DoReset ();
@@ -409,14 +409,14 @@ MemberLteUeCphySapProvider<C>::SetDlBandwidth (uint16_t dlBandwidth)
 }
 
 template <class C>
-void 
+void
 MemberLteUeCphySapProvider<C>::ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth)
 {
   m_owner->DoConfigureUplink (ulEarfcn, ulBandwidth);
 }
 
 template <class C>
-void 
+void
 MemberLteUeCphySapProvider<C>::ConfigureReferenceSignalPower (int8_t referenceSignalPower)
 {
   m_owner->DoConfigureReferenceSignalPower (referenceSignalPower);
@@ -430,14 +430,14 @@ MemberLteUeCphySapProvider<C>::SetRnti (uint16_t rnti)
 }
 
 template <class C>
-void 
+void
 MemberLteUeCphySapProvider<C>::SetTransmissionMode (uint8_t txMode)
 {
   m_owner->DoSetTransmissionMode (txMode);
 }
 
 template <class C>
-void 
+void
 MemberLteUeCphySapProvider<C>::SetSrsConfigurationIndex (uint16_t srcCi)
 {
   m_owner->DoSetSrsConfigurationIndex (srcCi);
@@ -487,7 +487,7 @@ void MemberLteUeCphySapProvider<C>::SetImsi (uint64_t imsi)
 /**
  * Template for the implementation of the LteUeCphySapUser as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberLteUeCphySapUser : public LteUeCphySapUser
@@ -526,8 +526,8 @@ MemberLteUeCphySapUser<C>::MemberLteUeCphySapUser ()
 {
 }
 
-template <class C> 
-void 
+template <class C>
+void
 MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (uint16_t cellId,
                                                        LteRrcSap::MasterInformationBlock mib)
 {

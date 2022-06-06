@@ -48,7 +48,7 @@ namespace test {
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Pretty printer for test cases.
  */
 class Printer
@@ -113,7 +113,7 @@ std::ostream & operator << (std::ostream & os, const Printer & p)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: manipulate the high and low part of every number.
  */
 class Int64x64HiLoTestCase : public TestCase
@@ -192,7 +192,7 @@ Int64x64HiLoTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: check GetInt and Round.
  */
 class Int64x64IntRoundTestCase : public TestCase
@@ -265,7 +265,7 @@ Int64x64IntRoundTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: parse int64x64_t numbers as strings.
  */
 class Int64x64InputTestCase : public TestCase
@@ -351,9 +351,9 @@ Int64x64InputTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: roundtrip int64x64_t numbers as strings.
- * 
+ *
  * Prints an int64x64_t and read it back.
  */
 class Int64x64InputOutputTestCase : public TestCase
@@ -444,7 +444,7 @@ Int64x64InputOutputTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: basic arithmetic operations.
  */
 class Int64x64ArithmeticTestCase : public TestCase
@@ -588,9 +588,9 @@ Int64x64ArithmeticTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test case for bug 455.
- * 
+ *
  * See \bugid{455}
  */
 class Int64x64Bug455TestCase : public TestCase
@@ -659,9 +659,9 @@ Int64x64Bug455TestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test case for bug 455.
- * 
+ *
  * See \bugid{863}
  */
 class Int64x64Bug863TestCase : public TestCase
@@ -731,9 +731,9 @@ Int64x64Bug863TestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test case for bug 455.
- * 
+ *
  * See \bugid{1786}
  */
 class Int64x64Bug1786TestCase : public TestCase
@@ -876,7 +876,7 @@ Int64x64Bug1786TestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: basic compare operations.
  */
 class Int64x64CompareTestCase : public TestCase
@@ -992,7 +992,7 @@ Int64x64CompareTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: Invert and MulByInvert.
  */
 class Int64x64InvertTestCase : public TestCase
@@ -1117,7 +1117,7 @@ Int64x64InvertTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: construct from floating point.
  */
 class Int64x64DoubleTestCase : public TestCase
@@ -1183,7 +1183,7 @@ private:
    * We scale and round this value to match the
    * hard-coded fractional values in Check(intPart)
    * which have 22 decimal digits.
-   * 
+   *
    * Since we use std::round() which isn't constexpr,
    * just declare this const and initialize below.
    */
@@ -1228,16 +1228,16 @@ Int64x64DoubleTestCase::Check (const long double dec,
   /*
     This approach works for real values with mantissa very near zero,
     but isn't ideal.  For values near 0.5, say, the low order bits
-    are completely lost, since they exceed the precision of the 
+    are completely lost, since they exceed the precision of the
     double representation.  This shows up on M1 and ARM architectures
-    as the x.5... values all skipped, because they are indistinguishable 
+    as the x.5... values all skipped, because they are indistinguishable
     from x.5 exactly.
 
     A more involved alternative would be to separate the
     "frac" and "low" values in the caller.  Then the underflow
-    rescaling could be applied to the low bits only, 
+    rescaling could be applied to the low bits only,
     before adding to the frac part.
-    
+
     To do this the signature of this function would have to be
        Check (cld dec, cld frac, int64_t intPart, int64_t low);
                                                   ^- Note this signed
@@ -1533,7 +1533,7 @@ Int64x64DoubleTestCase::DoRun (void)
 
 /**
  * \ingroup int64x64-tests
- * 
+ *
  * Test: print the implementation
  */
 class Int64x64ImplTestCase : public TestCase
@@ -1584,7 +1584,7 @@ Int64x64ImplTestCase::DoRun (void)
  * \internal
  *
  * The int64x64 Test Suite.
- * 
+ *
  * Some of these tests are a little unusual for ns-3 in that they
  * are sensitive to implementation, specifically the resolution
  * of the double and long double implementations.

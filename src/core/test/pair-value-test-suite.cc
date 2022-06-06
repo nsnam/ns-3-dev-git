@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE ("PairTestSuite");
 
 /**
  * \ingroup pair-tests
- * 
+ *
  * Object holding pairs of values.
  */
 class PairObject : public Object
@@ -121,7 +121,7 @@ operator << (std::ostream &os, const PairObject &obj)
 
 /**
  * \ingroup pair-tests
- * 
+ *
  * Pair test - Test instantiation, initialization, access.
  */
 class PairValueTestCase : public TestCase
@@ -165,7 +165,7 @@ PairValueTestCase::DoRun ()
 
 /**
  * \ingroup pair-tests
- * 
+ *
  * Pair test - test setting through attribute interface.
  */
 class PairValueSettingsTestCase : public TestCase
@@ -189,7 +189,7 @@ PairValueSettingsTestCase::DoRun ()
 
   std::ostringstream oss;
   oss << *p;
-  
+
   std::ostringstream ref;
   ref << "StringPair = { (hello,world) } DoubleIntPair = { (3.14,31) }";
 
@@ -198,7 +198,7 @@ PairValueSettingsTestCase::DoRun ()
 
 /**
  * \ingroup pair-tests
- *  
+ *
  * \brief The pair-value Test Suite.
  */
 class PairValueTestSuite : public TestSuite

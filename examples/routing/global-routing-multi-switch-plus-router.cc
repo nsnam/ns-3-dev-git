@@ -714,7 +714,7 @@ main (int argc, char *argv[])
   // ======================================================================
   // Print routing tables at T=0.1
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // NOTE: Node 0 and Node 13 must have non-empty tables (except for local 
+  // NOTE: Node 0 and Node 13 must have non-empty tables (except for local
   //       loopback and local LAN) if routing is operating correctly.
   // ----------------------------------------------------------------------
   NS_LOG_INFO ("Set up to print routing tables at T=0.1s");

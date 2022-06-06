@@ -116,7 +116,7 @@ TestChildQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-TestChildQueueDisc::DoDequeue (void) 
+TestChildQueueDisc::DoDequeue (void)
 {
   Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
 
@@ -178,7 +178,7 @@ TestParentQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 }
 
 Ptr<QueueDiscItem>
-TestParentQueueDisc::DoDequeue (void) 
+TestParentQueueDisc::DoDequeue (void)
 {
   return GetQueueDiscClass (0)->GetQueueDisc ()->Dequeue ();
 }

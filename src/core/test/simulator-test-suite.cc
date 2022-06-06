@@ -40,7 +40,7 @@ using namespace ns3;
 
 /**
  * \ingroup simulator-tests
- *  
+ *
  * \brief Check that basic event handling is working with different Simulator implementations.
  */
 class SimulatorEventsTestCase : public TestCase
@@ -215,9 +215,9 @@ SimulatorEventsTestCase::DoRun (void)
 
 /**
  * \ingroup simulator-tests
- *  
+ *
  * \brief Check that all templates are instantiated correctly.
- * 
+ *
  * This is a compilation test, it cannot fail at runtime.
  */
 class SimulatorTemplateTestCase : public TestCase
@@ -226,7 +226,7 @@ public:
   SimulatorTemplateTestCase ();
   /**
    * Ref and Unref - only here for testing of Ptr<>
-   * 
+   *
    * @{
    */
   void Ref (void) const {};
@@ -239,7 +239,7 @@ private:
   /* *NS_CHECK_STYLE_OFF* */
   /**
    * Function used for scheduling.
-   * 
+   *
    * @{
    */
   void bar0 (void) {}
@@ -282,7 +282,7 @@ private:
 
 /**
   * Function used for scheduling.
-  * 
+  *
   * @{
   */
 static void foo0 (void)
@@ -533,7 +533,7 @@ SimulatorTemplateTestCase::DoRun (void)
 
 /**
  * \ingroup simulator-tests
- *  
+ *
  * \brief The simulator Test Suite.
  */
 class SimulatorTestSuite : public TestSuite

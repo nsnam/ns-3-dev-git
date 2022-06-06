@@ -46,7 +46,7 @@ protected:
 
 public:
   virtual ~FlowProbe ();
-  
+
   // Delete copy constructor and assignment operator to avoid misuse
   FlowProbe (FlowProbe const &) = delete;
   FlowProbe& operator= (FlowProbe const &) = delete;
@@ -54,7 +54,7 @@ public:
   /// Register this type.
   /// \return The TypeId.
   static TypeId GetTypeId (void);
-  
+
   /// Structure to hold the statistics of a flow
   struct FlowStats
   {

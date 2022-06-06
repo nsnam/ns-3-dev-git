@@ -103,7 +103,7 @@ EthernetTrailer::GetTrailerSize (void) const
   return GetSerializedSize ();
 }
 
-TypeId 
+TypeId
 EthernetTrailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EthernetTrailer")
@@ -113,18 +113,18 @@ EthernetTrailer::GetTypeId (void)
   ;
   return tid;
 }
-TypeId 
+TypeId
 EthernetTrailer::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-void 
+void
 EthernetTrailer::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << "fcs=" << m_fcs;
 }
-uint32_t 
+uint32_t
 EthernetTrailer::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);

@@ -3,7 +3,7 @@
 +++++++++++++++++++++++++++++++++++++
 
 In this section we describe the test suites included with the antenna
-module that verify its correct functionality. 
+module that verify its correct functionality.
 
 
 Angles
@@ -72,5 +72,5 @@ values.
 
 
 
- 
- 
+
+

@@ -93,7 +93,7 @@ public:
     m_packet = p;
   }
   /**
-   * Get destination address 
+   * Get destination address
    * \returns the destination IPv4 address
    */
   Ipv4Address GetDestination () const
@@ -141,7 +141,7 @@ public:
     m_nextHop = n;
   }
   /**
-   * Set expire time 
+   * Set expire time
    * \param exp the expire time
    */
   void SetExpireTime (Time exp)

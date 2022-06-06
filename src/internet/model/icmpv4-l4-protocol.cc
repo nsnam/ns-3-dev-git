@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (Icmpv4L4Protocol);
 // see rfc 792
 const uint8_t Icmpv4L4Protocol::PROT_NUMBER = 1;
 
-TypeId 
+TypeId
 Icmpv4L4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4L4Protocol")
@@ -96,14 +96,14 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
   IpL4Protocol::NotifyNewAggregate ();
 }
 
-uint16_t 
+uint16_t
 Icmpv4L4Protocol::GetStaticProtocolNumber (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return PROT_NUMBER;
 }
 
-int 
+int
 Icmpv4L4Protocol::GetProtocolNumber (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -149,23 +149,23 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Addre
 
   m_downTarget (packet, source, dest, PROT_NUMBER, route);
 }
-void 
-Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header, 
+void
+Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header,
                                              Ptr<const Packet> orgData,
                                              uint16_t nextHopMtu)
 {
   NS_LOG_FUNCTION (this << header << *orgData << nextHopMtu);
   SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::ICMPV4_FRAG_NEEDED, nextHopMtu);
 }
-void 
-Icmpv4L4Protocol::SendDestUnreachPort (Ipv4Header header, 
+void
+Icmpv4L4Protocol::SendDestUnreachPort (Ipv4Header header,
                                        Ptr<const Packet> orgData)
 {
   NS_LOG_FUNCTION (this << header << *orgData);
   SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::ICMPV4_PORT_UNREACHABLE, 0);
 }
-void 
-Icmpv4L4Protocol::SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData, 
+void
+Icmpv4L4Protocol::SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData,
                                    uint8_t code, uint16_t nextHopMtu)
 {
   NS_LOG_FUNCTION (this << header << *orgData << (uint32_t) code << nextHopMtu);
@@ -178,7 +178,7 @@ Icmpv4L4Protocol::SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData,
   SendMessage (p, header.GetSource (), Icmpv4Header::ICMPV4_DEST_UNREACH, code);
 }
 
-void 
+void
 Icmpv4L4Protocol::SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgData, bool isFragment)
 {
   NS_LOG_FUNCTION (this << header << *orgData);
@@ -291,7 +291,7 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
   NS_LOG_FUNCTION (this << p << header.GetSource () << header.GetDestination () << incomingInterface);
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
-void 
+void
 Icmpv4L4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);

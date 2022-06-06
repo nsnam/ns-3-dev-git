@@ -78,7 +78,7 @@ ListErrorModel, etc, such as is done in |ns2|.
 You may be thinking at this point, "Why not make IsCorrupt() a virtual method?".
 That is one approach; the other is to make the public non-virtual function
 indirect through a private virtual function (this in C++ is known as the non
-virtual interface idiom and is adopted in the |ns3| ErrorModel class).  
+virtual interface idiom and is adopted in the |ns3| ErrorModel class).
 
 Next, should this device have any dependencies on IP or other protocols?  We do
 not want to create dependencies on Internet protocols (the error model should be
@@ -106,7 +106,7 @@ NetDevice level.
 After some thinking and looking at existing |ns2| code, here is a sample API of
 a base class and first subclass that could be posted for initial review::
 
-    class ErrorModel 
+    class ErrorModel
     {
     public:
       ErrorModel ();
@@ -153,14 +153,14 @@ Let's say that you are ready to start implementing; you have a fairly clear
 picture of what you want to build, and you may have solicited some initial
 review or suggestions from the list.  One way to approach the next step
 (implementation) is to create scaffolding and fill in the details as the design
-matures.  
+matures.
 
 This section walks through many of the steps you should consider to define
 scaffolding, or a non-functional skeleton of what your model will eventually
 implement. It is usually good practice to not wait to get these details
 integrated at the end, but instead to plumb a skeleton of your model into the
 system early and then add functions later once the API and integration seems
-about right.  
+about right.
 
 Note that you will want to modify a few things in the below presentation for
 your model since if you follow the error model verbatim, the code you produce
@@ -185,7 +185,7 @@ particularly for ease of integrating with the build system.
 
 In the case of the error model, it is very related to the packet class, so it
 makes sense to implement this in the ``src/network/`` module where |ns3|
-packets are implemented.  
+packets are implemented.
 
 `cmake` and `CMakeLists.txt`
 ++++++++++++++++++++++++++++
@@ -197,7 +197,7 @@ add your files to the ``CMakeLists.txt`` file found in each directory.
 
 Let's start with empty files error-model.h and error-model.cc, and add this to
 ``src/network/CMakeLists.txt``. It is really just a matter of adding the .cc file to the
-rest of the source files, and the .h file to the list of the header files. 
+rest of the source files, and the .h file to the list of the header files.
 
 Now, pop up to the top level directory and type "./test.py".  You
 shouldn't have broken anything by this operation.
@@ -290,7 +290,7 @@ from class Object.::
     #include "ns3/object.h"
 
     namespace ns3 {
-      
+
     class ErrorModel : public Object
     {
     public:
@@ -304,7 +304,7 @@ from class Object.::
     {
     public:
       static TypeId GetTypeId (void);
-     
+
       RateErrorModel ();
       virtual ~RateErrorModel ();
     };
@@ -317,18 +317,18 @@ included without any path prefix. Therefore, if we were implementing ErrorModel
 in ``src/core/model`` directory, we could have just said "``#include "object.h"``".
 But we are in ``src/network/model``, so we must include it as "``#include
 "ns3/object.h"``". Note also that this goes outside the namespace declaration.
- 
+
 Second, each class must implement a static public member function called
-``GetTypeId (void)``.  
+``GetTypeId (void)``.
 
 Third, it is a good idea to implement constructors and destructors rather than
 to let the compiler generate them, and to make the destructor virtual. In C++,
 note also that copy assignment operator and copy constructors are auto-generated
 if they are not defined, so if you do not want those, you should implement those
 as private members. This aspect of C++ is discussed in Scott Meyers' Effective
-C++ book. item 45. 
+C++ book. item 45.
 
-Let's now look at some corresponding skeletal implementation code in the .cc 
+Let's now look at some corresponding skeletal implementation code in the .cc
 file.::
 
     #include "error-model.h"
@@ -347,11 +347,11 @@ file.::
     }
 
     ErrorModel::ErrorModel ()
-    { 
+    {
     }
 
     ErrorModel::~ErrorModel ()
-    { 
+    {
     }
 
     NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
@@ -368,7 +368,7 @@ file.::
 
     RateErrorModel::RateErrorModel ()
     {
-    } 
+    }
 
     RateErrorModel::~RateErrorModel ()
     {
@@ -378,7 +378,7 @@ What is the ``GetTypeId (void)`` function? This function does a few things.  It
 registers a unique string into the TypeId system. It establishes  the hierarchy
 of objects in the attribute system (via ``SetParent``). It also declares that
 certain objects can be created via the object creation framework
-(``AddConstructor``).  
+(``AddConstructor``).
 
 The macro ``NS_OBJECT_ENSURE_REGISTERED (classname)`` is needed also once for
 every class that defines a new GetTypeId method, and it does the actual
@@ -422,12 +422,12 @@ Add Basic Support in the Class
 
     /* point-to-point-net-device.h */
       class ErrorModel;
-      
+
       /**
        * Error model for receive packet events
        */
       Ptr<ErrorModel> m_receiveErrorModel;
-      
+
 Add Accessor
 ++++++++++++
 
@@ -438,7 +438,7 @@ Add Accessor
     {
       NS_LOG_FUNCTION (this << em);
       m_receiveErrorModel = em;
-    } 
+    }
 
        .AddAttribute ("ReceiveErrorModel",
                        "The receiver error model used to simulate packet loss",
@@ -455,26 +455,26 @@ Plumb Into the System
     {
       NS_LOG_FUNCTION (this << packet);
       uint16_t protocol = 0;
-      
+
       if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
         {
-    //  
+    //
     // If we have an error model and it indicates that it is time to lose a
-    // corrupted packet, don't forward this packet up, let it go. 
-    // 
+    // corrupted packet, don't forward this packet up, let it go.
+    //
           m_dropTrace (packet);
-        } 
+        }
       else
         {
-    //  
+    //
     // Hit the receive trace hook, strip off the point-to-point protocol header
     // and forward this packet up the protocol stack.
-    //     
+    //
           m_rxTrace (packet);
           ProcessHeader(packet, protocol);
           m_rxCallback (this, packet, protocol, GetRemote ());
           if (!m_promiscCallback.IsNull ())
-            {           m_promiscCallback (this, packet, protocol, GetRemote (), 
+            {           m_promiscCallback (this, packet, protocol, GetRemote (),
                           GetAddress (), NetDevice::PACKET_HOST);
             }
         }

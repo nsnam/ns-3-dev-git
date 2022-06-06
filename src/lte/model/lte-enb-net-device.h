@@ -85,24 +85,24 @@ public:
    * \return a pointer to the physical layer of the PCC.
    */
   Ptr<LteEnbPhy> GetPhy (void) const;
-  
+
   /**
    * \param index SCC index
    * \return a pointer to the physical layer of the SCC addressed by index.
    */
   Ptr<LteEnbPhy> GetPhy (uint8_t index) const;
 
-  /** 
+  /**
    * \return a pointer to the Radio Resource Control instance of the eNB
    */
   Ptr<LteEnbRrc> GetRrc () const;
-  
-  /** 
+
+  /**
    * \return a pointer to the ComponentCarrierManager instance of the eNB
    */
   Ptr<LteEnbComponentCarrierManager> GetComponentCarrierManager () const;
 
-  /** 
+  /**
    * \return the Cell Identifier of this eNB
    */
   uint16_t GetCellId () const;
@@ -118,42 +118,42 @@ public:
    */
   bool HasCellId (uint16_t cellId) const;
 
-  /** 
+  /**
    * \return the uplink bandwidth in RBs
    */
   uint16_t GetUlBandwidth () const;
 
-  /** 
+  /**
    * \param bw the uplink bandwidth in RBs
    */
   void SetUlBandwidth (uint16_t bw);
 
-  /** 
+  /**
    * \return the downlink bandwidth in RBs
    */
   uint16_t GetDlBandwidth () const;
 
-  /** 
+  /**
    * \param bw the downlink bandwidth in RBs
    */
   void SetDlBandwidth (uint16_t bw);
 
-  /** 
+  /**
    * \return the downlink carrier frequency (EARFCN)
    */
   uint32_t GetDlEarfcn () const;
 
-  /** 
+  /**
    * \param earfcn the downlink carrier frequency (EARFCN)
    */
   void SetDlEarfcn (uint32_t earfcn);
 
-  /** 
+  /**
    * \return the uplink carrier frequency (EARFCN)
    */
   uint32_t GetUlEarfcn () const;
 
-  /** 
+  /**
    * \param earfcn the uplink carrier frequency (EARFCN)
    */
   void SetUlEarfcn (uint32_t earfcn);
@@ -242,7 +242,7 @@ private:
   Ptr<LteEnbRrc> m_rrc; ///< the RRC
 
   Ptr<LteHandoverAlgorithm> m_handoverAlgorithm; ///< the handover algorithm
- 
+
   Ptr<LteAnr> m_anr; ///< ANR
 
   Ptr<LteFfrAlgorithm> m_ffrAlgorithm; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
@@ -259,7 +259,7 @@ private:
   bool m_csgIndication; ///< CSG indication
 
   std::map < uint8_t, Ptr<ComponentCarrierBaseStation> > m_ccMap; /**< ComponentCarrier map */
-  
+
   Ptr<LteEnbComponentCarrierManager> m_componentCarrierManager; ///< the component carrier manager of this eNb
 
 }; // end of class LteEnbNetDevice

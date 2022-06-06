@@ -47,7 +47,7 @@ class GroupMobilityHelper
 {
 public:
   /**
-   * Construct a group mobility helper 
+   * Construct a group mobility helper
    */
   GroupMobilityHelper ();
 
@@ -57,7 +57,7 @@ public:
   ~GroupMobilityHelper ();
 
   /**
-   * Set the position allocator which will be used to allocate the initial 
+   * Set the position allocator which will be used to allocate the initial
    * position of the reference mobility model.
    *
    * \param allocator allocate initial reference mobility model position
@@ -100,7 +100,7 @@ public:
                              std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue ());
 
   /**
-   * Set the position allocator which will be used to allocate the initial 
+   * Set the position allocator which will be used to allocate the initial
    * position of the member mobility models.
    *
    * \param allocator allocate initial member mobility model positions
@@ -188,7 +188,7 @@ public:
   /**
    * Configure the mobility model which will be installed as the
    * member (child) mobility model during GroupMobilityModel::Install.
-   * 
+   *
    * \param type the type of mobility model to use.
    * \param n1 the name of the attribute to set in the mobility model.
    * \param v1 the value of the attribute to set in the mobility model.
@@ -209,7 +209,7 @@ public:
    * \param n9 the name of the attribute to set in the mobility model.
    * \param v9 the value of the attribute to set in the mobility model.
    *
-   * Calls to MobilityHelper::Install will create an instance of a matching 
+   * Calls to MobilityHelper::Install will create an instance of a matching
    * mobility model for each node.
    */
   void SetMemberMobilityModel (std::string type,
@@ -257,8 +257,8 @@ public:
 
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by the mobility models on these nodes. Return the number of 
-   * streams (possibly zero) that have been assigned. The Install() 
+   * used by the mobility models on these nodes. Return the number of
+   * streams (possibly zero) that have been assigned. The Install()
    * method should have previously been called by the user.
    *
    * \note If the PositionAllocator used contains random variables, they

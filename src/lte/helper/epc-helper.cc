@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
 
-EpcHelper::EpcHelper () 
+EpcHelper::EpcHelper ()
 {
   NS_LOG_FUNCTION (this);
 }

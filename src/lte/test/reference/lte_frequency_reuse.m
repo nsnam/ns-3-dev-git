@@ -2,7 +2,7 @@ clear all;
 close all;
 
 fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
-ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100 
+ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 nrbs = 25; % tx bandwidth configuration in number of RBs
 dlpdBm = 30;  % tx power dBm in DL, referenceSignalPower
 dlp = 10.^((dlpdBm - 30)/10); %% tx pow in W in DL
@@ -14,7 +14,7 @@ PdschPower = 10.^((dlpdBm+ P_A - 30)/10);
 printf("Expexted Pdsch Power: %f \n", PdschPower)
 
 
-%%UPLINK 
+%%UPLINK
 %% Uplink Power Control Parameters
 Pcmax = 23;
 Pcmin = -40;
@@ -39,7 +39,7 @@ PoPusch = PoNominalPusch + PoUePusch;
 
 
 %% distances
-%%                d1  
+%%                d1
 %%  eNB1---------------------UE1
 %%
 d1 = 200;
@@ -49,22 +49,22 @@ fc = -1;
 MPusch = 6;
 
 %% pathloss
-%%             pathloss  
+%%             pathloss
 %%  eNB1---------------------UE1
-%%         
+%%
 
 pathloss = path_loss (d1, fdl);
 pathlossdB = 10.*log10(pathloss);
 pathlossdB = -pathlossdB;
 
-%% PUSCH TX POWER 
+%% PUSCH TX POWER
 PuschPowerdB = 10*log10(MPusch) + PoPusch + alpha * pathlossdB + deltaTF + fc;
 
 if (PuschPowerdB > Pcmax)
   PuschPowerdB = Pcmax;
 endif
 
-if (PuschPowerdB < Pcmin) 
+if (PuschPowerdB < Pcmin)
   PuschPowerdB = Pcmin;
 endif
 

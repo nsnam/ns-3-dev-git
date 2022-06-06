@@ -45,11 +45,11 @@ class NetDevice;
 
 /**
  * \ingroup ipv4Routing
- * \brief Abstract base class for IPv4 routing protocols. 
- * 
- * Defines two virtual functions for packet routing and forwarding.  The first, 
+ * \brief Abstract base class for IPv4 routing protocols.
+ *
+ * Defines two virtual functions for packet routing and forwarding.  The first,
  * RouteOutput(), is used for locally originated packets, and the second,
- * RouteInput(), is used for forwarding and/or delivering received packets. 
+ * RouteInput(), is used for forwarding and/or delivering received packets.
  * Also defines the signatures of four callbacks used in RouteInput().
  *
  */
@@ -82,15 +82,15 @@ public:
    * multicast or unicast.  The Linux equivalent is ip_route_output()
    *
    * The header input parameter may have an uninitialized value
-   * for the source address, but the destination address should always be 
+   * for the source address, but the destination address should always be
    * properly set by the caller.
    *
    * \param p packet to be routed.  Note that this method may modify the packet.
-   *          Callers may also pass in a null pointer. 
+   *          Callers may also pass in a null pointer.
    * \param header input parameter (used to form key to search for the route)
    * \param oif Output interface Netdevice.  May be zero, or may be bound via
    *            socket options to a particular output interface.
-   * \param sockerr Output parameter; socket errno 
+   * \param sockerr Output parameter; socket errno
    *
    * \returns a code that indicates what happened in the lookup
    */
@@ -114,10 +114,10 @@ public:
    * \param lcb Callback for the case in which the packet is to be locally
    *            delivered
    * \param ecb Callback to call if there is an error in forwarding
-   * \returns true if the Ipv4RoutingProtocol takes responsibility for 
+   * \returns true if the Ipv4RoutingProtocol takes responsibility for
    *          forwarding or delivering the packet, false otherwise
-   */ 
-  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
+   */
+  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                             LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
 
@@ -158,7 +158,7 @@ public:
 
   /**
    * \param ipv4 the ipv4 object this routing protocol is being associated with
-   * 
+   *
    * Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
    */
   virtual void SetIpv4 (Ptr<Ipv4> ipv4) = 0;

@@ -34,7 +34,7 @@ using namespace ns3;
  * Test 1.1 BuildingsPathlossModel Pathloss compound test
  *
  * This TestSuite tests the BuildingPathlossModel by reproducing
- * several communication scenarios 
+ * several communication scenarios
  */
 class BuildingsPathlossTestSuite : public TestSuite
 {

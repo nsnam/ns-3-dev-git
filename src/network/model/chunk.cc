@@ -24,7 +24,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Chunk);
 
-TypeId 
+TypeId
 Chunk::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Chunk")

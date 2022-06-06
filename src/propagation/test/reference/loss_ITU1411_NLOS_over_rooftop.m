@@ -5,7 +5,7 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb
-  
+
   assert(isscalar(f));
   assert(f > 0);
 
@@ -28,7 +28,7 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
       kd = 18;
       if (fmhz>2000)
          ka = 71.4;
-      else 
+      else
          ka = 54;
       endif
       Lbsh = -18*log10(1+Dhb);
@@ -64,7 +64,7 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
     Lori = 4- 0.114*(phi-55);
   endif
   Lrts = -8.2 -10*log10(st_w) + 10*log10(fmhz) + 20*log10(Dhm) + Lori;
-  
+
   Lbf = 32.4 +20*log10(d/1000) + 20*log10(fmhz);
   g = zeros(size(d));
   if (Lrts+Lmsd>0)
@@ -75,4 +75,4 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
   g(find(d > 0)) = L;
 
   g(find(d <= 0)) = 1;
-  
+

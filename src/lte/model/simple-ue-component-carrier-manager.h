@@ -59,7 +59,7 @@ public:
   /// let the forwarder class access the protected and private members
   friend class MemberLteUeCcmRrcSapProvider<SimpleUeComponentCarrierManager>;
   //friend class MemberLteUeCcmRrcSapUser<SimpleUeComponentCarrierManager>;
-  
+
   /// allow SimpleUeCcmMacSapProvider class friend access
   friend class SimpleUeCcmMacSapProvider;
   /// allow SimpleUeCcmMacSapUser class friend access
@@ -131,9 +131,9 @@ protected:
    *
    */
   void DoReset ();
-  
+
 protected:
-  
+
   LteMacSapUser* m_ccmMacSapUser;//!< Interface to the UE RLC instance.
   LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the UE RLC instance
 

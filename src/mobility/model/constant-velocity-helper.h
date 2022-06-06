@@ -37,12 +37,12 @@ class ConstantVelocityHelper
 {
 public:
   ConstantVelocityHelper ();
-  /** 
+  /**
    * Create object and set position
    * \param position the position vector
    */
   ConstantVelocityHelper (const Vector &position);
-  /** 
+  /**
    * Create object and set position and velocity
    * \param position the position vector
    * \param vel the velocity vector
@@ -81,12 +81,12 @@ public:
 
   /**
    * Update position, if not paused, from last position and time of last update
-   * \param rectangle 2D bounding rectangle for resulting position; object will not move outside the rectangle 
+   * \param rectangle 2D bounding rectangle for resulting position; object will not move outside the rectangle
    */
   void UpdateWithBounds (const Rectangle &rectangle) const;
   /**
    * Update position, if not paused, from last position and time of last update
-   * \param bounds 3D bounding box for resulting position; object will not move outside the box 
+   * \param bounds 3D bounding box for resulting position; object will not move outside the box
    */
   void UpdateWithBounds (const Box &bounds) const;
   /**

@@ -46,7 +46,7 @@ class Ipv6Interface;
  * \ingroup udp
  *
  * \brief A sockets interface to UDP
- * 
+ *
  * This class subclasses ns3::UdpSocket, and provides a socket interface
  * to ns3's implementation of UDP.
  *
@@ -109,7 +109,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
                                 Address &fromAddress);
-  virtual int GetSockName (Address &address) const; 
+  virtual int GetSockName (Address &address) const;
   virtual int GetPeerName (Address &address) const;
   virtual int MulticastJoinGroup (uint32_t interfaceIndex, const Address &groupAddress);
   virtual int MulticastLeaveGroup (uint32_t interfaceIndex, const Address &groupAddress);
@@ -119,7 +119,7 @@ public:
   virtual void Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilterMode filterMode, std::vector<Ipv6Address> sourceAddresses);
 
 private:
-  // Attributes set through UdpSocket base class 
+  // Attributes set through UdpSocket base class
   virtual void SetRcvBufSize (uint32_t size);
   virtual uint32_t GetRcvBufSize (void) const;
   virtual void SetIpMulticastTtl (uint8_t ipTtl);

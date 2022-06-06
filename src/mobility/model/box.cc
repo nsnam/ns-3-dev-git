@@ -24,7 +24,7 @@
 #include "ns3/fatal-error.h"
 #include <cmath>
 #include <algorithm>
-#include <sstream> 
+#include <sstream>
 
 namespace ns3 {
 

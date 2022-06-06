@@ -132,7 +132,7 @@ double MultModM (double a, double s, double c, double m)
     {
       return v += m;
     }
-  else 
+  else
     {
       return v;
     }
@@ -209,7 +209,7 @@ void MatMatModM (const Matrix A, const Matrix B,
 
 //-------------------------------------------------------------------------
 /**
- * Compute the matrix B = (A^(2^e) Mod m);  works also if A = B. 
+ * Compute the matrix B = (A^(2^e) Mod m);  works also if A = B.
  *
  * \param [in] src Matrix input argument \c A.
  * \param [out] dst Matrix output \c B.

@@ -313,7 +313,7 @@ double
 AcousticModemEnergyModel::DoGetCurrentA (void) const
 {
   NS_LOG_FUNCTION (this);
-  
+
   double supplyVoltage = m_source->GetSupplyVoltage ();
   NS_ASSERT (supplyVoltage != 0.0);
   double stateCurrent = 0.0;

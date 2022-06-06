@@ -47,7 +47,7 @@ CsmaHelper::CsmaHelper ()
   m_enableFlowControl = true;
 }
 
-void 
+void
 CsmaHelper::SetQueue (std::string type,
                       std::string n1, const AttributeValue &v1,
                       std::string n2, const AttributeValue &v2,
@@ -63,13 +63,13 @@ CsmaHelper::SetQueue (std::string type,
   m_queueFactory.Set (n4, v4);
 }
 
-void 
+void
 CsmaHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
-void 
+void
 CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
@@ -81,7 +81,7 @@ CsmaHelper::DisableFlowControl (void)
   m_enableFlowControl = false;
 }
 
-void 
+void
 CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   //
@@ -108,7 +108,7 @@ CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool prom
       filename = pcapHelper.GetFilenameFromDevice (prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, 
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out,
                                                      PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
@@ -120,10 +120,10 @@ CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool prom
     }
 }
 
-void 
+void
 CsmaHelper::EnableAsciiInternal (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
   Ptr<NetDevice> nd,
   bool explicitFilename)
 {
@@ -140,13 +140,13 @@ CsmaHelper::EnableAsciiInternal (
     }
 
   //
-  // Our default trace sinks are going to use packet printing, so we have to 
+  // Our default trace sinks are going to use packet printing, so we have to
   // make sure that is turned on.
   //
   Packet::EnablePrinting ();
 
   //
-  // If we are not provided an OutputStreamWrapper, we are expected to create 
+  // If we are not provided an OutputStreamWrapper, we are expected to create
   // one using the usual trace filename conventions and do a Hook*WithoutContext
   // since there will be one file per context and therefore the context would
   // be redundant.
@@ -154,7 +154,7 @@ CsmaHelper::EnableAsciiInternal (
   if (stream == 0)
     {
       //
-      // Set up an output stream object to deal with private ofstream copy 
+      // Set up an output stream object to deal with private ofstream copy
       // constructor and lifetime issues.  Let the helper decide the actual
       // name of the file given the prefix.
       //
@@ -192,13 +192,13 @@ CsmaHelper::EnableAsciiInternal (
   //
   // If we are provided an OutputStreamWrapper, we are expected to use it, and
   // to providd a context.  We are free to come up with our own context if we
-  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for
   // compatibility and simplicity, we just use Config::Connect and let it deal
   // with the context.
   //
-  // Note that we are going to use the default trace sinks provided by the 
+  // Note that we are going to use the default trace sinks provided by the
   // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
-  // but the default trace sinks are actually publicly available static 
+  // but the default trace sinks are actually publicly available static
   // functions that are always there waiting for just such a case.
   //
   uint32_t nodeid = nd->GetNode ()->GetId ();
@@ -263,7 +263,7 @@ CsmaHelper::Install (std::string nodeName, std::string channelName) const
   return NetDeviceContainer (InstallPriv (node, channel));
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 CsmaHelper::Install (const NodeContainer &c) const
 {
   Ptr<CsmaChannel> channel = m_channelFactory.Create ()->GetObject<CsmaChannel> ();
@@ -271,7 +271,7 @@ CsmaHelper::Install (const NodeContainer &c) const
   return Install (c, channel);
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const
 {
   NetDeviceContainer devs;
@@ -284,7 +284,7 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const
   return devs;
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 CsmaHelper::Install (const NodeContainer &c, std::string channelName) const
 {
   Ptr<CsmaChannel> channel = Names::Find<CsmaChannel> (channelName);

@@ -48,19 +48,19 @@ public:
  * \ingroup lte
  *
  * MME side of the S1-AP Service Access Point (SAP), provides the MME
- * methods to be called when an S1-AP message is received by the MME. 
+ * methods to be called when an S1-AP message is received by the MME.
  */
 class EpcS1apSapMme : public EpcS1apSap
 {
 public:
 
-  /** 
-   * 
+  /**
+   *
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
    * \param stmsi in practice, the imsi
    * \param ecgi in practice, the cell Id
-   * 
+   *
    */
   virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t stmsi, uint16_t ecgi) = 0;
 
@@ -87,8 +87,8 @@ public:
   virtual void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication ) = 0;
 
   /**
-   *  E-RAB Setup Item IEs, see 3GPP TS 36.413 9.1.4.2 
-   * 
+   *  E-RAB Setup Item IEs, see 3GPP TS 36.413 9.1.4.2
+   *
    */
   struct ErabSetupItem
   {
@@ -97,13 +97,13 @@ public:
     uint32_t    enbTeid; ///< TEID
   };
 
-  /** 
-   * INITIAL CONTEXT SETUP RESPONSE message,  see 3GPP TS 36.413 9.1.4.2 
-   * 
+  /**
+   * INITIAL CONTEXT SETUP RESPONSE message,  see 3GPP TS 36.413 9.1.4.2
+   *
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
    * \param erabSetupList
-   * 
+   *
    */
   virtual void InitialContextSetupResponse (uint64_t mmeUeS1Id,
                                             uint16_t enbUeS1Id,
@@ -112,18 +112,18 @@ public:
 
   /**
    * E-RABs Switched in Downlink Item IE, see 3GPP TS 36.413 9.1.5.8
-   * 
+   *
    */
   struct ErabSwitchedInDownlinkItem
   {
     uint16_t    erabId; ///< ERAB ID
-    Ipv4Address enbTransportLayerAddress; ///< address 
-    uint32_t    enbTeid; ///< TEID   
+    Ipv4Address enbTransportLayerAddress; ///< address
+    uint32_t    enbTeid; ///< TEID
   };
 
   /**
    * PATH SWITCH REQUEST message, see 3GPP TS 36.413 9.1.5.8
-   * 
+   *
    * \param enbUeS1Id in practice, we use the RNTI
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param gci
@@ -138,7 +138,7 @@ public:
  * \ingroup lte
  *
  * eNB side of the S1-AP Service Access Point (SAP), provides the eNB
- * methods to be called when an S1-AP message is received by the eNB. 
+ * methods to be called when an S1-AP message is received by the eNB.
  */
 class EpcS1apSapEnb : public EpcS1apSap
 {
@@ -154,13 +154,13 @@ public:
     uint32_t    sgwTeid; ///< TEID
   };
 
-  /** 
+  /**
    * Initial context setup request
-   * 
+   *
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
    * \param erabToBeSetupList
-   * 
+   *
    */
   virtual void InitialContextSetupRequest (uint64_t mmeUeS1Id,
                                            uint16_t enbUeS1Id,
@@ -169,7 +169,7 @@ public:
 
   /**
    * E-RABs Switched in Uplink Item IE, see 3GPP TS 36.413 9.1.5.9
-   * 
+   *
    */
   struct ErabSwitchedInUplinkItem
   {
@@ -180,7 +180,7 @@ public:
 
   /**
    * PATH SWITCH REQUEST ACKNOWLEDGE message, see 3GPP TS 36.413 9.1.5.9
-   * 
+   *
    * \param enbUeS1Id in practice, we use the RNTI
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param cgi
@@ -199,7 +199,7 @@ public:
 /**
  * Template for the implementation of the EpcS1apSapMme as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberEpcS1apSapMme : public EpcS1apSapMme
@@ -294,7 +294,7 @@ void MemberEpcS1apSapMme<C>::PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mme
 /**
  * Template for the implementation of the EpcS1apSapEnb as a member
  * of an owner class of type C to which all methods are forwarded
- * 
+ *
  */
 template <class C>
 class MemberEpcS1apSapEnb : public EpcS1apSapEnb

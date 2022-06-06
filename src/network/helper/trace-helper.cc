@@ -47,10 +47,10 @@ PcapHelper::~PcapHelper ()
 
 Ptr<PcapFileWrapper>
 PcapHelper::CreateFile (
-  std::string filename, 
+  std::string filename,
   std::ios::openmode filemode,
   DataLinkType dataLinkType,
-  uint32_t    snapLen, 
+  uint32_t    snapLen,
   int32_t     tzCorrection)
 {
   NS_LOG_FUNCTION (filename << filemode << dataLinkType << snapLen << tzCorrection);
@@ -65,7 +65,7 @@ PcapHelper::CreateFile (
   //
   // Note that the pcap helper promptly forgets all about the pcap file.  We
   // rely on the reference count of the file object which will soon be owned
-  // by the caller to keep the object alive.  If the caller uses the file 
+  // by the caller to keep the object alive.  If the caller uses the file
   // object to hook a trace source, ownership of the file object will be
   // implicitly transferred to the callback which keeps the object alive.
   // When the callback is destroyed (when either the trace is disconnected or
@@ -197,7 +197,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::ios::openmode fil
   //
   // Note that the ascii trace helper promptly forgets all about the trace file.
   // We rely on the reference count of the file object which will soon be owned
-  // by the caller to keep the object alive.  If the caller uses the stream 
+  // by the caller to keep the object alive.  If the caller uses the stream
   // object to hook a trace source, ownership of the stream object will be
   // implicitly transferred to the callback which keeps the object alive.
   // When the callback is destroyed (when either the trace is disconnected or
@@ -255,9 +255,9 @@ AsciiTraceHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> devi
 
 std::string
 AsciiTraceHelper::GetFilenameFromInterfacePair (
-  std::string prefix, 
-  Ptr<Object> object, 
-  uint32_t interface, 
+  std::string prefix,
+  Ptr<Object> object,
+  uint32_t interface,
   bool useObjectNames)
 {
   NS_LOG_FUNCTION (prefix << object << interface << useObjectNames);
@@ -300,7 +300,7 @@ AsciiTraceHelper::GetFilenameFromInterfacePair (
 //
 //   When a packet has been sent to a device for transmission, the device is
 //   expected to place the packet onto a transmit queue even if it does not
-//   have to delay the packet at all, if only to trigger this event.  This 
+//   have to delay the packet at all, if only to trigger this event.  This
 //   event will eventually translate into a '+' operation in the trace file.
 //
 //   This is typically implemented by hooking the "TxQueue/Enqueue" trace hook
@@ -324,7 +324,7 @@ AsciiTraceHelper::DefaultEnqueueSinkWithContext (Ptr<OutputStreamWrapper> stream
 // One of the basic default trace sink sets.  Drop:
 //
 //   When a packet has been sent to a device for transmission, the device is
-//   expected to place the packet onto a transmit queue.  If this queue is 
+//   expected to place the packet onto a transmit queue.  If this queue is
 //   full the packet will be dropped.  The device is expected to trigger an
 //   event to indicate that an outbound packet is being dropped.  This event
 //   will eventually translate into a 'd' operation in the trace file.
@@ -352,8 +352,8 @@ AsciiTraceHelper::DefaultDropSinkWithContext (Ptr<OutputStreamWrapper> stream, s
 //   When a packet has been sent to a device for transmission, the device is
 //   expected to place the packet onto a transmit queue even if it does not
 //   have to delay the packet at all.  The device removes the packet from the
-//   transmit queue when the packet is ready to send, and this dequeue will 
-//   fire a corresponding event.  This event will eventually translate into a 
+//   transmit queue when the packet is ready to send, and this dequeue will
+//   fire a corresponding event.  This event will eventually translate into a
 //   '-' operation in the trace file.
 //
 //   This is typically implemented by hooking the "TxQueue/Dequeue" trace hook
@@ -378,7 +378,7 @@ AsciiTraceHelper::DefaultDequeueSinkWithContext (Ptr<OutputStreamWrapper> stream
 //
 //   When a packet is received by a device for transmission, the device is
 //   expected to trigger this event to indicate the reception has occurred.
-//   This event will eventually translate into an 'r' operation in the trace 
+//   This event will eventually translate into an 'r' operation in the trace
 //   file.
 //
 //   This is typically implemented by hooking the "MacRx" trace hook in the
@@ -397,20 +397,20 @@ AsciiTraceHelper::DefaultReceiveSinkWithContext (Ptr<OutputStreamWrapper> stream
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-void 
+void
 PcapHelperForDevice::EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   EnablePcapInternal (prefix, nd, promiscuous, explicitFilename);
 }
 
-void 
+void
 PcapHelperForDevice::EnablePcap (std::string prefix, std::string ndName, bool promiscuous, bool explicitFilename)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
   EnablePcap (prefix, nd, promiscuous, explicitFilename);
 }
 
-void 
+void
 PcapHelperForDevice::EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
@@ -441,7 +441,7 @@ PcapHelperForDevice::EnablePcapAll (std::string prefix, bool promiscuous)
   EnablePcap (prefix, NodeContainer::GetGlobal (), promiscuous);
 }
 
-void 
+void
 PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
@@ -449,12 +449,12 @@ PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t d
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }
 
-      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), "PcapHelperForDevice::EnablePcap(): Unknown deviceid = " 
+      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), "PcapHelperForDevice::EnablePcap(): Unknown deviceid = "
                        << deviceid);
       Ptr<NetDevice> nd = node->GetDevice (deviceid);
       EnablePcap (prefix, nd, promiscuous);
@@ -465,7 +465,7 @@ PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t d
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename)
 {
   EnableAsciiInternal (Ptr<OutputStreamWrapper> (), prefix, nd, explicitFilename);
@@ -474,7 +474,7 @@ AsciiTraceHelperForDevice::EnableAscii (std::string prefix, Ptr<NetDevice> nd, b
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd)
 {
   EnableAsciiInternal (stream, std::string (), nd, false);
@@ -483,7 +483,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<Net
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, std::string ndName, bool explicitFilename)
 {
   EnableAsciiImpl (Ptr<OutputStreamWrapper> (), prefix, ndName, explicitFilename);
@@ -492,7 +492,7 @@ AsciiTraceHelperForDevice::EnableAscii (std::string prefix, std::string ndName, 
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, std::string ndName)
 {
   EnableAsciiImpl (stream, std::string (), ndName, false);
@@ -501,10 +501,10 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, std::st
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAsciiImpl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
   std::string ndName,
   bool explicitFilename)
 {
@@ -515,7 +515,7 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, NetDeviceContainer d)
 {
   EnableAsciiImpl (Ptr<OutputStreamWrapper> (), prefix, d);
@@ -524,7 +524,7 @@ AsciiTraceHelperForDevice::EnableAscii (std::string prefix, NetDeviceContainer d
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d)
 {
   EnableAsciiImpl (stream, std::string (), d);
@@ -533,7 +533,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, NetDevi
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, NetDeviceContainer d)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
@@ -600,7 +600,7 @@ AsciiTraceHelperForDevice::EnableAsciiAll (Ptr<OutputStreamWrapper> stream)
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid)
 {
   EnableAsciiImpl (stream, std::string (), nodeid, deviceid, false);
@@ -609,10 +609,10 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAscii (
-  std::string prefix, 
-  uint32_t nodeid, 
+  std::string prefix,
+  uint32_t nodeid,
   uint32_t deviceid,
   bool explicitFilename)
 {
@@ -622,11 +622,11 @@ AsciiTraceHelperForDevice::EnableAscii (
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForDevice::EnableAsciiImpl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
-  uint32_t nodeid, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
+  uint32_t nodeid,
   uint32_t deviceid,
   bool explicitFilename)
 {
@@ -635,12 +635,12 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }
 
-      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), 
+      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (),
                        "AsciiTraceHelperForDevice::EnableAscii(): Unknown deviceid = " << deviceid);
 
       Ptr<NetDevice> nd = node->GetDevice (deviceid);

@@ -42,7 +42,7 @@ output from Packet::Print and Packet::Print.
 
 Also, developers often want to store data in packet objects that is not found
 in the real packets (such as timestamps or flow-ids). The Packet class
-deals with this requirement by storing a set of tags (class Tag).  
+deals with this requirement by storing a set of tags (class Tag).
 We have found two classes of use cases for these tags, which leads to
 two different types of tags. So-called 'byte' tags are used to tag a subset of
 the bytes in the packet byte buffer while 'packet' tags are used to tag the
@@ -55,7 +55,7 @@ written once, read many times, and removed exactly once. An example of a 'byte'
 tag is a FlowIdTag which contains a flow id and is set by the application
 generating traffic. An example of a 'packet' tag is a cross-layer QoS class id
 set by an application and processed by a lower-level MAC layer.
- 
+
 Memory management of Packet objects is entirely automatic and extremely
 efficient: memory for the application-level payload can be modeled by a virtual
 buffer of zero-filled bytes for which memory is never allocated unless
@@ -68,7 +68,7 @@ Packets (messages) are fundamental objects in the simulator and
 their design is important from a performance and resource management
 perspective. There are various ways to design the simulation packet, and
 tradeoffs among the different approaches. In particular, there is a tension
-between ease-of-use, performance, and safe interface design. 
+between ease-of-use, performance, and safe interface design.
 
 Packet design overview
 **********************
@@ -88,12 +88,12 @@ packet Tags, and a PacketMetadata object:
   data structures in the packet.  Each Tag is uniquely identified by its type;
   only one instance of each type of data structure is allowed in a list of tags.
   These tags typically contain per-packet cross-layer information or flow
-  identifiers (i.e., things that you wouldn't find in the bits on the wire). 
+  identifiers (i.e., things that you wouldn't find in the bits on the wire).
 
 .. _packets:
 
 .. figure:: figures/packet.*
-   
+
    Implementation overview of Packet class.
 
 Figure :ref:`packets` is a high-level overview of the Packet implementation;
@@ -113,7 +113,7 @@ designed to avoid the overhead of a vtable in class Packet.
 
 The Packet class is designed to be copied cheaply; the overall design
 is based on Copy on Write (COW).  When there are multiple references
-to a packet object, and there is an operation on one of them, only 
+to a packet object, and there is an operation on one of them, only
 so-called "dirty" operations will trigger a deep copy of the packet:
 
 * ``ns3::Packet::AddHeader()``
@@ -131,7 +131,7 @@ virtual methods listed below:
 * ``ns3::Header::SerializeTo()``
 * ``ns3::Header::DeserializeFrom()``
 * ``ns3::Header::GetSerializedSize()``
-* ``ns3::Header::PrintTo()`` 
+* ``ns3::Header::PrintTo()``
 
 Basically, the first three functions are used to serialize and deserialize
 protocol control information to/from a Buffer. For example, one may define
@@ -147,7 +147,7 @@ output stream.
 Similarly, user-defined Tags can be appended to the packet. Unlike Headers,
 Tags are not serialized into a contiguous buffer but are stored in lists. Tags
 can be flexibly defined to be any type, but there can only be one instance of
-any particular object type in the Tags buffer at any time.  
+any particular object type in the Tags buffer at any time.
 
 Using the packet interface
 **************************
@@ -184,7 +184,7 @@ created::
 
   Ptr<Packet> pkt = Create<Packet> (N);
 
-where N is a positive integer.  
+where N is a positive integer.
 
 The packet now has a size of N bytes, which can be verified by the GetSize()
 method::
@@ -231,7 +231,7 @@ must inherit from class Header, and implement the following methods:
 
 To see a simple example of how these are done, look at the UdpHeader class
 headers src/internet/model/udp-header.cc. There are many other examples within
-the source code. 
+the source code.
 
 Once you have a header (or you have a preexisting header), the following
 Packet API can be used to add or remove such headers.::
@@ -239,7 +239,7 @@ Packet API can be used to add or remove such headers.::
   /**
    * Add header to this packet. This method invokes the
    * Header::GetSerializedSize and Header::Serialize
-   * methods to reserve space in the buffer and request the 
+   * methods to reserve space in the buffer and request the
    * header to serialize itself in the packet buffer.
    *
    * \param header a reference to the header to add to this packet.
@@ -274,7 +274,7 @@ For instance, here are the typical operations to add and remove a UDP header.::
  ...
  // remove header
  UdpHeader udpHeader;
- packet->RemoveHeader (udpHeader); 
+ packet->RemoveHeader (udpHeader);
  // Read udpHeader fields as needed
 
 If the header is variable-length, then another variant of RemoveHeader() is
@@ -334,12 +334,12 @@ behavior of packet tags and byte tags.
   single packet (AddPacketTag () and RemovePacketTag ()). The packet However,
   once a byte tag is added, it can only be removed by stripping all byte tags
   from the packet. Removing one of possibly multiple byte tags is not supported
-  by the current API.  
+  by the current API.
 
 If a user wants to take an existing packet object and reuse it as a new packet,
 he or she should remove all byte tags and packet tags before doing so. An
 example is the UdpEchoServer class, which takes the received packet and "turns
-it around" to send back to the echo client. 
+it around" to send back to the echo client.
 
 The Packet API for byte tags is given below.::
 
@@ -349,7 +349,7 @@ The Packet API for byte tags is given below.::
    * Tag each byte included in this packet with the
    * new tag.
    *
-   * Note that adding a tag is a const operation which is pretty 
+   * Note that adding a tag is a const operation which is pretty
    * un-intuitive. The rationale is that the content and behavior of
    * a packet is _not_ changed when a tag is added to a packet: any
    * code which was not aware of the new tag is going to work just
@@ -369,11 +369,11 @@ The Packet API for byte tags is given below.::
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
    *
-   * If the requested tag type is found, it is copied in the user's 
+   * If the requested tag type is found, it is copied in the user's
    * provided tag instance.
    */
   bool FindFirstMatchingByteTag (Tag &tag) const;
-  
+
   /**
    * Remove all the tags stored in this packet.
    */
@@ -421,7 +421,7 @@ The Packet API for packet tags is given below.::
    * Remove all packet tags.
    */
   void RemoveAllPacketTags (void);
-  
+
   /**
    * \param os the stream in which we want to print data.
    *
@@ -431,7 +431,7 @@ The Packet API for packet tags is given below.::
    *  Packet::RemoveAllPacketTags
    */
   void PrintPacketTags (std::ostream &os) const;
-  
+
   /**
    * \returns an object which can be used to iterate over the list of
    *  packet tags.
@@ -554,7 +554,7 @@ The byte buffer is implemented as follows: ::
         uint32_t m_dirtyStart;
         uint32_t m_dirtySize;
         uint8_t m_data[1];
-    }; 
+    };
     struct BufferData *m_data;
     uint32_t m_zeroAreaSize;
     uint32_t m_start;
@@ -577,7 +577,7 @@ The byte buffer is implemented as follows: ::
 .. _buffer:
 
 .. figure:: figures/buffer.*
-   
+
    Implementation overview of a packet's byte Buffer.
 
 
@@ -593,10 +593,10 @@ Tags implementation
 
 (XXX revise me)
 
-Tags are implemented by a single pointer which points to the start of a 
-linked list ofTagData data structures. Each TagData structure points 
-to the next TagData in the list (its next pointer contains zero to 
-indicate the end of the linked list). Each TagData contains an integer 
+Tags are implemented by a single pointer which points to the start of a
+linked list ofTagData data structures. Each TagData structure points
+to the next TagData in the list (its next pointer contains zero to
+indicate the end of the linked list). Each TagData contains an integer
 unique id which identifies the type of the tag stored in the TagData.::
 
     struct TagData {
@@ -605,7 +605,7 @@ unique id which identifies the type of the tag stored in the TagData.::
         uint32_t m_count;
         uint8_t m_data[Tags::SIZE];
     };
-    class Tags {        
+    class Tags {
         struct TagData *m_next;
     };
 
@@ -618,7 +618,7 @@ copying the TagData head pointer and incrementing its reference count.
 
 Tags are found by the unique mapping between the Tag type and
 its underlying id. This is why at most one instance of any Tag
-can be stored in a packet. The mapping between Tag type and 
+can be stored in a packet. The mapping between Tag type and
 underlying id is performed by a registration as follows::
 
     /* A sample Tag implementation

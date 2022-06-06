@@ -33,8 +33,8 @@ namespace ns3 {
 
 /**
  * \ingroup lte
- * The LteSimpleNetDevice class implements the LTE simple net device. 
- * This class is used to provide a limited LteNetDevice functionalities that 
+ * The LteSimpleNetDevice class implements the LTE simple net device.
+ * This class is used to provide a limited LteNetDevice functionalities that
  * are necessary for testing purposes.
  */
 class LteSimpleNetDevice : public SimpleNetDevice

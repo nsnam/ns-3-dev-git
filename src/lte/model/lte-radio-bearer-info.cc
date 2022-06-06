@@ -38,8 +38,8 @@ LteRadioBearerInfo::LteRadioBearerInfo (void)
 LteRadioBearerInfo::~LteRadioBearerInfo (void)
 {
 }
-  
-TypeId 
+
+TypeId
 LteRadioBearerInfo::GetTypeId (void)
 {
   static TypeId
@@ -50,9 +50,9 @@ LteRadioBearerInfo::GetTypeId (void)
     ;
   return tid;
 }
-  
-  
-TypeId 
+
+
+TypeId
 LteDataRadioBearerInfo::GetTypeId (void)
 {
   static TypeId
@@ -88,7 +88,7 @@ LteDataRadioBearerInfo::GetTypeId (void)
 }
 
 
-TypeId 
+TypeId
 LteSignalingRadioBearerInfo::GetTypeId (void)
 {
   static TypeId

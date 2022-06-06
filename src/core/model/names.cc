@@ -249,7 +249,7 @@ public:
   Ptr<Object> Find (Ptr<Object> context, std::string name);
 
 private:
-  
+
   /**
    * Check if an object has a name.
    *

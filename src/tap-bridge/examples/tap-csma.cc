@@ -69,7 +69,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TapCsmaExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   std::string mode = "ConfigureLocal";

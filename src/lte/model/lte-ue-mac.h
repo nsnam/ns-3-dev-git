@@ -89,7 +89,7 @@ public:
   * \return a pointer to the LTE CMAC SAP provider
   */
   LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
-  
+
   /**
   * \brief Set the component carried ID
   * \param index the component carrier ID
@@ -107,7 +107,7 @@ public:
   * \param s a pointer to the PHY SAP Provider
   */
   void SetLteUePhySapProvider (LteUePhySapProvider* s);
-  
+
   /**
   * \brief Forwarded from LteUePhySapUser: trigger the start from a new frame
   *
@@ -209,7 +209,7 @@ private:
   * \param msg the LTE control message
   */
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
-  
+
   // internal methods
   /// Randomly select and send RA preamble function
   void RandomlySelectAndSendRaPreamble ();
@@ -259,13 +259,13 @@ private:
 
   LteUePhySapProvider* m_uePhySapProvider; ///< UE Phy SAP provider
   LteUePhySapUser* m_uePhySapUser; ///< UE Phy SAP user
-  
+
   std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters> m_ulBsrReceived; ///< BSR received from RLC (the last one)
-  
-  
+
+
   Time m_bsrPeriodicity; ///< BSR periodicity
   Time m_bsrLast; ///< BSR last
-  
+
   bool m_freshUlBsr; ///< true when a BSR has been received in the last TTI
 
   uint8_t m_harqProcessId; ///< HARQ process ID

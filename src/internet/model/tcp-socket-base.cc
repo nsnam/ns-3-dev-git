@@ -2265,7 +2265,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       m_tcb->m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
       m_tcb->m_highTxMark = ++m_tcb->m_nextTxSequence;
       m_txBuffer->SetHeadSequence (m_tcb->m_nextTxSequence);
-      // Before sending packets, update the pacing rate based on RTT measurement so far 
+      // Before sending packets, update the pacing rate based on RTT measurement so far
       UpdatePacingRate ();
       SendEmptyPacket (TcpHeader::ACK);
 
@@ -2303,7 +2303,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 /* Received a packet upon SYN_RCVD */
 void
 TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
-                               const Address& fromAddress, 
+                               const Address& fromAddress,
                                [[maybe_unused]] const Address& toAddress)
 {
   NS_LOG_FUNCTION (this << tcpHeader);
@@ -4505,7 +4505,7 @@ TcpSocketBase::UpdatePacingRate (void)
     }
   Time lastRtt = m_tcb->m_lastRtt.Get (); // Get underlying Time value
   NS_LOG_DEBUG ("Last RTT is " << lastRtt.GetSeconds ());
-  
+
   // Multiply by 8 to convert from bytes per second to bits per second
   DataRate pacingRate ((std::max (m_tcb->m_cWnd, m_tcb->m_bytesInFlight) * 8 * factor) / lastRtt.GetSeconds ());
   if (pacingRate < m_tcb->m_maxPacingRate)

@@ -67,14 +67,14 @@ public:
    * Set peer close function
    * \param localLinkID the local link id
    * \param peerLinkId the peer link id
-   * \param reasonCode the reason code 
-   */   
+   * \param reasonCode the reason code
+   */
   void SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
   /**
    * Set peer confirm function
    * \param localLinkID the local link id
    * \param peerLinkId the peer link id
-   */   
+   */
   void SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
 
   /**
@@ -90,7 +90,7 @@ public:
   /**
    * Get peer link ID function
    * \returns the peer link ID
-   */ 
+   */
   uint16_t GetPeerLinkId () const;
   /**
    * Subtype is open function

@@ -179,7 +179,7 @@ and we can see the edits with git diff:
    @@ -1439,6 +1439,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           // There is a DupAck
           ++m_dupAckCount;
-   
+
    +      // I'm introducing a subtle bug!
    +
    +      m_tcb->m_cWnd = m_tcb->m_ssThresh;
@@ -250,7 +250,7 @@ Submit work for review
 **********************
 
 After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html
-to create a merge request. 
+to create a merge request.
 
 GitLab CI (Continous Integration)
 +++++++++++++++++++++++++++++++++
@@ -380,7 +380,7 @@ Make a commit of these files:
 Next, make the following change to RELEASE_NOTES and commit it:
 
 ::
-  
+
    Availability
    ------------
   -This release is not yet available.
@@ -390,7 +390,7 @@ Next, make the following change to RELEASE_NOTES and commit it:
   $ git commit -m"Update availability in RELEASE_NOTES" RELEASE_NOTES
 
 Finally, add a git annotated tag:
-  
+
 ::
 
   $ git tag -a 'ns-3.34' -m"ns-3.34 release"
@@ -466,7 +466,7 @@ are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual::
   ... (now fix a really important bug)
   $ echo 'abc' >> a
   $ git commit -m"Fix missing abc bug on file a" a
-  
+
 
 Now the tree looks like this::
 
@@ -543,10 +543,10 @@ We can next hand-edit these files to restore them to original state, so that::
 
 The new log should show something like the below, with parallel git
 history paths until the merge back again::
-  
+
   $ git log --graph --decorate --oneline --all
   *   815ce6e (HEAD -> master) Merge branch 'ns-3.34.1-release'
-  |\  
+  |\
   | * 12a29ca (tag: ns-3.34.1) Update VERSION to 3.34.1
   | * 21ebdbf Fix missing abc bug on file a
   * | ee37d41 Fix missing abc bug on file a
@@ -554,8 +554,8 @@ history paths until the merge back again::
   * | ba28d6d Add new feature
   * | e50015a make some changes
   * |   fd075f6 Merge ns-3.34-release branch
-  |\ \  
-  | |/  
+  |\ \
+  | |/
   | * 3fab3cf (tag: ns-3.34) Update availability in RELEASE_NOTES
   | * c50aaf7 Update VERSION and documentation tags for ns-3.34 release
   |/

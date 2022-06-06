@@ -3,7 +3,7 @@
  * Copyright (c) 2014 Universita' degli Studi di Napoli "Federico II"
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiTxCurrentModel");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiTxCurrentModel);
 
-TypeId 
+TypeId
 WifiTxCurrentModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiTxCurrentModel")
@@ -49,7 +49,7 @@ WifiTxCurrentModel::~WifiTxCurrentModel()
 
 NS_OBJECT_ENSURE_REGISTERED (LinearWifiTxCurrentModel);
 
-TypeId 
+TypeId
 LinearWifiTxCurrentModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LinearWifiTxCurrentModel")

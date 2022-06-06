@@ -30,17 +30,17 @@ class Socket;
  * \ingroup socket
  * \ingroup tcp
  *
- * \brief API to create TCP socket instances 
+ * \brief API to create TCP socket instances
  *
  * This abstract class defines the API for TCP sockets.
  * This class also holds the global default variables used to
  * initialize newly created sockets, such as values that are
  * set through the sysctl or proc interfaces in Linux.
 
- * All TCP socket factory implementations must provide an implementation 
+ * All TCP socket factory implementations must provide an implementation
  * of CreateSocket
  * below, and should make use of the default values configured below.
- * 
+ *
  * \see TcpSocketFactoryImpl
  *
  */

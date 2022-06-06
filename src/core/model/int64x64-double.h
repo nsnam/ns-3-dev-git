@@ -241,7 +241,7 @@ public:
 
   /**
    * Truncate to an integer.
-   * Truncation is always toward zero, 
+   * Truncation is always toward zero,
    * \return The value truncated toward zero.
    */
   int64_t GetInt (void) const
@@ -289,7 +289,7 @@ public:
   }
 
 private:
-  
+
   /**
    * \name Arithmetic Operators
    * Arithmetic operators for int64x64_t.

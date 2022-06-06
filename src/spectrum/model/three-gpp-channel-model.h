@@ -138,7 +138,7 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
-  
+
 protected:
   /**
    * Wrap an (azimuth, inclination) angle pair in a valid range.
@@ -224,7 +224,7 @@ protected:
     double m_rTau = 0; //!< Delay scaling parameter
     double m_uXpr = 0; //!< Mean of Cross-Polarization Ratio
     double m_sigXpr = 0; //!< Standard deviation of Cross-Polarization Ratio
-    double m_perClusterShadowingStd = 0; //!< Per cluster shadowing standard deviation 
+    double m_perClusterShadowingStd = 0; //!< Per cluster shadowing standard deviation
     double m_sqrtC[7][7]; //!< The square root matrix and follows the order of [SF, K, DS, ASD, ASA, ZSD, ZSA]
   };
 

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
@@ -24,7 +24,7 @@ namespace ns3 {
 
 /**
  * \ingroup configstore
- * \brief A class that provides a GTK-based front end to ns3::ConfigStore 
+ * \brief A class that provides a GTK-based front end to ns3::ConfigStore
  *
  */
 class GtkConfigStore

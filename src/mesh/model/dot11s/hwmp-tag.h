@@ -51,7 +51,7 @@ public:
   HwmpTag ();
   ~HwmpTag ();
   /**
-   * Set address 
+   * Set address
    * \param retransmitter the MAC address of the retransmitter
    */
   void SetAddress (Mac48Address retransmitter);
@@ -61,7 +61,7 @@ public:
    */
   Mac48Address GetAddress ();
   /**
-   * Set the TTL value 
+   * Set the TTL value
    * \param ttl
    */
   void SetTtl (uint8_t ttl);
@@ -71,7 +71,7 @@ public:
    */
   uint8_t GetTtl ();
   /**
-   * Set the metric value 
+   * Set the metric value
    * \param metric the metric
    */
   void SetMetric (uint32_t metric);

@@ -744,7 +744,7 @@ private:
   friend typename std::enable_if<std::is_integral<T>::value, Time>::type
   operator * (const Time& lhs, T rhs);
 
-  // Reversed arg version (forwards to `rhs * lhs`) 
+  // Reversed arg version (forwards to `rhs * lhs`)
   // Accepts both integers and decimal types
   template<class T>
   friend typename std::enable_if<std::is_arithmetic<T>::value, Time>::type
@@ -946,16 +946,16 @@ operator * (const int64x64_t & lhs, const Time & rhs)
  *
  * \tparam T Integer data type (int, long, etc.)
  *
- * \param [in] lhs The Time instance to scale 
+ * \param [in] lhs The Time instance to scale
  * \param [in] rhs The scale value
- * \returns A new Time instance containing the scaled value 
+ * \returns A new Time instance containing the scaled value
  */
 template<class T>
 typename std::enable_if<std::is_integral<T>::value, Time>::type
 operator * (const Time& lhs, T rhs)
 {
   static_assert(!std::is_same<T, bool>::value,
-                "Multiplying a Time by a boolean is not supported"); 
+                "Multiplying a Time by a boolean is not supported");
 
   return Time (lhs.m_data * rhs);
 }
@@ -977,9 +977,9 @@ operator * (const Time& lhs, T rhs)
  *
  * \tparam T Arithmetic data type (int, long, float, etc.)
  *
- * \param [in] lhs The scale value 
- * \param [in] rhs The Time instance to scale 
- * \returns A new Time instance containing the scaled value 
+ * \param [in] lhs The scale value
+ * \param [in] rhs The Time instance to scale
+ * \returns A new Time instance containing the scaled value
  */
 template<class T>
 typename std::enable_if<std::is_arithmetic<T>::value, Time>::type
@@ -1033,16 +1033,16 @@ operator / (const Time & lhs, const int64x64_t & rhs)
  *
  * \tparam T Integer data type (int, long, etc.)
  *
- * \param [in] lhs The Time instance to scale 
+ * \param [in] lhs The Time instance to scale
  * \param [in] rhs The scale value
- * \returns A new Time instance containing the scaled value 
+ * \returns A new Time instance containing the scaled value
  */
 template<class T>
 typename std::enable_if<std::is_integral<T>::value, Time>::type
 operator / (const Time& lhs, T rhs)
 {
   static_assert(!std::is_same<T, bool>::value,
-                "Dividing a Time by a boolean is not supported"); 
+                "Dividing a Time by a boolean is not supported");
 
   return Time(lhs.m_data / rhs);
 }

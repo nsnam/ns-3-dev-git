@@ -48,12 +48,12 @@ class PacketSocketAddress;
  * is very similar to the linux and BSD "packet" sockets.
  *
  * Here is a summary of the semantics of this class:
- * - Bind: Bind uses only the protocol and device fields of the 
- *       PacketSocketAddress. If none are provided, Bind uses 
+ * - Bind: Bind uses only the protocol and device fields of the
+ *       PacketSocketAddress. If none are provided, Bind uses
  *       zero for both, which means that the socket is bound
  *       to all protocols on all devices on the node.
  *
- * - Connect: uses only the protocol, device and "physical address" 
+ * - Connect: uses only the protocol, device and "physical address"
  *       field of the PacketSocketAddress. It is used to set the default
  *       destination address for outgoing packets.
  *
@@ -61,11 +61,11 @@ class PacketSocketAddress;
  *       with the default destination address. The socket must
  *       be bound and connected.
  *
- * - SendTo: uses the protocol, device, and "physical address" 
- *       fields of the PacketSocketAddress. The device value is 
- *       used to specialize the packet transmission to a single 
+ * - SendTo: uses the protocol, device, and "physical address"
+ *       fields of the PacketSocketAddress. The device value is
+ *       used to specialize the packet transmission to a single
  *       device, the protocol value specifies the protocol of this
- *       packet only and the "physical address" field is used to override the 
+ *       packet only and the "physical address" field is used to override the
  *       default destination address. The socket must be bound.
  *
  * - Recv: The address represents the address of the packer originator.
@@ -147,7 +147,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
                                 Address &fromAddress);
-  virtual int GetSockName (Address &address) const; 
+  virtual int GetSockName (Address &address) const;
   virtual int GetPeerName (Address &address) const;
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
@@ -163,7 +163,7 @@ private:
    * \param to destination address
    * \param packetType packet type
    */
-  void ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 
+  void ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
                   uint16_t protocol, const Address &from, const Address &to,
                   NetDevice::PacketType packetType);
   /**
@@ -229,7 +229,7 @@ public:
    */
   void SetPacketType (NetDevice::PacketType t);
   /**
-   * Get the packet type 
+   * Get the packet type
    * @return the packet type of the corresponding packet
    */
   NetDevice::PacketType GetPacketType (void) const;

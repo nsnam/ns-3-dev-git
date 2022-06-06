@@ -73,12 +73,12 @@ int main (int argc, char *argv[])
 
 
   // NOTE: the PropagationLoss trace source of the SpectrumChannel
-  // works only for single-frequency path loss model.  
+  // works only for single-frequency path loss model.
   // e.g., it will work with the following models:
-  // ns3::FriisPropagationLossModel, 
-  // ns3::TwoRayGroundPropagationLossModel, 
+  // ns3::FriisPropagationLossModel,
+  // ns3::TwoRayGroundPropagationLossModel,
   // ns3::LogDistancePropagationLossModel,
-  // ns3::ThreeLogDistancePropagationLossModel, 
+  // ns3::ThreeLogDistancePropagationLossModel,
   // ns3::NakagamiPropagationLossModel
   // ns3::BuildingsPropagationLossModel
   // etc.
@@ -86,7 +86,7 @@ int main (int argc, char *argv[])
   // ns3::FriisSpectrumPropagationLossModel
   // ns3::ConstantSpectrumPropagationLossModel
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
-  
+
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -161,7 +161,7 @@ int main (int argc, char *argv[])
   Config::Connect ("/ChannelList/0/PathLoss",
                    MakeCallback (&DownlinkLteGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
   Config::Connect ("/ChannelList/1/PathLoss",
-                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
+                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb));
 
   Simulator::Run ();
 

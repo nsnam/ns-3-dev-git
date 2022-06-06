@@ -155,7 +155,7 @@ LtePdcp::GetLteRlcSapUser ()
   return m_rlcSapUser;
 }
 
-LtePdcp::Status 
+LtePdcp::Status
 LtePdcp::GetStatus ()
 {
   Status s;
@@ -164,7 +164,7 @@ LtePdcp::GetStatus ()
   return s;
 }
 
-void 
+void
 LtePdcp::SetStatus (Status s)
 {
   m_txSequenceNumber = s.txSn;

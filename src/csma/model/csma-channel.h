@@ -34,10 +34,10 @@ class CsmaNetDevice;
 
 /**
  * \ingroup csma
- * \brief CsmaNetDevice Record 
+ * \brief CsmaNetDevice Record
  *
  * Stores the information related to each net device that is
- * connected to the channel. 
+ * connected to the channel.
  */
 class CsmaDeviceRec {
 public:
@@ -69,7 +69,7 @@ public:
 
 /**
  * Current state of the channel
- */ 
+ */
 enum WireState
 {
   IDLE,            /**< Channel is IDLE, no packet is being transmitted */
@@ -87,7 +87,7 @@ enum WireState
  * take into account the distances between stations or the speed of
  * light to determine collisions.
  */
-class CsmaChannel : public Channel 
+class CsmaChannel : public Channel
 {
 public:
 

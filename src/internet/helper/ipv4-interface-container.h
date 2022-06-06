@@ -34,16 +34,16 @@ namespace ns3 {
  * \brief holds a vector of std::pair of Ptr<Ipv4> and interface index.
  *
  * Typically ns-3 Ipv4Interfaces are installed on devices using an Ipv4 address
- * helper.  The helper's Assign() method takes a NetDeviceContainer which holds 
- * some number of Ptr<NetDevice>.  For each of the NetDevices in the 
+ * helper.  The helper's Assign() method takes a NetDeviceContainer which holds
+ * some number of Ptr<NetDevice>.  For each of the NetDevices in the
  * NetDeviceContainer the helper will find the associated Ptr<Node> and
- * Ptr<Ipv4>.  It makes sure that an interface exists on the node for the 
+ * Ptr<Ipv4>.  It makes sure that an interface exists on the node for the
  * device and then adds an Ipv4Address according to the address helper settings
  * (incrementing the Ipv4Address somehow as it goes).  The helper then converts
- * the Ptr<Ipv4> and the interface index to a std::pair and adds them to a 
+ * the Ptr<Ipv4> and the interface index to a std::pair and adds them to a
  * container -- a container of this type.
  *
- * The point is then to be able to implicitly associate an index into the 
+ * The point is then to be able to implicitly associate an index into the
  * original NetDeviceContainer (that identifies a particular net device) with
  * an identical index into the Ipv4InterfaceContainer that has a std::pair with
  * the Ptr<Ipv4> and interface index you need to play with the interface.
@@ -71,12 +71,12 @@ public:
   void Add (const Ipv4InterfaceContainer& other);
 
   /**
-   * \brief Get an iterator which refers to the first pair in the 
+   * \brief Get an iterator which refers to the first pair in the
    * container.
    *
    * Pairs can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the pairs
    *
    * \code
@@ -93,12 +93,12 @@ public:
   Iterator Begin (void) const;
 
   /**
-   * \brief Get an iterator which indicates past-the-last Node in the 
+   * \brief Get an iterator which indicates past-the-last Node in the
    * container.
    *
    * Nodes can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the Nodes
    *
    * \code
@@ -115,7 +115,7 @@ public:
   Iterator End (void) const;
 
   /**
-   * \returns the number of Ptr<Ipv4> and interface pairs stored in this 
+   * \returns the number of Ptr<Ipv4> and interface pairs stored in this
    * Ipv4InterfaceContainer.
    *
    * Pairs can be retrieved from the container in two ways.  First,
@@ -142,8 +142,8 @@ public:
    * \param j interface address index (if interface has multiple addresses)
    * \returns the IPv4 address of the j'th address of the interface
    *  corresponding to index i.
-   * 
-   * If the second parameter is omitted, the zeroth indexed address of 
+   *
+   * If the second parameter is omitted, the zeroth indexed address of
    * the interface is returned.  Unless IP aliasing is being used on
    * the interface, the second parameter may typically be omitted.
    */
@@ -166,7 +166,7 @@ public:
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
-   * Manually add an entry to the container consisting of a previously composed 
+   * Manually add an entry to the container consisting of a previously composed
    * entry std::pair.
    *
    * \param ipInterfacePair the pair of a pointer to Ipv4 object and interface index of the Ipv4Interface to add to the container
@@ -184,7 +184,7 @@ public:
   void Add (std::string ipv4Name, uint32_t interface);
 
   /**
-   * Get the std::pair of an Ptr<Ipv4> and interface stored at the location 
+   * Get the std::pair of an Ptr<Ipv4> and interface stored at the location
    * specified by the index.
    *
    * \param i the index of the container entry to retrieve.

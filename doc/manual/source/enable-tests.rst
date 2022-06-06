@@ -23,7 +23,7 @@ Enable/disable examples and tests using build.py
 
 You can use build.py to enable/disable examples and tests when |ns3| is built for the first time.
 
-By default, examples and tests are not built in |ns3|.  
+By default, examples and tests are not built in |ns3|.
 
 From the ns-3-allinone directory, you can build |ns3| without any
 examples or tests simply by doing: ::
@@ -31,7 +31,7 @@ examples or tests simply by doing: ::
   $ ./build.py
 
 Running test.py in the top level |ns3| directory now will cause no examples or tests to be run:
- 
+
 .. sourcecode:: text
 
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -41,7 +41,7 @@ If you would like build |ns3| with examples and tests, then do the following fro
   $ ./build.py --enable-examples --enable-tests
 
 Running test.py in the top level |ns3| directory will cause all of the examples and tests to be run:
- 
+
 .. sourcecode:: text
 
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -51,7 +51,7 @@ Enable/disable examples and tests using ns3
 
 You can use ns3 to enable/disable examples and tests once |ns3| has been built.
 
-By default, examples and tests are not built in |ns3|.  
+By default, examples and tests are not built in |ns3|.
 
 From the top level |ns3| directory, you can build |ns3| without any
 examples or tests simply by doing: ::
@@ -60,7 +60,7 @@ examples or tests simply by doing: ::
   $ ./ns3 build
 
 Running test.py now will cause no examples or tests to be run:
- 
+
 .. sourcecode:: text
 
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -71,7 +71,7 @@ If you would like build |ns3| with examples and tests, then do the following fro
   $ ./ns3 build
 
 Running test.py will cause all of the examples and tests to be run:
- 
+
 .. sourcecode:: text
 
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -101,16 +101,16 @@ The .ns3rc file should now be in your top level |ns3| directory, and it contains
 .. sourcecode:: python
 
   #! /usr/bin/env python
-  
+
   # A list of the modules that will be enabled when ns-3 is run.
   # Modules that depend on the listed modules will be enabled also.
   #
   # All modules can be enabled by choosing 'all_modules'.
   modules_enabled = ['all_modules']
-  
+
   # Set this equal to true if you want examples to be run.
   examples_enabled = False
-  
+
   # Set this equal to true if you want tests to be run.
   tests_enabled = False
 
@@ -121,7 +121,7 @@ examples or tests simply by doing: ::
   $ ./ns3 build
 
 Running test.py now will cause no examples or tests to be run:
- 
+
 .. sourcecode:: text
 
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -133,16 +133,16 @@ examples_enabled and tests_enabled file to be True:
 .. sourcecode:: python
 
   #! /usr/bin/env python
-  
+
   # A list of the modules that will be enabled when ns-3 is run.
   # Modules that depend on the listed modules will be enabled also.
   #
   # All modules can be enabled by choosing 'all_modules'.
   modules_enabled = ['all_modules']
-  
+
   # Set this equal to true if you want examples to be run.
   examples_enabled = True
-  
+
   # Set this equal to true if you want tests to be run.
   tests_enabled = True
 
@@ -153,7 +153,7 @@ and tests simply by doing: ::
   $ ./ns3 build
 
 Running test.py will cause all of the examples and tests to be run:
- 
+
 .. sourcecode:: text
 
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)

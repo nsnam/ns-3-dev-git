@@ -120,7 +120,7 @@ private:
   uint8_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
   uint8_t m_dlEdgeSubBandOffset; ///< DL edge subband offset
   uint8_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
- 
+
   uint8_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
   uint8_t m_ulEdgeSubBandOffset; ///< UL edge subband offset
   uint8_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
@@ -152,7 +152,7 @@ private:
   uint8_t m_edgeSubBandThreshold; ///< edge subband threshold
 
   uint8_t m_centerAreaPowerOffset; ///< center area power offset
-  uint8_t m_mediumAreaPowerOffset; ///< medium area power offset 
+  uint8_t m_mediumAreaPowerOffset; ///< medium area power offset
   uint8_t m_edgeAreaPowerOffset; ///< edge area power offset
 
   uint8_t m_centerAreaTpc; ///< center area tpc

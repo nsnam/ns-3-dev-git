@@ -52,7 +52,7 @@ public:
     NLOSv, //!< Non Line of Sight due to a vehicle
     LC_ND //!< Los condition not defined
   };
-  
+
   /**
    * Possible values for Outdoor to Indoor condition.
    */
@@ -75,7 +75,7 @@ public:
    * Constructor for the ChannelCondition class
    */
   ChannelCondition ();
-  
+
   /**
    * Constructor for the ChannelCondition class
    * \param losCondition the LOS condition value
@@ -103,7 +103,7 @@ public:
    * \param losCondition the LosConditionValue
    */
   void SetLosCondition (LosConditionValue losCondition);
-  
+
   /**
    * Get the O2iConditionValue contaning the information about the O2I
    * state of the channel
@@ -119,53 +119,53 @@ public:
    * \param o2iCondition the O2iConditionValue
    */
   void SetO2iCondition (O2iConditionValue o2iCondition);
-  
+
   /**
    * Return true if the channel condition is LOS
    *
    * \return true if the channel condition is LOS
    */
   bool IsLos () const;
-  
+
   /**
    * Return true if the channel condition is NLOS
    *
-   * It does not consider the case in which the LOS path is obstructed by a 
-   * vehicle. This case is represented as a separate channel condition (NLOSv), 
+   * It does not consider the case in which the LOS path is obstructed by a
+   * vehicle. This case is represented as a separate channel condition (NLOSv),
    * use the method IsNlosv instead.
    *
    * \return true if the channel condition is NLOS
    */
   bool IsNlos () const;
-  
+
   /**
    * Return true if the channel condition is NLOSv
    *
    * \return true if the channel condition is NLOSv
    */
   bool IsNlosv () const;
-  
+
   /**
    * Return true if the channel is outdoor-to-indoor
    *
    * \return true if the channel is outdoor-to-indoor
    */
   bool IsO2i () const;
-  
+
   /**
    * Return true if the channel is outdoor-to-outdoor
    *
    * \return true if the channel is outdoor-to-outdoor
    */
   bool IsO2o () const;
-  
+
   /**
    * Return true if the channel is indoor-to-indoor
    *
    * \return true if the channel is indoor-to-indoor
    */
   bool IsI2i () const;
-  
+
   /**
    * Return true if this instance is equivalent to the one passed as argument
    *
@@ -178,12 +178,12 @@ public:
 private:
   LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel
   O2iConditionValue m_o2iCondition; //!< contains the information about the O2I state of the channel
-  
-  /** 
+
+  /**
    * Prints a LosConditionValue to output
    * \param os the output stream
    * \param cond the LosConditionValue
-   * 
+   *
    * \return a reference to the output stream
    */
   friend std::ostream& operator<< (std::ostream& os, LosConditionValue cond);
@@ -359,12 +359,12 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Constructor 
+   * Constructor
    */
   NeverLosVehicleChannelConditionModel ();
 
   /**
-   * Destructor 
+   * Destructor
    */
   virtual ~NeverLosVehicleChannelConditionModel ();
 
@@ -422,8 +422,8 @@ public:
   /**
    * \brief Retrieve the condition of the channel between a and b.
    *
-   * If the channel condition does not exists, the method computes it by calling 
-   * ComputeChannelCondition and stores it in a local cache, that will be updated 
+   * If the channel condition does not exists, the method computes it by calling
+   * ComputeChannelCondition and stores it in a local cache, that will be updated
    * following the "UpdatePeriod" parameter.
    *
    * \param a mobility model
@@ -445,7 +445,7 @@ public:
 
 protected:
   virtual void DoDispose () override;
-  
+
   /**
    * Determine the density of vehicles in a V2V scenario.
    */
@@ -464,12 +464,12 @@ protected:
   * \return the 2D distance between a and b
   */
   static double Calculate2dDistance (const Vector &a, const Vector &b);
-  
+
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
 
 private:
   /**
-  * This method computes the channel condition based on a probabilistic model 
+  * This method computes the channel condition based on a probabilistic model
   * that is specific for the scenario of interest
   *
   * \param a tx mobility model
@@ -477,7 +477,7 @@ private:
   * \return the channel condition
   */
   Ptr<ChannelCondition> ComputeChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
-  
+
   /**
    * Compute the LOS probability.
    *
@@ -486,7 +486,7 @@ private:
    * \return the LOS probability
    */
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const = 0;
-  
+
   /**
    * Compute the NLOS probability. By default returns 1 - PLOS
    *

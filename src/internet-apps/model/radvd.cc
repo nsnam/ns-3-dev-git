@@ -165,7 +165,7 @@ void Radvd::AddConfiguration (Ptr<RadvdInterface> routerInterface)
   m_configurations.push_back (routerInterface);
 }
 
-int64_t 
+int64_t
 Radvd:: AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
@@ -249,8 +249,8 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
   m_sendSockets[config->GetInterface ()]->GetSockName (sockAddr);
   Ipv6Address src = Inet6SocketAddress::ConvertFrom (sockAddr).GetIpv6 ();
 
-  /* as we know interface index that will be used to send RA and 
-   * we always send RA with router's link-local address, we can 
+  /* as we know interface index that will be used to send RA and
+   * we always send RA with router's link-local address, we can
    * calculate checksum here.
    */
   raHdr.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + raHdr.GetSerializedSize (), 58 /* ICMPv6 */);

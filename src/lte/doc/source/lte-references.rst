@@ -61,29 +61,29 @@ References
    "LTE - The UMTS Long Term Evolution - from theory to practice",
    Wiley, 2009
 
-.. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 
+.. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3",
    Proceedings of ICST NSTools 2009, Pisa, Italy
 
 .. [Piro2010] Giuseppe Piro, Luigi Alfredo Grieco, Gennaro Boggia, and Pietro Camarda,
    "A Two-level Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks",
-   Proc. of European Wireless, EW2010, Lucca, Italy, Apr., 2010 
+   Proc. of European Wireless, EW2010, Lucca, Italy, Apr., 2010
 
-.. [Holtzman2000] J.M. Holtzman, "CDMA forward link waterfilling power control", 
+.. [Holtzman2000] J.M. Holtzman, "CDMA forward link waterfilling power control",
    in Proc. of IEEE VTC Spring, 2000.
 
-.. [Piro2011] G. Piro, N. Baldo. M. Miozzo, "An LTE module for the ns-3 network simulator", 
+.. [Piro2011] G. Piro, N. Baldo. M. Miozzo, "An LTE module for the ns-3 network simulator",
    in Proc. of Wns3 2011 (in conjunction with SimuTOOLS 2011), March 2011, Barcelona (Spain)
 
-.. [Seo2004] H. Seo, B. G. Lee. "A proportional-fair power allocation scheme for fair and efficient multiuser OFDM systems", 
+.. [Seo2004] H. Seo, B. G. Lee. "A proportional-fair power allocation scheme for fair and efficient multiuser OFDM systems",
    in Proc. of IEEE GLOBECOM, December 2004. Dallas (USA)
 
 .. [Ofcom2600MHz] Ofcom, "Consultation on assessment of future mobile
    competition and proposals for the award of 800 MHz and 2.6 GHz
-   spectrum and related issues", March 2011 
+   spectrum and related issues", March 2011
 
 .. [RealWireless] RealWireless, "Low-power shared access to spectrum
    for mobile broadband",  Final Report, Ofcom Project MC/073, 18th
-   March 2011 
+   March 2011
 
 .. [PaduaPEM] `"Ns-developers - LTE error model contribution"
    <http://mailman.isi.edu/pipermail/ns-developers/2011-November/009397.html>`_
@@ -126,11 +126,11 @@ References
 
 .. [FABokhari2009] F.A. Bokhari, H. Yanikomeroglu, W.K. Wong, M. Rahman,
    "Cross-Layer Resource Scheduling for Video Traffic in the Downlink of OFDMA-Based Wireless 4G Networks",
-   EURASIP J. Wirel. Commun. Netw., vol.2009, no.3, pp. 1-10, Jan. 2009. 
+   EURASIP J. Wirel. Commun. Netw., vol.2009, no.3, pp. 1-10, Jan. 2009.
 
 .. [WKWong2004] W.K. Wong, H.Y. Tang, V.C.M, Leung,
    "Token bank fair queuing: a new scheduling algorithm for wireless multimedia services",
-   Int. J. Commun. Syst., vol.17, no.6, pp.591-614, Aug.2004. 
+   Int. J. Commun. Syst., vol.17, no.6, pp.591-614, Aug.2004.
 
 .. [GMonghal2008] G. Mongha, K.I. Pedersen, I.Z. Kovacs, P.E. Mogensen,
    "QoS Oriented Time and Frequency Domain Packet Schedulers for The UTRAN Long Term Evolution",
@@ -143,20 +143,20 @@ References
 .. [Lee2010] Y.J. Lee, B.J. Shin, J.C. Lim, D.H. Hong,
    "Effects of time-to-trigger parameter on handover performance in SON-based LTE systems",
    Communications (APCC), 2010 16th Asia-Pacific Conference on, pp.492-496, Oct. 31 2010--Nov. 3 2010
-   
+
 .. [Bbojovic2014] B. Bojovic, N. Baldo, `"A new Channel and QoS Aware
    Scheduler to enhance the capacity of Voice over LTE systems"
    <http://www.cttc.es/publication/a-new-channel-and-qos-aware-scheduler-to-enhance-the-capacity-of-voice-over-lte-systems/>`_,
    in Proceedings of 11th International Multi-Conference on Systems,
    Signals & Devices (SSD’14), Castelldefels, 11-14 February 2014,
-   Castelldefels (Spain). 
+   Castelldefels (Spain).
 
 .. [Baldo2014] N. Baldo, R. Martínez, P. Dini, R. Vilalta, M. Miozzo,
    R. Casellas, R. Muñoz, `"A Testbed for Fixed Mobile Convergence
    Experimentation: ADRENALINE-LENA Integration"
-   <http://www.cttc.es/publication/a-testbed-for-fixed-mobile-convergence-experimentation-adrenaline-lena-integration/>`_, 
+   <http://www.cttc.es/publication/a-testbed-for-fixed-mobile-convergence-experimentation-adrenaline-lena-integration/>`_,
    in Proceedings of European Wireless 2014, 14-16 May 2014, Barcelona
-   (Spain). 
+   (Spain).
 
 
 .. [ASHamza2013] Abdelbaset S. Hamza, Shady S. Khalifa, Haitham S. Hamza, and Khaled Elsayed, "A Survey on Inter-Cell Interference Coordination Techniques in OFDMA-based Cellular Networks", IEEE Communications Surveys & Tutorials, March 19, 2013

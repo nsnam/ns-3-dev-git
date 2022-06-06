@@ -38,7 +38,7 @@ class RemoteChannelBundle;
 
   /**
  * \ingroup mpi
- * 
+ *
  * \brief Singleton for managing the RemoteChannelBundles for each process.
  *
  * Manages collective tasks associated with the bundle collection.
@@ -96,7 +96,7 @@ private:
   }
 
   /**
-   * Private dtor to prevent destruction outside of singleton pattern. 
+   * Private dtor to prevent destruction outside of singleton pattern.
    */
   ~RemoteChannelBundleManager ()
   {

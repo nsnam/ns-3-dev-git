@@ -28,10 +28,10 @@ namespace ns3 {
 /**
  * \ingroup lr-wpan
  * Represent the LQI (Link Quality Estination).
- * 
- * The LQI Tag is added to each received packet, and can be 
+ *
+ * The LQI Tag is added to each received packet, and can be
  * used by upper layers to estimate the channel conditions.
- * 
+ *
  * The LQI is the total packet success rate scaled to 0-255.
  */
 class LrWpanLqiTag : public Tag

@@ -3,7 +3,7 @@
  * Copyright (c) 2009 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -66,7 +66,7 @@ public:
    * \param cw CW value for completed runs.
    */
   void IncrementCw (uint32_t cw);
-  
+
   uint32_t m_numNodes;                //!< Number of transmitting nodes.
   uint32_t m_dataRate;                //!< DataRate in bps.
   double m_depth;                     //!< Depth of transmitting and sink nodes.
@@ -77,7 +77,7 @@ public:
   uint32_t m_cwMax;                   //!< Max CW to simulate.
   uint32_t m_cwStep;                  //!< CW step size, default 10.
   uint32_t m_avgs;                    //!< Number of topologies to test for each cw point.
-                                 
+
   Time m_slotTime;                    //!< Slot time duration.
   Time m_simTime;                     //!< Simulation run time, default 1000 s.
 

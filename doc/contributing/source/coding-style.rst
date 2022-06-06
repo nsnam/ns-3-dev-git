@@ -300,7 +300,7 @@ is described in the `Doxygen website <https://www.doxygen.nl/index.html>`_.
     /**
      * Private method doxygen is also recommended
      */
-    void MyPrivateMethod (void); 
+    void MyPrivateMethod (void);
     int m_myPrivateMemberVariable; ///< Brief description of member variable
   };
 
@@ -415,7 +415,7 @@ Miscellaneous items
 
 - ``NS_LOG_COMPONENT_DEFINE("log-component-name");`` statements should be
   placed within namespace ns3 (for module code) and after the
-  ``using namespace ns3;``.  In examples. 
+  ``using namespace ns3;``.  In examples.
   ``NS_OBJECT_ENSURE_REGISTERED()`` should also be placed within namespace ns3.
 
 - Const reference syntax:
@@ -455,7 +455,7 @@ Miscellaneous items
   This guidance does not apply to the use of references to implement operators.
 
 - Expose class members through access functions, rather than direct access
-  to a public object. The access functions are typically named Get" and 
+  to a public object. The access functions are typically named Get" and
   "Set". For example, a member m_delayTime might have accessor functions
   ``GetDelayTime ()`` and ``SetDelayTime ()``.
 

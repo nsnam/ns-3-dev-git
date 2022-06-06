@@ -90,7 +90,7 @@ SpectrumChannelHelper::AddPropagationLoss (std::string type,
 }
 
 
-void 
+void
 SpectrumChannelHelper::AddPropagationLoss (Ptr<PropagationLossModel> m)
 {
   m->SetNext (m_propagationLossModel);
@@ -122,7 +122,7 @@ SpectrumChannelHelper::AddSpectrumPropagationLoss (std::string type,
   AddSpectrumPropagationLoss (m);
 }
 
-void 
+void
 SpectrumChannelHelper::AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossModel> m)
 {
   m->SetNext (m_spectrumPropagationLossModel);

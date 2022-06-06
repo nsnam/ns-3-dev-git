@@ -104,7 +104,7 @@ public:
 
   /// allow MemberCschedSapProvider<PfFfMacScheduler> class friend access
   friend class MemberCschedSapProvider<PfFfMacScheduler>;
-  /// allow MemberSchedSapProvider<PfFfMacScheduler> class friend access  
+  /// allow MemberSchedSapProvider<PfFfMacScheduler> class friend access
   friend class MemberSchedSapProvider<PfFfMacScheduler>;
 
   /**

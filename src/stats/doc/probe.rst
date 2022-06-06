@@ -20,21 +20,21 @@ with their simulation's results.
 Probe Overview
 ==============
 
-A Probe object is supposed to be connected to a variable from the 
-simulation whose values throughout the experiment are relevant to the user. 
-The Probe will record what were values assumed by the variable throughout 
-the simulation and pass such data to another member of the Data Collection 
-Framework.  While it is out of this section's scope to discuss what happens 
-after the Probe produces its output, it is sufficient to say that, by the 
-end of the simulation, the user will have detailed information about what 
+A Probe object is supposed to be connected to a variable from the
+simulation whose values throughout the experiment are relevant to the user.
+The Probe will record what were values assumed by the variable throughout
+the simulation and pass such data to another member of the Data Collection
+Framework.  While it is out of this section's scope to discuss what happens
+after the Probe produces its output, it is sufficient to say that, by the
+end of the simulation, the user will have detailed information about what
 values were stored inside the variable being probed during the simulation.
 
 Typically, a Probe is connected to an |ns3| trace source.  In this manner,
 whenever the trace source exports a new value, the Probe consumes the
 value (and exports it downstream to another object via its own trace source).
 
-The Probe can be thought of as kind of a filter on trace sources.  The 
-main reasons for possibly hooking to a Probe rather than directly to a 
+The Probe can be thought of as kind of a filter on trace sources.  The
+main reasons for possibly hooking to a Probe rather than directly to a
 trace source are as follows:
 
 * Probes may be dynamically turned on and off during the simulation
@@ -68,7 +68,7 @@ have not been implemented.  An object of type DoubleProbe,
 which is a subclass of the Probe class, will be created here to
 show what needs to be done.
 
-One declares a DoubleProbe in dynamic memory by using the smart pointer class 
+One declares a DoubleProbe in dynamic memory by using the smart pointer class
 (Ptr<T>). To create a DoubleProbe in dynamic memory with smart pointers, one
 just needs to call the |ns3| method ``CreateObject()``:
 
@@ -76,8 +76,8 @@ just needs to call the |ns3| method ``CreateObject()``:
 
   Ptr<DoubleProbe> myprobe = CreateObject<DoubleProbe> ();
 
-The declaration above creates DoubleProbes using the default values for its 
-attributes.  There are four attributes in the DoubleProbe class; two in the 
+The declaration above creates DoubleProbes using the default values for its
+attributes.  There are four attributes in the DoubleProbe class; two in the
 base class object DataCollectionObject, and two in the Probe base class:
 
 * "Name" (DataCollectionObject), a StringValue
@@ -85,19 +85,19 @@ base class object DataCollectionObject, and two in the Probe base class:
 * "Start" (Probe), a TimeValue
 * "Stop" (Probe), a TimeValue
 
-One can set such attributes at object creation by using the following 
+One can set such attributes at object creation by using the following
 method:
 
 ::
 
   Ptr<DoubleProbe> myprobe = CreateObjectWithAttributes<DoubleProbe> (
-      "Name", StringValue ("myprobe"), 
+      "Name", StringValue ("myprobe"),
       "Enabled", BooleanValue (false),
       "Start", TimeValue (Seconds (100.0)),
       "Stop", TimeValue (Seconds (1000.0)));
 
-Start and Stop are Time variables which determine the interval of action 
-of the Probe. The Probe will only output data if the current time of the 
+Start and Stop are Time variables which determine the interval of action
+of the Probe. The Probe will only output data if the current time of the
 Simulation is inside of that interval.  The special time value of 0 seconds
 for Stop will disable this attribute (i.e. keep the Probe on for the whole
 simulation).  Enabled is a flag that turns the
@@ -128,7 +128,7 @@ probing a Counter exported by an emitter object (class Emitter).
 
 ::
 
-  Ptr<Emitter> emitter = CreateObject<Emitter> ();  
+  Ptr<Emitter> emitter = CreateObject<Emitter> ();
   Names::Add ("/Names/Emitter", emitter);
   ...
 
@@ -163,7 +163,7 @@ created.
   // We must add it to the config database
   Names::Add ("/Names/Probes", probe3->GetName (), probe3);
 
-The emitter's Count() function is now able to set the value for this DoubleProbe as follows: 
+The emitter's Count() function is now able to set the value for this DoubleProbe as follows:
 
 ::
 
@@ -180,10 +180,10 @@ The above example shows how the code calling the Probe does not have to
 have an explicit reference to the Probe, but can direct the value
 setting through the Config namespace.  This is similar in functionality
 to the `Stat::Put` method introduced by ns2measure paper [Cic06]_, and allows
-users to temporarily insert Probe statements like `printf` statements within 
+users to temporarily insert Probe statements like `printf` statements within
 existing |ns3| models.  Note that in order to be able to use the DoubleProbe in this example like this, 2 things were necessary:
 
-1. the stats module header file was included in the example .cc file 
+1. the stats module header file was included in the example .cc file
 2. the example was made dependent on the stats module in its CMakeLists.txt file.
 
 Analogous things need to be done in order to add other Probes in other places in the |ns3| code base.
@@ -194,7 +194,7 @@ using the function DoubleProbe::GetValue().
 
 The DoubleProbe exports double values in its "Output" trace source;
 a downstream object can hook a trace sink (NotifyViaProbe) to this as follows:
- 
+
 ::
 
   connected = probe1->TraceConnect ("Output", probe1->GetName (), MakeCallback (&NotifyViaProbe));
@@ -248,12 +248,12 @@ summarize what occurs in this program, there is an emitter that
 exports a counter that increments according to a Poisson process.  In
 particular, two ways of emitting data are shown:
 
-1. through a traced variable hooked to one Probe: 
+1. through a traced variable hooked to one Probe:
 
    ::
-  
+
      TracedValue<double> m_counter;  // normally this would be integer type
-  
+
 2. through a counter whose value is posted to a second Probe, referenced by its name in the Config system:
 
   ::
@@ -273,12 +273,12 @@ in a multiple ways:
 
 1.  by the Probe accessing the trace source directly and connecting
     a trace sink to it
-2.  by the Probe accessing the trace source through the config namespace 
+2.  by the Probe accessing the trace source through the config namespace
     and connecting a trace sink to it
 3.  by the calling code explicitly calling the Probe's `SetValue()` method
 4.  by the calling code explicitly calling `SetValueByPath ("/path/through/Config/namespace", ...)`
 
-The first two techniques are expected to be the most common.  Also in the 
+The first two techniques are expected to be the most common.  Also in the
 example, the hooking of a normal callback function is shown,
 as is typically done in |ns3|.  This callback function is not associated
 with a Probe object.  We'll call this case 0) below.
@@ -286,12 +286,12 @@ with a Probe object.  We'll call this case 0) below.
 ::
 
   // This is a function to test hooking a raw function to the trace source
-  void 
+  void
   NotifyViaTraceSource (std::string context, double oldVal, double newVal)
   {
     NS_LOG_DEBUG ("context: " << context << " old " << oldVal << " new " << newVal);
   }
-  
+
 First, the emitter needs to be setup:
 
 ::
@@ -315,21 +315,21 @@ Case 0):
     //
     connected = emitter->TraceConnect ("Counter", "sample context", MakeCallback (&NotifyViaTraceSource));
     NS_ASSERT_MSG (connected, "Trace source not connected");
-  
+
 
 case 1):
 
   ::
 
-    // 
+    //
     // Probe1 will be hooked directly to the Emitter trace source object
     //
-  
+
     // probe1 will be hooked to the Emitter trace source
     Ptr<DoubleProbe> probe1 = CreateObject<DoubleProbe> ();
     // the probe's name can serve as its context in the tracing
     probe1->SetName ("ObjectProbe");
-  
+
     // Connect the probe to the emitter's Counter
     connected = probe1->ConnectByObject ("Counter", emitter);
     NS_ASSERT_MSG (connected, "Trace source not connected to probe1");
@@ -338,31 +338,31 @@ case 2):
 
   ::
 
-    // 
-    // Probe2 will be hooked to the Emitter trace source object by 
+    //
+    // Probe2 will be hooked to the Emitter trace source object by
     // accessing it by path name in the Config database
     //
-  
+
     // Create another similar probe; this will hook up via a Config path
     Ptr<DoubleProbe> probe2 = CreateObject<DoubleProbe> ();
     probe2->SetName ("PathProbe");
-  
+
     // Note, no return value is checked here
     probe2->ConnectByPath ("/Names/Emitter/Counter");
-  
+
 case 4) (case 3 is not shown in this example):
 
   ::
 
-    // 
-    // Probe3 will be called by the emitter directly through the 
-    // static method SetValueByPath().  
+    //
+    // Probe3 will be called by the emitter directly through the
+    // static method SetValueByPath().
     //
     Ptr<DoubleProbe> probe3 = CreateObject<DoubleProbe> ();
     probe3->SetName ("StaticallyAccessedProbe");
     // We must add it to the config database
     Names::Add ("/Names/Probes", probe3->GetName (), probe3);
-  
+
 And finally, the example shows how the probes can be hooked to
 generate output:
 
@@ -375,15 +375,15 @@ generate output:
                                       "/Names/Probes/StaticallyAccessedProbe/Output",
                                       MakeCallback (&NotifyViaProbe));
     NS_ASSERT_MSG (connected, "Trace source not .. connected to probe3 Output");
-  
-The following callback is hooked to the Probe in this example for 
-illustrative purposes; normally, the Probe would be hooked to a 
+
+The following callback is hooked to the Probe in this example for
+illustrative purposes; normally, the Probe would be hooked to a
 Collector object.
 
 ::
 
   // This is a function to test hooking it to the probe output
-  void 
+  void
   NotifyViaProbe (std::string context, double oldVal, double newVal)
   {
     NS_LOG_DEBUG ("context: " << context << " old " << oldVal << " new " << newVal);
@@ -393,8 +393,8 @@ Collector object.
 IPv4 Packet Plot Example
 ########################
 
-The IPv4 packet plot example is based on the fifth.cc example from the |ns3| 
-Tutorial.  It can be found in 
+The IPv4 packet plot example is based on the fifth.cc example from the |ns3|
+Tutorial.  It can be found in
 ``src/stats/examples/ipv4-packet-plot-example.cc``.
 
 .. sourcecode:: text
@@ -456,7 +456,7 @@ output the number of bytes on the `OutputBytes` trace source.
           m_ipv4      = ipv4;
           m_interface = interface;
           m_output (packet, ipv4, interface);
-    
+
           uint32_t packetSizeNew = packet->GetSize ();
           m_outputBytes (m_packetSizeOld, packetSizeNew);
           m_packetSizeOld = packetSizeNew;
@@ -467,6 +467,6 @@ output the number of bytes on the `OutputBytes` trace source.
 References
 ==========
 
-.. [Cic06] Claudio Cicconetti, Enzo Mingozzi, Giovanni Stea, "An Integrated 
-    Framework for Enabling Effective Data Collection and Statistical 
+.. [Cic06] Claudio Cicconetti, Enzo Mingozzi, Giovanni Stea, "An Integrated
+    Framework for Enabling Effective Data Collection and Statistical
     Analysis with ns2, Workshop on ns-2 (WNS2), Pisa, Italy, October 2006.

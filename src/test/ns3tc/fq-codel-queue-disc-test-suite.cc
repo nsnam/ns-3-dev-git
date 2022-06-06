@@ -700,7 +700,7 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
   Ptr<CoDelQueueDisc> q2 = queueDisc->GetQueueDiscClass (2)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
   Ptr<CoDelQueueDisc> q3 = queueDisc->GetQueueDiscClass (3)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
   Ptr<CoDelQueueDisc> q4 = queueDisc->GetQueueDiscClass (4)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
-  
+
 
   //Ensure there are some remaining packets in the flow queues to check for flow queues with ECN capable packets
   NS_TEST_EXPECT_MSG_NE (queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetNPackets (), 0, "There should be some remaining packets");
@@ -723,7 +723,7 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
   NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 6, "There should be 6 marked packets");
   NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  
+
   // As packets in flow queues are not ECN capable
   NS_TEST_EXPECT_MSG_EQ (q3->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 4, "There should be 4 dropped packets"
                         "with 20 packets, total bytes in the queue = 120 * 20 = 2400. First packet dequeues at 110ms which is greater than"
@@ -753,7 +753,7 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
                                                                                    "CeThreshold", TimeValue (MilliSeconds (2)));
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
-  
+
   // Add 20 ECT0 (ECN capable) packets from first flow
   hdr.SetDestination (Ipv4Address ("10.10.1.2"));
   hdr.SetEcn (Ipv4Header::ECN_ECT0);
@@ -828,7 +828,7 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
                                                                                    "CeThreshold", TimeValue (MilliSeconds (2)));
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
-  
+
   // Add 20 ECT0 (ECN capable) packets from first flow
   hdr.SetDestination (Ipv4Address ("10.10.1.2"));
   hdr.SetEcn (Ipv4Header::ECN_ECT0);
@@ -870,15 +870,15 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
 
   // As packets in flow queues are ECN capable
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 20 - q0->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
   NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q1->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 20 - q1->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
   NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
-  NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) + 
+  NS_TEST_EXPECT_MSG_EQ (q2->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK) +
                          q2->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 20 - q2->GetNPackets (), "Number of CE threshold"
                         " exceeded marks plus Number of Target exceeded marks should be equal to total number of packets dequeued");
 
@@ -909,14 +909,14 @@ FqCoDelQueueDiscECNMarking::DoRun (void)
  *
  * We modified DoClassify () and CheckProtocol () so that we could control
  * the hash returned for each packet. In the beginning, we use flow hashes
- * ranging from 0 to 7. These must go into different queues in the same set. 
- * The set number for these is obtained using outerHash, which is 0.  
+ * ranging from 0 to 7. These must go into different queues in the same set.
+ * The set number for these is obtained using outerHash, which is 0.
  * When a new packet arrives with flow hash 1024, outerHash = 0 is obtained
  * and the first set is iteratively searched.
- * The packet is eventually added to queue 0 since the tags of queues 
- * in the set do not match with the hash of the flow. The tag of queue 0 is 
+ * The packet is eventually added to queue 0 since the tags of queues
+ * in the set do not match with the hash of the flow. The tag of queue 0 is
  * updated as 1024. When a packet with hash 1025 arrives, outerHash = 0
- * is obtained and the first set is iteratively searched. 
+ * is obtained and the first set is iteratively searched.
  * Since there is no match, it is added to queue 0 and the tag of queue 0 is
  * updated to 1025.
  *

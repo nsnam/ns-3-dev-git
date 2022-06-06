@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("TagBuffer");
 
 #ifndef TAG_BUFFER_USE_INLINE
 
-void 
+void
 TagBuffer::WriteU8 (uint8_t v)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (v));
@@ -37,14 +37,14 @@ TagBuffer::WriteU8 (uint8_t v)
   m_current++;
 }
 
-void 
+void
 TagBuffer::WriteU16 (uint16_t data)
 {
   NS_LOG_FUNCTION (this << data);
   WriteU8 ((data >> 0) & 0xff);
   WriteU8 ((data >> 8) & 0xff);
 }
-void 
+void
 TagBuffer::WriteU32 (uint32_t data)
 {
   NS_LOG_FUNCTION (this << data);
@@ -66,7 +66,7 @@ TagBuffer::ReadU8 (void)
   return v;
 }
 
-uint16_t 
+uint16_t
 TagBuffer::ReadU16 (void)
 {
   NS_LOG_FUNCTION (this);
@@ -77,7 +77,7 @@ TagBuffer::ReadU16 (void)
   data |= byte0;
   return data;
 }
-uint32_t 
+uint32_t
 TagBuffer::ReadU32 (void)
 {
   NS_LOG_FUNCTION (this);
@@ -98,7 +98,7 @@ TagBuffer::ReadU32 (void)
 #endif /* TAG_BUFFER_USE_INLINE */
 
 
-void 
+void
 TagBuffer::WriteU64 (uint64_t data)
 {
   NS_LOG_FUNCTION (this << data);
@@ -121,7 +121,7 @@ TagBuffer::WriteDouble (double v)
       WriteU8 (*buf);
     }
 }
-void 
+void
 TagBuffer::Write (const uint8_t *buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this << &buffer << size);
@@ -130,7 +130,7 @@ TagBuffer::Write (const uint8_t *buffer, uint32_t size)
       WriteU8 (*buffer);
     }
 }
-uint64_t 
+uint64_t
 TagBuffer::ReadU64 (void)
 {
   NS_LOG_FUNCTION (this);
@@ -172,7 +172,7 @@ TagBuffer::ReadDouble (void)
     }
   return v;
 }
-void 
+void
 TagBuffer::Read (uint8_t *buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this << &buffer << size);

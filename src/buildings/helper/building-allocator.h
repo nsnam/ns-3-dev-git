@@ -39,7 +39,7 @@ class Building;
  *
  * This class allows to create a set of buildings positioned on a
  * rectangular 2D grid. Under the hood, this class uses two instances
- * of GridPositionAllocator. 
+ * of GridPositionAllocator.
  */
 class GridBuildingAllocator : public Object
 {
@@ -53,19 +53,19 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  /** 
+  /**
    * Set an attribute to be used for each new building to be created
-   * 
+   *
    * \param n attribute name
    * \param v attribute value
    */
   void SetBuildingAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Create a set of buildings allocated on a grid
-   * 
+   *
    * \param n the number of buildings to create
-   * 
+   *
    * \return the BuildingContainer that contains the newly created buildings
    */
   BuildingContainer Create (uint32_t n) const;
@@ -90,7 +90,7 @@ private:
   mutable ObjectFactory m_buildingFactory; //!< The building factory
   Ptr<GridPositionAllocator> m_lowerLeftPositionAllocator;  //!< The upper left position allocator
   Ptr<GridPositionAllocator> m_upperRightPositionAllocator; //!< The upper right position allocator
-  
+
 };
 
 } // namespace ns3

@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: 
+ * Authors:
  *   Nicola Baldo <nbaldo@cttc.es> (the EpcTftClassifier class)
- *   Giuseppe Piro <g.piro@poliba.it> (part of the code in EpcTftClassifier::Classify () 
+ *   Giuseppe Piro <g.piro@poliba.it> (part of the code in EpcTftClassifier::Classify ()
  *       which comes from RrcEntity::Classify of the GSoC 2010 LTE module)
  *
  */
@@ -64,7 +64,7 @@ EpcTftClassifier::Delete (uint32_t id)
   m_tftMap.erase (id);
 }
 
-uint32_t 
+uint32_t
 EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << p << p->GetSize () << direction);

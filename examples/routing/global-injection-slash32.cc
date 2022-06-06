@@ -44,7 +44,7 @@ using std::cout;
 
 NS_LOG_COMPONENT_DEFINE ("GlobalRouterInjectionTest");
 
-int 
+int
 main (int argc, char *argv[])
 {
 
@@ -114,7 +114,7 @@ main (int argc, char *argv[])
   ipv4C->AddAddress (ifIndexC, ifInAddrC);
   ipv4C->SetMetric (ifIndexC, 1);
   ipv4C->SetUp (ifIndexC);
- 
+
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
 
@@ -136,7 +136,7 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
   onoff.SetConstantRate (DataRate (6000));
   ApplicationContainer apps = onoff.Install (nA);

@@ -80,7 +80,7 @@ public:
    * \param ts received timestamp. If not called, will contain 0
    */
   void SetTsEchoReply (Time ts);
-  
+
   // Inherited
   virtual TypeId GetInstanceTypeId (void) const override;
   virtual void Print (std::ostream &os) const override;

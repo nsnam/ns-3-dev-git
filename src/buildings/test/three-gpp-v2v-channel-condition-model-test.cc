@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("ThreeGppV2vChannelConditionModelsTest");
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * Test case for the classes ThreeGppV2vUrbanChannelConditionModel,
  * and ThreeGppV2vHighwayChannelConditionModel to test their code to
  * deterministically determine NLOS state. The test checks if the
@@ -478,7 +478,7 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun (void)
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * Test suite for the 3GPP V2V channel condition model
  *
  * Note that, in 3GPP V2V scenarios, the channel condition model is

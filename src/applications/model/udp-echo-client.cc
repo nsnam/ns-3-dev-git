@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -42,22 +42,22 @@ UdpEchoClient::GetTypeId (void)
     .SetParent<Application> ()
     .SetGroupName("Applications")
     .AddConstructor<UdpEchoClient> ()
-    .AddAttribute ("MaxPackets", 
+    .AddAttribute ("MaxPackets",
                    "The maximum number of packets the application will send",
                    UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_count),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Interval", 
+    .AddAttribute ("Interval",
                    "The time to wait between packets",
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteAddress", 
+    .AddAttribute ("RemoteAddress",
                    "The destination Address of the outbound packets",
                    AddressValue (),
                    MakeAddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeAddressChecker ())
-    .AddAttribute ("RemotePort", 
+    .AddAttribute ("RemotePort",
                    "The destination port of the outbound packets",
                    UintegerValue (0),
                    MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
@@ -103,7 +103,7 @@ UdpEchoClient::~UdpEchoClient()
   m_dataSize = 0;
 }
 
-void 
+void
 UdpEchoClient::SetRemote (Address ip, uint16_t port)
 {
   NS_LOG_FUNCTION (this << ip << port);
@@ -111,7 +111,7 @@ UdpEchoClient::SetRemote (Address ip, uint16_t port)
   m_peerPort = port;
 }
 
-void 
+void
 UdpEchoClient::SetRemote (Address addr)
 {
   NS_LOG_FUNCTION (this << addr);
@@ -125,7 +125,7 @@ UdpEchoClient::DoDispose (void)
   Application::DoDispose ();
 }
 
-void 
+void
 UdpEchoClient::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -177,12 +177,12 @@ UdpEchoClient::StartApplication (void)
   ScheduleTransmit (Seconds (0.));
 }
 
-void 
+void
 UdpEchoClient::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket != 0) 
+  if (m_socket != 0)
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
@@ -192,14 +192,14 @@ UdpEchoClient::StopApplication ()
   Simulator::Cancel (m_sendEvent);
 }
 
-void 
+void
 UdpEchoClient::SetDataSize (uint32_t dataSize)
 {
   NS_LOG_FUNCTION (this << dataSize);
 
   //
   // If the client is setting the echo packet data size this way, we infer
-  // that she doesn't care about the contents of the packet at all, so 
+  // that she doesn't care about the contents of the packet at all, so
   // neither will we.
   //
   delete [] m_data;
@@ -208,14 +208,14 @@ UdpEchoClient::SetDataSize (uint32_t dataSize)
   m_size = dataSize;
 }
 
-uint32_t 
+uint32_t
 UdpEchoClient::GetDataSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_size;
 }
 
-void 
+void
 UdpEchoClient::SetFill (std::string fill)
 {
   NS_LOG_FUNCTION (this << fill);
@@ -237,7 +237,7 @@ UdpEchoClient::SetFill (std::string fill)
   m_size = dataSize;
 }
 
-void 
+void
 UdpEchoClient::SetFill (uint8_t fill, uint32_t dataSize)
 {
   NS_LOG_FUNCTION (this << fill << dataSize);
@@ -256,7 +256,7 @@ UdpEchoClient::SetFill (uint8_t fill, uint32_t dataSize)
   m_size = dataSize;
 }
 
-void 
+void
 UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
 {
   NS_LOG_FUNCTION (this << fill << fillSize << dataSize);
@@ -295,14 +295,14 @@ UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
   m_size = dataSize;
 }
 
-void 
+void
 UdpEchoClient::ScheduleTransmit (Time dt)
 {
   NS_LOG_FUNCTION (this << dt);
   m_sendEvent = Simulator::Schedule (dt, &UdpEchoClient::Send, this);
 }
 
-void 
+void
 UdpEchoClient::Send (void)
 {
   NS_LOG_FUNCTION (this);
@@ -370,7 +370,7 @@ UdpEchoClient::Send (void)
                    Inet6SocketAddress::ConvertFrom (m_peerAddress).GetIpv6 () << " port " << Inet6SocketAddress::ConvertFrom (m_peerAddress).GetPort ());
     }
 
-  if (m_sent < m_count) 
+  if (m_sent < m_count)
     {
       ScheduleTransmit (m_interval);
     }

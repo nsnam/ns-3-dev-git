@@ -52,12 +52,12 @@ public:
    */
   PeerManagementProtocolMac (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
   ~PeerManagementProtocolMac ();
-  
+
   // Inherited from plugin abstract class
   /**
    * Set pointer to parent
    * \param parent Ptr<MeshWifiInterfaceMac>
-   */ 
+   */
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   /**
    * Receive and process a packet

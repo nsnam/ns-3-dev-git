@@ -63,8 +63,8 @@ Ipv4StaticRoutingHelper::GetStaticRouting (Ptr<Ipv4> ipv4) const
   if (DynamicCast<Ipv4StaticRouting> (ipv4rp))
     {
       NS_LOG_LOGIC ("Static routing found as the main IPv4 routing protocol.");
-      return DynamicCast<Ipv4StaticRouting> (ipv4rp); 
-    } 
+      return DynamicCast<Ipv4StaticRouting> (ipv4rp);
+    }
   if (DynamicCast<Ipv4ListRouting> (ipv4rp))
     {
       Ptr<Ipv4ListRouting> lrp = DynamicCast<Ipv4ListRouting> (ipv4rp);
@@ -87,14 +87,14 @@ Ipv4StaticRoutingHelper::GetStaticRouting (Ptr<Ipv4> ipv4) const
 void
 Ipv4StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
-  Ipv4Address source, 
+  Ipv4Address source,
   Ipv4Address group,
-  Ptr<NetDevice> input, 
+  Ptr<NetDevice> input,
   NetDeviceContainer output)
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
 
-  // We need to convert the NetDeviceContainer to an array of interface 
+  // We need to convert the NetDeviceContainer to an array of interface
   // numbers
   std::vector<uint32_t> outputInterfaces;
   for (NetDeviceContainer::Iterator i = output.Begin (); i != output.End (); ++i)
@@ -125,9 +125,9 @@ Ipv4StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv4StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
-  Ipv4Address source, 
+  Ipv4Address source,
   Ipv4Address group,
-  std::string inputName, 
+  std::string inputName,
   NetDeviceContainer output)
 {
   Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
@@ -137,9 +137,9 @@ Ipv4StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv4StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
-  Ipv4Address source, 
+  Ipv4Address source,
   Ipv4Address group,
-  Ptr<NetDevice> input, 
+  Ptr<NetDevice> input,
   NetDeviceContainer output)
 {
   Ptr<Node> n = Names::Find<Node> (nName);
@@ -149,9 +149,9 @@ Ipv4StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv4StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
-  Ipv4Address source, 
+  Ipv4Address source,
   Ipv4Address group,
-  std::string inputName, 
+  std::string inputName,
   NetDeviceContainer output)
 {
   Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
@@ -161,7 +161,7 @@ Ipv4StaticRoutingHelper::AddMulticastRoute (
 
 void
 Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
-  Ptr<Node> n, 
+  Ptr<Node> n,
   Ptr<NetDevice> nd)
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
@@ -173,7 +173,7 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
   Ptr<Ipv4StaticRouting> ipv4StaticRouting = helper.GetStaticRouting (ipv4);
   if (!ipv4StaticRouting)
     {
-      NS_ASSERT_MSG (ipv4StaticRouting, 
+      NS_ASSERT_MSG (ipv4StaticRouting,
                      "Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(): "
                      "Expected an Ipv4StaticRouting associated with this node");
     }
@@ -182,7 +182,7 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
-  Ptr<Node> n, 
+  Ptr<Node> n,
   std::string ndName)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
@@ -191,7 +191,7 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
-  std::string nName, 
+  std::string nName,
   Ptr<NetDevice> nd)
 {
   Ptr<Node> n = Names::Find<Node> (nName);
@@ -200,7 +200,7 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
-  std::string nName, 
+  std::string nName,
   std::string ndName)
 {
   Ptr<Node> n = Names::Find<Node> (nName);

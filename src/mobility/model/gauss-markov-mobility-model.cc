@@ -165,19 +165,19 @@ GaussMarkovMobilityModel::DoWalk (Time delayLeft)
     }
   else
     {
-      if (nextPosition.x > m_bounds.xMax || nextPosition.x < m_bounds.xMin) 
+      if (nextPosition.x > m_bounds.xMax || nextPosition.x < m_bounds.xMin)
         {
           speed.x = -speed.x;
           m_meanDirection = M_PI - m_meanDirection;
         }
 
-      if (nextPosition.y > m_bounds.yMax || nextPosition.y < m_bounds.yMin) 
+      if (nextPosition.y > m_bounds.yMax || nextPosition.y < m_bounds.yMin)
         {
           speed.y = -speed.y;
           m_meanDirection = -m_meanDirection;
         }
 
-      if (nextPosition.z > m_bounds.zMax || nextPosition.z < m_bounds.zMin) 
+      if (nextPosition.z > m_bounds.zMax || nextPosition.z < m_bounds.zMin)
         {
           speed.z = -speed.z;
           m_meanPitch = -m_meanPitch;
@@ -205,7 +205,7 @@ GaussMarkovMobilityModel::DoGetPosition (void) const
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
 }
-void 
+void
 GaussMarkovMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);

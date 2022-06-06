@@ -54,7 +54,7 @@ DataCalculator::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void
 DataCalculator::DoDispose (void)
 {

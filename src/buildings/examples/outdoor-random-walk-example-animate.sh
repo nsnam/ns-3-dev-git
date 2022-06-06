@@ -32,7 +32,7 @@
 # 'buildings.txt' file are present in the same directory.  The script
 # will create a subdirectory named 'outdoor-random-walk-animation' and
 # will generate 820 PNG files into that subdirectory.
-# 
+#
 # The PNGs are named in increasing numerical order from '0000.png' to
 # '0819.png'.  The images can be assembled into an animated gif file
 # using a tool such as ImageMagick's convert utility, such as:
@@ -62,7 +62,7 @@ set style circle radius 5
 plot "<echo '$p'" with circles lc rgb "blue"
 EOL
     gnuplot buildings.txt plotcmds
-    rm plotcmds 
+    rm plotcmds
     mv $basename.png outdoor-random-walk-animation
     (( n++ ))
 done < mobility-trace-reduced.txt

@@ -19,7 +19,7 @@
 #  @ingroup randomvariable
 #  Demonstrate use of ns-3 as a random number generator integrated with
 #  plotting tools.
-#  
+#
 #  This is adapted from Gustavo Carneiro's ns-3 tutorial
 
 

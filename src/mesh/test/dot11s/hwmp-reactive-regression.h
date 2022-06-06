@@ -34,12 +34,12 @@ using namespace ns3;
  * Initiate scenario with 6 stations. Procedure of opening peer link
  * is the following: (PMP routines are not shown)
  * \verbatim
- *      0    1    2    3    4    5 
+ *      0    1    2    3    4    5
  *      |    |    |    |    |<---|--->  ARP request (2.002s)
  *      |....|....|....|....|....|      ARP requests (continued)
  *      |<---|--->|    |    |    |      ARP request
  *  <---|--->|    |    |    |    |      PREQ       } This order is broken
- *  <---|--->|    |    |    |    |      ARP request} due to BroadcastDca 
+ *  <---|--->|    |    |    |    |      ARP request} due to BroadcastDca
  *      |<---|--->|    |    |    |      PREQ 2.00468s)
  *      |....|....|....|....|....|      ARP request
  *      |    |    |    |<---|--->|      PREQ (2.00621s)

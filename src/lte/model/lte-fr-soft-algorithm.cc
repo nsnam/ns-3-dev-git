@@ -59,7 +59,7 @@ static const struct FrSoftUplinkDefaultConfiguration
 {
   uint8_t cellId; ///< cell ID
   uint8_t ulBandwidth; ///< UL bandwidth
-  uint8_t ulEdgeSubBandOffset; ///< UL edge subband offset  
+  uint8_t ulEdgeSubBandOffset; ///< UL edge subband offset
   uint8_t ulEdgeSubBandwidth; ///< UL endge subbandwidth
 } g_frSoftUplinkDefaultConfiguration[] = {
   { 1, 15, 0, 5},

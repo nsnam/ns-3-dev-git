@@ -645,11 +645,11 @@ main (int argc, char *argv[])
     {
       NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; second TCP: " << secondTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
     }
-  else 
+  else
     {
       NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
     }
-  
+
   // Write traces only if we are not in validation mode (g_validate == "")
   std::ofstream pingOfStream;
   std::ofstream firstTcpRttOfStream;

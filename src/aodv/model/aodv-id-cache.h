@@ -55,7 +55,7 @@ public:
    * \param addr the IP address
    * \param id the cache entry ID
    * \returns true if the pair exists
-   */ 
+   */
   bool IsDuplicate (Ipv4Address addr, uint32_t id);
   /// Remove all expired entries
   void Purge ();

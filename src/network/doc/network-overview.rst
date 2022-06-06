@@ -40,7 +40,7 @@ Let's look more closely at the protocol demultiplexer. We want incoming frames
 at layer-2 to be delivered to the right layer-3 protocol such as IPv4. The
 function of this demultiplexer is to register callbacks for receiving packets.
 The callbacks are indexed based on the `EtherType
-<http://en.wikipedia.org/wiki/EtherType>`_ in the layer-2 frame.   
+<http://en.wikipedia.org/wiki/EtherType>`_ in the layer-2 frame.
 
 Many different types of higher-layer protocols may be connected to the
 NetDevice, such as IPv4, IPv6, ARP, MPLS, IEEE 802.1x, and packet sockets.

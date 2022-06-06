@@ -17,12 +17,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# NOTE: Run this script with the Python3 interpreter if the python3 compatibility 
+# NOTE: Run this script with the Python3 interpreter if the python3 compatibility
 #       of the ns-3 unit test runner needs to be tested.
 
 #   The following options of test.py are being tested for poratability by this script.
 #   To see the options supported by this script, run with the -h option on the command line
-#      
+#
 #   -h, --help            show this help message and exit
 #   -b BUILDPATH, --buildpath=BUILDPATH
 #                         specify the path where ns-3 was built (defaults to the

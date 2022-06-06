@@ -70,7 +70,7 @@ repoversion="$(basename $(dirname $PWD))@$(hg id -i)"
 
 # curl complains if this contains white space
 description="Coverity-mods"
-    
+
 doo curl \
      --form file=@$tarf \
      --form project=ns-3 \

@@ -31,10 +31,10 @@ using namespace ns3;
 void Print ( ComponentCarrier cc);
 
 int main (int argc, char *argv[])
-{	
+{
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-	
+
   Config::SetDefault ("ns3::ComponentCarrier::UlBandwidth", UintegerValue (50));
   Config::SetDefault ("ns3::ComponentCarrier::PrimaryCarrier", BooleanValue (true));
 
@@ -45,15 +45,15 @@ int main (int argc, char *argv[])
   cch->SetNumberOfComponentCarriers(2);
 
   std::map< uint8_t, ComponentCarrier > ccm = cch->EquallySpacedCcs ();
- 
+
   std::map< uint8_t, ComponentCarrier >::iterator it;
-  
+
   std::cout << " CcMap size " << ccm.size () << std::endl;
   for (it = ccm.begin (); it !=ccm.end (); it++)
     {
       Print (it->second);
     }
- 
+
 
   Simulator::Stop (Seconds (1.05));
 
@@ -72,6 +72,6 @@ void Print ( ComponentCarrier cc)
             << " DlBandwidth " << uint16_t (cc.GetDlBandwidth ())
             << " Dl Earfcn " << cc.GetDlEarfcn ()
             << " Ul Earfcn " << cc.GetUlEarfcn ()
-            << " - Is this the Primary Channel? " << cc.IsPrimary () 
+            << " - Is this the Primary Channel? " << cc.IsPrimary ()
             << std::endl;
 }

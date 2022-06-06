@@ -280,7 +280,7 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   WaveNetDeviceExample example;
   std::cout << "run WAVE WSMP routing service case:" << std::endl;
   example.SendWsmpExample ();

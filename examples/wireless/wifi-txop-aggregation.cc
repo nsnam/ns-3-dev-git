@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
                "Ssid", SsidValue (ssid));
 
   staDeviceB = wifi.Install (phy, mac, wifiStaNodes.Get (1));
-  
+
   // Disable A-MPDU
   dev = wifiStaNodes.Get (1)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
@@ -180,7 +180,7 @@ int main (int argc, char *argv[])
                "Ssid", SsidValue (ssid),
                "EnableBeaconJitter", BooleanValue (false));
   apDeviceB = wifi.Install (phy, mac, wifiApNodes.Get (1));
-  
+
   // Disable A-MPDU
   dev = wifiApNodes.Get (1)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);

@@ -32,7 +32,7 @@ namespace ns3 {
 class Dot11sStack : public MeshStack
 {
 public:
-  
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -61,7 +61,7 @@ public:
    * \return true if successful
    */
   bool InstallStack (Ptr<MeshPointDevice> mp);
- 
+
   /**
    * \brief Iterate through the referenced devices and protocols and print
    * their statistics

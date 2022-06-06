@@ -16,8 +16,8 @@ Overview
 The |ns3| `mesh` module extends the |ns3| `wifi` module to provide mesh
 networking capabilities according to the IEEE 802.11s standard [ieee80211s]_.
 
-The basic purpose of IEEE 802.11s is to define a mode of operation for 
-Wi-Fi that permits frames to be forwarded over multiple radio hops 
+The basic purpose of IEEE 802.11s is to define a mode of operation for
+Wi-Fi that permits frames to be forwarded over multiple radio hops
 transparent to higher layer protocols such as IP.  To accomplish this,
 mesh-capable stations form a `Mesh Basic Service Set` (MBSS) by running
 a pair-wise peering protocol to establish forwarding associations, and
@@ -29,7 +29,7 @@ The basic enhancements defined by IEEE 802.11s include:
 
 * discovery services
 * peering management
-* security 
+* security
 * beaconing and synchronization
 * the Mesh Coordination Function (MCF)
 * power management
@@ -51,12 +51,12 @@ presentation by Kirill Andreev was published at the Workshop on ns-3
 in 2009 [And09]_.  An overview paper is available at [And10]_.
 
 As of ns-3.23 release, the model has been updated to the 802.11s-2012
-standard [ieee80211s]_ with regard to packet formats, based on the 
+standard [ieee80211s]_ with regard to packet formats, based on the
 contribution in [Hep15]_.
 
 These changes include:
 
-* Category codes and the categories compliant to IEEE-802.11-2012 Table 8-38—Category values.  
+* Category codes and the categories compliant to IEEE-802.11-2012 Table 8-38—Category values.
 * Information Elements (An adjustment of the element ID values was needed according to Table 8-54 of IEEE-802.11-2012).
 * Mesh Peering Management element format changed according to IEEE-802.11-2012 Figure 8-370.
 * Mesh Configuration element format changed according to IEEE-802.11-2012 Figure 8-363.
@@ -76,8 +76,8 @@ The tasks of the peer management protocol are the following:
 * opening links, detecting beacons, and starting peer link finite state machine, and
 * closing peer links due to transmission failures or beacon loss.
 
-If a peer link between the sender and receiver does not exist, a frame will be 
-dropped. So, the plug-in to the peer management protocol (PMP) is the first 
+If a peer link between the sender and receiver does not exist, a frame will be
+dropped. So, the plug-in to the peer management protocol (PMP) is the first
 in the list of ``ns3::MeshWifiInterfaceMacPlugins`` to be used.
 
 Peer management protocol
@@ -89,14 +89,14 @@ The peer management protocol consists of three main parts:
 * the MAC plug-in, ``ns3::dot11s::PeerManagementProtocolMac``, which drops frames if there is no peer link, and peeks all needed information from management frames and information elements from beacons.
 * the peer link, ``ns3::dot11s::PeerLink``, which keeps finite state machine of each peer link, keeps beacon loss counter and counter of successive transmission failures.
 
-The procedure of closing a peer link is not described in detail in the 
-standard, so in the model the link may be closed by: 
+The procedure of closing a peer link is not described in detail in the
+standard, so in the model the link may be closed by:
 
 * beacon loss (see an appropriate attribute of ns3::dot11s::PeerLink class)
 * transmission failure – when a predefined number of successive packets have failed to transmit, the link will be closed.
 
-The peer management protocol is also responsible for beacon collision avoidance, because it keeps beacon timing elements from all neighbours. Note that the PeerManagementProtocol is not attached to the MeshPointDevice as a routing protocol, but the structure is similar: the upper tier of the protocol is 
-``ns3::dot11s::PeerManagementProtocol`` and its plug-in is 
+The peer management protocol is also responsible for beacon collision avoidance, because it keeps beacon timing elements from all neighbours. Note that the PeerManagementProtocol is not attached to the MeshPointDevice as a routing protocol, but the structure is similar: the upper tier of the protocol is
+``ns3::dot11s::PeerManagementProtocol`` and its plug-in is
 ``ns3::dot11s::PeerManagementProtocolMac``.
 
 Hybrid Wireless Mesh Protocol
@@ -115,7 +115,7 @@ within radio range of the next hop node decide to forward a received
 frame at the same time, they will repeatedly collide (if no backoff is
 triggered).  Past contributors have argued for the triggering of backoff
 when forwarding a frame (e.g., [Hep16]_), but current wifi module maintainers
-concluded that the standard does not call for backoff in this case.  
+concluded that the standard does not call for backoff in this case.
 This was also privately confirmed with a Wi-Fi vendor.
 `Issue 478 <https://gitlab.com/nsnam/ns-3-dev/-/issues/478>`_ in the GitLab.com
 tracker has more discussion on this point.
@@ -193,7 +193,7 @@ Mesh PCAP is not decoded properly by Wireshark (https://www.nsnam.org/bugzilla/s
 
 Energy module can not be used on mesh devices (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2265).
 
-IE11S_MESH_PEERING_PROTOCOL_VERSION should be removed as per standard. 
+IE11S_MESH_PEERING_PROTOCOL_VERSION should be removed as per standard.
 Protocol ID should actually be part of the Mesh Peering Management IE (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2600).
 
 MeshInformationElementVector printing error (https://www.nsnam.org/bugzilla/show_bug.cgi?id=2728).

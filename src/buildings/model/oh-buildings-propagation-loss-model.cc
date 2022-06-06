@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
- * 
+ *
  */
 
 #include "ns3/propagation-loss-model.h"
@@ -52,12 +52,12 @@ TypeId
 OhBuildingsPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OhBuildingsPropagationLossModel")
-  
+
   .SetParent<BuildingsPropagationLossModel> ()
   .SetGroupName ("Buildings")
-  
+
   .AddConstructor<OhBuildingsPropagationLossModel> ();
-  
+
   return tid;
 }
 

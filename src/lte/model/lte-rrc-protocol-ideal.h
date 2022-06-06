@@ -42,8 +42,8 @@ class LteUeRrc;
  *
  * Models the transmission of RRC messages from the UE to the eNB in
  * an ideal fashion, without errors and without consuming any radio
- * resources. 
- * 
+ * resources.
+ *
  */
 class LteUeRrcProtocolIdeal : public Object
 {
@@ -75,14 +75,14 @@ public:
    * \returns LTE UE RRC SAP user
    */
   LteUeRrcSapUser* GetLteUeRrcSapUser ();
-  
+
   /**
    * Set LTE UE RRC  function
    *
-   * \param rrc LTE UE RRC 
+   * \param rrc LTE UE RRC
    */
   void SetUeRrc (Ptr<LteUeRrc> rrc);
-  
+
 
 private:
 
@@ -90,43 +90,43 @@ private:
   /**
    * Setup function
    *
-   * \param params LteUeRrcSapUser::SetupParameters 
+   * \param params LteUeRrcSapUser::SetupParameters
    */
   void DoSetup (LteUeRrcSapUser::SetupParameters params);
   /**
    * Send RRC connection request function
    *
-   * \param msg LteRrcSap::RrcConnectionRequest 
+   * \param msg LteRrcSap::RrcConnectionRequest
    */
   void DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg);
   /**
    * Send RRC connection setup completed function
    *
-   * \param msg LteRrcSap::RrcConnectionSetupCompleted 
+   * \param msg LteRrcSap::RrcConnectionSetupCompleted
    */
   void DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg);
   /**
    * Send RRC connection reconfiguration completed function
    *
-   * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted 
+   * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted
    */
   void DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
   /**
    * Send RRC connection reestablishment request function
    *
-   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest 
+   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest
    */
   void DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
   /**
    * Send RRC connection reestablishment complete function
    *
-   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest 
+   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest
    */
   void DoSendRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
   /**
    * Send measurement report function
    *
-   * \param msg LteRrcSap::MeasurementReport 
+   * \param msg LteRrcSap::MeasurementReport
    */
   void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
 
@@ -149,15 +149,15 @@ private:
   LteUeRrcSapProvider* m_ueRrcSapProvider; ///< the UE RRC SAP provider
   LteUeRrcSapUser* m_ueRrcSapUser; ///< the RRC SAP user
   LteEnbRrcSapProvider* m_enbRrcSapProvider; ///< the ENB RRC SAP provider
-  
+
 };
 
 
 /**
  * Models the transmission of RRC messages from the UE to the eNB in
  * an ideal fashion, without errors and without consuming any radio
- * resources. 
- * 
+ * resources.
+ *
  */
 class LteEnbRrcProtocolIdeal : public Object
 {
@@ -180,7 +180,7 @@ public:
   /**
    * Set LTE ENB RRC SAP provider function
    *
-   * \param p the LTE ENB RRC SAP provider 
+   * \param p the LTE ENB RRC SAP provider
    */
   void SetLteEnbRrcSapProvider (LteEnbRrcSapProvider* p);
   /**
@@ -193,7 +193,7 @@ public:
   /**
    * Set the cell ID function
    *
-   * \param cellId the cell ID 
+   * \param cellId the cell ID
    */
   void SetCellId (uint16_t cellId);
 
@@ -208,7 +208,7 @@ public:
    * Set UE RRC SAP provider function
    *
    * \param rnti the RNTI
-   * \param p the UE RRC SAP provider 
+   * \param p the UE RRC SAP provider
    */
   void SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider* p);
 
@@ -219,7 +219,7 @@ private:
    * Setup UE function
    *
    * \param rnti the RNTI
-   * \param params LteEnbRrcSapUser::SetupUeParameters 
+   * \param params LteEnbRrcSapUser::SetupUeParameters
    */
   void DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParameters params);
   /**
@@ -318,7 +318,7 @@ private:
   LteEnbRrcSapProvider* m_enbRrcSapProvider; ///< the ENB RRC SAP provider
   LteEnbRrcSapUser* m_enbRrcSapUser; ///< the ENB RRC SAP user
   std::map<uint16_t, LteUeRrcSapProvider*> m_enbRrcSapProviderMap; ///< the LTE UE RRC SAP provider
-  
+
 };
 
 

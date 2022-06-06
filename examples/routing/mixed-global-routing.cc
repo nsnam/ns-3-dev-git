@@ -24,7 +24,7 @@
 //     \ p-p
 //      \          (shared csma/cd)
 //       n2 -------------------------n3
-//      /            |        | 
+//      /            |        |
 //     / p-p        n4        n5 ---------- n6
 //   n1                             p-p
 //
@@ -47,7 +47,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("MixedGlobalRoutingExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));

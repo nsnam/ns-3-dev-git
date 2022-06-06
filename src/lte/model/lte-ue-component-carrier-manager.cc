@@ -68,7 +68,7 @@ LteUeComponentCarrierManager::GetLteCcmRrcSapProvider ()
 }
 
 
-bool 
+bool
 LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders (uint8_t componentCarrierId, LteMacSapProvider* sap)
 {
   NS_LOG_FUNCTION (this);
@@ -89,7 +89,7 @@ LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders (uint8_t compon
       result = true;
     }
   return result;
-  
+
 }
 
 void

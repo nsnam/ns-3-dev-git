@@ -33,19 +33,19 @@ namespace ns3 {
  * \brief Random waypoint mobility model.
  *
  * Each object starts by pausing at time zero for the duration governed
- * by the random variable "Pause".  After pausing, the object will pick 
- * a new waypoint (via the PositionAllocator) and a new random speed 
- * via the random variable "Speed", and will begin moving towards the 
- * waypoint at a constant speed.  When it reaches the destination, 
+ * by the random variable "Pause".  After pausing, the object will pick
+ * a new waypoint (via the PositionAllocator) and a new random speed
+ * via the random variable "Speed", and will begin moving towards the
+ * waypoint at a constant speed.  When it reaches the destination,
  * the process starts over (by pausing).
  *
- * This mobility model enforces no bounding box by itself; the 
+ * This mobility model enforces no bounding box by itself; the
  * PositionAllocator assigned to this object will bound the movement.
  * If the user fails to provide a pointer to a PositionAllocator to
  * be used to pick waypoints, the simulation program will assert.
  *
  * The implementation of this model is not 2d-specific. i.e. if you provide
- * a 3d random waypoint position model to this mobility model, the model 
+ * a 3d random waypoint position model to this mobility model, the model
  * will still work. There is no 3d position allocator for now but it should
  * be trivial to add one.
  */

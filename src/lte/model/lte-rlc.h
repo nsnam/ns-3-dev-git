@@ -38,7 +38,7 @@ namespace ns3 {
 
 // class LteRlcSapProvider;
 // class LteRlcSapUser;
-// 
+//
 // class LteMacSapProvider;
 // class LteMacSapUser;
 
@@ -131,12 +131,12 @@ public:
 
   /// \todo MRE What is the sense to duplicate all the interfaces here???
   // NB to avoid the use of multiple inheritance
-  
+
 protected:
   // Interface forwarded by LteRlcSapProvider
   /**
    * Transmit PDCP PDU
-   * 
+   *
    * \param p packet
    */
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p) = 0;
@@ -149,17 +149,17 @@ protected:
    * Notify transmit opportunity
    *
    * \param params LteMacSapUser::TxOpportunityParameters
-   */ 
+   */
   virtual void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters params) = 0;
   /**
    * Notify HARQ delivery failure
-   */ 
+   */
   virtual void DoNotifyHarqDeliveryFailure () = 0;
   /**
    * Receive PDU function
    *
    * \param params the LteMacSapUser::ReceivePduParameters
-   */ 
+   */
   virtual void DoReceivePdu (LteMacSapUser::ReceivePduParameters params) = 0;
 
   LteMacSapUser* m_macSapUser; ///< MAC SAP user

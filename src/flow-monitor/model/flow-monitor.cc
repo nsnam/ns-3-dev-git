@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 
 NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
 
-TypeId 
+TypeId
 FlowMonitor::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FlowMonitor")
@@ -73,7 +73,7 @@ FlowMonitor::GetTypeId (void)
   return tid;
 }
 
-TypeId 
+TypeId
 FlowMonitor::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
@@ -224,7 +224,7 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
           stats.jitterSum += jitter;
           stats.jitterHistogram.AddValue (jitter.GetSeconds ());
         }
-      else 
+      else
         {
           stats.jitterSum -= jitter;
           stats.jitterHistogram.AddValue (-jitter.GetSeconds ());

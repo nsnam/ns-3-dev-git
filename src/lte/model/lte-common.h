@@ -73,7 +73,7 @@ public:
 };
 
 /**
-* \brief Parameters for configuring the UE 
+* \brief Parameters for configuring the UE
 */
 struct LteUeConfig_t
 {
@@ -122,7 +122,7 @@ class LteFfConverter
 public:
   /**
    * Convert from double to fixed point S11.3 notation
-   * 
+   *
    * \param val double value
    * \returns fixed point S11.3 value
    */
@@ -132,7 +132,7 @@ public:
    *
    * \param val fixed point S11.3 value
    * \returns double value
-   */ 
+   */
   static double fpS11dot3toDouble (uint16_t val);
   /**
    * Get minimum fixed point S11.3 value
@@ -196,7 +196,7 @@ struct PhyTransmissionStatParameters
   uint8_t  m_rv;      ///< the redundancy version (HARQ)
   uint8_t  m_ndi;     ///< new data indicator flag
   uint8_t  m_ccId;    ///< component carrier id
-  
+
   /**
    *  TracedCallback signature.
    *
@@ -204,7 +204,7 @@ struct PhyTransmissionStatParameters
    * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const PhyTransmissionStatParameters params);
-  
+
 };
 
 
@@ -231,7 +231,7 @@ struct PhyReceptionStatParameters
    * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const PhyReceptionStatParameters params);
-  
+
 };
 
 
@@ -246,70 +246,70 @@ struct DlSchedulingCallbackInfo
   uint8_t  mcsTb2; ///< MCS TB2
   uint16_t sizeTb2; ///< size TB2
   uint8_t  componentCarrierId; ///< component carrier ID
-}; 
+};
 
 /**
  * Implements the E-UTRA measurement mappings defined in  3GPP TS
- * 36.133 section 9.1 E-UTRAN measurements 
- * 
+ * 36.133 section 9.1 E-UTRAN measurements
+ *
  */
 class EutranMeasurementMapping
 {
 public:
-  /** 
-   * converts an RSRP range to dBm as per 
+  /**
+   * converts an RSRP range to dBm as per
    * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
    *
    * \param range the RSRP range value
-   * 
+   *
    * \return the corresponding RSRP value in dBm
    */
   static double RsrpRange2Dbm (uint8_t range);
 
-  /** 
-   * convert an RSRP value in dBm to the corresponding range as per 
+  /**
+   * convert an RSRP value in dBm to the corresponding range as per
    * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
-   * 
+   *
    * \param dbm the RSRP value in dBm
-   * 
+   *
    * \return the corresponding range
    */
   static uint8_t Dbm2RsrpRange (double dbm);
 
-  /** 
-   * converts an RSRQ range to dB as per 
+  /**
+   * converts an RSRQ range to dB as per
    * 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
    *
    * \param range the RSRQ range value
-   * 
+   *
    * \return the corresponding RSRQ value in dB
    */
   static double RsrqRange2Db (uint8_t range);
 
-  /** 
-   * convert an RSRQ value in dB to the corresponding range as per 
+  /**
+   * convert an RSRQ value in dB to the corresponding range as per
    * 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
-   * 
+   *
    * \param db the RSRQ value in dB
-   * 
+   *
    * \return the corresponding range
    */
   static uint8_t Db2RsrqRange (double db);
 
-  /** 
+  /**
    * Quantize an RSRP value according to the measurement mapping of TS 36.133
-   * 
+   *
    * \param v RSRP value in dBm
-   * 
+   *
    * \return the quantized RSRP value in dBm
    */
   static double QuantizeRsrp (double v);
 
-  /** 
+  /**
    * Quantize an RSRQ value according to the measurement mapping of TS 36.133
-   * 
+   *
    * \param v RSRQ value in dB
-   * 
+   *
    * \return the quantized RSRQ value in dB
    */
   static double QuantizeRsrq (double v);

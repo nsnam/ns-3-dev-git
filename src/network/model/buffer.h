@@ -39,7 +39,7 @@ namespace ns3 {
  * or appended by the user. Its implementation is optimized
  * to ensure that the number of buffer resizes is minimized,
  * by creating new Buffers of the maximum size ever used.
- * The correct maximum size is learned at runtime during use by 
+ * The correct maximum size is learned at runtime during use by
  * recording the maximum size of each packet.
  *
  * \internal
@@ -48,11 +48,11 @@ namespace ns3 {
  * the data bytes is shared among a lot of Buffer instances despite
  * data being added or removed from them.
  *
- * When multiple Buffer instances hold a reference to the same 
+ * When multiple Buffer instances hold a reference to the same
  * underlying BufferData object, they must be able to detect when
  * the operation they want to perform should trigger a copy of the
  * BufferData. If the BufferData::m_count field is one, it means that
- * there exist only one instance of Buffer which references the 
+ * there exist only one instance of Buffer which references the
  * BufferData instance so, it is safe to modify it. It is also
  * safe to modify the content of a BufferData if the modification
  * falls outside of the "dirty area" defined by the BufferData.
@@ -89,13 +89,13 @@ namespace ns3 {
  *
  * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */
-class Buffer 
+class Buffer
 {
 public:
   /**
    * \brief iterator in a Buffer instance
    */
-  class Iterator 
+  class Iterator
   {
 public:
     inline Iterator ();
@@ -490,7 +490,7 @@ private:
   inline uint32_t GetSize (void) const;
 
   /**
-   * \return a pointer to the start of the internal 
+   * \return a pointer to the start of the internal
    * byte buffer.
    *
    * The returned pointer points to an area of
@@ -577,9 +577,9 @@ private:
    * \param buffer points to serialization buffer
    * \param maxSize max number of bytes to write
    *
-   * This buffer's contents are serialized into the raw 
-   * character buffer parameter. Note: The zero length 
-   * data is not copied entirely. Only the length of 
+   * This buffer's contents are serialized into the raw
+   * character buffer parameter. Note: The zero length
+   * data is not copied entirely. Only the length of
    * zero byte data is serialized.
    */
   uint32_t Serialize (uint8_t* buffer, uint32_t maxSize) const;
@@ -589,14 +589,14 @@ private:
    * \param buffer points to buffer for deserialization
    * \param size number of bytes to deserialize
    *
-   * The raw character buffer is deserialized and all the 
+   * The raw character buffer is deserialized and all the
    * data is placed into this buffer.
    */
   uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
 
-  /** 
+  /**
    * Copy the specified amount of data from the buffer to the given output stream.
-   * 
+   *
    * @param os the output stream
    * @param size the maximum amount of bytes to copy. If zero, nothing is copied.
    */
@@ -758,13 +758,13 @@ private:
    * decide on the position of the zero area in new buffers.
    * It is read from the Buffer destructor to update the global
    * heuristic data and these global heuristic data are used from
-   * the Buffer constructor to choose an initial value for 
+   * the Buffer constructor to choose an initial value for
    * m_zeroAreaStart.
    */
   uint32_t m_maxZeroAreaStart;
   /**
    * location in a newly-allocated buffer where you should start
-   * writing data. i.e., m_start should be initialized to this 
+   * writing data. i.e., m_start should be initialized to this
    * value.
    */
   static uint32_t g_recommendedStart;
@@ -794,7 +794,7 @@ private:
   /// Container for buffer data
   typedef std::vector<struct Buffer::Data*> FreeList;
   /// Local static destructor structure
-  struct LocalStaticDestructor 
+  struct LocalStaticDestructor
   {
     ~LocalStaticDestructor ();
   };
@@ -841,25 +841,25 @@ Buffer::Iterator::Construct (const Buffer *buffer)
   m_data = buffer->m_data->m_data;
 }
 
-void 
+void
 Buffer::Iterator::Next (void)
 {
   NS_ASSERT (m_current + 1 <= m_dataEnd);
   m_current++;
 }
-void 
+void
 Buffer::Iterator::Prev (void)
 {
   NS_ASSERT (m_current >= 1);
   m_current--;
 }
-void 
+void
 Buffer::Iterator::Next (uint32_t delta)
 {
   NS_ASSERT (m_current + delta <= m_dataEnd);
   m_current += delta;
 }
-void 
+void
 Buffer::Iterator::Prev (uint32_t delta)
 {
   NS_ASSERT (m_current >= delta);
@@ -883,7 +883,7 @@ Buffer::Iterator::WriteU8 (uint8_t data)
     }
 }
 
-void 
+void
 Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 {
   NS_ASSERT_MSG (CheckNoZero (m_current, m_current + len),
@@ -901,7 +901,7 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
     }
 }
 
-void 
+void
 Buffer::Iterator::WriteHtonU16 (uint16_t data)
 {
   NS_ASSERT_MSG (CheckNoZero (m_current, m_current + 2),
@@ -920,7 +920,7 @@ Buffer::Iterator::WriteHtonU16 (uint16_t data)
   m_current+= 2;
 }
 
-void 
+void
 Buffer::Iterator::WriteHtonU32 (uint32_t data)
 {
   NS_ASSERT_MSG (CheckNoZero (m_current, m_current + 4),
@@ -942,7 +942,7 @@ Buffer::Iterator::WriteHtonU32 (uint32_t data)
   m_current+= 4;
 }
 
-uint16_t 
+uint16_t
 Buffer::Iterator::ReadNtohU16 (void)
 {
   uint8_t *buffer;
@@ -966,7 +966,7 @@ Buffer::Iterator::ReadNtohU16 (void)
   return retval;
 }
 
-uint32_t 
+uint32_t
 Buffer::Iterator::ReadNtohU32 (void)
 {
   uint8_t *buffer;
@@ -1025,7 +1025,7 @@ Buffer::Iterator::ReadU8 (void)
   return ret;
 }
 
-uint16_t 
+uint16_t
 Buffer::Iterator::ReadU16 (void)
 {
   uint8_t byte0 = ReadU8 ();
@@ -1042,7 +1042,7 @@ Buffer::Iterator::Read (Buffer::Iterator start, uint32_t size)
 {
   Buffer::Iterator end = *this;
   end.Next (size);
-  
+
   start.Write (*this, end);
 }
 
@@ -1059,19 +1059,19 @@ Buffer::Buffer (Buffer const&o)
   NS_ASSERT (CheckInternalState ());
 }
 
-uint32_t 
+uint32_t
 Buffer::GetSize (void) const
 {
   return m_end - m_start;
 }
 
-Buffer::Iterator 
+Buffer::Iterator
 Buffer::Begin (void) const
 {
   NS_ASSERT (CheckInternalState ());
   return Buffer::Iterator (this);
 }
-Buffer::Iterator 
+Buffer::Iterator
 Buffer::End (void) const
 {
   NS_ASSERT (CheckInternalState ());

@@ -603,7 +603,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   reportConfigToAddMod.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
   reportConfigToAddMod.reportConfigEutra.maxReportCells = 5;
   reportConfigToAddMod.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN60;
-  reportConfigToAddMod.reportConfigEutra.reportAmount = 16; 
+  reportConfigToAddMod.reportConfigEutra.reportAmount = 16;
   msg.measConfig.reportConfigToAddModList.push_back (reportConfigToAddMod);
 
   // Set measIdToAddModList

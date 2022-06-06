@@ -93,7 +93,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  
+
   FlameProtocol ();
   ~FlameProtocol ();
 

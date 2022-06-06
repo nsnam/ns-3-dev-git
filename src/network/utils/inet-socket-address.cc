@@ -80,7 +80,7 @@ InetSocketAddress::GetTos (void) const
   return m_tos;
 }
 
-void 
+void
 InetSocketAddress::SetPort (uint16_t port)
 {
   NS_LOG_FUNCTION (this << port);
@@ -111,7 +111,7 @@ InetSocketAddress::operator Address () const
   return ConvertTo ();
 }
 
-Address 
+Address
 InetSocketAddress::ConvertTo (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -122,7 +122,7 @@ InetSocketAddress::ConvertTo (void) const
   buf[6] = m_tos;
   return Address (GetType (), buf, 7);
 }
-InetSocketAddress 
+InetSocketAddress
 InetSocketAddress::ConvertFrom (const Address &address)
 {
   NS_LOG_FUNCTION (&address);
@@ -136,7 +136,7 @@ InetSocketAddress::ConvertFrom (const Address &address)
   inet.SetTos (tos);
   return inet;
 }
-uint8_t 
+uint8_t
 InetSocketAddress::GetType (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -24,7 +24,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteTestUePhy");
- 
+
 NS_OBJECT_ENSURE_REGISTERED (LteTestUePhy);
 
 LteTestUePhy::LteTestUePhy ()
@@ -89,7 +89,7 @@ void
 LteTestUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
-  
+
   // Store calculated SINR, it will be retrieved at the end of the test
   m_sinr = sinr;
 }

@@ -2429,7 +2429,7 @@ private:
  * point is selected.  In either case the interpolating mode will *not*
  * interpolate (since there is no value beyond `r` to work with), but
  * simply return the extremal CDF value, as in sampling.
- * 
+ *
  * Here is an example of how to use this class:
  *
  *    // Create the RNG with a non-uniform distribution between 0 and 10.

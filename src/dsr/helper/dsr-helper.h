@@ -46,7 +46,7 @@ namespace ns3 {
  * \ingroup dsr
  *
  * \brief DSR helper class to manage creation of DSR routing instance and
- *        to insert it on a node as a sublayer between transport and 
+ *        to insert it on a node as a sublayer between transport and
  *        IP layers.
  */
 class DsrHelper

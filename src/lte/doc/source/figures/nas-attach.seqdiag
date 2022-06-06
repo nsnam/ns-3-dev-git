@@ -1,8 +1,8 @@
 
 diagram {
 	EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcMmeApplication; EpcSgwApplication; EpcPgwApplication;
-	
-	
+
+
 	EpcUeNas ->> LteUeRrc [label="ForceCampedOnEnb (CellId)"]
 	EpcUeNas ->> LteUeRrc [label="Connect"]
 	LteUeRrc ->> LteEnbRrc [label="RRC Connection Request"]

@@ -29,7 +29,7 @@
 //     \ p-p
 //      \          (shared csma/cd)
 //       n2 -------------------------n3
-//      /            |        | 
+//      /            |        |
 //     / p-p        n4        n5 ---------- n6
 //   n1                             p-p
 //   |                                      |
@@ -55,7 +55,7 @@
 //    on the n1/n6 p2p link)
 //  At time 12s, bring the n1 interface down between n1 and n6.  Packets
 //    will be diverted to the alternate path
-//  At time 14s, re-enable the n1/n6 interface to up.  This will change 
+//  At time 14s, re-enable the n1/n6 interface to up.  This will change
 //    routing back to n1-n6 since the interface up notification will cause
 //    a new local interface route, at higher priority than global routing
 //  At time 16s, stop the second flow.
@@ -79,7 +79,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("DynamicGlobalRoutingExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // The below value configures the default behavior of global routing.
@@ -193,7 +193,7 @@ main (int argc, char *argv[])
 
   p2p.EnablePcapAll ("dynamic-global-routing");
   csma.EnablePcapAll ("dynamic-global-routing", false);
- 
+
   Ptr<Node> n1 = c.Get (1);
   Ptr<Ipv4> ipv41 = n1->GetObject<Ipv4> ();
   // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
@@ -214,7 +214,7 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (12),&Ipv4::SetDown,ipv41, ipv4ifIndex1);
   Simulator::Schedule (Seconds (14),&Ipv4::SetUp,ipv41, ipv4ifIndex1);
 
-  // Trace routing tables 
+  // Trace routing tables
   Ipv4GlobalRoutingHelper g;
   Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("dynamic-global-routing.routes", std::ios::out);
   g.PrintRoutingTableAllAt (Seconds (12), routingStream);

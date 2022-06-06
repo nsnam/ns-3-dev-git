@@ -34,7 +34,7 @@
 
 
 namespace ns3 {
-  
+
 /**
  * \ingroup energy
  * \brief Creates EnergyHarvester objects.

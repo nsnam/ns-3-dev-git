@@ -57,7 +57,7 @@ public:
   /**
    * Create Reservation object with given packet list,
    * frame number and max packets.
-   * 
+   *
    * \param list List of packets for assigned to reservation.
    * \param frameNo Frame number of reservation transmission.
    * \param maxPkts Maximum number of packets to assign to reservation
@@ -88,7 +88,7 @@ public:
   const std::list<std::pair <Ptr<Packet>, Mac8Address > > &GetPktList (void) const;
   /**
    * Get the frame number.
-   * 
+   *
    * \return The frame number.
    */
   uint8_t GetFrameNo () const;
@@ -124,7 +124,7 @@ public:
   void IncrementRetry ();
   /**
    * Set the reservation transmitted state.
-   * 
+   *
    * \param t True if resevation has been transmitted.
    */
   void SetTransmitted (bool t = true);
@@ -197,7 +197,7 @@ public:
    */
   typedef void (* QueueTracedCallback)
     (Ptr<const Packet> packet, uint32_t proto);
-  
+
 private:
   /** MAC state. */
   enum State {

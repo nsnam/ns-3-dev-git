@@ -55,7 +55,7 @@ NS_LOG_COMPONENT_DEFINE ("UanHelper");
  * \param mode The transmission mode.
  */
 static void AsciiPhyTxEvent (std::ostream *os, std::string context,
-                             Ptr<const Packet> packet, 
+                             Ptr<const Packet> packet,
                              [[maybe_unused]] double txPowerDb, UanTxMode mode)
 {
   *os << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
@@ -71,7 +71,7 @@ static void AsciiPhyTxEvent (std::ostream *os, std::string context,
  * \param mode The channel transmission mode.
  */
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context,
-                               Ptr<const Packet> packet, 
+                               Ptr<const Packet> packet,
                                [[maybe_unused]] double snr, UanTxMode mode)
 {
   *os << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;

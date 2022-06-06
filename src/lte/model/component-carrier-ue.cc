@@ -99,7 +99,7 @@ ComponentCarrierUe::GetPhy () const
   return m_phy;
 }
 
-void 
+void
 ComponentCarrierUe::SetMac (Ptr<LteUeMac> s)
 {
   NS_LOG_FUNCTION (this);

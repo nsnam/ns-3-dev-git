@@ -65,7 +65,7 @@ public:
   typedef typename std::pair<first_type, second_type> result_type;
 
   PairValue ();
-  
+
   /**
    * Construct this PairValue from a std::pair
    *
@@ -80,8 +80,8 @@ public:
 
   /**
    * Get the stored value as a std::pair.
-   * 
-   * This differs from the actual value stored in the object which is 
+   *
+   * This differs from the actual value stored in the object which is
    * a pair of Ptr<AV> where AV is a class derived from AttributeValue.
    * \return stored value as std::pair<A, B>.
    */
@@ -104,15 +104,15 @@ public:
 
   /**
    * Set the individual AttributeChecker for each pair entry.
-   * 
+   *
    * \param[in] firstchecker AttributeChecker for abscissa.
    * \param[in] secondchecker AttributeChecker for ordinate.
    */
   virtual void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker) = 0;
-  
+
   /**
    * Get the pair of checkers for each pair entry.
-   * 
+   *
    * \return std::pair with AttributeChecker for each of abscissa and ordinate.
    */
   virtual checker_pair_type GetCheckers (void) const = 0;
@@ -120,7 +120,7 @@ public:
 
 /**
  * Make a PairChecker from a PairValue.
- * 
+ *
  * This function returns a Pointer to a non-const instance to
  * allow subsequent setting of the underlying AttributeCheckers.
  * \param[in] value PairValue from which to derive abscissa and ordinate types.
@@ -132,10 +132,10 @@ MakePairChecker (const PairValue<A, B> &value);
 
 /**
  * Make a PairChecker from abscissa and ordinate AttributeCheckers.
- * 
+ *
  * This function returns a Pointer to a const instance since both
  * underlying AttributeCheckers are set.
- * 
+ *
  * \param[in] firstchecker AttributeChecker for abscissa.
  * \param[in] secondchecker AttributeChecker for ordinate.
  * \return Pointer to PairChecker instance.
@@ -146,7 +146,7 @@ MakePairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeCh
 
 /**
  * Make a PairChecker without abscissa and ordinate AttributeCheckers.
- * 
+ *
  * \return Pointer to PairChecker instance.
  */
 template <class A, class B>

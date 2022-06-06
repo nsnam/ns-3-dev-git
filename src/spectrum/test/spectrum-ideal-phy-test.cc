@@ -95,14 +95,14 @@ private:
    * \return the test name
    */
   static std::string Name (std::string channelType, double snrLinear, uint64_t phyRate);
-  
+
   double      m_snrLinear;        //!< SNR (linear)
   uint64_t    m_phyRate;          //!< PHY rate (bps)
   bool        m_rateIsAchievable; //!< Check if the rate is achievable
   std::string m_channelType;      //!< Channel type
 };
 
-std::string 
+std::string
 SpectrumIdealPhyTestCase::Name (std::string channelType, double snrLinear, uint64_t phyRate)
 {
   std::ostringstream oss;
@@ -132,22 +132,22 @@ SpectrumIdealPhyTestCase::~SpectrumIdealPhyTestCase ()
 
 void
 SpectrumIdealPhyTestCase::DoRun (void)
-{  
+{
   NS_LOG_FUNCTION (m_snrLinear << m_phyRate);
-  double txPowerW = 0.1; 
+  double txPowerW = 0.1;
   // for the noise, we use the Power Spectral Density of thermal noise
   // at room temperature. The value of the PSD will be constant over the band of interest.
   const double k = 1.381e-23; //Boltzmann's constant
   const double T = 290; // temperature in Kelvin
   double noisePsdValue = k * T; // W/Hz
-  double lossLinear = (txPowerW) / (m_snrLinear * noisePsdValue * g_bandwidth); 
+  double lossLinear = (txPowerW) / (m_snrLinear * noisePsdValue * g_bandwidth);
   double lossDb = 10 * std::log10 (lossLinear);
   uint64_t phyRate = m_phyRate; // bps
   uint32_t pktSize = 50; // bytes
 
   uint32_t numPkts = 200; //desired number of packets in the
 			  //test. Directly related with the accuracy
-			  //of the measurement. 
+			  //of the measurement.
 
   double testDuration = (numPkts * pktSize * 8.0) / phyRate;
   NS_LOG_INFO ("test duration = " << std::fixed << testDuration);
@@ -169,7 +169,7 @@ SpectrumIdealPhyTestCase::DoRun (void)
   SpectrumChannelHelper channelHelper;
   channelHelper.SetChannel (m_channelType);
   channelHelper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();  
+  Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
   propLoss->SetLoss (c.Get(0)->GetObject<MobilityModel> (), c.Get(1)->GetObject<MobilityModel> (), lossDb, true);
   channelHelper.AddPropagationLoss (propLoss);
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
@@ -214,14 +214,14 @@ SpectrumIdealPhyTestCase::DoRun (void)
   double throughputBps = (g_rxBytes * 8.0) / testDuration;
 
   std::clog.unsetf(std::ios_base::floatfield);
-  
+
   if (m_rateIsAchievable)
     {
       NS_TEST_ASSERT_MSG_EQ_TOL (throughputBps, m_phyRate, m_phyRate*0.01, "throughput does not match PHY rate");
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (throughputBps, 0.0, "PHY rate is not achievable but throughput is non-zero");    
+      NS_TEST_ASSERT_MSG_EQ (throughputBps, 0.0, "PHY rate is not achievable but throughput is non-zero");
     }
 
   Simulator::Destroy ();
@@ -245,10 +245,10 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite ()
 {
 
   NS_LOG_INFO ("creating SpectrumIdealPhyTestSuite");
-    
+
   for (double snr = 0.01; snr <= 10 ; snr *= 2)
-    {          
-      double achievableRate = g_bandwidth*log2(1+snr);      
+    {
+      double achievableRate = g_bandwidth*log2(1+snr);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.1),  true,  "ns3::SingleModelSpectrumChannel"), TestCase::QUICK);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.5),  true,  "ns3::SingleModelSpectrumChannel"), TestCase::QUICK);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.95), true,  "ns3::SingleModelSpectrumChannel"), TestCase::QUICK);
@@ -257,8 +257,8 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite ()
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*4),    false,  "ns3::SingleModelSpectrumChannel"), TestCase::QUICK);
     }
   for (double snr = 0.01; snr <= 10 ; snr *= 10)
-    {          
-      double achievableRate = g_bandwidth*log2(1+snr);      
+    {
+      double achievableRate = g_bandwidth*log2(1+snr);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.1),  true,  "ns3::MultiModelSpectrumChannel"), TestCase::QUICK);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.5),  true,  "ns3::MultiModelSpectrumChannel"), TestCase::QUICK);
       AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.95), true,  "ns3::MultiModelSpectrumChannel"), TestCase::QUICK);

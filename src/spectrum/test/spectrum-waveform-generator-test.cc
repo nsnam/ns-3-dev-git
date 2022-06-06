@@ -38,7 +38,7 @@ class WaveformGeneratorTestCase : public TestCase
 public:
   /**
    * Constructor
-   * 
+   *
    * \param period waveform period (seconds)
    * \param dutyCycle waveform duty cycle
    * \param stop stop time (seconds)
@@ -55,7 +55,7 @@ private:
    */
   void    TraceWave (Ptr<const Packet> newPkt);
   double  m_period;     //!< waveform period (seconds)
-  double  m_dutyCycle;  //!< waveform duty cycle 
+  double  m_dutyCycle;  //!< waveform duty cycle
   double  m_stop;       //!< stop time (seconds)
   int     m_fails;      //!< failure check
 };

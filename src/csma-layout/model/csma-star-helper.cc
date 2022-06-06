@@ -71,13 +71,13 @@ CsmaStarHelper::GetSpokeDevices () const
   return m_spokeDevices;
 }
 
-Ipv4Address 
+Ipv4Address
 CsmaStarHelper::GetHubIpv4Address (uint32_t i) const
 {
   return m_hubInterfaces.GetAddress (i);
 }
 
-Ipv4Address 
+Ipv4Address
 CsmaStarHelper::GetSpokeIpv4Address (uint32_t i) const
 {
   return m_spokeInterfaces.GetAddress (i);
@@ -101,14 +101,14 @@ CsmaStarHelper::SpokeCount () const
   return m_spokes.GetN ();
 }
 
-void 
+void
 CsmaStarHelper::InstallStack (InternetStackHelper stack)
 {
   stack.Install (m_hub);
   stack.Install (m_spokes);
 }
 
-void 
+void
 CsmaStarHelper::AssignIpv4Addresses (Ipv4AddressHelper address)
 {
   for (uint32_t i = 0; i < m_spokes.GetN (); ++i)
@@ -119,7 +119,7 @@ CsmaStarHelper::AssignIpv4Addresses (Ipv4AddressHelper address)
     }
 }
 
-void 
+void
 CsmaStarHelper::AssignIpv6Addresses (Ipv6Address network, Ipv6Prefix prefix)
 {
   Ipv6AddressGenerator::Init(network, prefix);

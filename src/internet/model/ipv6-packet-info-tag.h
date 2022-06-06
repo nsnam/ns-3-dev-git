@@ -33,8 +33,8 @@ class Packet;
 /**
  * \ingroup ipv6
  *
- * \brief This class implements a tag that carries socket ancillary 
- * data to the socket interface. This is used like 
+ * \brief This class implements a tag that carries socket ancillary
+ * data to the socket interface. This is used like
  * socket option of IP_PKTINFO/IPV6_PKTINFO in \RFC{3542}
  *
  * See also SocketIpv6TclassTag and SocketIpv6HopLimitTag
@@ -120,7 +120,7 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  /* 
+  /*
    * RFC 3542 includes
    * for outgoing packet,
    *  1.  the source IPv6 address,

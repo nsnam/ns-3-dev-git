@@ -31,7 +31,7 @@
 //   | | device| device |             | device |     |
 //   |  ------- --------               --------      |
 //   |   |          |____csma channel_____|          |
-//   |   |                                           | 
+//   |   |                                           |
 //   ----|------------------------------------------
 //   |  ---            |
 //   | |   |           |
@@ -41,8 +41,8 @@
 //   |                 |
 //   |  host           |
 //   ------------------
-//                 
-//                 
+//
+//
 
 #include <sstream>
 #include <string>
@@ -62,7 +62,7 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   NS_LOG_INFO ("Ping6 Emulation Example with TAP");
 
   //
@@ -102,16 +102,16 @@ main (int argc, char *argv[])
   // Assign IPv6 addresses.
   //
   Ipv6AddressHelper ipv6;
- 
+
   ipv6.SetBase (Ipv6Address ("2001:0DB8:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer i1 = ipv6.Assign (devs);
   i1.SetForwarding (1, true);
   i1.SetDefaultRouteInAllNodes (1);
-  
+
   ipv6.SetBase (Ipv6Address ("2001:0DB8:2::"), Ipv6Prefix (64));
   Ipv6Address tapAddr = ipv6.NewAddress ();
   std::stringstream ss;
-  std::string tapIp; 
+  std::string tapIp;
   tapAddr.Print (ss);
   ss >> tapIp;
 
@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   Ping6Helper ping6;
 
   ping6.SetRemote (tapIp.c_str ());
-  
+
   ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));
   ping6.SetAttribute ("PacketSize", UintegerValue (packetSize));

@@ -19,7 +19,7 @@
  */
 
 #ifndef RADVD_PREFIX_H
-#define RADVD_PREFIX_H 
+#define RADVD_PREFIX_H
 
 #include <stdint.h>
 
@@ -169,7 +169,7 @@ private:
   bool m_autonomousFlag;
 
   /**
-   * \brief Router address flag, indicates that router address is sent instead 
+   * \brief Router address flag, indicates that router address is sent instead
    * of network prefix as is required by Mobile IPv6.
    */
   bool m_routerAddrFlag;

@@ -103,7 +103,7 @@ private:
    * \return the exponent
    */
   static double GetExponentFromBeamwidth (double beamwidthDegrees);
-  
+
   /**
    * Compute the beamwidth of the cosine antenna model from the exponent
    * \param exponent the exponent

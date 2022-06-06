@@ -62,13 +62,13 @@ ConstantVelocityHelper::GetCurrentPosition (void) const
   return m_position;
 }
 
-Vector 
+Vector
 ConstantVelocityHelper::GetVelocity (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_paused ? Vector (0.0, 0.0, 0.0) : m_velocity;
 }
-void 
+void
 ConstantVelocityHelper::SetVelocity (const Vector &vel)
 {
   NS_LOG_FUNCTION (this << vel);
@@ -118,14 +118,14 @@ ConstantVelocityHelper::UpdateWithBounds (const Box &bounds) const
   m_position.z = std::max (bounds.zMin, m_position.z);
 }
 
-void 
+void
 ConstantVelocityHelper::Pause (void)
 {
   NS_LOG_FUNCTION (this);
   m_paused = true;
 }
 
-void 
+void
 ConstantVelocityHelper::Unpause (void)
 {
   NS_LOG_FUNCTION (this);

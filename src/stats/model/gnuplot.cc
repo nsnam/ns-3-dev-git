@@ -357,7 +357,7 @@ Gnuplot2dDataset::SetErrorBars (enum ErrorBars errorBars)
   reinterpret_cast<Data2d*>(m_data)->m_errorBars = errorBars;
 }
 
-void 
+void
 Gnuplot2dDataset::Add (double x, double y)
 {
   NS_ASSERT (reinterpret_cast<Data2d*>(m_data)->m_errorBars == NONE);
@@ -371,7 +371,7 @@ Gnuplot2dDataset::Add (double x, double y)
   reinterpret_cast<Data2d*>(m_data)->m_pointset.push_back (data);
 }
 
-void 
+void
 Gnuplot2dDataset::Add (double x, double y, double errorDelta)
 {
   NS_ASSERT ( reinterpret_cast<Data2d*>(m_data)->m_errorBars == X ||
@@ -386,7 +386,7 @@ Gnuplot2dDataset::Add (double x, double y, double errorDelta)
   reinterpret_cast<Data2d*>(m_data)->m_pointset.push_back (data);
 }
 
-void 
+void
 Gnuplot2dDataset::Add (double x, double y, double xErrorDelta, double yErrorDelta)
 {
   NS_ASSERT ( reinterpret_cast<Data2d*>(m_data)->m_errorBars == XY );
@@ -591,7 +591,7 @@ Gnuplot3dDataset::SetStyle (const std::string& style)
   reinterpret_cast<Data3d*>(m_data)->m_style = style;
 }
 
-void 
+void
 Gnuplot3dDataset::Add (double x, double y, double z)
 {
   struct Point data;
@@ -734,7 +734,7 @@ Gnuplot::SetTitle (const std::string& title)
   m_title = title;
 }
 
-void 
+void
 Gnuplot::SetLegend (const std::string& xLegend, const std::string& yLegend)
 {
   m_xLegend = xLegend;
@@ -754,7 +754,7 @@ Gnuplot::AppendExtra (const std::string& extra)
   m_extra += extra;
 }
 
-void 
+void
 Gnuplot::AddDataset (const GnuplotDataset& dataset)
 {
   m_datasets.push_back (dataset);
@@ -826,7 +826,7 @@ Gnuplot::GenerateOutput (std::ostream &osControl,
                                       m_generateOneOutputFile,
                                       m_dataFileDatasetIndex,
                                       dataFileName);
-    
+
           m_dataFileDatasetIndex++;
         }
 

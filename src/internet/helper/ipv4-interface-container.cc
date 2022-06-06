@@ -63,14 +63,14 @@ Ipv4InterfaceContainer::GetAddress (uint32_t i, uint32_t j) const
   return ipv4->GetAddress (interface, j).GetLocal ();
 }
 
-void 
+void
 Ipv4InterfaceContainer::SetMetric (uint32_t i, uint16_t metric)
 {
   Ptr<Ipv4> ipv4 = m_interfaces[i].first;
   uint32_t interface = m_interfaces[i].second;
   ipv4->SetMetric (interface, metric);
 }
-void 
+void
 Ipv4InterfaceContainer::Add (Ptr<Ipv4> ipv4, uint32_t interface)
 {
   m_interfaces.push_back (std::make_pair (ipv4, interface));
@@ -79,7 +79,7 @@ void Ipv4InterfaceContainer::Add (std::pair<Ptr<Ipv4>, uint32_t> a)
 {
   Add (a.first, a.second);
 }
-void 
+void
 Ipv4InterfaceContainer::Add (std::string ipv4Name, uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);

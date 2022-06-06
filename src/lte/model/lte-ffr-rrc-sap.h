@@ -209,7 +209,7 @@ class MemberLteFfrRrcSapUser : public LteFfrRrcSapUser
 public:
   /**
    * Constructor
-   * 
+   *
    * \param owner the owner class
    */
   MemberLteFfrRrcSapUser (C* owner);

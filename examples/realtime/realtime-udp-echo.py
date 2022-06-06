@@ -20,7 +20,7 @@
 #              LAN
 #
 # - UDP flows from n0 to n1 and back
-# - DropTail queues 
+# - DropTail queues
 # - Tracing of queues and packet receptions to file "udp-echo.tr"
 
 import ns.applications

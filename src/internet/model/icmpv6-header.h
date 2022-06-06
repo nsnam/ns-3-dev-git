@@ -216,7 +216,7 @@ protected:
   /**
    * \brief The checksum.
    */
-  uint16_t m_checksum; 
+  uint16_t m_checksum;
 
 private:
   /**

@@ -101,7 +101,7 @@ public:
    * \param s a pointer to the LteFfrAlgorithm
    */
   void SetFfrAlgorithm (Ptr<LteFfrAlgorithm> s);
-  
+
 protected:
 
   virtual void DoInitialize (void);

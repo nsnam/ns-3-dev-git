@@ -24,7 +24,7 @@ import sys, os
 
 # To change default code-block format in Latex to footnotesize (8pt)
 # Tip from https://stackoverflow.com/questions/9899283/how-do-you-change-the-code-example-font-size-in-latex-pdf-output-with-sphinx/9955928
-# Note:  sizes are \footnotesize (8pt), \small (9pt), and \normalsize (10pt).  
+# Note:  sizes are \footnotesize (8pt), \small (9pt), and \normalsize (10pt).
 
 #from sphinx.highlighting import PygmentsBridge
 #from pygments.formatters.latex import LatexFormatter
@@ -274,7 +274,7 @@ latex_elements = {
     # (double backquotes) to either \footnotesize (8pt) or \small (9pt)
     #
     # See above to change the font size of verbatim code blocks
-    # 
+    #
     # 'preamble': '',
     'preamble': u'''\\usepackage{amssymb}
  \\definecolor{VerbatimBorderColor}{rgb}{1,1,1}

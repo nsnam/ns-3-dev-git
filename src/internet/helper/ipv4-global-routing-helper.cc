@@ -57,13 +57,13 @@ Ipv4GlobalRoutingHelper::Create (Ptr<Node> node) const
   return globalRouting;
 }
 
-void 
+void
 Ipv4GlobalRoutingHelper::PopulateRoutingTables (void)
 {
   GlobalRouteManager::BuildGlobalRoutingDatabase ();
   GlobalRouteManager::InitializeRoutes ();
 }
-void 
+void
 Ipv4GlobalRoutingHelper::RecomputeRoutingTables (void)
 {
   GlobalRouteManager::DeleteGlobalRoutes ();

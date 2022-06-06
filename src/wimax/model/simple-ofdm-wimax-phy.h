@@ -42,7 +42,7 @@ class SimpleOfdmWimaxChannel;
 
 /**
  * \ingroup wimax
- * \brief SimpleOfdmWimaxPhy class 
+ * \brief SimpleOfdmWimaxPhy class
  */
 class SimpleOfdmWimaxPhy : public WimaxPhy
 {
@@ -455,7 +455,7 @@ private:
 
   // parameters to store for a per burst life-time
   uint16_t m_nrBlocks; ///< number of blocks
-  uint16_t m_nrRemainingBlocksToSend; ///< number of remaining blocks to send 
+  uint16_t m_nrRemainingBlocksToSend; ///< number of remaining blocks to send
   Ptr<PacketBurst> m_currentBurst; ///< current burst
   uint16_t m_blockSize; ///< block size
   uint32_t m_paddingBits; ///< padding bits

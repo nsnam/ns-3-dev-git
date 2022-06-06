@@ -32,9 +32,9 @@ using namespace ns3;
 class FlameRegressionSuite : public TestSuite
 {
 public:
-  FlameRegressionSuite () : TestSuite ("devices-mesh-flame-regression", SYSTEM) 
+  FlameRegressionSuite () : TestSuite ("devices-mesh-flame-regression", SYSTEM)
   {
-    // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has 
+    // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
     // subdirectories
     SetDataDir (std::string ("src/mesh/test/flame"));
     AddTestCase (new FlameRegressionTest, TestCase::QUICK);

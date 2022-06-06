@@ -97,9 +97,9 @@ public:
    * \param incomingInterface the incoming interface
    * \return list of IPv4EndPoints (could be 0 element)
    */
-  EndPoints Lookup (Ipv4Address daddr, 
-                    uint16_t dport, 
-                    Ipv4Address saddr, 
+  EndPoints Lookup (Ipv4Address daddr,
+                    uint16_t dport,
+                    Ipv4Address saddr,
                     uint16_t sport,
                     Ptr<Ipv4Interface> incomingInterface);
 
@@ -111,9 +111,9 @@ public:
    * \param sport source port to test
    * \return IPv4EndPoint (0 if not found)
    */
-  Ipv4EndPoint *SimpleLookup (Ipv4Address daddr, 
-                              uint16_t dport, 
-                              Ipv4Address saddr, 
+  Ipv4EndPoint *SimpleLookup (Ipv4Address daddr,
+                              uint16_t dport,
+                              Ipv4Address saddr,
                               uint16_t sport);
 
   /**

@@ -13,7 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: John Abraham <john.abraham@gatech.edu> 
+ * Author: John Abraham <john.abraham@gatech.edu>
  * Modified by:   Pasquale Imputato <p.imputato@gmail.com>
  *
  */
@@ -36,7 +36,7 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  uint32_t    nLeaf = 5; 
+  uint32_t    nLeaf = 5;
   uint32_t    maxPackets = 100;
   uint32_t    modeBytes  = 0;
   uint32_t    queueDiscLimitPackets = 1000;
@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
     Config::SetDefault ("ns3::PfifoFastQueueDisc::MaxSize",
                         QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscLimitPackets)));
   }
-  else 
+  else
   {
     Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
                         QueueSizeValue (QueueSize (QueueSizeUnit::BYTES, queueDiscLimitPackets * pktSize)));
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   clientHelper.SetAttribute ("OffTime", StringValue ("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
   Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
-  ApplicationContainer sinkApps; 
+  ApplicationContainer sinkApps;
   for (uint32_t i = 0; i < d.LeftCount (); ++i)
     {
       sinkApps.Add (packetSinkHelper.Install (d.GetLeft (i)));
@@ -174,10 +174,10 @@ int main (int argc, char *argv[])
       Ptr <PacketSink> pktSink = DynamicCast <PacketSink> (app);
       totalRxBytesCounter += pktSink->GetTotalRx ();
     }
-  NS_LOG_UNCOND ("----------------------------\nQueueDisc Type:" 
-                 << queueDiscType 
-                 << "\nGoodput Bytes/sec:" 
-                 << totalRxBytesCounter/Simulator::Now ().GetSeconds ()); 
+  NS_LOG_UNCOND ("----------------------------\nQueueDisc Type:"
+                 << queueDiscType
+                 << "\nGoodput Bytes/sec:"
+                 << totalRxBytesCounter/Simulator::Now ().GetSeconds ());
   NS_LOG_UNCOND ("----------------------------");
 
 

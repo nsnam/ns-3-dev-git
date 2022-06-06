@@ -270,7 +270,7 @@ public:
   * have been assigned. The Install() method should have previously been
   * called by the user.
   *
-  * \param c NetDeviceContainer of the set of net devices for which the 
+  * \param c NetDeviceContainer of the set of net devices for which the
   *          WimaxNetDevice should be modified to use a fixed stream
   * \param stream first stream index to use
   * \return the number of stream indices assigned by this helper

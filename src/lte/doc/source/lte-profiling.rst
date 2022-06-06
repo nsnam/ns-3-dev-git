@@ -23,7 +23,7 @@ The simulation script used for all the E-UTRAN results showed in this documentat
 
 .. _fig-eutranProfilingScenario:
 
-.. figure:: figures/eutran-profiling-scenario.*                 
+.. figure:: figures/eutran-profiling-scenario.*
    :align: center
    :width: 80%
 
@@ -33,7 +33,7 @@ For the EPC results, the script is ``src/lte/examples/lena-simple-epc.cc``. It u
 
 .. _fig-epcProfilingScenario:
 
-.. figure:: figures/epc-profiling-scenario.*                 
+.. figure:: figures/epc-profiling-scenario.*
    :align: center
    :width: 80%
 
@@ -44,10 +44,10 @@ RLC and MAC traces are enabled for all UEs and all eNodeBs and those traces are 
 Simulation input parameters
 ---------------------------
 
-The *lena-profiling* simulation script accepts the following input parameters: 
+The *lena-profiling* simulation script accepts the following input parameters:
 
  * ``simTime``: time to simulate (in seconds)
- * ``nUe``: number of UEs attached to each eNodeB 
+ * ``nUe``: number of UEs attached to each eNodeB
  * ``nEnb``: number of eNodeB composing the grid per floor
  * ``nFloors``: number of floors, 0 for *Friis propagation model* (no walls), 1 or greater for *Building propagation model* generating a nFloors-storey building.
  * ``traceDirectory``: destination directory where simulation traces will be stored
@@ -71,7 +71,7 @@ Requirements
 ------------
 
 The following Perl modules are required to use the provided script, all of them available from CPAN:
- * IO::CaptureOutput 
+ * IO::CaptureOutput
  * Statistics::Descriptive
 
 For installing the modules, simply use the following command:
@@ -108,7 +108,7 @@ This scenario, evaluates the running time for a fixed simulation time (10s) and 
 
 .. _fig-runTime:
 
-.. figure:: figures/runningTime10s.*                 
+.. figure:: figures/runningTime10s.*
    :align: center
    :width: 80%
 
@@ -123,7 +123,7 @@ The objective of this scenario is to evaluate the impact of the propagation mode
 
 .. _fig-propagationModel:
 
-.. figure:: figures/propagationModel.*                 
+.. figure:: figures/propagationModel.*
    :align: center
    :width: 80%
 
@@ -139,7 +139,7 @@ In this scenario, for a fixed set of UEs per eNodeB, different simulation times 
 
 .. _fig-simulationTime:
 
-.. figure:: figures/simulationTime.*                 
+.. figure:: figures/simulationTime.*
    :align: center
    :width: 80%
 
@@ -176,7 +176,7 @@ Running time evolution is quadratic since we increase at the same time the numbe
 
    Running time
 
-To estimate the additional complexity of the upper LTE Radio Protocol Stack model and the EPC model, we compare two scenarios using the simplified E-UTRAN version (using only PHY, MAC and the simplified RLC/SM, with no EPC and no ns-3 applications) against the complete E-UTRAN + EPC (with UM RLC, PDCP, end-to-end IP networking and regular ns-3 applications). Both configuration have been tested with the same number of UEs per eNodeB, the same number of eNodeBs, and approximately the same volume of transmitted data (an exact match was not possible due to the different ways in which packets are generated in the two configurations). 
+To estimate the additional complexity of the upper LTE Radio Protocol Stack model and the EPC model, we compare two scenarios using the simplified E-UTRAN version (using only PHY, MAC and the simplified RLC/SM, with no EPC and no ns-3 applications) against the complete E-UTRAN + EPC (with UM RLC, PDCP, end-to-end IP networking and regular ns-3 applications). Both configuration have been tested with the same number of UEs per eNodeB, the same number of eNodeBs, and approximately the same volume of transmitted data (an exact match was not possible due to the different ways in which packets are generated in the two configurations).
 
 .. _fig-epcEutranRunTime:
 
@@ -196,7 +196,7 @@ Finally, again the linearity of the running time as the simulation time increase
 
 .. _fig-epcSimTime:
 
-.. figure:: figures/epcSimulationTime.*                 
+.. figure:: figures/epcSimulationTime.*
    :align: center
    :width: 80%
 

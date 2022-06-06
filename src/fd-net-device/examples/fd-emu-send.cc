@@ -20,11 +20,11 @@
 
 /*
  * This example builds a node with a device in emulation mode in {raw, netmap}.
- * The aim is to measure the maximum tx rate in pps achievable with 
+ * The aim is to measure the maximum tx rate in pps achievable with
  * NetmapNetDevice and FdNetDevice on a specific machine.
  * The emulated device must be connected and in promiscuous mode.
  *
- * If you run emulation in netmap mode, you need before to load the 
+ * If you run emulation in netmap mode, you need before to load the
  * netmap.ko module.  The user is responsible for configuring and building
  * netmap separately.
  */

@@ -14,7 +14,7 @@ The API documentation is generated from the source code itself,
 using Doxygen_, to generate cross-linked web pages.
 Both of these are important:  the Sphinx chapters explain the *why*
 and overview of using a model; the API documentation explains the
-*how* details.  
+*how* details.
 
 This chapter gives a quick overview of these
 tools, emphasizing preferred usage and customizations for |ns3|.
@@ -64,7 +64,7 @@ all go in the ``src/foo/doc/`` directory.  The docs are actually built
 by a Sphinx Makefile.  For especially involved
 documentation, it may be helpful to have a local ``Makefile``
 in the ``src/foo/doc/`` directory to
-simplify building the documentation for this module 
+simplify building the documentation for this module
 (`Antenna`_ is an example).  Setting this up
 is not particularly hard, but is beyond the scope of this chapter.
 
@@ -87,7 +87,7 @@ To add your chapter there, edit ``doc/models/source/index.rst``
 
    .. toctree::
       :maxdepth: 1
- 
+
      organization
      animation
      antenna
@@ -127,7 +127,7 @@ your image files.  Again, please keep these in alphabetical order.
 Building Sphinx Docs
 ====================
 
-Building the Sphinx documentation is pretty simple.  
+Building the Sphinx documentation is pretty simple.
 To build all the Sphinx documentation:
 
 .. sourcecode:: bash
@@ -175,12 +175,12 @@ the basics here, instead focusing on preferred usage for |ns3|.
 
 
 * Start documents with these two lines:
-   
+
   .. sourcecode:: rest
-     
+
      .. include:: replace.txt
      .. highlight:: cpp
-   
+
   The first line enables some simple replacements.  For example,
   typing ``|ns3|`` renders as |ns3|.
   The second sets the default source code highlighting language explicitly
@@ -189,12 +189,12 @@ the basics here, instead focusing on preferred usage for |ns3|.
   see below.)
 
 * Sections:
-  
+
   Sphinx is pretty liberal about marking section headings.  By convention,
   we prefer this hierarchy:
-  
+
   .. sourcecode:: rest
-      
+
      .. heading hierarchy:
         ------------- Chapter
         ************* Section (#.#)
@@ -202,7 +202,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
         ############# Sub-subsection
 
 * Syntax Highlighting:
-  
+
   To use the default syntax highlighter, simply start a sourcecode block:
 
   +--------------------------------------+------------------------------------+
@@ -227,7 +227,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
   |                                      |                                    |
   |      $ ls                            |    $ ls		              |
   +--------------------------------------+------------------------------------+
-  
+
 * Shorthand Notations:
 
   These shorthands are defined:
@@ -390,7 +390,7 @@ script:
 .. sourcecode:: bash
 
     $ doc/doxygen.warnings.report.sh
-    
+
     doxygen.warnings.report.sh:
     Building and running print-introspected-doxygen...done.
     Rebuilding doxygen (v1.8.10) docs with full errors...done.
@@ -545,7 +545,7 @@ usage for |ns3|.
      */
 
   or in the corresponding ``.cc`` file::
-  
+
     /**
      *  \file
      *  \ingroup foo
@@ -570,7 +570,7 @@ usage for |ns3|.
      *  \param ale The size of a pint of ale, in Imperial ounces.
      */
     typedef void (* BarCallback)(const int ale);
-    
+
 * Copy the ``Attribute`` help strings from the ``GetTypeId`` method to use
   as the brief descriptions of associated members.
 
@@ -586,7 +586,7 @@ usage for |ns3|.
   The allowed values of the direction token are ``[in]``, ``[out]``, and
   ``[in,out]`` (note the explicit square brackets), as discussed in the
   Doxygen docs for ``\param``.
-  
+
 * Document template arguments with ``\tparam``, just as you use ``\param``
   for function arguments.
 

@@ -16,7 +16,7 @@ Validation results for the 802.11b error model are available in this
 
 Two clarifications on the results should be noted.  First, Figure 1-4
 of the above reference
-corresponds to the |ns3| NIST BER model.   In the program in the 
+corresponds to the |ns3| NIST BER model.   In the program in the
 Appendix of the paper (80211b.c), there are two constants used to generate
 the data.  The first, packet size, is set to 1024 bytes.  The second,
 "noise", is set to a value of 7 dB; this was empirically picked to align
@@ -24,12 +24,12 @@ the curves the best with the reported data from the CMU testbed.  Although
 a value of 1.55 dB would correspond to the reported -99 dBm noise floor
 from the CMU paper, a noise figure of 7 dB results in the best fit with the
 CMU experimental data.  This default of 7 dB is the RxNoiseFigure in the
-``ns3::YansWifiPhy`` model.  Other values for noise figure will shift the 
-curves leftward or rightward but not change the slope. 
+``ns3::YansWifiPhy`` model.  Other values for noise figure will shift the
+curves leftward or rightward but not change the slope.
 
-The curves can be reproduced by running the ``wifi-clear-channel-cmu.cc`` 
+The curves can be reproduced by running the ``wifi-clear-channel-cmu.cc``
 example program in the ``examples/wireless`` directory, and the figure produced
-(when GNU Scientific Library (GSL) is enabled) is reproduced below in 
+(when GNU Scientific Library (GSL) is enabled) is reproduced below in
 Figure :ref:`fig-clear-channel-80211b`.
 
 .. _fig-clear-channel-80211b:
@@ -91,11 +91,11 @@ SpectrumWiFiPhy
 
 The SpectrumWifiPhy implementation has been verified to produce equivalent
 results to the legacy YansWifiPhy by using the saturation and packet
-error rate programs (described below) and toggling the implementation 
+error rate programs (described below) and toggling the implementation
 between the two physical layers.
 
 A basic unit test is provided using injection of hand-crafted packets to
-a receiving Phy object, controlling the timing and receive power of 
+a receiving Phy object, controlling the timing and receive power of
 each packet arrival and checking the reception results.  However, most of
 the testing of this Phy implementation has been performed using example
 programs described below, and during the course of a (separate) LTE/Wi-Fi
@@ -120,7 +120,7 @@ intervals):
 ::
 
   wifiType: ns3::SpectrumWifiPhy distance: 1m
-  index   MCS   width Rate (Mb/s) Tput (Mb/s) Received 
+  index   MCS   width Rate (Mb/s) Tput (Mb/s) Received
       0     0      20       6.5     5.81381    4937
       1     1      20        13     11.8266   10043
       2     2      20      19.5     17.7935   15110
@@ -146,14 +146,14 @@ When run with the legacy YansWifiPhy, as in ``./ns3 run "wifi-spectrum-saturatio
 ::
 
   wifiType: ns3::YansWifiPhy distance: 1m
-  index   MCS   width Rate (Mb/s) Tput (Mb/s) Received 
+  index   MCS   width Rate (Mb/s) Tput (Mb/s) Received
       0     0      20       6.5     5.81381    4937
       1     1      20        13     11.8266   10043
       2     2      20      19.5     17.7935   15110
       3     3      20        26     23.7958   20207
     ...
 
-This is to be expected since YansWifiPhy and SpectrumWifiPhy use the 
+This is to be expected since YansWifiPhy and SpectrumWifiPhy use the
 same error rate model in this case.
 
 Packet error rate performance
@@ -165,8 +165,8 @@ the distance between the nodes, and to log the reception statistics and
 received SNR (as observed by the WifiPhy::MonitorSnifferRx trace source), using a
 Friis propagation loss model.  The transmit power is lowered from the default
 of 40 mW (16 dBm) to 1 dBm to lower the baseline SNR; the distance between
-the nodes can be changed to further change the SNR.  By default, it steps 
-through the same index values as in the saturation example (0 through 31) 
+the nodes can be changed to further change the SNR.  By default, it steps
+through the same index values as in the saturation example (0 through 31)
 for a 50m distance, for 10 seconds of simulation time, producing output such as:
 
 ::
@@ -181,7 +181,7 @@ for a 50m distance, for 10 seconds of simulation time, producing output such as:
       5     5     52.00        0.00       0         N/A         N/A         N/A
       6     6     58.50        0.00       0         N/A         N/A         N/A
       7     7     65.00        0.00       0         N/A         N/A         N/A
-  
+
 As in the above saturation example, running this program with YansWifiPhy
 will yield identical output.
 
@@ -241,7 +241,7 @@ If ns3::YansWifiPhy is selected as the wifiType, the waveform generator will
 not be enabled because only transmitters of type YansWifiPhy may be connected
 to a YansWifiChannel.
 
-The interference signal as received by the sending node is typically below 
+The interference signal as received by the sending node is typically below
 the default -62 dBm CCA Mode 1 threshold in this example.  If it raises
 above, the sending node will suppress all transmissions.
 
@@ -259,8 +259,8 @@ User can regenerate Bianchi results by running
 ``generate_bianchi.m`` in MATLAB.
 
 By default, the program ``src/wifi/examples/wifi-bianchi.cc``
-simulates an 802.11a adhoc ring scenario, with a PHY rate set to 
-54 Mbit/s, and loop from 5 stations to 50 stations, by a step of 
+simulates an 802.11a adhoc ring scenario, with a PHY rate set to
+54 Mbit/s, and loop from 5 stations to 50 stations, by a step of
 5 stations. It generates a plt file, which allows user to quickly
 generate an eps file using gnuplot and vizualize the graph.
 

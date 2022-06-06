@@ -86,7 +86,7 @@ namespace ns3 {
  *           // Handle error, then
  *           continue;
  *         }
- *       
+ *
  *       // Do something with values
  *
  *     }  // while FetchNextRow

@@ -62,7 +62,7 @@ protected:
    * \param pkt packet
    */
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> pkt);
-  
+
 private:
   Ptr<TcpSeqErrorModel> m_errorModel; //!< The error model
   bool m_sendClose;                   //!< true when the sender has closed

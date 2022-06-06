@@ -108,7 +108,7 @@ LteRlcAm::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("ReportBufferStatusTimer",
                    "How much to wait to issue a new Report Buffer Status since the last time "
-                   "a new SDU was received",     
+                   "a new SDU was received",
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&LteRlcAm::m_rbsTimerValue),
                    MakeTimeChecker ())
@@ -227,41 +227,41 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       Ptr<Packet> packet = Create<Packet> ();
       LteRlcAmHeader rlcAmHeader;
       rlcAmHeader.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
-     
+
       NS_LOG_LOGIC ("Check for SNs to NACK from " << m_vrR.GetValue() << " to " << m_vrMs.GetValue());
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vrR);
       std::map<uint16_t, PduBuffer>::iterator pduIt;
-      for (sn = m_vrR; sn < m_vrMs; sn++) 
+      for (sn = m_vrR; sn < m_vrMs; sn++)
         {
-          NS_LOG_LOGIC ("SN = " << sn);          
+          NS_LOG_LOGIC ("SN = " << sn);
           if (!rlcAmHeader.OneMoreNackWouldFitIn (txOpParams.bytes))
             {
               NS_LOG_LOGIC ("Can't fit more NACKs in STATUS PDU");
               break;
-            }          
+            }
           pduIt = m_rxonBuffer.find (sn.GetValue ());
           if (pduIt == m_rxonBuffer.end () || (!(pduIt->second.m_pduComplete)))
             {
               NS_LOG_LOGIC ("adding NACK_SN " << sn.GetValue ());
-              rlcAmHeader.PushNack (sn.GetValue ());              
-            }          
+              rlcAmHeader.PushNack (sn.GetValue ());
+            }
         }
       NS_LOG_LOGIC ("SN at end of NACK loop = " << sn);
       // 3GPP TS 36.322 section 6.2.2.1.4 ACK SN
-      // find the  SN of the next not received RLC Data PDU 
-      // which is not reported as missing in the STATUS PDU. 
+      // find the  SN of the next not received RLC Data PDU
+      // which is not reported as missing in the STATUS PDU.
       pduIt = m_rxonBuffer.find (sn.GetValue ());
-      while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end ()) && (pduIt->second.m_pduComplete))            
+      while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end ()) && (pduIt->second.m_pduComplete))
         {
           NS_LOG_LOGIC ("SN = " << sn << " < " << m_vrMs << " = " << (sn < m_vrMs));
           sn++;
           NS_LOG_LOGIC ("SN = " << sn);
           pduIt = m_rxonBuffer.find (sn.GetValue ());
         }
-      
-      NS_ASSERT_MSG (sn <= m_vrMs, "first SN not reported as missing = " << sn << ", VR(MS) = " << m_vrMs);      
-      rlcAmHeader.SetAckSn (sn); 
+
+      NS_ASSERT_MSG (sn <= m_vrMs, "first SN not reported as missing = " << sn << ", VR(MS) = " << m_vrMs);
+      rlcAmHeader.SetAckSn (sn);
 
 
       NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
@@ -291,12 +291,12 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
     }
   else if ( m_retxBufferSize > 0 )
     {
-      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);      
+      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
       NS_ASSERT (m_vtA < m_vtS);
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vtA);
-      for (sn = m_vtA; sn < m_vtS; sn++) 
+      for (sn = m_vtA; sn < m_vtS; sn++)
         {
           uint16_t seqNumberValue = sn.GetValue ();
           NS_LOG_LOGIC ("SN = " << seqNumberValue << " m_pdu " << m_retxBuffer.at (seqNumberValue).m_pdu);
@@ -304,7 +304,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
             {
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
-              
+
               if (( packet->GetSize () <= txOpParams.bytes )
                   || m_txOpportunityForRetxAlwaysBigEnough)
                 {
@@ -316,10 +316,10 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   // Calculate the Polling Bit (5.2.2.1)
                   rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_NOT_REQUESTED);
 
-                  NS_LOG_LOGIC ("polling conditions: m_txonBuffer.empty=" << m_txonBuffer.empty () 
+                  NS_LOG_LOGIC ("polling conditions: m_txonBuffer.empty=" << m_txonBuffer.empty ()
                                 << " retxBufferSize="  << m_retxBufferSize
                                 << " packet->GetSize ()=" << packet->GetSize ());
-                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize () + rlcAmHeader.GetSerializedSize ())) 
+                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize () + rlcAmHeader.GetSerializedSize ()))
                       || (m_vtS >= m_vtMs)
                       || m_pollRetransmitTimerJustExpired)
                     {
@@ -367,7 +367,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   params.layer = txOpParams.layer;
                   params.harqProcessId = txOpParams.harqId;
                   params.componentCarrierId = txOpParams.componentCarrierId;
-                  
+
                   m_macSapProvider->TransmitPdu (params);
 
                   m_retxBuffer.at (seqNumberValue).m_retxCount++;
@@ -388,7 +388,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   m_retxBuffer.at (seqNumberValue).m_pdu = 0;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
                   m_retxBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
-                  
+
                   NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
 
                   return;
@@ -895,7 +895,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
         {
           // - if some byte segments of the AMD PDU contained in the RLC data PDU have been received before:
           //         - discard the duplicate byte segments.
-          // note: re-segmentation of AMD PDU is currently not supported, 
+          // note: re-segmentation of AMD PDU is currently not supported,
           // so we just check that the segment was not received before
           std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
           if (it != m_rxonBuffer.end () )
@@ -1043,7 +1043,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       ackSn.SetModulusBase (m_vtA);
       sn.SetModulusBase (m_vtA);
 
-      bool incrementVtA = true; 
+      bool incrementVtA = true;
 
       for (sn = m_vtA; sn < ackSn && sn < m_vtS; sn++)
         {
@@ -1051,7 +1051,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
           uint16_t seqNumberValue = sn.GetValue ();
 
-          if (m_pollRetransmitTimer.IsRunning () 
+          if (m_pollRetransmitTimer.IsRunning ()
               && (seqNumberValue == m_pollSn.GetValue ()))
             {
               m_pollRetransmitTimer.Cancel ();
@@ -1078,7 +1078,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                 }
 
               NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu != 0);
-              
+
             }
           else
             {
@@ -1106,7 +1106,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
             }
 
           NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
-          NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);      
+          NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
 
           if (incrementVtA)
             {
@@ -1119,9 +1119,9 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
               ackSn.SetModulusBase (m_vtA);
               sn.SetModulusBase (m_vtA);
             }
-          
+
         } // loop over SN : VT(A) <= SN < ACK SN
-      
+
       return;
 
     }
@@ -1617,8 +1617,8 @@ LteRlcAm::DoReportBufferStatus (void)
         }
       retxQueueHolDelay = now - senderTimestamp;
     }
-  else 
-    {      
+  else
+    {
       retxQueueHolDelay = Seconds (0);
     }
 
@@ -1641,8 +1641,8 @@ LteRlcAm::DoReportBufferStatus (void)
 
   if ( r.txQueueSize != 0 || r.retxQueueSize != 0 || r.statusPduSize != 0 )
     {
-      NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
-                                               << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
+      NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", "
+                                               << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", "
                                                << r.statusPduSize);
       m_macSapProvider->ReportBufferStatus (r);
     }
@@ -1691,7 +1691,7 @@ LteRlcAm::ExpireReorderingTimer (void)
 
     // Section 5.2.3 Status Reporting:
     //   - The receiving side of an AM RLC entity shall trigger a
-    //     STATUS report when T_reordering expires. 
+    //     STATUS report when T_reordering expires.
   m_statusPduRequested = true;
 }
 
@@ -1740,7 +1740,7 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 }
 
 
-void 
+void
 LteRlcAm::ExpireStatusProhibitTimer (void)
 {
   NS_LOG_FUNCTION (this);

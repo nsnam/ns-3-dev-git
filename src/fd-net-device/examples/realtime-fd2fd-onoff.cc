@@ -19,20 +19,20 @@
  *
  */
 
-// 
-//        node 0                          node 1         
-//  +----------------+              +----------------+  
-//  |    ns-3 TCP    |              |    ns-3 TCP    |  
-//  +----------------+              +----------------+  
-//  |    10.1.1.1    |              |    10.1.1.2    | 
-//  +----------------+  socketpair  +----------------+  
-//  |  fd-net-device |--------------|  fd-net-device | 
+//
+//        node 0                          node 1
+//  +----------------+              +----------------+
+//  |    ns-3 TCP    |              |    ns-3 TCP    |
+//  +----------------+              +----------------+
+//  |    10.1.1.1    |              |    10.1.1.2    |
+//  +----------------+  socketpair  +----------------+
+//  |  fd-net-device |--------------|  fd-net-device |
 //  +----------------+              +----------------+
 //
 // This example is aimed at meassuring the thoughput of the FdNetDevice
 // in a pure simulation. For this purpose two FdNetDevices, attached to
 // different nodes but in a same simulation, are connected using a socket pair.
-// TCP traffic is sent at a saturating data rate. Then the thoughput can 
+// TCP traffic is sent at a saturating data rate. Then the thoughput can
 // be obtained from the generated .pcap files.
 //
 // Steps to run the experiment:
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   uint16_t sinkPort = 8000;
   uint32_t packetSize = 10000; // bytes
   std::string dataRate("1000Mb/s");

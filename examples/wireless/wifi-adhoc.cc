@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("Wifi-Adhoc");
 
 /**
  * WiFi adhoc experiment class.
- * 
+ *
  * It handles the creation and run of an experiment.
  */
 class Experiment
@@ -58,7 +58,7 @@ public:
    * \param wifiPhy   //!< The YansWifiPhyHelper class.
    * \param wifiMac   //!< The WifiMacHelper class.
    * \param wifiChannel //!< The YansWifiChannelHelper class.
-   * \return a 2D dataset of the experiment data. 
+   * \return a 2D dataset of the experiment data.
    */
   Gnuplot2dDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
                         const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel);

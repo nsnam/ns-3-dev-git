@@ -7,7 +7,7 @@ RealTime
 |ns3| has been designed for integration into testbed and virtual machine
 environments. To integrate with real network stacks and emit/consume packets, a
 real-time scheduler is needed to try to lock the simulation clock with the
-hardware clock. We describe here a component of this: the RealTime scheduler. 
+hardware clock. We describe here a component of this: the RealTime scheduler.
 
 The purpose of the realtime scheduler is to cause the progression of the
 simulation clock to occur synchronously with respect to some external time base.
@@ -41,7 +41,7 @@ executing events until it reaches a point where the next event is in the
 possible for the simulation to consume more time than the wall clock time. The
 other option "HardLimit" will cause the simulation to abort if the tolerance
 threshold is exceeded.  This attribute is
-``ns3::RealTimeSimulatorImpl::HardLimit`` and the default is 0.1 seconds.   
+``ns3::RealTimeSimulatorImpl::HardLimit`` and the default is 0.1 seconds.
 
 A different mode of operation is one in which simulated time is **not** frozen
 during an event execution. This mode of realtime simulation was implemented but
@@ -55,7 +55,7 @@ Usage
 *****
 
 The usage of the realtime simulator is straightforward, from a scripting
-perspective.  Users just need to set the attribute 
+perspective.  Users just need to set the attribute
 ``SimulatorImplementationType`` to the Realtime simulator, such as follows: ::
 
   GlobalValue::Bind ("SimulatorImplementationType",
@@ -93,4 +93,4 @@ smaller than the minimum sleep time, so we busy-wait for the remainder of the
 time. This means that the thread just sits in a for loop consuming cycles until
 the desired time arrives. After the combination of sleep- and busy-waits, the
 elapsed realtime (wall) clock should agree with the simulation time of the next
-event and the simulation proceeds. 
+event and the simulation proceeds.

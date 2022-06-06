@@ -66,10 +66,10 @@ Mac64Address::Mac64Address (const char *str)
 {
   NS_LOG_FUNCTION (this << str);
   int i = 0;
-  while (*str != 0 && i < 8) 
+  while (*str != 0 && i < 8)
     {
       uint8_t byte = 0;
-      while (*str != ASCII_COLON && *str != 0) 
+      while (*str != ASCII_COLON && *str != 0)
         {
           byte <<= 4;
           char low = AsciiToLowCase (*str);
@@ -85,7 +85,7 @@ Mac64Address::Mac64Address (const char *str)
         }
       m_address[i] = byte;
       i++;
-      if (*str == 0) 
+      if (*str == 0)
         {
           break;
         }
@@ -93,20 +93,20 @@ Mac64Address::Mac64Address (const char *str)
     }
   NS_ASSERT (i == 8);
 }
-void 
+void
 Mac64Address::CopyFrom (const uint8_t buffer[8])
 {
   NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (m_address, buffer, 8);
 }
-void 
+void
 Mac64Address::CopyTo (uint8_t buffer[8]) const
 {
   NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (buffer, m_address, 8);
 }
 
-bool 
+bool
 Mac64Address::IsMatchingType (const Address &address)
 {
   NS_LOG_FUNCTION (&address);
@@ -116,7 +116,7 @@ Mac64Address::operator Address () const
 {
   return ConvertTo ();
 }
-Mac64Address 
+Mac64Address
 Mac64Address::ConvertFrom (const Address &address)
 {
   NS_LOG_FUNCTION (address);
@@ -133,7 +133,7 @@ Mac64Address::ConvertTo (void) const
   return Address (GetType (), m_address, 8);
 }
 
-Mac64Address 
+Mac64Address
 Mac64Address::Allocate (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -150,7 +150,7 @@ Mac64Address::Allocate (void)
   address.m_address[7] = (id >> 0) & 0xff;
   return address;
 }
-uint8_t 
+uint8_t
 Mac64Address::GetType (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -165,7 +165,7 @@ std::ostream& operator<< (std::ostream& os, const Mac64Address & address)
 
   os.setf (std::ios::hex, std::ios::basefield);
   os.fill ('0');
-  for (uint8_t i=0; i < 7; i++) 
+  for (uint8_t i=0; i < 7; i++)
     {
       os << std::setw (2) << (uint32_t)ad[i] << ":";
     }

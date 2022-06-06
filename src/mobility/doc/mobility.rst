@@ -26,7 +26,7 @@ Design
 ======
 
 The design includes mobility models, position allocators, and helper
-functions.  
+functions.
 
 In |ns3|, `MobilityModel`` objects track the evolution of position
 with respect to a (cartesian) coordinate system.  The mobility model
@@ -45,7 +45,7 @@ classes.  The MobilityHelper combines a mobility model and position
 allocator, and can be used with a node container to install a similar
 mobility capability on a set of nodes.
 
-We first describe the coordinate system and issues 
+We first describe the coordinate system and issues
 surrounding multiple coordinate systems.
 
 Coordinate system
@@ -58,7 +58,7 @@ The question has arisen as to how to use the mobility models (supporting
 Cartesian coordinates) with different coordinate systems.  This is possible
 if the user performs conversion between the |ns3| Cartesian and the
 other coordinate system.  One possible library to assist is
-the `proj4 <https://proj.org>`_ library for projections and reverse 
+the `proj4 <https://proj.org>`_ library for projections and reverse
 projections.
 
 If we support converting between coordinate systems, we must adopt a
@@ -69,9 +69,9 @@ The question has arisen about adding a new mobility model whose motion
 is natively implemented in a different coordinate system (such as an
 orbital mobility model implemented using spherical coordinate system).
 We advise to create a subclass with the APIs desired
-(such as Get/SetSphericalPosition), and new position allocators, and 
-implement the motion however desired, but must also support the conversion to 
-cartesian (by supporting the cartesian Get/SetPosition). 
+(such as Get/SetSphericalPosition), and new position allocators, and
+implement the motion however desired, but must also support the conversion to
+cartesian (by supporting the cartesian Get/SetPosition).
 
 Coordinates
 ###########
@@ -80,8 +80,8 @@ The base class for a coordinate is called ``ns3::Vector``.  While
 positions are normally described as coordinates and not vectors in
 the literature, it is possible to reuse the same data structure to
 represent position (x,y,z) and velocity (magnitude and direction
-from the current position).  |ns3| uses class Vector for both.  
-  
+from the current position).  |ns3| uses class Vector for both.
+
 There are also some additional related structures used to support
 mobility models.
 
@@ -132,9 +132,9 @@ Helper
 
 A special mobility helper is provided that is mainly aimed at supporting
 the installation of mobility to a Node container (when using containers
-at the helper API level).  The MobilityHelper class encapsulates 
+at the helper API level).  The MobilityHelper class encapsulates
 a MobilityModel factory object and a PositionAllocator used for
-initial node layout.  
+initial node layout.
 
 Group mobility is also configurable via a GroupMobilityHelper object.
 Group mobility reuses the HierarchicalMobilityModel allowing one to
@@ -166,13 +166,13 @@ Valid trace files use the following |ns2| statements:
 
 In the above, the initial positions are set using the ``set`` statements.
 Also, this ``set`` can be specified for a future time, such as in the
-last three statements above.  
+last three statements above.
 
-The command ``setdest`` instructs the simulation to start moving the 
+The command ``setdest`` instructs the simulation to start moving the
 specified node towards the coordinate (x2, y2) at the specified time.
 Note that the node may never get to the destination, but will
 proceed towards the destination at the specified speed until it
-either reaches the destination (where it will pause), is set to 
+either reaches the destination (where it will pause), is set to
 a new position (via ``set``), or sent on another course change
 (via ``setdest``).
 
@@ -270,12 +270,12 @@ ns2-mobility-trace
 
 The ``ns2-mobility-trace.cc`` program is an example of loading an
 |ns2| trace file that specifies the movements of two nodes over 100
-seconds of simulation time.  It is paired with the file 
+seconds of simulation time.  It is paired with the file
 ``default.ns_movements``.
 
 The program behaves as follows:
 
-- a Ns2MobilityHelper object is created, with the specified trace file. 
+- a Ns2MobilityHelper object is created, with the specified trace file.
 - A log file is created, using the log file name argument.
 - A node container is created with the number of nodes specified in the command line.  For this particular trace file, specify the value 2 for this argument.
 - the Install() method of Ns2MobilityHelper to set mobility to nodes. At this moment, the file is read line by line, and the movement is scheduled in the simulator.
@@ -306,12 +306,12 @@ bonnmotion-ns2-example
 ######################
 
 The ``bonnmotion-ns2-example.cc`` program, which models the movement of
-a single mobile node for 1000 seconds of simulation time, has a few 
+a single mobile node for 1000 seconds of simulation time, has a few
 associated files:
 
 - ``bonnmotion.ns_movements`` is the |ns2|-formatted mobility trace
 - ``bonnmotion.params`` is a BonnMotion-generated file with some metadata about the mobility trace
-- ``bonnmotion.ns_params`` is another BonnMotion-generated file with ns-2-related metadata.  
+- ``bonnmotion.ns_params`` is another BonnMotion-generated file with ns-2-related metadata.
 
 Neither of the latter two files is used by |ns3|, although they are generated
 as part of the BonnMotion process to output ns-2-compatible traces.
@@ -334,7 +334,7 @@ The program ``bonnmotion-ns2-example.cc`` will output the following to stdout:
 The motion of the mobile node is sampled every 100 seconds, and its position
 and speed are printed out.  This output may be compared to the output of
 a similar |ns2| program (found in the |ns2| ``tcl/ex/`` directory of |ns2|)
-running from the same mobility trace. 
+running from the same mobility trace.
 
 The next file is generated from |ns2| (users will have to download and
 install |ns2| and run this Tcl program to see this output).
@@ -360,14 +360,14 @@ for comparison (file ``bonnmotion-example.tr``):
   M 900.00000 0 (250.08, 41.76, 0.00), (309.59, 37.22), 0.60
 
 The output formatting is slightly different, and the course change
-times are additionally plotted, but it can be seen that the position 
+times are additionally plotted, but it can be seen that the position
 vectors are the same between the two traces at intervals of 100 seconds.
 
 The mobility computations performed on the |ns2| trace file are slightly
 different in |ns2| and |ns3|, and floating-point arithmetic is used,
-so there is a chance that the position in |ns2| may be slightly 
+so there is a chance that the position in |ns2| may be slightly
 different than the respective position when using the trace file
-in |ns3|.  
+in |ns3|.
 
 Use of Random Variables
 =======================
@@ -393,12 +393,12 @@ API to assign streams to underlying random variables:
    */
   int64_t AssignStreams (int64_t stream);
 
-The class ``MobilityHelper`` also provides this API.  The typical usage 
+The class ``MobilityHelper`` also provides this API.  The typical usage
 pattern when using the helper is:
 
 .. sourcecode:: cpp
 
-  int64_t streamIndex = /*some positive integer */  
+  int64_t streamIndex = /*some positive integer */
   MobilityHelper mobility;
   ... (configure mobility)
   mobility.Install (wifiStaNodes);

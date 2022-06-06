@@ -96,7 +96,7 @@ EnvDictionary (std::string key)
 }
 
 } // unnamed namespace
-  
+
 
 /**
  * Ensure the TypeId for ObjectBase gets fully configured
@@ -154,7 +154,7 @@ ObjectBase::NotifyConstructionCompleted (void)
 #else
 #define LOG_WHERE_VALUE(where, value)
 #endif
-  
+
 void
 ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
 {
@@ -164,7 +164,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
   do    // Do this tid and all parents
     {
       // loop over all attributes in object type
-      NS_LOG_DEBUG ("construct tid=" << tid.GetName () << 
+      NS_LOG_DEBUG ("construct tid=" << tid.GetName () <<
                     ", params=" << tid.GetAttributeN ());
       for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
         {
@@ -177,7 +177,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
 
           LOG_WHERE_VALUE (where, value);
           // See if this attribute should not be set here in the
-          // constructor. 
+          // constructor.
           if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
               // Handle this attribute if it should not be
@@ -227,7 +227,7 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
               NS_LOG_DEBUG ("construct \"" << tid.GetName () << "::" <<
                             info.name << "\" from " << where);
             }
-          
+
         }  // for i attributes
       tid = tid.GetParent ();
     }

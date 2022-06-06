@@ -65,14 +65,14 @@ public:
 
   /**
    * Set the MAC layer for this device.
-   * 
+   *
    * \param mac The MAC layer.
    */
   void SetMac (Ptr<UanMac> mac);
 
   /**
    * Set the Phy layer for this device.
-   *   
+   *
    * \param phy The PHY layer.
    */
   void SetPhy (Ptr<UanPhy> phy);
@@ -167,7 +167,7 @@ public:
    */
   typedef void (* RxTxTracedCallback)
     (Ptr<const Packet> packet, Mac8Address address);
-  
+
 private:
   /**
    * Forward the packet to a higher level, set with SetReceiveCallback.
@@ -177,7 +177,7 @@ private:
    * \param protocolNumber The layer 3 protocol number.
    */
   virtual void ForwardUp (Ptr<Packet> pkt, uint16_t protocolNumber, const Mac8Address &src);
-  
+
   /** \return The channel attached to this device. */
   Ptr<UanChannel> DoGetChannel (void) const;
 

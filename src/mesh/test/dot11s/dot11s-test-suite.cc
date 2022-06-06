@@ -132,12 +132,12 @@ private:
 };
 
 HwmpRtableTest::HwmpRtableTest () :
-  TestCase ("HWMP routing table"), 
-  dst ("01:00:00:01:00:01"), 
+  TestCase ("HWMP routing table"),
+  dst ("01:00:00:01:00:01"),
   hop ("01:00:00:01:00:03"),
-  iface (8010), 
-  metric (10), 
-  seqnum (1), 
+  iface (8010),
+  metric (10),
+  seqnum (1),
   expire (Seconds (10))
 {
   precursors.push_back (Mac48Address ("00:10:20:30:40:50"));

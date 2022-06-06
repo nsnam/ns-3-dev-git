@@ -10,12 +10,12 @@
 Submitting new models
 ---------------------
 
-We actively encourage submission of new features to |ns3|. 
+We actively encourage submission of new features to |ns3|.
 Independent submissions are essential for open source projects, and if
 accepted into the mainline, you will also be credited as an author of
-future versions of |ns3|. However, 
+future versions of |ns3|. However,
 please keep in mind that there is already a large burden on the |ns3|
-maintainers to manage the flow of incoming contributions and maintain new 
+maintainers to manage the flow of incoming contributions and maintain new
 and existing code. The goal of this chapter is to outline the options for
 new models in |ns3|, and how you can help to minimize the burden on maintainers
 and thus minimize the average time-to-merge of your code.
@@ -43,7 +43,7 @@ The options for publishing new models are:
 
 1. Propose a Merge Request for the |ns3| mainline and follow the guidelines below.
 
-2. Organize your code as a "contributed module" or modules and maintain them in 
+2. Organize your code as a "contributed module" or modules and maintain them in
    your own public Git repository.  A page on the App Store can be made to
    advertise this to users, and other tooling can be used to ensure that the
    module stays compatible with the mainline.
@@ -59,7 +59,7 @@ The options for publishing new models are:
    changes so that public forks can be avoided.
 
 4. Archive your code somewhere, or publish in a Git repository, and link to
-   it from the |ns3| `Contributed Code <https://www.nsnam.org/wiki/Contributed_Code>`_ 
+   it from the |ns3| `Contributed Code <https://www.nsnam.org/wiki/Contributed_Code>`_
    wiki page.  This option requires the least amount of work from the
    contributor, but visibility of the code to new |ns3| users will likely be
    reduced.  To follow this route, obtain a wiki account from the webmaster,
@@ -70,13 +70,13 @@ other options are described in the next chapter (:ref:`External`).
 
 Upstreaming new models
 **********************
-The term "upstreaming" refers to the process whereby new code is 
+The term "upstreaming" refers to the process whereby new code is
 contributed back to an upstream source (the main open source project)
 whereby that project takes responsibility for further enhancement and
 maintenance.
 
-Making sure that each code submission fulfills as many items 
-as possible in the following checklist is the best way to ensure quick 
+Making sure that each code submission fulfills as many items
+as possible in the following checklist is the best way to ensure quick
 merging of your code.
 
 In brief, we can summarize the guidelines as follows:
@@ -87,12 +87,12 @@ In brief, we can summarize the guidelines as follows:
     engineering and consistency feedback that maintainers may provide
 4.  Write associated documentation, tests, and example programs
 
-If you do not have the time to follow through the process to include your 
+If you do not have the time to follow through the process to include your
 code in the main tree, please see the next chapter (:ref:`External`)
 about contributing ns-3 code that is not maintained in the main tree.
 
 The process can take a long time when submissions are large or when
-contributors skip some of these steps.  Therefore, best results are found 
+contributors skip some of these steps.  Therefore, best results are found
 when the following guidelines are followed:
 
 * Ask for review of small chunks of code, rather than large patches.  Split
@@ -215,7 +215,7 @@ documentation, test code, and example scripts.
 
 Note that you may want to go through multiple phases of code reviews, and
 all of this supporting material may not be needed at the first stage (e.g.
-when you want some feedback on public API header declarations only, before 
+when you want some feedback on public API header declarations only, before
 starting the implementation). However, when it times come to merge your code,
 you should be prepared to provide these things, as fits your contribution
 (maintainers will provide some guidance here).

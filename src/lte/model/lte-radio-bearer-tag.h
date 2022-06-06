@@ -52,7 +52,7 @@ public:
    * \param lcId the LCID
    */
   LteRadioBearerTag (uint16_t  rnti, uint8_t lcId);
-  
+
   /**
   * Create a LteRadioBearerTag with the given RNTI, LC id and layer
    * \param rnti the RNTI
@@ -74,7 +74,7 @@ public:
    * @param lcid the value of the RNTI to set
    */
   void SetLcid (uint8_t lcid);
-  
+
   /**
   * Set the layer id to the given value.
   *

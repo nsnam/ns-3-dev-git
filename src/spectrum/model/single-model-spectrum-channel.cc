@@ -169,7 +169,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   propagationGainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
                   NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
                   pathLossDb -= propagationGainDb;
-                }                    
+                }
               NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");
               // Gain trace
               m_gainTrace (senderMobility, receiverMobility, txAntennaGain, rxAntennaGain, propagationGainDb, pathLossDb);
@@ -181,7 +181,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   continue;
                 }
               double pathGainLinear = std::pow (10.0, (-pathLossDb) / 10.0);
-              *(rxParams->psd) *= pathGainLinear;              
+              *(rxParams->psd) *= pathGainLinear;
 
               if (m_spectrumPropagationLoss)
                 {

@@ -46,7 +46,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   virtual void Output (DataCollector &dc);
 
 protected:

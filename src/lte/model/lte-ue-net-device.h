@@ -94,7 +94,7 @@ public:
    * \return the LTE UE NAS
    */
   Ptr<EpcUeNas> GetNas (void) const;
-  
+
   /**
    * \brief Get the componentn carrier manager.
    * \return the LTE UE component carrier manager

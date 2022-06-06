@@ -43,7 +43,7 @@ public:
    * and may ultimately match zero, one, or more than one object.
    *
    * The objects to match are of type PointerValue where the underlying
-   * type is of type Ptr<RandomVariableStream>.  
+   * type is of type Ptr<RandomVariableStream>.
    *
    * \code
    *    .AddAttribute ("Speed",

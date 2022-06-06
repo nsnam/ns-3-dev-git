@@ -4,8 +4,8 @@
 PIE queue disc
 ----------------
 
-This chapter describes the PIE ([Pan13]_, [Pan16]_) queue disc implementation 
-in |ns3|. 
+This chapter describes the PIE ([Pan13]_, [Pan16]_) queue disc implementation
+in |ns3|.
 
 Proportional Integral controller Enhanced (PIE) is a queuing discipline that aims to
 solve the bufferbloat [Buf14]_ problem. The model in ns-3 is a port of Preethi
@@ -46,14 +46,14 @@ References
 Attributes
 ==========
 
-The key attributes that the PieQueue class holds include the following: 
+The key attributes that the PieQueue class holds include the following:
 
 * ``MaxSize:`` The maximum number of bytes or packets the queue can hold.
 * ``MeanPktSize:`` Mean packet size in bytes. The default value is 1000 bytes.
-* ``Tupdate:`` Time period to calculate drop probability. The default value is 30 ms. 
-* ``Supdate:`` Start time of the update timer. The default value is 0 ms. 
-* ``DequeueThreshold:`` Minimum queue size in bytes before dequeue rate is measured. The default value is 10000 bytes. 
-* ``QueueDelayReference:`` Desired queue delay. The default value is 20 ms. 
+* ``Tupdate:`` Time period to calculate drop probability. The default value is 30 ms.
+* ``Supdate:`` Start time of the update timer. The default value is 0 ms.
+* ``DequeueThreshold:`` Minimum queue size in bytes before dequeue rate is measured. The default value is 10000 bytes.
+* ``QueueDelayReference:`` Desired queue delay. The default value is 20 ms.
 * ``MaxBurstAllowance:`` Current max burst allowance in seconds before random drop. The default value is 0.1 seconds.
 * ``A:`` Value of alpha. The default value is 0.125.
 * ``B:`` Value of beta. The default value is 1.25.
@@ -99,7 +99,7 @@ The PIE model is tested using :cpp:class:`PieQueueDiscTestSuite` class defined i
 * Test 15: Tests Active/Inactive feature, ActiveThreshold set to a high value so PIE never starts.
 * Test 16: Tests Active/Inactive feature, ActiveThreshold set to a low value so PIE starts early.
 
-The test suite can be run using the following commands: 
+The test suite can be run using the following commands:
 
 .. sourcecode:: bash
 
@@ -107,7 +107,7 @@ The test suite can be run using the following commands:
   $ ./ns3 build
   $ ./test.py -s pie-queue-disc
 
-or alternatively (to see logging statements in a debug build):  
+or alternatively (to see logging statements in a debug build):
 
 .. sourcecode:: bash
 

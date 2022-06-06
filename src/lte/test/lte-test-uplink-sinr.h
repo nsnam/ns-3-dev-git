@@ -48,9 +48,9 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test generation of SINR in the uplink. Test schedules the signal and the interference 
- * signals and it evaluates if the obtained value for SINR corresponds to the theoretical value 
- * in given conditions. 
+ * \brief Test generation of SINR in the uplink. Test schedules the signal and the interference
+ * signals and it evaluates if the obtained value for SINR corresponds to the theoretical value
+ * in given conditions.
  */
 class LteUplinkDataSinrTestCase : public TestCase
 {
@@ -81,10 +81,10 @@ private:
  * \ingroup tests
  *
  * \brief  In this test one signal will be of interest, i.e., the
-  *  SRS of the first signal will have the same CellId of the 
-  *  receiving PHY; the others will have a different 
-  *  CellId and hence will be the interfering signals. The test 
-  *  checks whether the SINR of the signal correspond to the 
+  *  SRS of the first signal will have the same CellId of the
+  *  receiving PHY; the others will have a different
+  *  CellId and hence will be the interfering signals. The test
+  *  checks whether the SINR of the signal correspond to the
   *  theoretical value.
  */
 class LteUplinkSrsSinrTestCase : public TestCase
@@ -100,17 +100,17 @@ class LteUplinkSrsSinrTestCase : public TestCase
    */
     LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LteUplinkSrsSinrTestCase ();
-    
-  /** 
+
+  /**
    * Callback to be connected to an LteChunkProcessor to collect the reported SINR
-   * 
-   * \param sinr 
+   *
+   * \param sinr
    */
   void ReportSinr (const SpectrumValue& sinr);
 
 private:
   virtual void DoRun (void);
-  
+
   Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
   Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model

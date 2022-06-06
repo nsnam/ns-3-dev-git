@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (Application);
 
 // Application Methods
 
-TypeId 
+TypeId
 Application::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Application")
@@ -107,7 +107,7 @@ Ptr<Node> Application::GetNode () const
   return m_node;
 }
 
-void 
+void
 Application::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this);

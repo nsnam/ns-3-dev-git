@@ -444,7 +444,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (uint32_t centerFr
           *vit = (txPowerPerBandW / (bit->fh - bit->fl));
         }
     }
-  
+
   return c;
 }
 

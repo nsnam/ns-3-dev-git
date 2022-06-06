@@ -119,7 +119,7 @@ public:
    * \param [in] data The new data value.
    */
   typedef void (* OutputTracedCallback) (const double now, const double data);
-  
+
 private:
   TracedCallback<double, double> m_output; //!< output trace
 };

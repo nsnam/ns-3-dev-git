@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("IsotropicAntennaModel");
 NS_OBJECT_ENSURE_REGISTERED (IsotropicAntennaModel);
 
 
-TypeId 
+TypeId
 IsotropicAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IsotropicAntennaModel")
@@ -55,7 +55,7 @@ IsotropicAntennaModel::IsotropicAntennaModel ()
   NS_LOG_FUNCTION (this);
 }
 
-double 
+double
 IsotropicAntennaModel::GetGainDb (Angles a)
 {
   NS_LOG_FUNCTION (this << a);

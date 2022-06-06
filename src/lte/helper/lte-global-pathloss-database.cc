@@ -34,7 +34,7 @@ LteGlobalPathlossDatabase::~LteGlobalPathlossDatabase (void)
 {
 }
 
-void 
+void
 LteGlobalPathlossDatabase::Print ()
 {
   NS_LOG_FUNCTION (this);
@@ -68,10 +68,10 @@ LteGlobalPathlossDatabase::GetPathloss (uint16_t cellId, uint64_t imsi)
     }
   return ueIt->second;
 }
- 
+
 
 void
-DownlinkLteGlobalPathlossDatabase::UpdatePathloss (std::string context, 
+DownlinkLteGlobalPathlossDatabase::UpdatePathloss (std::string context,
                                         Ptr<const SpectrumPhy> txPhy,
                                         Ptr<const SpectrumPhy> rxPhy,
                                         double lossDb)
@@ -84,7 +84,7 @@ DownlinkLteGlobalPathlossDatabase::UpdatePathloss (std::string context,
 
 
 void
-UplinkLteGlobalPathlossDatabase::UpdatePathloss (std::string context, 
+UplinkLteGlobalPathlossDatabase::UpdatePathloss (std::string context,
                                         Ptr<const SpectrumPhy> txPhy,
                                         Ptr<const SpectrumPhy> rxPhy,
                                         double lossDb)

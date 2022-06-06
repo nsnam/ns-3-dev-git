@@ -62,7 +62,7 @@ static const double SpectralEfficiencyForCqi[16] = {
  * - in R1-081483, a valid MCS index is in the range of 1-30 (not 0-28).
  */
 static const int ModulationSchemeForMcs[32] = {
-  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   4, 4, 4, 4, 4, 4, 4,
   6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
   2,  // reserved
@@ -236,7 +236,7 @@ LteAmc::LteAmc ()
 
 
 LteAmc::~LteAmc ()
-{ 
+{
 }
 
 TypeId
@@ -333,7 +333,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
 
   std::vector<int> cqi;
   Values::const_iterator it;
-  
+
   if (m_amcModel == PiroEW2010)
     {
 
@@ -390,7 +390,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
                     break;
                   }
                 mcs++;
-                
+
               }
             if (mcs > 0)
               {
@@ -423,9 +423,9 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
               }
             rbgMap.clear ();
          }
-        
+
       }
-      
+
     }
 
   return cqi;

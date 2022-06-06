@@ -62,7 +62,7 @@ const uint32_t PCAP_SNAPLEN   = 64;         //!< Don't bother to save much data.
 
 /**
  * \ingroup system-tests-tcp
- * 
+ *
  * \brief Tests of TCP implementation loss behavior.
  */
 class Ns3TcpLossTestCase : public TestCase
@@ -72,7 +72,7 @@ public:
 
   /**
    * Constructor.
-   * 
+   *
    * \param tcpModel The TCP model name.
    * \param testCase Testcase number.
    */
@@ -101,7 +101,7 @@ private:
   /**
    * Check that the transmitted packets are consitent with the trace.
    * This callback is hooked to ns3::Ipv4L3Protocol/Tx.
-   * 
+   *
    * \param context The callback context (unused).
    * \param packet The transmitted packet.
    * \param ipv4 The IPv4 object that did send the packet (unused).
@@ -110,21 +110,21 @@ private:
   void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
   /**
    * CWND trace.
-   * 
+   *
    * \param oldval The old value.
    * \param newval The new value.
    */
   void CwndTracer (uint32_t oldval, uint32_t newval);
   /**
    * Write to the socket until the buffer is full.
-   * 
+   *
    * \param localSocket The output socket.
    * \param txSpace The space left on the socket (unused).
    */
   void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
   /**
    * Start transmitting a TCP flow.
-   * 
+   *
    * \param localSocket The sending socket.
    * \param servAddress The IPv4 address of the server (i.e., the destination address).
    * \param servPort The TCP port of the server (i.e., the destination port).
@@ -508,7 +508,7 @@ Ns3TcpLossTestCase::DoRun (void)
 
 /**
  * \ingroup system-tests-tcp
- * 
+ *
  * TCP implementation loss behavior TestSuite.
  */
 class Ns3TcpLossTestSuite : public TestSuite

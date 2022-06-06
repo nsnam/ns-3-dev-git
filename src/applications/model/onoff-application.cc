@@ -81,7 +81,7 @@ OnOffApplication::GetTypeId (void)
                    StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                    MakePointerAccessor (&OnOffApplication::m_offTime),
                    MakePointerChecker <RandomVariableStream>())
-    .AddAttribute ("MaxBytes", 
+    .AddAttribute ("MaxBytes",
                    "The total number of bytes to send. Once these bytes are sent, "
                    "no packet is sent again, even in on state. The value zero means "
                    "that there is no limit.",
@@ -129,7 +129,7 @@ OnOffApplication::~OnOffApplication()
   NS_LOG_FUNCTION (this);
 }
 
-void 
+void
 OnOffApplication::SetMaxBytes (uint64_t maxBytes)
 {
   NS_LOG_FUNCTION (this << maxBytes);
@@ -143,7 +143,7 @@ OnOffApplication::GetSocket (void) const
   return m_socket;
 }
 
-int64_t 
+int64_t
 OnOffApplication::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);

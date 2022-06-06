@@ -36,7 +36,7 @@ class SpectrumChannel;
 //class BuildingsMobilityModel;
 class MobilityModel;
 
-/** 
+/**
  * \ingroup lte
  *
  * Generates a 2D map of the SINR from the strongest transmitter in the
@@ -45,11 +45,11 @@ class MobilityModel;
  */
 class RadioEnvironmentMapHelper : public Object
 {
-public:  
+public:
 
   RadioEnvironmentMapHelper ();
   virtual ~RadioEnvironmentMapHelper ();
-  
+
   // inherited from Object
   virtual void DoDispose (void);
   /**
@@ -58,20 +58,20 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  /** 
+  /**
    * \return the bandwidth (in num of RBs) over which SINR is calculated
    */
   uint16_t GetBandwidth () const;
 
-  /** 
+  /**
    *
    * \param bw  the bandwidth (in num of RBs) over which SINR is calculated
    */
   void SetBandwidth (uint16_t bw);
 
-  /** 
+  /**
    * Deploy the RemSpectrumPhy objects that generate the map according to the specified settings.
-   * 
+   *
    */
   void Install ();
 
@@ -109,7 +109,7 @@ private:
   void Finalize ();
 
   /// A complete Radio Environment Map is composed of many of this structure.
-  struct RemPoint 
+  struct RemPoint
   {
     /// Simplified listener which compute SINR over the DL channel.
     Ptr<RemSpectrumPhy> phy;
@@ -134,7 +134,7 @@ private:
 
   uint16_t m_earfcn;     ///< The `Earfcn` attribute.
   uint16_t m_bandwidth;  ///< The `Bandwidth` attribute.
- 
+
   double m_z;  ///< The `Z` attribute.
 
   /**
@@ -147,7 +147,7 @@ private:
   std::string m_outputFile;   ///< The `OutputFile` attribute.
 
   bool m_stopWhenDone;   ///< The `StopWhenDone` attribute.
-  
+
   /**
    * The `Channel` attribute, which is a direct pointer to the DL channel
    * object for which will be created the REM. Alternatively, `ChannelPath`

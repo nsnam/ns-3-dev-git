@@ -44,7 +44,7 @@ SocketWriter::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void
 SocketWriter::StartApplication ()
 {

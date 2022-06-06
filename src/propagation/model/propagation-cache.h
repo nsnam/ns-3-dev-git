@@ -67,7 +67,7 @@ public:
   {
     PropagationPathIdentifier key = PropagationPathIdentifier (a, b, modelUid);
     NS_ASSERT (m_pathCache.find (key) == m_pathCache.end ());
-    m_pathCache.insert (std::make_pair (key, data)); 
+    m_pathCache.insert (std::make_pair (key, data));
   };
 private:
   /// Each path is identified by

@@ -33,8 +33,8 @@ namespace ns3 {
 
 unsigned long SinkTracer::m_sinkCount = 0;
 unsigned long SinkTracer::m_line = 0;
-int SinkTracer::m_worldRank = -1; 
-int SinkTracer::m_worldSize = -1; 
+int SinkTracer::m_worldRank = -1;
+int SinkTracer::m_worldSize = -1;
 
 void
 SinkTracer::Init (void)
@@ -65,7 +65,7 @@ SinkTracer::Verify (unsigned long expectedCount)
 #else
   globalCount = m_sinkCount;
 #endif
-  
+
   if (expectedCount == globalCount)
     {
       RANK0COUT ("PASSED\n");
@@ -80,7 +80,7 @@ std::string
 SinkTracer::FormatAddress (const ns3::Address address)
 {
   std::stringstream ss;
-  
+
   if (InetSocketAddress::IsMatchingType (address))
     {
       ss << InetSocketAddress::ConvertFrom(address).GetIpv4 ()

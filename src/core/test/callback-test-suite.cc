@@ -35,7 +35,7 @@ using namespace ns3;
 
 /**
  * \ingroup callback-tests
- * 
+ *
  * Test the basic Callback mechanism.
  */
 class BasicCallbackTestCase : public TestCase
@@ -214,7 +214,7 @@ BasicCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup callback-tests
- * 
+ *
  * Test the MakeCallback mechanism.
  */
 class MakeCallbackTestCase : public TestCase
@@ -393,7 +393,7 @@ MakeCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup callback-tests
- * 
+ *
  * Test the MakeBoundCallback mechanism.
  */
 class MakeBoundCallbackTestCase : public TestCase
@@ -683,7 +683,7 @@ MakeBoundCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup callback-tests
- * 
+ *
  * Test the Nullify mechanism.
  */
 class NullifyCallbackTestCase : public TestCase
@@ -738,7 +738,7 @@ NullifyCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup callback-tests
- * 
+ *
  * Make sure that various MakeCallback template functions compile and execute;
  * doesn't check an results of the execution.
  */
@@ -787,8 +787,8 @@ void TestFRSix (int &, int &, int &, int &, int &, int &) {}
 
 /**
  * \ingroup callback-tests
- * 
- * Class used to check the capability of callbacks to call 
+ *
+ * Class used to check the capability of callbacks to call
  * public, protected, and private functions.
  */
 class CallbackTestParent
@@ -814,8 +814,8 @@ private:
 
 /**
  * \ingroup callback-tests
- * 
- * Derived class used to check the capability of callbacks to call 
+ *
+ * Derived class used to check the capability of callbacks to call
  * public, protected, and private functions.
  */
 class CallbackTestClass : public CallbackTestParent
@@ -920,7 +920,7 @@ MakeCallbackTemplatesTestCase::DoRun (void)
 
 /**
  * \ingroup callback-tests
- *  
+ *
  * \brief The callback Test Suite.
  */
 class CallbackTestSuite : public TestSuite

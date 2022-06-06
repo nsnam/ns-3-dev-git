@@ -29,7 +29,7 @@
 # If both a and b are true, we're building for public urls.
 # (The newer update-docs script (through ns3) sets
 # NS3_WWW_URLS=public explicitly.)
-# 
+#
 # The repo version is either a tag name or a commit (short) id.
 #
 # If we're building for nsnam.org, and at a tag, we use just
@@ -64,7 +64,7 @@ function usage
 	  -n  pretend we are on nsnam.org
 	  -d  pretend we are in the automated build directory
 	  -t  pretend we are at a repo tag
-	    
+
 EOF
     exit 1
 }
@@ -172,24 +172,24 @@ if [ $PUBLIC -eq 1 ]; then
     echo "//  public urls"                                   >> $outf
     # Generate URL relative to server root
     echo "var ns3_host = \"/\";"                             >> $outf
-    
+
     if [ $distance -eq 1 ]; then
 	# Like "http://www.nsnam.org/ns-3-14"
 	vers_href="https://www.nsnam.org/ns-3-${version#ns-3.}"
 	vers_href="<a href=\\\"$vers_href\\\">$version$dirty</a>"
-	
+
 	echo "var ns3_version = \"Release $vers_href\";"     >> $outf
 	echo "var ns3_release = \"docs/release/${version#ns-}/\";" >> $outf
     else
 	vers_href="https://gitlab.com/nsnam/ns-3-dev/commits/$version"
 	version="<a href=\\\"$vers_href\\\">$version$dirty</a>"
-	
+
 	echo "var ns3_version = \"ns-3-dev @ $version\";"    >> $outf
 	echo "var ns3_release = \"docs/\";" >> $outf
     fi
     echo "var ns3_local = \"\";"                             >> $outf
     echo "var ns3_doxy  = \"doxygen/\";"                     >> $outf
-    
+
 else
     repo=`basename $PWD`
     echo "// ns3_version.js:  automatically generated"       >  $outf

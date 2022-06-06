@@ -37,7 +37,7 @@ class Packet;
  * \ingroup csma
  * \brief build a set of CsmaNetDevice objects
  *
- * Normally we eschew multiple inheritance, however, the classes 
+ * Normally we eschew multiple inheritance, however, the classes
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
  * treated as "mixins".  A mixin is a self-contained class that
  * encapsulates a general attribute or a set of functionality that
@@ -124,7 +124,7 @@ public:
 
   /**
    * This method creates an ns3::CsmaNetDevice with the attributes configured by
-   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and 
+   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
    * attaches the provided channel to the device.
    *
    * \param node The node to install the device in
@@ -135,7 +135,7 @@ public:
 
   /**
    * This method creates an ns3::CsmaNetDevice with the attributes configured by
-   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and 
+   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
    * attaches the provided channel to the device.
    *
    * \param node The node to install the device in
@@ -146,7 +146,7 @@ public:
 
   /**
    * This method creates an ns3::CsmaNetDevice with the attributes configured by
-   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and 
+   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
    * attaches the provided channel to the device.
    *
    * \param nodeName The name of the node to install the device in
@@ -157,7 +157,7 @@ public:
 
   /**
    * This method creates an ns3::CsmaNetDevice with the attributes configured by
-   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and 
+   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and
    * attaches the provided channel to the device.
    *
    * \param nodeName The name of the node to install the device in
@@ -169,8 +169,8 @@ public:
   /**
    * This method creates an ns3::CsmaChannel with the attributes configured by
    * CsmaHelper::SetChannelAttribute.  For each Ptr<node> in the provided
-   * container: it creates an ns3::CsmaNetDevice (with the attributes 
-   * configured by CsmaHelper::SetDeviceAttribute); adds the device to the 
+   * container: it creates an ns3::CsmaNetDevice (with the attributes
+   * configured by CsmaHelper::SetDeviceAttribute); adds the device to the
    * node; and attaches the channel to the device.
    *
    * \param c The NodeContainer holding the nodes to be changed.
@@ -179,9 +179,9 @@ public:
   NetDeviceContainer Install (const NodeContainer &c) const;
 
   /**
-   * For each Ptr<node> in the provided container, this method creates an 
-   * ns3::CsmaNetDevice (with the attributes configured by 
-   * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches 
+   * For each Ptr<node> in the provided container, this method creates an
+   * ns3::CsmaNetDevice (with the attributes configured by
+   * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches
    * the provided channel to the device.
    *
    * \param c The NodeContainer holding the nodes to be changed.
@@ -191,9 +191,9 @@ public:
   NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const;
 
   /**
-   * For each Ptr<node> in the provided container, this method creates an 
-   * ns3::CsmaNetDevice (with the attributes configured by 
-   * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches 
+   * For each Ptr<node> in the provided container, this method creates an
+   * ns3::CsmaNetDevice (with the attributes configured by
+   * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches
    * the provided channel to the device.
    *
    * \param c The NodeContainer holding the nodes to be changed.
@@ -208,7 +208,7 @@ public:
   * have been assigned. The Install() method should have previously been
   * called by the user.
   *
-  * \param c NetDeviceContainer of the set of net devices for which the 
+  * \param c NetDeviceContainer of the set of net devices for which the
   *          CsmaNetDevice should be modified to use a fixed stream
   * \param stream first stream index to use
   * \return the number of stream indices assigned by this helper
@@ -252,8 +252,8 @@ private:
    * \param nd Net device for which you want to enable tracing.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, 
-                                    std::string prefix, 
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+                                    std::string prefix,
                                     Ptr<NetDevice> nd,
                                     bool explicitFilename);
 

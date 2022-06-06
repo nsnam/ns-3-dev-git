@@ -64,8 +64,8 @@ Ipv6StaticRoutingHelper::GetStaticRouting (Ptr<Ipv6> ipv6) const
   if (DynamicCast<Ipv6StaticRouting> (ipv6rp))
     {
       NS_LOG_LOGIC ("Static routing found as the main IPv4 routing protocol.");
-      return DynamicCast<Ipv6StaticRouting> (ipv6rp); 
-    } 
+      return DynamicCast<Ipv6StaticRouting> (ipv6rp);
+    }
   if (DynamicCast<Ipv6ListRouting> (ipv6rp))
     {
       Ptr<Ipv6ListRouting> lrp = DynamicCast<Ipv6ListRouting> (ipv6rp);
@@ -88,28 +88,28 @@ Ipv6StaticRoutingHelper::GetStaticRouting (Ptr<Ipv6> ipv6) const
 void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
-  Ipv6Address source, 
+  Ipv6Address source,
   Ipv6Address group,
-  Ptr<NetDevice> input, 
+  Ptr<NetDevice> input,
   NetDeviceContainer output)
 {
   Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
 
-  // We need to convert the NetDeviceContainer to an array of interface 
+  // We need to convert the NetDeviceContainer to an array of interface
   // numbers
   std::vector<uint32_t> outputInterfaces;
   for (NetDeviceContainer::Iterator i = output.Begin (); i != output.End (); ++i)
     {
       Ptr<NetDevice> nd = *i;
       int32_t interface = ipv6->GetInterfaceForDevice (nd);
-      NS_ASSERT_MSG (interface >= 0, 
+      NS_ASSERT_MSG (interface >= 0,
                      "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
                      "Expected an interface associated with the device nd");
       outputInterfaces.push_back (interface);
     }
 
   int32_t inputInterface = ipv6->GetInterfaceForDevice (input);
-  NS_ASSERT_MSG (inputInterface >= 0, 
+  NS_ASSERT_MSG (inputInterface >= 0,
                  "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
                  "Expected an interface associated with the device input");
   Ipv6StaticRoutingHelper helper;
@@ -126,9 +126,9 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
-  Ipv6Address source, 
+  Ipv6Address source,
   Ipv6Address group,
-  std::string inputName, 
+  std::string inputName,
   NetDeviceContainer output)
 {
   Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
@@ -138,9 +138,9 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
-  Ipv6Address source, 
+  Ipv6Address source,
   Ipv6Address group,
-  Ptr<NetDevice> input, 
+  Ptr<NetDevice> input,
   NetDeviceContainer output)
 {
   Ptr<Node> n = Names::Find<Node> (nName);
@@ -150,9 +150,9 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
 void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
-  Ipv6Address source, 
+  Ipv6Address source,
   Ipv6Address group,
-  std::string inputName, 
+  std::string inputName,
   NetDeviceContainer output)
 {
   Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
@@ -163,19 +163,19 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
 #if 0
 void
 Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
-  Ptr<Node> n, 
+  Ptr<Node> n,
   Ptr<NetDevice> nd)
 {
   Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
   int32_t interfaceSrc = ipv6->GetInterfaceForDevice (nd);
-  NS_ASSERT_MSG (interfaceSrc >= 0, 
+  NS_ASSERT_MSG (interfaceSrc >= 0,
                  "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
                  "Expected an interface associated with the device");
   Ipv6StaticRoutingHelper helper;
   Ptr<Ipv6StaticRouting> ipv6StaticRouting = helper.GetStaticRouting (ipv6);
   if (!ipv6StaticRouting)
     {
-      NS_ASSERT_MSG (ipv6StaticRouting, 
+      NS_ASSERT_MSG (ipv6StaticRouting,
                      "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
                      "Expected an Ipv6StaticRouting associated with this node");
     }
@@ -184,7 +184,7 @@ Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
-  Ptr<Node> n, 
+  Ptr<Node> n,
   std::string ndName)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
@@ -193,7 +193,7 @@ Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
-  std::string nName, 
+  std::string nName,
   Ptr<NetDevice> nd)
 {
   Ptr<Node> n = Names::Find<Node> (nName);
@@ -202,7 +202,7 @@ Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
 
 void
 Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
-  std::string nName, 
+  std::string nName,
   std::string ndName)
 {
   Ptr<Node> n = Names::Find<Node> (nName);

@@ -47,7 +47,7 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6RawSocketImpl")
     .SetParent<Socket> ()
     .SetGroupName ("Internet")
-    .AddAttribute ("Protocol", "Protocol number to match.", 
+    .AddAttribute ("Protocol", "Protocol number to match.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6RawSocketImpl::m_protocol),
                    MakeUintegerChecker<uint16_t> ())
@@ -261,8 +261,8 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
           NS_LOG_LOGIC ("Route exists");
           if (m_protocol == Icmpv6L4Protocol::GetStaticProtocolNumber ())
             {
-              /* calculate checksum here for ICMPv6 echo request (sent by ping6) 
-               * as we cannot determine source IPv6 address at application level 
+              /* calculate checksum here for ICMPv6 echo request (sent by ping6)
+               * as we cannot determine source IPv6 address at application level
                */
               uint8_t type;
               p->CopyData (&type, sizeof(type));
@@ -412,7 +412,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         }
     }
 
-  if ((m_src == Ipv6Address::GetAny () || hdr.GetDestination () == m_src) && 
+  if ((m_src == Ipv6Address::GetAny () || hdr.GetDestination () == m_src) &&
       (m_dst == Ipv6Address::GetAny () || hdr.GetSource () == m_dst) &&
       hdr.GetNextHeader () == m_protocol)
     {

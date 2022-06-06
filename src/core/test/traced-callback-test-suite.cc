@@ -34,7 +34,7 @@ using namespace ns3;
 
 /**
  * \ingroup tracedcallback-tests
- * 
+ *
  * TracedCallback Test case, check basic TracedCallback operation.
  */
 class BasicTracedCallbackTestCase : public TestCase
@@ -136,7 +136,7 @@ BasicTracedCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup tracedcallback-tests
- *  
+ *
  * \brief The traced callback Test Suite.
  */
 class TracedCallbackTestSuite : public TestSuite

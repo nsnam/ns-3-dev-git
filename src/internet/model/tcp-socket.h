@@ -53,7 +53,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
- 
+
   TcpSocket (void);
   virtual ~TcpSocket (void);
 

@@ -140,7 +140,7 @@ RedQueueDiscTestCase::RunRedTest (QueueSizeUnit mode)
                          "Verify that we can actually set the attribute QW");
 
   Address dest;
-  
+
   if (mode == QueueSizeUnit::BYTES)
     {
       // pktSize should be same as MeanPktSize to avoid performance gap between byte and packet mode
@@ -490,7 +490,7 @@ RedQueueDiscTestCase::RunRedTest (QueueSizeUnit mode)
 
 }
 
-void 
+void
 RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt, bool ecnCapable)
 {
   Address dest;

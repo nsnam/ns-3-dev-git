@@ -60,8 +60,8 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite ()
   : TestSuite ("lte-phy-error-model", SYSTEM)
 {
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
-  
-  
+
+
   for (uint32_t rngRun = 1; rngRun <= 3; ++rngRun)
     {
 
@@ -130,7 +130,7 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite ()
 
 static LenaTestPhyErrorModelSuite lenaTestPhyErrorModelSuite;
 
-std::string 
+std::string
 LenaDataPhyErrorModelTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint32_t rngRun)
 {
   std::ostringstream oss;
@@ -158,7 +158,7 @@ LenaDataPhyErrorModelTestCase::~LenaDataPhyErrorModelTestCase ()
 void
 LenaDataPhyErrorModelTestCase::DoRun (void)
 {
-  
+
   double ber = 0.03;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
@@ -176,7 +176,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 
   int64_t stream = 1;
   Ptr<LteHelper> lena = CreateObject<LteHelper> ();
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -191,7 +191,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
   BuildingsHelper::Install (ueNodes);
-  
+
   // remove random shadowing component
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
@@ -203,7 +203,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   NetDeviceContainer ueDevs;
   lena->SetSchedulerType ("ns3::RrFfMacScheduler");
   lena->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
-  
+
   enbDevs = lena->InstallEnbDevice (enbNodes);
   stream += lena->AssignStreams (enbDevs, stream);
   ueDevs = lena->InstallUeDevice (ueNodes);
@@ -216,7 +216,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateDataRadioBearer (ueDevs, bearer);
-  
+
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -236,7 +236,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
       uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
-    
+
   Time statsDuration = Seconds (1.0);
   Simulator::Stop (m_statsStartTime + statsDuration - Seconds (0.0001));
 
@@ -269,11 +269,11 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI
       double expectedDlTxPackets = static_cast<double> (statsDuration.GetMilliSeconds ());
-      NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005, 
+      NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005,
                                  " too different DL TX packets reported");
 
       // this is the main test condition: check that the RX packets are within the expected range
-      NS_TEST_ASSERT_MSG_EQ_TOL (dlRxPackets, expectedDlRxPackets, m_toleranceRxPackets, 
+      NS_TEST_ASSERT_MSG_EQ_TOL (dlRxPackets, expectedDlRxPackets, m_toleranceRxPackets,
                                  " too different DL RX packets reported");
     }
 
@@ -284,7 +284,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 
 
 
-std::string 
+std::string
 LenaDlCtrlPhyErrorModelTestCase::BuildNameString (uint16_t nEnb, uint16_t dist, uint32_t rngRun)
 {
   std::ostringstream oss;
@@ -313,7 +313,7 @@ LenaDlCtrlPhyErrorModelTestCase::~LenaDlCtrlPhyErrorModelTestCase ()
 void
 LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
 {
-  
+
   double ber = 0.03;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
@@ -334,13 +334,13 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
 
   int64_t stream = 1;
   Ptr<LteHelper> lena = CreateObject<LteHelper> ();
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (m_nEnb);
   ueNodes.Create (1);
-  
+
   // Install Mobility Model
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -349,32 +349,32 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
   BuildingsHelper::Install (ueNodes);
-  
+
   // remove random shadowing component
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
-  
+
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lena->SetSchedulerType ("ns3::RrFfMacScheduler");
   lena->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
-  
+
   enbDevs = lena->InstallEnbDevice (enbNodes);
   stream += lena->AssignStreams (enbDevs, stream);
   ueDevs = lena->InstallUeDevice (ueNodes);
   stream += lena->AssignStreams (ueDevs, stream);
-  
+
   // Attach a UE to one eNB (the others are interfering ones)
   lena->Attach (ueDevs, enbDevs.Get (0));
-  
+
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateDataRadioBearer (ueDevs, bearer);
-  
+
   // Set UEs' position and power
   for (int i = 0; i < m_nEnb; i++)
     {
@@ -386,7 +386,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
       enbPhy->SetAttribute ("TxPower", DoubleValue (43.0));
       enbPhy->SetAttribute ("NoiseFigure", DoubleValue (5.0));
     }
-  
+
   // Set UEs' position and power
   Ptr<MobilityModel> mm = ueNodes.Get (0)->GetObject<MobilityModel> ();
   mm->SetPosition (Vector (m_dist, 0.0, 1.0));
@@ -394,7 +394,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();
   uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
-  
+
   Time statsDuration = Seconds (1.0);
   Simulator::Stop (m_statsStartTime + statsDuration - Seconds (0.0001));
 
@@ -404,7 +404,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   rlcStats->SetAttribute ("EpochDuration", TimeValue (statsDuration));
 
   Simulator::Run ();
-  
+
   NS_LOG_INFO ("\tTest downlink control channels (PCFICH+PDCCH)");
   NS_LOG_INFO ("Test with " << m_nEnb << " eNB(s) at distance " << m_dist << " expected BLER " << m_blerRef);
   int nUser = 1;
@@ -427,7 +427,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI
       double expectedDlTxPackets = static_cast<double> (statsDuration.GetMilliSeconds ());
-      NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005, 
+      NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005,
                                  " too different DL TX packets reported");
 
       // this is the main test condition: check that the RX packets are within the expected range
@@ -435,6 +435,6 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
                                  "too different DL RX packets reported");
 
     }
-  
+
   Simulator::Destroy ();
 }

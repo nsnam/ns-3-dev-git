@@ -11,11 +11,11 @@ is a long-standing API used by user-space applications to access
 network services in the kernel.  A *socket* is an abstraction, like
 a Unix file handle, that allows applications to connect to other
 Internet hosts and exchange reliable byte streams and unreliable
-datagrams, among other services.   
+datagrams, among other services.
 
 |ns3| provides two types of sockets APIs, and it is important to
 understand the differences between them.  The first is a *native*
-|ns3| API, while the second uses the services of the native API to 
+|ns3| API, while the second uses the services of the native API to
 provide a `POSIX-like <http://en.wikipedia.org/wiki/POSIX>`_
 API as part of an overall application process.  Both APIs strive
 to be close to the typical sockets API that application writers
@@ -28,7 +28,7 @@ ns-3 sockets API
 The native sockets API for ns-3 provides an interface to various
 types of transport protocols (TCP, UDP) as well as to packet sockets
 and, in the future, Netlink-like sockets.  However, users are cautioned
-to understand that the semantics are *not* the exact same as 
+to understand that the semantics are *not* the exact same as
 one finds in a real system (for an API which is very much aligned
 to real systems, see the next section).
 
@@ -48,7 +48,7 @@ we have tried to align with a Posix sockets API.  However, note that:
 * the C-style socket address structures are not used;
 
 * the API is not a complete sockets API, such as supporting
-  all socket options or all function variants; 
+  all socket options or all function variants;
 
 * many calls use :cpp:class:`ns3::Packet` class to transfer data
   between application and socket.  This may seem peculiar to
@@ -92,7 +92,7 @@ example::
 
   Ptr<Node> n0;
   // Do some stuff to build up the Node's internet stack
-  Ptr<Socket> localSocket = 
+  Ptr<Socket> localSocket =
      Socket::CreateSocket (n0, TcpSocketFactory::GetTypeId ());
 
 In some ns-3 code, sockets will not be explicitly created by user's
@@ -114,20 +114,20 @@ real implementation::
     recv(sock, ...);
     close(sock);
 
-There are analogs to all of these calls in ns-3, but we will focus on  
-two aspects here.  First, most usage of sockets in real systems 
-requires a way to manage I/O between the application and kernel.  
+There are analogs to all of these calls in ns-3, but we will focus on
+two aspects here.  First, most usage of sockets in real systems
+requires a way to manage I/O between the application and kernel.
 These models include *blocking sockets*, *signal-based I/O*,
 and *non-blocking sockets* with polling.  In ns-3, we make use
-of the callback mechanisms to support a fourth mode, which is 
+of the callback mechanisms to support a fourth mode, which is
 analogous to POSIX *asynchronous I/O*.
 
 In this model, on the sending side, if the :c:func:`send()` call were to
 fail because of insufficient buffers, the application suspends the
-sending of more data until a function registered at the 
-:cpp:func:`ns3::Socket::SetSendCallback` callback is invoked.  
-An application can also ask the socket how much space is available 
-by calling :cpp:func:`ns3::Socket::GetTxAvailable`.  A typical sequence 
+sending of more data until a function registered at the
+:cpp:func:`ns3::Socket::SetSendCallback` callback is invoked.
+An application can also ask the socket how much space is available
+by calling :cpp:func:`ns3::Socket::GetTxAvailable`.  A typical sequence
 of events for sending data (ignoring connection setup) might be::
 
     SetSendCallback (MakeCallback(&HandleSendCallback));
@@ -163,7 +163,7 @@ the raw buffer variant of :cpp:func:`ns3::Socket::Send`, the buffer is immediate
 written into a Packet and the packet variant is invoked.
 
 Users may find it semantically odd to pass a Packet to a stream socket
-such as TCP.  However, do not let the name bother you; think of 
+such as TCP.  However, do not let the name bother you; think of
 :cpp:class:`ns3::Packet` to be a fancy byte buffer.  There are a few reasons why
 the Packet variants are more likely to be preferred in ns-3:
 
@@ -171,7 +171,7 @@ the Packet variants are more likely to be preferred in ns-3:
   a flow ID or other helper data at the application layer.
 
 * Users can exploit the copy-on-write implementation to avoid
-  memory copies (on the receive side, the conversion back to a 
+  memory copies (on the receive side, the conversion back to a
   ``uint8_t* buf`` may sometimes incur an additional copy).
 
 * Use of Packet is more aligned with the rest of the ns-3 API

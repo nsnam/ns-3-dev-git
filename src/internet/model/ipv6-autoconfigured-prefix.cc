@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2008-2009 Telecom Bretagne 
+ * Copyright (c) 2008-2009 Telecom Bretagne
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -187,7 +187,7 @@ void Ipv6AutoconfiguredPrefix::SetValid ()
 }
 
 uint32_t Ipv6AutoconfiguredPrefix::GetId () const
-{ 
+{
   return m_id;
 }
 

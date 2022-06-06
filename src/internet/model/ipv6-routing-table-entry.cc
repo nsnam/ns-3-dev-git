@@ -38,7 +38,7 @@ Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6RoutingTableEntry const& route
 {
 }
 
-Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6RoutingTableEntry const* route) 
+Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6RoutingTableEntry const* route)
   : m_dest (route->m_dest),
     m_destNetworkPrefix (route->m_destNetworkPrefix),
     m_gateway (route->m_gateway),
@@ -251,7 +251,7 @@ Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry ()
 {
 }
 
-Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry (Ipv6MulticastRoutingTableEntry const & route) 
+Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry (Ipv6MulticastRoutingTableEntry const & route)
   : m_origin (route.m_origin),
     m_group (route.m_group),
     m_inputInterface (route.m_inputInterface),

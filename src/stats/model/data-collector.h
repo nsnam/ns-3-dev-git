@@ -44,7 +44,7 @@ typedef std::list<std::pair<std::string, std::string> > MetadataList;
 /**
  * \ingroup dataoutput
  * \class DataCollector
- * \brief Collects data 
+ * \brief Collects data
  */
 class DataCollector : public Object {
 public:
@@ -56,7 +56,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Provide specific parameters to the DataCollector
    * \param experiment Label for the experiment

@@ -48,7 +48,7 @@ public:
    * \param mask The network mask of the base Ipv4Address
    * \param addr The base address used for initialization
    */
-  static void Init (const Ipv4Address net, const Ipv4Mask mask, 
+  static void Init (const Ipv4Address net, const Ipv4Mask mask,
                     const Ipv4Address addr = "0.0.0.1");
 
   /**

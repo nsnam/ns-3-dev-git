@@ -36,7 +36,7 @@ namespace ns3 {
 
 /**
  * \ingroup wimax
- * The value field of a tlv can take different values (uint8_t, uint16, 
+ * The value field of a tlv can take different values (uint8_t, uint16,
  * vector, ...). This class is a virtual interface
  * from which all the types of tlv values should derive
  */
@@ -60,7 +60,7 @@ public:
    * Deserialize from a buffer
    * \param start the iterator
    * \param valueLen the maximum length of the value
-   * \returns the  
+   * \returns the
    */
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLen ) = 0;
   /**
@@ -130,7 +130,7 @@ public:
    */
   uint64_t GetLength (void) const;
   /**
-   * Peek value 
+   * Peek value
    * \returns the TLV value
    */
   TlvValue* PeekValue (void);
@@ -165,7 +165,7 @@ private:
 // ==============================================================================
 /**
  * \ingroup wimax
- * \brief U8TlvValue class 
+ * \brief U8TlvValue class
  */
 class U8TlvValue : public TlvValue
 {
@@ -193,7 +193,7 @@ public:
    */
   uint8_t GetValue (void) const;
   /**
-   * Copy 
+   * Copy
    * \returns a U8 TLV value
    */
   U8TlvValue * Copy (void) const;
@@ -204,7 +204,7 @@ private:
 // ==============================================================================
 /**
  * \ingroup wimax
- * \brief U16TlvValue class 
+ * \brief U16TlvValue class
  */
 class U16TlvValue : public TlvValue
 {
@@ -227,12 +227,12 @@ public:
    */
   uint32_t Deserialize (Buffer::Iterator start);
   /**
-   * Get value 
+   * Get value
    * \returns the value
    */
   uint16_t GetValue (void) const;
   /**
-   * Copy 
+   * Copy
    * \returns the U16 TLV value
    */
   virtual U16TlvValue * Copy (void) const;
@@ -243,7 +243,7 @@ private:
 // ==============================================================================
 /**
  * \ingroup wimax
- * \brief U32TlvValue class 
+ * \brief U32TlvValue class
  */
 class U32TlvValue : public TlvValue
 {
@@ -312,7 +312,7 @@ public:
    */
   void Add (const Tlv & val);
   /**
-   * Copy 
+   * Copy
    * \returns the vector TLV value
    */
   virtual VectorTlvValue * Copy (void) const = 0;
@@ -323,7 +323,7 @@ private:
 // ==============================================================================
 /**
  * \ingroup wimax
- * \brief SfVectorTlvValue class 
+ * \brief SfVectorTlvValue class
  */
 class SfVectorTlvValue : public VectorTlvValue
 {
@@ -465,7 +465,7 @@ private:
 // ==============================================================================
 /**
  * \ingroup wimax
- * \brief PortRangeTlvValue class 
+ * \brief PortRangeTlvValue class
  */
 class PortRangeTlvValue : public TlvValue
 {
@@ -587,7 +587,7 @@ public:
   Iterator End () const;
   virtual Ipv4AddressTlvValue * Copy () const;
 private:
-  std::vector<struct ipv4Addr> * m_ipv4Addr; ///< ipv4 addr 
+  std::vector<struct ipv4Addr> * m_ipv4Addr; ///< ipv4 addr
 };
 
 }

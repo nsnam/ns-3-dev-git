@@ -51,7 +51,7 @@ public:
    * \param mask The network mask of the base Ipv4Address
    * \param addr The base address used for initialization
    */
-  void Init (const Ipv4Address net, const Ipv4Mask mask, 
+  void Init (const Ipv4Address net, const Ipv4Mask mask,
              const Ipv4Address addr);
 
   /**
@@ -187,7 +187,7 @@ public:
   bool m_test; //!< test mode (if true)
 };
 
-Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl () 
+Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl ()
   : m_entries (), m_test (false)
 {
   NS_LOG_FUNCTION (this);
@@ -203,11 +203,11 @@ Ipv4AddressGeneratorImpl::Reset (void)
 //
 // There are 32 possible masks in a 32-bit integer.  Two of these are illegal
 // for a network mask (0x00000000 and 0xffffffff).  Valid network masks
-// correspond to some nonzero number of high order bits set to one followed by 
+// correspond to some nonzero number of high order bits set to one followed by
 // some nonzero number of lower order bits set to zero.
 //
-// We look at a network number as an n-bit number where n is defined as the 
-// number of bits in each mask.  Allocating a new network number is simply 
+// We look at a network number as an n-bit number where n is defined as the
+// number of bits in each mask.  Allocating a new network number is simply
 // incrementing this number.
 //
 // In order to combine an allocated network number with an IP address, we have
@@ -291,9 +291,9 @@ Ipv4AddressGeneratorImpl::NextNetwork (
 //
 // The way this is expected to be used is that an address and network prefix
 // are initialized, and then NextAddress() is called repeatedly to set the
-// addresses on a given subnet.  The client will expect that the first 
+// addresses on a given subnet.  The client will expect that the first
 // addresses will use the network prefix she used to initialize the generator
-// with.  After a subnet is assigned, the client will call NextNetwork to 
+// with.  After a subnet is assigned, the client will call NextNetwork to
 // get the network number of the next subnet.  This implies that that this
 // operation is a pre-increment.
 //
@@ -365,13 +365,13 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 
   uint32_t addr = address.Get ();
 
-  NS_ABORT_MSG_UNLESS (addr, "Ipv4AddressGeneratorImpl::Add(): Allocating the broadcast address is not a good idea"); 
- 
+  NS_ABORT_MSG_UNLESS (addr, "Ipv4AddressGeneratorImpl::Add(): Allocating the broadcast address is not a good idea");
+
   std::list<Entry>::iterator i;
 
   for (i = m_entries.begin (); i != m_entries.end (); ++i)
     {
-      NS_LOG_LOGIC ("examine entry: " << Ipv4Address ((*i).addrLow) << 
+      NS_LOG_LOGIC ("examine entry: " << Ipv4Address ((*i).addrLow) <<
                     " to " << Ipv4Address ((*i).addrHigh));
 //
 // First things first.  Is there an address collision -- that is, does the
@@ -379,8 +379,8 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 //
       if (addr >= (*i).addrLow && addr <= (*i).addrHigh)
         {
-          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
-          if (!m_test) 
+          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
+          if (!m_test)
             {
               NS_FATAL_ERROR ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
             }
@@ -396,12 +396,12 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
           break;
         }
 //
-// If the new address fits at the end of the block, look ahead to the next 
+// If the new address fits at the end of the block, look ahead to the next
 // block and make sure it's not a collision there.  If we won't overlap, then
 // just extend the current block by one address.  We expect that completely
 // filled network ranges will be a fairly rare occurrence, so we don't worry
 // about collapsing address range blocks.
-// 
+//
       if (addr == (*i).addrHigh + 1)
         {
           std::list<Entry>::iterator j = i;
@@ -426,8 +426,8 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
           return true;
         }
 //
-// If we get here, we know that the next lower block of addresses couldn't 
-// have been extended to include this new address since the code immediately 
+// If we get here, we know that the next lower block of addresses couldn't
+// have been extended to include this new address since the code immediately
 // above would have been executed and that next lower block extended upward.
 // So we know it's safe to extend the current block down to include the new
 // address.
@@ -508,9 +508,9 @@ Ipv4AddressGeneratorImpl::TestMode (void)
 uint32_t
 Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
 {
-  
+
   NS_LOG_FUNCTION (this << mask);
-  
+
 //
 // We've been given a mask that has a higher order bit set for each bit of the
 // network number.  In order to translate this mask into an index, we just need

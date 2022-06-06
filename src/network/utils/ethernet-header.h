@@ -49,7 +49,7 @@ enum ethernet_header_t {
  * the packet. Eventually the class will be improved to also support
  * VLAN tags in packet headers.
  */
-class EthernetHeader : public Header 
+class EthernetHeader : public Header
 {
 public:
 

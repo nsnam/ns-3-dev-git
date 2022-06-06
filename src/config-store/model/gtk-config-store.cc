@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
@@ -76,14 +76,14 @@ GtkConfigStore::ConfigureDefaults (void)
 
   gtk_main ();
 
-  gtk_tree_model_foreach (GTK_TREE_MODEL (model), 
+  gtk_tree_model_foreach (GTK_TREE_MODEL (model),
                           clean_model_callback_config_default,
                           0);
 
-  gtk_widget_destroy (window); 
+  gtk_widget_destroy (window);
 }
 
-void 
+void
 GtkConfigStore::ConfigureAttributes (void)
 {
   GtkWidget *window;
@@ -128,7 +128,7 @@ GtkConfigStore::ConfigureAttributes (void)
 
   gtk_main ();
 
-  gtk_tree_model_foreach (GTK_TREE_MODEL (model), 
+  gtk_tree_model_foreach (GTK_TREE_MODEL (model),
                           clean_model_callback,
                           0);
 

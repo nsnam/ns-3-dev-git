@@ -5,7 +5,7 @@ close all;
 %% Table 22.7 Reference sensitivity.
 
 fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
-ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100 
+ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 nrbs = 25; % tx bandwidth configuration in number of RBs
 bw = nrbs * 180000; % bandwidth in Hz, note that this is smaller than
 		    % the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
@@ -28,7 +28,7 @@ gamma = -log (5*ber)./1.5;
 
 
 %% distances
-%%         d2  
+%%         d2
 %%  UE1-----------eNB2
 %%   |             |
 %% d1|             |d1
@@ -40,11 +40,11 @@ d1 = 50;
 for d2 = [20 50 200 500]
 
   %% propagation gains (linear)
-  %%             g21dl  
+  %%             g21dl
   %%      UE1<----------eNB2
-  %%      ^ |              
-  %%g11dl1| |g11ul          
-  %%      | v            
+  %%      ^ |
+  %%g11dl1| |g11ul
+  %%      | v
   %%      eNB1<---------UE2
   %%             g21ul
 
@@ -69,5 +69,5 @@ for d2 = [20 50 200 500]
   %%printf("AddTestCase (new LteInterferenceHardFrTestCase (\"d1=%d, d2=%d\", % f, %f, %f, %f , ));\n", d1, d2, d1, d2, privateRbDlsinr, privateRbUlsinr)
 
   printf("AddTestCase (new LteInterferenceStrictFrTestCase (\"d1=%d, d2=%d\", % f, %f, %f, %f , %f, %f , ));\n", d1, d2, d1, d2, commonRbDlsinr, commonRbUlsinr, privateRbDlsinr, privateRbUlsinr)
-  
+
 endfor

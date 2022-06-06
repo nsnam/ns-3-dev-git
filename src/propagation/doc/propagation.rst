@@ -805,168 +805,168 @@ As a consequence, the packets order is not preserved.
 Models for vehicular environments
 *********************************
 
-The 3GPP TR 37.885 [37885]_ specifications extends the channel modeling framework 
-described in TR 38.901 [38901]_ to simulate wireless channels in vehicular environments. 
-The extended framework supports frequencies between 0.5 to 100 GHz and provides 
-the possibility to simulate urban and highway propagation environments. 
-To do so, new propagation loss and channel condition models, as well as new 
-parameters for the fast fading model, are provided. 
+The 3GPP TR 37.885 [37885]_ specifications extends the channel modeling framework
+described in TR 38.901 [38901]_ to simulate wireless channels in vehicular environments.
+The extended framework supports frequencies between 0.5 to 100 GHz and provides
+the possibility to simulate urban and highway propagation environments.
+To do so, new propagation loss and channel condition models, as well as new
+parameters for the fast fading model, are provided.
 
 .. _sec-3gpp-v2v-ch-cond:
 
 Vehicular channel condition models
 ==================================
 
-To properly capture channel dynamics in vehicular environments, three different 
-channel conditions have been identified: 
+To properly capture channel dynamics in vehicular environments, three different
+channel conditions have been identified:
 
-  * LOS (Line Of Sight): represents the case in which the direct path between 
+  * LOS (Line Of Sight): represents the case in which the direct path between
     the transmitter and the receiver is not blocked
-  * NLOSv (Non Line Of Sight vehicle): when the direct path 
+  * NLOSv (Non Line Of Sight vehicle): when the direct path
     between the transmitter and the receiver is blocked by a vehicle
   * NLOS (Non Line Of Sight): when the direct path is blocked by a building
 
-TR 37.885 includes two models that can be used to determine the condition of 
-the wireless channel between a pair of nodes, the first for urban and the second 
-for highway environments. 
-Each model includes both a deterministic and a stochastic part, and works as 
+TR 37.885 includes two models that can be used to determine the condition of
+the wireless channel between a pair of nodes, the first for urban and the second
+for highway environments.
+Each model includes both a deterministic and a stochastic part, and works as
 follows:
 
-  1. The model determines the presence of buildings obstructing the direct path 
-     between the communicating nodes. This is done in a deterministic way, looking at 
-     the possible interceptions between the direct path and the buildings. 
-     If the path is obstructed, the channel condition is set to NLOS. 
-  2. If not, the model determines the presence of vehicles obstructing the 
-     direct path. This is done using a probabilistic model, which is specific 
-     for the scenario of interest. If the path is obstructed, the channel 
+  1. The model determines the presence of buildings obstructing the direct path
+     between the communicating nodes. This is done in a deterministic way, looking at
+     the possible interceptions between the direct path and the buildings.
+     If the path is obstructed, the channel condition is set to NLOS.
+  2. If not, the model determines the presence of vehicles obstructing the
+     direct path. This is done using a probabilistic model, which is specific
+     for the scenario of interest. If the path is obstructed, the channel
      condition is set to NLOSv, otherwise is set to LOS.
 
-These models have been implemented by extending the interface 
-:cpp:class:`ChannelConditionModel` with the following classes. They have been included in 
-the ``building`` module, because they make use of :cpp:class:`Buildings` objects to determine 
+These models have been implemented by extending the interface
+:cpp:class:`ChannelConditionModel` with the following classes. They have been included in
+the ``building`` module, because they make use of :cpp:class:`Buildings` objects to determine
 the presence of obstructions caused by buildings.
 
-  * :cpp:class:`ThreeGppV2vUrbanChannelConditionModel`: implements the model 
-    described in Table 6.2-1 of TR 37.885 for the urban scenario. 
-  * :cpp:class:`ThreeGppV2vHighwayChannelConditionModel`: implements the model 
-    described in Table 6.2-1 of TR 37.885 for the highway scenario.   
+  * :cpp:class:`ThreeGppV2vUrbanChannelConditionModel`: implements the model
+    described in Table 6.2-1 of TR 37.885 for the urban scenario.
+  * :cpp:class:`ThreeGppV2vHighwayChannelConditionModel`: implements the model
+    described in Table 6.2-1 of TR 37.885 for the highway scenario.
 
-These models rely on :cpp:class:`Buildings` objects to determine the presence 
-of obstructing buildings. When considering large scenarios with a large number of 
-buildings, this process may become computationally demanding and dramatically 
-increase the simulation time. 
-To solve this problem, we implemented two fully-probabilistic models 
-that can be used as an alternative to the ones included in TR 37.885. 
-These models are based on the work carried out by M. Boban et al. [Boban2016Modeling]_, 
-which derived a statistical representation of the three channel conditions, 
-With the fully-probabilistic models there is no need to determine the presence of blocking 
-buildings in a deterministic way, and therefore the computational effort is 
-reduced. 
-To determine the channel condition, these models account for the propagation 
-environment, i.e., urban or highway, as well as for the density of vehicles in the 
+These models rely on :cpp:class:`Buildings` objects to determine the presence
+of obstructing buildings. When considering large scenarios with a large number of
+buildings, this process may become computationally demanding and dramatically
+increase the simulation time.
+To solve this problem, we implemented two fully-probabilistic models
+that can be used as an alternative to the ones included in TR 37.885.
+These models are based on the work carried out by M. Boban et al. [Boban2016Modeling]_,
+which derived a statistical representation of the three channel conditions,
+With the fully-probabilistic models there is no need to determine the presence of blocking
+buildings in a deterministic way, and therefore the computational effort is
+reduced.
+To determine the channel condition, these models account for the propagation
+environment, i.e., urban or highway, as well as for the density of vehicles in the
 scenario, which can be high, medium, or low.
 
 The classes implementing the fully-probabilistic models are:
 
-  * :cpp:class:`ProbabilisticV2vUrbanChannelConditionModel`: implements the model 
-    described in [Boban2016Modeling]_ for the urban scenario. 
-  * :cpp:class:`ProbabilisticV2vHighwayChannelConditionModel`: implements the model 
-    described in [Boban2016Modeling]_ for the highway scenario. 
+  * :cpp:class:`ProbabilisticV2vUrbanChannelConditionModel`: implements the model
+    described in [Boban2016Modeling]_ for the urban scenario.
+  * :cpp:class:`ProbabilisticV2vHighwayChannelConditionModel`: implements the model
+    described in [Boban2016Modeling]_ for the highway scenario.
 
-Both the classes own the attribute "Density", which can be used to select the 
-proper value depending on the scenario that have to be simulated. 
-Differently from the hybrid models described above, these classes have been 
-included in the ``propagation`` module, since they do not have any dependency on the 
+Both the classes own the attribute "Density", which can be used to select the
+proper value depending on the scenario that have to be simulated.
+Differently from the hybrid models described above, these classes have been
+included in the ``propagation`` module, since they do not have any dependency on the
 ``building`` module.
 
-**NOTE:** Both the hybrid and the fully-probabilistic models supports the 
-modeling of outdoor scenarios, no support is provided for the modeling of 
+**NOTE:** Both the hybrid and the fully-probabilistic models supports the
+modeling of outdoor scenarios, no support is provided for the modeling of
 indoor scenarios.
 
 Vehicular propagation loss models
 =================================
 
-The propagation models described in TR 37.885 determines the attenuation caused 
-by path loss and shadowing by considering the propagation environment and the 
-channel condition. 
+The propagation models described in TR 37.885 determines the attenuation caused
+by path loss and shadowing by considering the propagation environment and the
+channel condition.
 
-These models have been implemented by extending the interface 
-:cpp:class:`ThreeGppPropagationLossModel` with the following classes, which 
+These models have been implemented by extending the interface
+:cpp:class:`ThreeGppPropagationLossModel` with the following classes, which
 are part of the ``propagation`` module:
 
-  * :cpp:class:`ThreeGppV2vUrbanPropagationLossModel`: implements the models 
+  * :cpp:class:`ThreeGppV2vUrbanPropagationLossModel`: implements the models
     defined in Table 6.2.1-1 of TR 37.885 for the urban scenario.
-  * :cpp:class:`ThreeGppV2vHighwayPropagationLossModel`: implements the models 
-    defined in Table 6.2.1-1 of TR 37.885 for the highway scenario.       
+  * :cpp:class:`ThreeGppV2vHighwayPropagationLossModel`: implements the models
+    defined in Table 6.2.1-1 of TR 37.885 for the highway scenario.
 
-As for all the classes extending the interface :cpp:class:`ThreeGppPropagationLossModel`, 
-they have to be paired with an instance of the class :cpp:class:`ChannelConditionModel` 
-which is used to determine the channel condition. 
+As for all the classes extending the interface :cpp:class:`ThreeGppPropagationLossModel`,
+they have to be paired with an instance of the class :cpp:class:`ChannelConditionModel`
+which is used to determine the channel condition.
 This is done by setting the attribute :cpp:class:`ChannelConditionModel`.
-To build the channel modeling framework described in TR 37.885, 
-:cpp:class:`ThreeGppV2vUrbanChannelConditionModel` or 
-:cpp:class:`ThreeGppV2vHighwayChannelConditionModel` should be used, but users 
-are allowed to test any other combination. 
+To build the channel modeling framework described in TR 37.885,
+:cpp:class:`ThreeGppV2vUrbanChannelConditionModel` or
+:cpp:class:`ThreeGppV2vHighwayChannelConditionModel` should be used, but users
+are allowed to test any other combination.
 
 .. _sec-3gpp-v2v-ff:
 
 Vehicular fast fading model
 ===========================
 
-The fast fading model described in Sec. 6.2.3 of TR 37.885 is based on the one 
-specified in TR 38.901, whose implementation is provided in the ``spectrum`` module 
-(see the :ref:`spectrum module documentation <sec-3gpp-fast-fading-model>`). 
-This model is general and includes different parameters which can 
+The fast fading model described in Sec. 6.2.3 of TR 37.885 is based on the one
+specified in TR 38.901, whose implementation is provided in the ``spectrum`` module
+(see the :ref:`spectrum module documentation <sec-3gpp-fast-fading-model>`).
+This model is general and includes different parameters which can
 be tuned to simulate multiple propagation environments.
-To better model the channel dynamics in vehicular environments, TR 37.885 
-provides new sets of values for these parameters, specific for 
-vehicle-to-vehicle transmissions in urban and highway scenarios. 
-To select the parameters for vehicular scenarios, it is necessary to set 
-the attribute "Scenario" of the class :cpp:class:`ThreeGppChannelModel` using the value 
+To better model the channel dynamics in vehicular environments, TR 37.885
+provides new sets of values for these parameters, specific for
+vehicle-to-vehicle transmissions in urban and highway scenarios.
+To select the parameters for vehicular scenarios, it is necessary to set
+the attribute "Scenario" of the class :cpp:class:`ThreeGppChannelModel` using the value
 "V2V-Urban" or "V2V-Highway".
 
-Additionally, TR 37.885 specifies a new equation to compute the Doppler component, 
-which accounts for the mobility of both nodes, as well as scattering 
-from the environment. 
-In particular, the scattering effect is considered by deviating the Doppler 
+Additionally, TR 37.885 specifies a new equation to compute the Doppler component,
+which accounts for the mobility of both nodes, as well as scattering
+from the environment.
+In particular, the scattering effect is considered by deviating the Doppler
 frequency by a random value, whose distribution depends on the parameter :math:`v_{scatt}`.
-TR 37.885 specifies that :math:`v_{scatt}` should be set to the maximum speed of the 
-vehicles in the layout and, if :math:`v_{scatt} = 0`, the scattering effect is not considered. 
-The Doppler equation is implemented in the class :cpp:class:`ThreeGppSpectrumPropagationLossModel`. 
-By means of the attribute "vScatt", it is possible to adjust the value of 
+TR 37.885 specifies that :math:`v_{scatt}` should be set to the maximum speed of the
+vehicles in the layout and, if :math:`v_{scatt} = 0`, the scattering effect is not considered.
+The Doppler equation is implemented in the class :cpp:class:`ThreeGppSpectrumPropagationLossModel`.
+By means of the attribute "vScatt", it is possible to adjust the value of
 :math:`v_{scatt} = 0` (by default, the value is set to 0).
 
 Example
 =======
 
-We implemented the example ``three-gpp-v2v-channel-example.cc`` which shows how to 
-configure the different classes to simulate wireless propagation in vehicular 
+We implemented the example ``three-gpp-v2v-channel-example.cc`` which shows how to
+configure the different classes to simulate wireless propagation in vehicular
 scenarios, it can be found in the folder ``examples/channel-models``.
 
-We considered two communicating vehicles moving within the scenario, and 
-computed the SNR experienced during the entire simulation, with a time 
-resolution of 10 ms. 
-The vehicles are equipped with 2x2 antenna arrays modeled using the 
-:ref:`3GPP antenna model <sec-3gpp-antenna-model>`. 
-The bearing and the downtilt angles are properly configured and the 
-optimal beamforming vectors are computed at the beginning of the simulation. 
- 
-The simulation script accepts the following command line parameters: 
+We considered two communicating vehicles moving within the scenario, and
+computed the SNR experienced during the entire simulation, with a time
+resolution of 10 ms.
+The vehicles are equipped with 2x2 antenna arrays modeled using the
+:ref:`3GPP antenna model <sec-3gpp-antenna-model>`.
+The bearing and the downtilt angles are properly configured and the
+optimal beamforming vectors are computed at the beginning of the simulation.
+
+The simulation script accepts the following command line parameters:
 
   * *frequency*: the operating frequency in Hz
   * *txPow*: the transmission power in dBm
   * *noiseFigure*: the noise figure in dB
   * *scenario*: the simulation scenario, "V2V-Urban" or "V2V-Highway"
-  
-The "V2V-Urban" scenario simulates urban environment with a rectangular grid of 
-buildings. The vehicles moves with a waypoint mobility model. They start from 
-the same position and travel in the same direction, along the main street. 
-The first vehicle moves at 60 km/h and the second at 30 km/h. 
-At a certain point, the first vehicle turns left while the second continues on 
-the main street. 
 
-The "V2V-Highway" scenario simulates an highway environment in which the 
-two vehicles travel on the same lane, in the same direction, and keep a safety 
+The "V2V-Urban" scenario simulates urban environment with a rectangular grid of
+buildings. The vehicles moves with a waypoint mobility model. They start from
+the same position and travel in the same direction, along the main street.
+The first vehicle moves at 60 km/h and the second at 30 km/h.
+At a certain point, the first vehicle turns left while the second continues on
+the main street.
+
+The "V2V-Highway" scenario simulates an highway environment in which the
+two vehicles travel on the same lane, in the same direction, and keep a safety
 distance of 20 m. They maintain a constant speed of 140 km/h.
 
 The example generates the output file ``example-output.txt``. Each row of the
@@ -974,7 +974,7 @@ file is organized as follows:
 
 ``Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState SNR[dB] Pathloss[dB]``
 
-We also provide the bash script ``three-gpp-v2v-channel-example.sh`` which reads the 
+We also provide the bash script ``three-gpp-v2v-channel-example.sh`` which reads the
 output file and generates two figures:
 
   1. map.gif, a GIF representing the simulation scenario and vehicle mobility;
@@ -1002,6 +1002,6 @@ References
 
 .. [37885] 3GPP. 2019. TR 37.885, Study on evaluation methodology of new Vehicle-to-Everything (V2X) use cases for LTE and NR, V15.3.0. (2019-06).
 
-.. [Boban2016Modeling]  M. Boban,  X. Gong, and  W. Xu, “Modeling the evolution 
-   of line-of-sight blockage for V2V channels,” in IEEE 84th Vehicular Technology 
+.. [Boban2016Modeling]  M. Boban,  X. Gong, and  W. Xu, “Modeling the evolution
+   of line-of-sight blockage for V2V channels,” in IEEE 84th Vehicular Technology
    Conference (VTC-Fall), 2016.

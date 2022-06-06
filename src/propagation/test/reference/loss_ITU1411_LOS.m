@@ -5,7 +5,7 @@ function g = loss_ITU1411_LOS (d, hb, hm, f)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb
-  
+
   assert(isscalar(f));
   assert(f > 0);
 
@@ -25,4 +25,4 @@ function g = loss_ITU1411_LOS (d, hb, hm, f)
   g(find(d > 0)) = (Ll.+Lu)./2;
 
   g(find(d <= 0)) = 1;
-  
+

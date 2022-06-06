@@ -57,7 +57,7 @@ ConstantVelocityMobilityModel::DoGetPosition (void) const
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
 }
-void 
+void
 ConstantVelocityMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);

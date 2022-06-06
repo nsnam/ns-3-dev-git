@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  */
 
@@ -51,7 +51,7 @@ ModelTypeidCreator::Remove (void)
   m_iters.pop_back ();
 }
 
-void 
+void
 ModelTypeidCreator::VisitAttribute (TypeId tid, std::string name, std::string defaultValue, uint32_t index)
 {
   ModelTypeid *node = new ModelTypeid ();
@@ -64,7 +64,7 @@ ModelTypeidCreator::VisitAttribute (TypeId tid, std::string name, std::string de
   Remove ();
 }
 
-void 
+void
 ModelTypeidCreator::StartVisitTypeId (std::string name)
 {
   ModelTypeid *node = new ModelTypeid ();
@@ -73,7 +73,7 @@ ModelTypeidCreator::StartVisitTypeId (std::string name)
   Add (node);
 }
 
-void 
+void
 ModelTypeidCreator::EndVisitTypeId (void)
 {
   Remove ();

@@ -43,7 +43,7 @@ namespace ns3 {
  *
  *
  * This PHY model supports a single antenna model instance which is
- * used for reception (this PHY model never transmits). 
+ * used for reception (this PHY model never transmits).
  */
 class SpectrumAnalyzer : public SpectrumPhy
 {
@@ -76,9 +76,9 @@ public:
    */
   void SetRxSpectrumModel (Ptr<SpectrumModel> m);
 
-  /** 
+  /**
    * Set the AntennaModel to be used
-   * 
+   *
    * \param a the Antenna Model
    */
   void SetAntenna (Ptr<AntennaModel> a);

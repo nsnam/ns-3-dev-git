@@ -42,7 +42,7 @@ namespace ns3 {
  * \c modulation<modulation-and-conding-index>.txt, _e.g._
  * \c modulation0.txt, \c modulation1.txt, _etc._ for
  * modulation 0, modulation 1, and so on...
- * 
+ *
  * The file format is ASCII with six columns as follows:
  *
  * -#  The SNR value,

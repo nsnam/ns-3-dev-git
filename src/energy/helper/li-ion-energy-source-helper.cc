@@ -34,13 +34,13 @@ LiIonEnergySourceHelper::~LiIonEnergySourceHelper ()
 {
 }
 
-void 
+void
 LiIonEnergySourceHelper::Set (std::string name, const AttributeValue &v)
 {
   m_liIonEnergySource.Set (name, v);
 }
 
-Ptr<EnergySource> 
+Ptr<EnergySource>
 LiIonEnergySourceHelper::DoInstall (Ptr<Node> node) const
 {
   NS_ASSERT (node != NULL);

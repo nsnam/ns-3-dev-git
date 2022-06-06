@@ -41,8 +41,8 @@ NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 /*
 * Test 1.1 Shadowing compound test
 *
-* This TestSuite tests the shadowing model of BuildingPathlossModel 
-* by reproducing several communication scenarios 
+* This TestSuite tests the shadowing model of BuildingPathlossModel
+* by reproducing several communication scenarios
 */
 
 
@@ -90,15 +90,15 @@ BuildingsShadowingTestCase::DoRun (void)
   NS_LOG_FUNCTION (this);
 
   // the building basically occupies the negative x plane, so any node
-  // in this area will fall in the building 
+  // in this area will fall in the building
   Ptr<Building> building1 = CreateObject<Building> ();
   building1->SetBoundaries (Box (-3000, -1, -4000, 4000.0, 0.0, 12));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   building1->SetNFloors (3);
-  
+
   Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
-  
+
   std::vector<double> loss;
   double sum = 0.0;
   double sumSquared = 0.0;
@@ -109,7 +109,7 @@ BuildingsShadowingTestCase::DoRun (void)
       Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
       double shadowingLoss = propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef;
       double shadowingLoss2 = propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef;
-      NS_TEST_ASSERT_MSG_EQ_TOL (shadowingLoss, shadowingLoss2, 0.001, 
+      NS_TEST_ASSERT_MSG_EQ_TOL (shadowingLoss, shadowingLoss2, 0.001,
                                  "Shadowing is not constant for the same mobility model pair!");
       loss.push_back (shadowingLoss);
       sum += shadowingLoss;
@@ -126,10 +126,10 @@ BuildingsShadowingTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ_TOL (std::fabs (sampleMean), 0.0, ci, "Wrong shadowing distribution !");
 
   // test whether the sample variance falls in the 99% confidence interval
-  // since the shadowing is gaussian, its sample variance follows the 
+  // since the shadowing is gaussian, its sample variance follows the
   // chi2 distribution with samples-1 degrees of freedom
   double chi2 = (samples - 1) *  sampleVariance / (m_sigmaRef*m_sigmaRef);
-  const double zchi2_005 = 887.621135217515;  //  0.5% quantile of the chi2 distribution 
+  const double zchi2_005 = 887.621135217515;  //  0.5% quantile of the chi2 distribution
   const double zchi2_995 = 1117.89045267865;  // 99.5% quantile of the chi2 distribution
   NS_TEST_ASSERT_MSG_GT (chi2, zchi2_005, "sample variance lesser than expected");
   NS_TEST_ASSERT_MSG_LT (chi2, zchi2_995, "sample variance greater than expected");
@@ -150,7 +150,7 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
    * constructor of the test suite, which caused subtle bugs due to
    * "static initialization order fiasco". An example of such a subtle
    * bug is that logging via NS_LOG failed for some modules.
-   * 
+   *
    */
 
   double hm = 1;
@@ -158,7 +158,7 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   double henbHeight = 10.0;
 
   Ptr<MobilityModel> mm;
-  
+
   switch (index)
     {
     case 1:

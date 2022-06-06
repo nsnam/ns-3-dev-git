@@ -16,17 +16,17 @@ def parse_time_ns(tm):
 ## FiveTuple
 class FiveTuple(object):
     ## class variables
-    ## @var sourceAddress 
+    ## @var sourceAddress
     #  source address
-    ## @var destinationAddress 
+    ## @var destinationAddress
     #  destination address
-    ## @var protocol 
+    ## @var protocol
     #  network protocol
-    ## @var sourcePort 
+    ## @var sourcePort
     #  source port
-    ## @var destinationPort 
+    ## @var destinationPort
     #  destination port
-    ## @var __slots_ 
+    ## @var __slots_
     #  class variable list
     __slots_ = ['sourceAddress', 'destinationAddress', 'protocol', 'sourcePort', 'destinationPort']
     def __init__(self, el):
@@ -39,7 +39,7 @@ class FiveTuple(object):
         self.sourcePort = int(el.get('sourcePort'))
         self.destinationPort = int(el.get('destinationPort'))
         self.protocol = int(el.get('protocol'))
-        
+
 ## Histogram
 class Histogram(object):
     ## class variables
@@ -191,8 +191,8 @@ class Simulation(object):
 def main(argv):
     file_obj = open(argv[1])
     print("Reading XML file ", end=" ")
- 
-    sys.stdout.flush()        
+
+    sys.stdout.flush()
     level = 0
     sim_list = []
     for event, elem in ElementTree.iterparse(file_obj, events=("start", "end")):

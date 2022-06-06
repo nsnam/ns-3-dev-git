@@ -55,7 +55,7 @@ private:
    */
   Ptr<UanNetDevice> CreateNode (Vector pos, Ptr<UanChannel> chan);
   /**
-   * Phy test function 
+   * Phy test function
    * \returns true if successful
    */
   bool DoPhyTests ();
@@ -86,7 +86,7 @@ private:
    * \param mode the transmit mode
    */
   void SendOnePacket (Ptr<UanNetDevice> dev, uint16_t mode);
-  ObjectFactory m_phyFac; ///< Phy 
+  ObjectFactory m_phyFac; ///< Phy
   uint32_t m_bytesRx; ///< byes received
 
 };
@@ -98,8 +98,8 @@ UanTest::UanTest () : TestCase ("UAN")
 }
 
 bool
-UanTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, 
-                   [[maybe_unused]] uint16_t mode, 
+UanTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt,
+                   [[maybe_unused]] uint16_t mode,
                    [[maybe_unused]] const Address &sender)
 {
   m_bytesRx += pkt->GetSize ();

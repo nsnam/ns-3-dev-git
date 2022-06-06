@@ -30,7 +30,7 @@ V4PingHelper::V4PingHelper (Ipv4Address remote)
   m_factory.Set ("Remote", Ipv4AddressValue (remote));
 }
 
-void 
+void
 V4PingHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
   m_factory.Set (name, value);

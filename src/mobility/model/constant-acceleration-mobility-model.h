@@ -28,7 +28,7 @@ namespace ns3 {
  *
  * \brief Mobility model for which the current acceleration does not change once it has been set and until it is set again explicitly to a new value.
  */
-class ConstantAccelerationMobilityModel : public MobilityModel 
+class ConstantAccelerationMobilityModel : public MobilityModel
 {
 public:
   /**

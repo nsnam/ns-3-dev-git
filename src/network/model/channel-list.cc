@@ -103,7 +103,7 @@ private:
 
 NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv);
 
-TypeId 
+TypeId
 ChannelListPriv::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ChannelListPriv")
@@ -117,7 +117,7 @@ ChannelListPriv::GetTypeId (void)
   return tid;
 }
 
-Ptr<ChannelListPriv> 
+Ptr<ChannelListPriv>
 ChannelListPriv::Get (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -138,7 +138,7 @@ ChannelListPriv::DoGet (void)
   return &ptr;
 }
 
-void 
+void
 ChannelListPriv::Delete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -180,21 +180,21 @@ ChannelListPriv::Add (Ptr<Channel> channel)
 
 }
 
-ChannelList::Iterator 
+ChannelList::Iterator
 ChannelListPriv::Begin (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_channels.begin ();
 }
 
-ChannelList::Iterator 
+ChannelList::Iterator
 ChannelListPriv::End (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_channels.end ();
 }
 
-uint32_t 
+uint32_t
 ChannelListPriv::GetNChannels (void)
 {
   NS_LOG_FUNCTION (this);
@@ -217,14 +217,14 @@ ChannelList::Add (Ptr<Channel> channel)
   return ChannelListPriv::Get ()->Add (channel);
 }
 
-ChannelList::Iterator 
+ChannelList::Iterator
 ChannelList::Begin (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ChannelListPriv::Get ()->Begin ();
 }
 
-ChannelList::Iterator 
+ChannelList::Iterator
 ChannelList::End (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

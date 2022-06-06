@@ -33,15 +33,15 @@
  * \defgroup core Core
  * \brief The "core" module contains:
  *    - a time management class to hold a time and convert between various
- *      time units: ns3::Time 
+ *      time units: ns3::Time
  *    - a scheduler base class used to implement new simulation event
- *      schedulers:       
- *      ns3::Scheduler and ns3::SchedulerFactory 
+ *      schedulers:
+ *      ns3::Scheduler and ns3::SchedulerFactory
  *    - a simulator class used to create, schedule and cancel events:
  *      ns3::Simulator
- *    - a Functor class: ns3::Callback  
+ *    - a Functor class: ns3::Callback
  *    - an os-independent interface to get access to the elapsed wall clock
- *      time: ns3::SystemWallClockMs 
+ *      time: ns3::SystemWallClockMs
  *    - a class to register regression tests with the test manager: ns3::Test
  *      and ns3::TestManager
  *    - debugging facilities: \ref debugging

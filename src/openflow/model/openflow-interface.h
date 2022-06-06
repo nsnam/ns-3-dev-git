@@ -486,7 +486,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   void ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
 };
 
@@ -589,7 +589,7 @@ void ExecuteVendor (ofpbuf *buffer, const sw_flow_key *key, const ofp_action_hea
  */
 uint16_t ValidateVendor (const sw_flow_key *key, const ofp_action_header *ah, uint16_t len);
 
-/* 
+/*
  * From datapath.c
  * Buffers are identified to userspace by a 31-bit opaque ID.  We divide the ID
  * into a buffer number (low bits) and a cookie (high bits).  The buffer number

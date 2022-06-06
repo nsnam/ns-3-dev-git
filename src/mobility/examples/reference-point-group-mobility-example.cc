@@ -76,7 +76,7 @@ PrintPosition (Ptr<Node> node)
   if (model == nullptr) return;
   NS_LOG_LOGIC ("Node: " << node->GetId () << " Position: " << model->GetPosition ());
   g_timeSeries << Simulator::Now ().GetSeconds () << " " << node->GetId () << " " << model->GetPosition () << std::endl;
-  
+
 }
 
 int
@@ -91,7 +91,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   g_timeSeries.open ("reference-point-time-series.mob");
-  
+
   NodeContainer n;
   n.Create (3);
 
@@ -112,7 +112,7 @@ main (int argc, char *argv[])
   // The reference (parent) mobility model starts at coordinate (10,10
   // and walks clockwise to each waypoint, making two laps.  The time
   // to travel between each waypoint is 100s, so the velocity alternates
-  // between two values due to the rectangular path. 
+  // between two values due to the rectangular path.
   // No actual node is represented by the position of this mobility
   // model; it forms the reference point from which the node's child
   // mobility model position is offset.
@@ -146,7 +146,7 @@ main (int argc, char *argv[])
       // Mobility model for the first node (node 0)
       Ptr<HierarchicalMobilityModel> hierarchical0 = CreateObject<HierarchicalMobilityModel> ();
       hierarchical0->SetParent (waypointMm);
-    
+
       // Child Mobility model for the first node (node 0).  This can be any
       // other mobility model type; for this example, we reuse the random walk
       // but with a small 10m x 10m bounding box.
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
       // (it can use its first waypoint as such), but in general, the
       // GroupMobilityHelper can be configured to accept configuration for
       // a PositionAllocator for the reference model.  We skip that here.
-  
+
       // Next, configure the member mobility model
       group.SetMemberMobilityModel ("ns3::RandomWalk2dMobilityModel",
         "Bounds", RectangleValue (Rectangle (-5, 5, -5, 5)),
@@ -206,7 +206,7 @@ main (int argc, char *argv[])
       group.Install (n);
 
       // After installation, use the helper to make the equivalent
-      // stream assignments as above 
+      // stream assignments as above
       group.AssignStreams (n, streamIndex);
     }
 

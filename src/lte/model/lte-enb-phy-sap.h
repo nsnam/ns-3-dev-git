@@ -48,12 +48,12 @@ public:
    */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 
-  /** 
+  /**
    * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to send
    */
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
-  
+
   /**
   * \brief Get the delay from MAC to Channel expressed in TTIs
   * \returns MAC channel TTI delay
@@ -96,9 +96,9 @@ public:
    */
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
-  /** 
-   * notify the reception of a RACH preamble on the PRACH 
-   * 
+  /**
+   * notify the reception of a RACH preamble on the PRACH
+   *
    * \param prachId the ID of the preamble
    */
   virtual void ReceiveRachPreamble (uint32_t prachId) = 0;

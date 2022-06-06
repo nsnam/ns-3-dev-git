@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("multirate");
 
 /**
  * WiFi multirate experiment class.
- * 
+ *
  * It handles the creation and run of an experiment.
  *
  * Scenarios: 100 nodes, multiple simultaneous flows, multi-hop ad hoc, routing,
@@ -82,7 +82,7 @@ public:
   Experiment ();
   /**
    * \brief Construct a new Experiment object
-   * 
+   *
    * \param name The name of the experiment.
    */
   Experiment (std::string name);
@@ -93,23 +93,23 @@ public:
    * \param wifiMac The WifiMacHelper class.
    * \param wifiChannel The YansWifiChannelHelper class.
    * \param mobility The MobilityHelper class.
-   * \return a 2D dataset of the experiment data. 
+   * \return a 2D dataset of the experiment data.
    */
   Gnuplot2dDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
                         const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel, const MobilityHelper &mobility);
 
   /**
    * \brief Setup the experiment from the command line arguments.
-   * 
+   *
    * \param argc The argument count.
    * \param argv The argument vector.
-   * \return true 
+   * \return true
    */
   bool CommandSetup (int argc, char **argv);
 
   /**
    * \brief Check if routing is enabled.
-   * 
+   *
    * \return true if routing is enabled.
    */
   bool IsRouting ()
@@ -118,7 +118,7 @@ public:
   }
   /**
    * \brief Check if mobility is enabled.
-   * 
+   *
    * \return true if mobility is enabled.
    */
   bool IsMobility ()
@@ -128,8 +128,8 @@ public:
 
   /**
    * \brief Get the Scenario number.
-   * 
-   * \return the scenario number. 
+   *
+   * \return the scenario number.
    */
   uint32_t GetScenario ()
   {
@@ -137,7 +137,7 @@ public:
   }
   /**
    * \brief Get the RTS Threshold.
-   * 
+   *
    * \return the RTS Threshold.
    */
   std::string GetRtsThreshold ()
@@ -146,8 +146,8 @@ public:
   }
   /**
    * \brief Get the Output File Name.
-   * 
-   * \return the Output File Name. 
+   *
+   * \return the Output File Name.
    */
   std::string GetOutputFileName ()
   {
@@ -155,7 +155,7 @@ public:
   }
   /**
    * \brief Get the Rate Manager.
-   * 
+   *
    * \return the Rate Manager.
    */
   std::string GetRateManager ()
@@ -166,7 +166,7 @@ public:
 private:
   /**
    * \brief Setup the receiving socket.
-   * 
+   *
    * \param node The receiving node.
    * \return the Rx socket.
    */
@@ -181,7 +181,7 @@ private:
 
   /**
    * \brief Setup the application in the nodes.
-   * 
+   *
    * \param client Client node.
    * \param server Server node.
    * \param start Start time.
@@ -199,13 +199,13 @@ private:
    * Sources and destinations are randomly selected such that a node
    * may be the source for multiple destinations and a node maybe a destination
    * for multiple sources.
-   * 
+   *
    * \param c The node container.
    */
   void SelectSrcDest (NodeContainer c);
   /**
    * \brief Receive a packet.
-   * 
+   *
    * \param socket The receiving socket.
    */
   void ReceivePacket (Ptr<Socket> socket);
@@ -216,7 +216,7 @@ private:
   /**
    * A sender node will  set up a flow to each of the its neighbors
    * in its quadrant randomly.  All the flows are exponentially distributed.
-   * 
+   *
    * \param sender The sender node.
    * \param c The node neighbors.
    */

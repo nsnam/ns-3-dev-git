@@ -16,17 +16,17 @@ Overview
 
 |ns3| is built as a system of software libraries that work together.
 User programs can be written that links with (or imports from) these
-libraries.  User programs are written in either the C++ or Python 
+libraries.  User programs are written in either the C++ or Python
 programming languages.
 
 |ns3| is distributed as source code, meaning that the target system
 needs to have a software development environment to build the libraries
-first, then build the user program.  |ns3| could in principle be 
+first, then build the user program.  |ns3| could in principle be
 distributed as pre-built libraries for selected systems, and in the
 future it may be distributed that way, but at present, many users
 actually do their work by editing |ns3| itself, so having the source
-code around to rebuild the libraries is useful.  If someone would like 
-to undertake the job of making pre-built libraries and packages for 
+code around to rebuild the libraries is useful.  If someone would like
+to undertake the job of making pre-built libraries and packages for
 operating systems, please contact the ns-developers mailing list.
 
 In the following, we'll look at three ways of downloading and building
@@ -49,11 +49,11 @@ a non-privileged user account is recommended.
 Prerequisites
 *************
 
-The entire set of available |ns3| libraries has a number of dependencies   
+The entire set of available |ns3| libraries has a number of dependencies
 on third-party libraries, but most of |ns3| can be built and used with
 support for a few common (often installed by default) components:  a
 C++ compiler, an installation of Python, a source code editor (such as vim,
-emacs, or Eclipse) and, if using the development repositories, an 
+emacs, or Eclipse) and, if using the development repositories, an
 installation of Git source code control system.  Most beginning users
 need not concern themselves if their configuration reports some missing
 optional features of |ns3|, but for those wishing a full installation,
@@ -62,13 +62,13 @@ and tips.  One such page is the "Installation" page, with install instructions
 for various systems, available at
 https://www.nsnam.org/wiki/Installation.
 
-The "Prerequisites" section of this wiki page explains which packages are 
-required to support common |ns3| options, and also provides the 
+The "Prerequisites" section of this wiki page explains which packages are
+required to support common |ns3| options, and also provides the
 commands used to install them for common Linux or macOS variants.
 
-You may want to take this opportunity to explore the |ns3| wiki 
-a bit, or the main web site at https://www.nsnam.org, since there is a 
-wealth of information there. 
+You may want to take this opportunity to explore the |ns3| wiki
+a bit, or the main web site at https://www.nsnam.org, since there is a
+wealth of information there.
 
 As of the most recent |ns3| release (ns-3.36), the following tools
 are needed to get started with |ns3|:
@@ -104,7 +104,7 @@ of the parent directories contains a space in the directory name:
 Downloading a release of ns-3 as a source archive
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-This option is for the new user who wishes to download and experiment with 
+This option is for the new user who wishes to download and experiment with
 the most recently released and packaged version of |ns3|.
 |ns3| publishes its releases as compressed source archives, sometimes
 referred to as a tarball.
@@ -114,9 +114,9 @@ The process for downloading |ns3| via tarball is simple; you just
 have to pick a release, download it and uncompress it.
 
 Let's assume that you, as a user, wish to build |ns3| in a local
-directory called ``workspace``. 
-If you adopt the ``workspace`` directory approach, you can 
-get a copy of a release by typing the following into your Linux shell 
+directory called ``workspace``.
+If you adopt the ``workspace`` directory approach, you can
+get a copy of a release by typing the following into your Linux shell
 (substitute the appropriate version numbers, of course)
 
 .. sourcecode:: console
@@ -130,8 +130,8 @@ get a copy of a release by typing the following into your Linux shell
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
 you can use a browser for this step.
- 
-Following these steps, if you change into the directory 
+
+Following these steps, if you change into the directory
 ``ns-allinone-3.36``, you should see a number of files and directories
 
 .. sourcecode:: text
@@ -152,7 +152,7 @@ at https://gitlab.com/nsnam/.  The group name ``nsnam`` organizes the
 various repositories used by the open source project.
 
 The simplest way to get started using Git repositories is to fork or clone
-the ``ns-3-allinone`` environment.  This is a set of scripts that manages the 
+the ``ns-3-allinone`` environment.  This is a set of scripts that manages the
 downloading and building of the most commonly used subsystems of |ns3|
 for you.  If you are new to Git, the terminology of ``fork`` and ``clone``
 may be foreign to you; if so, we recommend that you simply ``clone``
@@ -193,7 +193,7 @@ release number:
 
 After this step, the additional repositories of |ns3|, bake, pybindgen,
 and netanim will be downloaded to the ``ns-3-allinone`` directory.
- 
+
 Downloading ns-3 Using Bake
 +++++++++++++++++++++++++++
 
@@ -205,7 +205,7 @@ ns-3-allinone is called ``bake``.
 
 Bake is a tool for coordinated software building from multiple repositories,
 developed for the |ns3| project. Bake can be used to fetch development
-versions of the |ns3| software, and to download and build extensions to the 
+versions of the |ns3| software, and to download and build extensions to the
 base |ns3| distribution, such as the Direct Code Execution environment,
 Network Simulation Cradle, ability to create new Python bindings, and
 various |ns3| "apps".  If you envision that your |ns3| installation may
@@ -218,10 +218,10 @@ will allow one to download any software that was current at the
 time of the release.  That is, for example, the version of Bake that
 is distributed with the ``ns-3.30`` release can be used to fetch components
 for that |ns3| release or earlier, but can't be used to fetch components
-for later releases (unless the ``bakeconf.xml`` package description file 
+for later releases (unless the ``bakeconf.xml`` package description file
 is updated).
 
-You can also get the most recent copy of ``bake`` by typing the 
+You can also get the most recent copy of ``bake`` by typing the
 following into your Linux shell (assuming you have installed Git)::
 
   $ cd
@@ -229,7 +229,7 @@ following into your Linux shell (assuming you have installed Git)::
   $ cd workspace
   $ git clone https://gitlab.com/nsnam/bake.git
 
-As the git command executes, you should see something like the 
+As the git command executes, you should see something like the
 following displayed:
 
 .. sourcecode:: console
@@ -242,7 +242,7 @@ following displayed:
   Receiving objects: 100% (2086/2086), 2.68 MiB | 3.82 MiB/s, done.
   Resolving deltas: 100% (1404/1404), done.
 
-After the clone command completes, you should have a directory called 
+After the clone command completes, you should have a directory called
 ``bake``, the contents of which should look something like the following:
 
 .. sourcecode:: console
@@ -266,21 +266,21 @@ There are a few configuration targets available:
 4.  ``ns-3-allinone``:  similar to the released version of the allinone
     module, but for development code.
 
-The current development snapshot (unreleased) of |ns3| may be found 
-at https://gitlab.com/nsnam/ns-3-dev.git.  The 
+The current development snapshot (unreleased) of |ns3| may be found
+at https://gitlab.com/nsnam/ns-3-dev.git.  The
 developers attempt to keep these repositories in consistent, working states but
-they are in a development area with unreleased code present, so you may want 
+they are in a development area with unreleased code present, so you may want
 to consider staying with an official release if you do not need newly-
 introduced features.
 
 You can find the latest version  of the
-code either by inspection of the repository list or by going to the 
+code either by inspection of the repository list or by going to the
 `"ns-3 Releases"
 <https://www.nsnam.org/releases>`_
 web page and clicking on the latest release link.  We'll proceed in
 this tutorial example with ``ns-3.36``.
 
-We are now going to use the bake tool to pull down the various pieces of 
+We are now going to use the bake tool to pull down the various pieces of
 |ns3| you will be using.  First, we'll say a word about running bake.
 
 Bake works by downloading source packages into a source directory,
@@ -290,9 +290,9 @@ outside of the directory it was downloaded into, it is advisable
 to put bake into your path, such as follows (Linux bash shell example).
 First, change into the 'bake' directory, and then set the following
 environment variables:
- 
+
 .. sourcecode:: console
- 
+
   $ export BAKE_HOME=`pwd`
   $ export PATH=$PATH:$BAKE_HOME:$BAKE_HOME/build/bin
   $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME:$BAKE_HOME/build/lib
@@ -333,8 +333,8 @@ You should see something like the following:
 In particular, download tools such as Git and Mercurial
 are our principal concerns at this point, since they allow us to fetch
 the code.  Please install missing tools at this stage, in the usual
-way for your system (if you are able to), or contact your system 
-administrator as needed to install these tools.  You can also 
+way for your system (if you are able to), or contact your system
+administrator as needed to install these tools.  You can also
 
 Next, try to download the software:
 
@@ -393,15 +393,15 @@ described above; not from downloading via git or bake.
 
 When working from a released tarball, a convenience script available as
 part of ``ns-3-allinone`` can orchestrate a simple build of components.
-This program is called ``build.py``.  This 
+This program is called ``build.py``.  This
 program will get the project configured for you
 in the most commonly useful way.  However, please note that more advanced
 configuration and work with |ns3| will typically involve using the
 native |ns3| build system, CMake, to be introduced later in this tutorial.
 
 If you downloaded
-using a tarball you should have a directory called something like 
-``ns-allinone-3.36`` under your ``~/workspace`` directory.  
+using a tarball you should have a directory called something like
+``ns-allinone-3.36`` under your ``~/workspace`` directory.
 Type the following:
 
 .. sourcecode:: console
@@ -424,7 +424,7 @@ Building with bake
 ++++++++++++++++++
 
 If you used bake above to fetch source code from project repositories, you
-may continue to use it to build |ns3|.  Type: 
+may continue to use it to build |ns3|.  Type:
 
 .. sourcecode:: console
 
@@ -440,12 +440,12 @@ and you should see something like:
 
 There may be failures to build all components, but the build will proceed
 anyway if the component is optional.  For example, a recent portability issue
-has been that castxml may not build via the bake build tool on all 
+has been that castxml may not build via the bake build tool on all
 platforms; in this case, the line will show something like::
 
   >> Building castxml - Problem
   > Problem: Optional dependency, module "castxml" failed
-    This may reduce the  functionality of the final build. 
+    This may reduce the  functionality of the final build.
     However, bake will continue since "castxml" is not an essential dependency.
     For more information call bake with -v or -vvv, for full verbose mode.
 
@@ -475,18 +475,18 @@ CMake needs to be installed before building |ns3|.
 So, to proceed, please change your working directory to
 the |ns3| directory that you have initially built.
 
-It's not 
+It's not
 strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
-Probably the most useful configuration change you can make will be to 
+Probably the most useful configuration change you can make will be to
 build the optimized version of the code. The project will be configured
 by default using the ``default`` build profile, which is an optimized
-build with debug information (CMAKE_BUILD_TYPE=relwithdebinfo) version. 
+build with debug information (CMAKE_BUILD_TYPE=relwithdebinfo) version.
 Let's tell the project to make an optimized build.
 
 To maintain a similar interface for command-line users, we include a
 wrapper script for CMake, |ns3|. To tell |ns3| that it should do optimized
-builds that include the examples and tests, you will need to execute the 
+builds that include the examples and tests, you will need to execute the
 following commands:
 
 .. sourcecode:: console
@@ -495,11 +495,11 @@ following commands:
   $ ./ns3 configure --build-profile=optimized --enable-examples --enable-tests
 
 This runs CMake out of the local directory (which is provided as a convenience
-for you).  The first command to clean out the previous build is not 
+for you).  The first command to clean out the previous build is not
 typically strictly necessary but is good practice (but see `Build Profiles`_,
 below); it will remove the
-previously built libraries and object files found in directory ``build/``. 
-When the project is reconfigured and the build system checks for various 
+previously built libraries and object files found in directory ``build/``.
+When the project is reconfigured and the build system checks for various
 dependencies, you should see
 output that looks similar to the following:
 
@@ -651,8 +651,8 @@ output that looks similar to the following:
   Tap Bridge                    : ON
   Tap FdNetDevice               : ON
   Tests                         : ON
-  
-  
+
+
   Modules configured to be built:
   antenna                   aodv                      applications
   bridge                    buildings                 config-store
@@ -667,13 +667,13 @@ output that looks similar to the following:
   tap-bridge                test                      topology-read
   traffic-control           uan                       virtual-net-device
   wave                      wifi                      wimax
-  
-  
+
+
   Modules that cannot be built:
   brite                     click                     mpi
   openflow                  visualizer
-  
-  
+
+
   -- Configuring done
   -- Generating done
   -- Build files have been written to: /mnt/dev/tools/source/ns-3-dev/cmake-cache
@@ -686,8 +686,8 @@ Note the last part of the above output.  Some |ns3| options are not enabled by
 default or require support from the underlying system to work properly (``OFF (not requested)``).
 Other options might depend on third-party libraries, which if not found will be disabled
 (``OFF(missing dependency)``).
-If this library were not found, the corresponding |ns3| feature 
-would not be enabled and a message would be displayed.  Note further that there is 
+If this library were not found, the corresponding |ns3| feature
+would not be enabled and a message would be displayed.  Note further that there is
 a feature to use the program ``sudo`` to set the suid bit of certain programs.
 This is not enabled by default and so this feature is reported as "not enabled."
 Finally, to reprint this summary of which optional features are enabled, use
@@ -700,7 +700,7 @@ Now go ahead and switch back to the debug build that includes the examples and t
   $ ./ns3 clean
   $ ./ns3 configure --build-profile=debug --enable-examples --enable-tests
 
-The build system is now configured and you can build the debug versions of 
+The build system is now configured and you can build the debug versions of
 the |ns3| programs by simply typing:
 
 .. sourcecode:: console
@@ -737,7 +737,7 @@ options through to ns3, so instead of the above, the following will work:
 
 .. sourcecode:: console
 
-  $ ./build.py -- --disable-python   
+  $ ./build.py -- --disable-python
 
 as it generates the underlying command ``./ns3 configure --disable-python``.
 
@@ -762,7 +762,7 @@ on Fedora 28, when Gtk2+ is installed, will result in an error such as::
    void (*__gtk_reserved1);
 
 In releases starting with ns-3.28.1, an option is available in CMake to work
-around these issues.  The option disables the inclusion of the '-Werror' 
+around these issues.  The option disables the inclusion of the '-Werror'
 flag to g++ and clang++.  The option is '--disable-werror' and must be
 used at configure time; e.g.:
 
@@ -774,9 +774,9 @@ Configure vs. Build
 ===================
 
 Some CMake commands are only meaningful during the configure phase and some commands are valid
-in the build phase.  For example, if you wanted to use the emulation 
+in the build phase.  For example, if you wanted to use the emulation
 features of |ns3|, you might want to enable setting the suid bit using
-sudo as described above.  This turns out to be a configuration-time command, and so 
+sudo as described above.  This turns out to be a configuration-time command, and so
 you could reconfigure using the following command that also includes the examples and tests.
 
 .. sourcecode:: console
@@ -829,10 +829,10 @@ The build profile controls the use of logging, assertions, and compiler optimiza
     | Flags    |                                 |                             |                               | ``-march=native``               |
     |          |                                 |                             |                               | ``-mtune=native``               |
     +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
-    
+
 As you can see, logging and assertions are only configured
 by default in debug builds, although they can be selectively enabled
-in other build profiles by using the ``--enable-logs`` and 
+in other build profiles by using the ``--enable-logs`` and
 ``--enable-asserts`` flags during CMake configuration time.
 Recommended practice is to develop your scenario in debug mode, then
 conduct repetitive runs (for statistics or changing parameters) in
@@ -932,7 +932,7 @@ into ``/usr/local/bin``, libraries into ``/usr/local/lib``, and headers
 into ``/usr/local/include``.  Superuser privileges are typically needed
 to install to the default prefix, so the typical command would be
 ``sudo ./ns3 install``.  When running programs with ns3, ns3 will
-first prefer to use shared libraries in the build directory, then 
+first prefer to use shared libraries in the build directory, then
 will look for libraries in the library path configured in the local
 environment.  So when installing libraries to the system, it is good
 practice to check that the intended libraries are being used.
@@ -950,7 +950,7 @@ the project if ns3 will be used to install things at a different prefix.
 
 In summary, it is not necessary to call ``./ns3 install`` to use |ns3|.
 Most users will not need this command since ns3 will pick up the
-current libraries from the ``build`` directory, but some users may find 
+current libraries from the ``build`` directory, but some users may find
 it useful if their use case involves working with programs outside
 of the |ns3| directory.
 
@@ -968,8 +968,8 @@ remember where you are, and invoke ns3 like this:
 
 but that gets tedious, and error prone, and there are better solutions.
 
-One common way when using a text-based editor such as emacs or vim is to 
-open two terminal sessions and use one to build |ns3| and one to 
+One common way when using a text-based editor such as emacs or vim is to
+open two terminal sessions and use one to build |ns3| and one to
 edit source code.
 
 If you only have the tarball, an environment variable can help:
@@ -1255,7 +1255,7 @@ source files to/from the CMakeLists.txt files, adding a new module or dependenci
 Testing ns-3
 ************
 
-You can run the unit tests of the |ns3| distribution by running the 
+You can run the unit tests of the |ns3| distribution by running the
 ``./test.py`` script:
 
 .. sourcecode:: console
@@ -1314,7 +1314,7 @@ executing each test, which will actually look something like:
   739 of 742 tests passed (739 passed, 3 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 
-This command is typically run by users to quickly verify that an 
+This command is typically run by users to quickly verify that an
 |ns3| distribution has built correctly.  (Note the order of the ``PASS: ...``
 lines can vary, which is okay.  What's important is that the summary line at
 the end report that all tests passed; none failed or crashed.)
@@ -1348,13 +1348,13 @@ Congratulations!  You are now an ns-3 user!
 **What do I do if I don't see the output?**
 
 If you see ns3 messages indicating that the build was
-completed successfully, but do not see the "Hello Simulator" output, 
-chances are that you have switched your build mode to ``optimized`` in 
+completed successfully, but do not see the "Hello Simulator" output,
+chances are that you have switched your build mode to ``optimized`` in
 the `Building with the ns3 CMake wrapper`_ section, but have missed the change back to
-``debug`` mode.  All of the console output used in this tutorial uses a 
-special |ns3| logging component that is useful for printing 
-user messages to the console.  Output from this component is 
-automatically disabled when you compile optimized code -- it is 
+``debug`` mode.  All of the console output used in this tutorial uses a
+special |ns3| logging component that is useful for printing
+user messages to the console.  Output from this component is
+automatically disabled when you compile optimized code -- it is
 "optimized out."  If you don't see the "Hello Simulator" output,
 type the following:
 
@@ -1363,14 +1363,14 @@ type the following:
   $ ./ns3 configure --build-profile=debug --enable-examples --enable-tests
 
 to tell ns3 to build the debug versions of the |ns3|
-programs that includes the examples and tests.  You must still build 
+programs that includes the examples and tests.  You must still build
 the actual debug version of the code by typing
 
 .. sourcecode:: console
 
   $ ./ns3
 
-Now, if you run the ``hello-simulator`` program, you should see the 
+Now, if you run the ``hello-simulator`` program, you should see the
 expected output.
 
 Program Arguments
@@ -1387,7 +1387,7 @@ for ``<args>``.  The ``--command-template`` argument to ns3 is
 basically a recipe for constructing the actual command line ns3 should use
 to execute the program.  ns3 checks that the build is complete,
 sets the shared library paths, then invokes the executable
-using the provided command line template, 
+using the provided command line template,
 inserting the program name for the ``%s`` placeholder.
 
 If you find the above to be syntactically complicated, a simpler variant
@@ -1466,7 +1466,7 @@ Running without Building
 As of the ns-3.30 release, a new ns3 option was introduced to allow the
 running of programs while skipping the build step.  This can reduce the time
 to run programs when, for example, running the same program repeatedly
-through a shell script, or when demonstrating program execution. 
+through a shell script, or when demonstrating program execution.
 The option ``--no-build`` modifies the ``run`` option,
 skipping the build steps of the program and required ns-3 libraries.
 
@@ -1478,8 +1478,8 @@ Build version
 +++++++++++++
 
 As of the ns-3.32 release, a new ns3 configure option ``--enable-build-version``
-was introduced which inspects the local ns3 git repository during builds and adds 
-version metadata to the core module. 
+was introduced which inspects the local ns3 git repository during builds and adds
+version metadata to the core module.
 
 This configuration option has the following prerequisites:
 
@@ -1493,9 +1493,9 @@ or
 
 If these prerequisites are not met, the configuration will fail.
 
-When these prerequisites are met and ns-3 is configured with the 
+When these prerequisites are met and ns-3 is configured with the
 ``--enable-build-version`` option, the ns3 command ``--check-version`` can be
-used to query the local git repository and display the current version metadata. 
+used to query the local git repository and display the current version metadata.
 
 .. sourcecode:: console
 
@@ -1513,10 +1513,10 @@ an error message indicating that the option is disabled will be displayed instea
 
 .. sourcecode:: text
 
-  Build version support is not enabled, reconfigure with --enable-build-version flag 
+  Build version support is not enabled, reconfigure with --enable-build-version flag
 
-The build information is generated by examining the current state of the git 
-repository.  The output of  ``--check-version`` will change whenever the state 
+The build information is generated by examining the current state of the git
+repository.  The output of  ``--check-version`` will change whenever the state
 of the active branch changes.
 
 The output of ``--check-version`` has the following format:
@@ -1525,39 +1525,39 @@ The output of ``--check-version`` has the following format:
 
   <version_tag>[+closest_tag][+distance_from_tag]@<commit_hash>[-tree_state]-<profile>
 
-version_tag 
+version_tag
   version_tag contains the version of the ns-3 code.  The version tag is
   defined as a git tag with the format ns-3*.  If multiple git tags match the
   format, the tag on the active branch which is closest to the current commit
-  is chosen. 
+  is chosen.
 
 closest_tag
   closest_tag is similar to version_tag except it is the first tag found,
   regardless of format.  The closest tag is not included in the output when
-  closest_tag and version_tag have the same value. 
+  closest_tag and version_tag have the same value.
 
 distance_from_tag
-  distance_from_tag contains the number of commits between the current commit 
-  and closest_tag.  distance_from_tag is not included in the output when the 
+  distance_from_tag contains the number of commits between the current commit
+  and closest_tag.  distance_from_tag is not included in the output when the
   value is 0 (i.e. when closest_tag points to the current commit)
 
 commit_hash
   commit_hash is the hash of the commit at the tip of the active branch. The
   value is 'g' followed by the first 7 characters of the commit hash. The 'g'
-  prefix is used to indicate that this is a git hash. 
+  prefix is used to indicate that this is a git hash.
 
 tree_state
   tree_state indicates the state of the working tree.  When the working tree
-  has uncommitted changes this field has the value 'dirty'.  The tree state is 
-  not included in the version output when the working tree is clean (e.g. when 
-  there are no uncommitted changes). 
+  has uncommitted changes this field has the value 'dirty'.  The tree state is
+  not included in the version output when the working tree is clean (e.g. when
+  there are no uncommitted changes).
 
 profile
-  The build profile specified in the ``--build-profile`` option passed to 
+  The build profile specified in the ``--build-profile`` option passed to
   ``ns3 configure``
 
-A new class, named Version, has been added to the core module.  The Version class 
-contains functions to retrieve individual fields of the build version as well 
+A new class, named Version, has been added to the core module.  The Version class
+contains functions to retrieve individual fields of the build version as well
 as functions to print the full build version like ``--check-version``.
 The ``build-version-example``  application provides an example of how to use
 the Version class to retrieve the various build version fields.  See the
@@ -1572,7 +1572,7 @@ the core module when the ``--enable-build-version`` option is configured.
 
   build-version-example:
   Program Version (according to CommandLine): ns-3.33+249@g80e0dd0-dirty-debug
-  
+
   Version fields:
   LongVersion:        ns-3.33+249@g80e0dd0-dirty-debug
   ShortVersion:       ns-3.33+*
@@ -1581,14 +1581,14 @@ the core module when the ``--enable-build-version`` option is configured.
   Major:              3
   Minor:              33
   Patch:              0
-  ReleaseCandidate:   
+  ReleaseCandidate:
   ClosestAncestorTag: ns-3.33
   TagDistance:        249
   CommitHash:         g80e0dd0
   BuildProfile:       debug
   WorkingTree:        dirty
 
-The CommandLine class has also been updated to support the ``--version`` 
+The CommandLine class has also been updated to support the ``--version``
 option which will print the full build version and exit.
 
 .. sourcecode:: text

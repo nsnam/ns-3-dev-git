@@ -113,7 +113,7 @@ void
 LteInterferenceTestCase::DoRun (void)
 {
   NS_LOG_INFO (this << GetName ());
-  
+
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
@@ -231,7 +231,7 @@ LteInterferenceTestCase::DoRun (void)
     {
       double ulSinr1Db = 10.0 * std::log10 (ulSinr1Catcher.GetValue ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr1Db, m_expectedUlSinrDb, 0.01, "Wrong SINR in UL!  (UE1 --> eNB1)");
-      
+
       double ulSinr2Db = 10.0 * std::log10 (ulSinr2Catcher.GetValue ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr2Db, m_expectedUlSinrDb, 0.01, "Wrong SINR in UL!  (UE2 --> eNB2)");
     }

@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
- 
+
 #ifndef ATTRIBUTE_ITERATOR_H
 #define ATTRIBUTE_ITERATOR_H
 
@@ -29,7 +29,7 @@ namespace ns3 {
 /**
  * \ingroup configstore
  *
- * \brief Iterator to iterate on the values of attributes of an ns3::Object 
+ * \brief Iterator to iterate on the values of attributes of an ns3::Object
  * \note This class is used internally by ConfigStore and GtkConfigStore.
  */
 class AttributeIterator
@@ -51,7 +51,7 @@ protected:
 private:
   /**
    * This method visits and performs a config-store action (such as saving
-   * to a text file) on the attribute values corresponding to the input 
+   * to a text file) on the attribute values corresponding to the input
    * object pointer and attribute name.
    *
    * \param object the object visited
@@ -89,7 +89,7 @@ private:
    *
    * \param object the object on which the attribute of type ObjectVectorValue resides
    * \param name the attribute name provided
-   * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute 
+   * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute
    */
   virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   /**
@@ -162,7 +162,7 @@ private:
    *
    * \param object the object on which the attribute of type ObjectVectorValue resides
    * \param name the attribute name provided
-   * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute 
+   * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute
    */
   void StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   /**

@@ -280,11 +280,11 @@ LiIonEnergySource::CalculateRemainingEnergy (void)
   if (m_remainingEnergyJ < energyToDecreaseJ)
     {
       m_remainingEnergyJ = 0; // energy never goes below 0
-    } 
-  else 
+    }
+  else
     {
       m_remainingEnergyJ -= energyToDecreaseJ;
-    }  
+    }
 
   m_drainedCapacity += (totalCurrentA * duration).GetHours ();
   // update the supply voltage

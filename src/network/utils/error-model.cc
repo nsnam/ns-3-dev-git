@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 University of Washington
- * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas 
+ * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * This file incorporates work covered by the following copyright and  
- * permission notice:  
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
  *
  * Copyright (c) 1997 Regents of the University of California.
  * All rights reserved.
@@ -57,7 +57,7 @@
  *
  * Author: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
  *         ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
- *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director 
+ *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 
 #include <cmath>
@@ -80,7 +80,7 @@ NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
 TypeId ErrorModel::GetTypeId (void)
-{ 
+{
   static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
     .SetGroupName("Network")
@@ -93,7 +93,7 @@ TypeId ErrorModel::GetTypeId (void)
 }
 
 ErrorModel::ErrorModel () :
-  m_enable (true) 
+  m_enable (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -149,7 +149,7 @@ ErrorModel::IsEnabled (void) const
 NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
 TypeId RateErrorModel::GetTypeId (void)
-{ 
+{
   static TypeId tid = TypeId ("ns3::RateErrorModel")
     .SetParent<ErrorModel> ()
     .SetGroupName("Network")
@@ -178,47 +178,47 @@ RateErrorModel::RateErrorModel ()
   NS_LOG_FUNCTION (this);
 }
 
-RateErrorModel::~RateErrorModel () 
+RateErrorModel::~RateErrorModel ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 RateErrorModel::ErrorUnit
-RateErrorModel::GetUnit (void) const 
-{ 
+RateErrorModel::GetUnit (void) const
+{
   NS_LOG_FUNCTION (this);
-  return m_unit; 
+  return m_unit;
 }
 
-void 
-RateErrorModel::SetUnit (enum ErrorUnit error_unit) 
-{ 
+void
+RateErrorModel::SetUnit (enum ErrorUnit error_unit)
+{
   NS_LOG_FUNCTION (this << error_unit);
-  m_unit = error_unit; 
+  m_unit = error_unit;
 }
 
 double
-RateErrorModel::GetRate (void) const 
-{ 
+RateErrorModel::GetRate (void) const
+{
   NS_LOG_FUNCTION (this);
-  return m_rate; 
+  return m_rate;
 }
 
-void 
+void
 RateErrorModel::SetRate (double rate)
-{ 
+{
   NS_LOG_FUNCTION (this << rate);
   m_rate = rate;
 }
 
-void 
+void
 RateErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranvar)
 {
   NS_LOG_FUNCTION (this << ranvar);
   m_ranvar = ranvar;
 }
 
-int64_t 
+int64_t
 RateErrorModel::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
@@ -226,15 +226,15 @@ RateErrorModel::AssignStreams (int64_t stream)
   return 1;
 }
 
-bool 
-RateErrorModel::DoCorrupt (Ptr<Packet> p) 
-{ 
+bool
+RateErrorModel::DoCorrupt (Ptr<Packet> p)
+{
   NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
     }
-  switch (m_unit) 
+  switch (m_unit)
     {
     case ERROR_UNIT_PACKET:
       return DoCorruptPkt (p);
@@ -274,11 +274,11 @@ RateErrorModel::DoCorruptBit (Ptr<Packet> p)
   return (m_ranvar->GetValue () < per);
 }
 
-void 
-RateErrorModel::DoReset (void) 
-{ 
+void
+RateErrorModel::DoReset (void)
+{
   NS_LOG_FUNCTION (this);
-  /* re-initialize any state; no-op for now */ 
+  /* re-initialize any state; no-op for now */
 }
 
 
@@ -371,9 +371,9 @@ BurstErrorModel::DoCorrupt (Ptr<Packet> p)
   if (ranVar < m_burstRate)
     {
       // get a new burst size for the new error event
-      m_currentBurstSz = m_burstSize->GetInteger();     
+      m_currentBurstSz = m_burstSize->GetInteger();
       NS_LOG_DEBUG ("new burst size selected: " << m_currentBurstSz);
-      if (m_currentBurstSz == 0)                        
+      if (m_currentBurstSz == 0)
         {
           NS_LOG_WARN ("Burst size == 0; shouldn't happen");
           return false;
@@ -386,10 +386,10 @@ BurstErrorModel::DoCorrupt (Ptr<Packet> p)
       // not a burst error event
       if (m_counter < m_currentBurstSz)
         {
-         // check to see if all the packets (determined by the last 
-         // generated m_currentBurstSz) have been dropped. 
+         // check to see if all the packets (determined by the last
+         // generated m_currentBurstSz) have been dropped.
          // If not, drop 1 more packet
-          m_counter++;                                 
+          m_counter++;
           return true;
         }
       else
@@ -418,7 +418,7 @@ BurstErrorModel::DoReset (void)
 NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
 TypeId ListErrorModel::GetTypeId (void)
-{ 
+{
   static TypeId tid = TypeId ("ns3::ListErrorModel")
     .SetParent<ErrorModel> ()
     .SetGroupName("Network")
@@ -432,38 +432,38 @@ ListErrorModel::ListErrorModel ()
   NS_LOG_FUNCTION (this);
 }
 
-ListErrorModel::~ListErrorModel () 
+ListErrorModel::~ListErrorModel ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-std::list<uint32_t> 
-ListErrorModel::GetList (void) const 
-{ 
+std::list<uint32_t>
+ListErrorModel::GetList (void) const
+{
   NS_LOG_FUNCTION (this);
-  return m_packetList; 
+  return m_packetList;
 }
 
-void 
+void
 ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
-{ 
+{
   NS_LOG_FUNCTION (this << &packetlist);
   m_packetList = packetlist;
 }
 
-// When performance becomes a concern, the list provided could be 
-// converted to a dynamically-sized array of uint32_t to avoid 
+// When performance becomes a concern, the list provided could be
+// converted to a dynamically-sized array of uint32_t to avoid
 // list iteration below.
-bool 
-ListErrorModel::DoCorrupt (Ptr<Packet> p) 
-{ 
+bool
+ListErrorModel::DoCorrupt (Ptr<Packet> p)
+{
   NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
     }
   uint32_t uid = p->GetUid ();
-  for (PacketListCI i = m_packetList.begin (); 
+  for (PacketListCI i = m_packetList.begin ();
        i != m_packetList.end (); i++)
     {
       if (uid == *i)
@@ -474,9 +474,9 @@ ListErrorModel::DoCorrupt (Ptr<Packet> p)
   return false;
 }
 
-void 
-ListErrorModel::DoReset (void) 
-{ 
+void
+ListErrorModel::DoReset (void)
+{
   NS_LOG_FUNCTION (this);
   m_packetList.clear ();
 }
@@ -488,7 +488,7 @@ ListErrorModel::DoReset (void)
 NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel);
 
 TypeId ReceiveListErrorModel::GetTypeId (void)
-{ 
+{
   static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
     .SetParent<ErrorModel> ()
     .SetGroupName("Network")
@@ -504,35 +504,35 @@ ReceiveListErrorModel::ReceiveListErrorModel () :
   NS_LOG_FUNCTION (this);
 }
 
-ReceiveListErrorModel::~ReceiveListErrorModel () 
+ReceiveListErrorModel::~ReceiveListErrorModel ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-std::list<uint32_t> 
-ReceiveListErrorModel::GetList (void) const 
-{ 
+std::list<uint32_t>
+ReceiveListErrorModel::GetList (void) const
+{
   NS_LOG_FUNCTION (this);
-  return m_packetList; 
+  return m_packetList;
 }
 
-void 
+void
 ReceiveListErrorModel::SetList (const std::list<uint32_t> &packetlist)
-{ 
+{
   NS_LOG_FUNCTION (this << &packetlist);
   m_packetList = packetlist;
 }
 
-bool 
-ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p) 
-{ 
+bool
+ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
+{
   NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
     }
   m_timesInvoked += 1;
-  for (PacketListCI i = m_packetList.begin (); 
+  for (PacketListCI i = m_packetList.begin ();
        i != m_packetList.end (); i++)
     {
       if (m_timesInvoked - 1 == *i)
@@ -543,9 +543,9 @@ ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
   return false;
 }
 
-void 
-ReceiveListErrorModel::DoReset (void) 
-{ 
+void
+ReceiveListErrorModel::DoReset (void)
+{
   NS_LOG_FUNCTION (this);
   m_packetList.clear ();
 }

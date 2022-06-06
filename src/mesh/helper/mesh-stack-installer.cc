@@ -23,7 +23,7 @@
 namespace ns3
 {
 NS_OBJECT_ENSURE_REGISTERED (MeshStack);
-  
+
 TypeId
 MeshStack::GetTypeId ()
 {

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- */ 
+ */
 
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
@@ -27,7 +27,7 @@ using namespace ns3;
  * \param context event context
  * \param position a pointer to the mobility model
  */
-static void 
+static void
 CourseChange (std::string context, Ptr<const MobilityModel> position)
 {
   Vector pos = position->GetPosition ();

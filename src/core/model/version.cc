@@ -94,7 +94,7 @@ std::string
 Version::ShortVersion (void)
 {
   std::ostringstream ostream;
-  ostream << VersionTag (); 
+  ostream << VersionTag ();
 
   auto ancestorTag = ClosestAncestorTag ();
   if ( ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )
@@ -132,7 +132,7 @@ std::string
 Version::LongVersion (void)
 {
   std::ostringstream ostream;
-  ostream << VersionTag (); 
+  ostream << VersionTag ();
 
   auto ancestorTag = ClosestAncestorTag ();
   if ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )

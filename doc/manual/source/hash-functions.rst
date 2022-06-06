@@ -27,7 +27,7 @@ The simplest way to get a hash value of a data buffer or string is just::
 
   char * buffer = ...
   size_t buffer_size = ...
-  
+
   uint32_t  buffer_hash = Hash32 ( buffer, buffer_size);
 
   std::string s;
@@ -92,7 +92,7 @@ To add the hash function ``foo``, follow the ``hash-murmur3.h``/``.cc`` pattern:
    ``hash-murmur3.h`` is included.
  * In your own code, instantiate a ``Hasher`` object via the constructor
    ``Hasher (Ptr<Hash::Function::Foo> ())``
-   
+
 
 If your hash function is a single function, e.g. ``hashf``, you don't
 even need to create a new class derived from HashImplementation::

@@ -118,9 +118,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
       clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper1.SetAttribute 
+      clientHelper1.SetAttribute
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
-      clientHelper1.SetAttribute 
+      clientHelper1.SetAttribute
         ("PacketSize", UintegerValue (1000));
 
       ApplicationContainer clientApps1;
@@ -135,9 +135,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper2 ("ns3::TcpSocketFactory", Address ());
       clientHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper2.SetAttribute 
+      clientHelper2.SetAttribute
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
-      clientHelper2.SetAttribute 
+      clientHelper2.SetAttribute
         ("PacketSize", UintegerValue (1000));
 
       ApplicationContainer clientApps2;
@@ -186,9 +186,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
       clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper1.SetAttribute 
+      clientHelper1.SetAttribute
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
-      clientHelper1.SetAttribute 
+      clientHelper1.SetAttribute
         ("PacketSize", UintegerValue (1000));
 
       ApplicationContainer clientApps1;
@@ -203,9 +203,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper2 ("ns3::TcpSocketFactory", Address ());
       clientHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper2.SetAttribute 
+      clientHelper2.SetAttribute
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
-      clientHelper2.SetAttribute 
+      clientHelper2.SetAttribute
         ("PacketSize", UintegerValue (1000));
 
       ApplicationContainer clientApps2;
@@ -220,9 +220,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper3 ("ns3::TcpSocketFactory", Address ());
       clientHelper3.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper3.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper3.SetAttribute 
+      clientHelper3.SetAttribute
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
-      clientHelper3.SetAttribute 
+      clientHelper3.SetAttribute
         ("PacketSize", UintegerValue (1000));
 
       ApplicationContainer clientApps3;
@@ -237,9 +237,9 @@ BuildAppsTest (uint32_t test)
       OnOffHelper clientHelper4 ("ns3::TcpSocketFactory", Address ());
       clientHelper4.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       clientHelper4.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      clientHelper4.SetAttribute 
+      clientHelper4.SetAttribute
         ("DataRate", DataRateValue (DataRate ("40b/s")));
-      clientHelper4.SetAttribute 
+      clientHelper4.SetAttribute
         ("PacketSize", UintegerValue (5 * 8)); // telnet
 
       ApplicationContainer clientApps4;
@@ -269,7 +269,7 @@ main (int argc, char *argv[])
   bool printRedStats = true;
 
   global_start_time = 0.0;
-  global_stop_time = 11; 
+  global_stop_time = 11;
   sink_start_time = global_start_time;
   sink_stop_time = global_stop_time + 3.0;
   client_start_time = sink_start_time + 0.2;
@@ -406,7 +406,7 @@ main (int argc, char *argv[])
   // Set up the routing
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  if (redTest == 5) 
+  if (redTest == 5)
     {
       // like in ns2 test, r2 -> r1, have a queue in packet mode
       Ptr<QueueDisc> queue = queueDiscs.Get (1);

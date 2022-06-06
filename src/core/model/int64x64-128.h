@@ -262,7 +262,7 @@ public:
 
   /**
    * Truncate to an integer.
-   * Truncation is always toward zero, 
+   * Truncation is always toward zero,
    * \return The value truncated toward zero.
    */
   int64_t GetInt (void) const

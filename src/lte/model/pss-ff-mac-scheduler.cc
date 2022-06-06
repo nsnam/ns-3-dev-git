@@ -285,7 +285,7 @@ void
 PssFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_uesTxMode.erase (params.m_rnti);
   m_dlHarqCurrentProcessId.erase (params.m_rnti);
   m_dlHarqProcessesStatus.erase  (params.m_rnti);
@@ -487,7 +487,7 @@ PssFfMacScheduler::RefreshHarqProcesses ()
           if ((*itTimers).second.at (i) == HARQ_DL_TIMEOUT)
             {
               // reset HARQ process
-              
+
               NS_LOG_DEBUG (this << " Reset HARQ proc " << i << " for RNTI " << (*itTimers).first);
               std::map <uint16_t, DlHarqProcessesStatus_t>::iterator itStat = m_dlHarqProcessesStatus.find ((*itTimers).first);
               if (itStat == m_dlHarqProcessesStatus.end ())
@@ -503,7 +503,7 @@ PssFfMacScheduler::RefreshHarqProcesses ()
             }
         }
     }
-  
+
 }
 
 
@@ -981,7 +981,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               }
               continue;
             }
-    
+
           double metric = 0.0;
           if ((*it).second.lastAveragedThroughput < (*it).second.targetThroughput )
             {
@@ -1037,34 +1037,34 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 {
                   wbCqi = (*itCqi).second;
                 }
-    
+
               if (wbCqi > 0)
                 {
                   if (LcActivePerFlow ((*it).first) > 0)
                     {
                       // this UE has data to transmit
                       double achievableRate = 0.0;
-                      for (uint8_t k = 0; k < nLayer; k++) 
+                      for (uint8_t k = 0; k < nLayer; k++)
                         {
-                          uint8_t mcs = 0; 
+                          uint8_t mcs = 0;
                           mcs = m_amc->GetMcsFromCqi (wbCqi);
                           achievableRate += ((m_amc->GetDlTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                         }
-    
+
                       metric = achievableRate / (*it).second.lastAveragedThroughput;
                    }
                   ueSet2.push_back(std::pair<double, uint16_t> (metric, (*it).first));
                 } // end of wbCqi
             }
         }// end of ueSet
-    
-    
+
+
       if (ueSet1.size () != 0 || ueSet2.size () != 0)
         {
           // sorting UE in ueSet1 and ueSet1 in descending order based on their metric value
           std::sort (ueSet1.rbegin (), ueSet1.rend ());
           std::sort (ueSet2.rbegin (), ueSet2.rend ());
- 
+
           // select UE set for frequency domain scheduler
           uint32_t nMux;
           if ( m_nMux > 0)
@@ -1081,30 +1081,30 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
            {
              std::vector <std::pair<double, uint16_t> >::iterator itSet;
              for (itSet = ueSet1.begin (); itSet != ueSet1.end () && nMux != 0; itSet++)
-               {  
+               {
                  std::map <uint16_t, pssFlowPerf_t>::iterator itUe;
                  itUe = m_flowStatsDl.find((*itSet).second);
                  tdUeSet.insert(std::pair<uint16_t, pssFlowPerf_t> ( (*itUe).first, (*itUe).second ) );
                  nMux--;
                }
-           
+
              if (nMux == 0)
                break;
-        
+
              for (itSet = ueSet2.begin (); itSet != ueSet2.end () && nMux != 0; itSet++)
-               {  
+               {
                  std::map <uint16_t, pssFlowPerf_t>::iterator itUe;
                  itUe = m_flowStatsDl.find((*itSet).second);
                  tdUeSet.insert(std::pair<uint16_t, pssFlowPerf_t> ( (*itUe).first, (*itUe).second ) );
                  nMux--;
                }
-        
+
              if (nMux == 0)
                break;
-        
+
            } // end of m_flowStatsDl
-        
-        
+
+
           if ( m_fdSchedulerType.compare("CoItA") == 0)
             {
               // FD scheduler: Carrier over Interference to Average (CoItA)
@@ -1135,36 +1135,36 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         {
                           sbCqis = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
                         }
-        
+
                       uint8_t cqi1 = sbCqis.at (0);
                       uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at (1);
                         }
-            
+
                       uint8_t sbCqi = 0;
                       if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                         {
-                          for (uint8_t k = 0; k < nLayer; k++) 
+                          for (uint8_t k = 0; k < nLayer; k++)
                             {
                               if (sbCqis.size () > k)
-                                {                       
+                                {
            	                  sbCqi = sbCqis.at(k);
                                 }
                               else
                                 {
-                                  // no info on this subband 
+                                  // no info on this subband
                                   sbCqi = 0;
                                 }
                               sum += sbCqi;
                             }
                         }   // end if cqi
                     }// end of rbgNum
-              
+
                   sbCqiSum.insert (std::pair<uint16_t, uint8_t> ((*it).first, sum));
                 }// end tdUeSet
-        
+
               for (int i = 0; i < rbgNum; i++)
                 {
                   if (rbgMap.at (i) == true)
@@ -1177,14 +1177,14 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
                         continue;
 
-                      // calculate PF weight 
+                      // calculate PF weight
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
                         weight = 1.0;
-        
+
                       std::map < uint16_t, uint8_t>::iterator itSbCqiSum;
                       itSbCqiSum = sbCqiSum.find((*it).first);
-        
+
                       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
                       itCqi = m_a30CqiRxed.find ((*it).first);
                       std::map <uint16_t,uint8_t>::iterator itTxMode;
@@ -1206,39 +1206,39 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         {
                           sbCqis = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
                         }
-        
+
                       uint8_t cqi1 = sbCqis.at( 0);
                       uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at(1);
                         }
-            
+
                       uint8_t sbCqi = 0;
                       double colMetric = 0.0;
                       if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                         {
-                          for (uint8_t k = 0; k < nLayer; k++) 
+                          for (uint8_t k = 0; k < nLayer; k++)
                             {
                               if (sbCqis.size () > k)
-                                {                       
+                                {
                                   sbCqi = sbCqis.at(k);
                                 }
                               else
                                 {
-                                  // no info on this subband 
+                                  // no info on this subband
                                   sbCqi = 0;
                                 }
                               colMetric += (double)sbCqi / (double)(*itSbCqiSum).second;
-           	                } 
+           	                }
                         }   // end if cqi
-        
+
                       double metric = 0.0;
                       if (colMetric != 0)
                         metric= weight * colMetric;
                       else
                         metric = 1;
-        
+
                       if (metric > metricMax )
                         {
                           metricMax = metric;
@@ -1256,10 +1256,10 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       rbgMap.at (i) = true;
                     }
                 }// end of rbgNum
-        
+
             }// end of CoIta
-        
-        
+
+
           if ( m_fdSchedulerType.compare("PFsch") == 0)
             {
               // FD scheduler: Proportional Fair scheduled (PFsch)
@@ -1274,11 +1274,11 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                     {
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
                         continue;
-                      // calculate PF weight 
+                      // calculate PF weight
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
                         weight = 1.0;
-        
+
                       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
                       itCqi = m_a30CqiRxed.find ((*it).first);
                       std::map <uint16_t,uint8_t>::iterator itTxMode;
@@ -1300,23 +1300,23 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         {
                           sbCqis = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
                         }
-        
+
                       uint8_t cqi1 = sbCqis.at(0);
                       uint8_t cqi2 = 0;
                       if (sbCqis.size () > 1)
                         {
                           cqi2 = sbCqis.at(1);
                         }
-                
+
                       double schMetric = 0.0;
                       if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                         {
                           double achievableRate = 0.0;
-                          for (uint8_t k = 0; k < nLayer; k++) 
+                          for (uint8_t k = 0; k < nLayer; k++)
                             {
                               uint8_t mcs = 0;
                               if (sbCqis.size () > k)
-                                {                       
+                                {
                                   mcs = m_amc->GetMcsFromCqi (sbCqis.at (k));
                                 }
                               else
@@ -1328,10 +1328,10 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             	  	    }
                           schMetric = achievableRate / (*it).second.secondLastAveragedThroughput;
                         }   // end if cqi
-         
+
                       double metric = 0.0;
                       metric= weight * schMetric;
-         
+
                       if (metric > metricMax )
                         {
                           metricMax = metric;
@@ -1341,20 +1341,20 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
                   if (itMax == tdUeSet.end ())
                     {
-                      // no UE available for downlink 
+                      // no UE available for downlink
                     }
                   else
                     {
                       allocationMap[(*itMax).first].push_back (i);
                       rbgMap.at (i) = true;
                     }
-         
+
                 }// end of rbgNum
-        
+
             } // end of PFsch
 
         } // end if ueSet1 || ueSet2
-    
+
     } // end if ueSet
 
 
@@ -1550,7 +1550,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   // update UEs stats
   NS_LOG_INFO (this << " Update UEs statistics");
   for (itStats = m_flowStatsDl.begin (); itStats != m_flowStatsDl.end (); itStats++)
-    { 
+    {
       std::map <uint16_t, pssFlowPerf_t>::iterator itUeScheduleted = tdUeSet.end();
       itUeScheduleted = tdUeSet.find((*itStats).first);
       if (itUeScheduleted != tdUeSet.end())
@@ -1577,7 +1577,7 @@ PssFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::Sch
   NS_LOG_FUNCTION (this);
 
   m_rachList = params.m_rachList;
-  
+
   return;
 }
 
@@ -1725,7 +1725,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
     {
       //   Process UL HARQ feedback
       for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
-        {        
+        {
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
               // retx correspondent block: retrieve the UL-DCI
@@ -1815,7 +1815,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
           m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           m_schedSapUser->SchedUlConfigInd (ret);
         }
-        
+
       return;  // no flows to be scheduled
     }
 
@@ -1873,7 +1873,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
           if (rbPerFlow < 3)
             {
               // terminate allocation
-              rbPerFlow = 0;      
+              rbPerFlow = 0;
             }
         }
 
@@ -1924,7 +1924,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
               if (rbPerFlow < 3)
                 {
                   // terminate allocation
-                  rbPerFlow = 0;                 
+                  rbPerFlow = 0;
                 }
             }
         }
@@ -2098,7 +2098,7 @@ PssFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::
               uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (lcg);
               buffer += BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
             }
-          
+
           uint16_t rnti = params.m_macCeList.at (i).m_rnti;
           NS_LOG_LOGIC (this << "RNTI=" << rnti << " buffer=" << buffer);
           it = m_ceBsrRxed.find (rnti);
@@ -2374,8 +2374,8 @@ PssFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t 
               // for SRB1 (using RLC AM) it's better to
               // overestimate RLC overhead rather than
               // underestimate it and risk unneeded
-              // segmentation which increases delay 
-              rlcOverhead = 4;                                  
+              // segmentation which increases delay
+              rlcOverhead = 4;
             }
           else
             {
@@ -2388,7 +2388,7 @@ PssFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t 
               (*it).second.m_rlcTransmissionQueueSize = 0;
             }
           else
-            {                    
+            {
               (*it).second.m_rlcTransmissionQueueSize -= size - rlcOverhead;
             }
         }

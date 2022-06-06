@@ -50,7 +50,7 @@ main (int argc, char *argv[])
 // Strings, especially with blanks in it, have to be enclosed in quotation
 // marks, like in click configuration files.
   defines["OUTPUT"] = "\"Hello World!\"";
-  
+
   ClickInternetStackHelper clickinternet;
   clickinternet.SetClickFile (n, clickConfigFolder + "/nsclick-defines.click");
   clickinternet.SetRoutingTableElement (n, "rt");

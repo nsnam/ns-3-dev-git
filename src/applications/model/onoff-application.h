@@ -40,10 +40,10 @@ class RandomVariableStream;
 class Socket;
 
 /**
- * \ingroup applications 
+ * \ingroup applications
  * \defgroup onoff OnOffApplication
  *
- * This traffic generator follows an On/Off pattern: after 
+ * This traffic generator follows an On/Off pattern: after
  * Application::StartApplication
  * is called, "On" and "Off" states alternate. The duration of each of
  * these states is determined with the onTime and the offTime random
@@ -86,13 +86,13 @@ class Socket;
 *
  * If the attribute "EnableSeqTsSizeHeader" is enabled, the application will
  * use some bytes of the payload to store an header with a sequence number,
- * a timestamp, and the size of the packet sent. Support for extracting 
- * statistics from this header have been added to \c ns3::PacketSink 
+ * a timestamp, and the size of the packet sent. Support for extracting
+ * statistics from this header have been added to \c ns3::PacketSink
  * (enable its "EnableSeqTsSizeHeader" attribute), or users may extract
  * the header via trace sources.  Note that the continuity of the sequence
  * number may be disrupted across On/Off cycles.
 */
-class OnOffApplication : public Application 
+class OnOffApplication : public Application
 {
 public:
   /**

@@ -24,7 +24,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Tlv");
-  
+
 // NS_OBJECT_ENSURE_REGISTERED ("Tlv");
 
 /* static */
@@ -38,7 +38,7 @@ Tlv::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 TypeId Tlv::GetInstanceTypeId (void) const
 {
   return GetTypeId ();

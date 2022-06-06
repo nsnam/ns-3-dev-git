@@ -46,7 +46,7 @@ TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SimpleOfdmWimaxPhy")
     .SetParent<WimaxPhy> ()
     .SetGroupName ("Wimax")
-    
+
     .AddConstructor<SimpleOfdmWimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",

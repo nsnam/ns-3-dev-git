@@ -131,7 +131,7 @@ LenaTestTtaFfMacSchedulerSuite::LenaTestTtaFfMacSchedulerSuite ()
   AddTestCase (new LenaTtaFfMacSchedulerTestCase (3,10000,775000,137000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTtaFfMacSchedulerTestCase (6,10000,775000,67000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTtaFfMacSchedulerTestCase (12,10000,775000,32667,errorModel), TestCase::EXTENSIVE);
- 
+
   // DONWLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec for one UE; 0 bytes/sec for other UEs
   // 3 users -> 421000 among 3 users -> 421000 bytes/sec for one UE; 0 bytes/sec for other UEs
@@ -158,7 +158,7 @@ static LenaTestTtaFfMacSchedulerSuite lenaTestTtaFfMacSchedulerSuite;
 
 // --------------- T E S T - C A S E ------------------------------
 
-std::string 
+std::string
 LenaTtaFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, double dist)
 {
   std::ostringstream oss;
@@ -237,8 +237,8 @@ LenaTtaFfMacSchedulerTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
- 
+
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -322,8 +322,8 @@ LenaTtaFfMacSchedulerTestCase::DoRun (void)
     }
   /**
   * Check that the assignment is done in a "proportional fair" manner among users
-  * with equal SINRs: the bandwidth should be distributed according to the 
-  * ratio of the estimated throughput per TTI of each user; therefore equally 
+  * with equal SINRs: the bandwidth should be distributed according to the
+  * ratio of the estimated throughput per TTI of each user; therefore equally
   * partitioning the whole bandwidth achievable from a single users in a TTI
   */
   for (int i = 0; i < m_nUser; i++)

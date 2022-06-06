@@ -33,7 +33,7 @@ Ipv6PacketInfoTag::Ipv6PacketInfoTag ()
 {
 }
 
-void 
+void
 Ipv6PacketInfoTag::SetAddress (Ipv6Address addr)
 {
   m_addr = addr;
@@ -45,37 +45,37 @@ Ipv6PacketInfoTag::GetAddress (void) const
   return m_addr;
 }
 
-void 
+void
 Ipv6PacketInfoTag::SetRecvIf (uint32_t ifindex)
 {
   m_ifindex = ifindex;
 }
 
-uint32_t 
+uint32_t
 Ipv6PacketInfoTag::GetRecvIf (void) const
 {
   return m_ifindex;
 }
 
-void 
+void
 Ipv6PacketInfoTag::SetHoplimit (uint8_t ttl)
 {
   m_hoplimit = ttl;
 }
 
-uint8_t 
+uint8_t
 Ipv6PacketInfoTag::GetHoplimit (void) const
 {
   return m_hoplimit;
 }
 
-void 
+void
 Ipv6PacketInfoTag::SetTrafficClass (uint8_t tclass)
 {
   m_tclass = tclass;
 }
 
-uint8_t 
+uint8_t
 Ipv6PacketInfoTag::GetTrafficClass (void) const
 {
   return m_tclass;
@@ -98,17 +98,17 @@ Ipv6PacketInfoTag::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t 
+uint32_t
 Ipv6PacketInfoTag::GetSerializedSize (void) const
-{ 
+{
   return 16
          + sizeof (uint8_t)
          + sizeof (uint8_t)
          + sizeof (uint8_t);
 }
-void 
+void
 Ipv6PacketInfoTag::Serialize (TagBuffer i) const
-{ 
+{
   uint8_t buf[16];
   m_addr.Serialize (buf);
   i.Write (buf, 16);
@@ -116,9 +116,9 @@ Ipv6PacketInfoTag::Serialize (TagBuffer i) const
   i.WriteU8 (m_hoplimit);
   i.WriteU8 (m_tclass);
 }
-void 
+void
 Ipv6PacketInfoTag::Deserialize (TagBuffer i)
-{ 
+{
   uint8_t buf[16];
   i.Read (buf, 16);
   m_addr = Ipv6Address::Deserialize (buf);

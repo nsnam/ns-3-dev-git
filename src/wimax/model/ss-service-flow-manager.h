@@ -38,7 +38,7 @@ class SubscriberStationNetDevice;
 
 /**
  * \ingroup wimax
- * \brief SsServiceFlowManager class 
+ * \brief SsServiceFlowManager class
  */
 class SsServiceFlowManager : public ServiceFlowManager
 {
@@ -65,7 +65,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * \brief add a service flow to the list
    * \param serviceFlow the service flow to add

@@ -54,7 +54,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Set the SpectrumErrorModel to be used.
    *

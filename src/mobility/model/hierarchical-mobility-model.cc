@@ -28,7 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("HierarchicalMobilityModel");
 
 NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 
-TypeId 
+TypeId
 HierarchicalMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HierarchicalMobilityModel")
@@ -80,7 +80,7 @@ HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
     }
 }
 
-void 
+void
 HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 {
   NS_LOG_FUNCTION (this << model);
@@ -108,13 +108,13 @@ HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 }
 
 
-Ptr<MobilityModel> 
+Ptr<MobilityModel>
 HierarchicalMobilityModel::GetChild (void) const
 {
   return m_child;
 }
 
-Ptr<MobilityModel> 
+Ptr<MobilityModel>
 HierarchicalMobilityModel::GetParent (void) const
 {
   return m_parent;
@@ -133,7 +133,7 @@ HierarchicalMobilityModel::DoGetPosition (void) const
                  parentPosition.y + childPosition.y,
                  parentPosition.z + childPosition.z);
 }
-void 
+void
 HierarchicalMobilityModel::DoSetPosition (const Vector &position)
 {
   NS_LOG_FUNCTION (this << position);
@@ -174,13 +174,13 @@ HierarchicalMobilityModel::DoGetVelocity (void) const
     }
 }
 
-void 
+void
 HierarchicalMobilityModel::ParentChanged (Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
 }
 
-void 
+void
 HierarchicalMobilityModel::ChildChanged (Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();

@@ -4,46 +4,46 @@
 OpenFlow switch support
 -----------------------
 
-ns-3 simulations can use OpenFlow switches (McKeown et al. [1]_), 
-widely used in research.  OpenFlow switches are configurable via the 
-OpenFlow API, and also have an MPLS extension for quality-of-service and 
-service-level-agreement support. By extending these capabilities to ns-3 
-for a simulated OpenFlow switch that is both configurable and can use 
-the MPLS extension, ns-3 simulations can accurately simulate many different 
+ns-3 simulations can use OpenFlow switches (McKeown et al. [1]_),
+widely used in research.  OpenFlow switches are configurable via the
+OpenFlow API, and also have an MPLS extension for quality-of-service and
+service-level-agreement support. By extending these capabilities to ns-3
+for a simulated OpenFlow switch that is both configurable and can use
+the MPLS extension, ns-3 simulations can accurately simulate many different
 switches.
 
 
-The OpenFlow software implementation distribution is hereby referred to as 
-the OFSID. This is a demonstration of running OpenFlow in software that 
-the OpenFlow research group has made available. There is also an OFSID 
-that Ericsson researchers created to add MPLS capabilities; this is the 
-OFSID currently used with ns-3. The design will allow the users to, 
-with minimal effort, switch in a different OFSID that may include more 
+The OpenFlow software implementation distribution is hereby referred to as
+the OFSID. This is a demonstration of running OpenFlow in software that
+the OpenFlow research group has made available. There is also an OFSID
+that Ericsson researchers created to add MPLS capabilities; this is the
+OFSID currently used with ns-3. The design will allow the users to,
+with minimal effort, switch in a different OFSID that may include more
 efficient code than a previous OFSID.
 
 
 Model Description
 *****************
 
-The model relies on building an external OpenFlow switch library (OFSID), 
-and then building some ns-3 wrappers that call out to the library.  
-The source code for the ns-3 wrappers lives in the directory 
+The model relies on building an external OpenFlow switch library (OFSID),
+and then building some ns-3 wrappers that call out to the library.
+The source code for the ns-3 wrappers lives in the directory
 ``src/openflow/model``.
 
 Design
 ======
 
-The OpenFlow module presents a OpenFlowSwitchNetDevice and a OpenFlowSwitchHelper for 
-installing it on nodes. Like the Bridge module, it takes a collection of 
-NetDevices to set up as ports, and it acts as the intermediary between 
-them, receiving a packet on one port and forwarding it on another, or all 
-but the received port when flooding. Like an OpenFlow switch, it maintains 
-a configurable flow table that can match packets by their headers and do 
-different actions with the packet based on how it matches. The module's 
-understanding of OpenFlow configuration messages are kept the same format 
-as a real OpenFlow-compatible switch, so users testing Controllers via 
-ns-3 won't have to rewrite their Controller to work on real 
-OpenFlow-compatible switches. 
+The OpenFlow module presents a OpenFlowSwitchNetDevice and a OpenFlowSwitchHelper for
+installing it on nodes. Like the Bridge module, it takes a collection of
+NetDevices to set up as ports, and it acts as the intermediary between
+them, receiving a packet on one port and forwarding it on another, or all
+but the received port when flooding. Like an OpenFlow switch, it maintains
+a configurable flow table that can match packets by their headers and do
+different actions with the packet based on how it matches. The module's
+understanding of OpenFlow configuration messages are kept the same format
+as a real OpenFlow-compatible switch, so users testing Controllers via
+ns-3 won't have to rewrite their Controller to work on real
+OpenFlow-compatible switches.
 
 The ns-3 OpenFlow switch device models an OpenFlow-enabled switch. It is designed to
 express basic use of the OpenFlow protocol, with the maintaining of a virtual
@@ -51,7 +51,7 @@ Flow Table and TCAM to provide OpenFlow-like results.
 
 The functionality comes down to the Controllers, which send messages to the
 switch that configure its flows, producing different effects. Controllers can
-be added by the user, under the ofi namespace extending ofi::Controller. To 
+be added by the user, under the ofi namespace extending ofi::Controller. To
 demonstrate this, a DropController, which creates flows for ignoring every single
 packet, and LearningController, which effectively makes the switch a more complicated
 BridgeNetDevice. A user versed in a standard OFSID, and/or OF protocol, can write
@@ -66,20 +66,20 @@ switch, with a few modifications made for a proper simulation environment.
 Normal OF-enabled Switch:
 
 .. sourcecode:: text
-  
+
   | Secure Channel                  | <--OF Protocol--> | Controller is external |
   | Hardware or Software Flow Table |
- 
+
 
 ns-3 OF-enabled Switch (module):
 
 .. sourcecode:: text
-  
+
   | m_controller->ReceiveFromSwitch() | <--OF Protocol--> | Controller is internal |
   | Software Flow Table, virtual TCAM |
 
 
-In essence, there are two differences: 
+In essence, there are two differences:
 
 1) No SSL, Embedded Controller: Instead of a secure channel and connecting to an
 outside location for the Controller program/machine, we currently only allow a
@@ -112,7 +112,7 @@ Scope and Limitations
 All MPLS capabilities are implemented on the OFSID side in the OpenFlowSwitchNetDevice,
 but ns-3-mpls hasn't been integrated, so ns-3 has no way to pass in
 proper MPLS packets to the OpenFlowSwitch. If it did, one would only need to make
-BufferFromPacket pick up the MplsLabelStack or whatever the MPLS header 
+BufferFromPacket pick up the MplsLabelStack or whatever the MPLS header
 is called on the Packet, and build the MPLS header into the ofpbuf.
 
 Future Work
@@ -145,7 +145,7 @@ To do this:
      $ cd openflow
 
    From the "openflow" directory, run::
-     
+
      $ ./waf configure
      $ ./waf build
 
@@ -158,7 +158,7 @@ To do this:
 3. Under ``---- Summary of optional NS-3 features:`` you should see:
 
    .. sourcecode:: text
-  
+
      "NS-3 OpenFlow Integration     : enabled"
 
    indicating the library has been linked to ns-3. Run::
@@ -169,7 +169,7 @@ to build ns-3 and activate the OpenFlowSwitch module in ns-3.
 
 Examples
 ========
-For an example demonstrating its use in a simple learning controller/switch, 
+For an example demonstrating its use in a simple learning controller/switch,
 run::
 
   $ ./ns3 run openflow-switch

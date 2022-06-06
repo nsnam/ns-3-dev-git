@@ -30,11 +30,11 @@ using namespace ns3;
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * Shadowing compound test
  *
- * This TestSuite tests the shadowing model of BuildingPathlossModel 
- * by reproducing several communication scenarios 
+ * This TestSuite tests the shadowing model of BuildingPathlossModel
+ * by reproducing several communication scenarios
  */
 class BuildingsShadowingTestSuite : public TestSuite
 {
@@ -46,7 +46,7 @@ public:
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * Shadowing test
  */
 class BuildingsShadowingTestCase : public TestCase

@@ -26,7 +26,7 @@
 namespace ns3 {
 
 /**
- * Tag used to define PHY parameters 
+ * Tag used to define PHY parameters
  */
 class LtePhyTag : public Tag
 {

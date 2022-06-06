@@ -43,7 +43,7 @@ class OkumuraHataPropagationLossModelTestCase : public TestCase
 public:
   /**
    * Constructor
-   * 
+   *
    * \param freq carrier frequency in Hz
    * \param dist 2D distance between UT and BS in meters
    * \param hb height of BS in meters
@@ -52,7 +52,7 @@ public:
    * \param city city type
    * \param refValue reference loss value
    * \param name TestCase name
-   */ 
+   */
   OkumuraHataPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name);
   virtual ~OkumuraHataPropagationLossModelTestCase ();
 
@@ -114,7 +114,7 @@ OkumuraHataPropagationLossModelTestCase::DoRun (void)
 
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
- 
+
   NS_TEST_ASSERT_MSG_EQ_TOL (loss, m_lossRef, 0.1, "Wrong loss!");
 
 }
@@ -124,7 +124,7 @@ OkumuraHataPropagationLossModelTestCase::DoRun (void)
  * \ingroup propagation-tests
  *
  * \brief OkumuraHataPropagationLossModel TestSuite
- * 
+ *
  * This TestSuite tests the following cases:
  *   - UrbanEnvironment - Large City (original OH and COST231 OH)
  *   - UrbanEnvironment - Small City (original OH and COST231 OH)

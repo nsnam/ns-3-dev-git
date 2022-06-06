@@ -35,9 +35,9 @@ class WifiPhyHelper;
 class WifiNetDevice;
 class NodeContainer;
 
-/** 
+/**
  * \ingroup dot11s
- * 
+ *
  * \brief Helper to create IEEE 802.11s mesh networks
  */
 class MeshHelper
@@ -126,12 +126,12 @@ public:
    * \param standard the wifi phy standard
    */
   void SetStandard (enum WifiStandard standard);
-  /// \todo SetMeshId 
+  /// \todo SetMeshId
   //void SetMeshId (std::string s);
-  /** 
-   *  \brief Spread/not spread frequency channels of MP interfaces. 
-   * 
-   *  If set to true different non-overlapping 20MHz frequency 
+  /**
+   *  \brief Spread/not spread frequency channels of MP interfaces.
+   *
+   *  If set to true different non-overlapping 20MHz frequency
    *  channels will be assigned to different mesh point interfaces.
    */
   enum ChannelPolicy
@@ -151,12 +151,12 @@ public:
    */
   void SetNumberOfInterfaces (uint32_t nInterfaces);
 
-  /** 
+  /**
    * \brief Install 802.11s mesh device & protocols on given node list
-   * 
+   *
    * \param phyHelper           Wifi PHY helper
    * \param c               List of nodes to install
-   * 
+   *
    * \return list of created mesh point devices, see MeshPointDevice
    */
   NetDeviceContainer

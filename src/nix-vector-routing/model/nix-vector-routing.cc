@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * This file is adapted from the old ipv4-nix-vector-routing.cc.
  *
  * Authors: Josh Pelkey <jpelkey@gatech.edu>
- * 
+ *
  * Modified by: Ameya Deshpande <ameyanrd@outlook.com>
  */
 
@@ -55,7 +55,7 @@ template <typename T>
 typename NixVectorRouting<T>::NetDeviceToIpInterfaceMap NixVectorRouting<T>::g_netdeviceToIpInterfaceMap;
 
 template <typename T>
-TypeId 
+TypeId
 NixVectorRouting<T>::GetTypeId (void)
 {
   std::string Tname = GetTypeParamName<NixVectorRouting<T> > ();
@@ -118,7 +118,7 @@ NixVectorRouting<T>::DoInitialize ()
 }
 
 template <typename T>
-void 
+void
 NixVectorRouting<T>::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -190,7 +190,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
   nixVector->SetEpoch (g_epoch);
 
   // not in cache, must build the nix vector
-  // First, we have to figure out the nodes 
+  // First, we have to figure out the nodes
   // associated with these IPs
   Ptr<Node> destNode = GetNodeByIp (dest);
   if (destNode == 0)
@@ -209,7 +209,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
     }
   else
     {
-      // otherwise proceed as normal 
+      // otherwise proceed as normal
       // and build the nix vector
       std::vector< Ptr<Node> > parentVector;
 
@@ -320,8 +320,8 @@ NixVectorRouting<T>::BuildNixVector (const std::vector< Ptr<Node> > & parentVect
       GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
 
       // Finally we can get the adjacent nodes
-      // and scan through them.  If we find the 
-      // node that matches "dest" then we can add 
+      // and scan through them.  If we find the
+      // node that matches "dest" then we can add
       // the index  to the nix vector.
       // the index corresponds to the neighbor index
       uint32_t offset = 0;
@@ -338,7 +338,7 @@ NixVectorRouting<T>::BuildNixVector (const std::vector< Ptr<Node> > & parentVect
 
       totalNeighbors += netDeviceContainer.GetN ();
     }
-  NS_LOG_LOGIC ("Adding Nix: " << destId << " with " 
+  NS_LOG_LOGIC ("Adding Nix: " << destId << " with "
                                << nixVector->BitCount (totalNeighbors) << " bits, for node " << parentNode->GetId ());
   nixVector->AddNeighborIndex (destId, nixVector->BitCount (totalNeighbors));
 
@@ -418,7 +418,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
             }
 
           Ptr<BridgeNetDevice> bd = NetDeviceIsBridged (remoteDevice);
-          // we have a bridged device, we need to add all 
+          // we have a bridged device, we need to add all
           // bridged devices
           if (bd)
             {
@@ -1000,8 +1000,8 @@ NixVectorRouting<T>::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::U
             }
         }
     }
-  
-  *os << "IpRouteCache:" << std::endl;  
+
+  *os << "IpRouteCache:" << std::endl;
   if (m_ipRouteCache.size () > 0)
     {
       *os << std::setw (30) << "Destination";
@@ -1034,7 +1034,7 @@ NixVectorRouting<T>::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::U
   (*os).copyfmt (oldState);
 }
 
-// virtual functions from Ipv4RoutingProtocol 
+// virtual functions from Ipv4RoutingProtocol
 template <typename T>
 void
 NixVectorRouting<T>::NotifyInterfaceUp (uint32_t i)
@@ -1095,15 +1095,15 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
     {
       Ptr<Node> currNode = greyNodeList.front ();
       Ptr<IpL3Protocol> ip = currNode->GetObject<IpL3Protocol> ();
- 
-      if (currNode == dest) 
+
+      if (currNode == dest)
         {
           NS_LOG_LOGIC ("Made it to Node " << currNode->GetId ());
           return true;
         }
 
-      // if this is the first iteration of the loop and a 
-      // specific output interface was given, make sure 
+      // if this is the first iteration of the loop and a
+      // specific output interface was given, make sure
       // we go this way
       if (currNode == source && oif)
         {
@@ -1124,7 +1124,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
             }
           Ptr<Channel> channel = oif->GetChannel ();
           if (channel == 0)
-            { 
+            {
               return false;
             }
 
@@ -1135,7 +1135,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
 
           // Finally we can get the adjacent nodes
           // and scan through them.  We push them
-          // to the greyNode queue, if they aren't 
+          // to the greyNode queue, if they aren't
           // already there.
           for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++)
             {
@@ -1186,7 +1186,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                 }
               Ptr<Channel> channel = localNetDevice->GetChannel ();
               if (channel == 0)
-                { 
+                {
                   continue;
                 }
 
@@ -1197,7 +1197,7 @@ NixVectorRouting<T>::BFS (uint32_t numberOfNodes, Ptr<Node> source,
 
               // Finally we can get the adjacent nodes
               // and scan through them.  We push them
-              // to the greyNode queue, if they aren't 
+              // to the greyNode queue, if they aren't
               // already there.
               for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++)
                 {
@@ -1362,7 +1362,7 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
 }
 
 template <typename T>
-void 
+void
 NixVectorRouting<T>::CheckCacheStateAndFlush (void) const
 {
   if (g_isCacheDirty)

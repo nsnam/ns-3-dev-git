@@ -86,9 +86,9 @@ private:
 std::string ParabolicAntennaModelTestCase::BuildNameString (Angles a, double b, double o, double g)
 {
   std::ostringstream oss;
-  oss <<  "theta=" << a.GetInclination () << " , phi=" << a.GetAzimuth () 
+  oss <<  "theta=" << a.GetInclination () << " , phi=" << a.GetAzimuth ()
       << ", beamdwidth=" << b << "deg"
-      << ", orientation=" << o 
+      << ", orientation=" << o
       << ", maxAttenuation=" << g << " dB";
   return oss.str ();
 }
@@ -115,7 +115,7 @@ ParabolicAntennaModelTestCase::DoRun ()
   a->SetAttribute ("Orientation", DoubleValue (m_o));
   a->SetAttribute ("MaxAttenuation", DoubleValue (m_g));
   double actualGain = a->GetGainDb (m_a);
-  switch (m_cond) 
+  switch (m_cond)
     {
     case EQUAL:
       NS_TEST_EXPECT_MSG_EQ_TOL (actualGain, m_expectedGain, 0.001, "wrong value of the radiation pattern");
@@ -142,7 +142,7 @@ public:
 
 ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite ()
   : TestSuite ("parabolic-antenna-model", UNIT)
-{ 
+{
 
   // with a 60 deg beamwidth, gain is -20dB at +-77.460 degrees from boresight
   //                                                                         phi,                     theta, beamwidth, orientation,  maxAttn,  expectedGain,   condition

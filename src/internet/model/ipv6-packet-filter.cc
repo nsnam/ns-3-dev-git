@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6PacketFilter");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6PacketFilter);
 
-TypeId 
+TypeId
 Ipv6PacketFilter::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv6PacketFilter")

@@ -36,10 +36,10 @@ class Node;
  *
  * \brief a factory to create ns3::Ipv4RoutingProtocol objects
  *
- * For each new routing protocol created as a subclass of 
- * ns3::Ipv4RoutingProtocol, you need to create a subclass of 
- * ns3::Ipv4RoutingHelper which can be used by 
- * ns3::InternetStackHelper::SetRoutingHelper and 
+ * For each new routing protocol created as a subclass of
+ * ns3::Ipv4RoutingProtocol, you need to create a subclass of
+ * ns3::Ipv4RoutingHelper which can be used by
+ * ns3::InternetStackHelper::SetRoutingHelper and
  * ns3::InternetStackHelper::Install.
  */
 class Ipv4RoutingHelper
@@ -52,8 +52,8 @@ public:
 
   /**
    * \brief virtual constructor
-   * \returns pointer to clone of this Ipv4RoutingHelper 
-   * 
+   * \returns pointer to clone of this Ipv4RoutingHelper
+   *
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
@@ -68,10 +68,10 @@ public:
   /**
    * \brief prints the routing tables of all nodes at a particular time.
    * \param printTime the time at which the routing table is supposed to be printed.
-   * \param stream The output stream object to use 
+   * \param stream The output stream object to use
    * \param unit The time unit to be used in the report
    *
-   * This method calls the PrintRoutingTable() method of the 
+   * This method calls the PrintRoutingTable() method of the
    * Ipv4RoutingProtocol stored in the Ipv4 object, for all nodes at the
    * specified time; the output format is routing protocol-specific.
    */
@@ -83,7 +83,7 @@ public:
    * \param stream The output stream object to use
    * \param unit The time unit to be used in the report
    *
-   * This method calls the PrintRoutingTable() method of the 
+   * This method calls the PrintRoutingTable() method of the
    * Ipv4RoutingProtocol stored in the Ipv4 object, for all nodes at the
    * specified time interval; the output format is routing protocol-specific.
    */
@@ -96,8 +96,8 @@ public:
    * \param stream The output stream object to use
    * \param unit The time unit to be used in the report
    *
-   * This method calls the PrintRoutingTable() method of the 
-   * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node 
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node
    * at the specified time; the output format is routing protocol-specific.
    */
   static void PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
@@ -109,8 +109,8 @@ public:
    * \param stream The output stream object to use
    * \param unit The time unit to be used in the report
    *
-   * This method calls the PrintRoutingTable() method of the 
-   * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node 
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv4RoutingProtocol stored in the Ipv4 object, for the selected node
    * at the specified interval; the output format is routing protocol-specific.
    */
   static void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
@@ -192,7 +192,7 @@ public:
    */
   template<class T>
   static Ptr<T> GetRouting (Ptr<Ipv4RoutingProtocol> protocol);
-  
+
 private:
   /**
    * \brief prints the routing tables of a node.

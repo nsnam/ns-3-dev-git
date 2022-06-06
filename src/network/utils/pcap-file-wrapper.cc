@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
 
 NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper);
 
-TypeId 
+TypeId
 PcapFileWrapper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PcapFileWrapper")
@@ -59,23 +59,23 @@ PcapFileWrapper::PcapFileWrapper ()
 PcapFileWrapper::~PcapFileWrapper ()
 {
   NS_LOG_FUNCTION (this);
-  Close ();   
+  Close ();
 }
 
-bool 
+bool
 PcapFileWrapper::Fail (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_file.Fail ();
 }
 
-bool 
+bool
 PcapFileWrapper::Eof (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_file.Eof ();
 }
-void 
+void
 PcapFileWrapper::Clear (void)
 {
   NS_LOG_FUNCTION (this);
@@ -108,11 +108,11 @@ PcapFileWrapper::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrec
   if (snapLen != std::numeric_limits<uint32_t>::max ())
     {
       m_file.Init (dataLinkType, snapLen, tzCorrection, false, m_nanosecMode);
-    } 
+    }
   else
     {
       m_file.Init (dataLinkType, m_snapLen, tzCorrection, false, m_nanosecMode);
-    } 
+    }
 }
 
 void
@@ -175,7 +175,7 @@ PcapFileWrapper::Write (Time t, uint8_t const *buffer, uint32_t length)
     }
 }
 
-Ptr<Packet> 
+Ptr<Packet>
 PcapFileWrapper::Read (Time &t)
 {
   uint32_t tsSec;

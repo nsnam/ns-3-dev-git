@@ -182,7 +182,7 @@ public:
    */
   uint8_t GetNumberOfLinks ();
   /**
-   * Set mesh ID to a string value 
+   * Set mesh ID to a string value
    * \param s the mesh ID string value
    */
   void SetMeshId (std::string s);
@@ -208,7 +208,7 @@ public:
    */
   void NotifyBeaconSent (uint32_t interface, Time beaconInterval);
   ///@}
-  
+
   /**
    * \brief Report statistics
    * \param os the output stream
@@ -234,11 +234,11 @@ public:
    */
   typedef void (* LinkOpenCloseTracedCallback)
     (Mac48Address src, const Mac48Address dst);
-   
+
 
 private:
   virtual void DoInitialize ();
-  
+
   // Private structures
   /// Keeps information about beacon of peer station: beacon interval, association ID, last time we have received a beacon
   struct BeaconInfo
@@ -381,7 +381,7 @@ private:
     /**
      * Constructor
      *
-     * \param t 
+     * \param t
      */
     Statistics (uint16_t t = 0);
     /**

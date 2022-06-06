@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
       mm->SetPosition (Vector (userDistance[i], 0.0, 0.0));
-    } 
+    }
 
   Simulator::Run ();
 

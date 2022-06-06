@@ -64,7 +64,7 @@ struct UeDlTestData
 
   uint32_t numPkts; ///< number of packets
   uint32_t pktSize; ///< packet size
- 
+
   Ptr<PacketSink> serverApp; ///< Server application
   Ptr<Application> clientApp; ///< Client application
 };
@@ -79,7 +79,7 @@ UeDlTestData::UeDlTestData (uint32_t n, uint32_t s)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Custom structure for testing eNodeB downlink data, contains 
+ * \brief Custom structure for testing eNodeB downlink data, contains
  * the list of data structures for UEs
  */
 struct EnbDlTestData
@@ -122,7 +122,7 @@ EpcS1uDlTestCase::EpcS1uDlTestCase (std::string name, std::vector<EnbDlTestData>
 EpcS1uDlTestCase::~EpcS1uDlTestCase ()
 {
 }
-void 
+void
 EpcS1uDlTestCase::DoRun ()
 {
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
@@ -132,7 +132,7 @@ EpcS1uDlTestCase::DoRun ()
   Config::SetDefault ("ns3::CsmaNetDevice::Mtu", UintegerValue (30000));
   Config::SetDefault ("ns3::PointToPointNetDevice::Mtu", UintegerValue (30000));
   epcHelper->SetAttribute ("S1uLinkMtu", UintegerValue (30000));
-  
+
   // Create a single RemoteHost
   NodeContainer remoteHostContainer;
   remoteHostContainer.Create (1);
@@ -143,18 +143,18 @@ EpcS1uDlTestCase::DoRun ()
   // Create the internet
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate",  DataRateValue (DataRate ("100Gb/s")));
-  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
+  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
   ipv4h.Assign (internetDevices);
-  
+
   // setup default gateway for the remote hosts
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
 
   // hardcoded UE addresses for now
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.255.255.0"), 1);
-  
+
 
 
 
@@ -182,10 +182,10 @@ EpcS1uDlTestCase::DoRun ()
       cell.Add (ues);
       cell.Add (enb);
 
-      CsmaHelper csmaCell;      
+      CsmaHelper csmaCell;
       NetDeviceContainer cellDevices = csmaCell.Install (cell);
 
-      // the eNB's CSMA NetDevice acting as an LTE NetDevice. 
+      // the eNB's CSMA NetDevice acting as an LTE NetDevice.
       Ptr<NetDevice> enbDevice = cellDevices.Get (cellDevices.GetN () - 1);
 
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
@@ -200,7 +200,7 @@ EpcS1uDlTestCase::DoRun ()
       enb->AggregateObject (rrc);
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
       enbApp->SetS1SapUser (rrc->GetS1SapUser ());
-      
+
       // we install the IP stack on UEs only
       InternetStackHelper internet;
       internet.Install (ues);
@@ -215,16 +215,16 @@ EpcS1uDlTestCase::DoRun ()
 
           // disable IP Forwarding on the UE. This is because we use
           // CSMA broadcast MAC addresses for this test. The problem
-          // won't happen with a LteUeNetDevice. 
+          // won't happen with a LteUeNetDevice.
           ue->GetObject<Ipv4> ()->SetAttribute ("IpForward", BooleanValue (false));
-          
+
           uint16_t port = 1234;
           PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
           ApplicationContainer apps = packetSinkHelper.Install (ue);
           apps.Start (Seconds (1.0));
           apps.Stop (Seconds (10.0));
           enbit->ues[u].serverApp = apps.Get (0)->GetObject<PacketSink> ();
-          
+
           Time interPacketInterval = Seconds (0.01);
           UdpEchoClientHelper client (ueIpIface.GetAddress (0), port);
           client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
@@ -232,7 +232,7 @@ EpcS1uDlTestCase::DoRun ()
           client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
           apps = client.Install (remoteHost);
           apps.Start (Seconds (2.0));
-          apps.Stop (Seconds (10.0));   
+          apps.Stop (Seconds (10.0));
           enbit->ues[u].clientApp = apps.Get (0);
 
           uint64_t imsi = ++imsiCounter;
@@ -241,10 +241,10 @@ EpcS1uDlTestCase::DoRun ()
           Simulator::Schedule (MilliSeconds (10),
                                &EpcEnbS1SapProvider::InitialUeMessage,
                                enbApp->GetS1SapProvider (), imsi, (uint16_t) imsi);
-        } 
-            
-    } 
-  
+        }
+
+    }
+
   Simulator::Run ();
 
   for (std::vector<EnbDlTestData>::iterator enbit = m_enbDlTestData.begin ();
@@ -256,9 +256,9 @@ EpcS1uDlTestCase::DoRun ()
            ++ueit)
         {
           NS_TEST_ASSERT_MSG_EQ (ueit->serverApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes");
-        }      
+        }
     }
-  
+
   Simulator::Destroy ();
 }
 
@@ -273,13 +273,13 @@ class EpcS1uDlTestSuite : public TestSuite
 {
 public:
   EpcS1uDlTestSuite ();
-  
+
 } g_epcS1uDlTestSuiteInstance;
 
 EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   : TestSuite ("epc-s1u-downlink", SYSTEM)
-{  
-  std::vector<EnbDlTestData> v1;  
+{
+  std::vector<EnbDlTestData> v1;
   EnbDlTestData e1;
   UeDlTestData f1 (1, 100);
   e1.ues.push_back (f1);
@@ -287,7 +287,7 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   AddTestCase (new EpcS1uDlTestCase ("1 eNB, 1UE", v1), TestCase::QUICK);
 
 
-  std::vector<EnbDlTestData> v2;  
+  std::vector<EnbDlTestData> v2;
   EnbDlTestData e2;
   UeDlTestData f2_1 (1, 100);
   e2.ues.push_back (f2_1);
@@ -297,7 +297,7 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   AddTestCase (new EpcS1uDlTestCase ("1 eNB, 2UEs", v2), TestCase::QUICK);
 
 
-  std::vector<EnbDlTestData> v3;  
+  std::vector<EnbDlTestData> v3;
   v3.push_back (e1);
   v3.push_back (e2);
   AddTestCase (new EpcS1uDlTestCase ("2 eNBs", v3), TestCase::QUICK);
@@ -310,34 +310,34 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   e3.ues.push_back (f3_2);
   UeDlTestData f3_3 (1, 1);
   e3.ues.push_back (f3_2);
-  std::vector<EnbDlTestData> v4;  
+  std::vector<EnbDlTestData> v4;
   v4.push_back (e3);
   v4.push_back (e1);
   v4.push_back (e2);
   AddTestCase (new EpcS1uDlTestCase ("3 eNBs", v4), TestCase::QUICK);
 
-  std::vector<EnbDlTestData> v5;  
+  std::vector<EnbDlTestData> v5;
   EnbDlTestData e5;
   UeDlTestData f5 (10, 3000);
   e5.ues.push_back (f5);
   v5.push_back (e5);
   AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 3000 bytes each", v5), TestCase::QUICK);
 
-  std::vector<EnbDlTestData> v6;  
+  std::vector<EnbDlTestData> v6;
   EnbDlTestData e6;
   UeDlTestData f6 (50, 3000);
   e6.ues.push_back (f6);
   v6.push_back (e6);
   AddTestCase (new EpcS1uDlTestCase ("1 eNB, 50 pkts 3000 bytes each", v6), TestCase::QUICK);
-  
-  std::vector<EnbDlTestData> v7;  
+
+  std::vector<EnbDlTestData> v7;
   EnbDlTestData e7;
   UeDlTestData f7 (10, 15000);
   e7.ues.push_back (f7);
   v7.push_back (e7);
   AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 15000 bytes each", v7), TestCase::QUICK);
 
-  std::vector<EnbDlTestData> v8;  
+  std::vector<EnbDlTestData> v8;
   EnbDlTestData e8;
   UeDlTestData f8 (100, 15000);
   e8.ues.push_back (f8);

@@ -47,14 +47,14 @@ LlcSnapHeader::GetType (void)
   return m_etherType;
 }
 
-uint32_t 
+uint32_t
 LlcSnapHeader::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return LLC_SNAP_HEADER_LENGTH;
 }
 
-TypeId 
+TypeId
 LlcSnapHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LlcSnapHeader")
@@ -64,12 +64,12 @@ LlcSnapHeader::GetTypeId (void)
   ;
   return tid;
 }
-TypeId 
+TypeId
 LlcSnapHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-void 
+void
 LlcSnapHeader::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);

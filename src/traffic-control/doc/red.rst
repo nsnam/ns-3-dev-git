@@ -188,7 +188,7 @@ Examples
 The RED queue example is found at ``src/traffic-control/examples/red-tests.cc``.
 
 ARED queue examples can be found at:
-``src/traffic-control/examples/adaptive-red-tests.cc`` and 
+``src/traffic-control/examples/adaptive-red-tests.cc`` and
 ``src/traffic-control/examples/red-vs-ared.cc``
 
 Feng's Adaptive RED example can be found at:
@@ -201,4 +201,4 @@ Validation
 **********
 
 The RED model has been validated and the report is currently stored
-at: https://github.com/downloads/talau/ns-3-tcp-red/report-red-ns3.pdf 
+at: https://github.com/downloads/talau/ns-3-tcp-red/report-red-ns3.pdf

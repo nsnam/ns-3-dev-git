@@ -52,7 +52,7 @@ namespace ns3 {
 
 /**
  * \ingroup attribute-tests
- * 
+ *
  * Test class for TracedValue callbacks attributes.
  * \see attribute_ValueClassTest
  */
@@ -112,7 +112,7 @@ ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
 /**
  * \ingroup attribute-tests
- * 
+ *
  * Simple class derived from ns3::Object, used to check attribute constructors.
  */
 class Derived : public Object
@@ -138,7 +138,7 @@ NS_OBJECT_ENSURE_REGISTERED (Derived);
 
 /**
  * \ingroup attribute-tests
- * 
+ *
  * Class used to check attributes.
  */
 class AttributeObjectTest : public Object
@@ -463,7 +463,7 @@ NS_OBJECT_ENSURE_REGISTERED (AttributeObjectTest);
 
 /**
  * \ingroup attribute-tests
- * 
+ *
  * \brief Test case template used for generic Attribute Value types -- used to make
  * sure that Attributes work as expected.
  */
@@ -970,7 +970,7 @@ AttributeTestCase<TimeValue>::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * Test the Attributes of type RandomVariableStream.
  */
 class RandomVariableStreamAttributeTestCase : public TestCase
@@ -1042,9 +1042,9 @@ RandomVariableStreamAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * \brief Test case for Object Vector Attributes.
- * 
+ *
  * Generic nature is pretty much lost here, so we just break the class out.
  */
 class ObjectVectorAttributeTestCase : public TestCase
@@ -1115,7 +1115,7 @@ ObjectVectorAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * \brief Test case for Object Map Attributes.
  */
 class ObjectMapAttributeTestCase : public TestCase
@@ -1186,8 +1186,8 @@ ObjectMapAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
- * \brief Trace sources with value semantics can be used like Attributes, 
+ *
+ * \brief Trace sources with value semantics can be used like Attributes,
  * make sure we can use them that way.
  */
 class IntegerTraceSourceAttributeTestCase : public TestCase
@@ -1284,8 +1284,8 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
- * \brief Trace sources used like Attributes must also work as trace sources, 
+ *
+ * \brief Trace sources used like Attributes must also work as trace sources,
  * make sure we can use them that way.
  */
 class IntegerTraceSourceTestCase : public TestCase
@@ -1370,8 +1370,8 @@ IntegerTraceSourceTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
- * \brief Trace sources used like Attributes must also work as trace sources, 
+ *
+ * \brief Trace sources used like Attributes must also work as trace sources,
  * make sure we can use them that way.
  */
 class TracedCallbackTestCase : public TestCase
@@ -1459,8 +1459,8 @@ TracedCallbackTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
- * \brief Smart pointers (Ptr) are central to our architecture, so they 
+ *
+ * \brief Smart pointers (Ptr) are central to our architecture, so they
  * must work as attributes.
  */
 class PointerAttributeTestCase : public TestCase
@@ -1586,7 +1586,7 @@ PointerAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * \brief Test the Attributes of type CallbackValue.
  */
 class CallbackValueTestCase : public TestCase
@@ -1685,7 +1685,7 @@ CallbackValueTestCase::DoRun (void)
 
 /**
  * \ingroup attribute-tests
- *  
+ *
  * \brief The attributes Test Suite.
  */
 class AttributesTestSuite : public TestSuite

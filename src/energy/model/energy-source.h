@@ -35,7 +35,7 @@
 #include "ns3/energy-harvester.h"
 
 namespace ns3 {
-  
+
 /**
  * \defgroup energy Energy Models
  */
@@ -80,9 +80,9 @@ namespace ns3 {
  * energy in different units (eg. kWh), a simple converter function should
  * suffice.
  */
-  
+
 class EnergyHarvester;
-  
+
 class EnergySource : public Object
 {
 public:
@@ -177,7 +177,7 @@ public:
    * here. Called by EnergySourceContainer, which is aggregated to the node.
    */
   void DisposeDeviceModels (void);
-  
+
   /**
    * \param energyHarvesterPtr Pointer to energy harvester.
    *
@@ -210,7 +210,7 @@ private:
    * sure device models are installed onto the corresponding node.
    */
   Ptr<Node> m_node;
-    
+
   /**
   * Vector of EnergyHarvester pointer connected to the same energy source.
   * This vector is used by the CalculateTotalCurrent method to determine the

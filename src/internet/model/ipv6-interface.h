@@ -250,8 +250,8 @@ public:
   /**
    * \brief Remove the given Ipv6 address from the interface.
    * \param address The Ipv6 address to remove
-   * \returns The removed Ipv6 interface address 
-   * \returns The null interface address if the interface did not contain the 
+   * \returns The removed Ipv6 interface address
+   * \returns The null interface address if the interface did not contain the
    * address or if loopback address was passed as argument
    */
   Ipv6InterfaceAddress RemoveAddress (Ipv6Address address);
@@ -266,7 +266,7 @@ public:
   /**
    * \brief Update NS DAD packet UID of an interface address.
    * \param address IPv6 address
-   * \param uid packet UID 
+   * \param uid packet UID
    */
   void SetNsDadUid (Ipv6Address address, uint32_t uid);
 

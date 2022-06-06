@@ -18,7 +18,7 @@
  * Authors: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-/* 
+/*
  * This is an example included in the doxygen-generated documentation
  * for NS_DEPRECATED.
  */

@@ -62,7 +62,7 @@ ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
     .SetParent<PhasedArraySpectrumPropagationLossModel> ()
     .SetGroupName ("Spectrum")
     .AddConstructor<ThreeGppSpectrumPropagationLossModel> ()
-    .AddAttribute("ChannelModel", 
+    .AddAttribute("ChannelModel",
                   "The channel model. It needs to implement the MatrixBasedChannelModel interface",
                   StringValue("ns3::ThreeGppChannelModel"),
                   MakePointerAccessor (&ThreeGppSpectrumPropagationLossModel::SetChannelModel,

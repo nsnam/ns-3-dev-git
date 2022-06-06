@@ -193,7 +193,7 @@ GtpcHeader::SetIesLength (uint16_t iesLength)
 void
 GtpcHeader::ComputeMessageLength (void)
 {
-  SetIesLength (GetMessageSize ()); 
+  SetIesLength (GetMessageSize ());
 }
 /////////////////////////////////////////////////////////////////////
 

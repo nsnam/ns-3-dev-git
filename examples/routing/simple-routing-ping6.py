@@ -20,7 +20,7 @@
 
 #
 # Network topology:
-# 
+#
 #             n0   r    n1
 #             |    _    |
 #             ====|_|====
@@ -79,7 +79,7 @@ def main(argv):
     i2.SetForwarding(0, True);
     i2.SetDefaultRouteInAllNodes(0);
 
-    # Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r 
+    # Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r
     print ("Application")
     packetSize = 1024;
     maxPacketCount = 5;
@@ -87,7 +87,7 @@ def main(argv):
     ping6 = ns.internet_apps.Ping6Helper();
 
     ping6.SetLocal(i1.GetAddress(0, 1));
-    ping6.SetRemote(i2.GetAddress(1, 1)); 
+    ping6.SetRemote(i2.GetAddress(1, 1));
 
     ping6.SetAttribute("MaxPackets", ns.core.UintegerValue(maxPacketCount));
     ping6.SetAttribute("Interval", ns.core.TimeValue(interPacketInterval));
@@ -102,7 +102,7 @@ def main(argv):
     csma.EnableAsciiAll(ascii.CreateFileStream("simple-routing-ping6.tr"))
     csma.EnablePcapAll("simple-routing-ping6", True)
 
-    # Run Simulation     
+    # Run Simulation
     ns.core.Simulator.Run()
     ns.core.Simulator.Destroy()
 

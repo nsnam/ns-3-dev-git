@@ -920,7 +920,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
           NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*itFlow).first);
         }
     }
- 
+
   if (estAveThr.size () != 0)
     {
       // Find UE with largest priority metric
@@ -938,7 +938,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
       // The scheduler tries the best to achieve the equal throughput among all UEs
       int i = 0;
-      do 
+      do
         {
           NS_LOG_INFO (this << " ALLOCATION for RBG " << i << " of " << rbgNum);
           if (rbgMap.at (i) == false)
@@ -968,7 +968,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
                 }
               int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
               std::vector <uint8_t> mcs;
-              for (uint8_t j = 0; j < nLayer; j++) 
+              for (uint8_t j = 0; j < nLayer; j++)
                 {
                   if (itCqi == m_p10CqiRxed.end ())
                     {
@@ -1015,7 +1015,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
           i++;
 
-        } 
+        }
       while ( i < rbgNum ); // end for RBGs
 
     } // end if estAveThr
@@ -1990,7 +1990,7 @@ FdBetFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_
               // for SRB1 (using RLC AM) it's better to
               // overestimate RLC overhead rather than
               // underestimate it and risk unneeded
-              // segmentation which increases delay 
+              // segmentation which increases delay
               rlcOverhead = 4;
             }
           else

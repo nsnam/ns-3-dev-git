@@ -42,28 +42,28 @@ ApplicationContainer::ApplicationContainer (std::string name)
 }
 
 
-ApplicationContainer::Iterator 
+ApplicationContainer::Iterator
 ApplicationContainer::Begin (void) const
 {
   return m_applications.begin ();
 }
-ApplicationContainer::Iterator 
+ApplicationContainer::Iterator
 ApplicationContainer::End (void) const
 {
   return m_applications.end ();
 }
 
-uint32_t 
+uint32_t
 ApplicationContainer::GetN (void) const
 {
   return m_applications.size ();
 }
-Ptr<Application> 
+Ptr<Application>
 ApplicationContainer::Get (uint32_t i) const
 {
   return m_applications[i];
 }
-void 
+void
 ApplicationContainer::Add (ApplicationContainer other)
 {
   for (Iterator i = other.Begin (); i != other.End (); i++)
@@ -71,19 +71,19 @@ ApplicationContainer::Add (ApplicationContainer other)
       m_applications.push_back (*i);
     }
 }
-void 
+void
 ApplicationContainer::Add (Ptr<Application> application)
 {
   m_applications.push_back (application);
 }
-void 
+void
 ApplicationContainer::Add (std::string name)
 {
   Ptr<Application> application = Names::Find<Application> (name);
   m_applications.push_back (application);
 }
 
-void 
+void
 ApplicationContainer::Start (Time start)
 {
   for (Iterator i = Begin (); i != End (); ++i)
@@ -92,7 +92,7 @@ ApplicationContainer::Start (Time start)
       app->SetStartTime (start);
     }
 }
-void 
+void
 ApplicationContainer::StartWithJitter (Time start, Ptr<RandomVariableStream> rv)
 {
   for (Iterator i = Begin (); i != End (); ++i)
@@ -103,7 +103,7 @@ ApplicationContainer::StartWithJitter (Time start, Ptr<RandomVariableStream> rv)
       app->SetStartTime (start + Seconds (value));
     }
 }
-void 
+void
 ApplicationContainer::Stop (Time stop)
 {
   for (Iterator i = Begin (); i != End (); ++i)

@@ -54,8 +54,8 @@ public:
   SimpleChannel ();
 
   /**
-   * A packet is sent by a net device.  A receive event will be 
-   * scheduled for all net device connected to the channel other 
+   * A packet is sent by a net device.  A receive event will be
+   * scheduled for all net device connected to the channel other
    * than the net device who sent the packet
    *
    * \param p packet to be sent
@@ -72,7 +72,7 @@ public:
    * Attached a net device to the channel.
    *
    * \param device the device to attach to the channel
-   */ 
+   */
   virtual void Add (Ptr<SimpleNetDevice> device);
 
   /**

@@ -21,7 +21,7 @@
 #ifndef BUILD_VERSION_H_
 #define BUILD_VERSION_H_
 
-#include "ns3/int64x64.h" 
+#include "ns3/int64x64.h"
 #include <string>
 
 /**
@@ -37,13 +37,13 @@ namespace ns3 {
  * \defgroup buildversion Build version reporting
  *
  * Version information is pulled from the local git repository during the build
- * process.  If a git repository is not found, the build system will search for 
- * a file named version.cache under the src/core directory.  The version.cache 
- * file must contain key/value pairs in the format key=value with one entry per 
- * line. The build system will use the data pulled from the git repository, or 
- * loaded from the version.cache file, to generate the file version-defines.h 
+ * process.  If a git repository is not found, the build system will search for
+ * a file named version.cache under the src/core directory.  The version.cache
+ * file must contain key/value pairs in the format key=value with one entry per
+ * line. The build system will use the data pulled from the git repository, or
+ * loaded from the version.cache file, to generate the file version-defines.h
  *
- * The build will fail if a local git repository is not present and 
+ * The build will fail if a local git repository is not present and
  * a version.cache file can not be found.
  */
 
@@ -102,7 +102,7 @@ public:
   /**
    * Returns the ns-3 version tag of the closest ancestor commit.
    *
-   * The format of the tag is 
+   * The format of the tag is
    * \verbatim ns3-<major>.<minor>[.patch] \endverbatim
    *
    * The patch field is optional and may not be present.  The value of
@@ -126,7 +126,7 @@ public:
   /**
    * Major component of the build version
    *
-   * The format of the build version string is 
+   * The format of the build version string is
    * \verbatim ns-<major>.<minor>[.patch][-RC<digit>] \endverbatim
    *
    * The major component is the number before the first period
@@ -138,7 +138,7 @@ public:
   /**
    * Minor component of the build version
    *
-   * The format of the build version string is 
+   * The format of the build version string is
    * \verbatim ns-<major>.<minor>[.patch][-RC<digit>] \endverbatim
    *
    * The minor component is the number after the first period
@@ -217,7 +217,7 @@ public:
    * Constructs a string containing the ns-3 major and minor version components,
    * and indication of additional commits or dirty status.
    *
-   * The format of the constructed string is 
+   * The format of the constructed string is
    * \verbatim ns-<major>.<minor>[.patch][-rc]<flags> \endverbatim
    *
    *   * [patch] is included when Patch() > 0.
@@ -254,7 +254,7 @@ public:
    * Constructs a string containing all of the build details
    *
    * The format of the constructed string is
-   * \verbatim 
+   * \verbatim
    * ns-<major>.<minor>[.patch][-rc][-closest-tag]-<tag-distance>@<hash>[-dirty]-<build-profile>
    * \endverbatim
    *

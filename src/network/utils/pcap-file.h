@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
@@ -34,8 +34,8 @@ class Header;
 
 /**
  * \brief A class representing a pcap file
- * 
- * A class representing a pcap file.  This allows easy creation, writing and 
+ *
+ * A class representing a pcap file.  This allows easy creation, writing and
  * reading of files composed of stored packets; which may be viewed using
  * standard tools.
  */
@@ -70,7 +70,7 @@ public:
    * position) points to the beginning of the first packet in the file, not
    * zero (which would point to the start of the pcap header).
    *
-   * Since a pcap file is always a binary file, the file type is automatically 
+   * Since a pcap file is always a binary file, the file type is automatically
    * selected as a binary file (fstream::binary is automatically ored with the mode
    * field).
    *
@@ -90,7 +90,7 @@ public:
    * been previously opened with write permissions.
    *
    * \param dataLinkType A data link type as defined in the pcap library.  If
-   * you want to make resulting pcap files visible in existing tools, the 
+   * you want to make resulting pcap files visible in existing tools, the
    * data link type must match existing definitions, such as PCAP_ETHERNET,
    * PCAP_PPP, PCAP_80211, etc.  If you are storing different kinds of packet
    * data, such as naked TCP headers, you are at liberty to locally define your
@@ -105,7 +105,7 @@ public:
    * time zone from UTC/GMT.  For example, Pacific Standard Time in the US is
    * GMT-8, so one would enter -8 for that correction.  Defaults to 0 (UTC).
    *
-   * \param swapMode Flag indicating a difference in endianness of the 
+   * \param swapMode Flag indicating a difference in endianness of the
    * writing system. Defaults to false.
    *
    * \param nanosecMode Flag indicating the time resolution of the writing
@@ -114,47 +114,47 @@ public:
    * \warning Calling this method on an existing file will result in the loss
    * any existing data.
    */
-  void Init (uint32_t dataLinkType, 
-             uint32_t snapLen = SNAPLEN_DEFAULT, 
+  void Init (uint32_t dataLinkType,
+             uint32_t snapLen = SNAPLEN_DEFAULT,
              int32_t timeZoneCorrection = ZONE_DEFAULT,
              bool swapMode = false,
              bool nanosecMode = false);
 
   /**
    * \brief Write next packet to file
-   * 
-   * \param tsSec       Packet timestamp, seconds 
+   *
+   * \param tsSec       Packet timestamp, seconds
    * \param tsUsec      Packet timestamp, microseconds
    * \param data        Data buffer
    * \param totalLen    Total packet length
-   * 
+   *
    */
   void Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen);
 
   /**
    * \brief Write next packet to file
-   * 
-   * \param tsSec       Packet timestamp, seconds 
+   *
+   * \param tsSec       Packet timestamp, seconds
    * \param tsUsec      Packet timestamp, microseconds
    * \param p           Packet to write
-   * 
+   *
    */
   void Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p);
   /**
    * \brief Write next packet to file
-   * 
-   * \param tsSec       Packet timestamp, seconds 
+   *
+   * \param tsSec       Packet timestamp, seconds
    * \param tsUsec      Packet timestamp, microseconds
    * \param header      Header to write, in front of packet
    * \param p           Packet to write
-   * 
+   *
    */
   void Write (uint32_t tsSec, uint32_t tsUsec, const Header &header, Ptr<const Packet> p);
 
 
   /**
    * \brief Read next packet from file
-   * 
+   *
    * \param data        [out] Data buffer
    * \param maxBytes    Allocated data buffer size
    * \param tsSec       [out] Packet timestamp, seconds
@@ -162,31 +162,31 @@ public:
    * \param inclLen     [out] Included length
    * \param origLen     [out] Original length
    * \param readLen     [out] Number of bytes read
-   * 
+   *
    */
-  void Read (uint8_t * const data, 
+  void Read (uint8_t * const data,
              uint32_t maxBytes,
-             uint32_t &tsSec, 
-             uint32_t &tsUsec, 
-             uint32_t &inclLen, 
-             uint32_t &origLen, 
+             uint32_t &tsSec,
+             uint32_t &tsUsec,
+             uint32_t &inclLen,
+             uint32_t &origLen,
              uint32_t &readLen);
 
   /**
    * \brief Get the swap mode of the file.
    *
-   * Pcap files use a magic number that is overloaded to identify both the 
+   * Pcap files use a magic number that is overloaded to identify both the
    * format of the file itself and the byte ordering of the file.  The magic
    * number (and all data) is written into the file according to the native
    * byte ordering of the writing system.  If a reading application reads
-   * the magic number identically (for example 0xa1b2c3d4) then no byte 
+   * the magic number identically (for example 0xa1b2c3d4) then no byte
    * swapping is required to correctly interpret the file data.  If the reading
    * application sees the magic number is byte swapped (for example 0xd4c3b2a1)
    * then it knows that it needs to byteswap appropriate fields in the format.
    *
    * GetSWapMode returns a value indicating whether or not the fields are being
-   * byteswapped.  Used primarily for testing the class itself, but may be 
-   * useful as a flag indicating a difference in endianness of the writing 
+   * byteswapped.  Used primarily for testing the class itself, but may be
+   * useful as a flag indicating a difference in endianness of the writing
    * system.
    *
    * \returns swap mode of the file
@@ -200,7 +200,7 @@ public:
    * file have nanosecond resolution.
    */
    bool IsNanoSecMode (void);
- 
+
   /**
    * \brief Returns the magic number of the pcap file as defined by the magic_number
    * field in the pcap global header.
@@ -208,7 +208,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns magic number
-   */ 
+   */
   uint32_t GetMagic (void);
 
   /**
@@ -218,7 +218,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns major version
-   */ 
+   */
   uint16_t GetVersionMajor (void);
 
   /**
@@ -228,7 +228,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns minor version
-   */ 
+   */
   uint16_t GetVersionMinor (void);
 
   /**
@@ -238,7 +238,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns time zone offset
-   */ 
+   */
   int32_t GetTimeZoneOffset (void);
 
   /**
@@ -248,34 +248,34 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns accuracy of timestamps
-   */ 
+   */
   uint32_t GetSigFigs (void);
 
   /**
-   * \brief Returns the max length of saved packets field of the pcap file as 
+   * \brief Returns the max length of saved packets field of the pcap file as
    * defined by the snaplen field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns max length of saved packets field
-   */ 
+   */
   uint32_t GetSnapLen (void);
 
   /**
-   * \brief Returns the data link type field of the pcap file as defined by the 
+   * \brief Returns the data link type field of the pcap file as defined by the
    * network field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    *
    * \returns data link type field
-   */ 
+   */
   uint32_t GetDataLinkType (void);
 
   /**
    * \brief Compare two PCAP files packet-by-packet
-   * 
+   *
    * \return true if files are different, false otherwise
-   * 
+   *
    * \param  f1         First PCAP file name
    * \param  f2         Second PCAP file name
    * \param  sec        [out] Time stamp of first different packet, seconds. Undefined if files doesn't differ.
@@ -283,7 +283,7 @@ public:
    * \param  packets    [out] Number of first different packet. Total number of parsed packets if files doesn't differ.
    * \param  snapLen    Snap length (if used)
    */
-  static bool Diff (std::string const & f1, std::string const & f2, 
+  static bool Diff (std::string const & f1, std::string const & f2,
                     uint32_t & sec, uint32_t & usec, uint32_t & packets,
                     uint32_t snapLen = SNAPLEN_DEFAULT);
 

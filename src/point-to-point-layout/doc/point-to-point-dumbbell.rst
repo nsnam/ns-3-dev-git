@@ -1,6 +1,6 @@
 .. include:: replace.txt
 .. highlight:: cpp
- 
+
 Point to Point Dumbbell Topology Helper
 ---------------------------------------
 

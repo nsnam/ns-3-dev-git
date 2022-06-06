@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * This file is adapted from the old ipv4-nix-vector-helper.h.
  *
  * Authors: Josh Pelkey <jpelkey@gatech.edu>
- * 
+ *
  * Modified by: Ameya Deshpande <ameyanrd@outlook.com>
  */
 
@@ -37,11 +37,11 @@ namespace ns3 {
  *
  * \brief Helper class that adds Nix-vector routing to nodes.
  *
- * This class is expected to be used in conjunction with 
+ * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
  *
  * \internal
- * Since this class is meant to be specialized only by Ipv4RoutingHelper or 
+ * Since this class is meant to be specialized only by Ipv4RoutingHelper or
  * Ipv6RoutingHelper the implementation of this class doesn't need to be
  * exposed here; it is in nix-vector-helper.cc.
 
@@ -77,7 +77,7 @@ public:
 
   /**
    * \returns pointer to clone of this NixVectorHelper
-   * 
+   *
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */

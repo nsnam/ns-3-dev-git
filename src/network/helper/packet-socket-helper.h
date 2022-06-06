@@ -51,7 +51,7 @@ public:
    * For each node in the provided container, aggregate an instance of a
    * ns3::PacketSocketFactory.
    *
-   * \param c NodeContainer of the set of nodes to aggregate the 
+   * \param c NodeContainer of the set of nodes to aggregate the
    * ns3::PacketSocketFactory on.
    */
   void Install (NodeContainer c) const;

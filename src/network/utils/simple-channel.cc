@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleChannel);
 
-TypeId 
+TypeId
 SimpleChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleChannel")

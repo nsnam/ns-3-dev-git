@@ -30,7 +30,7 @@ namespace ns3 {
  *
  * This helper class allows to easily create a topology with eNBs
  * grouped in three-sector sites laid out on an hexagonal grid. The
- * layout is done row-wise. 
+ * layout is done row-wise.
  *
  */
 class LteHexGridEnbTopologyHelper : public Object
@@ -47,7 +47,7 @@ public:
   virtual void DoDispose (void);
 
 
-  /** 
+  /**
    * Set the LteHelper to be used to actually create the EnbNetDevices
    *
    * \note if no EpcHelper is ever set, then LteHexGridEnbTopologyHelper will default
@@ -56,7 +56,7 @@ public:
    * words, it will be a radio-level simulation involving only LTE PHY
    * and MAC and the FF Scheduler, with a saturation traffic model for
    * the RLC.
-   * 
+   *
    * \param h a pointer to the EpcHelper to be used
    */
   void SetLteHelper (Ptr<LteHelper> h);

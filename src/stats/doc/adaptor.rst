@@ -22,7 +22,7 @@ Adaptor Overview
 ================
 
 An Adaptor is used to make connections between different types of DCF
-objects. 
+objects.
 
 To date, one Adaptor has been implemented:
 

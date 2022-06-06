@@ -119,4 +119,4 @@ weekly-build-clang-11-optimized:
   variables:
     CLANG: 11
     MODE: optimized
-    
+

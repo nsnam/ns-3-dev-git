@@ -183,12 +183,12 @@ SimpleTag::Print (std::ostream &os) const
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleNetDevice);
 
-TypeId 
+TypeId
 SimpleNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SimpleNetDevice")
     .SetParent<NetDevice> ()
-    .SetGroupName("Network") 
+    .SetGroupName("Network")
     .AddConstructor<SimpleNetDevice> ()
     .AddAttribute ("ReceiveErrorModel",
                    "The receiver error model used to simulate packet loss",
@@ -254,7 +254,7 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     {
       packetType = NetDevice::PACKET_MULTICAST;
     }
-  else 
+  else
     {
       packetType = NetDevice::PACKET_OTHERHOST;
     }
@@ -270,7 +270,7 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     }
 }
 
-void 
+void
 SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
 {
   NS_LOG_FUNCTION (this << channel);
@@ -301,19 +301,19 @@ SimpleNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
   m_receiveErrorModel = em;
 }
 
-void 
+void
 SimpleNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
   m_ifIndex = index;
 }
-uint32_t 
+uint32_t
 SimpleNetDevice::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
-Ptr<Channel> 
+Ptr<Channel>
 SimpleNetDevice::GetChannel (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -325,7 +325,7 @@ SimpleNetDevice::SetAddress (Address address)
   NS_LOG_FUNCTION (this << address);
   m_address = Mac48Address::ConvertFrom (address);
 }
-Address 
+Address
 SimpleNetDevice::GetAddress (void) const
 {
   //
@@ -334,32 +334,32 @@ SimpleNetDevice::GetAddress (void) const
   NS_LOG_FUNCTION (this);
   return m_address;
 }
-bool 
+bool
 SimpleNetDevice::SetMtu (const uint16_t mtu)
 {
   NS_LOG_FUNCTION (this << mtu);
   m_mtu = mtu;
   return true;
 }
-uint16_t 
+uint16_t
 SimpleNetDevice::GetMtu (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_mtu;
 }
-bool 
+bool
 SimpleNetDevice::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_linkUp;
 }
-void 
+void
 SimpleNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
  NS_LOG_FUNCTION (this << &callback);
  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
-bool 
+bool
 SimpleNetDevice::IsBroadcast (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -375,7 +375,7 @@ SimpleNetDevice::GetBroadcast (void) const
   NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
-bool 
+bool
 SimpleNetDevice::IsMulticast (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -385,7 +385,7 @@ SimpleNetDevice::IsMulticast (void) const
     }
   return true;
 }
-Address 
+Address
 SimpleNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION (this << multicastGroup);
@@ -398,7 +398,7 @@ Address SimpleNetDevice::GetMulticast (Ipv6Address addr) const
   return Mac48Address::GetMulticast (addr);
 }
 
-bool 
+bool
 SimpleNetDevice::IsPointToPoint (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -409,14 +409,14 @@ SimpleNetDevice::IsPointToPoint (void) const
   return false;
 }
 
-bool 
+bool
 SimpleNetDevice::IsBridge (void) const
 {
   NS_LOG_FUNCTION (this);
   return false;
 }
 
-bool 
+bool
 SimpleNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
@@ -470,11 +470,11 @@ SimpleNetDevice::StartTransmission ()
    * SimpleChannel will deliver the packet to the far end(s) of the link as soon as Send is called
    * (or after its fixed delay, if one is configured). So we have to handle the rate of the link here,
    * which we do by scheduling FinishTransmission (packetSize / linkRate) time in the future. While
-   * that event is running, the transmit path of this NetDevice is busy, so we can't send other packets. 
-   * 
+   * that event is running, the transmit path of this NetDevice is busy, so we can't send other packets.
+   *
    * SimpleChannel doesn't have a locking mechanism, and doesn't check for collisions, so there's nothing
    * we need to do with the channel until the transmission has "completed" from the perspective of this
-   * NetDevice. 
+   * NetDevice.
    */
   Time txTime = Time (0);
   if (m_bps > DataRate (0))
@@ -503,19 +503,19 @@ SimpleNetDevice::FinishTransmission (Ptr<Packet> packet)
   return;
 }
 
-Ptr<Node> 
+Ptr<Node>
 SimpleNetDevice::GetNode (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_node;
 }
-void 
+void
 SimpleNetDevice::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_node = node;
 }
-bool 
+bool
 SimpleNetDevice::NeedsArp (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -525,7 +525,7 @@ SimpleNetDevice::NeedsArp (void) const
     }
   return true;
 }
-void 
+void
 SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   NS_LOG_FUNCTION (this << &cb);

@@ -91,8 +91,8 @@ public:
 
   /**
    * Set mesh TTL subfield corresponding to the remaining number of hops
-   * the MSDU/MMPDU is forwarded. 
-   * 
+   * the MSDU/MMPDU is forwarded.
+   *
    * \param TTL the TTL value to set
    */
   void SetMeshTtl (uint8_t TTL);

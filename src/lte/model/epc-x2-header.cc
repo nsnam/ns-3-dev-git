@@ -93,7 +93,7 @@ EpcX2Header::Deserialize (Buffer::Iterator start)
   m_lengthOfIes = i.ReadU8 () - 3;
   i.ReadNtohU16 ();
   m_numberOfIes = i.ReadU8 ();
-  
+
   return GetSerializedSize ();
 }
 
@@ -220,7 +220,7 @@ EpcX2HandoverRequestHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU64 (m_ueAggregateMaxBitRateDownlink);
   i.WriteHtonU64 (m_ueAggregateMaxBitRateUplink);
 
-  std::vector <EpcX2Sap::ErabToBeSetupItem>::size_type sz = m_erabsToBeSetupList.size (); 
+  std::vector <EpcX2Sap::ErabToBeSetupItem>::size_type sz = m_erabsToBeSetupList.size ();
   i.WriteHtonU32 (sz);              // number of bearers
   for (int j = 0; j < (int) sz; j++)
     {
@@ -261,7 +261,7 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
   m_cause = i.ReadU8 ();
   m_headerLength += 5;
   m_numberOfIes++;
-  
+
   i.ReadNtohU16 ();
   i.ReadU8 ();
   i.ReadU8 ();
@@ -284,7 +284,7 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
       EpcX2Sap::ErabToBeSetupItem erabItem;
 
       erabItem.erabId = i.ReadNtohU16 ();
- 
+
       erabItem.erabLevelQosParameters = EpsBearer ((EpsBearer::Qci) i.ReadNtohU16 ());
       erabItem.erabLevelQosParameters.gbrQosInfo.gbrDl = i.ReadNtohU64 ();
       erabItem.erabLevelQosParameters.gbrQosInfo.gbrUl = i.ReadNtohU64 ();
@@ -485,7 +485,7 @@ EpcX2HandoverRequestAckHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (m_oldEnbUeX2apId);
   i.WriteHtonU16 (m_newEnbUeX2apId);
 
-  std::vector <EpcX2Sap::ErabAdmittedItem>::size_type sz = m_erabsAdmittedList.size (); 
+  std::vector <EpcX2Sap::ErabAdmittedItem>::size_type sz = m_erabsAdmittedList.size ();
   i.WriteHtonU32 (sz);
   for (int j = 0; j < (int) sz; j++)
     {
@@ -494,7 +494,7 @@ EpcX2HandoverRequestAckHeader::Serialize (Buffer::Iterator start) const
       i.WriteHtonU32 (m_erabsAdmittedList [j].dlGtpTeid);
     }
 
-  std::vector <EpcX2Sap::ErabNotAdmittedItem>::size_type sz2 = m_erabsNotAdmittedList.size (); 
+  std::vector <EpcX2Sap::ErabNotAdmittedItem>::size_type sz2 = m_erabsNotAdmittedList.size ();
   i.WriteHtonU32 (sz2);
   for (int j = 0; j < (int) sz2; j++)
     {
@@ -574,7 +574,7 @@ EpcX2HandoverRequestAckHeader::Print (std::ostream &os) const
           os << "]";
         }
     }
-  
+
   os << " NotAdmittedBearers=" << m_erabsNotAdmittedList.size ();
   std::vector <EpcX2Sap::ErabNotAdmittedItem>::size_type sz2 = m_erabsNotAdmittedList.size ();
   if (sz2 > 0)
@@ -620,7 +620,7 @@ EpcX2HandoverRequestAckHeader::SetNewEnbUeX2apId (uint16_t x2apId)
   m_newEnbUeX2apId = x2apId;
 }
 
-std::vector <EpcX2Sap::ErabAdmittedItem> 
+std::vector <EpcX2Sap::ErabAdmittedItem>
 EpcX2HandoverRequestAckHeader::GetAdmittedBearers () const
 {
   return m_erabsAdmittedList;
@@ -794,7 +794,7 @@ EpcX2SnStatusTransferHeader::EpcX2SnStatusTransferHeader ()
     m_oldEnbUeX2apId (0xfffa),
     m_newEnbUeX2apId (0xfffa)
 {
-  m_erabsSubjectToStatusTransferList.clear (); 
+  m_erabsSubjectToStatusTransferList.clear ();
 }
 
 EpcX2SnStatusTransferHeader::~EpcX2SnStatusTransferHeader ()
@@ -803,7 +803,7 @@ EpcX2SnStatusTransferHeader::~EpcX2SnStatusTransferHeader ()
   m_headerLength = 0;
   m_oldEnbUeX2apId = 0xfffb;
   m_newEnbUeX2apId = 0xfffb;
-  m_erabsSubjectToStatusTransferList.clear (); 
+  m_erabsSubjectToStatusTransferList.clear ();
 }
 
 TypeId

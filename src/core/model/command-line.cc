@@ -52,21 +52,21 @@ namespace {
 /**
  * HTML-encode a string, for PrintDoxygenUsage().
  * Usage and help strings, which are intended for text-only display,
- * can contain illegal characters for HTML.  This function 
+ * can contain illegal characters for HTML.  This function
  * encodes '&', '\"', '\'',  and '<'.
  * \param [in] source The original string.
  * \returns The HTML-encoded version.
  */
-std::string 
+std::string
 Encode (const std::string & source)
 {
   std::string buffer;
   buffer.reserve (1.1 * source.size ());
 
-  for(size_t pos = 0; pos != source.size (); ++pos) 
+  for(size_t pos = 0; pos != source.size (); ++pos)
     {
       /* *NS_CHECK_STYLE_OFF* */
-      switch (source[pos]) 
+      switch (source[pos])
         {
         case '&':  buffer.append ("&amp;");          break;
         case '\"': buffer.append ("&quot;");         break;

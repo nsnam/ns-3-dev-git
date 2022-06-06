@@ -15,22 +15,22 @@ endif()
 
 set(examples_as_tests_sources)
 if(${{ENABLE_EXAMPLES}})
-    set(examples_as_tests_sources    
+    set(examples_as_tests_sources
         #test/{MODULE}-examples-test-suite.cc
         )
-endif()    
+endif()
 
 build_lib(
     LIBNAME {MODULE}
     SOURCE_FILES model/{MODULE}.cc
-                 helper/{MODULE}-helper.cc 
+                 helper/{MODULE}-helper.cc
     HEADER_FILES model/{MODULE}.h
                  helper/{MODULE}-helper.h
     LIBRARIES_TO_LINK ${{libcore}}
     TEST_SOURCES test/{MODULE}-test-suite.cc
                  ${{examples_as_tests_sources}}
 )
-    
+
 '''
 
 
@@ -114,7 +114,7 @@ EXAMPLE_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:n
 using namespace ns3;
 
 
-int 
+int
 main (int argc, char *argv[])
 {{
   bool verbose = true;
@@ -238,8 +238,8 @@ Add here a basic description of what is being modeled.
 Design
 ======
 
-Briefly describe the software design of the model and how it fits into 
-the existing ns-3 architecture. 
+Briefly describe the software design of the model and how it fits into
+the existing ns-3 architecture.
 
 Scope and Limitations
 =====================
@@ -302,7 +302,7 @@ Validation
 **********
 
 Describe how the model has been tested/validated.  What tests run in the
-test suite?  How much API and code is covered by the tests?  Again, 
+test suite?  How much API and code is covered by the tests?  Again,
 references to outside published work may help here.
 '''
 
@@ -319,7 +319,7 @@ def make_cmakelists(moduledir, modname):
     macro = "build_lib"
     create_file(path, CMAKELISTS_TEMPLATE, MODULE=modname)
 
-    return True 
+    return True
 
 
 def make_model(moduledir, modname):
@@ -331,11 +331,11 @@ def make_model(moduledir, modname):
 
     hfile_path = modelpath.joinpath(modname).with_suffix('.h')
     guard = "{}_H".format(modname.replace('-', '_').upper())
-    create_file(hfile_path, MODEL_H_TEMPLATE, 
-                MODULE=modname, 
+    create_file(hfile_path, MODEL_H_TEMPLATE,
+                MODULE=modname,
                 INCLUDE_GUARD=guard)
 
-    return True 
+    return True
 
 
 def make_test(moduledir, modname):
@@ -348,7 +348,7 @@ def make_test(moduledir, modname):
                 CAPITALIZED=''.join([word.capitalize() for word in name_parts]),
                 COMPOUND=''.join([word.capitalize() if index > 0 else word for index, word in enumerate(name_parts)]))
 
-    return True 
+    return True
 
 
 def make_helper(moduledir, modname):
@@ -362,7 +362,7 @@ def make_helper(moduledir, modname):
     guard = "{}_HELPER_H".format(modname.replace('-', '_').upper())
     create_file(h_file_path, HELPER_H_TEMPLATE, MODULE=modname, INCLUDE_GUARD=guard)
 
-    return True 
+    return True
 
 
 def make_examples(moduledir, modname):
@@ -375,7 +375,7 @@ def make_examples(moduledir, modname):
     examplesfile_path = examplespath.joinpath(modname+'-example').with_suffix('.cc')
     create_file(examplesfile_path, EXAMPLE_CC_TEMPLATE, MODULE=modname)
 
-    return True 
+    return True
 
 
 def make_doc(moduledir, modname):
@@ -390,7 +390,7 @@ def make_doc(moduledir, modname):
     file_path = Path(docpath, file_name)
     create_file(file_path, DOC_RST_TEMPLATE, MODULE=modname, MODULE_DIR=mod_relpath)
 
-    return True 
+    return True
 
 
 def make_module(modpath, modname):
@@ -450,13 +450,13 @@ The following directory structure is generated under the contrib directory:
 
 
 <modname> is the name of the module and is restricted to the following
-character groups: letters, numbers, -, _ 
+character groups: letters, numbers, -, _
 The script validates the module name and skips modules that have characters
-outside of the above groups.  One exception to the naming rule is that src/ 
-or contrib/ may be added to the front of the module name to indicate where the 
-module scaffold should be created.  If the module name starts with src/, then 
-the module is placed in the src directory.  If the module name starts with 
-contrib/, then the module is placed in the contrib directory.  If the module 
+outside of the above groups.  One exception to the naming rule is that src/
+or contrib/ may be added to the front of the module name to indicate where the
+module scaffold should be created.  If the module name starts with src/, then
+the module is placed in the src directory.  If the module name starts with
+contrib/, then the module is placed in the contrib directory.  If the module
 name does not start with src/ or contrib/, then it defaults to contrib/.
 See the examples section for use cases.
 
@@ -464,10 +464,10 @@ See the examples section for use cases.
 In some situations it can be useful to group multiple related modules under one
 directory.  Use the --project option to specify a common parent directory where
 the modules should be generated.  The value passed to --project is treated
-as a relative path.  The path components have the same naming requirements as 
+as a relative path.  The path components have the same naming requirements as
 the module name: letters, numbers, -, _
 The project directory is placed under the contrib directory and any parts of the
-path that do not exist will be created.  Creating projects in the src directory 
+path that do not exist will be created.  Creating projects in the src directory
 is not supported.  Module names that start with src/ are not allowed when
 --project is used.  Module names that start with contrib/ are treated the same
 as module names that don't start with contrib/ and are generated under the
@@ -521,14 +521,14 @@ project directory.
     return parser
 
 def main(argv):
-    parser = create_argument_parser() 
+    parser = create_argument_parser()
 
     args = parser.parse_args(argv[1:])
 
     project = args.project
     modnames = args.modnames
 
-    base_path = Path.cwd() 
+    base_path = Path.cwd()
 
     src_path = base_path.joinpath('src')
     contrib_path = base_path.joinpath('contrib')
@@ -546,7 +546,7 @@ def main(argv):
     # Alphanumeric and '-' only
     allowedRE = re.compile('^(\w|-)+$')
 
-    project_path = None 
+    project_path = None
 
     if project:
         #project may be a path in the form a/b/c
@@ -557,7 +557,7 @@ def main(argv):
             #remove leading separator
             project_path = project_path.relative_to(os.sep)
 
-        if not all(allowedRE.match(part) for part in project_path.parts): 
+        if not all(allowedRE.match(part) for part in project_path.parts):
             parser.error('Project path may only contain the characters [a-zA-Z0-9_-].')
     #
     # Create each module, if it doesn't exist
@@ -565,7 +565,7 @@ def main(argv):
     modules = []
     for name in modnames:
         if name:
-            #remove any leading or trailing directory separators 
+            #remove any leading or trailing directory separators
             name = name.strip(os.sep)
 
         if not name:
@@ -579,7 +579,7 @@ def main(argv):
             continue
 
         #default target directory is contrib
-        modpath = contrib_path 
+        modpath = contrib_path
 
         if name_path.parts[0] == 'src':
             if project:
@@ -588,13 +588,13 @@ def main(argv):
             modpath = src_path
 
             #create a new path without the src part
-            name_path = name_path.relative_to('src') 
+            name_path = name_path.relative_to('src')
 
         elif name_path.parts[0] == 'contrib':
             modpath = contrib_path
 
             #create a new path without the contrib part
-            name_path = name_path.relative_to('contrib') 
+            name_path = name_path.relative_to('contrib')
 
         if project_path:
             #if a project path was specified, that overrides other paths
@@ -608,12 +608,12 @@ def main(argv):
             continue
 
         modules.append((modpath, modname))
-        
+
     if all(make_module(*module) for module in modules):
         print()
         print("Successfully created new modules")
         print("Run './ns3 configure' to include them in the build")
-        
+
     return 0
 
 if __name__ == '__main__':
@@ -622,6 +622,6 @@ if __name__ == '__main__':
         return_value = main(sys.argv)
     except Exception as e:
         print("Exception: '{}'".format(e), file=sys.stderr)
-        return_value = 1 
+        return_value = 1
 
     sys.exit(return_value)

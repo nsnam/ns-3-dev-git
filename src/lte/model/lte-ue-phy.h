@@ -96,7 +96,7 @@ public:
   /**
    * \brief Get the PHY SAP provider
    *
-   * \return a pointer to the SAP Provider 
+   * \return a pointer to the SAP Provider
    */
   LteUePhySapProvider* GetLteUePhySapProvider ();
 
@@ -412,13 +412,13 @@ private:
    * \param [in] rbMap
    */
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
-  /** 
+  /**
    * \brief Get CQI, RSRP, and RSRQ
    *
    * internal method that takes care of generating CQI reports,
    * calculating the RSRP and RSRQ metrics, and generating RSRP+SINR traces
-   * 
-   * \param sinr 
+   *
+   * \param sinr
    */
   void GenerateCqiRsrpRsrq (const SpectrumValue& sinr);
   /**
@@ -640,7 +640,7 @@ private:
    */
   double ComputeAvgSinr (const SpectrumValue& sinr);
 
-  // UE PHY SAP methods 
+  // UE PHY SAP methods
   virtual void DoSendMacPdu (Ptr<Packet> p);
   /**
    * \brief Send LTE control message function
@@ -698,7 +698,7 @@ private:
   LteUeCphySapUser* m_ueCphySapUser; ///< UE CPhy SAP user
 
   uint16_t  m_rnti; ///< the RNTI
- 
+
   uint8_t m_transmissionMode; ///< the transmission mode
   std::vector <double> m_txModeGain; ///< the transmit mode gain
 
@@ -734,7 +734,7 @@ private:
 
   bool m_pssReceived; ///< PSS received?
   /// PssElement structure
-  struct PssElement 
+  struct PssElement
   {
     uint16_t cellId; ///< cell ID
     double pssPsdSum; ///< PSS PSD sum
@@ -823,7 +823,7 @@ private:
    */
   TracedCallback< uint16_t, Ptr<SpectrumValue> > m_reportPowerSpectralDensity;
 
-  
+
   Ptr<SpectrumValue> m_noisePsd; ///< Noise power spectral density for
                                  ///the configured bandwidth
 

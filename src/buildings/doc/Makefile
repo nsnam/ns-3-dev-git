@@ -7,16 +7,16 @@ FIGURES = $(SOURCE)/figures
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
-IMAGES_EPS = 
+IMAGES_EPS =
 
 # specify figures for build process (all eps figures)
-GRAPHS_EPS = 
+GRAPHS_EPS =
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
+IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
@@ -48,7 +48,7 @@ BUILDDIR      = build
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCE) 
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCE)
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 

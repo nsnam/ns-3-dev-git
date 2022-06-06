@@ -73,7 +73,7 @@ private:
    * \param name the config attribute name
    * \param value the value to set
    * \returns true if all of type, name, and value parsed; false otherwise
-   * 
+   *
    */
   virtual bool ParseLine (const std::string &line, std::string &type, std::string &name, std::string &value);
 
@@ -82,7 +82,7 @@ private:
    * \param value the input string
    * \returns the updated string
    */
-  std::string Strip (std::string value); 
+  std::string Strip (std::string value);
   /// Config store input stream
   std::ifstream *m_is;
 };

@@ -56,7 +56,7 @@
 //    ./ns3 run tap-wifi-dumbbell&
 //    ping 10.1.1.3
 //
-// 2) Configure a route in the linux host and ping once of the nodes on the 
+// 2) Configure a route in the linux host and ping once of the nodes on the
 //    right, across the point-to-point link.  You will see relatively large
 //    delays due to CBR background traffic on the point-to-point (see next
 //    item).
@@ -65,16 +65,16 @@
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
-//    Take a look at the pcap traces and note that the timing reflects the 
-//    addition of the significant delay and low bandwidth configured on the 
+//    Take a look at the pcap traces and note that the timing reflects the
+//    addition of the significant delay and low bandwidth configured on the
 //    point-to-point link along with the high traffic.
 //
-// 3) Fiddle with the background CBR traffic across the point-to-point 
+// 3) Fiddle with the background CBR traffic across the point-to-point
 //    link and watch the ping timing change.  The OnOffApplication "DataRate"
 //    attribute defaults to 500kb/s and the "PacketSize" Attribute defaults
 //    to 512.  The point-to-point "DataRate" is set to 512kb/s in the script,
-//    so in the default case, the link is pretty full.  This should be 
-//    reflected in large delays seen by ping.  You can crank down the CBR 
+//    so in the default case, the link is pretty full.  This should be
+//    reflected in large delays seen by ping.  You can crank down the CBR
 //    traffic data rate and watch the ping timing change dramatically.
 //
 //    ./ns3 run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
@@ -114,7 +114,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TapDumbbellExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   std::string mode = "ConfigureLocal";

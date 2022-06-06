@@ -97,7 +97,7 @@ public:
    * \param [in] model Value of the MobilityModel.
    */
   typedef void (* TracedCallback)(Ptr<const MobilityModel> model);
-  
+
 protected:
   /**
    * Must be invoked by subclasses when the course of the
@@ -108,7 +108,7 @@ private:
   /**
    * \return the current position.
    *
-   * Concrete subclasses of this base class must 
+   * Concrete subclasses of this base class must
    * implement this method.
    */
   virtual Vector DoGetPosition (void) const = 0;
@@ -123,14 +123,14 @@ private:
   /**
    * \param position the position to set.
    *
-   * Concrete subclasses of this base class must 
+   * Concrete subclasses of this base class must
    * implement this method.
    */
   virtual void DoSetPosition (const Vector &position) = 0;
   /**
    * \return the current velocity.
    *
-   * Concrete subclasses of this base class must 
+   * Concrete subclasses of this base class must
    * implement this method.
    */
   virtual Vector DoGetVelocity (void) const = 0;

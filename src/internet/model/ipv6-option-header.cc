@@ -70,7 +70,7 @@ void Ipv6OptionHeader::SetLength (uint8_t length)
   m_length = length;
 }
 
-uint8_t Ipv6OptionHeader::GetLength () const 
+uint8_t Ipv6OptionHeader::GetLength () const
 {
   return m_length;
 }
@@ -95,7 +95,7 @@ void Ipv6OptionHeader::Serialize (Buffer::Iterator start) const
   i.Write (m_data.Begin (), m_data.End ());
 }
 
-uint32_t Ipv6OptionHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6OptionHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -160,7 +160,7 @@ void Ipv6OptionPad1Header::Serialize (Buffer::Iterator start) const
   i.WriteU8 (GetType ());
 }
 
-uint32_t Ipv6OptionPad1Header::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6OptionPad1Header::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -220,7 +220,7 @@ void Ipv6OptionPadnHeader::Serialize (Buffer::Iterator start) const
     }
 }
 
-uint32_t Ipv6OptionPadnHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6OptionPadnHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -263,14 +263,14 @@ void Ipv6OptionJumbogramHeader::SetDataLength (uint32_t dataLength)
   m_dataLength = dataLength;
 }
 
-uint32_t Ipv6OptionJumbogramHeader::GetDataLength () const 
+uint32_t Ipv6OptionJumbogramHeader::GetDataLength () const
 {
   return m_dataLength;
 }
 
 void Ipv6OptionJumbogramHeader::Print (std::ostream &os) const
 {
-  os << "( type = " << (uint32_t)GetType () << " length = " << (uint32_t)GetLength () << " data length = " << (uint32_t)m_dataLength << " )"; 
+  os << "( type = " << (uint32_t)GetType () << " length = " << (uint32_t)GetLength () << " data length = " << (uint32_t)m_dataLength << " )";
 }
 
 uint32_t Ipv6OptionJumbogramHeader::GetSerializedSize () const
@@ -287,7 +287,7 @@ void Ipv6OptionJumbogramHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU32 (m_dataLength);
 }
 
-uint32_t Ipv6OptionJumbogramHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6OptionJumbogramHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -360,7 +360,7 @@ void Ipv6OptionRouterAlertHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (m_value);
 }
 
-uint32_t Ipv6OptionRouterAlertHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6OptionRouterAlertHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 

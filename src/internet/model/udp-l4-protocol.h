@@ -187,7 +187,7 @@ public:
    * \param dport The destination port number
    */
   void Send (Ptr<Packet> packet,
-             Ipv4Address saddr, Ipv4Address daddr, 
+             Ipv4Address saddr, Ipv4Address daddr,
              uint16_t sport, uint16_t dport);
   /**
    * \brief Send a packet via UDP (IPv4)
@@ -199,7 +199,7 @@ public:
    * \param route The route
    */
   void Send (Ptr<Packet> packet,
-             Ipv4Address saddr, Ipv4Address daddr, 
+             Ipv4Address saddr, Ipv4Address daddr,
              uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route);
   /**
    * \brief Send a packet via UDP (IPv6)
@@ -210,7 +210,7 @@ public:
    * \param dport The destination port number
    */
   void Send (Ptr<Packet> packet,
-             Ipv6Address saddr, Ipv6Address daddr, 
+             Ipv6Address saddr, Ipv6Address daddr,
              uint16_t sport, uint16_t dport);
   /**
    * \brief Send a packet via UDP (IPv6)
@@ -222,7 +222,7 @@ public:
    * \param route The route
    */
   void Send (Ptr<Packet> packet,
-             Ipv6Address saddr, Ipv6Address daddr, 
+             Ipv6Address saddr, Ipv6Address daddr,
              uint16_t sport, uint16_t dport, Ptr<Ipv6Route> route);
 
   // inherited from Ipv4L4Protocol

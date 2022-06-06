@@ -358,7 +358,7 @@ NixVectorRoutingTest::DoRun (void)
                                   "IpRouteCache:\n\n";
   NS_TEST_EXPECT_MSG_EQ (stringStream2v4.str (), emptyCaches, "The caches should have been empty.");
   NS_TEST_EXPECT_MSG_EQ (stringStream2v6.str (), emptyCaches, "The caches should have been empty.");
-  
+
   Simulator::Destroy ();
 }
 

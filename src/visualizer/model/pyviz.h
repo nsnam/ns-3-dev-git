@@ -336,7 +336,7 @@ private:
    * \param dummy_ipv4
    * \param interface the interface
    */
-  void TraceIpv4Drop (std::string context, ns3::Ipv4Header const &hdr, Ptr<const Packet> packet, 
+  void TraceIpv4Drop (std::string context, ns3::Ipv4Header const &hdr, Ptr<const Packet> packet,
                       ns3::Ipv4L3Protocol::DropReason reason, Ptr<Ipv4> dummy_ipv4, uint32_t interface);
 
   /**

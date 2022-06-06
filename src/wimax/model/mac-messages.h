@@ -614,7 +614,7 @@ public:
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
-  uint16_t m_transactionId; ///< transaction ID 
+  uint16_t m_transactionId; ///< transaction ID
   uint8_t m_confirmationCode; ///< confirmation code
 };
 

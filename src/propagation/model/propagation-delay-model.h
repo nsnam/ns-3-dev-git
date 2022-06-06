@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -65,10 +65,10 @@ public:
 protected:
   /**
    * Assign a fixed random variable stream number to the random variables used by this model.
-   * 
+   *
    * Subclasses must implement this; those not using random variables
    * can return zero.
-   * 
+   *
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */

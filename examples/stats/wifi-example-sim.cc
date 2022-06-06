@@ -27,7 +27,7 @@
  *
  * Applications used by this program are in test02-apps.h and
  * test02-apps.cc, which should be in the same place as this file.
- * 
+ *
  */
 
 #include <ctime>
@@ -240,7 +240,7 @@ int main (int argc, char *argv[]) {
 
   /**
    * Just to show this is here...
-   Ptr<MinMaxAvgTotalCalculator<uint32_t> > test = 
+   Ptr<MinMaxAvgTotalCalculator<uint32_t> > test =
    CreateObject<MinMaxAvgTotalCalculator<uint32_t> >();
    test->SetKey("test-dc");
    data.AddDataCalculator(test);

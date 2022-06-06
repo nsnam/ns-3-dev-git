@@ -95,14 +95,14 @@ EpcUeNas::GetTypeId (void)
   return tid;
 }
 
-void 
+void
 EpcUeNas::SetDevice (Ptr<NetDevice> dev)
 {
   NS_LOG_FUNCTION (this << dev);
   m_device = dev;
 }
 
-void 
+void
 EpcUeNas::SetImsi (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this << imsi);
@@ -152,7 +152,7 @@ EpcUeNas::StartCellSelection (uint32_t dlEarfcn)
   m_asSapProvider->StartCellSelection (dlEarfcn);
 }
 
-void 
+void
 EpcUeNas::Connect ()
 {
   NS_LOG_FUNCTION (this);
@@ -174,7 +174,7 @@ EpcUeNas::Connect (uint16_t cellId, uint32_t dlEarfcn)
 }
 
 
-void 
+void
 EpcUeNas::Disconnect ()
 {
   NS_LOG_FUNCTION (this);
@@ -183,7 +183,7 @@ EpcUeNas::Disconnect ()
 }
 
 
-void 
+void
 EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -221,7 +221,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           }
         else
           {
-            m_asSapProvider->SendData (packet, bid); 
+            m_asSapProvider->SendData (packet, bid);
             return true;
           }
       }
@@ -234,7 +234,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
     }
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionSuccessful ()
 {
   NS_LOG_FUNCTION (this);
@@ -258,7 +258,7 @@ EpcUeNas::DoRecvData (Ptr<Packet> packet)
   m_forwardUpCallback (packet);
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionReleased ()
 {
   NS_LOG_FUNCTION (this);
@@ -274,7 +274,7 @@ EpcUeNas::DoNotifyConnectionReleased ()
   Disconnect ();
 }
 
-void 
+void
 EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -290,7 +290,7 @@ EpcUeNas::GetState () const
   return m_state;
 }
 
-void 
+void
 EpcUeNas::SwitchToState (State newState)
 {
   NS_LOG_FUNCTION (this << ToString (newState));

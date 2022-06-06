@@ -177,7 +177,7 @@ private:
 
   /**
    *  \param current the actual discharge current value.
-   *  \return the cell voltage 
+   *  \return the cell voltage
    *
    *  Get the cell voltage in function of the discharge current.
    *  It consider different discharge curves for different discharge currents

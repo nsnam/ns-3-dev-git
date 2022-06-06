@@ -120,7 +120,7 @@ typedef std::map<HOL_group,std::set<LteFlowId_t> >::iterator t_it_HOLgroupToUEs;
  * \param key1 the first item
  * \param key2 the second item
  * \returns true if the first item > the second item
- */  
+ */
 bool CqaKeyDescComparator (uint16_t key1, uint16_t key2)
 {
   return key1>key2;
@@ -383,7 +383,7 @@ CqaFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::Cs
           NS_FATAL_ERROR ("Logical channels cannot be released because it can not be found in the list of active LCs");
         }
     }
-	
+
   for (uint16_t i = 0; i < params.m_logicalChannelIdentity.size (); i++)
     {
       std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
@@ -766,7 +766,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
         {
           m_rachAllocationMap.at (i) = (*itRach).m_rnti;
         }
-      
+
       if (m_harqOn == true)
         {
           // generate UL-DCI for HARQ retransmissions
@@ -804,7 +804,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }
           (*itDci).second.at (harqId) = uldci;
         }
-      
+
       rbStart = rbStart + rbLen;
       ret.m_buildRarList.push_back (newRar);
     }
@@ -1087,7 +1087,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
     }
 
   std::map <LteFlowId_t,struct LogicalChannelConfigListElement_s>::iterator itLogicalChannels;
-	
+
   for (itLogicalChannels = m_ueLogicalChannelsConfigList.begin (); itLogicalChannels != m_ueLogicalChannelsConfigList.end (); itLogicalChannels++)
     {
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find (itLogicalChannels->first.m_rnti);
@@ -1203,7 +1203,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*itrbr).first.m_rnti);
           continue;
         }
-      
+
       // map: UE, to the amount of traffic they have to transfer
       int amountOfDataToTransfer =  8*((int)m_rlcBufferReq.find (flowId)->second.m_rlcRetransmissionQueueSize +
                                        (int)m_rlcBufferReq.find (flowId)->second.m_rlcTransmissionQueueSize);
@@ -2497,7 +2497,7 @@ CqaFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t 
               // for SRB1 (using RLC AM) it's better to
               // overestimate RLC overhead rather than
               // underestimate it and risk unneeded
-              // segmentation which increases delay 
+              // segmentation which increases delay
               rlcOverhead = 4;
             }
           else

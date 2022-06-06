@@ -172,11 +172,11 @@ EmuEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   NS_ASSERT (enb2Interface >= 0);
   NS_ASSERT (enb1Ipv4->GetNAddresses (enb1Interface) == 1);
   NS_ASSERT (enb2Ipv4->GetNAddresses (enb2Interface) == 1);
-  Ipv4Address enb1Addr = enb1Ipv4->GetAddress (enb1Interface, 0).GetLocal (); 
-  Ipv4Address enb2Addr = enb2Ipv4->GetAddress (enb2Interface, 0).GetLocal (); 
-  NS_LOG_LOGIC (" eNB 1 IP address: " << enb1Addr); 
+  Ipv4Address enb1Addr = enb1Ipv4->GetAddress (enb1Interface, 0).GetLocal ();
+  Ipv4Address enb2Addr = enb2Ipv4->GetAddress (enb2Interface, 0).GetLocal ();
+  NS_LOG_LOGIC (" eNB 1 IP address: " << enb1Addr);
   NS_LOG_LOGIC (" eNB 2 IP address: " << enb2Addr);
-  
+
   // Add X2 interface to both eNBs' X2 entities
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();

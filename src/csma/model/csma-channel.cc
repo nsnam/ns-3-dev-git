@@ -37,7 +37,7 @@ CsmaChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .SetGroupName ("Csma")
     .AddConstructor<CsmaChannel> ()
-    .AddAttribute ("DataRate", 
+    .AddAttribute ("DataRate",
                    "The transmission data rate to be provided to devices connected to the channel",
                    DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&CsmaChannel::m_bps),
@@ -86,14 +86,14 @@ CsmaChannel::Reattach (Ptr<CsmaNetDevice> device)
   std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin (); it < m_deviceList.end ( ); it++)
     {
-      if (it->devicePtr == device) 
+      if (it->devicePtr == device)
         {
-          if (!it->active) 
+          if (!it->active)
             {
               it->active = true;
               return true;
-            } 
-          else 
+            }
+          else
             {
               return false;
             }
@@ -115,8 +115,8 @@ CsmaChannel::Reattach (uint32_t deviceId)
   if (m_deviceList[deviceId].active)
     {
       return false;
-    } 
-  else 
+    }
+  else
     {
       m_deviceList[deviceId].active = true;
       return true;
@@ -144,8 +144,8 @@ CsmaChannel::Detach (uint32_t deviceId)
         }
 
       return true;
-    } 
-  else 
+    }
+  else
     {
       return false;
     }
@@ -158,9 +158,9 @@ CsmaChannel::Detach (Ptr<CsmaNetDevice> device)
   NS_ASSERT (device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++)
     {
-      if ((it->devicePtr == device) && (it->active)) 
+      if ((it->devicePtr == device) && (it->active))
         {
           it->active = false;
           return true;
@@ -256,7 +256,7 @@ CsmaChannel::GetNumActDevices (void)
 {
   int numActDevices = 0;
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++)
     {
       if (it->active)
         {
@@ -283,15 +283,15 @@ CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
 {
   std::vector<CsmaDeviceRec>::iterator it;
   int i = 0;
-  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++)
     {
       if (it->devicePtr == device)
         {
-          if (it->active) 
+          if (it->active)
             {
               return i;
-            } 
-          else 
+            }
+          else
             {
               return -2;
             }
@@ -304,11 +304,11 @@ CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::IsBusy (void)
 {
-  if (m_state == IDLE) 
+  if (m_state == IDLE)
     {
       return false;
-    } 
-  else 
+    }
+  else
     {
       return true;
     }
@@ -345,7 +345,7 @@ CsmaDeviceRec::CsmaDeviceRec ()
 
 CsmaDeviceRec::CsmaDeviceRec (Ptr<CsmaNetDevice> device)
 {
-  devicePtr = device; 
+  devicePtr = device;
   active = true;
 }
 
@@ -356,7 +356,7 @@ CsmaDeviceRec::CsmaDeviceRec (CsmaDeviceRec const &deviceRec)
 }
 
 bool
-CsmaDeviceRec::IsActive () 
+CsmaDeviceRec::IsActive ()
 {
   return active;
 }

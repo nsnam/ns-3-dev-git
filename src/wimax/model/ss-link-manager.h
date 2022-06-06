@@ -67,7 +67,7 @@ public:
   void SetEirXPIrMax (uint16_t eir_x_p_ir_max);
   /**
    * Set ranging interval found
-   * \param rangingIntervalFound the ranging interval found 
+   * \param rangingIntervalFound the ranging interval found
    */
   void SetRangingIntervalFound (bool rangingIntervalFound);
   /**
@@ -132,7 +132,7 @@ public:
                                 SubscriberStationNetDevice::EventType eventType,
                                 bool deleteUlParameters, EventId &eventId);
 private:
-  /// type conversion operator 
+  /// type conversion operator
   SSLinkManager (const SSLinkManager &);
   /**
    * assignment operator
@@ -172,7 +172,7 @@ private:
   /**
    * Calculate maximum IR signal strength
    * \returns the maximum IR signal strength
-   */ 
+   */
   uint16_t CalculateMaxIRSignalStrength (void);
   /**
    * Get minimum transmit power level
@@ -205,7 +205,7 @@ private:
   uint8_t m_rangingCW; ///< ranging CW
   uint8_t m_rangingBO; ///< ranging BO
   uint8_t m_nrRangingTransOpps; ///< number ranging trans opps
-  bool m_isBackoffSet; ///< is backoff set 
+  bool m_isBackoffSet; ///< is backoff set
   uint8_t m_rangingAnomalies; ///< ranging anomalies
 
   EventId m_waitForRngRspEvent; ///< wait for rang response event

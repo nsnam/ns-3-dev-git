@@ -33,7 +33,7 @@ spectral_efficiency_piro2011 = log2(1 + snr./gamma);
 
 [snr_db spectral_efficiency_piro2011]
 
-%% 
+%%
 %% now that we got the spectral efficiency for each value of SNR in dB
 %% you should do the following:
 %% we look up (manually) into the XLS sheet annexed to 3GPP R1-081483 "Conveying MCS

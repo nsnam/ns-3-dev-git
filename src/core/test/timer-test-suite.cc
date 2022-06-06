@@ -58,7 +58,7 @@ using namespace ns3;
 
 /**
  * \ingroup timer-tests
- *  
+ *
  * \brief Check correct state transitions.
  */
 class TimerStateTestCase : public TestCase
@@ -107,7 +107,7 @@ TimerStateTestCase::DoRun (void)
 
 /**
  * \ingroup timer-tests
- *  
+ *
  * \brief Check that Timer template magic is working.
  */
 class TimerTemplateTestCase : public TestCase
@@ -219,7 +219,7 @@ TimerTemplateTestCase::DoTeardown (void)
 
 /**
  * \ingroup timer-tests
- *  
+ *
  * \brief The timer Test Suite.
  */
 class TimerTestSuite : public TestSuite

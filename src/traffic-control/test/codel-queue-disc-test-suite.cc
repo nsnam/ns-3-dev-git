@@ -143,7 +143,7 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
 
   uint32_t pktSize = 1000;
   uint32_t modeSize = 0;
-  
+
   Address dest;
 
   NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
@@ -400,8 +400,8 @@ CoDelQueueDiscControlLawTest::DoRun (void)
       for (uint16_t recInvSqrt = 0xff; recInvSqrt > 0; recInvSqrt /= 2)
         {
           codelTimeVal = queue->Time2CoDel (timeVal);
-          uint32_t ns3Result = queue->ControlLaw (codelTimeVal, interval, recInvSqrt); 
-          uint32_t linuxResult = _codel_control_law (codelTimeVal, interval, recInvSqrt); 
+          uint32_t ns3Result = queue->ControlLaw (codelTimeVal, interval, recInvSqrt);
+          uint32_t linuxResult = _codel_control_law (codelTimeVal, interval, recInvSqrt);
           NS_TEST_ASSERT_MSG_EQ (ns3Result, linuxResult, "Linux result for ControlLaw should equal ns-3 result");
         }
     }
@@ -662,7 +662,7 @@ CoDelQueueDiscBasicMark::DoRun (void)
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)),
                          true, "Verify that we can actually set the attribute UseEcn");
-  
+
   queue->Initialize ();
 
   // Not-ECT traffic to induce packet drop
@@ -720,7 +720,7 @@ CoDelQueueDiscBasicMark::DoRun (void)
                          true, "Verify that we can actually set the attribute UseEcn");
   NS_TEST_ASSERT_MSG_EQ (queue->SetAttributeFailSafe ("CeThreshold", TimeValue (MilliSeconds (2))),
                          true, "Verify that we can actually set the attribute CeThreshold");
-  
+
   queue->Initialize ();
 
   // First 3 packets in the queue are ecnCapable
@@ -962,7 +962,7 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                 }
             }
           else if (initialCeThreshMarkCount > 0 && currentTime < queue->GetInterval ())
-            { 
+            {
               if (initialCeThreshMarkCount < 2)
                 {
                   currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);

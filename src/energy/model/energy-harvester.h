@@ -32,7 +32,7 @@
 #include "ns3/energy-source-container.h"
 
 namespace ns3 {
-    
+
 class EnergySource;
 
 /**
@@ -108,7 +108,7 @@ private:
    *
    * This method should be used to connect the logic behind the particular implementation
    * of the energy harvester with the energy source.
-   * 
+   *
    * \returns Amount of power currently provided by the harvester.
    */
   virtual double DoGetPower (void) const;
@@ -130,7 +130,7 @@ private:
 protected:
 
 };
-    
+
 } // namespace ns3
 
 #endif /* defined(ENERGY_HARVESTER_H) */

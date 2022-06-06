@@ -36,9 +36,9 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
-  
+
 namespace dot11s {
-  
+
 /***************************************************
  * PeerManager
  ***************************************************/
@@ -498,10 +498,10 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
 {
   PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end ());
-  NS_LOG_DEBUG ("Link between me:" << m_address << " my interface:" 
+  NS_LOG_DEBUG ("Link between me:" << m_address << " my interface:"
                     << plugin->second->GetAddress ()
                     << " and peer mesh point:" << peerMeshPointAddress << " and its interface:" << peerAddress
-                    << ", at my interface ID:" << interface << ". State movement:" << PeerLink::PeerStateNames[ostate] 
+                    << ", at my interface ID:" << interface << ". State movement:" << PeerLink::PeerStateNames[ostate]
                     << " -> " << PeerLink::PeerStateNames[nstate]);
   if ((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {

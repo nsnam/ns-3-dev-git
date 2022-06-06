@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("ShowProgress");
 const int64x64_t ShowProgress::HYSTERESIS = 1.414;
 /* static */
 const int64x64_t ShowProgress::MAXGAIN = 2.0;
-  
+
 ShowProgress::ShowProgress (const Time interval /* = Seconds (1.0) */,
                             std::ostream & os /* = std::cout */)
   : m_timer (),
@@ -128,7 +128,7 @@ ShowProgress::GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed
     {
       (*m_os) << std::right << std::setw (5) << m_repCount << std::left
               << (ratio > (1.0 / HYSTERESIS) ? "-->" : "   ")
-              << std::setprecision (9) 
+              << std::setprecision (9)
               << " [del: " << m_elapsed.As (Time::S)
               << "/ int: " << m_interval.As (Time::S)
               << " = rat: " << ratio
@@ -270,7 +270,7 @@ ShowProgress::CheckProgress (void)
       // GiveFeedback (nEvents, ratio, speed);
     }
   ++m_repCount;
-  
+
   // And do it again
   ScheduleCheckProgress ();
 

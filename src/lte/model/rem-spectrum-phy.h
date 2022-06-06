@@ -42,11 +42,11 @@ namespace ns3 {
  * purpose of this class is to be used to generate a
  * Radio Environment Map (REM) by locating several instances in a grid
  * fashion, and connecting them to the channel only for a very short
- * amount of time. 
+ * amount of time.
  *
  * The assumption on which this class works is that the system
  * being considered is an infrastructure radio access network using
- * FDD, hence all signals will be transmitted simultaneously. 
+ * FDD, hence all signals will be transmitted simultaneously.
  */
 class RemSpectrumPhy : public SpectrumPhy
 {
@@ -73,17 +73,17 @@ public:
   Ptr<Object> GetAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
-  /** 
+  /**
    * set the RX spectrum model to be used
-   * 
-   * \param m 
+   *
+   * \param m
    */
   void SetRxSpectrumModel (Ptr<const SpectrumModel> m);
 
-  /** 
-   * 
+  /**
+   *
    * \param noisePower the noise power
-   * \return the Signal to Noise Ratio calculated 
+   * \return the Signal to Noise Ratio calculated
    */
   double GetSinr (double noisePower);
 
@@ -93,15 +93,15 @@ public:
    */
   void Deactivate ();
 
-  /** 
-   * 
+  /**
+   *
    * \return true if active
    */
   bool IsActive ();
 
-  /** 
+  /**
    * Reset the SINR calculator
-   * 
+   *
    */
   void Reset ();
 

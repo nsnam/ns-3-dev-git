@@ -91,7 +91,7 @@ char**       GrantedTimeWindowMpiInterface::g_pRxBuffers;
 MPI_Comm     GrantedTimeWindowMpiInterface::g_communicator = MPI_COMM_WORLD;
 bool         GrantedTimeWindowMpiInterface::g_freeCommunicator = false;;
 
-TypeId 
+TypeId
 GrantedTimeWindowMpiInterface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::GrantedTimeWindowMpiInterface")
@@ -150,8 +150,8 @@ GrantedTimeWindowMpiInterface::IsEnabled ()
   return g_enabled;
 }
 
-MPI_Comm 
-GrantedTimeWindowMpiInterface::GetCommunicator() 
+MPI_Comm
+GrantedTimeWindowMpiInterface::GetCommunicator()
 {
   NS_ASSERT (g_enabled);
   return g_communicator;
@@ -183,16 +183,16 @@ GrantedTimeWindowMpiInterface::Enable (MPI_Comm communicator)
   // context.
   MPI_Comm_dup (communicator, &g_communicator);
   g_freeCommunicator = true;
-  
+
   MPI_Barrier (g_communicator);
-  
+
   int mpiSystemId;
   int mpiSize;
   MPI_Comm_rank (g_communicator, &mpiSystemId);
   MPI_Comm_size (g_communicator, &mpiSize);
   g_sid = mpiSystemId;
   g_size = mpiSize;
-  
+
   g_enabled = true;
   // Post a non-blocking receive for all peers
   g_pRxBuffers = new char*[g_size];
@@ -238,7 +238,7 @@ GrantedTimeWindowMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, ui
 
 void
 GrantedTimeWindowMpiInterface::ReceiveMessages ()
-{ 
+{
   NS_LOG_FUNCTION_NOARGS ();
 
   // Poll the non-block reads to see if data arrived

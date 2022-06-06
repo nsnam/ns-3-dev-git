@@ -111,14 +111,14 @@ public:
   /**
    * Set the spectrum model used by the created SpectrumAnalyzer instances to represent incoming signals
    *
-   * @param m 
+   * @param m
    */
   void SetRxSpectrumModel (Ptr<SpectrumModel> m);
 
 
-  /** 
+  /**
    * Enable ASCII output. This will create one filename for every created SpectrumAnalyzer instance.
-   * 
+   *
    * @param prefix the prefix of the filename of the traces that will be created.
    */
   void EnableAsciiAll (std::string prefix);

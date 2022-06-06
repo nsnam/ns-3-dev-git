@@ -26,7 +26,7 @@ Other than that, the module strictly follows :rfc:`4944` and :rfc:`6282`, with t
 exception that HC2 encoding is not supported, as it has been superseded by IPHC and NHC
 compression type (\ :rfc:`6282`).
 
-IPHC sateful (context-based) compression is supported but, since :rfc:`6775`   
+IPHC sateful (context-based) compression is supported but, since :rfc:`6775`
 ("Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)")
 is not yet implemented, it is necessary to add the context to the nodes manually.
 
@@ -115,7 +115,7 @@ Scope and Limitations
 Contex-based compression
 ########################
 
-IPHC sateful (context-based) compression is supported but, since :rfc:`6775`   
+IPHC sateful (context-based) compression is supported but, since :rfc:`6775`
 ("Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)")
 is not yet implemented, it is necessary to add the context to the nodes manually.
 
@@ -141,7 +141,7 @@ One adds the PanId in the pseudo-MAC address (4944) and the other doesn't (6282)
 
 The expected use cases (confirmed by the RFC editor) is to *never* have a mixed environment
 where part of the nodes are using HC1 and part IPHC because this would lead to confusion on
-what the IPv6 address of a node is. 
+what the IPv6 address of a node is.
 
 Due to this, the nodes configured to use IPHC will drop the packets compressed with HC1
 and viceversa. The drop is logged in the drop trace as ``DROP_DISALLOWED_COMPRESSION``.

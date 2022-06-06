@@ -37,21 +37,21 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModelTest");
  * \ingroup propagation-tests
  *
  * \brief ItuR1411LosPropagationLossModel Test Case
- * 
+ *
  */
 class ItuR1411LosPropagationLossModelTestCase : public TestCase
 {
 public:
   /**
    * Constructor
-   * 
+   *
    * \param freq carrier frequency in Hz
    * \param dist 2D distance between UT and BS in meters
    * \param hb height of BS in meters
    * \param hm height of UT in meters
    * \param refValue reference loss value
    * \param name TestCase name
-   */ 
+   */
   ItuR1411LosPropagationLossModelTestCase (double freq, double dist, double hb, double hm, double refValue, std::string name);
   virtual ~ItuR1411LosPropagationLossModelTestCase ();
 
@@ -107,7 +107,7 @@ ItuR1411LosPropagationLossModelTestCase::DoRun (void)
 
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
- 
+
   NS_TEST_ASSERT_MSG_EQ_TOL (loss, m_lossRef, 0.1, "Wrong loss!");
 
 }
@@ -117,7 +117,7 @@ ItuR1411LosPropagationLossModelTestCase::DoRun (void)
  * \ingroup propagation-tests
  *
  * \brief ItuR1411LosPropagationLossModel TestSuite
- * 
+ *
  */
 class ItuR1411LosPropagationLossModelTestSuite : public TestSuite
 {

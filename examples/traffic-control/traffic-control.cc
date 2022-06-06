@@ -27,7 +27,7 @@
 #include "ns3/traffic-control-module.h"
 #include "ns3/flow-monitor-module.h"
 
-// This simple example shows how to use TrafficControlHelper to install a 
+// This simple example shows how to use TrafficControlHelper to install a
 // QueueDisc on a device.
 //
 // The default QueueDisc is a pfifo_fast with a capacity of 1000 packets (as in

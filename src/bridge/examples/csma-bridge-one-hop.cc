@@ -38,7 +38,7 @@
 //   ------------------        has three CMSA net devices that are bridged
 //        bridge2              together using a BridgeNetDevice.
 //
-// Or, more abstractly, recognizing that bridge 1 and bridge 2 are nodes 
+// Or, more abstractly, recognizing that bridge 1 and bridge 2 are nodes
 // with three net devices:
 //
 //        n0     n1                (n0 = 10.1.1.2)
@@ -57,12 +57,12 @@
 //
 // So, this example shows two broadcast domains, each interconnected by a bridge
 // with a router node (n2) interconnecting the layer-2 broadcast domains
-// 
+//
 // It is meant to mirror somewhat the csma-bridge example but adds another
 // bridged link separated by a router.
-// 
+//
 // - CBR/UDP flows from n0 (10.1.1.2) to n1 (10.1.1.3) and from n3 (10.1.2.2) to n0 (10.1.1.3)
-// - DropTail queues 
+// - DropTail queues
 // - Global static routing
 // - Tracing of queues and packet receptions to file "csma-bridge-one-hop.tr"
 
@@ -86,14 +86,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaBridgeOneHopExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   //
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
   //
-#if 0 
+#if 0
   LogComponentEnable ("CsmaBridgeOneHopExample", LOG_LEVEL_INFO);
 #endif
 
@@ -125,7 +125,7 @@ main (int argc, char *argv[])
 
   // Create the csma links, from each terminal to the bridge
   // This will create six network devices; we'll keep track separately
-  // of the devices on and off the bridge respectively, for later configuration 
+  // of the devices on and off the bridge respectively, for later configuration
   NetDeviceContainer topLanDevices;
   NetDeviceContainer topBridgeDevices;
 
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   ipv4.Assign (bottomLanDevices);
 
-  // 
+  //
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.  We excuse the bridge nodes from having to serve as
   // routers, since they don't even have internet stacks on them.
@@ -186,7 +186,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("10.1.1.3"), port)));
   onoff.SetConstantRate (DataRate ("500kb/s"));
 
@@ -202,10 +202,10 @@ main (int argc, char *argv[])
   sink1.Start (Seconds (1.0));
   sink1.Stop (Seconds (10.0));
 
-  // 
+  //
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   //
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
   ApplicationContainer app2 = onoff.Install (n3);
   app2.Start (Seconds (1.1));

@@ -221,7 +221,7 @@ int main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   GnuplotCollection gnuplots ("main-propagation-loss.pdf");
 
   {

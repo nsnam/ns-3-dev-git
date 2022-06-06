@@ -40,8 +40,8 @@ Because netmap uses file descriptor based communication to interact with the
 real device, the straightforward approach to design a new ``NetDevice`` around
 netmap is to have it inherit from the existing ``FdNetDevice`` and implement
 a specialized version of the operations specific to netmap.
-The operations that require a specialized implementation are the 
-initialization, because the NIC has to be put in netmap mode, and the 
+The operations that require a specialized implementation are the
+initialization, because the NIC has to be put in netmap mode, and the
 read/write methods, which have to make use of the netmap API to coordinate
 the exchange of packets with the netmap rings.
 
@@ -49,12 +49,12 @@ In the initialization stage, the network device is switched to netmap mode,
 so that |ns3| is able to send/receive packets to/from the
 real network device by writing/reading them to/from the netmap rings.
 Following the design of the ``FdNetDevice``, a separate reading thread is
-started during the initialization. The task of the reading thread is 
+started during the initialization. The task of the reading thread is
 to wait for new incoming packets in the netmap receiver rings, in order
 to schedule the events of packet reception. In
-the initialization of the ``NetmapNetDevice``, an additional thread, 
+the initialization of the ``NetmapNetDevice``, an additional thread,
 the sync thread, is started. The sync thread is required because, in order
-to reduce the cost of the system calls, netmap does not automatically 
+to reduce the cost of the system calls, netmap does not automatically
 transfer a packet written to a slot of the netmap ring to the transmission
 ring or to the installed qdisc. It is up to the user process to
 periodically request a synchronization of the netmap ring. Therefore,
@@ -77,13 +77,13 @@ The ``NetmapNetDevice`` also specializes the write method, i.e., the method
 used to transmit a packet received from the upper layer (the |ns3| traffic
 control layer).  The write method uses the netmap API to write the packet to a
 free slot in the netmap
-transmission ring. After writing a packet, the write method checks whether 
-there is enough room in the netmap transmission ring for another packet. 
+transmission ring. After writing a packet, the write method checks whether
+there is enough room in the netmap transmission ring for another packet.
 If not, the ``NetmapNetDevice`` stops its queue so that the |ns3| traffic
-control layer does not attempt to send a packet that could not be stored in 
+control layer does not attempt to send a packet that could not be stored in
 the netmap transmission ring.
 
-A stopped ``NetmapNetDevice`` queue needs to be restarted as soon as some 
+A stopped ``NetmapNetDevice`` queue needs to be restarted as soon as some
 room is made in the netmap transmission ring. The sync thread can be exploited
 for this purpose, given that it periodically synchronizes the netmap
 transmission ring. In particular, the sync thread also checks the number of
@@ -94,7 +94,7 @@ queue and wakes the associated |ns3| qdisc. The NetmapNetDevice also supports
 BQL: the write method notifies the BQL library of the amount of bytes that
 have been written to the netmap transmission ring, while the sync thread
 notifies the BQL library of the amount of bytes that have been removed from
-the netmap transmission ring and transferred to the NIC since the previous 
+the netmap transmission ring and transferred to the NIC since the previous
 notification.
 
 Scope and Limitations
@@ -122,7 +122,7 @@ report that:
 
 If not, it will report:
 
-.. sourcecode:: text 
+.. sourcecode:: text
 
   Netmap emulation FdNetDevice  : not enabled (needs net/netmap_user.h)
 
@@ -145,7 +145,7 @@ There is one attribute specialized to ``NetmapNetDevice``, named
 microseconds, and is used as the period of time after which the device
 syncs the netmap ring and notifies queue status.  The value should be
 close to the interrupt coalescence period of the real device.  Users
-may want to tune this parameter for their own system; it should be 
+may want to tune this parameter for their own system; it should be
 a compromise between CPU usage and accuracy in the ring sync (if it is
 too high, the device goes into starvation and lower throughput occurs).
 
@@ -170,11 +170,11 @@ Several examples are provided:
 * ``fd-emu-tc.cc``: This example configures a router on a machine with two
    interfaces in emulated mode through netmap. The aim is to explore different
    qdiscs behaviours on the backlog of a device emulated bottleneck side.
-* ``fd-emu-send.cc``: This example builds a node with a device in 
+* ``fd-emu-send.cc``: This example builds a node with a device in
   emulation mode through netmap.  The aim is to measure the maximum transmit
-  rate in packets per second (pps) achievable with ``NetmapNetDevice`` on 
+  rate in packets per second (pps) achievable with ``NetmapNetDevice`` on
   a specific machine.
 
-Note that all the examples run in emulation mode through netmap (with 
+Note that all the examples run in emulation mode through netmap (with
 ``NetmapNetDevice``) and raw socket (with ``FdNetDevice``).
 

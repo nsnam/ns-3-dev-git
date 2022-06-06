@@ -38,7 +38,7 @@ public:
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
   FlowIdTag ();
-  
+
   /**
    *  Constructs a FlowIdTag with the given flow id
    *

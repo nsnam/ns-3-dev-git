@@ -26,7 +26,7 @@
 //        WSN (802.15.4)
 //
 // - ICMPv6 echo request flows from n0 to n1 and back with ICMPv6 echo reply
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "wsn-ping6.tr"
 //
 // This example is based on the "ping6.cc" example.

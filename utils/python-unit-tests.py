@@ -146,7 +146,7 @@ class TestSimulator(unittest.TestCase):
         """
         self.assertEqual(Seconds(10) + Seconds(5), Seconds(15))
         self.assertEqual(Seconds(10) - Seconds(5), Seconds(5))
-        
+
         v1 = int64x64_t(5.0)*int64x64_t(10)
         self.assertEqual(v1, int64x64_t(50))
 
@@ -207,7 +207,7 @@ class TestSimulator(unittest.TestCase):
         ptr = ns.core.PointerValue()
         mobility.GetAttribute("PositionAllocator", ptr)
         self.assertEqual(ptr.GetObject(), None)
-        
+
         pos = ns.mobility.ListPositionAllocator()
         mobility.SetAttribute("PositionAllocator", ns.core.PointerValue(pos))
 
@@ -223,7 +223,7 @@ class TestSimulator(unittest.TestCase):
         csma = ns.csma.CsmaNetDevice()
         channel = ns.csma.CsmaChannel()
         csma.Attach(channel)
-        
+
         c1 = csma.GetChannel()
         c2 = csma.GetChannel()
 
@@ -236,7 +236,7 @@ class TestSimulator(unittest.TestCase):
         """
         typeId1 = ns.core.TypeId.LookupByNameFailSafe("ns3::UdpSocketFactory")
         self.assertEqual(typeId1.GetName (), "ns3::UdpSocketFactory")
-        
+
         self.assertRaises(KeyError, ns.core.TypeId.LookupByNameFailSafe, "__InvalidTypeName__")
 
     def testCommandLine(self):
@@ -256,7 +256,7 @@ class TestSimulator(unittest.TestCase):
         foo = Foo()
         foo.test_foo = None
         cmd.AddValue("Test4", "this is a test option", variable="test_foo", namespace=foo)
-        
+
         cmd.Parse(["python", "--Test1=value1", "--Test2=value2", "--Test3=123", "--Test4=xpto"])
 
         self.assertEqual(cmd.Test1, "value1")

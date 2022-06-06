@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -58,12 +58,12 @@ Kun2600MhzPropagationLossModel::~Kun2600MhzPropagationLossModel ()
 double
 Kun2600MhzPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  double dist = a->GetDistanceFrom (b);  
+  double dist = a->GetDistanceFrom (b);
   double loss = 36 + 26 * std::log10 (dist);
   return loss;
 }
 
-double 
+double
 Kun2600MhzPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 					       Ptr<MobilityModel> a,
 					       Ptr<MobilityModel> b) const

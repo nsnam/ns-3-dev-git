@@ -46,7 +46,7 @@ do for [i=0:299] {
     unset ylabel
     unset xtics
     unset ytics
-    plot 'example-output.txt' using 1:1:1 with labels offset -10, 0, 'example-output.txt' using 1:1:6 with labels offset 10, 0 
+    plot 'example-output.txt' using 1:1:1 with labels offset -10, 0, 'example-output.txt' using 1:1:6 with labels offset 10, 0
     unset object 101
   unset multiplot
 }
@@ -54,8 +54,8 @@ do for [i=0:299] {
 reset
 set terminal png
 set output 'snr.png'
-set xlabel 'Time [s]' 
-set ylabel 'SNR [dB]' 
+set xlabel 'Time [s]'
+set ylabel 'SNR [dB]'
 set xtics
 set ytics
 set grid

@@ -41,7 +41,7 @@ public:
    */
   void SetAid (uint8_t aid);
   /**
-   * Set last beacon value 
+   * Set last beacon value
    * \param lastBeacon the last beacon
    */
   void SetLastBeacon (uint16_t lastBeacon);
@@ -62,7 +62,7 @@ public:
    */
   uint16_t GetLastBeacon () const;
   /**
-   * Get beacon interval 
+   * Get beacon interval
    * \returns the beacon interval
    */
   uint16_t GetBeaconInterval () const;
@@ -128,7 +128,7 @@ public:
     );
   /// Clear timing element
   void ClearTimingElement ();
-  
+
   // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual uint8_t GetInformationFieldSize () const;

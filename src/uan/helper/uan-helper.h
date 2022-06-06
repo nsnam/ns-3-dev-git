@@ -199,7 +199,7 @@ public:
    * \return The installed netdevices.
    */
   NetDeviceContainer Install (NodeContainer c) const;
-  
+
   /**
    * For each of the input nodes, a new ns3::UanNetDevice is attached
    * to the shared input channel. Each ns3::UanNetDevice is also
@@ -238,7 +238,7 @@ public:
   * have been assigned. The Install() method should have previously been
   * called by the user.
   *
-  * \param c NetDeviceContainer of the set of net devices for which the 
+  * \param c NetDeviceContainer of the set of net devices for which the
   *          UanNetDevice should be modified to use a fixed stream.
   * \param stream First stream index to use.
   * \return The number of stream indices assigned by this helper.

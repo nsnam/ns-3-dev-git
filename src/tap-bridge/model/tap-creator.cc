@@ -53,7 +53,7 @@ static int gVerbose = 0; // Set to true to turn on logging messages.
     { \
       std::cout << "    errno = " << errno << " (" << std::strerror (errno) << ")" << std::endl; \
     } \
-  std::exit (-1); 
+  std::exit (-1);
 
 #define ABORT_IF(cond, msg, printErrno) \
   if (cond) \
@@ -85,7 +85,7 @@ AsciiToLowCase (char c)
     }
 }
 
-static uint32_t 
+static uint32_t
 AsciiToIpv4 (const char *address)
 {
   uint32_t host = 0;
@@ -107,14 +107,14 @@ AsciiToIpv4 (const char *address)
   return host;
 }
 
-static void 
+static void
 AsciiToMac48 (const char *str, uint8_t addr[6])
 {
   int i = 0;
-  while (*str != 0 && i < 6) 
+  while (*str != 0 && i < 6)
     {
       uint8_t byte = 0;
-      while (*str != ASCII_COLON && *str != 0) 
+      while (*str != ASCII_COLON && *str != 0)
         {
           byte <<= 4;
           char low = AsciiToLowCase (*str);
@@ -130,7 +130,7 @@ AsciiToMac48 (const char *str, uint8_t addr[6])
         }
       addr[i] = byte;
       i++;
-      if (*str == 0) 
+      if (*str == 0)
         {
           break;
         }
@@ -164,7 +164,7 @@ SendSocket (const char *path, int fd)
   //
   // We have this string called path, which is really a hex representation
   // of the endpoint that the tap bridge created.  It used a forward encoding
-  // method (TapBufferToString) to take the sockaddr_un it made and passed 
+  // method (TapBufferToString) to take the sockaddr_un it made and passed
   // the resulting string to us.  So we need to take the inverse method
   // (TapStringToBuffer) and build the same sockaddr_un over here.
   //
@@ -182,32 +182,32 @@ SendSocket (const char *path, int fd)
   LOG ("Connected");
 
   //
-  // This is arcane enough that a few words are worthwhile to explain what's 
+  // This is arcane enough that a few words are worthwhile to explain what's
   // going on here.
   //
   // The interesting information (the socket FD) is going to go back to the
-  // tap bridge as an integer of ancillary data.  Ancillary data is bits 
-  // that are not a part a socket payload (out-of-band data).  We're also 
+  // tap bridge as an integer of ancillary data.  Ancillary data is bits
+  // that are not a part a socket payload (out-of-band data).  We're also
   // going to send one integer back.  It's just initialized to a magic number
-  // we use to make sure that the tap bridge is talking to the tap socket 
+  // we use to make sure that the tap bridge is talking to the tap socket
   // creator and not some other creator process (emu, specifically)
   //
   // The struct iovec below is part of a scatter-gather list.  It describes a
   // buffer.  In this case, it describes a buffer (an integer) containing the
   // data that we're going to send back to the tap bridge (that magic number).
-  // 
+  //
   struct iovec iov;
   uint32_t magic = TAP_MAGIC;
   iov.iov_base = &magic;
   iov.iov_len = sizeof(magic);
 
   //
-  // The CMSG macros you'll see below are used to create and access control 
-  // messages (which is another name for ancillary data).  The ancillary 
+  // The CMSG macros you'll see below are used to create and access control
+  // messages (which is another name for ancillary data).  The ancillary
   // data is made up of pairs of struct cmsghdr structures and associated
   // data arrays.
-  // 
-  // First, we're going to allocate a buffer on the stack to contain our 
+  //
+  // First, we're going to allocate a buffer on the stack to contain our
   // data array (that contains the socket).  Sometimes you'll see this called
   // an "ancillary element" but the msghdr uses the control message termimology
   // so we call it "control."
@@ -237,10 +237,10 @@ SendSocket (const char *path, int fd)
 
   //
   // A cmsghdr contains a length field that is the length of the header and
-  // the data.  It has a cmsg_level field corresponding to the originating 
+  // the data.  It has a cmsg_level field corresponding to the originating
   // protocol.  This takes values which are legal levels for getsockopt and
-  // setsockopt (here SOL_SOCKET).  We're going to use the SCM_RIGHTS type of 
-  // cmsg, that indicates that the ancillary data array contains access rights 
+  // setsockopt (here SOL_SOCKET).  We're going to use the SCM_RIGHTS type of
+  // cmsg, that indicates that the ancillary data array contains access rights
   // that we are sending back to the tap bridge.
   //
   // We have to put together the first (and only) cmsghdr that will describe
@@ -262,7 +262,7 @@ SendSocket (const char *path, int fd)
   // put our file descriptor in.
   //
   int *fdptr = (int*)(CMSG_DATA (cmsg));
-  *fdptr = fd; // 
+  *fdptr = fd; //
 
   //
   // Actually send the file descriptor back to the tap bridge.
@@ -300,8 +300,8 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
 
   //
   // Operating mode "2" corresponds to USE_LOCAL and "3" to USE_BRIDGE mode.
-  // This means that we expect that the user will have named, created and 
-  // configured a network tap that we are just going to use.  So don't mess 
+  // This means that we expect that the user will have named, created and
+  // configured a network tap that we are just going to use.  So don't mess
   // up his hard work by changing anything, just return the tap fd.
   //
   if (strcmp (mode, "2") == 0 || strcmp (mode, "3") == 0)
@@ -404,8 +404,8 @@ main (int argc, char *argv[])
   LOG ("Provided Device Name is \"" << dev << "\"");
 
   //
-  // We have got to be able to provide a gateway to the external Linux host 
-  // so it can talk to the ns-3 network.  This ip address is provided in 
+  // We have got to be able to provide a gateway to the external Linux host
+  // so it can talk to the ns-3 network.  This ip address is provided in
   // gw.
   //
   ABORT_IF (gw == NULL, "Gateway Address is a required argument", 0);
@@ -447,10 +447,10 @@ main (int argc, char *argv[])
   // wants to create a socket as described below.  We are going to do the
   // work here since we're running suid root.  Once we create the socket,
   // we have to send it back to the tap bridge.  We do that over a Unix
-  // (local interprocess) socket.  The tap bridge created a socket to 
+  // (local interprocess) socket.  The tap bridge created a socket to
   // listen for our response on, and it is expected to have encoded the address
   // information as a string and to have passed that string as an argument to
-  // us.  We see it here as the "path" string.  We can't do anything useful 
+  // us.  We see it here as the "path" string.  We can't do anything useful
   // unless we have that string.
   //
   ABORT_IF (path == NULL, "path is a required argument", 0);
@@ -460,8 +460,8 @@ main (int argc, char *argv[])
   // The whole reason for all of the hoops we went through to call out to this
   // program will pay off here.  We created this program to run as suid root
   // in order to keep the main simulation program from having to be run with
-  // root privileges.  We need root privileges to be able to futz with the 
-  // Tap device underlying all of this.  So all of these hoops are to allow 
+  // root privileges.  We need root privileges to be able to futz with the
+  // Tap device underlying all of this.  So all of these hoops are to allow
   // us to exeucte the following code:
   //
   LOG ("Creating Tap");

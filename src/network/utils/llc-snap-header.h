@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-/** 
+/**
  * The length in octects of the LLC/SNAP header
  */
 static const uint16_t LLC_SNAP_HEADER_LENGTH = 8;
@@ -39,7 +39,7 @@ static const uint16_t LLC_SNAP_HEADER_LENGTH = 8;
  *
  * For a list of EtherTypes, see http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml
  */
-class LlcSnapHeader : public Header 
+class LlcSnapHeader : public Header
 {
 public:
   LlcSnapHeader ();

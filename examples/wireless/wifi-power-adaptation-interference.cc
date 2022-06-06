@@ -90,7 +90,7 @@ class NodeStatistics
 public:
   /**
    * \brief Constructor.
-   * 
+   *
    * \param aps Access points
    * \param stas WiFi Stations.
    */
@@ -98,14 +98,14 @@ public:
 
   /**
    * \brief Collects the statistics at a given time.
-   * 
+   *
    * \param time Time at which the statistics are collected.
    */
   void CheckStatistics (double time);
 
   /**
-   * \brief Callback called by WifiNetDevice/Phy/PhyTxBegin. 
-   * 
+   * \brief Callback called by WifiNetDevice/Phy/PhyTxBegin.
+   *
    * \param path The trace path.
    * \param packet The sent packet.
    * \param powerW The Tx power.
@@ -113,7 +113,7 @@ public:
   void PhyCallback (std::string path, Ptr<const Packet> packet, double powerW);
   /**
    * \brief Callback called by PacketSink/Rx.
-   * 
+   *
    * \param path The trace path.
    * \param packet The received packet.
    * \param from The sender address.
@@ -121,7 +121,7 @@ public:
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
   /**
    * \brief Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
-   * 
+   *
    * \param path The trace path.
    * \param oldPower Old Tx power.
    * \param newPower Actual Tx power.
@@ -130,7 +130,7 @@ public:
   void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest);
   /**
    * \brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
-   * 
+   *
    * \param path The trace path.
    * \param oldRate Old rate.
    * \param newRate Actual rate.
@@ -139,7 +139,7 @@ public:
   void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
   /**
    * \brief Callback called by YansWifiPhy/State/State.
-   * 
+   *
    * \param path The trace path.
    * \param init Time when the state started.
    * \param duration Amount of time we've been in (or will be in) the state.
@@ -149,45 +149,45 @@ public:
 
   /**
    * \brief Get the Throughput output data
-   * 
+   *
    * \return the Throughput output data.
    */
   Gnuplot2dDataset GetDatafile ();
   /**
    * \brief Get the Power output data.
-   * 
+   *
    * \return the Power output data.
    */
   Gnuplot2dDataset GetPowerDatafile ();
   /**
    * \brief Get the IDLE state output data.
-   * 
+   *
    * \return the IDLE state output data.
    */
   Gnuplot2dDataset GetIdleDatafile ();
   /**
    * \brief Get the BUSY state output data.
-   * 
+   *
    * \return the BUSY state output data.
    */
   Gnuplot2dDataset GetBusyDatafile ();
   /**
    * \brief Get the TX state output data.
-   * 
+   *
    * \return the TX state output data.
    */
   Gnuplot2dDataset GetTxDatafile ();
   /**
    * \brief Get the RX state output data.
-   * 
+   *
    * \return the RX state output data.
    */
   Gnuplot2dDataset GetRxDatafile ();
 
   /**
    * \brief Get the Busy time.
-   * 
-   * \return the busy time. 
+   *
+   * \return the busy time.
    */
   double GetBusyTime ();
 
@@ -196,13 +196,13 @@ private:
   typedef std::vector<std::pair<Time, DataRate> > TxTime;
   /**
    * \brief Setup the WifiPhy object.
-   * 
+   *
    * \param phy The WifiPhy to setup.
    */
   void SetupPhy (Ptr<WifiPhy> phy);
   /**
    * \brief Get the time at which a given datarate has been recorded.
-   * 
+   *
    * \param rate The datarate to search.
    * \return the time.
    */

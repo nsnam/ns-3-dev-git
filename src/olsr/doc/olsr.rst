@@ -10,9 +10,9 @@ University of Murcia (Spain) by Francisco J. Ros for NS-2, and was
 ported to NS-3 by Gustavo Carneiro at INESC Porto (Portugal).
 
 The implementation is based on OLSR Version 1 (:rfc:`3626` [rfc3626]_) and
-it is *not* compliant with OLSR Version 2 (:rfc:`7181` [rfc7181]_) or any 
+it is *not* compliant with OLSR Version 2 (:rfc:`7181` [rfc7181]_) or any
 of the Version 2 extensions.
- 
+
 Model Description
 *****************
 
@@ -23,9 +23,9 @@ design choices are based on the previous ns2 model.
 Scope and Limitations
 +++++++++++++++++++++
 
-The model is for IPv4 only.  
+The model is for IPv4 only.
 
-* Mostly compliant with OLSR as documented in :rfc:`3626` ([rfc3626]_), 
+* Mostly compliant with OLSR as documented in :rfc:`3626` ([rfc3626]_),
 * The use of multiple interfaces was not supported by the NS-2 version, but is supported in NS-3;
 * OLSR does not respond to the routing event notifications corresponding to dynamic interface up and down (``ns3::RoutingProtocol::NotifyInterfaceUp`` and ``ns3::RoutingProtocol::NotifyInterfaceDown``) or address insertion/removal ``ns3::RoutingProtocol::NotifyAddAddress`` and ``ns3::RoutingProtocol::NotifyRemoveAddress``).
 * Unlike the NS-2 version, does not yet support MAC layer feedback as described in :rfc:`3626` ([rfc3626]_);

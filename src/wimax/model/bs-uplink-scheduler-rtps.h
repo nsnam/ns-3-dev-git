@@ -180,7 +180,7 @@ public:
    * \param serviceFlow the service flow
    */
   void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow);
- 
+
   /**
    * Process bandwidth requet function
    * \param bwRequestHdr the bandwidth request header

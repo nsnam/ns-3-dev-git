@@ -137,7 +137,7 @@ RadiansToDegreesTestCase::DoRun ()
 /**
  * \ingroup tests
  *
- * \brief TestSuite: degree to radians (and viceversa) conversions 
+ * \brief TestSuite: degree to radians (and viceversa) conversions
  */
 class DegreesRadiansTestSuite : public TestSuite
 {

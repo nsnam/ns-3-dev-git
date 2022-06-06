@@ -23,7 +23,7 @@
 #include "ipv6-route.h"
 #include "ipv6-routing-protocol.h"
 
-namespace ns3 
+namespace ns3
 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6RoutingProtocol);

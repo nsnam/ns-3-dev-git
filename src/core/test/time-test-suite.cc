@@ -69,14 +69,14 @@ private:
    * Helper function to handle boilerplate code for multiplication tests
    *
    * \tparam T type of multiplication value
-   *  
+   *
    * \param t Time value to multiply
    * \param expected Expected result of the multiplication
    * \param val Value to multiply by
    * \param msg Error message to print if test fails
    */
   template<typename T>
-  void TestMultiplication (Time t, Time expected, T val, const std::string& msg); 
+  void TestMultiplication (Time t, Time expected, T val, const std::string& msg);
 
   /**
    * Test multiplying a Time instance by various integer types
@@ -93,8 +93,8 @@ private:
    *
    * \tparam T type of division value
    *
-   * \param t Time value to divide 
-   * \param expected Expected result of the divsion 
+   * \param t Time value to divide
+   * \param expected Expected result of the divsion
    * \param val Value to divide by
    * \param msg Error message to print if test fails
    */
@@ -208,21 +208,21 @@ TimeSimpleTestCase::DoTeardown (void)
 {}
 
 template<typename T>
-void 
-TimeSimpleTestCase::TestMultiplication (Time t, Time expected, T val, 
-                                       const std::string& msg) 
-                      
+void
+TimeSimpleTestCase::TestMultiplication (Time t, Time expected, T val,
+                                       const std::string& msg)
+
 {
   using TestEntry = std::tuple<Time, std::string>;
-  std::array<TestEntry, 2> TESTS{ 
+  std::array<TestEntry, 2> TESTS{
       std::make_tuple (t * val, "Test Time * value: "),
       std::make_tuple (val * t, "Test Time * value: ")
   };
-  
+
   for (auto test: TESTS )
   {
     std::string errMsg = std::get<1> (test) + msg;
-  
+
     NS_TEST_ASSERT_MSG_EQ (std::get<0> (test), expected, errMsg);
   }
 }
@@ -231,28 +231,28 @@ void
 TimeSimpleTestCase::TestMultiplicationByIntegerTypes ()
 {
   int sec = 125;
-  int scale = 100; 
+  int scale = 100;
 
   Time t = Seconds (sec);
-  Time expected = Time (t.GetTimeStep () * scale); 
+  Time expected = Time (t.GetTimeStep () * scale);
 
   TestMultiplication (t, expected, static_cast<char> (scale), "Multiplication by char");
-  TestMultiplication (t, expected, static_cast<unsigned char> (scale), 
+  TestMultiplication (t, expected, static_cast<unsigned char> (scale),
                      "Multiplication by unsigned char");
   TestMultiplication (t, expected, static_cast<short> (scale), "Multiplication by short");
-  TestMultiplication (t, expected, static_cast<unsigned short> (scale), 
+  TestMultiplication (t, expected, static_cast<unsigned short> (scale),
                      "Multiplication by unsigned short");
   TestMultiplication (t, expected, static_cast<int> (scale), "Multiplication by int");
-  TestMultiplication (t, expected, static_cast<unsigned int> (scale), 
+  TestMultiplication (t, expected, static_cast<unsigned int> (scale),
                      "Multiplication by unsigned int");
   TestMultiplication (t, expected, static_cast<long> (scale), "Multiplication by long");
-  TestMultiplication (t, expected, static_cast<unsigned long> (scale), 
+  TestMultiplication (t, expected, static_cast<unsigned long> (scale),
                      "Multiplication by unsigned long");
-  TestMultiplication (t, expected, static_cast<long long> (scale), 
+  TestMultiplication (t, expected, static_cast<long long> (scale),
                      "Multiplication by long long");
-  TestMultiplication (t, expected, static_cast<unsigned long long> (scale), 
+  TestMultiplication (t, expected, static_cast<unsigned long long> (scale),
                      "Multiplication by unsigned long long");
-  TestMultiplication (t, expected, static_cast<std::size_t> (scale), 
+  TestMultiplication (t, expected, static_cast<std::size_t> (scale),
                      "Multiplication by size_t");
 
   int64x64_t scale64 = 100;
@@ -263,18 +263,18 @@ void
 TimeSimpleTestCase::TestMultiplicationByDecimalTypes ()
 {
   float sec = 150.0;
-  float scale = 100.2; 
+  float scale = 100.2;
 
   Time t = Seconds (sec);
-  Time expected = Time (t.GetDouble () * scale); 
+  Time expected = Time (t.GetDouble () * scale);
 
   TestMultiplication (t, expected, scale, "Multiplication by float");
-  TestMultiplication (t, expected, static_cast<double> (scale), 
+  TestMultiplication (t, expected, static_cast<double> (scale),
                      "Multiplication by double");
 }
 
 template<typename T>
-void 
+void
 TimeSimpleTestCase::TestDivision (Time t, Time expected, T val, const std::string& msg)
 {
   Time result = t / val;
@@ -282,49 +282,49 @@ TimeSimpleTestCase::TestDivision (Time t, Time expected, T val, const std::strin
   NS_TEST_ASSERT_MSG_EQ (result, expected, msg);
 }
 
-void 
+void
 TimeSimpleTestCase::TestDivisionByIntegerTypes()
 {
   int sec = 2000;
-  int scale = 100; 
+  int scale = 100;
 
   Time t = Seconds (sec);
   Time expected = Time (t.GetTimeStep () / scale);
 
   TestDivision (t, expected, static_cast<char> (scale), "Division by char");
-  TestDivision (t, expected, static_cast<unsigned char> (scale), 
+  TestDivision (t, expected, static_cast<unsigned char> (scale),
                      "Division by unsigned char");
   TestDivision (t, expected, static_cast<short> (scale), "Division by short");
-  TestDivision (t, expected, static_cast<unsigned short> (scale), 
+  TestDivision (t, expected, static_cast<unsigned short> (scale),
                      "Division by unsigned short");
   TestDivision (t, expected, static_cast<int> (scale), "Division by int");
-  TestDivision (t, expected, static_cast<unsigned int> (scale), 
+  TestDivision (t, expected, static_cast<unsigned int> (scale),
                      "Division by unsigned int");
   TestDivision (t, expected, static_cast<long> (scale), "Division by long");
-  TestDivision (t, expected, static_cast<unsigned long> (scale), 
+  TestDivision (t, expected, static_cast<unsigned long> (scale),
                      "Division by unsigned long");
-  TestDivision (t, expected, static_cast<long long> (scale), 
+  TestDivision (t, expected, static_cast<long long> (scale),
                      "Division by long long");
-  TestDivision (t, expected, static_cast<unsigned long long> (scale), 
+  TestDivision (t, expected, static_cast<unsigned long long> (scale),
                      "Division by unsigned long long");
-  TestDivision (t, expected, static_cast<std::size_t> (scale), 
+  TestDivision (t, expected, static_cast<std::size_t> (scale),
                      "Division by size_t");
 
   int64x64_t scale64 = 100;
   TestDivision (t, expected, scale64, "Division by int64x64_t");
 }
 
-void 
+void
 TimeSimpleTestCase::TestDivisionByDecimalTypes ()
 {
   float sec = 200.0;
-  float scale = 0.2; 
+  float scale = 0.2;
 
   Time t = Seconds (sec);
   Time expected = t / int64x64_t (scale);
 
   TestDivision (t, expected, scale, "Division by float");
-  TestDivision (t, expected, static_cast<double> (scale), 
+  TestDivision (t, expected, static_cast<double> (scale),
                      "Division by double");
 }
 
@@ -416,7 +416,7 @@ public:
 private:
   /**
    * \brief DoRun for TimeInputOutputTestCase.
-   */ 
+   */
   virtual void DoRun (void);
   /**
    * \brief Check roundtrip from/to string.

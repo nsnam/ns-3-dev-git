@@ -32,7 +32,7 @@ namespace ns3 {
 
 /**
  * \ingroup bridge
- * 
+ *
  * \brief Virtual channel implementation for bridges (BridgeNetDevice).
  *
  * Just like BridgeNetDevice aggregates multiple NetDevices,

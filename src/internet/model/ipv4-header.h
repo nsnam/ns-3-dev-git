@@ -30,7 +30,7 @@ namespace ns3 {
  *
  * \brief Packet header for IPv4
  */
-class Ipv4Header : public Header 
+class Ipv4Header : public Header
 {
 public:
   /**
@@ -116,7 +116,7 @@ public:
       ECN_ECT1 = 0x01,
       ECN_ECT0 = 0x02,
       ECN_CE = 0x03
-    }; 
+    };
   /**
    * \brief Set ECN Field
    * \param ecn ECN Type

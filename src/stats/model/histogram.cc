@@ -32,51 +32,51 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Histogram");
 
-// uint32_t 
+// uint32_t
 // Histogram::GetSize () const
 // {
 //   return m_histogram.size ();
 // }
 
-uint32_t 
+uint32_t
 Histogram::GetNBins () const
 {
   return m_histogram.size ();
 }
 
-double 
+double
 Histogram::GetBinStart (uint32_t index)
 {
   return index*m_binWidth;
 }
 
-double 
+double
 Histogram::GetBinEnd (uint32_t index)
 {
   return (index + 1) * m_binWidth;
 }
 
-double 
+double
 Histogram::GetBinWidth (uint32_t index) const
 {
   return m_binWidth;
 }
 
-void 
+void
 Histogram::SetDefaultBinWidth (double binWidth)
 {
   NS_ASSERT (m_histogram.size () == 0); //we can only change the bin width if no values were added
   m_binWidth = binWidth;
 }
 
-uint32_t 
-Histogram::GetBinCount (uint32_t index) 
+uint32_t
+Histogram::GetBinCount (uint32_t index)
 {
   NS_ASSERT (index < m_histogram.size ());
   return m_histogram[index];
 }
 
-void 
+void
 Histogram::AddValue (double value)
 {
   uint32_t index = (uint32_t)std::floor (value/m_binWidth);

@@ -122,7 +122,7 @@ public:
    *
    * \param arpRequestCallback Callback for transmitting an Arp request.
    */
-  void SetArpRequestCallback (Callback<void, Ptr<const ArpCache>, 
+  void SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
                                        Ipv4Address> arpRequestCallback);
   /**
    * This method will schedule a timeout at WaitReplyTimeout interval
@@ -203,7 +203,7 @@ public:
     void MarkPermanent (void);
     /**
      * \param waiting
-     * \return 
+     * \return
      */
     bool UpdateWaitReply (Ipv4PayloadHeaderPair waiting);
     /**
@@ -221,7 +221,7 @@ public:
     /**
      * \return True if the state of this entry is permanent; false otherwise.
      */
-    bool IsPermanent (void); 
+    bool IsPermanent (void);
     /**
      * \return The MacAddress of this entry
      */
@@ -246,7 +246,7 @@ public:
      */
     bool IsExpired (void) const;
     /**
-     * \returns 0 is no packet is pending, the next packet to send if 
+     * \returns 0 is no packet is pending, the next packet to send if
      *            packets are pending.
      */
     Ipv4PayloadHeaderPair DequeuePending (void);

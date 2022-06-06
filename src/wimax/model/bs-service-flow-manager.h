@@ -63,7 +63,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * \brief Add a new service flow
    * \param serviceFlow the service flow to add
@@ -117,7 +117,7 @@ public:
    * \brief process a DSA-Req message
    * \param dsaReq the message to process
    * \param cid the identifier of the connection on which the message was received
-   * \return a pointer to the service flow 
+   * \return a pointer to the service flow
    */
   ServiceFlow* ProcessDsaReq (const DsaReq &dsaReq, Cid cid);
 

@@ -21,7 +21,7 @@
  */
 
 /**
- * NOTE: These validation tests are same as provided in ns-2 
+ * NOTE: These validation tests are same as provided in ns-2
  * (ns/tcl/test/test-suite-adaptive-red.tcl)
  *
  * In this code, tests 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14 and 15 refer to tests

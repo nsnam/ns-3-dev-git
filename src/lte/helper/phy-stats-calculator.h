@@ -141,41 +141,41 @@ public:
    */
   void ReportInterference (uint16_t cellId, Ptr<SpectrumValue> interference);
 
-  /** 
+  /**
    * trace sink
-   * 
-   * \param phyStats 
-   * \param path 
-   * \param cellId 
-   * \param rnti 
-   * \param rsrp 
-   * \param sinr 
+   *
+   * \param phyStats
+   * \param path
+   * \param cellId
+   * \param rnti
+   * \param rsrp
+   * \param sinr
    * \param componentCarrierId
    */
   static void ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
                                           std::string path, uint16_t cellId, uint16_t rnti,
                                           double rsrp, double sinr, uint8_t componentCarrierId);
-  
-  /** 
+
+  /**
    * trace sink
-   * 
-   * \param phyStats 
-   * \param path 
-   * \param cellId 
-   * \param rnti 
+   *
+   * \param phyStats
+   * \param path
+   * \param cellId
+   * \param rnti
    * \param sinrLinear
    * \param componentCarrierId
    */
   static void ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string path,
                      uint16_t cellId, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId);
 
-  /** 
+  /**
    * trace sink
-   * 
-   * \param phyStats 
-   * \param path 
-   * \param cellId 
-   * \param interference 
+   *
+   * \param phyStats
+   * \param path
+   * \param cellId
+   * \param interference
    */
   static void ReportInterference (Ptr<PhyStatsCalculator> phyStats, std::string path,
                            uint16_t cellId, Ptr<SpectrumValue> interference);

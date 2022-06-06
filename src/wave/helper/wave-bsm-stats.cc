@@ -51,7 +51,7 @@ WaveBsmStats::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void
 WaveBsmStats::IncTxPktCount ()
 {

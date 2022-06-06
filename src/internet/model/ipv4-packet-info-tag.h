@@ -33,9 +33,9 @@ class Packet;
 /**
  * \ingroup ipv4
  *
- * \brief This class implements Linux struct pktinfo 
+ * \brief This class implements Linux struct pktinfo
  * in order to deliver ancillary information to the socket interface.
- * This is used with socket option such as IP_PKTINFO, IP_RECVTTL, 
+ * This is used with socket option such as IP_PKTINFO, IP_RECVTTL,
  * IP_RECVTOS. See linux manpage ip(7).
  *
  * See also SocketIpTosTag and SocketIpTtlTag
@@ -104,7 +104,7 @@ public:
 
 private:
   // Linux IP_PKTINFO ip(7) implementation
-  // 
+  //
   // struct in_pktinfo {
   //   unsigned int   ipi_ifindex;  /* Interface index */
   //   struct in_addr ipi_spec_dst; /* Local address */

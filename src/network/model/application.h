@@ -37,12 +37,12 @@ class Node;
  * Class ns3::Application can be used as a base class for ns3 applications.
  * Applications are associated with individual nodes.  Each node
  * holds a list of references (smart pointers) to its applications.
- * 
+ *
  * Conceptually, an application has zero or more ns3::Socket
  * objects associated with it, that are created using the Socket
  * creation API of the Kernel capability.  The Socket object
  * API is modeled after the
- * well-known BSD sockets interface, although it is somewhat 
+ * well-known BSD sockets interface, although it is somewhat
  * simplified for use with ns3.  Further, any socket call that
  * would normally "block" in normal sockets will return immediately
  * in ns3.  A set of "upcalls" are defined that will be called when

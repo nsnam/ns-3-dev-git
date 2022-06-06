@@ -46,10 +46,10 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  
+
   LteAmc ();
   virtual ~LteAmc();
-  
+
   /// Types of AMC model.
   enum AmcModel
     {
@@ -66,7 +66,7 @@ public:
        */
       MiErrorModel
     };
-  
+
   /**
    * \brief Get the Modulation and Coding Scheme for
    * a CQI value
@@ -116,9 +116,9 @@ public:
    * \return the CQI value
    */
   int GetCqiFromSpectralEfficiency (double s);
-  
+
 private:
-  
+
   /**
    * The `Ber` attribute.
    *

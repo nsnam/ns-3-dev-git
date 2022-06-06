@@ -50,13 +50,13 @@ void ReceivePacket (Ptr<Socket> socket)
     }
 }
 
-static void SendPacket (Ptr<Socket> socket, uint32_t pktSize, 
+static void SendPacket (Ptr<Socket> socket, uint32_t pktSize,
                         uint32_t pktCount, Time pktInterval )
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
-      Simulator::Schedule (pktInterval, &SendPacket, 
+      Simulator::Schedule (pktInterval, &SendPacket,
                            socket, pktSize,pktCount - 1, pktInterval);
     }
   else
@@ -65,7 +65,7 @@ static void SendPacket (Ptr<Socket> socket, uint32_t pktSize,
     }
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
 //
@@ -114,7 +114,7 @@ main (int argc, char *argv[])
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i = ipv4.Assign (d);
   serverAddress = Address(i.GetAddress (1));
-   
+
   NS_LOG_INFO ("Create sockets.");
   //Receiver socket on n1
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -148,7 +148,7 @@ main (int argc, char *argv[])
   //Schedule SendPacket
   Time interPacketInterval = Seconds (packetInterval);
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
-                                  Seconds (1.0), &SendPacket, 
+                                  Seconds (1.0), &SendPacket,
                                   source, packetSize, packetCount, interPacketInterval);
 
   NS_LOG_INFO ("Run Simulation.");

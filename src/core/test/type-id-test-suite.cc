@@ -48,7 +48,7 @@ const std::string suite ("type-id: ");
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * Test for uniqueness of all TypeIds.
  */
 class UniqueTypeIdTestCase : public TestCase
@@ -128,7 +128,7 @@ UniqueTypeIdTestCase::DoRun (void)
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * Collision test.
  */
 class CollisionTestCase : public TestCase
@@ -209,7 +209,7 @@ CollisionTestCase::DoRun (void)
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * Class used to test deprecated Attributes.
  */
 class DeprecatedAttribute : public Object
@@ -291,7 +291,7 @@ public:
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * Check deprecated Attributes and TraceSources.
  */
 class DeprecatedAttributeTestCase : public TestCase
@@ -354,7 +354,7 @@ DeprecatedAttributeTestCase::DoRun (void)
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * Performance test: measure average lookup time.
  */
 class LookupTimeTestCase : public TestCase
@@ -450,7 +450,7 @@ LookupTimeTestCase::Report (const std::string how,
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * TypeId test suites.
  */
 class TypeIdTestSuite : public TestSuite
@@ -475,12 +475,12 @@ TypeIdTestSuite::TypeIdTestSuite ()
 }
 
 /// Static variable for test initialization.
-static TypeIdTestSuite g_TypeIdTestSuite; 
+static TypeIdTestSuite g_TypeIdTestSuite;
 
 
 /**
  * \ingroup typeid-tests
- * 
+ *
  * TypeId performance test suites.
  */
 class TypeIdPerformanceSuite : public TestSuite

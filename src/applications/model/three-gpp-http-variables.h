@@ -277,7 +277,7 @@ private:
    * Mu and Sigma based on changes to attribute values.
    */
   void UpdateEmbeddedObjectMuAndSigma (void);
-  
+
   void DoInitialize (void);   // overridden from base class
 
   /**

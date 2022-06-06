@@ -35,7 +35,7 @@
 
 #include "ipv6-address-helper.h"
 
-namespace ns3 
+namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6AddressHelper");
@@ -211,7 +211,7 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c)
 {
   NS_LOG_FUNCTION (this);
   std::vector<bool> withConfiguration;
-  for (uint32_t i = 0; i < c.GetN (); ++i) 
+  for (uint32_t i = 0; i < c.GetN (); ++i)
     {
       withConfiguration.push_back (true);
     }
@@ -294,7 +294,7 @@ Ipv6InterfaceContainer Ipv6AddressHelper::AssignWithoutAddress (const NetDeviceC
 {
   NS_LOG_FUNCTION (this);
   std::vector<bool> withConfiguration;
-  for (uint32_t i = 0; i < c.GetN (); ++i) 
+  for (uint32_t i = 0; i < c.GetN (); ++i)
     {
       withConfiguration.push_back (false);
     }

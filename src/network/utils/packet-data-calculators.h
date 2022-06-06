@@ -44,7 +44,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Increments the packet counter by one
    *
@@ -83,13 +83,13 @@ class PacketSizeMinMaxAvgTotalCalculator :
 public:
   PacketSizeMinMaxAvgTotalCalculator();
   virtual ~PacketSizeMinMaxAvgTotalCalculator();
-  
+
   /**
    * Register this type.
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Increments the packet stats by the size of the packet
    *
@@ -97,14 +97,14 @@ public:
    * \param packet packet size used to update stats
    */
   void PacketUpdate (std::string path, Ptr<const Packet> packet);
-  
+
   /**
    * Increments the packet stats by the size of the packet
    *
    * \param path not used in this method
    * \param packet packet size used to update stats
    * \param realto not used in this method
-   */  
+   */
   void FrameUpdate (std::string path, Ptr<const Packet> packet,
                     Mac48Address realto);
 

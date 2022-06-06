@@ -35,7 +35,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocolMac");
-  
+
 namespace dot11s {
 
 HwmpProtocolMac::HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol) :
@@ -90,7 +90,7 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   if ((destination == Mac48Address::GetBroadcast ()) && (m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (),
                                                                                     source)))
     {
-      NS_LOG_DEBUG ("Dropping frame; source " << source << " dest " << destination << " seqno " << meshHdr.GetMeshSeqno ()); 
+      NS_LOG_DEBUG ("Dropping frame; source " << source << " dest " << destination << " seqno " << meshHdr.GetMeshSeqno ());
       return false;
     }
   return true;
@@ -221,7 +221,7 @@ HwmpProtocolMac::GetWifiActionHeader ()
   WifiActionHeader actionHdr;
   WifiActionHeader::ActionValue action;
   action.meshAction = WifiActionHeader::PATH_SELECTION;
-  actionHdr.SetAction (WifiActionHeader::MESH, action); 
+  actionHdr.SetAction (WifiActionHeader::MESH, action);
   return actionHdr;
 }
 void

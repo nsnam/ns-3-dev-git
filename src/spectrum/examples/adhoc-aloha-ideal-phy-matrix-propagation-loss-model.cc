@@ -65,26 +65,26 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
  *
  * Store the last pathloss value for each TX-RX pair. This is an
  * example of how the PathlossTrace (provided by some SpectrumChannel
- * implementations) work. 
- * 
+ * implementations) work.
+ *
  */
 class GlobalPathlossDatabase
 {
 public:
 
-  /** 
+  /**
    * update the pathloss value
-   * 
-   * \param context 
+   *
+   * \param context
    * \param txPhy the transmitting PHY
    * \param rxPhy the receiving PHY
    * \param lossDb the loss in dB
    */
   void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb);
 
-  /** 
+  /**
    * print the stored pathloss values to standard output
-   * 
+   *
    */
   void Print ();
 
@@ -93,9 +93,9 @@ private:
 };
 
 void
-GlobalPathlossDatabase::UpdatePathloss (std::string context, 
-                                        Ptr<const SpectrumPhy> txPhyConst, 
-                                        Ptr<const SpectrumPhy> rxPhyConst, 
+GlobalPathlossDatabase::UpdatePathloss (std::string context,
+                                        Ptr<const SpectrumPhy> txPhyConst,
+                                        Ptr<const SpectrumPhy> rxPhyConst,
                                         double lossDb)
 {
   Ptr<SpectrumPhy> txPhy = ConstCast<SpectrumPhy> (txPhyConst);
@@ -105,7 +105,7 @@ GlobalPathlossDatabase::UpdatePathloss (std::string context,
   m_pathlossMap[txNodeId][rxNodeId] = lossDb;
 }
 
-void 
+void
 GlobalPathlossDatabase::Print ()
 {
   for (std::map<uint32_t, std::map<uint32_t, double> >::const_iterator txit = m_pathlossMap.begin ();
@@ -127,7 +127,7 @@ int main (int argc, char** argv)
 {
   CommandLine cmd (__FILE__);
   double lossDb = 130;
-  double txPowerW = 0.1; 
+  double txPowerW = 0.1;
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
   double simDuration = 0.5;
@@ -197,7 +197,7 @@ int main (int argc, char** argv)
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback (&PhyRxEndOkTrace));
 
   GlobalPathlossDatabase globalPathlossDatabase;
-  Config::Connect ("/ChannelList/*/$ns3::SpectrumChannel/PathLoss", 
+  Config::Connect ("/ChannelList/*/$ns3::SpectrumChannel/PathLoss",
                    MakeCallback (&GlobalPathlossDatabase::UpdatePathloss, &globalPathlossDatabase));
 
   g_rxBytes = 0;
@@ -211,10 +211,10 @@ int main (int argc, char** argv)
       double throughputBps = (g_rxBytes * 8.0) / simDuration;
       std::cout << "throughput:       " << throughputBps << std::endl;
       std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
-      std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
+      std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl;
       double rxPowerW = txPowerW / (std::pow (10.0, lossDb/10.0));
       double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
-      std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+      std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl;
 
     }
 

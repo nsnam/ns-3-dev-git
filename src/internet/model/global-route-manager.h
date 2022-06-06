@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -32,7 +32,7 @@ namespace ns3 {
  * This singleton object can query interface each node in the system
  * for a GlobalRouter interface.  For those nodes, it fetches one or
  * more Link State Advertisements and stores them in a local database.
- * Then, it can compute shortest paths on a per-node basis to all routers, 
+ * Then, it can compute shortest paths on a per-node basis to all routers,
  * and finally configure each of the node's forwarding tables.
  *
  * The design is guided by OSPFv2 \RFC{2328} section 16.1.1 and quagga ospfd.
@@ -51,7 +51,7 @@ public:
   static uint32_t AllocateRouterId ();
 
 /**
- * @brief Delete all static routes on all nodes that have a 
+ * @brief Delete all static routes on all nodes that have a
  * GlobalRouterInterface
  *
  */

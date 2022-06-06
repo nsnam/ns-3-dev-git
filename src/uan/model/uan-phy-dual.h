@@ -45,7 +45,7 @@ public:
   UanPhyCalcSinrDual ();
   /** Destructor */
   virtual ~UanPhyCalcSinrDual ();
-  
+
   /**
    * Register this type.
    * \return The TypeId.
@@ -141,7 +141,7 @@ public:
   }
   int64_t AssignStreams (int64_t stream);
   Ptr<Packet> GetPacketRx (void) const;
-  
+
 
   /** \copydoc UanPhy::IsStateIdle */
   bool IsPhy1Idle (void);
@@ -187,7 +187,7 @@ public:
 
   /**
    * Set the available modes.
-   * 
+   *
    * \param modes List of modes.
    */
   void SetModesPhy1 (UanModesList modes);
@@ -220,7 +220,7 @@ public:
   Ptr<UanPhyCalcSinr> GetSinrModelPhy1 (void) const;
   /** \copydoc GetSinrModelPhy1 */
   Ptr<UanPhyCalcSinr> GetSinrModelPhy2 (void) const;
-  
+
   /**
    * Set the SINR calculator.
    *
@@ -230,7 +230,7 @@ public:
   /** \copydoc SetSinrModelPhy1 */
   void SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> calcSinr);
 
-  
+
   /** \copydoc UanPhy::GetPacketRx */
   Ptr<Packet> GetPhy1PacketRx (void) const;
   /** \copydoc UanPhy::GetPacketRx */
@@ -270,7 +270,7 @@ private:
    * \param sinr The SINR.
    */
   void RxErrFromSubPhy (Ptr<Packet> pkt, double sinr);
-  
+
 protected:
   virtual void DoDispose ();
 

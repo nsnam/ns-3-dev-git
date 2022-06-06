@@ -48,7 +48,7 @@ public:
    * \param modulationType modulation type
    * \param direction the direction
    * \param rxPowerDbm receive power
-   */ 
+   */
   simpleOfdmSendParam (const bvec &fecBlock, uint32_t burstSize,
                        bool isFirstBlock, uint64_t Frequency,
                        WimaxPhy::ModulationType modulationType, uint8_t direction,
@@ -63,7 +63,7 @@ public:
    * \param direction the direction
    * \param rxPowerDbm receive power
    * \param burst packet burst object
-   */ 
+   */
   simpleOfdmSendParam (uint32_t burstSize,
                        bool isFirstBlock, uint64_t Frequency,
                        WimaxPhy::ModulationType modulationType, uint8_t direction,

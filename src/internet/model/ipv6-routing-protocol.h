@@ -39,7 +39,7 @@ class Ipv6Route;
 class NetDevice;
 
 /**
- * \ingroup internet 
+ * \ingroup internet
  * \defgroup ipv6Routing IPv6 Routing Protocols.
  *
  * The classes in this group implement different routing protocols
@@ -49,10 +49,10 @@ class NetDevice;
 /**
  * \ingroup ipv6Routing
  * \brief Abstract base class for IPv6 routing protocols.
- * 
- * Defines two virtual functions for packet routing and forwarding.  The first, 
+ *
+ * Defines two virtual functions for packet routing and forwarding.  The first,
  * RouteOutput (), is used for locally originated packets, and the second,
- * RouteInput (), is used for forwarding and/or delivering received packets. 
+ * RouteInput (), is used for forwarding and/or delivering received packets.
  * Also defines the signatures of four callbacks used in RouteInput ().
  */
 
@@ -85,11 +85,11 @@ public:
    * multicast or unicast.  The Linux equivalent is ip_route_output ()
    *
    * \param p packet to be routed.  Note that this method may modify the packet.
-   *          Callers may also pass in a null pointer. 
+   *          Callers may also pass in a null pointer.
    * \param header input parameter (used to form key to search for the route)
    * \param oif Output interface device.  May be zero, or may be bound via
    *            socket options to a particular output interface.
-   * \param sockerr Output parameter; socket errno 
+   * \param sockerr Output parameter; socket errno
    *
    * \returns a code that indicates what happened in the lookup
    */
@@ -113,11 +113,11 @@ public:
    * \param lcb Callback for the case in which the packet is to be locally
    *            delivered
    * \param ecb Callback to call if there is an error in forwarding
-   * \returns true if the Ipv6RoutingProtocol takes responsibility for 
+   * \returns true if the Ipv6RoutingProtocol takes responsibility for
    *          forwarding or delivering the packet, false otherwise
-   */ 
-  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev, 
-                            UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
+   */
+  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
+                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                             LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
 
   /**

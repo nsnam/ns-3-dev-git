@@ -77,7 +77,7 @@ public:
   ApplicationContainer Install (std::string nodeName) const;
 
   /**
-   * \brief Configure ping applications attribute 
+   * \brief Configure ping applications attribute
    * \param name   attribute's name
    * \param value  attribute's value
    */

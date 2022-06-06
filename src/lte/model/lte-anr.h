@@ -218,7 +218,7 @@ private:
   typedef std::map<uint16_t, NeighbourRelation_t> NeighbourRelationTable_t;
 
   /// neighbor relation table
-  NeighbourRelationTable_t m_neighbourRelationTable; 
+  NeighbourRelationTable_t m_neighbourRelationTable;
 
   /**
    * \internal methods

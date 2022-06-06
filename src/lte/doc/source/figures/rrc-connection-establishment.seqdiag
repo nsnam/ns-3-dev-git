@@ -2,10 +2,10 @@
 
 diagram {
 	AsSap; UeRrc; CmacSap; RrcSap; EnbRrc;
-	
+
 
 	AsSap ->> UeRrc [label="Connect"]
-	UeRrc ->> CmacSap [label="StartContentionBasedRandomAccessProcedure"]   
+	UeRrc ->> CmacSap [label="StartContentionBasedRandomAccessProcedure"]
 	=== UE sends RA preamble and receives RAR with T-C-RNTI ===
 	UeRrc <<- CmacSap [label="SetTemporaryCellRnti"]
 	UeRrc ->> RrcSap [label="send RRC CONNECTION REQUEST"]

@@ -1111,7 +1111,7 @@ LteRlcUm::ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 
 
           m_rxBuffer.erase (it);
         }
-        
+
       reassembleSn++;
     }
 }

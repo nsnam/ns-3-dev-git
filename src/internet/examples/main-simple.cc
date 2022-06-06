@@ -59,7 +59,7 @@ SocketPrinter (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   while ((packet = socket->Recv ()))
-    { 
+    {
       std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
     }
 }

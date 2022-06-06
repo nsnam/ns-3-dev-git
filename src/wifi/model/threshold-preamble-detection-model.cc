@@ -81,7 +81,7 @@ ThresholdPreambleDetectionModel::IsPreambleDetected (double rssi, double snr, do
       NS_LOG_DEBUG ("Received RSSI is below the target RSSI");
       return false;
     }
-  
+
 }
 
 } //namespace ns3

@@ -29,7 +29,7 @@ elementclass LanSimHost {
   arpquerier::ARPQuerier(eth0);
   arpresponder::ARPResponder(eth0);
 
-  ethout::Queue 	
+  ethout::Queue
     -> ToDump(out_eth0.pcap,PER_NODE 1)
     -> ToSimDevice(eth0);
 
@@ -46,12 +46,12 @@ elementclass LanSimHost {
   cl[1] -> [1]arpquerier;
 
   // All other packets get checked whether they are meant for us
-  cl[2]				
+  cl[2]
     -> Strip(14)
     -> CheckIPHeader2
     -> MarkIPHeader
     -> GetIPAddress(16) // Sets destination IP address annotation from packet data
-    -> forhost; 
+    -> forhost;
 
   // Packets for us are pushed outside
   forhost[0]
@@ -83,7 +83,7 @@ elementclass TapSimHost {
 
   // Packets go to "tap0" which sends them to the kernel
   input[0]
-    -> ToDump(tokernel.pcap,2000,IP,PER_NODE 1) 
+    -> ToDump(tokernel.pcap,2000,IP,PER_NODE 1)
     -> ToSimDevice($dev,IP);
 
   // Packets sent out by the "kernel" get pushed outside

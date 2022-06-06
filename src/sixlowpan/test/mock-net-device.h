@@ -35,7 +35,7 @@ class Node;
  *
  * This device assumes 48-bit mac addressing; there is also the possibility to
  * add an ErrorModel if you want to force losses on the device.
- * 
+ *
  * The device can be installed on a node through the MockNetDeviceHelper.
  * In case of manual creation, the user is responsible for assigning an unique
  * address to the device.

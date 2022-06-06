@@ -38,7 +38,7 @@ BridgeHelper::BridgeHelper ()
   m_deviceFactory.SetTypeId ("ns3::BridgeNetDevice");
 }
 
-void 
+void
 BridgeHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -224,7 +224,7 @@ RawTextConfigLoad::Default (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) 
+      if (!ParseLine (line, type, name, value))
         {
           continue;
         }
@@ -249,7 +249,7 @@ RawTextConfigLoad::Global (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) 
+      if (!ParseLine (line, type, name, value))
         {
           continue;
         }
@@ -274,7 +274,7 @@ RawTextConfigLoad::Attributes (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) 
+      if (!ParseLine (line, type, name, value))
         {
           continue;
         }

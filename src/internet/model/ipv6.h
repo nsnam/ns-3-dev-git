@@ -52,22 +52,22 @@ class Ipv6Route;
  *
  * This class defines the API to manipulate the following aspects of
  * the IPv6 implementation:
- * -# set/get an Ipv6RoutingProtocol 
+ * -# set/get an Ipv6RoutingProtocol
  * -# register a NetDevice for use by the IPv6 layer (basically, to
- * create IPv6-related state such as addressing and neighbor cache that 
+ * create IPv6-related state such as addressing and neighbor cache that
  * is associated with a NetDevice)
- * -# manipulate the status of the NetDevice from the IPv6 perspective, 
- * such as marking it as Up or Down, 
- * -# adding, deleting, and getting addresses associated to the IPv6 
+ * -# manipulate the status of the NetDevice from the IPv6 perspective,
+ * such as marking it as Up or Down,
+ * -# adding, deleting, and getting addresses associated to the IPv6
  * interfaces.
  * -# exporting IPv6 configuration attributes
- * 
+ *
  * Each NetDevice has conceptually a single IPv6 interface associated
  * with it (the corresponding structure in the Linux IPv6 implementation
  * is struct in_device).  Each interface may have one or more IPv6
  * addresses associated with it.  Each IPv6 address may have different
- * subnet mask, scope, etc., so all of this per-address information 
- * is stored in an Ipv6InterfaceAddress class (the corresponding 
+ * subnet mask, scope, etc., so all of this per-address information
+ * is stored in an Ipv6InterfaceAddress class (the corresponding
  * structure in Linux is struct in6_ifaddr)
  *
  * IPv6 attributes such as whether IP forwarding is enabled and disabled
@@ -100,17 +100,17 @@ public:
   /**
    * \brief Register a new routing protocol to be used by this IPv6 stack
    *
-   * This call will replace any routing protocol that has been previously 
+   * This call will replace any routing protocol that has been previously
    * registered.  If you want to add multiple routing protocols, you must
    * add them to a Ipv6ListRoutingProtocol directly.
-   * 
+   *
    * \param routingProtocol smart pointer to Ipv6RoutingProtocol object
    */
   virtual void SetRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol) = 0;
 
   /**
    * \brief Get the routing protocol to be used by this IPv6 stack
-   * 
+   *
    * \returns smart pointer to Ipv6RoutingProtocol object, or null pointer if none
    */
   virtual Ptr<Ipv6RoutingProtocol> GetRoutingProtocol (void) const = 0;
@@ -138,7 +138,7 @@ public:
    *        assigned the specified IP address.
    *
    * \param address The IP address being searched for
-   * \returns The interface number of the IPv6 interface with the given 
+   * \returns The interface number of the IPv6 interface with the given
    *          address or -1 if not found.
    *
    * Each IP interface has one or more IP addresses associated with it.
@@ -150,18 +150,18 @@ public:
   virtual int32_t GetInterfaceForAddress (Ipv6Address address) const = 0;
 
   /**
-   * \brief Return the interface number of first interface found that 
+   * \brief Return the interface number of first interface found that
    *  has an IPv6 address within the prefix specified by the input
    *  address and mask parameters
    *
    * \param address The IP address assigned to the interface of interest.
    * \param mask The IP prefix to use in the mask
-   * \returns The interface number of the IPv6 interface with the given 
+   * \returns The interface number of the IPv6 interface with the given
    *          address or -1 if not found.
    *
    * Each IP interface has one or more IP addresses associated with it.
    * This method searches the list of interfaces for the first one found
-   * that holds an address that is included within the prefix 
+   * that holds an address that is included within the prefix
    * formed by the input address and mask parameters.  The value -1 is
    * returned if no match is found.
    */
@@ -203,9 +203,9 @@ public:
    *
    * Because addresses can be removed, the addressIndex is not guaranteed
    * to be static across calls to this method.
-   * 
+   *
    * \param interface Interface number of an IPv6 interface
-   * \param addressIndex index of Ipv6InterfaceAddress 
+   * \param addressIndex index of Ipv6InterfaceAddress
    * \returns the Ipv6InterfaceAddress associated to the interface and addressIndex
    */
   virtual Ipv6InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
@@ -217,9 +217,9 @@ public:
    * for all higher indices will decrement by one after this method is called;
    * so, for example, to remove 5 addresses from an interface i, one could
    * call RemoveAddress (i, 0); 5 times.
-   * 
+   *
    * \param interface Interface number of an IPv6 interface
-   * \param addressIndex index of Ipv6InterfaceAddress to remove 
+   * \param addressIndex index of Ipv6InterfaceAddress to remove
    * \returns true if the operation succeeded
    */
   virtual bool RemoveAddress (uint32_t interface, uint32_t addressIndex) = 0;
@@ -237,7 +237,7 @@ public:
    * \brief Set metric on specified Ipv6 interface.
    *
    * \param interface The interface number of an IPv6 interface
-   * \param metric routing metric (cost) associated to the underlying 
+   * \param metric routing metric (cost) associated to the underlying
    *          IPv6 interface
    */
   virtual void SetMetric (uint32_t interface, uint16_t metric) = 0;
@@ -246,7 +246,7 @@ public:
    * \brief Get metric for the specified IPv6 interface.
    *
    * \param interface The interface number of an IPv6 interface
-   * \returns routing metric (cost) associated to the underlying 
+   * \returns routing metric (cost) associated to the underlying
    *          IPv6 interface
    */
   virtual uint16_t GetMetric (uint32_t interface) const = 0;
@@ -275,7 +275,7 @@ public:
   virtual bool IsUp (uint32_t interface) const = 0;
 
   /**
-   * \brief Set the interface into the "up" state. 
+   * \brief Set the interface into the "up" state.
    *
    * In this state, it is considered valid during IPv6 forwarding.
    * \param interface Interface number of IPv6 interface
@@ -301,7 +301,7 @@ public:
    * \brief Set forwarding on specified IPv6 interface.
    * \param interface Interface number of IPv6 interface
    * \param val Value to set the forwarding flag
-   * 
+   *
    * If set to true, IPv6 forwarding is enabled for input datagrams on this device
    */
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
@@ -419,7 +419,7 @@ private:
   virtual bool GetMtuDiscover (void) const = 0;
 };
 
-} // namespace ns3 
+} // namespace ns3
 
 #endif /* IPV6_H */
 

@@ -17,7 +17,7 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #ifndef LTE_HELPER_H
@@ -81,7 +81,7 @@ class SpectrumPropagationLossModel;
  *     * Handover algorithm
  *     * FFR (frequency reuse) algorithm
  *     * ANR (automatic neighbour relation)
- *     * CCM (Carrier Component Manager) 
+ *     * CCM (Carrier Component Manager)
  *   + EPC related models (EPC application, Internet stack, X2 interface)
  * - UE node(s)
  *   + Mobility model
@@ -112,7 +112,7 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
-  /** 
+  /**
    * Set the EpcHelper to be used to setup the EPC network in
    * conjunction with the setup of the LTE radio access network.
    *
@@ -122,14 +122,14 @@ public:
    * words, it will be a radio-level simulation involving only LTE PHY
    * and MAC and the FF Scheduler, with a saturation traffic model for
    * the RLC.
-   * 
+   *
    * \param h a pointer to the EpcHelper to be used
    */
   void SetEpcHelper (Ptr<EpcHelper> h);
 
-  /** 
+  /**
    * Set the type of path loss model to be used for both DL and UL channels.
-   * 
+   *
    * \param type type of path loss model, must be a type name of any class
    *             inheriting from ns3::PropagationLossModel, for example:
    *             "ns3::FriisPropagationLossModel"
@@ -138,15 +138,15 @@ public:
 
   /**
    * Set an attribute for the path loss models to be created.
-   * 
+   *
    * \param n the name of the attribute
    * \param v the value of the attribute
    */
   void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of scheduler to be used by eNodeB devices.
-   * 
+   *
    * \param type type of scheduler, must be a type name of any class
    *             inheriting from ns3::FfMacScheduler, for example:
    *             "ns3::PfFfMacScheduler"
@@ -159,11 +159,11 @@ public:
    *
    * \return the scheduler type
    */
-  std::string GetSchedulerType () const; 
+  std::string GetSchedulerType () const;
 
   /**
    * Set an attribute for the scheduler to be created.
-   * 
+   *
    * \param n the name of the attribute
    * \param v the value of the attribute
    */
@@ -221,15 +221,15 @@ public:
 
   /**
    * Set an attribute for the eNodeB devices (LteEnbNetDevice) to be created.
-   * 
+   *
    * \param n the name of the attribute.
    * \param v the value of the attribute
    */
   void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of antenna model to be used by eNodeB devices.
-   * 
+   *
    * \param type type of antenna model, must be a type name of any class
    *             inheriting from ns3::AntennaModel, for example:
    *             "ns3::IsotropicAntennaModel"
@@ -238,7 +238,7 @@ public:
 
   /**
    * Set an attribute for the eNodeB antenna model to be created.
-   * 
+   *
    * \param n the name of the attribute.
    * \param v the value of the attribute
    */
@@ -252,9 +252,9 @@ public:
    */
   void SetUeDeviceAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of antenna model to be used by UE devices.
-   * 
+   *
    * \param type type of antenna model, must be a type name of any class
    *             inheriting from ns3::AntennaModel, for example:
    *             "ns3::IsotropicAntennaModel"
@@ -263,7 +263,7 @@ public:
 
   /**
    * Set an attribute for the UE antenna model to be created.
-   * 
+   *
    * \param n the name of the attribute
    * \param v the value of the attribute
    */
@@ -280,7 +280,7 @@ public:
 
   /**
    * Set an attribute for the spectrum channel to be created (both DL and UL).
-   * 
+   *
    * \param n the name of the attribute
    * \param v the value of the attribute
    */
@@ -415,23 +415,23 @@ public:
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t componentCarrierId = 0);
 
-  /** 
+  /**
    * \brief Manual attachment of a set of UE devices to the network via the
    *        closest eNodeB (with respect to distance) among those in the set.
    * \param ueDevices the set of UE devices to be attached
    * \param enbDevices the set of eNodeB devices to be considered
-   * 
+   *
    * This function finds among the eNodeB set the closest eNodeB for each UE,
    * and then invokes manual attachment between the pair.
-   * 
+   *
    * Users are encouraged to use automatic attachment (Idle mode cell selection)
    * instead of this function.
-   * 
+   *
    * \sa LteHelper::Attach(NetDeviceContainer ueDevices);
    */
   void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
-  /** 
+  /**
    * \brief Manual attachment of a UE device to the network via the closest
    *        eNodeB (with respect to distance) among those in the set.
    * \param ueDevice the UE device to be attached
@@ -439,7 +439,7 @@ public:
    *
    * This function finds among the eNodeB set the closest eNodeB for the UE,
    * and then invokes manual attachment between the pair.
-   * 
+   *
    * Users are encouraged to use automatic attachment (Idle mode cell selection)
    * instead of this function.
    *
@@ -524,27 +524,27 @@ public:
   void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev,
                         Ptr<NetDevice> sourceEnbDev, uint16_t targetCellId);
 
-  /** 
+  /**
    * Activate a Data Radio Bearer on a given UE devices (for LTE-only simulation).
-   * 
+   *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    */
   void ActivateDataRadioBearer (NetDeviceContainer ueDevices,  EpsBearer bearer);
 
-  /** 
+  /**
    * Activate a Data Radio Bearer on a UE device (for LTE-only simulation).
    * This method will schedule the actual activation
    * the bearer so that it happens after the UE got connected.
-   * 
+   *
    * \param ueDevice the UE device
    * \param bearer the characteristics of the bearer to be activated
    */
   void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
 
-  /** 
+  /**
    * Set the type of fading model to be used in both DL and UL.
-   * 
+   *
    * \param type type of fading model, must be a type name of any class
    *             inheriting from ns3::SpectrumPropagationLossModel, for
    *             example: "ns3::TraceFadingLossModel"
@@ -626,8 +626,8 @@ public:
    */
   void EnableRlcTraces (void);
 
-  /** 
-   * 
+  /**
+   *
    * \return the RLC stats calculator object
    */
   Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
@@ -637,8 +637,8 @@ public:
    */
   void EnablePdcpTraces (void);
 
-  /** 
-   * 
+  /**
+   *
    * \return the PDCP stats calculator object
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
@@ -659,13 +659,13 @@ public:
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
-  /** 
+  /**
    * \return a pointer to the SpectrumChannel instance used for the uplink
    */
   Ptr<SpectrumChannel> GetUplinkSpectrumChannel (void) const;
 
 
-  /** 
+  /**
    * \return a pointer to the SpectrumChannel instance used for the downlink
    */
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;

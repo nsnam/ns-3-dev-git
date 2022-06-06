@@ -323,7 +323,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                       propagationGainDb = m_propagationLoss->CalcRxPower (0, txMobility, receiverMobility);
                       NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
                       pathLossDb -= propagationGainDb;
-                    }                    
+                    }
                   NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");
                   // Gain trace
                   m_gainTrace (txMobility, receiverMobility, txAntennaGain, rxAntennaGain, propagationGainDb, pathLossDb);
@@ -335,7 +335,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                       continue;
                     }
                   double pathGainLinear = std::pow (10.0, (-pathLossDb) / 10.0);
-                  *(rxParams->psd) *= pathGainLinear;              
+                  *(rxParams->psd) *= pathGainLinear;
 
                   if (m_spectrumPropagationLoss)
                     {
@@ -396,12 +396,12 @@ MultiModelSpectrumChannel::GetDevice (std::size_t i) const
   NS_ASSERT (i < m_numDevices);
   // this method implementation is computationally intensive. This
   // method would be faster if we actually used a std::vector for
-  // storing devices, which we don't due to the need to have fast 
+  // storing devices, which we don't due to the need to have fast
   // SpectrumModel conversions and to allow PHY devices to change a
   // SpectrumModel at run time. Note that having this method slow is
   // acceptable as it is not used much at run time (often not at all).
   // On the other hand, having slow SpectrumModel conversion would be
-  // less acceptable. 
+  // less acceptable.
   std::size_t j = 0;
   for (RxSpectrumModelInfoMap_t::const_iterator rxInfoIterator = m_rxSpectrumModelInfoMap.begin ();
        rxInfoIterator !=  m_rxSpectrumModelInfoMap.end ();

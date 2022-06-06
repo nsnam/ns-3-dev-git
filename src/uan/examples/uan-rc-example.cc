@@ -3,7 +3,7 @@
  * Copyright (c) 2009 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,26 +28,26 @@
  * a reservation channel and a data channel.  The network is assumed
  * to consist of a single gateway node which services several
  * non-gateway nodes.
- * 
+ *
  * Time is divided into cycles.  The non-gateway nodes transmit RTS packets
  * on the reservation channel in parallel to scheduled data transmissions
  * (scheduled in the previous cycle), and the gateway stores these requests
  * for the duration of the cycle.  At the start of the next cycle
  * the gateway node transmits a CTS which contains packet transmission times
  * for reserved packets as well as bandwidth allocation information
- * 
+ *
  * This script deploys a single gateway node (current UanMacRc only supports
  * a single gateway) in the center of a region and then distributes
  * non-gateway nodes around the gateway with a uniformly distributed range
  * between each node and the gateway.
- * 
+ *
  * The script supports two simulation types.  By default the gateway
  * dynamically determines the optimal parameter settings and
  * simulations are run with varying number of nodes (SimMin to SimMax as
  * set by the command line).  If DoNode=0 is given as a command line option
  * then the mac parameter "a" (approximate expected number of successful
  * RTS arrivals per cycle) is varied as the simulation parameter.
- * 
+ *
  * For questions about this MAC protocol email "lentracy@gmail.com"
  */
 
@@ -67,7 +67,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UanRcExample");
 
-Experiment::Experiment () 
+Experiment::Experiment ()
   : m_simMin (1),
     m_simMax (1),
     m_simStep (1),
@@ -81,7 +81,7 @@ Experiment::Experiment ()
     m_simTime (Seconds (5000)),
     m_gnuplotfile ("uan-rc-example.gpl"),
     m_bytesTotal (0)
-{ 
+{
 }
 
 void

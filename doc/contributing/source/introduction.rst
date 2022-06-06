@@ -22,12 +22,12 @@ End users are encouraged to report issues and bugs, or to propose
 software or documentation modifications, to be reviewed by and handled by
 maintainers.  End users can also help by reviewing code
 proposals made by others.  Some end users who contribute high quality
-patches or code reviews over time may ask or be invited to become 
+patches or code reviews over time may ask or be invited to become
 a maintainer of software within their areas of expertise.  Finally, some
 end users wish to disseminate their |ns3| work to the community, through
 the addition of new features or modules to |ns3|.
 
-A question often asked by newcomers is "How can I contribute to |ns3|?" 
+A question often asked by newcomers is "How can I contribute to |ns3|?"
 or "How do I get started?".
 This document summarizes the various ways and processes used to contribute
 to |ns3|.  Contribution by users is essential for a project maintained
@@ -37,8 +37,8 @@ contributors to please become familiar with conventions and processes
 used by |ns3| so as to smooth the contribution process.
 
 The very first step is to become familiar with |ns3| by reading the tutorial,
-running some example programs, and then reading some of the code and 
-documentation to get a feel for things.  From that point, there are a 
+running some example programs, and then reading some of the code and
+documentation to get a feel for things.  From that point, there are a
 number of options to contribute:
 
 * Contributing a small documentation correction
@@ -54,7 +54,7 @@ number of options to contribute:
 how to contribute |ns3| code specifically, but the overall open source
 project maintains various related codebases written in several other
 languages, so if you are interested in contributing outside of |ns3|
-C++ code, there are several possibilities: 
+C++ code, there are several possibilities:
 
 * |ns3| provides Python bindings to most of its API, and maintains an
   automated API scanning process that relies on other tools.  We can use
@@ -64,7 +64,7 @@ C++ code, there are several possibilities:
 * The `NetAnim <https://gitlab.com/nsnam/netanim>`_ animator is written in `Qt <https://www.qt.io/>`_ and has lacked a maintainer for several years.
 * If you are interested in Linux kernel hacking, or use of applications in |ns3| such as open source routing daemons, we maintain the
   `Direct Code Execution project <https://www.nsnam.org/docs/dce/manual/html/index.html>`_.
-* If you are familiar with `Django <https://www.djangoproject.com/>`_, we have work to do on `our app store infrastructure <https://gitlab.com/nsnam/ns-3-AppStore>`_. 
+* If you are familiar with `Django <https://www.djangoproject.com/>`_, we have work to do on `our app store infrastructure <https://gitlab.com/nsnam/ns-3-AppStore>`_.
 * Our `website <https://gitlab.com/nsnam/nsnam-web>`_ is written in `Jekyll <https://jekyllrb.com/>`_ and is in need of more work.
 
 The remainder of this document is organized as follows.

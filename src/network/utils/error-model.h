@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 University of Washington
- * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas 
+ * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * This file incorporates work covered by the following copyright and  
- * permission notice:   
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
  *
  * Copyright (c) 1997 Regents of the University of California.
  * All rights reserved.
@@ -57,7 +57,7 @@
  *
  * Author: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
  *         ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
- *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director 
+ *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 
 #ifndef ERROR_MODEL_H
@@ -80,10 +80,10 @@ class Packet;
  * \brief General error model that can be used to corrupt packets
  *
  * This object is used to flag packets as being lost/errored or not.
- * It is part of the Object framework and can be aggregated to 
+ * It is part of the Object framework and can be aggregated to
  * other ns3 objects and handled by the Ptr class.
  *
- * The main method is IsCorrupt(Ptr<Packet> p) which returns true if 
+ * The main method is IsCorrupt(Ptr<Packet> p) which returns true if
  * the packet is to be corrupted according to the underlying model.
  * Depending on the error model, the packet itself may have its packet
  * data buffer errored or not, or side information may be returned to
@@ -91,10 +91,10 @@ class Packet;
  * that actually error the bits in a packet presently exist).
  * The object can have state (resettable by Reset()).
  * The object can also be enabled and disabled via two public member functions.
- * 
- * Typical code (simplified) to use an ErrorModel may look something like 
+ *
+ * Typical code (simplified) to use an ErrorModel may look something like
  * this:
- * \code 
+ * \code
  * Ptr<ErrorModel> rem = CreateObject<RateErrorModel> ();
  * Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
  * rem->SetRandomVariable (uv);
@@ -109,8 +109,8 @@ class Packet;
  *   }
  * \endcode
  *
- * Four practical error models, a RateErrorModel, a BurstErrorModel, 
- * a ListErrorModel, and a ReceiveListErrorModel, are currently implemented. 
+ * Four practical error models, a RateErrorModel, a BurstErrorModel,
+ * a ListErrorModel, and a ReceiveListErrorModel, are currently implemented.
  */
 class ErrorModel : public Object
 {
@@ -203,25 +203,25 @@ public:
 
   /**
    * \returns the ErrorUnit being used by the underlying model
-   */ 
+   */
   RateErrorModel::ErrorUnit GetUnit (void) const;
   /**
    * \param error_unit the ErrorUnit to be used by the underlying model
-   */ 
+   */
   void SetUnit (enum ErrorUnit error_unit);
 
   /**
    * \returns the error rate being applied by the model
-   */ 
+   */
   double GetRate (void) const;
   /**
    * \param rate the error rate to be used by the model
-   */ 
+   */
   void SetRate (double rate);
 
   /**
    * \param ranvar A random variable distribution to generate random variates
-   */ 
+   */
   void SetRandomVariable (Ptr<RandomVariableStream>);
 
  /**
@@ -264,33 +264,33 @@ private:
 
 
 /**
- * \brief Determine which bursts of packets are errored corresponding to 
+ * \brief Determine which bursts of packets are errored corresponding to
  * an underlying distribution, burst rate, and burst size.
  *
  * This object is used to flag packets as being lost/errored or not.
  * The two parameters that govern the behavior are the burst rate (or
- * equivalently, the mean duration/spacing between between error events), 
- * and the burst size (or equivalently, the number of packets being flagged 
+ * equivalently, the mean duration/spacing between between error events),
+ * and the burst size (or equivalently, the number of packets being flagged
  * as errored at each error event).
  *
  * Users can optionally provide RandomVariableStream objects;
  * the default for the decision variable is to use a Uniform(0,1) distribution;
- * the default for the burst size (number of packets) is to use a 
+ * the default for the burst size (number of packets) is to use a
  * discrete Uniform[1,4] distribution.
  *
- * For every packet, the model generates a random number based on the 
- * decision variable, and compares it with the burst error rate to 
+ * For every packet, the model generates a random number based on the
+ * decision variable, and compares it with the burst error rate to
  * determine if a burst error event should occur.
- * If a new error event occurs, the model to will generate a new burst size 
+ * If a new error event occurs, the model to will generate a new burst size
  * to determine how many packets should be dropped in this particular burst
  * error event in addition to the current packet.
  *
- * When a second packet arrives, the model again determines if a new error 
- * event should occur based on a newly generated decision variable and 
- * the burst error rate. If a new error event is determined to occur, 
+ * When a second packet arrives, the model again determines if a new error
+ * event should occur based on a newly generated decision variable and
+ * the burst error rate. If a new error event is determined to occur,
  * the model will restart with a new burst size. Otherwise, the model will
- * resume the last error event and drop the packet provided that the 
- * total number of packets that has been dropped does not exceed the 
+ * resume the last error event and drop the packet provided that the
+ * total number of packets that has been dropped does not exceed the
  * burst size.
  *
  * IsCorrupt() will not modify the packet data buffer
@@ -362,16 +362,16 @@ private:
  * in general, Packet uids received may be unordered.  Therefore,
  * each call to IsCorrupt() will result in a walk of the list with
  * the present underlying implementation.
- * 
+ *
  * Note also that if one wants to target multiple packets from looking
  * at an (unerrored) trace file, the act of erroring a given packet may
- * cause subsequent packet uids to change.  For instance, suppose one wants 
+ * cause subsequent packet uids to change.  For instance, suppose one wants
  * to error packets 11 and 17 on a given device.  It may be that erroring
  * packet 11 will cause the subsequent uid stream to change and 17 may no
  * longer correspond to the second packet that one wants to lose.  Therefore,
  * be advised that it might take some trial and error to select the
  * right uids when multiple are provided.
- * 
+ *
  * Reset() on this model will clear the list
  *
  * IsCorrupt() will not modify the packet data buffer
@@ -418,7 +418,7 @@ private:
  * corrupt, except that the list corresponds to the sequence of
  * received packets as observed by this error model, and not the
  * Packet UID.
- * 
+ *
  * Reset() on this model will clear the list
  *
  * IsCorrupt() will not modify the packet data buffer

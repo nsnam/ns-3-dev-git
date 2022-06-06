@@ -103,13 +103,13 @@ LtePhy::GetDevice () const
   return m_netDevice;
 }
 
-Ptr<LteSpectrumPhy> 
+Ptr<LteSpectrumPhy>
 LtePhy::GetDownlinkSpectrumPhy ()
 {
   return m_downlinkSpectrumPhy;
 }
 
-Ptr<LteSpectrumPhy> 
+Ptr<LteSpectrumPhy>
 LtePhy::GetUplinkSpectrumPhy ()
 {
   return m_uplinkSpectrumPhy;

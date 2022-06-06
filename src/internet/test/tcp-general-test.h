@@ -609,7 +609,7 @@ protected:
 
   /**
    * \brief Enable or disable pacing in the TCP socket
-   * 
+   *
    * \param who socket
    * \param pacing Boolean to enable or disable pacing
    */
@@ -617,7 +617,7 @@ protected:
 
   /**
    * \brief Enable or disable pacing of the initial window
-   * 
+   *
    * \param who socket
    * \param paceWindow Boolean to enable or disable pacing of initial window
    */

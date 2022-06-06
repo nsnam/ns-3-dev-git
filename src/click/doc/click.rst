@@ -7,7 +7,7 @@ Click is a software architecture for building configurable routers.
 By using different combinations of packet processing units called elements,
 a Click router can be made to perform a specific kind of functionality.
 This flexibility provides a good platform for testing and experimenting with
-different protocols. 
+different protocols.
 
 Model Description
 *****************
@@ -21,9 +21,9 @@ ns-3's design is well suited for an integration with Click due to the following 
 
 * Packets in ns-3 are serialised/deserialised as they move up/down the stack. This allows ns-3 packets to be passed to and from Click as they are.
 * This also means that any kind of ns-3 traffic generator and transport should work easily on top of Click.
-* By striving to implement click as an Ipv4RoutingProtocol instance, we can avoid significant changes to the LL and MAC layer of the ns-3 code. 
+* By striving to implement click as an Ipv4RoutingProtocol instance, we can avoid significant changes to the LL and MAC layer of the ns-3 code.
 
-The design goal was to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use. 
+The design goal was to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use.
 
 This model implements the interface to the Click Modular Router and
 provides the Ipv4ClickRouting class to allow a node to use Click
@@ -49,7 +49,7 @@ Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will 
 Packet hand off between ns-3 and Click
 ######################################
 
-There are four kinds of packet hand-offs that can occur between ns-3 and Click. 
+There are four kinds of packet hand-offs that can occur between ns-3 and Click.
 
 * L4 to L3
 * L3 to L4
@@ -86,9 +86,9 @@ The first step is to clone Click from the github repository and build it::
   $ make
 
 The --enable-wifi flag may be skipped if you don't intend on using Click with Wifi.
-* Note: You don't need to do a 'make install'. 
+* Note: You don't need to do a 'make install'.
 
-Once Click has been built successfully, change into the ns-3 directory and 
+Once Click has been built successfully, change into the ns-3 directory and
 configure ns-3 with Click Integration support::
 
   $ ./ns3 configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
@@ -158,7 +158,7 @@ The following examples have been written, which can be found in ``src/click/exam
 
 * nsclick-udp-client-server-csma.cc and nsclick-udp-client-server-wifi.cc: A 3 node LAN (Csma and Wifi respectively) wherein 2 Click based nodes run a UDP client, that sends packets to a third Click based node running a UDP server.
 
-* nsclick-routing.cc: One Click based node communicates to another via a third node that acts as an IP router (using the IP router Click configuration). This demonstrates routing using Click. 
+* nsclick-routing.cc: One Click based node communicates to another via a third node that acts as an IP router (using the IP router Click configuration). This demonstrates routing using Click.
 
 Scripts are available within ``<click-dir>/conf/`` that allow you to generate Click files for some common scenarios. The IP Router used in ``nsclick-routing.cc`` was generated from the make-ip-conf.pl file and slightly adapted to work with ns-3-click.
 

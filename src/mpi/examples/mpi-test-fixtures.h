@@ -26,12 +26,12 @@
  * \file
  * \ingroup mpi
  *
- * Common methods for MPI examples. 
+ * Common methods for MPI examples.
  *
  * Since MPI output is coming from multiple processors it is the
  * ordering between the processors is non-deterministic.  For
  * regression testing the output is sorted to force a deterministic
- * ordering. Methods include here add line number to support 
+ * ordering. Methods include here add line number to support
  * this sorting.
  *
  * Testing output is also grepped so only lines with "TEST" are
@@ -45,10 +45,10 @@ template <typename T> class Ptr;
 class Address;
 class Packet;
 
-  
+
 /**
  * \ingroup mpi
- * 
+ *
  * Write to std::cout only from rank 0.
  * Number line for sorting output of parallel runs.
  *
@@ -65,10 +65,10 @@ class Packet;
         std::cout << " : " << x;                                                       \
       }                                                                                \
   while (false)
-  
+
 /**
  * \ingroup mpi
- * 
+ *
  * Append to std::cout only from rank 0.
  * Number line for sorting output of parallel runs.
  *
@@ -84,7 +84,7 @@ class Packet;
 
 /**
  * \ingroup mpi
- * 
+ *
  * Collects data about incoming packets.
  */
 class SinkTracer
@@ -107,11 +107,11 @@ public:
   /**
    * Verify the sink trace count observed matches the expected count.
    * Prints message to std::cout indicating success or fail.
-   * 
+   *
    * \param expectedCount Expected number of packet received.
    */
   static void Verify (unsigned long expectedCount);
-  
+
   /**
    * Get the source address and port, as a formatted string.
    *

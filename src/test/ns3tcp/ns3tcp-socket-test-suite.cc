@@ -42,8 +42,8 @@ NS_LOG_COMPONENT_DEFINE ("Ns3SocketTest");
 
 /**
  * \ingroup system-tests-tcp
- * 
- * \brief Tests of TCP implementations from the application/socket perspective 
+ *
+ * \brief Tests of TCP implementations from the application/socket perspective
  * using point-to-point links.
  */
 class Ns3TcpSocketTestCaseP2P : public TestCase
@@ -74,7 +74,7 @@ Ns3TcpSocketTestCaseP2P::Ns3TcpSocketTestCaseP2P ()
 {
 }
 
-void 
+void
 Ns3TcpSocketTestCaseP2P::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
@@ -159,8 +159,8 @@ Ns3TcpSocketTestCaseP2P::DoRun (void)
 
 /**
  * \ingroup system-tests-tcp
- * 
- * \brief Tests of TCP implementations from the application/socket perspective 
+ *
+ * \brief Tests of TCP implementations from the application/socket perspective
  * using CSMA links.
  */
 class Ns3TcpSocketTestCaseCsma : public TestCase
@@ -191,7 +191,7 @@ Ns3TcpSocketTestCaseCsma::Ns3TcpSocketTestCaseCsma ()
 {
 }
 
-void 
+void
 Ns3TcpSocketTestCaseCsma::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
@@ -283,7 +283,7 @@ Ns3TcpSocketTestCaseCsma::DoRun (void)
 
 /**
  * \ingroup system-tests-tcp
- * 
+ *
  * TCP implementations from the application/socket perspective TestSuite.
  */
 class Ns3TcpSocketTestSuite : public TestSuite

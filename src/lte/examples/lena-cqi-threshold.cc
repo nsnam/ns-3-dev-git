@@ -44,12 +44,12 @@ GetPosition (Ptr<Node> node)
   return mobility->GetPosition ();
 }
 
-static void 
-ChangePosition (Ptr<Node> node) 
+static void
+ChangePosition (Ptr<Node> node)
 {
   Vector pos = GetPosition (node);
- 
-  if (pos.x <= 10.0) 
+
+  if (pos.x <= 10.0)
     {
       pos.x = 100000.0; // force CQI to 0
     }
@@ -58,14 +58,14 @@ ChangePosition (Ptr<Node> node)
       pos.x = 5.0;
     }
   SetPosition (node, pos);
-  
+
 }
 
 int main (int argc, char *argv[])
-{	
+{
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-	
+
   // to save a template default attribute file run it like this:
   // ./ns3 run src/lte/examples/lena-first-sim --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText"
   //
@@ -106,13 +106,13 @@ int main (int argc, char *argv[])
   lteHelper->SetSchedulerAttribute ("CqiTimerThreshold", UintegerValue (3));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
-  
+
   lteHelper->EnableRlcTraces();
   lteHelper->EnableMacTraces();
 
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs, enbDevs.Get (0));
-  
+
   Simulator::Schedule (Seconds (0.010), &ChangePosition, ueNodes.Get (0));
   Simulator::Schedule (Seconds (0.020), &ChangePosition, ueNodes.Get (0));
 

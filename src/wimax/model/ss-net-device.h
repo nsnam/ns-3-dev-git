@@ -294,9 +294,9 @@ public:
    */
   void AddServiceFlow (ServiceFlow sf);
   /**
-   * \brief Set timer.  If in stopped state, the EventId passed in the first 
+   * \brief Set timer.  If in stopped state, the EventId passed in the first
    * argument will be cancelled.  If not, the second parameter will be set
-   * to the value of the first parameter.  
+   * to the value of the first parameter.
    *
    * \param eventId EventId to cancel or to map to the second argument
    * \param event EventId is set to first argument if not in stopped state

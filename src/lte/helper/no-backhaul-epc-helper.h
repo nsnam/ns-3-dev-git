@@ -187,7 +187,7 @@ private:
   /**
    * Helper to assign addresses to S5 NetDevices
    */
-  Ipv4AddressHelper m_s5Ipv4AddressHelper; 
+  Ipv4AddressHelper m_s5Ipv4AddressHelper;
 
   /**
    * The data rate to be used for the next S5 link to be created

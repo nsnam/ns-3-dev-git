@@ -155,7 +155,7 @@ ResetAllocatorHelperTestCase::DoRun (void)
   Ipv4AddressHelper h;
 
   //
-  // We're going to use some of the same addresses allocated above, 
+  // We're going to use some of the same addresses allocated above,
   // so reset the Ipv4AddressGenerator to make it forget we did.
   //
 
@@ -252,7 +252,7 @@ IpAddressHelperTestCasev4::DoRun (void)
   ip1.SetBase ("192.168.0.0", "255.255.255.0", "0.0.0.100");
   ipAddr1 = ip1.NewAddress ();
   NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.0.100"), "Ipv4AddressHelper failure");
-  
+
   // rollover
   ip1.SetBase ("192.168.0.0", "255.255.255.0", "0.0.0.254");
   ipAddr1 = ip1.NewAddress (); // .254

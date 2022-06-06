@@ -30,8 +30,8 @@
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
-// - DropTail queues 
-// - Tracing of queues and packet receptions to file 
+// - DropTail queues
+// - Tracing of queues and packet receptions to file
 //   "simple-error-model.tr"
 
 #include <fstream>
@@ -46,12 +46,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleErrorModelExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
 #endif
 
@@ -134,14 +134,14 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  onoff.SetAttribute ("Remote", 
+  onoff.SetAttribute ("Remote",
                       AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  sink.SetAttribute ("Local", 
+  sink.SetAttribute ("Local",
                      AddressValue (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
@@ -152,7 +152,7 @@ main (int argc, char *argv[])
   //
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default TypeId
- 
+
   ObjectFactory factory;
   factory.SetTypeId (errorModelType);
   Ptr<ErrorModel> em = factory.Create<ErrorModel> ();

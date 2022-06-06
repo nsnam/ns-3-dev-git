@@ -6,7 +6,7 @@ function g = loss_ITU1238 (d, f, n_floors, build_t)
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb
   %% build_t = 0:residential; 1:office; 2:commercial
-  
+
   assert(isscalar(f));
   assert(f > 0);
 

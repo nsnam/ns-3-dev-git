@@ -69,7 +69,7 @@ struct BearerTestData
   uint32_t numPkts; ///< the number of packets
   uint32_t pktSize; ///< the packet size
   Time interPacketInterval; ///< the inter packet interval time
- 
+
   Ptr<PacketSink> dlServerApp; ///< the DL server app
   Ptr<Application> dlClientApp; ///< the DL client app
 
@@ -101,7 +101,7 @@ struct EnbTestData
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that e2e packet flow is correct. Compares the data send and the 
+ * \brief Test that e2e packet flow is correct. Compares the data send and the
  * data received. Test uses mostly the PDCP stats to check the performance.
  */
 
@@ -134,13 +134,13 @@ LteEpcE2eDataTestCase::~LteEpcE2eDataTestCase ()
 {
 }
 
-void 
+void
 LteEpcE2eDataTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
   Config::Reset ();
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlPdcpOutputFilename", StringValue (CreateTempDirFilename ("DlPdcpStats.txt")));
@@ -157,7 +157,7 @@ LteEpcE2eDataTestCase::DoRun ()
   epcHelper->SetAttribute ("S1uLinkMtu", UintegerValue (30000));
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
-  
+
   // Create a single RemoteHost
   NodeContainer remoteHostContainer;
   remoteHostContainer.Create (1);
@@ -169,20 +169,20 @@ LteEpcE2eDataTestCase::DoRun ()
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (30000)); // jumbo frames here as well
-  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));  
-  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
+  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
+  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
   Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
-  
+
   // setup default gateway for the remote hosts
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
 
   // hardcoded UE addresses for now
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.255.255.0"), 1);
-  
+
 
   NodeContainer enbs;
   enbs.Create (m_enbTestData.size ());
@@ -198,7 +198,7 @@ LteEpcE2eDataTestCase::DoRun ()
   enbMobility.Install (enbs);
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbs);
   NetDeviceContainer::Iterator enbLteDevIt = enbLteDevs.Begin ();
-  
+
   uint16_t ulPort = 1000;
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
@@ -206,7 +206,7 @@ LteEpcE2eDataTestCase::DoRun ()
        ++enbit, ++enbLteDevIt)
     {
       NS_ABORT_IF (enbLteDevIt ==  enbLteDevs.End ());
-      
+
 
 
       NodeContainer ues;
@@ -220,8 +220,8 @@ LteEpcE2eDataTestCase::DoRun ()
       ueMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       ueMobility.Install (ues);
       NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ues);
-       
-      // we install the IP stack on the UEs 
+
+      // we install the IP stack on the UEs
       InternetStackHelper internet;
       internet.Install (ues);
 
@@ -229,30 +229,30 @@ LteEpcE2eDataTestCase::DoRun ()
       for (uint32_t u = 0; u < ues.GetN (); ++u)
         {
 
-          Ptr<Node> ue = ues.Get (u);          
+          Ptr<Node> ue = ues.Get (u);
           Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
           Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
           // set the default gateway for the UE
-          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
+          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
 
 
           // we can now attach the UE, which will also activate the default EPS bearer
-          lteHelper->Attach (ueLteDevice, *enbLteDevIt);        
-      
-  
-          uint16_t dlPort = 2000;          
+          lteHelper->Attach (ueLteDevice, *enbLteDevIt);
+
+
+          uint16_t dlPort = 2000;
           for (uint32_t b = 0; b < enbit->ues.at (u).bearers.size (); ++b)
-            {              
+            {
               BearerTestData& bearerTestData = enbit->ues.at (u).bearers.at (b);
-              
+
               { // Downlink
                 ++dlPort;
                 PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
                 ApplicationContainer apps = packetSinkHelper.Install (ue);
                 apps.Start (Seconds (0.04));
                 bearerTestData.dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
-          
+
                 UdpEchoClientHelper client (ueIpIface.GetAddress (0), dlPort);
                 client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
                 client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
@@ -268,7 +268,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 ApplicationContainer apps = packetSinkHelper.Install (remoteHost);
                 apps.Start (Seconds (0.8));
                 bearerTestData.ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
-          
+
                 UdpEchoClientHelper client (remoteHostAddr, ulPort);
                 client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
                 client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
@@ -288,14 +288,14 @@ LteEpcE2eDataTestCase::DoRun ()
               EpcTft::PacketFilter ulpf;
               ulpf.remotePortStart = ulPort;
               ulpf.remotePortEnd = ulPort;
-              tft->Add (ulpf);                            
- 
+              tft->Add (ulpf);
+
               // all data will go over the dedicated bearer instead of the default EPS bearer
               lteHelper->ActivateDedicatedEpsBearer (ueLteDevice, epsBearer, tft);
             }
-        } 
-            
-    } 
+        }
+
+    }
 
   Config::Set ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
                UintegerValue (2 * 1024 * 1024));
@@ -305,14 +305,14 @@ LteEpcE2eDataTestCase::DoRun ()
 
   double statsStartTime = 0.040; // need to allow for RRC connection establishment + SRS
   double statsDuration = 2.0;
-    
+
   lteHelper->EnablePdcpTraces ();
 
   lteHelper->GetPdcpStats ()->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   lteHelper->GetPdcpStats ()->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
-  
-  
-  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));  
+
+
+  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
   Simulator::Run ();
 
   uint64_t imsiCounter = 0;
@@ -324,7 +324,7 @@ LteEpcE2eDataTestCase::DoRun ()
       for (std::vector<UeTestData>::iterator ueit = enbit->ues.begin ();
            ueit < enbit->ues.end ();
            ++ueit)
-        {                    
+        {
           uint64_t imsi = ++imsiCounter;
           for (uint32_t b = 0; b < ueit->bearers.size (); ++b)
             {
@@ -339,32 +339,32 @@ LteEpcE2eDataTestCase::DoRun ()
               uint32_t rxPktsPdcpUl = lteHelper->GetPdcpStats ()->GetUlRxPackets (imsi, lcid);
               uint32_t rxBytesDl = ueit->bearers.at (b).dlServerApp->GetTotalRx ();
               uint32_t rxBytesUl = ueit->bearers.at (b).ulServerApp->GetTotalRx ();
-              
-              
-              NS_TEST_ASSERT_MSG_EQ (txPktsPdcpDl, 
-                                     expectedPkts, 
-                                     "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-              
-              NS_TEST_ASSERT_MSG_EQ (rxPktsPdcpDl, 
-                                     expectedPkts, 
-                                     "wrong RX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-              NS_TEST_ASSERT_MSG_EQ (txPktsPdcpUl, 
-                                     expectedPkts, 
-                                     "wrong TX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-              NS_TEST_ASSERT_MSG_EQ (rxPktsPdcpUl, 
-                                     expectedPkts, 
-                                     "wrong RX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);        
 
-              NS_TEST_ASSERT_MSG_EQ (rxBytesDl, 
-                                     expectedBytes, 
+
+              NS_TEST_ASSERT_MSG_EQ (txPktsPdcpDl,
+                                     expectedPkts,
+                                     "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+
+              NS_TEST_ASSERT_MSG_EQ (rxPktsPdcpDl,
+                                     expectedPkts,
+                                     "wrong RX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+              NS_TEST_ASSERT_MSG_EQ (txPktsPdcpUl,
+                                     expectedPkts,
+                                     "wrong TX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+              NS_TEST_ASSERT_MSG_EQ (rxPktsPdcpUl,
+                                     expectedPkts,
+                                     "wrong RX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+
+              NS_TEST_ASSERT_MSG_EQ (rxBytesDl,
+                                     expectedBytes,
                                      "wrong total received bytes in downlink");
-              NS_TEST_ASSERT_MSG_EQ (rxBytesUl, 
-                                     expectedBytes, 
+              NS_TEST_ASSERT_MSG_EQ (rxBytesUl,
+                                     expectedBytes,
                                      "wrong total received bytes in uplink");
             }
-        }      
+        }
     }
-  
+
   Simulator::Destroy ();
 }
 
@@ -381,13 +381,13 @@ class LteEpcE2eDataTestSuite : public TestSuite
 {
 public:
   LteEpcE2eDataTestSuite ();
-  
+
 } g_lteEpcE2eDataTestSuite; ///< the test suite
 
 LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   : TestSuite ("lte-epc-e2e-data", SYSTEM)
-{  
-  std::vector<EnbTestData> v1;  
+{
+  std::vector<EnbTestData> v1;
   EnbTestData e1;
   UeTestData u1;
   BearerTestData f1 (1, 100, 0.01);
@@ -396,7 +396,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   v1.push_back (e1);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE", v1), TestCase::QUICK);
 
-  std::vector<EnbTestData> v2;  
+  std::vector<EnbTestData> v2;
   EnbTestData e2;
   UeTestData u2_1;
   BearerTestData f2_1 (1, 100, 0.01);
@@ -409,7 +409,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   v2.push_back (e2);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 2UEs", v2), TestCase::EXTENSIVE);
 
-  std::vector<EnbTestData> v3;  
+  std::vector<EnbTestData> v3;
   v3.push_back (e1);
   v3.push_back (e2);
   AddTestCase (new LteEpcE2eDataTestCase ("2 eNBs", v3), TestCase::EXTENSIVE);
@@ -427,7 +427,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   BearerTestData f4_3 (1, 12, 0.01);
   u4_3.bearers.push_back (f4_3);
   e4.ues.push_back (u4_3);
-  std::vector<EnbTestData> v4;  
+  std::vector<EnbTestData> v4;
   v4.push_back (e4);
   v4.push_back (e1);
   v4.push_back (e2);

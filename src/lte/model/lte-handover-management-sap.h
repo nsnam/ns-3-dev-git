@@ -121,7 +121,7 @@ public:
    * \param owner the owner class
    */
   MemberLteHandoverManagementSapProvider (C* owner);
-  
+
   // Delete default constructor to avoid misuse
   MemberLteHandoverManagementSapProvider () = delete;
 

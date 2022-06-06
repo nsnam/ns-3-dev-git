@@ -37,7 +37,7 @@ namespace ns3 {
  *
  * \brief Helper class that adds ns3::Ipv6StaticRouting objects
  *
- * This class is expected to be used in conjunction with 
+ * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
  */
 class Ipv6StaticRoutingHelper : public Ipv6RoutingHelper
@@ -49,7 +49,7 @@ public:
   Ipv6StaticRoutingHelper ();
 
   /**
-   * \brief Construct an Ipv6ListRoutingHelper from another previously 
+   * \brief Construct an Ipv6ListRoutingHelper from another previously
    * initialized instance (Copy Constructor).
    * \param o object to be copied
    */
@@ -82,7 +82,7 @@ public:
   Ptr<Ipv6StaticRouting> GetStaticRouting (Ptr<Ipv6> ipv6) const;
 
   /**
-   * \brief Add a multicast route to a node and net device using explicit 
+   * \brief Add a multicast route to a node and net device using explicit
    * Ptr<Node> and Ptr<NetDevice>
    *
    * \param n The node.
@@ -95,7 +95,7 @@ public:
                           Ptr<NetDevice> input, NetDeviceContainer output);
 
   /**
-   * \brief Add a multicast route to a node and device using a name string 
+   * \brief Add a multicast route to a node and device using a name string
    * previously associated to the node using the Object Name Service and a
    * Ptr<NetDevice>
    *
@@ -109,7 +109,7 @@ public:
                           Ptr<NetDevice> input, NetDeviceContainer output);
 
   /**
-   * \brief Add a multicast route to a node and device using a Ptr<Node> and a 
+   * \brief Add a multicast route to a node and device using a Ptr<Node> and a
    * name string previously associated to the device using the Object Name Service.
    *
    * \param n The node.
@@ -123,7 +123,7 @@ public:
 
   /**
    * \brief Add a multicast route to a node and device using name strings
-   * previously associated to both the node and device using the Object Name 
+   * previously associated to both the node and device using the Object Name
    * Service.
    *
    * \param nName The node.

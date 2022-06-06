@@ -35,7 +35,7 @@ the `issue tracker <https://gitlab.com/nsnam/ns-3-dev/-/issues>`_ for
 something that may be similar, and if nothing is found, please report
 the new issue.
 
-If a user wants to submit proposed new code for |ns3|, please 
+If a user wants to submit proposed new code for |ns3|, please
 submit on the `merge request tracker <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests>`_.
 
 More details for each are provided below.  Similarly, users who want to
@@ -54,7 +54,7 @@ determined which module your bug is related to, if it is inside the
 official distribution (mainline), then create an issue, label it with the
 name of the module, and provide as much information as possible.
 
-First, perform a cursory search on the 
+First, perform a cursory search on the
 `open issue list <https://gitlab.com/nsnam/ns-3-dev/-/issues>`_ to see if
 the problem has already been reported. If it has and the issue is still
 open, add a comment to the existing issue instead of opening a new one.
@@ -89,12 +89,12 @@ Here are some additional guidelines:
    block formatting.
 
 4. Describe the behavior you observed after following the steps and point out
-   what exactly is the problem with that behavior.  Explain which behavior you 
+   what exactly is the problem with that behavior.  Explain which behavior you
    expected to see instead and why.
 
 5.  If you're reporting that ns-3 crashed, include a crash report with a
     stack trace from the operating system. On macOS, the crash report will
-    be available in Console.app under 
+    be available in Console.app under
     `"Diagnostic and usage information" > "User diagnostic reports"`. Include
     the crash report in the issue in a code block, or a file attachment.
 
@@ -117,7 +117,7 @@ If you are new to public Git repositories, you may want to read
 pull requests, the GitLab.com merge requests are very similar.
 
 In brief, you will want to fork ns-3-dev into your own namespace (i.e.,
-fork the repository into your personal GitLab.com account, via the user 
+fork the repository into your personal GitLab.com account, via the user
 interface on GitLab.com), clone your fork of ns-3-dev to your local machine,
 create a new feature branch that is based on the
 current tip of ns-3-dev, push that new feature branch up to your fork,
@@ -129,7 +129,7 @@ Remember the documentation
 ==========================
 
 If you add or change API to the simulator, please include `Doxygen <https://www.doxygen.nl>`_ changes as appropriate.  Please scan the module documentation
-(written in `Restructured Text <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ in the `docs` directory) to check if an update is needed to align with the patch proposal. 
+(written in `Restructured Text <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ in the `docs` directory) to check if an update is needed to align with the patch proposal.
 
 Commit message format
 =====================
@@ -155,11 +155,11 @@ more detail, you can add subsequent message lines below the first one, separated
   Date:   Wed May 19 16:34:01 2021 +0200
 
     lte: Assign default values
-    
+
     Fixes crashing optimized/release builds with 'may be used uninitialized' error
 
 
-3. The first line of the commit message should include the relevant module name or names, separated by a colon.  Example: 
+3. The first line of the commit message should include the relevant module name or names, separated by a colon.  Example:
 
 .. code-block:: text
 
@@ -186,7 +186,7 @@ more detail, you can add subsequent message lines below the first one, separated
 
 5. If the commit is from a merge request, that may also be added in a similar
    way the same by saying 'merges !NNN'.  The exclamation point differentiates
-   merge requests from issues (which use the number sign '#') on GitLab.com. 
+   merge requests from issues (which use the number sign '#') on GitLab.com.
    Example:
 
 .. code-block:: text

@@ -353,7 +353,7 @@ Stats::PortStatsDump (Ptr<OpenFlowSwitchNetDevice> swtch, PortStatsState *s, ofp
           ops->collisions   = htonll (-1);
           ops->mpls_ttl0_dropped = htonll (p.mpls_ttl0_dropped);
           ops++;
-        } 
+        }
       else if (port >= OFPP_VP_START && port <= OFPP_VP_END) // virtual port?
         {
           // lookup the virtual port
@@ -742,12 +742,12 @@ Controller::StartDump (StatsDumpCallback* cb)
         {
           error = cb->swtch->StatsDump (cb);
         }
-	
+
       if (error != 0) // When the reply is complete, error will equal zero if there's no errors.
         {
           NS_LOG_WARN ("Dump Callback Error: " << strerror (-error));
         }
-	
+
       // Clean up
       cb->swtch->StatsDone (cb);
     }

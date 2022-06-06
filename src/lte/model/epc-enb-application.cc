@@ -122,33 +122,33 @@ EpcEnbApplication::~EpcEnbApplication (void)
 }
 
 
-void 
+void
 EpcEnbApplication::SetS1SapUser (EpcEnbS1SapUser * s)
 {
   m_s1SapUser = s;
 }
 
-  
-EpcEnbS1SapProvider* 
+
+EpcEnbS1SapProvider*
 EpcEnbApplication::GetS1SapProvider ()
 {
   return m_s1SapProvider;
 }
 
-void 
+void
 EpcEnbApplication::SetS1apSapMme (EpcS1apSapMme * s)
 {
   m_s1apSapMme = s;
 }
 
-  
-EpcS1apSapEnb* 
+
+EpcS1apSapEnb*
 EpcEnbApplication::GetS1apSapEnb ()
 {
   return m_s1apSapEnb;
 }
 
-void 
+void
 EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
 {
   NS_LOG_FUNCTION (this);
@@ -157,11 +157,11 @@ EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
   m_s1apSapMme->InitialUeMessage (imsi, rnti, imsi, m_cellId);
 }
 
-void 
+void
 EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params)
 {
   NS_LOG_FUNCTION (this);
-  uint16_t enbUeS1Id = params.rnti;  
+  uint16_t enbUeS1Id = params.rnti;
   uint64_t mmeUeS1Id = params.mmeUeS1Id;
   uint64_t imsi = mmeUeS1Id;
   // side effect: create entry if not exist
@@ -177,7 +177,7 @@ EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestPa
       flowId.m_rnti = params.rnti;
       flowId.m_bid = bit->epsBearerId;
       uint32_t teid = bit->teid;
-      
+
       EpsFlowId_t rbid (params.rnti, bit->epsBearerId);
       // side effect: create entries if not exist
       m_rbidTeidMap[params.rnti][bit->epsBearerId] = teid;
@@ -193,7 +193,7 @@ EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestPa
   m_s1apSapMme->PathSwitchRequest (enbUeS1Id, mmeUeS1Id, gci, erabToBeSwitchedInDownlinkList);
 }
 
-void 
+void
 EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
@@ -213,7 +213,7 @@ EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
     }
 }
 
-void 
+void
 EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList)
 {
   NS_LOG_FUNCTION (this);
@@ -247,7 +247,7 @@ EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t en
   m_s1SapUser->InitialContextSetupRequest (params);
 }
 
-void 
+void
 EpcEnbApplication::DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList)
 {
   NS_LOG_FUNCTION (this);
@@ -261,10 +261,10 @@ EpcEnbApplication::DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t 
   m_s1SapUser->PathSwitchRequestAcknowledge (params);
 }
 
-void 
+void
 EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this);  
+  NS_LOG_FUNCTION (this);
   if(m_lteSocket6)
     {
       NS_ASSERT (socket == m_lteSocket || socket == m_lteSocket6);
@@ -296,10 +296,10 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
     }
 }
 
-void 
+void
 EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this << socket);  
+  NS_LOG_FUNCTION (this << socket);
   NS_ASSERT (socket == m_s1uSocket);
   Ptr<Packet> packet = socket->Recv ();
   GtpuHeader gtpu;
@@ -317,10 +317,10 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
     }
 }
 
-void 
+void
 EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t bid)
 {
-  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid << packet->GetSize ());  
+  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid << packet->GetSize ());
   EpsBearerTag tag (rnti, bid);
   packet->AddPacketTag (tag);
   uint8_t ipType;
@@ -346,15 +346,15 @@ EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t b
 }
 
 
-void 
+void
 EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
 {
-  NS_LOG_FUNCTION (this << packet << teid <<  packet->GetSize ());  
+  NS_LOG_FUNCTION (this << packet << teid <<  packet->GetSize ());
   GtpuHeader gtpu;
   gtpu.SetTeid (teid);
   // From 3GPP TS 29.281 v10.0.0 Section 5.1
   // Length of the payload + the non obligatory GTP-U header
-  gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
+  gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
   m_s1uSocket->SendTo (packet, flags, InetSocketAddress (m_sgwS1uAddress, m_gtpuUdpPort));

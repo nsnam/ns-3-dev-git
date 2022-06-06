@@ -64,7 +64,7 @@ public:
   Box ();
   /**
    * \param position the position to test.
-   * \returns true if the input position is located within the box, 
+   * \returns true if the input position is located within the box,
    *          false otherwise.
    *
    * This method compares the x, y, and z coordinates of the input position.

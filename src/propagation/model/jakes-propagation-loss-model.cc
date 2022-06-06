@@ -26,7 +26,7 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE ("Jakes");
-  
+
 NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
 
 

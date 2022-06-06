@@ -52,7 +52,7 @@ public:
   // Pure virtual methods, to be implemented in child classes
   virtual uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
   virtual void Print (std::ostream &os) const = 0;
-    
+
   /**
    * This function serializes class attributes to m_serializationResult
    * local Buffer.  As ASN1 encoding produces a bitstream that does not have

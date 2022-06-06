@@ -3,7 +3,7 @@
  * Copyright (c) 2010 Andrea Sacco
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 /**
  * \file uan-animation.cc
  * \ingroup uan
- * 
+ *
  * This example showcases the "CW-MAC" described in System Design Considerations for Undersea Networks
  * article in the IEEE Journal on Selected Areas of Communications 2008 by Nathan Parrish, Leonard Tracy
  * and Sumit Roy.  The MAC protocol is implemented in the class UanMacCw.  CW-MAC is similar in nature
@@ -30,7 +30,7 @@
  * the slot time and the contention window size.  The contention window size is the backoff window
  * size in slots, and the slot time is the duration of each slot.  These parameters should be set
  * according to the overall network size, internode spacing and the number of nodes in the network.
- * 
+ *
  * This example deploys nodes randomly (according to RNG seed of course) in a finite square region with
  * the X and Y coordinates of the nodes distributed uniformly.  The CW parameter is varied throughout
  * the simulation in order to show the variation in throughput with respect to changes in CW.
@@ -49,7 +49,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UanCwExample");
 
-NetAnimExperiment::NetAnimExperiment () 
+NetAnimExperiment::NetAnimExperiment ()
   : m_numNodes (15),
     m_dataRate (80),
     m_depth (70),
@@ -135,7 +135,7 @@ NetAnimExperiment::Run (UanHelper &uan)
 
 #ifdef UAN_PROP_BH_INSTALLED
   Ptr<UanPropModelBh> prop = CreateObjectWithAttributes<UanPropModelBh> ("ConfigFile", StringValue ("exbhconfig.cfg"));
-#else 
+#else
   Ptr<UanPropModelIdeal> prop = CreateObjectWithAttributes<UanPropModelIdeal> ();
 #endif //UAN_PROP_BH_INSTALLED
   Ptr<UanChannel> channel = CreateObjectWithAttributes<UanChannel> ("PropagationModel", PointerValue (prop));

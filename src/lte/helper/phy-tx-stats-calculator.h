@@ -35,7 +35,7 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * Takes care of storing the information generated at PHY layer regarding 
+ * Takes care of storing the information generated at PHY layer regarding
  * transmission. Metrics saved are:
  *
  *   - Timestamp (in seconds)
@@ -105,23 +105,23 @@ public:
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);
 
-  
-  /** 
+
+  /**
    * trace sink
-   * 
-   * \param phyTxStats 
-   * \param path 
-   * \param params 
+   *
+   * \param phyTxStats
+   * \param path
+   * \param params
    */
   static void DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
                                   std::string path, PhyTransmissionStatParameters params);
 
-  /** 
+  /**
    * trace sink
-   * 
-   * \param phyTxStats 
-   * \param path 
-   * \param params 
+   *
+   * \param phyTxStats
+   * \param path
+   * \param params
    */
   static void UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
                                   std::string path, PhyTransmissionStatParameters params);

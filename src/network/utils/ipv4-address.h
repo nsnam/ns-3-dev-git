@@ -31,7 +31,7 @@ namespace ns3 {
 
 class Ipv4Mask;
 
-/** 
+/**
  * \ingroup address
  *
  * \brief Ipv4 addresses are stored in host order in this class.
@@ -46,7 +46,7 @@ public:
    * \param address The host order 32-bit address
    */
   explicit Ipv4Address (uint32_t address);
-  /** 
+  /**
     * \brief Constructs an Ipv4Address by parsing a the input C-string
     *
     * Input address is in format:
@@ -56,7 +56,7 @@ public:
     * \param address C-string containing the address as described above
     */
   Ipv4Address (char const *address);
-  /** 
+  /**
    * Get the host-order 32-bit IP address
    * \return the host-order 32-bit IP address
    */
@@ -66,7 +66,7 @@ public:
    * \param address The host order 32-bit address
    */
   void Set (uint32_t address);
-  /** 
+  /**
     * \brief Sets an Ipv4Address by parsing a the input C-string
     *
     * Input address is in format:
@@ -86,7 +86,7 @@ public:
   /**
    * \param buf buffer to read address from
    * \return an Ipv4Address
-   * 
+   *
    * The input address is expected to be in network byte order format.
    */
   static Ipv4Address Deserialize (const uint8_t buf[4]);
@@ -129,7 +129,7 @@ public:
    * (bitwise and) with a network mask, yielding an IPv4 network
    * address.
    *
-   * \param mask a network mask 
+   * \param mask a network mask
    * \returns the address combined with the mask
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
@@ -141,19 +141,19 @@ public:
    * (i.e., the address is a /32 address), the program will assert, since
    * there is no subnet associated with a /32 address.
    *
-   * \param mask a network mask 
+   * \param mask a network mask
    * \returns a broadcast address for the subnet.
    */
   Ipv4Address GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
   /**
    * \brief Generate subnet-directed broadcast address corresponding to mask
-   * 
+   *
    * The subnet-directed broadcast address has the host bits set to all
    * ones.  If this method is called with a mask of 255.255.255.255,
    * (i.e., the address is a /32 address), the program will assert, since
    * there is no subnet associated with a /32 address.
    *
-   * \param mask a network mask 
+   * \param mask a network mask
    * \return true if the address, when combined with the input mask, has all
    * of its host bits set to one
    */
@@ -246,8 +246,8 @@ private:
  * \ingroup address
  *
  * \brief a class to represent an Ipv4 address mask
- * 
- * The constructor takes arguments according to a few formats. 
+ *
+ * The constructor takes arguments according to a few formats.
  * Ipv4Mask ("255.255.255.255"), Ipv4Mask ("/32"), and Ipv4Mask (0xffffffff)
  * are all equivalent.
  *
@@ -261,7 +261,7 @@ public:
   Ipv4Mask ();
   /**
    * \param mask bitwise integer representation of the mask
-   * 
+   *
    * For example, the integer input 0xffffff00 yields a 24-bit mask
    */
   Ipv4Mask (uint32_t mask);
@@ -272,11 +272,11 @@ public:
   /**
    * \param a first address to compare
    * \param b second address to compare
-   * \return true if both addresses are equal in their masked bits, 
+   * \return true if both addresses are equal in their masked bits,
    * corresponding to this mask
    */
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
-  /** 
+  /**
    * Get the host-order 32-bit IP mask
    * \return the host-order 32-bit IP mask
    */
@@ -287,7 +287,7 @@ public:
    */
   void Set (uint32_t mask);
   /**
-   * \brief Return the inverse mask in host order. 
+   * \brief Return the inverse mask in host order.
    * \return The inverse mask
    */
   uint32_t GetInverse (void) const;

@@ -130,7 +130,7 @@ div.sphinxsidebar a {
 
 /*
    ns-3 Main-menu, based on WordPress site
-   
+
    Drop down menu based on Simple Javascript Drop-Down Menu v2.0
    http://javascript-array.com/scripts/simple_drop_down_menu/
    */
@@ -168,7 +168,7 @@ div.sphinxsidebar a {
   color:#ffffff;
   float:left;
   font-family: Aldo, Tahoma, Arial, sans-serif;
-  font-size: 14px;  
+  font-size: 14px;
 /*   height:40px; */
   margin:0px 0px 0px 0px;
 /*   overflow:hidden; */
@@ -184,7 +184,7 @@ div.sphinxsidebar a {
   font-weight: normal;  /* default anchors are bold */
   text-decoration:none; /* default anchors are underlined */
 }
-    
+
 #ns3-menu .menu ul li a:hover {
   color:#cadc48;
   text-decoration:none; /* don't add underline on hover */

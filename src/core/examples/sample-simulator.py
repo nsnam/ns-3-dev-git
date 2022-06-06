@@ -17,7 +17,7 @@
 #  *
 #  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
 #  */
-# 
+#
 # Python version of sample-simulator.cc
 
 ## \file
@@ -64,7 +64,7 @@ def CancelledEvent():
 
 def main(dummy_argv):
     ns.core.CommandLine().Parse(dummy_argv)
-    
+
     model = MyModel()
     v = ns.core.UniformRandomVariable()
     v.SetAttribute("Min", ns.core.DoubleValue (10))

@@ -36,9 +36,9 @@ using namespace ns3;
 class Dot11sRegressionSuite : public TestSuite
 {
 public:
-  Dot11sRegressionSuite () : TestSuite ("devices-mesh-dot11s-regression", SYSTEM) 
+  Dot11sRegressionSuite () : TestSuite ("devices-mesh-dot11s-regression", SYSTEM)
   {
-    // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has 
+    // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
     // subdirectories
     SetDataDir (std::string ("src/mesh/test/dot11s"));
     AddTestCase (new PeerManagementProtocolRegressionTest, TestCase::QUICK);

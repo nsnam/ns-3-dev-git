@@ -25,11 +25,11 @@
 #include "ns3/log.h"
 
 namespace ns3 {
-  
+
 NS_LOG_COMPONENT_DEFINE ("FlameProtocolMac");
-  
+
 namespace flame {
-  
+
 FlameProtocolMac::FlameProtocolMac (Ptr<FlameProtocol> protocol) :
   m_protocol (protocol)
 {
@@ -119,7 +119,7 @@ FlameProtocolMac::Statistics::Print (std::ostream &os) const
 void
 FlameProtocolMac::Report (std::ostream & os) const
 {
-  os << "<FlameProtocolMac" << std::endl << 
+  os << "<FlameProtocolMac" << std::endl <<
   "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
   os << "</FlameProtocolMac>" << std::endl;

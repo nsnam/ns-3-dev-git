@@ -573,7 +573,7 @@ private:
   uint16_t m_arqRetryTimeoutRx; ///< ARQ retry timeout receive
   uint16_t m_arqBlockLifeTime; ///< ARQ block life time
   uint16_t m_arqSyncLoss; ///< ARQ sync loss
-  uint8_t m_arqDeliverInOrder; ///< ARQ deliver in order 
+  uint8_t m_arqDeliverInOrder; ///< ARQ deliver in order
   uint16_t m_arqPurgeTimeout; ///< ARQ purge timeout
   uint16_t m_arqBlockSize; ///< ARQ block size
   enum CsSpecification m_csSpecification; ///< CS specification

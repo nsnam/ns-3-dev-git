@@ -40,11 +40,11 @@ namespace ns3 {
  * This class allows subclasses of the ns3::Tag base class
  * to serialize and deserialize their data through a stream-like
  * API. This class keeps track of the "current" point in the
- * buffer and advances that "current" point every time data is 
- * written. The in-memory format of the data written by 
+ * buffer and advances that "current" point every time data is
+ * written. The in-memory format of the data written by
  * this class is unspecified.
  *
- * If the user attempts to write more data in the buffer than 
+ * If the user attempts to write more data in the buffer than
  * he allocated with Tag::GetSerializedSize, he will trigger
  * an NS_ASSERT error.
  */
@@ -168,7 +168,7 @@ private:
 
 namespace ns3 {
 
-void 
+void
 TagBuffer::WriteU8 (uint8_t v)
 {
   NS_ASSERT (m_current + 1 <= m_end);
@@ -176,13 +176,13 @@ TagBuffer::WriteU8 (uint8_t v)
   m_current++;
 }
 
-void 
+void
 TagBuffer::WriteU16 (uint16_t data)
 {
   WriteU8 ((data >> 0) & 0xff);
   WriteU8 ((data >> 8) & 0xff);
 }
-void 
+void
 TagBuffer::WriteU32 (uint32_t data)
 {
   WriteU8 ((data >> 0) & 0xff);
@@ -201,7 +201,7 @@ TagBuffer::ReadU8 (void)
   return v;
 }
 
-uint16_t 
+uint16_t
 TagBuffer::ReadU16 (void)
 {
   uint8_t byte0 = ReadU8 ();
@@ -211,7 +211,7 @@ TagBuffer::ReadU16 (void)
   data |= byte0;
   return data;
 }
-uint32_t 
+uint32_t
 TagBuffer::ReadU32 (void)
 {
   uint8_t byte0 = ReadU8 ();

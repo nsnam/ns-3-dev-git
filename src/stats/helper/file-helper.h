@@ -84,9 +84,9 @@ public:
    * in m_outputFileNameWithoutExtension plus ".txt", and will consist
    * of the 'newValue' at each timestamp.
    *
-   * This method will create one or more probes according to the TypeId 
+   * This method will create one or more probes according to the TypeId
    * provided, connect the probe(s) to the trace source specified by
-   * the config path, and hook the probeTraceSource(s) to the downstream 
+   * the config path, and hook the probeTraceSource(s) to the downstream
    * aggregator.
    *
    * If the config path has more than one match in the system

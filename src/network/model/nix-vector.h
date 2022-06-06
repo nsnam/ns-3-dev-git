@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 The Georgia Institute of Technology 
+ * Copyright (c) 2009 The Georgia Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -32,31 +32,31 @@ namespace ns3 {
  *
  * \brief Neighbor-index data structure for nix-vector routing
  *
- * This data structure holds a vector of "neighbor-indexes" for 
+ * This data structure holds a vector of "neighbor-indexes" for
  * a simulation specific routing protocol, nix-vector routing.
- * Theses neighbor-indexes correspond to the net-device which a 
+ * Theses neighbor-indexes correspond to the net-device which a
  * node should use to route a packet.  A nix-vector is built
- * (or fetched from a cache) on-demand. The nix-vector is 
- * transmitted with the packet, and along each hop of the 
- * route, the current node extracts the appropriate 
+ * (or fetched from a cache) on-demand. The nix-vector is
+ * transmitted with the packet, and along each hop of the
+ * route, the current node extracts the appropriate
  * neighbor-index and routes the packet.
  *
  * \internal
- * The implementation of NixVector uses a vector to store 
- * the neighbor-indexes.  Each entry in the vector is 32 
- * bits long and can store multiple neighbor-indexes.  A 
- * fair amount of bit manipulation is used to store these 
- * neighbor-indexes efficiently.  A vector is used so that 
- * the nix-vector can grow arbitrarily if the topology and 
+ * The implementation of NixVector uses a vector to store
+ * the neighbor-indexes.  Each entry in the vector is 32
+ * bits long and can store multiple neighbor-indexes.  A
+ * fair amount of bit manipulation is used to store these
+ * neighbor-indexes efficiently.  A vector is used so that
+ * the nix-vector can grow arbitrarily if the topology and
  * route requires a large number of neighbor-indexes.
  *
- * As the nix-vector travels along the route, an internal 
- * private member variable keeps track of how many bits 
- * have been used.  At a particular node, the nix-vector 
- * is used to return the next neighbor-index. This 
- * neighbor-index is used to determine which net-device 
- * to use.  The number of bits used would then be 
- * incremented accordingly, and the packet would be 
+ * As the nix-vector travels along the route, an internal
+ * private member variable keeps track of how many bits
+ * have been used.  At a particular node, the nix-vector
+ * is used to return the next neighbor-index. This
+ * neighbor-index is used to determine which net-device
+ * to use.  The number of bits used would then be
+ * incremented accordingly, and the packet would be
  * routed.
  */
 
@@ -170,7 +170,7 @@ private:
    * \brief Print the NixVector.
    *
    * \param os the output stream
-   * 
+   *
    * \note: this could be greatly simplified by using std::format (but it's C++20).
    */
   void DumpNixVector (std::ostream &os) const;

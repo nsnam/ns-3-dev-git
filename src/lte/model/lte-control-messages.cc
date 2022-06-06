@@ -186,7 +186,7 @@ RachPreambleLteControlMessage::SetRapId (uint32_t rapId)
   m_rapId = rapId;
 }
 
-uint32_t 
+uint32_t
 RachPreambleLteControlMessage::GetRapId () const
 {
   return m_rapId;
@@ -208,7 +208,7 @@ RarLteControlMessage::SetRaRnti (uint16_t raRnti)
   m_raRnti = raRnti;
 }
 
-uint16_t 
+uint16_t
 RarLteControlMessage::GetRaRnti () const
 {
   return m_raRnti;
@@ -221,13 +221,13 @@ RarLteControlMessage::AddRar (Rar rar)
   m_rarList.push_back (rar);
 }
 
-std::list<RarLteControlMessage::Rar>::const_iterator 
+std::list<RarLteControlMessage::Rar>::const_iterator
 RarLteControlMessage::RarListBegin () const
 {
   return m_rarList.begin ();
 }
 
-std::list<RarLteControlMessage::Rar>::const_iterator 
+std::list<RarLteControlMessage::Rar>::const_iterator
 RarLteControlMessage::RarListEnd () const
 {
   return m_rarList.end ();
@@ -250,7 +250,7 @@ MibLteControlMessage::SetMib (LteRrcSap::MasterInformationBlock  mib)
   m_mib = mib;
 }
 
-LteRrcSap::MasterInformationBlock 
+LteRrcSap::MasterInformationBlock
 MibLteControlMessage::GetMib () const
 {
   return m_mib;

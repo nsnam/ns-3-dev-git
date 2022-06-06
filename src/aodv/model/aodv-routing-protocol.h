@@ -269,7 +269,7 @@ private:
    * \param header the IP header
    * \param ucb the UnicastForwardCallback function
    * \param ecb the ErrorCallback function
-   */ 
+   */
   void DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /**
    * If route exists and is valid, forward packet.
@@ -279,7 +279,7 @@ private:
    * \param ucb the UnicastForwardCallback function
    * \param ecb the ErrorCallback function
    * \returns true if forwarded
-   */ 
+   */
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /**
    * Repeated attempts by a source node at route discovery for a single destination
@@ -322,7 +322,7 @@ private:
   Ptr<Socket> FindSubnetBroadcastSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /**
    * Process hello message
-   * 
+   *
    * \param rrepHeader RREP message header
    * \param receiverIfaceAddr receiver interface IP address
    */

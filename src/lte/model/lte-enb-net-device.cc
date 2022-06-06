@@ -95,13 +95,13 @@ TypeId LteEnbNetDevice::GetTypeId (void)
     .AddAttribute ("UlBandwidth",
                    "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
                    UintegerValue (25),
-                   MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth, 
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth,
                                          &LteEnbNetDevice::GetUlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DlBandwidth",
                    "Downlink Transmission Bandwidth Configuration in number of Resource Blocks",
                    UintegerValue (25),
-                   MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth, 
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth,
                                          &LteEnbNetDevice::GetDlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CellId",
@@ -178,7 +178,7 @@ LteEnbNetDevice::DoDispose ()
       m_ccMap.at (i)->Dispose ();
       m_ccMap.at (i) = 0;
     }
-   
+
   LteNetDevice::DoDispose ();
 }
 
@@ -250,12 +250,12 @@ LteEnbNetDevice::GetUlBandwidth () const
   return m_ulBandwidth;
 }
 
-void 
+void
 LteEnbNetDevice::SetUlBandwidth (uint16_t bw)
-{ 
+{
   NS_LOG_FUNCTION (this << bw);
   switch (bw)
-    { 
+    {
     case 6:
     case 15:
     case 25:
@@ -277,12 +277,12 @@ LteEnbNetDevice::GetDlBandwidth () const
   return m_dlBandwidth;
 }
 
-void 
+void
 LteEnbNetDevice::SetDlBandwidth (uint16_t bw)
 {
   NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
-    { 
+    {
     case 6:
     case 15:
     case 25:
@@ -298,28 +298,28 @@ LteEnbNetDevice::SetDlBandwidth (uint16_t bw)
     }
 }
 
-uint32_t 
+uint32_t
 LteEnbNetDevice::GetDlEarfcn () const
 {
   return m_dlEarfcn;
 }
 
-void 
+void
 LteEnbNetDevice::SetDlEarfcn (uint32_t earfcn)
-{ 
+{
   NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 
-uint32_t 
+uint32_t
 LteEnbNetDevice::GetUlEarfcn () const
 {
   return m_ulEarfcn;
 }
 
-void 
+void
 LteEnbNetDevice::SetUlEarfcn (uint32_t earfcn)
-{ 
+{
   NS_LOG_FUNCTION (this << earfcn);
   m_ulEarfcn = earfcn;
 }
@@ -365,7 +365,7 @@ LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierBaseStation> >
   m_ccMap = ccm;
 }
 
-void 
+void
 LteEnbNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);

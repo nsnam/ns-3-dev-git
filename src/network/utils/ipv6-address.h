@@ -32,7 +32,7 @@
 #include "ns3/deprecated.h"
 #include "mac8-address.h"
 
-namespace ns3 { 
+namespace ns3 {
 
 class Ipv6Prefix;
 class Mac16Address;

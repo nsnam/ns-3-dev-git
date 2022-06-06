@@ -39,7 +39,7 @@ using namespace ns3;
  * This test suite verifies following two things:
  *
  *  1. When CA is enabled and UE carriers configuration is different than the default one,
- *     we check that the UE is configured properly once it receives 
+ *     we check that the UE is configured properly once it receives
  *     RRC Connection Reconfiguration message from eNB.
  *
  *  2. A user can configure 2 or more eNBs and UEs with different configuration parameters,

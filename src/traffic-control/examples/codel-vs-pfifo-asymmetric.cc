@@ -363,7 +363,7 @@ int main (int argc, char *argv[])
     {
       NS_LOG_DEBUG ("Invalid router WAN queue disc type");
       exit (1);
-    }  
+    }
   tchPfifo.Install (routerHostDev);
 
   NS_LOG_INFO ("Assign IP Addresses");

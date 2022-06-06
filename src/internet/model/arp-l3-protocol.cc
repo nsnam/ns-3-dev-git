@@ -42,7 +42,7 @@ const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
 NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
 
-TypeId 
+TypeId
 ArpL3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpL3Protocol")
@@ -91,7 +91,7 @@ ArpL3Protocol::AssignStreams (int64_t stream)
   return 1;
 }
 
-void 
+void
 ArpL3Protocol::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
@@ -126,7 +126,7 @@ ArpL3Protocol::NotifyNewAggregate ()
   Object::NotifyNewAggregate ();
 }
 
-void 
+void
 ArpL3Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
@@ -141,7 +141,7 @@ ArpL3Protocol::DoDispose (void)
   Object::DoDispose ();
 }
 
-Ptr<ArpCache> 
+Ptr<ArpCache>
 ArpL3Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION (this << device << interface);
@@ -171,7 +171,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
   return 0;
 }
 
-void 
+void
 ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                         const Address &to, NetDevice::PacketType packetType)
 {
@@ -183,8 +183,8 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
 
   Ptr<ArpCache> cache = FindCache (device);
 
-  // 
-  // If we're connected to a real world network, then some of the fields sizes 
+  //
+  // If we're connected to a real world network, then some of the fields sizes
   // in an ARP packet can vary in ways not seen in simulations.  We need to be
   // able to detect ARP packets with headers we don't recongnize and not process
   // them instead of crashing.  The ArpHeader will return 0 if it can't deal
@@ -217,17 +217,17 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
   bool found = false;
   for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)
     {
-      if (arp.IsRequest () && arp.GetDestinationIpv4Address () == 
+      if (arp.IsRequest () && arp.GetDestinationIpv4Address () ==
           cache->GetInterface ()->GetAddress (i).GetLocal ())
         {
           found = true;
-          NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " << 
+          NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " <<
                         arp.GetSourceIpv4Address () << " -- send reply");
           SendArpReply (cache, arp.GetDestinationIpv4Address (), arp.GetSourceIpv4Address (),
                         arp.GetSourceHardwareAddress ());
           break;
-        } 
-      else if (arp.IsReply () && 
+        }
+      else if (arp.IsReply () &&
                arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress (i).GetLocal () &&
                arp.GetDestinationHardwareAddress () == device->GetAddress ())
         {
@@ -236,9 +236,9 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
           ArpCache::Entry *entry = cache->Lookup (from);
           if (entry != 0)
             {
-              if (entry->IsWaitReply ()) 
+              if (entry->IsWaitReply ())
                 {
-                  NS_LOG_LOGIC ("node="<< m_node->GetId () << 
+                  NS_LOG_LOGIC ("node="<< m_node->GetId () <<
                                 ", got reply from " << arp.GetSourceIpv4Address ()
                                        << " for waiting entry -- flush");
                   Address from_mac = arp.GetSourceHardwareAddress ();
@@ -250,18 +250,18 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
                                                     arp.GetSourceIpv4Address ());
                       pending = entry->DequeuePending ();
                     }
-                } 
-              else 
+                }
+              else
                 {
-                  // ignore this reply which might well be an attempt 
+                  // ignore this reply which might well be an attempt
                   // at poisening my arp cache.
                   NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply from " <<
                                 arp.GetSourceIpv4Address () <<
                                 " for non-waiting entry -- drop");
                   m_dropTrace (packet);
                 }
-            } 
-          else 
+            }
+          else
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply for unknown entry -- drop");
               m_dropTrace (packet);
@@ -277,7 +277,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
     }
 }
 
-bool 
+bool
 ArpL3Protocol::Lookup (Ptr<Packet> packet, const Ipv4Header & ipHeader, Ipv4Address destination,
                        Ptr<NetDevice> device,
                        Ptr<ArpCache> cache,
@@ -287,45 +287,45 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, const Ipv4Header & ipHeader, Ipv4Addr
   ArpCache::Entry *entry = cache->Lookup (destination);
   if (entry != 0)
     {
-      if (entry->IsExpired ()) 
+      if (entry->IsExpired ())
         {
-          if (entry->IsDead ()) 
+          if (entry->IsDead ())
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", dead entry for " << destination << " expired -- send arp request");
               entry->MarkWaitReply (ArpCache::Ipv4PayloadHeaderPair (packet, ipHeader));
               Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
-            } 
-          else if (entry->IsAlive ()) 
+            }
+          else if (entry->IsAlive ())
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", alive entry for " << destination << " expired -- send arp request");
               entry->MarkWaitReply (ArpCache::Ipv4PayloadHeaderPair (packet, ipHeader));
               Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
-            } 
+            }
           else
             {
               NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
             }
-        } 
-      else 
+        }
+      else
         {
-          if (entry->IsDead ()) 
+          if (entry->IsDead ())
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", dead entry for " << destination << " valid -- drop");
               // add the Ipv4 header for tracing purposes
               packet->AddHeader (ipHeader);
               m_dropTrace (packet);
-            } 
-          else if (entry->IsAlive ()) 
+            }
+          else if (entry->IsAlive ())
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", alive entry for " << destination << " valid -- send");
               *hardwareDestination = entry->GetMacAddress ();
               return true;
-            } 
-          else if (entry->IsWaitReply ()) 
+            }
+          else if (entry->IsWaitReply ())
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", wait reply for " << destination << " valid -- drop previous");

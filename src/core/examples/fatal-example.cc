@@ -29,7 +29,7 @@
  * \defgroup fatal-example Core example: NS_FATAL error handlers
  * \ingroup core-examples
  * \ingroup fatal
- * 
+ *
  * Example program illustrating use of the NS_FATAL error handlers.
  */
 
@@ -78,7 +78,7 @@ main (int argc, char ** argv)
   Simulator::Schedule (Seconds (1), FatalNoMsg);
   Simulator::Schedule (Seconds (2), FatalCont);
   Simulator::Schedule (Seconds (3), Fatal);
-  
+
 
   // Show some errors outside of simulation time
   std::cerr << "\nFatal error with custom message, and continuing:" << std::endl;
@@ -86,7 +86,7 @@ main (int argc, char ** argv)
 
   std::cerr << "\nFatal error without message, and continuing:" << std::endl;
   NS_FATAL_ERROR_NO_MSG_CONT ();
-  
+
   // Now run the simulator
   Simulator::Run ();
 

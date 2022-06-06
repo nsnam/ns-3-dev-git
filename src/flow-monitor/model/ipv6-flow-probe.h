@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId (void);
 
   /// \brief enumeration of possible reasons why a packet may be dropped
-  enum DropReason 
+  enum DropReason
   {
     /// Packet dropped due to missing route to the destination
     DROP_NO_ROUTE = 0,

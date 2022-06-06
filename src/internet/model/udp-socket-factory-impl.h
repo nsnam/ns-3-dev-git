@@ -31,7 +31,7 @@ class UdpL4Protocol;
  * \ingroup socket
  * \ingroup udp
  *
- * \brief Object to create UDP socket instances 
+ * \brief Object to create UDP socket instances
  *
  * This class implements the API for creating UDP sockets.
  * It is a socket factory (deriving from class SocketFactory).

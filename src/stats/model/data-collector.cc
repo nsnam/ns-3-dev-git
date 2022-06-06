@@ -51,7 +51,7 @@ DataCollector::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void DataCollector::DoDispose () {
   NS_LOG_FUNCTION (this);
 

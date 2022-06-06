@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 University of Washington
- * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas 
+ * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -22,7 +22,7 @@
  *
  * Author: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
  *         ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
- *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director 
+ *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 
 #include "ns3/test.h"
@@ -116,14 +116,14 @@ ErrorModelSimple::~ErrorModelSimple ()
 {
 }
 
-bool 
+bool
 ErrorModelSimple::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr)
 {
   m_count++;
   return true;
 }
 
-void 
+void
 ErrorModelSimple::DropEvent (Ptr<const Packet> p)
 {
   m_drops++;
@@ -146,7 +146,7 @@ ErrorModelSimple::DoRun (void)
 
   output->SetReceiveCallback (MakeCallback (&ErrorModelSimple::Receive, this));
   Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
-  // Set this variable to a specific stream 
+  // Set this variable to a specific stream
   uv->SetStream (50);
 
   Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();

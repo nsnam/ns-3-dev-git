@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * This file is adapted from the old ipv4-nix-vector-routing.h.
  *
  * Authors: Josh Pelkey <jpelkey@gatech.edu>
- * 
+ *
  * Modified by: Ameya Deshpande <ameyanrd@outlook.com>
  */
 
@@ -59,7 +59,7 @@ namespace ns3 {
  * Nix-vector routing protocol
  *
  * \internal
- * Since this class is meant to be specialized only by Ipv4RoutingProtocol or 
+ * Since this class is meant to be specialized only by Ipv4RoutingProtocol or
  * Ipv6RoutingProtocol the implementation of this class doesn't need to be
  * exposed here; it is in nix-vector-routing.cc.
  */
@@ -128,7 +128,7 @@ public:
    * \param dest Destination node address
    * \param stream The ostream the Routing path is printed to
    * \param unit the time unit to be used in the report
-   * 
+   *
    * \note IpAddress is alias for either Ipv4Address or Ipv6Address
    *       depending on on whether the network is IPv4 or IPv6 respectively.
    */
@@ -340,7 +340,7 @@ private:
   virtual bool RouteInput (Ptr<const Packet> p, const IpHeader &header, Ptr<const NetDevice> idev,
                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                            LocalDeliverCallback lcb, ErrorCallback ecb);
-  
+
   /**
    * \param interface the index of the interface we are being notified about
    *
@@ -443,7 +443,7 @@ private:
   void BuildIpAddressToNodeMap (void) const;
 
   /**
-   * Flag to mark when caches are dirty and need to be flushed.  
+   * Flag to mark when caches are dirty and need to be flushed.
    * Used for lazy cleanup of caches when there are many topology changes.
    */
   static bool g_isCacheDirty;

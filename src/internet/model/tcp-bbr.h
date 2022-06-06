@@ -37,7 +37,7 @@ namespace ns3 {
  * \ingroup congestionOps
  *
  * \brief BBR congestion control algorithm
- * 
+ *
  * This class implement the BBR (Bottleneck Bandwidth and Round-trip propagation time)
  * congestion control type.
  */
@@ -385,7 +385,7 @@ private:
   uint32_t    m_extraAcked [2]              {0, 0};              //!< Maximum excess data acked in epoch
   uint32_t    m_extraAckedWinRtt            {0};                 //!< Age of extra acked in rtt
   uint32_t    m_extraAckedWinRttLength      {5};                 //!< Window length of extra acked window
-  uint32_t    m_ackEpochAckedResetThresh    {1 << 17};           //!< Max allowed val for m_ackEpochAcked, after which sampling epoch is reset 
+  uint32_t    m_ackEpochAckedResetThresh    {1 << 17};           //!< Max allowed val for m_ackEpochAcked, after which sampling epoch is reset
   uint32_t    m_extraAckedIdx               {0};                 //!< Current index in extra acked array
   Time        m_ackEpochTime                {Seconds(0)};        //!< Starting of ACK sampling epoch time
   uint32_t    m_ackEpochAcked               {0};                 //!< Bytes ACked in sampling epoch

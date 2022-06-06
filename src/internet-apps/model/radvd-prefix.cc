@@ -106,7 +106,7 @@ void RadvdPrefix::SetOnLinkFlag (bool onLinkFlag)
 bool RadvdPrefix::IsAutonomousFlag () const
 {
   NS_LOG_FUNCTION (this);
-  return m_autonomousFlag; 
+  return m_autonomousFlag;
 }
 
 void RadvdPrefix::SetAutonomousFlag (bool autonomousFlag)

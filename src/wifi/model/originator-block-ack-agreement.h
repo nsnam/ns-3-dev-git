@@ -94,7 +94,7 @@ public:
   *    state the next transmission will be treated as if the BA agreement is not created yet.
   *
   *  REJECTED (not used for now):
-  *    The agreement's state becomes REJECTED if an ADDBAResponse frame is received from recipient 
+  *    The agreement's state becomes REJECTED if an ADDBAResponse frame is received from recipient
   *    and the Status Code field is set to failure.
   */
   /// State enumeration

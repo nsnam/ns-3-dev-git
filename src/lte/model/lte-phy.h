@@ -53,13 +53,13 @@ class LtePhy : public Object
 {
 
 public:
-  /** 
+  /**
    * @warning the default constructor should not be used
    */
   LtePhy ();
 
-  /** 
-   * 
+  /**
+   *
    * \param dlPhy the downlink LteSpectrumPhy instance
    * \param ulPhy the uplink LteSpectrumPhy instance
    */
@@ -84,15 +84,15 @@ public:
    */
   Ptr<LteNetDevice> GetDevice () const;
 
-  /** 
-   * 
+  /**
+   *
    * \return a pointer to the LteSpectrumPhy instance that manages the downlink
    */
   Ptr<LteSpectrumPhy> GetDownlinkSpectrumPhy ();
 
 
-  /** 
-   * 
+  /**
+   *
    * \return a pointer to the LteSpectrumPhy instance that manages the uplink
    */
   Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy ();
@@ -133,8 +133,8 @@ public:
    */
   double GetTti (void) const;
 
-  /** 
-   * 
+  /**
+   *
    * \param cellId the Cell Identifier
    */
   void DoSetCellId (uint16_t cellId);
@@ -144,14 +144,14 @@ public:
   * \returns the RB group size according to the bandwidth
   */
   uint8_t GetRbgSize (void) const;
-  
-  
+
+
   /**
   * \returns the SRS periodicity (see Table 8.2-1 of 36.213)
   * \param srcCi the SRS Configuration Index
   */
   uint16_t GetSrsPeriodicity (uint16_t srcCi) const;
-  
+
   /**
   * \returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
   * \param srcCi the SRS Configuration Index
@@ -180,17 +180,17 @@ public:
   std::list<Ptr<LteControlMessage> > GetControlMessages (void);
 
 
-  /** 
+  /**
    * generate a CQI report based on the given SINR of Ctrl frame
-   * 
+   *
    * \param sinr the SINR vs frequency measured by the device
    */
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr) = 0;
-  
-  /** 
+
+  /**
   * generate a CQI report based on the given SINR of Data frame
   * (used for PUSCH CQIs)
-  * 
+  *
   * \param sinr the SINR vs frequency measured by the device
   */
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
@@ -198,14 +198,14 @@ public:
   /**
   * generate a report based on the linear interference and noise power
   * perceived during DATA frame
-  * NOTE: used only by eNB 
+  * NOTE: used only by eNB
   *
   * \param interf the interference + noise power measured by the device
   */
   virtual void ReportInterference (const SpectrumValue& interf) = 0;
 
   /**
-  * generate a report based on the linear RS power perceived during CTRL 
+  * generate a report based on the linear RS power perceived during CTRL
   * frame
   * NOTE: used only by UE for evaluating RSRP
   *
@@ -214,14 +214,14 @@ public:
   virtual void ReportRsReceivedPower (const SpectrumValue& power) = 0;
 
   /**
-  * Set the component carrier ID 
+  * Set the component carrier ID
   *
   * \param index the component carrier ID index
   */
   void SetComponentCarrierId (uint8_t index);
 
   /**
-  * Get the component carrier ID 
+  * Get the component carrier ID
   *
   * \returns the component carrier ID index
   */

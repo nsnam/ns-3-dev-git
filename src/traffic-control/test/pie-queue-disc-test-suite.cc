@@ -418,7 +418,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   NS_TEST_ASSERT_MSG_LT (testAttributes->m_maxDropProbDiff, 0.0200000000000001,
                               "Maximum increase in drop probability should be less than or equal to 0.02");
 
-  
+
   // test 9: PIE queue disc is ECN enabled, but packets are not ECN capable
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
@@ -569,7 +569,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize)));
   queue->SetAttributeFailSafe ("ActiveThreshold", TimeValue (Seconds (1)));
   queue->Initialize ();
-  
+
   EnqueueWithDelay (queue, pktSize, 100, testAttributes);
   DequeueWithDelay (queue, 0.02, 100);
   Simulator::Stop (Seconds (8.0));
@@ -588,7 +588,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize)));
   queue->SetAttributeFailSafe ("ActiveThreshold", TimeValue (Seconds (0.001)));
   queue->Initialize ();
-  
+
   EnqueueWithDelay (queue, pktSize, 100, testAttributes);
   DequeueWithDelay (queue, 0.02, 100);
   Simulator::Stop (Seconds (8.0));

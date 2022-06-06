@@ -55,7 +55,7 @@ class EventId
 public:
 
   /** Special values of the event UID. */
-  enum UID 
+  enum UID
     {
       /** Invalid UID value. */
       INVALID = 0,

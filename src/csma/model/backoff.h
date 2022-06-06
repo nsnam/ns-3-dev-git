@@ -39,12 +39,12 @@ public:
   /**
    * Minimum number of backoff slots (when multiplied by m_slotTime, determines minimum backoff time)
    */
-  uint32_t m_minSlots; 
+  uint32_t m_minSlots;
 
   /**
    * Maximum number of backoff slots (when multiplied by m_slotTime, determines maximum backoff time)
    */
-  uint32_t m_maxSlots; 
+  uint32_t m_maxSlots;
 
   /**
    * Caps the exponential function when the number of retries reaches m_ceiling.

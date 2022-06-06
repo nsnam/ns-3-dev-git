@@ -75,7 +75,7 @@ class SvgItem(GooCanvas.ItemSimple):
         @param x The x coordinate of a SVG image
         @param y The y coordinate of a SVG image
         @param rsvg_handle SVG handle
-        @param kwargs key-value arguments 
+        @param kwargs key-value arguments
         """
         super(SvgItem, self).__init__(**kwargs)
         assert isinstance(rsvg_handle, rsvg.Handle)

@@ -43,7 +43,7 @@ int main (int argc, char** argv)
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   /* nodes and positions */
   NodeContainer tvTransmitterNodes;
   NodeContainer spectrumAnalyzerNodes;
@@ -54,7 +54,7 @@ int main (int argc, char** argv)
   allNodes.Add (spectrumAnalyzerNodes);
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> nodePositionList = CreateObject<ListPositionAllocator> ();
-  nodePositionList->Add (Vector (128000.0, 0.0, 0.0)); // TV Transmitter 1; 128 km away from spectrum analyzer 
+  nodePositionList->Add (Vector (128000.0, 0.0, 0.0)); // TV Transmitter 1; 128 km away from spectrum analyzer
   nodePositionList->Add (Vector (0.0, 24000.0, 0.0)); // TV Transmitter 2; 24 km away from spectrum analyzer
   nodePositionList->Add (Vector (0.0, 0.0, 0.0));  // Spectrum Analyzer
   mobility.SetPositionAllocator (nodePositionList);
@@ -68,7 +68,7 @@ int main (int argc, char** argv)
   // FriisSpectrumPropagationLossModel already added by default in SpectrumChannelHelper
   channelHelper.AddSpectrumPropagationLoss ("ns3::ConstantSpectrumPropagationLossModel");
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
-  
+
   /* TV transmitter setup */
   TvSpectrumTransmitterHelper tvTransHelper;
   tvTransHelper.SetChannel (channel);
@@ -76,8 +76,8 @@ int main (int argc, char** argv)
   tvTransHelper.SetAttribute ("ChannelBandwidth", DoubleValue (6e6));
   tvTransHelper.SetAttribute ("StartingTime", TimeValue (Seconds (0)));
   tvTransHelper.SetAttribute ("TransmitDuration", TimeValue (Seconds (0.2)));
-  // 22.22 dBm/Hz from 1000 kW ERP transmit power, flat 6 MHz PSD spectrum assumed for this approximation 
-  tvTransHelper.SetAttribute ("BasePsd", DoubleValue (22.22)); 
+  // 22.22 dBm/Hz from 1000 kW ERP transmit power, flat 6 MHz PSD spectrum assumed for this approximation
+  tvTransHelper.SetAttribute ("BasePsd", DoubleValue (22.22));
   tvTransHelper.SetAttribute ("TvType", EnumValue (TvSpectrumTransmitter::TVTYPE_8VSB));
   tvTransHelper.SetAttribute ("Antenna", StringValue ("ns3::IsotropicAntennaModel"));
   tvTransHelper.InstallAdjacent (tvTransmitterNodes);

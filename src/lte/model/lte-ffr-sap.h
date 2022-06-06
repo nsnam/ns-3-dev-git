@@ -154,7 +154,7 @@ class MemberLteFfrSapProvider : public LteFfrSapProvider
 public:
   /**
    * Constructor
-   * 
+   *
    * \param owner the owner class
    */
   MemberLteFfrSapProvider (C* owner);

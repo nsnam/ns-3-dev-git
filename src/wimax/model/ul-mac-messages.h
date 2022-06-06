@@ -139,7 +139,7 @@ public:
   /**
    * Set SB channel reguest region full parameters
    * \param sbchnlReqRegionFullParams the channel request region full parameters
-   */ 
+   */
   void SetSbchnlReqRegionFullParams (uint8_t sbchnlReqRegionFullParams);
   /**
    * Set SB channel for control codes
@@ -286,7 +286,7 @@ public:
    */
   Buffer::Iterator Read (Buffer::Iterator start);
 private:
-  uint8_t m_type; ///< type 
+  uint8_t m_type; ///< type
   uint8_t m_length; ///< length
   uint8_t m_uiuc; ///< UIUC
 

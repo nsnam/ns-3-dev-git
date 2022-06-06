@@ -34,7 +34,7 @@
  * \file
  * \ingroup core-examples randomvariable
  * \defgroup empirical-rng-example Core example: Empirical random variables use.
- * 
+ *
  * Example program illustrating use of ns3::EmpiricalRandomVariable
  *
  * This example illustrates
@@ -54,7 +54,7 @@ using namespace ns3;
 
 /**
  * \ingroup empirical-rng-example
- * 
+ *
  * \brief Sample the random variable only once.
  * \param mode Rng mode (Normal or Antithetic).
  * \param erv The empirical random variable.
@@ -64,7 +64,7 @@ RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
 {
   std::cout << "------------------------------" << std::endl;
   std::cout << "Sampling " << mode << std::endl;
-  
+
   std::cout << std::endl;
   std::cout << "Binned sample" << std::endl;
   double value = erv->GetValue ();
@@ -80,7 +80,7 @@ RunSingleSample (std::string mode, Ptr<EmpiricalRandomVariable> erv)
 
 /**
  * \ingroup empirical-rng-example
- * 
+ *
  * \brief Prints a stat line.
  * \param value The value to print.
  * \param count The number of times that value has been sampled.
@@ -99,7 +99,7 @@ PrintStatsLine (const double value, const long count, const long n)
 
 /**
  * \ingroup empirical-rng-example
- * 
+ *
  * \brief Prints the summary.
  * \param sum The number of sampled values.
  * \param n The total number of random values to be drawn.
@@ -129,7 +129,7 @@ PrintSummary (long sum, long n, double weighted, double expected)
 
 /**
  * \ingroup empirical-rng-example
- * 
+ *
  * \brief Sample the random variable.
  * \param mode Rng mode (Normal or Antithetic).
  * \param erv The empirical random variable.
@@ -213,7 +213,7 @@ int main (int argc, char *argv[])
     {
       std::cout << "Antithetic sampling disabled" << std::endl;
     }
-  
+
   // Create the ERV in sampling mode
   Ptr<EmpiricalRandomVariable> erv = CreateObject<EmpiricalRandomVariable> ();
   erv->SetInterpolate (false);
@@ -236,7 +236,7 @@ int main (int argc, char *argv[])
       std::cout << std::endl;
       return 0;
     }
-  
+
   RunBothModes ("normal", erv, n);
 
   if (!disableAnti)
@@ -245,6 +245,6 @@ int main (int argc, char *argv[])
       RunBothModes ("antithetic", erv, n);
       erv->SetAntithetic (false);
     }
-  
+
   return 0;
 }

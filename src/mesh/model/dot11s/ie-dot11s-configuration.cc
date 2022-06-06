@@ -32,12 +32,12 @@ Dot11sMeshCapability::Dot11sMeshCapability () :
 uint8_t
 Dot11sMeshCapability::GetSerializedSize () const
 {
-  return 1; 
+  return 1;
 }
-uint8_t  
-Dot11sMeshCapability::GetUint8 () const  //IEEE 802.11-2012 8.4.2.100.8 Mesh Capability 
+uint8_t
+Dot11sMeshCapability::GetUint8 () const  //IEEE 802.11-2012 8.4.2.100.8 Mesh Capability
 {
-  uint8_t result = 0;  
+  uint8_t result = 0;
   if (acceptPeerLinks)
     {
       result |= 1 << 0; //The Accepting Additional Mesh Peerings subfield is set to 1 if the mesh STA is willing to establish additional mesh peerings   with other mesh STAs and set to 0 otherwise

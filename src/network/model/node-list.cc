@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: 
+ * Authors:
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
 
@@ -106,7 +106,7 @@ private:
 
 NS_OBJECT_ENSURE_REGISTERED (NodeListPriv);
 
-TypeId 
+TypeId
 NodeListPriv::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NodeListPriv")
@@ -120,7 +120,7 @@ NodeListPriv::GetTypeId (void)
   return tid;
 }
 
-Ptr<NodeListPriv> 
+Ptr<NodeListPriv>
 NodeListPriv::Get (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -139,7 +139,7 @@ NodeListPriv::DoGet (void)
     }
   return &ptr;
 }
-void 
+void
 NodeListPriv::Delete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -182,19 +182,19 @@ NodeListPriv::Add (Ptr<Node> node)
   return index;
 
 }
-NodeList::Iterator 
+NodeList::Iterator
 NodeListPriv::Begin (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_nodes.begin ();
 }
-NodeList::Iterator 
+NodeList::Iterator
 NodeListPriv::End (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_nodes.end ();
 }
-uint32_t 
+uint32_t
 NodeListPriv::GetNNodes (void)
 {
   NS_LOG_FUNCTION (this);
@@ -225,13 +225,13 @@ NodeList::Add (Ptr<Node> node)
   NS_LOG_FUNCTION (node);
   return NodeListPriv::Get ()->Add (node);
 }
-NodeList::Iterator 
+NodeList::Iterator
 NodeList::Begin (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return NodeListPriv::Get ()->Begin ();
 }
-NodeList::Iterator 
+NodeList::Iterator
 NodeList::End (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

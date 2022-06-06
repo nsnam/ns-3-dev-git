@@ -325,7 +325,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
                    "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
     next = m_events->RemoveNext ();
 
-    PreEventHook (EventId (next.impl, next.key.m_ts, 
+    PreEventHook (EventId (next.impl, next.key.m_ts,
                            next.key.m_context, next.key.m_uid));
 
     m_unscheduledEvents--;
@@ -670,7 +670,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
     // overridden by the uid of DESTROY which identifies this as an event to be
     // executed at Simulator::Destroy time.
     //
-    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 0xffffffff, 
+    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 0xffffffff,
                   EventId::UID::DESTROY);
     m_destroyEvents.push_back (id);
     m_uid++;

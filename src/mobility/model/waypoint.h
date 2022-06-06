@@ -52,7 +52,7 @@ public:
    */
   Time time;
   /**
-   * \brief The position of the waypoint 
+   * \brief The position of the waypoint
    */
   Vector position;
 };

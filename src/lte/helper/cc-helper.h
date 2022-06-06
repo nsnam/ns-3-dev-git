@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Danilo Abrignani <danilo.abrignani@unibo.it> 
+ * Author: Danilo Abrignani <danilo.abrignani@unibo.it>
  */
 
 #ifndef CC_HELPER_H
@@ -52,7 +52,7 @@ namespace ns3 {
  *
  *
  * This helper it is also used within the LteHelper in order to maintain backwards compatibility
- * with previous user simulation script. 
+ * with previous user simulation script.
  */
 class CcHelper : public Object
 {
@@ -175,8 +175,8 @@ private:
    * \param ulBandwidth uplink bandwidth for the current CC
    * \param dlBandwidth downlink bandwidth for the current CC
    * \param ulEarfcn uplink EARFCN - not control on the validity at this point
-   * \param dlEarfcn downlink EARFCN - not control on the validity at this point	
-   * \param isPrimary identify if this is the Primary Component Carrier (PCC) - only one PCC is allowed 
+   * \param dlEarfcn downlink EARFCN - not control on the validity at this point
+   * \param isPrimary identify if this is the Primary Component Carrier (PCC) - only one PCC is allowed
    * \return the component carrier
    */
   ComponentCarrier CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t ulEarfcn, uint32_t dlEarfcn, bool isPrimary);

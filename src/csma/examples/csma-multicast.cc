@@ -18,7 +18,7 @@
 //
 //                     Lan1
 //                 ===========
-//                 |    |    | 
+//                 |    |    |
 //       n0   n1   n2   n3   n4
 //       |    |    |
 //       ===========
@@ -27,7 +27,7 @@
 // - Multicast source is at node n0;
 // - Multicast forwarded by node n2 onto LAN1;
 // - Nodes n0, n1, n2, n3, and n4 receive the multicast frame.
-// - Node n4 listens for the data 
+// - Node n4 listens for the data
 
 #include <iostream>
 #include <fstream>
@@ -42,7 +42,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaMulticastExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   //
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
- 
+
   // We will use these NetDevice containers later, for IP addressing
   NetDeviceContainer nd0 = csma.Install (c0);  // First LAN
   NetDeviceContainer nd1 = csma.Install (c1);  // Second LAN
@@ -91,8 +91,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Configure multicasting.");
   //
-  // Now we can configure multicasting.  As described above, the multicast 
-  // source is at node zero, which we assigned the IP address of 10.1.1.1 
+  // Now we can configure multicasting.  As described above, the multicast
+  // source is at node zero, which we assigned the IP address of 10.1.1.1
   // earlier.  We need to define a multicast group to send packets to.  This
   // can be any multicast address from 224.0.0.0 through 239.255.255.255
   // (avoiding the reserved routing protocol addresses).
@@ -103,7 +103,7 @@ main (int argc, char *argv[])
 
   // Now, we will set up multicast routing.  We need to do three things:
   // 1) Configure a (static) multicast route on node n2
-  // 2) Set up a default multicast route on the sender n0 
+  // 2) Set up a default multicast route on the sender n0
   // 3) Have node n4 join the multicast group
   // We have a helper that can help us with static multicast
   Ipv4StaticRoutingHelper multicast;
@@ -114,10 +114,10 @@ main (int argc, char *argv[])
   NetDeviceContainer outputDevices;  // A container of output NetDevices
   outputDevices.Add (nd1.Get (0));  // (we only need one NetDevice here)
 
-  multicast.AddMulticastRoute (multicastRouter, multicastSource, 
+  multicast.AddMulticastRoute (multicastRouter, multicastSource,
                                multicastGroup, inputIf, outputDevices);
 
-  // 2) Set up a default multicast route on the sender n0 
+  // 2) Set up a default multicast route on the sender n0
   Ptr<Node> sender = c.Get (0);
   Ptr<NetDevice> senderIf = nd0.Get (0);
   multicast.SetDefaultMulticastRoute (sender, senderIf);
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (multicastGroup, multicastPort)));
   onoff.SetConstantRate (DataRate ("255b/s"));
   onoff.SetAttribute ("PacketSize", UintegerValue (128));
@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          InetSocketAddress (Ipv4Address::GetAny (), multicastPort));
 
-  ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
+  ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4
   // Start the sink
   sinkC.Start (Seconds (1.0));
   sinkC.Stop (Seconds (10.0));

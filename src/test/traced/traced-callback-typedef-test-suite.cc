@@ -47,7 +47,7 @@ using namespace ns3;
 /**
  * \file
  * \ingroup system-tests-traced
- * 
+ *
  * TracedCallback tests to verify if they are called with
  * the right type and number of arguments.
  */
@@ -55,9 +55,9 @@ using namespace ns3;
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * TracedCallback Testcase.
- * 
+ *
  * This test verifies that the TracedCallback is called with
  * the right type and number of arguments.
  */
@@ -97,9 +97,9 @@ private:
 
 namespace {
 
-/** 
+/**
  * \ingroup system-tests-traced
- * 
+ *
  * Record typedefs which are identical to previously declared.
  * \return a container of strings representing the duplicates.
  */
@@ -119,7 +119,7 @@ Duplicates (void)
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Container for duplicate types.
  */
 std::set<std::string> g_dupes = Duplicates ();
@@ -127,7 +127,7 @@ std::set<std::string> g_dupes = Duplicates ();
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Stringify the known TracedCallback type names.
  *
  * \tparam T \explicit The typedef name.
@@ -143,7 +143,7 @@ std::string TypeName (int N)
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Returns a sting representing the type of a class.
 */
 #define TYPENAME(T)               \
@@ -158,7 +158,7 @@ std::string TypeName (int N)
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * \name Stringify known typename.
 */
 /**
@@ -226,7 +226,7 @@ TYPENAME (WifiRemoteStationManager::RateChangeTracedCallback);
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Log that a callback was invoked.
  *
  * We can't actually do anything with any of the arguments,
@@ -242,7 +242,7 @@ void SinkIt (std::size_t N)
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Sink functions.
  */
 template <typename... Ts>
@@ -283,7 +283,7 @@ class TracedCallbackTypedefTestCase::Checker : public Object
 public:
   Checker  () {};
   virtual ~Checker () {};
-  
+
   /// Arguments of the TracedCallback.
   std::tuple<typename TypeTraits<Ts>::BaseType...> m_items;
 
@@ -304,7 +304,7 @@ public:
     std::apply(m_cb, m_items);
     Cleanup ();
   }
-  
+
   /**
    * Cleanup the test.
    */
@@ -328,7 +328,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Check the TracedCallback duplicate by checking if it maches the TracedCallback
  * it is supposed to be equal to.
  */
@@ -348,7 +348,7 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase ()
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Check the TracedCallback by calling its Invoke function.
  */
 #define CHECK(U, ...)                                    \

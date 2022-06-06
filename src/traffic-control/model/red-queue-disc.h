@@ -95,7 +95,7 @@ public:
    * \brief Destructor
    *
    * Destructor
-   */ 
+   */
   virtual ~RedQueueDisc ();
 
   /**
@@ -108,7 +108,7 @@ public:
       Below,        //!< When m_qAvg < m_minTh
     };
 
-  /** 
+  /**
    * \brief Drop types
    */
   enum

@@ -128,7 +128,7 @@ Ipv6L3Protocol::Ipv6L3Protocol ()
 {
   NS_LOG_FUNCTION (this);
   m_pmtuCache = CreateObject<Ipv6PmtuCache> ();
-  
+
   Ptr<Ipv6RawSocketFactoryImpl> rawFactoryImpl = CreateObject<Ipv6RawSocketFactoryImpl> ();
   AggregateObject (rawFactoryImpl);
 }
@@ -362,7 +362,7 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
   NS_LOG_FUNCTION (this << interface << network << mask);
   Ptr<Ipv6Interface> iface = GetInterface (interface);
   Address addr = iface->GetDevice ()->GetAddress ();
-  
+
   Ipv6Address addressToFind = Ipv6Address::MakeAutoconfiguredAddress (addr, network);
 
   for (uint32_t i = 0; i < iface->GetNAddresses (); i++)
@@ -373,7 +373,7 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
           break;
         }
     }
-  
+
   /* remove from list of autoconfigured address */
   for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin (); it != m_prefixes.end (); ++it)
     {
@@ -440,7 +440,7 @@ bool Ipv6L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   return false;
 }
 
-bool 
+bool
 Ipv6L3Protocol::RemoveAddress (uint32_t i, Ipv6Address address)
 {
   NS_LOG_FUNCTION (this << i << address);
@@ -605,7 +605,7 @@ Ipv6Address Ipv6L3Protocol::SourceAddressSelection (uint32_t interface, Ipv6Addr
     {
       return Ipv6Address::GetLoopback ();
     }
-  
+
   if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
     {
       for (uint32_t i = 0; i < GetNAddresses (interface); i++)
@@ -697,7 +697,7 @@ void Ipv6L3Protocol::NotifyNewAggregate ()
           this->SetNode (node);
         }
     }
-  
+
   Ipv6::NotifyNewAggregate ();
 }
 
@@ -864,7 +864,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   SocketIpv6TclassTag tclassTag;
   uint8_t tclass = m_defaultTclass;
   found = packet->RemovePacketTag (tclassTag);
-  
+
   if (found)
     {
       tclass = tclassTag.GetTclass ();

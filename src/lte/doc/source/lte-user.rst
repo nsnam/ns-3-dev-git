@@ -15,7 +15,7 @@ We assume the reader is already familiar with how to use the ns-3
 simulator to run generic simulation programs. If this is not the case,
 we strongly recommend the reader to consult [ns3tutorial]_.
 
-  
+
 Usage Overview
 --------------
 
@@ -27,7 +27,7 @@ following steps:
  1. *Define the scenario* to be simulated
  2. *Write a simulation program* that recreates the desired scenario
     topology/architecture. This is done accessing the ns-3 LTE model
-    library using the ``ns3::LteHelper`` API defined in ``src/lte/helper/lte-helper.h``. 
+    library using the ``ns3::LteHelper`` API defined in ``src/lte/helper/lte-helper.h``.
  3. *Specify configuration parameters* of the objects that are being
     used for the simulation. This can be done using input files (via the
     ``ns3::ConfigStore``) or directly within the simulation program.
@@ -49,13 +49,13 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 .. highlight:: none
 
 #. Initial boilerplate::
-       
+
     #include <ns3/core-module.h>
     #include <ns3/network-module.h>
     #include <ns3/mobility-module.h>
-    #include <ns3/lte-module.h>   
+    #include <ns3/lte-module.h>
 
-    using namespace ns3;    
+    using namespace ns3;
 
     int main (int argc, char *argv[])
     {
@@ -76,9 +76,9 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
       enbNodes.Create (1);
       NodeContainer ueNodes;
       ueNodes.Create (2);
-  
+
    Note that the above Node instances at this point still don't have
-   an LTE protocol stack installed; they're just empty nodes. 
+   an LTE protocol stack installed; they're just empty nodes.
 
 #. Configure the Mobility model for all the nodes::
 
@@ -91,7 +91,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
    The above will place all nodes at the coordinates (0,0,0). Please
    refer to the documentation of the ns-3 mobility model for how to
    set your own position or configure node movement.
-  
+
 #. Install an LTE protocol stack on the eNB(s)::
 
       NetDeviceContainer enbDevs;
@@ -115,12 +115,12 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
       lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
    this method will also activate two saturation traffic generators for
-   that bearer, one in uplink and one in downlink. 
+   that bearer, one in uplink and one in downlink.
 
 #. Set the stop time::
 
        Simulator::Stop (Seconds (0.005));
-  
+
    This is needed otherwise the simulation will last forever, because
    (among others) the start-of-subframe event is scheduled repeatedly, and the
    ns-3 simulator scheduler will hence never run out of events.
@@ -203,8 +203,8 @@ There are several types of LTE MAC scheduler user can choose here. User can use 
  lteHelper->SetSchedulerType ("ns3::FdMtFfMacScheduler");    // FD-MT scheduler
  lteHelper->SetSchedulerType ("ns3::TdMtFfMacScheduler");    // TD-MT scheduler
  lteHelper->SetSchedulerType ("ns3::TtaFfMacScheduler");     // TTA scheduler
- lteHelper->SetSchedulerType ("ns3::FdBetFfMacScheduler");   // FD-BET scheduler 
- lteHelper->SetSchedulerType ("ns3::TdBetFfMacScheduler");   // TD-BET scheduler 
+ lteHelper->SetSchedulerType ("ns3::FdBetFfMacScheduler");   // FD-BET scheduler
+ lteHelper->SetSchedulerType ("ns3::TdBetFfMacScheduler");   // TD-BET scheduler
  lteHelper->SetSchedulerType ("ns3::FdTbfqFfMacScheduler");  // FD-TBFQ scheduler
  lteHelper->SetSchedulerType ("ns3::TdTbfqFfMacScheduler");  // TD-TBFQ scheduler
  lteHelper->SetSchedulerType ("ns3::PssFfMacScheduler");     //PSS scheduler
@@ -225,11 +225,11 @@ TBFQ and PSS have more parameters than other schedulers. Users can define those 
   lteHelper->SetSchedulerAttribute("nMux", UIntegerValue(yourvalue)); // the maximum number of UE selected by TD scheduler
   lteHelper->SetSchedulerAttribute("PssFdSchedulerType", StringValue("CoItA")); // PF scheduler type in PSS
 
-In TBFQ, default values of debt limit and credit limit are set to -5Mb and 5Mb respectively based on paper [FABokhari2009]_. 
-Current implementation does not consider credit threshold (:math:`C` = 0). In PSS, if user does not define nMux, 
+In TBFQ, default values of debt limit and credit limit are set to -5Mb and 5Mb respectively based on paper [FABokhari2009]_.
+Current implementation does not consider credit threshold (:math:`C` = 0). In PSS, if user does not define nMux,
 PSS will set this value to half of total UE. The default FD scheduler is PFsch.
 
-In addition, token generation rate in TBFQ and target bit rate in PSS need to be configured by Guarantee Bit Rate (GBR) or 
+In addition, token generation rate in TBFQ and target bit rate in PSS need to be configured by Guarantee Bit Rate (GBR) or
 Maximum Bit Rate (MBR) in epc bearer QoS parameters. Users can use following codes to define GBR and MBR in both downlink and uplink::
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
@@ -244,9 +244,9 @@ Maximum Bit Rate (MBR) in epc bearer QoS parameters. Users can use following cod
 
 In PSS, TBR is obtained from GBR in bearer level QoS parameters. In TBFQ, token generation rate is obtained from the MBR
 setting in bearer level QoS parameters, which therefore needs to be configured consistently.
-For constant bit rate (CBR) traffic, it is suggested to set MBR to GBR. For variance bit rate (VBR) traffic, 
-it is suggested to set MBR k times larger than GBR in order to cover the peak traffic rate. In current implementation, k is set to 
-three based on paper [FABokhari2009]_. In addition, current version of TBFQ does not consider RLC header and PDCP header length in 
+For constant bit rate (CBR) traffic, it is suggested to set MBR to GBR. For variance bit rate (VBR) traffic,
+it is suggested to set MBR k times larger than GBR in order to cover the peak traffic rate. In current implementation, k is set to
+three based on paper [FABokhari2009]_. In addition, current version of TBFQ does not consider RLC header and PDCP header length in
 MBR and GBR. Another parameter in TBFQ is packet arrival rate. This parameter is calculated within scheduler and equals to the past
 average throughput which is used in PF scheduler.
 
@@ -262,13 +262,13 @@ program, like this::
 
 
 You can try also with other LTE and EPC objects, like this::
-   
+
      ./ns3 run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbNetDevice"
      ./ns3 run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
      ./ns3 run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
      ./ns3 run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
      ./ns3 run lena-simple --command-template="%s --PrintAttributes=ns3::PointToPointEpcHelper"
- 
+
 
 
 .. _sec-simulation-output:
@@ -281,13 +281,13 @@ and PDCP level Key Performance Indicators (KPIs). You can enable it in
 the following way::
 
       Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-      
+
       // configure all the simulation scenario here...
-      
+
       lteHelper->EnablePhyTraces ();
       lteHelper->EnableMacTraces ();
-      lteHelper->EnableRlcTraces ();   
-      lteHelper->EnablePdcpTraces ();   
+      lteHelper->EnableRlcTraces ();
+      lteHelper->EnablePdcpTraces ();
 
       Simulator::Run ();
 
@@ -299,7 +299,7 @@ uplink and one for downlink. The time interval duration can be controlled using 
 
 The columns of the RLC KPI files is the following (the same
 for uplink and downlink):
- 
+
   1. start time of measurement interval in seconds since the start of simulation
   2. end time of measurement interval in seconds since the start of simulation
   3. Cell ID
@@ -321,7 +321,7 @@ for uplink and downlink):
 
 Similarly, the columns of the PDCP KPI files is the following (again, the same
 for uplink and downlink):
- 
+
   1. start time of measurement interval in seconds since the start of simulation
   2. end time of measurement interval in seconds since the start of simulation
   3. Cell ID
@@ -372,7 +372,7 @@ while for uplink MAC KPIs the format is:
   8. size of TB
 
 The names of the files used for MAC KPI output can be customized via
-the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
+the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
 PHY KPIs are distributed in seven different files, configurable through the attributes
@@ -452,7 +452,7 @@ It is possible to generate fading traces by using a dedicated matlab script prov
  * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
  * ``traceDuration`` : the duration in seconds of the total length of the trace.
- * ``numRBs`` : the number of the resource block to be evaluated. 
+ * ``numRBs`` : the number of the resource block to be evaluated.
  * ``tag`` : the tag to be applied to the file generated.
 
 The file generated contains ASCII-formatted real values organized in a matrix fashion: every row corresponds to a different RB, and every column correspond to a different temporal fading trace sample.
@@ -494,7 +494,7 @@ The simulator provide natively three fading traces generated according to the co
 
 .. _fig-fadingPedestrianTrace:
 
-.. figure:: figures/fading_pedestrian.*                 
+.. figure:: figures/fading_pedestrian.*
    :align: center
    :alt: Fading trace 3 kmph
 
@@ -502,7 +502,7 @@ The simulator provide natively three fading traces generated according to the co
 
 .. _fig-fadingVehicularTrace:
 
-.. figure:: figures/fading_vehicular.*                 
+.. figure:: figures/fading_vehicular.*
    :align: center
    :alt: Fading trace 60 kmph
 
@@ -510,7 +510,7 @@ The simulator provide natively three fading traces generated according to the co
 
 .. _fig-fadingUrbanTrace:
 
-.. figure:: figures/fading_urban_3kmph.*                 
+.. figure:: figures/fading_urban_3kmph.*
    :align: center
    :alt: Fading trace 3 kmph
 
@@ -534,11 +534,11 @@ We now explain by examples how to use the buildings model (in particular, the ``
 #. Pathloss model selection::
 
     Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  
+
     lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
 #. EUTRA Band Selection
-   
+
 The selection of the working frequency of the propagation model has to be done with the standard ns-3 attribute system as described in the correspond section ("Configuration of LTE model parameters") by means of the DlEarfcn and UlEarfcn parameters, for instance::
 
    lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (100));
@@ -549,9 +549,9 @@ It is to be noted that using other means to configure the frequency used by the 
 #. Mobility model selection::
 
     MobilityHelper mobility;
-    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel"); 
+    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
-    It is to be noted that any mobility model can be used. 
+    It is to be noted that any mobility model can be used.
 
 #. Building creation::
 
@@ -596,7 +596,7 @@ PHY Error Model
 The Physical error model consists of the data error model and the downlink control error model, both of them active by default. It is possible to deactivate them with the ns3 attribute system, in detail::
 
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
 
 
@@ -633,7 +633,7 @@ This method can be used both for developing transmission mode decision engine (i
   Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
 
 Finally, the model implemented can be reconfigured according to different MIMO models by updating the gain values (the only constraints is that the gain has to be constant during simulation run-time and common for the layers). The gain of each Transmission Mode can be changed according to the standard ns3 attribute system, where the attributes are: ``TxMode1Gain``, ``TxMode2Gain``, ``TxMode3Gain``, ``TxMode4Gain``, ``TxMode5Gain``, ``TxMode6Gain`` and ``TxMode7Gain``. By default only ``TxMode1Gain``, ``TxMode2Gain`` and ``TxMode3Gain`` have a meaningful value, that are the ones derived by _[CatreuxMIMO] (i.e., respectively 0.0, 4.2 and -2.8 dB).
-  
+
 
 
 
@@ -648,7 +648,7 @@ convenient to use the ``CosineAntennaModel`` provided by the ns-3
 antenna module. The configuration of the eNB is to be done via the
 ``LteHelper`` instance right before the creation of the
 ``EnbNetDevice``, as shown in the following::
-  
+
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
   lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (60));
@@ -701,7 +701,7 @@ By configuring the attributes of the ``RadioEnvironmentMapHelper`` object
 as shown above, you can tune the parameters of the REM to be
 generated. Note that each ``RadioEnvironmentMapHelper`` instance can
 generate only one REM; if you want to generate more REMs, you need to
-create one separate instance for each REM. 
+create one separate instance for each REM.
 
 Note that the REM generation is very demanding, in particular:
 
@@ -710,8 +710,8 @@ Note that the REM generation is very demanding, in particular:
    a resolution of 1000x1000 would need needs about 5 GB (too much for a
    regular PC at the time of this writing). To overcome this issue,
    the REM is generated at successive steps, with each step evaluating
-   at most a number of pixels determined by the value of the 
-   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``. 
+   at most a number of pixels determined by the value of the
+   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``.
  * if you generate a REM at the beginning of a simulation, it will
    slow down the execution of the rest of the simulation. If you want
    to generate a REM for a program and also use the same program to
@@ -756,7 +756,7 @@ respectively in the files ``ues.txt``, ``enbs.txt`` and
 gnuplot. For example, assuming that your gnuplot script (e.g., the
 minimal gnuplot script described above) is saved in a file named
 ``my_plot_script``, running the following command would plot the
-location of UEs, eNBs and buildings on top of the REM:: 
+location of UEs, eNBs and buildings on top of the REM::
 
    gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
 
@@ -765,9 +765,9 @@ location of UEs, eNBs and buildings on top of the REM::
 AMC Model and CQI Calculation
 -----------------------------
 
-The simulator provides two possible schemes for what concerns the selection of the MCSs and 
-correspondingly the generation of the CQIs. The first one is based on the GSoC module [Piro2011]_ 
-and works per RB basis. This model can be activated with the ns3 attribute system, as presented in 
+The simulator provides two possible schemes for what concerns the selection of the MCSs and
+correspondingly the generation of the CQIs. The first one is based on the GSoC module [Piro2011]_
+and works per RB basis. This model can be activated with the ns3 attribute system, as presented in
 the following::
 
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
@@ -956,7 +956,7 @@ In the previous section we used PointToPoint links for the connection between th
   epcHelper->Initialize ();
 
 
-The attributes ``ns3::EmuEpcHelper::sgwDeviceName`` and ``ns3::EmuEpcHelper::enbDeviceName`` are used to set the name of the devices used for transporting the S1-U, X2-U and X2-C interfaces at the SGW and eNB, respectively. We will now show how this is done in an example where we execute the example program ``lena-simple-epc-emu`` using two virtual ethernet interfaces. 
+The attributes ``ns3::EmuEpcHelper::sgwDeviceName`` and ``ns3::EmuEpcHelper::enbDeviceName`` are used to set the name of the devices used for transporting the S1-U, X2-U and X2-C interfaces at the SGW and eNB, respectively. We will now show how this is done in an example where we execute the example program ``lena-simple-epc-emu`` using two virtual ethernet interfaces.
 
 First of all we build ns-3 appropriately::
 
@@ -984,7 +984,7 @@ Then we setup two virtual ethernet interfaces, and start wireshark to look at th
   ip link set veth0 up
   ip link set veth1 up
 
-  # start wireshark and capture on veth0 
+  # start wireshark and capture on veth0
   wireshark &
 
 
@@ -995,7 +995,7 @@ We can now run the example program with the simulated clock::
 
 
 Using wireshark, you should see ARP resolution first, then some GTP
-packets exchanged both in uplink and downlink. 
+packets exchanged both in uplink and downlink.
 
 The default setting of the example program is 1 eNB and 1UE. You can change this via command line parameters, e.g.::
 
@@ -1012,8 +1012,8 @@ To get a list of the available parameters::
 To run with the realtime clock: it turns out that the default debug
 build is too slow for realtime. Softening the real time constraints
 with the BestEffort mode is not a good idea: something can go wrong
-(e.g., ARP can fail) and, if so, you won't get any data packets out. 
-So you need a decent hardware and the optimized build with statically  
+(e.g., ARP can fail) and, if so, you won't get any data packets out.
+So you need a decent hardware and the optimized build with statically
 linked modules::
 
   ./ns3 configure -d optimized --enable-static --enable-modules=lte --enable-examples
@@ -1029,7 +1029,7 @@ Then run the example program like this::
 
 
 note the HardLimit setting, which will cause the program to terminate
-if it cannot keep up with real time. 
+if it cannot keep up with real time.
 
 The approach described in this section can be used with any type of
 net device. For instance, [Baldo2014]_ describes how it was used to
@@ -1231,12 +1231,12 @@ example using the following ``LteHelper`` functions::
 
    // label one or more UEs with CSG identity of 1
    lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (1));
-   
+
    // install the eNodeBs and UEs
    NetDeviceContainer csgEnbDevs = lteHelper->InstallEnbDevice (csgEnbNodes);
    NetDeviceContainer csgUeDevs = lteHelper->InstallUeDevice (csgUeNodes);
 
-Then enable the initial cell selection procedure on the UEs:: 
+Then enable the initial cell selection procedure on the UEs::
 
    lteHelper->Attach (csgUeDevs);
 
@@ -1258,11 +1258,11 @@ selected so called "consumers", such as handover algorithm. Users may add their
 own configuration into action, and there are several ways to do so:
 
  #. direct configuration in eNodeB RRC entity;
- 
+
  #. configuring existing handover algorithm; and
- 
+
  #. developing a new handover algorithm.
- 
+
 This section will cover the first method only. The second method is covered in
 :ref:`sec-automatic-handover`, while the third method is explained in length in
 Section :ref:`sec-handover-algorithm` of the Design Documentation.
@@ -1284,13 +1284,13 @@ of [TS36331]_.
 The code sample below configures Event A1 RSRP measurement to every eNodeB
 within the container ``devs``::
 
-   LteRrcSap::ReportConfigEutra config;        
+   LteRrcSap::ReportConfigEutra config;
    config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
    config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
    config.threshold1.range = 41;
    config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
    config.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-   
+
    std::vector<uint8_t> measIdList;
 
    NetDeviceContainer::Iterator it;
@@ -1299,10 +1299,10 @@ within the container ``devs``::
      Ptr<NetDevice> dev = *it;
      Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice> ();
      Ptr<LteEnbRrc> enbRrc = enbDev->GetRrc ();
-    
+
      uint8_t measId = enbRrc->AddUeMeasReportConfig (config);
      measIdList.push_back (measId); // remember the measId created
-    
+
      enbRrc->TraceConnect ("RecvMeasurementReport",
                            "context",
                            MakeCallback (&RecvMeasurementReportCallback));
@@ -1341,7 +1341,7 @@ decision:
 
  - there is only one, unambiguous and definitive *measurement object*, thus
    there is no need to configure it;
-   
+
  - *measurement identities* are kept hidden because of the fact that there is
    one-to-one mapping between reporting configuration and measurement identity,
    thus a new measurement identity is set up automatically when a new reporting
@@ -1349,7 +1349,7 @@ decision:
 
  - *quantity configuration* is configured elsewhere, see
    :ref:`sec-performing-measurements`; and
-   
+
  - *measurement gaps* are not supported, because it is only applicable for
    inter-frequency settings;
 
@@ -1402,13 +1402,13 @@ is to be handed over, and that ``enbLteDevs`` is another ``NetDeviceContainer``
 that contains the source and the target eNB. Then, a handover at 0.1s can be
 scheduled like this::
 
-   lteHelper->HandoverRequest (Seconds (0.100), 
-                               ueLteDevs.Get (0), 
-                               enbLteDevs.Get (0), 
+   lteHelper->HandoverRequest (Seconds (0.100),
+                               ueLteDevs.Get (0),
+                               enbLteDevs.Get (0),
                                enbLteDevs.Get (1));
 
 Note that the UE needs to be already connected to the source eNB, otherwise the
-simulation will terminate with an error message. 
+simulation will terminate with an error message.
 
 For an example with full source code, please refer to the ``lena-x2-handover``
 example program.
@@ -1419,7 +1419,7 @@ example program.
 Automatic handover trigger
 **************************
 
-Handover procedure can also be triggered "automatically" by the serving eNodeB 
+Handover procedure can also be triggered "automatically" by the serving eNodeB
 of the UE. The logic behind the trigger depends on the handover algorithm
 currently active in the eNodeB RRC entity. Users may select and configure the
 handover algorithm that will be used in the simulation, which will be explained
@@ -1432,7 +1432,7 @@ Selecting a handover algorithm is done via the ``LteHelper`` object and its
 
    Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
    lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
- 
+
 The selected handover algorithm may also provide several configurable
 attributes, which can be set as follows::
 
@@ -1472,7 +1472,7 @@ instance of the selected handover algorithm for each eNodeB device. In other
 words, make sure to select the right handover algorithm before finalizing it in
 the following line of code::
 
-   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes); 
+   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
 
 Example with full source code of using automatic handover trigger can be found
 in the ``lena-x2-handover-measures`` example program.
@@ -1498,7 +1498,7 @@ eNodeB and the target eNodeB) and the S1 interface (between the target eNodeB
 and the SGW/PGW) are quite stable. Therefore we will focus our attention to the
 RRC protocol (between the UE and the eNodeBs) and the Random Access procedure,
 which are normally transmitted through the air and susceptible to degradation of
-channel condition. 
+channel condition.
 
 A general tips to reduce transmission error is to *ensure high enough SINR*
 level in every UE. This can be done by a proper planning of the network topology
@@ -1527,8 +1527,8 @@ also affect all other data or control packets not related to handover, which may
 be an unwanted side effect. Otherwise, it can be done as follows::
 
    Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
-   
+   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+
 By using the above code, we disable the error model in both control and data
 channels and in both directions (downlink and uplink). This is necessary because
 handover-related signaling messages are transmitted using these channels. An
@@ -1536,7 +1536,7 @@ exception is when the simulation uses the ideal RRC protocol. In this case, only
 the Random Access procedure is left to be considered. The procedure consists of
 control messages, therefore we only need to disable the control channel's error
 model.
-      
+
 
 .. _sec-handover-traces:
 
@@ -1549,59 +1549,59 @@ custom functions so that they are called upon start and end of the
 handover execution phase at both the UE and eNB side. As an example,
 in your simulation program you can declare the following methods::
 
-   void 
-   NotifyHandoverStartUe (std::string context, 
-                          uint64_t imsi, 
-                          uint16_t cellId, 
-                          uint16_t rnti, 
+   void
+   NotifyHandoverStartUe (std::string context,
+                          uint64_t imsi,
+                          uint16_t cellId,
+                          uint16_t rnti,
                           uint16_t targetCellId)
    {
-     std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " UE IMSI " << imsi 
-               << ": previously connected to CellId " << cellId 
-               << " with RNTI " << rnti 
-               << ", doing handover to CellId " << targetCellId 
+     std::cout << Simulator::Now ().GetSeconds () << " " << context
+               << " UE IMSI " << imsi
+               << ": previously connected to CellId " << cellId
+               << " with RNTI " << rnti
+               << ", doing handover to CellId " << targetCellId
                << std::endl;
    }
 
-   void 
-   NotifyHandoverEndOkUe (std::string context, 
-                          uint64_t imsi, 
-                          uint16_t cellId, 
+   void
+   NotifyHandoverEndOkUe (std::string context,
+                          uint64_t imsi,
+                          uint16_t cellId,
                           uint16_t rnti)
    {
-     std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " UE IMSI " << imsi 
-               << ": successful handover to CellId " << cellId 
-               << " with RNTI " << rnti 
+     std::cout << Simulator::Now ().GetSeconds () << " " << context
+               << " UE IMSI " << imsi
+               << ": successful handover to CellId " << cellId
+               << " with RNTI " << rnti
                << std::endl;
    }
 
-   void 
-   NotifyHandoverStartEnb (std::string context, 
-                           uint64_t imsi, 
-                           uint16_t cellId, 
-                           uint16_t rnti, 
+   void
+   NotifyHandoverStartEnb (std::string context,
+                           uint64_t imsi,
+                           uint16_t cellId,
+                           uint16_t rnti,
                            uint16_t targetCellId)
    {
-     std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " eNB CellId " << cellId 
-               << ": start handover of UE with IMSI " << imsi 
-               << " RNTI " << rnti 
-               << " to CellId " << targetCellId 
+     std::cout << Simulator::Now ().GetSeconds () << " " << context
+               << " eNB CellId " << cellId
+               << ": start handover of UE with IMSI " << imsi
+               << " RNTI " << rnti
+               << " to CellId " << targetCellId
                << std::endl;
    }
 
-   void 
-   NotifyHandoverEndOkEnb (std::string context, 
-                           uint64_t imsi, 
-                           uint16_t cellId, 
+   void
+   NotifyHandoverEndOkEnb (std::string context,
+                           uint64_t imsi,
+                           uint16_t cellId,
                            uint16_t rnti)
    {
-     std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " eNB CellId " << cellId 
-               << ": completed handover of UE with IMSI " << imsi 
-               << " RNTI " << rnti 
+     std::cout << Simulator::Now ().GetSeconds () << " " << context
+               << " eNB CellId " << cellId
+               << ": completed handover of UE with IMSI " << imsi
+               << " RNTI " << rnti
                << std::endl;
    }
 
@@ -1633,21 +1633,21 @@ information, you can run the program like this::
 Frequency Reuse Algorithms
 --------------------------
 
-In this section we will describe how to use Frequency Reuse Algorithms 
-in eNb within LTE simulations. 
-There are two possible ways of configuration. The first approach is the 
-"manual" one, it requires more parameters to be configured, but allow user 
-to configure FR algorithm as he/she needs. The second approach is more 
-"automatic". It is very convenient, because is the same for each FR algorithm, 
-so user can switch FR algorithm very quickly by changing only type of FR 
-algorithm. One drawback is that "automatic" approach uses only limited set 
-of configurations for each algorithm, what make it less flexible, but is 
+In this section we will describe how to use Frequency Reuse Algorithms
+in eNb within LTE simulations.
+There are two possible ways of configuration. The first approach is the
+"manual" one, it requires more parameters to be configured, but allow user
+to configure FR algorithm as he/she needs. The second approach is more
+"automatic". It is very convenient, because is the same for each FR algorithm,
+so user can switch FR algorithm very quickly by changing only type of FR
+algorithm. One drawback is that "automatic" approach uses only limited set
+of configurations for each algorithm, what make it less flexible, but is
 sufficient for most of cases.
 
 These two approaches will be described more in following sub-section.
 
-If user do not configure Frequency Reuse algorithm, default one 
-(i.e. LteFrNoOpAlgorithm) is installed in eNb. It acts as if FR 
+If user do not configure Frequency Reuse algorithm, default one
+(i.e. LteFrNoOpAlgorithm) is installed in eNb. It acts as if FR
 algorithm was disabled.
 
 One thing that should be mentioned is that most of implemented FR algorithms work with
@@ -1657,8 +1657,8 @@ that at least three continuous RBs have to be assigned to UE for transmission.
 Manual configuration
 ********************
 
-Frequency reuse algorithm can be configured "manually" within the simulation 
-program by setting type of FR algorithm and all its attributes. Currently, 
+Frequency reuse algorithm can be configured "manually" within the simulation
+program by setting type of FR algorithm and all its attributes. Currently,
 seven FR algorithms are implemented:
 
  - ``ns3::LteFrNoOpAlgorithm``
@@ -1670,14 +1670,14 @@ seven FR algorithms are implemented:
  - ``ns3::LteFfrDistributedAlgorithm``
 
 
-Selecting a FR algorithm is done via the ``LteHelper`` object and 
+Selecting a FR algorithm is done via the ``LteHelper`` object and
 its ``SetFfrAlgorithmType`` method as shown below::
 
    Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
    lteHelper->SetFfrAlgorithmType ("ns3::LteFrHardAlgorithm");
 
-Each implemented FR algorithm provide several configurable attributes. Users do 
-not have to care about UL and DL bandwidth configuration, because it is done 
+Each implemented FR algorithm provide several configurable attributes. Users do
+not have to care about UL and DL bandwidth configuration, because it is done
 automatically during cell configuration. To change bandwidth for FR algorithm,
 configure required values for ``LteEnbNetDevice``::
 
@@ -1686,14 +1686,14 @@ configure required values for ``LteEnbNetDevice``::
    lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (bandwidth));
 
 
-Now, each FR algorithms configuration will be described. 
+Now, each FR algorithms configuration will be described.
 
 Hard Frequency Reuse Algorithm
 ++++++++++++++++++++++++++++++
 
-As described in Section :ref:`sec-fr-hard-algorithm` of the Design Documentation 
-``ns3::LteFrHardAlgorithm`` uses one sub-band. To configure this sub-band user need 
-to specify offset and bandwidth for DL and UL in number of RBs. 
+As described in Section :ref:`sec-fr-hard-algorithm` of the Design Documentation
+``ns3::LteFrHardAlgorithm`` uses one sub-band. To configure this sub-band user need
+to specify offset and bandwidth for DL and UL in number of RBs.
 
 Hard Frequency Reuse Algorithm provides following attributes:
 
@@ -1712,15 +1712,15 @@ Example configuration of LteFrHardAlgorithm can be done in following way::
    NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
 
 Above example allow eNB to use only RBs from 8 to 16 in DL and UL, while entire cell
-bandwidth is 25. 
+bandwidth is 25.
 
 
 Strict Frequency Reuse Algorithm
 ++++++++++++++++++++++++++++++++
 
-Strict Frequency Reuse Algorithm uses two sub-bands: one common for each cell and one 
-private. There is also RSRQ threshold, which is needed to decide within which sub-band 
-UE should be served. Moreover the power transmission in these sub-bands can be different. 
+Strict Frequency Reuse Algorithm uses two sub-bands: one common for each cell and one
+private. There is also RSRQ threshold, which is needed to decide within which sub-band
+UE should be served. Moreover the power transmission in these sub-bands can be different.
 
 Strict Frequency Reuse Algorithm provides following attributes:
 
@@ -1733,14 +1733,14 @@ Strict Frequency Reuse Algorithm provides following attributes:
  * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
  * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
  * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
- * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
  * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
 
 
-Example below allow eNB to use RBs from 0 to 6 as common sub-band and from 12 to 18 as 
-private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equals 
+Example below allow eNB to use RBs from 0 to 6 as common sub-band and from 12 to 18 as
+private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equals
 ``LteEnbPhy::TxPower - 3dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
 
    lteHelper->SetFfrAlgorithmType ("ns3::LteFrStrictAlgorithm");
@@ -1763,8 +1763,8 @@ private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equ
 Soft Frequency Reuse Algorithm
 ++++++++++++++++++++++++++++++
 
-With Soft Frequency Reuse Algorithm, eNb uses entire cell bandwidth, but there are two 
-sub-bands, within UEs are served with different power level. 
+With Soft Frequency Reuse Algorithm, eNb uses entire cell bandwidth, but there are two
+sub-bands, within UEs are served with different power level.
 
 Soft Frequency Reuse Algorithm provides following attributes:
 
@@ -1772,17 +1772,17 @@ Soft Frequency Reuse Algorithm provides following attributes:
  * ``UlEdgeSubBandwidth``: Uplink Edge SubBandwidth Configuration in number of Resource Block Groups
  * ``DlEdgeSubBandOffset``: Downlink Edge SubBand Offset in number of Resource Block Groups
  * ``DlEdgeSubBandwidth``: Downlink Edge SubBandwidth Configuration in number of Resource Block Groups
- * ``AllowCenterUeUseEdgeSubBand``: If true center UEs can receive on edge sub-band RBGs, otherwise 
+ * ``AllowCenterUeUseEdgeSubBand``: If true center UEs can receive on edge sub-band RBGs, otherwise
    edge sub-band is allowed only for edge UEs, default value is true
  * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
  * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
  * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
- * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
  * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
 
-Example below configures RBs from 8 to 16 to be used by cell edge UEs and this sub-band 
+Example below configures RBs from 8 to 16 to be used by cell edge UEs and this sub-band
 is not available for cell center users. RSRQ threshold is 20 dB, power in center area
 equals ``LteEnbPhy::TxPower``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
 
@@ -1823,9 +1823,9 @@ Soft Fractional Frequency Reuse Algorithm provides following attributes:
  * ``CenterAreaPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
  * ``MediumAreaPowerOffset``: PdschConfigDedicated::Pa value for medium sub-band, default value dB0
  * ``EdgeAreaPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
- * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
- * ``MediumAreaTpc``: TPC value which will be set in DL-DCI for UEs in medium area, 
+ * ``MediumAreaTpc``: TPC value which will be set in DL-DCI for UEs in medium area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
  * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
@@ -1833,9 +1833,9 @@ Soft Fractional Frequency Reuse Algorithm provides following attributes:
 
 In example below RBs from 0 to 6 will be used as common (medium) sub-band,
 RBs from 6 to 12 will be used as edge sub-band and RBs from 12 to 24 will be used as
-center sub-band (it is composed with remaining RBs). RSRQ threshold between center 
+center sub-band (it is composed with remaining RBs). RSRQ threshold between center
 and medium area is 28 dB, RSRQ threshold between medium and edge area is 18 dB.
-Power in center area equals ``LteEnbPhy::TxPower - 3dB``, power in medium area equals 
+Power in center area equals ``LteEnbPhy::TxPower - 3dB``, power in medium area equals
 ``LteEnbPhy::TxPower + 3dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
 
    lteHelper->SetFfrAlgorithmType ("ns3::LteFfrSoftAlgorithm");
@@ -1862,16 +1862,16 @@ Enhanced Fractional Frequency Reuse Algorithm
 Enhanced Fractional Frequency Reuse (EFFR) reserve part of system bandwidth for each cell
 (typically there are 3 cell types and each one gets 1/3 of system bandwidth). Then part of
 this subbandwidth it used as `Primary Segment` with reuse factor 3 and as `Secondary Segment`
-with reuse factor 1. User has to configure (for DL and UL) offset of the cell subbandwidth 
-in number of RB, number of RB which will be used as `Primary Segment` and number of RB which 
-will be used as `Secondary Segment`. `Primary Segment` is used by cell at will, but RBs from 
-`Secondary Segment` can be assigned to UE only is CQI feedback from this UE have higher value 
+with reuse factor 1. User has to configure (for DL and UL) offset of the cell subbandwidth
+in number of RB, number of RB which will be used as `Primary Segment` and number of RB which
+will be used as `Secondary Segment`. `Primary Segment` is used by cell at will, but RBs from
+`Secondary Segment` can be assigned to UE only is CQI feedback from this UE have higher value
 than configured CQI threshold. UE is considered as edge UE when its RSRQ is lower than ``RsrqThreshold``.
 
-Since each eNb needs to know where are Primary and Secondary of other cell types, 
+Since each eNb needs to know where are Primary and Secondary of other cell types,
 it will calculate them assuming configuration is the same for each cell and only subbandwidth offsets
-are different. So it is important to divide available system bandwidth equally to each cell and apply 
-the same configuration of Primary and Secondary Segments to them. 
+are different. So it is important to divide available system bandwidth equally to each cell and apply
+the same configuration of Primary and Secondary Segments to them.
 
 
 Enhanced Fractional Frequency Reuse Algorithm provides following attributes:
@@ -1887,15 +1887,15 @@ Enhanced Fractional Frequency Reuse Algorithm provides following attributes:
  * ``EdgeAreaPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
  * ``DlCqiThreshold``: If the DL-CQI for RBG of is higher than this threshold, transmission on RBG is possible
  * ``UlCqiThreshold``: If the UL-CQI for RBG of is higher than this threshold, transmission on RBG is possible
- * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
  * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
 
 
-In example below offset in DL and UL is 0 RB, 4 RB will be used in `Primary Segment` and 
-`Secondary Segment`. RSRQ threshold between center and edge area is 25 dB. DL and UL CQI 
-thresholds are set to value of 10. Power in center area equals ``LteEnbPhy::TxPower - 6dB``, 
+In example below offset in DL and UL is 0 RB, 4 RB will be used in `Primary Segment` and
+`Secondary Segment`. RSRQ threshold between center and edge area is 25 dB. DL and UL CQI
+thresholds are set to value of 10. Power in center area equals ``LteEnbPhy::TxPower - 6dB``,
 power in edge area equals ``LteEnbPhy::TxPower + 0dB``::
 
    lteHelper->SetFfrAlgorithmType("ns3::LteFfrEnhancedAlgorithm");
@@ -1917,15 +1917,15 @@ power in edge area equals ``LteEnbPhy::TxPower + 0dB``::
 Distributed Fractional Frequency Reuse Algorithm
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-Distributed Fractional Frequency Reuse requires X2 interface between all eNB to be installed. 
+Distributed Fractional Frequency Reuse requires X2 interface between all eNB to be installed.
 X2 interfaces can be installed only when EPC is configured, so this FFR scheme can be used only with
-EPC scenarios. 
+EPC scenarios.
 
-With Distributed Fractional Frequency Reuse  Algorithm, eNb uses entire cell bandwidth and there can 
-be two sub-bands: center sub-band and edge sub-band . Within these sub-bands UEs can be served with 
-different power level. Algorithm adaptively selects RBs for cell-edge sub-band on basis of 
-coordination information (i.e. RNTP) from adjecent cells and notifies the base stations of the adjacent cells, 
-which RBs it selected to use in edge sub-band. If there are no UE classified as edge UE in cell, 
+With Distributed Fractional Frequency Reuse  Algorithm, eNb uses entire cell bandwidth and there can
+be two sub-bands: center sub-band and edge sub-band . Within these sub-bands UEs can be served with
+different power level. Algorithm adaptively selects RBs for cell-edge sub-band on basis of
+coordination information (i.e. RNTP) from adjecent cells and notifies the base stations of the adjacent cells,
+which RBs it selected to use in edge sub-band. If there are no UE classified as edge UE in cell,
 eNB will not use any RBs as edge sub-band.
 
 Distributed Fractional Frequency Reuse Algorithm provides following attributes:
@@ -1933,18 +1933,18 @@ Distributed Fractional Frequency Reuse Algorithm provides following attributes:
  * ``CalculationInterval``: Time interval between calculation of Edge sub-band, Default value 1 second
  * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
  * ``RsrpDifferenceThreshold``: If the difference between the power of the signal received by UE from
-   the serving cell and the power of the signal received from the adjacent cell is less than a 
+   the serving cell and the power of the signal received from the adjacent cell is less than a
    RsrpDifferenceThreshold value, the cell weight is incremented
  * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
  * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
  * ``EdgeRbNum``: Number of RB that can be used in edge sub-band
- * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
  * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
    Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
 
-In example below calculation interval is 500 ms. RSRQ threshold between center and edge area is 25. 
-RSRP Difference Threshold is set to be 5. In DL and UL 6 RB will be used by each cell in edge sub-band.  
+In example below calculation interval is 500 ms. RSRQ threshold between center and edge area is 25.
+RSRP Difference Threshold is set to be 5. In DL and UL 6 RB will be used by each cell in edge sub-band.
 Power in center area equals ``LteEnbPhy::TxPower - 0dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
 
   lteHelper->SetFfrAlgorithmType("ns3::LteFfrDistributedAlgorithm");
@@ -1961,17 +1961,17 @@ Power in center area equals ``LteEnbPhy::TxPower - 0dB``, power in edge area equ
 Automatic configuration
 ***********************
 
-Frequency Reuse algorithms can also be configured in more “automatic” way by setting 
-only the bandwidth and FrCellTypeId. During initialization of FR instance, configuration 
-for set bandwidth and FrCellTypeId will be taken from configuration table. It is important 
-that only sub-bands will be configured, thresholds and transmission power will be set 
-to default values. If one wants, he/she can change thresholds and transmission power 
-as show in previous sub-section. 
+Frequency Reuse algorithms can also be configured in more “automatic” way by setting
+only the bandwidth and FrCellTypeId. During initialization of FR instance, configuration
+for set bandwidth and FrCellTypeId will be taken from configuration table. It is important
+that only sub-bands will be configured, thresholds and transmission power will be set
+to default values. If one wants, he/she can change thresholds and transmission power
+as show in previous sub-section.
 
-There are three FrCellTypeId : ``1, 2, 3``, which correspond to three different 
-configurations for each bandwidth. Three configurations allow to have different 
+There are three FrCellTypeId : ``1, 2, 3``, which correspond to three different
+configurations for each bandwidth. Three configurations allow to have different
 configurations in neighbouring cells in hexagonal eNB layout. If user needs to have
-more different configuration for neighbouring cells, he/she need to use manual 
+more different configuration for neighbouring cells, he/she need to use manual
 configuration.
 
 Example below show automatic FR algorithm configuration::
@@ -1984,34 +1984,34 @@ Example below show automatic FR algorithm configuration::
 Uplink Power Control
 --------------------
 
-Uplink Power Control functionality is enabled by default. User can disable it by setting 
+Uplink Power Control functionality is enabled by default. User can disable it by setting
 the boolean attribute ``ns3::LteUePhy::EnableUplinkPowerControl`` to true.
 
 User can switch between Open Loop Power Control and Closed Loop Power Control mechanisms
-by setting the boolean attribute ``ns3::LteUePowerControl::ClosedLoop``. 
+by setting the boolean attribute ``ns3::LteUePowerControl::ClosedLoop``.
 By default Closed Loop Power Control with Accumulation Mode is enabled.
 
-Path-loss is key component of Uplink Power Control. It is computed as difference between 
-filtered RSRP and ReferenceSignalPower parameter. ReferenceSignalPower is 
+Path-loss is key component of Uplink Power Control. It is computed as difference between
+filtered RSRP and ReferenceSignalPower parameter. ReferenceSignalPower is
 sent with SIB2.
 
 Attributes available in Uplink Power Control:
 
- * ``ClosedLoop``: if true Closed Loop Uplink Power Control mode is enabled and Open Loop 
+ * ``ClosedLoop``: if true Closed Loop Uplink Power Control mode is enabled and Open Loop
    Power Control otherwise, default value is false
- * ``AccumulationEnabled``: if true Accumulation Mode is enabled and Absolute mode otherwise, 
-   default value is false 
+ * ``AccumulationEnabled``: if true Accumulation Mode is enabled and Absolute mode otherwise,
+   default value is false
  * ``Alpha``: the path loss compensation factor, default value is 1.0
  * ``Pcmin``: minimal UE TxPower, default value is -40 dBm
  * ``Pcmax``: maximal UE TxPower, default value is 23 dBm
- * ``PoNominalPusch``: this parameter should be set by higher layers, but currently 
-   it needs to be configured by attribute system, possible values are 
+ * ``PoNominalPusch``: this parameter should be set by higher layers, but currently
+   it needs to be configured by attribute system, possible values are
    integers in range (-126 ... 24), Default value is -80
- * ``PoUePusch``: this parameter should be set by higher layers, but currently 
-   it needs to be configured by attribute system, possible values are 
+ * ``PoUePusch``: this parameter should be set by higher layers, but currently
+   it needs to be configured by attribute system, possible values are
    integers in range (-8 ... 7), Default value is 0
- * ``PsrsOffset``: this parameter should be set by higher layers, but currently 
-   it needs to be configured by attribute system, possible values are 
+ * ``PsrsOffset``: this parameter should be set by higher layers, but currently
+   it needs to be configured by attribute system, possible values are
    integers in range (0 ... 15), Default value is 7, what gives P_Srs_Offset_Value = 0
 
 Traced values in Uplink Power Control:
@@ -2034,14 +2034,14 @@ Examples Programs
 -----------------
 
 The directory ``src/lte/examples/`` contains some example simulation programs that
-show how to simulate different LTE scenarios. 
+show how to simulate different LTE scenarios.
 
 
 Reference scenarios
 -------------------
 
 There is a vast amount of reference LTE simulation scenarios which can
-be found in the literature. Here we list some of them: 
+be found in the literature. Here we list some of them:
 
  * The system simulation scenarios mentioned in section A.2 of [TR36814]_.
 
@@ -2052,7 +2052,7 @@ be found in the literature. Here we list some of them:
    global variables, you can run this command::
 
      ./ns3 run lena-dual-stripe --command-template="%s --PrintGlobals"
-     
+
    The following subsection presents an example of running a simulation
    campaign using this example program.
 
@@ -2243,7 +2243,7 @@ Some notes on the execution:
    This figure also shows the position of eNodeBs and UEs at the beginning of a
    simulation using ``RngRun = 1``. Other values of `RngRun` may produce
    different UE position.
-   
+
 .. _fig-lte-handover-campaign-rem:
 
 .. figure:: figures/lte-handover-campaign-rem.*
@@ -2351,27 +2351,27 @@ Frequency Reuse examples
 
 There are two examples showing Frequency Reuse Algorithms functionality.
 
-``lena-frequency-reuse`` is simple example with 3 eNBs in triangle layout. 
-There are 3 cell edge UEs, which are located in the center of this triangle and 
-3 cell center UEs (one near each eNB). User can also specify the number of randomly 
-located UEs. FR algorithm is installed in eNBs and each eNB has different FrCellTypeId, 
-what means each eNB uses different FR configuration. User can run ``lena-frequency-reuse`` 
+``lena-frequency-reuse`` is simple example with 3 eNBs in triangle layout.
+There are 3 cell edge UEs, which are located in the center of this triangle and
+3 cell center UEs (one near each eNB). User can also specify the number of randomly
+located UEs. FR algorithm is installed in eNBs and each eNB has different FrCellTypeId,
+what means each eNB uses different FR configuration. User can run ``lena-frequency-reuse``
 with 6 different FR algorithms: NoOp, Hard FR, Strict FR, Soft FR, Soft FFR and Enhanced FFR.
-To run scenario with Distributed FFR algorithm, user should use ``lena-distributed-ffr``. 
-These two examples are very similar, but they were split because Distributed FFR requires 
-EPC to be used, and other algorithms do not. 
+To run scenario with Distributed FFR algorithm, user should use ``lena-distributed-ffr``.
+These two examples are very similar, but they were split because Distributed FFR requires
+EPC to be used, and other algorithms do not.
 
-To run ``lena-frequency-reuse`` with different Frequency Reuse algorithms, user needs to specify 
+To run ``lena-frequency-reuse`` with different Frequency Reuse algorithms, user needs to specify
 FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
 Example command to run ``lena-frequency-reuse`` with Soft FR algorithm is presented below::
 
    $ ./ns3 run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm"
 
-In these examples functionality to generate REM and spectrum analyzer trace was added. 
+In these examples functionality to generate REM and spectrum analyzer trace was added.
 User can enable generation of it by setting ``generateRem`` and ``generateSpectrumTrace``
-attributes. 
+attributes.
 
-Command to generate REM for RB 1 in data channel from ``lena-frequency-reuse`` scenario 
+Command to generate REM for RB 1 in data channel from ``lena-frequency-reuse`` scenario
 with Soft FR algorithm is presented below::
 
    $ ./ns3 run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm
@@ -2384,12 +2384,12 @@ Radio Environment Map for Soft FR is presented in Figure :ref:`fig-lte-soft-fr-1
 .. figure:: figures/lte-fr-soft-1-rem.*
    :align: center
 
-   REM for RB 1 obtained from ``lena-frequency-reuse`` example with Soft FR 
+   REM for RB 1 obtained from ``lena-frequency-reuse`` example with Soft FR
    algorithm enabled
 
 
-Command to generate spectrum trace from ``lena-frequency-reuse`` scenario 
-with Soft FFR algorithm is presented below (Spectrum Analyzer position needs to be configured 
+Command to generate spectrum trace from ``lena-frequency-reuse`` scenario
+with Soft FFR algorithm is presented below (Spectrum Analyzer position needs to be configured
 inside script)::
 
    $ ./ns3 run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFfrSoftAlgorithm
@@ -2397,7 +2397,7 @@ inside script)::
 
 Example spectrum analyzer trace is presented in figure :ref:`fig-lte-soft-ffr-2-spectrum-trace`.
 As can be seen, different data channel subbands are sent with different power level
-(according to configuration), while control channel is transmitted with uniform power 
+(according to configuration), while control channel is transmitted with uniform power
 along entire system bandwidth.
 
 
@@ -2406,12 +2406,12 @@ along entire system bandwidth.
 .. figure:: figures/lte-ffr-soft-2-spectrum-trace.*
    :align: center
 
-   Spectrum Analyzer trace obtained from ``lena-frequency-reuse`` example 
-   with Soft FFR algorithm enabled. Spectrum Analyzer was located need eNB 
+   Spectrum Analyzer trace obtained from ``lena-frequency-reuse`` example
+   with Soft FFR algorithm enabled. Spectrum Analyzer was located need eNB
    with FrCellTypeId 2.
 
 
-``lena-dual-stripe`` can be also run with Frequency Reuse algorithms installed in all macro eNB. 
+``lena-dual-stripe`` can be also run with Frequency Reuse algorithms installed in all macro eNB.
 User needs to specify FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
 Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented below::
 
@@ -2426,7 +2426,7 @@ Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented 
      --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
      --RngRun=1" > no-op.txt
 
-Example command to generate REM for RB 1 in data channel from ``lena-dual-stripe`` scenario 
+Example command to generate REM for RB 1 in data channel from ``lena-dual-stripe`` scenario
 with Hard FR algorithm is presented below::
 
    $ ./ns3 run="lena-dual-stripe
@@ -2441,7 +2441,7 @@ with Hard FR algorithm is presented below::
      --RngRun=1 --generateRem=true --remRbId=1" > no-op.txt
 
 Radio Environment Maps for RB 1, 10 and 20 generated from ``lena-dual-stripe``
-scenario with Hard Frequency Reuse algorithm are presented in the figures 
+scenario with Hard Frequency Reuse algorithm are presented in the figures
 below. These RB were selected because each one is used by different FR cell type.
 
 .. _fig-lte-hard-fr-1-rem:
@@ -2468,11 +2468,11 @@ below. These RB were selected because each one is used by different FR cell type
 
 Carrier aggregation examples
 ------------------------------------------
-The carrier aggregation feature is not enabled by default. The user can enable it by setting the boolean attribute 
-``ns3::LteHelper::UseCa`` to true. The number of component carriers to be used in carrier aggregation can 
-be configured by setting the attribute ``ns3::LteHelper::NumberOfComponentCarriers``. Currently the 
-maximum number is 5. Additionally, the component carrier manager needs to be configured. By default 
-the ``NoOpComponentCarrierManager`` is selected, which means that only the primary carrier is enabled. The Component 
+The carrier aggregation feature is not enabled by default. The user can enable it by setting the boolean attribute
+``ns3::LteHelper::UseCa`` to true. The number of component carriers to be used in carrier aggregation can
+be configured by setting the attribute ``ns3::LteHelper::NumberOfComponentCarriers``. Currently the
+maximum number is 5. Additionally, the component carrier manager needs to be configured. By default
+the ``NoOpComponentCarrierManager`` is selected, which means that only the primary carrier is enabled. The Component
 carrier manager (CCM) implementation that uses all the available carriers is ``RrComponentCarrierManager``.
 The CCM can be configured by using the attribute ``LteHelper::EnbComponentCarrierManager``.
 
@@ -2482,10 +2482,10 @@ An example configuration is presented below::
   Config::SetDefault ("ns3::LteHelper::NumberOfComponentCarriers", UintegerValue (2));
   Config::SetDefault ("ns3::LteHelper::EnbComponentCarrierManager", StringValue ("ns3::RrComponentCarrierManager"));
 
-As an example, the user can take a look and run the ``lena-simple`` and ``lena-simple-epc`` programs and enable LTE traces 
+As an example, the user can take a look and run the ``lena-simple`` and ``lena-simple-epc`` programs and enable LTE traces
 to check the performance. A new column is added to PHY and MAC traces to indicate the component carrier.
 
-The test suite ``lte-carrier-aggregation`` is also a test program that can be used as an example as it can be run in a mode to write results 
+The test suite ``lte-carrier-aggregation`` is also a test program that can be used as an example as it can be run in a mode to write results
 to output files by setting the ``s_writeResults`` boolean static variable to true. The test can be run by using a `test-runner`:
 
    ./ns3 run 'test-runner --suite=lte-carrier-aggregation'
@@ -2514,8 +2514,8 @@ To plot the test results, a file has to be created in the root folder of the ns-
         uplink_results using 1:($2==2 ? $3/1000000 : 1/0) w lp t 'RR SDL 1', \
         uplink_results using 1:($2==3 ? $3/1000000 : 1/0) w lp t 'RR SDL 2'
 
-``gnuplot`` can be run by providing the file name, so that in the ns-3 root directory 
-figures are generated. An example to run this test suite is shown in figures: 
+``gnuplot`` can be run by providing the file name, so that in the ns-3 root directory
+figures are generated. An example to run this test suite is shown in figures:
 `fig-ca-test-example-ul` and `fig-ca-test-example-dl`.
 
 .. _fig-ca-test-example-ul:
@@ -2523,7 +2523,7 @@ figures are generated. An example to run this test suite is shown in figures:
 .. figure:: figures/ca-test-example-ul.png
    :scale: 60 %
    :align: center
-   
+
    Example of CA test performance in the uplink
 
 
@@ -2532,8 +2532,8 @@ figures are generated. An example to run this test suite is shown in figures:
 .. figure:: figures/ca-test-example-dl.png
    :scale: 60 %
    :align: center
-   
-   Example of CA test performance in the downlink 
+
+   Example of CA test performance in the downlink
 
 
 Radio link failure example

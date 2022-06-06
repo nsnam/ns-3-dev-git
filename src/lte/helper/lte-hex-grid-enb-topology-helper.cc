@@ -91,14 +91,14 @@ LteHexGridEnbTopologyHelper::DoDispose ()
 }
 
 
-void 
+void
 LteHexGridEnbTopologyHelper::SetLteHelper (Ptr<LteHelper> h)
 {
   NS_LOG_FUNCTION (this << h);
   m_lteHelper = h;
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
@@ -107,25 +107,25 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
   double yd = xydfactor*m_d;
   for (uint32_t n = 0; n < c.GetN (); ++n)
     {
-      uint32_t currentSite = n / 3; 
+      uint32_t currentSite = n / 3;
       uint32_t biRowIndex = (currentSite / (m_gridWidth + m_gridWidth + 1));
       uint32_t biRowRemainder = currentSite % (m_gridWidth + m_gridWidth + 1);
       uint32_t rowIndex = biRowIndex*2;
-      uint32_t colIndex = biRowRemainder; 
+      uint32_t colIndex = biRowRemainder;
       if (biRowRemainder >= m_gridWidth)
 	{
 	  ++rowIndex;
 	  colIndex -= m_gridWidth;
 	}
-      NS_LOG_LOGIC ("node " << n << " site " << currentSite 
-		    << " rowIndex " << rowIndex 
-		    << " colIndex " << colIndex 
+      NS_LOG_LOGIC ("node " << n << " site " << currentSite
+		    << " rowIndex " << rowIndex
+		    << " colIndex " << colIndex
 		    << " biRowIndex " << biRowIndex
 		    << " biRowRemainder " << biRowRemainder);
       double y = m_yMin + yd * rowIndex;
       double x;
       double antennaOrientation;
-      if ((rowIndex % 2) == 0) 
+      if ((rowIndex % 2) == 0)
 	{
 	  x = m_xMin + m_d * colIndex;
 	}
@@ -133,7 +133,7 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 	{
 	  x = m_xMin -(0.5*m_d) + m_d * colIndex;
 	}
-      
+
       switch (n%3)
 	{
 	case 0:
@@ -141,21 +141,21 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 	  x += m_offset;
 	  m_lteHelper->SetFfrAlgorithmAttribute("FrCellTypeId", UintegerValue (1));
 	  break;
-	  
+
 	case 1:
 	  antennaOrientation = 120;
 	  x -= m_offset/2.0;
 	  y += m_offset*xydfactor;
 	  m_lteHelper->SetFfrAlgorithmAttribute("FrCellTypeId", UintegerValue (2));
 	  break;
-	  
+
 	case 2:
 	  antennaOrientation = -120;
 	  x -= m_offset/2.0;
 	  y -= m_offset*xydfactor;
 	  m_lteHelper->SetFfrAlgorithmAttribute("FrCellTypeId", UintegerValue (3));
 	  break;
-	
+
           // no default, n%3 = 0, 1, 2
 	}
       Ptr<Node> node = c.Get (n);
@@ -170,4 +170,4 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 }
 
 } // namespace ns3
- 
+

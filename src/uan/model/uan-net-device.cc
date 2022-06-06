@@ -308,9 +308,9 @@ UanNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNu
 }
 
 bool
-UanNetDevice::SendFrom (Ptr<Packet> packet, 
-                        [[maybe_unused]] const Address& source, 
-                        [[maybe_unused]] const Address& dest, 
+UanNetDevice::SendFrom (Ptr<Packet> packet,
+                        [[maybe_unused]] const Address& source,
+                        [[maybe_unused]] const Address& dest,
                         [[maybe_unused]] uint16_t protocolNumber)
 {
   // Not yet implemented

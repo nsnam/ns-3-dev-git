@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -103,7 +103,7 @@ ItuR1238PropagationLossModel::GetLoss (Ptr<MobilityModel> a1, Ptr<MobilityModel>
 }
 
 
-double 
+double
 ItuR1238PropagationLossModel::DoCalcRxPower (double txPowerDbm,
 						Ptr<MobilityModel> a,
 						Ptr<MobilityModel> b) const

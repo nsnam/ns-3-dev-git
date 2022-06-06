@@ -103,7 +103,7 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
       b += (k[4] + ((ub4)k[5] << 8) + ((ub4)k[6] << 16) + ((ub4)k[7] << 24));
       c += (k[8] + ((ub4)k[9] << 8) + ((ub4)k[10] << 16) + ((ub4)k[11] << 24));
       mix (a, b, c);
-      k += 12; 
+      k += 12;
       len -= 12;
     }
 
@@ -905,7 +905,7 @@ Ipv6Address Ipv6Address::GetOnes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address ones ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
-  return ones; 
+  return ones;
 }
 
 void Ipv6Address::GetBytes (uint8_t buf[16]) const
@@ -1004,7 +1004,7 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
   mod = prefix % 8;
 
   // protect memset with 'nb > 0' check to suppress
-  // __warn_memset_zero_len compiler errors in some gcc>4.5.x 
+  // __warn_memset_zero_len compiler errors in some gcc>4.5.x
   if (nb > 0)
     {
       memset (m_prefix, 0xff, nb);
@@ -1081,7 +1081,7 @@ Ipv6Prefix Ipv6Prefix::GetOnes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Prefix ones ((uint8_t)128);
-  return ones; 
+  return ones;
 }
 
 Ipv6Prefix Ipv6Prefix::GetZero ()

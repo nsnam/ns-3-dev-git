@@ -47,19 +47,19 @@ VirtualNetDevice::GetTypeId (void)
                    MakeUintegerAccessor (&VirtualNetDevice::SetMtu,
                                          &VirtualNetDevice::GetMtu),
                    MakeUintegerChecker<uint16_t> ())
-    .AddTraceSource ("MacTx", 
+    .AddTraceSource ("MacTx",
                      "Trace source indicating a packet has arrived "
                      "for transmission by this device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_macTxTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("MacPromiscRx", 
+    .AddTraceSource ("MacPromiscRx",
                      "A packet has been received by this device, "
                      "has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  "
                      "This is a promiscuous trace,",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_macPromiscRxTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("MacRx", 
+    .AddTraceSource ("MacRx",
                      "A packet has been received by this device, "
                      "has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  "
@@ -67,14 +67,14 @@ VirtualNetDevice::GetTypeId (void)
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_macRxTrace),
                      "ns3::Packet::TracedCallback")
     //
-    // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
+    // Trace sources designed to simulate a packet sniffer facility (tcpdump).
     //
-    .AddTraceSource ("Sniffer", 
+    .AddTraceSource ("Sniffer",
                      "Trace source simulating a non-promiscuous "
                      "packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_snifferTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("PromiscSniffer", 
+    .AddTraceSource ("PromiscSniffer",
                      "Trace source simulating a promiscuous "
                      "packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_promiscSnifferTrace),
@@ -141,9 +141,9 @@ VirtualNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                            const Address &source, const Address &destination,
                            PacketType packetType)
 {
-  // 
+  //
   // For all kinds of packetType we receive, we hit the promiscuous sniffer
-  // hook and pass a copy up to the promiscuous callback.  Pass a copy to 
+  // hook and pass a copy up to the promiscuous callback.  Pass a copy to
   // make sure that nobody messes with our packet.
   //
   m_promiscSnifferTrace (packet);

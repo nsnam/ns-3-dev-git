@@ -58,7 +58,7 @@ ConstantAccelerationMobilityModel::DoGetPosition (void) const
                  m_basePosition.z + m_baseVelocity.z*t + m_acceleration.z*half_t_square);
 }
 
-void 
+void
 ConstantAccelerationMobilityModel::DoSetPosition (const Vector &position)
 {
   m_baseVelocity = DoGetVelocity ();
@@ -67,7 +67,7 @@ ConstantAccelerationMobilityModel::DoSetPosition (const Vector &position)
   NotifyCourseChange ();
 }
 
-void 
+void
 ConstantAccelerationMobilityModel::SetVelocityAndAcceleration (const Vector &velocity,
                                                                const Vector &acceleration)
 {

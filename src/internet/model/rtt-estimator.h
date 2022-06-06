@@ -38,7 +38,7 @@ namespace ns3 {
  * The RTT Estimator class computes an estimate of the round trip time
  * observed in a series of Time measurements.  The estimate is provided in
  * the form of an estimate and a sample variation.  Subclasses can implement
- * different algorithms to provide values for the estimate and variation.  
+ * different algorithms to provide values for the estimate and variation.
  */
 class RttEstimator : public Object {
 public:
@@ -84,7 +84,7 @@ public:
 
   /**
    * Note that this is not a formal statistical variance; it has the
-   * the same units as the estimate.  Mean deviation or standard deviation 
+   * the same units as the estimate.  Mean deviation or standard deviation
    * are example quantities that could be provided here.
    *
    * \brief gets the RTT estimate variation.
@@ -152,14 +152,14 @@ public:
   void Reset ();
 
 private:
-  /** 
+  /**
    * Utility function to check for possible conversion
    * of a double value (0 < value < 1) to a reciprocal power of two
    *
    * Values of 1/32, 1/16, 1/8, 1/4, and 1/2 (i.e., within the possible
    * range of experimentation for this estimator) are supported.
-   * 
-   * \param val value to check 
+   *
+   * \param val value to check
    * \return log base 2 (1/val) if reciprocal power of 2, or zero if not
    */
   uint32_t CheckForReciprocalPowerOfTwo (double val) const;

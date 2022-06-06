@@ -45,8 +45,8 @@ public:
  *
  * \brief This is the test case for testing different configuration of CQI generation.
  *  The topology consists of the two UEs and two eNbs. UEs have the same position,
- *  while eNodeBs are at the same distance from both UEs. The checking whether CQI is 
- *  generated properly for two different cases: when PDCCH is used for the CQI 
+ *  while eNodeBs are at the same distance from both UEs. The checking whether CQI is
+ *  generated properly for two different cases: when PDCCH is used for the CQI
  *  estimation and when PDSCH is used for CQI estimation.
  */
 

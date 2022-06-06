@@ -244,7 +244,7 @@ TestCarrierAggregationSuite::TestCarrierAggregationSuite ()
 
 static TestCarrierAggregationSuite lenaTestRrFfMacSchedulerSuite;
 
-std::string 
+std::string
 CarrierAggregationTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint32_t dlBandwidth, uint32_t ulBandwidth, uint32_t numberOfComponentCarriers)
 {
   std::ostringstream oss;
@@ -305,7 +305,7 @@ CarrierAggregationTestCase::DoRun (void)
    */
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  
+
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
@@ -336,8 +336,8 @@ CarrierAggregationTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
- 
+
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));

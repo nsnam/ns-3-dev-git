@@ -32,9 +32,9 @@ using namespace ns3;
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief This system test program creates different test cases with a 
- * single eNB and single UE. The traffic is configured to be in saturation 
- * mode. It is checked if the throughput reaches the expected values 
+ * \brief This system test program creates different test cases with a
+ * single eNB and single UE. The traffic is configured to be in saturation
+ * mode. It is checked if the throughput reaches the expected values
  * when MIMO is used.
  */
 class LenaMimoTestCase : public TestCase
@@ -53,7 +53,7 @@ public:
 
 private:
   virtual void DoRun (void);
-  
+
   /**
    * Get RLC buffer sample
    * \param rlcStats Ptr<RadioBearerStatsCalculator>
@@ -61,7 +61,7 @@ private:
    * \param rnti the RNTI
    */
   void GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, uint64_t imsi, uint8_t rnti);
-  
+
   /**
    * Builds the test name string based on provided parameter values
    * \param dist the distance
@@ -74,7 +74,7 @@ private:
   std::vector<uint32_t> m_estThrDl; ///< estimated throughput DL
   std::string m_schedulerType; ///< the scheduler type
   bool m_useIdealRrc; ///< whether to use the ideal RRC
-  
+
   std::vector <uint64_t> m_dlDataRxed; ///< DL data received
 
 };

@@ -28,16 +28,16 @@ using namespace ns3;
 /**
  * \ingroup dot11s-test
  * \ingroup tests
- * 
+ *
  * \brief Peering Management Protocol regression test
- * 
+ *
  * Initiate scenario with 2 stations. Procedure of opening peer link
  * is the following:
  * \verbatim
  * |----------->|  Beacon
  * |----------->|  Peer Link Open frame
  * |<-----------|  Peer Link Confirm frame
- * |<-----------|  Peer Link Open frame 
+ * |<-----------|  Peer Link Open frame
  * |----------->|  Peer Link Confirm frame
  * |............|
  * |<---------->|  Other beacons

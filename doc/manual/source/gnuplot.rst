@@ -1,6 +1,6 @@
 .. include:: replace.txt
 .. highlight:: cpp
- 
+
 Making Plots using the Gnuplot Class
 ------------------------------------
 
@@ -16,7 +16,7 @@ Creating Plots Using the Gnuplot Class
 
 The following steps must be taken in order to create a plot using |ns3|'s Gnuplot class:
 
-#. Modify your code so that is uses the Gnuplot class and its functions. 
+#. Modify your code so that is uses the Gnuplot class and its functions.
 #. Run your code so that it creates a gnuplot control file.
 #. Call gnuplot with the name of the gnuplot control file.
 #. View the graphics file that was produced in your favorite graphics viewer.
@@ -42,38 +42,38 @@ This should produce the following gnuplot control files:
 
 .. sourcecode:: text
 
-  plot-2d.plt 
+  plot-2d.plt
   plot-2d-with-error-bars.plt
-  plot-3d.plt 
+  plot-3d.plt
 
 In order to process these gnuplot control files, do the following:
 
 .. sourcecode:: bash
 
-  $ gnuplot plot-2d.plt 
+  $ gnuplot plot-2d.plt
   $ gnuplot plot-2d-with-error-bars.plt
-  $ gnuplot plot-3d.plt 
+  $ gnuplot plot-3d.plt
 
 This should produce the following graphics files:
 
 .. sourcecode:: text
 
-  plot-2d.png 
+  plot-2d.png
   plot-2d-with-error-bars.png
-  plot-3d.png 
+  plot-3d.png
 
 You can view these graphics files in your favorite graphics viewer.  If you have gimp installed on your machine, for example, you can do this:
 
 .. sourcecode:: bash
 
-  $ gimp plot-2d.png 
+  $ gimp plot-2d.png
   $ gimp plot-2d-with-error-bars.png
-  $ gimp plot-3d.png 
+  $ gimp plot-3d.png
 
 An Example 2-Dimensional Plot
 *****************************
 
-The following 2-Dimensional plot 
+The following 2-Dimensional plot
 
 .. _plot-2d:
 
@@ -114,10 +114,10 @@ was created using the following code from gnuplot-example.cc: ::
   for (x = -5.0; x <= +5.0; x += 1.0)
     {
       // Calculate the 2-D curve
-      // 
+      //
       //            2
       //     y  =  x   .
-      //  
+      //
       y = x * x;
 
       // Add this point.
@@ -135,7 +135,7 @@ was created using the following code from gnuplot-example.cc: ::
 
   // Close the plot file.
   plotFile.close ();
-  
+
 An Example 2-Dimensional Plot with Error Bars
 *********************************************
 
@@ -185,10 +185,10 @@ was created using the following code from gnuplot-example.cc: ::
   for (x = -5.0; x <= +5.0; x += 1.0)
     {
       // Calculate the 2-D curve
-      // 
+      //
       //            2
       //     y  =  x   .
-      //  
+      //
       y = x * x;
 
       // Make the uncertainty in the x direction be constant and make
@@ -217,7 +217,7 @@ was created using the following code from gnuplot-example.cc: ::
 An Example 3-Dimensional Plot
 *****************************
 
-The following 3-Dimensional plot 
+The following 3-Dimensional plot
 
 .. _plot-3d:
 
@@ -271,10 +271,10 @@ was created using the following code from gnuplot-example.cc: ::
       for (y = -5.0; y <= +5.0; y += 1.0)
         {
           // Calculate the 3-D surface
-          // 
+          //
           //            2      2
           //     z  =  x   *  y   .
-          //  
+          //
           z = x * x * y * y;
 
           // Add this point.

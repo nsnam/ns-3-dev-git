@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingsHelperTest");
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * \brief Struct representing a position in a building
  */
 struct PositionInBuilding
@@ -68,7 +68,7 @@ PositionInBuilding::PositionInBuilding ()
  * objects to the TestCase constructor because otherwise BuildingList
  * would contain all of them (even if only one is meant to be in the
  * test case).
- * 
+ *
  */
 struct BuildingData
 {
@@ -100,8 +100,8 @@ BuildingData::BuildingData ()
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
- * \brief BuildingsHelper test 
+ *
+ * \brief BuildingsHelper test
  */
 class BuildingsHelperOneTestCase : public TestCase
 {
@@ -126,7 +126,7 @@ private:
 
   PositionInBuilding m_pib; //!< Position in the building
   BuildingData m_bd; //!< Building data
-  
+
 };
 
 std::string BuildingsHelperOneTestCase::BuildNameString (PositionInBuilding pib, BuildingData bd)
@@ -134,11 +134,11 @@ std::string BuildingsHelperOneTestCase::BuildNameString (PositionInBuilding pib,
   std::ostringstream oss;
   oss <<  "pos=" << pib.pos;
   if (pib.indoor)
-    {     
+    {
       oss << ", bid=" << pib.bid
-	  << ", rx=" << pib.rx 
+	  << ", rx=" << pib.rx
 	  << ", ry=" << pib.ry
-	  << ", fn=" << pib.fn;    
+	  << ", fn=" << pib.fn;
     }
   else
     {
@@ -165,7 +165,7 @@ BuildingsHelperOneTestCase::DoRun ()
   NodeContainer nodes;
   nodes.Create (1);
   mobility.Install (nodes);
-  
+
   Ptr<ConstantPositionMobilityModel> bmm = nodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
   bmm->SetPosition (m_pib.pos);
 
@@ -178,7 +178,7 @@ BuildingsHelperOneTestCase::DoRun ()
   Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> (b);
   bmm->AggregateObject (buildingInfo); // operation usually done by BuildingsHelper::Install
 
-  
+
   NS_TEST_ASSERT_MSG_EQ (buildingInfo->IsIndoor (), m_pib.indoor, "indoor/outdoor mismatch");
   if (m_pib.indoor)
     {
@@ -190,14 +190,14 @@ BuildingsHelperOneTestCase::DoRun ()
       NS_TEST_ASSERT_MSG_EQ ((uint32_t) buildingInfo->GetRoomNumberY (), m_pib.ry, "y room number mismatch");
     }
 
-  Simulator::Destroy ();  
+  Simulator::Destroy ();
 }
 
 
 /**
  * \ingroup building-test
  * \ingroup tests
- * 
+ *
  * \brief BuildingsHelper TestSuite
  */
 class BuildingsHelperTestSuite : public TestSuite
@@ -221,7 +221,7 @@ BuildingsHelperTestSuite::BuildingsHelperTestSuite ()
   b1.zmax = 4;
   b1.nrx = 1;
   b1.nry = 1;
-  b1.nf = 1;  
+  b1.nf = 1;
 
   Vector vp1 (1.5, 1.5, 0.5);
   PositionInBuilding p1;
@@ -347,7 +347,7 @@ BuildingsHelperTestSuite::BuildingsHelperTestSuite ()
   PositionInBuilding q7;
   q7.pos = vq7;
   q7.indoor = false;
-  AddTestCase (new BuildingsHelperOneTestCase (q7, b2), TestCase::QUICK);     
+  AddTestCase (new BuildingsHelperOneTestCase (q7, b2), TestCase::QUICK);
 }
 
 /// Static variable for test initialization

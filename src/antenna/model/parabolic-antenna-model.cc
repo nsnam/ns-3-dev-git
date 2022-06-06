@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ParabolicAntennaModel");
 NS_OBJECT_ENSURE_REGISTERED (ParabolicAntennaModel);
 
 
-TypeId 
+TypeId
 ParabolicAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::ParabolicAntennaModel")
@@ -62,9 +62,9 @@ ParabolicAntennaModel::GetTypeId ()
   return tid;
 }
 
-void 
+void
 ParabolicAntennaModel::SetBeamwidth (double beamwidthDegrees)
-{ 
+{
   NS_LOG_FUNCTION (this << beamwidthDegrees);
   m_beamwidthRadians = DegreesToRadians (beamwidthDegrees);
 }
@@ -75,7 +75,7 @@ ParabolicAntennaModel::GetBeamwidth () const
   return RadiansToDegrees (m_beamwidthRadians);
 }
 
-void 
+void
 ParabolicAntennaModel::SetOrientation (double orientationDegrees)
 {
   NS_LOG_FUNCTION (this << orientationDegrees);
@@ -88,7 +88,7 @@ ParabolicAntennaModel::GetOrientation () const
   return RadiansToDegrees (m_orientationRadians);
 }
 
-double 
+double
 ParabolicAntennaModel::GetGainDb (Angles a)
 {
   NS_LOG_FUNCTION (this << a);

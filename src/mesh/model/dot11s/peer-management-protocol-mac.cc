@@ -76,7 +76,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       MgtBeaconHeader beacon_hdr;
       packet->RemoveHeader (beacon_hdr);
       MeshInformationElementVector elements;
-      // To determine header size here, we can rely on the knowledge that 
+      // To determine header size here, we can rely on the knowledge that
       // this is the last header to remove.
       packet->RemoveHeader (elements, packet->GetSize ());
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE_BEACON_TIMING));
@@ -177,7 +177,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
         }
       Ptr<IePeerManagement> peerElement;
       MeshInformationElementVector elements;
-      // To determine header size here, we can rely on the knowledge that 
+      // To determine header size here, we can rely on the knowledge that
       // this is the last header to remove.
       packet->RemoveHeader (elements, packet->GetSize ());
       peerElement = DynamicCast<IePeerManagement>(elements.FindFirst (IE_MESH_PEERING_MANAGEMENT));
@@ -192,12 +192,12 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       if (peerElement->SubtypeIsConfirm ())
         {
           m_stats.rxConfirm++;
-          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CONFIRM); 
+          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CONFIRM);
         }
       if (peerElement->SubtypeIsClose ())
         {
           m_stats.rxClose++;
-          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CLOSE); 
+          NS_ASSERT (actionValue.selfProtectedAction == WifiActionHeader::PEER_LINK_CLOSE);
         }
       //Deliver Peer link management frame to protocol:
       m_protocol->ReceivePeerLinkFrame (m_ifIndex, peerAddress, peerMpAddress, aid, *peerElement, config);
@@ -215,7 +215,7 @@ PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHead
     {
       WifiActionHeader actionHdr;
       packet->PeekHeader (actionHdr);
-      if (actionHdr.GetCategory () == WifiActionHeader::SELF_PROTECTED) 
+      if (actionHdr.GetCategory () == WifiActionHeader::SELF_PROTECTED)
         {
           return true;
         }
@@ -274,7 +274,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       m_stats.txOpen++;
       WifiActionHeader::ActionValue action;
       action.selfProtectedAction = WifiActionHeader::PEER_LINK_OPEN;
-      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
+      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action);
       plinkOpen.SetPlinkOpenStart (fields);
       packet->AddHeader (plinkOpen);
       packet->AddHeader (actionHdr);
@@ -289,9 +289,9 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       WifiActionHeader actionHdr;
       m_stats.txConfirm++;
       WifiActionHeader::ActionValue action;
-      action.selfProtectedAction = WifiActionHeader::PEER_LINK_CONFIRM; 
+      action.selfProtectedAction = WifiActionHeader::PEER_LINK_CONFIRM;
       fields.aid = aid;
-      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
+      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action);
       plinkConfirm.SetPlinkConfirmStart (fields);
       packet->AddHeader (plinkConfirm);
       packet->AddHeader (actionHdr);
@@ -304,8 +304,8 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
       WifiActionHeader actionHdr;
       m_stats.txClose++;
       WifiActionHeader::ActionValue action;
-      action.selfProtectedAction = WifiActionHeader::PEER_LINK_CLOSE; 
-      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action); 
+      action.selfProtectedAction = WifiActionHeader::PEER_LINK_CLOSE;
+      actionHdr.SetAction (WifiActionHeader::SELF_PROTECTED, action);
       plinkClose.SetPlinkCloseStart (fields);
       packet->AddHeader (plinkClose);
       packet->AddHeader (actionHdr);
@@ -388,7 +388,7 @@ PeerManagementProtocolMac::GetLinkMetric (Mac48Address peerAddress)
 }
 int64_t
 PeerManagementProtocolMac::AssignStreams (int64_t stream)
-{ 
+{
   return m_protocol->AssignStreams (stream);
 }
 

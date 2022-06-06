@@ -62,7 +62,7 @@ class UplinkScheduler;
  * \ingroup wimax
  *
  * This class holds together ns3::WimaxPhy, ns3::WimaxConnection,
- * ns3::ConectionManager, ns3::BurstProfileManager, and 
+ * ns3::ConectionManager, ns3::BurstProfileManager, and
  * ns3::BandwidthManager.
  */
 class WimaxNetDevice : public NetDevice
@@ -299,7 +299,7 @@ public:
    */
   virtual uint32_t GetIfIndex (void) const;
   /**
-   * Get the channel (this method is redundant with GetChannel()) 
+   * Get the channel (this method is redundant with GetChannel())
    * \returns the channel used by the phy layer
    */
   virtual Ptr<Channel> GetPhyChannel (void) const;
@@ -529,7 +529,7 @@ private:
   mutable uint16_t m_mtu; ///< MTU
 
   /// temp, shall be in BS. defined here to allow SS to access. SS shall actually determine it from DLFP, shall be moved to BS after DLFP is implemented
-  static uint32_t m_nrFrames; 
+  static uint32_t m_nrFrames;
 
   /// not sure if it shall be included here
   std::vector<uint64_t> m_dlChannels;

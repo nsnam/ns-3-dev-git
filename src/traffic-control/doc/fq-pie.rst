@@ -9,7 +9,7 @@ This chapter describes the FQ-PIE ([Ram19]_) queue disc implementation in |ns3|.
 
 The FQ-PIE queue disc combines the Proportional Integral Controller Enhanced
 (PIE) AQM algorithm with the FlowQueue scheduler that is part of FQ-CoDel
-(also available in |ns3|). FQ-PIE was introduced to Linux kernel version 5.6. 
+(also available in |ns3|). FQ-PIE was introduced to Linux kernel version 5.6.
 
 Model Description
 *****************
@@ -23,7 +23,7 @@ implemented by Mohit P. Tahiliani.
 This model calculates drop probability independently in each flow queue.
 One difficulty, as pointed out by [CableLabs14]_, is that PIE calculates
 drop probability based on the departure rate of a (flow) queue, which may
-be more highly variable than the aggregate queue.  An alternative, which 
+be more highly variable than the aggregate queue.  An alternative, which
 CableLabs has called SFQ-PIE, is to calculate an overall drop probability
 for the entire queue structure, and then scale this drop probability based
 on the ratio of the queue depth of each flow queue compared with the depth
@@ -70,7 +70,7 @@ Second, there are QueueDisc level, or FQ-specific attributes::
 Examples
 ========
 
-A typical usage pattern is to create a traffic control helper and to configure 
+A typical usage pattern is to create a traffic control helper and to configure
 the type and attributes of queue disc and filters from the helper. For example, FqPIE
 can be configured as follows:
 

@@ -46,7 +46,7 @@ int main (int argc, char** argv)
   cmd.AddValue ("disable-asciitrace", "disable ascii trace generation", disableAsciiTrace);
   cmd.AddValue ("enable-sixlowpan-loginfo", "enable sixlowpan LOG_LEVEL_INFO (used for tests)", enableLSixlowLogLevelInfo);
   cmd.Parse (argc, argv);
-  
+
   if (verbose)
     {
       LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
@@ -70,7 +70,7 @@ int main (int argc, char** argv)
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
-  
+
   LrWpanHelper lrWpanHelper;
   // Add and install the LrWpanNetDevice for each node
   NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
@@ -84,8 +84,8 @@ int main (int argc, char** argv)
   internetv6.Install (nodes);
 
   SixLowPanHelper sixlowpan;
-  NetDeviceContainer devices = sixlowpan.Install (lrwpanDevices); 
- 
+  NetDeviceContainer devices = sixlowpan.Install (lrwpanDevices);
+
   Ipv6AddressHelper ipv6;
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer deviceInterfaces;
@@ -98,7 +98,7 @@ int main (int argc, char** argv)
       std::cout << "Device 1: pseudo-Mac-48 " << Mac48Address::ConvertFrom (devices.Get (1)->GetAddress ())
                 << ", IPv6 Address " << deviceInterfaces.GetAddress (1,1) << std::endl;
     }
-   
+
   uint32_t packetSize = 10;
   uint32_t maxPacketCount = 5;
   Time interPacketInterval = Seconds (1.);
@@ -131,7 +131,7 @@ int main (int argc, char** argv)
     }
 
   Simulator::Stop (Seconds (10));
-  
+
   Simulator::Run ();
   Simulator::Destroy ();
 

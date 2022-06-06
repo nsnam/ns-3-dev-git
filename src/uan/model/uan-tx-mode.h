@@ -112,7 +112,7 @@ private:
 
 };  // class UanTxMode
 
-  
+
 /**
  * Writes tx mode entry to stream os.
  *
@@ -288,7 +288,7 @@ public:
 private:
   /** The vector of modes in this list. */
   std::vector<UanTxMode> m_modes;
-  
+
   friend std::ostream &operator << (std::ostream &os, const UanModesList &ml);
   friend std::istream &operator >> (std::istream &is, UanModesList &ml);
 

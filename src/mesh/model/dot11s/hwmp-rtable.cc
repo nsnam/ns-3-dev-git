@@ -31,7 +31,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("HwmpRtable");
 
 namespace dot11s {
-  
+
 NS_OBJECT_ENSURE_REGISTERED (HwmpRtable);
 
 TypeId
@@ -78,7 +78,7 @@ void
 HwmpRtable::AddProactivePath (uint32_t metric, Mac48Address root, Mac48Address retransmitter,
                               uint32_t interface, Time lifetime, uint32_t seqnum)
 {
-  NS_LOG_FUNCTION (this << metric << root << retransmitter << interface << lifetime << seqnum); 
+  NS_LOG_FUNCTION (this << metric << root << retransmitter << interface << lifetime << seqnum);
   m_root.root = root;
   m_root.retransmitter = retransmitter;
   m_root.metric = metric;

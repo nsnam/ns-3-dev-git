@@ -40,9 +40,9 @@ namespace ns3 {
 
 /**
  * \ingroup mpi
- * 
+ *
  * \brief Collection of ns-3 channels between local and remote nodes.
- * 
+ *
  * An instance exists for each remote system that the local system is
  * in communication with.  These are created and managed by the
  * RemoteChannelBundleManager class.  Stores time information for each

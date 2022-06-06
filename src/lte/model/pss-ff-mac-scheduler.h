@@ -379,7 +379,7 @@ private:
 
   // FFR SAPs
   LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
-  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider 
+  LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig; ///< CSched cell config

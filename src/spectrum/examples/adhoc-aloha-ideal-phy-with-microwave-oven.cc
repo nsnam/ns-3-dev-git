@@ -223,7 +223,7 @@ int main (int argc, char** argv)
 
   Simulator::Schedule (Seconds (0.1), &WaveformGenerator::Start,
                        waveformGeneratorDevices.Get (0)->GetObject<NonCommunicatingNetDevice> ()->GetPhy ()->GetObject<WaveformGenerator> ());
-  
+
 
 
   /////////////////////////////////
@@ -243,7 +243,7 @@ int main (int argc, char** argv)
     you can get a nice plot of the output of SpectrumAnalyzer with this gnuplot script:
 
     unset surface
-    set pm3d at s 
+    set pm3d at s
     set palette
     set key off
     set view 50,50

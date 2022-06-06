@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("RvBatteryModelTestSuite");
 
 /**
  * \ingroup energy
- * 
+ *
  * This example was originally devised as a test, then it was converted
  * to an example.
  *
@@ -642,7 +642,7 @@ main (int argc, char **argv)
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   NS_LOG_DEBUG ("Constant load run.");
 
   BatteryLifetimeTest test;

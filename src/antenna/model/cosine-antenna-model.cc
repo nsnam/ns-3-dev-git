@@ -168,7 +168,7 @@ CosineAntennaModel::GetGainDb (Angles a)
   double gain = (std::pow (std::cos (a.GetAzimuth () / 2), 2 * m_horizontalExponent)) *
                 (std::pow (std::cos ((M_PI / 2 - a.GetInclination ()) / 2), 2 * m_verticalExponent));
   double gainDb = 10 * std::log10 (gain);
-  
+
   NS_LOG_LOGIC ("gain = " << gainDb << " + " << m_maxGain << " dB");
   return gainDb + m_maxGain;
 }

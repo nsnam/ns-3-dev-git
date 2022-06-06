@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("NoBackhaulEpcHelper");
 NS_OBJECT_ENSURE_REGISTERED (NoBackhaulEpcHelper);
 
 
-NoBackhaulEpcHelper::NoBackhaulEpcHelper () 
+NoBackhaulEpcHelper::NoBackhaulEpcHelper ()
   : m_gtpuUdpPort (2152),  // fixed by the standard
     m_s11LinkDataRate (DataRate ("10Gb/s")),
     m_s11LinkDelay (Seconds (0)),
@@ -105,8 +105,8 @@ NoBackhaulEpcHelper::NoBackhaulEpcHelper ()
   tunDeviceContainer.Add (m_tunDevice);
   // the TUN device is on the same subnet as the UEs, so when a packet
   // addressed to an UE arrives at the intenet to the WAN interface of
-  // the PGW it will be forwarded to the TUN device. 
-  Ipv4InterfaceContainer tunDeviceIpv4IfContainer = AssignUeIpv4Address (tunDeviceContainer);  
+  // the PGW it will be forwarded to the TUN device.
+  Ipv4InterfaceContainer tunDeviceIpv4IfContainer = AssignUeIpv4Address (tunDeviceContainer);
 
 
   // the TUN device for IPv6 address is on the different subnet as the
@@ -241,17 +241,17 @@ NoBackhaulEpcHelper::GetTypeId (void)
                    UintegerValue (2000),
                    MakeUintegerAccessor (&NoBackhaulEpcHelper::m_s5LinkMtu),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("S11LinkDataRate", 
+    .AddAttribute ("S11LinkDataRate",
                    "The data rate to be used for the next S11 link to be created",
                    DataRateValue (DataRate ("10Gb/s")),
                    MakeDataRateAccessor (&NoBackhaulEpcHelper::m_s11LinkDataRate),
                    MakeDataRateChecker ())
-    .AddAttribute ("S11LinkDelay", 
+    .AddAttribute ("S11LinkDelay",
                    "The delay to be used for the next S11 link to be created",
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&NoBackhaulEpcHelper::m_s11LinkDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("S11LinkMtu", 
+    .AddAttribute ("S11LinkMtu",
                    "The MTU of the next S11 link to be created.",
                    UintegerValue (2000),
                    MakeUintegerAccessor (&NoBackhaulEpcHelper::m_s11LinkMtu),
@@ -319,7 +319,7 @@ NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std:
   internet.Install (enb);
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after node creation: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());
 
-  // create LTE socket for the ENB 
+  // create LTE socket for the ENB
   Ptr<Socket> enbLteSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::PacketSocketFactory"));
   PacketSocketAddress enbLteSocketBindAddress;
   enbLteSocketBindAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
@@ -331,21 +331,21 @@ NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std:
   enbLteSocketConnectAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
   enbLteSocketConnectAddress.SetProtocol (Ipv4L3Protocol::PROT_NUMBER);
   retval = enbLteSocket->Connect (enbLteSocketConnectAddress);
-  NS_ASSERT (retval == 0);  
+  NS_ASSERT (retval == 0);
 
-  // create LTE socket for the ENB 
+  // create LTE socket for the ENB
   Ptr<Socket> enbLteSocket6 = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::PacketSocketFactory"));
   PacketSocketAddress enbLteSocketBindAddress6;
   enbLteSocketBindAddress6.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
   enbLteSocketBindAddress6.SetProtocol (Ipv6L3Protocol::PROT_NUMBER);
   retval = enbLteSocket6->Bind (enbLteSocketBindAddress6);
-  NS_ASSERT (retval == 0);  
+  NS_ASSERT (retval == 0);
   PacketSocketAddress enbLteSocketConnectAddress6;
   enbLteSocketConnectAddress6.SetPhysicalAddress (Mac48Address::GetBroadcast ());
   enbLteSocketConnectAddress6.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
   enbLteSocketConnectAddress6.SetProtocol (Ipv6L3Protocol::PROT_NUMBER);
   retval = enbLteSocket6->Connect (enbLteSocketConnectAddress6);
-  NS_ASSERT (retval == 0);  
+  NS_ASSERT (retval == 0);
 
   NS_LOG_INFO ("Create EpcEnbApplication for cell ID " << cellIds.at (0));
   Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, cellIds.at (0));
@@ -429,7 +429,7 @@ NoBackhaulEpcHelper::DoAddX2Interface (const Ptr<EpcX2> &enb1X2, const Ptr<NetDe
 }
 
 
-void 
+void
 NoBackhaulEpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
 {
   NS_LOG_FUNCTION (this << imsi << ueDevice);
@@ -446,8 +446,8 @@ NoBackhaulEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi,
 
   // we now retrieve the IPv4/IPv6 address of the UE and notify it to the SGW;
   // we couldn't do it before since address assignment is triggered by
-  // the user simulation program, rather than done by the EPC   
-  Ptr<Node> ueNode = ueDevice->GetNode (); 
+  // the user simulation program, rather than done by the EPC
+  Ptr<Node> ueNode = ueDevice->GetNode ();
   Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
   Ptr<Ipv6> ueIpv6 = ueNode->GetObject<Ipv6> ();
   NS_ASSERT_MSG (ueIpv4 != 0 || ueIpv6 != 0, "UEs need to have IPv4/IPv6 installed before EPS bearers can be activated");
@@ -503,13 +503,13 @@ NoBackhaulEpcHelper::GetPgwNode () const
   return m_pgw;
 }
 
-Ipv4InterfaceContainer 
+Ipv4InterfaceContainer
 NoBackhaulEpcHelper::AssignUeIpv4Address (NetDeviceContainer ueDevices)
 {
   return m_uePgwAddressHelper.Assign (ueDevices);
 }
 
-Ipv6InterfaceContainer 
+Ipv6InterfaceContainer
 NoBackhaulEpcHelper::AssignUeIpv6Address (NetDeviceContainer ueDevices)
 {
   for (NetDeviceContainer::Iterator iter = ueDevices.Begin ();

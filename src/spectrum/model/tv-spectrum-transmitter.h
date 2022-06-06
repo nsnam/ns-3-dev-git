@@ -47,7 +47,7 @@ class TvSpectrumTransmitter : public SpectrumPhy
 {
 
 public:
-  /** 
+  /**
    * types of TV transmitters: analog, digital 8-VSB, or digital COFDM
    */
   enum TvType
@@ -56,10 +56,10 @@ public:
     TVTYPE_8VSB,
     TVTYPE_COFDM
   };
-  
+
   TvSpectrumTransmitter ();
   virtual ~TvSpectrumTransmitter ();
-  
+
   /**
    * Register this type.
    * \return The object TypeId.
@@ -77,48 +77,48 @@ public:
   Ptr<Object> GetAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
-  /** 
+  /**
    * Get the spectrum channel
-   * 
+   *
    * @return a pointer to the assigned spectrum channel
    */
   Ptr<SpectrumChannel> GetChannel () const;
 
-  /** 
+  /**
    * Creates power spectral density (PSD) spectrum of the TV transmitter and
    * sets it for transmission.
-   * Before calling this method, must set attributes and parameters that are 
+   * Before calling this method, must set attributes and parameters that are
    * applicable to your transmitter.
-   * 
+   *
    * 8-VSB PSD approximated from Figure 3 of the following article:
-   * Baron, Stanley. "First-Hand:Digital Television: The Digital Terrestrial 
+   * Baron, Stanley. "First-Hand:Digital Television: The Digital Terrestrial
    * Television Broadcasting (DTTB) Standard." IEEE Global History Network.
    * <http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_
    * Digital_Terrestrial_Television_Broadcasting_(DTTB)_Standard>.
    *
    * COFDM PSD approximated from Figure 12 (8k mode) of the following article:
-   * Kopp, Carlo. "High Definition Television." High Definition Television. Air 
+   * Kopp, Carlo. "High Definition Television." High Definition Television. Air
    * Power Australia. <http://www.ausairpower.net/AC-1100.html>.
    *
    * Analog PSD approximated from Figure 4 of the following paper:
-   * Stephen Shellhammer, Ahmed Sadek, and Wenyi Zhang. "Technical Challenges 
+   * Stephen Shellhammer, Ahmed Sadek, and Wenyi Zhang. "Technical Challenges
    * for Cognitive Radio in the TV White Space Spectrum." Qualcomm Incorporated.
    */
   virtual void CreateTvPsd ();
 
-  /** 
+  /**
    * Get the power spectral density of the TV transmitter's signal
-   * 
+   *
    * @return a pointer to the PSD
-   */  
+   */
   Ptr<SpectrumValue> GetTxPsd () const;
 
-  /** 
+  /**
    * Starts the TV Transmitter's transmission on the spectrum channel
    */
   virtual void Start ();
 
-  /** 
+  /**
    * Stops the TV Transmitter's transmission on the spectrum channel
    */
   virtual void Stop ();

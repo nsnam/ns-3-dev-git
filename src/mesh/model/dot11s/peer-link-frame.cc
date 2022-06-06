@@ -50,7 +50,7 @@ PeerLinkOpenStart::GetFields () const
   retval.rates = m_rates;
   retval.meshId = m_meshId;
   retval.config = m_config;
-  
+
   return retval;
 }
 TypeId
@@ -92,7 +92,7 @@ void
 PeerLinkOpenStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  
+
   i.WriteHtolsbU16 (m_capability);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
@@ -103,7 +103,7 @@ uint32_t
 PeerLinkOpenStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  
+
   m_capability = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
@@ -123,7 +123,7 @@ PeerLinkOpenStart::Deserialize (Buffer::Iterator start)
       NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
     }
   i.Next (m_config.GetInformationFieldSize ());
- 
+
   return i.GetDistanceFrom (start);
 }
 bool
@@ -131,7 +131,7 @@ operator== (const PeerLinkOpenStart & a, const PeerLinkOpenStart & b)
 {
   return ((a.m_capability == b.m_capability)
           && (a.m_meshId.IsEqual (b.m_meshId)) && (a.m_config == b.m_config));
-  
+
 }
 NS_OBJECT_ENSURE_REGISTERED (PeerLinkCloseStart);
 
@@ -150,7 +150,7 @@ PeerLinkCloseStart::GetFields () const
   PlinkCloseStartFields retval;
   /// \todo protocol version:
   retval.meshId = m_meshId;
-  
+
   return retval;
 }
 TypeId
@@ -190,7 +190,7 @@ uint32_t
 PeerLinkCloseStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  
+
   uint8_t id = i.ReadU8 ();
   uint8_t length = i.ReadU8 ();
   m_meshId.DeserializeInformationField (i, length);
@@ -230,7 +230,7 @@ PeerLinkConfirmStart::GetFields () const
   retval.aid = m_aid;
   retval.rates = m_rates;
   retval.config = m_config;
-  
+
   return retval;
 }
 TypeId
@@ -270,7 +270,7 @@ void
 PeerLinkConfirmStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  
+
   i.WriteHtolsbU16 (m_capability);
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
@@ -281,7 +281,7 @@ uint32_t
 PeerLinkConfirmStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  
+
   m_capability = i.ReadLsbtohU16 ();
   m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);

@@ -20,9 +20,9 @@
 # *
 # * This perl script is used within plot.gp, a gnuplot file also
 # * in this directory, for parsing the Ns3TcpLossTest logging output.
-# * It can also be used, stand-alone, to tidy up the logging output 
+# * It can also be used, stand-alone, to tidy up the logging output
 # * from Ns3TcpStateTestCases, if logging is enabled in these tests.
-### 
+###
 
   while(<>) {
     s|ns3::PppHeader \(Point-to-Point Protocol: IP \(0x0021\)\) ||;

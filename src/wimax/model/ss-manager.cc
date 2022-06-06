@@ -28,7 +28,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SSManager");
-  
+
 NS_OBJECT_ENSURE_REGISTERED (SSManager);
 
 TypeId SSManager::GetTypeId (void)

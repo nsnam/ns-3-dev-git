@@ -38,7 +38,7 @@ class Packet;
  *
  * \brief A representation of an internet endpoint/connection
  *
- * This class provides an internet four-tuple (source and destination ports 
+ * This class provides an internet four-tuple (source and destination ports
  * and addresses).  These are used in the ns3::Ipv4EndPointDemux as targets
  * of lookups.  The class also has a callback for notification to higher
  * layers that a packet from a lower layer was received.  In the ns3
@@ -151,7 +151,7 @@ public:
    * \param sport source port
    * \param incomingInterface incoming interface
    */
-  void ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport, 
+  void ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
                   Ptr<Ipv4Interface> incomingInterface);
 
   /**
@@ -166,7 +166,7 @@ public:
    * \param icmpCode ICMP code
    * \param icmpInfo ICMP info
    */
-  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                     uint8_t icmpType, uint8_t icmpCode,
                     uint32_t icmpInfo);
 

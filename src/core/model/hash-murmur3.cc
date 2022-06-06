@@ -224,7 +224,7 @@ void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
     k1 *= c2;
 
     h1 ^= k1;
-    h1 = rotl32(h1,13); 
+    h1 = rotl32(h1,13);
     h1 = h1*5+0xe6546b64;
   }
 
@@ -260,7 +260,7 @@ void MurmurHash3_x86_32_fin ( std::size_t len,
   h1 = fmix(h1);
 
   *(uint32_t *)out = h1;
-} 
+}
 
 //-----------------------------------------------------------------------------
 
@@ -315,9 +315,9 @@ void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
   uint32_t h3 = seeds[2];
   uint32_t h4 = seeds[3];
 
-  uint32_t c1 = 0x239b961b; 
+  uint32_t c1 = 0x239b961b;
   uint32_t c2 = 0xab0e9789;
-  uint32_t c3 = 0x38b34ae5; 
+  uint32_t c3 = 0x38b34ae5;
   uint32_t c4 = 0xa1e38b93;
 
   //----------

@@ -60,7 +60,7 @@ RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
   m_direction = CreateObject <UniformRandomVariable> ();
 }
 
-void 
+void
 RandomDirection2dMobilityModel::DoDispose (void)
 {
   // chain up.

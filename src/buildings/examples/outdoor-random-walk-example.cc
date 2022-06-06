@@ -54,7 +54,7 @@ PrintGnuplottableBuildingListToFile (std::string filename)
 
 /**
  * This is an example on how to use the RandomWalk2dOutdoorMobilityModel class.
- * The script outdoor-random-walk-example.sh can be used to visualize the 
+ * The script outdoor-random-walk-example.sh can be used to visualize the
  * positions visited by the random walk.
  */
 int

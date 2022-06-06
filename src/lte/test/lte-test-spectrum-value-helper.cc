@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("LteTestSpectrumValueHelper");
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test checks if lte spectrum model is generated properly. Different 
+ * \brief Test checks if lte spectrum model is generated properly. Different
  * test cases are configured by defining different frequency and banwidth.
  */
 class LteSpectrumModelTestCase : public TestCase
@@ -71,7 +71,7 @@ LteSpectrumModelTestCase::~LteSpectrumModelTestCase ()
 {
 }
 
-void 
+void
 LteSpectrumModelTestCase::DoRun (void)
 {
   NS_LOG_FUNCTION (this);
@@ -85,7 +85,7 @@ LteSpectrumModelTestCase::DoRun (void)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that the function for creation of LTE noise power spectral 
+ * \brief Test that the function for creation of LTE noise power spectral
  * density is working properly.
  */
 class LteNoisePsdTestCase : public TestCase
@@ -123,7 +123,7 @@ LteNoisePsdTestCase::~LteNoisePsdTestCase ()
 {
 }
 
-void 
+void
 LteNoisePsdTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (m_actual->GetSpectrumModelUid (), m_expected->GetSpectrumModelUid (), "SpectrumModel UID mismatch");
@@ -138,7 +138,7 @@ LteNoisePsdTestCase::DoRun (void)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that the funtcion for the creation of the Lte transmission power 
+ * \brief Test that the funtcion for the creation of the Lte transmission power
  * spectral density is working as expected.
  */
 class LteTxPsdTestCase : public TestCase
@@ -177,7 +177,7 @@ LteTxPsdTestCase::~LteTxPsdTestCase ()
 {
 }
 
-void 
+void
 LteTxPsdTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (m_actual->GetSpectrumModelUid (), m_expected->GetSpectrumModelUid (), "SpectrumModel UID mismatch");
@@ -191,7 +191,7 @@ LteTxPsdTestCase::DoRun (void)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test suite for LteSpectrumValueHelper. Test suite is 
+ * \brief Test suite for LteSpectrumValueHelper. Test suite is
  * checking different functionalities of LteSpectrumValueHelper.
  */
 class LteSpectrumValueHelperTestSuite : public TestSuite
@@ -210,7 +210,7 @@ LteSpectrumValueHelperTestSuite::LteSpectrumValueHelperTestSuite ()
 //   LogComponentEnable ("LteSpectrumValueHelperTestSuite", logLevel);
 //   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
 
- 
+
   NS_LOG_INFO ("Creating LteSpectrumValueHelperTestSuite");
 
 

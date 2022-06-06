@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpLossTestSuite");
  * \brief Check rollover of sequence number and how that affects loss recovery
  *
  * This test checks that fast recovery is entered correctly even if it has
- * been a long time since the last recovery event.  Merge request !156 
+ * been a long time since the last recovery event.  Merge request !156
  * reported the error and fixed the issue with large transfers.
  *
  * The issue reported is that fast recovery detection relies on comparing
@@ -143,13 +143,13 @@ TcpLargeTransferLossTest::CreateReceiverErrorModel ()
   return rem;
 }
 
-void 
+void
 TcpLargeTransferLossTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
 {
   m_sent++;
 }
 
-void 
+void
 TcpLargeTransferLossTest::Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
 {
   m_received++;
@@ -176,7 +176,7 @@ public:
     // For large transfer tests, the three sequence numbers passed in
     // are the segment (i.e. not byte) number that should be dropped first,
     // then the second drop, and then the last segment number to send
-    // 
+    //
     // If we force a loss at packet 1000 and then shortly after at 2000,
     // the TCP logic should correctly pass this case (no sequence wrapping).
     AddTestCase (new TcpLargeTransferLossTest (1000, 2000, 2500, "large-transfer-loss-without-wrap"), TestCase::EXTENSIVE);

@@ -18,7 +18,7 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  *         Pavel Boyko <boyko@iitp.ru>
  */
- 
+
 #include "mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/pointer.h"
@@ -168,7 +168,7 @@ MeshHelper::SetRemoteStationManager (std::string type,
   m_stationManager.Set (n6, v6);
   m_stationManager.Set (n7, v7);
 }
-void 
+void
 MeshHelper::SetStandard (enum WifiStandard standard)
 {
   m_standard = standard;
@@ -250,7 +250,7 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
           for (std::vector<Ptr<NetDevice> >::iterator i = ifaces.begin (); i != ifaces.end (); i++)
             {
               wifi = DynamicCast<WifiNetDevice> (*i);
-           
+
               // Handle any random numbers in the PHY objects.
               currentStream += wifi->GetPhy ()->AssignStreams (currentStream);
 

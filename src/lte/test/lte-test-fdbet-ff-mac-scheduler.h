@@ -34,11 +34,11 @@ using namespace ns3;
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief This system test program creates different test cases with a single eNB and 
- * several UEs, all having the same Radio Bearer specification. In each test 
- * case, the UEs see the same SINR from the eNB; different test cases are 
- * implemented obtained by using different SINR values and different numbers of 
- * UEs. The test consists on checking that the obtained throughput performance 
+ * \brief This system test program creates different test cases with a single eNB and
+ * several UEs, all having the same Radio Bearer specification. In each test
+ * case, the UEs see the same SINR from the eNB; different test cases are
+ * implemented obtained by using different SINR values and different numbers of
+ * UEs. The test consists on checking that the obtained throughput performance
  * is equal among users is consistent with the definition of blind equal throughput
  * scheduling
  */
@@ -79,8 +79,8 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test case is simillar to the one defined in 
- * LenaFdBetFfMacSchedulerTestCase1, with the difference that UEs are 
+ * \brief Test case is simillar to the one defined in
+ * LenaFdBetFfMacSchedulerTestCase1, with the difference that UEs are
  * placed in such a way to experience different SINRs from eNodeB.
  */
 class LenaFdBetFfMacSchedulerTestCase2 : public TestCase

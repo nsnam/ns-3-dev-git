@@ -40,7 +40,7 @@ class LteFfrSapUser;
  * \ingroup lte
  * \defgroup ff-api FF MAC Schedulers
  */
-     
+
 /**
  * \ingroup ff-api
  *
@@ -126,9 +126,9 @@ public:
    * \return the User part of the LteFfrSap provided by the FfrAlgorithm
    */
   virtual LteFfrSapUser* GetLteFfrSapUser () = 0;
-  
+
 protected:
-    
+
   UlCqiFilter_t m_ulCqiFilter; ///< UL CQI filter
 
 };

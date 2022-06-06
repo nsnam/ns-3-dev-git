@@ -150,12 +150,12 @@ The first thing to do in implementing this experiment is developing the simulati
 
   ::
 
-    Ptr<Node> appSource = NodeList::GetNode(0);  
+    Ptr<Node> appSource = NodeList::GetNode(0);
     Ptr<Sender> sender = CreateObject<Sender>();
     appSource->AddApplication(sender);
     sender->Start(Seconds(1));
 
-    Ptr<Node> appSink = NodeList::GetNode(1);  
+    Ptr<Node> appSink = NodeList::GetNode(1);
     Ptr<Receiver> receiver = CreateObject<Receiver>();
     appSink->AddApplication(receiver);
     receiver->Start(Seconds(0));
@@ -209,7 +209,7 @@ The first thing to do in implementing this experiment is developing the simulati
 
   ::
 
-    Simulator::Run();    
+    Simulator::Run();
 
 * Generating either `OMNet++`_ or SQLite_ output, depending on the command line arguments.  To do this a ``ns3::DataOutputInterface`` object is created and configured.  The specific type of this will determine the output format.  This object is then given the ``ns3::DataCollector`` object which it interrogates to produce the output.
 
@@ -239,7 +239,7 @@ Logging
 =======
 
 To see what the example program, applications, and stat framework are doing in detail, set the ``NS_LOG`` variable appropriately.  The following will provide copious output from all three.
-  
+
 .. sourcecode:: bash
 
   $ export NS_LOG=WiFiDistanceExperiment:WiFiDistanceApps
@@ -252,16 +252,16 @@ Sample Output
 Compiling and simply running the test program will append `OMNet++`_ formatted output such as the following to ``data.sca``.
 
 .. sourcecode:: text
- 
+
   run run-1212239121
-  
+
   attr experiment "wifi-distance-test"
   attr strategy "wifi-default"
   attr input "50"
   attr description ""
-  
+
   attr "author" "tjkopena"
-  
+
   scalar wifi-tx-frames count 30
   scalar wifi-rx-frames count 30
   scalar sender-tx-packets count 30
@@ -283,16 +283,16 @@ Control Script
 In order to automate data collection at a variety of inputs (distances), a simple Bash script is used to execute a series of simulations.  It can be found at ``examples/stats/wifi-example-db.sh``.  The script is meant to be run from the ``examples/stats/`` directory.
 
 The script runs through a set of distances, collecting the results into an SQLite_ database.  At each distance five trials are conducted to give a better picture of expected performance.  The entire experiment takes only a few dozen seconds to run on a low end machine as there is no output during the simulation and little traffic is generated.
-  
+
 .. sourcecode:: bash
 
   #!/bin/sh
-  
+
   DISTANCES="25 50 75 100 125 145 147 150 152 155 157 160 162 165 167 170 172 175 177 180"
   TRIALS="1 2 3 4 5"
-  
+
   echo WiFi Experiment Example
-  
+
   if [ -e data.db ]
   then
     echo Kill data.db?
@@ -303,7 +303,7 @@ The script runs through a set of distances, collecting the results into an SQLit
       rm data.db
     fi
   fi
-  
+
   for trial in $TRIALS
   do
     for distance in $DISTANCES
@@ -317,7 +317,7 @@ Analysis and Conclusion
 +++++++++++++++++++++++
 
 Once all trials have been conducted, the script executes a simple SQL query over the database using the SQLite_ command line program.  The query computes average packet loss in each set of trials associated with each distance.  It does not take into account different strategies, but the information is present in the database to make some simple extensions and do so.  The collected data is then passed to GNUPlot for graphing.
-  
+
 .. sourcecode:: sql
 
   CMD="select exp.input,avg(100-((rx.value*100)/tx.value)) \
@@ -328,19 +328,19 @@ Once all trials have been conducted, the script executes a simple SQL query over
             tx.name='sender-tx-packets' \
       group by exp.input \
       order by abs(exp.input) ASC;"
-  
+
   sqlite3 -noheader data.db "$CMD" > wifi-default.data
   sed -i "s/|/   /" wifi-default.data
   gnuplot wifi-example.gnuplot
 
 The GNUPlot script found at ``examples/stats/wifi-example.gnuplot`` simply defines the output format and some basic formatting for the graph.
-  
+
 .. sourcecode:: bash
 
   set terminal postscript portrait enhanced lw 2 "Helvetica" 14
-  
+
   set size 1.0, 0.66
-  
+
   #-------------------------------------------------------
   set out "wifi-default.eps"
   #set title "Packet Loss Over Distance"
@@ -348,7 +348,7 @@ The GNUPlot script found at ``examples/stats/wifi-example.gnuplot`` simply defin
   set xrange [0:200]
   set ylabel "% Packet Loss"
   set yrange [0:110]
-  
+
   plot "wifi-default.data" with lines title "WiFi Defaults"
 
 End Result

@@ -317,7 +317,7 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
   return addr;  /* quiet compiler */
 }
 
-Ipv6InterfaceAddress 
+Ipv6InterfaceAddress
 Ipv6Interface::RemoveAddress(Ipv6Address address)
 {
   NS_LOG_FUNCTION(this << address);
@@ -476,7 +476,7 @@ uint16_t Ipv6Interface::GetReachableTime () const
 
 void Ipv6Interface::SetRetransTimer (uint16_t retransTimer)
 {
-  NS_LOG_FUNCTION (this << retransTimer); 
+  NS_LOG_FUNCTION (this << retransTimer);
   m_retransTimer = retransTimer;
 }
 

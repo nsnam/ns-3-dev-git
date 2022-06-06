@@ -53,9 +53,9 @@ public:
 
   /**
    * Get the message size.
-   * 
+   *
    * Subclasses are supposed to have a message size greater than zero.
-   * 
+   *
    * \returns the message size
    */
   virtual uint32_t GetMessageSize (void) const;
@@ -221,13 +221,13 @@ public:
 
   /**
    * Serialize the IMSI
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param imsi The IMSI
    */
   void SerializeImsi (Buffer::Iterator &i, uint64_t imsi) const;
   /**
    * Deserialize the IMSI
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] imsi The IMSI
    * \return the number of deserialized bytes
    */
@@ -235,13 +235,13 @@ public:
 
   /**
    * Serialize the Cause
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param cause The Cause
    */
   void SerializeCause (Buffer::Iterator &i, Cause_t cause) const;
   /**
    * Deserialize the Cause
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] cause The cause
    * \return the number of deserialized bytes
    */
@@ -249,20 +249,20 @@ public:
 
   /**
    * Serialize the eps Bearer Id
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param  epsBearerId The eps Bearer Id
    */
   void SerializeEbi (Buffer::Iterator &i, uint8_t epsBearerId) const;
   /**
    * Deserialize the eps Bearer Id
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] epsBearerId The eps Bearer Id
    * \return the number of deserialized bytes
    */
   uint32_t DeserializeEbi (Buffer::Iterator &i, uint8_t &epsBearerId);
 
   /**
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param data data to write in buffer
    *
    * Write the data in buffer and advance the iterator position
@@ -271,7 +271,7 @@ public:
    */
   void WriteHtonU40 (Buffer::Iterator &i, uint64_t data) const;
   /**
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \return the five bytes read in the buffer.
    *
    * Read data and advance the Iterator by the number of bytes
@@ -282,13 +282,13 @@ public:
 
   /**
    * Serialize the eps Bearer QoS
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param bearerQos The Bearer QoS
    */
   void SerializeBearerQos (Buffer::Iterator &i, EpsBearer bearerQos) const;
   /**
    * Deserialize the eps Bearer QoS
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] bearerQos The Bearer QoS
    * \return the number of deserialized bytes
    */
@@ -296,13 +296,13 @@ public:
 
   /**
    * Serialize the Bearer TFT
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param packetFilters The Packet filters
    */
   void SerializeBearerTft (Buffer::Iterator &i, std::list<EpcTft::PacketFilter> packetFilters) const;
   /**
    * Deserialize the Bearer TFT
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] epcTft The Bearer TFT
    * \return the number of deserialized bytes
    */
@@ -310,13 +310,13 @@ public:
 
   /**
    * Serialize the UliEcgi
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param uliEcgi The UliEcgi
    */
   void SerializeUliEcgi (Buffer::Iterator &i, uint32_t uliEcgi) const;
   /**
    * Deserialize the UliEcgi
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] uliEcgi UliEcgi
    * \return the number of deserialized bytes
    */
@@ -324,13 +324,13 @@ public:
 
   /**
    * Serialize the Fteid_t
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param fteid The Fteid_t
    */
   void SerializeFteid (Buffer::Iterator &i, GtpcHeader::Fteid_t fteid) const;
   /**
    * Deserialize the Fteid
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] fteid Fteid
    * \return the number of deserialized bytes
    */
@@ -338,13 +338,13 @@ public:
 
   /**
    * Serialize the Bearer Context Header
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param length The length
    */
   void SerializeBearerContextHeader (Buffer::Iterator &i, uint16_t length) const;
   /**
    * Deserialize the Bearer Context Header
-   * \param i Buffer iterator 
+   * \param i Buffer iterator
    * \param [out] length length
    * \return the number of deserialized bytes
    */

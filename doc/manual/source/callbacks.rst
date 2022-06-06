@@ -48,7 +48,7 @@ independent compilation units in the simulator) and is not generalized; if in a
 later usage scenario, B needs to talk to a completely different C object, the
 source code for B needs to be changed to add a ``c_instance`` and so forth. It
 is easy to see that this is a brute force mechanism of communication that can
-lead to programming cruft in the models.  
+lead to programming cruft in the models.
 
 This is not to say that objects should not know about one another if there is a
 hard dependency between them, but that often the model can be made more flexible
@@ -182,14 +182,14 @@ calling function from the called class completely. This requirement led to the
 development of the *Functor*.
 
 A functor is the outgrowth of something invented in the 1960s called a closure.
-It is basically just a packaged-up function call, possibly with some state.  
+It is basically just a packaged-up function call, possibly with some state.
 
 A functor has two parts, a specific part and a generic part, related through
 inheritance. The calling code (the code that executes the callback) will execute
 a generic overloaded ``operator ()`` of a generic functor to cause the callback
 to be called. The called code (the code that wants to be called back) will have
 to provide a specialized implementation of the ``operator ()`` that performs the
-class-specific work that caused the close-coupling problem above.  
+class-specific work that caused the close-coupling problem above.
 
 With the specific functor and its overloaded ``operator ()`` created, the called
 code then gives the specialized code to the module that will execute the
@@ -201,7 +201,7 @@ functor.  This means that the calling module just needs to understand the
 generic functor type. It is decoupled from the calling code completely.
 
 The information one needs to make a specific functor is the object pointer and
-the pointer-to-method address. 
+the pointer-to-method address.
 
 The essence of what needs to happen is that the system declares a generic part
 of the functor::
@@ -213,7 +213,7 @@ of the functor::
     virtual int operator() (T arg) = 0;
   };
 
-The caller defines a specific part of the functor that really is just there to 
+The caller defines a specific part of the functor that really is just there to
 implement the specific ``operator()`` method::
 
   template <typename T, typename ARG>
@@ -256,11 +256,11 @@ Here is an example of the usage::
   }
 
 .. note:: The previous code is not real ns-3 code.  It is simplistic example
-   code used only to illustrate the concepts involved and to help you understand 
+   code used only to illustrate the concepts involved and to help you understand
    the system more.  Do not expect to find this code anywhere in the ns-3 tree.
 
-Notice that there are two variables defined in the class above.  The m_p 
-variable is the object pointer and m_pmi is the variable containing the 
+Notice that there are two variables defined in the class above.  The m_p
+variable is the object pointer and m_pmi is the variable containing the
 address of the function to execute.
 
 Notice that when ``operator()`` is called, it in turn calls the method provided
@@ -271,16 +271,16 @@ as a parameter::
 
   void LibraryFunction (Functor functor);
 
-The code that will talk to the model would build a specific functor and pass it to ``LibraryFunction``:: 
+The code that will talk to the model would build a specific functor and pass it to ``LibraryFunction``::
 
   MyClass myClass;
   SpecificFunctor<MyClass, int> functor (&myclass, MyClass::MyMethod);
 
-When ``LibraryFunction`` is done, it executes the callback using the 
+When ``LibraryFunction`` is done, it executes the callback using the
 ``operator()`` on the generic functor it was passed, and in this particular
 case, provides the integer argument::
 
-  void 
+  void
   LibraryFunction (Functor functor)
   {
     // Execute the library function
@@ -291,11 +291,11 @@ Notice that ``LibraryFunction`` is completely decoupled from the specific
 type of the client.  The connection is made through the Functor polymorphism.
 
 The Callback API in |ns3| implements object-oriented callbacks using
-the functor mechanism.  This callback API, being based on C++ templates, is 
+the functor mechanism.  This callback API, being based on C++ templates, is
 type-safe; that is, it performs static type checks to enforce proper signature
-compatibility between callers and callees.  It is therefore more type-safe to 
-use than traditional function pointers, but the syntax may look imposing at 
-first.  This section is designed to walk you through the Callback system so 
+compatibility between callers and callees.  It is therefore more type-safe to
+use than traditional function pointers, but the syntax may look imposing at
+first.  This section is designed to walk you through the Callback system so
 that you can be comfortable using it in |ns3|.
 
 Using the Callback API
@@ -340,39 +340,39 @@ a ``this`` pointer.  The function template ``Callback`` is essentially the
 declaration of the variable containing the pointer-to-function.  In the example
 above, we explicitly showed a pointer to a function that returned an integer and
 took a single integer as a parameter,  The ``Callback`` template function is
-a generic version of that -- it is used to declare the type of a callback.  
+a generic version of that -- it is used to declare the type of a callback.
 
 .. note:: Readers unfamiliar with C++ templates may consult `<http://www.cplusplus.com/doc/tutorial/templates/>`_.
 
-The ``Callback`` template requires one mandatory argument (the return type 
-of the function to be assigned to this callback) and up to five optional 
+The ``Callback`` template requires one mandatory argument (the return type
+of the function to be assigned to this callback) and up to five optional
 arguments, which each specify the type of the arguments (if your particular
 callback function has more than five arguments, then this can be handled
 by extending the callback implementation).
 
 So in the above example, we have a declared a callback named "one" that will
 eventually hold a function pointer.  The signature of the function that it will
-hold must return double and must support two double arguments.  If one tries 
-to pass a function whose signature does not match the declared callback, 
+hold must return double and must support two double arguments.  If one tries
+to pass a function whose signature does not match the declared callback,
 a compilation error will occur.  Also, if one tries to assign to a callback
-an incompatible one, compilation will succeed but a run-time 
-NS_FATAL_ERROR will be raised.  The sample program 
+an incompatible one, compilation will succeed but a run-time
+NS_FATAL_ERROR will be raised.  The sample program
 ``src/core/examples/main-callback.cc`` demonstrates both of these error cases
 at the end of the ``main()`` program.
 
 Now, we need to tie together this callback instance and the actual target function
-(CbOne).  Notice above that CbOne has the same function signature types as the 
-callback-- this is important.  We can pass in any such properly-typed function 
+(CbOne).  Notice above that CbOne has the same function signature types as the
+callback-- this is important.  We can pass in any such properly-typed function
 to this callback.  Let's look at this more closely::
 
   static   double CbOne (double a, double b) {}
              ^             ^         ^
              |             |         |
-             |             |         | 
+             |             |         |
   Callback<double,       double,   double> one;
 
 You can only bind a function to a callback if they have the matching signature.
-The first template argument is the return type, and the additional template 
+The first template argument is the return type, and the additional template
 arguments are the types of the arguments of the function signature.
 
 Now, let's bind our callback "one" to the function that matches its signature::
@@ -381,9 +381,9 @@ Now, let's bind our callback "one" to the function that matches its signature::
   one = MakeCallback (&CbOne);
 
 This call to ``MakeCallback`` is, in essence, creating one of the specialized
-functors mentioned above.  The variable declared using the ``Callback`` 
+functors mentioned above.  The variable declared using the ``Callback``
 template function is going to be playing the part of the generic functor.  The
-assignment ``one = MakeCallback (&CbOne)`` is the cast that converts the 
+assignment ``one = MakeCallback (&CbOne)`` is the cast that converts the
 specialized functor known to the callee to a generic functor known to the caller.
 
 Then, later in the program, if the callback is needed, it can be used as follows::
@@ -394,18 +394,18 @@ Then, later in the program, if the callback is needed, it can be used as follows
   double retOne;
   retOne = one (10.0, 20.0);
 
-The check for ``IsNull()`` ensures that the callback is not null -- that there 
+The check for ``IsNull()`` ensures that the callback is not null -- that there
 is a function to call behind this callback.  Then, ``one()`` executes the
 generic ``operator()`` which is really overloaded with a specific implementation
-of ``operator()`` and returns the same result as if ``CbOne()`` had been 
+of ``operator()`` and returns the same result as if ``CbOne()`` had been
 called directly.
 
 Using the Callback API with member functions
 ++++++++++++++++++++++++++++++++++++++++++++
 
-Generally, you will not be calling static functions but instead public member 
-functions of an object.  In this case, an extra argument is needed to the 
-MakeCallback function, to tell the system on which object the function should be 
+Generally, you will not be calling static functions but instead public member
+functions of an object.  In this case, an extra argument is needed to the
+MakeCallback function, to tell the system on which object the function should be
 invoked.  Consider this example, also from main-callback.cc::
 
   class MyCb {
@@ -429,7 +429,7 @@ invoked.  Consider this example, also from main-callback.cc::
   }
 
 Here, we pass an additional object pointer to the ``MakeCallback<>`` function.
-Recall from the background section above that ``Operator()`` will use the pointer to 
+Recall from the background section above that ``Operator()`` will use the pointer to
 member syntax when it executes on an object::
 
       virtual int operator() (ARG arg)
@@ -446,8 +446,8 @@ does precisely that.  In this case, when ``two ()`` is invoked::
 
   int result = two (1.0);
 
-will result in a call to the ``CbTwo`` member function (method) on the object 
-pointed to by ``&cb``.   
+will result in a call to the ``CbTwo`` member function (method) on the object
+pointed to by ``&cb``.
 
 Building Null Callbacks
 +++++++++++++++++++++++
@@ -466,21 +466,21 @@ crash at runtime.
 Bound Callbacks
 ***************
 
-A very useful extension to the functor concept is that of a Bound Callback.  
-Previously it was mentioned that closures were originally function calls 
-packaged up for later execution.  Notice that in all of the Callback 
-descriptions above, there is no way to package up any parameters for use 
-later -- when the ``Callback`` is called via ``operator()``.  All of 
-the parameters are provided by the calling function.  
+A very useful extension to the functor concept is that of a Bound Callback.
+Previously it was mentioned that closures were originally function calls
+packaged up for later execution.  Notice that in all of the Callback
+descriptions above, there is no way to package up any parameters for use
+later -- when the ``Callback`` is called via ``operator()``.  All of
+the parameters are provided by the calling function.
 
 What if it is desired to allow the client function (the one that provides the
 callback) to provide some of the parameters?  `Alexandrescu <http://erdani.com/book/main.html>`_ calls the process of
-allowing a client to specify one of the parameters *"binding"*.  One of the 
+allowing a client to specify one of the parameters *"binding"*.  One of the
 parameters of ``operator()`` has been bound (fixed) by the client.
 
 Some of our pcap tracing code provides a nice example of this.  There is a
 function that needs to be called whenever a packet is received.  This function
-calls an object that actually writes the packet to disk in the pcap file 
+calls an object that actually writes the packet to disk in the pcap file
 format.  The signature of one of these functions will be::
 
   static void DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
@@ -492,8 +492,8 @@ the calling code is just a call that looks like::
 
   m_promiscSnifferTrace (m_currentPkt);
 
-What we want to do is to *bind* the ``Ptr<PcapFileWriter> file`` to the 
-specific callback implementation when it is created and arrange for the 
+What we want to do is to *bind* the ``Ptr<PcapFileWriter> file`` to the
+specific callback implementation when it is created and arrange for the
 ``operator()`` of the Callback to provide that parameter for free.
 
 We provide the ``MakeBoundCallback`` template function for that purpose.  It
@@ -585,9 +585,9 @@ itself.  The actual Callback code is quite complicated and very template-intense
 a deep understanding of the code is not required.  If interested, expert users may
 find the following useful.
 
-The code was originally written based on the techniques described in 
+The code was originally written based on the techniques described in
 `<http://www.codeproject.com/cpp/TTLFunction.asp>`_.
-It was subsequently rewritten to follow the architecture outlined in 
+It was subsequently rewritten to follow the architecture outlined in
 `Modern C++ Design, Generic Programming and Design Patterns Applied, Alexandrescu, chapter 5, Generalized Functors <http://www.moderncppdesign.com/book/main.html>`_.
 
 This code uses:
@@ -605,6 +605,6 @@ This code uses:
   value semantics.
 
 This code most notably departs from the Alexandrescu implementation in that it
-does not use type lists to specify and pass around the types of the callback 
-arguments. Of course, it also does not use copy-destruction semantics and 
+does not use type lists to specify and pass around the types of the callback
+arguments. Of course, it also does not use copy-destruction semantics and
 relies on a reference list rather than autoPtr to hold the pointer.

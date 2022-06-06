@@ -50,7 +50,7 @@ constexpr int MAXTHREADS = 64;
 
 /**
  * \ingroup threaded-tests
- *  
+ *
  * \brief Check threaded event handling with various thread number, schedulers, and  simulator types.
  */
 class ThreadedSimulatorEventsTestCase : public TestCase
@@ -58,7 +58,7 @@ class ThreadedSimulatorEventsTestCase : public TestCase
 public:
   /**
    * Constructor.
-   * 
+   *
    * \param schedulerFactory The scheduler factory.
    * \param simulatorType The simulator type.
    * \param threads The number of threads.
@@ -85,7 +85,7 @@ public:
    */
   void EventD (int d);
   /**
-   * No-op function, records the thread that called it. 
+   * No-op function, records the thread that called it.
    * \param threadno The thread number.
    */
   void DoNothing (unsigned int threadno);
@@ -273,7 +273,7 @@ ThreadedSimulatorEventsTestCase::DoRun (void)
 
 /**
  * \ingroup threaded-tests
- *  
+ *
  * \brief The threaded simulator Test Suite.
  */
 class ThreadedSimulatorTestSuite : public TestSuite
@@ -317,4 +317,4 @@ public:
 };
 
 /// Static variable for test initialization.
-static ThreadedSimulatorTestSuite g_threadedSimulatorTestSuite; 
+static ThreadedSimulatorTestSuite g_threadedSimulatorTestSuite;

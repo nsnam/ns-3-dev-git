@@ -120,7 +120,7 @@ class Tag;
  *       shared. This portion is copied before the #Remove or #Replace is
  *       performed.
  */
-class PacketTagList 
+class PacketTagList
 {
 public:
   /**
@@ -252,7 +252,7 @@ private:
    */
   static
   TagData * CreateTagData (size_t dataSize);
-  
+
   /**
    * Typedef of method function pointer for copy-on-write operations
    *
@@ -334,13 +334,13 @@ PacketTagList &
 PacketTagList::operator = (PacketTagList const &o)
 {
   // self assignment
-  if (m_next == o.m_next) 
+  if (m_next == o.m_next)
     {
       return *this;
     }
   RemoveAll ();
   m_next = o.m_next;
-  if (m_next != 0) 
+  if (m_next != 0)
     {
       m_next->count++;
     }
@@ -359,18 +359,18 @@ PacketTagList::RemoveAll (void)
   for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
     {
       cur->count--;
-      if (cur->count > 0) 
+      if (cur->count > 0)
         {
           break;
         }
-      if (prev != 0) 
+      if (prev != 0)
         {
           prev->~TagData ();
           std::free (prev);
         }
       prev = cur;
     }
-  if (prev != 0) 
+  if (prev != 0)
     {
       prev->~TagData ();
       std::free (prev);

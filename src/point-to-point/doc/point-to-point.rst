@@ -89,7 +89,7 @@ nodes with associated net devices connected by a PointToPointChannel.::
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
- 
+
 Once the attributes are set, all that remains is to create the devices and
 install them on the required nodes, and to connect the devices together using a
 PointToPoint channel. When we create the net devices, we add them to a container
@@ -125,12 +125,12 @@ sources:
 * A Dequeue operation source (see ns3::Queue::m_traceDequeue);
 * A Drop operation source (see ns3::Queue::m_traceDrop).
 
-The upper-level (MAC) trace hooks for the PointToPointNetDevice are, in fact, 
-exactly these three trace sources on the single transmit queue of the device.  
+The upper-level (MAC) trace hooks for the PointToPointNetDevice are, in fact,
+exactly these three trace sources on the single transmit queue of the device.
 
 The m_traceEnqueue event is triggered when a packet is placed on the transmit
-queue. This happens at the time that ns3::PointtoPointNetDevice::Send or 
-ns3::PointToPointNetDevice::SendFrom is called by a higher layer to queue a 
+queue. This happens at the time that ns3::PointtoPointNetDevice::Send or
+ns3::PointToPointNetDevice::SendFrom is called by a higher layer to queue a
 packet for transmission. An Enqueue trace event firing should be interpreted
 as only indicating that a higher level protocol has sent a packet to the device.
 
@@ -148,7 +148,7 @@ Lower-Level (PHY) Hooks
 
 Similar to the upper level trace hooks, there are trace hooks available at the
 lower levels of the net device. We call these the PHY hooks. These events fire
-from the device methods that talk directly to the 
+from the device methods that talk directly to the
 PointToPointChannel.
 
 The trace source m_dropTrace is called to indicate a packet that is dropped by

@@ -121,7 +121,7 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
- * to them.  If no matching trace sources are found, this method will 
+ * to them.  If no matching trace sources are found, this method will
  * throw a fatal error.  Use ConnectWithoutContextFailSafe if the absence
  * of matching trace sources should not be fatal.
  */
@@ -133,7 +133,7 @@ void ConnectWithoutContext (std::string path, const CallbackBase &cb);
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
- * to them.  If no matching trace sources are found, this method will 
+ * to them.  If no matching trace sources are found, this method will
  * return false; otherwise true.
  * \returns \c true if any trace sources could be connected.
  */
@@ -155,7 +155,7 @@ void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
  * match the input path and will then connect the input callback
  * to them in such a way that the callback will receive an extra
  * context string upon trace event notification.
- * If no matching trace sources are found, this method will 
+ * If no matching trace sources are found, this method will
  * throw a fatal error.  Use ConnectFailSafe if the absence
  * of matching trace sources should not be fatal.
  */
@@ -252,7 +252,7 @@ public:
    * Set the specified attribute value to all the objects stored in this
    * container.  This method will raise a fatal error if no such attribute
    * exists; use SetFailSafe if the absence of the attribute is to be
-   * permitted.  
+   * permitted.
    * \sa ns3::Config::Set
    */
   void Set (std::string name, const AttributeValue &value);

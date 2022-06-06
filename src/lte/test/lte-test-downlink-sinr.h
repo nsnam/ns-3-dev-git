@@ -46,11 +46,11 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief  Test compares if the generated SINR is equal to estimated SINR 
- *  value. Test generates several calls to LteSpectrumPhy::StartRx corresponding 
+ * \brief  Test compares if the generated SINR is equal to estimated SINR
+ *  value. Test generates several calls to LteSpectrumPhy::StartRx corresponding
  *  to several signals. One will be the signal of interest, i.e., the
  *  LteSpectrumSignalParametersDlCtrlFrame of the first signal will have the
- *  same CellId of the receiving PHY; the others will have a different 
+ *  same CellId of the receiving PHY; the others will have a different
  *  CellId and hence will be the interfering signals.
  */
 class LteDownlinkDataSinrTestCase : public TestCase
@@ -79,12 +79,12 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief  
- *  Test compares if the generated SINR is equal to estimated SINR value. 
- *  Test generates several calls to LteSpectrumPhy::StartRx corresponding 
+ * \brief
+ *  Test compares if the generated SINR is equal to estimated SINR value.
+ *  Test generates several calls to LteSpectrumPhy::StartRx corresponding
  *  to several signals. One will be the signal of interest, i.e., the
  *  LteSpectrumSignalParametersDlCtrlFrame of the first signal will have the
- *  same CellId of the receiving PHY; the others will have a different 
+ *  same CellId of the receiving PHY; the others will have a different
  *  CellId and hence will be the interfering signals.
  */
 class LteDownlinkCtrlSinrTestCase : public TestCase
@@ -99,10 +99,10 @@ class LteDownlinkCtrlSinrTestCase : public TestCase
    */
     LteDownlinkCtrlSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LteDownlinkCtrlSinrTestCase ();
-  
+
 private:
   virtual void DoRun (void);
-  
+
   Ptr<SpectrumValue> m_sv; ///< the spectrum value
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model
   Ptr<SpectrumValue> m_expectedSinr; ///< the expected SINR

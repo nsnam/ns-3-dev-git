@@ -120,18 +120,18 @@ Output
 ======
 
 The ns-3 ascii trace helpers used by many of the NetDevices will hook
-the Enqueue, Dequeue, and Drop traces of these queues and print out 
+the Enqueue, Dequeue, and Drop traces of these queues and print out
 trace statements, such as the following from ``examples/udp/udp-echo.cc``:
 
 .. sourcecode:: text
 
-  + 2 /NodeList/0/DeviceList/1/$ns3::CsmaNetDevice/TxQueue/Enqueue ns3::EthernetHeader 
-  ( length/type=0x806, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) 
-  ns3::ArpHeader (request source mac: 00-06-00:00:00:00:00:01 source ipv4: 10.1.1.1 
+  + 2 /NodeList/0/DeviceList/1/$ns3::CsmaNetDevice/TxQueue/Enqueue ns3::EthernetHeader
+  ( length/type=0x806, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff)
+  ns3::ArpHeader (request source mac: 00-06-00:00:00:00:00:01 source ipv4: 10.1.1.1
   dest ipv4: 10.1.1.2) Payload (size=18) ns3::EthernetTrailer (fcs=0)
-  - 2 /NodeList/0/DeviceList/1/$ns3::CsmaNetDevice/TxQueue/Dequeue ns3::EthernetHeader 
-  ( length/type=0x806, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) 
-  ns3::ArpHeader (request source mac: 00-06-00:00:00:00:00:01 source ipv4: 10.1.1.1 
+  - 2 /NodeList/0/DeviceList/1/$ns3::CsmaNetDevice/TxQueue/Dequeue ns3::EthernetHeader
+  ( length/type=0x806, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff)
+  ns3::ArpHeader (request source mac: 00-06-00:00:00:00:00:01 source ipv4: 10.1.1.1
   dest ipv4: 10.1.1.2) Payload (size=18) ns3::EthernetTrailer (fcs=0)
 
 which shows an enqueue "+" and dequeue "-" event at time 2 seconds.
@@ -142,6 +142,6 @@ these trace sources.
 Examples
 ========
 
-The drop-tail queue is used in several examples, such as 
+The drop-tail queue is used in several examples, such as
 ``examples/udp/udp-echo.cc``.
 

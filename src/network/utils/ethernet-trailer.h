@@ -36,7 +36,7 @@ namespace ns3 {
  * This class can be used to add and verify the FCS at the end of an
  * Ethernet packet.
  */
-class EthernetTrailer : public Trailer 
+class EthernetTrailer : public Trailer
 {
 public:
   /**
@@ -53,7 +53,7 @@ public:
   /**
    * \brief Updates the Fcs Field to the correct FCS
    * \param p Reference to a packet on which the FCS should be
-   * calculated. The packet should not currently contain an 
+   * calculated. The packet should not currently contain an
    * EthernetTrailer.
    */
   void CalcFcs (Ptr<const Packet> p);
@@ -80,14 +80,14 @@ public:
    * \param p Reference to the packet on which the FCS should be
    * calculated. The packet should not contain an EthernetTrailer.
    *
-   * \return Returns true if the Packet FCS matches the FCS in the trailer, 
+   * \return Returns true if the Packet FCS matches the FCS in the trailer,
    * false otherwise.
    */
   bool CheckFcs (Ptr<const Packet> p) const;
 
   /**
    *\return Returns the size of the trailer
-   */ 
+   */
   uint32_t GetTrailerSize () const;
 
   /**

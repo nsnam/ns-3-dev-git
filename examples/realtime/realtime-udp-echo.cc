@@ -22,7 +22,7 @@
 //              LAN
 //
 // - UDP flows from n0 to n1 and back
-// - DropTail queues 
+// - DropTail queues
 // - Tracing of queues and packet receptions to file "udp-echo.tr"
 
 #include <fstream>
@@ -35,7 +35,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("RealtimeUdpEchoExample");
 
-int 
+int
 main (int argc, char *argv[])
 {
   //
@@ -49,7 +49,7 @@ main (int argc, char *argv[])
   // But since this is a realtime script, don't allow the user to mess with
   // that.
   //
-  GlobalValue::Bind ("SimulatorImplementationType", 
+  GlobalValue::Bind ("SimulatorImplementationType",
                      StringValue ("ns3::RealtimeSimulatorImpl"));
 
   //

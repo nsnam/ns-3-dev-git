@@ -66,7 +66,7 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
   // interval 1 : [0.1, 0.2) sec TxMode 0: MCS 20 -> TB size 1191 bytes
   // interval 2 : [0.3, 0.4) sec TxMode 1: MCS 26 -> TB size 1836 bytes
   // interval 3 : [0.5, 0.6) sec TxMode 2: MCS 18 -> TB size  967 bytes (x2 layers)
-  // --> 
+  // -->
   std::vector<uint32_t> estThrDl;
   estThrDl.push_back (119100); // interval 1 : estimated throughput for TxMode 1
   estThrDl.push_back (183600); // interval 2 : estimated throughput for TxMode 2
@@ -80,7 +80,7 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
 
 static LenaTestMimoSuite lenaTestMimoSuite;
 
-std::string 
+std::string
 LenaMimoTestCase::BuildNameString (uint16_t dist, std::string schedulerType, bool useIdealRrc)
 {
   std::ostringstream oss;
@@ -92,12 +92,12 @@ LenaMimoTestCase::BuildNameString (uint16_t dist, std::string schedulerType, boo
   else
     {
       oss << ", real RRC";
-    }  
+    }
   return oss.str ();
 }
 
 LenaMimoTestCase::LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType, bool useIdealRrc)
-  : TestCase (BuildNameString (dist, schedulerType, useIdealRrc)),              
+  : TestCase (BuildNameString (dist, schedulerType, useIdealRrc)),
     m_dist (dist),
     m_estThrDl (estThrDl),
     m_schedulerType (schedulerType),
@@ -132,15 +132,15 @@ LenaMimoTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
-  
+
 //   lteHelper->SetSchedulerAttribute ("HarqEnabled", BooleanValue (false));
-  
-  
+
+
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
-  
+
 //   lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
@@ -164,7 +164,7 @@ LenaMimoTestCase::DoRun (void)
   lteHelper->SetSchedulerType (m_schedulerType);
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
-  
+
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
@@ -172,7 +172,7 @@ LenaMimoTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
+
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -188,16 +188,16 @@ LenaMimoTestCase::DoRun (void)
   Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();
   uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
-  
+
   // need to allow for RRC connection establishment + SRS before enabling traces
   lteHelper->EnableRlcTraces ();
   lteHelper->EnableMacTraces ();
-  double simulationTime = 0.6; 
+  double simulationTime = 0.6;
   double tolerance = 0.1;
-  
+
   uint8_t rnti = 1;
   Ptr<LteEnbNetDevice> enbNetDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
-  
+
   PointerValue ptrval;
   enbNetDev->GetCcMap()[0]->GetAttribute ("FfMacScheduler", ptrval);
   Ptr<PfFfMacScheduler> pfsched;
@@ -219,7 +219,7 @@ LenaMimoTestCase::DoRun (void)
         {
           NS_FATAL_ERROR ("No Pf Scheduler available");
         }
-      
+
       Simulator::Schedule (Seconds (0.2), &PfFfMacScheduler::TransmissionModeConfigurationUpdate, pfsched, rnti, 1);
       Simulator::Schedule (Seconds (0.4), &PfFfMacScheduler::TransmissionModeConfigurationUpdate, pfsched, rnti, 2);
     }
@@ -227,8 +227,8 @@ LenaMimoTestCase::DoRun (void)
     {
       NS_FATAL_ERROR ("Scheduler not supported by this test");
     }
-    
-  
+
+
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.1)));
 

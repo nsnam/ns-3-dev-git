@@ -33,7 +33,7 @@ using namespace ns3;
  */
 
 int main (int argc, char *argv[])
-{	
+{
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
 
   double eNbTxPower = 30;
@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   uint16_t bandwidth = 25;

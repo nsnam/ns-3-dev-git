@@ -54,29 +54,29 @@ class Packet;
 class EpcTftClassifier : public SimpleRefCount<EpcTftClassifier>
 {
 public:
-  
+
   EpcTftClassifier ();
-  
-  /** 
+
+  /**
    * add a TFT to the Classifier
-   * 
+   *
    * \param tft the TFT to be added
    * \param id the ID of the bearer which will be classified by specified TFT classifier
-   * 
+   *
    */
   void Add (Ptr<EpcTft> tft, uint32_t id);
 
-  /** 
+  /**
    * delete an existing TFT from the classifier
-   * 
+   *
    * \param id the identifier of the TFT to be deleted
    */
   void Delete (uint32_t id);
-  
 
-  /** 
+
+  /**
    * classify an IP packet
-   * 
+   *
    * \param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
    * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
    * \param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
@@ -84,9 +84,9 @@ public:
    * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT matched.
    */
   uint32_t Classify (Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber);
-  
+
 protected:
-  
+
   std::map <uint32_t, Ptr<EpcTft> > m_tftMap; ///< TFT map
 
   std::map < std::tuple<uint32_t, uint32_t, uint8_t, uint16_t>,
@@ -103,5 +103,5 @@ protected:
 
 
 } // namespace ns3
-  
-#endif /* TFT_CLASSIFIER_H */ 
+
+#endif /* TFT_CLASSIFIER_H */

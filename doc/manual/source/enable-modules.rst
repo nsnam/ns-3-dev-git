@@ -4,7 +4,7 @@
 Enabling Subsets of |ns3| Modules
 ---------------------------------
 
-As with most software projects, |ns3| is ever growing larger in terms of number of modules, lines of code, and memory footprint.  Users, however, may only use a few of those modules at a time.  For this reason, users may want to explicitly enable only the subset of the possible |ns3| modules that they actually need for their research.  
+As with most software projects, |ns3| is ever growing larger in terms of number of modules, lines of code, and memory footprint.  Users, however, may only use a few of those modules at a time.  For this reason, users may want to explicitly enable only the subset of the possible |ns3| modules that they actually need for their research.
 
 This chapter discusses how to enable only the |ns3| modules that you are interested in using.
 
@@ -23,7 +23,7 @@ If the module has a test library and test libraries are being built, then
 
   libns3-modulename-test.so
 
-will be built, too.  Other modules that the module depends on and their test libraries will also be built.  
+will be built, too.  Other modules that the module depends on and their test libraries will also be built.
 
 By default, all modules are built in |ns3|.  There are two ways to enable a subset of these modules:
 
@@ -52,7 +52,7 @@ and the following libraries should be present:
 Note the ``./ns3 clean`` step is done here only to make it more obvious which module libraries were built.  You don't have to do ``./ns3 clean`` in order to enable subsets of modules.
 
 Running test.py will cause only those tests that depend on module core to be run:
- 
+
 .. sourcecode:: text
 
   24 of 24 tests passed (24 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
@@ -94,16 +94,16 @@ The .ns3rc file should now be in your top level |ns3| directory, and it contains
 .. sourcecode:: python
 
   #! /usr/bin/env python
-  
+
   # A list of the modules that will be enabled when ns-3 is run.
   # Modules that depend on the listed modules will be enabled also.
   #
   # All modules can be enabled by choosing 'all_modules'.
   modules_enabled = ['all_modules']
-  
+
   # Set this equal to true if you want examples to be run.
   examples_enabled = False
-  
+
   # Set this equal to true if you want tests to be run.
   tests_enabled = False
 
@@ -112,16 +112,16 @@ Use your favorite editor to modify the .ns3rc file to only enable the core modul
 .. sourcecode:: python
 
   #! /usr/bin/env python
-  
+
   # A list of the modules that will be enabled when ns-3 is run.
   # Modules that depend on the listed modules will be enabled also.
   #
   # All modules can be enabled by choosing 'all_modules'.
   modules_enabled = ['core']
-  
+
   # Set this equal to true if you want examples to be run.
   examples_enabled = True
-  
+
   # Set this equal to true if you want tests to be run.
   tests_enabled = True
 
@@ -143,7 +143,7 @@ and the following libraries should be present:
 Note the ``./ns3 clean`` step is done here only to make it more obvious which module libraries were built.  You don't have to do ``./ns3 clean`` in order to enable subsets of modules.
 
 Running test.py will cause only those tests that depend on module core to be run:
- 
+
 .. sourcecode:: text
 
   24 of 24 tests passed (24 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)

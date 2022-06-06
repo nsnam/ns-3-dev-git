@@ -35,7 +35,7 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * Takes care of storing the information generated at PHY layer regarding 
+ * Takes care of storing the information generated at PHY layer regarding
  * reception. Metrics saved are:
  *
  *   - Timestamp (in seconds)
@@ -105,22 +105,22 @@ public:
    */
   void UlPhyReception (PhyReceptionStatParameters params);
 
-  /** 
+  /**
    * trace sink
-   * 
-   * \param phyRxStats 
-   * \param path 
-   * \param params 
+   *
+   * \param phyRxStats
+   * \param path
+   * \param params
    */
   static void DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
                                std::string path, PhyReceptionStatParameters params);
 
-  /** 
+  /**
    * trace sink
-   * 
-   * \param phyRxStats 
-   * \param path 
-   * \param params 
+   *
+   * \param phyRxStats
+   * \param path
+   * \param params
    */
   static void UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
                                std::string path, PhyReceptionStatParameters params);

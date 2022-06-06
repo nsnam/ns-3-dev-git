@@ -152,7 +152,7 @@ public:
   /**
    * Return a (random) forwarding delay value from the random variable
    * ForwardingDelay attribute.
-   * 
+   *
    * \return A Time value from the ForwardingDelay random variable
    */
   Time GetForwardingDelay () const;
@@ -185,7 +185,7 @@ private:
   /**
    * \brief Response callback for L2 routing protocol. This will be executed when routing information is ready.
    *
-   * \param success     True is route found. 
+   * \param success     True is route found.
    * \param packet      Packet to send
    * \param src         Source MAC address
    * \param dst         Destination MAC address

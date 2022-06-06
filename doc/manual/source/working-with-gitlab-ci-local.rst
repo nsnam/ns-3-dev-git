@@ -15,25 +15,25 @@ Working with gitlab-ci-local
 .. _rootless mode : https://docs.docker.com/engine/security/rootless/
 
 The ns-3 project repository is currently hosted in GitLab, which includes
-`continuos integration (CI)`_ tools to automate build, tests, packaging and 
-distribution of software. The CI works based on jobs, that are defined 
-on YAML files. 
+`continuos integration (CI)`_ tools to automate build, tests, packaging and
+distribution of software. The CI works based on jobs, that are defined
+on YAML files.
 
-The ns-3 GitLab CI files are located in ``ns-3-dev/utils/tests/``. 
+The ns-3 GitLab CI files are located in ``ns-3-dev/utils/tests/``.
 The main GitLab CI file is ``gitlab-ci.yml``. The different jobs
 are used to check if a multitude of compilers and package versions
-are compatible with the current ns-3 build, which is why a build is 
-usually followed by a test run. Other CI jobs build and warn about 
-missing the documentation. 
+are compatible with the current ns-3 build, which is why a build is
+usually followed by a test run. Other CI jobs build and warn about
+missing the documentation.
 
-The GitLab CI jobs are executed based on `pipelines`_ containing a 
+The GitLab CI jobs are executed based on `pipelines`_ containing a
 sequence of job batches. Jobs within a batch can be executed in parallel.
-These `pipelines`_ can be triggered manually, or scheduled to run automatically 
-per commit and/or based on a time period 
-(ns-3 has `daily and weekly pipelines`_ scheduled). 
+These `pipelines`_ can be triggered manually, or scheduled to run automatically
+per commit and/or based on a time period
+(ns-3 has `daily and weekly pipelines`_ scheduled).
 
 The GitLab CI free tier is very slow, taking a lot of time to identify
-issues during active merge request development. 
+issues during active merge request development.
 
 Note: the free tier
 now requires a credit card due to `crypto miners abuse`_.
@@ -42,18 +42,18 @@ now requires a credit card due to `crypto miners abuse`_.
 configuration files locally, allowing for the debugging of CI settings
 and pipelines without requiring pushes to test repositories or main
 repositories that fill up the CI job queues with failed jobs due to
-script errors. 
+script errors.
 
 GitLab-CI-local relies on `Docker`_ to setup the environment to execute
-the jobs. 
+the jobs.
 
-Note: Docker is usually setup in root mode, requiring 
+Note: Docker is usually setup in root mode, requiring
 frequent use of administrative permissions/sudo. However,
-this is highly discouraged. You can configure Docker to run 
-in `rootless mode`_. From this point onwards, we assume Docker is configured 
+this is highly discouraged. You can configure Docker to run
+in `rootless mode`_. From this point onwards, we assume Docker is configured
 in `rootless mode`_.
 
-After installing both `Docker`_ in `rootless mode`_ and `GitLab-CI-local`_, 
+After installing both `Docker`_ in `rootless mode`_ and `GitLab-CI-local`_,
 the ns-3 jobs can be listed using the following command:
 
 .. sourcecode:: bash
@@ -61,30 +61,30 @@ the ns-3 jobs can be listed using the following command:
     ~/ns-3-dev$ gitlab-ci-local --file ./utils/tests/gitlab-ci.yml --list
     parsing and downloads finished in 226 ms
     name                                   description  stage          when        allow_failure  needs
-    weekly-build-ubuntu-18.04-debug                     build          on_success  false      
-    
-    ...  
+    weekly-build-ubuntu-18.04-debug                     build          on_success  false
 
-    weekly-build-clang-11-optimized                     build          on_success  false      
-    pybindgen                                           build          on_success  false      
-    per-commit-compile-debug                            build          on_success  false      
-    per-commit-compile-release                          build          on_success  false      
-    per-commit-compile-optimized                        build          on_success  false      
-    daily-test-debug                                    test           on_success  false      
-    daily-test-release                                  test           on_success  false      
-    daily-test-optimized                                test           on_success  false      
-    daily-test-optimized-valgrind                       test           on_success  false      
-    weekly-test-debug-valgrind                          test           on_success  false      
-    weekly-test-release-valgrind                        test           on_success  false      
-    weekly-test-optimized-valgrind                      test           on_success  false      
-    weekly-test-takes-forever-optimized                 test           on_success  false      
-    doxygen                                             documentation  on_success  false      
-    manual                                              documentation  on_success  false      
-    tutorial                                            documentation  on_success  false      
-    models                                              documentation  on_success  false   
+    ...
 
-To execute the ``per-commit-compile-release`` job, or any of the others listed above, use 
-the following command. 
+    weekly-build-clang-11-optimized                     build          on_success  false
+    pybindgen                                           build          on_success  false
+    per-commit-compile-debug                            build          on_success  false
+    per-commit-compile-release                          build          on_success  false
+    per-commit-compile-optimized                        build          on_success  false
+    daily-test-debug                                    test           on_success  false
+    daily-test-release                                  test           on_success  false
+    daily-test-optimized                                test           on_success  false
+    daily-test-optimized-valgrind                       test           on_success  false
+    weekly-test-debug-valgrind                          test           on_success  false
+    weekly-test-release-valgrind                        test           on_success  false
+    weekly-test-optimized-valgrind                      test           on_success  false
+    weekly-test-takes-forever-optimized                 test           on_success  false
+    doxygen                                             documentation  on_success  false
+    manual                                              documentation  on_success  false
+    tutorial                                            documentation  on_success  false
+    models                                              documentation  on_success  false
+
+To execute the ``per-commit-compile-release`` job, or any of the others listed above, use
+the following command.
 
 .. sourcecode:: console
 
@@ -161,6 +161,6 @@ Then run the doxygen job again:
      PASS  doxygen
 
 Artifacts built by the CI jobs will be stored in separate subfolders
-based on the job name. 
+based on the job name.
 
 ``~/ns-3-dev/.gitlab-ci-local/artifacts/jobname``

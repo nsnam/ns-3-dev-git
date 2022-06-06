@@ -171,7 +171,7 @@ Usage
 *****
 
 The traffic control layer is automatically created and inserted on an ``ns3::Node`` object
-when typical device and internet module helpers are used.  By default, the  
+when typical device and internet module helpers are used.  By default, the
 ``InternetStackHelper::Install()`` method aggregates a TrafficControlLayer object to every
 node. When invoked to assign an IPv{4,6} address to a device, the Ipv{4,6}AddressHelper,
 besides creating an Ipv{4,6}Interface, also installs the default qdisc
@@ -226,7 +226,7 @@ and the config path of the second internal queue is:
 /NodeList/[i]/$ns3::TrafficControlLayer/RootQueueDiscList/[j]/InternalQueueList/1
 
 For this helper's configuration to take effect, it should be added to the ns-3 program after
-``InternetStackHelper::Install()`` is called, but before IP addresses are configured using 
+``InternetStackHelper::Install()`` is called, but before IP addresses are configured using
 ``Ipv{4,6}AddressHelper``. For an example program, see examples/traffic-control/traffic-control.cc.
 
 If it is desired to install no queue disc on a device, it is necessary to use the Uninstall
@@ -249,7 +249,7 @@ device helper, so that the device is created without support for the flow contro
 Implementation details
 **********************
 
-In Linux, the struct netdev_queue is used to store information about a single 
+In Linux, the struct netdev_queue is used to store information about a single
 transmission queue of a device: status (i.e., whether it has been stopped or not),
 data used by techniques such as Byte Queue Limits and a qdisc pointer field that
 is mainly used to solve the following problems:
@@ -312,7 +312,7 @@ interface). In particular:
 
 * a NetDeviceQueueInterface object is aggregated to all the devices by the NetDevice
   helper classes, at ``Install`` time.  See, for example, the implementation in the
-  method ``CsmaHelper::InstallPriv()``.  
+  method ``CsmaHelper::InstallPriv()``.
 
 * when notified that a netdevice queue interface has been aggregated, traffic control \
   aware devices can cache the pointer to the \

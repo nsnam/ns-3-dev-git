@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 
 #ifndef ITU_R_1411_NLOS_OVER_ROOFTOP_PROPAGATION_LOSS_MODEL_H
@@ -32,10 +32,10 @@ namespace ns3 {
  * \ingroup propagation
  *
  * \brief the ITU-R 1411 NLOS over rooftop propagation model
- * 
+ *
  * This class implements the ITU-R 1411 LOS propagation model for
- * Non-Line-of-Sight (NLoS) short range outdoor communication over 
- * rooftops in the frequency range 300 MHz to 100 GHz.  
+ * Non-Line-of-Sight (NLoS) short range outdoor communication over
+ * rooftops in the frequency range 300 MHz to 100 GHz.
  * For more information about the model, please see
  * the propagation module documentation in .rst format.
  */
@@ -57,19 +57,19 @@ public:
   ItuR1411NlosOverRooftopPropagationLossModel (const ItuR1411NlosOverRooftopPropagationLossModel &) = delete;
   ItuR1411NlosOverRooftopPropagationLossModel & operator = (const ItuR1411NlosOverRooftopPropagationLossModel &) = delete;
 
-  /** 
+  /**
    * Set the operating frequency
-   * 
+   *
    * \param freq the frequency in Hz
    */
   void SetFrequency (double freq);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param a the first mobility model
    * \param b the second mobility model
-   * 
+   *
    * \return the loss in dBm for the propagation between
    * the two given mobility models
    */

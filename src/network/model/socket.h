@@ -53,13 +53,13 @@ class Packet;
  *   C-style structs
  * - in contrast to the original BSD socket API, this API is asynchronous:
  *   it does not contain blocking calls.  Sending and receiving operations
- *   must make use of the callbacks provided. 
- * - It also uses class ns3::Packet as a fancy byte buffer, allowing 
- *   data to be passed across the API using an ns-3 Packet instead of 
+ *   must make use of the callbacks provided.
+ * - It also uses class ns3::Packet as a fancy byte buffer, allowing
+ *   data to be passed across the API using an ns-3 Packet instead of
  *   a raw data pointer.
  * - Not all of the full POSIX sockets API is supported
  *
- * Other than that, it tries to stick to the BSD API to make it 
+ * Other than that, it tries to stick to the BSD API to make it
  * easier for those who know the BSD API to use this API.
  * More details are provided in the ns-3 tutorial.
  */
@@ -144,9 +144,9 @@ public:
   /**
    * This method wraps the creation of sockets that is performed
    * on a given node by a SocketFactory specified by TypeId.
-   * 
+   *
    * \return A smart pointer to a newly created socket.
-   * 
+   *
    * \param node The node on which to create the socket
    * \param tid The TypeId of a SocketFactory class to use
    */
@@ -171,14 +171,14 @@ public:
   /**
    * \brief Specify callbacks to allow the caller to determine if
    * the connection succeeds of fails.
-   * \param connectionSucceeded this callback is invoked when the 
-   *        connection request initiated by the user is successfully 
-   *        completed. The callback is passed  back a pointer to 
+   * \param connectionSucceeded this callback is invoked when the
+   *        connection request initiated by the user is successfully
+   *        completed. The callback is passed  back a pointer to
    *        the same socket object.
-   * \param connectionFailed this callback is invoked when the 
-   *        connection request initiated by the user is unsuccessfully 
-   *        completed. The callback is passed back a pointer to the 
-   *        same socket object. 
+   * \param connectionFailed this callback is invoked when the
+   *        connection request initiated by the user is unsuccessfully
+   *        completed. The callback is passed back a pointer to the
+   *        same socket object.
    */
   void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
                            Callback<void,  Ptr<Socket> > connectionFailed);
@@ -201,38 +201,38 @@ public:
                           Callback<void, Ptr<Socket> > errorClose);
   /**
    * \brief Accept connection requests from remote hosts
-   * \param connectionRequest Callback for connection request from peer. 
-   *        This user callback is passed a pointer to this socket, the 
-   *        ip address and the port number of the connection originator. 
+   * \param connectionRequest Callback for connection request from peer.
+   *        This user callback is passed a pointer to this socket, the
+   *        ip address and the port number of the connection originator.
    *        This callback must return true to accept the incoming connection,
-   *        false otherwise. If the connection is accepted, the 
-   *        "newConnectionCreated" callback will be invoked later to 
-   *        give access to the user to the socket created to match 
-   *        this new connection. If the user does not explicitly 
+   *        false otherwise. If the connection is accepted, the
+   *        "newConnectionCreated" callback will be invoked later to
+   *        give access to the user to the socket created to match
+   *        this new connection. If the user does not explicitly
    *        specify this callback, all incoming  connections will be refused.
    * \param newConnectionCreated Callback for new connection: when a new
    *        is accepted, it is created and the corresponding socket is passed
-   *        back to the user through this callback. This user callback is 
-   *        passed a pointer to the new socket, and the ip address and 
+   *        back to the user through this callback. This user callback is
+   *        passed a pointer to the new socket, and the ip address and
    *        port number of the connection originator.
    */
-  void SetAcceptCallback (Callback<bool, Ptr<Socket>, 
+  void SetAcceptCallback (Callback<bool, Ptr<Socket>,
                                    const Address &> connectionRequest,
-                          Callback<void, Ptr<Socket>, 
+                          Callback<void, Ptr<Socket>,
                                    const Address&> newConnectionCreated);
   /**
-   * \brief Notify application when a packet has been sent from transport 
+   * \brief Notify application when a packet has been sent from transport
    *        protocol (non-standard socket call)
    * \param dataSent Callback for the event that data is sent from the
    *        underlying transport protocol.  This callback is passed a
    *        pointer to the socket, and the number of bytes sent.
    */
-  void SetDataSentCallback (Callback<void, Ptr<Socket>, 
+  void SetDataSentCallback (Callback<void, Ptr<Socket>,
                                      uint32_t> dataSent);
   /**
    * \brief Notify application when space in transmit buffer is added
    *
-   *        This callback is intended to notify a 
+   *        This callback is intended to notify a
    *        socket that would have been blocked in a blocking socket model
    *        that space is available in the transmit buffer and that it
    *        can call Send() again.
@@ -255,21 +255,21 @@ public:
    *        is passed a pointer to the socket.
    */
   void SetRecvCallback (Callback<void, Ptr<Socket> > receivedData);
-  /** 
+  /**
    * \brief Allocate a local endpoint for this socket.
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
    */
   virtual int Bind (const Address &address) = 0;
 
-  /** 
+  /**
    * \brief Allocate a local IPv4 endpoint for this socket.
    *
    * \returns 0 on success, -1 on failure.
    */
   virtual int Bind () = 0;
 
-  /** 
+  /**
    * \brief Allocate a local IPv6 endpoint for this socket.
    *
    * \returns 0 on success, -1 on failure.
@@ -316,8 +316,8 @@ public:
 
   /**
    * \brief Returns the number of bytes which can be sent in a single call
-   * to Send. 
-   * 
+   * to Send.
+   *
    * For datagram sockets, this returns the number of bytes that
    * can be passed atomically through the underlying protocol.
    *
@@ -327,7 +327,7 @@ public:
    * \returns The number of bytes which can be sent in a single Send call.
    */
   virtual uint32_t GetTxAvailable (void) const = 0;
- 
+
   /**
    * \brief Send data (or dummy data) to the remote host
    *
@@ -335,16 +335,16 @@ public:
    * call in the standard C library (libc):
    *   ssize_t send (int s, const void *msg, size_t len, int flags);
    * except that the send I/O is asynchronous.  This is the
-   * primary Send method at this low-level API and must be implemented 
+   * primary Send method at this low-level API and must be implemented
    * by subclasses.
-   * 
+   *
    * In a typical blocking sockets model, this call would block upon
    * lack of space to hold the message to be sent.  In ns-3 at this
    * API, the call returns immediately in such a case, but the callback
    * registered with SetSendCallback() is invoked when the socket
    * has space (when it conceptually unblocks); this is an asynchronous
    * I/O model for send().
-   * 
+   *
    * This variant of Send() uses class ns3::Packet to encapsulate
    * data, rather than providing a raw pointer and length field.
    * This allows an ns-3 application to attach tags if desired (such
@@ -353,17 +353,17 @@ public:
    * socket, just think of it as a fancy byte buffer with streaming
    * semantics.
    *
-   * If either the message buffer within the Packet is too long to pass 
-   * atomically through the underlying protocol (for datagram sockets), 
+   * If either the message buffer within the Packet is too long to pass
+   * atomically through the underlying protocol (for datagram sockets),
    * or the message buffer cannot entirely fit in the transmit buffer
-   * (for stream sockets), -1 is returned and SocketErrno is set 
+   * (for stream sockets), -1 is returned and SocketErrno is set
    * to ERROR_MSGSIZE.  If the packet does not fit, the caller can
-   * split the Packet (based on information obtained from 
+   * split the Packet (based on information obtained from
    * GetTxAvailable) and reattempt to send the data.
    *
    * The flags argument is formed by or'ing one or more of the values:
-   *        MSG_OOB        process out-of-band data 
-   *        MSG_DONTROUTE  bypass routing, use direct interface 
+   *        MSG_OOB        process out-of-band data
+   *        MSG_DONTROUTE  bypass routing, use direct interface
    * These flags are _unsupported_ as of ns-3.1.
    *
    * \param p ns3::Packet to send
@@ -385,14 +385,14 @@ public:
    * \param p packet to send
    * \param flags Socket control flags
    * \param toAddress IP Address of remote host
-   * \returns -1 in case of error or the number of bytes copied in the 
+   * \returns -1 in case of error or the number of bytes copied in the
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, 
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags,
                       const Address &toAddress) = 0;
 
   /**
-   * Return number of bytes which can be returned from one or 
+   * Return number of bytes which can be returned from one or
    * multiple calls to Recv.
    * Must be possible to call this method from the Recv callback.
    *
@@ -408,9 +408,9 @@ public:
    * call in the standard C library (libc):
    *   ssize_t recv (int s, void *buf, size_t len, int flags);
    * except that the receive I/O is asynchronous.  This is the
-   * primary Recv method at this low-level API and must be implemented 
+   * primary Recv method at this low-level API and must be implemented
    * by subclasses.
-   * 
+   *
    * This method is normally used only on a connected socket.
    * In a typical blocking sockets model, this call would block until
    * at least one byte is returned or the connection closes.
@@ -420,7 +420,7 @@ public:
    * to be notified of data being available to be read
    * (when it conceptually unblocks); this is an asynchronous
    * I/O model for recv().
-   * 
+   *
    * This variant of Recv() uses class ns3::Packet to encapsulate
    * data, rather than providing a raw pointer and length field.
    * This allows an ns-3 application to attach tags if desired (such
@@ -434,7 +434,7 @@ public:
    * is not necessarily preserved.  For a stream socket, the bytes
    * are delivered in order, and on-the-wire packet boundaries are
    * not preserved.
-   * 
+   *
    * The flags argument is formed by or'ing one or more of the values:
    *        MSG_OOB             process out-of-band data
    *        MSG_PEEK            peek at incoming message
@@ -455,7 +455,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
 
   /**
-   * \brief Read a single packet from the socket and retrieve the sender 
+   * \brief Read a single packet from the socket and retrieve the sender
    * address.
    *
    * Calls Recv(maxSize, flags) with maxSize
@@ -480,10 +480,10 @@ public:
   //   The remainder of these public methods are overloaded methods  //
   //   or variants of Send() and Recv(), and they are non-virtual    //
   /////////////////////////////////////////////////////////////////////
- 
+
   /**
    * \brief Send data (or dummy data) to the remote host
-   * 
+   *
    * Overloaded version of Send(..., flags) with flags set to zero.
    *
    * \param p ns3::Packet to send
@@ -494,12 +494,12 @@ public:
 
   /**
    * \brief Send data (or dummy data) to the remote host
-   * 
-   * This method is provided so as to have an API which is closer in 
+   *
+   * This method is provided so as to have an API which is closer in
    * appearance to that of real network or BSD sockets.
    *
-   * \param buf A pointer to a raw byte buffer of some data to send.  If 
-   * this buffer is 0, we send dummy data whose size is specified by the 
+   * \param buf A pointer to a raw byte buffer of some data to send.  If
+   * this buffer is 0, we send dummy data whose size is specified by the
    * second parameter
    * \param size the number of bytes to copy from the buffer
    * \param flags Socket control flags
@@ -512,21 +512,21 @@ public:
   /**
    * \brief Send data to a specified peer.
    *
-   * This method is provided so as to have an API which is closer in 
+   * This method is provided so as to have an API which is closer in
    * appearance to that of real network or BSD sockets.
    *
    * \param buf A pointer to a raw byte buffer of some data to send.
-   * If this is 0, we send dummy data whose size is specified by the 
+   * If this is 0, we send dummy data whose size is specified by the
    * third parameter
    * \param size the number of bytes to copy from the buffer
    * \param flags Socket control flags
    * \param address IP Address of remote host
-   * \returns -1 in case of error or the number of bytes copied in the 
+   * \returns -1 in case of error or the number of bytes copied in the
    *          internal buffer and accepted for transmission.
    *
    */
-  int SendTo (const uint8_t* buf, uint32_t size, uint32_t flags, 
-              const Address &address); 
+  int SendTo (const uint8_t* buf, uint32_t size, uint32_t flags,
+              const Address &address);
 
   /**
    * \brief Read a single packet from the socket
@@ -542,13 +542,13 @@ public:
   /**
    * \brief Recv data (or dummy data) from the remote host
    *
-   * This method is provided so as to have an API which is closer in 
+   * This method is provided so as to have an API which is closer in
    * appearance to that of real network or BSD sockets.
-   * 
+   *
    * If the underlying packet was carring null (fake) data, this buffer
    * will be zeroed up to the length specified by the return value.
    *
-   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * \param buf A pointer to a raw byte buffer to write the data to.
    * \param size Number of bytes (at most) to copy to buf
    * \param flags any flags to pass to the socket
    * \returns number of bytes copied into buf
@@ -556,7 +556,7 @@ public:
   int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
 
   /**
-   * \brief Read a single packet from the socket and retrieve the sender 
+   * \brief Read a single packet from the socket and retrieve the sender
    * address.
    *
    * Calls RecvFrom (maxSize, flags, fromAddress) with maxSize
@@ -574,10 +574,10 @@ public:
    * \brief Read a single packet from the socket and retrieve the sender
    * address.
    *
-   * This method is provided so as to have an API which is closer in 
+   * This method is provided so as to have an API which is closer in
    * appearance to that of real network or BSD sockets.
-   * 
-   * \param buf A pointer to a raw byte buffer to write the data to. 
+   *
+   * \param buf A pointer to a raw byte buffer to write the data to.
    * If the underlying packet was carring null (fake) data, this buffer
    * will be zeroed up to the length specified by the return value.
    * \param size Number of bytes (at most) to copy to buf
@@ -594,7 +594,7 @@ public:
    * \param address the address name this socket is associated with.
    * \returns 0 if success, -1 otherwise
    */
-  virtual int GetSockName (Address &address) const = 0; 
+  virtual int GetSockName (Address &address) const = 0;
 
   /**
    * \brief Get the peer address of a connected socket.
@@ -613,8 +613,8 @@ public:
    * packets received from the bound interface will be delivered.
    *
    * This option has no particular relationship to binding sockets to
-   * an address via Socket::Bind ().  It is possible to bind sockets to a 
-   * specific IP address on the bound interface by calling both 
+   * an address via Socket::Bind ().  It is possible to bind sockets to a
+   * specific IP address on the bound interface by calling both
    * Socket::Bind (address) and Socket::BindToNetDevice (device), but it
    * is also possible to bind to mismatching device and address, even if
    * the socket can not receive any packets as a result.
@@ -628,11 +628,11 @@ public:
    *
    * This method corresponds to using getsockopt() SO_BINDTODEVICE
    * of real network or BSD sockets.
-   * 
-   * 
+   *
+   *
    * \returns Pointer to interface.
    */
-  Ptr<NetDevice> GetBoundNetDevice (); 
+  Ptr<NetDevice> GetBoundNetDevice ();
 
 
   /**
@@ -661,7 +661,7 @@ public:
   /**
    * \brief Enable/Disable receive packet information to socket.
    *
-   * For IP_PKTINFO/IP6_PKTINFO. This method is only usable for 
+   * For IP_PKTINFO/IP6_PKTINFO. This method is only usable for
    * Raw socket and Datagram Socket. Not supported for Stream socket.
    *
    * Method doesn't make distinction between IPv4 and IPv6. If it is enabled,
@@ -782,7 +782,7 @@ public:
 
   /**
    * \brief Manually set IP Type of Service field
-   * 
+   *
    * This method corresponds to using setsockopt () IP_TOS of
    * real network or BSD sockets. This option is for IPv4 only.
    * Setting the IP TOS also changes the socket priority as
@@ -806,7 +806,7 @@ public:
    * \brief Tells a socket to pass information about IP Type of Service up the stack
    *
    * This method corresponds to using setsockopt () IP_RECVTOS of real
-   * network or BSD sockets. In our implementation, the socket simply 
+   * network or BSD sockets. In our implementation, the socket simply
    * adds a SocketIpTosTag tag to the packet before passing the
    * packet up the stack.
    *
@@ -827,7 +827,7 @@ public:
 
   /**
    * \brief Manually set IPv6 Traffic Class field
-   * 
+   *
    * This method corresponds to using setsockopt () IPV6_TCLASS of
    * real network or BSD sockets. This option is for IPv6 only.
    * Setting the IPV6_TCLASSS to -1 clears the option and let the socket
@@ -851,7 +851,7 @@ public:
    * \brief Tells a socket to pass information about IPv6 Traffic Class up the stack
    *
    * This method corresponds to using setsockopt () IPV6_RECVTCLASS of real
-   * network or BSD sockets. In our implementation, the socket simply 
+   * network or BSD sockets. In our implementation, the socket simply
    * adds a SocketIpv6TclasssTag tag to the packet before passing the
    * packet up the stack.
    *
@@ -872,7 +872,7 @@ public:
 
   /**
    * \brief Manually set IP Time to Live field
-   * 
+   *
    * This method corresponds to using setsockopt () IP_TTL of
    * real network or BSD sockets.
    *
@@ -894,7 +894,7 @@ public:
    * \brief Tells a socket to pass information about IP_TTL up the stack
    *
    * This method corresponds to using setsockopt () IP_RECVTTL of real
-   * network or BSD sockets. In our implementation, the socket simply 
+   * network or BSD sockets. In our implementation, the socket simply
    * adds a SocketIpTtlTag tag to the packet before passing the
    * packet up the stack.
    *
@@ -915,7 +915,7 @@ public:
 
   /**
    * \brief Manually set IPv6 Hop Limit
-   * 
+   *
    * This method corresponds to using setsockopt () IPV6_HOPLIMIT of
    * real network or BSD sockets.
    *
@@ -937,7 +937,7 @@ public:
    * \brief Tells a socket to pass information about IPv6 Hop Limit up the stack
    *
    * This method corresponds to using setsockopt () IPV6_RECVHOPLIMIT of real
-   * network or BSD sockets. In our implementation, the socket simply 
+   * network or BSD sockets. In our implementation, the socket simply
    * adds a SocketIpv6HopLimitTag tag to the packet before passing the
    * packet up the stack.
    *
@@ -955,7 +955,7 @@ public:
    * \return Whether the IPV6_RECVHOPLIMIT is set
    */
   bool IsIpv6RecvHopLimit (void) const;
- 
+
   /**
    * \brief Joins a IPv6 multicast group.
    *
@@ -1277,7 +1277,7 @@ public:
    * \returns the TOS
    */
   uint8_t GetTos (void) const;
-  
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -1370,7 +1370,7 @@ public:
    * \returns the Tclass
    */
   uint8_t GetTclass (void) const;
-  
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId

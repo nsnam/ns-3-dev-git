@@ -73,7 +73,7 @@ public:
   virtual bool GetIsIrIntrvlAllocated (void) const;
   /**
    * \brief Set if the IR interval is allocated
-   * \param isIrIntrvlAllocated 
+   * \param isIrIntrvlAllocated
    */
   virtual void SetIsIrIntrvlAllocated (bool isIrIntrvlAllocated);
 
@@ -83,7 +83,7 @@ public:
   virtual bool GetIsInvIrIntrvlAllocated (void) const;
   /**
    * \brief Set if the Inv IR interval is allocated
-   * \param isInvIrIntrvlAllocated 
+   * \param isInvIrIntrvlAllocated
    */
   virtual void SetIsInvIrIntrvlAllocated (bool isInvIrIntrvlAllocated);
 
@@ -98,7 +98,7 @@ public:
   virtual Time GetTimeStampIrInterval (void);
   /**
    * \brief Set timestamp IR interval
-   * \param timeStampIrInterval 
+   * \param timeStampIrInterval
    */
   virtual void SetTimeStampIrInterval (Time timeStampIrInterval);
 
@@ -108,7 +108,7 @@ public:
   virtual Time GetDcdTimeStamp (void) const;
   /**
    * \brief Set DCD timestamp
-   * \param dcdTimeStamp 
+   * \param dcdTimeStamp
    */
   virtual void SetDcdTimeStamp (Time dcdTimeStamp);
 
@@ -118,7 +118,7 @@ public:
   virtual Time GetUcdTimeStamp (void) const;
   /**
    * \brief Set UCD timestamp
-   * \param ucdTimeStamp 
+   * \param ucdTimeStamp
    */
   virtual void SetUcdTimeStamp (Time ucdTimeStamp);
 
@@ -128,7 +128,7 @@ public:
   virtual Ptr<BaseStationNetDevice> GetBs (void);
   /**
    * \brief Set base station device
-   * \param bs 
+   * \param bs
    */
   virtual void SetBs (Ptr<BaseStationNetDevice> bs);
   /**
@@ -226,7 +226,7 @@ public:
 
   /**
    * \brief Set requested bandwidth
-   * \param sfr service flow record 
+   * \param sfr service flow record
    */
   virtual void OnSetRequestedBandwidth (ServiceFlowRecord *sfr) = 0;
 

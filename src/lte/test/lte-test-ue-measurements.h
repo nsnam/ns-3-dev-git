@@ -62,8 +62,8 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that UE measurements calculation works properly in a scenario 
- * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of 
+ * \brief Test that UE measurements calculation works properly in a scenario
+ * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of
  * the neighbor cell correspond to the reference values.
  */
 class LteUeMeasurementsTestCase : public TestCase
@@ -138,17 +138,17 @@ public:
  * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 1 eNodeB and 1 UE in
- *        piecewise configuration and 120 ms report interval. During the simulation 
- *        the placement of UE is being changed several times. Four different 
- *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB, 
- *        UE is far from eNodeB and UE is very far from eNodeB. Test checks 
- *        if the measurments correspond to the real conditions of the UE, i.e. 
- *        wnen the signal from serving cell becomes weak, the measurements should 
- *        also start to correspond to the new channel conditions. Additionally, it 
- *        is checked if UE detects some neighboring signal, if it does the test 
- *        fails because there is no neighbor in this configuration. Also, test 
- *        checks if the reporting occurs at intervals that it should according to 
- *        the measurements configuration. If it occurs in some different time 
+ *        piecewise configuration and 120 ms report interval. During the simulation
+ *        the placement of UE is being changed several times. Four different
+ *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB,
+ *        UE is far from eNodeB and UE is very far from eNodeB. Test checks
+ *        if the measurments correspond to the real conditions of the UE, i.e.
+ *        wnen the signal from serving cell becomes weak, the measurements should
+ *        also start to correspond to the new channel conditions. Additionally, it
+ *        is checked if UE detects some neighboring signal, if it does the test
+ *        fails because there is no neighbor in this configuration. Also, test
+ *        checks if the reporting occurs at intervals that it should according to
+ *        the measurements configuration. If it occurs in some different time
  *        stamp the test will fail.
  */
 class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
@@ -279,16 +279,16 @@ public:
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        piecewise configuration and 240 ms report interval.
  *        Here is intenisvely test events A1 and A2. A1 event should be triggered
- *        when the serving cell becomes better than a given threshold. A2 shall 
- *        be triggered when the serving cell becomes worse than threshold. A3 
+ *        when the serving cell becomes better than a given threshold. A2 shall
+ *        be triggered when the serving cell becomes worse than threshold. A3
  *        event is triggered when the neighbour becomes offset better than the PCell.
- *        In this test UE is being transported several times during the simulation 
- *        duration. Then the test checks if measurement report contains correct 
- *        RSRP and RSRQ result, than if CQI info is correctly generated, if the 
- *        reporting occurs at the correct time stamp in the simulation and according 
- *        to the measurements configuration. It also checks if the reported values 
+ *        In this test UE is being transported several times during the simulation
+ *        duration. Then the test checks if measurement report contains correct
+ *        RSRP and RSRQ result, than if CQI info is correctly generated, if the
+ *        reporting occurs at the correct time stamp in the simulation and according
+ *        to the measurements configuration. It also checks if the reported values
  *        of RSRP and RSRQ are equal to expected reference values.
- *        
+ *
  */
 class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 {
@@ -556,15 +556,15 @@ public:
  *        a handover configuration.
  *
  * The simulation will run for the specified duration, while the handover
- * command will be issued exactly at the middle of simulation. Handover 
- * test covers four different scenarios: switch from event A1 to event A2, 
- * from event A2 to event A1, from event A3 to event A4, from event A4 to event 
- * A3, from event A2 to event A3, from event A3 to event A2, from event A4 to 
- * event A5, from event A5 to event A4. Additionally, it tests different 
+ * command will be issued exactly at the middle of simulation. Handover
+ * test covers four different scenarios: switch from event A1 to event A2,
+ * from event A2 to event A1, from event A3 to event A4, from event A4 to event
+ * A3, from event A2 to event A3, from event A3 to event A2, from event A4 to
+ * event A5, from event A5 to event A4. Additionally, it tests different
  * handover threshold configurations, A2 threshold difference, A3 offset difference,
- * A4 and A5 threshold difference. Finally, different handover is tested for 
+ * A4 and A5 threshold difference. Finally, different handover is tested for
  * different time-to-trigger (TTT) configurations.
- * 
+ *
  */
 class LteUeMeasurementsHandoverTestCase : public TestCase
 {

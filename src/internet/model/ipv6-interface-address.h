@@ -19,7 +19,7 @@
  */
 
 #ifndef IPV6_INTERFACE_ADDRESS_H
-#define IPV6_INTERFACE_ADDRESS_H 
+#define IPV6_INTERFACE_ADDRESS_H
 
 #include <stdint.h>
 

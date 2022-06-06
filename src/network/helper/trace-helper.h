@@ -74,7 +74,7 @@ public:
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for a
    * pcap file associated with a device.
-   * 
+   *
    * @param prefix prefix string
    * @param device NetDevice
    * @param useObjectNames use node and device names instead of indexes
@@ -85,19 +85,19 @@ public:
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for the
    * pcap file associated with a node.
-   * 
+   *
    * @param prefix prefix string
    * @param object interface (such as Ipv4Interface or Ipv6Interface)
    * @param interface interface id
    * @param useObjectNames use node and device names instead of indexes
    * @returns file name
    */
-  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
+  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object,
                                             uint32_t interface, bool useObjectNames = true);
 
   /**
    * @brief Create and initialize a pcap file.
-   * 
+   *
    * @param filename file name
    * @param filemode file mode
    * @param dataLinkType data link type of packet data
@@ -112,7 +112,7 @@ public:
                                    int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
-   * 
+   *
    * @param object object
    * @param traceName trace source name
    * @param file file wrapper
@@ -155,7 +155,7 @@ PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileW
 /**
  * \brief Manage ASCII trace files for device models
  *
- * Handling ascii trace files is a common operation for ns-3 devices.  It is 
+ * Handling ascii trace files is a common operation for ns-3 devices.  It is
  * useful to provide a common base class for dealing with these ops.
  */
 
@@ -175,7 +175,7 @@ public:
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a device.
-   * 
+   *
    * @param prefix prefix string
    * @param device NetDevice
    * @param useObjectNames use node and device names instead of indexes
@@ -186,137 +186,137 @@ public:
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a node.
-   * 
+   *
    * @param prefix prefix string
    * @param object interface (such as Ipv4Interface or Ipv6Interface)
    * @param interface interface id
    * @param useObjectNames use node and device names instead of indexes
    * @returns file name
    */
-  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
+  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object,
                                             uint32_t interface, bool useObjectNames = true);
 
   /**
-   * @brief Create and initialize an output stream object we'll use to write the 
+   * @brief Create and initialize an output stream object we'll use to write the
    * traced bits.
    *
    * One of the common issues users run into when trying to use tracing in ns-3
-   * is actually a design decision made in the C++ stream library.  It is not 
-   * widely known that copy and assignment of iostreams is forbidden by 
-   * std::basic_ios<>.  This is because it is not possible to predict the 
+   * is actually a design decision made in the C++ stream library.  It is not
+   * widely known that copy and assignment of iostreams is forbidden by
+   * std::basic_ios<>.  This is because it is not possible to predict the
    * semantics of the stream desired by a user.
    *
    * The tempting ns-3 idiom when tracing to a file is to create a bound callback
-   * with an ofstream as the bound object.  Unfortunately, this implies a copy 
-   * construction in order to get the ofstream object into the callback.  This 
-   * operation, as mentioned above, is forbidden by the STL.  You could use a 
-   * global ostream and pass a pointer to it, but that is pretty ugly.  You 
+   * with an ofstream as the bound object.  Unfortunately, this implies a copy
+   * construction in order to get the ofstream object into the callback.  This
+   * operation, as mentioned above, is forbidden by the STL.  You could use a
+   * global ostream and pass a pointer to it, but that is pretty ugly.  You
    * could create an ostream on the stack and pass a pointer to it, but you may
    * run into object lifetime issues.  Ns-3 has a nice reference counted object
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
-   * 
+   *
    * @param filename file name
    * @param filemode file mode
    * @returns a smart pointer to the output stream
    */
-  Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, 
+  Ptr<OutputStreamWrapper> CreateFileStream (std::string filename,
                                              std::ios::openmode filemode = std::ios::out);
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does not accept nor log a trace context.
-   * 
+   *
    * @param object object
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
+  template <typename T>
   void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does accept and log a trace context.
-   * 
+   *
    * @param object object
    * @param context context string
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
-  void HookDefaultEnqueueSinkWithContext (Ptr<T> object, 
+  template <typename T>
+  void HookDefaultEnqueueSinkWithContext (Ptr<T> object,
                                           std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
-   * @brief Hook a trace source to the default drop operation trace sink that 
+   * @brief Hook a trace source to the default drop operation trace sink that
    * does not accept nor log a trace context.
-   * 
+   *
    * @param object object
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
+  template <typename T>
   void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
-   * @brief Hook a trace source to the default drop operation trace sink that 
+   * @brief Hook a trace source to the default drop operation trace sink that
    * does accept and log a trace context.
-   * 
+   *
    * @param object object
    * @param context context string
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
-  void HookDefaultDropSinkWithContext (Ptr<T> object, 
+  template <typename T>
+  void HookDefaultDropSinkWithContext (Ptr<T> object,
                                        std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does not accept nor log a trace context.
-   * 
+   *
    * @param object object
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
+  template <typename T>
   void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does accept and log a trace context.
-   * 
+   *
    * @param object object
    * @param context context string
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
-  void HookDefaultDequeueSinkWithContext (Ptr<T> object, 
+  template <typename T>
+  void HookDefaultDequeueSinkWithContext (Ptr<T> object,
                                           std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does not accept nor log a trace context.
-   * 
+   *
    * @param object object
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
+  template <typename T>
   void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does accept and log a trace context.
-   * 
+   *
    * @param object object
    * @param context context string
    * @param traceName trace source name
    * @param stream output stream wrapper
    */
-  template <typename T> 
-  void HookDefaultReceiveSinkWithContext (Ptr<T> object, 
+  template <typename T>
+  void HookDefaultReceiveSinkWithContext (Ptr<T> object,
                                           std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
@@ -463,20 +463,20 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::stri
 {
   bool result =
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultEnqueueSinkWithoutContext, file));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
 template <typename T> void
 AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
-  Ptr<T> object, 
-  std::string context, 
-  std::string tracename, 
+  Ptr<T> object,
+  std::string context,
+  std::string tracename,
   Ptr<OutputStreamWrapper> stream)
 {
   bool result =
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, stream));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
@@ -485,20 +485,20 @@ AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string 
 {
   bool result =
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDropSinkWithoutContext, file));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithoutContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithoutContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
 template <typename T> void
 AsciiTraceHelper::HookDefaultDropSinkWithContext (
-  Ptr<T> object, 
+  Ptr<T> object,
   std::string context,
-  std::string tracename, 
+  std::string tracename,
   Ptr<OutputStreamWrapper> stream)
 {
   bool result =
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, stream));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
@@ -507,20 +507,20 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::stri
 {
   bool result =
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDequeueSinkWithoutContext, file));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
 template <typename T> void
 AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
-  Ptr<T> object, 
+  Ptr<T> object,
   std::string context,
-  std::string tracename, 
+  std::string tracename,
   Ptr<OutputStreamWrapper> stream)
 {
   bool result =
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, stream));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
@@ -529,20 +529,20 @@ AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::stri
 {
   bool result =
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultReceiveSinkWithoutContext, file));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
 template <typename T> void
 AsciiTraceHelper::HookDefaultReceiveSinkWithContext (
-  Ptr<T> object, 
+  Ptr<T> object,
   std::string context,
-  std::string tracename, 
+  std::string tracename,
   Ptr<OutputStreamWrapper> stream)
 {
   bool result =
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, stream));
-  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithContext():  Unable to hook \"" 
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithContext():  Unable to hook \""
                  << tracename << "\"");
 }
 
@@ -595,7 +595,7 @@ public:
   void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
 
   /**
-   * @brief Enable pcap output on each device in the container which is of the 
+   * @brief Enable pcap output on each device in the container which is of the
    * appropriate type.
    *
    * @param prefix Filename prefix to use for pcap files.
@@ -664,9 +664,9 @@ public:
    * In this case, adding a trace context to the file would be pointless, so
    * the device implementation is expected to TraceConnectWithoutContext.
    *
-   * If the output stream object is provided, there may be many different 
-   * devices writing to a single file.  In this case, the device adding a 
-   * trace context could be important, so the device implementation is 
+   * If the output stream object is provided, there may be many different
+   * devices writing to a single file.  In this case, the device adding a
+   * trace context could be important, so the device implementation is
    * expected to TraceConnect.
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
@@ -675,8 +675,8 @@ public:
    * @param nd Net device for which you want to enable tracing
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, 
-                                    std::string prefix, 
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+                                    std::string prefix,
                                     Ptr<NetDevice> nd,
                                     bool explicitFilename) = 0;
 
@@ -699,7 +699,7 @@ public:
   void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
   /**
-   * @brief Enable ascii trace output the indicated net device using a device 
+   * @brief Enable ascii trace output the indicated net device using a device
    * previously named using the ns-3 object name service.
    *
    * @param prefix filename prefix to use for ascii files.
@@ -709,7 +709,7 @@ public:
   void EnableAscii (std::string prefix, std::string ndName, bool explicitFilename = false);
 
   /**
-   * @brief Enable ascii trace output the indicated net device using a device 
+   * @brief Enable ascii trace output the indicated net device using a device
    * previously named using the ns-3 object name service.
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
@@ -738,7 +738,7 @@ public:
   void EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
 
   /**
-   * @brief Enable ascii trace output on each device (which is of the 
+   * @brief Enable ascii trace output on each device (which is of the
    * appropriate type) in the nodes provided in the container.
    *
    * \param prefix Filename prefix to use for ascii files.
@@ -747,7 +747,7 @@ public:
   void EnableAscii (std::string prefix, NodeContainer n);
 
   /**
-   * @brief Enable ascii trace output on each device (which is of the 
+   * @brief Enable ascii trace output on each device (which is of the
    * appropriate type) in the nodes provided in the container.
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
@@ -774,7 +774,7 @@ public:
   void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
 
   /**
-   * @brief Enable ascii trace output on the device specified by a global 
+   * @brief Enable ascii trace output on the device specified by a global
    * node-id (of a previously created node) and associated device-id.
    *
    * @param prefix Filename prefix to use when creating ascii trace files
@@ -787,7 +787,7 @@ public:
   void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
 
   /**
-   * @brief Enable ascii trace output on the device specified by a global 
+   * @brief Enable ascii trace output on the device specified by a global
    * node-id (of a previously created node) and associated device-id.
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
@@ -814,9 +814,9 @@ private:
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
 
-  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, 
-                        std::string prefix, 
-                        uint32_t nodeid, 
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream,
+                        std::string prefix,
+                        uint32_t nodeid,
                         uint32_t deviceid,
                         bool explicitFilename);
 

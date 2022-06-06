@@ -55,7 +55,7 @@ public:
   BulkSendHelper (std::string protocol, Address address);
 
   /**
-   * Helper function used to set the underlying application attributes, 
+   * Helper function used to set the underlying application attributes,
    * _not_ the socket attributes.
    *
    * \param name the name of the application attribute to set

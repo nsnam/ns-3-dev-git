@@ -410,7 +410,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoRun (void)
   // Since it takes 152.8us to transmit the packet, PHY should be back to IDLE at time 152.8us.
   Simulator::Schedule (Seconds (11.0) + NanoSeconds (152799), &TestThresholdPreambleDetectionWithoutFrameCapture::CheckPhyState, this, WifiPhyState::RX);
   Simulator::Schedule (Seconds (11.0) + NanoSeconds (152800), &TestThresholdPreambleDetectionWithoutFrameCapture::CheckPhyState, this, WifiPhyState::IDLE);
-  
+
   // RX power < CCA-PD < CCA-ED
   rxPowerDbm = -83;
 
@@ -498,7 +498,7 @@ void
 TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
 {
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
-  
+
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
 
@@ -517,7 +517,7 @@ TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
   txParams->txPhy = 0;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
-  
+
   m_phy->StartRx (txParams);
 }
 
@@ -1017,10 +1017,10 @@ void
 TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
 {
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
-  
+
   Ptr<Packet> pkt = Create<Packet> (packetSize);
   WifiMacHeader hdr;
-  
+
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
@@ -1036,7 +1036,7 @@ TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
   txParams->txPhy = 0;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
-  
+
   m_phy->StartRx (txParams);
 }
 
@@ -1311,7 +1311,7 @@ TestPhyHeadersReception::DoRun (void)
 
   // RX power > CCA-ED
   double rxPowerDbm = -50;
-  
+
   // CASE 1: send one packet followed by a second one with same power between the end of the 4us preamble detection window
   // and the start of L-SIG of the first packet: reception should be aborted since L-SIG cannot be decoded (SNR too low).
 
@@ -1358,7 +1358,7 @@ TestPhyHeadersReception::DoRun (void)
 
   // CASE 4: send one packet followed by a second one 3 dB weaker between the end of L-SIG and the start of HE-SIG of the first packet:
   // PHY header reception should succeed.
-  
+
   Simulator::Schedule (Seconds (4.0), &TestPhyHeadersReception::SendPacket, this, rxPowerDbm);
   Simulator::Schedule (Seconds (4.0) + MicroSeconds (25), &TestPhyHeadersReception::SendPacket, this, rxPowerDbm - 3);
   // At 10 us, STA PHY STATE should be CCA_BUSY.
@@ -1378,7 +1378,7 @@ TestPhyHeadersReception::DoRun (void)
 
   // CASE 5: send one packet followed by a second one with same power between the end of the 4us preamble detection window
   // and the start of L-SIG of the first packet: reception should be aborted since L-SIG cannot be decoded (SNR too low).
-  
+
   Simulator::Schedule (Seconds (5.0), &TestPhyHeadersReception::SendPacket, this, rxPowerDbm);
   Simulator::Schedule (Seconds (5.0) + MicroSeconds (10), &TestPhyHeadersReception::SendPacket, this, rxPowerDbm);
   // At 10 us, STA PHY STATE should be CCA_BUSY.
@@ -1765,7 +1765,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
       mpduList.push_back (Create<WifiMacQueueItem> (p, hdr));
     }
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);
-  
+
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
   Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
@@ -1777,7 +1777,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
   txParams->txPhy = 0;
   txParams->duration = txDuration;
   txParams->ppdu = ppdu;
-  
+
   m_phy->StartRx (txParams);
 }
 

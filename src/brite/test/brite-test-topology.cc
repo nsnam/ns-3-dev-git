@@ -35,8 +35,8 @@ using namespace ns3;
  * \ingroup brite-tests
  *
  * \brief BRITE topology structure Test
- * 
- * Test that two brite topologies created with same seed value 
+ *
+ * Test that two brite topologies created with same seed value
  * produce same graph (not an exact test)
  */
 class BriteTopologyStructureTestCase : public TestCase
@@ -98,7 +98,7 @@ void BriteTopologyStructureTestCase::DoRun (void)
  * \ingroup brite-tests
  *
  * \brief BRITE topology function Test
- * 
+ *
  * Test that packets can be send across a BRITE topology using UDP
  */
 class BriteTopologyFunctionTestCase : public TestCase

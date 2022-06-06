@@ -27,36 +27,36 @@
 
 namespace ns3 {
 namespace dot11s {
- 
+
 //according to IEEE 802.11 - 2012
 
-//in 7.3.2.98.2 Active Path Selection Protocol Identifier - 802.11s-2011 
+//in 7.3.2.98.2 Active Path Selection Protocol Identifier - 802.11s-2011
 enum dot11sPathSelectionProtocol
 {
   PROTOCOL_HWMP = 0x01,
 };
- 
-//in 7.3.2.98.3 Active Path Selection Metric Identifier - 802.11s-2011 
+
+//in 7.3.2.98.3 Active Path Selection Metric Identifier - 802.11s-2011
 enum dot11sPathSelectionMetric
 {
   METRIC_AIRTIME = 0x01,
 };
 
-// in 7.3.2.98.4 Congestion Control Mode Identifier - 802.11s-2011 
+// in 7.3.2.98.4 Congestion Control Mode Identifier - 802.11s-2011
 enum dot11sCongestionControlMode
 {
   CONGESTION_SIGNALING = 0x01,
   CONGESTION_NULL      = 0x00,
 };
 
-// in 7.3.2.98.5 Synchronization Method Identifier - 802.11s-2011 
+// in 7.3.2.98.5 Synchronization Method Identifier - 802.11s-2011
 enum dot11sSynchronizationProtocolIdentifier
 {
   SYNC_NEIGHBOUR_OFFSET = 0x01,  //Neighbor offset synchronization method
   SYNC_NULL             = 0x00,  //Reserved
 };
 
-// in 7.3.2.98.6 Authentication Protocol Identifier - 802.11s-2011 
+// in 7.3.2.98.6 Authentication Protocol Identifier - 802.11s-2011
 enum dot11sAuthenticationProtocol
 {
   AUTH_NULL = 0x00,  //No authentication method is required to establish mesh peerings within the MBSS
@@ -94,12 +94,12 @@ public:
    * This method returns the whole byte.
    * \returns the Mesh Capability byte
    */
-  uint8_t GetUint8 () const;  
+  uint8_t GetUint8 () const;
   bool acceptPeerLinks; ///< accept peer links
   bool MCCASupported; ///< MCCA supported
   bool MCCAEnabled; ///< MCCA enabled
   bool forwarding; ///< forwarding?
-  bool beaconTimingReport; ///< beacon timing report 
+  bool beaconTimingReport; ///< beacon timing report
   bool TBTTAdjustment; ///< TBTT adjustment
   bool powerSaveLevel; ///< power save level
   /**
@@ -121,7 +121,7 @@ public:
 
 /**
  * \ingroup dot11s
- * \brief Describes Mesh Configuration Element 
+ * \brief Describes Mesh Configuration Element
  * see 7.3.2.86 of 802.11s draft 3.0
  */
 class IeConfiguration : public WifiInformationElement
@@ -140,13 +140,13 @@ public:
   void SetMetric (dot11sPathSelectionMetric metricId);
   /**
    * Is HWMP function
-   * \returns true if Active Path Selection Protocol Identifier field set 
+   * \returns true if Active Path Selection Protocol Identifier field set
    *          to HWMP
    */
   bool IsHWMP ();
   /**
    * Is airtime function
-   * \returns true if Active Path Selection Metric Identifier is set to 
+   * \returns true if Active Path Selection Metric Identifier is set to
    *          airtime link metric
    */
   bool IsAirtime ();
@@ -165,7 +165,7 @@ public:
    * \returns the dot11s mesh capability
    */
   Dot11sMeshCapability const& MeshCapability ();
-  
+
   // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual uint8_t GetInformationFieldSize () const;

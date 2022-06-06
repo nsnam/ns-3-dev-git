@@ -55,7 +55,7 @@ OmnetDataOutput::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 void
 OmnetDataOutput::DoDispose ()
 {

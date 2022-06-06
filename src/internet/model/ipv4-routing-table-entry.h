@@ -31,7 +31,7 @@ namespace ns3 {
 /**
  * \ingroup ipv4Routing
  *
- * A record of an IPv4 routing table entry for Ipv4GlobalRouting and 
+ * A record of an IPv4 routing table entry for Ipv4GlobalRouting and
  * Ipv4StaticRouting.  This is not a reference counted object.
  */
 class Ipv4RoutingTableEntry {
@@ -92,26 +92,26 @@ public:
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param dest Ipv4Address of the destination
    * \param nextHop Ipv4Address of the next hop
-   * \param interface Outgoing interface 
+   * \param interface Outgoing interface
    */
-  static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
+  static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest,
                                                   Ipv4Address nextHop,
                                                   uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param dest Ipv4Address of the destination
-   * \param interface Outgoing interface 
+   * \param interface Outgoing interface
    */
-  static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
+  static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest,
                                                   uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param network Ipv4Address of the destination network
    * \param networkMask Ipv4Mask of the destination network mask
    * \param nextHop Ipv4Address of the next hop
-   * \param interface Outgoing interface 
+   * \param interface Outgoing interface
    */
-  static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
+  static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network,
                                                      Ipv4Mask networkMask,
                                                      Ipv4Address nextHop,
                                                      uint32_t interface);
@@ -119,19 +119,19 @@ public:
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param network Ipv4Address of the destination network
    * \param networkMask Ipv4Mask of the destination network mask
-   * \param interface Outgoing interface 
+   * \param interface Outgoing interface
    */
-  static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
+  static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network,
                                                      Ipv4Mask networkMask,
                                                      uint32_t interface);
   /**
-   * \return An Ipv4RoutingTableEntry object corresponding to the input 
-   * parameters.  This route is distinguished; it will match any 
+   * \return An Ipv4RoutingTableEntry object corresponding to the input
+   * parameters.  This route is distinguished; it will match any
    * destination for which a more specific route does not exist.
    * \param nextHop Ipv4Address of the next hop
-   * \param interface Outgoing interface 
+   * \param interface Outgoing interface
    */
-  static Ipv4RoutingTableEntry CreateDefaultRoute (Ipv4Address nextHop, 
+  static Ipv4RoutingTableEntry CreateDefaultRoute (Ipv4Address nextHop,
                                                    uint32_t interface);
 
 private:
@@ -245,12 +245,12 @@ public:
   std::vector<uint32_t> GetOutputInterfaces (void) const;
   /**
    * \return Ipv4MulticastRoutingTableEntry corresponding to the input parameters.
-   * \param origin Source address for the multicast route 
+   * \param origin Source address for the multicast route
    * \param group Group destination address for the multicast route
    * \param inputInterface Input interface that multicast datagram must be received on
    * \param outputInterfaces vector of output interfaces to copy and forward the datagram to
    */
-  static Ipv4MulticastRoutingTableEntry CreateMulticastRoute (Ipv4Address origin, 
+  static Ipv4MulticastRoutingTableEntry CreateMulticastRoute (Ipv4Address origin,
                                                               Ipv4Address group, uint32_t inputInterface,
                                                               std::vector<uint32_t> outputInterfaces);
 
@@ -262,7 +262,7 @@ private:
    * \param inputInterface input interface
    * \param outputInterfaces output interfaces
    */
-  Ipv4MulticastRoutingTableEntry (Ipv4Address origin, Ipv4Address group, 
+  Ipv4MulticastRoutingTableEntry (Ipv4Address origin, Ipv4Address group,
                                   uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
 
   Ipv4Address m_origin;   //!< source address

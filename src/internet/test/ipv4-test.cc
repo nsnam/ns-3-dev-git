@@ -95,14 +95,14 @@ Ipv4L3ProtocolTestCase::DoRun (void)
                          "Wrong Interface Address Removed??");
   num = interface->GetNAddresses ();
   NS_TEST_ASSERT_MSG_EQ (num, 2, "Should find 2 addresses??");
-  
+
   /* Remove a non-existent Address */
   output = interface->RemoveAddress (Ipv4Address ("253.123.9.81"));
   NS_TEST_ASSERT_MSG_EQ (Ipv4InterfaceAddress (), output,
                          "Removed non-existent address??");
   num = interface->GetNAddresses ();
   NS_TEST_ASSERT_MSG_EQ (num, 2, "Should find 2 addresses??");
-  
+
   /* Remove a Loopback Address */
   output = interface->RemoveAddress (Ipv4Address::GetLoopback ());
   NS_TEST_ASSERT_MSG_EQ (Ipv4InterfaceAddress (), output,
@@ -134,7 +134,7 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-  
+
 /**
  * \ingroup internet-test
  * \ingroup tests

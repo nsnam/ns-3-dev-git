@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("BridgeChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (BridgeChannel);
 
-TypeId 
+TypeId
 BridgeChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BridgeChannel")

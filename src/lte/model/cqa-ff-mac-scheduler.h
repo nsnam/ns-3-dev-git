@@ -51,10 +51,10 @@ typedef std::vector < uint8_t > DlHarqProcessesTimer_t;
 /// DL HARQ process DCI buffer vector typedef
 typedef std::vector < DlDciListElement_s > DlHarqProcessesDciBuffer_t;
 /// vector of the LCs and layers per UE
-typedef std::vector < std::vector <struct RlcPduListElement_s> > RlcPduList_t; 
+typedef std::vector < std::vector <struct RlcPduListElement_s> > RlcPduList_t;
 /// vector of the 8 HARQ processes per UE
 typedef std::vector < RlcPduList_t > DlHarqRlcPduListBuffer_t;
-/// UL HARQ process DCI buffer vector 
+/// UL HARQ process DCI buffer vector
 typedef std::vector < UlDciListElement_s > UlHarqProcessesDciBuffer_t;
 /// UL HARQ process status vector
 typedef std::vector < uint8_t > UlHarqProcessesStatus_t;

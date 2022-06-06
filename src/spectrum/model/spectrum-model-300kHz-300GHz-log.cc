@@ -33,8 +33,8 @@ Ptr<SpectrumModel> SpectrumModel300Khz300GhzLog;
 
 /**
  * \ingroup spectrum
- * 
- * Static initializer class for Spectrum model logger 
+ *
+ * Static initializer class for Spectrum model logger
  * for frequencies between 300 Khz 300 Ghz
  */
 class static_SpectrumModel300Khz300GhzLog_initializer

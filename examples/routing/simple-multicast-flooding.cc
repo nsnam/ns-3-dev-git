@@ -72,7 +72,7 @@ using namespace ns3;
  *
  * This example demonstrates configuration of
  * static routing to realize broadcast-like
- * flooding of packets from node A 
+ * flooding of packets from node A
  * across the illustrated topology.
  */
 int
@@ -163,7 +163,7 @@ main (int argc, char *argv[])
   simplechannel->BlackList (Names::Find <SimpleNetDevice> ("E/dev"), Names::Find <SimpleNetDevice> ("C/dev"));
   // ensure some time progress between re-transmissions
   simplechannel->SetAttribute ("Delay", TimeValue (MilliSeconds (1)));
-  
+
   // sinks
   PacketSinkHelper sinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), 9));
   auto sinks = sinkHelper.Install ("B");
@@ -188,14 +188,14 @@ main (int argc, char *argv[])
 
   // run simulation
   Simulator::Run ();
-  
+
   std::cout << "Node A sent " << 10 * 1024 << " bytes" << std::endl;
   for (auto end = sinks.End (),
            iter = sinks.Begin (); iter != end; ++iter)
     {
       auto node = (*iter)->GetNode ();
       auto sink = (*iter)->GetObject <PacketSink> ();
-      std::cout << "Node " << Names::FindName (node) 
+      std::cout << "Node " << Names::FindName (node)
                 << " received " << sink->GetTotalRx () << " bytes" << std::endl;
     }
 

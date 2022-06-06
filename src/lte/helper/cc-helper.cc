@@ -99,7 +99,7 @@ CcHelper::DoDispose ()
   Object::DoDispose ();
 }
 
-void 
+void
 CcHelper::SetCcAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
@@ -225,7 +225,7 @@ CcHelper::CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t u
     {
       cc.SetUlEarfcn (ulEarfcn);
     }
-  else 
+  else
     {
       uint16_t ul = cc.GetUlEarfcn () + ulEarfcn;
       cc.SetUlEarfcn (ul);
@@ -234,7 +234,7 @@ CcHelper::CreateSingleCc (uint16_t ulBandwidth, uint16_t dlBandwidth, uint32_t u
     {
       cc.SetDlEarfcn (dlEarfcn);
     }
-  else 
+  else
     {
       uint16_t dl = cc.GetDlEarfcn () + dlEarfcn;
       cc.SetDlEarfcn (dl);

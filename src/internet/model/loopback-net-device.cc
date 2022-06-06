@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("LoopbackNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (LoopbackNetDevice);
 
-TypeId 
+TypeId
 LoopbackNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LoopbackNetDevice")
@@ -50,8 +50,8 @@ LoopbackNetDevice::LoopbackNetDevice ()
   NS_LOG_FUNCTION (this);
 }
 
-void 
-LoopbackNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, 
+void
+LoopbackNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                             Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (packet << " " << protocol << " " << to << " " << from);
@@ -68,7 +68,7 @@ LoopbackNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     {
       packetType = NetDevice::PACKET_MULTICAST;
     }
-  else 
+  else
     {
       packetType = NetDevice::PACKET_OTHERHOST;
     }
@@ -79,60 +79,60 @@ LoopbackNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     }
 }
 
-void 
+void
 LoopbackNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
 
-uint32_t 
+uint32_t
 LoopbackNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
 
-Ptr<Channel> 
+Ptr<Channel>
 LoopbackNetDevice::GetChannel (void) const
 {
   return 0;
 }
 
-void 
+void
 LoopbackNetDevice::SetAddress (Address address)
 {
   m_address = Mac48Address::ConvertFrom (address);
 }
 
-Address 
+Address
 LoopbackNetDevice::GetAddress (void) const
 {
   return m_address;
 }
 
-bool 
+bool
 LoopbackNetDevice::SetMtu (const uint16_t mtu)
 {
   m_mtu = mtu;
   return true;
 }
 
-uint16_t 
+uint16_t
 LoopbackNetDevice::GetMtu (void) const
 {
   return m_mtu;
 }
 
-bool 
+bool
 LoopbackNetDevice::IsLinkUp (void) const
 {
   return true;
 }
 
-void 
+void
 LoopbackNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {}
 
-bool 
+bool
 LoopbackNetDevice::IsBroadcast (void) const
 {
   return true;
@@ -145,15 +145,15 @@ LoopbackNetDevice::GetBroadcast (void) const
   return Mac48Address ("00:00:00:00:00:00");
 }
 
-bool 
+bool
 LoopbackNetDevice::IsMulticast (void) const
 {
-  // Multicast loopback will need to be supported for outgoing 
+  // Multicast loopback will need to be supported for outgoing
   // datagrams but this will probably be handled in multicast sockets
   return false;
 }
 
-Address 
+Address
 LoopbackNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
@@ -164,19 +164,19 @@ Address LoopbackNetDevice::GetMulticast (Ipv6Address addr) const
   return Mac48Address::GetMulticast (addr);
 }
 
-bool 
+bool
 LoopbackNetDevice::IsPointToPoint (void) const
 {
   return false;
 }
 
-bool 
+bool
 LoopbackNetDevice::IsBridge (void) const
 {
   return false;
 }
 
-bool 
+bool
 LoopbackNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << " " << dest << " " << protocolNumber);
@@ -186,7 +186,7 @@ LoopbackNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t proto
   return true;
 }
 
-bool 
+bool
 LoopbackNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << " " << source << " " << dest << " " << protocolNumber);
@@ -197,25 +197,25 @@ LoopbackNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Ad
   return true;
 }
 
-Ptr<Node> 
+Ptr<Node>
 LoopbackNetDevice::GetNode (void) const
 {
   return m_node;
 }
 
-void 
+void
 LoopbackNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
 }
 
-bool 
+bool
 LoopbackNetDevice::NeedsArp (void) const
 {
   return false;
 }
 
-void 
+void
 LoopbackNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;

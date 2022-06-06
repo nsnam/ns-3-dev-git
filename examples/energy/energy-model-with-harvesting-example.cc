@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   double interval = 1;          // seconds
   double startTime = 0.0;       // seconds
   double distanceToRx = 100.0;  // meters
-  
+
   // Energy Harvester variables
   double harvestingUpdateInterval = 1;  // seconds
 

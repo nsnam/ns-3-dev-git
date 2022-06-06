@@ -37,7 +37,7 @@ namespace ns3 {
 class AcousticModemEnergyModelHelper : public DeviceEnergyModelHelper
 {
 public:
-  /** 
+  /**
    * Construct a helper which is used to add a radio energy model to a node.
    */
   AcousticModemEnergyModelHelper ();

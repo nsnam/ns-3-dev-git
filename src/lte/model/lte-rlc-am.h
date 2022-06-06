@@ -71,37 +71,37 @@ private:
    * in which case this method does nothing.
    */
   void ExpireReorderingTimer (void);
-  /// Expire poll retransmitter 
+  /// Expire poll retransmitter
   void ExpirePollRetransmitTimer (void);
   /// Expire RBS timer
   void ExpireRbsTimer (void);
 
-  /** 
+  /**
    * method called when the T_status_prohibit timer expires
-   * 
+   *
    */
   void ExpireStatusProhibitTimer (void);
 
-  /** 
+  /**
    * method called when the T_status_prohibit timer expires
-   * 
+   *
    * \param seqNumber SequenceNumber10
    * \returns true is inside receivign window
    */
   bool IsInsideReceivingWindow (SequenceNumber10 seqNumber);
-// 
+//
 //   void ReassembleOutsideWindow (void);
 //   void ReassembleSnLessThan (uint16_t seqNumber);
-// 
+//
 
-  /** 
+  /**
    * Reassemble and deliver
-   * 
+   *
    * \param packet the packet
    */
   void ReassembleAndDeliver (Ptr<Packet> packet);
 
-  /** 
+  /**
    * Report buffer status
    */
   void DoReportBufferStatus ();
@@ -138,9 +138,9 @@ private:
     Time        m_waitingSince; ///< Layer arrival time
   };
 
-  std::vector <RetxPdu> m_txedBuffer;  ///< Buffer for transmitted and retransmitted PDUs 
-                                       ///< that have not been acked but are not considered 
-                                       ///< for retransmission 
+  std::vector <RetxPdu> m_txedBuffer;  ///< Buffer for transmitted and retransmitted PDUs
+                                       ///< that have not been acked but are not considered
+                                       ///< for retransmission
   std::vector <RetxPdu> m_retxBuffer;  ///< Buffer for PDUs considered for retransmission
 
     uint32_t m_maxTxBufferSize; ///< maximum transmission buffer size
@@ -166,7 +166,7 @@ private:
 
     // SDU reassembly
 //   std::vector < Ptr<Packet> > m_reasBuffer;     // Reassembling buffer
-// 
+//
     std::list < Ptr<Packet> > m_sdusBuffer;       ///< List of SDUs in a packet (PDU)
 
   /**
@@ -214,8 +214,8 @@ private:
   uint16_t m_maxRetxThreshold;  ///< \todo How these parameters are configured???
   uint16_t m_pollPdu; ///< poll PDU
   uint16_t m_pollByte; ///< poll byte
-  
-  bool m_txOpportunityForRetxAlwaysBigEnough; ///< transmit opportunity for retransmit? 
+
+  bool m_txOpportunityForRetxAlwaysBigEnough; ///< transmit opportunity for retransmit?
   bool m_pollRetransmitTimerJustExpired; ///< poll retransmit timer just expired?
 
   /**

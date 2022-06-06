@@ -159,7 +159,7 @@ RttEstimatorTestCase::DoRun (void)
   CheckValues (rtt, Time (Seconds (1)), Time (Seconds (1)), Time (MilliSeconds (500)));
   CheckValues (rtt, Time (Seconds (2.5)), Time (Seconds (2.5)), Time (Seconds (1.5)));
   CheckValues (rtt, Time (Seconds (7)), Time (Seconds (7)), Time (Seconds (4.5)));
-  
+
   // recheck initial values
   rtt->Reset ();
   NS_TEST_EXPECT_MSG_EQ (rtt->GetEstimate (), Time (Seconds (1)), "Incorrect initial estimate");

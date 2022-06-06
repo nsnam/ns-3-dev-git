@@ -30,12 +30,12 @@ namespace ns3 {
  * \brief holds a vector of ns3::NetDevice pointers
  *
  * Typically ns-3 NetDevices are installed on nodes using a net device
- * helper.  The helper Install method takes a NodeContainer which holds 
+ * helper.  The helper Install method takes a NodeContainer which holds
  * some number of Ptr<Node>.  For each of the Nodes in the NodeContainer
  * the helper will instantiate a net device, add a MAC address and a queue
  * to the device and install it to the node.  For each of the devices, the
  * helper also adds the device into a Container for later use by the caller.
- * This is that container used to hold the Ptr<NetDevice> which are 
+ * This is that container used to hold the Ptr<NetDevice> which are
  * instantiated by the device helper.
  */
 class NetDeviceContainer
@@ -58,9 +58,9 @@ public:
   NetDeviceContainer (Ptr<NetDevice> dev);
 
   /**
-   * Create a NetDeviceContainer with exactly one device which has been 
+   * Create a NetDeviceContainer with exactly one device which has been
    * previously instantiated and assigned a name using the Object name
-   * service.  This NetDevice is specified by its assigned name. 
+   * service.  This NetDevice is specified by its assigned name.
    *
    * \param devName The name of the device to add to the container
    *
@@ -76,22 +76,22 @@ public:
    * NetDeviceContainers.
    *
    * \note A frequently seen idiom that uses these constructors involves the
-   * implicit conversion by constructor of Ptr<NetDevice>.  When used, two 
+   * implicit conversion by constructor of Ptr<NetDevice>.  When used, two
    * Ptr<NetDevice> will be passed to this constructor instead of NetDeviceContainer&.
-   * C++ will notice the implicit conversion path that goes through the 
+   * C++ will notice the implicit conversion path that goes through the
    * NetDeviceContainer (Ptr<NetDevice> dev) constructor above.  Using this conversion
-   * one may provide optionally provide arguments of Ptr<NetDevice> to these 
+   * one may provide optionally provide arguments of Ptr<NetDevice> to these
    * constructors.
    */
   NetDeviceContainer (const NetDeviceContainer &a, const NetDeviceContainer &b);
 
   /**
-   * \brief Get an iterator which refers to the first NetDevice in the 
+   * \brief Get an iterator which refers to the first NetDevice in the
    * container.
    *
    * NetDevices can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the NetDevices
    *
    * \code
@@ -107,12 +107,12 @@ public:
   Iterator Begin (void) const;
 
   /**
-   * \brief Get an iterator which indicates past-the-last NetDevice in the 
+   * \brief Get an iterator which indicates past-the-last NetDevice in the
    * container.
    *
    * NetDevices can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
-   * This method is used in the iterator method and is typically used in a 
+   * This method is used in the iterator method and is typically used in a
    * for-loop to run through the NetDevices
    *
    * \code

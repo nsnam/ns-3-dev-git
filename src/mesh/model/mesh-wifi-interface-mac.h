@@ -116,7 +116,7 @@ public:
   /**
    * Install plugin.
    *
-   * \param plugin 
+   * \param plugin
    *
    * \todo return unique ID to allow user to unregister plugins
    */
@@ -137,7 +137,7 @@ public:
   /**
    * Switch frequency channel.
    *
-   * \param new_id 
+   * \param new_id
    */
   void SwitchFrequencyChannel (uint16_t new_id);
 
@@ -151,7 +151,7 @@ public:
   /**
    * Check supported rates.
    *
-   * \param rates 
+   * \param rates
    * \return true if rates are supported
    */
   bool CheckSupportedRates (SupportedRates rates) const;
@@ -275,7 +275,7 @@ private:
     /**
      * Print statistics.
      *
-     * \param os 
+     * \param os
      */
     void Print (std::ostream & os) const;
     /// constructor

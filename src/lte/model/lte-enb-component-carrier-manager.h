@@ -108,7 +108,7 @@ public:
    * received, or to notify CCM about PRB occupancy, and similar. Functions that are
    * specific for the communication between MAC and CCM.
    *
-   * \returns LteCcmMacSapUser* 
+   * \returns LteCcmMacSapUser*
    */
   virtual LteCcmMacSapUser* GetLteCcmMacSapUser ();
 
@@ -120,7 +120,7 @@ public:
    * component carriers based on the logic implemented in the
    * specific component carrier manager.
    *
-   * \returns LteMacSapProvider* 
+   * \returns LteMacSapProvider*
    */
   virtual LteMacSapProvider* GetLteMacSapProvider ();
 

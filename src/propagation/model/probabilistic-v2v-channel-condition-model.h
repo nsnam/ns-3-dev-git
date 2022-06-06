@@ -31,9 +31,9 @@ class MobilityModel;
  *
  * \brief Computes the channel condition for the V2V Urban scenario
  *
- * Computes the channel condition following the probabilistic model described in 
- * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight 
- * blockage for V2V channels,” in IEEE 84th Vehicular Technology 
+ * Computes the channel condition following the probabilistic model described in
+ * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight
+ * blockage for V2V channels,” in IEEE 84th Vehicular Technology
  * Conference (VTC-Fall), 2016.
  */
 class ProbabilisticV2vUrbanChannelConditionModel : public ThreeGppChannelConditionModel
@@ -58,23 +58,23 @@ public:
 
 private:
   /**
-   * Compute the LOS probability 
+   * Compute the LOS probability
    *
    * \param a tx mobility model
    * \param b rx mobility model
    * \return the LOS probability
    */
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-  
+
   /**
-   * Compute the NLOS probability 
+   * Compute the NLOS probability
    *
    * \param a tx mobility model
    * \param b rx mobility model
    * \return the NLOS probability
    */
   virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-  
+
   enum VehicleDensity m_densityUrban {VehicleDensity::INVALID}; //!< vehicle density
 };
 
@@ -83,9 +83,9 @@ private:
  *
  * \brief Computes the channel condition for the V2V Highway scenario
  *
- * Computes the channel condition following the probabilistic model described in 
- * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight 
- * blockage for V2V channels,” in IEEE 84th Vehicular Technology 
+ * Computes the channel condition following the probabilistic model described in
+ * M. Boban,  X.Gong, and  W. Xu, “Modeling the evolution of line-of-sight
+ * blockage for V2V channels,” in IEEE 84th Vehicular Technology
  * Conference (VTC-Fall), 2016.
  */
 class ProbabilisticV2vHighwayChannelConditionModel : public ThreeGppChannelConditionModel
@@ -117,16 +117,16 @@ private:
    * \return the LOS probability
    */
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-  
+
   /**
-   * Compute the NLOS probability 
+   * Compute the NLOS probability
    *
    * \param a tx mobility model
    * \param b rx mobility model
    * \return the NLOS probability
    */
   virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
-  
+
   enum VehicleDensity m_densityHighway {VehicleDensity::INVALID}; //!< vehicle density
 };
 

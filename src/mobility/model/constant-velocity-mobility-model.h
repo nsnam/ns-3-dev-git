@@ -32,7 +32,7 @@ namespace ns3 {
  *
  * \brief Mobility model for which the current speed does not change once it has been set and until it is set again explicitly to a new value.
  */
-class ConstantVelocityMobilityModel : public MobilityModel 
+class ConstantVelocityMobilityModel : public MobilityModel
 {
 public:
   /**

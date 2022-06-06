@@ -39,7 +39,7 @@ class Cid;
 
 /**
  * \ingroup wimax
- * 
+ *
  * BaseStation Scheduler - simplified
  */
 class BSSchedulerSimple : public BSScheduler

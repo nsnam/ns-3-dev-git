@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -46,7 +46,7 @@ operator<< (std::ostream& os, const SPFVertex::VertexType& t)
   return os;
 }
 
-std::ostream& 
+std::ostream&
 operator<< (std::ostream& os, const CandidateQueue& q)
 {
   typedef CandidateQueue::CandidateList_t List_t;
@@ -56,7 +56,7 @@ operator<< (std::ostream& os, const CandidateQueue& q)
   os << "*** CandidateQueue Begin (<id, distance, LSA-type>) ***" << std::endl;
   for (CIter_t iter = list.begin (); iter != list.end (); iter++)
     {
-      os << "<" 
+      os << "<"
       << (*iter)->GetVertexId () << ", "
       << (*iter)->GetDistanceFromRoot () << ", "
       << (*iter)->GetVertexType () << ">" << std::endl;
@@ -176,7 +176,7 @@ CandidateQueue::Reorder (void)
  *
  * This ordering is necessary for implementing ECMP
  */
-bool 
+bool
 CandidateQueue::CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2)
 {
   NS_LOG_FUNCTION (&v1 << &v2);
@@ -188,7 +188,7 @@ CandidateQueue::CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2)
     }
   else if (v1->GetDistanceFromRoot () == v2->GetDistanceFromRoot ())
     {
-      if (v1->GetVertexType () == SPFVertex::VertexNetwork 
+      if (v1->GetVertexType () == SPFVertex::VertexNetwork
           && v2->GetVertexType () == SPFVertex::VertexRouter)
         {
           result = true;

@@ -47,7 +47,7 @@ An example commit (July 14, 2021) to review is 9df8ef4b2.
 new release 'ns-3.x' will not be yet available as a tagged release, so
 the 'ns-3.x' module may need some indirection to fetch ns-3-dev in its place.
 
-2.3) Check out a clean ns-3-dev somewhere using ns-3-allinone 
+2.3) Check out a clean ns-3-dev somewhere using ns-3-allinone
    - git clone https://gitlab.com/nsnam/ns-3-allinone.git
    - cd ns-3-allinone
    - ./download.py
@@ -58,7 +58,7 @@ the 'ns-3.x' module may need some indirection to fetch ns-3-dev in its place.
    - cd ..
    - ./dist.py
 
-This should yield a compressed tarfile, such as:  ns-allinone-3.31.rc1.tar.bz2 
+This should yield a compressed tarfile, such as:  ns-allinone-3.31.rc1.tar.bz2
 Test this, and when satisfied, upload it to
 www.nsnam.org:/var/www/html/releases/ (with apache:apache file ownership)
 
@@ -79,7 +79,7 @@ we will work off of a release branch.
 
 At this point, you are ready for final packaging and repository/site work
 
-We'll refer to the release number as "X" or "x" below.  
+We'll refer to the release number as "X" or "x" below.
 
 creating the distribution tarball
 ---------------------------------
@@ -121,7 +121,7 @@ bake commit ba47854c (July 14, 2021).
    - check that ns-3-allinone build.py works
    - check that bake ns-3.x and ns-allinone-3.x targets work
 
-5. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
+5. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on
    the www.nsnam.org server
    - scp ns-allinone-3.x.tar.bz2 www.nsnam.org:~
    - ssh www.nsnam.org
@@ -148,8 +148,8 @@ preparing the documentation
 ----------------------------
 
 1. If final release, build release documentation
-   - sudo bash; su nsnam; cd /home/nsnam/bin 
-   - ./update-docs -c -R -r ns-3.x 
+   - sudo bash; su nsnam; cd /home/nsnam/bin
+   - ./update-docs -c -R -r ns-3.x
 
 2. Check if these new files are available on the website; check that the
    headers all say 'ns-3.x release' in the version, and that all links work
@@ -169,7 +169,7 @@ https://www.nsnam.org/releases/ns-3-x.
 release (there are two such pages, one under Releases and one under
 Documentation)
 
-4. Create a blog entry to announce release 
+4. Create a blog entry to announce release
 
 ns-3 wiki edits
 ---------------
@@ -200,8 +200,8 @@ start collecting inputs for the ns-3.(x+1) release.
 The project may decide to make incremental, bug-fix releases from
 time to time, with a minor version number (e.g. ns-3.36.1).  To do
 this, changesets may be cherry-picked from ns-3-dev and added to
-ns-3.x branch.  Do not move over changesets that pertain to 
-adding new features, but documentation fixes and bug fixes are good 
+ns-3.x branch.  Do not move over changesets that pertain to
+adding new features, but documentation fixes and bug fixes are good
 changesets to make available in a minor release.  The same steps
 above for making a release are generally followed; the documentation
 in the manual about working with Git as a maintainer provides the

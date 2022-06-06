@@ -141,7 +141,7 @@ private:
   std::map< uint16_t, uint8_t > m_ues; ///< UEs
   std::vector<uint16_t> m_edgeUes; ///< Edge UEs
 
-  uint8_t m_edgeSubBandThreshold; ///< Edge subband threshold 
+  uint8_t m_edgeSubBandThreshold; ///< Edge subband threshold
 
   uint8_t m_centerPowerOffset; ///< center power offset
   uint8_t m_edgePowerOffset; ///< edge power offset

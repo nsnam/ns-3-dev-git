@@ -46,18 +46,18 @@ Ipv6ListRoutingHelper::Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &o)
     }
 }
 
-Ipv6ListRoutingHelper* 
-Ipv6ListRoutingHelper::Copy (void) const 
+Ipv6ListRoutingHelper*
+Ipv6ListRoutingHelper::Copy (void) const
 {
-  return new Ipv6ListRoutingHelper (*this); 
+  return new Ipv6ListRoutingHelper (*this);
 }
 
-void 
+void
 Ipv6ListRoutingHelper::Add (const Ipv6RoutingHelper &routing, int16_t priority)
 {
   m_list.push_back (std::make_pair (const_cast<const Ipv6RoutingHelper *> (routing.Copy ()), priority));
 }
-Ptr<Ipv6RoutingProtocol> 
+Ptr<Ipv6RoutingProtocol>
 Ipv6ListRoutingHelper::Create (Ptr<Node> node) const
 {
   Ptr<Ipv6ListRouting> list = CreateObject<Ipv6ListRouting> ();

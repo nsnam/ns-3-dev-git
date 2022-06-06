@@ -195,7 +195,7 @@ public:
   bool Enqueue (QueueEntry & entry);
   /**
    * Return first found (the earliest) entry for given destination
-   * 
+   *
    * \param dst the destination IP address
    * \param entry the queue entry
    * \returns true if successful

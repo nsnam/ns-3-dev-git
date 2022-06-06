@@ -49,7 +49,7 @@ SimpleNetDeviceHelper::SimpleNetDeviceHelper ()
   m_enableFlowControl = true;
 }
 
-void 
+void
 SimpleNetDeviceHelper::SetQueue (std::string type,
                                  std::string n1, const AttributeValue &v1,
                                  std::string n2, const AttributeValue &v2,
@@ -116,7 +116,7 @@ SimpleNetDeviceHelper::Install (Ptr<Node> node, Ptr<SimpleChannel> channel) cons
   return NetDeviceContainer (InstallPriv (node, channel));
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 SimpleNetDeviceHelper::Install (const NodeContainer &c) const
 {
   Ptr<SimpleChannel> channel = m_channelFactory.Create<SimpleChannel> ();
@@ -124,7 +124,7 @@ SimpleNetDeviceHelper::Install (const NodeContainer &c) const
   return Install (c, channel);
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 SimpleNetDeviceHelper::Install (const NodeContainer &c, Ptr<SimpleChannel> channel) const
 {
   NetDeviceContainer devs;

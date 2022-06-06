@@ -39,7 +39,7 @@ namespace ns3
  * \ingroup ipv6HeaderExt
  *
  * \brief IPv6 Option base
- * 
+ *
  * If you want to implement a new IPv6 option, all you have to do is
  * implement a subclass of this class and add it to an Ipv6OptionDemux.
  */

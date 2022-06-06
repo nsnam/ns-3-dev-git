@@ -201,7 +201,7 @@ private:
   Ptr<UlJob> m_job; ///< the job
 };
 
-/// SortProcess structure 
+/// SortProcess structure
 struct SortProcess
 {
   /**
@@ -211,7 +211,7 @@ struct SortProcess
    * \returns true if left is logically less then right for given comparison
    */
    bool operator () (PriorityUlJob& left, PriorityUlJob& right) const
-   { 
+   {
     if (left.GetPriority () < right.GetPriority ())
       {
         return true;
@@ -246,7 +246,7 @@ struct SortProcessPtr
    * \returns true if left is logically less then right for given comparison
    */
   bool operator () (Ptr<PriorityUlJob>& left, Ptr<PriorityUlJob>& right) const
-  { 
+  {
     if (left->GetPriority () < right->GetPriority ())
       {
         return true;

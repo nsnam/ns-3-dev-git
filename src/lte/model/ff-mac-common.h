@@ -162,7 +162,7 @@ struct UlDciListElement_s
 * \brief Base class for storing the values of vendor specific parameters
 */
 struct VendorSpecificValue : public SimpleRefCount<VendorSpecificValue>
-{ 
+{
   virtual ~VendorSpecificValue ();
 
 };
@@ -213,7 +213,7 @@ struct LogicalChannelConfigListElement_s
 
 /**
  * \brief See section 4.3.6 rachListElement
- * \struct RachListElement_s 
+ * \struct RachListElement_s
  */
 struct RachListElement_s
 {
@@ -270,7 +270,7 @@ struct UlGrant_s
   int8_t m_tpc {INT8_MIN}; ///< Tx power control command
   bool m_cqiRequest {false}; ///< CQI request?
   bool m_ulDelay {false}; ///< UL delay?
-}; 
+};
 
 /**
  * \brief See section 4.3.10 buildRARListElement
@@ -305,7 +305,7 @@ struct UlInfoListElement_s
   uint16_t  m_rnti {UINT16_MAX}; ///< RNTI
   std::vector <uint16_t> m_ulReception; ///< UL reception
   /// Reception status enum
-  enum ReceptionStatus_e 
+  enum ReceptionStatus_e
   {
     Ok, NotOk, NotValid
   } m_receptionStatus {NotValid}; ///< the status

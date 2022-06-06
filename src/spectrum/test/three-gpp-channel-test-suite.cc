@@ -327,7 +327,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun (void)
   Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (rxAntennaElements [0]),
                                                                                     "NumRows", UintegerValue (rxAntennaElements [1]),
                                                                                     "AntennaElement", PointerValue(CreateObject<IsotropicAntennaModel> ()));
-  
+
   // check if the channel matrix is correctly updated
 
   // compute the channel matrix for the first time
@@ -391,7 +391,7 @@ struct CheckLongTermUpdateParams
 
 /**
  * \ingroup spectrum-tests
- * 
+ *
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
  *    are the same
@@ -538,7 +538,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
   Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (rxAntennaElements [0]),
                                                                                     "NumRows", UintegerValue (rxAntennaElements [1]),
                                                                                     "AntennaElement", PointerValue(CreateObject<IsotropicAntennaModel> ()));
-  
+
   // set the beamforming vectors
   DoBeamforming (txDev, txAntenna, rxDev, rxAntenna);
   DoBeamforming (rxDev, rxAntenna, txDev, txAntenna);

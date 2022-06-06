@@ -49,9 +49,9 @@ class LteRlcUmTransmitterTestSuite : public TestSuite
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test case used by LteRlcUmTransmitterOneSduTestCase to create topology 
- * and to implement functionalities and check if data received corresponds to 
- * data sent. 
+ * \brief Test case used by LteRlcUmTransmitterOneSduTestCase to create topology
+ * and to implement functionalities and check if data received corresponds to
+ * data sent.
  */
 class LteRlcUmTransmitterTestCase : public TestCase
 {

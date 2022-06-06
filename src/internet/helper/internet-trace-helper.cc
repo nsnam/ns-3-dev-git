@@ -35,20 +35,20 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("InternetTraceHelper");
 
-void 
+void
 PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename)
 {
   EnablePcapIpv4Internal (prefix, ipv4, interface, explicitFilename);
 }
 
-void 
+void
 PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
   EnablePcapIpv4 (prefix, ipv4, interface, explicitFilename);
 }
 
-void 
+void
 PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c)
 {
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -81,7 +81,7 @@ PcapHelperForIpv4::EnablePcapIpv4All (std::string prefix)
   EnablePcapIpv4 (prefix, NodeContainer::GetGlobal ());
 }
 
-void 
+void
 PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
@@ -89,7 +89,7 @@ PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }
@@ -106,7 +106,7 @@ PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename)
 {
   EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> (), prefix, ipv4, interface, explicitFilename);
@@ -115,7 +115,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, ui
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   EnableAsciiIpv4Internal (stream, std::string (), ipv4, interface, false);
@@ -124,10 +124,10 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<I
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (
-  std::string prefix, 
-  std::string ipv4Name, 
+  std::string prefix,
+  std::string ipv4Name,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -137,7 +137,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface)
 {
   EnableAsciiIpv4Impl (stream, std::string (), ipv4Name, interface, false);
@@ -146,11 +146,11 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
-  std::string ipv4Name, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
+  std::string ipv4Name,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -161,7 +161,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c)
 {
   EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> (), prefix, c);
@@ -170,7 +170,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceConta
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ipv4InterfaceContainer c)
 {
   EnableAsciiIpv4Impl (stream, std::string (), c);
@@ -179,7 +179,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ipv4I
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv4InterfaceContainer c)
 {
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -248,10 +248,10 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream)
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (
-  Ptr<OutputStreamWrapper> stream, 
-  uint32_t nodeid, 
+  Ptr<OutputStreamWrapper> stream,
+  uint32_t nodeid,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -261,7 +261,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename)
 {
   EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> (), prefix, nodeid, interface, explicitFilename);
@@ -270,11 +270,11 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, u
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
-  uint32_t nodeid, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
+  uint32_t nodeid,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -283,7 +283,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }
@@ -298,20 +298,20 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
     }
 }
 
-void 
+void
 PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface, bool explicitFilename)
 {
   EnablePcapIpv6Internal (prefix, ipv6, interface, explicitFilename);
 }
 
-void 
+void
 PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface, bool explicitFilename)
 {
   Ptr<Ipv6> ipv6 = Names::Find<Ipv6> (ipv6Name);
   EnablePcapIpv6 (prefix, ipv6, interface, explicitFilename);
 }
 
-void 
+void
 PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, Ipv6InterfaceContainer c)
 {
   for (Ipv6InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -344,7 +344,7 @@ PcapHelperForIpv6::EnablePcapIpv6All (std::string prefix)
   EnablePcapIpv6 (prefix, NodeContainer::GetGlobal ());
 }
 
-void 
+void
 PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
@@ -352,7 +352,7 @@ PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }
@@ -369,7 +369,7 @@ PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface, bool explicitFilename)
 {
   EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> (), prefix, ipv6, interface, explicitFilename);
@@ -378,7 +378,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ptr<Ipv6> ipv6, ui
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv6> ipv6, uint32_t interface)
 {
   EnableAsciiIpv6Internal (stream, std::string (), ipv6, interface, false);
@@ -387,7 +387,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, Ptr<I
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface, bool explicitFilename)
 {
   EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> (), prefix, ipv6Name, interface, explicitFilename);
@@ -396,7 +396,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, std::string ipv6Na
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, std::string ipv6Name, uint32_t interface)
 {
   EnableAsciiIpv6Impl (stream, std::string (), ipv6Name, interface, false);
@@ -405,11 +405,11 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, std::
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
-  std::string ipv6Name, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
+  std::string ipv6Name,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -420,7 +420,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ipv6InterfaceContainer c)
 {
   EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> (), prefix, c);
@@ -429,7 +429,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ipv6InterfaceConta
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, Ipv6InterfaceContainer c)
 {
   EnableAsciiIpv6Impl (stream, std::string (), c);
@@ -438,7 +438,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, Ipv6I
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv6InterfaceContainer c)
 {
   for (Ipv6InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -507,7 +507,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6All (Ptr<OutputStreamWrapper> stream)
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface)
 {
   EnableAsciiIpv6Impl (stream, std::string (), nodeid, interface, false);
@@ -516,7 +516,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, uint3
 //
 // Public API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename)
 {
   EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> (), prefix, nodeid, interface, explicitFilename);
@@ -525,11 +525,11 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, u
 //
 // Private API
 //
-void 
+void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
-  uint32_t nodeid, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
+  uint32_t nodeid,
   uint32_t interface,
   bool explicitFilename)
 {
@@ -538,7 +538,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      if (node->GetId () != nodeid) 
+      if (node->GetId () != nodeid)
         {
           continue;
         }

@@ -1,6 +1,6 @@
 .. include:: replace.txt
 
-Data Collection 
+Data Collection
 ---------------
 
 This chapter describes the ns-3 Data Collection Framework (DCF), which
@@ -23,9 +23,9 @@ collection objects, should read the remainder of the chapter, which
 goes into detail about all of the basic DCF object types and provides
 low-level coding examples.
 
-.. toctree:: 
+.. toctree::
    :maxdepth: 1
-  
+
    data-collection-overview.rst
    data-collection-helpers.rst
    probe.rst

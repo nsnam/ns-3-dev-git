@@ -34,12 +34,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
 
-Ipv4AddressHelper::Ipv4AddressHelper () 
+Ipv4AddressHelper::Ipv4AddressHelper ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
 //
-// Set the default values to an illegal state.  Do this so the client is 
+// Set the default values to an illegal state.  Do this so the client is
 // forced to think at least briefly about what addresses get used and what
 // is going on here.
 //
@@ -52,7 +52,7 @@ Ipv4AddressHelper::Ipv4AddressHelper ()
 }
 
 Ipv4AddressHelper::Ipv4AddressHelper (
-  const Ipv4Address network, 
+  const Ipv4Address network,
   const Ipv4Mask    mask,
   const Ipv4Address address)
 {
@@ -62,7 +62,7 @@ Ipv4AddressHelper::Ipv4AddressHelper (
 
 void
 Ipv4AddressHelper::SetBase (
-  const Ipv4Address network, 
+  const Ipv4Address network,
   const Ipv4Mask mask,
   const Ipv4Address address)
 {
@@ -163,7 +163,7 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
       retval.Add (ipv4, interface);
 
       // Install the default traffic control configuration if the traffic
-      // control layer has been aggregated, if this is not 
+      // control layer has been aggregated, if this is not
       // a loopback interface, and there is no queue disc installed already
       Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
       if (tc && DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0)

@@ -257,7 +257,7 @@ public:
   void NotifyRxStart ();
   /**
    * Notify that RX has ended.
-   * 
+   *
    * \param endTime the end time of the signal
    */
   void NotifyRxEnd (Time endTime);

@@ -33,7 +33,7 @@ namespace ns3 {
  *
  * \brief Helper class that adds ns3::Ipv6ListRouting objects
  *
- * This class is expected to be used in conjunction with 
+ * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
  */
 class Ipv6ListRoutingHelper : public Ipv6RoutingHelper
@@ -51,7 +51,7 @@ public:
   virtual ~Ipv6ListRoutingHelper ();
 
   /**
-   * \brief Construct an Ipv6ListRoutingHelper from another previously 
+   * \brief Construct an Ipv6ListRoutingHelper from another previously
    * initialized instance (Copy Constructor).
    * \param o object to be copied
    */
@@ -61,8 +61,8 @@ public:
   Ipv6ListRoutingHelper &operator= (const Ipv6ListRoutingHelper &) = delete;
 
   /**
-   * \returns pointer to clone of this Ipv6ListRoutingHelper 
-   * 
+   * \returns pointer to clone of this Ipv6ListRoutingHelper
+   *
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */

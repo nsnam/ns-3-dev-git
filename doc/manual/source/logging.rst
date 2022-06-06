@@ -17,10 +17,10 @@ in your ``main()`` program or by the use of the ``NS_LOG`` environment variable.
 Logging statements are not compiled into optimized builds of |ns3|.  To use
 logging, one must build the (default) debug build of |ns3|.
 
-The project makes no guarantee about whether logging output will remain 
+The project makes no guarantee about whether logging output will remain
 the same over time.  Users are cautioned against building simulation output
 frameworks on top of logging code, as the output and the way the output
-is enabled may change over time. 
+is enabled may change over time.
 
 Overview
 ********
@@ -61,10 +61,10 @@ This can be made more granular by selecting individual components:
    $ NS_LOG="Ipv4L3Protocol" ./ns3 run first
 
 The output can be further tailored with prefix options.
-  
+
 The second way to enable logging is to use explicit statements in your
 program, such as in the ``first`` tutorial program::
-   
+
    int
    main (int argc, char *argv[])
    {
@@ -107,7 +107,7 @@ in a module, spanning different compilation units, but logically grouped
 together, such as the |ns3| wifi code::
 
    WifiHelper wifiHelper;
-   wifiHelper.EnableLogComponents (); 
+   wifiHelper.EnableLogComponents ();
 
 The ``NS_LOG`` log component wildcard \`*' will enable all components.
 
@@ -306,10 +306,10 @@ for all log components.  These are all equivalent:
 
 .. sourcecode:: bash
 
-   $ NS_LOG="***" ...      $ NS_LOG="*=all|*" ...        $ NS_LOG="*=*|all" ...	      
+   $ NS_LOG="***" ...      $ NS_LOG="*=all|*" ...        $ NS_LOG="*=*|all" ...
    $ NS_LOG="*=**" ...     $ NS_LOG="*=level_all|*" ...  $ NS_LOG="*=*|prefix_all" ...
    $ NS_LOG="*=*|*" ...
-                       
+
 Be advised:  even the trivial ``scratch-simulator`` produces over
 46K lines of output with ``NS_LOG="***"``!
 
@@ -329,7 +329,7 @@ Adding logging to your code is very simple:
   ::
 
     namespace ns3 {
-    
+
     NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
     ...
 
@@ -400,8 +400,8 @@ Controlling timestamp precision
 *******************************
 
 Timestamps are printed out in units of seconds.  When used with the default
-|ns3| time resolution of nanoseconds, the default timestamp precision is 9 
-digits, with fixed format, to allow for 9 digits to be consistently printed 
+|ns3| time resolution of nanoseconds, the default timestamp precision is 9
+digits, with fixed format, to allow for 9 digits to be consistently printed
 to the right of the decimal point.  Example:
 
 ::
@@ -417,11 +417,11 @@ or femtoseconds, the precision is expanded accordingly; e.g. for picosecond:
 
 When the |ns3| simulation uses a time resolution lower than microseconds,
 the default C++ precision is used.
- 
+
 An example program at ``src\core\examples\sample-log-time-format.cc``
 demonstrates how to change the timestamp formatting.
 
-The maximum useful precision is 20 decimal digits, since Time is signed 64 
+The maximum useful precision is 20 decimal digits, since Time is signed 64
 bits.
 
 Logging Macros
@@ -476,7 +476,7 @@ Guidelines
 * Start every class method with ``NS_LOG_FUNCTION (this << args...);``
   This enables easy function call tracing.
 
-  * Except:  don't log operators or explicit copy constructors, 
+  * Except:  don't log operators or explicit copy constructors,
     since these will cause infinite recursion and stack overflow.
 
   * For methods without arguments use the same form:
@@ -502,11 +502,11 @@ Guidelines
 
 * Use ``NS_LOG_LOGIC`` to trace important logic branches within a function.
 
-* Test that your logging changes do not break the code.  
-  Run some example programs with all log components turned on (e.g. 
+* Test that your logging changes do not break the code.
+  Run some example programs with all log components turned on (e.g.
   ``NS_LOG="***"``).
 
-* Use an explicit cast for any variable of type uint8_t or int8_t, 
+* Use an explicit cast for any variable of type uint8_t or int8_t,
   e.g., ``NS_LOG_LOGIC ("Variable i is " << static_cast<int> (i));``.
   Without the cast, the integer is interpreted as a char, and the result
   will be most likely not in line with the expectations.

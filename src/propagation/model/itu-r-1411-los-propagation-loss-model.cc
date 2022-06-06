@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -94,7 +94,7 @@ ItuR1411LosPropagationLossModel::SetFrequency (double freq)
 }
 
 
-double 
+double
 ItuR1411LosPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 						Ptr<MobilityModel> a,
 						Ptr<MobilityModel> b) const

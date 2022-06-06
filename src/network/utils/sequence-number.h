@@ -66,7 +66,7 @@ public:
   /**
    * \brief Constructs a SequenceNumber with the given value
    * \param value the sequence number value
-   */ 
+   */
   explicit SequenceNumber (NUMERIC_TYPE value)
     : m_value (value)
   {}
@@ -112,7 +112,7 @@ public:
   /**
    * \brief Extracts the numeric value of the sequence number
    * \returns the sequence number value
-   */ 
+   */
   NUMERIC_TYPE GetValue () const
   {
     return m_value;
@@ -121,7 +121,7 @@ public:
   /**
    * \brief Prefix increment operator
    * \returns incremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator++ ()
   {
     m_value++;
@@ -131,7 +131,7 @@ public:
   /**
    * \brief Postfix increment operator
    * \returns incremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator++ (int)
   {
     SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> retval (m_value);
@@ -142,7 +142,7 @@ public:
   /**
    * \brief Prefix decrement operator
    * \returns decremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator-- ()
   {
     m_value--;
@@ -152,7 +152,7 @@ public:
    /**
    * \brief Postfix decrement operator
    * \returns decremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator-- (int)
   {
     SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> retval (m_value);
@@ -164,18 +164,18 @@ public:
    * \brief Plus equals operator
    * \param value value to add to sequence number
    * \returns incremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& operator+= (SIGNED_TYPE value)
   {
     m_value += value;
     return *this;
   }
-  
+
   /**
    * \brief Minus equals operator
    * \param value value to subtract from sequence number
    * \returns decremented sequence number
-   */ 
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& operator-= (SIGNED_TYPE value)
   {
     m_value -= value;

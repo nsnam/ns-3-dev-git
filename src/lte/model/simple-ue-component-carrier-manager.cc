@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleUeComponentCarrierManager);
 
 /// SimpleUeCcmMacSapProvider class
 class SimpleUeCcmMacSapProvider : public LteMacSapProvider
-{ 
+{
 public:
   /**
    * Constructor
@@ -80,7 +80,7 @@ SimpleUeCcmMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters para
 
 /// SimpleUeCcmMacSapUser class
 class SimpleUeCcmMacSapUser : public LteMacSapUser
-{ 
+{
 public:
   /**
    * Constructor
@@ -220,14 +220,14 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::Report
     }
 }
 
-void 
+void
 SimpleUeComponentCarrierManager::DoNotifyHarqDeliveryFailure ()
 {
  NS_LOG_FUNCTION (this);
 }
 
 
-void 
+void
 SimpleUeComponentCarrierManager::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
 {
   NS_LOG_FUNCTION (this);
@@ -276,7 +276,7 @@ SimpleUeComponentCarrierManager::DoRemoveLc (uint8_t lcid)
     }
   NS_ABORT_MSG_IF (res.size () == 0, "LCID " << lcid << " not found in the ComponentCarrierManager map");
 
-  return res; 
+  return res;
 
 }
 
@@ -317,7 +317,7 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
       elem.lcConfig = lcConfig;
       elem.msu = m_ccmMacSapUser;
       res.insert (res.end (), elem);
-      
+
       ccLcMapIt = m_componentCarrierLcMap.find (ncc);
       if (ccLcMapIt != m_componentCarrierLcMap.end ())
         {
@@ -333,8 +333,8 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
           ccLcMapIt->second.insert (std::pair <uint8_t, LteMacSapProvider*> (lcId, m_macSapProvidersMap.at (ncc)));
         }
     }
-  
-  return res;  
+
+  return res;
 }
 
 LteMacSapUser*
@@ -369,6 +369,6 @@ SimpleUeComponentCarrierManager::DoConfigureSignalBearer (uint8_t lcid,  LteUeCm
     }
 
   return m_ccmMacSapUser;
- } 
+ }
 
 } // end of namespace ns3

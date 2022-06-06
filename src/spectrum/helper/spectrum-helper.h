@@ -114,9 +114,9 @@ public:
                            std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
 
-  /** 
+  /**
    * Add a new single-frequency propagation loss model instance to this channel helper.
-   * 
+   *
    * \param m a pointer to the instance of the propagation loss model
    */
   void AddPropagationLoss (Ptr<PropagationLossModel> m);
@@ -152,9 +152,9 @@ public:
                                    std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                                    std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
-  /** 
+  /**
    * Add a new frequency-dependent propagation loss model instance to this channel helper.
-   * 
+   *
    * \param m a pointer to the instance of the propagation loss model
    */
   void AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossModel> m);

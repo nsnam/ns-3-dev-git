@@ -36,7 +36,7 @@ namespace ns3 {
  * if PPP is transmitted over a serial link, it will typically be framed in
  * some way derivative of IBM SDLC (HDLC) with all that that entails.
  * Thankfully, we don't have to deal with all of that -- we can use our own
- * protocol for getting bits across the serial link which we call an ns3 
+ * protocol for getting bits across the serial link which we call an ns3
  * Packet.  What we do have to worry about is being able to capture PPP frames
  * which are understandable by Wireshark.  All this means is that we need to
  * teach the PcapWriter about the appropriate data link type (DLT_PPP = 9),

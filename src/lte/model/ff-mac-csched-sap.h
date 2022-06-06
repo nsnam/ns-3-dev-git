@@ -108,7 +108,7 @@ public:
     uint8_t m_prachFreqOffset; ///< prach frequency offset
     uint8_t m_raResponseWindowSize; ///< response window size
     uint8_t m_macContentionResolutionTimer; ///< MAC contention resolution timer
-    uint8_t m_maxHarqMsg3Tx; ///< maximum HARQ message 3 transmit 
+    uint8_t m_maxHarqMsg3Tx; ///< maximum HARQ message 3 transmit
     uint16_t m_n1PucchAn; ///< n1pu cch an
     uint8_t m_deltaPucchShift; ///< delta pu cch shift
     uint8_t m_nrbCqi; ///< nrb CQI

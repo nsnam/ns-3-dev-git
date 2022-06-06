@@ -38,7 +38,7 @@ class SpectrumValue;
 /// Chunk processor callback typedef
 typedef Callback< void, const SpectrumValue& > LteChunkProcessorCallback;
 
-/** 
+/**
  * This abstract class is used to process the time-vs-frequency
  * SINR/interference/power chunk of a received LTE signal
  * which was calculated by the LteInterference object.
@@ -97,27 +97,27 @@ private:
 
 /**
  * A sink to be plugged to the callback of LteChunkProcessor allowing
- * to save and later retrieve the latest reported value 
- * 
+ * to save and later retrieve the latest reported value
+ *
  */
 class LteSpectrumValueCatcher
 {
 public:
 
-  /** 
+  /**
    * function to be plugged to LteChunkProcessor::AddCallback ()
-   * 
-   * \param value 
+   *
+   * \param value
    */
   void ReportValue (const SpectrumValue& value);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the latest value reported by the LteChunkProcessor
    */
   Ptr<SpectrumValue> GetValue ();
-  
+
 private:
   Ptr<SpectrumValue> m_value; ///< spectrum value
 };

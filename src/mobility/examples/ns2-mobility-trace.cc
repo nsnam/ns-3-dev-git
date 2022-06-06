@@ -25,7 +25,7 @@
  *
  *  - intended usage: this should be used in order to load ns2 movement trace files into ns3.
  *  - behavior:
- *      - Ns2MobilityHelper object is created, associated to the specified trace file. 
+ *      - Ns2MobilityHelper object is created, associated to the specified trace file.
  *      - A log file is created, using the log file name argument.
  *      - A node container is created with the number of nodes specified in the command line.  For the default ns-2 trace, specify the value 2 for this argument.
  *      - the program calls the Install() method of Ns2MobilityHelper to set mobility to nodes. At this moment, the file is read line by line, and the movement is scheduled in the simulator.

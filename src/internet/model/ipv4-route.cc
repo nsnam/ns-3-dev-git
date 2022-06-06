@@ -99,49 +99,49 @@ Ipv4MulticastRoute::Ipv4MulticastRoute ()
   m_ttls.clear ();
 }
 
-void 
+void
 Ipv4MulticastRoute::SetGroup (const Ipv4Address group)
 {
   NS_LOG_FUNCTION (this << group);
   m_group = group;
 }
 
-Ipv4Address 
+Ipv4Address
 Ipv4MulticastRoute::GetGroup (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_group;
 }
 
-void 
+void
 Ipv4MulticastRoute::SetOrigin (const Ipv4Address origin)
 {
   NS_LOG_FUNCTION (this << origin);
   m_origin = origin;
 }
 
-Ipv4Address 
+Ipv4Address
 Ipv4MulticastRoute::GetOrigin (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_origin;
 }
 
-void 
+void
 Ipv4MulticastRoute::SetParent (uint32_t parent)
 {
   NS_LOG_FUNCTION (this << parent);
   m_parent = parent;
 }
 
-uint32_t 
+uint32_t
 Ipv4MulticastRoute::GetParent (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_parent;
 }
 
-void 
+void
 Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
 {
   NS_LOG_FUNCTION (this << oif << ttl);

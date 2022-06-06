@@ -63,7 +63,7 @@ private:
    * \param p the packet
    * \param addr the sender's address
    */
-  void ReceiveRx (Ptr<const Packet> p, const Address& addr); 
+  void ReceiveRx (Ptr<const Packet> p, const Address& addr);
   uint64_t m_sent {0};      //!< number of bytes sent
   uint64_t m_received {0};  //!< number of bytes received
 };
@@ -84,7 +84,7 @@ BulkSendBasicTestCase::SendTx (Ptr<const Packet> p)
 }
 
 void
-BulkSendBasicTestCase::ReceiveRx (Ptr<const Packet> p, const Address& addr) 
+BulkSendBasicTestCase::ReceiveRx (Ptr<const Packet> p, const Address& addr)
 {
   m_received += p->GetSize ();
 }

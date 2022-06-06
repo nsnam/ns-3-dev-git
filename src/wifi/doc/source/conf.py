@@ -210,7 +210,7 @@ latex_documents = [
 
 
 # add page breaks in the pdf. Level 1 is for top-level sections, level 2 for subsections, and so on.
-pdf_break_level = 4 
+pdf_break_level = 4
 
 
 # -- Options for manual page output --------------------------------------------

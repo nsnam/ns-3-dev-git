@@ -43,7 +43,7 @@ namespace ns3 {
  * and speed. This model is often identified as a brownian motion
  * model.
  */
-class RandomWalk2dMobilityModel : public MobilityModel 
+class RandomWalk2dMobilityModel : public MobilityModel
 {
 public:
   /**
@@ -81,7 +81,7 @@ private:
   virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper; //!< helper for this object
-  EventId m_event; //!< stored event ID 
+  EventId m_event; //!< stored event ID
   enum Mode m_mode; //!< whether in time or distance mode
   double m_modeDistance; //!< Change direction and speed after this distance
   Time m_modeTime; //!< Change current direction and speed after this delay

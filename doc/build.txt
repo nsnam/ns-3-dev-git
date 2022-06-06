@@ -30,7 +30,7 @@ option is -d <debug level>.  Valid debug levels (which are listed in
 ns3 --help) are: "debug" or "optimized", with debug being default.  It is
 also possible to change the flags used for compilation with (e.g.):
 CXXFLAGS="-O3" ./ns3 configure.  By default, ns-3 is built as debug code,
-with examples and tests disabled, and with python bindings enabled.  
+with examples and tests disabled, and with python bindings enabled.
 
 [ Note:  Unlike some other build tools, to change the build target,
 the option must be supplied during the configure stage rather than

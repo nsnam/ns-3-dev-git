@@ -38,7 +38,7 @@ original.  The Software Freedom Law Center has published
 `guidance <http://www.softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html>`_ on handling this case.
 
 Note that it is incumbent upon the submitter to make sure that the
-licensing attribution is correct and that the code is suitable for |ns3| 
+licensing attribution is correct and that the code is suitable for |ns3|
 inclusion. Do not include code (even snippets) from sources that have
 incompatible licenses.  Even if the code licenses are compatible, do not
 copy someone else's code without attribution.
@@ -171,7 +171,7 @@ these guidelines:
   main body of the code, for attribution purposes
 
 An example of a substantial modification that led to extension of
-the authors section of the header can be found in 
+the authors section of the header can be found in
 ``src/lte/model/lte-ue-phy.h``::
 
    * Author: Giuseppe Piro  <g.piro@poliba.it>
@@ -188,14 +188,14 @@ obtaining proper attribution and avoiding long headers.
 
 Coding style
 ************
-We ask that all contributors make their code conform to the 
+We ask that all contributors make their code conform to the
 coding standard which is outlined in :ref:`Coding style`.
 
 The project maintains a Python program called ``check-style.py`` found in
 the ``utils/`` directory.  This is a wrapper around the ``uncrustify``
 utility with configuration set to the conventions used by |ns3|, and
 can be used to quickly format new source code files proposed for the
-mainline. 
+mainline.
 
 Additionally, the project also maintains a Python program called
 ``trim_trailing_whitespace.py``, found in the ``utils/`` directory.
@@ -209,21 +209,21 @@ Patches are preferably submitted as a GitLab.com
 Short patches can be attached to an issue report or sent to the mailing-lists,
 but a Merge Request is the best way to submit.
 
-The UNIX diff tool is the most common way of producing a patch: a patch is 
-a text-based representation of the difference between two text files or two 
-directories with text files in them. If you have two files, 
-``original.cc``, and, ``modified.cc``, you can generate a patch with the 
-command ``diff -u original.cc modified.cc``. If you wish to produce a patch 
+The UNIX diff tool is the most common way of producing a patch: a patch is
+a text-based representation of the difference between two text files or two
+directories with text files in them. If you have two files,
+``original.cc``, and, ``modified.cc``, you can generate a patch with the
+command ``diff -u original.cc modified.cc``. If you wish to produce a patch
 between two directories, use the command ``diff -uprN original modified``.
 
-Make sure you specify to the reviewer where the original files came from 
-and make sure that the resulting patch file does not contain unexpected 
+Make sure you specify to the reviewer where the original files came from
+and make sure that the resulting patch file does not contain unexpected
 content by performing a final inspection of the patch file yourself.
 
-Patches such as this are sufficient for simple bug fixes or very simple 
+Patches such as this are sufficient for simple bug fixes or very simple
 small features.
 
-Git can be used to create a patch of what parts differ from the last 
+Git can be used to create a patch of what parts differ from the last
 committed code; try::
 
   $ git diff
@@ -247,7 +247,7 @@ Maintainers
 Maintainers are the set of people who make decisions on code and documentation
 changes.  Maintainers are contributors who have demonstrated, over time,
 knowledge and good judgment as pertains to contributions to |ns3|, and who
-have expressed willingness to maintain some code.  |ns3| is like other 
+have expressed willingness to maintain some code.  |ns3| is like other
 open source projects in terms of how people gradually become maintainers
 as their involvement with the project deepens; maintainers are not newcomers
 to the project.
@@ -255,14 +255,14 @@ to the project.
 The list of maintainers for each module is found here:
 https://www.nsnam.org/developers/maintainers/
 
-Maintainers review code (bug fixes, new models) within scope of their 
+Maintainers review code (bug fixes, new models) within scope of their
 maintenance responsibility.  A maintainer of a module should "sign off"
 (or approve of) changes to an |ns3| module before it is committed to
 the main codebase.  Note that we typically do not formalize the signing
 off using Git's sign off feature, but instead, maintainers will indicate
 their approval of the merge request using GitLab.com.
 
-Note that some modules do not have active maintainers; these types of 
+Note that some modules do not have active maintainers; these types of
 modules typically receive less maintenance attention than those with
 active maintainers (and bugs may linger unattended).
 

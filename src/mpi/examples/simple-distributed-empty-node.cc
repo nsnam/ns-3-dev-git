@@ -25,7 +25,7 @@
  * This test is equivalent to simple-distributed but tests boundary cases
  * when one of the ranks has no Nodes on it.   When run on two tasks
  * rank 0 will have all the Nodes and rank 1 will be empty:
- * 
+ *
  *                 -------   -------
  *                  RANK 0    RANK 0
  *                 ------- | -------
@@ -101,12 +101,12 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Distributed simulation setup; by default use granted time window algorithm.
-  if(nullmsg) 
+  if(nullmsg)
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::NullMessageSimulatorImpl"));
-    } 
-  else 
+    }
+  else
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::DistributedSimulatorImpl"));
@@ -115,12 +115,12 @@ main (int argc, char *argv[])
   MpiInterface::Enable (&argc, &argv);
 
   SinkTracer::Init ();
-  
+
   if (verbose)
     {
       LogComponentEnable ("PacketSink", (LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_NODE | LOG_PREFIX_TIME));
     }
-    
+
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
 
@@ -141,7 +141,7 @@ main (int argc, char *argv[])
       std::cout << "This simulation requires 2 or 3 logical processors." << std::endl;
       return 1;
     }
-    
+
   // Some default values
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (512));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("1Mbps"));
@@ -259,7 +259,7 @@ main (int argc, char *argv[])
           routerLink.EnablePcap("router-left", routerDevices, true);
           leafLink.EnablePcap("leaf-left", leftLeafDevices, true);
         }
-      
+
       if (systemId == rightHalfSystemId)
         {
           routerLink.EnablePcap("router-right", routerDevices, true);
@@ -315,7 +315,7 @@ main (int argc, char *argv[])
     {
       SinkTracer::Verify (4);
     }
-  
+
   // Exit the MPI execution environment
   MpiInterface::Disable ();
   return 0;

@@ -116,8 +116,8 @@ AcousticModemEnergyTestCase::SendOnePacket (Ptr<Node> node)
 }
 
 bool
-AcousticModemEnergyTestCase::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, 
-                                       [[maybe_unused]] uint16_t mode, 
+AcousticModemEnergyTestCase::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt,
+                                       [[maybe_unused]] uint16_t mode,
                                        [[maybe_unused]] const Address &sender)
 {
   // increase the total bytes received

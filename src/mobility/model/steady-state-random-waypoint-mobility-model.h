@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Denis Fakhriev <fakhriev@iitp.ru>
  */
 #ifndef STEADY_STATE_RANDOM_WAYPOINT_MOBILITY_MODEL_H
@@ -32,17 +32,17 @@ namespace ns3 {
  * \ingroup mobility
  * \brief Steady-state random waypoint mobility model.
  *
- * This model based on random waypoint mobility (RWM) model for case when 
- * speed, pause and position are uniformly distributed random variables. 
- * The difference is that the initial values of this parameters are not 
+ * This model based on random waypoint mobility (RWM) model for case when
+ * speed, pause and position are uniformly distributed random variables.
+ * The difference is that the initial values of this parameters are not
  * from uniform distribution but from stationary distribution of RWM model.
  * The implementation of this model is 2D-specific and with nonzero nodes speeds.
- * In the 3D ns-3 coordinate system, the momement occurs on the 
+ * In the 3D ns-3 coordinate system, the momement occurs on the
  * \f$ z=\overline{Z} \f$ plane, where \f$ \overline{Z} \f$ is a constant which
- * can be configured using the Z attribute. 
+ * can be configured using the Z attribute.
  *
  * Based on NS-2 implementation by Toilers Research Group -- Colorado
- *      School of Mines (http://toilers.mines.edu). 
+ *      School of Mines (http://toilers.mines.edu).
  * The papers related to this code are:
  *      W. Navidi and T. Camp, Stationary Distributions for the Random
  *      Waypoint Mobility Model, IEEE Transactions on Mobile Computing,
@@ -104,7 +104,7 @@ private:
   Ptr<UniformRandomVariable> m_pause; //!< random variable for pause values
   EventId m_event; //!< current event ID
   bool alreadyStarted; //!< flag for starting state
-  Ptr<UniformRandomVariable> m_x1_r; //!< rv used in rejection sampling phase 
+  Ptr<UniformRandomVariable> m_x1_r; //!< rv used in rejection sampling phase
   Ptr<UniformRandomVariable> m_y1_r; //!< rv used in rejection sampling phase
   Ptr<UniformRandomVariable> m_x2_r; //!< rv used in rejection sampling phase
   Ptr<UniformRandomVariable> m_y2_r; //!< rv used in rejection sampling phase

@@ -258,7 +258,7 @@ int main (int argc, char *argv[])
     {
       factory.SetTypeId ("ns3::PriorityQueueScheduler");
     }
-      
+
   Simulator::SetScheduler (factory);
 
   LOGME (std::setprecision (g_fwidth - 6));

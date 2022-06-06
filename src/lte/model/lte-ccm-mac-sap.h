@@ -33,7 +33,7 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * \brief Service Access Point (SAP) offered by the component carrier manager (CCM) 
+ * \brief Service Access Point (SAP) offered by the component carrier manager (CCM)
  *  by MAC to CCM.
  *
  * This is the *Component Carrier Manager SAP Provider*, i.e., the part of the SAP
@@ -42,7 +42,7 @@ namespace ns3 {
  */
 class LteCcmMacSapProvider
 {
- 
+
 public:
   virtual ~LteCcmMacSapProvider ();
 
@@ -67,12 +67,12 @@ public:
 /**
  * \ingroup lte
  *
- * \brief Service Access Point (SAP) offered by MAC to the 
+ * \brief Service Access Point (SAP) offered by MAC to the
  *        component carrier manager (CCM).
- *  
+ *
  *
  * This is the *CCM MAC SAP User*, i.e., the part of the SAP
- * that contains the component carrier manager methods called 
+ * that contains the component carrier manager methods called
  * by the eNodeB MAC instance.
  */
 class LteCcmMacSapUser : public LteMacSapUser
@@ -80,7 +80,7 @@ class LteCcmMacSapUser : public LteMacSapUser
 public:
   virtual ~LteCcmMacSapUser ();
   /**
-   * \brief When the Primary Component carrier receive a buffer status report 
+   * \brief When the Primary Component carrier receive a buffer status report
    *  it is sent to the CCM.
    * \param bsr Buffer Status Report received from a Ue
    * \param componentCarrierId
@@ -134,7 +134,7 @@ MemberLteCcmMacSapProvider<C>::MemberLteCcmMacSapProvider (C* owner)
   : m_owner (owner)
 {
 }
- 
+
 template <class C>
 void MemberLteCcmMacSapProvider<C>::ReportMacCeToScheduler (MacCeListElement_s bsr)
 {
@@ -214,7 +214,7 @@ void MemberLteCcmMacSapUser<C>::NotifyHarqDeliveryFailure ()
   m_owner->DoNotifyHarqDeliveryFailure ();
 }
 
-  
+
 } // end of namespace ns3
 
 

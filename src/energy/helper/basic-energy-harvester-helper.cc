@@ -23,7 +23,7 @@
 #include "ns3/energy-harvester.h"
 
 namespace ns3 {
-  
+
 BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper ()
 {
   m_basicEnergyHarvester.SetTypeId ("ns3::BasicEnergyHarvester");
@@ -55,5 +55,5 @@ BasicEnergyHarvesterHelper::DoInstall (Ptr<EnergySource> source) const
   harvester->SetEnergySource (source);
   return harvester;
 }
-  
+
 } // namespace ns3

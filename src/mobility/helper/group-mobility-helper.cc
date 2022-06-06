@@ -116,7 +116,7 @@ GroupMobilityHelper::SetReferenceMobilityModel (Ptr<MobilityModel> mobility)
   m_referenceMobility = mobility;
 }
 
-void 
+void
 GroupMobilityHelper::SetReferenceMobilityModel (std::string type,
                                   std::string n1, const AttributeValue &v1,
                                   std::string n2, const AttributeValue &v2,
@@ -144,7 +144,7 @@ GroupMobilityHelper::SetReferenceMobilityModel (std::string type,
   NS_ABORT_MSG_IF (m_referenceMobility == nullptr, "Unable to create mobility from TypeId " << type);
 }
 
-void 
+void
 GroupMobilityHelper::SetMemberMobilityModel (std::string type,
                                   std::string n1, const AttributeValue &v1,
                                   std::string n2, const AttributeValue &v2,
@@ -202,7 +202,7 @@ GroupMobilityHelper::Install (std::string nodeName)
   Install (node);
 }
 
-void 
+void
 GroupMobilityHelper::Install (NodeContainer c)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)

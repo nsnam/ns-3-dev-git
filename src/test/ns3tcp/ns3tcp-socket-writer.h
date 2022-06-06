@@ -27,7 +27,7 @@ namespace ns3
 
 /**
  * \ingroup system-tests-tcp
- * 
+ *
  * \brief Simple class to write data to sockets.
  */
 class SocketWriter : public Application
@@ -40,7 +40,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Setup the socket.
    * \param node The node owning the socket.

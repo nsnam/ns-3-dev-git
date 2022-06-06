@@ -89,7 +89,7 @@ public:
     (Time now, Time delay, uint32_t numRts, uint32_t totalBytes,
      double secs, uint32_t ctlRate, double actualX);
 
-  
+
 private:
   /** Gateway state. */
   enum State {
@@ -124,7 +124,7 @@ private:
   };
   /** Forwarding up callback. */
   Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;
-  
+
   Ptr<UanPhy> m_phy;            //!< PHY layer attached to this MAC.
   Time m_maxDelta;              //!< Maximum propagation delay between gateway and non-gateway nodes .
   Time m_sifs;                  //!< Spacing between frames to account for timing error and processing delay.

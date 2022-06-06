@@ -84,7 +84,7 @@ EpcPgwApplication::UeInfo::SetSgwAddr (Ipv4Address sgwAddr)
   m_sgwAddr = sgwAddr;
 }
 
-Ipv4Address 
+Ipv4Address
 EpcPgwApplication::UeInfo::GetUeAddr ()
 {
   return m_ueAddr;
@@ -96,7 +96,7 @@ EpcPgwApplication::UeInfo::SetUeAddr (Ipv4Address ueAddr)
   m_ueAddr = ueAddr;
 }
 
-Ipv6Address 
+Ipv6Address
 EpcPgwApplication::UeInfo::GetUeAddr6 ()
 {
   return m_ueAddr6;
@@ -356,7 +356,7 @@ EpcPgwApplication::DoRecvModifyBearerRequest (Ptr<Packet> packet)
   NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
   ueit->second->SetSgwAddr (m_sgwS5Addr);
 
   std::list<GtpcModifyBearerRequestMessage::BearerContextToBeModified> bearerContexts =
@@ -492,7 +492,7 @@ EpcPgwApplication::SetUeAddress (uint64_t imsi, Ipv4Address ueAddr)
 {
   NS_LOG_FUNCTION (this << imsi << ueAddr);
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI" << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI" << imsi);
   ueit->second->SetUeAddr (ueAddr);
   m_ueInfoByAddrMap[ueAddr] = ueit->second;
 }
@@ -502,7 +502,7 @@ EpcPgwApplication::SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr)
 {
   NS_LOG_FUNCTION (this << imsi << ueAddr);
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
   m_ueInfoByAddrMap6[ueAddr] = ueit->second;
   ueit->second->SetUeAddr6 (ueAddr);
 }

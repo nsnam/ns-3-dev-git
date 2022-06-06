@@ -47,7 +47,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Updates all variables of MinMaxAvgTotalCalculator
    * \param i value of type T to use for updating the calculator
@@ -149,7 +149,7 @@ template <typename T>
 MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
 {
 }
-  
+
 template <typename T>
 void
 MinMaxAvgTotalCalculator<T>::DoDispose (void)
@@ -172,7 +172,7 @@ MinMaxAvgTotalCalculator<T>::GetTypeId (void)
     ;
   return tid;
 }
-  
+
 template <typename T>
 void
 MinMaxAvgTotalCalculator<T>::Update (const T i)
@@ -278,7 +278,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Increments count by 1
    */

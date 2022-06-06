@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
- * 
+ *
  */
 
 #include <ns3/simulator.h>
@@ -98,7 +98,7 @@ MobilityBuildingInfo::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t
   m_nFloor = nfloor;
   m_roomX = nroomx;
   m_roomY = nroomy;
-  
+
 
   NS_ASSERT (m_roomX > 0);
   NS_ASSERT (m_roomX <= building->GetNRoomsX ());
@@ -195,5 +195,5 @@ MobilityBuildingInfo::MakeConsistent (Ptr<MobilityModel> mm)
 
 }
 
-  
+
 } // namespace

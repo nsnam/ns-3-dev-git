@@ -93,7 +93,7 @@ public:
 
 int main (int argc, char** argv)
 {
-#if 0 
+#if 0
   LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
@@ -146,7 +146,7 @@ int main (int argc, char** argv)
   Ping6Helper ping6;
 
   ping6.SetLocal (i1.GetAddress (0, 1));
-  ping6.SetRemote (i2.GetAddress (1, 1)); 
+  ping6.SetRemote (i2.GetAddress (1, 1));
 
   ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));

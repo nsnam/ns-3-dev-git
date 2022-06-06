@@ -48,7 +48,7 @@ class LteUeRrc;
  * a real fashion, by creating real RRC PDUs and transmitting them
  * over Signaling Radio Bearers using radio resources allocated by the
  * LTE MAC scheduler.
- * 
+ *
  */
 class LteUeRrcProtocolReal : public Object
 {
@@ -74,7 +74,7 @@ public:
   /**
    * Set LTE UE RRC SAP provider function
    *
-   * \param p the LTE UE RRC SAP provider 
+   * \param p the LTE UE RRC SAP provider
    */
   void SetLteUeRrcSapProvider (LteUeRrcSapProvider* p);
   /**
@@ -87,7 +87,7 @@ public:
   /**
    * Set UE RRC function
    *
-   * \param rrc the LTE UE RRC 
+   * \param rrc the LTE UE RRC
    */
   void SetUeRrc (Ptr<LteUeRrc> rrc);
 
@@ -97,43 +97,43 @@ private:
   /**
    * Setup function
    *
-   * \param params LteUeRrcSapUser::SetupParameters 
+   * \param params LteUeRrcSapUser::SetupParameters
    */
   void DoSetup (LteUeRrcSapUser::SetupParameters params);
   /**
    * Send RRC connection request function
    *
-   * \param msg LteRrcSap::RrcConnectionRequest 
+   * \param msg LteRrcSap::RrcConnectionRequest
    */
   void DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg);
   /**
    * Send RRC connection setup completed function
    *
-   * \param msg LteRrcSap::RrcConnectionSetupCompleted 
+   * \param msg LteRrcSap::RrcConnectionSetupCompleted
    */
   void DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg);
   /**
    * Send RRC connection reconfiguration setup completed function
    *
-   * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted 
+   * \param msg LteRrcSap::RrcConnectionReconfigurationCompleted
    */
   void DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
   /**
    * Send RRC connection reestablishment request function
    *
-   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest 
+   * \param msg LteRrcSap::RrcConnectionReestablishmentRequest
    */
   void DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
   /**
    * Send RRC connection reestablishment complete function
    *
-   * \param msg LteRrcSap::RrcConnectionReestablishmentComplete 
+   * \param msg LteRrcSap::RrcConnectionReestablishmentComplete
    */
   void DoSendRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
   /**
    * Send measurement report function
    *
-   * \param msg LteRrcSap::MeasurementReport 
+   * \param msg LteRrcSap::MeasurementReport
    */
   void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
   /**
@@ -152,13 +152,13 @@ private:
   /**
    * Receive PDCP PDU function
    *
-   * \param p the packet 
+   * \param p the packet
    */
   void DoReceivePdcpPdu (Ptr<Packet> p);
   /**
    * Receive PDCP SDU function
    *
-   * \param params LtePdcpSapUser::ReceivePdcpSduParameters 
+   * \param params LtePdcpSapUser::ReceivePdcpSduParameters
    */
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
@@ -207,20 +207,20 @@ public:
   /**
    * Set LTE ENB RRC SAP provider function
    *
-   * \param p LteEnbRrcSapProvider * 
+   * \param p LteEnbRrcSapProvider *
    */
   void SetLteEnbRrcSapProvider (LteEnbRrcSapProvider* p);
   /**
    * Get LTE ENB RRC SAP user function
    *
-   * \returns LteEnbRrcSapUser * 
+   * \returns LteEnbRrcSapUser *
    */
   LteEnbRrcSapUser* GetLteEnbRrcSapUser ();
 
   /**
    * Set cell ID function
    *
-   * \param cellId the cell ID 
+   * \param cellId the cell ID
    */
   void SetCellId (uint16_t cellId);
 
@@ -228,7 +228,7 @@ public:
    * Get UE RRC SAP provider function
    *
    * \param rnti the RNTI
-   * \returns LteUeRrcSapProvider * 
+   * \returns LteUeRrcSapProvider *
    */
   LteUeRrcSapProvider* GetUeRrcSapProvider (uint16_t rnti);
   /**

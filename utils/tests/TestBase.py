@@ -54,9 +54,9 @@ class TestBaseClass:
     """
         Generic class for testing tools based on provided commands and test cases.
     """
-    ## @var my_env 
+    ## @var my_env
     #  os environment
-    ## @var mode 
+    ## @var mode
     #  mode
     ## @var outfile
     #  output file

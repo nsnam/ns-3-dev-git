@@ -35,7 +35,7 @@ namespace ns3
  *
  * \brief A record of an IPv6 route.
  */
-class Ipv6RoutingTableEntry 
+class Ipv6RoutingTableEntry
 {
 public:
   /**
@@ -85,7 +85,7 @@ public:
   void SetPrefixToUse (Ipv6Address prefix);
 
   /**
-   * \brief Is the route entry correspond to a network ? 
+   * \brief Is the route entry correspond to a network ?
    * \return true if the route is a network, false otherwise
    */
   bool IsNetwork () const;
@@ -109,7 +109,7 @@ public:
   bool IsDefault () const;
 
   /**
-   * \brief Is it the gateway ? 
+   * \brief Is it the gateway ?
    * \return true if this route is a gateway, false otherwise
    */
   bool IsGateway () const;

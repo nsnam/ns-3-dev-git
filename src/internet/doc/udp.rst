@@ -81,7 +81,7 @@ UDP::
 
 For users who wish to have a pointer to the actual socket (so that
 socket operations like ``Bind()``, setting socket options, etc. can be
-done on a per-socket basis), UDP sockets can be created by using the 
+done on a per-socket basis), UDP sockets can be created by using the
 ``Socket::CreateSocket()`` method as given below::
 
   Ptr<Node> node = CreateObject<Node> ();
@@ -100,7 +100,7 @@ a port number and an address on the local machine. It allocates a local IPv4
 endpoint for this socket.
 
 At the end of data transmission, the socket is closed using the ``Socket::Close()``.
-It returns a 0 on success and -1 on failure. 
+It returns a 0 on success and -1 on failure.
 
 Please note that applications usually create the sockets automatically. Please
 refer to the source code of your preferred application to discover how and
@@ -111,7 +111,7 @@ UDP Socket interaction and interface with Application layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The following is the description of the public interface of the UDP socket,
 and how the interface is used to interact with the socket itself.
- 
+
 **Socket APIs for UDP connections**:
 
 *Connect()*

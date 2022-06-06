@@ -44,7 +44,7 @@ class UanPacketArrival
 public:
 
   /** Default constructor. */
-  UanPacketArrival () 
+  UanPacketArrival ()
   {
   }
 
@@ -171,7 +171,7 @@ public:
   virtual bool IsRx (void) const = 0;
   /**
    * Is the state transmitting?
-   * 
+   *
    * \return True if there is a packet being transmitted from this transducer.
    */
   virtual bool IsTx (void) const = 0;
@@ -186,7 +186,7 @@ public:
    *
    * \param gainDb Gain added at receiver, in dB.
    */
-  virtual void SetRxGainDb (double gainDb) = 0;  
+  virtual void SetRxGainDb (double gainDb) = 0;
   /**
    * Get the receiver gain added to signal at receiver in dB.
    *
@@ -221,7 +221,7 @@ public:
   virtual void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode) = 0;
   /**
    * Attach this transducer to a channel.
-   * 
+   *
    * \param chan The channel
    */
   virtual void SetChannel (Ptr<UanChannel> chan) = 0;

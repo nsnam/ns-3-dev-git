@@ -91,7 +91,7 @@ private:
  */
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);
 
-  
+
 } // namespace dot11s
 } // namespace ns3
 #endif /* MESH_ID_H */

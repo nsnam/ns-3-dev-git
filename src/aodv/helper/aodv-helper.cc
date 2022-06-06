@@ -27,19 +27,19 @@
 namespace ns3
 {
 
-AodvHelper::AodvHelper() : 
+AodvHelper::AodvHelper() :
   Ipv4RoutingHelper ()
 {
   m_agentFactory.SetTypeId ("ns3::aodv::RoutingProtocol");
 }
 
-AodvHelper* 
-AodvHelper::Copy (void) const 
+AodvHelper*
+AodvHelper::Copy (void) const
 {
-  return new AodvHelper (*this); 
+  return new AodvHelper (*this);
 }
 
-Ptr<Ipv4RoutingProtocol> 
+Ptr<Ipv4RoutingProtocol>
 AodvHelper::Create (Ptr<Node> node) const
 {
   Ptr<aodv::RoutingProtocol> agent = m_agentFactory.Create<aodv::RoutingProtocol> ();
@@ -47,7 +47,7 @@ AodvHelper::Create (Ptr<Node> node) const
   return agent;
 }
 
-void 
+void
 AodvHelper::Set (std::string name, const AttributeValue &value)
 {
   m_agentFactory.Set (name, value);

@@ -40,8 +40,8 @@ class LteTestMac;
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief A simplified version of LteHelper, that 
- * is used for creation and configuration of LTE entities for testing purposes 
+ * \brief A simplified version of LteHelper, that
+ * is used for creation and configuration of LTE entities for testing purposes
  * when just a limited LteHelper functionality is wanted.
  *
  */
@@ -127,7 +127,7 @@ protected:
 
 private:
   /**
-   * Install single ENB device 
+   * Install single ENB device
    *
    * \param n the node
    * \returns the device

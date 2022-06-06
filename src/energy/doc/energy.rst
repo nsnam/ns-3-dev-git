@@ -48,7 +48,7 @@ practical batteries:
 Rate Capacity Effect
   Decrease of battery lifetime when the current draw is higher
   than the rated value of the battery.
-  
+
 Recovery Effect
   Increase of battery lifetime when the battery is alternating
   between discharge and idle states.
@@ -171,22 +171,22 @@ References
 .. [3] M. Handy and D. Timmermann. Simulation of mobile wireless
    networks with accurate modelling of non-linear battery effects. In
    Proc. of Applied simulation and Modeling (ASM), 2003.
-       
+
 .. [4] D. N. Rakhmatov and S. B. Vrudhula. An analytical high-level
    battery model for use in energy management of portable electronic
    systems. In Proc. of IEEE/ACM International Conference on Computer
    Aided Design (ICCAD'01), pages 488-493, November 2001.
-       
+
 .. [5] D. N. Rakhmatov, S. B. Vrudhula, and D. A. Wallach. Battery
    lifetime prediction for energy-aware computing. In Proc. of the 2002
    International Symposium on Low Power Electronics and Design
    (ISLPED'02), pages 154-159, 2002.
-       
+
 .. [6] C. Tapparello, H. Ayatollahi and W. Heinzelman. Extending the
    Energy Framework for Network Simulator 3 (ns-3). Workshop on ns-3
    (WNS3), Poster Session, Atlanta, GA, USA. May, 2014.
 
-.. [7] C. Tapparello, H. Ayatollahi and W. Heinzelman. Energy Harvesting 
+.. [7] C. Tapparello, H. Ayatollahi and W. Heinzelman. Energy Harvesting
    Framework for Network Simulator 3 (ns-3). 2nd International Workshop on
    Energy Neutral Sensing Systems (ENSsys), Memphis, TN, USA. November 6,
    2014.

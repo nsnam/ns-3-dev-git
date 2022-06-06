@@ -78,7 +78,7 @@
  * - Source (n1) and Destination (n1)
  *   It goes from n1 -> n1
  * .
- * 
+ *
  * Expected IPv4 Routing Path output for above
  * cases (in the output stream):
  * \verbatim
@@ -97,7 +97,7 @@
   10.1.4.2                 (Node 2)  ---->   10.1.1.1                 (Node 0)
 
   Time: +7s, Nix Routing
-  Route path from Node 1 to Node 1, Nix Vector: 
+  Route path from Node 1 to Node 1, Nix Vector:
   10.1.1.2                 (Node 1)  ---->   10.1.1.2                 (Node 1)
 
   Node: 0, Time: +8s, Local time: +8s, Nix Routing
@@ -146,7 +146,7 @@
   2001:4::200:ff:fe00:8    (Node 2)  ---->   2001:1::200:ff:fe00:1    (Node 0)
 
   Time: +7s, Nix Routing
-  Route path from Node 1 to Node 1, Nix Vector: 
+  Route path from Node 1 to Node 1, Nix Vector:
   2001:1::200:ff:fe00:2    (Node 1)  ---->   2001:1::200:ff:fe00:2    (Node 1)
 
   Node: 0, Time: +8s, Local time: +8s, Nix Routing
@@ -280,7 +280,7 @@ main (int argc, char *argv[])
       // Trace routing tables
       nixRouting.PrintRoutingTableAllAt (Seconds (8), routingStream);
     }
-  
+
   UdpEchoServerHelper echoServer (9);
 
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (3));

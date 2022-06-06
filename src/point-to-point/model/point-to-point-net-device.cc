@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 
-TypeId 
+TypeId
 PointToPointNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
@@ -47,22 +47,22 @@ PointToPointNetDevice::GetTypeId (void)
                    MakeUintegerAccessor (&PointToPointNetDevice::SetMtu,
                                          &PointToPointNetDevice::GetMtu),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("Address", 
+    .AddAttribute ("Address",
                    "The MAC address of this device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("DataRate", 
+    .AddAttribute ("DataRate",
                    "The default data rate for point to point links",
                    DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
-    .AddAttribute ("ReceiveErrorModel", 
+    .AddAttribute ("ReceiveErrorModel",
                    "The receiver error model used to simulate packet loss",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
-    .AddAttribute ("InterframeGap", 
+    .AddAttribute ("InterframeGap",
                    "The time to wait between packet (frame) transmissions",
                    TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
@@ -72,7 +72,7 @@ PointToPointNetDevice::GetTypeId (void)
     // Transmit queueing discipline for the device which includes its own set
     // of trace hooks.
     //
-    .AddAttribute ("TxQueue", 
+    .AddAttribute ("TxQueue",
                    "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_queue),
@@ -82,24 +82,24 @@ PointToPointNetDevice::GetTypeId (void)
     // Trace sources at the "top" of the net device, where packets transition
     // to/from higher layers.
     //
-    .AddTraceSource ("MacTx", 
+    .AddTraceSource ("MacTx",
                      "Trace source indicating a packet has arrived "
                      "for transmission by this device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("MacTxDrop", 
+    .AddTraceSource ("MacTxDrop",
                      "Trace source indicating a packet has been dropped "
                      "by the device before transmission",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxDropTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("MacPromiscRx", 
+    .AddTraceSource ("MacPromiscRx",
                      "A packet has been received by this device, "
                      "has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  "
                      "This is a promiscuous trace,",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macPromiscRxTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("MacRx", 
+    .AddTraceSource ("MacRx",
                      "A packet has been received by this device, "
                      "has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  "
@@ -108,7 +108,7 @@ PointToPointNetDevice::GetTypeId (void)
                      "ns3::Packet::TracedCallback")
 #if 0
     // Not currently implemented for this device
-    .AddTraceSource ("MacRxDrop", 
+    .AddTraceSource ("MacRxDrop",
                      "Trace source indicating a packet was dropped "
                      "before being forwarded up the stack",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macRxDropTrace),
@@ -118,35 +118,35 @@ PointToPointNetDevice::GetTypeId (void)
     // Trace sources at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
-    .AddTraceSource ("PhyTxBegin", 
+    .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet has begun "
                      "transmitting over the channel",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxBeginTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("PhyTxEnd", 
+    .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet has been "
                      "completely transmitted over the channel",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxEndTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("PhyTxDrop", 
+    .AddTraceSource ("PhyTxDrop",
                      "Trace source indicating a packet has been "
                      "dropped by the device during transmission",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxDropTrace),
                      "ns3::Packet::TracedCallback")
 #if 0
     // Not currently implemented for this device
-    .AddTraceSource ("PhyRxBegin", 
+    .AddTraceSource ("PhyRxBegin",
                      "Trace source indicating a packet has begun "
                      "being received by the device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxBeginTrace),
                      "ns3::Packet::TracedCallback")
 #endif
-    .AddTraceSource ("PhyRxEnd", 
+    .AddTraceSource ("PhyRxEnd",
                      "Trace source indicating a packet has been "
                      "completely received by the device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxEndTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("PhyRxDrop", 
+    .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been "
                      "dropped by the device during reception",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxDropTrace),
@@ -154,15 +154,15 @@ PointToPointNetDevice::GetTypeId (void)
 
     //
     // Trace sources designed to simulate a packet sniffer facility (tcpdump).
-    // Note that there is really no difference between promiscuous and 
+    // Note that there is really no difference between promiscuous and
     // non-promiscuous traces in a point-to-point link.
     //
-    .AddTraceSource ("Sniffer", 
+    .AddTraceSource ("Sniffer",
                     "Trace source simulating a non-promiscuous packet sniffer "
                      "attached to the device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_snifferTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("PromiscSniffer", 
+    .AddTraceSource ("PromiscSniffer",
                      "Trace source simulating a promiscuous packet sniffer "
                      "attached to the device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_promiscSnifferTrace),
@@ -172,7 +172,7 @@ PointToPointNetDevice::GetTypeId (void)
 }
 
 
-PointToPointNetDevice::PointToPointNetDevice () 
+PointToPointNetDevice::PointToPointNetDevice ()
   :
     m_txMachineState (READY),
     m_channel (0),
@@ -334,18 +334,18 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
   NS_LOG_FUNCTION (this << packet);
   uint16_t protocol = 0;
 
-  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
     {
-      // 
+      //
       // If we have an error model and it indicates that it is time to lose a
       // corrupted packet, don't forward this packet up, let it go.
       //
       m_phyRxDropTrace (packet);
     }
-  else 
+  else
     {
-      // 
-      // Hit the trace hooks.  All of these hooks are in the same place in this 
+      //
+      // Hit the trace hooks.  All of these hooks are in the same place in this
       // device because it is so simple, but this is not usually the case in
       // more complicated devices.
       //
@@ -380,7 +380,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
 Ptr<Queue<Packet> >
 PointToPointNetDevice::GetQueue (void) const
-{ 
+{
   NS_LOG_FUNCTION (this);
   return m_queue;
 }
@@ -457,7 +457,7 @@ PointToPointNetDevice::IsBroadcast (void) const
 }
 
 //
-// We don't really need any addressing information since this is a 
+// We don't really need any addressing information since this is a
 // point-to-point device.  The base class NetDevice wants us to return a
 // broadcast address, so we make up something reasonable.
 //
@@ -505,8 +505,8 @@ PointToPointNetDevice::IsBridge (void) const
 
 bool
 PointToPointNetDevice::Send (
-  Ptr<Packet> packet, 
-  const Address &dest, 
+  Ptr<Packet> packet,
+  const Address &dest,
   uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
@@ -514,7 +514,7 @@ PointToPointNetDevice::Send (
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
   //
-  // If IsLinkUp() is false it means there is no channel to send any packet 
+  // If IsLinkUp() is false it means there is no channel to send any packet
   // over so we just hit the drop trace on the packet and return an error.
   //
   if (IsLinkUp () == false)
@@ -538,7 +538,7 @@ PointToPointNetDevice::Send (
     {
       //
       // If the channel is ready for transition we send the packet right now
-      // 
+      //
       if (m_txMachineState == READY)
         {
           packet = m_queue->Dequeue ();
@@ -557,9 +557,9 @@ PointToPointNetDevice::Send (
 }
 
 bool
-PointToPointNetDevice::SendFrom (Ptr<Packet> packet, 
-                                 const Address &source, 
-                                 const Address &dest, 
+PointToPointNetDevice::SendFrom (Ptr<Packet> packet,
+                                 const Address &source,
+                                 const Address &dest,
                                  uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << packet << source << dest << protocolNumber);
@@ -612,7 +612,7 @@ PointToPointNetDevice::DoMpiReceive (Ptr<Packet> p)
   Receive (p);
 }
 
-Address 
+Address
 PointToPointNetDevice::GetRemote (void) const
 {
   NS_LOG_FUNCTION (this);

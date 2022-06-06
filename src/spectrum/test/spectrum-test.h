@@ -91,7 +91,7 @@
 
 /**
  * \ingroup spectrum-tests
- * 
+ *
  * \brief Test if two SpectrumValue instances are equal within a given tolerance.
  *
  * This test compares component-by-component the two SpectrumValue

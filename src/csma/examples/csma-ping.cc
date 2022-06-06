@@ -113,7 +113,7 @@ main (int argc, char *argv[])
   csma.EnablePcapAll ("csma-ping", false);
 
   // then, print what the packet sink receives.
-  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx", 
+  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx",
                                  MakeCallback (&SinkRx));
   // finally, print the ping rtts.
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::V4Ping/Rtt",

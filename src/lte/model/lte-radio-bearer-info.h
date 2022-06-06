@@ -34,7 +34,7 @@ class LtePdcp;
 
 /**
  * store information on active radio bearer instance
- * 
+ *
  */
 class LteRadioBearerInfo : public Object
 {
@@ -55,7 +55,7 @@ public:
 
 /**
  * store information on active signaling radio bearer instance
- * 
+ *
  */
 class LteSignalingRadioBearerInfo : public LteRadioBearerInfo
 {
@@ -68,13 +68,13 @@ public:
   static TypeId GetTypeId (void);
 
   uint8_t m_srbIdentity; ///< SRB indentity
-  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config  
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< logical channel config
 };
 
 
 /**
  * store information on active data radio bearer instance
- * 
+ *
  */
 class LteDataRadioBearerInfo : public LteRadioBearerInfo
 {

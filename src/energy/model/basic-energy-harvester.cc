@@ -179,5 +179,5 @@ BasicEnergyHarvester::DoGetPower (void) const
   NS_LOG_FUNCTION (this);
   return m_harvestedPower;
 }
-  
+
 } // namespace ns3

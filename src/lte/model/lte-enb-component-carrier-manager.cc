@@ -80,7 +80,7 @@ LteEnbComponentCarrierManager::GetLteCcmMacSapUser ()
   return m_ccmMacSapUser;
 }
 
-bool 
+bool
 LteEnbComponentCarrierManager::SetMacSapProvider (uint8_t componentCarrierId, LteMacSapProvider* sap)
 {
   NS_LOG_FUNCTION (this);
@@ -100,24 +100,24 @@ LteEnbComponentCarrierManager::SetMacSapProvider (uint8_t componentCarrierId, Lt
       res = true;
     }
   return res;
-  
+
 }
 
-bool 
+bool
 LteEnbComponentCarrierManager::SetCcmMacSapProviders (uint8_t componentCarrierId, LteCcmMacSapProvider* sap)
 {
   NS_LOG_FUNCTION (this);
   bool res = false;
   std::map< uint8_t,LteCcmMacSapProvider*>::iterator it =  m_ccmMacSapProviderMap.find (componentCarrierId);
-  
+
   if (it == m_ccmMacSapProviderMap.end ())
     {
       m_ccmMacSapProviderMap.insert (std::pair <uint8_t,LteCcmMacSapProvider*> (componentCarrierId, sap));
     }
- 
+
   res = true;
   return res;
-  
+
 }
 
 void

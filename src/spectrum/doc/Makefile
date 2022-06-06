@@ -11,7 +11,7 @@ seqdiags: 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 		${IMAGES_SEQDIAG:.seqdiag=.pdf}
 
 
-%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
+%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $<
 
 %.pdf : %.seqdiag
 	$(SEQDIAG) -Tpdf -o $@ $<

@@ -96,8 +96,8 @@ private:
   Ipv4Address m_remote;
   /// Wait  interval  seconds between sending each packet
   Time m_interval;
-  /** 
-   * Specifies  the number of data bytes to be sent. 
+  /**
+   * Specifies  the number of data bytes to be sent.
    * The default is 56, which translates into 64 ICMP data bytes when combined with the 8 bytes of ICMP header data.
    */
   uint32_t m_size;

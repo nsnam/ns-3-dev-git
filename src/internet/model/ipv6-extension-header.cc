@@ -99,7 +99,7 @@ void Ipv6ExtensionHeader::Serialize (Buffer::Iterator start) const
   i.Write (m_data.PeekData (), m_data.GetSize ());
 }
 
-uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -114,7 +114,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
     {
       m_data.AddAtEnd (dataLength - m_data.GetSize ());
     }
-  else 
+  else
     {
       m_data.RemoveAtEnd (m_data.GetSize () - dataLength);
     }
@@ -249,7 +249,7 @@ void Ipv6ExtensionHopByHopHeader::Serialize (Buffer::Iterator start) const
   OptionField::Serialize (i);
 }
 
-uint32_t Ipv6ExtensionHopByHopHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionHopByHopHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -305,7 +305,7 @@ void Ipv6ExtensionDestinationHeader::Serialize (Buffer::Iterator start) const
   OptionField::Serialize (i);
 }
 
-uint32_t Ipv6ExtensionDestinationHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionDestinationHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -351,7 +351,7 @@ void Ipv6ExtensionFragmentHeader::SetOffset (uint16_t offset)
   m_offset |= offset & (~7);
 }
 
-uint16_t Ipv6ExtensionFragmentHeader::GetOffset () const 
+uint16_t Ipv6ExtensionFragmentHeader::GetOffset () const
 {
   return m_offset & (~1);
 }
@@ -378,7 +378,7 @@ uint32_t Ipv6ExtensionFragmentHeader::GetIdentification () const
 
 void Ipv6ExtensionFragmentHeader::Print (std::ostream &os) const
 {
-  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength () 
+  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength ()
      << " offset = " << (uint32_t)GetOffset () << " MF = " << (uint32_t)GetMoreFragment () << " identification = " << (uint32_t)m_identification << " )";
 }
 
@@ -398,7 +398,7 @@ void Ipv6ExtensionFragmentHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU32 (m_identification);
 }
 
-uint32_t Ipv6ExtensionFragmentHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionFragmentHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -438,7 +438,7 @@ Ipv6ExtensionRoutingHeader::~Ipv6ExtensionRoutingHeader ()
 {
 }
 
-void Ipv6ExtensionRoutingHeader::SetTypeRouting (uint8_t typeRouting) 
+void Ipv6ExtensionRoutingHeader::SetTypeRouting (uint8_t typeRouting)
 {
   m_typeRouting = typeRouting;
 }
@@ -460,7 +460,7 @@ uint8_t Ipv6ExtensionRoutingHeader::GetSegmentsLeft () const
 
 void Ipv6ExtensionRoutingHeader::Print (std::ostream &os) const
 {
-  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength () 
+  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength ()
      << " typeRouting = " << (uint32_t)m_typeRouting << " segmentsLeft = " << (uint32_t)m_segmentsLeft << " )";
 }
 
@@ -479,7 +479,7 @@ void Ipv6ExtensionRoutingHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_segmentsLeft);
 }
 
-uint32_t Ipv6ExtensionRoutingHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionRoutingHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -545,7 +545,7 @@ Ipv6Address Ipv6ExtensionLooseRoutingHeader::GetRouterAddress (uint8_t index) co
 
 void Ipv6ExtensionLooseRoutingHeader::Print (std::ostream &os) const
 {
-  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " <<  (uint32_t)GetLength () 
+  os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " <<  (uint32_t)GetLength ()
      << " typeRouting = " << (uint32_t)GetTypeRouting () << " segmentsLeft = " << (uint32_t)GetSegmentsLeft () << " ";
 
   for (std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
@@ -581,7 +581,7 @@ void Ipv6ExtensionLooseRoutingHeader::Serialize (Buffer::Iterator start) const
     }
 }
 
-uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t buff[16];
@@ -644,7 +644,7 @@ void Ipv6ExtensionESPHeader::Serialize (Buffer::Iterator start) const
   /** \todo */
 }
 
-uint32_t Ipv6ExtensionESPHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionESPHeader::Deserialize (Buffer::Iterator start)
 {
   /** \todo */
   return 0;
@@ -691,9 +691,9 @@ void Ipv6ExtensionAHHeader::Serialize (Buffer::Iterator start) const
   /** \todo */
 }
 
-uint32_t Ipv6ExtensionAHHeader::Deserialize (Buffer::Iterator start) 
+uint32_t Ipv6ExtensionAHHeader::Deserialize (Buffer::Iterator start)
 {
-  /** \todo */ 
+  /** \todo */
   return 0;
 }
 

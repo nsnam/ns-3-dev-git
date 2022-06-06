@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-c = 3e8; 
+c = 3e8;
 % Excess taps delay (according to 3GPP TS 36.104 Annex B.2)
 delays_pedestrianEPA = [0 30e-9 70e-9 90e-9 120e-9 190e-9 410e-9];
 delays_vehicularEVA = [0 30e-9 150e-9 310e-9 370e-9 710e-9 1090e-9 1730e-9 2510e-9];
@@ -32,7 +32,7 @@ fd = v_m_s / lambda; % doppler shift
 % w = 2 * pi * (f/fs) * t
 % hence the max normalized frequency w=2*pi corresponds to f = fs,
 % hence fs is also the max frequecy of our PowerSpectralDensity
-fs = 20e6; 
+fs = 20e6;
 
 % sampling period must be determined corresponding to the sampling
 % frequency, because of the properties of an FFT
@@ -59,31 +59,31 @@ numRBs = 100;
 sig = zeros(numSamples, 1); % Signal
 sig(1) = 1; % dirac impulse
 
-[psdsig,F] = pwelch(sig,[],[],numRBs,fs,'twosided');     
+[psdsig,F] = pwelch(sig,[],[],numRBs,fs,'twosided');
 
 for ii=1:round((traceDuration/TTI))
-        
+
     % y is the frequency response of the channel
-    y = c(sig);   
-    
+    y = c(sig);
+
 %     [Pxx,F] = PWELCH(X,WINDOW,NOVERLAP,NFFT,Fs) returns a PSD computed as
 %     a function of physical frequency (Hz).  Fs is the sampling frequency
 %     specified in Hz.  If Fs is empty, it defaults to 1 Hz.
-%  
+%
 %     F is the vector of frequencies at which the PSD is estimated and has
 %     units of Hz.  For real signals, F spans the interval [0,Fs/2] when NFFT
 %     is even and [0,Fs/2) when NFFT is odd.  For complex signals, F always
 %     spans the interval [0,Fs).
 
 
-    [psdy,F] = pwelch(y,[],[],numRBs,fs);      
-    
+    [psdy,F] = pwelch(y,[],[],numRBs,fs);
+
     %% the gain in frequency is obtained by dividing the psd of the received signal
     %% by the psd of the original signal. Note that the psd of the original
     %% signal is constant in frequency (since the transform of a delta is a
     %% constant)
-    ppssdd(:,ii) = psdy ./ psdsig;  
-    
+    ppssdd(:,ii) = psdy ./ psdsig;
+
 
     % this to plot
     %   figure;
@@ -113,9 +113,9 @@ zlabel ('Amplitude [dB]');
 TAG = upper(tag);
 len = round((traceDuration/TTI));
 
-file = fopen(strcat('fading_trace_',tag,'.fad'),'at');   
+file = fopen(strcat('fading_trace_',tag,'.fad'),'at');
 
-        
+
 for j=1:numRBs
     for s=1:len
         fprintf(file, '%g ',10.*log10(ppssdd(j, s)));

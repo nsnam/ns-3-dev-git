@@ -87,7 +87,7 @@ namespace ns3 {
 
 
 /**
- * \ingroup openflow 
+ * \ingroup openflow
  * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  */
 class OpenFlowSwitchNetDevice : public NetDevice
@@ -437,7 +437,7 @@ private:
    * \param buffer Buffer of the packet received.
    * \param packet_uid Packet UID; used to fetch the packet and its metadata.
    * \param port The port the packet was received over.
-   * \param send_to_controller 
+   * \param send_to_controller
    */
   void FlowTableLookup (sw_flow_key key, ofpbuf* buffer, uint32_t packet_uid, int port, bool send_to_controller);
 

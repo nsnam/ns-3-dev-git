@@ -5,28 +5,28 @@ Profiling
 ---------
 
 Memory profiling is essential to identify issues that
-may cause memory corruption, which may lead to all sorts of 
+may cause memory corruption, which may lead to all sorts of
 side-effects, such as crashing after many hours of simulation and
 producing wrong results that invalidate the entire simulation.
 
-It also can help tracking sources of excessive memory allocations, 
-the size of these allocations and memory usage during simulation. 
-These can affect simulation performance, or limit the complexity 
+It also can help tracking sources of excessive memory allocations,
+the size of these allocations and memory usage during simulation.
+These can affect simulation performance, or limit the complexity
 and the number of concurrent simulations.
 
-Performance profiling on the other hand is essential for 
+Performance profiling on the other hand is essential for
 high-performance applications, as it allows for the identification
 of bottlenecks and their mitigation.
 
 Another type of profiling is related to system calls. They
-can be used to debug issues and identify hotspots that 
+can be used to debug issues and identify hotspots that
 may cause performance issues in specific conditions. Excessive
-calls results in more context switches, which interrupt the 
-simulations, ultimately slowing them down. 
+calls results in more context switches, which interrupt the
+simulations, ultimately slowing them down.
 
 Other than profiling the simulations, which can highlight bottlenecks
-in the simulator, we can also profile the compilation process. 
-This allows us to identify and fix bottlenecks, which speed up 
+in the simulator, we can also profile the compilation process.
+This allows us to identify and fix bottlenecks, which speed up
 build times.
 
 
@@ -40,22 +40,22 @@ Memory Profilers
 .. _Bytehound : https://github.com/koute/bytehound
 .. _gperftools : https://github.com/gperftools/gperftools
 
-Memory profilers are tools that help identifying memory related 
+Memory profilers are tools that help identifying memory related
 issues.
 
 There are two well known tools for finding bugs such as uninitialized memory usage,
 out-of-bound accesses, dereferencing null pointers and other memory-related bugs:
 
 * `Valgrind`_
-  
+
   * Pros: very rich tooling, no need to recompile programs to profile the program.
   * Cons: very slow and limited to Linux and MacOS.
 * `Sanitizers`_
-  
+
   * Pros: sanitizers are distributed along with compilers, such as GCC, Clang and MSVC.
     They are widely available, cross platform and faster than Valgrind.
-  * Cons: false positives, high memory usage, memory sanitizer is incompatible 
-    with other sanitizers (e.g. address sanitizer), requiring two instrumented 
+  * Cons: false positives, high memory usage, memory sanitizer is incompatible
+    with other sanitizers (e.g. address sanitizer), requiring two instrumented
     compilations and two test runs. The memory sanitizer requires Clang.
 
 There are also tools to count memory allocations, track memory usage and memory leaks,
@@ -92,11 +92,11 @@ used to profile programs at runtime and find issues related to undefined behavio
 memory corruption (out-of-bound access, uninitialized memory use), leaks, race
 conditions and others.
 
-Sanitizers are shipped with most modern compilers and can be used by instructing the 
+Sanitizers are shipped with most modern compilers and can be used by instructing the
 compiler to link the required libraries and instrument the code.
 
 To build ns-3 with sanitizers, enable the ``NS3_SANITIZE`` option. This can be done
-directly via CMake: 
+directly via CMake:
 
 .. sourcecode:: console
 
@@ -158,27 +158,27 @@ Sanitizers were used to find issues in multiple occasions:
     =>0x0ffd7197db70: 00 00 04 f9 f9 f9 f9[f9]00 00 00 00 00 00 00 00
     Shadow byte legend (one shadow byte represents 8 application bytes):
       Addressable:           00
-      Partially addressable: 01 02 03 04 05 06 07 
+      Partially addressable: 01 02 03 04 05 06 07
       Global redzone:        f9
     ==51636==ABORTING
 
-  * The output above shows the type of error (``global-buffer-overflow``), 
-    the stack-trace of where the bug happened (``LteAmc::GetDlTbSizeFromMcs``), 
-    affected variables (``McsToItbsUl`` and ``TransportBlockSizeTable``), 
+  * The output above shows the type of error (``global-buffer-overflow``),
+    the stack-trace of where the bug happened (``LteAmc::GetDlTbSizeFromMcs``),
+    affected variables (``McsToItbsUl`` and ``TransportBlockSizeTable``),
     and a shadow bytes map, showing the wrong access between square brackets.
-  * The the global redzone (f9) shadow bytes are empty memory allocated between global variables (00s and 04s), 
+  * The the global redzone (f9) shadow bytes are empty memory allocated between global variables (00s and 04s),
     which are left there to be corrupted by the bugged program.
     Any eventual corruption is then traced back to the source, without affecting the program execution.
   * The adopted solution in merge request `MR703`_ was to fix one of the schedulers that could produce the index value of -1,
     and updating the asserts to catch the illegal index value.
 
 * A wrong downcast in the Wimax module:
-  
+
   * The pointer was casted incorrectly to U16TlvValue instead of U8TvlValue, which could have different sizes in memory
-    leading to the program reading the wrong memory address. 
-    Reading the wrong memory address can result in unexpected or invalid values being read, which could change the 
-    program flow and corrupt memory, producing wrong simulation results or crashing the program. 
-  
+    leading to the program reading the wrong memory address.
+    Reading the wrong memory address can result in unexpected or invalid values being read, which could change the
+    program flow and corrupt memory, producing wrong simulation results or crashing the program.
+
   .. sourcecode:: console
 
     ~/ns-3-dev/src/wimax/model/service-flow.cc:159:86: runtime error: downcast of address 0x6020000148b0 which does not point to an object of type 'U16TlvValue'
@@ -210,8 +210,8 @@ along with stack traces, allowing developers to identify code responsible
 for possible memory leaks and unnecessary allocations.
 
 For the examples below we used the default configuration of ns-3,
-with the output going to the ``build`` directory. The actual executable 
-for the ``wifi-he-network`` example is ``./build/examples/wireless/ns3-dev-wifi-he-network``, which is what is 
+with the output going to the ``build`` directory. The actual executable
+for the ``wifi-he-network`` example is ``./build/examples/wireless/ns3-dev-wifi-he-network``, which is what is
 executed by ``./ns3 run wifi-he-network``.
 
 To collect information of a program (in this case the ``wifi-he-network``
@@ -225,13 +225,13 @@ If you prefer to use the ``ns3`` wrapper, try:
 
 .. sourcecode:: console
 
-   ~ns-3-dev/$ ./ns3 run "wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745" --command-template "heaptrack %s" --no-build 
+   ~ns-3-dev/$ ./ns3 run "wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745" --command-template "heaptrack %s" --no-build
 
 In both cases, heaptrack will print to the terminal the output file:
 
 .. sourcecode:: console
 
-    ~ns-3-dev/$ ./ns3 run "wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745" --command-template "heaptrack %s" --no-build 
+    ~ns-3-dev/$ ./ns3 run "wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745" --command-template "heaptrack %s" --no-build
     heaptrack output will be written to "~ns-3-dev/heaptrack.ns3-dev-wifi-he-network.210305.zst"
     starting application, this might take some time...
     MCS value               Channel width           GI                      Throughput
@@ -248,10 +248,10 @@ In both cases, heaptrack will print to the terminal the output file:
 
         heaptrack --analyze "~/ns-3-dev/heaptrack.ns3-dev-wifi-he-network.210305.zst"
 
-The output above shows a summary of the stats collected: ~149 million allocations, 
+The output above shows a summary of the stats collected: ~149 million allocations,
 ~21 million temporary allocations and ~10 thousand possible leaked allocations.
 
-If ``heaptrack-gui`` is installed, running ``heaptrack`` will launch it. If it is not installed, 
+If ``heaptrack-gui`` is installed, running ``heaptrack`` will launch it. If it is not installed,
 the command line interface will be used.
 
 .. sourcecode:: console
@@ -364,7 +364,7 @@ Here is a short description of what each line of the last block of the output me
 * Total memory leak refers to memory allocated but never freed. This includes static initialization,
   so it is not uncommon to be different than 0KB. However this does not mean the program does not
   have memory leaks. Other memory profilers such as Valgrind and memory sanitizers are better
-  suited to track down memory leaks. 
+  suited to track down memory leaks.
 
 Based on the stack trace, it is fairly easy to locate the corresponding code and act on it to
 reduce the number of allocations.
@@ -383,7 +383,7 @@ but in a more interactive way.
 .. image:: figures/heaptrack.png
 
 Heaptrack was used in merge request `MR830`_ to track and reduce the number of allocations
-in the ``wifi-he-network`` example mentioned above. About 29 million unnecessary allocations 
+in the ``wifi-he-network`` example mentioned above. About 29 million unnecessary allocations
 were removed, which translates to a 20% reduction. This resulted in a 1.07x speedup of the
 test suite with Valgrind (``./test.py -d -g``) and 1.02x speedup without it.
 
@@ -402,16 +402,16 @@ Performance Profilers
 
 Performance profilers are programs that collect runtime information and help to
 identify performance bottlenecks. In some cases, they can point out hotspots
-and suggest solutions. 
+and suggest solutions.
 
-There are many tools to profile your program, including: 
+There are many tools to profile your program, including:
 
 * profilers from CPU manufacturers, such as `AMD uProf`_ and `Intel VTune`_
 * profilers from the operating systems, such as Linux's `Perf`_ and `Windows Performance Toolkit`_
-  
+
   * `Perf`_ also has a few graphical user interfaces available, being `Hotspot`_ one of them
 * instrumented compilation and auxiliary tools provided by compilers, such as `Gprof`_
-* third-party tools, such as `Sysprof`_ and `Oprofile`_ 
+* third-party tools, such as `Sysprof`_ and `Oprofile`_
 
 An overview on how to use `Perf`_ with `Hotspot`_, `AMD uProf`_ and
 `Intel VTune`_ is provided in the following sections.
@@ -422,29 +422,29 @@ Linux Perf and Hotspot GUI
 ++++++++++++++++++++++++++
 
 `Perf`_ is the kernel tool to measure performance of the Linux kernel,
-drivers and user-space applications. 
+drivers and user-space applications.
 
 Perf tracks some performance events, being some of the most important for performance:
 
 * cycles
-  
+
   * Clocks (time) spent running.
 * cache-misses
-  
-  * When either data or instructions were not in the L1/L2 caches, requiring 
+
+  * When either data or instructions were not in the L1/L2 caches, requiring
     a L3 or memory access.
 * branch-misses
-  
+
   * How many branch instructions were mispredicted.
-    Mispredictions causes the CPU to stall and clean the pipeline, 
+    Mispredictions causes the CPU to stall and clean the pipeline,
     slowing down the program.
 * stalled-cycles-frontend
-  
+
   * Cycles wasted by the processor waiting for the next instruction,
     usually due to instruction cache miss or mispredictions.
     Starves the CPU pipeline of instructions and slows down the program.
 * stalled-cycles-backend
-  
+
   * Cycles wasted waiting for pipeline resources to finish their work.
     Usually waiting for memory read/write, or executing long-latency instructions.
 
@@ -459,12 +459,12 @@ to the ``perf.data`` output file.
     ~/ns-3-dev$ ./ns3 run "wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745" --command-template "perf record -o ./perf.data --call-graph dwarf --event cycles,cache-misses,branch-misses --sample-cpu %s" --no-build
 
 
-`Hotspot`_ is a GUI for Perf, that makes performance profiling more 
-enjoyable and productive. It can parse the ``perf.data`` and show in 
+`Hotspot`_ is a GUI for Perf, that makes performance profiling more
+enjoyable and productive. It can parse the ``perf.data`` and show in
 a more friendly way.
 
 To record the same perf.data from Hotspot directly, fill the fields
-for working directory, path to the executable, arguments, perf 
+for working directory, path to the executable, arguments, perf
 events to track and output directory for the ``perf.data``.
 Then run to start recording.
 
@@ -475,7 +475,7 @@ image.
 
 .. image:: figures/hotspot-cycles.png
 
-The data is also presented in a tabular format in the bottom-up, 
+The data is also presented in a tabular format in the bottom-up,
 top-down and caller/callee tabs (top left of the screen).
 
 .. image:: figures/hotspot-top-down.png
@@ -490,14 +490,14 @@ Hotspot was used to identify performance bottlenecks in multiple occasions:
 #.  ``wifi-primary-channels`` test suite was extremely slow due to unnecessary RF processing.
     The adopted solution was to replace the filtering step of the entire channel to just the desired
     sub-band, and assuming sub-bands are uniformly sized, saving multiplications in the integral
-    used to compute the power of each sub-band. This resulted in a 6x speedup with 
-    ``./ns3 run "test-runner --fullness=TAKES_FOREVER --test-name=wifi-primary-channels"``. 
+    used to compute the power of each sub-band. This resulted in a 6x speedup with
+    ``./ns3 run "test-runner --fullness=TAKES_FOREVER --test-name=wifi-primary-channels"``.
     Hotspot was used along with AMD uProf to track this and other bottlenecks in `issue 426`_.
 
 #.  ``WifiMacQueue::TtlExceeded`` dereferenced data out of cache when calling Simulator::Now().
     The adopted solution was to move Simulator::Now() out of TtlExceeded and reuse the value
     and inlining TtlExceeded. This resulted in a ~1.20x speedup with the test suite (``./test.py -d``).
-    Hotspot was used along with AMD uProf to track this and other bottlenecks in `issue 280`_ 
+    Hotspot was used along with AMD uProf to track this and other bottlenecks in `issue 280`_
     and merge request `MR681`_.
 
 #.  MpduAggregator and MsduAggregator required an expensive attribute lookup to get the maximum sizes
@@ -510,9 +510,9 @@ Hotspot was used to identify performance bottlenecks in multiple occasions:
 AMD uProf
 +++++++++
 
-`AMD uProf`_ works much like `Linux Perf and Hotspot GUI`_, but 
+`AMD uProf`_ works much like `Linux Perf and Hotspot GUI`_, but
 is available in more platforms (Linux, Windows and BSD) using AMD
-processors. Differently from Perf, it provides more performance 
+processors. Differently from Perf, it provides more performance
 trackers for finer analysis.
 
 To use it, open uProf then click to profile an application. If you
@@ -522,11 +522,11 @@ Configurations`` section.
 
 .. image:: figures/uprof-start.png
 
-Fill the fields with the application path, the arguments and 
-the working directory. 
+Fill the fields with the application path, the arguments and
+the working directory.
 
-You may need to add the LD_LIBRARY_PATH environment variable 
-(or PATH on Windows), pointing it to the library output 
+You may need to add the LD_LIBRARY_PATH environment variable
+(or PATH on Windows), pointing it to the library output
 directory (e.g. ``ns-3-dev/build/lib``).
 
 Then click next:
@@ -537,29 +537,29 @@ Now select custom events and pick the events you want.
 
 The recommended ones for performance profiling are:
  * CYCLES_NOT_IN_HALT
-   
+
    * Clocks (time) spent running.
  * RETIRED_INST
-  
+
    * How many instructions were completed.
    * These do not count mispredictions, stalls, etc.
    * Instructions per clock (IPC) = RETIRED_INST / CYCLES_NOT_IN_HALT
  * RETIRED_BR_INST_MISP
-  
+
    * How many branch instructions were mispredicted.
-   * Mispredictions causes the CPU to stall and clean the pipeline, 
+   * Mispredictions causes the CPU to stall and clean the pipeline,
      slowing down the program.
- * L2_CACHE_MISS.FROM_L1_IC_MISS 
-  
-   * L2 cache misses caused by instruction L1 cache misses. 
+ * L2_CACHE_MISS.FROM_L1_IC_MISS
+
+   * L2 cache misses caused by instruction L1 cache misses.
    * Results in L3/memory accesses due to missing instructions in L1/L2.
- * L2_CACHE_MISS.FROM_L1_DC_MISS 
-  
-   * L2 cache misses caused by data L1 cache misses. 
+ * L2_CACHE_MISS.FROM_L1_DC_MISS
+
+   * L2 cache misses caused by data L1 cache misses.
    * Results in L3/memory accesses due to missing instructions in L1/L2
  * MISALIGNED_LOADS
-   
-   * Loads not aligned with processor words. 
+
+   * Loads not aligned with processor words.
    * Might result in additional cache and memory accesses.
 
 .. image:: figures/uprof-select-events.png
@@ -569,14 +569,14 @@ Now click in advanced options to enable collection of the call stack.
 .. image:: figures/uprof-collect-callstack.png
 
 Then click ``Start Profile`` and wait for the program to end.
-After it finishes you will be greeted with a hotspot summary screen, 
-but the ``Analyze`` tab (top of the screen) has sub-tabs with more 
+After it finishes you will be greeted with a hotspot summary screen,
+but the ``Analyze`` tab (top of the screen) has sub-tabs with more
 relevant information.
 
-In the following image the metrics are shown per module, including the 
+In the following image the metrics are shown per module, including the
 C library (libc.so.6) which provides the ``malloc`` and ``free`` functions.
 Values can be shown in terms of samples or percentages for easier reading
-and to decide where to optimize. 
+and to decide where to optimize.
 
 .. image:: figures/uprof-stats.png
 
@@ -597,23 +597,23 @@ Here are a few cases where AMD uProf was used to identify performance bottleneck
 #.  ``wifi-primary-channels`` test suite was extremely slow due to unnecessary RF processing.
     The adopted solution was to replace the filtering step of the entire channel to just the desired
     sub-band, and assuming sub-bands are uniformly sized, saving multiplications in the integral
-    used to compute the power of each sub-band. This resulted in a 6x speedup with 
-    ``./ns3 run "test-runner --fullness=TAKES_FOREVER --test-name=wifi-primary-channels"``. 
+    used to compute the power of each sub-band. This resulted in a 6x speedup with
+    ``./ns3 run "test-runner --fullness=TAKES_FOREVER --test-name=wifi-primary-channels"``.
     More details on: `issue 426`_ and merge request `MR677`_.
 
 #.  Continuing the work on ``wifi-primary-channels`` test suite, profiling showed an excessive
-    number of cache misses in ``InterferenceHelper::GetNextPosition``. 
+    number of cache misses in ``InterferenceHelper::GetNextPosition``.
     This function searches for an iterator on a map, which is very fast
     if the map is small and fits in the cache, which was not the case. After reviewing the code,
     it was noticed in most cases this call was unnecessary as the iterator was already known.
-    The adopted solution was to reuse the iterator whenever possible. 
-    This resulted in a 1.78x speedup on top of the previous 6x with 
+    The adopted solution was to reuse the iterator whenever possible.
+    This resulted in a 1.78x speedup on top of the previous 6x with
     ``./ns3 run "test-runner --fullness=TAKES_FOREVER --test-name=wifi-primary-channels"``.
     More details on: `issue 426`_ and merge requests `MR677`_ and `MR680`_.
 
-#.  Position-Independent Code libraries (``-fPIC``) have an additional layer of indirection that increases 
+#.  Position-Independent Code libraries (``-fPIC``) have an additional layer of indirection that increases
     instruction cache misses. The adopted solution was to disable `semantic interposition`_ with flag
-    ``-fno-semantic-interposition`` on GCC. This is the default setting on Clang. This results in 
+    ``-fno-semantic-interposition`` on GCC. This is the default setting on Clang. This results in
     approximately 1.14x speedup with ``./test.py -d``. More details on: `MR777`_.
 
 Note: all speedups above were measured on the same machine. Results may differ based on clock speeds,
@@ -622,39 +622,39 @@ cache sizes, number of cores, memory bandwidth and latency, storage throughput a
 Intel VTune
 +++++++++++
 
-`Intel VTune`_ works much like `Linux Perf and Hotspot GUI`_, but 
+`Intel VTune`_ works much like `Linux Perf and Hotspot GUI`_, but
 is available in more platforms (Linux, Windows and Mac) using Intel
-processors. Differently from Perf, it provides more performance 
+processors. Differently from Perf, it provides more performance
 trackers for finer analysis.
 
-When you open the program, you will be greeted by the landing page 
+When you open the program, you will be greeted by the landing page
 shown in the following image. To start a new profiling project, click
-in the ``Configure Analysis`` button. If you already have a project, 
-right-click the entry and click to configure analysis to reuse the 
+in the ``Configure Analysis`` button. If you already have a project,
+right-click the entry and click to configure analysis to reuse the
 settings.
 
 .. image:: figures/vtune-landing.png
 
 A configuration page will open, where you can fill the fields with
-the path to the program, arguments, and set working directory and 
-environment variables. 
+the path to the program, arguments, and set working directory and
+environment variables.
 
 Note: in this example on Windows using MinGW,
-we need to define the ``PATH`` environment variable with the paths 
-to both ``~/ns-3-dev/build/lib`` and the MinGW binaries folder 
+we need to define the ``PATH`` environment variable with the paths
+to both ``~/ns-3-dev/build/lib`` and the MinGW binaries folder
 (``~/msys64/mingw64/bin``), which contains essential libraries.
-On Linux-like systems you will need to define the 
+On Linux-like systems you will need to define the
 ``LD_LIBRARY_PATH`` environment variable instead of ``PATH``.
 
 Clicking on the ``Performance Snapshot`` shows the different profiling
-options. 
+options.
 
 .. image:: figures/vtune-configure.png
 
-If executed as is, a quicker profiling will be executed to 
+If executed as is, a quicker profiling will be executed to
 determine what areas should be profiled with more details.
-For the specific example, it is indicated that there are 
-microarchitectural bottlenecks and low parallelism 
+For the specific example, it is indicated that there are
+microarchitectural bottlenecks and low parallelism
 (not a surprise since ns-3 is single-threaded).
 
 .. image:: figures/vtune-perf-snapshot.png
@@ -678,7 +678,7 @@ mispredictions), bad speculation, cache misses, unused load ports,
 and more.
 
 The stats for the wifi module are shown below. The retiring
-metric indicates about 40% of dispatched instructions are 
+metric indicates about 40% of dispatched instructions are
 executed. The diagram on the right shows the bottleneck is
 in the front-end of the pipeline (red), due to high
 instruction cache misses, translation lookaside buffer (TLB)
@@ -686,10 +686,10 @@ overhead and unknown branches (most likely callbacks).
 
 .. image:: figures/vtune-uarch-wifi-stats.png
 
-The stats for the core module are shown below. 
+The stats for the core module are shown below.
 More specifically for the ns3::Object::DoGetObject function.
 Metrics indicates about 63% of bad speculations.
-The diagram on the right shows that there are bottlenecks 
+The diagram on the right shows that there are bottlenecks
 both in the front-end and due to bad speculation (red).
 
 .. image:: figures/vtune-uarch-core-stats.png
@@ -703,7 +703,7 @@ System calls profilers
 .. _procmon : https://docs.microsoft.com/en-us/sysinternals/downloads/procmon
 
 System call profilers collect information on which system
-calls were made by a program, how long they took to be 
+calls were made by a program, how long they took to be
 fulfilled and how many of them resulted in errors.
 
 There are many system call profilers, including `dtrace`_, `strace`_ and `procmon`_.
@@ -714,8 +714,8 @@ Strace
 ++++++
 
 
-The `strace`_ is a system calls (syscalls) profiler for Linux. It can filter 
-specific syscalls, or gather stats during the execution. 
+The `strace`_ is a system calls (syscalls) profiler for Linux. It can filter
+specific syscalls, or gather stats during the execution.
 
 To collect statistics, use ``strace -c``:
 
@@ -734,10 +734,10 @@ To collect statistics, use ``strace -c``:
     ------ ----------- ----------- --------- --------- ----------------
     100.00    0.011515           8      1378       251 total
 
-In the example above, the syscalls are listed in the right, after 
+In the example above, the syscalls are listed in the right, after
 the time spent on each syscall, number of calls and errors.
 
-The errors can be caused due to multiple reasons and may not 
+The errors can be caused due to multiple reasons and may not
 be a problem. To check if they were problems, strace can log the
 syscalls with ``strace -o calls.log``:
 
@@ -750,7 +750,7 @@ syscalls with ``strace -o calls.log``:
     11                      160 MHz                 800 ns                  524.459 Mbit/s
 
 
-Looking at the ``calls.log`` file, we can see different sections. In the 
+Looking at the ``calls.log`` file, we can see different sections. In the
 following section, the example is executed (``execve``), architecture is checked (``arch_prctl``),
 memory is mapped for execution (``mmap``) and LD_PRELOAD use is checked.
 
@@ -772,14 +772,14 @@ Then the program searches for the wifi module library and fails multiple times (
     openat(AT_FDCWD, "~/ns-3-dev/build/lib/x86_64/libns3-dev-wifi.so", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
     newfstatat(AT_FDCWD, "~/ns-3-dev/build/lib/x86_64", 0x7ffff8d62c80, 0) = -1 ENOENT (No such file or directory)
 
-The library is finally found and its header is read: 
+The library is finally found and its header is read:
 
 .. sourcecode:: console
 
     openat(AT_FDCWD, "~/ns-3-dev/build/lib/libns3-dev-wifi.so", O_RDONLY|O_CLOEXEC) = 3
     read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0py\30\0\0\0\0\0"..., 832) = 832
 
-Then other modules that wifi depends on are loaded, then execution of the program continues to the main 
+Then other modules that wifi depends on are loaded, then execution of the program continues to the main
 function of the simulation.
 
 Strace was used to track down issues found while running the ``lena-radio-link-failure`` example.
@@ -802,8 +802,8 @@ Its ``strace -c`` table was the following:
     100,00    0,781554           1    411681       951 total
 
 Notice the number of ``openat``, ``write``, ``close`` and ``lseek`` calls
-are much more frequent than the other calls. These mean 
-``lena-radio-link-failure`` is opening, then seeking, then writing, 
+are much more frequent than the other calls. These mean
+``lena-radio-link-failure`` is opening, then seeking, then writing,
 then closing at least one file handler.
 
 Using ``strace``, we can easily find the most frequently used file handlers.
@@ -835,21 +835,21 @@ Using ``strace``, we can easily find the most frequently used file handlers.
 
 With the name of the files, we can look at the code that manipulates them.
 
-The issue above was found in `MR777`_, were performance for some LTE examples 
-regressed for no apparent reason. The flame graph below, produced by `AMD uProf`_, 
-contains four large columns/"flames" in red, which 
+The issue above was found in `MR777`_, were performance for some LTE examples
+regressed for no apparent reason. The flame graph below, produced by `AMD uProf`_,
+contains four large columns/"flames" in red, which
 correspond to the ``write``, ``openat``, ``close`` and ``lseek`` syscalls.
 
 .. image:: figures/uprof-strace-lte.png
 
-Upon closer inspection, these syscalls take a long time to complete due to 
+Upon closer inspection, these syscalls take a long time to complete due to
 the underlying filesystem of the machine running the example (NTFS mount
-using the ntfs-3g FUSE filesystem). In other words, the bottleneck only 
-exists when running the example in slow file systems 
-(e.g. FUSE and network file systems). 
+using the ntfs-3g FUSE filesystem). In other words, the bottleneck only
+exists when running the example in slow file systems
+(e.g. FUSE and network file systems).
 
 The merge request `MR814`_ addressed the issue by keeping the files open
-throughout the simulation. That alone resulted in a 1.75x speedup. 
+throughout the simulation. That alone resulted in a 1.75x speedup.
 
 
 Compilation Profilers
@@ -859,7 +859,7 @@ Compilation profilers can help identifying which steps of the compilation
 are slowing it down. These profilers are built into the compilers themselves,
 only requiring third-party tools to consolidate the results.
 
-The GCC feature is mentioned and exemplified, but is not the recommended 
+The GCC feature is mentioned and exemplified, but is not the recommended
 compilation profiling method. For that, Clang is recommended.
 
 GCC
@@ -899,14 +899,14 @@ output for a file is shown below. The line of ``---`` was inserted for clarity.
   TOTAL                              :   0.67          0.20          0.88          78612 kB
 
 In the table above, the first few lines show the five main compilations steps: ``setup``,
-``parsing``, ``lang. deferred`` (C++ specific transformations), 
-``opt(imize) and generate (code)``, ``last asm`` (produce binary code). 
+``parsing``, ``lang. deferred`` (C++ specific transformations),
+``opt(imize) and generate (code)``, ``last asm`` (produce binary code).
 
 The lines below the ``---`` line show sub-steps of the five main compilation steps.
-For this specific case, parsing global definitions (21%) and structures (16%), 
+For this specific case, parsing global definitions (21%) and structures (16%),
 ``template instantiation`` (16%) and generating the code in ``symout`` (10%).
 
-Aggregating the data into a meaningful output to help focus where to improve is not that easy 
+Aggregating the data into a meaningful output to help focus where to improve is not that easy
 and it is `not a priority`_ for GCC developers.
 
 It is recommended to use the Clang alternative.
@@ -920,8 +920,8 @@ Clang can output very similar results with the ``-ftime-trace`` flag, but can al
 it in a more meaningful way. With the help of the third-party tool `ClangBuildAnalyzer`_,
 we can have really good insights on where to spend time trying to speed up the compilation.
 
-Support for building with ``-ftime-trace``, compiling `ClangBuildAnalyzer`_ and producing a 
-report for the project have been baked into the CMake project of ns-3, and can be enabled 
+Support for building with ``-ftime-trace``, compiling `ClangBuildAnalyzer`_ and producing a
+report for the project have been baked into the CMake project of ns-3, and can be enabled
 with ``-DNS3_CLANG_TIMETRACE=ON``.
 
 .. sourcecode:: console
@@ -1019,13 +1019,13 @@ The entire procedure looks like the following:
     lte-test-rlc-um-transmitter.cc.o simulator.h event-id.h  (560 ms)
     ...
 
-  
+
     done in 2.8s.
 
-The output printed out contain a summary of time spent on parsing and on code generation, along 
+The output printed out contain a summary of time spent on parsing and on code generation, along
 with multiple lists for different tracked categories. From the summary, it is clear that parsing times
 are very high when compared to the optimization time (``-O3``). Skipping the others categories and going straight
-to the expensive headers section, we can better understand why parsing times are so high, with some headers 
+to the expensive headers section, we can better understand why parsing times are so high, with some headers
 adding as much as 5 minutes of CPU time to the parsing time.
 
 .. _drastically speed up parsing times : https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/731#note_687176503
@@ -1038,7 +1038,7 @@ compilation at the cost of increasing recompilation times.
 CMake Profiler
 **************
 
-CMake has a built-in tracer that permits tracking hotspots in the CMake files slowing down the 
+CMake has a built-in tracer that permits tracking hotspots in the CMake files slowing down the
 project configuration. To use the tracer, call cmake directly from a clean CMake cache directory:
 
 .. sourcecode:: console
@@ -1055,14 +1055,14 @@ Or using the ns3 wrapper:
 
 .. _Perfetto UI: https://ui.perfetto.dev/
 
-A ``cmake_performance_trace.log`` file will be generated in the ns-3-dev directory. 
+A ``cmake_performance_trace.log`` file will be generated in the ns-3-dev directory.
 The tracing results can be visualized using the ``about:tracing`` panel available
 in Chromium-based browsers or a compatible trace viewer such as `Perfetto UI`_.
 
 After opening the trace file, select the traced process and click on
 any of the blocks to inspect the different stacks and find hotspots.
-An auxiliary panel containing the function/macro name, arguments 
-and location can be shown, providing enough information to trace 
+An auxiliary panel containing the function/macro name, arguments
+and location can be shown, providing enough information to trace
 back the location of each specific call.
 
 Just like in performance profilers, visual inspection makes it easier
@@ -1083,7 +1083,7 @@ up-to-date copies of headers in the output directory.
 
 In `MR911`_, alternatives such as stub headers that include the original header
 files, keeping them in their respective modules, and symlinking headers to the
-output directory were used to reduce the configuration overhead. 
+output directory were used to reduce the configuration overhead.
 
 Note: when testing I/O bottlenecks, you may want to drop filesystem caches,
 otherwise the cache may hide the issues. In Linux, the caches can be cleared

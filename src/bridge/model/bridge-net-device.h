@@ -38,14 +38,14 @@ class Node;
 
 /**
  * \defgroup bridge Bridge Network Device
- * 
+ *
  * \brief a virtual net device that bridges multiple LAN segments
  *
  * The BridgeNetDevice object is a "virtual" netdevice that aggregates
  * multiple "real" netdevices and implements the data plane forwarding
  * part of IEEE 802.1D.  By adding a BridgeNetDevice to a Node, it
  * will act as a "bridge", or "switch", to multiple LAN segments.
- * 
+ *
  * By default the bridge netdevice implements a "learning bridge"
  * algorithm (see 802.1D), where incoming unicast frames from one port
  * may occasionally be forwarded throughout all other ports, but
@@ -83,7 +83,7 @@ public:
   BridgeNetDevice (const BridgeNetDevice &) = delete;
   BridgeNetDevice & operator = (const BridgeNetDevice &) = delete;
 
-  /** 
+  /**
    * \brief Add a 'port' to a bridge device
    * \param bridgePort the NetDevice to add
    *

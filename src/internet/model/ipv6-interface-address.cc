@@ -30,7 +30,7 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress");
 
-Ipv6InterfaceAddress::Ipv6InterfaceAddress () 
+Ipv6InterfaceAddress::Ipv6InterfaceAddress ()
   : m_address (Ipv6Address ()),
     m_prefix (Ipv6Prefix ()),
     m_state (TENTATIVE_OPTIMISTIC),
@@ -71,7 +71,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (Ipv6Address address, Ipv6Prefix pref
   m_nsDadUid = 0;
 }
 
-Ipv6InterfaceAddress::Ipv6InterfaceAddress (const Ipv6InterfaceAddress& o) 
+Ipv6InterfaceAddress::Ipv6InterfaceAddress (const Ipv6InterfaceAddress& o)
   : m_address (o.m_address),
     m_prefix (o.m_prefix),
     m_state (o.m_state),

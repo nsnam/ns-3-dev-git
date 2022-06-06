@@ -1,15 +1,15 @@
 
 diagram {
-	
+
    LtePdcp -> LteRlc [label="send SDU"]
-             LteRlc -> LteMacSapProvider [label="ReportBufferStatus ()"] 
-                       LteMacSapProvider -> LteEnbMac [label="DoReportBufferStatus ()"] 
-                                            LteEnbMac -> FfMacSchedSapProvider [label="SchedDlRlcBufferReq ()"] 
+             LteRlc -> LteMacSapProvider [label="ReportBufferStatus ()"]
+                       LteMacSapProvider -> LteEnbMac [label="DoReportBufferStatus ()"]
+                                            LteEnbMac -> FfMacSchedSapProvider [label="SchedDlRlcBufferReq ()"]
                                                          FfMacSchedSapProvider -> Scheduler [label="DoSchedDlRlcBufferReq ()"]
-                                                         FfMacSchedSapProvider <-- Scheduler 
-                                            LteEnbMac <-- FfMacSchedSapProvider 
+                                                         FfMacSchedSapProvider <-- Scheduler
+                                            LteEnbMac <-- FfMacSchedSapProvider
                        LteMacSapProvider <-- LteEnbMac
-             LteRlc <-- LteMacSapProvider 
-   LtePdcp <-- LteRlc 
+             LteRlc <-- LteMacSapProvider
+   LtePdcp <-- LteRlc
    }
 

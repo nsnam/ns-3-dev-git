@@ -49,7 +49,7 @@ public:
   virtual void DoRun (void);
 
 private:
-  
+
   Ptr<const Packet> m_recvdPacket; //!< received packet
   /**
    * \brief Send one packet to the device specified
@@ -66,7 +66,7 @@ private:
    * \param pkt The received packet.
    * \param mode The protocol mode used.
    * \param sender The sender address.
-   * 
+   *
    * \return A boolean indicating packet handled properly.
    */
   bool RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
@@ -110,12 +110,12 @@ PointToPointTest::DoRun (void)
 
   a->AddDevice (devA);
   b->AddDevice (devB);
-  
+
   devB->SetReceiveCallback (MakeCallback (&PointToPointTest::RxPacket,
                                           this));
   uint8_t txBuffer [] = "\"Can you tell me where my country lies?\" \\ said the unifaun to his true love's eyes. \\ \"It lies with me!\" cried the Queen of Maybe \\ - for her merchandise, he traded in his prize.";
   size_t txBufferSize = sizeof(txBuffer);
-  
+
   Simulator::Schedule (Seconds (1.0), &PointToPointTest::SendOnePacket, this, devA, txBuffer, txBufferSize);
 
   Simulator::Run ();
@@ -123,10 +123,10 @@ PointToPointTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_recvdPacket->GetSize (), txBufferSize, "trivial");
 
   uint8_t rxBuffer [1500]; // As large as the P2P MTU size, assuming that the user didn't change it.
-  
+
   m_recvdPacket->CopyData (rxBuffer, txBufferSize);
   NS_TEST_EXPECT_MSG_EQ (memcmp (rxBuffer, txBuffer, txBufferSize), 0, "trivial");
-  
+
   Simulator::Destroy ();
 }
 

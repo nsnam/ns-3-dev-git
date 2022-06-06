@@ -84,21 +84,21 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual Address GetMulticast (Ipv4Address addr) const;
   virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb); 
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual bool SupportsSendFrom (void) const;
 
-  /** 
+  /**
    * receive a packet from the lower layers in order to forward it to the upper layers
-   * 
+   *
    * \param p the packet
    */
   void Receive (Ptr<Packet> p);
-  
+
 protected:
-  
+
   NetDevice::ReceiveCallback m_rxCallback; ///< receive callback
-  
+
 private:
   Ptr<Node> m_node; ///< the node
 

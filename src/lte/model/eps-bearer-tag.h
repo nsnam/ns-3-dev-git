@@ -30,7 +30,7 @@ class Tag;
 
 /**
  * Tag used to define the RNTI and EPS bearer ID for packets
- * interchanged between the EpcEnbApplication and the LteEnbNetDevice 
+ * interchanged between the EpcEnbApplication and the LteEnbNetDevice
  */
 
 class EpsBearerTag : public Tag
@@ -55,7 +55,7 @@ public:
    * @param bid the value of the Bearer Id to set
    */
   EpsBearerTag (uint16_t  rnti, uint8_t bid);
-  
+
   /**
    * Set the RNTI to the given value.
    *

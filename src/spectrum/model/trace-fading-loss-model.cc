@@ -35,7 +35,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (TraceFadingLossModel);
-  
+
 
 
 TraceFadingLossModel::TraceFadingLossModel ()
@@ -99,17 +99,17 @@ void
 TraceFadingLossModel::SetTraceFileName (std::string fileName)
 {
   NS_LOG_FUNCTION (this << "Set Fading Trace " << fileName);
-  
+
   m_traceFile = fileName;
 }
 
-void 
+void
 TraceFadingLossModel::SetTraceLength (Time t)
 {
   m_traceLength = t;
 }
 
-void 
+void
 TraceFadingLossModel::DoInitialize ()
 {
   LoadTrace ();
@@ -154,7 +154,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   Ptr<const MobilityModel> b) const
 {
   NS_LOG_FUNCTION (this << *txPsd << a << b);
-  
+
   std::map <ChannelRealizationId_t, int >::iterator itOff;
   ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
   itOff = m_windowOffsetsMap.find (mobilityPair);
@@ -191,13 +191,13 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
       itOff = m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ())).first;
     }
 
-  
+
   Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
   Values::iterator vit = rxPsd->ValuesBegin ();
-  
+
   //Vector aSpeedVector = a->GetVelocity ();
   //Vector bSpeedVector = b->GetVelocity ();
-  
+
   //double speed = std::sqrt (std::pow (aSpeedVector.x-bSpeedVector.x,2) + std::pow (aSpeedVector.y-bSpeedVector.y,2));
 
   NS_LOG_LOGIC (this << *rxPsd);
@@ -237,7 +237,7 @@ int64_t
 TraceFadingLossModel::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
-  NS_ASSERT (m_streamsAssigned == false);  
+  NS_ASSERT (m_streamsAssigned == false);
   m_streamsAssigned = true;
   m_currentStream = stream;
   m_lastStream = stream + m_streamSetSize - 1;

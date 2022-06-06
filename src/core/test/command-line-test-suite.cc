@@ -176,10 +176,10 @@ class CommandLineUint8tTestCase : public CommandLineTestCaseBase
 {
 public:
   /** Constructor */
-  CommandLineUint8tTestCase ();             
+  CommandLineUint8tTestCase ();
   /** Destructor */
   virtual ~CommandLineUint8tTestCase ()
-  {}                                        
+  {}
 
 private:
   /** Run the test */

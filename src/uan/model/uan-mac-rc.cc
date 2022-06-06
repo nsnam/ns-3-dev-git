@@ -340,7 +340,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTx
 
       if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()))
         {
-          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << Mac8Address::ConvertFrom (GetAddress ()) <<
                         " UanMacRc Receiving DATA packet from PHY");
           UanHeaderRcData dh;
           pkt->RemoveHeader (dh);
@@ -371,7 +371,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTx
           }
         else
           {
-            NS_FATAL_ERROR (Now ().As (Time::S) << " Node " << 
+            NS_FATAL_ERROR (Now ().As (Time::S) << " Node " <<
                             Mac8Address::ConvertFrom (GetAddress ()) << " Received window period < 0");
           }
 
@@ -393,8 +393,8 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, [[maybe_unused]] double sinr, UanTx
                   }
                 else
                   {
-                    NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
-                                  Mac8Address::ConvertFrom (GetAddress ()) << 
+                    NS_LOG_DEBUG (Now ().As (Time::S) << " Node " <<
+                                  Mac8Address::ConvertFrom (GetAddress ()) <<
                                   " received CTS while state != RTSSENT or GWPING");
                   }
               }
@@ -435,13 +435,13 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
     }
   if (it == m_resList.end ())
     {
-      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
-                    Mac8Address::ConvertFrom (GetAddress ()) << 
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " <<
+                    Mac8Address::ConvertFrom (GetAddress ()) <<
                     " received CTS packet with no corresponding reservation!");
       return;
     }
-  NS_LOG_DEBUG (Now ().As (Time::S) << 
-                " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+  NS_LOG_DEBUG (Now ().As (Time::S) <<
+                " Node " << Mac8Address::ConvertFrom (GetAddress ()) <<
                 " received CTS packet.  Scheduling data");
   it->SetTransmitted ();
 
@@ -483,11 +483,11 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
         {
           NS_FATAL_ERROR ("Scheduling error resulted in very negative data transmission time! eventTime = " << eventTime.As (Time::S));
         }
-      NS_LOG_DEBUG (Now ().As (Time::S) << 
-                    " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
-                    " scheduling with delay " << eventTime.As (Time::S) << 
-                    " propDelay " << m_learnedProp.As (Time::S) << 
-                    " start delay " << startDelay.As (Time::S) << 
+      NS_LOG_DEBUG (Now ().As (Time::S) <<
+                    " Node " << Mac8Address::ConvertFrom (GetAddress ()) <<
+                    " scheduling with delay " << eventTime.As (Time::S) <<
+                    " propDelay " << m_learnedProp.As (Time::S) <<
+                    " start delay " << startDelay.As (Time::S) <<
                     " arrival time " << arrTime.As (Time::S));
       Simulator::Schedule (eventTime, &UanMacRc::SendPacket, this, pkt, m_currentRate);
       frameDelay = frameDelay + m_sifs + Seconds (pkt->GetSize () / currentBps);
@@ -536,10 +536,10 @@ UanMacRc::SendPacket (Ptr<Packet> pkt, uint32_t rate)
       type = "UNKNOWN";
       break;
     }
-  NS_LOG_DEBUG (Now ().As (Time::S) << 
-                " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
-                " transmitting " << pkt->GetSize () << 
-                " byte packet of type " << type << " with rate " << rate << 
+  NS_LOG_DEBUG (Now ().As (Time::S) <<
+                " Node " << Mac8Address::ConvertFrom (GetAddress ()) <<
+                " transmitting " << pkt->GetSize () <<
+                " byte packet of type " << type << " with rate " << rate <<
                 "(" << m_phy->GetMode (rate).GetDataRateBps () << ") to " << ch.GetDest ());
   m_dequeueLogger (pkt, rate);
   m_phy->SendPacket (pkt, rate);
@@ -579,8 +579,8 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
       uint8_t pnum = 0;
       for (; nit != nacks.end (); nit++)
         {
-          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
-                        Mac8Address::ConvertFrom (GetAddress ()) << 
+          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " <<
+                        Mac8Address::ConvertFrom (GetAddress ()) <<
                         " Received NACK for " << (uint32_t) *nit);
           while (pnum < *nit)
             {
@@ -594,8 +594,8 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
     }
   else
     {
-      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
-                    Mac8Address::ConvertFrom (GetAddress ()) << 
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " <<
+                    Mac8Address::ConvertFrom (GetAddress ()) <<
                     " received ACK for all frames");
     }
   m_resList.erase (it);
@@ -745,8 +745,8 @@ UanMacRc::RtsTimeout (void)
 
       if (m_resList.empty ())
         {
-          NS_FATAL_ERROR (Now ().As (Time::S) << " Node " << 
-                          Mac8Address::ConvertFrom (GetAddress ()) << 
+          NS_FATAL_ERROR (Now ().As (Time::S) << " Node " <<
+                          Mac8Address::ConvertFrom (GetAddress ()) <<
                           " tried to retry RTS with empty reservation list");
         }
       Ptr<Packet> pkt = Create<Packet> (0);
@@ -769,7 +769,7 @@ UanMacRc::RtsTimeout (void)
   m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::RtsTimeout, this);
 }
 
-void 
+void
 UanMacRc::BlockRtsing (void)
 {
   m_rtsBlocked = true;

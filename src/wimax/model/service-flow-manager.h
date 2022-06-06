@@ -68,7 +68,7 @@ public:
    * Get service flow by flow id
    * \param sfid the service flow id
    * \returns pointer to the service flow object corresponding to the flow id
-   */ 
+   */
   ServiceFlow* GetServiceFlow (uint32_t sfid) const;
   /**
    * Get service flow by CID

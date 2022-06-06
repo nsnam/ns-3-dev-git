@@ -40,7 +40,7 @@ class DataOutputCallback;
 /**
  * \ingroup stats
  * \class StatisticalSummary
- * \brief Abstract class for calculating statistical data 
+ * \brief Abstract class for calculating statistical data
  *
  */
 class StatisticalSummary {
@@ -118,7 +118,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Returns whether the DataCalculator is enabled
    * \return true if DataCalculator is enabled

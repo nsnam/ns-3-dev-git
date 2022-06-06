@@ -61,7 +61,7 @@ main (int argc, char *argv[])
 {
   typedef std::vector<NodeContainer> vectorOfNodeContainer;
   typedef std::vector<vectorOfNodeContainer> vectorOfVectorOfNodeContainer;
-  typedef std::vector<vectorOfVectorOfNodeContainer> vectorOfVectorOfVectorOfNodeContainer;  
+  typedef std::vector<vectorOfVectorOfNodeContainer> vectorOfVectorOfVectorOfNodeContainer;
 
   typedef std::vector<Ipv4InterfaceContainer> vectorOfIpv4InterfaceContainer;
   typedef std::vector<vectorOfIpv4InterfaceContainer> vectorOfVectorOfIpv4InterfaceContainer;
@@ -94,7 +94,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("single", "Use single on/off app per campus network", single);
   cmd.AddValue ("verbose", "Show extra timing information", verbose);
   cmd.AddValue ("test", "Enable regression test output", testing);
-  
+
   cmd.Parse (argc,argv);
 
   // Enable parallel simulator with the command line arguments
@@ -658,7 +658,7 @@ main (int argc, char *argv[])
 
       SinkTracer::Verify (expectedPacketCount);
     }
-  
+
   // Exit the parallel execution environment
   MpiInterface::Disable ();
   t2.End ();

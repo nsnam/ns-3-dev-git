@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 University of Washington, 2012 INRIA 
+ * Copyright (c) 2012 University of Washington, 2012 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -52,8 +52,8 @@
 //
 // By default, we create the following topology
 //
-//            n0    n1  
-//            |     |   
+//            n0    n1
+//            |     |
 //            -------
 //             "eth1"
 //
@@ -65,11 +65,11 @@
 // Another mode of operation corresponds to the wiki HOWTO
 // 'HOWTO use ns-3 scripts to drive real hardware'
 //
-// If the --client mode is specified, only one ns-3 node is created 
+// If the --client mode is specified, only one ns-3 node is created
 // on the specified device name, assuming that a server node is
 // on another virtual machine.  The client node will use 10.1.1.2
 //
-// If the --server mode is specified, only one ns-3 node is created 
+// If the --server mode is specified, only one ns-3 node is created
 // on the specified device name, assuming that a client node is
 // on another virtual machine.  The server node will use 10.1.1.1
 
@@ -170,11 +170,11 @@ main (int argc, char *argv[])
       NS_LOG_INFO ("Assign IP Addresses.");
       i = ipv4.Assign (d);
     }
-    
+
   if (serverMode)
     {
       //
-      // Create a UdpEchoServer application 
+      // Create a UdpEchoServer application
       //
       NS_LOG_INFO ("Create Applications.");
       UdpEchoServerHelper server (9);
@@ -185,7 +185,7 @@ main (int argc, char *argv[])
   else if (clientMode)
     {
       //
-      // Create a UdpEchoClient application to send UDP datagrams 
+      // Create a UdpEchoClient application to send UDP datagrams
       //
       uint32_t packetSize = 1024;
       uint32_t maxPacketCount = 20;
@@ -208,7 +208,7 @@ main (int argc, char *argv[])
       apps = server.Install (n.Get (1));
       apps.Start (Seconds (1.0));
       apps.Stop (Seconds (stopTime));
-    
+
       //
       // Create a UdpEchoClient application to send UDP datagrams from node zero to node one.
       //

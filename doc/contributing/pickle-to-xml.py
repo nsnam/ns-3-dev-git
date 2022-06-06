@@ -20,12 +20,12 @@ def dump_pickles(out, dirname, filename, path):
     out.write('  <page url="%s">\n' % path)
     out.write('    <fragment>%s.frag</fragment>\n' % data['current_page_name'])
     if data['prev'] is not None:
-        out.write('    <prev url="%s">%s</prev>\n' % 
-                  (os.path.normpath(os.path.join(path, data['prev']['link'])), 
+        out.write('    <prev url="%s">%s</prev>\n' %
+                  (os.path.normpath(os.path.join(path, data['prev']['link'])),
                    data['prev']['title']))
     if data['next'] is not None:
-        out.write('    <next url="%s">%s</next>\n' % 
-                  (os.path.normpath(os.path.join(path, data['next']['link'])), 
+        out.write('    <next url="%s">%s</next>\n' %
+                  (os.path.normpath(os.path.join(path, data['next']['link'])),
                    data['next']['title']))
     out.write('  </page>\n')
     f.close()

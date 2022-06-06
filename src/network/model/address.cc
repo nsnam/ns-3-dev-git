@@ -71,7 +71,7 @@ Address::IsInvalid (void) const
   return m_len == 0 && m_type == 0;
 }
 
-uint8_t 
+uint8_t
 Address::GetLength (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -118,7 +118,7 @@ Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
   std::memcpy (m_data, buffer + 2, m_len);
   return m_len + 2;
 }
-bool 
+bool
 Address::CheckCompatible (uint8_t type, uint8_t len) const
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (type) << static_cast<uint32_t> (len));
@@ -127,14 +127,14 @@ Address::CheckCompatible (uint8_t type, uint8_t len) const
   /// Mac address type/length detection is discussed in \bugid{1568}
   return (m_len == len && m_type == type) || (m_len >= len && m_type == 0);
 }
-bool 
+bool
 Address::IsMatchingType (uint8_t type) const
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   return m_type == type;
 }
 
-uint8_t 
+uint8_t
 Address::Register (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -174,9 +174,9 @@ ATTRIBUTE_HELPER_CPP (Address);
 
 bool operator == (const Address &a, const Address &b)
 {
-  /* Two addresses can be equal even if their types are 
-   * different if one of the two types is zero. a type of 
-   * zero identifies an Address which might contain meaningful 
+  /* Two addresses can be equal even if their types are
+   * different if one of the two types is zero. a type of
+   * zero identifies an Address which might contain meaningful
    * payload but for which the type field could not be set because
    * we did not know it. This can typically happen in the ARP
    * layer where we receive an address from an ArpHeader but
@@ -184,7 +184,7 @@ bool operator == (const Address &a, const Address &b)
    * compare addresses without knowing their real type.
    */
   if (a.m_type != b.m_type &&
-      a.m_type != 0 && 
+      a.m_type != 0 &&
       b.m_type != 0)
     {
       return false;
@@ -220,11 +220,11 @@ bool operator < (const Address &a, const Address &b)
   NS_ASSERT (a.GetLength () == b.GetLength ());
   for (uint8_t i = 0; i < a.GetLength (); i++)
     {
-      if (a.m_data[i] < b.m_data[i]) 
+      if (a.m_data[i] < b.m_data[i])
         {
           return true;
         }
-      else if (a.m_data[i] > b.m_data[i]) 
+      else if (a.m_data[i] > b.m_data[i])
         {
           return false;
         }

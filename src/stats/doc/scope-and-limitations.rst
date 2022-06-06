@@ -23,7 +23,7 @@ Currently, only these Probes have been implemented in DCF:
 - ApplicationPacketProbe
 - Ipv4PacketProbe
 
-Currently, no Collectors are available in the DCF, although a 
+Currently, no Collectors are available in the DCF, although a
 BasicStatsCollector is under development.
 
 Currently, only these Aggregators have been implemented in DCF:

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
- * 
+ *
  */
 
 #ifndef OH_BUILDINGS_PROPAGATION_LOSS_MODEL_H_
@@ -32,7 +32,7 @@ class OkumuraHataPropagationLossModel;
  * \ingroup propagation
  *
  *  this model combines the OkumuraHata model with the BuildingsPropagationLossModel
- * 
+ *
  *  \warning This model works with MobilityBuildingInfo only
  *
  */
@@ -54,7 +54,7 @@ public:
    * \returns the propagation loss (in dBm)
    */
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  
+
 private:
 
   Ptr<OkumuraHataPropagationLossModel> m_okumuraHata; //!< OkumuraHata Propagation Loss Model

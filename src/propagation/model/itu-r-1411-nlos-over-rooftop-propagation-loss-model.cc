@@ -17,7 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
  *         Nicola Baldo <nbaldo@cttc.es>
- * 
+ *
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -140,7 +140,7 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<
           ka = (fmhz > 2000 ? 71.4 : 54.0);
           kd = 18.0;
         }
-      else 
+      else
         {
           Lbsh = 0;
           kd = 18.0 - 15 * Dhb / a->GetPosition ().z;
@@ -212,7 +212,7 @@ ItuR1411NlosOverRooftopPropagationLossModel::SetFrequency (double freq)
 }
 
 
-double 
+double
 ItuR1411NlosOverRooftopPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 						Ptr<MobilityModel> a,
 						Ptr<MobilityModel> b) const

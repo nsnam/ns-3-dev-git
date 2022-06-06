@@ -27,7 +27,7 @@
 *
 * Subsequent integration in LENA and extension done by:
 *      Marco Miozzo <marco.miozzo@cttc.es>
-*/ 
+*/
 
 #include <list>
 #include <vector>
@@ -59,7 +59,7 @@ NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
   static const uint8_t McsEcrBlerTableMapping[29] = {
     3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     16, 17, 18, 19, 20, 21, 22,
-    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37    
+    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37
   };
 
   /// Table of ECR of the standard MCSs
@@ -71,39 +71,39 @@ NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
   static const double HarqRetxEcr[9] = {0.00064, 0.000512, 0.000041, 0.09, 0.027, 0.0081, 0.185, 0.079, 0.034
   };
 #endif
- 
+
   /** PCFICH-PDCCH Error model based on 3GPP R4-081920 "LTE PDCCH/PCFICH
-   *  Demodulation Performance Results with Implementation Margin" 
+   *  Demodulation Performance Results with Implementation Margin"
    *  X axis */
   static const double PdcchPcfichBlerCurveXaxis[PDCCH_PCFICH_CURVE_SIZE] = {
       -10,-9.8,-9.6, -9.4, -9.2, -9.0, -8.8, -8.6, -8.4, -8.2, -8.0,
-      -7.8, -7.6, -7.4, -7.2, -7.0, -6.8, -6.6, -6.4,   -6.2, -6.0, 
-      -5.8, -5.6, -5.4, -5.2, -5.0, -4.8, -4.6, -4.4, -4.2, -4.0, 
-      -3.8, -3.6, -3.4, -3.2, -3.0, -2.8, -2.6, -2.4, -2.2, -2.0, 
+      -7.8, -7.6, -7.4, -7.2, -7.0, -6.8, -6.6, -6.4,   -6.2, -6.0,
+      -5.8, -5.6, -5.4, -5.2, -5.0, -4.8, -4.6, -4.4, -4.2, -4.0,
+      -3.8, -3.6, -3.4, -3.2, -3.0, -2.8, -2.6, -2.4, -2.2, -2.0,
       -1.8, -1.6, -1.4, -1.2, -1.0
   };
-  
+
   /** PCFICH-PDCCH Error model based on 3GPP R4-081920 "LTE PDCCH/PCFICH
-   *  Demodulation Performance Results with Implementation Margin" 
+   *  Demodulation Performance Results with Implementation Margin"
    *  Y axis */
   static const double PdcchPcfichBlerCurveYaxis[PDCCH_PCFICH_CURVE_SIZE] = {
     0.922602, 0.871559, 0.82334, 0.777789, 0.734758, 0.694107, 0.655706,
     0.619429, 0.585159, 0.552785, 0.520927, 0.479229, 0.440869, 0.405579,
     0.373114, 0.343104, 0.309947,0.279994, 0.252936, 0.228492, 0.206048,
     0.181449, 0.159787, 0.140711, 0.123912, 0.109119, 0.0916184, 0.0769244,
-    0.0645871, 0.0542285, 0.0454971, 0.037584, 0.0310472, 0.0256473, 
+    0.0645871, 0.0542285, 0.0454971, 0.037584, 0.0310472, 0.0256473,
     0.0211866, 0.0175023, 0.0144636, 0.0119524, 0.00987724, 0.00816236,
     0.00673821, 0.00532283, 0.00420476, 0.00332154, 0.00262385, 0.0020727
-  
+
   };
-  
+
 #if 0 // currently unused
   static const int TbsIndex[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, -1, -1, -1};
 #endif
-  
+
   /// as K column of table 5.1.3-3 of TS 36,212
   static const uint16_t cbSizeTable[188] = {
-    
+
     40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152,
     160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 264,
     272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352, 360, 368, 376,
@@ -121,7 +121,7 @@ NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
     5824, 5888, 5952, 6016, 6080, 6144
   };
 
-/// MI size table  
+/// MI size table
 static const uint16_t cbMiSizeTable [9] = {40, 104, 160, 256, 512, 1024, 2560, 4032, 6144};
 
 
@@ -168,7 +168,7 @@ static const double bEcrTable [9][38] = {
     -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
     -1.000, -1.000, -1.000, // 64QAM retx
     -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
-  },  
+  },
   // CB of 104 bits
   {
     0.01940, 0.05020, 0.07592, // QPSK retx
@@ -242,9 +242,9 @@ static const double bEcrTable [9][38] = {
     0.49780, 0.51606, 0.5600, 0.6027, 0.6494, 0.6948, 0.7407, 0.7842, 0.8284, 0.8692, 0.9058, 0.9325  // 64QAM
   },
 };
-  
 
-/// CECR table  
+
+/// CECR table
 static const double cEcrTable [9][38] = {
   // CB of 40 bits
   {
@@ -327,19 +327,19 @@ static const double cEcrTable [9][38] = {
     0.00303, 0.00377, 0.00507, // 64QAM retx
     0.0060, 0.00609, 0.0061, 0.0066, 0.0069, 0.0080, 0.0081, 0.0080, 0.0077, 0.0068, 0.0066, 0.0058 // 64QAM
   }
-    
+
 };
 
 
-double 
+double
 LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs)
 {
   NS_LOG_FUNCTION (sinr << &map << (uint32_t) mcs);
-  
+
   double MI;
   double MIsum = 0.0;
   SpectrumValue sinrCopy = sinr;
-  
+
   for (uint32_t i = 0; i < map.size (); i++)
     {
       double sinrLin = sinrCopy[map.at (i)];
@@ -350,13 +350,13 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
             {
               MI = 1;
             }
-          else 
-            { 
+          else
+            {
               // since the values in MI_map_qpsk_axis are uniformly spaced, we have
               // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
               // the scaling coefficient is always the same, so we use a static const
               // to speed up the calculation
-              static const double scalingCoeffQpsk = 
+              static const double scalingCoeffQpsk =
                 (MI_MAP_QPSK_SIZE - 1) / (MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1] - MI_map_qpsk_axis[0]);
               double sinrIndexDouble = (sinrLin -  MI_map_qpsk_axis[0]) * scalingCoeffQpsk + 1;
               uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
@@ -372,13 +372,13 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
                 {
                   MI = 1;
                 }
-              else 
+              else
                 {
                   // since the values in MI_map_16QAM_axis are uniformly spaced, we have
                   // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
                   // the scaling coefficient is always the same, so we use a static const
                   // to speed up the calculation
-                  static const double scalingCoeff16qam = 
+                  static const double scalingCoeff16qam =
                     (MI_MAP_16QAM_SIZE - 1) / (MI_map_16qam_axis[MI_MAP_16QAM_SIZE-1] - MI_map_16qam_axis[0]);
                   double sinrIndexDouble = (sinrLin -  MI_map_16qam_axis[0]) * scalingCoeff16qam + 1;
                   uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
@@ -398,7 +398,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
                   // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
                   // the scaling coefficient is always the same, so we use a static const
                   // to speed up the calculation
-                  static const double scalingCoeff64qam = 
+                  static const double scalingCoeff64qam =
                     (MI_MAP_64QAM_SIZE - 1) / (MI_map_64qam_axis[MI_MAP_64QAM_SIZE-1] - MI_map_64qam_axis[0]);
                   double sinrIndexDouble = (sinrLin -  MI_map_64qam_axis[0]) * scalingCoeff64qam + 1;
                   uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
@@ -416,7 +416,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
 }
 
 
-double 
+double
 LteMiErrorModel::MappingMiBler (double mib, uint8_t ecrId, uint16_t cbSize)
 {
   NS_LOG_FUNCTION (mib << (uint32_t) ecrId << (uint32_t) cbSize);
@@ -479,13 +479,13 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
         {
           MI = 1;
         }
-      else 
-        { 
+      else
+        {
           // since the values in MI_map_qpsk_axis are uniformly spaced, we have
           // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
               // the scaling coefficient is always the same, so we use a static const
               // to speed up the calculation
-          static const double scalingCoeffQpsk = 
+          static const double scalingCoeffQpsk =
             (MI_MAP_QPSK_SIZE - 1) / (MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1] - MI_map_qpsk_axis[0]);
           double sinrIndexDouble = (sinrLin -  MI_map_qpsk_axis[0]) * scalingCoeffQpsk + 1;
           uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
@@ -508,10 +508,10 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
     {
       esinr = MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1];
     }
-  else 
+  else
     {
       NS_ASSERT_MSG (j<MI_MAP_QPSK_SIZE, "MI map out of data");
-      // take the closest value (when possible)  
+      // take the closest value (when possible)
       if (j>0)
         {
           if ((MI_map_qpsk[j]-MI)<(MI-MI_map_qpsk[j-1]))
@@ -529,7 +529,7 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
         }
     }
 
-  double esirnDb = 10*log10 (esinr); 
+  double esirnDb = 10*log10 (esinr);
 //   NS_LOG_DEBUG ("Effective SINR " << esirnDb << " max " << 10*log10 (MI_map_qpsk [MI_MAP_QPSK_SIZE-1]));
   uint16_t i = 0;
   double errorRate = 0.0;
@@ -541,12 +541,12 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
     {
       errorRate = 0.0;
     }
-  else 
+  else
     {
       NS_ASSERT_MSG (i<PDCCH_PCFICH_CURVE_SIZE, "PDCCH-PCFICH map out of data");
       errorRate = PdcchPcfichBlerCurveYaxis[i];
-    }  
-  
+    }
+
   return (errorRate);
 }
 
@@ -576,7 +576,7 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
       codeBitsSum += (((double)size*8.0) / McsEcrTable [mcs]);
       miSum += (tbMi*(((double)size*8.0) / McsEcrTable [mcs]));
       Reff = miHistory.at (0).m_infoBits / (double)codeBitsSum; // information bits are the size of the first TB
-      MI = miSum / (double)codeBitsSum;      
+      MI = miSum / (double)codeBitsSum;
     }
   else
     {
@@ -740,7 +740,7 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
 }
 
 
-  
+
 
 } // namespace ns3
 

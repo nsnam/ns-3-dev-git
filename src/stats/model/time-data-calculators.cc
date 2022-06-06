@@ -49,7 +49,7 @@ TimeMinMaxAvgTotalCalculator::GetTypeId (void)
     .AddConstructor<TimeMinMaxAvgTotalCalculator> ();
   return tid;
 }
-  
+
 void
 TimeMinMaxAvgTotalCalculator::DoDispose (void)
 {

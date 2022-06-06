@@ -75,9 +75,9 @@ FlowProbe::AddPacketDropStats (FlowId flowId, uint32_t packetSize, uint32_t reas
   ++flow.packetsDropped[reasonCode];
   flow.bytesDropped[reasonCode] += packetSize;
 }
- 
+
 FlowProbe::Stats
-FlowProbe::GetStats () const 
+FlowProbe::GetStats () const
 {
   return m_stats;
 }

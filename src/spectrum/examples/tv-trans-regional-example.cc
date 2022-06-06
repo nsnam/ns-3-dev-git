@@ -31,7 +31,7 @@ using namespace ns3;
 /**
  * This example uses the TvSpectrumTransmitterHelper class to generate a random
  * number of COFDM TV transmitters within a 250 km radius around latitude
- * 48.86 degrees and longitude 2.35 degrees (Paris, France). The transmitters' 
+ * 48.86 degrees and longitude 2.35 degrees (Paris, France). The transmitters'
  * frequencies and bandwidths correspond to the European TV channel allocations.
  * These TV transmitters model the digital DVB-T standard.
  *
@@ -43,7 +43,7 @@ int main (int argc, char** argv)
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   /* random seed and run number; adjust these to change random draws */
   RngSeedManager::SetSeed(1);
   RngSeedManager::SetRun(3);
@@ -53,8 +53,8 @@ int main (int argc, char** argv)
   spectrumAnalyzerNodes.Create (1);
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> nodePositionList = CreateObject<ListPositionAllocator> ();
-  Vector coordinates = GeographicPositions::GeographicToCartesianCoordinates (48.86, 
-                                                                              2.35, 
+  Vector coordinates = GeographicPositions::GeographicToCartesianCoordinates (48.86,
+                                                                              2.35,
                                                                               0,
                                                                               GeographicPositions::SPHERE);
   nodePositionList->Add (coordinates); // spectrum analyzer
@@ -66,22 +66,22 @@ int main (int argc, char** argv)
   SpectrumChannelHelper channelHelper = SpectrumChannelHelper::Default ();
   channelHelper.SetChannel ("ns3::MultiModelSpectrumChannel");
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
-  
+
   /* TV transmitter setup */
   TvSpectrumTransmitterHelper tvTransHelper;
   tvTransHelper.SetChannel (channel);
   tvTransHelper.SetAttribute ("StartingTime", TimeValue (Seconds (0.1)));
   tvTransHelper.SetAttribute ("TransmitDuration", TimeValue (Seconds (0.1)));
-  // 7.96 dBm/Hz from 50 kW ERP transmit power, flat 8 MHz PSD spectrum assumed for this approximation 
+  // 7.96 dBm/Hz from 50 kW ERP transmit power, flat 8 MHz PSD spectrum assumed for this approximation
   tvTransHelper.SetAttribute ("BasePsd", DoubleValue (7.96));
   tvTransHelper.SetAttribute ("TvType", EnumValue (TvSpectrumTransmitter::TVTYPE_COFDM));
   tvTransHelper.SetAttribute ("Antenna", StringValue ("ns3::IsotropicAntennaModel"));
 
   tvTransHelper.AssignStreams (300);
-  tvTransHelper.CreateRegionalTvTransmitters(TvSpectrumTransmitterHelper::REGION_EUROPE, 
-                                             TvSpectrumTransmitterHelper::DENSITY_MEDIUM, 
-                                             48.86, 
-                                             2.35, 
+  tvTransHelper.CreateRegionalTvTransmitters(TvSpectrumTransmitterHelper::REGION_EUROPE,
+                                             TvSpectrumTransmitterHelper::DENSITY_MEDIUM,
+                                             48.86,
+                                             2.35,
                                              0,
                                              250000);
 

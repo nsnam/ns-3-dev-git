@@ -4,7 +4,7 @@
    :format: html latex
 
 .. Mimic doxygen formatting for parameter names
-   
+
 .. raw:: html
 
     <style>.param {font-weight:bold; color:#602020;}</style>
@@ -77,7 +77,7 @@ standard output, as in::
     ...
     std::cout << "The value of x is " << x << std::endl;
     ...
-  } 
+  }
 
 Nobody is going to prevent you from going deep into the core of |ns3|
 and adding print statements.  This is insanely easy to do and, after
@@ -107,7 +107,7 @@ other people as a patch to the existing core.
 Let's pick a random example.  If you wanted to add more logging to the
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new
 message down in the implementation.  Notice that in
-``TcpSocketBase::ProcessEstablished ()`` there is no log message for the 
+``TcpSocketBase::ProcessEstablished ()`` there is no log message for the
 reception of a SYN+ACK in ESTABLISHED state.
 You could simply add one, changing the code.  Here is the original::
 
@@ -158,7 +158,7 @@ files to disk and process them down to a few lines whenever you want
 to do anything.
 
 Since there are no guarantees in |ns3| about the stability of
-``NS_LOG`` output, you may also discover that pieces of log output 
+``NS_LOG`` output, you may also discover that pieces of log output
 which you depend on disappear or change between releases.  If you depend
 on the structure of the output, you may find other messages being
 added or deleted which may affect your parsing code.
@@ -328,14 +328,14 @@ the tutorial directory as ``fourth.cc``.  Let's walk through it::
    * along with this program; if not, write to the Free Software
    * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    */
-  
+
   #include "ns3/object.h"
   #include "ns3/uinteger.h"
   #include "ns3/traced-value.h"
   #include "ns3/trace-source-accessor.h"
-  
+
   #include <iostream>
-  
+
   using namespace ns3;
 
 Most of this code should be quite familiar to you.  As mentioned
@@ -376,7 +376,7 @@ simple Object we can work with.
         ;
       return tid;
     }
-    
+
     MyObject () {}
     TracedValue<int32_t> m_myInt;
   };
@@ -431,7 +431,7 @@ code to connect the source to the sink, which happens in ``main``::
   {
     Ptr<MyObject> myObject = CreateObject<MyObject> ();
     myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback(&IntTrace));
-  
+
     myObject->m_myInt = 1234;
   }
 
@@ -522,7 +522,7 @@ more clear to you what this function is doing::
   CourseChange (std::string context, Ptr<const MobilityModel> model)
   {
     Vector position = model->GetPosition ();
-    NS_LOG_UNCOND (context << 
+    NS_LOG_UNCOND (context <<
       " x = " << position.x << ", y = " << position.y);
   }
 
@@ -628,7 +628,7 @@ for "CourseChange" in your favorite editor.  You should find
                    MakeTraceSourceAccessor (&MobilityModel::m_courseChangeTrace),
                    "ns3::MobilityModel::CourseChangeCallback")
 
-which should look very familiar at this point.  
+which should look very familiar at this point.
 
 If you look for the corresponding declaration of the underlying traced
 variable in ``mobility-model.h`` you will find
@@ -740,7 +740,7 @@ an entry for
 
 ::
 
-  CourseChange: The value of the position and/or velocity vector changed 
+  CourseChange: The value of the position and/or velocity vector changed
 
 You should recognize this as the trace source we used in the
 ``third.cc`` example.  Perusing this list will be helpful.
@@ -772,7 +772,7 @@ in the "All TraceSources" list and you want to figure out how to
 connect to it.  You know that you are using (again, from the
 ``third.cc`` example) an ``ns3::RandomWalk2dMobilityModel``.  So
 either click on the class name in the "All TraceSources" list, or find
-``ns3::RandomWalk2dMobilityModel`` in the "Class List".  Either way 
+``ns3::RandomWalk2dMobilityModel`` in the "Class List".  Either way
 you should now be looking at the "ns3::RandomWalk2dMobilityModel Class
 Reference" page.
 
@@ -808,7 +808,7 @@ Look further down in the "Detailed Description" section for the list
 of trace sources.  You will find
 
   No TraceSources are defined for this type.
-  
+
   **TraceSources defined in parent class ``ns3::MobilityModel``**
 
   * **CourseChange**: The value of the position and/or velocity vector
@@ -843,11 +843,11 @@ and you may find your answer along with working code.  For example, in
 this case, ``src/mobility/examples/main-random-topology.cc`` has
 something just waiting for you to use::
 
-  Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", 
+  Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
     MakeCallback (&CourseChange));
 
-We'll return to this example in a moment.    
-      
+We'll return to this example in a moment.
+
 Callback Signatures
 +++++++++++++++++++
 
@@ -871,7 +871,7 @@ The callback signature is given as a link to the relevant ``typedef``,
 where we find
 
   ``typedef void (* CourseChangeCallback)(std::string context, Ptr<const MobilityModel> * model);``
-					  
+
   **TracedCallback** signature for course change notifications.
 
   If the callback is connected using ``ConnectWithoutContext`` omit the
@@ -1040,11 +1040,11 @@ Just after this comment, you will find
 
 ::
 
-  template<typename T1 = empty, typename T2 = empty, 
+  template<typename T1 = empty, typename T2 = empty,
            typename T3 = empty, typename T4 = empty,
            typename T5 = empty, typename T6 = empty,
            typename T7 = empty, typename T8 = empty>
-  class TracedCallback 
+  class TracedCallback
   {
     ...
 
@@ -1063,11 +1063,11 @@ tracing system is in the ``Connect`` and ``ConnectWithoutContext``
 functions.  If you scroll down, you will see a
 ``ConnectWithoutContext`` method here::
 
-  template<typename T1, typename T2, 
+  template<typename T1, typename T2,
            typename T3, typename T4,
            typename T5, typename T6,
            typename T7, typename T8>
-  void 
+  void
   TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext ...
   {
     Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
@@ -1081,7 +1081,7 @@ instantiated for the declaration above, the compiler will replace
 
 ::
 
-  void 
+  void
   TracedCallback<Ptr<const MobilityModel>::ConnectWithoutContext ... cb
   {
     Callback<void, Ptr<const MobilityModel> > cb;
@@ -1304,8 +1304,8 @@ usual, ``grep`` is your friend:
 
   $ find . -name '*.cc' | xargs grep CongestionWindow
 
-This will point out a couple of promising candidates: 
-``examples/tcp/tcp-large-transfer.cc`` and 
+This will point out a couple of promising candidates:
+``examples/tcp/tcp-large-transfer.cc`` and
 ``src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc``.
 
 We haven't visited any of the test code yet, so let's take a look
@@ -1316,7 +1316,7 @@ and search for "CongestionWindow".  You will find,
 
 ::
 
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", 
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow",
     MakeCallback (&Ns3TcpCwndTestCase1::CwndChange, this));
 
 This should look very familiar to you.  We mentioned above that if we
@@ -1405,16 +1405,16 @@ see some familiar looking code::
    * along with this program; if not, write to the Free Software
    * Foundation, Include., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    */
-  
+
   #include <fstream>
   #include "ns3/core-module.h"
   #include "ns3/network-module.h"
   #include "ns3/internet-module.h"
   #include "ns3/point-to-point-module.h"
   #include "ns3/applications-module.h"
-  
+
   using namespace ns3;
-  
+
   NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
 
 This has all been covered, so we won't rehash it.  The next lines of
@@ -1469,20 +1469,20 @@ time.
   class MyApp : public Application
   {
   public:
-  
+
     MyApp ();
     virtual ~MyApp();
-  
-    void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
+
+    void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize,
       uint32_t nPackets, DataRate dataRate);
-  
+
   private:
     virtual void StartApplication (void);
     virtual void StopApplication (void);
-  
+
     void ScheduleTx (void);
     void SendPacket (void);
-  
+
     Ptr<Socket>     m_socket;
     Address         m_peer;
     uint32_t        m_packetSize;
@@ -1669,7 +1669,7 @@ course::
       m_packetsSent (0)
   {
   }
-  
+
   MyApp::~MyApp()
   {
     m_socket = 0;
@@ -1681,7 +1681,7 @@ this ``Application`` in the first place.
 ::
 
   void
-  MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
+  MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize,
                        uint32_t nPackets, DataRate dataRate)
   {
     m_socket = socket;
@@ -1690,7 +1690,7 @@ this ``Application`` in the first place.
     m_nPackets = nPackets;
     m_dataRate = dataRate;
   }
-  
+
 This code should be pretty self-explanatory.  We are just initializing
 member variables.  The important one from the perspective of tracing
 is the ``Ptr<Socket> socket`` which we needed to provide to the
@@ -1734,12 +1734,12 @@ creating simulation events.
   MyApp::StopApplication (void)
   {
     m_running = false;
-  
+
     if (m_sendEvent.IsRunning ())
       {
         Simulator::Cancel (m_sendEvent);
       }
-  
+
     if (m_socket)
       {
         m_socket->Close ();
@@ -1769,7 +1769,7 @@ chain of events that describes the ``Application`` behavior.
   {
     Ptr<Packet> packet = Create<Packet> (m_packetSize);
     m_socket->Send (packet);
-  
+
     if (++m_packetsSent < m_nPackets)
       {
         ScheduleTx ();
@@ -1865,11 +1865,11 @@ The following code should be very familiar to you by now::
   {
     NodeContainer nodes;
     nodes.Create (2);
-  
+
     PointToPointHelper pointToPoint;
     pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
     pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  
+
     NetDeviceContainer devices;
     devices = pointToPoint.Install (nodes);
 
@@ -1886,7 +1886,7 @@ congestion window.
 |ns3| provides ``ErrorModel`` objects which can be attached to
 ``Channels``.  We are using the ``RateErrorModel`` which allows us to
 introduce errors
-into a ``Channel`` at a given *rate*. 
+into a ``Channel`` at a given *rate*.
 
 ::
 
@@ -1921,7 +1921,7 @@ is commonly used in |ns3| for that purpose.
 
   uint16_t sinkPort = 8080;
   Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", 
+  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory",
     InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
@@ -1931,7 +1931,7 @@ This should all be familiar, with the exception of,
 
 ::
 
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", 
+  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory",
     InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
 
 This code instantiates a ``PacketSinkHelper`` and tells it to create
@@ -1952,9 +1952,9 @@ trace source.
 
 ::
 
-  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), 
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0),
     TcpSocketFactory::GetTypeId ());
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", 
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow",
     MakeCallback (&CwndChange));
 
 The first statement calls the static member function
@@ -2127,7 +2127,7 @@ information to a stream representing a file.
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
     *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
   }
-  
+
   static void
   RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   {
@@ -2350,7 +2350,7 @@ and we did this in only 18 lines of code::
   }
 
   ...
-  
+
   PcapHelper pcapHelper;
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
@@ -2364,7 +2364,7 @@ previous sections, primarily :ref:`BuildingTopologies`, we have seen
 several varieties of the trace helper methods designed for use inside
 other (device) helpers.
 
-Perhaps you will recall seeing some of these variations: 
+Perhaps you will recall seeing some of these variations:
 
 ::
 
@@ -2619,8 +2619,8 @@ inherited from the ASCII trace ``mixin``.
 
 ::
 
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, 
-                                    std::string prefix, 
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+                                    std::string prefix,
                                     Ptr<NetDevice> nd,
                                     bool explicitFilename) = 0;
 
@@ -2778,7 +2778,7 @@ but to summarize ...
   This would result in a number of ASCII trace files being created,
   each of which follows the ``<prefix>-<node id>-<device id>.tr``
   convention.
-  
+
   Combining all of the traces into a single file is accomplished
   similarly to the examples above::
 
@@ -2889,8 +2889,8 @@ class ``Object``, and methods that share the same signature.
 
 ::
 
-  virtual void EnablePcapIpv4Internal (std::string prefix, 
-                                       Ptr<Ipv4> ipv4, 
+  virtual void EnablePcapIpv4Internal (std::string prefix,
+                                       Ptr<Ipv4> ipv4,
                                        uint32_t interface,
                                        bool explicitFilename) = 0;
 
@@ -2967,7 +2967,7 @@ summarize ...
     NodeContainer nodes;
     ...
     NetDeviceContainer devices = deviceHelper.Install (nodes);
-    ... 
+    ...
     Ipv4AddressHelper ipv4;
     ipv4.SetBase ("10.1.1.0", "255.255.255.0");
     Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
@@ -3061,9 +3061,9 @@ method inherited from this class.
 
 ::
 
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, 
-                                        std::string prefix, 
-                                        Ptr<Ipv4> ipv4, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream,
+                                        std::string prefix,
+                                        Ptr<Ipv4> ipv4,
                                         uint32_t interface,
                                         bool explicitFilename) = 0;
 
@@ -3204,7 +3204,7 @@ but to summarize ...
     NodeContainer nodes;
     ...
     NetDeviceContainer devices = deviceHelper.Install (nodes);
-    ... 
+    ...
     Ipv4AddressHelper ipv4;
     ipv4.SetBase ("10.1.1.0", "255.255.255.0");
     Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
@@ -3220,7 +3220,7 @@ but to summarize ...
     NodeContainer nodes;
     ...
     NetDeviceContainer devices = deviceHelper.Install (nodes);
-    ... 
+    ...
     Ipv4AddressHelper ipv4;
     ipv4.SetBase ("10.1.1.0", "255.255.255.0");
     Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);

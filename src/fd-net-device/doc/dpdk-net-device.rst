@@ -213,7 +213,7 @@ To check allocation of hugepages, run:
 
 You will see the number of hugepages allocated, they should be equal to the number you used above.
 
-Once the hugepage memory is reserved (at either runtime or boot time), 
+Once the hugepage memory is reserved (at either runtime or boot time),
 to make the memory available for DPDK use, perform the following steps:
 
 .. sourcecode:: text

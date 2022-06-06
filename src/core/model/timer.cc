@@ -186,7 +186,7 @@ Timer::Suspend (void)
   else if (m_flags & REMOVE_ON_DESTROY)
     {
       m_event.Remove ();
-    } 
+    }
   m_flags |= TIMER_SUSPENDED;
 }
 

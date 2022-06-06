@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2008 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -37,22 +37,22 @@
  * one another, regardless of whether the nodes can use the channel
  * successfully (in the case of wireless).  Therefore, this model
  * should typically be used only on wired topologies.  Layer-2 bridge
- * devices are supported.  API does not yet exist to control the subset 
+ * devices are supported.  API does not yet exist to control the subset
  * of a topology to which this global static routing is applied.
- * 
+ *
  * If the topology changes during the simulation, by default, routing
  * will not adjust.  There are two ways to make it adjust.
- * - Set the attribute Ipv4GlobalRouting::RespondToInterfaceEvents to true 
+ * - Set the attribute Ipv4GlobalRouting::RespondToInterfaceEvents to true
  * - Manually call the sequence of GlobalRouteManager methods to delete global
  *   routes, build global routing database, and initialize routes.
- *   There is a helper method that encapsulates this 
+ *   There is a helper method that encapsulates this
  *   (Ipv4GlobalRoutingHelper::RecomputeRoutingTables())
- * 
+ *
  * \section api API and Usage
- * 
+ *
  * Users must include ns3/global-route-manager.h header file.  After the
  * IPv4 topology has been built and addresses assigned, users call
- * ns3::GlobalRouteManager::PopulateRoutingTables (), prior to the 
+ * ns3::GlobalRouteManager::PopulateRoutingTables (), prior to the
  * ns3::Simulator::Run() call.
  *
  * There are two attributes of Ipv4GlobalRouting that govern behavior.
@@ -69,7 +69,7 @@
  *
  * The nodes that export data are those that have had an ns3::GlobalRouter
  * object aggregated to them.  The ns3::GlobalRouter can be thought of
- * as a per-node agent that exports topology information to the 
+ * as a per-node agent that exports topology information to the
  * ns3::GlobalRouteManager.  When it comes time to build the global
  * routing database, the list of nodes is iterated and each node with
  * an ns3::GlobalRouter object is asked to export routing information
@@ -80,9 +80,9 @@
  * information is exported in the form of ns3::GlobalLSA objects that
  * semantically match the Link State Advertisements of OSPF.
  *
- * By using a standard data format for reporting topology, existing 
+ * By using a standard data format for reporting topology, existing
  * OSPF route computation code can be reused, and that is what is done
  * by the ns3::GlobalRouteManager.  The main computation functions are
  * ported from the quagga routing suite (http://www.quagga.net).
- * 
+ *
  */

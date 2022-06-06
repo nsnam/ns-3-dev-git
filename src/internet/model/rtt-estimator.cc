@@ -41,13 +41,13 @@ NS_OBJECT_ENSURE_REGISTERED (RttEstimator);
 /// Tolerance used to check reciprocal of two numbers.
 static const double TOLERANCE = 1e-6;
 
-TypeId 
+TypeId
 RttEstimator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RttEstimator")
     .SetParent<Object> ()
     .SetGroupName ("Internet")
-    .AddAttribute ("InitialEstimation", 
+    .AddAttribute ("InitialEstimation",
                    "Initial RTT estimate",
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&RttEstimator::m_initialEstimatedRtt),
@@ -62,7 +62,7 @@ RttEstimator::GetEstimate (void) const
   return m_estimatedRtt;
 }
 
-Time 
+Time
 RttEstimator::GetVariation (void) const
 {
   return m_estimatedVariation;
@@ -73,10 +73,10 @@ RttEstimator::GetVariation (void) const
 
 RttEstimator::RttEstimator ()
   : m_nSamples (0)
-{ 
+{
   NS_LOG_FUNCTION (this);
-  
-  // We need attributes initialized here, not later, so use the 
+
+  // We need attributes initialized here, not later, so use the
   // ConstructSelf() technique documented in the manual
   ObjectBase::ConstructSelf (AttributeConstructionList ());
   m_estimatedRtt = m_initialEstimatedRtt;
@@ -106,7 +106,7 @@ RttEstimator::GetInstanceTypeId (void) const
 }
 
 void RttEstimator::Reset ()
-{ 
+{
   NS_LOG_FUNCTION (this);
   // Reset to initial state
   m_estimatedRtt = m_initialEstimatedRtt;
@@ -114,7 +114,7 @@ void RttEstimator::Reset ()
   m_nSamples = 0;
 }
 
-uint32_t 
+uint32_t
 RttEstimator::GetNSamples (void) const
 {
   return m_nSamples;
@@ -126,7 +126,7 @@ RttEstimator::GetNSamples (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (RttMeanDeviation);
 
-TypeId 
+TypeId
 RttMeanDeviation::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RttMeanDeviation")
@@ -235,12 +235,12 @@ RttMeanDeviation::IntegerUpdate (Time m, uint32_t rttShift, uint32_t variationSh
   return;
 }
 
-void 
+void
 RttMeanDeviation::Measurement (Time m)
 {
   NS_LOG_FUNCTION (this << m);
   if (m_nSamples)
-    { 
+    {
       // If both alpha and beta are reciprocal powers of two, updating can
       // be done with integer arithmetic according to Jacobson/Karels paper.
       // If not, since class Time only supports integer multiplication,
@@ -265,16 +265,16 @@ RttMeanDeviation::Measurement (Time m)
   m_nSamples++;
 }
 
-Ptr<RttEstimator> 
+Ptr<RttEstimator>
 RttMeanDeviation::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return CopyObject<RttMeanDeviation> (this);
 }
 
-void 
+void
 RttMeanDeviation::Reset ()
-{ 
+{
   NS_LOG_FUNCTION (this);
   RttEstimator::Reset ();
 }

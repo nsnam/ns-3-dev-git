@@ -34,7 +34,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SSScheduler");
-  
+
 NS_OBJECT_ENSURE_REGISTERED (SSScheduler);
 
 TypeId SSScheduler::GetTypeId (void)

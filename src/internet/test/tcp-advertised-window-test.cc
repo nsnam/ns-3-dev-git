@@ -88,7 +88,7 @@ private:
 
   /**
    * \brief Test meta-information: size of the segments that are received.
-   * 
+   *
    * This is necessary for making sure the calculated awnd only differs by
    * exactly that one segment that was not yet read by the application.
    */
@@ -251,7 +251,7 @@ bool
 TcpDropRatioErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHeader,
                               uint32_t packetSize)
 {
-  return m_prng->GetValue () < m_dropRatio; 
+  return m_prng->GetValue () < m_dropRatio;
 }
 
 /**
@@ -262,11 +262,11 @@ TcpDropRatioErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader 
  * In TcpSocketBase, the advertised window is now calculated as
  *
  *   m_tcb->m_rxBuffer->MaxRxSequence () - m_tcb->m_rxBuffer->NextRxSequence ()
- * 
+ *
  * instead of the previous
  *
  *   m_tcb->m_rxBuffer->MaxBufferSize ()
- * 
+ *
  * This change was introduced with regard to situations in which the receiviing
  * application does not read from the socket as fast as possible (see bug 2559
  * for details). This test ensures that no regression is introduced for other,

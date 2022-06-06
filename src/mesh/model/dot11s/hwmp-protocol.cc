@@ -41,11 +41,11 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
-  
+
 namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED (HwmpProtocol);
-  
+
 TypeId
 HwmpProtocol::GetTypeId ()
 {
@@ -826,7 +826,7 @@ HwmpProtocol::DropDataFrame (uint32_t seqno, Mac48Address source)
   NS_LOG_FUNCTION (this << seqno << source);
   if (source == GetAddress ())
     {
-      NS_LOG_DEBUG ("Dropping seqno " << seqno << "; from self"); 
+      NS_LOG_DEBUG ("Dropping seqno " << seqno << "; from self");
       return true;
     }
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> >::const_iterator i = m_lastDataSeqno.find (source);

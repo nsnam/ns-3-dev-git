@@ -44,7 +44,7 @@ X2IfaceInfo::~X2IfaceInfo (void)
   m_localUserPlaneSocket = 0;
 }
 
-X2IfaceInfo& 
+X2IfaceInfo&
 X2IfaceInfo::operator= (const X2IfaceInfo& value)
 {
   NS_LOG_FUNCTION (this);
@@ -66,7 +66,7 @@ X2CellInfo::~X2CellInfo (void)
 {
 }
 
-X2CellInfo& 
+X2CellInfo&
 X2CellInfo::operator= (const X2CellInfo& value)
 {
   NS_LOG_FUNCTION (this);
@@ -170,7 +170,7 @@ EpcX2::AddX2Interface (uint16_t localCellId, Ipv4Address localX2Address, std::ve
 }
 
 
-void 
+void
 EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -230,7 +230,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 
           NS_LOG_INFO ("X2 HandoverRequestAck header: " << x2HoReqAckHeader);
 
-          EpcX2SapUser::HandoverRequestAckParams params;          
+          EpcX2SapUser::HandoverRequestAckParams params;
           params.oldEnbUeX2apId = x2HoReqAckHeader.GetOldEnbUeX2apId ();
           params.newEnbUeX2apId = x2HoReqAckHeader.GetNewEnbUeX2apId ();
           params.sourceCellId   = cellsInfo->m_localCellIds.at (0);
@@ -255,7 +255,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 
           NS_LOG_INFO ("X2 HandoverPreparationFailure header: " << x2HoPrepFailHeader);
 
-          EpcX2SapUser::HandoverPreparationFailureParams params;          
+          EpcX2SapUser::HandoverPreparationFailureParams params;
           params.oldEnbUeX2apId = x2HoPrepFailHeader.GetOldEnbUeX2apId ();
           params.sourceCellId   = cellsInfo->m_localCellIds.at (0);
           params.targetCellId   = cellsInfo->m_remoteCellIds.at (0);
@@ -369,7 +369,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 }
 
 
-void 
+void
 EpcX2::RecvFromX2uSocket (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);

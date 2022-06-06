@@ -27,9 +27,9 @@ using namespace ns3;
 /**
  * \file
  * \ingroup system-tests-traced
- * 
+ *
  * TracedValueCallback tests to verify that they work with different types
- * of classes - it tests bool, double, various types of integers types, 
+ * of classes - it tests bool, double, various types of integers types,
  * Time, and SequenceNumber32.
  */
 
@@ -37,12 +37,12 @@ namespace {
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * \name Stringify the known TracedValue type names.
  */
 /**
  * Generic template for unknown classes.
- * 
+ *
  * \returns The \c TracedValueCallback type name, or "unknown" for unknown classes.
  */
 template <typename T> inline
@@ -65,7 +65,7 @@ template <> inline std::string TypeName <SequenceNumber32> (void) { return "Sequ
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Result of callback test.
  *
  * Since the sink function is outside the invoking class,
@@ -75,11 +75,11 @@ template <> inline std::string TypeName <SequenceNumber32> (void) { return "Sequ
  * in the TracedValueCallbackTestCase::CheckType method.
  */
 std::string g_Result = "";
-  
+
 
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * Template for TracedValue sink functions.
  *
  * This generates a sink function for any underlying type.
@@ -103,10 +103,10 @@ void TracedValueCbSink (T oldValue, T newValue)
     g_Result = "newValue should be 1";
 
 }  // TracedValueCbSink<>()
-  
+
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * TracedValueCbSink specialization for Time.
  * \param oldValue The old value,
  * \param newValue The new value.
@@ -119,12 +119,12 @@ void TracedValueCbSink<Time> (Time oldValue, Time newValue)
 }
 /**
  * \ingroup system-tests-traced
- * 
+ *
  * TracedValueCbSink specialization for SequenceNumber32.
  * \param oldValue The old value,
  * \param newValue The new value.
  */
-template <>  
+template <>
 void TracedValueCbSink<SequenceNumber32> (SequenceNumber32 oldValue,
                                           SequenceNumber32 newValue)
 {
@@ -161,10 +161,10 @@ private:
   public:
     /** Constructor. */
     CheckTvCb (void)  : m_value (0)  { }
-    
+
     /**
      * \brief Register this type.
-     * \return The object TypeId. 
+     * \return The object TypeId.
      */
     static TypeId GetTypeId (void)
     {
@@ -187,7 +187,7 @@ private:
      *
      * Just to make sure, we increment the TracedValue,
      * which calls the sink.
-     * 
+     *
      * \param cb Callback.
      */
     template <typename U>
@@ -199,11 +199,11 @@ private:
                 << GetTypeId ().GetTraceSource (0).callback
         ;
       // The endl is in the sink function.
-      
+
       if (ok)
         // Odd form here is to accommodate the uneven operator support
         // of Time and SequenceNumber32.
-        m_value = m_value + (T) 1; 
+        m_value = m_value + (T) 1;
       else
         {
           // finish the line started above
@@ -216,7 +216,7 @@ private:
     }  // Invoke()
 
   };  // class CheckTvCb<T>
-  
+
 
   /**
    * Check the TracedValue typedef against TracedValueCbSink<T>.
@@ -236,9 +236,9 @@ private:
 
     NS_TEST_ASSERT_MSG_EQ (g_Result, "", g_Result);
     g_Result = "";
-    
+
   }  // CheckType<>()
-    
+
   virtual void DoRun (void);
 
 };

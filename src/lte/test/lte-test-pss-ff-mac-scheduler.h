@@ -34,12 +34,12 @@ using namespace ns3;
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief This system test program creates different test cases with a single eNB and 
- * several UEs, all having the same Radio Bearer specification. In each test 
- * case, the UEs see the same SINR from the eNB; different test cases are 
- * implemented obtained by using different SINR values and different numbers of 
- * UEs. The test consists on checking that the obtained throughput performance 
- * is equal among users is consistent with the definition of token bank fair  
+ * \brief This system test program creates different test cases with a single eNB and
+ * several UEs, all having the same Radio Bearer specification. In each test
+ * case, the UEs see the same SINR from the eNB; different test cases are
+ * implemented obtained by using different SINR values and different numbers of
+ * UEs. The test consists on checking that the obtained throughput performance
+ * is equal among users is consistent with the definition of token bank fair
  * queue scheduling
  */
 class LenaPssFfMacSchedulerTestCase1 : public TestCase
@@ -82,7 +82,7 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Simillar to the LenaPssFfMacSchedulerTestCase1 with the difference that 
+ * \brief Simillar to the LenaPssFfMacSchedulerTestCase1 with the difference that
  * UEs are places in such a way to experience different SINRs. Test checks if the
  * achieved throughput in such conditions has expected value.
  */

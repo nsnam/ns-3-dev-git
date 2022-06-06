@@ -7,7 +7,7 @@ Random Variables
 |ns3| contains a built-in pseudo-random number generator (PRNG). It is important
 for serious users of the simulator to understand the functionality,
 configuration, and usage of this PRNG, and to decide whether it is sufficient
-for his or her research use.  
+for his or her research use.
 
 Quick Overview
 **************
@@ -17,7 +17,7 @@ Quick Overview
 
 * by default, |ns3| simulations use a fixed seed; if there is any randomness in
   the simulation, each run of the program will yield identical results unless
-  the seed and/or run number is changed.  
+  the seed and/or run number is changed.
 
 * in *ns-3.3* and earlier, |ns3| simulations used a random seed by default; this
   marks a change in policy starting with *ns-3.4*.
@@ -46,24 +46,24 @@ Read further for more explanation about the random number facility for |ns3|.
 Background
 **********
 
-Simulations use a lot of random numbers; one study 
-found that most network simulations spend as much as 50% 
+Simulations use a lot of random numbers; one study
+found that most network simulations spend as much as 50%
 of the CPU generating random numbers.  Simulation users need
 to be concerned with the quality of the (pseudo) random numbers and
-the independence between different streams of random numbers.  
+the independence between different streams of random numbers.
 
 Users need to be concerned with a few issues, such as:
 
-* the seeding of the random number generator and whether a 
+* the seeding of the random number generator and whether a
   simulation outcome is deterministic or not,
-* how to acquire different streams of random numbers that are 
-  independent from one another, and 
+* how to acquire different streams of random numbers that are
+  independent from one another, and
 * how long it takes for streams to cycle
 
 We will introduce a few terms here:  a RNG provides a long sequence
 of (pseudo) random numbers.
 The length of this sequence is called the *cycle length*
-or *period*, after which the RNG will repeat itself.  
+or *period*, after which the RNG will repeat itself.
 This sequence can
 be  partitioned into disjoint *streams*.  A stream of a
 RNG is a contiguous subset or block of the RNG sequence.
@@ -73,10 +73,10 @@ RNG, then
 the first stream might use the first N/2 values and the second
 stream might produce the second N/2 values.  An important property
 here is that the two streams are uncorrelated.  Likewise, each
-stream can be partitioned disjointedly to a number of 
+stream can be partitioned disjointedly to a number of
 uncorrelated *substreams*.  The underlying RNG hopefully
 produces a pseudo-random sequence of numbers with a very long
-cycle length, and partitions this into streams and substreams in an 
+cycle length, and partitions this into streams and substreams in an
 efficient manner.
 
 |ns3| uses the same underlying random number generator as does |ns2|:  the
@@ -85,7 +85,7 @@ http://www.iro.umontreal.ca/~lecuyer/myftp/papers/streams00.pdf.  The MRG32k3a
 generator provides :math:`1.8x10^{19}` independent streams of random numbers,
 each of which consists of :math:`2.3x10^{15}` substreams. Each substream has a
 period (*i.e.*, the number of random numbers before overlap) of
-:math:`7.6x10^{22}`. The period of the entire generator is :math:`3.1x10^{57}`. 
+:math:`7.6x10^{22}`. The period of the entire generator is :math:`3.1x10^{57}`.
 
 
 Class :cpp:class:`ns3::RandomVariableStream` is the public interface to this
@@ -109,10 +109,10 @@ Creating random variables
 *************************
 
 |ns3| supports a number of random variable objects from the base class
-:cpp:class:`RandomVariableStream`.  These objects derive from 
+:cpp:class:`RandomVariableStream`.  These objects derive from
 :cpp:class:`ns3::Object` and are handled by smart pointers.
 
-The correct way to create these objects is to use the templated 
+The correct way to create these objects is to use the templated
 `CreateObject<>` method, such as:
 
 ::
@@ -124,7 +124,7 @@ then you can access values by calling methods on the object such as:
 ::
 
   myRandomNo = x->GetInteger ();
-  
+
 
 If you try to instead do something like this:
 
@@ -175,7 +175,7 @@ substream capability to produce multiple independent runs of the same
 simulation.* In other words, the more statistically rigorous way to configure
 multiple independent replications is to use a fixed seed and to advance the run
 number.  This implementation allows for a maximum of :math:`2.3x10^{15}`
-independent replications using the substreams. 
+independent replications using the substreams.
 
 For ease of use, it is not necessary to control the seed and run number from
 within the program; the user can set the ``NS_GLOBAL_VALUE`` environment
@@ -209,7 +209,7 @@ base class provides a few methods for globally configuring the behavior
 of the random number generator. Derived classes provide API for drawing random
 variates from the particular distribution being supported.
 
-Each RandomVariableStream created in the simulation is given a generator that is a 
+Each RandomVariableStream created in the simulation is given a generator that is a
 new RNGStream from the underlying PRNG. Used in this manner, the L'Ecuyer
 implementation allows for a maximum of :math:`1.8x10^19` random variables.  Each
 random variable in a single replication can produce up to :math:`7.6x10^22`
@@ -228,7 +228,7 @@ that access the next value in the substream.
    * \return A floating point random value
    */
   double GetValue (void) const;
-  
+
   /**
    * \brief Returns a random integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
@@ -242,7 +242,7 @@ Types of RandomVariables
 ************************
 
 The following types of random variables are provided, and are documented in the
-|ns3| Doxygen or by reading ``src/core/model/random-variable-stream.h``.  Users 
+|ns3| Doxygen or by reading ``src/core/model/random-variable-stream.h``.  Users
 can also create their own custom random variables by deriving from class
 :cpp:class:`RandomVariableStream`.
 
@@ -274,7 +274,7 @@ An example is in the propagation models for WifiNetDevice::
 
     TypeId
     RandomPropagationDelayModel::GetTypeId (void)
-    { 
+    {
       static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
         .SetParent<PropagationDelayModel> ()
         .SetGroupName ("Propagation")
@@ -303,7 +303,7 @@ Setting the stream number
 *************************
 
 The underlying MRG32k3a generator provides 2^64 independent streams.
-In ns-3, these are assigned sequentially starting from the first stream as 
+In ns-3, these are assigned sequentially starting from the first stream as
 new RandomVariableStream instances make their first call to GetValue().
 
 As a result of how these RandomVariableStream objects are assigned to
@@ -314,12 +314,12 @@ streams may (or may not) change.
 
 As a concrete example, a user running a comparative study between routing
 protocols may find that the act of changing one routing protocol for another
-will notice that the underlying mobility pattern also changed.  
+will notice that the underlying mobility pattern also changed.
 
 Starting with ns-3.15, some control has been provided to users to allow
-users to optionally fix the assignment of selected RandomVariableStream 
+users to optionally fix the assignment of selected RandomVariableStream
 objects to underlying streams.  This is the ``Stream`` attribute, part
-of the base class RandomVariableStream.  
+of the base class RandomVariableStream.
 
 By partitioning the existing sequence of streams from before:
 
@@ -332,7 +332,7 @@ into two equal-sized sets:
 
 .. sourcecode:: text
 
-   <--------------------------------------------------------------------------> 
+   <-------------------------------------------------------------------------->
    ^                                    ^^                                    ^
    |                                    ||                                    |
    stream 0            stream (2^63 - 1)  stream 2^63         stream (2^64 - 1)
@@ -353,7 +353,7 @@ of -1 means that a value will be automatically allocated).
 Publishing your results
 ***********************
 
-When you publish simulation results, a key piece of configuration 
+When you publish simulation results, a key piece of configuration
 information that you should always state is how you used the
 random number generator.
 
@@ -374,8 +374,8 @@ Summary
 Let's review what things you should do when creating a simulation.
 
 * Decide whether you are running with a fixed seed or random seed; a fixed seed
-  is the default, 
-* Decide how you are going to manage independent replications, if applicable, 
+  is the default,
+* Decide how you are going to manage independent replications, if applicable,
 * Convince yourself that you are not drawing more random values than the cycle
   length, if you are running a very long simulation, and
 * When you publish, follow the guidelines above about documenting your use of

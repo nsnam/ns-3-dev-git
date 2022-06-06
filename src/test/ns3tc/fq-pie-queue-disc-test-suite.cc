@@ -49,7 +49,7 @@ static int32_t g_hash;
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * Simple test packet filter able to classify IPv4 packets.
  */
 class Ipv4FqPieTestPacketFilter : public Ipv4PacketFilter
@@ -111,7 +111,7 @@ Ipv4FqPieTestPacketFilter::CheckProtocol (Ptr<QueueDiscItem> item) const
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests packets for which there is no suitable filter.
  */
 class FqPieQueueDiscNoSuitableFilter : public TestCase
@@ -162,7 +162,7 @@ FqPieQueueDiscNoSuitableFilter::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the IP flows separation and the packet limit.
  */
 class FqPieQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
@@ -236,7 +236,7 @@ FqPieQueueDiscIPFlowsSeparationAndPacketLimit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the deficit per flow.
  */
 class FqPieQueueDiscDeficit : public TestCase
@@ -383,7 +383,7 @@ FqPieQueueDiscDeficit::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the TCP flows separation.
  */
 class FqPieQueueDiscTCPFlowsSeparation : public TestCase
@@ -475,7 +475,7 @@ FqPieQueueDiscTCPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * This class tests the UDP flows separation
  */
 class FqPieQueueDiscUDPFlowsSeparation : public TestCase
@@ -568,10 +568,10 @@ FqPieQueueDiscUDPFlowsSeparation::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * \brief This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqPIE.
- * 
+ *
  * This class tests linear probing, collision response, and set
  * creation capability of set associative hashing in FqPIE.
  * We modified DoClassify () and CheckProtocol () so that we could control
@@ -693,9 +693,9 @@ FqPieQueueDiscSetLinearProbing::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
- * \brief This class tests L4S mode. 
- * 
+ *
+ * \brief This class tests L4S mode.
+ *
  * This test is divided to sub test one without hash collisions and so ECT0 and ECT1 flows are
  * classified into different flows.
  * Sub Test 1
@@ -798,7 +798,7 @@ FqPieQueueDiscL4sMode::DoRun (void)
   // 2) With hash collisions
 
   // Test case 1, Without hash collisions
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), 
+  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"),
     "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
     "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
 
@@ -843,7 +843,7 @@ FqPieQueueDiscL4sMode::DoRun (void)
   Simulator::Destroy ();
 
   // Test case 2, With hash collisions
-  queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), 
+  queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"),
     "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
     "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
 
@@ -886,7 +886,7 @@ FqPieQueueDiscL4sMode::DoRun (void)
 
 /**
  * \ingroup system-tests-tc
- * 
+ *
  * FQ-PIE queue disc test suite.
  */
 class FqPieQueueDiscTestSuite : public TestSuite

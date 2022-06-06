@@ -21,14 +21,14 @@
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  http://wiki.ittc.ku.edu/resilinets
- * Information and Telecommunication Technology Center 
+ * Information and Telecommunication Technology Center
  * and
  * Department of Electrical Engineering and Computer Science
  * The University of Kansas
  * Lawrence, KS  USA
  *
  * Work supported in part by NSF FIND (Future Internet Design) Program
- * under grant CNS-0626918 (Postmodern Internet Architecture) and 
+ * under grant CNS-0626918 (Postmodern Internet Architecture) and
  * by NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI)
  *
  * This program reads an upper triangular adjacency matrix (e.g. adjacency_matrix.txt) and
@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   // ---------- End of Simulation Variables ----------------------------------
 
   // ---------- Read Adjacency Matrix ----------------------------------------

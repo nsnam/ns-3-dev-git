@@ -112,7 +112,7 @@ class Node(PyVizObject):
     #  highlighted property
 
     ## signal emitted whenever a tooltip is about to be shown for the node
-    ## the first signal parameter is a python list of strings, to which 
+    ## the first signal parameter is a python list of strings, to which
     ## information can be appended
     __gsignals__ = {
         'query-extra-tooltip-info': (GObject.SignalFlags.RUN_LAST, None, (object,)),

@@ -45,23 +45,23 @@ public:
   static TypeId GetTypeId (void);
   BuildingListPriv ();
   ~BuildingListPriv ();
-  
+
   /**
    * Add a Building to the list.
-   * 
+   *
    * \param building building to add
    * \returns index of building in list.
    */
   uint32_t Add (Ptr<Building> building);
   /**
    * Returns an interator to the start of the list.
-   * 
+   *
    * \returns iterator to the begin of the container.
    */
   BuildingList::Iterator Begin (void) const;
   /**
    * Returns an interator to the end of the list.
-   * 
+   *
    * \returns iterator to the end of the container.
    */
   BuildingList::Iterator End (void) const;
@@ -92,9 +92,9 @@ private:
   static Ptr<BuildingListPriv> *DoGet (void);
   /**
    * Dispose the Singleton instance of BuildingListPriv.
-   * 
+   *
    * \note: this function is automatically called at the simulation end.
-   * 
+   *
    */
   static void Delete (void);
   std::vector<Ptr<Building> > m_buildings; //!< Container of Building

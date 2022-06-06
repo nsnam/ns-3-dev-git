@@ -203,7 +203,7 @@ protected:
    * Method Initialization for start and stop attributes.
    */
   virtual void DoInitialize (void);
-  
+
   virtual void DoDispose (void);
 
   /**

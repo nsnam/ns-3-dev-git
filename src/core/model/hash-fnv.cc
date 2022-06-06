@@ -194,11 +194,11 @@ typedef uint32_t Fnv32_t;  //PDB
  * Determine how 64 bit unsigned values are represented
  */
 //#include "longlong.h"  //PDB - assume `unsigned long long' is 64 bit
-#define HAVE_64BIT_LONG_LONG  
+#define HAVE_64BIT_LONG_LONG
 
 
 
-/** 
+/**
  * 64 bit FNV-0 hash
  */
 #if defined(HAVE_64BIT_LONG_LONG)
@@ -229,7 +229,7 @@ extern const Fnv64_t fnv0_64_init;
  * 64 bit FNV-1 non-zero initial basis
  *
  * The FNV-1 initial basis is the FNV-0 hash of the following 32 octets:
- * 
+ *
  *              chongo <Landon Curt Noll> /\../\
  *
  * \note The \'s above are not back-slashing escape characters.

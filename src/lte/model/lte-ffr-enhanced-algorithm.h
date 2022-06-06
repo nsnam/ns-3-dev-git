@@ -131,7 +131,7 @@ private:
   LteFfrSapUser* m_ffrSapUser; ///< FFR SAP user
   LteFfrSapProvider* m_ffrSapProvider; ///< FFR SAP provider
 
-  // FFR RRF SAP 
+  // FFR RRF SAP
   LteFfrRrcSapUser* m_ffrRrcSapUser; ///< FFR RRC SAP user
   LteFfrRrcSapProvider* m_ffrRrcSapProvider; ///< FFR RRC SAP provider
 
@@ -141,7 +141,7 @@ private:
 
   uint8_t m_ulSubBandOffset; ///< UL subband offset
   uint8_t m_ulReuse3SubBandwidth; ///< UL reuse 3 subbandwidth
-  uint8_t m_ulReuse1SubBandwidth; ///< UL reuse 1 subbandwidth 
+  uint8_t m_ulReuse1SubBandwidth; ///< UL reuse 1 subbandwidth
 
   std::vector <bool> m_dlRbgMap; ///< DL RBG map
   std::vector <bool> m_ulRbgMap; ///< UL RBG Map

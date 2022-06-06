@@ -84,12 +84,12 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Distributed simulation setup; by default use granted time window algorithm.
-  if(nullmsg) 
+  if(nullmsg)
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::NullMessageSimulatorImpl"));
-    } 
-  else 
+    }
+  else
     {
       GlobalValue::Bind ("SimulatorImplementationType",
                          StringValue ("ns3::DistributedSimulatorImpl"));
@@ -233,7 +233,7 @@ main (int argc, char *argv[])
           routerLink.EnablePcap("router-left", routerDevices, true);
           leafLink.EnablePcap("leaf-left", leftLeafDevices, true);
         }
-      
+
       if (systemId == 1)
         {
           routerLink.EnablePcap("router-right", routerDevices, true);
@@ -290,7 +290,7 @@ main (int argc, char *argv[])
     {
       SinkTracer::Verify (4);
     }
-  
+
   // Exit the MPI execution environment
   MpiInterface::Disable ();
   return 0;

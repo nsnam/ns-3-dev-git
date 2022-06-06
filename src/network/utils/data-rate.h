@@ -81,7 +81,7 @@ namespace ns3 {
  * * "56kbps" = 56,000 bits/s
  * * "128 kb/s" = 128,000 bits/s
  * * "8Kib/s" = 1 KiB/s = 8192 bits/s
- * * "1kB/s" = 8000 bits/s 
+ * * "1kB/s" = 8000 bits/s
  *
  * \see attribute_DataRate
  */
@@ -93,7 +93,7 @@ public:
    * \brief Integer constructor
    *
    * Construct a data rate from an integer.  This class only supports positive
-   * integer data rates in units of bits/s, meaning 1bit/s is the smallest 
+   * integer data rates in units of bits/s, meaning 1bit/s is the smallest
    * non-trivial bitrate available.
    * \param bps bit/s value
    */
@@ -107,12 +107,12 @@ public:
    * kbps, kb/s, Kbps, Kb/s, kBps, kB/s, KBps, KB/s, Kib/s, KiB/s \n
    * Mbps, Mb/s, MBps, MB/s, Mib/s, MiB/s \n
    * Gbps, Gb/s, GBps, GB/s, Gib/s, GiB/s \n
-   * 
+   *
    * Examples:
    * "56kbps" = 56,000 bits/s \n
    * "128 kb/s" = 128,000 bits/s \n
    * "8Kib/s" = 1 KiB/s = 8192 bits/s \n
-   * "1kB/s" = 8000 bits/s 
+   * "1kB/s" = 8000 bits/s
    *
    * \param rate string representing the desired rate
    */
@@ -120,68 +120,68 @@ public:
 
   /**
    * \return the DataRate representing the sum of this object with rhs
-   * 
+   *
    * \param rhs the DataRate to add to this DataRate
    */
   DataRate operator + (DataRate rhs);
 
   /**
    * \return the DataRate representing the sum of this object with rhs
-   * 
+   *
    * \param rhs the DataRate to add to this DataRate
    */
   DataRate& operator += (DataRate rhs);
 
   /**
    * \return the DataRate representing the difference of this object with rhs
-   * 
+   *
    * \param rhs the DataRate to subtract from this DataRate
    */
   DataRate operator - (DataRate rhs);
 
   /**
    * \return the DataRate representing the difference of this object with rhs
-   * 
+   *
    * \param rhs the DataRate to subtract from this DataRate
    */
   DataRate& operator -= (DataRate rhs);
 
   /**
    * \brief Scales the DataRate
-   * 
+   *
    * Multiplies with double and is re-casted to an int
-   * 
-   * \return DataRate object representing the product of this object with rhs 
-   * 
+   *
+   * \return DataRate object representing the product of this object with rhs
+   *
    * \param rhs the double to multiply to this datarate
    */
   DataRate operator * (double rhs);
 
   /**
    * \brief Scales the DataRate
-   * 
-   * Multiplies with double and is re-casted to an int 
-   * 
+   *
+   * Multiplies with double and is re-casted to an int
+   *
    * \return DataRate object representing the product of this object with rhs
-   * 
+   *
    * \param rhs the double to multipy to this datarate
    */
   DataRate& operator *= (double rhs);
 
   /**
    * \brief Scales the DataRate
-   * 
+   *
    * \return DataRate object representing the product of this object with rhs
-   * 
+   *
    * \param rhs the uint64_t to multipy to this datarate
    */
   DataRate operator * (uint64_t rhs);
 
   /**
    * \brief Scales the DataRate
-   * 
+   *
    * \return DataRate object representing the product of this object with rhs
-   * 
+   *
    * \param rhs the uint64_t to multipy to this datarate
    */
   DataRate& operator *= (uint64_t rhs);
@@ -191,42 +191,42 @@ public:
    * \return true if this rate is less than rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */  
+   */
   bool operator <  (const DataRate& rhs) const;
 
   /**
    * \return true if this rate is less than or equal to rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */ 
+   */
   bool operator <= (const DataRate& rhs) const;
-  
+
   /**
    * \return true if this rate is greater than rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */   
+   */
   bool operator >  (const DataRate& rhs) const;
-  
+
   /**
    * \return true if this rate is greater than or equal to rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */   
+   */
   bool operator >= (const DataRate& rhs) const;
-  
+
   /**
    * \return true if this rate is equal to rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */   
+   */
   bool operator == (const DataRate& rhs) const;
-  
+
   /**
    * \return true if this rate is not equal to rhs
    *
    * \param rhs the datarate to compare to this datarate
-   */   
+   */
   bool operator != (const DataRate& rhs) const;
 
   /**
@@ -273,7 +273,7 @@ private:
 
   // Uses DoParse
   friend std::istream &operator >> (std::istream &is, DataRate &rate);
-  
+
   uint64_t m_bps; //!< data rate [bps]
 };
 

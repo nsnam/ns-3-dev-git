@@ -37,7 +37,7 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
-  
+
   NodeContainer nodes;
   nodes.Create (2);
 

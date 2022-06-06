@@ -61,7 +61,7 @@ LteHarqPhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       (*it).second.erase ((*it).second.begin ());
       HarqProcessInfoList_t h;
-      (*it).second.push_back (h);      
+      (*it).second.push_back (h);
     }
 
 }
@@ -84,7 +84,7 @@ HarqProcessInfoList_t
 LteHarqPhy::GetHarqProcessInfoDl (uint8_t harqProcId, uint8_t layer)
 {
   NS_LOG_FUNCTION (this << (uint32_t)harqProcId << (uint16_t)layer);
-  return (m_miDlHarqProcessesInfoMap.at (layer).at (harqProcId));   
+  return (m_miDlHarqProcessesInfoMap.at (layer).at (harqProcId));
 }
 
 
@@ -152,7 +152,7 @@ LteHarqPhy::ResetDlHarqProcessStatus (uint8_t id)
     {
       m_miDlHarqProcessesInfoMap.at (i).at (id).clear ();
     }
-  
+
 }
 
 
@@ -181,14 +181,14 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBy
           // HARQ should be disabled -> discard info
           return;
         }
-      
+
 //       move current status back at the end to maintain full history
       HarqProcessInfoList_t list = (*it).second.at (0);
       for (uint8_t i = 0; i < list.size (); i++)
         {
           (*it).second.at (7).push_back (list.at (i));
         }
-      
+
       HarqProcessInfoElement_t el;
       el.m_mi = mi;
       el.m_infoBits = infoBytes * 8;

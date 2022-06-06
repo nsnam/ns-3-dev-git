@@ -15,10 +15,10 @@ the implementation is not complete as some features of IPv6 are not of
 much interest to simulation studies, and some features of IPv6 are simply
 not modeled yet in |ns3|.
 
-The base class :cpp:class:`Ipv6` 
+The base class :cpp:class:`Ipv6`
 defines a generic API, while the class :cpp:class:`Ipv6L3Protocol` is the actual class
-implementing the protocol. The actual classes used by the IPv6 stack are located mainly 
-in the directory ``src/internet``. 
+implementing the protocol. The actual classes used by the IPv6 stack are located mainly
+in the directory ``src/internet``.
 
 The implementation of IPv6 is contained in the following files:
 
@@ -81,18 +81,18 @@ Usage
 
 The following description is based on using the typical helpers found in the example code.
 
-IPv6 does not need to be activated in a node. it is automatically added to the 
+IPv6 does not need to be activated in a node. it is automatically added to the
 available protocols once the Internet Stack is installed.
 
 In order to *not* install IPv6 along with IPv4, it is possible to use
-:cpp:class:`ns3::InternetStackHelper` method `SetIpv6StackInstall (bool enable)` 
+:cpp:class:`ns3::InternetStackHelper` method `SetIpv6StackInstall (bool enable)`
 before installing the InternetStack in the nodes.
 
 Note that to have an IPv6-only network (i.e., to not install the IPv4 stack in a node)
-one should use :cpp:class:`ns3::InternetStackHelper` method `SetIpv4StackInstall (bool enable)` 
+one should use :cpp:class:`ns3::InternetStackHelper` method `SetIpv4StackInstall (bool enable)`
 before the stack installation.
 
-As an example, in the following code node 0 will have both IPv4 and IPv6, node 1 only 
+As an example, in the following code node 0 will have both IPv4 and IPv6, node 1 only
 only IPv6 and node 2 only IPv4:
 
 ::
@@ -106,11 +106,11 @@ only IPv6 and node 2 only IPv4:
 
     internetV4only.SetIpv6StackInstall (false);
     internetV6only.SetIpv4StackInstall (false);
-    
+
     internet.Install (n.Get (0));
     internetV6only.Install (n.Get (1));
     internetV4only.Install (n.Get (2));
-   
+
 
 
 IPv6 addresses assignment
@@ -125,7 +125,7 @@ All the other NetDevices will have one or more IPv6 addresses:
 * One link-local address: ``fe80::interface ID``, where ``interface ID`` is derived from the NetDevice MAC address.
 * Zero or more global addresses, e.g., ``2001:db8::1``.
 
-Typically the first address on an interface will be the link-local one, with the global 
+Typically the first address on an interface will be the link-local one, with the global
 address(es) being the following ones.
 
 IPv6 global addresses might be:
@@ -146,15 +146,15 @@ This is probably the easiest and most used method. As an example:
     Ptr<Node> n1 = CreateObject<Node> ();
     NodeContainer net (n0, n1);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net); 
-    
+    NetDeviceContainer ndc = csma.Install (net);
+
     NS_LOG_INFO ("Assign IPv6 Addresses.");
     Ipv6AddressHelper ipv6;
     ipv6.SetBase (Ipv6Address ("2001:db8::"), Ipv6Prefix (64));
     Ipv6InterfaceContainer ic = ipv6.Assign (ndc);
 
 This method will add two global IPv6 addresses to the nodes. Note that, as usual for IPv6,
-all the nodes will also have a link-local address. Typically the first address on an 
+all the nodes will also have a link-local address. Typically the first address on an
 interface will be the link-local one, with the global address(es) being the following ones.
 
 Note that the global addresses will be derived from the MAC address. As a consequence, expect
@@ -171,7 +171,7 @@ Alternatively, it is possible to assign a specific address to a node:
     Ptr<Node> n0 = CreateObject<Node> ();
     NodeContainer net (n0);
     CsmaHelper csma;
-    NetDeviceContainer ndc = csma.Install (net); 
+    NetDeviceContainer ndc = csma.Install (net);
 
     NS_LOG_INFO ("Specifically Assign an IPv6 Address.");
     Ipv6AddressHelper ipv6;
@@ -195,14 +195,14 @@ and if the router is the default router for that interface.
 A fine grain configuration is possible though the :cpp:class:`RadvdInterface` class, which
 allows to setup every parameter of the announced router advertisement on a given interface.
 
-It is worth mentioning that the configurations must be set up before installing the 
+It is worth mentioning that the configurations must be set up before installing the
 application in the node.
 
 Upon using this method, the nodes will acquire dynamically (i.e., during the simulation)
-one (or more) global address(es) according to the RADVD configuration. 
+one (or more) global address(es) according to the RADVD configuration.
 These addresses will be bases on the RADVD announced prefix and the node's EUI-64.
 
-Examples of RADVD use are shown in ``examples/ipv6/radvd.cc`` 
+Examples of RADVD use are shown in ``examples/ipv6/radvd.cc``
 and ``examples/ipv6/radvd-two-prefix.cc``.
 
 Note that the router (i.e., the node with :cpp:class:`Radvd`) will have to have a global address,
@@ -243,11 +243,11 @@ Duplicate Address Detection (DAD)
 +++++++++++++++++++++++++++++++++
 
 Nodes will perform DAD (it can be disabled using an :cpp:class:`Icmpv6L4Protocol` attribute).
-Upon receiving a DAD, however, nodes will not react to it. As is: DAD reaction is 
-incomplete so far. 
-The main reason relies on the missing random-generated address capability. Moreover, 
+Upon receiving a DAD, however, nodes will not react to it. As is: DAD reaction is
+incomplete so far.
+The main reason relies on the missing random-generated address capability. Moreover,
 since |ns3| nodes will usually be well-behaving, there shouldn't be any Duplicate Address.
-This might be changed in the future, so as to avoid issues with real-world 
+This might be changed in the future, so as to avoid issues with real-world
 integrated simulations.
 
 Explicit Congestion Notification (ECN) bits in IPv6
@@ -282,10 +282,10 @@ routers can forward packets from an interface to another interface, while hosts 
 packets not directed to them.
 
 Unfortunately, forwarding is not the only thing affected by this distinction, and forwarding
-itself might be fine-tuned, e.g., to forward packets incoming from an interface and drop 
+itself might be fine-tuned, e.g., to forward packets incoming from an interface and drop
 packets from another interface.
 
-In |ns3| a node is configured to be an *host* by default. There are two main ways to change 
+In |ns3| a node is configured to be an *host* by default. There are two main ways to change
 this behaviour:
 
 * Using :cpp:class:`ns3::Ipv6InterfaceContainer` `SetForwarding(uint32_t i, bool router)` where ``i`` is the interface index in the container.
@@ -296,10 +296,10 @@ Either one can be used during the simulation.
 A fine-grained setup can be accomplished by using :cpp:class:`ns3::Ipv6Interface` `SetForwarding (bool forward);`
 which allows to change the behaviour on a per-interface-basis.
 
-Note that the node-wide configuration only serves as a convenient method to enable/disable the 
+Note that the node-wide configuration only serves as a convenient method to enable/disable the
 :cpp:class:`ns3::Ipv6Interface` specific setting. An Ipv6Interface added to a node
 with forwarding enabled will be set to be forwarding as well.
-This is really important when a node has interfaces added during the simulation. 
+This is really important when a node has interfaces added during the simulation.
 
 According to the :cpp:class:`ns3::Ipv6Interface` forwarding state, the following happens:
 
@@ -318,7 +318,7 @@ According to the :cpp:class:`ns3::Ipv6Interface` forwarding state, the following
  * Routing protocols MUST forward packets
 
 The behaviour is matching ip-sysctl.txt (http://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt)
-with the difference that it's not possible to override the behaviour using esoteric settings 
+with the difference that it's not possible to override the behaviour using esoteric settings
 (e.g., forwarding but accept router advertisements, accept_ra=2, or forwarding but send router solicitations
 forwarding=2).
 
@@ -342,15 +342,15 @@ The use is almost identical to the corresponding IPv4 case, e.g.:
 
     NodeContainer n;
     n.Create (4);
-    
+
     NS_LOG_INFO ("Create IPv6 Internet Stack");
     InternetStackHelper internetv6;
     internetv6.Install (n);
-    
+
     NS_LOG_INFO ("Create channels.");
     CsmaHelper csma;
     NetDeviceContainer d = csma.Install (n);
-    
+
     NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
     Ipv6AddressHelper ipv6;
     ipv6.SetBase (Ipv6Address ("2001:db8::"), Ipv6Prefix (64));
@@ -364,12 +364,12 @@ setup a default route toward it in the other nodes, e.g.:
     iic.SetForwarding (0, true);
     iic.SetDefaultRouteInAllNodes (0);
 
-This will enable forwarding on the node *0* and will setup a default route in 
-:cpp:class:`ns3::Ipv6StaticRouting` on all the other nodes. Note that this 
-requires that Ipv6StaticRouting is present in the nodes. 
+This will enable forwarding on the node *0* and will setup a default route in
+:cpp:class:`ns3::Ipv6StaticRouting` on all the other nodes. Note that this
+requires that Ipv6StaticRouting is present in the nodes.
 
 The IPv6 routing helpers enable the user to perform specific tasks on the
-particular routing algorithm and to print the routing tables. 
+particular routing algorithm and to print the routing tables.
 
 
 Attributes
@@ -379,7 +379,7 @@ Many classes in the |ns3| IPv6 implementation contain attributes. The most
 useful ones are:
 
 * :cpp:class:`ns3::Ipv6`
- 
+
  * `IpForward`, boolean, default false. Globally enable or disable IP forwarding for all current and future IPv6 devices.
  * `MtuDiscover`, boolean, default true. If disabled, every interface will have its MTU set to 1280 bytes.
 
@@ -387,15 +387,15 @@ useful ones are:
 
  * `DefaultTtl`, uint8_t, default 64. The TTL value set by default on all outgoing packets generated on this node.
  * `SendIcmpv6Redirect`, boolean, default true. Send the ICMPv6 Redirect when appropriate.
- 
+
 * :cpp:class:`ns3::Icmpv6L4Protocol`
 
  * `DAD`, boolean, default true. Always do DAD (Duplicate Address Detection) check.
- 
+
 * :cpp:class:`ns3::NdiscCache`
 
  * `UnresolvedQueueSize`, uint32_t, default 3. Size of the queue for packets pending an NA reply.
- 
+
 Output
 ======
 
@@ -413,7 +413,7 @@ The IPv6 stack provides some useful trace sources:
 
 The latest trace source is generated when a packet contains an unknown option blocking its processing.
 
-Mind that :cpp:class:`ns3::NdiscCache` could drop packets as well, and they are not logged 
+Mind that :cpp:class:`ns3::NdiscCache` could drop packets as well, and they are not logged
 in a trace source (yet). This might generate some confusion in the sent/received packets counters.
 
 Advanced Usage
@@ -443,7 +443,7 @@ classifications (e.g., flow label) are possible but not yet implemented.
 The Path-MTU default validity time is 10 minutes. After the cache entry expiration, the
 Path-MTU information is removed and the next packet will (eventually) trigger a new ICMPv6
 PACKET_TOO_BIG message.
-Note that 1) this is consistent with the RFC specification and 2) L4 protocols are 
+Note that 1) this is consistent with the RFC specification and 2) L4 protocols are
 responsible for retransmitting the packets.
 
 Examples
@@ -452,7 +452,7 @@ Examples
 The examples for IPv6 are in the directory ``examples/ipv6``. These examples focus on
 the most interesting IPv6 peculiarities, such as fragmentation, redirect and so on.
 
-Moreover, most TCP and UDP examples located in ``examples/udp``, ``examples/tcp``, etc. 
+Moreover, most TCP and UDP examples located in ``examples/udp``, ``examples/tcp``, etc.
 have a command-line option to use IPv6 instead of IPv4.
 
 Troubleshooting
@@ -464,18 +464,18 @@ Routing loops
 +++++++++++++
 
 Since the only (so far) routing scheme available for IPv6 is :cpp:class:`ns3::Ipv6StaticRouting`,
-default router have to be setup manually. When there are two or more routers in a network 
-(e.g., node A and node B), avoid using the helper function `SetDefaultRouteInAllNodes` 
+default router have to be setup manually. When there are two or more routers in a network
+(e.g., node A and node B), avoid using the helper function `SetDefaultRouteInAllNodes`
 for more than one router.
 
-The consequence would be to install a default route to B in A and a default route pointing to 
-A in B, generating a loop. 
+The consequence would be to install a default route to B in A and a default route pointing to
+A in B, generating a loop.
 
 Global address leakage
 ++++++++++++++++++++++
 
 Remember that addresses in IPv6 are *global* by definition. When using IPv6 with an emulation
-|ns3| capability, avoid at all costs address leakage toward the global Internet. 
+|ns3| capability, avoid at all costs address leakage toward the global Internet.
 It is advisable to setup an external firewall to prevent leakage.
 
 2001:DB8::/32 addresses
@@ -489,6 +489,6 @@ Validation
 **********
 
 The IPv6 protocols has not yet been extensively validated against real implementations.
-The actual tests involve mainly performing checks of the .pcap trace files with Wireshark, 
+The actual tests involve mainly performing checks of the .pcap trace files with Wireshark,
 and the results are positive.
 

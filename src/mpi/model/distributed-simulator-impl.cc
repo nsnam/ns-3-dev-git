@@ -309,7 +309,7 @@ DistributedSimulatorImpl::ProcessOneEvent (void)
 
   Scheduler::Event next = m_events->RemoveNext ();
 
-  PreEventHook (EventId (next.impl, next.key.m_ts, 
+  PreEventHook (EventId (next.impl, next.key.m_ts,
                          next.key.m_context, next.key.m_uid));
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
@@ -385,7 +385,7 @@ DistributedSimulatorImpl::Run (void)
           // And check for send completes
           GrantedTimeWindowMpiInterface::TestSendComplete ();
           // Finally calculate the lbts
-          LbtsMessage lMsg (GrantedTimeWindowMpiInterface::GetRxCount (), GrantedTimeWindowMpiInterface::GetTxCount (), 
+          LbtsMessage lMsg (GrantedTimeWindowMpiInterface::GetRxCount (), GrantedTimeWindowMpiInterface::GetTxCount (),
                             m_myId, IsLocalFinished (), nextTime);
           m_pLBTS[m_myId] = lMsg;
           MPI_Allgather (&lMsg, sizeof (LbtsMessage), MPI_BYTE, m_pLBTS,
@@ -412,7 +412,7 @@ DistributedSimulatorImpl::Run (void)
           // Global halting condition is all nodes have empty queue's and
           // no messages are in-flight.
           m_globalFinished &= totRx == totTx;
-          
+
           if (totRx == totTx)
             {
               // If lookahead is infinite then granted time should be as well.

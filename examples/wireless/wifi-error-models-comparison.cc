@@ -111,7 +111,7 @@ int main (int argc, char *argv[])
             }
           tabledataset.Add (snr, 1 - ps);
         }
-      
+
       if (tableErrorModelEnabled)
         {
           std::stringstream ss;

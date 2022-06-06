@@ -93,7 +93,7 @@ public:
   uint8_t GetHopcount () const;
   /**
    * Get TTL function
-   * \returns the TTL 
+   * \returns the TTL
    */
   uint32_t GetTtl () const;
   /**
@@ -149,7 +149,7 @@ private:
   Mac48Address m_destinationAddress; ///< destination address
   uint32_t m_destSeqNumber; ///< destination sequence number
   uint32_t m_lifetime; ///< lifetime
-  uint32_t m_metric; ///< metric 
+  uint32_t m_metric; ///< metric
   Mac48Address m_originatorAddress; ///< originator address
   uint32_t m_originatorSeqNumber; ///< originator sequence number
   /**

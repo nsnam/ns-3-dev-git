@@ -27,7 +27,7 @@ namespace ns3 {
 
 /**
  * \ingroup propagation
- * 
+ *
  * \brief Base class for the 3GPP propagation models
  */
 class ThreeGppPropagationLossModel : public PropagationLossModel
@@ -93,7 +93,7 @@ private:
                                 Ptr<MobilityModel> b) const override;
 
   virtual int64_t DoAssignStreams (int64_t stream) override;
-  
+
   /**
    * \brief Computes the pathloss between a and b
    * \param cond the channel condition
@@ -126,10 +126,10 @@ private:
    * \return pathloss value in dB
    */
   virtual double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const = 0;
-  
+
   /**
    * \brief Computes the pathloss between a and b considering that the line of
-   *        sight is obstructed by a vehicle. By default it raises an error to 
+   *        sight is obstructed by a vehicle. By default it raises an error to
    *        avoid misuse.
    * \param distance2D the 2D distance between tx and rx in meters
    * \param distance3D the 3D distance between tx and rx in meters
@@ -204,8 +204,8 @@ private:
   static Vector GetVectorDifference (Ptr<MobilityModel> a, Ptr<MobilityModel> b);
 
 protected:
-  virtual void DoDispose () override; 
-  
+  virtual void DoDispose () override;
+
   /**
   * \brief Computes the 2D distance between two 3D vectors
   * \param a the first 3D vector
