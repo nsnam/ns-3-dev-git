@@ -103,7 +103,7 @@ For Red Hat/Fedora based distribution:
   $ yum install qt5
   $ yum install qt5-devel
 
-For Mac/OSX, see http://qt.nokia.com/downloads/
+For Mac/OSX, see https://www.qt.io/download
 
 Build steps
 ~~~~~~~~~~~

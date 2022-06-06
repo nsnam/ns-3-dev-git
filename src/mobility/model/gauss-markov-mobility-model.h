@@ -17,7 +17,7 @@
  *
  * Author: Dan Broyles <dbroyl01@ku.edu>
  * Thanks to Kevin Peters, faculty advisor James P.G. Sterbenz, and the ResiliNets
- * initiative at The University of Kansas, https://wiki.ittc.ku.edu/resilinets
+ * initiative at The University of Kansas, https://resilinets.org
  */
 #ifndef GAUSS_MARKOV_MOBILITY_MODEL_H
 #define GAUSS_MARKOV_MOBILITY_MODEL_H

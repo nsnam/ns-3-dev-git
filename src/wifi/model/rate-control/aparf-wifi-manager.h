@@ -36,7 +36,7 @@ struct AparfWifiRemoteStation;
  * in IEEE 802.11 wireless LANs</i> by Chevillat, P.; Jelitto, J.
  * and Truong, H. L. in International Journal of Wireless Information
  * Networks, Springer, 2005, 12, 123-145.
- * http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf
+ * https://web.archive.org/web/20170810111231/http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf
  *
  * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC

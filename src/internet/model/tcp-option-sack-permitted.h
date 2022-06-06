@@ -18,7 +18,7 @@
  *
  * Original Author: Adrian Sai-wah Tam <adrian.sw.tam@gmail.com>
  * Documentation, test cases: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
- *                            ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
+ *                            ResiliNets Research Group   https://resilinets.org/
  *                            The University of Kansas
  *                            James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */

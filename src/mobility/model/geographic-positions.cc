@@ -33,11 +33,11 @@ static constexpr double EARTH_RADIUS = 6371e3;
  * GRS80 and WGS84 sources
  *
  * Moritz, H. "Geodetic Reference System 1980." GEODETIC REFERENCE SYSTEM 1980.
- * <http://www.gfy.ku.dk/~iag/HB2000/part4/grs80_corr.htm>.
+ * <https://web.archive.org/web/20170712034716/http://www.gfy.ku.dk/~iag/HB2000/part4/grs80_corr.htm>.
  *
  * "Department of Defense World Geodetic System 1984." National Imagery and
  * Mapping Agency, 1 Jan. 2000.
- * <http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
+ * <https://web.archive.org/web/20200730231853/http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
  */
 
 /// Earth's semi-major axis in meters as defined by both GRS80 and WGS84

@@ -79,11 +79,11 @@ class.
 References
 ==========
 
-.. [Ref1] A. Kuznetsov and D. Torokhov; Linux Cross Reference Source Code; Available online at `<http://lxr.free-electrons.com/source/net/sched/sch_tbf.c>`_.
+.. [Ref1] A. Kuznetsov and D. Torokhov; Linux Cross Reference Source Code; Available online at `<https://raw.githubusercontent.com/torvalds/linux/8efd0d9c316af470377894a6a0f9ff63ce18c177/net/sched/sch_tbf.c>`_.
 
 .. [Ref2] J. Vehent; Journey to the Center of the Linux Kernel: Traffic Control, Shaping and QoS; Available online at `<http://wiki.linuxwall.info/doku.php/en:resources:dossiers:networking:traffic_control#tbf_-_token_bucket_filter>`_.
 
-.. [Ref3] Practical IP Network QoS: TBF queuing discipline; Available online at `<http://web.opalsoft.net/qos/default.php?p=ds-24>`_.
+.. [Ref3] Practical IP Network QoS: TBF queuing discipline; Available online at `<https://web.archive.org/web/20200516025221/http://web.opalsoft.net/qos/default.php>`_.
 
 Attributes
 ==========

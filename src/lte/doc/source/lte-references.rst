@@ -49,7 +49,7 @@ References
    <http://www.3gpp.org/ftp/tsg_ran/wg4_radio/TSGR4_51/Documents/R4-092042.zip>`_
 
 .. [FFAPI] FemtoForum `"LTE MAC Scheduler Interface Specification v1.11"
-   <http://www.smallcellforum.org/smallcellforum_resources/pdfsend05.php?file=LTE%20MAC%20Scheduler%20Interface%20Specification.pdf>`_
+   <https://web.archive.org/web/20141209082506/http://www.smallcellforum.org/smallcellforum_resources/pdfsend05.php?file=LTE%20MAC%20Scheduler%20Interface%20Specification.pdf>`_
 
 .. [ns3tutorial] `"The ns-3 Tutorial"
    <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_

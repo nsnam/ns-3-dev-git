@@ -519,8 +519,8 @@ As for Sphinx, the Doxygen docs_ and reference_ are pretty good.
 We won't duplicate the basics here, instead focusing on preferred
 usage for |ns3|.
 
-.. _docs:       http://www.stack.nl/~dimitri/doxygen/index.html
-.. _reference:  http://www.stack.nl/~dimitri/doxygen/manual/commands.html
+.. _docs:       https://www.doxygen.nl/index.html
+.. _reference:  https://www.doxygen.nl/manual/commands.html
 
 
 * Use Doxygen ``Modules`` to group related items.

@@ -1,15 +1,15 @@
 # Copyright (c) 2007 RADLogic
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,7 +57,7 @@ __date__ = '$Date: 2007/03/27 03:15:06 $'
 __version__ = '$Revision: 0.45 $'
 __credits__ = """
               David Chandler, for polygon area algorithm.
-               (http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf)
+               (https://web.archive.org/web/20091104151838/http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf)
               """
 
 import re
@@ -94,7 +94,7 @@ def int2bin(i, n):
                'c': '1100', 'd': '1101', 'e': '1110', 'f': '1111'}
     # Convert to hex then map each hex digit to binary equivalent.
     result = ''.join([hex2bin[x] for x in hex(i).lower().replace('l','')[2:]])
-                      
+
     # Shrink result to appropriate length.
     # Raise an error if the value is changed by the truncation.
     if '1' in result[:-n]:
@@ -107,7 +107,7 @@ def int2bin(i, n):
 
 def bin2int(bin_string):
     """Convert binary number string to decimal integer.
-    
+
     Note: Python > v2 has int(bin_string, 2)
 
     >>> bin2int('1111')
@@ -166,7 +166,7 @@ def transpose(matrix):
 def polygon_area(points_list, precision=100):
     """Calculate area of an arbitrary polygon using an algorithm from the web.
 
-    Return the area of the polygon as a positive float. 
+    Return the area of the polygon as a positive float.
 
     Arguments:
     points_list -- list of point tuples [(x0, y0), (x1, y1), (x2, y2), ...]
@@ -178,8 +178,8 @@ def polygon_area(points_list, precision=100):
 
     Credits:
     Area of a General Polygon by David Chandler
-    http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf
-    
+    https://web.archive.org/web/20091104151838/http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf
+
     """
     # Scale up co-ordinates and convert them to integers.
     for i in range(len(points_list)):
@@ -225,7 +225,7 @@ def gcf(a, b, epsilon=1e-16):
 
     Arguments:
     a, b -- two numbers
-            If both numbers are integers return an integer result, 
+            If both numbers are integers return an integer result,
             otherwise return a float result.
     epsilon -- floats less than this magnitude are considered to be zero
                (default: 1e-16)
@@ -261,7 +261,7 @@ def lcm(a, b, precision=None):
     """Return the least common multiple of a and b, using the gcf function.
 
     Arguments:
-    a, b -- two numbers. If both are integers return an integer result, 
+    a, b -- two numbers. If both are integers return an integer result,
             otherwise a return a float result.
     precision -- scaling factor if a and/or b are floats.
 
@@ -281,7 +281,7 @@ def lcm(a, b, precision=None):
     """
     # Note: Dummy precision argument is for backwards compatibility.
     # Do the division first.
-    # (See http://en.wikipedia.org/wiki/Least_common_multiple )
+    # (See https://en.wikipedia.org/wiki/Least_common_multiple )
     denom = gcf(a, b)
     if denom == 0:
         result = 0
@@ -328,7 +328,7 @@ def permutations(input_list):
 
 def reduce_fraction(fraction):
     """Reduce fraction tuple to simplest form. fraction=(num, denom)
-    
+
     >>> reduce_fraction((14, 7))
     (2, 1)
 
@@ -340,7 +340,7 @@ def reduce_fraction(fraction):
 
     >>> reduce_fraction((4, 0))
     (1, 0)
-    
+
     """
     (numerator, denominator) = fraction
     common_factor = abs(gcf(numerator, denominator))
@@ -352,7 +352,7 @@ def quantile(l, p):
     """Return p quantile of list l. E.g. p=0.25 for q1.
 
     See:
-    http://rweb.stat.umn.edu/R/library/base/html/quantile.html
+    https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/quantile
 
     """
     l_sort = l[:]
@@ -515,7 +515,7 @@ def uniquify(seq, preserve_order=False):
     The code is based on usenet post by Tim Peters.
 
     This code is O(N) if the sequence items are hashable, O(N**2) if not.
-    
+
     Peter Bengtsson has a blog post with an empirical comparison of other
     approaches:
     http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -546,7 +546,7 @@ def uniquify(seq, preserve_order=False):
 
     The sorted output or the non-order-preserving approach should equal
     that of the sorted order-preserving approach output:
-    
+
     >>> unordered = uniquify([3, 3, 1, 2], preserve_order=False)
     >>> unordered.sort()
     >>> ordered = uniquify([3, 3, 1, 2], preserve_order=True)
@@ -598,7 +598,7 @@ def reverse_dict(d):
         result[value] = key
     return result
 
-    
+
 def lsb(x, n):
     """Return the n least significant bits of x.
 
@@ -625,27 +625,27 @@ def random_vec(bits, max_value=None):
 
     if max_value and (max_value < 2 ** bits - 1):
         vector = int2bin((int(vector, 2) / (2 ** bits - 1)) * max_value, bits)
-    
+
     return vector[0:bits]
 
 
 def binary_range(bits):
-    """Return a list of all possible binary numbers in order with width=bits. 
-    
+    """Return a list of all possible binary numbers in order with width=bits.
+
     It would be nice to extend it to match the
     functionality of python's range() built-in function.
-    
+
     """
     l = []
     v = ['0'] * bits
 
     toggle = [1] + [0] * bits
-    
+
     while toggle[bits] != 1:
         v_copy = v[:]
         v_copy.reverse()
         l.append(''.join(v_copy))
-        
+
         toggle = [1] + [0]*bits
         i = 0
         while i < bits and toggle[i] == 1:
@@ -664,9 +664,9 @@ def float_range(start, stop=None, step=None):
     """Return a list containing an arithmetic progression of floats.
 
     Return a list of floats between 0.0 (or start) and stop with an
-    increment of step. 
+    increment of step.
 
-    This is in functionality to python's range() built-in function 
+    This is in functionality to python's range() built-in function
     but can accept float increments.
 
     As with range(), stop is omitted from the list.
@@ -720,7 +720,7 @@ def find_common_fixes(s1, s2):
     while i < (common_len + 1):
         if s1[-i] != s2[-i]:
             break
-        
+
         suffix.append(s1[-i])
         i += 1
 
@@ -728,7 +728,7 @@ def find_common_fixes(s1, s2):
 
     prefix = ''.join(prefix)
     suffix = ''.join(suffix)
-        
+
     return (prefix, suffix)
 
 
@@ -783,7 +783,7 @@ def getmodule(obj):
     obj -- python obj, generally a class or a function
 
     Examples:
-    
+
     A function:
     >>> module = getmodule(random.choice)
     >>> module.__name__
@@ -820,7 +820,7 @@ def getmodule(obj):
 
     See GvR's post in this thread:
     http://groups.google.com.au/group/comp.lang.python/browse_thread/thread/966a7bdee07e3b34/c3cab3f41ea84236?lnk=st&q=python+determine+class+module&rnum=4&hl=en#c3cab3f41ea84236
-    
+
     """
     if hasattr(obj, 'func_globals'):
         func = obj
@@ -848,7 +848,7 @@ def round_grid(value, grid, mode=0):
     mode -- 0 nearest, 1 up, -1 down
 
     Examples:
-    
+
     >>> round_grid(7.5, 5)
     10
 
@@ -875,7 +875,7 @@ def round_grid(value, grid, mode=0):
 
 def get_args(argv):
     """Store command-line args in a dictionary.
-    
+
     -, -- prefixes are removed
     Items not prefixed with - or -- are stored as a list, indexed by 'args'
 
@@ -886,9 +886,9 @@ def get_args(argv):
     """
     d = {}
     args = []
-    
+
     for arg in argv:
-            
+
         if arg.startswith('-'):
             parts = re.sub(r'^-+', '', arg).split('=')
             if len(parts) == 2:
@@ -899,7 +899,7 @@ def get_args(argv):
             args.append(arg)
 
     d['args'] = args
-    
+
     return d
 
 

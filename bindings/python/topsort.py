@@ -1,17 +1,17 @@
 # topsort - dependency (topological) sorting and cycle finding functions
 # Copyright (C) 2007 RADLogic
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; 
+# License as published by the Free Software Foundation;
 # version 2.1 of the License.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # Lesser General Public License for more details.
 #
-# See http://www.fsf.org/licensing/licenses/lgpl.txt for full license text.
+# See https://www.fsf.org/licensing/licenses/lgpl.txt for full license text.
 """Provide toplogical sorting (i.e. dependency sorting) functions.
 
 The topsort function is based on code posted on Usenet by Tim Peters.
@@ -63,7 +63,7 @@ def topsort(pairlist):
 
     Return a list of the elements in dependency order (parent to child order).
 
-    >>> print topsort( [(1,2), (3,4), (5,6), (1,3), (1,5), (1,6), (2,5)] ) 
+    >>> print topsort( [(1,2), (3,4), (5,6), (1,3), (1,5), (1,6), (2,5)] )
     [1, 2, 3, 5, 4, 6]
 
     >>> print topsort( [(1,2), (1,3), (2,4), (3,4), (5,6), (4,5)] )
@@ -72,16 +72,16 @@ def topsort(pairlist):
     >>> print topsort( [(1,2), (2,3), (3,2)] )
     Traceback (most recent call last):
     CycleError: ([1], {2: 1, 3: 1}, {2: [3], 3: [2]})
-    
+
     """
-    num_parents = {}  # element -> # of predecessors 
-    children = {}  # element -> list of successors 
-    for parent, child in pairlist: 
+    num_parents = {}  # element -> # of predecessors
+    children = {}  # element -> list of successors
+    for parent, child in pairlist:
         # Make sure every element is a key in num_parents.
-        if not num_parents.has_key( parent ): 
-            num_parents[parent] = 0 
-        if not num_parents.has_key( child ): 
-            num_parents[child] = 0 
+        if not num_parents.has_key( parent ):
+            num_parents[parent] = 0
+        if not num_parents.has_key( child ):
+            num_parents[child] = 0
 
         # Since child has a parent, increment child's num_parents count.
         num_parents[child] += 1
@@ -94,27 +94,27 @@ def topsort(pairlist):
 
     # For everything in answer, knock down the parent count on its children.
     # Note that answer grows *in* the loop.
-    for parent in answer: 
+    for parent in answer:
         del num_parents[parent]
-        if children.has_key( parent ): 
-            for child in children[parent]: 
+        if children.has_key( parent ):
+            for child in children[parent]:
                 num_parents[child] -= 1
-                if num_parents[child] == 0: 
-                    answer.append( child ) 
-            # Following "del" isn't needed; just makes 
+                if num_parents[child] == 0:
+                    answer.append( child )
+            # Following "del" isn't needed; just makes
             # CycleError details easier to grasp.
             del children[parent]
 
-    if num_parents: 
-        # Everything in num_parents has at least one child -> 
+    if num_parents:
+        # Everything in num_parents has at least one child ->
         # there's a cycle.
         raise CycleError(answer, num_parents, children)
-    return answer 
+    return answer
 
 def topsort_levels(pairlist):
     """Topologically sort a list of (parent, child) pairs into depth levels.
 
-    This returns a generator. 
+    This returns a generator.
     Turn this into a an iterator using the iter built-in function.
     (if you iterate over the iterator, each element gets generated when
     it is asked for, rather than generating the whole list up-front.)
@@ -154,14 +154,14 @@ def topsort_levels(pairlist):
     # todo: Make the doctest more robust (i.e. handle arbitrary dict order).
 
     """
-    num_parents = {}  # element -> # of predecessors 
-    children = {}  # element -> list of successors 
-    for parent, child in pairlist: 
+    num_parents = {}  # element -> # of predecessors
+    children = {}  # element -> list of successors
+    for parent, child in pairlist:
         # Make sure every element is a key in num_parents.
-        if not num_parents.has_key( parent ): 
-            num_parents[parent] = 0 
-        if not num_parents.has_key( child ): 
-            num_parents[child] = 0 
+        if not num_parents.has_key( parent ):
+            num_parents[parent] = 0
+        if not num_parents.has_key( child ):
+            num_parents[child] = 0
 
         # Since child has a parent, increment child's num_parents count.
         num_parents[child] += 1
@@ -222,9 +222,9 @@ def topsort_levels_core(num_parents, children):
                 for level_parent_child in children[level_parent]:
                     num_parents[level_parent_child] -= 1
                 del children[level_parent]
-        
-    if num_parents: 
-        # Everything in num_parents has at least one child -> 
+
+    if num_parents:
+        # Everything in num_parents has at least one child ->
         # there's a cycle.
         raise CycleError(num_parents, children)
     else:
@@ -353,7 +353,7 @@ def find_cycles(parent_children):
             path = paths.pop()
 
             parent = path[-1]
-            
+
             try:
                 children = parent_children[parent]
             except KeyError:

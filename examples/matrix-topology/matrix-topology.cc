@@ -20,7 +20,7 @@
  * Author: Amit Dandekar       <dandekar@ittc.ku.edu>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
- * ResiliNets Research Group  http://wiki.ittc.ku.edu/resilinets
+ * ResiliNets Research Group  https://resilinets.org/
  * Information and Telecommunication Technology Center
  * and
  * Department of Electrical Engineering and Computer Science

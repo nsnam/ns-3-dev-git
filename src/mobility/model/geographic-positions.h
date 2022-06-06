@@ -41,11 +41,11 @@ public:
    * Reference System 1980 (GRS80), or World Geodetic System 1984 (WGS84)
    *
    * Moritz, H. "Geodetic Reference System 1980." GEODETIC REFERENCE SYSTEM 1980.
-   * <http://www.gfy.ku.dk/~iag/HB2000/part4/grs80_corr.htm>.
+   * <https://web.archive.org/web/20170712034716/http://www.gfy.ku.dk/~iag/HB2000/part4/grs80_corr.htm>.
    *
    * "Department of Defense World Geodetic System 1984." National Imagery and
    * Mapping Agency, 1 Jan. 2000.
-   * <http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
+   * <https://web.archive.org/web/20200729203634/https://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
    */
   enum EarthSpheroidType
   {

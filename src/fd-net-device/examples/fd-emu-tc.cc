@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   // address will have an Organizationally Unique Identifier (OUI) of zero.
   // The Internet Assigned Number Authority IANA
   //
-  //  http://www.iana.org/assignments/ethernet-numberslocalIp
+  //  https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.txt
   //
   // reports that this OUI is unassigned, and so should not conflict with
   // real hardware on your net.  It may raise all kinds of red flags in a

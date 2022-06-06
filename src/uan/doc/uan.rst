@@ -323,7 +323,7 @@ References
 
 .. [1] BINGHAM, D.; DRAKE, T.; HILL, A.; LOTT, R.; The Application of Autonomous Underwater Vehicle (AUV) Technology in the Oil Industry – Vision and Experiences, URL: http://www.fig.net/pub/fig_2002/Ts4-4/TS4_4_bingham_etal.pdf
 .. [2] AUVfest2008: Underwater mines; URL: http://oceanexplorer.noaa.gov/explorations/08auvfest/background/mines/mines.html
-.. [3] Hydroinc Products; URL: http://www.hydroidinc.com/products.html
+.. [3] Hydroinc (acquired by Huntington Ingalls Industries) Products; URL: https://tsd.huntingtoningalls.com/what-we-do/unmanned-systems/unmanned-underwater-vehicles/
 .. [4] WHOI, Autonomous Underwater Vehicle, REMUS; URL: http://www.whoi.edu/page.do?pid=29856
 .. [5] Eriksen, C.C., T.J. Osse, R.D. Light, T. Wen, T.W. Lehman, P.L. Sabin, J.W. Ballard, and A.M.
        Chiodi. Seaglider: A Long-Range Autonomous Underwater Vehicle for Oceanographic Research,

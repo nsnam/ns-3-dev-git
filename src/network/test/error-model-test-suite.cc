@@ -21,7 +21,7 @@
 /* BurstErrorModel additions
  *
  * Author: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
- *         ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
+ *         ResiliNets Research Group   https://resilinets.org/
  *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  */
 

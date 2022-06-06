@@ -40,7 +40,7 @@ class Packet;
  *
  * Sends UDP packets based on a trace file of an MPEG4 stream
  * trace files could be downloaded form:
- * http://www2.tkn.tu-berlin.de/research/trace/ltvt.html (the 2 first lines of
+ * https://web.archive.org/web/20200729203634/https://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf (the 2 first lines of
  * the file should be removed)
  * A valid trace file is a file with 4 columns:
  * \li -1- the first one represents the frame index

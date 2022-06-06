@@ -63,7 +63,7 @@ C++ code, there are several possibilities:
 * See also our Python-based `PyViz visualizer <https://www.nsnam.org/wiki/PyViz>`_; extensions and documentation would be welcome.
 * The `NetAnim <https://gitlab.com/nsnam/netanim>`_ animator is written in `Qt <https://www.qt.io/>`_ and has lacked a maintainer for several years.
 * If you are interested in Linux kernel hacking, or use of applications in |ns3| such as open source routing daemons, we maintain the
-  `Direct Code Execution project <https://www.nsnam.org/docs/dce/manual/html/index.html>`_.
+  `Direct Code Execution project <https://www.nsnam.org/about/projects/direct-code-execution/>`_.
 * If you are familiar with `Django <https://www.djangoproject.com/>`_, we have work to do on `our app store infrastructure <https://gitlab.com/nsnam/ns-3-AppStore>`_.
 * Our `website <https://gitlab.com/nsnam/nsnam-web>`_ is written in `Jekyll <https://jekyllrb.com/>`_ and is in need of more work.
 

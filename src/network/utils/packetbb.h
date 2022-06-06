@@ -20,7 +20,7 @@
  */
 /* These classes implement RFC 5444 - The Generalized Mobile Ad Hoc Network
  * (MANET) Packet/PbbMessage Format
- * See: http://tools.ietf.org/html/rfc5444 for details */
+ * See: https://datatracker.ietf.org/doc/html/rfc5444 for details */
 
 #ifndef PACKETBB_H
 #define PACKETBB_H

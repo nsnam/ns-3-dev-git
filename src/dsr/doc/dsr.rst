@@ -7,7 +7,7 @@ Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed sp
 for use in multi-hop wireless ad hoc networks of mobile nodes.
 
 This model was developed by
-`the ResiliNets research group <http://www.ittc.ku.edu/resilinets>`_
+`the ResiliNets research group <https://resilinets.org/>`_
 at the University of Kansas.
 
 DSR Routing Overview
@@ -202,8 +202,8 @@ The model full compliance with the RFC is planned for the future.
 References
 **********
 
-[1] Original paper: http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf
+[1] Original paper: https://web.archive.org/web/20150430233910/http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf
 
-[2] RFC 4728 http://www6.ietf.org/rfc/rfc4728.txt
+[2] RFC 4728 https://datatracker.ietf.org/doc/html/rfc4728
 
-[3] Broch's comparison paper: http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps
+[3] Broch's comparison paper: https://web.archive.org/web/20150725135435/http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps

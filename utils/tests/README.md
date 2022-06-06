@@ -50,7 +50,7 @@ To perform a deeper test, you can manually run the daily or the weekly test. Go 
 
 Related to the timeout, our `gitlab-ci.yml` script also configures the job-level timeout. Currently, this timeout is set to 9h considering the extensive and time-consuming testing done in weekly jobs.
 
-**Note**: The job-level timeout can exceed the [project-level](https://docs.gitlab.com/ce/user/project/pipelines/settings.html#timeout) timeout (default: 60 min), but can not exceed the Runner-specific timeout.
+**Note**: The job-level timeout can exceed the [project-level](https://docs.gitlab.com/ee/ci/pipelines/settings.html#set-a-limit-for-how-long-jobs-can-run) timeout (default: 60 min), but can not exceed the Runner-specific timeout.
 
 
 To summarize, if you are unsure about the commit you're about to

@@ -26,7 +26,7 @@
  * 2) By default, Minstrel applies the multi-rate retry (the core of Minstrel
  *    algorithm). Otherwise, please use ConstantRateWifiManager instead.
  *
- * http://linuxwireless.org/en/developers/Documentation/mac80211/RateControl/minstrel
+ * https://wireless.wiki.kernel.org/en/developers/documentation/mac80211/ratecontrol/minstrel
  */
 
 #include <iomanip>

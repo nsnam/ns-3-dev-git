@@ -11,7 +11,7 @@ available under the terms of the BSD which accompanies this distribution, and
 is available at U{http://www.opensource.org/licenses/bsd-license.php}
 """
 # this file is a modified version of source code from the Accerciser project
-# http://live.gnome.org/accerciser
+# https://wiki.gnome.org/Apps/Accerciser
 
 from __future__ import print_function
 import gtk, gobject

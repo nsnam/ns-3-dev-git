@@ -54,7 +54,7 @@
  *
  * Scenario 2 plays back vehicular trace files in
  * ns-2 movement format, and are taken from:
- * http://www.lst.inf.ethz.ch/research/ad-hoc/car-traces/
+ * https://web.archive.org/web/20150218095728/http://www.lst.inf.ethz.ch/research/ad-hoc/car-traces
  * This scenario is 300 simulation seconds of 99
  * vehicles respectively within the Unterstrass
  * section of Zurich Switzerland that travel based on

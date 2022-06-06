@@ -44,7 +44,7 @@ namespace ns3 {
  * the information needed to build the topology
  * (i.e.number of nodes, links and links structure).
  * It have been tested with Orbis 0.70
- * http://www.sysnet.ucsd.edu/~pmahadevan/topo_research/topo.html
+ * https://web.archive.org/web/20181102004219/http://sysnet.ucsd.edu/~pmahadevan/topo_research/topo.html
  */
 class OrbisTopologyReader : public TopologyReader
 {

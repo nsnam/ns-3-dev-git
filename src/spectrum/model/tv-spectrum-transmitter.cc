@@ -225,8 +225,7 @@ static std::map<TvSpectrumModelId, Ptr<SpectrumModel> > g_tvSpectrumModelMap;
  * 8-VSB PSD approximated from Figure 3 of the following article:
  * Baron, Stanley. "First-Hand:Digital Television: The Digital Terrestrial
  * Television Broadcasting (DTTB) Standard." IEEE Global History Network.
- * <http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_
- * Digital_Terrestrial_Television_Broadcasting_(DTTB)_Standard>.
+ * <http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_Digital_Terrestrial_Television_Broadcasting_(DTTB)_Standard>.
  *
  * COFDM PSD approximated from Figure 12 (8k mode) of the following article:
  * Kopp, Carlo. "High Definition Television." High Definition Television. Air

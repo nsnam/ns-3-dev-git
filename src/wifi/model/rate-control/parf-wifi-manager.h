@@ -34,7 +34,7 @@ struct ParfWifiRemoteStation;
  * <i>Self-management in chaotic wireless deployments</i>, by
  * Akella, A.; Judd, G.; Seshan, S. and Steenkiste, P. in
  * Wireless Networks, Kluwer Academic Publishers, 2007, 13, 737-755
- * http://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf
+ * https://web.archive.org/web/20210413094117/https://www.cs.odu.edu/~nadeem/classes/cs795-WNS-S13/papers/enter-006.pdf
  *
  * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC

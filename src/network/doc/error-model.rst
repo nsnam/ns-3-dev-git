@@ -143,7 +143,7 @@ time.
 
 The burst error model is due to Truc Anh N. Nguyen at the University of
 Kansas (James P.G. Sterbenz <jpgs@ittc.ku.edu>, director, ResiliNets
-Research Group (http://wiki.ittc.ku.edu/resilinets), Information and
+Research Group (https://resilinets.org/), Information and
 Telecommunication Technology Center (ITTC) and Department of Electrical
 Engineering and Computer Science, The University of Kansas Lawrence, KS USA).
 Work supported in part by NSF FIND (Future Internet Design) Program

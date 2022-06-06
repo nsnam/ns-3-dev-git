@@ -65,7 +65,7 @@ References
 
 .. [Cake16] Linux implementation of Cobalt as a part of the cake framework.
    Available online at
-   `<https://github.com/dtaht/sch_cake/blob/master/cobalt.c>`_.
+   `<https://github.com/dtaht/sch_cake/blob/master/sch_cake.c>`_.
 
 .. [Kath17] Controlled Delay Active Queue Management
    (draft-ietf-aqm-fq-codel-07)

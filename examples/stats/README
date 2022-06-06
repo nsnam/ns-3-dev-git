@@ -23,14 +23,11 @@ Use the wifi-example-omnet.sh script to generate the results in OMNeT++ format.
 
 If you want to analyse the results with OMNeT++'s result analyser tool:
 a) Download OMNeT++ 4 and install it. Start the IDE. (www.omnetpp.org)
-b) If you do not want to install the whole simulator framework, there is a separate 
-   package which contains only the analysis tool from the OMNeT++ package.
-   You can download it from http://omnetpp.org/download/release/omnetpp-scave.tgz
 
-Once you are running the OMNeT++ IDE or the separate analysis tool (SCAVE)
+Once you are running the OMNeT++ ID
 - Choose File|Import...|Existing Projects into Workspace, then click [Next]
 - Select root directory. (choose the examples/stats directory) and click [Finish]
 
-Double click the wifi-example-omnet.anf in the opened project and select 
+Double click the wifi-example-omnet.anf in the opened project and select
 the Chart page to see the created chart. Experiment with the analysis tool and read its
-documentation: http://omnetpp.org/doc/omnetpp40/userguide/ch09.html
+documentation: https://doc.omnetpp.org/omnetpp4/Manual.pdf

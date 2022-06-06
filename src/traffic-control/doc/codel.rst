@@ -58,7 +58,7 @@ References
 
 .. [Nic12] K. Nichols and V. Jacobson, Controlling Queue Delay, ACM Queue, Vol. 10 No. 5, May 2012.  Available online at `<http://queue.acm.org/detail.cfm?id=2209336>`_.
 
-.. [Nic14] K. Nichols and V. Jacobson, Internet-Draft:  Controlled Delay Active Queue Management, March 2014.  Available online at `<http://tools.ietf.org/html/draft-nichols-tsvwg-codel-02>`_.
+.. [Nic14] K. Nichols and V. Jacobson, Internet-Draft:  Controlled Delay Active Queue Management, March 2014.  Available online at `<https://datatracker.ietf.org/doc/html/draft-nichols-tsvwg-codel-02>`_.
 
 .. [Buf14] Bufferbloat.net.  Available online at `<http://www.bufferbloat.net/>`_.
 

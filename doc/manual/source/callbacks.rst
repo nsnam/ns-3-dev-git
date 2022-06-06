@@ -474,9 +474,10 @@ later -- when the ``Callback`` is called via ``operator()``.  All of
 the parameters are provided by the calling function.
 
 What if it is desired to allow the client function (the one that provides the
-callback) to provide some of the parameters?  `Alexandrescu <http://erdani.com/book/main.html>`_ calls the process of
-allowing a client to specify one of the parameters *"binding"*.  One of the
-parameters of ``operator()`` has been bound (fixed) by the client.
+callback) to provide some of the parameters?
+`Alexandrescu <http://erdani.org/index.php/books/modern-c-design/index.html>`_
+calls the process of allowing a client to specify one of the parameters *"binding"*.
+One of the parameters of ``operator()`` has been bound (fixed) by the client.
 
 Some of our pcap tracing code provides a nice example of this.  There is a
 function that needs to be called whenever a packet is received.  This function
@@ -588,7 +589,7 @@ find the following useful.
 The code was originally written based on the techniques described in
 `<http://www.codeproject.com/cpp/TTLFunction.asp>`_.
 It was subsequently rewritten to follow the architecture outlined in
-`Modern C++ Design, Generic Programming and Design Patterns Applied, Alexandrescu, chapter 5, Generalized Functors <http://www.moderncppdesign.com/book/main.html>`_.
+`Modern C++ Design, Generic Programming and Design Patterns Applied, Alexandrescu, chapter 5, Generalized Functors <http://erdani.org/index.php/books/modern-c-design/index.html>`_.
 
 This code uses:
 

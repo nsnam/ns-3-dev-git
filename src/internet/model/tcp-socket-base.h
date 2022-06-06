@@ -124,7 +124,7 @@ public:
  * now a matter of setting a pointer into the TcpSocketBase class. The idea
  * and the interfaces are inspired by the Linux operating system, and in
  * particular from the structure tcp_congestion_ops. The reference paper is
- * https://www.sciencedirect.com/science/article/pii/S1569190X15300939.
+ * https://www.sciencedirect.com/science/article/abs/pii/S1569190X15300939.
  *
  * Transmission Control Block (TCB)
  * --------------------------------

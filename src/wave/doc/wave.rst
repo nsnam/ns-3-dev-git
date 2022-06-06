@@ -932,4 +932,4 @@ Performance Computing (HPC) center, with each trial requiring from
 8 hours to 6 days of CPU time to complete.  Preliminary results were
 presented at the PhD Forum, 22nd IEEE International Conference on
 Network Protocols (ICNP), October 24, 2014, Research Triangle Park, NC.
-See:  http://www4.ncsu.edu/~scarpen/Research_files/Final-PHD_Forum_SE_Carpenter_2014.pdf
+See:  https://web.archive.org/web/20170808113648/http://www4.ncsu.edu/~scarpen/Research_files/Final-PHD_Forum_SE_Carpenter_2014.pdf

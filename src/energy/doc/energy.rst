@@ -163,7 +163,7 @@ References
 **********
 
 .. [1] ns-2 Energy model:
-   http://www.cubinlab.ee.unimelb.edu.au/~jrid/Docs/Manuel-NS2/node204.html
+   https://web.archive.org/web/20130428021737/http://www.cubinlab.ee.unimelb.edu.au/~jrid/Docs/Manuel-NS2/node204.html
 
 .. [2] H. Wu, S. Nabar and R. Poovendran. An Energy Framework for the
    Network Simulator 3 (ns-3).

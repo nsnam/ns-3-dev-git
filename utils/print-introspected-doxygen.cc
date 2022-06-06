@@ -1151,7 +1151,7 @@ PrintAllLogComponents (std::ostream & os)
 
   /**
    * \todo Switch to a border-less table, so the file links align
-   * See http://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html
+   * See https://www.doxygen.nl/manual/htmlcmds.html
    */
   LogComponent::ComponentList * logs = LogComponent::GetComponentList ();
   // Find longest log name

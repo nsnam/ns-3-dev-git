@@ -10,7 +10,7 @@ available in five forms:
 * Tutorial, Manual, and Model Library *(this document)* for the `latest release <https://www.nsnam.org/documentation/latest/>`_ and `development tree <https://www.nsnam.org/documentation/development-tree/>`_
 * `ns-3 wiki <https://www.nsnam.org/wiki>`_
 
-This document is written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ for `Sphinx <http://sphinx.pocoo.org/>`_ and is maintained in the
+This document is written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ for `Sphinx <https://www.sphinx-doc.org/>`_ and is maintained in the
 ``doc/models`` directory of ns-3's source code.
 
 .. toctree::

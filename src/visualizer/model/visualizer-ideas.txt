@@ -12,5 +12,5 @@
      > How about multiple flows?  How to represent them simultaneously?
 - Track down a Gtk+ bug preventing tooltips from working correctly with large zoom levels;
 - Possibly look for embedding an ipython shell as a widget inside the
-  main window: http://ipython.scipy.org/moin/Cookbook/EmbeddingInGTK
+  main window: https://ipython.readthedocs.io/en/latest/interactive/reference.html#embedding-ipython
 

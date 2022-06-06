@@ -31,7 +31,7 @@ Here is an example of what might occur::
 The error message says that the program terminated unsuccessfully, but it is
 not clear from this information what might be wrong. To examine more
 closely, try running it under the `gdb debugger
-<http://sources.redhat.com/gdb/>`_:
+<https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/user_guide/chap-gdb>`_:
 
 .. sourcecode:: bash
 

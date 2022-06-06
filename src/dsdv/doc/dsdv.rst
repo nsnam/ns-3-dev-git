@@ -8,9 +8,9 @@ for MANETs developed by Charles E. Perkins and Pravin Bhagwat in 1994. It uses t
 selection.
 
 This model was developed by
-`the ResiliNets research group <http://www.ittc.ku.edu/resilinets>`_
+`the ResiliNets research group <https://resilinets.org/>`_
 at the University of Kansas.  A paper on this model exists at
-`this URL <https://wiki.ittc.ku.edu/resilinets/ResiliNets_Publications#.E2.80.9CDestination-Sequenced_Distance_Vector_.28DSDV.29_Routing_Protocol_Implementation_in_ns-3.E2.80.9D>`_.
+`this URL <https://resilinets.org/resilinets_publications.html#.E2.80.9CDestination-Sequenced_Distance_Vector_.28DSDV.29_Routing_Protocol_Implementation_in_ns-3.E2.80.9D>`_.
 
 DSDV Routing Overview
 *********************

@@ -55,7 +55,8 @@ namespace ns3 {
  * Warning: two Lollipop counters can be compared only if they are of the same type (same underlying type, and same Sequence Window).
  *
  * References:
- * [Perlman83] Perlman, R., "Fault-Tolerant Broadcast of Routing Information", North-Holland Computer Networks 7: pp. 395-405, DOI 10.1016/0376-5075(83)90034-X, 1983, <http://www.cs.illinois.edu/~pbg/courses/cs598fa09/readings/p83.pdf>.
+ * [Perlman83] Perlman, R., "Fault-Tolerant Broadcast of Routing Information", North-Holland Computer Networks 7: pp. 395-405, DOI 10.1016/0376-5075(83)90034-X, 1983,
+ * <https://web.archive.org/web/20180723135334/http://pbg.cs.illinois.edu/courses/cs598fa09/readings/p83.pdf>.
  *
  * \tparam T \explicit The type being used for the counter.
  */
