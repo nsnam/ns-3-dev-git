@@ -54,6 +54,7 @@ This rule can be easily checked and enforced with the help of the Python script
 The ``trim_trailing_whitespace.py`` script can be run with the following commands:
 
 ::
+
   # Entire codebase (using paths relative to the ns-3 root)
   ./utils/trim-trailing-whitespace.py [--check] .
 
@@ -77,6 +78,7 @@ the GitLab CI/CD pipeline to check if the codebase has trailing whitespace.
 The complete API of the script can be obtained with the following command:
 
 ::
+
   $ ./utils/trim-trailing-whitespace.py --help
 
 Code layout
