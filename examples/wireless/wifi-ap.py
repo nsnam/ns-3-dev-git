@@ -22,13 +22,7 @@
 
 import sys
 
-import ns.applications
-import ns.core
-import ns.internet
-import ns.mobility
-import ns.network
-import ns.point_to_point
-import ns.wifi
+from ns import ns
 
 # void
 # DevTxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
@@ -76,23 +70,17 @@ import ns.wifi
 #   std::cout << " start="<<start<<" duration="<<duration<<std::endl;
 # }
 
-def SetPosition(node, position):
-    mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-    mobility.SetPosition(position)
-
-
-def GetPosition(node):
-    mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-    return mobility.GetPosition()
-
-def AdvancePosition(node):
-    pos = GetPosition(node);
-    pos.x += 5.0
-    if pos.x >= 210.0:
-      return
-    SetPosition(node, pos)
-    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), AdvancePosition, node)
-
+ns.cppyy.cppdef("""
+    using namespace ns3;
+    void AdvancePosition(Ptr<Node> node){
+        Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
+        Vector pos = mob->GetPosition();
+        pos.x += 5.0;
+        if (pos.x >= 210.0)
+            return;
+        mob->SetPosition(pos);
+        Simulator::Schedule(Seconds(1.0), AdvancePosition, node);
+    }""")
 
 def main(argv):
     ns.core.CommandLine().Parse(argv)
@@ -133,14 +121,15 @@ def main(argv):
     mobility.Install(stas)
     mobility.Install(ap)
 
-    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), AdvancePosition, ap.Get(0))
+    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), ns.cppyy.gbl.AdvancePosition, ap.Get(0))
 
     socket = ns.network.PacketSocketAddress()
     socket.SetSingleDevice(staDevs.Get(0).GetIfIndex())
     socket.SetPhysicalAddress(staDevs.Get(1).GetAddress())
     socket.SetProtocol(1)
 
-    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", ns.network.Address(socket))
+    genericAddress = ns.addressFromPacketSocketAddress(socket)
+    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", genericAddress)
     onoff.SetConstantRate (ns.network.DataRate ("500kb/s"))
 
     apps = onoff.Install(ns.network.NodeContainer(stas.Get(0)))

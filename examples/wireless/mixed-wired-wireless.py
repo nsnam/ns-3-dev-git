@@ -51,14 +51,7 @@
 #           +----------------+                       +----------------+
 #
 
-import ns.applications
-import ns.core
-import ns.csma
-import ns.internet
-import ns.mobility
-import ns.network
-import ns.olsr
-import ns.wifi
+from ns import ns
 
 # #
 # #  This function will be used below as a trace sink
@@ -76,11 +69,11 @@ def main(argv):
     #  simulation parameters.
     #
 
-    cmd = ns.core.CommandLine()
-    cmd.backboneNodes = 10
-    cmd.infraNodes = 2
-    cmd.lanNodes = 2
-    cmd.stopTime = 20
+    cmd = ns.getCommandLine(__file__)
+    cmd.backboneNodes = "10"
+    cmd.infraNodes = "2"
+    cmd.lanNodes = "2"
+    cmd.stopTime = "20"
 
     #
     #  Simulation defaults are typically set next, before command line
@@ -95,10 +88,10 @@ def main(argv):
     #  "--backboneNodes=20"
     #
 
-    cmd.AddValue("backboneNodes", "number of backbone nodes")
-    cmd.AddValue("infraNodes", "number of leaf nodes")
-    cmd.AddValue("lanNodes", "number of LAN nodes")
-    cmd.AddValue("stopTime", "simulation stop time(seconds)")
+    cmd.AddValue("backboneNodes", "number of backbone nodes", ns.null_callback(), cmd.backboneNodes)
+    cmd.AddValue("infraNodes", "number of leaf nodes", ns.null_callback(), cmd.infraNodes)
+    cmd.AddValue("lanNodes", "number of LAN nodes", ns.null_callback(), cmd.lanNodes)
+    cmd.AddValue("stopTime", "simulation stop time(seconds)", ns.null_callback(), cmd.stopTime)
 
     #
     #  The system global variables and the local values added to the argument
@@ -316,19 +309,26 @@ def main(argv):
     appSource = ns.network.NodeList.GetNode(backboneNodes)
     lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1
     appSink = ns.network.NodeList.GetNode(lastNodeIndex)
-    # Let's fetch the IP address of the last node, which is on Ipv4Interface 1
-    remoteAddr = appSink.GetObject(ns.internet.Ipv4.GetTypeId()).GetAddress(1,0).GetLocal()
 
-    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
-                            ns.network.Address(ns.network.InetSocketAddress(remoteAddr, port)))
+    ns.cppyy.cppdef("""
+        Ipv4Address getIpv4AddressFromNode(Ptr<Node> node){
+        return node->GetObject<Ipv4>()->GetAddress(1,0).GetLocal();
+        }
+    """)
+    # Let's fetch the IP address of the last node, which is on Ipv4Interface 1
+    remoteAddr = ns.cppyy.gbl.getIpv4AddressFromNode(appSink)
+    socketAddr = ns.network.InetSocketAddress(remoteAddr, port)
+    genericAddress = ns.addressFromInetSocketAddress(socketAddr)
+    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", genericAddress)
     apps = onoff.Install(ns.network.NodeContainer(appSource))
     apps.Start(ns.core.Seconds(3))
     apps.Stop(ns.core.Seconds(stopTime - 1))
 
     #  Create a packet sink to receive these packets
     sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory",
-                                ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port))
-    apps = sink.Install(ns.network.NodeContainer(appSink))
+                                ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port)))
+    sinkContainer = ns.network.NodeContainer(appSink)
+    apps = sink.Install(sinkContainer)
     apps.Start(ns.core.Seconds(3))
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # /
@@ -370,7 +370,6 @@ def main(argv):
     ns.core.Simulator.Stop(ns.core.Seconds(stopTime))
     ns.core.Simulator.Run()
     ns.core.Simulator.Destroy()
-
 
 if __name__ == '__main__':
     import sys

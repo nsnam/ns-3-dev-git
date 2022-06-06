@@ -16,12 +16,7 @@
 #  * Ported to Python by Mohit P. Tahiliani
 #  */
 
-import ns.core
-import ns.network
-import ns.csma
-import ns.internet
-import ns.point_to_point
-import ns.applications
+from ns import ns
 import sys
 
 # // Default Network Topology
@@ -31,21 +26,30 @@ import sys
 # //    point-to-point  |    |    |    |
 # //                    ================
 # //                      LAN 10.1.2.0
+ns.cppyy.cppdef("""
+using namespace ns3;
 
-cmd = ns.core.CommandLine()
-cmd.nCsma = 3
-cmd.verbose = "True"
-cmd.AddValue("nCsma", "Number of \"extra\" CSMA nodes/devices")
-cmd.AddValue("verbose", "Tell echo applications to log if true")
+CommandLine& GetCommandLine(std::string filename, int& nCsma, bool& verbose)
+{
+	static CommandLine cmd = CommandLine(filename);
+	cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma);
+	cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+	return cmd;
+}
+""")
+from ctypes import c_int, c_bool
+nCsma = c_int(3)
+verbose = c_bool(True)
+cmd = ns.cppyy.gbl.GetCommandLine(__file__, nCsma, verbose)
 cmd.Parse(sys.argv)
 
-nCsma = int(cmd.nCsma)
-verbose = cmd.verbose
+nCsma = nCsma.value
+verbose = verbose.value
 
 if verbose == "True":
 	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
-nCsma = 1 if int(nCsma) == 0 else int(nCsma)
+nCsma = 1 if nCsma == 0 else nCsma
 
 p2pNodes = ns.network.NodeContainer()
 p2pNodes.Create(2)
@@ -83,7 +87,7 @@ serverApps = echoServer.Install(csmaNodes.Get(nCsma))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(csmaInterfaces.GetAddress(nCsma), 9)
+echoClient = ns.applications.UdpEchoClientHelper(ns.addressFromIpv4Address(csmaInterfaces.GetAddress(nCsma)), 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))

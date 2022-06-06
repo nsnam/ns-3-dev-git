@@ -1,6 +1,5 @@
 import math
-import ns.wifi
-import ns.network
+from ns import ns
 from gi.repository import GooCanvas
 from visualizer.base import Link, transform_distance_canvas_to_simulation
 

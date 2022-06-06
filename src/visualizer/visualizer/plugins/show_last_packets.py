@@ -1,9 +1,7 @@
 from gi.repository import GObject
 from gi.repository import Gtk
 
-import ns.core
-import ns.network
-import ns.visualizer
+from ns import ns
 
 from visualizer.base import InformationWindow
 from kiwi.ui.objectlist import ObjectList, Column

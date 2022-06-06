@@ -19,40 +19,39 @@
 from __future__ import print_function
 import sys
 
-import ns.applications
-import ns.core
-import ns.flow_monitor
-import ns.internet
-import ns.mobility
-import ns.network
-import ns.olsr
-import ns.wifi
-try:
-    import ns.visualizer
-except ImportError:
-    pass
+from ns import ns
 
 DISTANCE = 20 # (m)
 NUM_NODES_SIDE = 3
 
+ns.cppyy.cppdef("""
+using namespace ns3;
+
+CommandLine& GetCommandLine(std::string filename, int& NumNodesSide, bool& Plot, std::string Results)
+{
+	static CommandLine cmd = CommandLine(filename);
+    cmd.AddValue("NumNodesSide", "Grid side number of nodes (total number of nodes will be this number squared)", NumNodesSide);
+    cmd.AddValue("Results", "Write XML results to file", Results);
+    cmd.AddValue("Plot", "Plot the results using the matplotlib python module", Plot);
+	return cmd;
+}
+""")
+
 def main(argv):
 
-    cmd = ns.core.CommandLine()
-
-    cmd.NumNodesSide = None
-    cmd.AddValue("NumNodesSide", "Grid side number of nodes (total number of nodes will be this number squared)")
-
-    cmd.Results = None
-    cmd.AddValue("Results", "Write XML results to file")
-
-    cmd.Plot = None
-    cmd.AddValue("Plot", "Plot the results using the matplotlib python module")
-
+    from ctypes import c_int, c_bool
+    NumNodesSide = c_int(2)
+    Plot = c_bool(True)
+    Results = "output.xml"
+    cmd = ns.cppyy.gbl.GetCommandLine(__file__, NumNodesSide, Plot, Results)
     cmd.Parse(argv)
 
-    wifi = ns.wifi.WifiHelper()
-    wifiMac = ns.wifi.WifiMacHelper()
-    wifiPhy = ns.wifi.YansWifiPhyHelper()
+    Plot = Plot.value
+    NumNodesSide = NumNodesSide.value
+
+    wifi = ns.CreateObject("WifiHelper")
+    wifiMac = ns.CreateObject("WifiMacHelper")
+    wifiPhy = ns.CreateObject("YansWifiPhyHelper")
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     ssid = ns.wifi.Ssid("wifi-default")
@@ -71,8 +70,9 @@ def main(argv):
     ipv4Addresses.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
     port = 9   # Discard port(RFC 863)
+    inetAddress = ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)
     onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
-                                  ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)))
+                                  ns.network.Address(ns.addressFromInetSocketAddress(inetAddress)))
     onOffHelper.SetAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate("100kbps")))
     onOffHelper.SetAttribute("OnTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=1]"))
     onOffHelper.SetAttribute("OffTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0]"))
@@ -80,34 +80,39 @@ def main(argv):
     addresses = []
     nodes = []
 
-    if cmd.NumNodesSide is None:
+    if NumNodesSide is None:
         num_nodes_side = NUM_NODES_SIDE
     else:
-        num_nodes_side = int(cmd.NumNodesSide)
+        num_nodes_side = NumNodesSide
 
+    nodes = ns.NodeContainer(num_nodes_side*num_nodes_side)
+    accumulator = 0
     for xi in range(num_nodes_side):
         for yi in range(num_nodes_side):
 
-            node = ns.network.Node()
-            nodes.append(node)
+            node = nodes.Get(accumulator)
+            accumulator += 1
+            container = ns.network.NodeContainer(node)
+            internet.Install(container)
 
-            internet.Install(ns.network.NodeContainer(node))
-
-            mobility = ns.mobility.ConstantPositionMobilityModel()
+            mobility = ns.CreateObject("ConstantPositionMobilityModel")
             mobility.SetPosition(ns.core.Vector(xi*DISTANCE, yi*DISTANCE, 0))
             node.AggregateObject(mobility)
 
-            devices = wifi.Install(wifiPhy, wifiMac, node)
-            ipv4_interfaces = ipv4Addresses.Assign(devices)
+            device = wifi.Install(wifiPhy, wifiMac, node)
+            ipv4_interfaces = ipv4Addresses.Assign(device)
             addresses.append(ipv4_interfaces.GetAddress(0))
 
-    for i, node in enumerate(nodes):
+    for i, node in [(i, nodes.Get(i)) for i in range(nodes.GetN())]:
         destaddr = addresses[(len(addresses) - 1 - i) % len(addresses)]
         #print (i, destaddr)
-        onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port)))
-        app = onOffHelper.Install(ns.network.NodeContainer(node))
-        urv = ns.core.UniformRandomVariable()
-        app.Start(ns.core.Seconds(urv.GetValue(20, 30)))
+        genericAddress = ns.addressFromInetSocketAddress(ns.network.InetSocketAddress(destaddr, port))
+        onOffHelper.SetAttribute("Remote", ns.network.AddressValue(genericAddress))
+        container = ns.network.NodeContainer(node)
+        app = onOffHelper.Install(container)
+        urv = ns.CreateObject("UniformRandomVariable")#ns.cppyy.gbl.get_rng()
+        startDelay = ns.Seconds(urv.GetValue(20, 30))
+        app.Start(startDelay)
 
     #internet.EnablePcapAll("wifi-olsr")
     flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
@@ -154,7 +159,7 @@ def main(argv):
     monitor.CheckForLostPackets()
     classifier = flowmon_helper.GetClassifier()
 
-    if cmd.Results is None:
+    if Results is None:
         for flow_id, flow_stats in monitor.GetFlowStats():
             t = classifier.FindFlow(flow_id)
             proto = {6: 'TCP', 17: 'UDP'} [t.protocol]
@@ -162,10 +167,10 @@ def main(argv):
                 (flow_id, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort))
             print_stats(sys.stdout, flow_stats)
     else:
-        print (monitor.SerializeToXmlFile(cmd.Results, True, True))
+        print (monitor.SerializeToXmlFile(Results, True, True))
 
 
-    if cmd.Plot is not None:
+    if Plot is not None:
         import pylab
         delays = []
         for flow_id, flow_stats in monitor.GetFlowStats():

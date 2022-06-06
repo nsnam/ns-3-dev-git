@@ -1,6 +1,7 @@
 # -*- Mode: python; coding: utf-8 -*-
 from __future__ import division, print_function
 #from __future__ import with_statement
+from ctypes import c_double
 
 LAYOUT_ALGORITHM = 'neato' # ['neato'|'dot'|'twopi'|'circo'|'fdp'|'nop']
 REPRESENT_CHANNELS_AS_NODES = 1
@@ -19,13 +20,6 @@ if platform.system() == "Windows":
     SHELL_FONT = "Lucida Console 9"
 else:
     SHELL_FONT = "Luxi Mono 10"
-
-
-import ns.core
-import ns.network
-import ns.visualizer
-import ns.internet
-import ns.mobility
 
 import math
 import os
@@ -50,6 +44,7 @@ try:
     from gi.repository import GooCanvas
     import threading
     from . import hud
+
     #import time
     try:
         import svgitem
@@ -116,7 +111,7 @@ class Node(PyVizObject):
     ## information can be appended
     __gsignals__ = {
         'query-extra-tooltip-info': (GObject.SignalFlags.RUN_LAST, None, (object,)),
-        }
+    }
 
     def __init__(self, visualizer, node_index):
         """! Initialize function.
@@ -231,12 +226,12 @@ class Node(PyVizObject):
         """
         self.visualizer.simulation.lock.acquire()
         try:
-            ns3_node = ns.network.NodeList.GetNode(self.node_index)
-            ipv4 = ns3_node.GetObject(ns.internet.Ipv4.GetTypeId())
-            ipv6 = ns3_node.GetObject(ns.internet.Ipv6.GetTypeId())
+            ns3_node = ns.NodeList.GetNode(self.node_index)
+            ipv4 = ns.cppyy.gbl.getNodeIpv4(ns3_node)
+            ipv6 = ns.cppyy.gbl.getNodeIpv6(ns3_node)
 
             name = '<b><u>Node %i</u></b>' % self.node_index
-            node_name = ns.core.Names.FindName (ns3_node)
+            node_name = ns.Names.FindName (ns3_node)
             if len(node_name)!=0:
                 name += ' <b>(' + node_name + ')</b>'
 
@@ -245,15 +240,16 @@ class Node(PyVizObject):
 
             self.emit("query-extra-tooltip-info", lines)
 
-            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-            if mob is not None:
-                lines.append('  <b>Mobility Model</b>: %s' % mob.GetInstanceTypeId().GetName())
+            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            if mob:
+                mobility_model_name = ns.cppyy.gbl.getMobilityModelName(ns3_node)
+                lines.append('  <b>Mobility Model</b>: %s' % ns.cppyy.gbl.getMobilityModelName(ns3_node))
 
             for devI in range(ns3_node.GetNDevices()):
                 lines.append('')
                 lines.append('  <u>NetDevice %i:</u>' % devI)
                 dev = ns3_node.GetDevice(devI)
-                name = ns.core.Names.FindName(dev)
+                name = ns.Names.FindName(dev)
                 if name:
                     lines.append('    <b>Name:</b> %s' % name)
                 devname = dev.GetInstanceTypeId().GetName()
@@ -388,12 +384,12 @@ class Node(PyVizObject):
         if self._label is not None:
             if self._label_canvas_item is None:
                 self._label_canvas_item = GooCanvas.CanvasText(visibility_threshold=0.5,
-                                                         font="Sans Serif 10",
-                                                         fill_color_rgba=0x808080ff,
-                                                         alignment=Pango.Alignment.CENTER,
-                                                         anchor=GooCanvas.CanvasAnchorType.N,
-                                                         parent=self.visualizer.canvas.get_root_item(),
-                                                         pointer_events=GooCanvas.CanvasPointerEvents.NONE)
+                                                               font="Sans Serif 10",
+                                                               fill_color_rgba=0x808080ff,
+                                                               alignment=Pango.Alignment.CENTER,
+                                                               anchor=GooCanvas.CanvasAnchorType.N,
+                                                               parent=self.visualizer.canvas.get_root_item(),
+                                                               pointer_events=GooCanvas.CanvasPointerEvents.NONE)
                 self._label_canvas_item.lower(None)
 
             self._label_canvas_item.set_properties(visibility=GooCanvas.CanvasItemVisibility.VISIBLE_ABOVE_THRESHOLD,
@@ -504,9 +500,8 @@ class Node(PyVizObject):
         @return modility option
         """
         if self._has_mobility is None:
-            node = ns.network.NodeList.GetNode(self.node_index)
-            mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-            self._has_mobility = (mobility is not None)
+            node = ns.NodeList.GetNode(self.node_index)
+            self._has_mobility = ns.cppyy.gbl.hasMobilityModel(node)
         return self._has_mobility
 
 
@@ -528,10 +523,10 @@ class Channel(PyVizObject):
         """
         self.channel = channel
         self.canvas_item = GooCanvas.CanvasEllipse(radius_x=30, radius_y=30,
-                                             fill_color="white",
-                                             stroke_color="grey", line_width=2.0,
-                                             line_dash=GooCanvas.CanvasLineDash.newv([10.0, 10.0 ]),
-                                             visibility=GooCanvas.CanvasItemVisibility.VISIBLE)
+                                                   fill_color="white",
+                                                   stroke_color="grey", line_width=2.0,
+                                                   line_dash=GooCanvas.CanvasLineDash.newv([10.0, 10.0 ]),
+                                                   visibility=GooCanvas.CanvasItemVisibility.VISIBLE)
         self.canvas_item.pyviz_object = self
         self.links = []
 
@@ -629,7 +624,7 @@ class SimulationThread(threading.Thread):
         self.go.clear()
         self.target_time = 0 # in seconds
         self.quit = False
-        self.sim_helper = ns.visualizer.PyViz()
+        self.sim_helper = ns.PyViz()
         self.pause_messages = []
 
     def set_nodes_of_interest(self, nodes):
@@ -664,13 +659,13 @@ class SimulationThread(threading.Thread):
             self.lock.acquire()
             try:
                 if 0:
-                    if ns3.core.Simulator.IsFinished():
+                    if ns3.Simulator.IsFinished():
                         self.viz.play_button.set_sensitive(False)
                         break
                 #print "sim: Current time is %f; Run until: %f" % (ns3.Simulator.Now ().GetSeconds (), self.target_time)
                 #if ns3.Simulator.Now ().GetSeconds () > self.target_time:
                 #    print "skipping, model is ahead of view!"
-                self.sim_helper.SimulatorRunUntil(ns.core.Seconds(self.target_time))
+                self.sim_helper.SimulatorRunUntil(ns.Seconds(self.target_time))
                 #print "sim: Run until ended at current time: ", ns3.Simulator.Now ().GetSeconds ()
                 self.pause_messages.extend(self.sim_helper.GetPauseMessages())
                 GLib.idle_add(self.viz.update_model, priority=PRIORITY_UPDATE_MODEL)
@@ -716,7 +711,7 @@ class Visualizer(GObject.GObject):
             # signal emitted when it's time to update the view objects
             'update-view': (GObject.SignalFlags.RUN_LAST, None, ()),
 
-            }
+        }
 
     def __init__(self):
         """!
@@ -776,7 +771,7 @@ class Visualizer(GObject.GObject):
         assert isinstance(mode, ShowTransmissionsMode)
         self._show_transmissions_mode = mode
         if self._show_transmissions_mode == ShowTransmissionsMode.ALL:
-            self.simulation.set_nodes_of_interest(list(range(ns.network.NodeList.GetNNodes())))
+            self.simulation.set_nodes_of_interest(list(range(ns.NodeList.GetNNodes())))
         elif self._show_transmissions_mode == ShowTransmissionsMode.NONE:
             self.simulation.set_nodes_of_interest([])
         elif self._show_transmissions_mode == ShowTransmissionsMode.SELECTED:
@@ -1050,9 +1045,9 @@ class Visualizer(GObject.GObject):
 
         # Screenshot button
         screenshot_button = GObject.new(Gtk.Button,
-                                       label="Snapshot",
-                                       relief=Gtk.ReliefStyle.NONE, focus_on_click=False,
-                                       visible=True)
+                                        label="Snapshot",
+                                        relief=Gtk.ReliefStyle.NONE, focus_on_click=False,
+                                        visible=True)
         hbox.pack_start(screenshot_button, False, False, 4)
 
         def load_button_icon(button, icon_name):
@@ -1071,9 +1066,9 @@ class Visualizer(GObject.GObject):
         # Shell button
         if ipython_view is not None:
             shell_button = GObject.new(Gtk.Button,
-                                           label="Shell",
-                                           relief=Gtk.ReliefStyle.NONE, focus_on_click=False,
-                                           visible=True)
+                                       label="Shell",
+                                       relief=Gtk.ReliefStyle.NONE, focus_on_click=False,
+                                       visible=True)
             hbox.pack_start(shell_button, False, False, 4)
             load_button_icon(shell_button, "gnome-terminal")
             shell_button.connect("clicked", self._start_shell)
@@ -1111,22 +1106,22 @@ class Visualizer(GObject.GObject):
         self.window.show()
 
     def scan_topology(self):
-        print("scanning topology: %i nodes..." % (ns.network.NodeList.GetNNodes(),))
+        print("scanning topology: %i nodes..." % (ns.NodeList.GetNNodes(),))
         graph = pygraphviz.AGraph()
         seen_nodes = 0
-        for nodeI in range(ns.network.NodeList.GetNNodes()):
+        for nodeI in range(ns.NodeList.GetNNodes()):
             seen_nodes += 1
             if seen_nodes == 100:
-                print("scan topology... %i nodes visited (%.1f%%)" % (nodeI, 100*nodeI/ns.network.NodeList.GetNNodes()))
+                print("scan topology... %i nodes visited (%.1f%%)" % (nodeI, 100*nodeI/ns.NodeList.GetNNodes()))
                 seen_nodes = 0
-            node = ns.network.NodeList.GetNode(nodeI)
+            node = ns.NodeList.GetNode(nodeI)
             node_name = "Node %i" % nodeI
             node_view = self.get_node(nodeI)
 
-            mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-            if mobility is not None:
+            mobility = ns.cppyy.gbl.hasMobilityModel(node)
+            if mobility:
                 node_view.set_color("red")
-                pos = mobility.GetPosition()
+                pos = ns.cppyy.gbl.getNodePosition(node)
                 node_view.set_position(*transform_point_simulation_to_canvas(pos.x, pos.y))
                 #print "node has mobility position -> ", "%f,%f" % (pos.x, pos.y)
             else:
@@ -1213,7 +1208,7 @@ class Visualizer(GObject.GObject):
     def update_view(self):
         #print "update_view"
 
-        self.time_label.set_text("Time: %f s" % ns.core.Simulator.Now().GetSeconds())
+        self.time_label.set_text("Time: %f s" % ns.Simulator.Now().GetSeconds())
 
         self._update_node_positions()
 
@@ -1229,10 +1224,10 @@ class Visualizer(GObject.GObject):
     def _update_node_positions(self):
         for node in self.nodes.values():
             if node.has_mobility:
-                ns3_node = ns.network.NodeList.GetNode(node.node_index)
-                mobility = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-                if mobility is not None:
-                    pos = mobility.GetPosition()
+                ns3_node = ns.NodeList.GetNode(node.node_index)
+                mobility = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+                if mobility:
+                    pos = ns.cppyy.gbl.getNodePosition(ns3_node)
                     x, y = transform_point_simulation_to_canvas(pos.x, pos.y)
                     node.set_position(x, y)
                     if node is self.follow_node:
@@ -1243,14 +1238,14 @@ class Visualizer(GObject.GObject):
                         vadj.set_value(py - vadj.get_page_size() / 2)
 
     def center_on_node(self, node):
-        if isinstance(node, ns.network.Node):
+        if isinstance(node, ns.Node):
             node = self.nodes[node.GetId()]
         elif isinstance(node, (int, long)):
             node = self.nodes[node]
         elif isinstance(node, Node):
             pass
         else:
-            raise TypeError("expected int, viz.Node or ns.network.Node, not %r" % node)
+            raise TypeError("expected int, viz.Node or ns.Node, not %r" % node)
 
         x, y = node.get_position()
         hadj = self._scrolled_window.get_hadjustment()
@@ -1285,10 +1280,14 @@ class Visualizer(GObject.GObject):
         bounds_x1, bounds_y1 = self.canvas.convert_from_pixels(hadj.get_value(), vadj.get_value())
         bounds_x2, bounds_y2 = self.canvas.convert_from_pixels(hadj.get_value() + hadj.get_page_size(),
                                                                vadj.get_value() + vadj.get_page_size())
-        pos1_x, pos1_y, pos2_x, pos2_y = ns.visualizer.PyViz.LineClipping(bounds_x1, bounds_y1,
-                                                                bounds_x2, bounds_y2,
-                                                                pos1_x, pos1_y,
-                                                                pos2_x, pos2_y)
+        try:
+            pos1_x, pos1_y, pos2_x, pos2_y = ns.PyViz.LineClipping(bounds_x1, bounds_y1,
+                                                               bounds_x2, bounds_y2,
+                                                               pos1_x, pos1_y,
+                                                               pos2_x, pos2_y)
+        except:
+            res = (0,0,0,0)
+        pos1_x, pos1_y, pos2_x, pos2_y = res
         return (pos1_x + pos2_x)/2, (pos1_y + pos2_y)/2
 
     def _update_transmissions_view(self):
@@ -1349,8 +1348,8 @@ class Visualizer(GObject.GObject):
                                      anchor=GooCanvas.CanvasAnchorType.N,
                                      x=0, y=line_width/2)
             M = cairo.Matrix()
-            lx, ly = self._get_label_over_line_position(pos1_x, pos1_y,
-                                                        pos2_x, pos2_y)
+            lx, ly = self._get_label_over_line_position(c_double(pos1_x), c_double(pos1_y),
+                                                        c_double(pos2_x), c_double(pos2_y))
             M.translate(lx, ly)
             M.rotate(angle)
             try:
@@ -1436,7 +1435,7 @@ class Visualizer(GObject.GObject):
         self.simulation.pause_messages = []
         try:
             self.update_view()
-            self.simulation.target_time = ns.core.Simulator.Now ().GetSeconds () + self.sample_period
+            self.simulation.target_time = ns.Simulator.Now ().GetSeconds () + self.sample_period
             #print "view: target time set to %f" % self.simulation.target_time
         finally:
             self.simulation.lock.release()
@@ -1590,13 +1589,13 @@ class Visualizer(GObject.GObject):
     def begin_node_drag(self, node, event):
         self.simulation.lock.acquire()
         try:
-            ns3_node = ns.network.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-            if mob is None:
+            ns3_node = ns.NodeList.GetNode(node.node_index)
+            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            if not mob:
                 return
             if self.node_drag_state is not None:
                 return
-            pos = mob.GetPosition()
+            pos = ns.cppyy.gbl.getNodePosition(ns3_node)
         finally:
             self.simulation.lock.release()
         devpos = self.canvas.get_window().get_device_position(event.device)
@@ -1607,9 +1606,9 @@ class Visualizer(GObject.GObject):
     def node_drag_motion(self, item, targe_item, event, node):
         self.simulation.lock.acquire()
         try:
-            ns3_node = ns.network.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
-            if mob is None:
+            ns3_node = ns.NodeList.GetNode(node.node_index)
+            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            if not mob:
                 return False
             if self.node_drag_state is None:
                 return False
@@ -1652,14 +1651,14 @@ class Visualizer(GObject.GObject):
             else:
                 self.simulation.lock.acquire()
                 try:
-                    ns3_node = ns.network.NodeList.GetNode(self.selected_node.node_index)
+                    ns3_node = ns.NodeList.GetNode(self.selected_node.node_index)
                 finally:
                     self.simulation.lock.release()
             self.ipython.updateNamespace({'selected_node': ns3_node})
 
 
     def select_node(self, node):
-        if isinstance(node, ns.network.Node):
+        if isinstance(node, ns.Node):
             node = self.nodes[node.GetId()]
         elif isinstance(node, (int, long)):
             node = self.nodes[node]
@@ -1668,7 +1667,7 @@ class Visualizer(GObject.GObject):
         elif node is None:
             pass
         else:
-            raise TypeError("expected None, int, viz.Node or ns.network.Node, not %r" % node)
+            raise TypeError("expected None, int, viz.Node or ns.Node, not %r" % node)
 
         if node is self.selected_node:
             return
@@ -1778,11 +1777,11 @@ class Visualizer(GObject.GObject):
             surface = cairo.SVGSurface(file_name, dest_width, dest_height)
         else:
             dialog = Gtk.MessageDialog(parent  = self.canvas.get_toplevel(),
-                		       flags   = Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                		       type    = Gtk.MessageType.ERROR,
-                		       buttons = Gtk.ButtonsType.OK,
-                		       message_format = "Unknown extension '%s' (valid extensions are '.eps', '.svg', and '.pdf')"
-                                                          % (extension,))
+                                       flags   = Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                       type    = Gtk.MessageType.ERROR,
+                                       buttons = Gtk.ButtonsType.OK,
+                                       message_format = "Unknown extension '%s' (valid extensions are '.eps', '.svg', and '.pdf')"
+                                                        % (extension,))
             dialog.run()
             dialog.destroy()
             return
@@ -1795,7 +1794,7 @@ class Visualizer(GObject.GObject):
         surface.finish()
 
     def set_follow_node(self, node):
-        if isinstance(node, ns.network.Node):
+        if isinstance(node, ns.Node):
             node = self.nodes[node.GetId()]
         self.follow_node = node
 
@@ -1856,11 +1855,11 @@ def start():
         import sys
         print("No visualization support (%s)." % (str(_import_error),),
               file=sys.stderr)
-        ns.core.Simulator.Run()
+        ns.Simulator.Run()
         return
     load_plugins()
     viz = Visualizer()
     for hook, args in initialization_hooks:
         GLib.idle_add(hook, viz, *args)
-    ns.network.Packet.EnablePrinting()
+    ns.Packet.EnablePrinting()
     viz.start()

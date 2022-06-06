@@ -69,9 +69,6 @@ function(write_lock)
   cache_cmake_flag(NS3_BRITE "ENABLE_BRITE" lock_contents)
   cache_cmake_flag(NS3_ENABLE_SUDO "ENABLE_SUDO" lock_contents)
   cache_cmake_flag(NS3_PYTHON_BINDINGS "ENABLE_PYTHON_BINDINGS" lock_contents)
-  cache_cmake_flag(
-    NS3_SCAN_PYTHON_BINDINGS "ENABLE_SCAN_PYTHON_BINDINGS" lock_contents
-  )
 
   string(APPEND lock_contents "EXAMPLE_DIRECTORIES = [")
   foreach(example_folder ${ns3-example-folders})

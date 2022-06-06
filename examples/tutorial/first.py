@@ -13,11 +13,7 @@
 #  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #  */
 
-import ns.applications
-import ns.core
-import ns.internet
-import ns.network
-import ns.point_to_point
+from ns import ns
 
 # // Default Network Topology
 # //
@@ -53,7 +49,8 @@ serverApps = echoServer.Install(nodes.Get(1))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(interfaces.GetAddress(1), 9)
+address = ns.addressFromIpv4Address(interfaces.GetAddress(1))
+echoClient = ns.applications.UdpEchoClientHelper(address, 9)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))

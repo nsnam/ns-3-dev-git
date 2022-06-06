@@ -1,12 +1,4 @@
 from __future__ import print_function
-import ns.point_to_point
-import ns.csma
-import ns.wifi
-import ns.bridge
-import ns.internet
-import ns.mesh
-import ns.wimax
-import ns.lte
 
 from gi.repository import GObject
 import os.path
@@ -58,16 +50,16 @@ class NetDeviceTraits(object):
         self.is_virtual = is_virtual
 
 netdevice_traits = {
-    ns.point_to_point.PointToPointNetDevice: NetDeviceTraits(is_wireless=False),
-    ns.csma.CsmaNetDevice: NetDeviceTraits(is_wireless=False),
-    ns.wifi.WifiNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.bridge.BridgeNetDevice: NetDeviceTraits(is_virtual=True),
-    ns.internet.LoopbackNetDevice: NetDeviceTraits(is_virtual=True, is_wireless=False),
-    ns.mesh.MeshPointDevice: NetDeviceTraits(is_virtual=True),
-    ns.wimax.SubscriberStationNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.wimax.BaseStationNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.lte.LteUeNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.lte.LteEnbNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.PointToPointNetDevice: NetDeviceTraits(is_wireless=False),
+    ns.CsmaNetDevice: NetDeviceTraits(is_wireless=False),
+    ns.WifiNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.BridgeNetDevice: NetDeviceTraits(is_virtual=True),
+    ns.LoopbackNetDevice: NetDeviceTraits(is_virtual=True, is_wireless=False),
+    ns.MeshPointDevice: NetDeviceTraits(is_virtual=True),
+    ns.SubscriberStationNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.BaseStationNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.LteUeNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.LteEnbNetDevice: NetDeviceTraits(is_wireless=True),
 }
 
 def lookup_netdevice_traits(class_type):

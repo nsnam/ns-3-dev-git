@@ -60,7 +60,6 @@ option(NS3_LINK_WHAT_YOU_USE
 )
 option(NS3_SANITIZE "Build with address, leak and undefined sanitizers" OFF)
 option(NS3_SANITIZE_MEMORY "Build with memory sanitizer" OFF)
-option(NS3_SCAN_PYTHON_BINDINGS "Scan python bindings" OFF)
 
 # 3rd-party libraries/programs
 option(NS3_NETANIM "Build netanim" OFF)
@@ -80,7 +79,7 @@ set(NS3_OUTPUT_DIRECTORY "" CACHE STRING "Directory to store built artifacts")
 option(NS3_PRECOMPILE_HEADERS
        "Precompile module headers to speed up compilation" ON
 )
-option(NS3_PYTHON_BINDINGS "Build ns-3 python bindings" OFF)
+option(NS3_PYTHON_BINDINGS "Build ns-3 python bindings" ON)
 option(NS3_REALTIME "Build with realtime support" ON)
 option(NS3_SQLITE "Build with SQLite support" ON)
 option(NS3_STATIC "Build a static ns-3 library and link it against executables"
@@ -141,7 +140,6 @@ add_subdirectory(utils)
 
 write_lock()
 write_configtable()
-write_header_to_modules_map()
 
 # Export package targets when installing
 ns3_cmake_package()

@@ -2,11 +2,6 @@ from __future__ import print_function
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-import ns.core
-import ns.network
-import ns.internet
-import ns.olsr
-
 from visualizer.base import InformationWindow
 
 ## ShowOlsrRoutingTable class
@@ -24,7 +19,7 @@ class ShowOlsrRoutingTable(InformationWindow):
         COLUMN_NEXT_HOP,
         COLUMN_INTERFACE,
         COLUMN_NUM_HOPS,
-        ) = range(4)
+    ) = range(4)
 
     def __init__(self, visualizer, node_index):
         """!
@@ -94,11 +89,12 @@ class ShowOlsrRoutingTable(InformationWindow):
         @param self this object
         @return none
         """
-        node = ns.network.NodeList.GetNode(self.node_index)
-        olsr = node.GetObject(ns.olsr.olsr.RoutingProtocol.GetTypeId())
-        ipv4 = node.GetObject(ns.internet.Ipv4.GetTypeId())
-        if olsr is None:
+        node = ns.NodeList.GetNode(self.node_index)
+        ipv4 = node.GetObject(ns.Ipv4.GetTypeId())
+        if not ns.cppyy.gbl.hasOlsr(ns3_node):
             return
+        olsr = ns.cppyy.gbl.getNodeOlsr(node)
+
         self.table_model.clear()
         for route in olsr.GetRoutingTableEntries():
             tree_iter = self.table_model.append()
@@ -106,7 +102,7 @@ class ShowOlsrRoutingTable(InformationWindow):
             if netdevice is None:
                 interface_name = 'lo'
             else:
-                interface_name = ns.core.Names.FindName(netdevice)
+                interface_name = ns.Names.FindName(netdevice)
                 if not interface_name:
                     interface_name = "(interface %i)" % route.interface
             self.table_model.set(tree_iter,
@@ -117,9 +113,8 @@ class ShowOlsrRoutingTable(InformationWindow):
 
 
 def populate_node_menu(viz, node, menu):
-    ns3_node = ns.network.NodeList.GetNode(node.node_index)
-    olsr = ns3_node.GetObject(ns.olsr.olsr.RoutingProtocol.GetTypeId())
-    if olsr is None:
+    ns3_node = ns.NodeList.GetNode(node.node_index)
+    if not ns.cppyy.gbl.hasOlsr(ns3_node):
         print("No OLSR")
         return
 

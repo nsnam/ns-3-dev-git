@@ -25,14 +25,15 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import ns.core
+from ns import ns
 
 # mu, var = 100, 225
 
 ## Random number generator.
-rng = ns.core.NormalRandomVariable()
-rng.SetAttribute("Mean", ns.core.DoubleValue(100.0))
-rng.SetAttribute("Variance", ns.core.DoubleValue(225.0))
+rng = ns.CreateObject("NormalRandomVariable")
+rng.SetAttribute("Mean", ns.DoubleValue(100.0))
+rng.SetAttribute("Variance", ns.DoubleValue(225.0))
+
 ## Random number samples.
 x = [rng.GetValue() for t in range(10000)]
 
@@ -40,14 +41,14 @@ x = [rng.GetValue() for t in range(10000)]
 
 ## Make a probability density histogram
 density = 1
-## Plot color
+## Plot color
 facecolor='g'
 ## Plot alpha value (transparency)
 alpha=0.75
 
 # We don't really need the plot results, we're just going to show it later.
 # n, bins, patches = plt.hist(x, 50, density=1, facecolor='g', alpha=0.75)
-plt.hist(x, 50, density=1, facecolor='g', alpha=0.75)
+n, bins, patches = plt.hist(x, 50, density=True, facecolor='g', alpha=0.75)
 
 plt.title('ns-3 histogram')
 plt.text(60, .025, r'$\mu=100,\ \sigma=15$')

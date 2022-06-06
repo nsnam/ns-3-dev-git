@@ -160,11 +160,6 @@ macro(write_configtable)
   string(APPEND out "PyViz visualizer              : ")
   check_on_or_off("${NS3_VISUALIZER}" "${ENABLE_VISUALIZER}")
 
-  string(APPEND out "Python API Scanning Support   : ")
-  check_on_or_off(
-    "${NS3_SCAN_PYTHON_BINDINGS}" "${ENABLE_SCAN_PYTHON_BINDINGS}"
-  )
-
   string(APPEND out "Python Bindings               : ")
   check_on_or_off("${NS3_PYTHON_BINDINGS}" "${ENABLE_PYTHON_BINDINGS}")
 

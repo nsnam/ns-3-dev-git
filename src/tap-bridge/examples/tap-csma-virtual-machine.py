@@ -18,11 +18,7 @@
 
 import sys
 
-import ns.core
-import ns.csma
-import ns.internet
-import ns.network
-import ns.tap_bridge
+from ns import ns
 
 def main(argv):
 
@@ -34,7 +30,7 @@ def main(argv):
     # and take the time to calculate checksums.
     #
     ns.core.GlobalValue.Bind("SimulatorImplementationType", ns.core.StringValue("ns3::RealtimeSimulatorImpl"))
-    ns.core.GlobalValue.Bind("ChecksumEnabled", ns.core.BooleanValue("true"))
+    ns.core.GlobalValue.Bind("ChecksumEnabled", ns.core.BooleanValue(True))
 
     #
     # Create two ghost nodes.  The first will represent the virtual machine host
@@ -76,7 +72,7 @@ def main(argv):
     # Run the simulation for ten minutes to give the user time to play around
     #
     ns.core.Simulator.Stop (ns.core.Seconds (600))
-    ns.core.Simulator.Run(signal_check_frequency = -1)
+    ns.core.Simulator.Run()#signal_check_frequency = -1
     ns.core.Simulator.Destroy()
     return 0
 

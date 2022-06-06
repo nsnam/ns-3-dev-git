@@ -26,35 +26,11 @@
 #  Python example program demonstrating use of various Schedule functions.
 
 
-import ns.core
-
-class MyModel(object):
-    """Simple model object to illustrate event handling."""
-
-    ## \return None.
-    def Start(self):
-        """Start model execution by scheduling a HandleEvent."""
-        ns.core.Simulator.Schedule(ns.core.Seconds(10.0), self.HandleEvent, ns.core.Simulator.Now().GetSeconds())
-
-    ## \param [in] self This instance of MyModel
-    ## \param [in] value Event argument.
-    ## \return None.
-    def HandleEvent(self, value):
-        """Simple event handler."""
-        print ("Member method received event at", ns.core.Simulator.Now().GetSeconds(), \
-            "s started at", value, "s")
-
-## Example function - starts MyModel.
-## \param [in] model The instance of MyModel
-## \return None.
-def ExampleFunction(model):
-    print ("ExampleFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
-    model.Start()
+from ns import ns
 
 ## Example function - triggered at a random time.
-## \param [in] model The instance of MyModel
 ## \return None.
-def RandomFunction(model):
+def RandomFunction():
     print ("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
 
 ## Example function - triggered if an event is canceled (should not be called).
@@ -62,19 +38,88 @@ def RandomFunction(model):
 def CancelledEvent():
     print ("I should never be called... ")
 
-def main(dummy_argv):
-    ns.core.CommandLine().Parse(dummy_argv)
+ns.cppyy.cppdef("""
+    #include "CPyCppyy/API.h"
 
-    model = MyModel()
-    v = ns.core.UniformRandomVariable()
+    using namespace ns3;
+    /** Simple model object to illustrate event handling. */
+    class MyModel
+    {
+    public:
+      /** Start model execution by scheduling a HandleEvent. */
+      void Start (void);
+
+    private:
+      /**
+       *  Simple event handler.
+       *
+       * \param [in] eventValue Event argument.
+       */
+      void HandleEvent (double eventValue);
+    };
+
+    void
+    MyModel::Start (void)
+    {
+      Simulator::Schedule (Seconds (10.0),
+                           &MyModel::HandleEvent,
+                           this, Simulator::Now ().GetSeconds ());
+    }
+    void
+    MyModel::HandleEvent (double value)
+    {
+      std::cout << "Member method received event at "
+                << Simulator::Now ().GetSeconds ()
+                << "s started at " << value << "s" << std::endl;
+    }
+
+    void ExampleFunction(MyModel& model){
+      std::cout << "ExampleFunction received event at " << Simulator::Now().GetSeconds() << "s" << std::endl;
+      model.Start();
+    };
+
+    EventImpl* ExampleFunctionEvent(MyModel& model)
+    {
+        return MakeEvent(&ExampleFunction, model);
+    }
+
+    void RandomFunctionCpp(MyModel& model) {
+        CPyCppyy::Eval("RandomFunction()");
+    }
+
+    EventImpl* RandomFunctionEvent(MyModel& model)
+    {
+        return MakeEvent(&RandomFunctionCpp, model);
+    }
+
+    void CancelledFunctionCpp(void) {
+        CPyCppyy::Eval("CancelledEvent()");
+    }
+
+    EventImpl* CancelledFunctionEvent()
+    {
+        return MakeEvent(&CancelledFunctionCpp);
+    }
+   """)
+
+
+def main(dummy_argv):
+    cmd = ns.getCommandLine(__file__)
+    cmd.Parse(dummy_argv)
+
+    model = ns.cppyy.gbl.MyModel()
+    v = ns.CreateObject("UniformRandomVariable")
     v.SetAttribute("Min", ns.core.DoubleValue (10))
     v.SetAttribute("Max", ns.core.DoubleValue (20))
 
-    ns.core.Simulator.Schedule(ns.core.Seconds(10.0), ExampleFunction, model)
+    ev = ns.cppyy.gbl.ExampleFunctionEvent(model)
+    ns.core.Simulator.Schedule(ns.core.Seconds(10.0), ev)
 
-    ns.core.Simulator.Schedule(ns.core.Seconds(v.GetValue()), RandomFunction, model)
+    ev2 = ns.cppyy.gbl.RandomFunctionEvent(model)
+    ns.core.Simulator.Schedule(ns.core.Seconds(v.GetValue()), ev2)
 
-    id = ns.core.Simulator.Schedule(ns.core.Seconds(30.0), CancelledEvent)
+    ev3 = ns.cppyy.gbl.CancelledFunctionEvent()
+    id = ns.core.Simulator.Schedule(ns.core.Seconds(30.0), ev3)
     ns.core.Simulator.Cancel(id)
 
     ns.core.Simulator.Run()

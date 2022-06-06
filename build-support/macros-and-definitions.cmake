@@ -766,15 +766,15 @@ macro(process_options)
   if(${NS3_PYTHON_BINDINGS})
     if(NOT ${Python3_FOUND})
       message(
-        FATAL_ERROR
-          "Bindings: python bindings require Python, but it could not be found"
+        ${HIGHLIGHTED_STATUS}
+        "Bindings: python bindings require Python, but it could not be found"
       )
     else()
-      check_python_packages("pybindgen" missing_packages)
+      check_python_packages("cppyy" missing_packages)
       if(missing_packages)
         message(
-          FATAL_ERROR
-            "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
+          ${HIGHLIGHTED_STATUS}
+          "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
         )
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
@@ -792,44 +792,6 @@ macro(process_options)
   # operand to 'typeid'"
   if(${ENABLE_PYTHON_BINDINGS} AND ${CLANG})
     add_compile_options(-Wno-potentially-evaluated-expression)
-  endif()
-
-  set(ENABLE_SCAN_PYTHON_BINDINGS OFF)
-  if(${NS3_SCAN_PYTHON_BINDINGS})
-    if(NOT ${Python3_FOUND})
-      message(
-        FATAL_ERROR
-          "Bindings: scanning python bindings require Python, but it could not be found"
-      )
-    else()
-      # Check if pybindgen, pygccxml, cxxfilt and castxml are installed
-      check_python_packages(
-        "pybindgen;pygccxml;cxxfilt;castxml" missing_packages
-      )
-
-      # If castxml has not been found via python import, fallback to searching
-      # the binary
-      if(castxml IN_LIST missing_packages)
-        mark_as_advanced(CASTXML)
-        find_program(CASTXML castxml)
-        if(NOT ("${CASTXML}" STREQUAL "CASTXML-NOTFOUND"))
-          list(REMOVE_ITEM missing_packages castxml)
-        endif()
-      endif()
-
-      # If packages were not found, print message
-      if(missing_packages)
-        message(
-          FATAL_ERROR
-            "Bindings: scanning of python bindings disabled due to the following missing dependencies: ${missing_packages}"
-        )
-      else()
-        set(ENABLE_SCAN_PYTHON_BINDINGS ON)
-        # empty scan target that will depend on other module scan targets to
-        # scan all of them
-        add_custom_target(apiscan-all)
-      endif()
-    endif()
   endif()
 
   set(ENABLE_VISUALIZER FALSE)
@@ -2076,20 +2038,6 @@ function(find_external_library)
         "find_external_library: ${name} was not found. Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\"."
       )
     endif()
-  endif()
-endfunction()
-
-function(write_header_to_modules_map)
-  if(${ENABLE_SCAN_PYTHON_BINDINGS})
-    set(header_map ${ns3-headers-to-module-map})
-
-    # Trim last comma
-    string(LENGTH "${header_map}" header_map_len)
-    math(EXPR header_map_len "${header_map_len}-1")
-    string(SUBSTRING "${header_map}" 0 ${header_map_len} header_map)
-
-    # Then write to header_map.json for consumption of pybindgen
-    file(WRITE ${PROJECT_BINARY_DIR}/header_map.json "{${header_map}}")
   endif()
 endfunction()
 
