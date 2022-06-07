@@ -14,6 +14,8 @@ find_external_library(
   HEADER_NAME simclick.h
   LIBRARY_NAMES nsclick
                 click
+  PATH_SUFFIXES userlevel
+                ns
   SEARCH_PATHS ${NS3_WITH_CLICK}
 )
 
