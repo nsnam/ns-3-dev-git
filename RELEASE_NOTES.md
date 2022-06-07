@@ -15,6 +15,7 @@ Release 3-dev
 ### New user-visible features
 
 - (lr-wpan) !959 - Add PHY channel page support
+- (lr-wpan) Adds PAN descriptor, CommandPayload Header and Capability Field
 
 ### Bugs fixed
 

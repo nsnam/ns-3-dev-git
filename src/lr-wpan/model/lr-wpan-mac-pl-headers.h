@@ -125,7 +125,16 @@ public:
     GTS_REQ              = 0x09,        //!< GTS Request (RFD true: none)
     CMD_RESERVED         = 0xff         //!< Reserved
   };
-
+  /**
+   *  Association Status Field values.
+   *  See IEEE 802.15.4-2011, Table 6
+   */
+  enum AssocStatus
+  {
+    SUCCESSFUL    = 0x00,        //!< Association successful
+    FULL_CAPACITY = 0x01,        //!< PAN at capacity
+    ACCESS_DENIED = 0x02         //!< PAN access denied
+  };
 
   CommandPayloadHeader (void);
   /**
@@ -150,15 +159,47 @@ public:
    */
   void SetCommandFrameType (MacCommand macCmd);
   /**
-   * Get the command frame type
-   * \return the command frame type
+   * Set the Capability Information Field to the command payload header (Association Request Command).
+   * \param cap The capability Information field
+   */
+  void SetCapabilityField (CapabilityField  cap);
+  /**
+   * Set the Short Address Assigned by the coordinator (Association Response Command).
+   * \param shortAddr The short address assigned by the coordinator
+   */
+  void SetShortAddr (Mac16Address  shortAddr);
+  /**
+   * Set status resulting from the association attempt (Association Response Command).
+   * \param status The status resulting from the association attempt
+   */
+  void SetAssociationStatus (AssocStatus  status);
+  /**
+   * Get the Short address assigned by the coordinator (Association Response Command).
+   * \return The Mac16Address assigned by the coordinator
+   */
+  Mac16Address GetShortAddr (void) const;
+  /**
+   * Get the status resulting from an association request (Association Response Command).
+   * \return The resulting status from an association request
+   */
+  AssocStatus GetAssociationStatus (void) const;
+  /**
+   * Get the command frame type ID
+   * \return The command type ID from the command payload header
    */
   MacCommand GetCommandFrameType (void) const;
-
+  /**
+   * Get the Capability Information Field from the command payload header. (Association Request Command)
+   * \return The Capability Information Field
+   */
+  CapabilityField GetCapabilityField (void) const;
 
 private:
-  /** The command Frame Identifier*/
-  uint8_t m_cmdFrameId;
+
+  MacCommand m_cmdFrameId;           //!< The command Frame Identifier
+  CapabilityField m_capabilityInfo;  //!< Capability Information Field   (Association Request Command)
+  Mac16Address m_shortAddr;          //!< Contains the short address assigned by the coordinator (Association Response Command) See IEEE 802.15.4-2011 5.3.2.2.
+  AssocStatus m_assocStatus;         //!< Association Status (Association Response Command)
 
 };
 

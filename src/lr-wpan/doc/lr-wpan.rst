@@ -90,11 +90,38 @@ This maps to |ns3| classes and methods such as:::
   ...
   }
 
+The primitives currently supported by the ns-3 model are:
+
+MAC Primitives
+++++++++++++++
+
+* MCPS-DATA.Request
+* MCPS-DATA.Confirm
+* MCPS-DATA.Indication
+* MLME-START.Request
+* MLME-START.Confirm
+
+PHY Primitives
+++++++++++++++
+
+* PLME-CCA.Request
+* PLME-CCA.Confirm
+* PD-DATA.Request
+* PD-DATA.Confirm
+* PD-DATA.Indication
+* PLME-SET-TRX-STATE.Request
+* PLME-SET-TRX-STATE.Confirm
+
 MAC
 ###
 
-The MAC at present implements the unslotted CSMA/CA variant, without beaconing.
-Currently there is no support for coordinators and the relevant APIs.
+The MAC at present implements both, the unslotted CSMA/CA (non-beacon mode) and
+the slotted CSMA/CA (beacon-enabled mode). The beacon-enabled mode supports only
+direct transmissions. Indirect transmissions and Guaranteed Time Slots (GTS) are
+currently not supported.
+
+The present implementation supports a single PAN coordinator, support for additional
+coordinators is under consideration for future releases.
 
 The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
 features. The radio is assumed to be always active (receiving or transmitting),
@@ -219,10 +246,9 @@ Scope and Limitations
 =====================
 
 Future versions of this document will contain a PICS proforma similar to
-Appendix D of IEEE 802.15.4-2006.  The current emphasis is on the
-unslotted mode of 802.15.4 operation for use in Zigbee, and the scope
-is limited to enabling a single mode (CSMA/CA) with basic data transfer
-capabilities. Association with PAN coordinators is not yet supported, nor the
+Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
+running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
+Association with PAN coordinators is not yet supported, nor the
 use of extended addressing. Interference is modeled as AWGN but this is
 currently not thoroughly tested.
 
@@ -310,6 +336,7 @@ The following tests have been written, which can be found in ``src/lr-wpan/tests
 * ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD SAP per IEEE 802.15.4
 * ``lr-wpan-spectrum-value-helper-test.cc``:  Test that the conversion between power (expressed as a scalar quantity) and spectral power, and back again, falls within a 25% tolerance across the range of possible channels and input powers.
 * ``lr-wpan-ifs-test.cc``:  Check that the Intraframe Spaces (IFS) are being used and issued in the correct order.
+* ``lr-wpan-slotted-csmaca-test.cc``:  Test the transmission and deferring of data packets in the Contention Access Period (CAP) for the slotted CSMA/CA (beacon-enabled mode).
 
 Validation
 **********

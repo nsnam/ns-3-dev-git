@@ -479,4 +479,134 @@ operator << (std::ostream &os, const PendingAddrFields &pendingAddrFields)
   return os;
 }
 
+/***********************************************************
+ *              Capability Information Field
+ ***********************************************************/
+
+CapabilityField::CapabilityField ()
+{
+  m_deviceType = true;
+  m_powerSource = false;
+  m_receiverOnWhenIdle = true;
+  m_securityCap = false;
+  m_allocAddr = true;
+}
+
+uint32_t
+CapabilityField::GetSerializedSize (void) const
+{
+  return 1;
+}
+
+Buffer::Iterator
+CapabilityField::Serialize (Buffer::Iterator i) const
+{
+  uint8_t capability;
+
+  capability = 0;                                            //!< Bit 0 (reserved)
+  capability = (m_deviceType << 1) & (0x01 << 1);            //!< Bit 1
+  capability |= (m_powerSource << 2) & (0x01 << 2);          //!< Bit 2
+  capability |= (m_receiverOnWhenIdle << 3) & (0x01 << 3);   //!< Bit 3
+                                                             //!< Bit 4-5 (reserved)
+  capability |= (m_securityCap << 6) & (0x01 << 6);          //!< Bit 6
+  capability |= (m_allocAddr << 7) & (0x01 << 7);            //!< Bit 7
+  i.WriteU8 (capability);
+  return i;
+}
+
+Buffer::Iterator
+CapabilityField::Deserialize (Buffer::Iterator i)
+{
+  uint8_t capability = i.ReadU8 ();
+  //!< Bit 0 (reserved)
+  m_deviceType = (capability >> 1) & (0x01);          //!< Bit 1
+  m_powerSource = (capability >> 2) & (0x01);         //!< Bit 2
+  m_receiverOnWhenIdle = (capability >> 3) & (0x01);  //!< Bit 3
+                                                      //!< Bit 4-5 (reserved)
+  m_securityCap = (capability >> 6) & (0x01);         //!< Bit 6
+  m_allocAddr = (capability >> 7) & (0x01);           //!< Bit 7
+
+  return i;
+}
+
+bool
+CapabilityField::IsDeviceTypeFfd (void) const
+{
+  return m_deviceType;
+}
+
+bool
+CapabilityField::IsPowSrcAvailable (void) const
+{
+  return m_powerSource;
+}
+
+bool
+CapabilityField::IsReceiverOnWhenIdle (void) const
+{
+  return m_receiverOnWhenIdle;
+}
+
+
+bool
+CapabilityField::IsSecurityCapability (void) const
+{
+  return m_securityCap;
+}
+
+bool
+CapabilityField::IsShortAddrAllocOn (void) const
+{
+  return m_allocAddr;
+}
+
+void
+CapabilityField::SetFfdDevice (bool devType)
+{
+  m_deviceType = devType;
+}
+
+void
+CapabilityField::SetPowSrcAvailable (bool pow)
+{
+  m_powerSource = pow;
+}
+
+void
+CapabilityField::SetRxOnWhenIdle (bool rxIdle)
+{
+  m_receiverOnWhenIdle = rxIdle;
+}
+
+void
+CapabilityField::SetSecurityCap (bool sec)
+{
+  m_securityCap = sec;
+}
+
+void
+CapabilityField::SetShortAddrAllocOn (bool addrAlloc)
+{
+  m_allocAddr = addrAlloc;
+}
+
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param capabilityField the Capability Information Field
+ *
+ * \returns output stream
+ */
+std::ostream &
+operator << (std::ostream &os, const CapabilityField &capabilityField)
+{
+  os << " FFD device capable = "  << bool  (capabilityField.IsDeviceTypeFfd ())
+     << ", Alternate Power Current Available  = "  << bool  (capabilityField.IsPowSrcAvailable ())
+     << ", Receiver On When Idle  = "  << bool  (capabilityField.IsReceiverOnWhenIdle ())
+     << ", Security Capable  = "  << bool  (capabilityField.IsSecurityCapability ())
+     << ", Coordinator Allocate Short Address  = "  << bool  (capabilityField.IsShortAddrAllocOn ());
+  return os;
+}
+
 } // ns-3 namespace

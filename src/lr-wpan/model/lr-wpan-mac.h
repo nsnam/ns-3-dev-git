@@ -231,6 +231,25 @@ typedef enum
 /**
  * \ingroup lr-wpan
  *
+ * PAN Descriptor, Table 17 IEEE 802.15.4-2011
+ */
+struct PanDescriptor
+{
+  LrWpanAddressMode m_coorAddrMode; //!< The coordinator addressing mode corresponding to the received beacon frame.
+  uint16_t m_coorPanId;             //!< The PAN ID of the coordinator as specified in the received beacon frame.
+  Mac16Address m_coorShortAddr;     //!< The coordinator short address as specified in the coordinator address mode.
+  Mac64Address m_coorExtAddr;       //!< The coordinator extended address as specified in the coordinator address mode.
+  uint8_t m_logCh;                  //!< The current channel number occupied by the network.
+  uint8_t m_logChPage;              //!< The current channel page occupied by the network.
+  SuperframeField m_superframeSpec; //!< The superframe specification as specified in the received beacon frame.
+  bool m_gtsPermit;                 //!< TRUE if the beacon is from the PAN coordinator that is accepting GTS requests.
+  uint8_t m_linkQuality;            //!< The LQI at which the network beacon was received. Lower values represent lower LQI.
+  Time m_timeStamp;                 //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid precision problems.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
  * MCPS-DATA.request params. See 7.1.1.1
  */
 struct McpsDataRequestParams
