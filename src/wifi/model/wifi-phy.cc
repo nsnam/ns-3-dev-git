@@ -173,7 +173,7 @@ WifiPhy::GetTypeId (void)
                    "Delay between two short frames transmitted on different frequencies.",
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&WifiPhy::m_channelSwitchDelay),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (Seconds (0)))
     .AddAttribute ("Antennas",
                    "The number of antennas on the device.",
                    UintegerValue (1),
