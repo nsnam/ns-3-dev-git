@@ -452,7 +452,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
   m_startSwitching = now;
   m_endSwitching = now + switchingDuration;
   NotifySwitchingStart (switchingDuration);
-  NS_ASSERT (IsStateSwitching ());
+  NS_ASSERT (switchingDuration.IsZero () || IsStateSwitching ());
 }
 
 void
