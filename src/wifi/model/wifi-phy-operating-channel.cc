@@ -470,6 +470,14 @@ WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency (uint16_t primaryChann
   return freq;
 }
 
+uint16_t
+WifiPhyOperatingChannel::GetSecondaryChannelCenterFrequency (uint16_t secondaryChannelWidth) const
+{
+  const uint8_t primaryIndex = GetPrimaryChannelIndex (secondaryChannelWidth);
+  const uint16_t primaryCenterFrequency = GetPrimaryChannelCenterFrequency (secondaryChannelWidth);
+  return (primaryIndex % 2 == 0) ? (primaryCenterFrequency + secondaryChannelWidth) : (primaryCenterFrequency - secondaryChannelWidth);
+}
+
 uint8_t
 WifiPhyOperatingChannel::GetPrimaryChannelNumber (uint16_t     primaryChannelWidth,
                                                   WifiStandard standard) const

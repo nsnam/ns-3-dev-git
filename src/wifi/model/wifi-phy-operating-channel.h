@@ -159,6 +159,7 @@ public:
    * \param index the index of the primary 20 MHz channel
    */
   void SetPrimary20Index (uint8_t index);
+
   /**
    * Get the center frequency of the primary channel of the given width.
    *
@@ -166,6 +167,14 @@ public:
    * \return the center frequency of the primary channel of the given width
    */
   uint16_t GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const;
+
+  /**
+   * Get the center frequency of the secondary channel of the given width.
+   *
+   * \param secondaryChannelWidth the width of the secondary channel in MHz
+   * \return the center frequency of the secondary channel of the given width
+   */
+  uint16_t GetSecondaryChannelCenterFrequency (uint16_t secondaryChannelWidth) const;
 
   /**
    * Get the channel indices of all the 20 MHz channels included in the primary
