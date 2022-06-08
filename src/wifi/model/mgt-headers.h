@@ -458,7 +458,7 @@ public:
    *
    * \return the supported rates
    */
-  const SupportedRates& GetSupportedRates (void);
+  const SupportedRates& GetSupportedRates (void) const;
   /**
    * Return the Capability information.
    *

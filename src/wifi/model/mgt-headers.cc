@@ -1267,7 +1267,7 @@ MgtAssocResponseHeader::GetStatusCode (void)
 }
 
 const SupportedRates&
-MgtAssocResponseHeader::GetSupportedRates (void)
+MgtAssocResponseHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
