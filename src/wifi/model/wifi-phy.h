@@ -704,19 +704,31 @@ public:
    */
   double GetRxSensitivity (void) const;
   /**
-   * Sets the CCA threshold (dBm). The energy of a received signal
-   * should be higher than this threshold to allow the PHY
-   * layer to declare CCA BUSY state.
+   * Sets the CCA energy detection threshold (dBm). The energy of a all received signals
+   * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
    *
    * \param threshold the CCA threshold in dBm
    */
   void SetCcaEdThreshold (double threshold);
   /**
-   * Return the CCA threshold (dBm).
+   * Return the CCA energy detection threshold (dBm).
    *
-   * \return the CCA threshold in dBm
+   * \return the CCA energy detection threshold in dBm
    */
   double GetCcaEdThreshold (void) const;
+  /**
+   * Sets the CCA sensitivity threshold (dBm). The energy of a received wifi signal
+   * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
+   *
+   * \param threshold the CCA sensitivity threshold in dBm
+   */
+  void SetCcaSensitivityThreshold (double threshold);
+  /**
+   * Return the CCA sensitivity threshold (dBm).
+   *
+   * \return the CCA sensitivity threshold in dBm
+   */
+  double GetCcaSensitivityThreshold (void) const;
   /**
    * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
    *
@@ -1344,14 +1356,16 @@ private:
   Time m_ackTxTime;                         //!< estimated Ack TX time
   Time m_blockAckTxTime;                    //!< estimated BlockAck TX time
 
-  double   m_rxSensitivityW;      //!< Receive sensitivity threshold in watts
-  double   m_ccaEdThresholdW;     //!< Clear channel assessment (CCA) threshold in watts
-  double   m_txGainDb;            //!< Transmission gain (dB)
-  double   m_rxGainDb;            //!< Reception gain (dB)
-  double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)
-  double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
-  uint8_t  m_nTxPower;            //!< Number of available transmission power levels
-  double m_powerDensityLimit;     //!< the power density limit (dBm/MHz)
+  double   m_rxSensitivityW;           //!< Receive sensitivity threshold in watts
+  double   m_ccaEdThresholdW;          //!< Clear channel assessment (CCA) energy detection (ED) threshold in watts
+  double   m_ccaSensitivityThresholdW; //!< Clear channel assessment (CCA) modulation and coding rate sensitivity threshold in watts
+
+  double   m_txGainDb;        //!< Transmission gain (dB)
+  double   m_rxGainDb;        //!< Reception gain (dB)
+  double   m_txPowerBaseDbm;  //!< Minimum transmission power (dBm)
+  double   m_txPowerEndDbm;   //!< Maximum transmission power (dBm)
+  uint8_t  m_nTxPower;        //!< Number of available transmission power levels
+  double m_powerDensityLimit; //!< the power density limit (dBm/MHz)
 
   bool m_powerRestricted;        //!< Flag whether transmit power is restricted by OBSS PD SR
   double m_txPowerMaxSiso;       //!< SISO maximum transmit power due to OBSS PD SR power restriction (dBm)

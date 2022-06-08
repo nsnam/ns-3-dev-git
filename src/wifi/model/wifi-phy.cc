@@ -123,12 +123,20 @@ WifiPhy::GetTypeId (void)
                                        &WifiPhy::GetRxSensitivity),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("CcaEdThreshold",
-                   "The energy of a non Wi-Fi received signal should be higher than "
-                   "this threshold (dBm) to allow the PHY layer to declare CCA BUSY state. "
-                   "This check is performed on the 20 MHz primary channel only.",
+                   "The energy of all received signals should be higher than "
+                   "this threshold (dBm) in the primary channel to allow the PHY layer "
+                   "to declare CCA BUSY state.",
                    DoubleValue (-62.0),
                    MakeDoubleAccessor (&WifiPhy::SetCcaEdThreshold,
                                        &WifiPhy::GetCcaEdThreshold),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("CcaSensitivity",
+                   "The energy of a received wifi signal should be higher than "
+                   "this threshold (dBm) in the primary channel to allow the PHY layer "
+                   "to declare CCA BUSY state.",
+                   DoubleValue (-82.0),
+                   MakeDoubleAccessor (&WifiPhy::SetCcaSensitivityThreshold,
+                                       &WifiPhy::GetCcaSensitivityThreshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxGain",
                    "Transmission gain (dB).",
@@ -447,6 +455,19 @@ double
 WifiPhy::GetCcaEdThreshold (void) const
 {
   return WToDbm (m_ccaEdThresholdW);
+}
+
+void
+WifiPhy::SetCcaSensitivityThreshold (double threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  m_ccaSensitivityThresholdW = DbmToW (threshold);
+}
+
+double
+WifiPhy::GetCcaSensitivityThreshold (void) const
+{
+  return WToDbm (m_ccaSensitivityThresholdW);
 }
 
 void

@@ -20,6 +20,9 @@
 
 #include "ns3/boolean.h"
 #include "ns3/log.h"
+#include "ns3/double.h"
+#include "ns3/tuple.h"
+#include "ns3/string.h"
 #include "vht-configuration.h"
 
 namespace ns3 {
@@ -51,6 +54,18 @@ VhtConfiguration::GetTypeId (void)
                    MakeBooleanAccessor (&VhtConfiguration::Get160MHzOperationSupported,
                                         &VhtConfiguration::Set160MHzOperationSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("SecondaryCcaSensitivityThresholds",
+                   "Tuple {threshold for 20MHz PPDUs, threshold for 40MHz PPDUs, threshold for 80MHz PPDUs} "
+                   "describing the CCA sensitivity thresholds for PPDUs that do not occupy the primary channel. "
+                   "The power of a received PPDU that does not occupy the primary channel should be higher than "
+                   "the threshold (dBm) associated to the PPDU bandwidth to allow the PHY layer to declare CCA BUSY state.",
+                   StringValue ("{-72.0, -72.0, -69.0}"),
+                   MakeTupleAccessor<DoubleValue, DoubleValue, DoubleValue> (&VhtConfiguration::SetSecondaryCcaSensitivityThresholds,
+                                                                             &VhtConfiguration::GetSecondaryCcaSensitivityThresholds),
+                   MakeTupleChecker<DoubleValue, DoubleValue, DoubleValue>
+                     (MakeDoubleChecker<double> (),
+                      MakeDoubleChecker<double> (),
+                      MakeDoubleChecker<double> ()))
     ;
     return tid;
 }
@@ -66,6 +81,27 @@ bool
 VhtConfiguration::Get160MHzOperationSupported (void) const
 {
   return m_160MHzSupported;
+}
+
+void
+VhtConfiguration::SetSecondaryCcaSensitivityThresholds (const SecondaryCcaSensitivityThresholds& thresholds)
+{
+  NS_LOG_FUNCTION (this);
+  m_secondaryCcaSensitivityThresholds[20] = std::get<0> (thresholds);
+  m_secondaryCcaSensitivityThresholds[40] = std::get<1> (thresholds);
+  m_secondaryCcaSensitivityThresholds[80] = std::get<2> (thresholds);
+}
+
+VhtConfiguration::SecondaryCcaSensitivityThresholds
+VhtConfiguration::GetSecondaryCcaSensitivityThresholds (void) const
+{
+  return {m_secondaryCcaSensitivityThresholds.at (20), m_secondaryCcaSensitivityThresholds.at (40), m_secondaryCcaSensitivityThresholds.at (80)};
+}
+
+const std::map<uint16_t, double>&
+VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw (void) const
+{
+  return m_secondaryCcaSensitivityThresholds;
 }
 
 } //namespace ns3
