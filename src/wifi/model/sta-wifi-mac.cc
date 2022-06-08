@@ -615,42 +615,34 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
       copy->RemoveHeader (beacon);
       const CapabilityInformation& capabilities = beacon.GetCapabilities ();
       NS_ASSERT (capabilities.IsEss ());
-      bool goodBeacon = false;
-      if (GetSsid ().IsBroadcast ()
-          || beacon.GetSsid ().IsEqual (GetSsid ()))
+      bool goodBeacon;
+      if (IsWaitAssocResp () || IsAssociated ())
         {
-          NS_LOG_LOGIC ("Beacon is for our SSID");
-          goodBeacon = true;
+          // we have to process this Beacon only if sent by the AP we are associated
+          // with or from which we are waiting an Association Response frame
+          goodBeacon = (hdr->GetAddr3 () == GetBssid (linkId));
         }
-      const SupportedRates& rates = beacon.GetSupportedRates ();
-      bool bssMembershipSelectorMatch = false;
-      auto selectorList = GetWifiPhy (linkId)->GetBssMembershipSelectorList ();
-      for (const auto & selector : selectorList)
+      else
         {
-          if (rates.IsBssMembershipSelectorRate (selector))
-            {
-              NS_LOG_LOGIC ("Beacon is matched to our BSS membership selector");
-              bssMembershipSelectorMatch = true;
-            }
+          // we retain this Beacon as candidate AP if the SSID matches ours and the
+          // supported rates fit the configured BSS membership selector
+          goodBeacon = ((GetSsid ().IsBroadcast () || beacon.GetSsid ().IsEqual (GetSsid ()))
+                        && CheckSupportedRates (beacon, linkId));
         }
-      if (selectorList.size () > 0 && bssMembershipSelectorMatch == false)
-        {
-          NS_LOG_LOGIC ("No match for BSS membership selector");
-          goodBeacon = false;
-        }
-      if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid (linkId))
+
+      if (!goodBeacon)
         {
           NS_LOG_LOGIC ("Beacon is not for us");
-          goodBeacon = false;
+          return;
         }
-      if (goodBeacon && m_state == ASSOCIATED)
+      if (m_state == ASSOCIATED)
         {
           m_beaconArrival (Simulator::Now ());
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
           UpdateApInfoFromBeacon (beacon, hdr->GetAddr2 (), hdr->GetAddr3 (), linkId);
         }
-      if (goodBeacon && m_state == SCANNING)
+      else if (m_state == SCANNING)
         {
           NS_LOG_DEBUG ("Beacon received while scanning from " << hdr->GetAddr2 ());
           SnrTag snrTag;
@@ -675,9 +667,9 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           MgtProbeResponseHeader probeResp;
           Ptr<Packet> copy = packet->Copy ();
           copy->RemoveHeader (probeResp);
-          if (!probeResp.GetSsid ().IsEqual (GetSsid ()))
+          if ((!GetSsid ().IsBroadcast () && !probeResp.GetSsid ().IsEqual (GetSsid ()))
+              || !CheckSupportedRates (probeResp, linkId))
             {
-              NS_LOG_DEBUG ("Probe response is not for our SSID");
               return;
             }
           SnrTag snrTag;
@@ -742,6 +734,33 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
   WifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr), linkId);
+}
+
+bool
+StaWifiMac::CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame,
+                                 uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+
+  // lambda to invoke on the current frame variant
+  auto check =
+    [&](auto&& mgtFrame) -> bool
+    {
+      // check supported rates
+      const SupportedRates& rates = mgtFrame.GetSupportedRates ();
+      for (const auto & selector : GetWifiPhy (linkId)->GetBssMembershipSelectorList ())
+        {
+          if (!rates.IsBssMembershipSelectorRate (selector))
+            {
+              NS_LOG_DEBUG ("Supported rates do not fit with the BSS membership selector");
+              return false;
+            }
+        }
+
+      return true;
+    };
+
+  return std::visit (check, frame);
 }
 
 void
@@ -902,14 +921,6 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
   NS_LOG_FUNCTION (this << probeResp << apAddr << bssid << +linkId);
   const CapabilityInformation& capabilities = probeResp.GetCapabilities ();
   const SupportedRates& rates = probeResp.GetSupportedRates ();
-  for (const auto & selector : GetWifiPhy (linkId)->GetBssMembershipSelectorList ())
-    {
-      if (!rates.IsBssMembershipSelectorRate (selector))
-        {
-          NS_LOG_DEBUG ("Supported rates do not fit with the BSS membership selector");
-          return;
-        }
-    }
   for (const auto & mode : GetWifiPhy (linkId)->GetModeList ())
     {
       if (rates.IsSupportedRate (mode.GetDataRate (GetWifiPhy (linkId)->GetChannelWidth ())))

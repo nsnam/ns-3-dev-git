@@ -171,6 +171,17 @@ private:
    */
   bool GetActiveProbing (void) const;
 
+  /**
+   * Determine whether the supported rates indicated in a given Beacon frame or
+   * Probe Response frame fit with the configured membership selector.
+   *
+   * \param frame the given Beacon or Probe Response frame
+   * \param linkId ID of the link the mgt frame was received over
+   * \return whether the the supported rates indicated in the given management
+   *         frame fit with the configured membership selector
+   */
+  bool CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame, uint8_t linkId);
+
   void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
   /**
    * Update associated AP's information from beacon. If STA is not associated,
