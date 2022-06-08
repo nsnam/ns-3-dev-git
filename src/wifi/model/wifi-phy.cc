@@ -322,8 +322,8 @@ WifiPhy::WifiPhy ()
     m_blockAckTxTime (Seconds (0)),
     m_powerRestricted (false),
     m_channelAccessRequested (false),
-    m_txSpatialStreams (0),
-    m_rxSpatialStreams (0),
+    m_txSpatialStreams (1),
+    m_rxSpatialStreams (1),
     m_wifiRadioEnergyModel (0),
     m_timeLastPreambleDetected (Seconds (0))
 {
