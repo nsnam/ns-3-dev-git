@@ -25,6 +25,7 @@
 
 #include "wifi-mac.h"
 #include "mgt-headers.h"
+#include <variant>
 
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;
@@ -35,22 +36,6 @@ namespace ns3  {
 class SupportedRates;
 class CapabilityInformation;
 
-/**
- * \ingroup wifi
- *
- * Struct to hold information regarding observed AP through
- * active/passive scanning
- */
-struct ApInfo
-{
-  Mac48Address m_bssid;               ///< BSSID
-  Mac48Address m_apAddr;              ///< AP MAC address
-  double m_snr;                       ///< SNR in linear scale
-  bool m_activeProbing;               ///< Flag whether active probing is used or not
-  MgtBeaconHeader m_beacon;           ///< Beacon header
-  MgtProbeResponseHeader m_probeResp; ///< Probe Response header
-  uint8_t m_linkId;                   ///< ID of the link used to communicate with the AP
-};
 
 /**
  * \ingroup wifi
@@ -104,6 +89,23 @@ public:
   friend class ::AmpduAggregationTest;
   /// Allow test cases to access private members
   friend class ::HeAggregationTest;
+
+  /// type of the management frames used to get info about APs
+  using MgtFrameType = std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
+
+  /**
+  * Struct to hold information regarding observed AP through
+  * active/passive scanning
+  */
+  struct ApInfo
+  {
+    Mac48Address m_bssid;        ///< BSSID
+    Mac48Address m_apAddr;       ///< AP MAC address
+    double m_snr;                ///< SNR in linear scale
+    MgtFrameType m_frame;        ///< The body of the management frame used to update AP info
+    uint8_t m_linkId;            ///< ID of the link used to communicate with the AP
+  };
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -183,35 +185,20 @@ private:
   bool CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame, uint8_t linkId);
 
   void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
+
   /**
-   * Update associated AP's information from beacon. If STA is not associated,
-   * this information will used for the association process.
+   * Update associated AP's information from the given management frame (Beacon,
+   * Probe Response or Association Response). If STA is not associated, this
+   * information will be used for the association process.
    *
-   * \param beacon the beacon header
+   * \param frame the body of the given management frame
    * \param apAddr MAC address of the AP
    * \param bssid MAC address of BSSID
-   * \param linkId ID of the link the beacon was received over
+   * \param linkId ID of the link the management frame was received over
    */
-  void UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr, Mac48Address bssid,
-                               uint8_t linkId);
-  /**
-   * Update AP's information from probe response. This information is required
-   * for the association process.
-   *
-   * \param probeResp the probe response header
-   * \param apAddr MAC address of the AP
-   * \param bssid MAC address of BSSID
-   * \param linkId ID of the link the beacon was received over
-   */
-  void UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr,
-                                  Mac48Address bssid, uint8_t linkId);
-  /**
-   * Update AP's information from association response.
-   *
-   * \param assocResp the association response header
-   * \param apAddr MAC address of the AP
-   */
-  void UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Address apAddr);
+  void UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
+                     const Mac48Address& bssid, uint8_t linkId);
+
   /**
    * Update list of candidate AP to associate. The list should contain ApInfo sorted from
    * best to worst SNR, with no duplicate.
