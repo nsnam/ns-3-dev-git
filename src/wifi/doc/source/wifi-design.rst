@@ -936,9 +936,20 @@ Multi-User Scheduler
 A new component, named **MultiUserScheduler**, is in charge of determining what frame exchange
 sequence the aggregated AP has to perform when gaining a TXOP (DL OFDMA, UL OFDMA or BSRP Trigger
 Frame), along with the information needed to perform the selected frame exchange sequence (e.g.,
-the set of PSDUs to send in case of DL OFDMA). ``MultiUserScheduler`` is an abstract base class.
-Currently, the only available subclass is **RrMultiUserScheduler**. By default, no multi-user
-scheduler is aggregated to an AP (hence, OFDMA is not enabled).
+the set of PSDUs to send in case of DL OFDMA). A TXOP is gained (some time) after requesting
+channel access, which is normally done by DCF/EDCA (Txop/QosTxop) if the device has frames to transmit. In order for an AP to coordinate UL MU transmissions even without DL traffic, the
+duration of the access request interval can be set to a non-zero value through the
+``AccessReqInterval`` attribute. The access request interval is the interval between two
+consecutive requests for channel access made by the MultiUserScheduler; such requests are made
+independently of the presence of frames in the queues of the AP. It is also possible to set the
+Access Category for which the MultiUserScheduler makes requests for channel access (via the
+``AccessReqAc`` attribute) and to choose whether the access request interval is measured starting
+from the last time the MultiUserScheduler made a request for channel access or from the last time
+channel access was obtained by DCF/EDCA (via the ``DelayAccessReqUponAccess`` attribute).
+
+``MultiUserScheduler`` is an abstract base class. Currently, the only available subclass is
+**RrMultiUserScheduler**. By default, no multi-user scheduler is aggregated to an AP (hence,
+OFDMA is not enabled).
 
 Round-robin Multi-User Scheduler
 ################################
