@@ -1857,6 +1857,9 @@ function(find_external_library)
                             # directories
       $ENV{PATH} # Search for libraries in PATH directories
   )
+  # Split : separated entries from environment variables by replacing separators with ;
+  string(REPLACE ":" ";" library_search_paths "${library_search_paths}")
+
   set(suffixes /build /lib /build/lib / /bin ${path_suffixes})
 
   # For each of the library names in LIBRARY_NAMES or LIBRARY_NAME
