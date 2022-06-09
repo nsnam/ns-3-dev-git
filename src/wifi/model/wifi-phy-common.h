@@ -197,6 +197,8 @@ enum WifiPpduField
   WIFI_PPDU_FIELD_TRAINING, //!< STF + LTF fields (excluding those in preamble for HT-GF)
   WIFI_PPDU_FIELD_SIG_A,    //!< SIG-A field
   WIFI_PPDU_FIELD_SIG_B,    //!< SIG-B field
+  WIFI_PPDU_FIELD_U_SIG,    //!< U-SIG field
+  WIFI_PPDU_FIELD_EHT_SIG,  //!< EHT-SIG field
   WIFI_PPDU_FIELD_DATA      //!< data field
 };
 
@@ -223,6 +225,10 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPpduField &field)
         return (os << "SIG-A");
       case WIFI_PPDU_FIELD_SIG_B:
         return (os << "SIG-B");
+      case WIFI_PPDU_FIELD_U_SIG:
+        return (os << "U-SIG");
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return (os << "EHT-SIG");
       case WIFI_PPDU_FIELD_DATA:
         return (os << "data");
       default:
@@ -286,6 +292,8 @@ enum WifiPhyRxfailureReason
   HT_SIG_FAILURE,
   SIG_A_FAILURE,
   SIG_B_FAILURE,
+  U_SIG_FAILURE,
+  EHT_SIG_FAILURE,
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET,
@@ -332,6 +340,10 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
         return (os << "SIG_A_FAILURE");
       case SIG_B_FAILURE:
         return (os << "SIG_B_FAILURE");
+      case U_SIG_FAILURE:
+        return (os << "U_SIG_FAILURE");
+      case EHT_SIG_FAILURE:
+        return (os << "EHT_SIG_FAILURE");
       case PREAMBLE_DETECTION_PACKET_SWITCH:
         return (os << "PREAMBLE_DETECTION_PACKET_SWITCH");
       case FRAME_CAPTURE_PACKET_SWITCH:

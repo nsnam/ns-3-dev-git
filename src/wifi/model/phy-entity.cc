@@ -177,7 +177,7 @@ PhyEntity::GetNextField (WifiPpduField currentField, WifiPreamble preamble) cons
 Time
 PhyEntity::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 {
-  if (field > WIFI_PPDU_FIELD_SIG_B)
+  if (field > WIFI_PPDU_FIELD_EHT_SIG)
     {
       NS_FATAL_ERROR ("Unsupported PPDU field");
     }
