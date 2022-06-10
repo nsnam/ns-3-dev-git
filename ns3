@@ -79,6 +79,9 @@ def parse_args(argv):
     parser.add_argument('--help',
                         help="Print a summary of available commands",
                         action="store_true", default=None, dest="help")
+    parser.add_argument('-l', '--list',
+                        help="Print a table of targets to build and run",
+                        action="store_true", default=None, dest="list")
     # parser.add_argument('--docset',
     #               help=(
     #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
@@ -583,7 +586,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         cmake_performance_trace = os.path.join(os.path.relpath(ns3_path, current_cmake_cache_folder),
                                                "cmake_performance_trace.log")
         cmake_args.extend(["--profiling-format=google-trace",
-                           "--profiling-output="+cmake_performance_trace])
+                           "--profiling-output=" + cmake_performance_trace])
 
     # Append CMake flags passed using the -- separator
     cmake_args.extend(args.program_args)
@@ -1047,6 +1050,66 @@ def run_step(args, target_to_run, target_args):
         exit(0)
 
 
+def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
+    def list_to_table(l: list) -> str:
+        # Set column width and check how much is space is left at the end
+        columnwidth = 30
+        try:
+            terminal_width = os.get_terminal_size().columns
+        except OSError:
+            terminal_width = 80  # assume 80 columns when grepping
+        dead_space = terminal_width % columnwidth
+
+        # Filter the targets with names longer than the column width
+        large_items = list(filter(lambda x: len(x) >= columnwidth, l))
+
+        # Then filter the targets with names shorter than the column width
+        small_items = sorted(list(set(l)-set(large_items)))
+
+        prev_new_line = 0
+        output = "\n"
+        for item in small_items:
+            current_end = len(output)
+            # If the terminal width minus the written columns is smaller than the dead space,
+            # we add a new line and start counting the width of the new line from it
+            if terminal_width - (current_end - prev_new_line) < dead_space:
+                prev_new_line = len(output)
+                output += "\n"
+            # After the new line or space, add the item plus some spacing
+            output += item + " " * (columnwidth - len(item))
+        # Add a new line in case we did not fill all the columns
+        # of the last small item line
+        if len(output) - prev_new_line > 0:
+            output += "\n"
+
+        # The list of large items is printed next
+        for large_item in sorted(large_items):
+            output += large_item + "\n"
+        return output
+
+    def non_ambiguous_target_list(programs: dict) -> list:
+        # Assembles a dictionary of all the possible shortcuts a program have
+        list_of_shortcuts = {}
+        for (shortcut, possible_programs) in programs.items():
+            if len(possible_programs) == 1:
+                if possible_programs[0] not in list_of_shortcuts:
+                    list_of_shortcuts[possible_programs[0]] = [shortcut]
+                else:
+                    list_of_shortcuts[possible_programs[0]].append(shortcut)
+        # Select the shortest non-ambiguous shortcut for each program
+        final_list = []
+        for shortcuts in list_of_shortcuts.values():
+            final_list.append(sorted(shortcuts, key=lambda x: len(x))[0])
+        return final_list
+
+    print("""Modules:{modules}\n\nRunnables:{programs}
+                  """.format(modules=list_to_table(sorted(ns3_modules)),
+                             programs=list_to_table(non_ambiguous_target_list(ns3_programs))
+                             )
+          )
+    return
+
+
 # Debugging this with PyCharm is a no no. It refuses to work hanging indefinitely
 def sudo_command(command: list, password: str):
     # Run command and feed the sudo password
@@ -1256,6 +1319,10 @@ def main():
 
     # Now that CMake is configured, we can look for c++ targets in .lock-ns3
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
+
+    if args.list:
+        print_targets_list(ns3_modules, ns3_programs)
+        exit(0)
 
     def check_ambiguous_target(target_type, target_to_check, programs):
         if len(programs[target_to_check]) > 1:
