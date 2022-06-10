@@ -1123,7 +1123,7 @@ macro(process_options)
     set(INT64X64_USE_CAIRO TRUE)
   endif()
 
-  include(CheckIncludeFile)  # Used to check a single C header at a time
+  include(CheckIncludeFile) # Used to check a single C header at a time
   include(CheckIncludeFileCXX) # Used to check a single C++ header at a time
   include(CheckIncludeFiles) # Used to check multiple headers at once
   include(CheckFunctionExists)
@@ -1857,7 +1857,12 @@ function(find_external_library)
                             # directories
       $ENV{PATH} # Search for libraries in PATH directories
   )
-  # Split : separated entries from environment variables by replacing separators with ;
+  # cmake-format: off
+  #
+  # Split : separated entries from environment variables
+  # by replacing separators with ;
+  #
+  # cmake-format: on
   string(REPLACE ":" ";" library_search_paths "${library_search_paths}")
 
   set(suffixes /build /lib /build/lib / /bin ${path_suffixes})

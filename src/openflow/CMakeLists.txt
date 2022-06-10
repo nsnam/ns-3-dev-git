@@ -51,7 +51,8 @@ set(NS3_OPENFLOW
 )
 
 if(${GCC})
-  add_compile_options(-Wno-stringop-truncation) # This option does not exist in CLANG
+  add_compile_options(-Wno-stringop-truncation) # This option does not exist in
+                                                # CLANG
 elseif(${CLANG})
   add_compile_options(-Wno-reserved-user-defined-literal)
 endif()

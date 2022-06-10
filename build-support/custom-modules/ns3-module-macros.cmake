@@ -522,8 +522,7 @@ function(build_lib_example)
     endif()
 
     set_runtime_outputdirectory(
-      ${BLIB_EXAMPLE_NAME}
-      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/ ""
+      ${BLIB_EXAMPLE_NAME} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/ ""
     )
   endif()
 endfunction()
