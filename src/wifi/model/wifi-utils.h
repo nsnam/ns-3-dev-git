@@ -128,10 +128,15 @@ void AddWifiMacTrailer (Ptr<Packet> packet);
 uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
 
 /// Size of the space of sequence numbers
-const uint16_t SEQNO_SPACE_SIZE = 4096;
+static constexpr uint16_t SEQNO_SPACE_SIZE = 4096;
 
 /// Size of the half the space of sequence numbers (used to determine old packets)
-const uint16_t SEQNO_SPACE_HALF_SIZE = SEQNO_SPACE_SIZE / 2;
+static constexpr uint16_t SEQNO_SPACE_HALF_SIZE = SEQNO_SPACE_SIZE / 2;
+
+/// Link ID for single link operations (helps tracking places where correct link
+/// ID is to be used to support multi-link operations)
+static constexpr uint8_t SINGLE_LINK_OP_ID = 0;
+
 } // namespace ns3
 
 #endif /* WIFI_UTILS_H */
