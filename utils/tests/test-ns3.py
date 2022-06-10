@@ -85,7 +85,7 @@ def run_program(program, args, python=False, cwd=ns3_path, env=None):
         arguments = [program]
 
     if args != "":
-        arguments.extend(re.findall("(?:\".*?\"|\S)+", args))
+        arguments.extend(re.findall("(?:\".*?\"|\S)+", args))  # noqa
 
     for i in range(len(arguments)):
         arguments[i] = arguments[i].replace("\"", "")
@@ -172,7 +172,7 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
     ns-3 tests related to checking if source files were left behind, not being used by CMake
     """
 
-    ## dictionary containing directories with .cc source files
+    ## dictionary containing directories with .cc source files # noqa
     directory_and_files = {}
 
     def setUp(self):
@@ -286,149 +286,107 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
 
         self.assertListEqual([], list(unused_sources))
 
-    def test_04_CheckForDeadLinksInSources(self):
+
+class NS3StyleTestCase(unittest.TestCase):
+    """!
+    ns-3 tests to check if the source code, whitespaces and CMake formatting
+    are according to the coding style
+    """
+
+    ## Holds the original diff, which must be maintained by each and every case tested # noqa
+    starting_diff = None
+    ## Holds the GitRepo's repository object # noqa
+    repo = None
+
+    def setUp(self) -> None:
         """!
-        Test if all urls in source files are alive
+        Import GitRepo and load the original diff state of the repository before the tests
+        @return None
+        """
+        if not NS3StyleTestCase.starting_diff:
+
+            if shutil.which("git") is None:
+                self.skipTest("Git is not available")
+
+            try:
+                from git import Repo
+                import git.exc
+            except ImportError:
+                self.skipTest("GitPython is not available")
+
+            try:
+                repo = Repo(ns3_path)  # noqa
+            except git.exc.InvalidGitRepositoryError:  # noqa
+                self.skipTest("ns-3 directory does not contain a .git directory")
+
+            hcommit = repo.head.commit  # noqa
+            NS3StyleTestCase.starting_diff = hcommit.diff(None)
+            NS3StyleTestCase.repo = repo
+
+        if NS3StyleTestCase.starting_diff is None:
+            self.skipTest("Unmet dependencies")
+
+    def test_01_CheckWhitespace(self):
+        """!
+        Check if there is any difference between tracked file after
+        applying whitespace trimming, uncrustify and cmake-format
         @return None
         """
 
-        # Skip this test if Django is not available
-        try:
-            import django
-        except ImportError:
-            self.skipTest("Django URL validators are not available")
+        # Trim all trailing whitespaces in the repository
+        return_code, stdout, stderr = run_program("./utils/trim-trailing-whitespace.py", "./", python=True)
+        self.assertEqual(return_code, 0)
 
-        # Skip this test if requests library is not available
-        try:
-            import requests
-        except ImportError:
-            self.skipTest("Requests library is not available")
+        # Check if the diff still is the same
+        new_diff = NS3StyleTestCase.repo.head.commit.diff(None)
+        self.assertEqual(NS3StyleTestCase.starting_diff, new_diff)
 
-        regex = re.compile(r'((http|https)://[^\ \n\)\"\'\}\>\<\]\;\`\\]*)')
-        skipped_files = []
+    def test_02_CheckUncrustify(self):
+        """!
+        Check if there is any difference between tracked file after
+        applying uncrustify
+        @return None
+        """
 
-        whitelisted_urls = {"https://gitlab.com/your-user-name/ns-3-dev",
-                            "https://www.nsnam.org/release/ns-allinone-3.31.rc1.tar.bz2",
-                            "https://www.nsnam.org/release/ns-allinone-3.X.rcX.tar.bz2",
-                            "https://www.nsnam.org/releases/ns-3-x",
-                            "https://www.nsnam.org/releases/ns-allinone-3.(x-1",
-                            "https://www.nsnam.org/releases/ns-allinone-3.x.tar.bz2",
-                            # split due to command-line formatting
-                            "https://cmake.org/cmake/help/latest/manual/cmake-",
-                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_",
-                            # Dia placeholder xmlns address
-                            "http://www.lysator.liu.se/~alla/dia/",
-                            # Fails due to bad regex
-                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_Digital_Terrestrial_Television_Broadcasting_(DTTB",
-                            "http://en.wikipedia.org/wiki/Namespace_(computer_science",
-                            "http://en.wikipedia.org/wiki/Bonobo_(component_model",
-                            "http://msdn.microsoft.com/en-us/library/aa365247(v=vs.85",
-                            # historical links
-                            "http://www.research.att.com/info/kpv/",
-                            "http://www.research.att.com/~gsf/",
-                            }
+        for required_program in ["bash", "ls", "xargs", "uncrustify"]:
+            if shutil.which(required_program) is None:
+                self.skipTest("%s was not found" % required_program)
 
-        # Scan for all URLs in all files we can parse
-        files_and_urls = set()
-        unique_urls = set()
-        for topdir in ["bindings", "doc", "examples", "src", "utils"]:
-            for root, dirs, files in os.walk(topdir):
-                # do not parse files in build directories
-                if "build" in root or "_static" in root or "source-temp" in root or 'html' in root:
-                    continue
-                for file in files:
-                    # skip svg files
-                    if file.endswith(".svg"):
-                        continue
-                    filepath = os.path.join(root, file)
+        # Run in-place uncrustify for each *.cc and *.h file
+        uncrustify_cmd = """-c "ls ./**/*.cc ./**/**/*.cc ./**/*.h ./**/**/*.h | xargs ./utils/check-style.py -i -f" """
+        return_code, stdout, stderr = run_program("bash", uncrustify_cmd)
+        self.assertEqual(return_code, 0)
 
-                    try:
-                        with open(filepath, "r") as f:
-                            matches = regex.findall(f.read())
+        # Check if the diff still is the same
+        new_diff = NS3StyleTestCase.repo.head.commit.diff(None)
+        self.assertEqual(NS3StyleTestCase.starting_diff, new_diff)
 
-                            # Get first group for each match (containing the URL)
-                            # and strip final punctuation or commas in matched links
-                            # commonly found in the docs
-                            urls = list(map(lambda x: x[0][:-1] if x[0][-1] in ".," else x[0], matches))
-                    except UnicodeDecodeError:
-                        skipped_files.append(filepath)
-                        continue
+    def test_03_CheckCMakeFormat(self):
+        """!
+        Check if there is any difference between tracked file after
+        applying cmake-format
+        @return None
+        """
 
-                    # Search for new unique URLs and add keep track of their associated source file
-                    for url in set(urls)-unique_urls-whitelisted_urls:
-                        unique_urls.add(url)
-                        files_and_urls.add((filepath, url))
+        for required_program in ["cmake", "cmake-format"]:
+            if shutil.which(required_program) is None:
+                self.skipTest("%s was not found" % required_program)
 
-        # Instantiate the Django URL validator
-        from django.core.validators import URLValidator
-        from django.core.exceptions import ValidationError
-        validate_url = URLValidator()
+        # Configure ns-3 to get the cmake-format target
+        return_code, stdout, stderr = run_ns3("configure")
+        self.assertEqual(return_code, 0)
 
-        # User agent string to make ACM and Elsevier let us check if links to papers are working
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        # Build/run cmake-format
+        return_code, stdout, stderr = run_ns3("build cmake-format")
+        self.assertEqual(return_code, 0)
 
-        def test_file_url(args):
-            filepath, url = args
-            dead_link_msg = None
+        # Clean the ns-3 configuration
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
 
-            # Skip invalid URLs
-            try:
-                validate_url(url)
-            except ValidationError:
-                dead_link_msg = "%s: URL %s, invalid URL" % (filepath, url)
-
-            # Check if valid URLs are alive
-            if dead_link_msg is None:
-                try:
-                    tries = 3
-                    while tries > 0:
-                        # Not verifying the certificate (verify=False) is potentially dangerous
-                        # HEAD checks are not as reliable as GET ones,
-                        # in some cases they may return bogus error codes and reasons
-                        response = requests.get(url, verify=False, headers=headers)
-
-                        # In case of success and redirection
-                        if response.status_code in [200, 301]:
-                            dead_link_msg = None
-                            break
-
-                        # People use the wrong code, but the reason
-                        # can still be correct
-                        if response.status_code in [302, 308, 500, 503]:
-                            if response.reason.lower() in ['found',
-                                                           'moved temporarily',
-                                                           'permanent redirect',
-                                                           'ok',
-                                                           'service temporarily unavailable'
-                                                           ]:
-                                dead_link_msg = None
-                                break
-                        # In case it didn't pass in any of the previous tests,
-                        # set dead_link_msg with the most recent error and try again
-                        dead_link_msg = "%s: URL %s: returned code %d" % (filepath, url, response.status_code)
-                        tries -= 1
-                except requests.exceptions.InvalidURL:
-                    dead_link_msg = "%s: URL %s: invalid URL" % (filepath, url)
-                except requests.exceptions.SSLError:
-                    dead_link_msg = "%s: URL %s: SSL error" % (filepath, url)
-                except requests.exceptions.TooManyRedirects:
-                    dead_link_msg = "%s: URL %s: too many redirects" % (filepath, url)
-                except Exception as e:
-                    try:
-                        error_msg = e.args[0].reason.__str__()
-                    except AttributeError:
-                        error_msg = e.args[0]
-                    dead_link_msg = "%s: URL %s: failed with exception: %s" % (filepath, url, error_msg)
-            return dead_link_msg
-
-        # Dispatch threads to test multiple URLs concurrently
-        from concurrent.futures import ThreadPoolExecutor
-        with ThreadPoolExecutor(max_workers=20) as executor:
-            dead_links = list(executor.map(test_file_url, list(files_and_urls)))
-
-        # Filter out None entries
-        dead_links = list(sorted(filter(lambda x: x is not None, dead_links)))
-        self.assertEqual(len(dead_links), 0, msg="\n".join(["Dead links found:", *dead_links]))
+        # Check if the diff still is the same
+        new_diff = NS3StyleTestCase.repo.head.commit.diff(None)
+        self.assertEqual(NS3StyleTestCase.starting_diff, new_diff)
 
 
 class NS3CommonSettingsTestCase(unittest.TestCase):
@@ -577,7 +535,7 @@ class NS3BaseTestCase(unittest.TestCase):
     Generic test case with basic function inherited by more complex tests.
     """
 
-    ## when cleaned_once is False, clean up build artifacts and reconfigure
+    ## when cleaned_once is False, clean up build artifacts and reconfigure # noqa
     cleaned_once = False
 
     def config_ok(self, return_code, stdout):
@@ -612,12 +570,12 @@ class NS3BaseTestCase(unittest.TestCase):
 
         # Check if .lock-ns3 exists, then read to get list of executables.
         self.assertTrue(os.path.exists(ns3_lock_filename))
-        ## ns3_executables holds a list of executables in .lock-ns3
+        ## ns3_executables holds a list of executables in .lock-ns3 # noqa
         self.ns3_executables = get_programs_list()
 
         # Check if .lock-ns3 exists than read to get the list of enabled modules.
         self.assertTrue(os.path.exists(ns3_lock_filename))
-        ## ns3_modules holds a list to the modules enabled stored in .lock-ns3
+        ## ns3_modules holds a list to the modules enabled stored in .lock-ns3 # noqa
         self.ns3_modules = get_enabled_modules()
 
 
@@ -626,7 +584,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
     Test ns3 configuration options
     """
 
-    ## when cleaned_once is False, clean up build artifacts and reconfigure
+    ## when cleaned_once is False, clean up build artifacts and reconfigure # noqa
     cleaned_once = False
 
     def setUp(self):
@@ -1296,7 +1254,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
     Tests ns3 regarding building the project
     """
 
-    ## when cleaned_once is False, clean up build artifacts and reconfigure
+    ## when cleaned_once is False, clean up build artifacts and reconfigure # noqa
     cleaned_once = False
 
     def setUp(self):
@@ -1425,10 +1383,10 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Re-build to return to the original state.
         run_ns3("build")
 
-        ## ns3_libraries holds a list of built module libraries
+        ## ns3_libraries holds a list of built module libraries # noqa
         self.ns3_libraries = get_libraries_list()
 
-        ## ns3_executables holds a list of executables in .lock-ns3
+        ## ns3_executables holds a list of executables in .lock-ns3 # noqa
         self.ns3_executables = get_programs_list()
 
         # Delete built programs and libraries to check if they were restored later.
@@ -1670,7 +1628,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Skip this test if pybindgen is not available
         try:
             import pybindgen
-        except Exception:
+        except ImportError:
             self.skipTest("Pybindgen is not available")
 
         # Check if the number of runnable python scripts is equal to 0
@@ -1850,7 +1808,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
     Tests ns3 usage in more realistic scenarios
     """
 
-    ## when cleaned_once is False, clean up build artifacts and reconfigure
+    ## when cleaned_once is False, clean up build artifacts and reconfigure # noqa
     cleaned_once = False
 
     def setUp(self):
@@ -1871,13 +1829,13 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # Check if .lock-ns3 exists, then read to get list of executables.
         self.assertTrue(os.path.exists(ns3_lock_filename))
 
-        ## ns3_executables holds a list of executables in .lock-ns3
+        ## ns3_executables holds a list of executables in .lock-ns3 # noqa
         self.ns3_executables = get_programs_list()
 
         # Check if .lock-ns3 exists than read to get the list of enabled modules.
         self.assertTrue(os.path.exists(ns3_lock_filename))
 
-        ## ns3_modules holds a list to the modules enabled stored in .lock-ns3
+        ## ns3_modules holds a list to the modules enabled stored in .lock-ns3 # noqa
         self.ns3_modules = get_enabled_modules()
 
     def test_01_BuildProject(self):
@@ -2044,7 +2002,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
 
             # Build
             return_code, stdout, stderr = run_ns3("docs %s" % target)
-            self.assertEqual(return_code, 0)
+            self.assertEqual(return_code, 0, target)
             self.assertIn(cmake_build_target_command(target="sphinx_%s" % target), stdout)
             self.assertIn("Built target sphinx_%s" % target, stdout)
 
@@ -2128,7 +2086,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # If we are on Windows, these permissions mean absolutely nothing,
         # and on Fuse builds they might not make any sense, so we need to skip before failing
         likely_fuse_mount = ((prev_fstat.st_mode & stat.S_ISUID) == (fstat.st_mode & stat.S_ISUID)) and \
-                            prev_fstat.st_uid == 0
+                            prev_fstat.st_uid == 0 # noqa
 
         if sys.platform == "win32" or likely_fuse_mount:
             self.skipTest("Windows or likely a FUSE mount")
@@ -2262,27 +2220,229 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertIn("(lldb) target create", stdout)
 
 
-if __name__ == '__main__':
+class NS3QualityControlTestCase(unittest.TestCase):
+    """!
+    ns-3 tests to control the quality of the repository over time,
+    by checking the state of URLs listed and more
+    """
+
+    def test_01_CheckForDeadLinksInSources(self):
+        """!
+        Test if all urls in source files are alive
+        @return None
+        """
+
+        # Skip this test if Django is not available
+        try:
+            import django
+        except ImportError:
+            self.skipTest("Django URL validators are not available")
+
+        # Skip this test if requests library is not available
+        try:
+            import requests
+        except ImportError:
+            self.skipTest("Requests library is not available")
+
+        regex = re.compile(r'((http|https)://[^\ \n\)\"\'\}\>\<\]\;\`\\]*)')  # noqa
+        skipped_files = []
+
+        whitelisted_urls = {"https://gitlab.com/your-user-name/ns-3-dev",
+                            "https://www.nsnam.org/release/ns-allinone-3.31.rc1.tar.bz2",
+                            "https://www.nsnam.org/release/ns-allinone-3.X.rcX.tar.bz2",
+                            "https://www.nsnam.org/releases/ns-3-x",
+                            "https://www.nsnam.org/releases/ns-allinone-3.(x-1",
+                            "https://www.nsnam.org/releases/ns-allinone-3.x.tar.bz2",
+                            # split due to command-line formatting
+                            "https://cmake.org/cmake/help/latest/manual/cmake-",
+                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_",
+                            # Dia placeholder xmlns address
+                            "http://www.lysator.liu.se/~alla/dia/",
+                            # Fails due to bad regex
+                            "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_Digital_Terrestrial_Television_Broadcasting_(DTTB",
+                            "http://en.wikipedia.org/wiki/Namespace_(computer_science",
+                            "http://en.wikipedia.org/wiki/Bonobo_(component_model",
+                            "http://msdn.microsoft.com/en-us/library/aa365247(v=vs.85",
+                            # historical links
+                            "http://www.research.att.com/info/kpv/",
+                            "http://www.research.att.com/~gsf/",
+                            }
+
+        # Scan for all URLs in all files we can parse
+        files_and_urls = set()
+        unique_urls = set()
+        for topdir in ["bindings", "doc", "examples", "src", "utils"]:
+            for root, dirs, files in os.walk(topdir):
+                # do not parse files in build directories
+                if "build" in root or "_static" in root or "source-temp" in root or 'html' in root:
+                    continue
+                for file in files:
+                    # skip svg files
+                    if file.endswith(".svg"):
+                        continue
+                    filepath = os.path.join(root, file)
+
+                    try:
+                        with open(filepath, "r") as f:
+                            matches = regex.findall(f.read())
+
+                            # Get first group for each match (containing the URL)
+                            # and strip final punctuation or commas in matched links
+                            # commonly found in the docs
+                            urls = list(map(lambda x: x[0][:-1] if x[0][-1] in ".," else x[0], matches))
+                    except UnicodeDecodeError:
+                        skipped_files.append(filepath)
+                        continue
+
+                    # Search for new unique URLs and add keep track of their associated source file
+                    for url in set(urls)-unique_urls-whitelisted_urls:
+                        unique_urls.add(url)
+                        files_and_urls.add((filepath, url))
+
+        # Instantiate the Django URL validator
+        from django.core.validators import URLValidator
+        from django.core.exceptions import ValidationError
+        validate_url = URLValidator()
+
+        # User agent string to make ACM and Elsevier let us check if links to papers are working
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+
+        def test_file_url(args):
+            filepath, url = args
+            dead_link_msg = None
+
+            # Skip invalid URLs
+            try:
+                validate_url(url)
+            except ValidationError:
+                dead_link_msg = "%s: URL %s, invalid URL" % (filepath, url)
+
+            # Check if valid URLs are alive
+            if dead_link_msg is None:
+                try:
+                    tries = 3
+                    while tries > 0:
+                        # Not verifying the certificate (verify=False) is potentially dangerous
+                        # HEAD checks are not as reliable as GET ones,
+                        # in some cases they may return bogus error codes and reasons
+                        response = requests.get(url, verify=False, headers=headers)
+
+                        # In case of success and redirection
+                        if response.status_code in [200, 301]:
+                            dead_link_msg = None
+                            break
+
+                        # People use the wrong code, but the reason
+                        # can still be correct
+                        if response.status_code in [302, 308, 500, 503]:
+                            if response.reason.lower() in ['found',
+                                                           'moved temporarily',
+                                                           'permanent redirect',
+                                                           'ok',
+                                                           'service temporarily unavailable'
+                                                           ]:
+                                dead_link_msg = None
+                                break
+                        # In case it didn't pass in any of the previous tests,
+                        # set dead_link_msg with the most recent error and try again
+                        dead_link_msg = "%s: URL %s: returned code %d" % (filepath, url, response.status_code)
+                        tries -= 1
+                except requests.exceptions.InvalidURL:
+                    dead_link_msg = "%s: URL %s: invalid URL" % (filepath, url)
+                except requests.exceptions.SSLError:
+                    dead_link_msg = "%s: URL %s: SSL error" % (filepath, url)
+                except requests.exceptions.TooManyRedirects:
+                    dead_link_msg = "%s: URL %s: too many redirects" % (filepath, url)
+                except Exception as e:
+                    try:
+                        error_msg = e.args[0].reason.__str__()
+                    except AttributeError:
+                        error_msg = e.args[0]
+                    dead_link_msg = "%s: URL %s: failed with exception: %s" % (filepath, url, error_msg)
+            return dead_link_msg
+
+        # Dispatch threads to test multiple URLs concurrently
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            dead_links = list(executor.map(test_file_url, list(files_and_urls)))
+
+        # Filter out None entries
+        dead_links = list(sorted(filter(lambda x: x is not None, dead_links)))
+        self.assertEqual(len(dead_links), 0, msg="\n".join(["Dead links found:", *dead_links]))
+
+    def test_02_MemoryCheckWithSanitizers(self):
+        """!
+        Test if all tests can be executed without hitting major memory bugs
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3("configure --enable-tests --enable-examples --enable-sanitizers -d optimized")
+        self.assertEqual(return_code, 0)
+
+        test_return_code, stdout, stderr = run_program("test.py", "", python=True)
+
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
+        self.assertEqual(test_return_code, 0)
+
+
+def main():
+    """!
+    Main function
+    @return None
+    """
+
+    test_completeness = {
+        "style": [NS3UnusedSourcesTestCase,
+                  NS3StyleTestCase,
+                  ],
+        "build": [NS3CommonSettingsTestCase,
+                  NS3ConfigureBuildProfileTestCase,
+                  NS3ConfigureTestCase,
+                  NS3BuildBaseTestCase,
+                  NS3ExpectedUseTestCase,
+                  ],
+        "complete": [NS3UnusedSourcesTestCase,
+                     NS3StyleTestCase,
+                     NS3CommonSettingsTestCase,
+                     NS3ConfigureBuildProfileTestCase,
+                     NS3ConfigureTestCase,
+                     NS3BuildBaseTestCase,
+                     NS3ExpectedUseTestCase,
+                     NS3QualityControlTestCase,
+                     ]
+    }
+
+    import argparse
+
+    parser = argparse.ArgumentParser("Test suite for the ns-3 buildsystem")
+    parser.add_argument("-c", "--completeness",
+                        choices=test_completeness.keys(),
+                        default="complete")
+    parser.add_argument("-tn", "--test-name",
+                        action="store",
+                        default=None,
+                        type=str)
+    parser.add_argument("-q", "--quiet",
+                        action="store_true",
+                        default=False)
+    args = parser.parse_args(sys.argv[1:])
+
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
     # Put tests cases in order
-    suite.addTests(loader.loadTestsFromTestCase(NS3UnusedSourcesTestCase))
-    suite.addTests(loader.loadTestsFromTestCase(NS3CommonSettingsTestCase))
-    suite.addTests(loader.loadTestsFromTestCase(NS3ConfigureBuildProfileTestCase))
-    suite.addTests(loader.loadTestsFromTestCase(NS3ConfigureTestCase))
-    suite.addTests(loader.loadTestsFromTestCase(NS3BuildBaseTestCase))
-    suite.addTests(loader.loadTestsFromTestCase(NS3ExpectedUseTestCase))
-
-    # Generate a dictionary of test names and their objects
-    tests = dict(map(lambda x: (x._testMethodName, x), suite._tests))
+    for testCase in test_completeness[args.completeness]:
+        suite.addTests(loader.loadTestsFromTestCase(testCase))
 
     # Filter tests by name
-    # name_to_search = ""
-    # tests_to_run = set(map(lambda x: x if name_to_search in x else None, tests.keys()))
-    # tests_to_remove = set(tests) - set(tests_to_run)
-    # for test_to_remove in tests_to_remove:
-    #     suite._tests.remove(tests[test_to_remove])
+    if args.test_name:
+        # Generate a dictionary of test names and their objects
+        tests = dict(map(lambda x: (x._testMethodName, x), suite._tests))
+
+        tests_to_run = set(map(lambda x: x if args.test_name in x else None, tests.keys()))
+        tests_to_remove = set(tests) - set(tests_to_run)
+        for test_to_remove in tests_to_remove:
+            suite._tests.remove(tests[test_to_remove])
 
     # Before running, check if ns3rc exists and save it
     ns3rc_script_bak = ns3rc_script + ".bak"
@@ -2290,9 +2450,13 @@ if __name__ == '__main__':
         shutil.move(ns3rc_script, ns3rc_script_bak)
 
     # Run tests and fail as fast as possible
-    runner = unittest.TextTestRunner(failfast=True)
+    runner = unittest.TextTestRunner(failfast=True, verbosity=1 if args.quiet else 2)
     result = runner.run(suite)
 
     # After completing the tests successfully, restore the ns3rc file
     if os.path.exists(ns3rc_script_bak):
         shutil.move(ns3rc_script_bak, ns3rc_script)
+
+
+if __name__ == '__main__':
+    main()
