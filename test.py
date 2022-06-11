@@ -769,10 +769,18 @@ def make_paths():
 #
 # Now, when you run valgrind the error will be suppressed.
 #
-VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
+# Until ns-3.36, we used a suppression in testpy.supp in the top-level
+# ns-3 directory.   It was defined below, but commented out once it was
+# no longer needed.  If it is needed again in the future, define the
+# below variable again, and remove the alternative definition to None
+#
+# VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
+VALGRIND_SUPPRESSIONS_FILE = None
 
 def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
-    suppressions_path = os.path.join(NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
+
+    if VALGRIND_SUPPRESSIONS_FILE is not None:
+        suppressions_path = os.path.join(NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
         path_cmd = PYTHON[0] + " " + os.path.join(NS3_BASEDIR, shell_command)
@@ -783,8 +791,11 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
             path_cmd = os.path.join(NS3_BUILDDIR, shell_command)
 
     if valgrind:
-        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
-            path_cmd)
+        if VALGRIND_SUPPRESSIONS_FILE:
+            cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
+                path_cmd)
+        else:
+            cmd = "valgrind --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (path_cmd)
     else:
         cmd = path_cmd
 
