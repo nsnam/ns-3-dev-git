@@ -57,7 +57,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, ui
   m_psdus.begin ()->second = 0;
   m_psdus.clear ();
   m_psdus = psdus;
-  if (IsMu ())
+  if (txVector.IsMu ())
     {
       for (auto heMuUserInfo : txVector.GetHeMuUserInfoMap ())
         {
@@ -67,7 +67,6 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, ui
           NS_ABORT_MSG_IF (!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }
     }
-
   SetPhyHeaders (txVector, ppduDuration);
   SetTxPsdFlag (flag);
 }
@@ -95,26 +94,14 @@ HePpdu::SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration)
     {
       sigExtension = 6;
     }
-  uint8_t m = 0;
-  if ((m_preamble == WIFI_PREAMBLE_HE_SU) || (m_preamble == WIFI_PREAMBLE_HE_TB))
-    {
-      m = 2;
-    }
-  else if (m_preamble == WIFI_PREAMBLE_HE_MU)
-    {
-      m = 1;
-    }
-  else
-    {
-      NS_ASSERT_MSG (false, "Unsupported preamble type");
-    }
+  uint8_t m = IsDlMu () ? 1 : 2;
   uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
   m_lSig.SetLength (length);
-  if (IsDlMu ())
+  if (txVector.IsDlMu ())
     {
       m_heSig.SetMuFlag (true);
     }
-  else if (!IsUlMu ())
+  else if (!txVector.IsUlMu ())
     {
       m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
       m_heSig.SetNStreams (txVector.GetNss ());
@@ -158,6 +145,7 @@ HePpdu::GetTxDuration (void) const
   uint8_t m = IsDlMu () ? 1 : 2;
   //Equation 27-11 of IEEE P802.11ax/D4.0
   Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (m_lSig.GetLength () + 3 + m) / 3)) * 4) + 20 + sigExtension);
+  NS_ASSERT (calculatedDuration > preambleDuration);
   uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
   ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
   return ppduDuration;

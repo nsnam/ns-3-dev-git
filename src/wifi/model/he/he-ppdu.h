@@ -227,6 +227,7 @@ public:
 
 protected:
   std::string PrintPayload (void) const override;
+  WifiTxVector DoGetTxVector (void) const override;
 
   /**
    * Return true if the PPDU is a MU PPDU
@@ -244,21 +245,18 @@ protected:
    */
   bool IsUlMu (void) const;
 
-  WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
-
-private:
-  WifiTxVector DoGetTxVector (void) const override;
-
   /**
    * Fill in the HE PHY headers.
    *
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    */
-  void SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration);
+  virtual void SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration);
 
   HeSigHeader m_heSig;   //!< the HE-SIG PHY header
   TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
+
+  WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
 }; //class HePpdu
 
 /**
