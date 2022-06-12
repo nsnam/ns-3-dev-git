@@ -111,7 +111,9 @@ set(source_files
     model/vht/vht-ppdu.cc
     model/wifi-ack-manager.cc
     model/wifi-acknowledgment.cc
+    model/wifi-assoc-manager.cc
     model/wifi-default-ack-manager.cc
+    model/wifi-default-assoc-manager.cc
     model/wifi-default-protection-manager.cc
     model/wifi-information-element-vector.cc
     model/wifi-information-element.cc
@@ -252,7 +254,9 @@ set(header_files
     model/vht/vht-ppdu.h
     model/wifi-ack-manager.h
     model/wifi-acknowledgment.h
+    model/wifi-assoc-manager.h
     model/wifi-default-ack-manager.h
+    model/wifi-default-assoc-manager.h
     model/wifi-default-protection-manager.h
     model/wifi-information-element-vector.h
     model/wifi-information-element.h
