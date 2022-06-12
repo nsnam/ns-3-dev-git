@@ -36,6 +36,7 @@ namespace ns3  {
 class SupportedRates;
 class CapabilityInformation;
 class RandomVariableStream;
+class WifiAssocManager;
 
 
 /**
@@ -169,6 +170,13 @@ public:
   void SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys) override;
 
   /**
+   * Set the Association Manager.
+   *
+   * \param assocManager the Association Manager
+   */
+  void SetAssocManager (Ptr<WifiAssocManager> assocManager);
+
+  /**
    * Forward a probe request packet to the DCF. The standard is not clear on the correct
    * queue for management frames if QoS is supported. We always use the DCF.
    */
@@ -178,8 +186,10 @@ public:
    * This method is called after wait beacon timeout or wait probe request timeout has
    * occurred. This will trigger association process from beacons or probe responses
    * gathered while scanning.
+   *
+   * \param bestAp the info about the best AP to associate with, if one was found
    */
-  void ScanningTimeout (void);
+  void ScanningTimeout (const std::optional<ApInfo>& bestAp);
 
   /**
    * Return whether we are associated with an AP.
@@ -259,14 +269,6 @@ private:
    */
   void UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
                      const Mac48Address& bssid, uint8_t linkId);
-
-  /**
-   * Update list of candidate AP to associate. The list should contain ApInfo sorted from
-   * best to worst SNR, with no duplicate.
-   *
-   * \param newApInfo the new ApInfo to be inserted
-   */
-  void UpdateCandidateApList (ApInfo newApInfo);
 
   /**
    * Forward an association or reassociation request packet to the DCF.
@@ -357,15 +359,24 @@ private:
    */
   void PhyCapabilitiesChanged (void);
 
+  /**
+   * Get the current primary20 channel used on the given link as a
+   * (channel number, PHY band) pair.
+   *
+   * \param linkId the ID of the given link
+   * \return a (channel number, PHY band) pair
+   */
+  WifiScanParams::Channel GetCurrentChannel (uint8_t linkId) const;
+
   void DoInitialize (void) override;
+  void DoDispose (void) override;
 
   MacState m_state;            ///< MAC state
   uint16_t m_aid;              ///< Association AID
+  Ptr<WifiAssocManager> m_assocManager; ///< Association Manager
   Time m_waitBeaconTimeout;    ///< wait beacon timeout
   Time m_probeRequestTimeout;  ///< probe request timeout
   Time m_assocRequestTimeout;  ///< association request timeout
-  EventId m_waitBeaconEvent;   ///< wait beacon event
-  EventId m_probeRequestEvent; ///< probe request event
   EventId m_assocRequestEvent; ///< association request event
   EventId m_beaconWatchdog;    ///< beacon watchdog
   Time m_beaconWatchdogEnd;    ///< beacon watchdog end
@@ -373,11 +384,6 @@ private:
   bool m_activeProbing;        ///< active probing
   Ptr<RandomVariableStream> m_probeDelay;  ///< RandomVariable used to randomize the time
                                            ///< of the first Probe Response on each channel
-  std::vector<ApInfo> m_candidateAps; ///< list of candidate APs to associate to
-  // Note: std::multiset<ApInfo> might be a candidate container to implement
-  // this sorted list, but we are using a std::vector because we want to sort
-  // based on SNR but find duplicates based on BSSID, and in practice this
-  // candidate vector should not be too large.
 
   TracedCallback<Mac48Address> m_assocLogger;   ///< association logger
   TracedCallback<Mac48Address> m_deAssocLogger; ///< disassociation logger

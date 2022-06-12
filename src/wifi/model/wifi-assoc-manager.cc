@@ -226,7 +226,7 @@ WifiAssocManager::ScanningTimeout (void)
     {
       if (m_apList.empty ())
         {
-          m_mac->ScanningTimeout (/*std::nullopt*/);
+          m_mac->ScanningTimeout (std::nullopt);
           return;
         }
 
@@ -234,7 +234,7 @@ WifiAssocManager::ScanningTimeout (void)
       m_apListIt.erase (bestAp.m_bssid);
     } while (!CanBeReturned (bestAp));
 
-  m_mac->ScanningTimeout (/*std::move (bestAp)*/);
+  m_mac->ScanningTimeout (std::move (bestAp));
 }
 
 } //namespace ns3

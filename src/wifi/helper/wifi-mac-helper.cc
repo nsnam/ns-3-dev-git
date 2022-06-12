@@ -23,6 +23,7 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-protection-manager.h"
 #include "ns3/wifi-ack-manager.h"
+#include "ns3/wifi-assoc-manager.h"
 #include "ns3/multi-user-scheduler.h"
 #include "ns3/boolean.h"
 
@@ -33,6 +34,7 @@ WifiMacHelper::WifiMacHelper ()
   //By default, we create an AdHoc MAC layer (without QoS).
   SetType ("ns3::AdhocWifiMac");
 
+  m_assocManager.SetTypeId ("ns3::WifiDefaultAssocManager");
   m_protectionManager.SetTypeId ("ns3::WifiDefaultProtectionManager");
   m_ackManager.SetTypeId ("ns3::WifiDefaultAckManager");
 }
@@ -96,6 +98,13 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
       Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();
       apMac->AggregateObject (muScheduler);
+    }
+
+  // create and install the Association Manager if this is a STA
+  if (auto staMac = DynamicCast<StaWifiMac> (mac); staMac != nullptr)
+    {
+      Ptr<WifiAssocManager> assocManager = m_assocManager.Create<WifiAssocManager> ();
+      staMac->SetAssocManager (assocManager);
     }
 
   return mac;

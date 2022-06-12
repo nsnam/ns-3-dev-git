@@ -32,6 +32,7 @@
 #include "wifi-phy.h"
 #include "mgt-headers.h"
 #include "snr-tag.h"
+#include "wifi-assoc-manager.h"
 #include "wifi-net-device.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/he-configuration.h"
@@ -99,8 +100,6 @@ StaWifiMac::GetTypeId (void)
 StaWifiMac::StaWifiMac ()
   : m_state (UNASSOCIATED),
     m_aid (0),
-    m_waitBeaconEvent (),
-    m_probeRequestEvent (),
     m_assocRequestEvent (),
     m_beaconWatchdogEnd (Seconds (0))
 {
@@ -118,6 +117,18 @@ StaWifiMac::DoInitialize (void)
   StartScanning ();
 }
 
+void
+StaWifiMac::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_assocManager)
+    {
+      m_assocManager->Dispose ();
+    }
+  m_assocManager = nullptr;
+  WifiMac::DoDispose ();
+}
+
 StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
@@ -129,6 +140,14 @@ StaWifiMac::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_probeDelay->SetStream (stream);
   return 1;
+}
+
+void
+StaWifiMac::SetAssocManager (Ptr<WifiAssocManager> assocManager)
+{
+  NS_LOG_FUNCTION (this << assocManager);
+  m_assocManager = assocManager;
+  m_assocManager->SetStaWifiMac (this);
 }
 
 uint16_t
@@ -165,6 +184,15 @@ StaWifiMac::SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys)
     {
       phy->SetCapabilitiesChangedCallback (MakeCallback (&StaWifiMac::PhyCapabilitiesChanged, this));
     }
+}
+
+WifiScanParams::Channel
+StaWifiMac::GetCurrentChannel (uint8_t linkId) const
+{
+  auto phy = GetWifiPhy (linkId);
+  uint16_t width = phy->GetOperatingChannel ().IsOfdm () ? 20 : phy->GetChannelWidth ();
+  uint8_t ch = phy->GetOperatingChannel ().GetPrimaryChannelNumber (width, phy->GetStandard ());
+  return {ch, phy->GetPhyBand ()};
 }
 
 void
@@ -354,68 +382,68 @@ void
 StaWifiMac::StartScanning (void)
 {
   NS_LOG_FUNCTION (this);
-  m_candidateAps.clear ();
-  if (m_probeRequestEvent.IsRunning ())
+  SetState (SCANNING);
+  NS_ASSERT (m_assocManager);
+
+  WifiScanParams scanParams;
+  scanParams.ssid = GetSsid ();
+  for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
     {
-      m_probeRequestEvent.Cancel ();
+      WifiScanParams::ChannelList channel {(GetWifiPhy (linkId)->HasFixedPhyBand ())
+                                           ? WifiScanParams::Channel {0, GetWifiPhy (linkId)->GetPhyBand ()}
+                                           : WifiScanParams::Channel {0, WIFI_PHY_BAND_UNSPECIFIED}};
+
+      scanParams.channelList.push_back (channel);
     }
-  if (m_waitBeaconEvent.IsRunning ())
+  if (m_activeProbing)
     {
-      m_waitBeaconEvent.Cancel ();
-    }
-  if (GetActiveProbing ())
-    {
-      SendProbeRequest ();
-      m_probeRequestEvent = Simulator::Schedule (m_probeRequestTimeout,
-                                                 &StaWifiMac::ScanningTimeout,
-                                                 this);
+      scanParams.type = WifiScanParams::ACTIVE;
+      scanParams.probeDelay = MicroSeconds (m_probeDelay->GetValue ());
+      scanParams.minChannelTime = scanParams.maxChannelTime = m_probeRequestTimeout;
     }
   else
     {
-      m_waitBeaconEvent = Simulator::Schedule (m_waitBeaconTimeout,
-                                               &StaWifiMac::ScanningTimeout,
-                                               this);
+      scanParams.type = WifiScanParams::PASSIVE;
+      scanParams.maxChannelTime = m_waitBeaconTimeout;
     }
-  SetState (SCANNING);
+
+  m_assocManager->StartScanning (std::move (scanParams));
 }
 
 void
-StaWifiMac::ScanningTimeout (void)
+StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
 {
   NS_LOG_FUNCTION (this);
-  if (!m_candidateAps.empty ())
-    {
-      ApInfo bestAp = m_candidateAps.front();
-      m_candidateAps.erase(m_candidateAps.begin ());
-      NS_LOG_DEBUG ("Attempting to associate with BSSID " << bestAp.m_bssid);
-      UpdateApInfo (bestAp.m_frame, bestAp.m_apAddr, bestAp.m_bssid, bestAp.m_linkId);
-      // lambda to get beacon interval from Beacon or Probe Response
-      auto getBeaconInterval =
-        [](auto&& frame)
-        {
-          using T = std::decay_t<decltype (frame)>;
-          if constexpr (std::is_same_v<T, MgtBeaconHeader>
-                        || std::is_same_v<T, MgtProbeResponseHeader>)
-            {
-              return MicroSeconds (frame.GetBeaconIntervalUs ());
-            }
-          else
-            {
-              NS_ABORT_MSG ("Unexpected frame type");
-              return Seconds (0);
-            }
-        };
-      Time beaconInterval = std::visit (getBeaconInterval, bestAp.m_frame);
-      Time delay = beaconInterval * m_maxMissedBeacons;
-      RestartBeaconWatchdog (delay);
-      SetState (WAIT_ASSOC_RESP);
-      SendAssociationRequest (false);
-    }
-  else
+
+  if (!bestAp.has_value ())
     {
       NS_LOG_DEBUG ("Exhausted list of candidate AP; restart scanning");
       StartScanning ();
+      return;
     }
+
+  NS_LOG_DEBUG ("Attempting to associate with BSSID " << bestAp->m_bssid);
+  UpdateApInfo (bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
+  // lambda to get beacon interval from Beacon or Probe Response
+  auto getBeaconInterval =
+    [](auto&& frame)
+    {
+      using T = std::decay_t<decltype (frame)>;
+      if constexpr (std::is_same_v<T, MgtBeaconHeader> || std::is_same_v<T, MgtProbeResponseHeader>)
+        {
+          return MicroSeconds (frame.GetBeaconIntervalUs ());
+        }
+      else
+        {
+          NS_ABORT_MSG ("Unexpected frame type");
+          return Seconds (0);
+        }
+    };
+  Time beaconInterval = std::visit (getBeaconInterval, bestAp->m_frame);
+  Time delay = beaconInterval * m_maxMissedBeacons;
+  RestartBeaconWatchdog (delay);
+  SetState (WAIT_ASSOC_RESP);
+  SendAssociationRequest (false);
 }
 
 void
@@ -645,10 +673,9 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
         }
       else
         {
-          // we retain this Beacon as candidate AP if the SSID matches ours and the
-          // supported rates fit the configured BSS membership selector
-          goodBeacon = ((GetSsid ().IsBroadcast () || beacon.GetSsid ().IsEqual (GetSsid ()))
-                        && CheckSupportedRates (beacon, linkId));
+          // we retain this Beacon as candidate AP if the supported rates fit the
+          // configured BSS membership selector
+          goodBeacon = CheckSupportedRates (beacon, linkId);
         }
 
       if (!goodBeacon)
@@ -663,9 +690,9 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           RestartBeaconWatchdog (delay);
           UpdateApInfo (beacon, hdr->GetAddr2 (), hdr->GetAddr3 (), linkId);
         }
-      else if (m_state == SCANNING)
+      else
         {
-          NS_LOG_DEBUG ("Beacon received while scanning from " << hdr->GetAddr2 ());
+          NS_LOG_DEBUG ("Beacon received from " << hdr->GetAddr2 ());
           SnrTag snrTag;
           bool removed = copy->RemovePacketTag (snrTag);
           NS_ASSERT (removed);
@@ -673,36 +700,34 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           apInfo.m_apAddr = hdr->GetAddr2 ();
           apInfo.m_bssid = hdr->GetAddr3 ();
           apInfo.m_snr = snrTag.Get ();
-          apInfo.m_frame = beacon;
+          apInfo.m_frame = std::move (beacon);
           apInfo.m_linkId = linkId;
-          UpdateCandidateApList (apInfo);
+          apInfo.m_channel = {GetCurrentChannel (linkId)};
+          m_assocManager->NotifyApInfo (std::move (apInfo));
         }
       return;
     }
   else if (hdr->IsProbeResp ())
     {
-      if (m_state == SCANNING)
+      NS_LOG_DEBUG ("Probe response received from " << hdr->GetAddr2 ());
+      MgtProbeResponseHeader probeResp;
+      Ptr<Packet> copy = packet->Copy ();
+      copy->RemoveHeader (probeResp);
+      if (!CheckSupportedRates (probeResp, linkId))
         {
-          NS_LOG_DEBUG ("Probe response received while scanning from " << hdr->GetAddr2 ());
-          MgtProbeResponseHeader probeResp;
-          Ptr<Packet> copy = packet->Copy ();
-          copy->RemoveHeader (probeResp);
-          if ((!GetSsid ().IsBroadcast () && !probeResp.GetSsid ().IsEqual (GetSsid ()))
-              || !CheckSupportedRates (probeResp, linkId))
-            {
-              return;
-            }
-          SnrTag snrTag;
-          bool removed = copy->RemovePacketTag (snrTag);
-          NS_ASSERT (removed);
-          ApInfo apInfo;
-          apInfo.m_apAddr = hdr->GetAddr2 ();
-          apInfo.m_bssid = hdr->GetAddr3 ();
-          apInfo.m_snr = snrTag.Get ();
-          apInfo.m_frame = probeResp;
-          apInfo.m_linkId = linkId;
-          UpdateCandidateApList (apInfo);
+          return;
         }
+      SnrTag snrTag;
+      bool removed = copy->RemovePacketTag (snrTag);
+      NS_ASSERT (removed);
+      ApInfo apInfo;
+      apInfo.m_apAddr = hdr->GetAddr2 ();
+      apInfo.m_bssid = hdr->GetAddr3 ();
+      apInfo.m_snr = snrTag.Get ();
+      apInfo.m_frame = std::move (probeResp);
+      apInfo.m_linkId = linkId;
+      apInfo.m_channel = {GetCurrentChannel (linkId)};
+      m_assocManager->NotifyApInfo (std::move (apInfo));
       return;
     }
   else if (hdr->IsAssocResp () || hdr->IsReassocResp ())
@@ -736,14 +761,8 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           else
             {
               NS_LOG_DEBUG ("association refused");
-              if (m_candidateAps.empty ())
-                {
-                  SetState (REFUSED);
-                }
-              else
-                {
-                  ScanningTimeout ();
-                }
+              SetState (REFUSED);
+              StartScanning ();
             }
         }
       return;
@@ -780,32 +799,6 @@ StaWifiMac::CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseH
     };
 
   return std::visit (check, frame);
-}
-
-void
-StaWifiMac::UpdateCandidateApList (ApInfo newApInfo)
-{
-  NS_LOG_FUNCTION (this << newApInfo.m_bssid << newApInfo.m_apAddr << newApInfo.m_snr << newApInfo.m_frame.index () +newApInfo.m_linkId);
-  // Remove duplicate ApInfo entry
-  for (std::vector<ApInfo>::iterator i = m_candidateAps.begin(); i != m_candidateAps.end(); ++i)
-    {
-      if (newApInfo.m_bssid == (*i).m_bssid)
-        {
-          m_candidateAps.erase(i);
-          break;
-        }
-    }
-  // Insert before the entry with lower SNR
-  for (std::vector<ApInfo>::iterator i = m_candidateAps.begin(); i != m_candidateAps.end(); ++i)
-    {
-      if (newApInfo.m_snr > (*i).m_snr)
-        {
-          m_candidateAps.insert (i, newApInfo);
-          return;
-        }
-    }
-  // If new ApInfo is the lowest, insert at back
-  m_candidateAps.push_back(newApInfo);
 }
 
 void

@@ -53,6 +53,7 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-default-ack-manager.h"
+#include "ns3/wifi-default-assoc-manager.h"
 
 using namespace ns3;
 
@@ -160,6 +161,10 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  if (mac->GetTypeOfStation () == STA)
+    {
+      StaticCast<StaWifiMac> (mac)->SetAssocManager (CreateObject<WifiDefaultAssocManager> ());
+    }
   Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
   Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (mac);
@@ -1801,6 +1806,7 @@ Bug2831TestCase::DoRun (void)
   staMac->SetDevice (staDev);
   staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax);
+  StaticCast<StaWifiMac> (staMac)->SetAssocManager (CreateObject<WifiDefaultAssocManager> ());
   fem = staMac->GetFrameExchangeManager ();
   protectionManager = CreateObject<WifiDefaultProtectionManager> ();
   protectionManager->SetWifiMac (staMac);

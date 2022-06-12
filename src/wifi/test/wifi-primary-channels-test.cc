@@ -436,13 +436,18 @@ WifiPrimaryChannelsTest::DoSetup (void)
 void
 WifiPrimaryChannelsTest::DoRun (void)
 {
-  // schedule association requests at different times
+  // schedule association requests at different times. One station's SSID is
+  // set to the correct value before initialization, so that such a station
+  // starts the scanning procedure by looking for the correct SSID
   Ptr<WifiNetDevice> dev;
 
-  for (uint16_t i = 0; i < m_nStationsPerBss; i++)
+  // association can be done in parallel over the multiple BSSes
+  for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
-      // association can be done in parallel over the multiple BSSes
-      for (uint8_t bss = 0; bss < m_nBss; bss++)
+      dev = DynamicCast<WifiNetDevice> (m_staDevices[bss].Get (0));
+      dev->GetMac ()->SetSsid (Ssid ("wifi-ssid-" + std::to_string (bss)));
+
+      for (uint16_t i = 1; i < m_nStationsPerBss; i++)
         {
           dev = DynamicCast<WifiNetDevice> (m_staDevices[bss].Get (i));
           Simulator::Schedule (i * MicroSeconds (102400), &WifiMac::SetSsid,

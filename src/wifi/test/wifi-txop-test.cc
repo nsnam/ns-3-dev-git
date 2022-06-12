@@ -192,14 +192,16 @@ WifiTxopTest::DoRun (void)
 
   m_apDevices = wifi.Install (phy, mac, wifiApNode);
 
-  // schedule association requests at different times
-  Time init = MilliSeconds (100);
-  Ptr<WifiNetDevice> dev;
+  // schedule association requests at different times. One station's SSID is
+  // set to the correct value before initialization, so that such a station
+  // starts the scanning procedure by looking for the correct SSID
+  Ptr<WifiNetDevice> dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (0));
+  dev->GetMac ()->SetSsid (Ssid ("wifi-txop-ssid"));
 
-  for (uint16_t i = 0; i < m_nStations; i++)
+  for (uint16_t i = 1; i < m_nStations; i++)
     {
       dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
-      Simulator::Schedule (init + i * MicroSeconds (102400), &WifiMac::SetSsid,
+      Simulator::Schedule (i * MicroSeconds (102400), &WifiMac::SetSsid,
                            dev->GetMac (), Ssid ("wifi-txop-ssid"));
     }
 
