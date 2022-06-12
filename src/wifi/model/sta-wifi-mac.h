@@ -132,6 +132,19 @@ public:
   void SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys) override;
 
   /**
+   * Forward a probe request packet to the DCF. The standard is not clear on the correct
+   * queue for management frames if QoS is supported. We always use the DCF.
+   */
+  void SendProbeRequest (void);
+
+  /**
+   * This method is called after wait beacon timeout or wait probe request timeout has
+   * occurred. This will trigger association process from beacons or probe responses
+   * gathered while scanning.
+   */
+  void ScanningTimeout (void);
+
+  /**
    * Return whether we are associated with an AP.
    *
    * \return true if we are associated with an AP, false otherwise
@@ -208,11 +221,6 @@ private:
   void UpdateCandidateApList (ApInfo newApInfo);
 
   /**
-   * Forward a probe request packet to the DCF. The standard is not clear on the correct
-   * queue for management frames if QoS is supported. We always use the DCF.
-   */
-  void SendProbeRequest (void);
-  /**
    * Forward an association or reassociation request packet to the DCF.
    * The standard is not clear on the correct queue for management frames if QoS is supported.
    * We always use the DCF.
@@ -236,12 +244,6 @@ private:
    * active probing flag.
    */
   void StartScanning (void);
-  /**
-   * This method is called after wait beacon timeout or wait probe request timeout has
-   * occurred. This will trigger association process from beacons or probe responses
-   * gathered while scanning.
-   */
-  void ScanningTimeout (void);
   /**
    * Return whether we are waiting for an association response from an AP.
    *
