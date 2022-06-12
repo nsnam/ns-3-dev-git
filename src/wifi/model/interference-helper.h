@@ -440,6 +440,19 @@ class InterferenceHelper : public Object
     double CalculateNoiseInterferenceW(Ptr<Event> event,
                                        NiChangesPerBand& nis,
                                        const WifiSpectrumBandInfo& band) const;
+
+    /**
+     * Calculate power of all other events preceding a given event that belong to the same MU-MIMO
+     * transmission.
+     *
+     * \param event the event
+     * \param band the band
+     *
+     * \return the power of all other events preceding the event that belong to the same MU-MIMO
+     * transmission
+     */
+    double CalculateMuMimoPowerW(Ptr<const Event> event, const WifiSpectrumBandInfo& band) const;
+
     /**
      * Calculate the error rate of the given PHY payload only in the provided time
      * window (thus enabling per MPDU PER information). The PHY payload can be divided into
@@ -530,6 +543,17 @@ class InterferenceHelper : public Object
     NiChanges::iterator AddNiChangeEvent(Time moment,
                                          NiChange change,
                                          NiChangesPerBand::iterator niIt);
+
+    /**
+     * Return whether another event is a MU-MIMO event that belongs to the same transmission and to
+     * the same RU.
+     *
+     * \param currentEvent the current event that is being inspected
+     * \param otherEvent the other event to compare against
+     *
+     * \return whether both events belong to the same transmission and to the same RU
+     */
+    bool IsSameMuMimoTransmission(Ptr<const Event> currentEvent, Ptr<const Event> otherEvent) const;
 };
 
 } // namespace ns3
