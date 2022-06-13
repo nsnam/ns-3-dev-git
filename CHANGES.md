@@ -20,6 +20,7 @@ Changes from ns-3.36 to ns-3.37
 
 * Added a new attribute **MaxTbPpduDelay** in HeConfiguration for configuring the maximum delay with which a TB PPDU can arrive at the AP after the first TB PPDU in order to be decoded properly. If the delay is higher than **MaxTbPpduDelay**, the TB PPDU is discarded and treated as interference.
 * Added new attributes (**AccessReqInterval**, **AccessReqAc** and **DelayAccessReqUponAccess**) to the MultiUserScheduler to allow a wifi AP to coordinate UL MU transmissions even without DL traffic.
+* `WifiNetDevice` has a new **Phys** attribute, which is primarily intended to select a specific PHY object of an 11be multi-link device when using path names.
 
 ### Changes to existing API
 
@@ -33,6 +34,7 @@ Changes from ns-3.36 to ns-3.37
 ### Changed behavior
 
 * Lr-wpan: **LrWpanPhy** now change to TRX_OFF after a CSMA-CA failure when the RxOnWhenIdle flag is set to false in the **LrWpanMac**.
+* The **Channel** attribute of `WifiNetDevice` is deprecated because it became ambiguous with the introduction of multiple links per device. The **Channel** attribute of `WifiPhy` can be used instead.
 
 Changes from ns-3.36 to ns-3.36.1
 ---------------------------------
