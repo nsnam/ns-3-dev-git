@@ -77,7 +77,7 @@ WifiPhy::GetTypeId (void)
                    "Note that the channel width can be left unspecified (0) if the channel "
                    "number uniquely identify a frequency channel for the given standard and band. ",
                    StringValue ("{0, 0, BAND_UNSPECIFIED, 0}"),
-                   MakeTupleAccessor <UintegerValue, UintegerValue, EnumValue, UintegerValue> ((void (WifiPhy::*) (const ChannelTuple&))(&WifiPhy::SetOperatingChannel)),
+                   MakeTupleAccessor <UintegerValue, UintegerValue, EnumValue, UintegerValue> (&WifiPhy::SetOperatingChannel),
                    MakeTupleChecker<UintegerValue, UintegerValue, EnumValue, UintegerValue>
                      (MakeUintegerChecker<uint8_t> (0, 233),
                       MakeUintegerChecker<uint16_t> (0, 160),
@@ -968,8 +968,7 @@ WifiPhy::SetOperatingChannel (const ChannelTuple& channelTuple)
   if (delay.IsStrictlyPositive ())
     {
       // switching channel has been postponed
-      void (WifiPhy::*fp) (const ChannelTuple&) = &WifiPhy::SetOperatingChannel;
-      Simulator::Schedule (delay, fp, this, channelTuple);
+      Simulator::Schedule (delay, &WifiPhy::SetOperatingChannel, this, channelTuple);
       return;
     }
 
