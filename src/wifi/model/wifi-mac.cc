@@ -521,18 +521,18 @@ WifiMac::GetMacQueueScheduler (void) const
 }
 
 void
-WifiMac::NotifyChannelSwitching (void)
+WifiMac::NotifyChannelSwitching (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
 
   // we may have changed PHY band, in which case it is necessary to re-configure
   // the PHY dependent parameters. In any case, this makes no harm
-  ConfigurePhyDependentParameters ();
+  ConfigurePhyDependentParameters (linkId);
 
   // SetupPhy not only resets the remote station manager, but also sets the
   // default TX mode and MCS, which is required when switching to a channel
   // in a different band
-  GetLink (SINGLE_LINK_OP_ID).stationManager->SetupPhy (GetLink (SINGLE_LINK_OP_ID).phy);
+  GetLink (linkId).stationManager->SetupPhy (GetLink (linkId).phy);
 }
 
 void
@@ -722,27 +722,24 @@ WifiMac::ConfigureStandard (WifiStandard standard)
           it->second->SetWifiMac (this);
           link->channelAccessManager->Add (it->second);
         }
-    }
 
-  ConfigurePhyDependentParameters ();
+      ConfigurePhyDependentParameters (link->id);
+    }
 }
 
 void
-WifiMac::ConfigurePhyDependentParameters (void)
+WifiMac::ConfigurePhyDependentParameters (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
 
-  WifiStandard standard = GetLink (SINGLE_LINK_OP_ID).phy->GetStandard ();
+  WifiStandard standard = GetLink (linkId).phy->GetStandard ();
 
   uint32_t cwmin = (standard == WIFI_STANDARD_80211b ? 31 : 15);
   uint32_t cwmax = 1023;
 
-  for (uint8_t linkId = 0; linkId < m_links.size (); ++linkId)
-    {
-      SetDsssSupported (standard == WIFI_STANDARD_80211b, linkId);
-      SetErpSupported (standard >= WIFI_STANDARD_80211g
-                       && m_links[linkId]->phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ, linkId);
-    }
+  SetDsssSupported (standard == WIFI_STANDARD_80211b, linkId);
+  SetErpSupported (standard >= WIFI_STANDARD_80211g
+                    && m_links[linkId]->phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ, linkId);
 
   ConfigureContentionWindow (cwmin, cwmax);
 }

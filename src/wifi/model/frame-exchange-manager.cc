@@ -945,7 +945,7 @@ void
 FrameExchangeManager::NotifySwitchingStartNow (Time duration)
 {
   NS_LOG_DEBUG ("Switching channel. Cancelling MAC pending events");
-  Simulator::Schedule (duration, &WifiMac::NotifyChannelSwitching, m_mac);
+  Simulator::Schedule (duration, &WifiMac::NotifyChannelSwitching, m_mac, m_linkId);
   if (m_txTimer.IsRunning ())
     {
       // we were transmitting something before channel switching. Since we will

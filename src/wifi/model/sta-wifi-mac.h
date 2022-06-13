@@ -205,7 +205,7 @@ public:
    */
   uint16_t GetAssociationId (void) const;
 
-  void NotifyChannelSwitching (void) override;
+  void NotifyChannelSwitching (uint8_t linkId) override;
 
   /**
    * Assign a fixed random variable stream number to the random variables

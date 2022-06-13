@@ -1049,14 +1049,15 @@ StaWifiMac::PhyCapabilitiesChanged (void)
 }
 
 void
-StaWifiMac::NotifyChannelSwitching (void)
+StaWifiMac::NotifyChannelSwitching (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
 
-  WifiMac::NotifyChannelSwitching ();
+  WifiMac::NotifyChannelSwitching (linkId);
 
   if (IsInitialized ())
     {
+      // TODO handle deassociation of a link in ML setup
       Disassociated ();
     }
 }

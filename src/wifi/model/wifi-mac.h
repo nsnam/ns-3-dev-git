@@ -341,9 +341,11 @@ public:
    */
 
   /**
-   * Notify that channel has been switched.
+   * Notify that channel on the given link has been switched.
+   *
+   * \param linkId the ID of the given link
    */
-  virtual void NotifyChannelSwitching (void);
+  virtual void NotifyChannelSwitching (uint8_t linkId);
 
   /**
    * \param packet the packet being enqueued
@@ -651,9 +653,11 @@ private:
                      std::list<bool> isDsss, AcIndex ac);
 
   /**
-   * Configure PHY dependent parameters such as CWmin and CWmax.
+   * Configure PHY dependent parameters such as CWmin and CWmax on the given link.
+   *
+   * \param linkId the ID of the given link
    */
-  void ConfigurePhyDependentParameters (void);
+  void ConfigurePhyDependentParameters (uint8_t linkId);
 
   /**
    * This method is a private utility invoked to configure the channel
