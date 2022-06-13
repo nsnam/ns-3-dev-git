@@ -69,6 +69,19 @@ public:
     NS_ASSERT (m_pathCache.find (key) == m_pathCache.end ());
     m_pathCache.insert (std::make_pair (key, data));
   };
+
+  /**
+   * Clean the cache
+   */
+  void Cleanup ()
+  {
+    for (auto i : m_pathCache)
+      {
+        i.second->Dispose ();
+      }
+    m_pathCache.clear ();
+  }
+
 private:
   /// Each path is identified by
   struct PropagationPathIdentifier

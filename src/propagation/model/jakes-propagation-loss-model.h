@@ -48,6 +48,9 @@ public:
   JakesPropagationLossModel (const JakesPropagationLossModel &) = delete;
   JakesPropagationLossModel & operator = (const JakesPropagationLossModel &) = delete;
 
+protected:
+  virtual void DoDispose () override;
+
 private:
   friend class JakesProcess;
 

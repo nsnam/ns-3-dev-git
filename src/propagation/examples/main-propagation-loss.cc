@@ -53,7 +53,7 @@ static double dround (double number, double precision)
 }
 
 static Gnuplot
-TestDeterministic (Ptr<PropagationLossModel> model)
+TestDeterministic (Ptr<PropagationLossModel> model, double targetDistance, double step)
 {
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
@@ -73,7 +73,7 @@ TestDeterministic (Ptr<PropagationLossModel> model)
   {
     a->SetPosition (Vector (0.0, 0.0, 0.0));
 
-    for (double distance = 0.0; distance < 2500.0; distance += 10.0)
+    for (double distance = 0.0; distance < targetDistance; distance += step)
       {
         b->SetPosition (Vector (distance, 0.0, 0.0));
 
@@ -99,7 +99,7 @@ TestDeterministic (Ptr<PropagationLossModel> model)
 }
 
 static Gnuplot
-TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 100000)
+TestProbabilistic (Ptr<PropagationLossModel> model, double targetDistance, double step, unsigned int samples)
 {
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
@@ -131,7 +131,7 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
   {
     a->SetPosition (Vector (0.0, 0.0, 0.0));
 
-    for (double distance = 100.0; distance < 2500.0; distance += 100.0)
+    for (double distance = 100.0; distance < targetDistance; distance += step)
       {
         b->SetPosition (Vector (distance, 0.0, 0.0));
 
@@ -169,9 +169,9 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
 
 static Gnuplot
 TestDeterministicByTime (Ptr<PropagationLossModel> model,
-                         Time timeStep = Seconds (0.001),
-                         Time timeTotal = Seconds (1.0),
-                         double distance = 100.0)
+                         Time timeStep,
+                         Time timeTotal,
+                         double distance)
 {
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
@@ -219,15 +219,32 @@ TestDeterministicByTime (Ptr<PropagationLossModel> model,
 
 int main (int argc, char *argv[])
 {
+  bool test = false;
   CommandLine cmd (__FILE__);
+  cmd.AddValue ("test", "Run as a test, sample the models only once", test);
   cmd.Parse (argc, argv);
+
+  double testDeterministicDistance = 2500.0;
+  double testProbabilisticDistance = 2500.0;
+  unsigned int testProbabilisticSamples = 100000;
+  Time testJakesTimeOneMsRes = Seconds (1.0);
+  Time testJakesTimeZeroDotOneMsRes = Seconds (0.1);
+
+  if (test)
+    {
+      testDeterministicDistance = 10;
+      testProbabilisticDistance = 200;
+      testProbabilisticSamples = 1;
+      testJakesTimeOneMsRes = Seconds (0.001);
+      testJakesTimeZeroDotOneMsRes = Seconds (0.0001);
+    }
 
   GnuplotCollection gnuplots ("main-propagation-loss.pdf");
 
   {
     Ptr<FriisPropagationLossModel> friis = CreateObject<FriisPropagationLossModel> ();
 
-    Gnuplot plot = TestDeterministic (friis);
+    Gnuplot plot = TestDeterministic (friis, testDeterministicDistance, 10.0);
     plot.SetTitle ("ns3::FriisPropagationLossModel (Default Parameters)");
     gnuplots.AddPlot (plot);
   }
@@ -236,7 +253,7 @@ int main (int argc, char *argv[])
     Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
     log->SetAttribute ("Exponent", DoubleValue (2.5));
 
-    Gnuplot plot = TestDeterministic (log);
+    Gnuplot plot = TestDeterministic (log, testDeterministicDistance, 10.0);
     plot.SetTitle ("ns3::LogDistancePropagationLossModel (Exponent = 2.5)");
     gnuplots.AddPlot (plot);
   }
@@ -246,7 +263,7 @@ int main (int argc, char *argv[])
     Ptr<ExponentialRandomVariable> expVar = CreateObjectWithAttributes<ExponentialRandomVariable> ("Mean", DoubleValue (50.0));
     random->SetAttribute ("Variable", PointerValue (expVar));
 
-    Gnuplot plot = TestDeterministic (random);
+    Gnuplot plot = TestDeterministic (random, testDeterministicDistance, 10.0);
     plot.SetTitle ("ns3::RandomPropagationLossModel with Exponential Distribution");
     gnuplots.AddPlot (plot);
   }
@@ -257,9 +274,13 @@ int main (int argc, char *argv[])
     // doppler frequency shift for 5.15 GHz at 100 km/h
     Config::SetDefault ("ns3::JakesProcess::DopplerFrequencyHz", DoubleValue (477.9));
 
-    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.001), Seconds (1.0));
+    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.001), testJakesTimeOneMsRes, 100.0);
     plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 1 millisec resolution)");
     gnuplots.AddPlot (plot);
+    // Usually objects are aggregated either to a Node or a Channel, and this aggregation ensures
+    // a proper call to Dispose.
+    // Here we must call it manually, since the PropagationLossModel is not aggregated to anything.
+    jakes->Dispose ();
   }
 
   {
@@ -268,15 +289,19 @@ int main (int argc, char *argv[])
     // doppler frequency shift for 5.15 GHz at 100 km/h
     Config::SetDefault ("ns3::JakesProcess::DopplerFrequencyHz", DoubleValue (477.9));
 
-    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.0001), Seconds (0.1));
+    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.0001), testJakesTimeZeroDotOneMsRes, 100.0);
     plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 0.1 millisec resolution)");
     gnuplots.AddPlot (plot);
-  }
+    // Usually objects are aggregated either to a Node or a Channel, and this aggregation ensures
+    // a proper call to Dispose.
+    // Here we must call it manually, since the PropagationLossModel is not aggregated to anything.
+    jakes->Dispose ();
+   }
 
   {
     Ptr<ThreeLogDistancePropagationLossModel> log3 = CreateObject<ThreeLogDistancePropagationLossModel> ();
 
-    Gnuplot plot = TestDeterministic (log3);
+    Gnuplot plot = TestDeterministic (log3, testDeterministicDistance, 10.0);
     plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel (Defaults)");
     gnuplots.AddPlot (plot);
   }
@@ -288,7 +313,7 @@ int main (int argc, char *argv[])
     log3->SetAttribute ("Exponent1", DoubleValue (3.0));
     log3->SetAttribute ("Exponent2", DoubleValue (10.0));
 
-    Gnuplot plot = TestDeterministic (log3);
+    Gnuplot plot = TestDeterministic (log3, testDeterministicDistance, 10.0);
     plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel (Exponents 1.0, 3.0 and 10.0)");
     gnuplots.AddPlot (plot);
   }
@@ -296,7 +321,7 @@ int main (int argc, char *argv[])
   {
     Ptr<NakagamiPropagationLossModel> nak = CreateObject<NakagamiPropagationLossModel> ();
 
-    Gnuplot plot = TestProbabilistic (nak);
+    Gnuplot plot = TestProbabilistic (nak, testProbabilisticDistance, 100.0, testProbabilisticSamples);
     plot.SetTitle ("ns3::NakagamiPropagationLossModel (Default Parameters)");
     gnuplots.AddPlot (plot);
   }
@@ -307,7 +332,7 @@ int main (int argc, char *argv[])
     Ptr<NakagamiPropagationLossModel> nak = CreateObject<NakagamiPropagationLossModel> ();
     log3->SetNext (nak);
 
-    Gnuplot plot = TestProbabilistic (log3);
+    Gnuplot plot = TestProbabilistic (log3, testProbabilisticDistance, 100.0, testProbabilisticSamples);
     plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel and ns3::NakagamiPropagationLossModel (Default Parameters)");
     gnuplots.AddPlot (plot);
   }

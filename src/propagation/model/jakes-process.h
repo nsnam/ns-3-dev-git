@@ -62,7 +62,6 @@ public:
   static TypeId GetTypeId (void);
   JakesProcess ();
   virtual ~JakesProcess();
-  virtual void DoDispose ();
 
   /**
    * Get the channel complex gain
@@ -80,6 +79,10 @@ public:
    * \param model the propagation model using this class
    */
   void SetPropagationLossModel (Ptr<const PropagationLossModel> model);
+
+protected:
+  virtual void DoDispose ();
+
 private:
   /**
    * This class Represents a single oscillator
@@ -119,7 +122,7 @@ private:
   void SetDopplerFrequencyHz (double dopplerFrequencyHz);
 
   /**
-   *
+   * Builds the object Oscillators
    */
   void ConstructOscillators ();
 private:

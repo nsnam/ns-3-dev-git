@@ -68,7 +68,7 @@ void
 JakesProcess::SetPropagationLossModel (Ptr<const PropagationLossModel> propagationModel)
 {
   Ptr<const JakesPropagationLossModel> jakes = propagationModel->GetObject<JakesPropagationLossModel> ();
-  NS_ASSERT_MSG (jakes != 0, "Jakes Process can work only with JakesPropagationLossModel!");
+  NS_ASSERT_MSG (jakes != nullptr, "Jakes Process can work only with JakesPropagationLossModel!");
   m_jakes = jakes;
 
   NS_ASSERT (m_nOscillators != 0);
@@ -127,7 +127,8 @@ JakesProcess::~JakesProcess()
 void
 JakesProcess::DoDispose ()
 {
-  m_jakes = 0;
+  m_uniformVariable = nullptr;
+  m_jakes = nullptr;
 }
 
 std::complex<double>
