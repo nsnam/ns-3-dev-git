@@ -128,14 +128,14 @@ results.  There are a few policies that we hope will encourage people to
 contribute to |ns3| like they have for |ns2|:
 
 * Open source licensing based on GNU GPLv2 compatibility
-* `wiki
-  <https://www.nsnam.org/wiki>`_
+* An `app store
+  <https://apps.nsnam.org>`_
 * `Contributed Code
   <https://www.nsnam.org/wiki/Contributed_Code>`_ page, similar to |ns2|'s popular Contributed Code
   `page
   <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_
-* Use of GitLab.com including issue tracker
-  <https://www.gitlab.com/nsnam>`_
+* Documentation on `how to contribute <https://www.nsnam.org/docs/contributing/html/index.html>`_
+* Use of Git hosting at GitLab.com including `issue tracker <https://www.gitlab.com/nsnam>`_
 
 We realize that if you are reading this document, contributing back to
 the project is probably not your foremost concern at this point, but

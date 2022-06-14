@@ -61,13 +61,13 @@ Downloading the Latest Release
 
    ::
 
-    $ tar xjf ns-allinone-3.36.tar.bz2
+    $ tar xjf ns-allinone-3.36.1.tar.bz2
 
 3) Change into the |ns3| directory directly; e.g.
 
    ::
 
-    $ cd ns-allinone-3.36/ns-3.36
+    $ cd ns-allinone-3.36.1/ns-3.36.1
 
 The ns-allinone directory has some additional components but we are skipping
 over them here; one can work directly from the |ns3| source code directory.
@@ -89,12 +89,12 @@ only to `cd` into ns-3-dev; the `master` branch is checked out by default.
 
   $ cd ns-3-dev
 
-If instead you want to try the most recent release (version 3.36 as of this
+If instead you want to try the most recent release (version 3.36.1 as of this
 writing), you can checkout a branch corresponding to that git tag:
 
 ::
 
-  $ git checkout -b ns-3.36-branch ns-3.36
+  $ git checkout -b ns-3.36.1-branch ns-3.36.1
 
 Building and testing ns-3
 *************************

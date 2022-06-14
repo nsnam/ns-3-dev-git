@@ -151,17 +151,16 @@ into an easy to use model for your convenience.
 A First ns-3 Script
 *******************
 If you downloaded the system as was suggested above, you will have a release
-of |ns3| in a directory called ``repos`` under your home
+of |ns3| in a directory called ``workspace`` under your home
 directory.  Change into that release directory, and you should find a
 directory structure something like the following:
 
 .. sourcecode:: bash
 
-  AUTHORS          doc        RELEASE_NOTES.md  utils
-  bindings         examples   scratch           utils.py
-  CHANGES.html     LICENSE    src               VERSION
-  contrib          Makefile   test.py
-  CONTRIBUTING.md  README.md  testpy.supp
+  AUTHORS        CMakeLists.txt   examples   RELEASE_NOTES.md  testpy.supp
+  bindings       contrib          LICENSE    scratch           utils
+  build-support  CONTRIBUTING.md  ns3        src               utils.py
+  CHANGES.md     doc              README.md  test.py           VERSION
 
 Change into the ``examples/tutorial`` directory.  You should see a file named
 ``first.cc`` located there.  This is a script that will create a simple
@@ -183,9 +182,9 @@ out of the way immediately.  The |ns3| project, like most large
 projects, has adopted a coding style to which all contributed code must
 adhere.  If you want to contribute your code to the project, you will
 eventually have to conform to the |ns3| coding standard as described
-in the file ``doc/codingstd.txt`` or shown on the project web page
+in the file ``doc/contributing/source/coding-style.rst`` or shown on the project web page
 `here
-<http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
+<https://www.nsnam.org/docs/contributing/html/coding-style.html>`_.
 
 We recommend that you, well, just get used to the look and feel of |ns3|
 code and adopt this standard whenever you are working with our code.  All of
@@ -194,7 +193,7 @@ grumbling.  The emacs mode line above makes it easier to get the formatting
 correct if you use the emacs editor.
 
 The |ns3| simulator is licensed using the GNU General Public
-License.  You will see the appropriate GNU legalese at the head of every file
+License version 2.  You will see the appropriate GNU legalese at the head of every file
 in the |ns3| distribution.  Often you will see a copyright notice for
 one of the institutions involved in the |ns3| project above the GPL
 text and an author listed below.
@@ -249,14 +248,14 @@ configuration.  CMake will also automatically generate a module include file to
 load all of the public header files.
 
 Since you are, of course, following this tutorial religiously, you will
-already have done a
+already have run the following command from the top-level directory:
 
 .. sourcecode:: bash
 
   $ ./ns3 configure -d debug --enable-examples --enable-tests
 
 in order to configure the project to perform debug builds that include
-examples and tests.  You will also have done a
+examples and tests.  You will also have called
 
 .. sourcecode:: bash
 
@@ -264,7 +263,7 @@ examples and tests.  You will also have done a
 
 to build the project.  So now if you look in the directory
 ``../../build/include/ns3`` you will find the four module include files shown
-above.  You can take a look at the contents of these files and find that they
+above (among many other header files).  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
 Ns3 Namespace
@@ -298,7 +297,7 @@ The next line of the script is the following,
 We will use this statement as a convenient place to talk about our Doxygen
 documentation system.  If you look at the project web site,
 `ns-3 project
-<http://www.nsnam.org>`_, you will find a link to "Documentation" in the navigation bar.  If you select this link, you will be
+<https://www.nsnam.org>`_, you will find a link to "Documentation" in the navigation bar.  If you select this link, you will be
 taken to our documentation page. There
 is a link to "Latest Release" that will take you to the documentation
 for the latest stable release of |ns3|.
@@ -825,18 +824,18 @@ Now build your first example script using ns3:
 
 .. sourcecode:: bash
 
-  $ ./ns3
+  $ ./ns3 build
 
 You should see messages reporting that your ``myfirst`` example was built
 successfully.
 
 .. sourcecode:: bash
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  [614/708] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
-  [706/708] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (2.357s)
+  Scanning dependencies of target scratch_myfirst
+  [  0%] Building CXX object scratch/CMakeFiles/scratch_myfirst.dir/myfirst.cc.o
+  [  0%] Linking CXX executable ../../build/scratch/ns3.36.1-myfirst-debug
+  Finished executing the following commands:
+  cd cmake-cache; cmake --build . -j 7 ; cd ..
 
 You can now run the example (note that if you build your program in the scratch
 directory you must run it out of the scratch directory):
@@ -849,15 +848,12 @@ You should see some output:
 
 .. sourcecode:: bash
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (0.418s)
-  Sent 1024 bytes to 10.1.1.2
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.1.2
+  At time +2s client sent 1024 bytes to 10.1.1.2 port 9
+  At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
+  At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
 
-Here you see that the build system checks to make sure that the file has been
-build and then runs it.  You see the logging component on the echo client
+Here you see the logging component on the echo client
 indicate that it has sent one 1024 byte packet to the Echo Server on
 10.1.1.2.  You also see the logging component on the echo server say that
 it has received the 1024 bytes from 10.1.1.1.  The echo server silently
@@ -869,64 +865,15 @@ Ns-3 Source Code
 
 Now that you have used some of the |ns3| helpers you may want to
 have a look at some of the source code that implements that functionality.
-The most recent code can be browsed on our web server at the following link:
-https://gitlab.com/nsnam/ns-3-dev.git.  There, you will see the Git/GitLab
-summary page for our |ns3| development tree.
 
-At the top of the page, you will see a number of links,
-
-.. sourcecode:: text
-
-  summary | shortlog | changelog | graph | tags | files
-
-Go ahead and select the ``files`` link.  This is what the top-level of
-most of our *repositories* will look:
-
-.. sourcecode:: text
-
-  drwxr-xr-x                               [up]
-  -rwxrwxrwx  12507 nov 23 23:12 AUTHORS
-  drwxrwxrwx      0 dez 30  2020 bindings
-  drwxrwxrwx   4096 nov 28 11:25 build-support
-  -rwxrwxrwx 189870 nov 28 10:13 CHANGES.html
-  -rwxrwxrwx   1490 nov 22 10:56 .clang-format
-  -rwxrwxrwx   5079 nov 28 10:50 CMakeLists.txt
-  drwxrwxrwx      0 nov 28 00:56 contrib
-  -rwxrwxrwx  18336 nov 23 23:12 CONTRIBUTING.md
-  drwxrwxrwx   4096 nov 28 11:30 doc
-  -rwxrwxrwx    564 nov 22 10:56 .editorconfig
-  drwxrwxrwx   4096 nov 28 00:28 examples
-  drwxrwxrwx   4096 nov 28 11:15 .git
-  -rwxrwxrwx     42 nov 22 10:56 .gitattributes
-  -rwxrwxrwx    395 nov 28 11:25 .gitignore
-  drwxrwxrwx   4096 nov 28 11:37 .idea
-  -rwxrwxrwx  17987 nov 22 10:56 LICENSE
-  -rwxrwxrwx   6841 nov 22 10:56 .mailmap
-  drwxrwxrwx      0 jul 13 20:15 .nompi
-  -rwxrwxrwx  31942 nov 28 11:16 ns3
-  -rwxrwxrwx   4210 nov 28 11:25 README.md
-  -rwxrwxrwx 185874 nov 28 10:13 RELEASE_NOTES.md
-  drwxrwxrwx   4096 nov 28 00:28 scratch
-  drwxrwxrwx      0 out 21 11:42 .settings
-  drwxrwxrwx   8192 nov 28 00:56 src
-  -rwxrwxrwx  83149 nov 28 11:28 test.py
-  -rwxrwxrwx    131 nov 22 10:56 testpy.supp
-  drwxrwxrwx   4096 nov 28 11:25 utils
-  -rwxrwxrwx   4227 nov 28 11:25 utils.py
-  -rwxrwxrwx      6 nov 22 10:56 VERSION
-
-Our example scripts are in the ``examples`` directory.  If you click on ``examples``
+Our example scripts are in the ``examples`` directory.  If you change to ``examples`` directory,
 you will see a list of subdirectories.  One of the files in ``tutorial`` subdirectory is ``first.cc``.  If
 you click on ``first.cc`` you will find the code you just walked through.
 
-The source code is mainly in the ``src`` directory.  You can view source
-code either by clicking on the directory name or by clicking on the ``files``
-link to the right of the directory name.  If you click on the ``src``
-directory, you will be taken to the listing of the ``src`` subdirectories.  If you
-then click on ``core`` subdirectory, you will find a list of files.  The first file
-you will find (as of this writing) is ``abort.h``.  If you click on the
-``abort.h`` link, you will be sent to the source file for ``abort.h`` which
-contains useful macros for exiting scripts if abnormal conditions are detected.
+The source code is mainly in the ``src`` directory.  The core of the simulator
+is in the ``src/core/model`` subdirectory.  The first file you will find there
+(as of this writing) is ``abort.h``.  If you open that file, you can view
+macros for exiting scripts if abnormal conditions are detected.
 
 The source code for the helpers we have used in this chapter can be found in the
 ``src/applications/helper`` directory.  Feel free to poke around in the directory tree to

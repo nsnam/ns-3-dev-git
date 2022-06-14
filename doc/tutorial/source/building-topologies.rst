@@ -335,14 +335,14 @@ the ``first.cc`` example.
   }
 
 In order to run this example, copy the ``second.cc`` example script into
-the scratch directory and use ns3 to build just as you did with
+the scratch directory and use the ``ns3`` build script to build just as you did with
 the ``first.cc`` example.  If you are in the top-level directory of the
 repository you just type,
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/second.cc scratch/mysecond.cc
-  $ ./ns3
+  $ ./ns3 build
 
 Warning:  We use the file ``second.cc`` as one of our regression tests to
 verify that it works exactly as we think it should in order to make your
@@ -351,13 +351,13 @@ tutorial experience a positive one.  This means that an executable named
 about what you are executing, please do the renaming to ``mysecond.cc``
 suggested above.
 
-If you are following the tutorial religiously (you are, aren't you) you will
+If you are following the tutorial closely, you will
 still have the NS_LOG variable set, so go ahead and clear that variable and
 run the program.
 
 .. sourcecode:: bash
 
-  $ export NS_LOG=
+  $ export NS_LOG=""
   $ ./ns3 run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in
@@ -365,12 +365,10 @@ Since we have set up the UDP echo applications to log just as we did in
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (0.415s)
-  Sent 1024 bytes to 10.1.2.4
-  Received 1024 bytes from 10.1.1.1
-  Received 1024 bytes from 10.1.2.4
+  At time +2s client sent 1024 bytes to 10.1.2.4 port 9
+  At time +2.0078s server received 1024 bytes from 10.1.1.1 port 49153
+  At time +2.0078s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +2.01761s client received 1024 bytes from 10.1.2.4 port 9
 
 Recall that the first message, "``Sent 1024 bytes to 10.1.2.4``," is the
 UDP echo client sending a packet to the server.  In this case, the server
@@ -380,7 +378,7 @@ the echo packet.  The final message, "``Received 1024 bytes from 10.1.2.4``,"
 is from the echo client, indicating that it has received its echo back from
 the server.
 
-If you now go and look in the top level directory, you will find three trace
+If you now look in the top level directory, you will find three trace
 files:
 
 .. sourcecode:: text
@@ -536,7 +534,7 @@ Finally, recall that we added the ability to control the number of CSMA devices
 in the simulation by command line argument.  You can change this argument in
 the same way as when we looked at changing the number of packets echoed in the
 ``first.cc`` example.  Try running the program with the number of "extra"
-devices set to four:
+devices set to four, instead of the default value of three (extra nodes):
 
 .. sourcecode:: bash
 
@@ -546,13 +544,10 @@ You should now see,
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (0.405s)
-  At time 2s client sent 1024 bytes to 10.1.2.5 port 9
-  At time 2.0118s server received 1024 bytes from 10.1.1.1 port 49153
-  At time 2.0118s server sent 1024 bytes to 10.1.1.1 port 49153
-  At time 2.02461s client received 1024 bytes from 10.1.2.5 port 9
+  At time +2s client sent 1024 bytes to 10.1.2.5 port 9
+  At time +2.0118s server received 1024 bytes from 10.1.1.1 port 49153
+  At time +2.0118s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +2.02461s client received 1024 bytes from 10.1.2.5 port 9
 
 Notice that the echo server has now been relocated to the last of the CSMA
 nodes, which is 10.1.2.5 instead of the default case, 10.1.2.4.
@@ -609,25 +604,36 @@ about what is going on,
 .. sourcecode:: bash
 
   $ rm *.pcap
-  $ rm *.tr
+
+On line 110, notice the following command to enable tracing on one node
+(the index 1 corresponds to the second CSMA node in the container):
+
+.. sourcecode:: bash
+
+   csma.EnablePcap ("second", csmaDevices.Get (1), true);
+
+Change the index to the quantity ``nCsma``, corresponding to the last
+node in the topology-- the node that contains the echo server:
+
+.. sourcecode:: bash
+
+   csma.EnablePcap ("second", csmaDevices.Get (nCsma), true);
 
 If you build the new script and run the simulation setting ``nCsma`` to 100,
 
 .. sourcecode:: bash
 
+  $ ./ns3 build
   $ ./ns3 run "scratch/mysecond --nCsma=100"
 
 you will see the following output:
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (0.407s)
-  At time 2s client sent 1024 bytes to 10.1.2.101 port 9
-  At time 2.0068s server received 1024 bytes from 10.1.1.1 port 49153
-  At time 2.0068s server sent 1024 bytes to 10.1.1.1 port 49153
-  At time 2.01761s client received 1024 bytes from 10.1.2.101 port 9
+  At time +2s client sent 1024 bytes to 10.1.2.101 port 9
+  At time +2.0068s server received 1024 bytes from 10.1.1.1 port 49153
+  At time +2.0068s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +2.01761s client received 1024 bytes from 10.1.2.101 port 9
 
 Note that the echo server is now located at 10.1.2.101 which corresponds to
 having 100 "extra" CSMA nodes with the echo server on the last one.  If you
@@ -635,17 +641,33 @@ list the pcap files in the top level directory you will see,
 
 .. sourcecode:: text
 
-  second-0-0.pcap  second-100-0.pcap  second-101-0.pcap
+  second-0-0.pcap  second-1-0.pcap  second-101-0.pcap
 
 The trace file ``second-0-0.pcap`` is the "leftmost" point-to-point device
 which is the echo packet source.  The file ``second-101-0.pcap`` corresponds
 to the rightmost CSMA device which is where the echo server resides.  You may
 have noticed that the final parameter on the call to enable pcap tracing on the
-echo server node was false.  This means that the trace gathered on that node
-was in non-promiscuous mode.
+echo server node was true.  This means that the trace gathered on that node
+was in promiscuous mode.
 
-To illustrate the difference between promiscuous and non-promiscuous traces, we
-also requested a non-promiscuous trace for the next-to-last node.  Go ahead and
+To illustrate the difference between promiscuous and non-promiscuous traces, 
+let's add a non-promiscuous trace for the next-to-last node.  Add the
+following line before or after the existing PCAP trace line; the last
+argument of ``false`` indicates that you would like a non-promiscuous trace:
+
+.. sourcecode:: bash
+
+   csma.EnablePcap ("second", csmaDevices.Get (nCsma - 1), false);
+
+Now build and run as before:
+
+.. sourcecode:: bash
+
+  $ rm *.pcap
+  $ ./ns3 build
+  $ ./ns3 run "scratch/mysecond --nCsma=100"
+
+This will produce a new PCAP file, ``second-100-0.pcap``.  Go ahead and
 take a look at the ``tcpdump`` for ``second-100-0.pcap``.
 
 .. sourcecode:: bash
@@ -668,7 +690,9 @@ Now take a look at the ``tcpdump`` for ``second-101-0.pcap``.
 
   $ tcpdump -nn -tt -r second-101-0.pcap
 
-You can now see that node 101 is really the participant in the echo exchange.
+Node 101 is really the participant in the echo exchange; the following trace
+will exist regardless of whether promiscuous mode is set on that PCAP
+statement.
 
 .. sourcecode:: text
 
@@ -1190,25 +1214,22 @@ Finally, we actually run the simulation, clean up and then exit the program.
 In order to run this example, you have to copy the ``third.cc`` example
 script into the scratch directory and use CMake to build just as you did with
 the ``second.cc`` example.  If you are in the top-level directory of the
-repository you would type,
+repository, type the following:
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/third.cc scratch/mythird.cc
-  $ ./ns3 run scratch/mythird
+  $ ./ns3 run 'scratch/mythird --tracing=1'
 
 Again, since we have set up the UDP echo applications just as we did in the
 ``second.cc`` script, you will see similar output.
 
 .. sourcecode:: text
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (0.407s)
-  At time 2s client sent 1024 bytes to 10.1.2.4 port 9
-  At time 2.01796s server received 1024 bytes from 10.1.3.3 port 49153
-  At time 2.01796s server sent 1024 bytes to 10.1.3.3 port 49153
-  At time 2.03364s client received 1024 bytes from 10.1.2.4 port 9
+  At time +2s client sent 1024 bytes to 10.1.2.4 port 9
+  At time +2.01624s server received 1024 bytes from 10.1.3.3 port 49153
+  At time +2.01624s server sent 1024 bytes to 10.1.3.3 port 49153
+  At time +2.02849s client received 1024 bytes from 10.1.2.4 port 9
 
 Recall that the first message, ``Sent 1024 bytes to 10.1.2.4``," is the
 UDP echo client sending a packet to the server.  In this case, the client
@@ -1218,7 +1239,8 @@ generated when it receives the echo packet.  The final message,
 "``Received 1024 bytes from 10.1.2.4``," is from the echo client, indicating
 that it has received its echo back from the server.
 
-If you now go and look in the top level directory, you will find four trace
+If you now look in the top level directory, and you enabled tracing at
+the command-line as suggested above, you will find four trace
 files from this simulation, two from node zero and two from node one:
 
 .. sourcecode:: text
@@ -1244,23 +1266,14 @@ You should see some wifi-looking contents you haven't seen here before:
 
 .. sourcecode:: text
 
-  reading from file third-0-1.pcap, link-type IEEE802_11 (802.11)
-  0.000025 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  0.000308 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000324 Acknowledgment RA:00:00:00:00:00:08
-  0.000402 Assoc Response AID(0) :: Successful
-  0.000546 Acknowledgment RA:00:00:00:00:00:0a
-  0.000721 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000737 Acknowledgment RA:00:00:00:00:00:07
-  0.000824 Assoc Response AID(0) :: Successful
-  0.000968 Acknowledgment RA:00:00:00:00:00:0a
-  0.001134 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.001150 Acknowledgment RA:00:00:00:00:00:09
-  0.001273 Assoc Response AID(0) :: Successful
-  0.001417 Acknowledgment RA:00:00:00:00:00:0a
-  0.102400 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  0.204800 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  0.307200 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
+  reading from file third-0-1.pcap, link-type IEEE802_11_RADIO (802.11 plus radiotap header)
+
+  0.033119 33119us tsft 6.0 Mb/s 5210 MHz 11a Beacon (ns-3-ssid) [6.0* 9.0 12.0* 18.0 24.0* 36.0 48.0 54.0 Mbit] ESS
+  0.120504 120504us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.120520 120520us tsft 6.0 Mb/s 5210 MHz 11a Acknowledgment RA:00:00:00:00:00:08 
+  0.120632 120632us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise CF-End RA:ff:ff:ff:ff:ff:ff 
+  0.120666 120666us tsft 6.0 Mb/s 5210 MHz 11a Assoc Response AID(1) :: Successful
+  ...
 
 You can see that the link type is now 802.11 as you would expect.  You can
 probably understand what is going on and find the IP echo request and response
@@ -1278,8 +1291,8 @@ Again, you should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-0-0.pcap, link-type PPP (PPP)
-  2.008151 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.026758 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.006440 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.025048 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is the echo packet going from left to right (from Wi-Fi to CSMA) and back
 again across the point-to-point link.
@@ -1295,8 +1308,8 @@ Again, you should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-1-0.pcap, link-type PPP (PPP)
-  2.011837 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.023072 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.010126 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.021361 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is also the echo packet going from left to right (from Wi-Fi to CSMA) and
 back again across the point-to-point link with slightly different timings
@@ -1314,12 +1327,12 @@ You should see some familiar looking contents:
 .. sourcecode:: text
 
   reading from file third-1-1.pcap, link-type EN10MB (Ethernet)
-  2.017837 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
-  2.017861 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
-  2.017861 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.022966 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
-  2.022966 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
-  2.023072 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.016126 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.016151 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
+  2.016151 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.021255 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.021255 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.021361 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This should be easily understood.  If you've forgotten, go back and look at
 the discussion in ``second.cc``.  This is the same sequence.
@@ -1395,42 +1408,41 @@ they happen.
 
 .. sourcecode:: text
 
-  'build' finished successfully (5.989s)
+  $ ./ns3 build
+  $ ./ns3 run scratch/mythird
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 10, y = 0
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.3841, y = 0.923277
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2049, y = 1.90708
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.8136, y = 1.11368
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.8452, y = 2.11318
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.9797, y = 3.10409
-  At time 2s client sent 1024 bytes to 10.1.2.4 port 9
-  At time 2.01796s server received 1024 bytes from 10.1.3.3 port 49153
-  At time 2.01796s server sent 1024 bytes to 10.1.3.3 port 49153
-  At time 2.03364s client received 1024 bytes from 10.1.2.4 port 9
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.3273, y = 4.04175
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.013, y = 4.76955
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.4317, y = 5.67771
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.4607, y = 5.91681
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.0155, y = 6.74878
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.0076, y = 6.62336
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.6285, y = 5.698
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.32, y = 4.97559
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.1134, y = 3.99715
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.8359, y = 4.68851
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 13.5953, y = 3.71789
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 12.7595, y = 4.26688
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.7629, y = 4.34913
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.2292, y = 5.19485
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2344, y = 5.09394
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.3601, y = 4.60846
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.40025, y = 4.32795
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.14292, y = 4.99761
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.08299, y = 5.99581
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.26068, y = 5.42677
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.35917, y = 6.42191
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.66805, y = 7.14466
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.71414, y = 6.84456
-  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.42489, y = 7.80181
-
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.36083, y = -0.769065
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.62346, y = 0.195831
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.42533, y = 1.17601
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.4854, y = 0.834616
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.79244, y = 1.55559
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.85546, y = 2.55361
+  At time +2s client sent 1024 bytes to 10.1.2.4 port 9
+  At time +2.01624s server received 1024 bytes from 10.1.3.3 port 49153
+  At time +2.01624s server sent 1024 bytes to 10.1.3.3 port 49153
+  At time +2.02849s client received 1024 bytes from 10.1.2.4 port 9
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.72774, y = 2.06461
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.52954, y = 2.6622
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.523, y = 2.77665
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.7054, y = 3.75987
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.143, y = 2.93301
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2355, y = 1.9373
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 11.2152, y = 1.73647
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.2379, y = 1.94864
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10.4491, y = 0.971199
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.56013, y = 1.42913
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.11607, y = 2.32513
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.22047, y = 1.88027
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.79149, y = 1.05934
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.41195, y = 0.275103
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.83369, y = -0.631617
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.15219, y = 0.100206
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.32714, y = 0.665266
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.46368, y = 0.160847
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.40394, y = -0.837367
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.96716, y = -1.73693
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.62062, y = -2.49388
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.99793, y = -1.56779
 
 Queues in ns-3
 **************
