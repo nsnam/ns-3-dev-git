@@ -650,7 +650,7 @@ have noticed that the final parameter on the call to enable pcap tracing on the
 echo server node was true.  This means that the trace gathered on that node
 was in promiscuous mode.
 
-To illustrate the difference between promiscuous and non-promiscuous traces, 
+To illustrate the difference between promiscuous and non-promiscuous traces,
 let's add a non-promiscuous trace for the next-to-last node.  Add the
 following line before or after the existing PCAP trace line; the last
 argument of ``false`` indicates that you would like a non-promiscuous trace:
@@ -1270,8 +1270,8 @@ You should see some wifi-looking contents you haven't seen here before:
 
   0.033119 33119us tsft 6.0 Mb/s 5210 MHz 11a Beacon (ns-3-ssid) [6.0* 9.0 12.0* 18.0 24.0* 36.0 48.0 54.0 Mbit] ESS
   0.120504 120504us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.120520 120520us tsft 6.0 Mb/s 5210 MHz 11a Acknowledgment RA:00:00:00:00:00:08 
-  0.120632 120632us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise CF-End RA:ff:ff:ff:ff:ff:ff 
+  0.120520 120520us tsft 6.0 Mb/s 5210 MHz 11a Acknowledgment RA:00:00:00:00:00:08
+  0.120632 120632us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise CF-End RA:ff:ff:ff:ff:ff:ff
   0.120666 120666us tsft 6.0 Mb/s 5210 MHz 11a Assoc Response AID(1) :: Successful
   ...
 

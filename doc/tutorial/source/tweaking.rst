@@ -209,10 +209,10 @@ name.
   UdpEchoClientApplication:StopApplication(0xea8e50)
   UdpEchoClientApplication:DoDispose(0xea8e50)
   UdpEchoClientApplication:~UdpEchoClient(0xea8e50)
-  
+
 You can now see all of the messages coming from the UDP echo client application
 are identified as such.  The message "Received 1024 bytes from 10.1.1.2" is
-now clearly identified as coming from the echo client application.  
+now clearly identified as coming from the echo client application.
 Also, in most log statements, you will see a hexadecimal value printed
 such as ``0xea8e50``; this is because most statements print out the value
 of the C++ ``this`` pointer, so that objects can be distinguished from
@@ -290,7 +290,7 @@ you should see the following output:
   UdpEchoServerApplication:DoDispose(0x8edfc0)
   UdpEchoClientApplication:~UdpEchoClient(0x8ee210)
   UdpEchoServerApplication:~UdpEchoServer(0x8edfc0)
-  
+
 You can see that the constructor for the UdpEchoServer was called at a
 simulation time of 0 seconds.  This is actually happening before the
 simulation starts, but the time is displayed as zero seconds.  The same is true
@@ -753,10 +753,10 @@ You should now see
   +10.000000000s UdpEchoServerApplication:StopApplication(0x836e50)
   UdpEchoServerApplication:DoDispose(0x836e50)
   UdpEchoServerApplication:~UdpEchoServer(0x836e50)
-  
-  
+
+
 You have now echoed two packets.  Pretty easy, isn't it?
-  
+
 You can see that if you are an |ns3| user, you can use the command
 line argument system to control global values and ``Attributes``.  If you are
 a model author, you can add new ``Attributes`` to your ``Objects`` and
