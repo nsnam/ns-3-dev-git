@@ -185,6 +185,10 @@ LrWpanMac::LrWpanMac ()
   m_beaconTrackingOn = false;
   m_numLostBeacons = 0;
 
+  m_pendPrimitive = MLME_NONE;
+  m_channelScanIndex = 0;
+  m_maxEnergyLevel = 0;
+
 
   Ptr<UniformRandomVariable> uniformVar = CreateObject<UniformRandomVariable> ();
   uniformVar->SetAttribute ("Min", DoubleValue (0.0));
@@ -607,6 +611,67 @@ LrWpanMac::MlmeStartRequest (MlmeStartRequestParams params)
     }
 }
 
+void
+LrWpanMac::MlmeScanRequest (MlmeScanRequestParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  MlmeScanConfirmParams confirmParams;
+  confirmParams.m_scanType = params.m_scanType;
+  confirmParams.m_chPage = params.m_chPage;
+
+  if (m_scanEvent.IsRunning () || m_scanEnergyEvent.IsRunning ())
+    {
+      if (!m_mlmeScanConfirmCallback.IsNull ())
+        {
+          confirmParams.m_status = MLMESCAN_SCAN_IN_PROGRESS;
+          m_mlmeScanConfirmCallback (confirmParams);
+        }
+      NS_LOG_ERROR (this << " A channel scan is already in progress");
+      return;
+    }
+
+  if (params.m_scanDuration > 14 || params.m_scanType > MLMESCAN_PASSIVE)
+    {
+      if (!m_mlmeScanConfirmCallback.IsNull ())
+        {
+          confirmParams.m_status = MLMESCAN_INVALID_PARAMETER;
+          m_mlmeScanConfirmCallback (confirmParams);
+        }
+      NS_LOG_ERROR (this << "Invalid scan duration or unsupported scan type");
+      return;
+    }
+  // Temporary store macPanId and set macPanId to 0xFFFF to accept all beacons.
+  m_macPanIdScan = m_macPanId;
+  m_macPanId = 0xFFFF;
+
+
+  m_panDescriptorList.clear ();
+  m_energyDetectList.clear ();
+
+  //TODO: stop beacon transmission
+
+  // Cancel any ongoing CSMA/CA operations and set to unslotted mode for scan
+  m_csmaCa->Cancel ();
+  m_capEvent.Cancel ();
+  m_cfpEvent.Cancel ();
+  m_incCapEvent.Cancel ();
+  m_incCfpEvent.Cancel ();
+  m_trackingEvent.Cancel ();
+  m_csmaCa->SetUnSlottedCsmaCa ();
+
+
+  m_channelScanIndex = 0;
+
+  // Mark primitive as pending and save the scan params while the new page and/or channel is set.
+  m_scanParams = params;
+  m_pendPrimitive = MLME_SCAN_REQ;
+
+  LrWpanPhyPibAttributes pibAttr;
+  pibAttr.phyCurrentPage = params.m_chPage;
+  m_phy->PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier::phyCurrentPage,&pibAttr);
+
+}
 
 void
 LrWpanMac::MlmeSyncRequest (MlmeSyncRequestParams params)
@@ -719,6 +784,59 @@ LrWpanMac::SendOneBeacon ()
   m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_TX_ON);
 }
 
+void
+LrWpanMac::EndChannelEnergyScan ()
+{
+  // Add the results of channel energy scan to the detectList
+  m_energyDetectList.push_back (m_maxEnergyLevel);
+  m_maxEnergyLevel = 0;
+
+  m_channelScanIndex++;
+
+  bool channelFound = false;
+  for (int i = m_channelScanIndex; i <= 26; i++)
+    {
+      if ((m_scanParams.m_scanChannels & (1 << m_channelScanIndex)) != 0)
+        {
+          channelFound = true;
+          break;
+        }
+      m_channelScanIndex++;
+    }
+
+  if (channelFound)
+    {
+      //switch to the next channel in the list and restart scan
+      LrWpanPhyPibAttributes pibAttr;
+      pibAttr.phyCurrentChannel = m_channelScanIndex;
+      m_phy->PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier::phyCurrentChannel,&pibAttr);
+    }
+  else
+    {
+      // Scan on all channels on the list completed
+      // Return to the MAC values previous to start of the first scan.
+      m_macPanId = m_macPanIdScan;
+      m_macPanIdScan = 0;
+
+      // TODO: restart beacon transmissions that were active before the beginning of the scan
+      // (i.e when a coordinator perform a scan and it was already transmitting beacons)
+
+      // All channels scanned, report success
+      if (!m_mlmeScanConfirmCallback.IsNull ())
+        {
+          MlmeScanConfirmParams confirmParams;
+          confirmParams.m_status = MLMESCAN_SUCCESS;
+          confirmParams.m_chPage = m_phy->GetCurrentPage ();
+          confirmParams.m_scanType = m_scanParams.m_scanType;
+          confirmParams.m_energyDetList = m_energyDetectList;
+          m_mlmeScanConfirmCallback (confirmParams);
+        }
+      m_pendPrimitive = MLME_NONE;
+      m_channelScanIndex = 0;
+      m_scanParams = {};
+
+    }
+}
 
 void
 LrWpanMac::StartCAP (SuperframeType superframeType)
@@ -998,6 +1116,12 @@ LrWpanMac::SetMlmeStartConfirmCallback (MlmeStartConfirmCallback c)
 }
 
 void
+LrWpanMac::SetMlmeScanConfirmCallback (MlmeScanConfirmCallback c)
+{
+  m_mlmeScanConfirmCallback = c;
+}
+
+void
 LrWpanMac::SetMlmeBeaconNotifyIndicationCallback (MlmeBeaconNotifyIndicationCallback c)
 {
   m_mlmeBeaconNotifyIndicationCallback = c;
@@ -1028,7 +1152,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
   // level 2 filtering if promiscuous mode pass frame to higher layer otherwise perform level 3 filtering
   // level 3 filtering accept frame
   // if Frame type and version is not reserved, and
-  // if there is a dstPanId then dstPanId=m_macPanId or broadcastPanI, and
+  // if there is a dstPanId then dstPanId=m_macPanId or broadcastPanId, and
   // if there is a shortDstAddr then shortDstAddr =shortMacAddr or broadcastAddr, and
   // if beacon frame then srcPanId = m_macPanId
   // if only srcAddr field in Data or Command frame,accept frame if srcPanId=m_macPanId
@@ -1126,8 +1250,21 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
           if (acceptFrame
               && (receivedMacHdr.GetDstAddrMode () > 1))
             {
-              acceptFrame = receivedMacHdr.GetDstPanId () == m_macPanId
-                || receivedMacHdr.GetDstPanId () == 0xffff;
+              // Accept frame if:
+
+              // 1) Have the same macPanId
+              // 2) Or is Message to all PANs
+              // 3) Or Is a beacon and the macPanId is not present (bootstrap)
+              acceptFrame = (receivedMacHdr.GetDstPanId () == m_macPanId || receivedMacHdr.GetDstPanId () == 0xffff)
+                || (m_macPanId == 0xffff && receivedMacHdr.IsBeacon ());
+            }
+
+          if (acceptFrame
+              && (receivedMacHdr.GetShortDstAddr () == Mac16Address ("FF:FF")))
+            {
+              // A broadcast message (e.g. beacons) should not be received by the device who issues it.
+              acceptFrame = (receivedMacHdr.GetShortSrcAddr () != GetShortAddress ());
+              // TODO: shouldn't this be filtered by the PHY?
             }
 
           if (acceptFrame
@@ -1175,6 +1312,12 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 {
                   acceptFrame = receivedMacHdr.GetSrcPanId () == m_macPanId;
                 }
+            }
+
+          // Energy Scan is running, reject any frames
+          if (m_scanEnergyEvent.IsRunning ())
+            {
+              acceptFrame = false;
             }
 
           if (acceptFrame
@@ -1660,6 +1803,15 @@ LrWpanMac::PlmeEdConfirm (LrWpanPhyEnumeration status, uint8_t energyLevel)
 {
   NS_LOG_FUNCTION (this << status << energyLevel);
 
+  if (energyLevel > m_maxEnergyLevel)
+    {
+      m_maxEnergyLevel = energyLevel;
+    }
+
+  if (Simulator::GetDelayLeft (m_scanEnergyEvent) > Seconds (8.0 / m_phy->GetDataOrSymbolRate (false)))
+    {
+      m_phy->PlmeEdRequest ();
+    }
 }
 
 void
@@ -1694,7 +1846,12 @@ LrWpanMac::PlmeSetTRXStateConfirm (LrWpanPhyEnumeration status)
     {
       NS_ASSERT (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS || status == IEEE_802_15_4_PHY_TRX_OFF);
 
-      if (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS)
+      if (status == IEEE_802_15_4_PHY_RX_ON && m_scanEnergyEvent.IsRunning ())
+        {
+          // Kick start Energy Detection Scan
+          m_phy->PlmeEdRequest ();
+        }
+      else if (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS)
         {
           // Check if there is not messages to transmit when going idle
           CheckQueue ();
@@ -1719,6 +1876,82 @@ LrWpanMac::PlmeSetAttributeConfirm (LrWpanPhyEnumeration status,
                                     LrWpanPibAttributeIdentifier id)
 {
   NS_LOG_FUNCTION (this << status << id);
+  if (id == LrWpanPibAttributeIdentifier::phyCurrentPage && m_pendPrimitive == MLME_SCAN_REQ )
+    {
+      if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
+        {
+          // get the first channel to scan from scan channel list
+          bool channelFound = false;
+          for (int i = m_channelScanIndex; i <= 26; i++)
+            {
+              if ((m_scanParams.m_scanChannels & (1 << m_channelScanIndex)) != 0)
+                {
+                  channelFound = true;
+                  break;
+                }
+              m_channelScanIndex++;
+            }
+
+          if (channelFound)
+            {
+              LrWpanPhyPibAttributes pibAttr;
+              pibAttr.phyCurrentChannel = m_channelScanIndex;
+              m_phy->PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier::phyCurrentChannel,&pibAttr);
+            }
+        }
+      else
+        {
+          if (!m_mlmeScanConfirmCallback.IsNull ())
+            {
+              MlmeScanConfirmParams confirmParams;
+              confirmParams.m_scanType = m_scanParams.m_scanType;
+              confirmParams.m_chPage = m_scanParams.m_chPage;
+              confirmParams.m_status = MLMESCAN_INVALID_PARAMETER;
+              m_mlmeScanConfirmCallback (confirmParams);
+            }
+          NS_LOG_ERROR (this << "Channel Scan: Invalid channel page");
+        }
+    }
+  else if (id == LrWpanPibAttributeIdentifier::phyCurrentChannel && m_pendPrimitive == MLME_SCAN_REQ)
+    {
+      if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
+        {
+          uint64_t symbolRate = static_cast<uint64_t> (m_phy->GetDataOrSymbolRate (false));
+          uint64_t scanDuration = aBaseSuperframeDuration * ((static_cast<uint32_t> (1 << m_scanParams.m_scanDuration)) + 1);
+          Time nextScanTime = Seconds (static_cast<double> (scanDuration / symbolRate));
+
+          switch (m_scanParams.m_scanType)
+            {
+              case MLMESCAN_ED:
+                m_maxEnergyLevel = 0;
+                m_scanEnergyEvent = Simulator::Schedule (nextScanTime, &LrWpanMac::EndChannelEnergyScan, this);
+                // set phy to RX_ON and kick start  the first PLME-ED.request
+                m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_RX_ON);
+                break;
+              case MLMESCAN_ACTIVE:
+                // TODO: add active scan support
+                break;
+              case MLMESCAN_PASSIVE:
+                // TODO: add passive scan support
+                break;
+              case MLMESCAN_ORPHAN:
+                // TODO: add orphan scan support
+                break;
+            }
+        }
+      else
+        {
+          if (!m_mlmeScanConfirmCallback.IsNull ())
+            {
+              MlmeScanConfirmParams confirmParams;
+              confirmParams.m_scanType = m_scanParams.m_scanType;
+              confirmParams.m_chPage = m_scanParams.m_chPage;
+              confirmParams.m_status = MLMESCAN_INVALID_PARAMETER;
+              m_mlmeScanConfirmCallback (confirmParams);
+            }
+          NS_LOG_ERROR ("Channel " << m_channelScanIndex << " could not be set in the current page");
+        }
+    }
 }
 
 void

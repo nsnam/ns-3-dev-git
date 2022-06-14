@@ -3,6 +3,7 @@ set(base_examples
     lr-wpan-mlme
     lr-wpan-packet-print
     lr-wpan-phy-test
+    lr-wpan-ed-scan
 )
 
 foreach(

@@ -104,6 +104,19 @@ typedef enum
   INCOMING = 1    //!< Incoming Superframe
 } SuperframeType;
 
+/**
+ * \ingroup lr-wpan
+ *
+ * Indicates a pending MAC primitive
+ */
+typedef enum
+{
+  MLME_NONE =        0, //!< No pending primitive
+  MLME_START_REQ =   1, //!< Pending MLME-START.request primitive
+  MLME_SCAN_REQ  =   2, //!< Pending MLME-SCAN.request primitive
+  MLME_ASSOC_REQ =   3, //!< Pending MLME-ASSOCIATION.request primitive
+  MLME_SYNC_REQ  =   4  //!< Pending MLME-SYNC.request primitive
+} PendingPrimitiveStatus;
 
 namespace TracedValueCallback {
 
@@ -159,6 +172,19 @@ typedef enum
 /**
  * \ingroup lr-wpan
  *
+ * Table 30 of IEEE 802.15.4-2011
+ */
+typedef enum
+{
+  MLMESCAN_ED  = 0x00,
+  MLMESCAN_ACTIVE = 0x01,
+  MLMESCAN_PASSIVE = 0x02,
+  MLMESCAN_ORPHAN = 0x03
+} LrWpanMlmeScanType;
+
+/**
+ * \ingroup lr-wpan
+ *
  * Table 42 of 802.15.4-2006
  */
 typedef enum
@@ -195,6 +221,24 @@ typedef enum
   MLMESTART_UNSUPPORTED_SECURITY   = 8,
   MLMESTART_CHANNEL_ACCESS_FAILURE = 9
 } LrWpanMlmeStartConfirmStatus;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * Table 31 of IEEE 802.15.4-2011
+ */
+typedef enum
+{
+  MLMESCAN_SUCCESS                = 0,
+  MLMESCAN_LIMIT_REACHED          = 1,
+  MLMESCAN_NO_BEACON              = 2,
+  MLMESCAN_SCAN_IN_PROGRESS       = 3,
+  MLMESCAN_COUNTER_ERROR          = 4,
+  MLMESCAN_FRAME_TOO_LONG         = 5,
+  MLMESCAN_UNAVAILABLE_KEY        = 6,
+  MLMESCAN_UNSUPPORTED_SECURITY   = 7,
+  MLMESCAN_INVALID_PARAMETER      = 8
+} LrWpanMlmeScanConfirmStatus;
 
 /**
  * \ingroup lr-wpan
@@ -364,6 +408,32 @@ struct MlmePollRequestParams
 /**
  * \ingroup lr-wpan
  *
+ * MLME-SCAN.request params. See IEEE 802.15.4-2011  Section 6.2.10.1 Table 30
+ */
+struct MlmeScanRequestParams
+{
+  LrWpanMlmeScanType m_scanType {};    //!< Indicates the type of scan performed as described in IEEE 802.15.4-2011 (5.1.2.1).
+  uint32_t m_scanChannels {0x7FFFFFF}; //!< The channel numbers to be scanned.
+  uint8_t m_scanDuration {14};         //!< A value used to calculate the length of time to spend scanning [aBaseSuperframeDuration * (2^m_scanDuration +)].
+  uint32_t m_chPage;                   //!< The channel page on which to perform scan.
+};
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-SCAN.confirm params. See IEEE 802.15.4-2011 Section 6.2.10.2
+ */
+struct MlmeScanConfirmParams
+{
+  LrWpanMlmeScanConfirmStatus m_status;        //!< The status of the scan request.
+  LrWpanMlmeScanType m_scanType;               //!< Indicates the type of scan performed (ED,ACTIVE,PASSIVE,ORPHAN).
+  uint32_t m_chPage;                           //!< The channel page on which the scan was performed.
+  std::vector <uint8_t> m_unscannedCh;         //!< A list of channels given in the request which were not scanned (Not valid for ED scans).
+  std::vector <uint8_t> m_energyDetList;       //!< A list of energy measurements, one for each channel searched during ED scan (Not valid for Active, Passive or Orphan Scans)
+  std::vector <PanDescriptor> m_panDescList;   //!< A list of PAN descriptor, one for each beacon found (Not valid for ED and Orphan scans).
+};
+/**
+ * \ingroup lr-wpan
+ *
  * MLME-START.confirm params. See  802.15.4-2011   Section 6.2.12.2
  */
 struct MlmeStartConfirmParams
@@ -459,6 +529,13 @@ typedef Callback<void, MlmeSyncLossIndicationParams> MlmeSyncLossIndicationCallb
  * transmission request
  */
 typedef Callback<void, MlmePollConfirmParams> MlmePollConfirmCallback;
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a MlmeScanRequest has been called from
+ * the higher layer.  It returns a status of the outcome of the scan.
+ */
+typedef Callback<void, MlmeScanConfirmParams> MlmeScanConfirmCallback;
 /**
  * \ingroup lr-wpan
  *
@@ -582,6 +659,14 @@ public:
    */
   void MlmeStartRequest (MlmeStartRequestParams params);
   /**
+    *  IEEE 802.15.4-2011, section 6.2.10.1
+    *  MLME-SCAN.request
+    *  Request primitive used to initiate a channel scan over a given list of channels.
+    *
+    *  \param params the scan request parameters
+    */
+  void MlmeScanRequest (MlmeScanRequestParams params);
+  /**
    *  IEEE 802.15.4-2011, section 6.2.13.1
    *  MLME-SYNC.request
    *  Request to synchronize with the coordinator by acquiring and,
@@ -640,6 +725,14 @@ public:
     * \param c the callback
     */
   void SetMlmeStartConfirmCallback (MlmeStartConfirmCallback c);
+  /**
+    * Set the callback for the confirmation of a data transmission request.
+    * The callback implements MLME-SCAN.confirm SAP of IEEE 802.15.4-2011,
+    * section 6.2.10.2.
+    *
+    * \param c the callback
+    */
+  void SetMlmeScanConfirmCallback (MlmeScanConfirmCallback c);
   /**
    * Set the callback for the indication of an incoming beacon packet.
    * The callback implements MLME-BEACON-NOTIFY.indication SAP of IEEE 802.15.4-2011,
@@ -837,6 +930,11 @@ public:
    */
   uint16_t m_macPanId;
   /**
+   * Temporally stores the value of the current m_macPanId when a MLME-SCAN.request is performed.
+   * See IEEE 802.15.4-2011, section 5.1.2.1.2.
+   */
+  uint16_t m_macPanIdScan;
+  /**
    * Sequence number added to transmitted data or MAC command frame, 00-ff.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
@@ -875,6 +973,10 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   bool m_macAutoRequest;
+  /**
+   * The maximum energy level detected during ED scan on the current channel.
+   */
+  uint8_t m_maxEnergyLevel;
   /**
    * The value of the necessary InterFrame Space after the transmission of a packet.
    */
@@ -1021,6 +1123,10 @@ private:
    * Called to send a single beacon frame.
    */
   void SendOneBeacon (void);
+  /**
+   * Called at the end of one ED channel scan.
+   */
+  void EndChannelEnergyScan (void);
   /**
    * Called to begin the Contention Free Period (CFP) in a
    * beacon-enabled mode.
@@ -1257,6 +1363,12 @@ private:
    */
   MlmeSyncLossIndicationCallback m_mlmeSyncLossIndicationCallback;
   /**
+   * This callback is used to report the result of a scan on a group of channels for the
+   * selected channel page.
+   * See IEEE 802.15.4-2011, section 6.2.10.2.
+   */
+  MlmeScanConfirmCallback m_mlmeScanConfirmCallback;
+  /**
    * This callback is used to report the status after a device send data command request to
    * the coordinator to transmit data.
    * See IEEE 802.15.4-2011, section 6.2.14.2.
@@ -1319,6 +1431,28 @@ private:
    */
   std::deque<IndTxQueueElement*> m_indTxQueue;
   /**
+   * The list of PAN descriptors accumulated during channel scans, used to select a PAN to associate.
+   */
+  std::vector<PanDescriptor> m_panDescriptorList;
+  /**
+   * The list of energy measurements, one for each channel searched during an ED scan.
+   */
+  std::vector<uint8_t> m_energyDetectList;
+  /**
+   * The parameters used during a MLME-SCAN.request. These parameters are stored here while
+   * PLME-SET operations (set channel page, set channel number) and multiple ed scans take place.
+   */
+  MlmeScanRequestParams m_scanParams;
+  /**
+   * The channel list index used to obtain the current scanned channel.
+   */
+  uint16_t m_channelScanIndex;
+  /**
+   * Indicates the pending primitive when PLME.SET operation (page or channel switch) is called from
+   * within another MLME primitive (e.g. Association, Scan, Sync, Start).
+   */
+  PendingPrimitiveStatus m_pendPrimitive;
+  /**
    * The number of already used retransmission for the currently transmitted
    * packet.
    */
@@ -1364,6 +1498,14 @@ private:
    * Scheduler event to track the incoming beacons.
    */
   EventId m_trackingEvent;
+  /**
+   * Scheduler event for the end of a channel scan.
+   */
+  EventId m_scanEvent;
+  /**
+   * Scheduler event for the end of a ED channel scan.
+   */
+  EventId m_scanEnergyEvent;
 };
 } // namespace ns3
 

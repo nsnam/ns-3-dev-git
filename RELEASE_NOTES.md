@@ -17,6 +17,7 @@ Release 3-dev
 - (lr-wpan) !959 - Add PHY channel page support
 - (lr-wpan) Adds PAN descriptor, CommandPayload Header and Capability Field
 - (wifi) !984 - MultiUserScheduler can request channel access periodically
+- (lr-wpan) !991 - Adds MAC ED scan support
 
 ### Bugs fixed
 

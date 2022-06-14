@@ -100,6 +100,8 @@ MAC Primitives
 * MCPS-DATA.Indication
 * MLME-START.Request
 * MLME-START.Confirm
+* MLME-SCAN.Request
+* MLME-SCAN.Confirm
 
 PHY Primitives
 ++++++++++++++
@@ -134,6 +136,26 @@ section 7.5.1.4 is supported. Frame reception and rejection according to
 Std 802.15.4-2006, section 7.5.6.2 is supported, including acknowledgements.
 Only short addressing completely implemented. Various trace sources are
 supported, and trace sources can be hooked to sinks.
+
+The implemented ns-3 MAC supports scanning. Typically, a scanning request is preceded
+by an association request but these can be used independently.
+IEEE 802.15.4 supports 4 types of scanning:
+
+* Energy Detection (ED) Scan: In an energy scan, a device or a coordinator scan a set number of channels
+looking for traces of energy. The maximum energy registered during a given amount of time is stored.
+Energy scan is typically used to measure the quality of a channel at any given time. For this reason,
+coordinators often use this scan before initiating a PAN on a channel.
+
+* Active Scan: <Not supported by ns-3>
+
+* Passive Scan: <Not supported by ns-3>
+
+* Orphan Scan: <Not supported by ns-3>
+
+In active and passive scans, the link quality indicator (LQI) is the main parameter used to
+determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality
+link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
+
 
 PHY
 ###
@@ -294,6 +316,7 @@ The following examples have been written, which can be found in ``src/lr-wpan/ex
 * ``lr-wpan-error-model-plot.cc``:  An example to test the phy.
 * ``lr-wpan-packet-print.cc``:  An example to print out the MAC header fields.
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
+* ``lr-wpan-ed-scan.cc``:  Simple example showing the use of energy detection (ED) scan in the MAC.
 
 In particular, the module enables a very simplified end-to-end data
 transfer scenario, implemented in ``lr-wpan-data.cc``.  The figure
