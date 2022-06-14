@@ -1960,18 +1960,13 @@ function(find_external_library)
     list(APPEND parent_dirs ${libdir} ${parent_libdir} ${parent_parent_libdir})
   endforeach()
 
-  # If we already found a library somewhere, limit the search paths for the
-  # header
-  if(parent_dirs)
-    set(header_search_paths ${parent_dirs})
-    set(header_skip_system_prefix NO_CMAKE_SYSTEM_PATH)
-  else()
-    set(header_search_paths
-        ${search_paths} ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in
-                                                  # ns-3-dev/build
-        ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
-    )
-  endif()
+  set(header_search_paths
+      ${parent_dirs}
+      ${search_paths}
+      ${CMAKE_OUTPUT_DIRECTORY} # Search for headers in
+      # ns-3-dev/build
+      ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
+  )
 
   set(not_found_headers)
   set(include_dirs)
