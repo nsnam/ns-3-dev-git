@@ -1293,7 +1293,7 @@ macro(process_options)
     file(RENAME ${netanim_SOURCE_DIR}/netanim-cmakelists.cmake
          ${netanim_SOURCE_DIR}/CMakeLists.txt
     )
-    add_subdirectory(${netanim_SOURCE_DIR})
+    add_subdirectory(${netanim_SOURCE_DIR} ${netanim_BINARY_DIR})
   endif()
 endmacro()
 
