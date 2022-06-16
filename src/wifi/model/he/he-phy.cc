@@ -677,48 +677,64 @@ HePhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
   return true;
 }
 
-void
+Time
 HePhy::DoStartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   const WifiTxVector& txVector = event->GetTxVector ();
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-  if (txVector.IsUlMu ())
+  if (!txVector.IsUlMu ())
     {
-      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
-      bool isAp = (DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()) != 0);
-      if (!isAp)
+      return PhyEntity::DoStartReceivePayload (event);
+    }
+
+  NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+  // TX duration is determined by the Length field of TXVECTOR
+  Time payloadDuration = ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (),
+                                                              txVector,
+                                                              m_wifiPhy->GetPhyBand ())
+                          - CalculatePhyPreambleAndHeaderDuration (txVector);
+  // This method is called when we start receiving the first OFDMA payload. To
+  // compute the time to the reception end of the last TB PPDU, we need to add the
+  // offset of the last TB PPDU to the payload duration (same for all TB PPDUs)
+  Time maxOffset {0};
+  for (const auto& beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
+    {
+      maxOffset = Max (maxOffset, Simulator::GetDelayLeft (beginOfdmaPayloadRxEvent.second));
+    }
+  Time timeToEndRx = payloadDuration + maxOffset;
+
+  bool isAp = (DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()) != 0);
+  if (!isAp)
+    {
+      NS_LOG_DEBUG ("Ignore HE TB PPDU payload received by STA but keep state in Rx");
+      NotifyPayloadBegin (txVector, timeToEndRx);
+      m_endRxPayloadEvents.push_back (Simulator::Schedule (timeToEndRx,
+                                                            &PhyEntity::ResetReceive, this, event));
+      //Cancel all scheduled events for OFDMA payload reception
+      NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty () && m_beginOfdmaPayloadRxEvents.begin ()->second.IsRunning ());
+      for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
         {
-          NS_LOG_DEBUG ("Ignore HE TB PPDU payload received by STA but keep state in Rx");
-          m_endRxPayloadEvents.push_back (Simulator::Schedule (ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector),
-                                                               &PhyEntity::ResetReceive, this, event));
-          //Cancel all scheduled events for OFDMA payload reception
-          NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty () && m_beginOfdmaPayloadRxEvents.begin ()->second.IsRunning ());
-          for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
-            {
-              beginOfdmaPayloadRxEvent.second.Cancel ();
-            }
-          m_beginOfdmaPayloadRxEvents.clear ();
+          beginOfdmaPayloadRxEvent.second.Cancel ();
         }
-      else
-        {
-          NS_LOG_DEBUG ("Receiving PSDU in HE TB PPDU");
-          uint16_t staId = GetStaId (ppdu);
-          m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
-          m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
-          //for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by StartReceiveOfdmaPayload
-          NS_ASSERT (isAp);
-          NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty ());
-          for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
-            {
-              NS_ASSERT (beginOfdmaPayloadRxEvent.second.IsRunning ());
-            }
-        }
+      m_beginOfdmaPayloadRxEvents.clear ();
     }
   else
     {
-      PhyEntity::DoStartReceivePayload (event);
+      NS_LOG_DEBUG ("Receiving PSDU in HE TB PPDU");
+      uint16_t staId = GetStaId (ppdu);
+      m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
+      m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
+      //for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by StartReceiveOfdmaPayload
+      NS_ASSERT (isAp);
+      NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty ());
+      for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
+        {
+          NS_ASSERT (beginOfdmaPayloadRxEvent.second.IsRunning ());
+        }
     }
+
+  return timeToEndRx;
 }
 
 void

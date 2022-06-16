@@ -386,7 +386,7 @@ protected:
   PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
-  void DoStartReceivePayload (Ptr<Event> event) override;
+  Time DoStartReceivePayload (Ptr<Event> event) override;
   std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const override;
   void RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                    const WifiTxVector& txVector, uint16_t staId,

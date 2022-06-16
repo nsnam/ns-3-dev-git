@@ -502,8 +502,7 @@ void
 WifiPhyStateHelper::SwitchFromRxEndOk (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
-  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
+  NS_ASSERT (m_endRx == Simulator::Now ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
 }
@@ -512,8 +511,7 @@ void
 WifiPhyStateHelper::SwitchFromRxEndError (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
-  //TODO: a better fix would be to call the function once all HE TB PPDUs are received
+  NS_ASSERT (m_endRx == Simulator::Now ());
   NotifyRxEndError ();
   DoSwitchFromRx ();
 }

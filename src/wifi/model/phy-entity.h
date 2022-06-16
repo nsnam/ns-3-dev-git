@@ -560,8 +560,9 @@ protected:
    * and perform amendment-specific actions.
    *
    * \param event the event holding incoming PPDU's information
+   * \return the payload duration
    */
-  virtual void DoStartReceivePayload (Ptr<Event> event);
+  virtual Time DoStartReceivePayload (Ptr<Event> event);
 
   /**
    * Perform amendment-specific actions before resetting PHY at

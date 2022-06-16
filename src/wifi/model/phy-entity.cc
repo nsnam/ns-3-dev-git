@@ -529,17 +529,12 @@ PhyEntity::StartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   NS_ASSERT (m_wifiPhy->m_endPhyRxEvent.IsExpired ());
-  const WifiTxVector& txVector = event->GetTxVector ();
-  Time payloadDuration = event->GetPpdu ()->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
 
-  //TODO: Add method in WifiPhy to clear all other PHYs (since this one is starting Rx)
+  Time payloadDuration = DoStartReceivePayload (event);
   m_state->SwitchToRx (payloadDuration);
-  m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been correctly decoded and that the mode within is supported
-
-  DoStartReceivePayload (event);
 }
 
-void
+Time
 PhyEntity::DoStartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
@@ -549,8 +544,12 @@ PhyEntity::DoStartReceivePayload (Ptr<Event> event)
   m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
   m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
   ScheduleEndOfMpdus (event);
-  m_endRxPayloadEvents.push_back (Simulator::Schedule (ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (event->GetTxVector ()),
+  const WifiTxVector& txVector = event->GetTxVector ();
+  Time payloadDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been correctly decoded and that the mode within is supported
+  m_endRxPayloadEvents.push_back (Simulator::Schedule (payloadDuration,
                                                        &PhyEntity::EndReceivePayload, this, event));
+  return payloadDuration;
 }
 
 void
