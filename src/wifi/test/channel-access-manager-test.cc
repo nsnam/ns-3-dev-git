@@ -1265,8 +1265,7 @@ private:
 };
 
 LargestIdlePrimaryChannelTest::LargestIdlePrimaryChannelTest ()
-  : TestCase ("Check calculation of the largest idle primary channel"),
-    m_cam (CreateObject<ChannelAccessManager> ())
+  : TestCase ("Check calculation of the largest idle primary channel")
 {
 }
 
@@ -1401,6 +1400,7 @@ LargestIdlePrimaryChannelTest::RunOne (uint16_t chWidth, WifiChannelListType bus
 void
 LargestIdlePrimaryChannelTest::DoRun ()
 {
+  m_cam = CreateObject<ChannelAccessManager> ();
   uint16_t delay = 0;
   uint8_t channel = 0;
   std::list<WifiChannelListType> busyChannels;
@@ -1415,7 +1415,11 @@ LargestIdlePrimaryChannelTest::DoRun ()
                               [this, chWidth, busyChannel]()
                               {
                                 // reset PHY
-                                m_cam->RemovePhyListener (m_phy);
+                                if (m_phy)
+                                  {
+                                    m_cam->RemovePhyListener (m_phy);
+                                    m_phy->Dispose ();
+                                  }
                                 // create a new PHY operating on a channel of the current width
                                 m_phy = CreateObject<SpectrumWifiPhy> ();
                                 m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {0, chWidth,
@@ -1433,6 +1437,9 @@ LargestIdlePrimaryChannelTest::DoRun ()
     }
 
   Simulator::Run ();
+  m_cam->RemovePhyListener (m_phy);
+  m_phy->Dispose ();
+  m_cam->Dispose ();
   Simulator::Destroy ();
 }
 
