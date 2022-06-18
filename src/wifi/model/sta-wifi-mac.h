@@ -36,6 +36,39 @@ namespace ns3  {
 class SupportedRates;
 class CapabilityInformation;
 
+/**
+ * \ingroup wifi
+ *
+ * Structure holding scan parameters
+ */
+struct WifiScanParams
+{
+  /**
+   * Struct identifying a channel to scan.
+   * A channel number equal to zero indicates to scan all the channels;
+   * an unspecified band (WIFI_PHY_BAND_UNSPECIFIED) indicates to scan
+   * all the supported PHY bands.
+   */
+  struct Channel
+  {
+    uint16_t number {0};                           ///< channel number
+    WifiPhyBand band {WIFI_PHY_BAND_UNSPECIFIED};  ///< PHY band
+  };
+
+  /// typedef for a list of channels
+  using ChannelList = std::list<Channel>;
+
+  enum : uint8_t
+  {
+    ACTIVE = 0,
+    PASSIVE
+  } type;                               ///< indicates either active or passive scanning
+  Ssid ssid;                            ///< desired SSID or wildcard SSID
+  std::vector<ChannelList> channelList; ///< list of channels to scan, for each link
+  Time probeDelay;                      ///< delay prior to transmitting a Probe Request
+  Time minChannelTime;                  ///< minimum time to spend on each channel
+  Time maxChannelTime;                  ///< maximum time to spend on each channel
+};
 
 /**
  * \ingroup wifi
@@ -99,11 +132,12 @@ public:
   */
   struct ApInfo
   {
-    Mac48Address m_bssid;        ///< BSSID
-    Mac48Address m_apAddr;       ///< AP MAC address
-    double m_snr;                ///< SNR in linear scale
-    MgtFrameType m_frame;        ///< The body of the management frame used to update AP info
-    uint8_t m_linkId;            ///< ID of the link used to communicate with the AP
+    Mac48Address m_bssid;              ///< BSSID
+    Mac48Address m_apAddr;             ///< AP MAC address
+    double m_snr;                      ///< SNR in linear scale
+    MgtFrameType m_frame;              ///< The body of the management frame used to update AP info
+    WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
+    uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
   };
 
   /**
