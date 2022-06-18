@@ -66,7 +66,7 @@
  *
  * Type: integer
  */
-#cmakedefine NS3_VERSION_MAJOR @NS3_VERSION_MAJOR@
+#define NS3_VERSION_MAJOR @NS3_VERSION_MAJOR@
 
 /**
  * The minor version extracted from #NS3_VERSION_TAG
@@ -76,7 +76,7 @@
  *
  * Type: integer
  */
-#cmakedefine NS3_VERSION_MINOR @NS3_VERSION_MINOR@
+#define NS3_VERSION_MINOR @NS3_VERSION_MINOR@
 
 /**
  * The patch number extracted from #NS3_VERSION_TAG
@@ -89,7 +89,7 @@
  *
  * Type: integer
  */
-#cmakedefine NS3_VERSION_PATCH @NS3_VERSION_PATCH@
+#define NS3_VERSION_PATCH @NS3_VERSION_PATCH@
 
 /**
  * The portion of the #NS3_VERSION_TAG indicating the version
@@ -110,7 +110,7 @@
  *
  * Type: integer
  */
-#cmakedefine NS3_VERSION_TAG_DISTANCE @NS3_VERSION_TAG_DISTANCE@
+#define NS3_VERSION_TAG_DISTANCE @NS3_VERSION_TAG_DISTANCE@
 
 /**
  * Hash value which uniquely identifies the commit of the

@@ -134,7 +134,7 @@ function(configure_embedded_version)
       if(${VER_LIST_LEN} GREATER 2)
         list(GET VERSION_LIST 2 NS3_VERSION_PATCH)
       else()
-        set(NS3_VERSION_PATCH "00")
+        set(NS3_VERSION_PATCH "0")
       endif()
     endif()
 
