@@ -338,11 +338,10 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
 
   double MI;
   double MIsum = 0.0;
-  SpectrumValue sinrCopy = sinr;
 
   for (uint32_t i = 0; i < map.size (); i++)
     {
-      double sinrLin = sinrCopy[map.at (i)];
+      double sinrLin = sinr[map.at (i)];
       if (mcs <= MI_QPSK_MAX_ID) // QPSK
         {
 
@@ -468,11 +467,10 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
   NS_LOG_FUNCTION (sinr);
   double MI;
   double MIsum = 0.0;
-  SpectrumValue sinrCopy = sinr;
-  Values::iterator sinrIt = sinrCopy.ValuesBegin ();
+  Values::const_iterator sinrIt = sinr.ConstValuesBegin ();
   uint16_t rb = 0;
-  NS_ASSERT (sinrIt!=sinrCopy.ValuesEnd ());
-  while (sinrIt!=sinrCopy.ValuesEnd ())
+  NS_ASSERT (sinrIt!=sinr.ConstValuesEnd ());
+  while (sinrIt!=sinr.ConstValuesEnd ())
     {
       double sinrLin = *sinrIt;
       if (sinrLin > MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1])
