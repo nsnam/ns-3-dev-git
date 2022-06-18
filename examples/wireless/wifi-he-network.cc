@@ -261,7 +261,7 @@ int main (int argc, char *argv[])
 
               RngSeedManager::SetSeed (1);
               RngSeedManager::SetRun (1);
-              int64_t streamNumber = 100;
+              int64_t streamNumber = 150;
               streamNumber += wifi.AssignStreams (apDevice, streamNumber);
               streamNumber += wifi.AssignStreams (staDevices, streamNumber);
 

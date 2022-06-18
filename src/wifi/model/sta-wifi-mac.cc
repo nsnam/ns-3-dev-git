@@ -23,7 +23,10 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "qos-txop.h"
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
@@ -73,6 +76,12 @@ StaWifiMac::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&StaWifiMac::SetActiveProbing, &StaWifiMac::GetActiveProbing),
                    MakeBooleanChecker ())
+    .AddAttribute ("ProbeDelay",
+                   "Delay (in microseconds) to be used prior to transmitting a "
+                   "Probe frame during active scanning.",
+                   StringValue ("ns3::UniformRandomVariable[Min=50.0|Max=250.0]"),
+                   MakePointerAccessor (&StaWifiMac::m_probeDelay),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("Assoc", "Associated with an access point.",
                      MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger),
                      "ns3::Mac48Address::TracedCallback")
@@ -112,6 +121,14 @@ StaWifiMac::DoInitialize (void)
 StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+int64_t
+StaWifiMac::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_probeDelay->SetStream (stream);
+  return 1;
 }
 
 uint16_t

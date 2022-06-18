@@ -330,7 +330,7 @@ int main (int argc, char *argv[])
 
   double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 58.5 || throughput > 59.5))
+  if (verifyResults && (throughput < 59.0 || throughput > 60.0))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);

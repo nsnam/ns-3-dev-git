@@ -35,6 +35,8 @@ namespace ns3  {
 
 class SupportedRates;
 class CapabilityInformation;
+class RandomVariableStream;
+
 
 /**
  * \ingroup wifi
@@ -193,6 +195,17 @@ public:
   uint16_t GetAssociationId (void) const;
 
   void NotifyChannelSwitching (void) override;
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   *
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   /**
@@ -357,6 +370,8 @@ private:
   Time m_beaconWatchdogEnd;    ///< beacon watchdog end
   uint32_t m_maxMissedBeacons; ///< maximum missed beacons
   bool m_activeProbing;        ///< active probing
+  Ptr<RandomVariableStream> m_probeDelay;  ///< RandomVariable used to randomize the time
+                                           ///< of the first Probe Response on each channel
   std::vector<ApInfo> m_candidateAps; ///< list of candidate APs to associate to
   // Note: std::multiset<ApInfo> might be a candidate container to implement
   // this sorted list, but we are using a std::vector because we want to sort

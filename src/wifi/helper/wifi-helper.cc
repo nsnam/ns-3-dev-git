@@ -22,6 +22,7 @@
 
 #include "ns3/wifi-net-device.h"
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
@@ -992,11 +993,15 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
               currentStream += bk_txop->AssignStreams (currentStream);
             }
 
-          //if an AP, handle any beacon jitter
-          Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (mac);
-          if (apmac)
+          // if an AP, handle any beacon jitter
+          if (auto apMac = DynamicCast<ApWifiMac> (mac); apMac)
             {
-              currentStream += apmac->AssignStreams (currentStream);
+              currentStream += apMac->AssignStreams (currentStream);
+            }
+          // if a STA, handle any probe request jitter
+          if (auto staMac = DynamicCast<StaWifiMac> (mac); staMac)
+            {
+              currentStream += staMac->AssignStreams (currentStream);
             }
         }
     }

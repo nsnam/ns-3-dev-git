@@ -396,7 +396,7 @@ int main (int argc, char *argv[])
   throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "AC_VI with default TXOP limit (4.096ms): " << '\n'
             << "  Throughput = " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 37.0 || throughput > 37.5))
+  if (verifyResults && (throughput < 36.5 || throughput > 37.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
