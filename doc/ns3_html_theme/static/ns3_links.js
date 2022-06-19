@@ -53,7 +53,7 @@ function ns3_write_links() {
   document.getElementById("ns3_mod"  ).href = ns3_mod;
   document.getElementById("ns3_con"  ).href = ns3_con;
   document.getElementById("ns3_wiki" ).href = ns3_wiki;
-  document.getElementById("ns3_api"  ).href = ns3_dox;
+  document.getElementById("ns3_api"  ).href = ns3_api;
   document.getElementById("ns3_bugs" ).href = ns3_bugs;
   document.getElementById("ns3_merge").href = ns3_merge;
 }
