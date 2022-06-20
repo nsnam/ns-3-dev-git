@@ -28,6 +28,8 @@ Changes from ns-3.37 to ns-3.38
 
 ### Changed behavior
 
+* (applications) **UdpClient** and **UdpEchoClient** MaxPackets attribute is aligned with other applications, in that the value zero means infinite packets.
+
 Changes from ns-3.36 to ns-3.37
 -------------------------------
 

@@ -44,11 +44,12 @@ UdpEchoClient::GetTypeId()
             .SetParent<Application>()
             .SetGroupName("Applications")
             .AddConstructor<UdpEchoClient>()
-            .AddAttribute("MaxPackets",
-                          "The maximum number of packets the application will send",
-                          UintegerValue(100),
-                          MakeUintegerAccessor(&UdpEchoClient::m_count),
-                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute(
+                "MaxPackets",
+                "The maximum number of packets the application will send (zero means infinite)",
+                UintegerValue(100),
+                MakeUintegerAccessor(&UdpEchoClient::m_count),
+                MakeUintegerChecker<uint32_t>())
             .AddAttribute("Interval",
                           "The time to wait between packets",
                           TimeValue(Seconds(1.0)),
@@ -391,7 +392,7 @@ UdpEchoClient::Send()
                        << Inet6SocketAddress::ConvertFrom(m_peerAddress).GetPort());
     }
 
-    if (m_sent < m_count)
+    if (m_sent < m_count || m_count == 0)
     {
         ScheduleTransmit(m_interval);
     }

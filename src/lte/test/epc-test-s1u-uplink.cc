@@ -125,11 +125,12 @@ EpsBearerTagUdpClient::GetTypeId()
         TypeId("ns3::EpsBearerTagUdpClient")
             .SetParent<Application>()
             .AddConstructor<EpsBearerTagUdpClient>()
-            .AddAttribute("MaxPackets",
-                          "The maximum number of packets the application will send",
-                          UintegerValue(100),
-                          MakeUintegerAccessor(&EpsBearerTagUdpClient::m_count),
-                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute(
+                "MaxPackets",
+                "The maximum number of packets the application will send (zero means infinite)",
+                UintegerValue(100),
+                MakeUintegerAccessor(&EpsBearerTagUdpClient::m_count),
+                MakeUintegerChecker<uint32_t>())
             .AddAttribute("Interval",
                           "The time to wait between packets",
                           TimeValue(Seconds(1.0)),
@@ -241,7 +242,7 @@ EpsBearerTagUdpClient::Send()
         NS_LOG_INFO("Error while sending " << m_size << " bytes to " << m_peerAddress);
     }
 
-    if (m_sent < m_count)
+    if (m_sent < m_count || m_count == 0)
     {
         m_sendEvent = Simulator::Schedule(m_interval, &EpsBearerTagUdpClient::Send, this);
     }
