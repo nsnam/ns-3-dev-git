@@ -470,7 +470,7 @@ VhtPhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInte
   NS_ASSERT (guardInterval == 800 || guardInterval == 400);
   NS_ASSERT (nss <= 8);
   NS_ASSERT_MSG (IsCombinationAllowed (mcsValue, channelWidth, nss), "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is " << +nss);
-  return HtPhy::CalculateDataRate (3.2, guardInterval,
+  return HtPhy::CalculateDataRate (GetSymbolDuration (NanoSeconds (guardInterval)),
                                    GetUsableSubcarriers (channelWidth),
                                    static_cast<uint16_t> (log2 (GetConstellationSize (mcsValue))),
                                    HtPhy::GetCodeRatio (GetCodeRate (mcsValue)), nss);

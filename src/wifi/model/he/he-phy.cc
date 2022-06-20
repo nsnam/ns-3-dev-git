@@ -316,7 +316,7 @@ HePhy::GetSymbolDuration (const WifiTxVector& txVector) const
 {
   uint16_t gi = txVector.GetGuardInterval ();
   NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
-  return NanoSeconds (12800 + gi);
+  return GetSymbolDuration (NanoSeconds (gi));
 }
 
 void
@@ -1229,7 +1229,7 @@ HePhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInter
 {
   NS_ASSERT (guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
   NS_ASSERT (nss <= 8);
-  return HtPhy::CalculateDataRate (12.8, guardInterval,
+  return HtPhy::CalculateDataRate (GetSymbolDuration (NanoSeconds (guardInterval)),
                                    GetUsableSubcarriers (channelWidth),
                                    static_cast<uint16_t> (log2 (GetConstellationSize (mcsValue))),
                                    HtPhy::GetCodeRatio (GetCodeRate (mcsValue)), nss);
@@ -1256,6 +1256,12 @@ HePhy::GetUsableSubcarriers (uint16_t channelWidth)
       case 160:
         return 1960;
     }
+}
+
+Time
+HePhy::GetSymbolDuration (Time guardInterval)
+{
+  return NanoSeconds (12800) + guardInterval;
 }
 
 uint64_t

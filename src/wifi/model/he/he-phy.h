@@ -422,11 +422,18 @@ protected:
    * and lookup in Table 10-10 of IEEE P802.11ax/D6.0.
    */
   static uint64_t CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellationSize);
+
   /**
    * \param channelWidth the channel width in MHz
-   * \return he number of usable subcarriers for data
+   * \return the number of usable subcarriers for data
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
+
+  /**
+   * \param guardInterval the guard interval duration
+   * \return the symbol duration
+   */
+  static Time GetSymbolDuration (Time guardInterval);
 
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received

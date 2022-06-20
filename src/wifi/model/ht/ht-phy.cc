@@ -666,19 +666,20 @@ HtPhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInter
 {
   NS_ASSERT (guardInterval == 800 || guardInterval == 400);
   NS_ASSERT (nss <= 4);
-  return CalculateDataRate (3.2, guardInterval,
+  return CalculateDataRate (GetSymbolDuration (NanoSeconds (guardInterval)),
                             GetUsableSubcarriers (channelWidth),
                             static_cast<uint16_t> (log2 (GetHtConstellationSize (mcsValue))),
                             GetCodeRatio (GetHtCodeRate (mcsValue)), nss);
 }
 
 uint64_t
-HtPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
-                          uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+HtPhy::CalculateDataRate (Time symbolDuration, uint16_t usableSubCarriers,
+                          uint16_t numberOfBitsPerSubcarrier,
                           double codingRate, uint8_t nss)
 {
-  return nss * OfdmPhy::CalculateDataRate (symbolDuration, guardInterval,
-                                           usableSubCarriers, numberOfBitsPerSubcarrier,
+  return nss * OfdmPhy::CalculateDataRate (symbolDuration,
+                                           usableSubCarriers,
+                                           numberOfBitsPerSubcarrier,
                                            codingRate);
 }
 
@@ -686,6 +687,12 @@ uint16_t
 HtPhy::GetUsableSubcarriers (uint16_t channelWidth)
 {
   return (channelWidth == 40) ? 108 : 52;
+}
+
+Time
+HtPhy::GetSymbolDuration (Time guardInterval)
+{
+  return NanoSeconds (3200) + guardInterval;
 }
 
 uint64_t

@@ -568,30 +568,40 @@ OfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth)
 uint64_t
 OfdmPhy::CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth)
 {
-  double symbolDuration = 3.2; //in us
-  uint16_t guardInterval = 800; //in ns
-  if (channelWidth == 10)
-    {
-      symbolDuration = 6.4;
-      guardInterval = 1600;
-    }
-  else if (channelWidth == 5)
-    {
-      symbolDuration = 12.8;
-      guardInterval = 3200;
-    }
-  return CalculateDataRate (symbolDuration, guardInterval,
-                            48, static_cast<uint16_t> (log2 (constellationSize)),
+  return CalculateDataRate (GetSymbolDuration (channelWidth),
+                            GetUsableSubcarriers (),
+                            static_cast<uint16_t> (log2 (constellationSize)),
                             GetCodeRatio (codeRate));
 }
 
 uint64_t
-OfdmPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
-                            uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
-                            double codingRate)
+OfdmPhy::CalculateDataRate (Time symbolDuration, uint16_t usableSubCarriers,
+                            uint16_t numberOfBitsPerSubcarrier, double codingRate)
 {
-  double symbolRate = (1 / (symbolDuration + (static_cast<double> (guardInterval) / 1000))) * 1e6;
+  double symbolRate = (1e9 / static_cast<double> (symbolDuration.GetNanoSeconds ()));
   return lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
+}
+
+uint16_t
+OfdmPhy::GetUsableSubcarriers (void)
+{
+  return 48;
+}
+
+Time
+OfdmPhy::GetSymbolDuration (uint16_t channelWidth)
+{
+  Time symbolDuration = MicroSeconds (4);
+  uint8_t bwFactor = 1;
+  if (channelWidth == 10)
+    {
+      bwFactor = 2;
+    }
+  else if (channelWidth == 5)
+    {
+      bwFactor = 4;
+    }
+  return bwFactor * symbolDuration;
 }
 
 bool

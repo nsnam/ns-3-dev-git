@@ -505,8 +505,7 @@ protected:
   /**
    * Calculates data rate from the supplied parameters.
    *
-   * \param symbolDuration the symbol duration (in us) excluding guard interval
-   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param symbolDuration the symbol duration
    * \param usableSubCarriers the number of usable subcarriers for data
    * \param numberOfBitsPerSubcarrier the number of data bits per subcarrier
    * \param codingRate the coding rate
@@ -514,14 +513,27 @@ protected:
    *
    * \return the data bit rate of this signal in bps.
    */
-  static uint64_t CalculateDataRate (double symbolDuration, uint16_t guardInterval,
-                                     uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+  static uint64_t CalculateDataRate (Time symbolDuration, uint16_t usableSubCarriers,
+                                     uint16_t numberOfBitsPerSubcarrier,
                                      double codingRate, uint8_t nss);
+
   /**
    * \param channelWidth the channel width in MHz
-   * \return he number of usable subcarriers for data
+   * \return the symbol duration excluding guard interval
+   */
+  static Time GetSymbolDuration (uint16_t channelWidth);
+
+  /**
+   * \param channelWidth the channel width in MHz
+   * \return the number of usable subcarriers for data
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
+
+  /**
+   * \param guardInterval the guard interval duration
+   * \return the symbol duration
+   */
+  static Time GetSymbolDuration (Time guardInterval);
 
   uint8_t m_maxMcsIndexPerSs;          //!< the maximum MCS index per spatial stream as defined by the standard
   uint8_t m_maxSupportedMcsIndexPerSs; //!< the maximum supported MCS index per spatial stream
