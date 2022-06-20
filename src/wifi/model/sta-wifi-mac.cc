@@ -602,7 +602,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
       NS_LOG_LOGIC ("packet sent by us.");
       return;
     }
-  else if (hdr->GetAddr1 () != GetAddress ()
+  if (hdr->GetAddr1 () != GetAddress ()
            && !hdr->GetAddr1 ().IsGroup ())
     {
       NS_LOG_LOGIC ("packet is not for us");
@@ -648,130 +648,157 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
         }
       return;
     }
-  else if (hdr->IsProbeReq ()
-           || hdr->IsAssocReq ()
-           || hdr->IsReassocReq ())
+
+  switch (hdr->GetType ())
     {
+    case WIFI_MAC_MGT_PROBE_REQUEST:
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
       //This is a frame aimed at an AP, so we can safely ignore it.
       NotifyRxDrop (packet);
-      return;
-    }
-  else if (hdr->IsBeacon ())
-    {
-      NS_LOG_DEBUG ("Beacon received");
-      MgtBeaconHeader beacon;
-      Ptr<Packet> copy = packet->Copy ();
-      copy->RemoveHeader (beacon);
-      const CapabilityInformation& capabilities = beacon.GetCapabilities ();
-      NS_ASSERT (capabilities.IsEss ());
-      bool goodBeacon;
-      if (IsWaitAssocResp () || IsAssociated ())
-        {
-          // we have to process this Beacon only if sent by the AP we are associated
-          // with or from which we are waiting an Association Response frame
-          goodBeacon = (hdr->GetAddr3 () == GetBssid (linkId));
-        }
-      else
-        {
-          // we retain this Beacon as candidate AP if the supported rates fit the
-          // configured BSS membership selector
-          goodBeacon = CheckSupportedRates (beacon, linkId);
-        }
+      break;
 
-      if (!goodBeacon)
-        {
-          NS_LOG_LOGIC ("Beacon is not for us");
-          return;
-        }
-      if (m_state == ASSOCIATED)
-        {
-          m_beaconArrival (Simulator::Now ());
-          Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          RestartBeaconWatchdog (delay);
-          UpdateApInfo (beacon, hdr->GetAddr2 (), hdr->GetAddr3 (), linkId);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Beacon received from " << hdr->GetAddr2 ());
-          SnrTag snrTag;
-          bool removed = copy->RemovePacketTag (snrTag);
-          NS_ASSERT (removed);
-          ApInfo apInfo;
-          apInfo.m_apAddr = hdr->GetAddr2 ();
-          apInfo.m_bssid = hdr->GetAddr3 ();
-          apInfo.m_snr = snrTag.Get ();
-          apInfo.m_frame = std::move (beacon);
-          apInfo.m_linkId = linkId;
-          apInfo.m_channel = {GetCurrentChannel (linkId)};
-          m_assocManager->NotifyApInfo (std::move (apInfo));
-        }
+    case WIFI_MAC_MGT_BEACON:
+      ReceiveBeacon (mpdu, linkId);
+      break;
+
+    case WIFI_MAC_MGT_PROBE_RESPONSE:
+      ReceiveProbeResp (mpdu, linkId);
+      break;
+
+    case WIFI_MAC_MGT_ASSOCIATION_RESPONSE:
+    case WIFI_MAC_MGT_REASSOCIATION_RESPONSE:
+      ReceiveAssocResp (mpdu, linkId);
+      break;
+
+    default:
+      //Invoke the receive handler of our parent class to deal with any
+      //other frames. Specifically, this will handle Block Ack-related
+      //Management Action frames.
+      WifiMac::Receive (mpdu, linkId);
+    }
+}
+
+void
+StaWifiMac::ReceiveBeacon (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << *mpdu << +linkId);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+  NS_ASSERT (hdr.IsBeacon ());
+
+  NS_LOG_DEBUG ("Beacon received");
+  MgtBeaconHeader beacon;
+  mpdu->GetPacket ()->PeekHeader (beacon);
+  const CapabilityInformation& capabilities = beacon.GetCapabilities ();
+  NS_ASSERT (capabilities.IsEss ());
+  bool goodBeacon;
+  if (IsWaitAssocResp () || IsAssociated ())
+    {
+      // we have to process this Beacon only if sent by the AP we are associated
+      // with or from which we are waiting an Association Response frame
+      goodBeacon = (hdr.GetAddr3 () == GetBssid (linkId));
+    }
+  else
+    {
+      // we retain this Beacon as candidate AP if the supported rates fit the
+      // configured BSS membership selector
+      goodBeacon = CheckSupportedRates (beacon, linkId);
+    }
+
+  if (!goodBeacon)
+    {
+      NS_LOG_LOGIC ("Beacon is not for us");
       return;
     }
-  else if (hdr->IsProbeResp ())
+  if (m_state == ASSOCIATED)
     {
-      NS_LOG_DEBUG ("Probe response received from " << hdr->GetAddr2 ());
-      MgtProbeResponseHeader probeResp;
-      Ptr<Packet> copy = packet->Copy ();
-      copy->RemoveHeader (probeResp);
-      if (!CheckSupportedRates (probeResp, linkId))
-        {
-          return;
-        }
+      m_beaconArrival (Simulator::Now ());
+      Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
+      RestartBeaconWatchdog (delay);
+      UpdateApInfo (beacon, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Beacon received from " << hdr.GetAddr2 ());
       SnrTag snrTag;
-      bool removed = copy->RemovePacketTag (snrTag);
-      NS_ASSERT (removed);
-      ApInfo apInfo;
-      apInfo.m_apAddr = hdr->GetAddr2 ();
-      apInfo.m_bssid = hdr->GetAddr3 ();
-      apInfo.m_snr = snrTag.Get ();
-      apInfo.m_frame = std::move (probeResp);
-      apInfo.m_linkId = linkId;
-      apInfo.m_channel = {GetCurrentChannel (linkId)};
-      m_assocManager->NotifyApInfo (std::move (apInfo));
+      bool found = mpdu->GetPacket ()->PeekPacketTag (snrTag);
+      NS_ASSERT (found);
+      m_assocManager->NotifyApInfo (ApInfo {.m_bssid = hdr.GetAddr3 (),
+                                            .m_apAddr = hdr.GetAddr2 (),
+                                            .m_snr = snrTag.Get (),
+                                            .m_frame = std::move (beacon),
+                                            .m_channel = {GetCurrentChannel (linkId)},
+                                            .m_linkId = linkId});
+    }
+}
+
+void
+StaWifiMac::ReceiveProbeResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << *mpdu << +linkId);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+  NS_ASSERT (hdr.IsProbeResp ());
+
+  NS_LOG_DEBUG ("Probe response received from " << hdr.GetAddr2 ());
+  MgtProbeResponseHeader probeResp;
+  mpdu->GetPacket ()->PeekHeader (probeResp);
+  if (!CheckSupportedRates (probeResp, linkId))
+    {
       return;
     }
-  else if (hdr->IsAssocResp () || hdr->IsReassocResp ())
+  SnrTag snrTag;
+  bool found = mpdu->GetPacket ()->PeekPacketTag (snrTag);
+  NS_ASSERT (found);
+  m_assocManager->NotifyApInfo (ApInfo {.m_bssid = hdr.GetAddr3 (),
+                                        .m_apAddr = hdr.GetAddr2 (),
+                                        .m_snr = snrTag.Get (),
+                                        .m_frame = std::move (probeResp),
+                                        .m_channel = {GetCurrentChannel (linkId)},
+                                        .m_linkId = linkId});
+}
+
+void
+StaWifiMac::ReceiveAssocResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << *mpdu << +linkId);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+  NS_ASSERT (hdr.IsAssocResp () || hdr.IsReassocResp ());
+
+  if (m_state != WAIT_ASSOC_RESP)
     {
-      if (m_state == WAIT_ASSOC_RESP)
-        {
-          MgtAssocResponseHeader assocResp;
-          packet->PeekHeader (assocResp);
-          if (m_assocRequestEvent.IsRunning ())
-            {
-              m_assocRequestEvent.Cancel ();
-            }
-          if (assocResp.GetStatusCode ().IsSuccess ())
-            {
-              SetState (ASSOCIATED);
-              m_aid = assocResp.GetAssociationId ();
-              if (hdr->IsReassocResp ())
-                {
-                  NS_LOG_DEBUG ("reassociation done");
-                }
-              else
-                {
-                  NS_LOG_DEBUG ("association completed");
-                }
-              UpdateApInfo (assocResp, hdr->GetAddr2 (), hdr->GetAddr3 (), linkId);
-              if (!m_linkUp.IsNull ())
-                {
-                  m_linkUp ();
-                }
-            }
-          else
-            {
-              NS_LOG_DEBUG ("association refused");
-              SetState (REFUSED);
-              StartScanning ();
-            }
-        }
       return;
     }
 
-  //Invoke the receive handler of our parent class to deal with any
-  //other frames. Specifically, this will handle Block Ack-related
-  //Management Action frames.
-  WifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr), linkId);
+  MgtAssocResponseHeader assocResp;
+  mpdu->GetPacket ()->PeekHeader (assocResp);
+  if (m_assocRequestEvent.IsRunning ())
+    {
+      m_assocRequestEvent.Cancel ();
+    }
+  if (assocResp.GetStatusCode ().IsSuccess ())
+    {
+      SetState (ASSOCIATED);
+      m_aid = assocResp.GetAssociationId ();
+      if (hdr.IsReassocResp ())
+        {
+          NS_LOG_DEBUG ("reassociation done");
+        }
+      else
+        {
+          NS_LOG_DEBUG ("association completed");
+        }
+      UpdateApInfo (assocResp, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
+      if (!m_linkUp.IsNull ())
+        {
+          m_linkUp ();
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("association refused");
+      SetState (REFUSED);
+      StartScanning ();
+    }
 }
 
 bool

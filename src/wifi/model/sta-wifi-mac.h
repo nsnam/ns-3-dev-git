@@ -258,6 +258,30 @@ private:
   void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
 
   /**
+   * Process the Beacon frame received on the given link.
+   *
+   * \param mpdu the MPDU containing the Beacon frame
+   * \param linkId the ID of the given link
+   */
+  void ReceiveBeacon (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+
+  /**
+   * Process the Probe Response frame received on the given link.
+   *
+   * \param mpdu the MPDU containing the Probe Response frame
+   * \param linkId the ID of the given link
+   */
+  void ReceiveProbeResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+
+  /**
+   * Process the (Re)Association Response frame received on the given link.
+   *
+   * \param mpdu the MPDU containing the (Re)Association Response frame
+   * \param linkId the ID of the given link
+   */
+  void ReceiveAssocResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+
+  /**
    * Update associated AP's information from the given management frame (Beacon,
    * Probe Response or Association Response). If STA is not associated, this
    * information will be used for the association process.
