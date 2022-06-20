@@ -110,7 +110,7 @@ WifiAssocManager::GetScanParams (void) const
 bool
 WifiAssocManager::MatchScanParams (const StaWifiMac::ApInfo& apInfo) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << apInfo);
 
   if (!m_scanParams.ssid.IsBroadcast ())
     {
@@ -189,7 +189,7 @@ WifiAssocManager::StartScanning (WifiScanParams&& scanParams)
 void
 WifiAssocManager::NotifyApInfo (const StaWifiMac::ApInfo&& apInfo)
 {
-  NS_LOG_FUNCTION (this << apInfo.m_apAddr << apInfo.m_bssid << +apInfo.m_linkId);
+  NS_LOG_FUNCTION (this << apInfo);
 
   if (!CanBeInserted (apInfo) || !MatchScanParams (apInfo))
     {

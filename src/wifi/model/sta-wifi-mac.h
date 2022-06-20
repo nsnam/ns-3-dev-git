@@ -390,6 +390,16 @@ private:
   TracedCallback<Time>         m_beaconArrival; ///< beacon arrival logger
 };
 
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the output stream
+ * \param apInfo the AP information
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const StaWifiMac::ApInfo& apInfo);
+
 } //namespace ns3
 
 #endif /* STA_WIFI_MAC_H */

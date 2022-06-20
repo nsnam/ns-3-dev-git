@@ -422,7 +422,7 @@ StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
       return;
     }
 
-  NS_LOG_DEBUG ("Attempting to associate with BSSID " << bestAp->m_bssid);
+  NS_LOG_DEBUG ("Attempting to associate with AP: " << *bestAp);
   UpdateApInfo (bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
   // lambda to get beacon interval from Beacon or Probe Response
   auto getBeaconInterval =
@@ -1032,6 +1032,19 @@ StaWifiMac::NotifyChannelSwitching (void)
     {
       Disassociated ();
     }
+}
+
+std::ostream & operator << (std::ostream &os, const StaWifiMac::ApInfo& apInfo)
+{
+  os << "BSSID=" << apInfo.m_bssid
+     << ", AP addr=" << apInfo.m_apAddr
+     << ", SNR=" << apInfo.m_snr
+     << ", Channel={" << apInfo.m_channel.number << "," << apInfo.m_channel.band
+     << "}, Link ID=" << +apInfo.m_linkId
+     << ", Frame=[";
+  std::visit ([&os](auto&& frame){frame.Print (os);}, apInfo.m_frame);
+  os << "]";
+  return os;
 }
 
 } //namespace ns3
