@@ -25,6 +25,7 @@ Release 3-dev
 - (wifi) Fix setting TX power for HE TB PPDUs in case AP requested using the max TX power
 - (wifi) #521 - UL OFDMA support
 - (lr-wpan) #536 - Fixes PHY not going to TRX_OFF after CSMA-CA failure (RxOnWhenIdle(false))
+- (wifi) Only include QoS Null frames for TIDs for which a BA agreement exists in responses to BSRP TFs
 
 Release 3.36.1
 --------------
