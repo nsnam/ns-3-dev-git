@@ -1000,9 +1000,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                       "scratch/empty.cc",
                       "scratch/subdir1/main.cc",
                       "scratch/subdir2/main.cc"]
+        backup_files = ["scratch/.main.cc"]  # hidden files should be ignored
 
         # Create test scratch files
-        for path in test_files:
+        for path in test_files+backup_files:
             filepath = os.path.join(ns3_path, path)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "w") as f:
@@ -1019,13 +1020,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 0)
 
         # Try to build them with ns3 and cmake
-        for path in test_files:
+        for path in test_files+backup_files:
             path = path.replace(".cc", "")
             return_code1, stdout1, stderr1 = run_program("cmake", "--build . --target %s"
                                                          % path.replace("/", "_"),
                                                          cwd=os.path.join(ns3_path, "cmake-cache"))
             return_code2, stdout2, stderr2 = run_ns3("build %s" % path)
-            if "main" in path:
+            if "main" in path and ".main" not in path:
                 self.assertEqual(return_code1, 0)
                 self.assertEqual(return_code2, 0)
             else:
@@ -1042,10 +1043,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 self.assertEqual(return_code, 1)
 
         # Delete the test files and reconfigure to clean them up
-        for path in test_files:
+        for path in test_files+backup_files:
             source_absolute_path = os.path.join(ns3_path, path)
             os.remove(source_absolute_path)
-            if "empty" in path:
+            if "empty" in path or ".main" in path:
                 continue
             filename = os.path.basename(path).replace(".cc", "")
             executable_absolute_path = os.path.dirname(os.path.join(ns3_path, "build", path))

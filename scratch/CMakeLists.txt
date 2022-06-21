@@ -62,7 +62,7 @@ function(create_scratch source_files)
 endfunction()
 
 # Scan *.cc files in ns-3-dev/scratch and build a target for each
-file(GLOB single_source_file_scratches CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
+file(GLOB single_source_file_scratches CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/[^.]*.cc)
 foreach(scratch_src ${single_source_file_scratches})
   create_scratch(${scratch_src})
 endforeach()
@@ -93,7 +93,7 @@ foreach(subdir ${scratch_subdirectories})
   else()
     # Otherwise we pick all the files in the subdirectory
     # and create a scratch for them automatically
-    file(GLOB scratch_sources CONFIGURE_DEPENDS ${subdir}/*.cc)
+    file(GLOB scratch_sources CONFIGURE_DEPENDS ${subdir}/[^.]*.cc)
     create_scratch("${scratch_sources}")
   endif()
 endforeach()
