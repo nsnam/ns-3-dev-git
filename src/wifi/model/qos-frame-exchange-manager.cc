@@ -683,11 +683,16 @@ QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVec
 
     const WifiMacHeader& hdr = psdu->GetHeader(0);
 
-    if (hdr.IsQosData() || hdr.IsMgt() || hdr.IsRts())
+    // A STA shall save the TXOP holder address for the BSS in which it is associated.
+    // The TXOP holder address is the MAC address from the Address 2 field of the frame
+    // that initiated a frame exchange sequence, except if this is a CTS frame, in which
+    // case the TXOP holder address is the Address 1 field. (Sec. 10.23.2.4 of 802.11-2020)
+    if ((hdr.IsQosData() || hdr.IsMgt() || hdr.IsRts()) &&
+        (hdr.GetAddr1() == m_bssid || hdr.GetAddr2() == m_bssid))
     {
         m_txopHolder = psdu->GetAddr2();
     }
-    else if (hdr.IsCts())
+    else if (hdr.IsCts() && hdr.GetAddr1() == m_bssid)
     {
         m_txopHolder = psdu->GetAddr1();
     }

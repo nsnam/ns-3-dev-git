@@ -1542,9 +1542,9 @@ HeFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVect
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
-    if (psdu->GetHeader(0).IsTrigger())
+    if (psdu->GetHeader(0).IsTrigger() && psdu->GetAddr2() == m_bssid)
     {
-        m_txopHolder = psdu->GetAddr2();
+        m_txopHolder = m_bssid;
     }
     else if (!txVector.IsUlMu()) // the sender of a TB PPDU is not the TXOP holder
     {
