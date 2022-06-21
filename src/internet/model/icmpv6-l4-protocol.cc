@@ -31,6 +31,8 @@
 #include "ns3/pointer.h"
 #include "ns3/string.h"
 #include "ns3/integer.h"
+#include "ns3/uinteger.h"
+#include "ns3/double.h"
 
 #include "ipv6-l3-protocol.h"
 #include "ipv6-interface.h"
@@ -94,6 +96,33 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
                    TimeValue (Seconds (5)),
                    MakeTimeAccessor (&Icmpv6L4Protocol::m_delayFirstProbe),
                    MakeTimeChecker ())
+    .AddAttribute ("DadTimeout", "Duplicate Address Detection (DAD) timeout",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_dadTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("RsRetransmissionJitter", "Multicast RS retransmission randomization quantity",
+                   StringValue ("ns3::UniformRandomVariable[Min=-0.1|Max=0.1]"),
+                   MakePointerAccessor (&Icmpv6L4Protocol::m_rsRetransmissionJitter),
+                   MakePointerChecker<RandomVariableStream> ())
+    .AddAttribute ("RsInitialRetransmissionTime", "Multicast RS initial retransmission time.",
+                   TimeValue (Seconds (4)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_rsInitialRetransmissionTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("RsMaxRetransmissionTime", "Multicast RS maximum retransmission time (0 means unbound).",
+                   TimeValue (Seconds (3600)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_rsMaxRetransmissionTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("RsMaxRetransmissionCount",
+                   "Multicast RS maximum retransmission count (0 means unbound). "
+                   "Note: RFC 7559 suggest a zero value (infinite). The default is 4 to avoid "
+                   "non-terminating simulations.",
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&Icmpv6L4Protocol::m_rsMaxRetransmissionCount),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("RsMaxRetransmissionDuration", "Multicast RS maximum retransmission duration (0 means unbound).",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&Icmpv6L4Protocol::m_rsMaxRetransmissionDuration),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -135,7 +164,8 @@ int64_t Icmpv6L4Protocol::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_solicitationJitter->SetStream (stream);
-  return 1;
+  m_rsRetransmissionJitter->SetStream (stream+1);
+  return 2;
 }
 
 void Icmpv6L4Protocol::NotifyNewAggregate ()
@@ -325,6 +355,14 @@ void Icmpv6L4Protocol::HandleEchoRequest (Ptr<Packet> packet, Ipv6Address const 
 void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
 {
   NS_LOG_FUNCTION (this << packet << src << dst << interface);
+
+  if (m_handleRsTimeoutEvent.IsRunning ())
+    {
+      m_handleRsTimeoutEvent.Cancel ();
+      // We need to update this in case we need to restart RS retransmissions.
+      m_rsRetransmissionCount = 0;
+    }
+
   Ptr<Packet> p = packet->Copy ();
   Icmpv6RA raHeader;
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
@@ -1074,7 +1112,7 @@ void Icmpv6L4Protocol::SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address tar
     }
 }
 
-void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwareAddress)
+void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst, Address hardwareAddress)
 {
   NS_LOG_FUNCTION (this << src << dst << hardwareAddress);
   Ptr<Packet> p = Create<Packet> ();
@@ -1100,8 +1138,58 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
   else
     {
       NS_LOG_LOGIC ("Destination is Multicast, using DelayedSendMessage");
-      Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
+      Time rsDelay = Time (0);
+      Time rsTimeout = Time (0);
+
+      if (m_rsRetransmissionCount == 0)
+        {
+          // First RS transmission - also add some jitter to desynchronize nodes.
+          m_rsInitialRetransmissionTime = Simulator::Now ();
+          rsTimeout = m_rsInitialRetransmissionTime * (1 + m_rsRetransmissionJitter->GetValue ());
+          rsDelay = Time (MilliSeconds (m_solicitationJitter->GetValue ()));
+        }
+      else
+        {
+          // Following RS transmission - adding further jitter is unnecesary.
+          rsTimeout = m_rsPrevRetransmissionTimeout * (2 + m_rsRetransmissionJitter->GetValue ());
+          if (rsTimeout > m_rsMaxRetransmissionTime)
+            {
+              rsTimeout = m_rsMaxRetransmissionTime * (1 + m_rsRetransmissionJitter->GetValue ());
+            }
+        }
+      m_rsPrevRetransmissionTimeout = rsTimeout;
+      Simulator::Schedule (rsDelay, &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
+      m_handleRsTimeoutEvent = Simulator::Schedule (rsDelay+m_rsPrevRetransmissionTimeout, &Icmpv6L4Protocol::HandleRsTimeout, this, src, dst, hardwareAddress);
     }
+}
+
+void Icmpv6L4Protocol::HandleRsTimeout (Ipv6Address src, Ipv6Address dst,  Address hardwareAddress)
+{
+  NS_LOG_FUNCTION (this << src << dst << hardwareAddress);
+
+  if (m_rsMaxRetransmissionCount == 0)
+    {
+      // Unbound number of retransmissions - just add one to signal that we're in retransmission mode.
+      m_rsRetransmissionCount = 1;
+    }
+  else
+    {
+      m_rsRetransmissionCount ++;
+      if (m_rsRetransmissionCount > m_rsMaxRetransmissionCount)
+        {
+          NS_LOG_LOGIC ("Maximum number of multicast RS reached, giving up.");
+          return;
+        }
+    }
+
+    if (m_rsMaxRetransmissionDuration != Time (0) &&
+        Simulator::Now () - m_rsInitialRetransmissionTime > m_rsMaxRetransmissionDuration)
+      {
+          NS_LOG_LOGIC ("Maximum RS retransmission time reached, giving up.");
+          return;
+      }
+
+  SendRS (src, dst, hardwareAddress);
 }
 
 void Icmpv6L4Protocol::SendErrorDestinationUnreachable (Ptr<Packet> malformedPacket, Ipv6Address dst, uint8_t code)
@@ -1490,7 +1578,8 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ipv6Interface* interface, Ipv6Address
           /* \todo Add random delays before sending RS
            * because all nodes start at the same time, there will be many of RS around 1 second of simulation time
            */
-          NS_LOG_LOGIC ("Scheduled a Router Solicitation");
+          NS_LOG_LOGIC ("Scheduled a first Router Solicitation");
+          m_rsRetransmissionCount = 0;
           Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, this, ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
         }
       else
@@ -1555,6 +1644,12 @@ Time
 Icmpv6L4Protocol::GetDelayFirstProbe () const
 {
   return m_delayFirstProbe;
+}
+
+Time
+Icmpv6L4Protocol::GetDadTimeout () const
+{
+  return m_dadTimeout;
 }
 
 

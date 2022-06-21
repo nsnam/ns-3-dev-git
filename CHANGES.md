@@ -28,6 +28,7 @@ Changes from ns-3.36 to ns-3.37
 * Adds supporting structures used by **LrWpanMac** (PAN descriptor, Command Payload Header, Capability Field).
 * Mac(8|16|48|64)Address address allocation pool is now reset between consecutive runs.
 * Adds support for **LrWpanMac** energy detection (ED) scan.
+* IPv6 Router Solicitations (RS) are now retrnamitted up to 4 times, following RFC 5779.
 
 ### Changes to build system
 

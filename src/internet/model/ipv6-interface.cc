@@ -222,7 +222,7 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
               if (icmpv6->IsAlwaysDad ())
                 {
                   Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
-                  Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
+                  Simulator::Schedule (icmpv6->GetDadTimeout (), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
                 }
               else
                 {
