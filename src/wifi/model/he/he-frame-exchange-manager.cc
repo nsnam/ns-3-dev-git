@@ -1465,7 +1465,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
     if (trigger.GetCsRequired() && hdr.GetAddr2() != m_txopHolder && m_navEnd > Simulator::Now())
     {
         NS_LOG_DEBUG("Carrier Sensing required and channel busy (TA="
-                     << hdr.GetAddr2() << ", TxopHolder=" << m_txopHolder
+                     << hdr.GetAddr2() << ", TxopHolder=" << (m_txopHolder ? *m_txopHolder : "")
                      << ", NAV end=" << m_navEnd.As(Time::S) << "), do nothing");
         return;
     }
