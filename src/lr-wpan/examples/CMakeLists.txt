@@ -4,6 +4,7 @@ set(base_examples
     lr-wpan-packet-print
     lr-wpan-phy-test
     lr-wpan-ed-scan
+    lr-wpan-active-scan
 )
 
 foreach(

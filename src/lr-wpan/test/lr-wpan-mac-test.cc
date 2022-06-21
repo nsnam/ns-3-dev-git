@@ -112,8 +112,8 @@ void
 TestRxOffWhenIdleAfterCsmaFailure::StateChangeNotificationDev0 (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState)
 {
   NS_LOG_DEBUG (Simulator::Now ().As (Time::S) << context << "PHY state change at " << now.As (Time::S)
-                                                << " from " << LrWpanHelper::LrWpanPhyEnumerationPrinter (oldState)
-                                                << " to " << LrWpanHelper::LrWpanPhyEnumerationPrinter (newState));
+                                               << " from " << LrWpanHelper::LrWpanPhyEnumerationPrinter (oldState)
+                                               << " to " << LrWpanHelper::LrWpanPhyEnumerationPrinter (newState));
 
   m_dev0State = newState;
 }
@@ -122,8 +122,8 @@ void
 TestRxOffWhenIdleAfterCsmaFailure::StateChangeNotificationDev2 (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState)
 {
   NS_LOG_DEBUG (Simulator::Now ().As (Time::S) << context << "PHY state change at " << now.As (Time::S)
-                                                << " from " << LrWpanHelper::LrWpanPhyEnumerationPrinter (oldState)
-                                                << " to " << LrWpanHelper::LrWpanPhyEnumerationPrinter (newState));
+                                               << " from " << LrWpanHelper::LrWpanPhyEnumerationPrinter (oldState)
+                                               << " to " << LrWpanHelper::LrWpanPhyEnumerationPrinter (newState));
 }
 
 void
@@ -144,10 +144,11 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun ()
   // do not attempt to do multiple backoffs delays in its CSMA,
   // macMinBE and MacMaxCSMABackoffs has been set to 0.
 
-  LogComponentEnableAll (LOG_PREFIX_TIME);
-  LogComponentEnableAll (LOG_PREFIX_FUNC);
+  LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_FUNC));
+
   LogComponentEnable ("LrWpanMac", LOG_LEVEL_DEBUG);
   LogComponentEnable ("LrWpanCsmaCa", LOG_LEVEL_DEBUG);
+  LogComponentEnable ("lr-wpan-mac-test", LOG_LEVEL_DEBUG);
 
   // Create 3 nodes, and a NetDevice for each one
   Ptr<Node> n0 = CreateObject <Node> ();
@@ -255,11 +256,186 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun ()
                                   &LrWpanMac::McpsDataRequest,
                                   dev2->GetMac (), params, p2);
 
-
+  NS_LOG_DEBUG ("----------- Start of TestRxOffWhenIdleAfterCsmaFailure -------------------");
   Simulator::Run ();
 
   NS_TEST_EXPECT_MSG_EQ (m_dev0State, LrWpanPhyEnumeration::IEEE_802_15_4_PHY_TRX_OFF,
                          "Error, dev0 [00:01] PHY should be in TRX_OFF after CSMA failure");
+
+  Simulator::Destroy ();
+
+}
+
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * \brief Test MAC Active Scan PAN descriptor reception and check some of its values.
+ */
+class TestActiveScanPanDescriptors : public TestCase
+{
+public:
+  TestActiveScanPanDescriptors ();
+  virtual ~TestActiveScanPanDescriptors ();
+
+private:
+
+  /**
+   * Function called in response to a MAC scan request.
+   *
+   * \param params MLME scan confirm parameters
+   */
+  void ScanConfirm (MlmeScanConfirmParams params);
+
+  virtual void DoRun (void);
+
+  std::vector <PanDescriptor> m_panDescriptorList; //!< The list of PAN descriptors accumulated during the scan
+
+};
+
+TestActiveScanPanDescriptors::TestActiveScanPanDescriptors ()
+  : TestCase ("Test the reception of PAN descriptors while performing an active scan")
+{}
+
+TestActiveScanPanDescriptors::~TestActiveScanPanDescriptors ()
+{}
+
+void
+TestActiveScanPanDescriptors::ScanConfirm (MlmeScanConfirmParams params)
+{
+  if (params.m_status == MLMESCAN_SUCCESS)
+    {
+      m_panDescriptorList = params.m_panDescList;
+    }
+}
+
+void
+TestActiveScanPanDescriptors::DoRun ()
+{
+  /*
+  *      [00:01]                   [00:02]                                   [00:03]
+  *  PAN Coordinator 1 (PAN: 5)       End Device                        PAN Coordinator 2 (PAN: 7)
+  *       |--------100 m----------------|----------106 m -----------------------|
+  *  Channel 12               (Active Scan channels 11-14)                 Channel 14
+  *
+  * Test Setup:
+  *
+  * At the beginning of the simulation, PAN coordinators are set to
+  * non-beacon enabled mode and wait for any beacon requests.
+  *
+  * During the simulation, the end device do an Active scan (i.e. send beacon request commands to the scanned channels).
+  * On reception of such commands, coordinators reply with a single beacon which contains a PAN descriptor.
+  * The test makes sure that the PAN descriptors are received (2 PAN descriptors) and because both PAN coordinators are
+  * set to a different distance from the end device, their LQI values should be bellow 255 but above 0. Likewise,
+  * Coordinator 2 LQI value should be less than Coordinator 1 LQI value. The exact expected value of LQI is not tested,
+  * this is dependable on the LQI implementation.
+  */
+
+
+
+  // Create 2 PAN coordinator nodes, and 1 end device
+  Ptr<Node> coord1 = CreateObject <Node> ();
+  Ptr<Node> endNode = CreateObject <Node> ();
+  Ptr<Node> coord2 = CreateObject <Node> ();
+
+  Ptr<LrWpanNetDevice> coord1NetDevice = CreateObject<LrWpanNetDevice> ();
+  Ptr<LrWpanNetDevice> endNodeNetDevice = CreateObject<LrWpanNetDevice> ();
+  Ptr<LrWpanNetDevice> coord2NetDevice = CreateObject<LrWpanNetDevice> ();
+
+  coord1NetDevice->SetAddress (Mac16Address ("00:01"));
+  endNodeNetDevice->SetAddress (Mac16Address ("00:02"));
+  coord2NetDevice->SetAddress (Mac16Address ("00:03"));
+
+
+  // Configure Spectrum channel
+  Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
+  Ptr<LogDistancePropagationLossModel> propModel = CreateObject<LogDistancePropagationLossModel> ();
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  channel->AddPropagationLossModel (propModel);
+  channel->SetPropagationDelayModel (delayModel);
+
+  coord1NetDevice->SetChannel (channel);
+  endNodeNetDevice->SetChannel (channel);
+  coord2NetDevice->SetChannel (channel);
+
+  coord1->AddDevice (coord1NetDevice);
+  endNode->AddDevice (endNodeNetDevice);
+  coord2->AddDevice (coord2NetDevice);
+
+
+  // Mobility
+  Ptr<ConstantPositionMobilityModel> coord1Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  coord1Mobility->SetPosition (Vector (0,0,0));
+  coord1NetDevice->GetPhy ()->SetMobility (coord1Mobility);
+
+  Ptr<ConstantPositionMobilityModel> endNodeMobility = CreateObject<ConstantPositionMobilityModel> ();
+  endNodeMobility->SetPosition (Vector (100,0,0));
+  endNodeNetDevice->GetPhy ()->SetMobility (endNodeMobility);
+
+  Ptr<ConstantPositionMobilityModel> coord2Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  coord2Mobility->SetPosition (Vector (206,0,0));
+  coord2NetDevice->GetPhy ()->SetMobility (coord2Mobility);
+
+  // MAC layer Callbacks hooks
+  MlmeScanConfirmCallback cb0;
+  cb0 = MakeCallback (&TestActiveScanPanDescriptors::ScanConfirm,this);
+  endNodeNetDevice->GetMac ()->SetMlmeScanConfirmCallback (cb0);
+
+  /////////////////
+  // ACTIVE SCAN //
+  /////////////////
+
+  // PAN coordinator N0 (PAN 5) is set to channel 12 in non-beacon mode but answer to beacon requests.
+  MlmeStartRequestParams params;
+  params.m_panCoor = true;
+  params.m_PanId = 5;
+  params.m_bcnOrd = 15;
+  params.m_sfrmOrd = 15;
+  params.m_logCh = 12;
+  Simulator::ScheduleWithContext (1, Seconds (2.0),
+                                  &LrWpanMac::MlmeStartRequest,
+                                  coord1NetDevice->GetMac (), params);
+
+  // PAN coordinator N2 (PAN 7) is set to channel 14 in non-beacon mode but answer to beacon requests.
+  MlmeStartRequestParams params2;
+  params2.m_panCoor = true;
+  params2.m_PanId = 7;
+  params2.m_bcnOrd = 15;
+  params2.m_sfrmOrd = 15;
+  params2.m_logCh = 14;
+  Simulator::ScheduleWithContext (2, Seconds (2.0),
+                                  &LrWpanMac::MlmeStartRequest,
+                                  coord2NetDevice->GetMac (), params2);
+
+  // End device N1 broadcast a single BEACON REQUEST for each channel (11, 12, 13, and 14).
+  // If a coordinator is present and in range, it will respond with a beacon broadcast.
+  // Scan Channels are represented by bits 0-26  (27 LSB)
+  //                       ch 14  ch 11
+  //                           |  |
+  // 0x7800  = 0000000000000000111100000000000
+  MlmeScanRequestParams scanParams;
+  scanParams.m_chPage = 0;
+  scanParams.m_scanChannels = 0x7800;
+  scanParams.m_scanDuration = 14;
+  scanParams.m_scanType = MLMESCAN_ACTIVE;
+  Simulator::ScheduleWithContext (1, Seconds (3.0),
+                                  &LrWpanMac::MlmeScanRequest,
+                                  endNodeNetDevice->GetMac (), scanParams);
+
+
+  Simulator::Stop (Seconds (2000));
+  NS_LOG_DEBUG ("----------- Start of TestActiveScanPanDescriptors -------------------");
+  Simulator::Run ();
+
+  NS_TEST_EXPECT_MSG_EQ (m_panDescriptorList.size (), 2, "Error, Beacons not received or PAN descriptors not found");
+  NS_TEST_ASSERT_MSG_LT (m_panDescriptorList [0].m_linkQuality, 255, "Error, Coordinator 1 (PAN 5) LQI value should be less than 255.");
+  NS_TEST_ASSERT_MSG_LT (m_panDescriptorList [1].m_linkQuality, 255, "Error, Coordinator 2 (PAN 7) LQI value should be less than 255.");
+  NS_TEST_ASSERT_MSG_GT (m_panDescriptorList [0].m_linkQuality, 0, "Error, Coordinator 1 (PAN 5) LQI value should be greater than 0.");
+  NS_TEST_ASSERT_MSG_GT (m_panDescriptorList [1].m_linkQuality, 0, "Error, Coordinator 2 (PAN 7) LQI value should be greater than 0.");
+
+  NS_TEST_ASSERT_MSG_LT (m_panDescriptorList [1].m_linkQuality,
+                         m_panDescriptorList [0].m_linkQuality,
+                         "Error, Coordinator 2 (PAN 7) LQI value should be less than Coordinator 1 (PAN 5).");
 
   Simulator::Destroy ();
 
@@ -282,6 +458,7 @@ LrWpanMacTestSuite::LrWpanMacTestSuite ()
   : TestSuite ("lr-wpan-mac-test", UNIT)
 {
   AddTestCase (new TestRxOffWhenIdleAfterCsmaFailure, TestCase::QUICK);
+  AddTestCase (new TestActiveScanPanDescriptors, TestCase::QUICK);
 }
 
 

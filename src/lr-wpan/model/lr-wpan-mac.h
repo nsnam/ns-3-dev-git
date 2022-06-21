@@ -447,13 +447,11 @@ struct MlmeStartConfirmParams
  */
 struct MlmeBeaconNotifyIndicationParams
 {
-  uint8_t m_bsn; //!< The beacon sequence number
-  //TODO: Add other params
-  //m_PanDesc;
-  //m_PenAddrSpec
-  //m_sduAddrList
-  //m_sduLength
-  //m_sdu;
+  uint8_t m_bsn;                  //!< The beacon sequence number.
+  PanDescriptor m_panDescriptor;  //!< The PAN descriptor for the received beacon.
+
+  uint32_t m_sduLength;           //!< The number of octets contained in the beacon payload.
+  Ptr<Packet> m_sdu;              //!< The set of octets comprising the beacon payload.
 };
 /**
  * \ingroup lr-wpan
@@ -1124,6 +1122,18 @@ private:
    */
   void SendOneBeacon (void);
   /**
+   * Called to send a beacon request command.
+   */
+  void SendBeaconRequestCommand (void);
+  /**
+   * Called to end a MLME-START.request after changing the page and channel number.
+   */
+  void EndStartRequest (void);
+  /**
+   * Called at the end of the current channel scan (Active or Passive) for a given duration.
+   */
+  void EndChannelScan (void);
+  /**
    * Called at the end of one ED channel scan.
    */
   void EndChannelEnergyScan (void);
@@ -1443,6 +1453,11 @@ private:
    * PLME-SET operations (set channel page, set channel number) and multiple ed scans take place.
    */
   MlmeScanRequestParams m_scanParams;
+  /**
+   * The parameters used during a MLME-START.request. These parameters are stored here while
+   * PLME-SET operations (set channel page, set channel number) take place.
+   */
+  MlmeStartRequestParams m_startParams;
   /**
    * The channel list index used to obtain the current scanned channel.
    */

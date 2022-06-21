@@ -197,6 +197,11 @@ public:
    */
   void SetGtsDirectionField (uint8_t gtsDir);
   /**
+   *  Get the GTS Specification Permit. TRUE if coordinator is accepting GTS requests.
+   *  \return True if the coordinator is accepting GTS request.
+   */
+  bool GetGtsPermit (void) const;
+  /**
    * Get the size of the serialized GTS fields.
    * \return the size of the serialized fields.
    */

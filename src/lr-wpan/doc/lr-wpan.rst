@@ -102,6 +102,7 @@ MAC Primitives
 * MLME-START.Confirm
 * MLME-SCAN.Request
 * MLME-SCAN.Confirm
+* MLME-BEACON-NOFIFY.Indication
 
 PHY Primitives
 ++++++++++++++
@@ -146,9 +147,14 @@ looking for traces of energy. The maximum energy registered during a given amoun
 Energy scan is typically used to measure the quality of a channel at any given time. For this reason,
 coordinators often use this scan before initiating a PAN on a channel.
 
-* Active Scan: <Not supported by ns-3>
+* Active Scan: A device sends beacon requests on a set number of channels looking for a PAN coordinator.
+               The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests.
+               The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process
+               devices extract the information in the PAN descriptors from the collected beacons and
+               based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
 
-* Passive Scan: <Not supported by ns-3>
+* Passive Scan: In a passive scan, no beacon requests are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode).
+                Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
 
 * Orphan Scan: <Not supported by ns-3>
 
@@ -280,6 +286,8 @@ The NetDevice Tx queue is not limited, i.e., packets are never dropped
 due to queue becoming full. They may be dropped due to excessive transmission
 retries or channel access failure.
 
+Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
+
 References
 ==========
 
@@ -317,6 +325,7 @@ The following examples have been written, which can be found in ``src/lr-wpan/ex
 * ``lr-wpan-packet-print.cc``:  An example to print out the MAC header fields.
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
 * ``lr-wpan-ed-scan.cc``:  Simple example showing the use of energy detection (ED) scan in the MAC.
+* ``lr-wpan-active-scan.cc``:  A simple example showing the use of an active scan in the MAC.
 
 In particular, the module enables a very simplified end-to-end data
 transfer scenario, implemented in ``lr-wpan-data.cc``.  The figure

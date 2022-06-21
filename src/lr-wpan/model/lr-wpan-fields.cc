@@ -241,6 +241,12 @@ GtsFields::SetGtsDirectionField (uint8_t gtsDir)
                                               // Bit 7 (Reserved)
 }
 
+bool
+GtsFields::GetGtsPermit (void) const
+{
+  return m_gtsSpecPermit;
+}
+
 uint32_t
 GtsFields::GetSerializedSize (void) const
 {
