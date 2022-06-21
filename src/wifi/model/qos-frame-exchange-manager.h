@@ -110,6 +110,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
                      const WifiTxVector& txVector,
                      bool inAmpdu) override;
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     Time GetFrameDurationId(const WifiMacHeader& header,
                             uint32_t size,
                             const WifiTxParameters& txParams,

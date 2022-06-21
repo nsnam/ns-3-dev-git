@@ -382,12 +382,22 @@ class FrameExchangeManager : public Object
     /**
      * Perform actions that are possibly needed when receiving any frame,
      * independently of whether the frame is addressed to this station
-     * (e.g., setting the NAV or the TXOP holder).
+     * (e.g., storing buffer status reports).
      *
      * \param psdu the received PSDU
      * \param txVector TX vector of the received PSDU
      */
     virtual void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+
+    /**
+     * Perform actions that are possibly needed after receiving any frame,
+     * independently of whether the frame is addressed to this station
+     * (e.g., setting the NAV or the TXOP holder).
+     *
+     * \param psdu the received PSDU
+     * \param txVector TX vector of the received PSDU
+     */
+    virtual void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
 
     /**
      * Get the updated TX duration of the frame associated with the given TX

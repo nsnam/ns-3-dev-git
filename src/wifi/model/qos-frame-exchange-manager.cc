@@ -644,8 +644,6 @@ QosFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
-    SetTxopHolder(psdu, txVector);
-
     // APs store buffer size report of associated stations
     if (m_mac->GetTypeOfStation() == AP && psdu->GetAddr1() == m_self)
     {
@@ -667,6 +665,15 @@ QosFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
     }
 
     FrameExchangeManager::PreProcessFrame(psdu, txVector);
+}
+
+void
+QosFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    SetTxopHolder(psdu, txVector);
+    FrameExchangeManager::PostProcessFrame(psdu, txVector);
 }
 
 void

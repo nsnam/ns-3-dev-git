@@ -1048,40 +1048,57 @@ FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
         PreProcessFrame(psdu, txVector);
     }
 
-    // ignore unicast frames that are not addressed to us
     Mac48Address addr1 = psdu->GetAddr1();
-    if (!addr1.IsGroup() && addr1 != m_self)
+
+    if (addr1.IsGroup() || addr1 == m_self)
     {
-        if (m_promisc && psdu->GetNMpdus() == 1 && psdu->GetHeader(0).IsData())
+        // receive broadcast frames or frames addressed to us only
+        if (psdu->GetNMpdus() == 1)
         {
-            m_rxMiddle->Receive(*psdu->begin(), m_linkId);
+            // if perMpduStatus is not empty (i.e., this MPDU is not included in an A-MPDU)
+            // then it must contain a single value which must be true (i.e., the MPDU
+            // has been correctly received)
+            NS_ASSERT(perMpduStatus.empty() || (perMpduStatus.size() == 1 && perMpduStatus[0]));
+            // Ack and CTS do not carry Addr2
+            if (!psdu->GetHeader(0).IsAck() && !psdu->GetHeader(0).IsCts())
+            {
+                GetWifiRemoteStationManager()->ReportRxOk(psdu->GetHeader(0).GetAddr2(),
+                                                          rxSignalInfo,
+                                                          txVector);
+            }
+            ReceiveMpdu(*(psdu->begin()), rxSignalInfo, txVector, perMpduStatus.empty());
         }
-        return;
+        else
+        {
+            EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
+        }
+    }
+    else if (m_promisc)
+    {
+        for (const auto& mpdu : *PeekPointer(psdu))
+        {
+            if (!mpdu->GetHeader().IsCtl())
+            {
+                m_rxMiddle->Receive(mpdu, m_linkId);
+            }
+        }
     }
 
-    if (psdu->GetNMpdus() == 1)
+    if (!perMpduStatus.empty())
     {
-        // if perMpduStatus is not empty (i.e., this MPDU is not included in an A-MPDU)
-        // then it must contain a single value which must be true (i.e., the MPDU
-        // has been correctly received)
-        NS_ASSERT(perMpduStatus.empty() || (perMpduStatus.size() == 1 && perMpduStatus[0]));
-        // Ack and CTS do not carry Addr2
-        if (!psdu->GetHeader(0).IsAck() && !psdu->GetHeader(0).IsCts())
-        {
-            GetWifiRemoteStationManager()->ReportRxOk(psdu->GetHeader(0).GetAddr2(),
-                                                      rxSignalInfo,
-                                                      txVector);
-        }
-        ReceiveMpdu(*(psdu->begin()), rxSignalInfo, txVector, perMpduStatus.empty());
-    }
-    else
-    {
-        EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
+        // for A-MPDUs, we get here only once
+        PostProcessFrame(psdu, txVector);
     }
 }
 
 void
 FrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+}
+
+void
+FrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
 
