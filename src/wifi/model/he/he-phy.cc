@@ -452,10 +452,19 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowers
 
           auto heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
           NS_ASSERT (heConfiguration);
-          Time maxDelay = heConfiguration->GetMaxTbPpduDelay ();
+          // DoStartReceivePayload(), which is called when we start receiving the Data field,
+          // computes the max offset among TB PPDUs based on the begin OFDMA payload RX events,
+          // which are scheduled by StartReceivePreamble() when starting the reception of the
+          // OFDMA portion. Therefore, the maximum delay cannot exceed the duration of the
+          // training fields that are between the start of the OFDMA portion and the start
+          // of the Data field.
+          Time maxDelay = GetDuration (WIFI_PPDU_FIELD_TRAINING, txVector);
+          if (heConfiguration->GetMaxTbPpduDelay ().IsStrictlyPositive ())
+            {
+              maxDelay = Min (maxDelay, heConfiguration->GetMaxTbPpduDelay ());
+            }
 
-          if (maxDelay.IsStrictlyPositive ()
-              && Simulator::Now () - event->GetStartTime () > maxDelay)
+          if (Simulator::Now () - event->GetStartTime () > maxDelay)
             {
               // This HE TB PPDU arrived too late to be decoded properly. The HE TB PPDU
               // is dropped and added as interference
