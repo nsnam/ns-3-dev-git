@@ -27,6 +27,8 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
+#include "channel-access-manager.h"
+#include "frame-exchange-manager.h"
 #include "qos-txop.h"
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
@@ -132,6 +134,23 @@ StaWifiMac::DoDispose (void)
 StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+StaWifiMac::StaLinkEntity::~StaLinkEntity ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
+std::unique_ptr<WifiMac::LinkEntity>
+StaWifiMac::CreateLinkEntity (void) const
+{
+  return std::make_unique<StaLinkEntity> ();
+}
+
+StaWifiMac::StaLinkEntity&
+StaWifiMac::GetLink (uint8_t linkId) const
+{
+  return static_cast<StaLinkEntity&> (WifiMac::GetLink (linkId));
 }
 
 int64_t

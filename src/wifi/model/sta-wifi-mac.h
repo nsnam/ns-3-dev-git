@@ -218,6 +218,29 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+protected:
+  /**
+   * Structure holding information specific to a single link. Here, the meaning of
+   * "link" is that of the 11be amendment which introduced multi-link devices. For
+   * previous amendments, only one link can be created.
+   */
+  struct StaLinkEntity : public WifiMac::LinkEntity
+  {
+    /// Destructor (a virtual method is needed to make this struct polymorphic)
+    virtual ~StaLinkEntity ();
+
+    std::optional<uint8_t> apLinkId;           //!< ID (as set by the AP) of the link we have
+                                               //!< setup or are setting up
+  };
+
+  /**
+   * Get a reference to the link associated with the given ID.
+   *
+   * \param linkId the given link ID
+   * \return a reference to the link associated with the given ID
+   */
+  StaLinkEntity& GetLink (uint8_t linkId) const;
+
 private:
   /**
    * The current MAC state of the STA.
@@ -256,6 +279,7 @@ private:
   bool CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame, uint8_t linkId);
 
   void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId) override;
+  std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
   /**
    * Process the Beacon frame received on the given link.
