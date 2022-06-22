@@ -547,6 +547,23 @@ HePhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
 }
 
 PhyEntity::PhyFieldRxStatus
+HePhy::ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field)
+{
+  NS_LOG_FUNCTION (this << *event << status << field);
+  NS_ASSERT (event->GetTxVector ().GetPreambleType () >= WIFI_PREAMBLE_HE_SU);
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_SIG_A:
+        return ProcessSigA (event, status);
+      case WIFI_PPDU_FIELD_SIG_B:
+        return ProcessSigB (event, status);
+      default:
+        NS_ASSERT_MSG (false, "Invalid PPDU field");
+    }
+  return status;
+}
+
+PhyEntity::PhyFieldRxStatus
 HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
 {
   NS_LOG_FUNCTION (this << *event << status);
@@ -643,6 +660,7 @@ PhyEntity::PhyFieldRxStatus
 HePhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
 {
   NS_LOG_FUNCTION (this << *event << status);
+  NS_ASSERT (IsDlMu (event->GetTxVector ().GetPreambleType ()));
   if (status.isSuccess)
     {
       //Check if PPDU is filtered only if the SIG-B content is supported (not explicitly stated but assumed based on behavior for SIG-A)

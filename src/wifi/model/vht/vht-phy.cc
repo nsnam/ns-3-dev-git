@@ -254,78 +254,59 @@ VhtPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
   switch (field)
     {
       case WIFI_PPDU_FIELD_SIG_A:
-        return EndReceiveSigA (event);
+        [[fallthrough]];
       case WIFI_PPDU_FIELD_SIG_B:
-        return EndReceiveSigB (event);
+        return EndReceiveSig (event, field);
       default:
         return HtPhy::DoEndReceiveField (field, event);
     }
 }
 
 PhyEntity::PhyFieldRxStatus
-VhtPhy::EndReceiveSigA (Ptr<Event> event)
+VhtPhy::EndReceiveSig (Ptr<Event> event, WifiPpduField field)
 {
-  NS_LOG_FUNCTION (this << *event);
+  NS_LOG_FUNCTION (this << *event << field);
+  SnrPer snrPer = GetPhyHeaderSnrPer (field, event);
+  NS_LOG_DEBUG (field << ": SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
+  if (status.isSuccess)
+    {
+      NS_LOG_DEBUG ("Received " << field);
+      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_SIG_A, event->GetPpdu ()))
+        {
+          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+        }
+      status = ProcessSig (event, status, field);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Drop packet because " << field << " reception failed");
+      status.reason = GetFailureReason (field);
+      status.actionIfFailure = DROP;
+    }
+  return status;
+}
+
+WifiPhyRxfailureReason
+VhtPhy::GetFailureReason (WifiPpduField field) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_SIG_A:
+        return SIG_A_FAILURE;
+      case WIFI_PPDU_FIELD_SIG_B:
+        return SIG_B_FAILURE;
+      default:
+        NS_ASSERT_MSG (false, "Unknown PPDU field");
+        return UNKNOWN;
+    }
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field)
+{
+  NS_LOG_FUNCTION (this << *event << status << field);
   NS_ASSERT (event->GetTxVector ().GetPreambleType () >= WIFI_PREAMBLE_VHT_SU);
-  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_SIG_A, event);
-  NS_LOG_DEBUG ("SIG-A: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
-  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
-  if (status.isSuccess)
-    {
-      NS_LOG_DEBUG ("Received SIG-A");
-      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_SIG_A, event->GetPpdu ()))
-        {
-          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
-        }
-      status = ProcessSigA (event, status);
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Drop packet because SIG-A reception failed");
-      status.reason = SIG_A_FAILURE;
-      status.actionIfFailure = DROP;
-    }
-  return status;
-}
-
-PhyEntity::PhyFieldRxStatus
-VhtPhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
-{
-  NS_LOG_FUNCTION (this << *event << status);
-  //TODO see if something should be done here once MU-MIMO is supported
-  return status; //nothing special for VHT
-}
-
-PhyEntity::PhyFieldRxStatus
-VhtPhy::EndReceiveSigB (Ptr<Event> event)
-{
-  NS_LOG_FUNCTION (this << *event);
-  NS_ASSERT (event->GetPpdu ()->GetType () == WIFI_PPDU_TYPE_DL_MU);
-  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_SIG_B, event);
-  NS_LOG_DEBUG ("SIG-B: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
-  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
-  if (status.isSuccess)
-    {
-      NS_LOG_DEBUG ("Received SIG-B");
-      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_SIG_A, event->GetPpdu ()))
-        {
-          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
-        }
-      status = ProcessSigB (event, status);
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Drop reception because SIG-B reception failed");
-      status.reason = SIG_B_FAILURE;
-      status.actionIfFailure = DROP;
-    }
-  return status;
-}
-
-PhyEntity::PhyFieldRxStatus
-VhtPhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
-{
-  NS_LOG_FUNCTION (this << *event << status);
   //TODO see if something should be done here once MU-MIMO is supported
   return status; //nothing special for VHT
 }

@@ -382,8 +382,7 @@ public:
   static bool IsAllowed (const WifiTxVector& txVector);
 
 protected:
-  PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
-  PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
+  PhyFieldRxStatus ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field) override;
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
   Time DoStartReceivePayload (Ptr<Event> event) override;
@@ -399,6 +398,26 @@ protected:
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
   uint32_t GetMaxPsduSize (void) const override;
   WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
+
+  /**
+   * Process SIG-A, perform amendment-specific actions, and
+   * provide an updated status of the reception.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \param status the status of the reception of the correctly received SIG-A after the configuration support check
+   * \return the updated status of the reception of the SIG-A
+   */
+  virtual PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status);
+
+  /**
+   * Process SIG-B, perform amendment-specific actions, and
+   * provide an updated status of the reception.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \param status the status of the reception of the correctly received SIG-A after the configuration support check
+   * \return the updated status of the reception of the SIG-B
+   */
+  virtual PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status);
 
   /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.
