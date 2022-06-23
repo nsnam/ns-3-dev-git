@@ -23,6 +23,9 @@ Changes from ns-3.36 to ns-3.37
 * Added new attributes (**AccessReqInterval**, **AccessReqAc** and **DelayAccessReqUponAccess**) to the MultiUserScheduler to allow a wifi AP to coordinate UL MU transmissions even without DL traffic.
 * `WifiNetDevice` has a new **Phys** attribute, which is primarily intended to select a specific PHY object of an 11be multi-link device when using path names.
 * `Txop` class (wifi module) has new attributes (**MinCws**, **MaxCws**, **Aifsns** and **TxopLimits**) to set minimum CW, maximum CW, AIFSN and TXOP limit for all the links of a multi-link device.
+* `WifiPhyListener::NotifyMaybeCcaBusyStart` has been renamed to `WifiPhyListener::NotifyCcaBusyStart` and has two additional parameters: the channel type that indicates for which subchannel the CCA-BUSY is reported and a vector of CCA-BUSY durations for each 20 MHz subchannel. A duration of zero indicates CCA is IDLE, and the vector of CCA-BUSY durations is not empty if the PHY supports 802.11ax and the operational channel width is larger than 20 MHz.
+* Added a new attribute **CcaSensitivity** in WifiPhy for configuring the threshold that corresponds to the minimum received power of a PPDU, that occupies the primary channel, should have to report a CCA-BUSY indication.
+* Added a new attribute **SecondaryCcaSensitivityThresholds** in VhtConfiguration for configuring the thresholds that corresponds to the minimum received power of a PPDU, that does not occupy the primary 20 MHz channel, should have to report a CCA-BUSY indication. This is made of a tuple, where the first threshold is used for 20 MHz PPDUs, the second one is used for 40 MHz PPDUs and the third one is used for 80 MHz PPDUs.
 
 ### Changes to existing API
 

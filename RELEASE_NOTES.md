@@ -20,7 +20,7 @@ Release 3-dev
 - (lr-wpan) !991 - Adds MAC ED scan support
 - (internet) !996 - IPv6 Router Solicitations (RS) are now retransmitted up to 4 times, following RFC 5779.
 - (lr-wpan) !997 - Adds MAC ACTIVE and PASSIVE scan support
-
+- (wifi) CCA has been reworked to report the channel type in the CCA-BUSY indication and the per-20 MHz CCA bitmap for 802.11ax.
 
 ### Bugs fixed
 
