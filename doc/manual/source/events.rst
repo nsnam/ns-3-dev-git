@@ -315,7 +315,7 @@ store events in time order.
 
 Because event distributions vary by model there is no one
 best strategy for the priority queue, so |ns3| has several options with
-differing tradeoffs.  The example `utils/bench-simulator.c` can be used
+differing tradeoffs.  The example `utils/bench-scheduler.c` can be used
 to test the performance for a user-supplied event distribution.
 For modest execution times (less than an hour, say) the choice of priority
 queue is usually not significant; configuring the build type to optimized

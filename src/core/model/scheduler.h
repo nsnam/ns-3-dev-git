@@ -55,7 +55,7 @@ class EventImpl;
  * Which one is "best" depends in part on the characteristics
  * of the model being executed.  For optimized production work common
  * practice is to benchmark each Scheduler on the model of interest.
- * The utility program utils/bench-simulator.cc can do simple benchmarking
+ * The utility program utils/bench-scheduler.cc can do simple benchmarking
  * of each SchedulerImpl against an exponential or user-provided
  * event time distribution.
  *

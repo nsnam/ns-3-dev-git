@@ -18,10 +18,10 @@ if(${ENABLE_TESTS} AND (test IN_LIST libs_to_build))
   add_dependencies(all-test-targets test-runner)
 endif()
 
-add_executable(bench-simulator bench-simulator.cc)
-target_link_libraries(bench-simulator ${libcore})
+add_executable(bench-scheduler bench-scheduler.cc)
+target_link_libraries(bench-scheduler ${libcore})
 set_runtime_outputdirectory(
-  bench-simulator ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/ ""
+  bench-scheduler ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/ ""
 )
 
 if(network IN_LIST libs_to_build)

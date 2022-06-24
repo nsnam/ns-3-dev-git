@@ -33,7 +33,7 @@ search for specific information.
 
 To run it, simply open terminal and type
 
-.. sourcecode:: bash
+.. sourcecode::
 
     $ ./ns3 run print-introspected-doxygen
 
@@ -70,29 +70,45 @@ This will output the following::
 
 
 
-Bench-simulator
-***************
+bench-scheduler
+****************
 
 This tool is used to benchmark the scheduler algorithms used in |ns3|.
 
 Command-line Arguments
 ++++++++++++++++++++++
 
-.. sourcecode:: bash
+.. sourcecode::
 
-    $ ./ns3 run "bench-simulator --help"
+    $ ./ns3 run "bench-scheduler --help"
+    bench-scheduler [Program Options] [General Arguments]
+
+    Benchmark the simulator scheduler.
+
+    Event intervals are taken from one of:
+      an exponential distribution, with mean 100 ns,
+      an ascii file, given by the --file="<filename>" argument,
+      or standard input, by the argument --file="-"
+    In the case of either --file form, the input is expected
+    to be ascii, giving the relative event times in ns.
 
     Program Options:
-	--cal:    use CalendarSheduler [false]
-	--heap:   use HeapScheduler [false]
-	--list:   use ListSheduler [false]
-	--map:    use MapScheduler (default) [true]
-	--debug:  enable debugging output [false]
-	--pop:    event population size (default 1E5) [100000]
-	--total:  total number of events to run (default 1E6) [1000000]
-	--runs:   number of runs (default 1) [1]
-	--file:   file of relative event times []
-	--prec:   printed output precision [6]
+	--all:     use all schedulers [false]
+	--cal:     use CalendarSheduler [false]
+	--calrev:  reverse ordering in the CalendarScheduler [false]
+	--heap:    use HeapScheduler [false]
+	--list:    use ListSheduler [false]
+	--map:     use MapScheduler (default) [true]
+	--pri:     use PriorityQueue [false]
+	--debug:   enable debugging output [false]
+	--pop:     event population size (default 1E5) [100000]
+	--total:   total number of events to run (default 1E6) [1000000]
+	--runs:    number of runs (default 1) [1]
+	--file:    file of relative event times
+	--prec:    printed output precision [6]
+
+    General Arguments:
+	...
 
 You can change the Scheduler being benchmarked by passing
 the appropriate flags, for example if you want to
@@ -102,7 +118,7 @@ The default total number of events, runs or population size
 can be overridden by passing `--total=value`, `--runs=value`
 and `--pop=value` respectively.
 
-If you want to use event distribution which is stored in a file,
+If you want to use an event distribution which is stored in a file,
 you can pass the file option by `--file=FILE_NAME`.
 
 `--prec` can be used to change the output precision value and
@@ -113,44 +129,42 @@ Invocation
 
 To run it, simply open the terminal and type
 
-.. sourcecode:: bash
+.. sourcecode::
 
-    $ ./ns3 run bench-simulator
+    $ ./ns3 run bench-scheduler
 
 It will show something like this depending upon the scheduler being benchmarked::
 
-    ns3-dev-bench-simulator-debug:
-    ns3-dev-bench-simulator-debug: scheduler: ns3::MapScheduler
-    ns3-dev-bench-simulator-debug: population: 100000
-    ns3-dev-bench-simulator-debug: total events: 1000000
-    ns3-dev-bench-simulator-debug: runs: 1
-    ns3-dev-bench-simulator-debug: using default exponential distribution
+    bench-scheduler:  Benchmark the simulator scheduler
+      Event population size:        100000
+      Total events per run:         1000000
+      Number of runs per scheduler: 1
+      Event time distribution:      default exponential
 
-    Run        Inititialization:                   Simulation:
+    ns3::MapScheduler
+    Run #       Initialization:                     Simulation:
 		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
-    (prime)     0.4         250000      4e-06       1.84        543478      1.84e-06
-    0           0.15        666667      1.5e-06     1.86        537634      1.86e-06
-
+    (prime)     0.09        1.11111e+06 9e-07       0.98        1.02041e+06 9.8e-07
+    0           0.04        2.5e+06     4e-07       0.98        1.02041e+06 9.8e-07
 
 Suppose we had to benchmark `CalendarScheduler` instead, we would have written
 
-.. sourcecode:: bash
+.. sourcecode::
 
-    $ ./ns3 run "bench-simulator --cal"
+    $ ./ns3 run "bench-scheduler --cal"
 
 And the output would look something like this::
 
-    ns3-dev-bench-simulator-debug:
-    ns3-dev-bench-simulator-debug: scheduler: ns3::CalendarScheduler
-    ns3-dev-bench-simulator-debug: population: 100000
-    ns3-dev-bench-simulator-debug: total events: 1000000
-    ns3-dev-bench-simulator-debug: runs: 1
-    ns3-dev-bench-simulator-debug: using default exponential distribution
+    bench-scheduler:  Benchmark the simulator scheduler
+      Event population size:        100000
+      Total events per run:         1000000
+      Number of runs per scheduler: 1
+      Event time distribution:      default exponential
 
-    Run        Inititialization:                   Simulation:
+    ns3::CalendarScheduler: insertion order: normal
+    Run #       Initialization:                     Simulation:
 		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
-    (prime)     1.19        84033.6     1.19e-05    32.03       31220.7     3.203e-05
-    0           0.99        101010      9.9e-06     31.22       32030.7     3.122e-05
-    ```
+    (prime)     0.3         333333      3e-06       12.77       78308.5     1.277e-05
+    0           0.29        344828      2.9e-06     13.66       73206.4     1.366e-05
