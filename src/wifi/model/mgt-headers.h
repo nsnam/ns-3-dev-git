@@ -727,7 +727,7 @@ public:
    *
    * \return SSID
    */
-  Ssid GetSsid (void) const;
+  const Ssid& GetSsid (void) const;
   /**
    * Return the beacon interval in microseconds unit.
    *
@@ -739,181 +739,243 @@ public:
    *
    * \return the supported rates
    */
-  SupportedRates GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates (void) const;
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  CapabilityInformation GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities (void) const;
   /**
    * Return the DSSS Parameter Set.
    *
    * \return the DSSS Parameter Set
    */
-  DsssParameterSet GetDsssParameterSet (void) const;
+  const DsssParameterSet& GetDsssParameterSet (void) const;
   /**
    * Return the extended capabilities.
    *
    * \return the extended capabilities
    */
-  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
-  HtCapabilities GetHtCapabilities (void) const;
+  const HtCapabilities& GetHtCapabilities (void) const;
   /**
    * Return the HT operation.
    *
    * \return HT operation
    */
-  HtOperation GetHtOperation (void) const;
+  const HtOperation& GetHtOperation (void) const;
   /**
    * Return the VHT capabilities.
    *
    * \return VHT capabilities
    */
-  VhtCapabilities GetVhtCapabilities (void) const;
+  const VhtCapabilities& GetVhtCapabilities (void) const;
   /**
    * Return the VHT operation.
    *
    * \return VHT operation
    */
-  VhtOperation GetVhtOperation (void) const;
+  const VhtOperation& GetVhtOperation (void) const;
   /**
    * Return the HE capabilities.
    *
    * \return HE capabilities
    */
-  HeCapabilities GetHeCapabilities (void) const;
+  const HeCapabilities& GetHeCapabilities (void) const;
   /**
    * Return the HE operation.
    *
    * \return HE operation
    */
-  HeOperation GetHeOperation (void) const;
+  const HeOperation& GetHeOperation (void) const;
   /**
    * Return the EHT capabilities.
    *
    * \return EHT capabilities
    */
-  EhtCapabilities GetEhtCapabilities (void) const;
+  const EhtCapabilities& GetEhtCapabilities (void) const;
   /**
    * Return the ERP information.
    *
    * \return the ERP information
    */
-  ErpInformation GetErpInformation (void) const;
+  const ErpInformation& GetErpInformation (void) const;
   /**
    * Return the EDCA Parameter Set.
    *
    * \return the EDCA Parameter Set
    */
-  EdcaParameterSet GetEdcaParameterSet (void) const;
+  const EdcaParameterSet& GetEdcaParameterSet (void) const;
   /**
    * Return the MU EDCA Parameter Set.
    *
    * \return the MU EDCA Parameter Set
    */
-  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  const MuEdcaParameterSet& GetMuEdcaParameterSet (void) const;
+
   /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
    */
-  void SetCapabilities (CapabilityInformation capabilities);
+  void SetCapabilities (const CapabilityInformation& capabilities);
+
+  /** \copydoc SetCapabilities */
+  void SetCapabilities (CapabilityInformation&& capabilities);
+
   /**
    * Set the extended capabilities.
    *
    * \param extendedCapabilities the extended capabilities
    */
-  void SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities);
+  void SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities);
+
+  /** \copydoc SetExtendedCapabilities */
+  void SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities);
+
   /**
    * Set the HT capabilities.
    *
    * \param htCapabilities HT capabilities
    */
-  void SetHtCapabilities (HtCapabilities htCapabilities);
+  void SetHtCapabilities (const HtCapabilities& htCapabilities);
+
+  /** \copydoc SetHtCapabilities */
+  void SetHtCapabilities (HtCapabilities&& htCapabilities);
+
   /**
    * Set the HT operation.
    *
    * \param htOperation HT operation
    */
-  void SetHtOperation (HtOperation htOperation);
+  void SetHtOperation (const HtOperation& htOperation);
+
+  /** \copydoc SetHtOperation */
+  void SetHtOperation (HtOperation&& htOperation);
+
   /**
    * Set the VHT capabilities.
    *
    * \param vhtCapabilities VHT capabilities
    */
-  void SetVhtCapabilities (VhtCapabilities vhtCapabilities);
+  void SetVhtCapabilities (const VhtCapabilities& vhtCapabilities);
+
+  /** \copydoc SetVhtCapabilities */
+  void SetVhtCapabilities (VhtCapabilities&& vhtCapabilities);
+
   /**
    * Set the VHT operation.
    *
    * \param vhtOperation VHT operation
    */
-  void SetVhtOperation (VhtOperation vhtOperation);
+  void SetVhtOperation (const VhtOperation& vhtOperation);
+
+  /** \copydoc SetVhtOperation */
+  void SetVhtOperation (VhtOperation&& vhtOperation);
+
   /**
    * Set the HE capabilities.
    *
    * \param heCapabilities HE capabilities
    */
-  void SetHeCapabilities (HeCapabilities heCapabilities);
+  void SetHeCapabilities (const HeCapabilities& heCapabilities);
+
+  /** \copydoc SetHeCapabilities */
+  void SetHeCapabilities (HeCapabilities&& heCapabilities);
+
   /**
    * Set the HE operation.
    *
    * \param heOperation HE operation
    */
-  void SetHeOperation (HeOperation heOperation);
+  void SetHeOperation (const HeOperation& heOperation);
+
+  /** \copydoc SetHeOperation */
+  void SetHeOperation (HeOperation&& heOperation);
+
   /**
    * Set the EHT capabilities.
    *
    * \param ehtCapabilities EHT capabilities
    */
-  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  void SetEhtCapabilities (const EhtCapabilities& ehtCapabilities);
+
+  /** \copydoc SetEhtCapabilities */
+  void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
+
   /**
    * Set the Service Set Identifier (SSID).
    *
    * \param ssid SSID
    */
-  void SetSsid (Ssid ssid);
+  void SetSsid (const Ssid& ssid);
+
+  /** \copydoc SetSsid */
+  void SetSsid (Ssid&& ssid);
+
   /**
    * Set the beacon interval in microseconds unit.
    *
    * \param us beacon interval in microseconds unit
    */
   void SetBeaconIntervalUs (uint64_t us);
+
   /**
    * Set the supported rates.
    *
    * \param rates the supported rates
    */
-  void SetSupportedRates (SupportedRates rates);
+  void SetSupportedRates (const SupportedRates& rates);
+
+  /** \copydoc SetSupportedRates */
+  void SetSupportedRates (SupportedRates&& rates);
+
   /**
    * Set the DSSS Parameter Set.
    *
    * \param dsssParameterSet the DSSS Parameter Set
    */
-  void SetDsssParameterSet (DsssParameterSet dsssParameterSet);
+  void SetDsssParameterSet (const DsssParameterSet& dsssParameterSet);
+
+  /** \copydoc SetDsssParameterSet */
+  void SetDsssParameterSet (DsssParameterSet&& dsssParameterSet);
+
   /**
    * Set the ERP information.
    *
    * \param erpInformation the ERP information
    */
-  void SetErpInformation (ErpInformation erpInformation);
+  void SetErpInformation (const ErpInformation& erpInformation);
+
+  /** \copydoc SetErpInformation */
+  void SetErpInformation (ErpInformation&& erpInformation);
+
   /**
    * Set the EDCA Parameter Set.
    *
    * \param edcaParameterSet the EDCA Parameter Set
    */
-  void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
+  void SetEdcaParameterSet (const EdcaParameterSet& edcaParameterSet);
+
+  /** \copydoc SetEdcaParameterSet */
+  void SetEdcaParameterSet (EdcaParameterSet&& edcaParameterSet);
+
   /**
    * Set the MU EDCA Parameter Set.
    *
    * \param muEdcaParameterSet the MU EDCA Parameter Set
    */
-  void SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameterSet);
+  void SetMuEdcaParameterSet (const MuEdcaParameterSet& muEdcaParameterSet);
+
+  /** \copydoc SetMuEdcaParameterSet */
+  void SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParameterSet);
+
   /**
    * Return the time stamp.
    *

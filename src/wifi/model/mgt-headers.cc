@@ -256,7 +256,7 @@ MgtProbeResponseHeader::GetTimestamp ()
   return m_timestamp;
 }
 
-Ssid
+const Ssid&
 MgtProbeResponseHeader::GetSsid (void) const
 {
   return m_ssid;
@@ -268,124 +268,184 @@ MgtProbeResponseHeader::GetBeaconIntervalUs (void) const
   return m_beaconInterval;
 }
 
-SupportedRates
+const SupportedRates&
 MgtProbeResponseHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
 
 void
-MgtProbeResponseHeader::SetCapabilities (CapabilityInformation capabilities)
+MgtProbeResponseHeader::SetCapabilities (const CapabilityInformation& capabilities)
 {
   m_capability = capabilities;
 }
 
-CapabilityInformation
+void
+MgtProbeResponseHeader::SetCapabilities (CapabilityInformation&& capabilities)
+{
+  m_capability = std::move (capabilities);
+}
+
+const CapabilityInformation&
 MgtProbeResponseHeader::GetCapabilities (void) const
 {
   return m_capability;
 }
 
 void
-MgtProbeResponseHeader::SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities)
+MgtProbeResponseHeader::SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities)
 {
   m_extendedCapability = extendedCapabilities;
 }
 
-ExtendedCapabilities
+void
+MgtProbeResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities)
+{
+  m_extendedCapability = std::move (extendedCapabilities);
+}
+
+const ExtendedCapabilities&
 MgtProbeResponseHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
 }
 
 void
-MgtProbeResponseHeader::SetHtCapabilities (HtCapabilities htCapabilities)
+MgtProbeResponseHeader::SetHtCapabilities (const HtCapabilities& htCapabilities)
 {
   m_htCapability = htCapabilities;
 }
 
-HtCapabilities
+void
+MgtProbeResponseHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
+{
+  m_htCapability = std::move (htCapabilities);
+}
+
+const HtCapabilities&
 MgtProbeResponseHeader::GetHtCapabilities (void) const
 {
   return m_htCapability;
 }
 
 void
-MgtProbeResponseHeader::SetHtOperation (HtOperation htOperation)
+MgtProbeResponseHeader::SetHtOperation (const HtOperation& htOperation)
 {
   m_htOperation = htOperation;
 }
 
-HtOperation
+void
+MgtProbeResponseHeader::SetHtOperation (HtOperation&& htOperation)
+{
+  m_htOperation = std::move (htOperation);
+}
+
+const HtOperation&
 MgtProbeResponseHeader::GetHtOperation (void) const
 {
   return m_htOperation;
 }
 
 void
-MgtProbeResponseHeader::SetVhtCapabilities (VhtCapabilities vhtCapabilities)
+MgtProbeResponseHeader::SetVhtCapabilities (const VhtCapabilities& vhtCapabilities)
 {
   m_vhtCapability = vhtCapabilities;
 }
 
-VhtCapabilities
+void
+MgtProbeResponseHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
+{
+  m_vhtCapability = std::move (vhtCapabilities);
+}
+
+const VhtCapabilities&
 MgtProbeResponseHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
 }
 
 void
-MgtProbeResponseHeader::SetVhtOperation (VhtOperation vhtOperation)
+MgtProbeResponseHeader::SetVhtOperation (const VhtOperation& vhtOperation)
 {
   m_vhtOperation = vhtOperation;
 }
 
-VhtOperation
+void
+MgtProbeResponseHeader::SetVhtOperation (VhtOperation&& vhtOperation)
+{
+  m_vhtOperation = std::move (vhtOperation);
+}
+
+const VhtOperation&
 MgtProbeResponseHeader::GetVhtOperation (void) const
 {
   return m_vhtOperation;
 }
 
 void
-MgtProbeResponseHeader::SetHeCapabilities (HeCapabilities heCapabilities)
+MgtProbeResponseHeader::SetHeCapabilities (const HeCapabilities& heCapabilities)
 {
   m_heCapability = heCapabilities;
 }
 
-HeCapabilities
+void
+MgtProbeResponseHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
+{
+  m_heCapability = std::move (heCapabilities);
+}
+
+const HeCapabilities&
 MgtProbeResponseHeader::GetHeCapabilities (void) const
 {
   return m_heCapability;
 }
 
 void
-MgtProbeResponseHeader::SetHeOperation (HeOperation heOperation)
+MgtProbeResponseHeader::SetHeOperation (const HeOperation& heOperation)
 {
   m_heOperation = heOperation;
 }
 
-HeOperation
+void
+MgtProbeResponseHeader::SetHeOperation (HeOperation&& heOperation)
+{
+  m_heOperation = std::move (heOperation);
+}
+
+const HeOperation&
 MgtProbeResponseHeader::GetHeOperation (void) const
 {
   return m_heOperation;
 }
 
 void
-MgtProbeResponseHeader::SetEhtCapabilities (EhtCapabilities ehtCapabilities)
+MgtProbeResponseHeader::SetEhtCapabilities (const EhtCapabilities& ehtCapabilities)
 {
   m_ehtCapability = ehtCapabilities;
 }
 
-EhtCapabilities
+void
+MgtProbeResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
+{
+  m_ehtCapability = std::move (ehtCapabilities);
+}
+
+const EhtCapabilities&
 MgtProbeResponseHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
 }
 
 void
-MgtProbeResponseHeader::SetSsid (Ssid ssid)
+MgtProbeResponseHeader::SetSsid (const Ssid& ssid)
 {
   m_ssid = ssid;
+}
+
+void
+MgtProbeResponseHeader::SetSsid (Ssid&& ssid)
+{
+  m_ssid = std::move (ssid);
 }
 
 void
@@ -395,54 +455,84 @@ MgtProbeResponseHeader::SetBeaconIntervalUs (uint64_t us)
 }
 
 void
-MgtProbeResponseHeader::SetSupportedRates (SupportedRates rates)
+MgtProbeResponseHeader::SetSupportedRates (const SupportedRates& rates)
 {
   m_rates = rates;
 }
 
 void
-MgtProbeResponseHeader::SetDsssParameterSet (DsssParameterSet dsssParameterSet)
+MgtProbeResponseHeader::SetSupportedRates (SupportedRates&& rates)
+{
+  m_rates = std::move (rates);
+}
+
+void
+MgtProbeResponseHeader::SetDsssParameterSet (const DsssParameterSet& dsssParameterSet)
 {
   m_dsssParameterSet = dsssParameterSet;
 }
 
-DsssParameterSet
+void
+MgtProbeResponseHeader::SetDsssParameterSet (DsssParameterSet&& dsssParameterSet)
+{
+  m_dsssParameterSet = std::move (dsssParameterSet);
+}
+
+const DsssParameterSet&
 MgtProbeResponseHeader::GetDsssParameterSet (void) const
 {
   return m_dsssParameterSet;
 }
 
 void
-MgtProbeResponseHeader::SetErpInformation (ErpInformation erpInformation)
+MgtProbeResponseHeader::SetErpInformation (const ErpInformation& erpInformation)
 {
   m_erpInformation = erpInformation;
 }
 
-ErpInformation
+void
+MgtProbeResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
+{
+  m_erpInformation = std::move (erpInformation);
+}
+
+const ErpInformation&
 MgtProbeResponseHeader::GetErpInformation (void) const
 {
   return m_erpInformation;
 }
 
 void
-MgtProbeResponseHeader::SetEdcaParameterSet (EdcaParameterSet edcaParameters)
+MgtProbeResponseHeader::SetEdcaParameterSet (const EdcaParameterSet& edcaParameters)
 {
   m_edcaParameterSet = edcaParameters;
 }
 
 void
-MgtProbeResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameters)
+MgtProbeResponseHeader::SetEdcaParameterSet (EdcaParameterSet&& edcaParameters)
+{
+  m_edcaParameterSet = std::move (edcaParameters);
+}
+
+void
+MgtProbeResponseHeader::SetMuEdcaParameterSet (const MuEdcaParameterSet& muEdcaParameters)
 {
   m_muEdcaParameterSet = muEdcaParameters;
 }
 
-EdcaParameterSet
+void
+MgtProbeResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParameters)
+{
+  m_muEdcaParameterSet = std::move (muEdcaParameters);
+}
+
+const EdcaParameterSet&
 MgtProbeResponseHeader::GetEdcaParameterSet (void) const
 {
   return m_edcaParameterSet;
 }
 
-MuEdcaParameterSet
+const MuEdcaParameterSet&
 MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
 {
   return m_muEdcaParameterSet;

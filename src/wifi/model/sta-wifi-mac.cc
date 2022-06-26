@@ -619,7 +619,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
       MgtBeaconHeader beacon;
       Ptr<Packet> copy = packet->Copy ();
       copy->RemoveHeader (beacon);
-      CapabilityInformation capabilities = beacon.GetCapabilities ();
+      const CapabilityInformation& capabilities = beacon.GetCapabilities ();
       NS_ASSERT (capabilities.IsEss ());
       bool goodBeacon = false;
       if (GetSsid ().IsBroadcast ()
@@ -628,7 +628,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
           NS_LOG_LOGIC ("Beacon is for our SSID");
           goodBeacon = true;
         }
-      SupportedRates rates = beacon.GetSupportedRates ();
+      const SupportedRates& rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;
       auto selectorList = GetWifiPhy ()->GetBssMembershipSelectorList ();
       for (const auto & selector : selectorList)
@@ -779,8 +779,8 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
 {
   NS_LOG_FUNCTION (this << beacon << apAddr << bssid);
   SetBssid (bssid);
-  CapabilityInformation capabilities = beacon.GetCapabilities ();
-  SupportedRates rates = beacon.GetSupportedRates ();
+  const CapabilityInformation& capabilities = beacon.GetCapabilities ();
+  const SupportedRates& rates = beacon.GetSupportedRates ();
   for (const auto & mode : GetWifiPhy ()->GetModeList ())
     {
       if (rates.IsSupportedRate (mode.GetDataRate (GetWifiPhy ()->GetChannelWidth ())))
@@ -791,7 +791,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
   bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
   if (GetErpSupported ())
     {
-      ErpInformation erpInformation = beacon.GetErpInformation ();
+      const ErpInformation& erpInformation = beacon.GetErpInformation ();
       isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
       if (erpInformation.GetUseProtection () != 0)
         {
@@ -815,7 +815,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
   if (GetQosSupported ())
     {
       bool qosSupported = false;
-      EdcaParameterSet edcaParameters = beacon.GetEdcaParameterSet ();
+      const EdcaParameterSet& edcaParameters = beacon.GetEdcaParameterSet ();
       if (edcaParameters.IsQosSupported ())
         {
           qosSupported = true;
@@ -829,7 +829,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
     }
   if (GetHtSupported ())
     {
-      HtCapabilities htCapabilities = beacon.GetHtCapabilities ();
+      const HtCapabilities& htCapabilities = beacon.GetHtCapabilities ();
       if (!htCapabilities.IsSupportedMcs (0))
         {
           GetWifiRemoteStationManager ()->RemoveAllSupportedMcs (apAddr);
@@ -841,12 +841,11 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
     }
   if (GetVhtSupported ())
     {
-      VhtCapabilities vhtCapabilities = beacon.GetVhtCapabilities ();
+      const VhtCapabilities& vhtCapabilities = beacon.GetVhtCapabilities ();
       //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (apAddr, vhtCapabilities);
-          VhtOperation vhtOperation = beacon.GetVhtOperation ();
           for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
             {
               if (vhtCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -858,16 +857,15 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
     }
   if (GetHtSupported ())
     {
-      ExtendedCapabilities extendedCapabilities = beacon.GetExtendedCapabilities ();
+      // const ExtendedCapabilities& extendedCapabilities = beacon.GetExtendedCapabilities ();
       //TODO: to be completed
     }
   if (GetHeSupported ())
     {
-      HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
+      const HeCapabilities& heCapabilities = beacon.GetHeCapabilities ();
       if (heCapabilities.GetSupportedMcsAndNss () != 0)
         {
           GetWifiRemoteStationManager ()->AddStationHeCapabilities (apAddr, heCapabilities);
-          HeOperation heOperation = beacon.GetHeOperation ();
           for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
             {
               if (heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -877,7 +875,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
             }
         }
 
-      MuEdcaParameterSet muEdcaParameters = beacon.GetMuEdcaParameterSet ();
+      const MuEdcaParameterSet& muEdcaParameters = beacon.GetMuEdcaParameterSet ();
       if (muEdcaParameters.IsPresent ())
         {
           SetMuEdcaParameters (AC_BE, muEdcaParameters.GetMuCwMin (AC_BE), muEdcaParameters.GetMuCwMax (AC_BE),
@@ -892,7 +890,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
     }
   if (GetEhtSupported ())
     {
-      EhtCapabilities ehtCapabilities = beacon.GetEhtCapabilities ();
+      const EhtCapabilities& ehtCapabilities = beacon.GetEhtCapabilities ();
       //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
       GetWifiRemoteStationManager ()->AddStationEhtCapabilities (apAddr, ehtCapabilities);
     }
@@ -904,8 +902,8 @@ void
 StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr, Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << probeResp << apAddr << bssid);
-  CapabilityInformation capabilities = probeResp.GetCapabilities ();
-  SupportedRates rates = probeResp.GetSupportedRates ();
+  const CapabilityInformation& capabilities = probeResp.GetCapabilities ();
+  const SupportedRates& rates = probeResp.GetSupportedRates ();
   for (const auto & selector : GetWifiPhy ()->GetBssMembershipSelectorList ())
     {
       if (!rates.IsBssMembershipSelectorRate (selector))
@@ -946,7 +944,7 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
         }
       else
         {
-          ErpInformation erpInformation = probeResp.GetErpInformation ();
+          const ErpInformation& erpInformation = probeResp.GetErpInformation ();
           isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
           if (GetWifiRemoteStationManager ()->GetShortSlotTimeEnabled ())
             {
