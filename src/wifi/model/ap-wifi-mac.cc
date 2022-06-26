@@ -1109,7 +1109,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
             }
           MgtProbeRequestHeader probeRequestHeader;
           packet->PeekHeader (probeRequestHeader);
-          Ssid ssid = probeRequestHeader.GetSsid ();
+          const Ssid& ssid = probeRequestHeader.GetSsid ();
           if (ssid == GetSsid () || ssid.IsBroadcast ())
             {
               NS_LOG_DEBUG ("Probe request received from " << from << ": send probe response");

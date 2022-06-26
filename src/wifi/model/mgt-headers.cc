@@ -37,84 +37,126 @@ MgtProbeRequestHeader::~MgtProbeRequestHeader ()
 }
 
 void
-MgtProbeRequestHeader::SetSsid (Ssid ssid)
+MgtProbeRequestHeader::SetSsid (const Ssid& ssid)
 {
   m_ssid = ssid;
 }
 
-Ssid
+void
+MgtProbeRequestHeader::SetSsid (Ssid&& ssid)
+{
+  m_ssid = std::move (ssid);
+}
+
+const Ssid&
 MgtProbeRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
 
 void
-MgtProbeRequestHeader::SetSupportedRates (SupportedRates rates)
+MgtProbeRequestHeader::SetSupportedRates (const SupportedRates& rates)
 {
   m_rates = rates;
 }
 
 void
-MgtProbeRequestHeader::SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities)
+MgtProbeRequestHeader::SetSupportedRates (SupportedRates&& rates)
+{
+  m_rates = std::move (rates);
+}
+
+void
+MgtProbeRequestHeader::SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities)
 {
   m_extendedCapability = extendedCapabilities;
 }
 
-ExtendedCapabilities
+void
+MgtProbeRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities)
+{
+  m_extendedCapability = std::move (extendedCapabilities);
+}
+
+const ExtendedCapabilities&
 MgtProbeRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
 }
 
 void
-MgtProbeRequestHeader::SetHtCapabilities (HtCapabilities htCapabilities)
+MgtProbeRequestHeader::SetHtCapabilities (const HtCapabilities& htCapabilities)
 {
   m_htCapability = htCapabilities;
 }
 
-HtCapabilities
+void
+MgtProbeRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
+{
+  m_htCapability = std::move (htCapabilities);
+}
+
+const HtCapabilities&
 MgtProbeRequestHeader::GetHtCapabilities (void) const
 {
   return m_htCapability;
 }
 
 void
-MgtProbeRequestHeader::SetVhtCapabilities (VhtCapabilities vhtCapabilities)
+MgtProbeRequestHeader::SetVhtCapabilities (const VhtCapabilities& vhtCapabilities)
 {
   m_vhtCapability = vhtCapabilities;
 }
 
-VhtCapabilities
+void
+MgtProbeRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
+{
+  m_vhtCapability = std::move (vhtCapabilities);
+}
+
+const VhtCapabilities&
 MgtProbeRequestHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
 }
 
 void
-MgtProbeRequestHeader::SetHeCapabilities (HeCapabilities heCapabilities)
+MgtProbeRequestHeader::SetHeCapabilities (const HeCapabilities& heCapabilities)
 {
   m_heCapability = heCapabilities;
 }
 
-HeCapabilities
+void
+MgtProbeRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
+{
+  m_heCapability = std::move (heCapabilities);
+}
+
+const HeCapabilities&
 MgtProbeRequestHeader::GetHeCapabilities (void) const
 {
   return m_heCapability;
 }
 
 void
-MgtProbeRequestHeader::SetEhtCapabilities (EhtCapabilities ehtCapabilities)
+MgtProbeRequestHeader::SetEhtCapabilities (const EhtCapabilities& ehtCapabilities)
 {
   m_ehtCapability = ehtCapabilities;
 }
 
-EhtCapabilities
+void
+MgtProbeRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
+{
+  m_ehtCapability = std::move (ehtCapabilities);
+}
+
+const EhtCapabilities&
 MgtProbeRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
 }
 
-SupportedRates
+const SupportedRates&
 MgtProbeRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
