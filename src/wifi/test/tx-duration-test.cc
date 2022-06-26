@@ -154,6 +154,24 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint1
                 << std::endl;
       return false;
     }
+  if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE ||
+      payloadMode.GetModulationClass () == WIFI_MOD_CLASS_EHT)
+    {
+      band = WIFI_PHY_BAND_6GHZ;
+      calculatedDuration = phy->GetPayloadDuration (size, txVector, band);
+      if (calculatedDuration != knownDuration)
+        {
+          std::cerr << "size=" << size
+                    << " mode=" << payloadMode
+                    << " channelWidth=" << channelWidth
+                    << " guardInterval=" << guardInterval
+                    << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
+                    << " known=" << knownDuration
+                    << " calculated=" << calculatedDuration
+                    << std::endl;
+          return false;
+        }
+    }
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT ||
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE ||
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_EHT)
@@ -212,6 +230,28 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
                 << std::endl;
       return false;
     }
+  if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE ||
+      payloadMode.GetModulationClass () == WIFI_MOD_CLASS_EHT)
+    {
+      band = WIFI_PHY_BAND_6GHZ;
+      calculatedDuration = phy->CalculateTxDuration (size, txVector, band);
+      calculatedDurationUsingList = CalculateTxDurationUsingList (std::list<uint32_t> {size}, std::list<uint16_t> {SU_STA_ID},
+                                                                  txVector, band);
+      if (calculatedDuration != knownDuration || calculatedDuration != calculatedDurationUsingList)
+        {
+          std::cerr << "size=" << size
+                    << " mode=" << payloadMode
+                    << " channelWidth=" << channelWidth
+                    << " guardInterval=" << guardInterval
+                    << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
+                    << " preamble=" << preamble
+                    << " known=" << knownDuration
+                    << " calculated=" << calculatedDuration
+                    << " calculatedUsingList=" << calculatedDurationUsingList
+                    << std::endl;
+          return false;
+        }
+    }
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT ||
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE ||
       payloadMode.GetModulationClass () == WIFI_MOD_CLASS_EHT)
@@ -264,12 +304,12 @@ TxDurationTest::CheckMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUser
       staIds.push_back (staId++);
     }
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
-  std::list<WifiPhyBand> testedBands {WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_2_4GHZ}; //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
+  std::list<WifiPhyBand> testedBands {WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ, WIFI_PHY_BAND_2_4GHZ}; //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
   for (auto & testedBand : testedBands)
     {
       if (testedBand == WIFI_PHY_BAND_2_4GHZ)
         {
-          knownDuration += MicroSeconds (6);
+          knownDuration += MicroSeconds (6); //2.4 GHz band should be at the end of the bands to test
         }
       Time calculatedDuration = NanoSeconds (0);
       uint32_t longuestSize = 0;
