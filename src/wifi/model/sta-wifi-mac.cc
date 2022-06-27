@@ -968,8 +968,8 @@ void
 StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Address apAddr)
 {
   NS_LOG_FUNCTION (this << assocResp << apAddr);
-  CapabilityInformation capabilities = assocResp.GetCapabilities ();
-  SupportedRates rates = assocResp.GetSupportedRates ();
+  const CapabilityInformation& capabilities = assocResp.GetCapabilities ();
+  const SupportedRates& rates = assocResp.GetSupportedRates ();
   bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
   if (GetErpSupported ())
     {
@@ -990,7 +990,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
         }
       else
         {
-          ErpInformation erpInformation = assocResp.GetErpInformation ();
+          const ErpInformation& erpInformation = assocResp.GetErpInformation ();
           isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
           if (GetWifiRemoteStationManager ()->GetShortSlotTimeEnabled ())
             {
@@ -1010,7 +1010,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetQosSupported ())
     {
       bool qosSupported = false;
-      EdcaParameterSet edcaParameters = assocResp.GetEdcaParameterSet ();
+      const EdcaParameterSet& edcaParameters = assocResp.GetEdcaParameterSet ();
       if (edcaParameters.IsQosSupported ())
         {
           qosSupported = true;
@@ -1024,7 +1024,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetHtSupported ())
     {
-      HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
+      const HtCapabilities& htCapabilities = assocResp.GetHtCapabilities ();
       if (!htCapabilities.IsSupportedMcs (0))
         {
           GetWifiRemoteStationManager ()->RemoveAllSupportedMcs (apAddr);
@@ -1036,25 +1036,25 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetVhtSupported ())
     {
-      VhtCapabilities vhtCapabilities = assocResp.GetVhtCapabilities ();
+      const VhtCapabilities& vhtCapabilities = assocResp.GetVhtCapabilities ();
       //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (apAddr, vhtCapabilities);
-          VhtOperation vhtOperation = assocResp.GetVhtOperation ();
+          // const VhtOperation& vhtOperation = assocResp.GetVhtOperation ();
         }
     }
   if (GetHeSupported ())
     {
-      HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
+      const HeCapabilities& heCapabilities = assocResp.GetHeCapabilities ();
       if (heCapabilities.GetSupportedMcsAndNss () != 0)
         {
           GetWifiRemoteStationManager ()->AddStationHeCapabilities (apAddr, heCapabilities);
-          HeOperation heOperation = assocResp.GetHeOperation ();
+          const HeOperation& heOperation = assocResp.GetHeOperation ();
           GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
         }
 
-      MuEdcaParameterSet muEdcaParameters = assocResp.GetMuEdcaParameterSet ();
+      const MuEdcaParameterSet& muEdcaParameters = assocResp.GetMuEdcaParameterSet ();
       if (muEdcaParameters.IsPresent ())
         {
           SetMuEdcaParameters (AC_BE, muEdcaParameters.GetMuCwMin (AC_BE), muEdcaParameters.GetMuCwMax (AC_BE),
@@ -1069,7 +1069,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetEhtSupported ())
     {
-      EhtCapabilities ehtCapabilities = assocResp.GetEhtCapabilities ();
+      const EhtCapabilities& ehtCapabilities = assocResp.GetEhtCapabilities ();
       //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
       GetWifiRemoteStationManager ()->AddStationEhtCapabilities (apAddr, ehtCapabilities);
     }
@@ -1086,7 +1086,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetHtSupported ())
     {
-      HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
+      const HtCapabilities& htCapabilities = assocResp.GetHtCapabilities ();
       for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT))
         {
           if (htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
@@ -1098,7 +1098,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetVhtSupported ())
     {
-      VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
+      const VhtCapabilities& vhtcapabilities = assocResp.GetVhtCapabilities ();
       for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
           if (vhtcapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -1110,12 +1110,12 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetHtSupported ())
     {
-      ExtendedCapabilities extendedCapabilities = assocResp.GetExtendedCapabilities ();
+      // const ExtendedCapabilities& extendedCapabilities = assocResp.GetExtendedCapabilities ();
       //TODO: to be completed
     }
   if (GetHeSupported ())
     {
-      HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
+      const HeCapabilities& heCapabilities = assocResp.GetHeCapabilities ();
       for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
         {
           if (heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -1127,7 +1127,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetEhtSupported ())
     {
-      EhtCapabilities ehtCapabilities = assocResp.GetEhtCapabilities ();
+      // const EhtCapabilities& ehtCapabilities = assocResp.GetEhtCapabilities ();
       //TODO: to be completed
     }
 }

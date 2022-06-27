@@ -426,61 +426,61 @@ public:
    *
    * \return the supported rates
    */
-  SupportedRates GetSupportedRates (void);
+  const SupportedRates& GetSupportedRates (void);
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  CapabilityInformation GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities (void) const;
   /**
    * Return the extended capabilities.
    *
    * \return the extended capabilities
    */
-  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
-  HtCapabilities GetHtCapabilities (void) const;
+  const HtCapabilities& GetHtCapabilities (void) const;
   /**
    * Return the HT operation.
    *
    * \return HT operation
    */
-  HtOperation GetHtOperation (void) const;
+  const HtOperation& GetHtOperation (void) const;
   /**
    * Return the VHT capabilities.
    *
    * \return VHT capabilities
    */
-  VhtCapabilities GetVhtCapabilities (void) const;
+  const VhtCapabilities& GetVhtCapabilities (void) const;
   /**
    * Return the VHT operation.
    *
    * \return VHT operation
    */
-  VhtOperation GetVhtOperation (void) const;
+  const VhtOperation& GetVhtOperation (void) const;
   /**
    * Return the HE capabilities.
    *
    * \return HE capabilities
    */
-  HeCapabilities GetHeCapabilities (void) const;
+  const HeCapabilities& GetHeCapabilities (void) const;
   /**
    * Return the HE operation.
    *
    * \return HE operation
    */
-  HeOperation GetHeOperation (void) const;
+  const HeOperation& GetHeOperation (void) const;
   /**
    * Return the EHT capabilities.
    *
    * \return EHT capabilities
    */
-  EhtCapabilities GetEhtCapabilities (void) const;
+  const EhtCapabilities& GetEhtCapabilities (void) const;
   /**
    * Return the association ID.
    *
@@ -492,109 +492,163 @@ public:
    *
    * \return the ERP information
    */
-  ErpInformation GetErpInformation (void) const;
+  const ErpInformation& GetErpInformation (void) const;
   /**
    * Return the EDCA Parameter Set.
    *
    * \return the EDCA Parameter Set
    */
-  EdcaParameterSet GetEdcaParameterSet (void) const;
+  const EdcaParameterSet& GetEdcaParameterSet (void) const;
   /**
    * Return the MU EDCA Parameter Set.
    *
    * \return the MU EDCA Parameter Set
    */
-  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  const MuEdcaParameterSet& GetMuEdcaParameterSet (void) const;
   /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
    */
-  void SetCapabilities (CapabilityInformation capabilities);
+  void SetCapabilities (const CapabilityInformation& capabilities);
+
+  /** \copydoc SetCapabilities */
+  void SetCapabilities (CapabilityInformation&& capabilities);
+
   /**
    * Set the extended capabilities.
    *
    * \param extendedCapabilities the extended capabilities
    */
-  void SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities);
+  void SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities);
+
+  /** \copydoc SetExtendedCapabilities */
+  void SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities);
+
   /**
    * Set the VHT operation.
    *
    * \param vhtOperation VHT operation
    */
-  void SetVhtOperation (VhtOperation vhtOperation);
+  void SetVhtOperation (const VhtOperation& vhtOperation);
+
+  /** \copydoc SetVhtOperation */
+  void SetVhtOperation (VhtOperation&& vhtOperation);
+
   /**
    * Set the VHT capabilities.
    *
    * \param vhtCapabilities VHT capabilities
    */
-  void SetVhtCapabilities (VhtCapabilities vhtCapabilities);
+  void SetVhtCapabilities (const VhtCapabilities& vhtCapabilities);
+
+  /** \copydoc SetVhtCapabilities */
+  void SetVhtCapabilities (VhtCapabilities&& vhtCapabilities);
+
   /**
    * Set the HT capabilities.
    *
    * \param htCapabilities HT capabilities
    */
-  void SetHtCapabilities (HtCapabilities htCapabilities);
+  void SetHtCapabilities (const HtCapabilities& htCapabilities);
+
+  /** \copydoc SetHtCapabilities */
+  void SetHtCapabilities (HtCapabilities&& htCapabilities);
+
   /**
    * Set the HT operation.
    *
    * \param htOperation HT operation
    */
-  void SetHtOperation (HtOperation htOperation);
+  void SetHtOperation (const HtOperation& htOperation);
+
+  /** \copydoc SetHtOperation */
+  void SetHtOperation (HtOperation&& htOperation);
+
   /**
    * Set the supported rates.
    *
    * \param rates the supported rates
    */
-  void SetSupportedRates (SupportedRates rates);
+  void SetSupportedRates (const SupportedRates& rates);
+
+  /** \copydoc SetSupportedRates */
+  void SetSupportedRates (SupportedRates&& rates);
+
   /**
    * Set the status code.
    *
    * \param code the status code
    */
   void SetStatusCode (StatusCode code);
+
   /**
    * Set the association ID.
    *
    * \param aid the association ID
    */
   void SetAssociationId (uint16_t aid);
+
   /**
    * Set the ERP information.
    *
    * \param erpInformation the ERP information
    */
-  void SetErpInformation (ErpInformation erpInformation);
+  void SetErpInformation (const ErpInformation& erpInformation);
+
+  /** \copydoc SetErpInformation */
+  void SetErpInformation (ErpInformation&& erpInformation);
+
   /**
    * Set the EDCA Parameter Set.
    *
    * \param edcaParameterSet the EDCA Parameter Set
    */
-  void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
+  void SetEdcaParameterSet (const EdcaParameterSet& edcaParameterSet);
+
+  /** \copydoc SetEdcaParameterSet */
+  void SetEdcaParameterSet (EdcaParameterSet&& edcaParameterSet);
+
   /**
    * Set the MU EDCA Parameter Set.
    *
    * \param muEdcaParameterSet the MU EDCA Parameter Set
    */
-  void SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameterSet);
+  void SetMuEdcaParameterSet (const MuEdcaParameterSet& muEdcaParameterSet);
+
+  /** \copydoc SetMuEdcaParameterSet */
+  void SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParameterSet);
+
   /**
    * Set the HE capabilities.
    *
    * \param heCapabilities HE capabilities
    */
-  void SetHeCapabilities (HeCapabilities heCapabilities);
+  void SetHeCapabilities (const HeCapabilities& heCapabilities);
+
+  /** \copydoc SetHeCapabilities */
+  void SetHeCapabilities (HeCapabilities&& heCapabilities);
+
   /**
    * Set the HE operation.
    *
    * \param heOperation HE operation
    */
-  void SetHeOperation (HeOperation heOperation);
+  void SetHeOperation (const HeOperation& heOperation);
+
+  /** \copydoc SetHeOperation */
+  void SetHeOperation (HeOperation&& heOperation);
+
   /**
    * Set the EHT capabilities.
    *
    * \param ehtCapabilities EHT capabilities
    */
-  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  void SetEhtCapabilities (const EhtCapabilities& ehtCapabilities);
+
+  /** \copydoc SetEhtCapabilities */
+  void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
+
 
   /**
    * Register this type.

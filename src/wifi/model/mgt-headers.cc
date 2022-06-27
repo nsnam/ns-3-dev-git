@@ -1199,7 +1199,7 @@ MgtAssocResponseHeader::GetStatusCode (void)
   return m_code;
 }
 
-SupportedRates
+const SupportedRates&
 MgtAssocResponseHeader::GetSupportedRates (void)
 {
   return m_rates;
@@ -1212,114 +1212,174 @@ MgtAssocResponseHeader::SetStatusCode (StatusCode code)
 }
 
 void
-MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
+MgtAssocResponseHeader::SetSupportedRates (const SupportedRates& rates)
 {
   m_rates = rates;
 }
 
 void
-MgtAssocResponseHeader::SetCapabilities (CapabilityInformation capabilities)
+MgtAssocResponseHeader::SetSupportedRates (SupportedRates&& rates)
+{
+  m_rates = std::move (rates);
+}
+
+void
+MgtAssocResponseHeader::SetCapabilities (const CapabilityInformation& capabilities)
 {
   m_capability = capabilities;
 }
 
-CapabilityInformation
+void
+MgtAssocResponseHeader::SetCapabilities (CapabilityInformation&& capabilities)
+{
+  m_capability = std::move (capabilities);
+}
+
+const CapabilityInformation&
 MgtAssocResponseHeader::GetCapabilities (void) const
 {
   return m_capability;
 }
 
 void
-MgtAssocResponseHeader::SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities)
+MgtAssocResponseHeader::SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities)
 {
   m_extendedCapability = extendedCapabilities;
 }
 
-ExtendedCapabilities
+void
+MgtAssocResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities)
+{
+  m_extendedCapability = std::move (extendedCapabilities);
+}
+
+const ExtendedCapabilities&
 MgtAssocResponseHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
 }
 
 void
-MgtAssocResponseHeader::SetHtCapabilities (HtCapabilities htCapabilities)
+MgtAssocResponseHeader::SetHtCapabilities (const HtCapabilities& htCapabilities)
 {
   m_htCapability = htCapabilities;
 }
 
-HtCapabilities
+void
+MgtAssocResponseHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
+{
+  m_htCapability = std::move (htCapabilities);
+}
+
+const HtCapabilities&
 MgtAssocResponseHeader::GetHtCapabilities (void) const
 {
   return m_htCapability;
 }
 
 void
-MgtAssocResponseHeader::SetHtOperation (HtOperation htOperation)
+MgtAssocResponseHeader::SetHtOperation (const HtOperation& htOperation)
 {
   m_htOperation = htOperation;
 }
 
-HtOperation
+void
+MgtAssocResponseHeader::SetHtOperation (HtOperation&& htOperation)
+{
+  m_htOperation = std::move (htOperation);
+}
+
+const HtOperation&
 MgtAssocResponseHeader::GetHtOperation (void) const
 {
   return m_htOperation;
 }
 
 void
-MgtAssocResponseHeader::SetVhtCapabilities (VhtCapabilities vhtCapabilities)
+MgtAssocResponseHeader::SetVhtCapabilities (const VhtCapabilities& vhtCapabilities)
 {
   m_vhtCapability = vhtCapabilities;
 }
 
-VhtCapabilities
+void
+MgtAssocResponseHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
+{
+  m_vhtCapability = std::move (vhtCapabilities);
+}
+
+const VhtCapabilities&
 MgtAssocResponseHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
 }
 
 void
-MgtAssocResponseHeader::SetVhtOperation (VhtOperation vhtOperation)
+MgtAssocResponseHeader::SetVhtOperation (const VhtOperation& vhtOperation)
 {
   m_vhtOperation = vhtOperation;
 }
 
-VhtOperation
+void
+MgtAssocResponseHeader::SetVhtOperation (VhtOperation&& vhtOperation)
+{
+  m_vhtOperation = std::move (vhtOperation);
+}
+
+const VhtOperation&
 MgtAssocResponseHeader::GetVhtOperation (void) const
 {
   return m_vhtOperation;
 }
 
 void
-MgtAssocResponseHeader::SetHeCapabilities (HeCapabilities heCapabilities)
+MgtAssocResponseHeader::SetHeCapabilities (const HeCapabilities& heCapabilities)
 {
   m_heCapability = heCapabilities;
 }
 
-HeCapabilities
+void
+MgtAssocResponseHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
+{
+  m_heCapability = std::move (heCapabilities);
+}
+
+const HeCapabilities&
 MgtAssocResponseHeader::GetHeCapabilities (void) const
 {
   return m_heCapability;
 }
 
 void
-MgtAssocResponseHeader::SetHeOperation (HeOperation heOperation)
+MgtAssocResponseHeader::SetHeOperation (const HeOperation& heOperation)
 {
   m_heOperation = heOperation;
 }
 
-HeOperation
+void
+MgtAssocResponseHeader::SetHeOperation (HeOperation&& heOperation)
+{
+  m_heOperation = std::move (heOperation);
+}
+
+const HeOperation&
 MgtAssocResponseHeader::GetHeOperation (void) const
 {
   return m_heOperation;
 }
 
 void
-MgtAssocResponseHeader::SetEhtCapabilities (EhtCapabilities ehtCapabilities)
+MgtAssocResponseHeader::SetEhtCapabilities (const EhtCapabilities& ehtCapabilities)
 {
   m_ehtCapability = ehtCapabilities;
 }
 
-EhtCapabilities
+void
+MgtAssocResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
+{
+  m_ehtCapability = std::move (ehtCapabilities);
+}
+
+const EhtCapabilities&
 MgtAssocResponseHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -1338,36 +1398,54 @@ MgtAssocResponseHeader::GetAssociationId (void) const
 }
 
 void
-MgtAssocResponseHeader::SetErpInformation (ErpInformation erpInformation)
+MgtAssocResponseHeader::SetErpInformation (const ErpInformation& erpInformation)
 {
   m_erpInformation = erpInformation;
 }
 
-ErpInformation
+void
+MgtAssocResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
+{
+  m_erpInformation = std::move (erpInformation);
+}
+
+const ErpInformation&
 MgtAssocResponseHeader::GetErpInformation (void) const
 {
   return m_erpInformation;
 }
 
 void
-MgtAssocResponseHeader::SetEdcaParameterSet (EdcaParameterSet edcaparameters)
+MgtAssocResponseHeader::SetEdcaParameterSet (const EdcaParameterSet& edcaparameters)
 {
   m_edcaParameterSet = edcaparameters;
 }
 
 void
-MgtAssocResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameters)
+MgtAssocResponseHeader::SetEdcaParameterSet (EdcaParameterSet&& edcaparameters)
+{
+  m_edcaParameterSet = std::move (edcaparameters);
+}
+
+void
+MgtAssocResponseHeader::SetMuEdcaParameterSet (const MuEdcaParameterSet& muEdcaParameters)
 {
   m_muEdcaParameterSet = muEdcaParameters;
 }
 
-EdcaParameterSet
+void
+MgtAssocResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParameters)
+{
+  m_muEdcaParameterSet = std::move (muEdcaParameters);
+}
+
+const EdcaParameterSet&
 MgtAssocResponseHeader::GetEdcaParameterSet (void) const
 {
   return m_edcaParameterSet;
 }
 
-MuEdcaParameterSet
+const MuEdcaParameterSet&
 MgtAssocResponseHeader::GetMuEdcaParameterSet (void) const
 {
   return m_muEdcaParameterSet;
