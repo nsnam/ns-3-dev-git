@@ -18,6 +18,7 @@ print_buffer = ""
 run_verbose = True
 path_sep = ";" if sys.platform == "win32" else ":"
 
+
 # Prints everything in the print_buffer on exit
 def exit_handler(dry_run):
     global print_buffer, run_verbose
@@ -79,9 +80,6 @@ def parse_args(argv):
     parser.add_argument('--help',
                         help="Print a summary of available commands",
                         action="store_true", default=None, dest="help")
-    parser.add_argument('-l', '--list',
-                        help="Print a table of targets to build and run",
-                        action="store_true", default=None, dest="list")
     # parser.add_argument('--docset',
     #               help=(
     #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
@@ -93,10 +91,13 @@ def parse_args(argv):
 
     parser_build = sub_parser.add_parser('build',
                                          help=('Accepts a list of targets to build,'
-                                               ' or builds the entire project if no target is given'))
+                                               ' or builds the entire project if no target is given'),
+                                         formatter_class=argparse.RawTextHelpFormatter)
     parser_build.add_argument('build',
-                              help='Build the entire project or the specified target and dependencies',
-                              action="store", nargs='*', default=None)
+                              help=('Build the entire project or the specified target and its dependencies.\n'
+                                    'To get the list of targets, use:\n'
+                                    './ns3 show targets\n'),
+                              action="store", nargs='*', default=None, metavar='target')
 
     parser_configure = sub_parser.add_parser('configure',
                                              help='Try "./ns3 configure --help" for more configuration options')
@@ -203,10 +204,18 @@ def parse_args(argv):
     parser_uninstall.add_argument('uninstall', action="store_true", default=False)
 
     parser_run = sub_parser.add_parser('run',
-                                       help='Try "./ns3 run --help" for more runtime options')
+                                       help='Try "./ns3 run --help" for more runtime options',
+                                       formatter_class=argparse.RawTextHelpFormatter)
     parser_run.add_argument('run',
-                            help='Build and run executable. If --no-build is present, build step is skipped.',
-                            type=str, default='')
+                            help=('Build and run the target executable.\n'
+                                  'If --no-build is present, the build step is skipped.\n'
+                                  'To get the list of targets, use:\n'
+                                  './ns3 show targets\n'
+                                  'Arguments can be passed down to a program in one of the following ways:\n'
+                                  './ns3 run "target --help"\n'
+                                  './ns3 run target -- --help\n'
+                                  './ns3 run target --command-template="%%s --help"\n'),
+                            default='', nargs='?', metavar='target')
     parser_run.add_argument('--no-build',
                             help='Skip build step.',
                             action="store_true", default=False)
@@ -236,7 +245,7 @@ def parse_args(argv):
                             default=False)
 
     parser_shell = sub_parser.add_parser('shell',
-                                         help='Try "./ns3 shell --help" for more runtime options')
+                                         help='Try "./ns3 shell --help" for more shell options')
     parser_shell.add_argument('shell',
                               help='Export necessary environment variables and open a shell',
                               action="store_true", default=False)
@@ -250,10 +259,11 @@ def parse_args(argv):
                              action="store", type=str, default=None)
 
     parser_show = sub_parser.add_parser('show',
-                                        help='Try "./ns3 show --help" for more runtime options')
+                                        help='Try "./ns3 show --help" for more show options')
     parser_show.add_argument('show',
-                             help='Print build profile type, ns-3 version or current configuration',
-                             choices=["profile", "version", "config"],
+                             help=('Print the current ns-3 build profile type, configuration or version, '
+                                   'or a list of buildable/runnable targets'),
+                             choices=["profile", "version", "config", "targets"],
                              action="store", type=str, default=None)
 
     add_argument_to_subparsers(
@@ -282,6 +292,10 @@ def parse_args(argv):
 
     # Parse known arguments and separate from unknown arguments
     args, unknown_args = parser.parse_known_args(argv)
+
+    if args.run == '':
+        parser_run.print_help()
+        exit(-1)
 
     if args.help:
         print(parser.description)
@@ -1102,9 +1116,9 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
             final_list.append(sorted(shortcuts, key=lambda x: len(x))[0])
         return final_list
 
-    print("""Modules:{modules}\n\nRunnables:{programs}
-                  """.format(modules=list_to_table(sorted(ns3_modules)),
-                             programs=list_to_table(non_ambiguous_target_list(ns3_programs))
+    print("""Buildable targets:{buildables}\n\nRunnable/Buildable targets:{runnables}
+                  """.format(buildables=list_to_table(sorted(ns3_modules)),
+                             runnables=list_to_table(non_ambiguous_target_list(ns3_programs))
                              )
           )
     return
@@ -1320,7 +1334,7 @@ def main():
     # Now that CMake is configured, we can look for c++ targets in .lock-ns3
     ns3_programs = get_program_shortcuts(build_profile, ns3_version)
 
-    if args.list:
+    if args.show == "targets":
         print_targets_list(ns3_modules, ns3_programs)
         exit(0)
 
