@@ -389,6 +389,46 @@ public:
   virtual void SetStandard (WifiStandard standard);
 
   /**
+   * Helper function used to configure the HT options listed as attributes of
+   * the HtConfiguration class.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void ConfigHtOptions (Args&&... args);
+
+  /**
+   * Helper function used to configure the VHT options listed as attributes of
+   * the VhtConfiguration class.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void ConfigVhtOptions (Args&&... args);
+
+  /**
+   * Helper function used to configure the HE options listed as attributes of
+   * the HeConfiguration class.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void ConfigHeOptions (Args&&... args);
+
+  /**
+   * Helper function used to configure the EHT options listed as attributes of
+   * the EhtConfiguration class.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void ConfigEhtOptions (Args&&... args);
+
+  /**
    * Helper to enable all WifiNetDevice log components with one statement
    */
   static void EnableLogComponents (void);
@@ -412,8 +452,11 @@ public:
 
 protected:
   ObjectFactory m_stationManager;            ///< station manager
-  ObjectFactory m_ackPolicySelector[4];      ///< ack policy selector for all ACs
   WifiStandard m_standard;                   ///< wifi standard
+  ObjectFactory m_htConfig;                  ///< HT configuration
+  ObjectFactory m_vhtConfig;                 ///< VHT configuration
+  ObjectFactory m_heConfig;                  ///< HE configuration
+  ObjectFactory m_ehtConfig;                 ///< EHT configuration
   SelectQueueCallback m_selectQueueCallback; ///< select queue callback
   ObjectFactory m_obssPdAlgorithm;           ///< OBSS_PD algorithm
   bool m_enableFlowControl;                  //!< whether to enable flow control
@@ -473,6 +516,34 @@ WifiHelper::SetObssPdAlgorithm (std::string type, Args&&... args)
 {
   m_obssPdAlgorithm.SetTypeId (type);
   m_obssPdAlgorithm.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigHtOptions (Args&&... args)
+{
+  m_htConfig.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigVhtOptions (Args&&... args)
+{
+  m_vhtConfig.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigHeOptions (Args&&... args)
+{
+  m_heConfig.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigEhtOptions (Args&&... args)
+{
+  m_ehtConfig.Set (args...);
 }
 
 } // namespace ns3

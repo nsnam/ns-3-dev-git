@@ -691,6 +691,10 @@ WifiHelper::WifiHelper ()
     m_enableFlowControl (true)
 {
   SetRemoteStationManager ("ns3::IdealWifiManager");
+  m_htConfig.SetTypeId ("ns3::HtConfiguration");
+  m_vhtConfig.SetTypeId ("ns3::VhtConfiguration");
+  m_heConfig.SetTypeId ("ns3::HeConfiguration");
+  m_ehtConfig.SetTypeId ("ns3::EhtConfiguration");
 }
 
 void
@@ -731,7 +735,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       if (m_standard >= WIFI_STANDARD_80211n)
         {
-          Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
+          auto htConfiguration = m_htConfig.Create<HtConfiguration> ();
           device->SetHtConfiguration (htConfiguration);
         }
       if (m_standard >= WIFI_STANDARD_80211ac)
@@ -741,17 +745,17 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           // This approach allows us not to worry about deleting this object when
           // the PHY band is switched from 5GHz to 2.4GHz and creating this object
           // when the PHY band is switched from 2.4GHz to 5GHz.
-          Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
+          auto vhtConfiguration = m_vhtConfig.Create<VhtConfiguration> ();
           device->SetVhtConfiguration (vhtConfiguration);
         }
       if (m_standard >= WIFI_STANDARD_80211ax)
         {
-          Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
+          auto heConfiguration = m_heConfig.Create<HeConfiguration> ();
           device->SetHeConfiguration (heConfiguration);
         }
       if (m_standard >= WIFI_STANDARD_80211be)
         {
-          Ptr<EhtConfiguration> ehtConfiguration = CreateObject<EhtConfiguration> ();
+          auto ehtConfiguration = m_ehtConfig.Create<EhtConfiguration> ();
           device->SetEhtConfiguration (ehtConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
