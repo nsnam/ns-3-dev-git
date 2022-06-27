@@ -58,103 +58,136 @@ public:
    *
    * \param ssid SSID
    */
-  void SetSsid (Ssid ssid);
+  void SetSsid (const Ssid& ssid);
+
+  /** \copydoc SetSsid */
+  void SetSsid (Ssid&& ssid);
+
   /**
    * Set the supported rates.
    *
    * \param rates the supported rates
    */
-  void SetSupportedRates (SupportedRates rates);
+  void SetSupportedRates (const SupportedRates& rates);
+
+  /** \copydoc SetSupportedRates */
+  void SetSupportedRates (SupportedRates&& rates);
+
   /**
    * Set the listen interval.
    *
    * \param interval the listen interval
    */
   void SetListenInterval (uint16_t interval);
+
   /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
    */
-  void SetCapabilities (CapabilityInformation capabilities);
+  void SetCapabilities (const CapabilityInformation& capabilities);
+
+  /** \copydoc SetCapabilities */
+  void SetCapabilities (CapabilityInformation&& capabilities);
+
   /**
    * Set the Extended Capabilities.
    *
    * \param extendedCapabilities the Extended Capabilities
    */
-  void SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities);
+  void SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities);
+
+  /** \copydoc SetExtendedCapabilities */
+  void SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities);
+
   /**
    * Set the HT capabilities.
    *
    * \param htCapabilities HT capabilities
    */
-  void SetHtCapabilities (HtCapabilities htCapabilities);
+  void SetHtCapabilities (const HtCapabilities& htCapabilities);
+
+  /** \copydoc SetHtCapabilities */
+  void SetHtCapabilities (HtCapabilities&& htCapabilities);
+
   /**
    * Set the VHT capabilities.
    *
    * \param vhtCapabilities VHT capabilities
    */
-  void SetVhtCapabilities (VhtCapabilities vhtCapabilities);
+  void SetVhtCapabilities (const VhtCapabilities& vhtCapabilities);
+
+  /** \copydoc SetVhtCapabilities */
+  void SetVhtCapabilities (VhtCapabilities&& vhtCapabilities);
+
   /**
    * Set the HE capabilities.
    *
    * \param heCapabilities HE capabilities
    */
-  void SetHeCapabilities (HeCapabilities heCapabilities);
+  void SetHeCapabilities (const HeCapabilities& heCapabilities);
+
+  /** \copydoc SetHeCapabilities */
+  void SetHeCapabilities (HeCapabilities&& heCapabilities);
+
   /**
    * Set the EHT capabilities.
    *
    * \param ehtCapabilities EHT capabilities
    */
-  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  void SetEhtCapabilities (const EhtCapabilities& ehtCapabilities);
+
+  /** \copydoc SetEhtCapabilities */
+  void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
+
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  CapabilityInformation GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities (void) const;
   /**
    * Return the extended capabilities.
    *
    * \return the extended capabilities
    */
-  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
-  HtCapabilities GetHtCapabilities (void) const;
+  const HtCapabilities& GetHtCapabilities (void) const;
   /**
    * Return the VHT capabilities.
    *
    * \return VHT capabilities
    */
-  VhtCapabilities GetVhtCapabilities (void) const;
+  const VhtCapabilities& GetVhtCapabilities (void) const;
   /**
    * Return the HE capabilities.
    *
    * \return HE capabilities
    */
-  HeCapabilities GetHeCapabilities (void) const;
+  const HeCapabilities& GetHeCapabilities (void) const;
   /**
    * Return the EHT capabilities.
    *
    * \return EHT capabilities
    */
-  EhtCapabilities GetEhtCapabilities (void) const;
+  const EhtCapabilities& GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
    * \return SSID
    */
-  Ssid GetSsid (void) const;
+  const Ssid& GetSsid (void) const;
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  SupportedRates GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates (void) const;
   /**
    * Return the listen interval.
    *
@@ -203,103 +236,136 @@ public:
    *
    * \param ssid SSID
    */
-  void SetSsid (Ssid ssid);
+  void SetSsid (const Ssid& ssid);
+
+  /** \copydoc SetSsid */
+  void SetSsid (Ssid&& ssid);
+
   /**
    * Set the supported rates.
    *
    * \param rates the supported rates
    */
-  void SetSupportedRates (SupportedRates rates);
+  void SetSupportedRates (const SupportedRates& rates);
+
+  /** \copydoc SetSupportedRates */
+  void SetSupportedRates (SupportedRates&& rates);
+
   /**
    * Set the listen interval.
    *
    * \param interval the listen interval
    */
   void SetListenInterval (uint16_t interval);
+
   /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
    */
-  void SetCapabilities (CapabilityInformation capabilities);
+  void SetCapabilities (const CapabilityInformation& capabilities);
+
+  /** \copydoc SetCapabilities */
+  void SetCapabilities (CapabilityInformation&& capabilities);
+
   /**
    * Set the Extended Capabilities.
    *
    * \param extendedCapabilities the Extended Capabilities
    */
-  void SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities);
+  void SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities);
+
+  /** \copydoc SetExtendedCapabilities */
+  void SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities);
+
   /**
    * Set the HT capabilities.
    *
    * \param htCapabilities HT capabilities
    */
-  void SetHtCapabilities (HtCapabilities htCapabilities);
+  void SetHtCapabilities (const HtCapabilities& htCapabilities);
+
+  /** \copydoc SetHtCapabilities */
+  void SetHtCapabilities (HtCapabilities&& htCapabilities);
+
   /**
    * Set the VHT capabilities.
    *
    * \param vhtCapabilities VHT capabilities
    */
-  void SetVhtCapabilities (VhtCapabilities vhtCapabilities);
+  void SetVhtCapabilities (const VhtCapabilities& vhtCapabilities);
+
+  /** \copydoc SetVhtCapabilities */
+  void SetVhtCapabilities (VhtCapabilities&& vhtCapabilities);
+
   /**
    * Set the HE capabilities.
    *
    * \param heCapabilities HE capabilities
    */
-  void SetHeCapabilities (HeCapabilities heCapabilities);
+  void SetHeCapabilities (const HeCapabilities& heCapabilities);
+
+  /** \copydoc SetHeCapabilities */
+  void SetHeCapabilities (HeCapabilities&& heCapabilities);
+
   /**
    * Set the EHT capabilities.
    *
    * \param ehtCapabilities EHT capabilities
    */
-  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  void SetEhtCapabilities (const EhtCapabilities& ehtCapabilities);
+
+  /** \copydoc SetEhtCapabilities */
+  void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
+
   /**
    * Return the Capability information.
    *
    * \return Capability information
    */
-  CapabilityInformation GetCapabilities (void) const;
+  const CapabilityInformation& GetCapabilities (void) const;
   /**
    * Return the extended capabilities.
    *
    * \return the extended capabilities
    */
-  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
    * \return HT capabilities
    */
-  HtCapabilities GetHtCapabilities (void) const;
+  const HtCapabilities& GetHtCapabilities (void) const;
   /**
    * Return the VHT capabilities.
    *
    * \return VHT capabilities
    */
-  VhtCapabilities GetVhtCapabilities (void) const;
+  const VhtCapabilities& GetVhtCapabilities (void) const;
   /**
    * Return the HE capabilities.
    *
    * \return HE capabilities
    */
-  HeCapabilities GetHeCapabilities (void) const;
+  const HeCapabilities& GetHeCapabilities (void) const;
   /**
    * Return the EHT capabilities.
    *
    * \return EHT capabilities
    */
-  EhtCapabilities GetEhtCapabilities (void) const;
+  const EhtCapabilities& GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
    * \return SSID
    */
-  Ssid GetSsid (void) const;
+  const Ssid& GetSsid (void) const;
   /**
    * Return the supported rates.
    *
    * \return the supported rates
    */
-  SupportedRates GetSupportedRates (void) const;
+  const SupportedRates& GetSupportedRates (void) const;
   /**
    * Return the listen interval.
    *

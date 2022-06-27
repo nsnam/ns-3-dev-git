@@ -682,15 +682,27 @@ MgtAssocRequestHeader::~MgtAssocRequestHeader ()
 }
 
 void
-MgtAssocRequestHeader::SetSsid (Ssid ssid)
+MgtAssocRequestHeader::SetSsid (const Ssid& ssid)
 {
   m_ssid = ssid;
 }
 
 void
-MgtAssocRequestHeader::SetSupportedRates (SupportedRates rates)
+MgtAssocRequestHeader::SetSsid (Ssid&& ssid)
+{
+  m_ssid = std::move (ssid);
+}
+
+void
+MgtAssocRequestHeader::SetSupportedRates (const SupportedRates& rates)
 {
   m_rates = rates;
+}
+
+void
+MgtAssocRequestHeader::SetSupportedRates (SupportedRates&& rates)
+{
+  m_rates = std::move (rates);
 }
 
 void
@@ -700,84 +712,120 @@ MgtAssocRequestHeader::SetListenInterval (uint16_t interval)
 }
 
 void
-MgtAssocRequestHeader::SetCapabilities (CapabilityInformation capabilities)
+MgtAssocRequestHeader::SetCapabilities (const CapabilityInformation& capabilities)
 {
   m_capability = capabilities;
 }
 
-CapabilityInformation
+void
+MgtAssocRequestHeader::SetCapabilities (CapabilityInformation&& capabilities)
+{
+  m_capability = std::move (capabilities);
+}
+
+const CapabilityInformation&
 MgtAssocRequestHeader::GetCapabilities (void) const
 {
   return m_capability;
 }
 
 void
-MgtAssocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities)
+MgtAssocRequestHeader::SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities)
 {
   m_extendedCapability = extendedCapabilities;
 }
 
-ExtendedCapabilities
+void
+MgtAssocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities)
+{
+  m_extendedCapability = std::move (extendedCapabilities);
+}
+
+const ExtendedCapabilities&
 MgtAssocRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
 }
 
 void
-MgtAssocRequestHeader::SetHtCapabilities (HtCapabilities htCapabilities)
+MgtAssocRequestHeader::SetHtCapabilities (const HtCapabilities& htCapabilities)
 {
   m_htCapability = htCapabilities;
 }
 
-HtCapabilities
+void
+MgtAssocRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
+{
+  m_htCapability = std::move (htCapabilities);
+}
+
+const HtCapabilities&
 MgtAssocRequestHeader::GetHtCapabilities (void) const
 {
   return m_htCapability;
 }
 
 void
-MgtAssocRequestHeader::SetVhtCapabilities (VhtCapabilities vhtCapabilities)
+MgtAssocRequestHeader::SetVhtCapabilities (const VhtCapabilities& vhtCapabilities)
 {
   m_vhtCapability = vhtCapabilities;
 }
 
-VhtCapabilities
+void
+MgtAssocRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
+{
+  m_vhtCapability = std::move (vhtCapabilities);
+}
+
+const VhtCapabilities&
 MgtAssocRequestHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
 }
 
 void
-MgtAssocRequestHeader::SetHeCapabilities (HeCapabilities heCapabilities)
+MgtAssocRequestHeader::SetHeCapabilities (const HeCapabilities& heCapabilities)
 {
   m_heCapability = heCapabilities;
 }
 
-HeCapabilities
+void
+MgtAssocRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
+{
+  m_heCapability = std::move (heCapabilities);
+}
+
+const HeCapabilities&
 MgtAssocRequestHeader::GetHeCapabilities (void) const
 {
   return m_heCapability;
 }
 
 void
-MgtAssocRequestHeader::SetEhtCapabilities (EhtCapabilities ehtCapabilities)
+MgtAssocRequestHeader::SetEhtCapabilities (const EhtCapabilities& ehtCapabilities)
 {
   m_ehtCapability = ehtCapabilities;
 }
 
-EhtCapabilities
+void
+MgtAssocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
+{
+  m_ehtCapability = std::move (ehtCapabilities);
+}
+
+const EhtCapabilities&
 MgtAssocRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
 }
 
-Ssid
+const Ssid&
 MgtAssocRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
 
-SupportedRates
+const SupportedRates&
 MgtAssocRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
@@ -885,15 +933,27 @@ MgtReassocRequestHeader::~MgtReassocRequestHeader ()
 }
 
 void
-MgtReassocRequestHeader::SetSsid (Ssid ssid)
+MgtReassocRequestHeader::SetSsid (const Ssid& ssid)
 {
   m_ssid = ssid;
 }
 
 void
-MgtReassocRequestHeader::SetSupportedRates (SupportedRates rates)
+MgtReassocRequestHeader::SetSsid (Ssid&& ssid)
+{
+  m_ssid = std::move (ssid);
+}
+
+void
+MgtReassocRequestHeader::SetSupportedRates (const SupportedRates& rates)
 {
   m_rates = rates;
+}
+
+void
+MgtReassocRequestHeader::SetSupportedRates (SupportedRates&& rates)
+{
+  m_rates = std::move (rates);
 }
 
 void
@@ -903,84 +963,120 @@ MgtReassocRequestHeader::SetListenInterval (uint16_t interval)
 }
 
 void
-MgtReassocRequestHeader::SetCapabilities (CapabilityInformation capabilities)
+MgtReassocRequestHeader::SetCapabilities (const CapabilityInformation& capabilities)
 {
   m_capability = capabilities;
 }
 
-CapabilityInformation
+void
+MgtReassocRequestHeader::SetCapabilities (CapabilityInformation&& capabilities)
+{
+  m_capability = std::move (capabilities);
+}
+
+const CapabilityInformation&
 MgtReassocRequestHeader::GetCapabilities (void) const
 {
   return m_capability;
 }
 
 void
-MgtReassocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities extendedCapabilities)
+MgtReassocRequestHeader::SetExtendedCapabilities (const ExtendedCapabilities& extendedCapabilities)
 {
   m_extendedCapability = extendedCapabilities;
 }
 
-ExtendedCapabilities
+void
+MgtReassocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedCapabilities)
+{
+  m_extendedCapability = std::move (extendedCapabilities);
+}
+
+const ExtendedCapabilities&
 MgtReassocRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
 }
 
 void
-MgtReassocRequestHeader::SetHtCapabilities (HtCapabilities htCapabilities)
+MgtReassocRequestHeader::SetHtCapabilities (const HtCapabilities& htCapabilities)
 {
   m_htCapability = htCapabilities;
 }
 
-HtCapabilities
+void
+MgtReassocRequestHeader::SetHtCapabilities (HtCapabilities&& htCapabilities)
+{
+  m_htCapability = std::move (htCapabilities);
+}
+
+const HtCapabilities&
 MgtReassocRequestHeader::GetHtCapabilities (void) const
 {
   return m_htCapability;
 }
 
 void
-MgtReassocRequestHeader::SetVhtCapabilities (VhtCapabilities vhtCapabilities)
+MgtReassocRequestHeader::SetVhtCapabilities (const VhtCapabilities& vhtCapabilities)
 {
   m_vhtCapability = vhtCapabilities;
 }
 
-VhtCapabilities
+void
+MgtReassocRequestHeader::SetVhtCapabilities (VhtCapabilities&& vhtCapabilities)
+{
+  m_vhtCapability = std::move (vhtCapabilities);
+}
+
+const VhtCapabilities&
 MgtReassocRequestHeader::GetVhtCapabilities (void) const
 {
   return m_vhtCapability;
 }
 
 void
-MgtReassocRequestHeader::SetHeCapabilities (HeCapabilities heCapabilities)
+MgtReassocRequestHeader::SetHeCapabilities (const HeCapabilities& heCapabilities)
 {
   m_heCapability = heCapabilities;
 }
 
-HeCapabilities
+void
+MgtReassocRequestHeader::SetHeCapabilities (HeCapabilities&& heCapabilities)
+{
+  m_heCapability = std::move (heCapabilities);
+}
+
+const HeCapabilities&
 MgtReassocRequestHeader::GetHeCapabilities (void) const
 {
   return m_heCapability;
 }
 
 void
-MgtReassocRequestHeader::SetEhtCapabilities (EhtCapabilities ehtCapabilities)
+MgtReassocRequestHeader::SetEhtCapabilities (const EhtCapabilities& ehtCapabilities)
 {
   m_ehtCapability = ehtCapabilities;
 }
 
-EhtCapabilities
+void
+MgtReassocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
+{
+  m_ehtCapability = std::move (ehtCapabilities);
+}
+
+const EhtCapabilities&
 MgtReassocRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
 }
 
-Ssid
+const Ssid&
 MgtReassocRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
 
-SupportedRates
+const SupportedRates&
 MgtReassocRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;

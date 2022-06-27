@@ -1126,9 +1126,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               //rate set is compatible with our Basic Rate set
               MgtAssocRequestHeader assocReq;
               packet->PeekHeader (assocReq);
-              CapabilityInformation capabilities = assocReq.GetCapabilities ();
+              const CapabilityInformation& capabilities = assocReq.GetCapabilities ();
               GetWifiRemoteStationManager ()->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
-              SupportedRates rates = assocReq.GetSupportedRates ();
+              const SupportedRates& rates = assocReq.GetSupportedRates ();
               bool problem = false;
               if (rates.GetNRates () == 0)
                 {
@@ -1137,7 +1137,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetHtSupported ())
                 {
                   //check whether the HT STA supports all MCSs in Basic MCS Set
-                  HtCapabilities htCapabilities = assocReq.GetHtCapabilities ();
+                  const HtCapabilities& htCapabilities = assocReq.GetHtCapabilities ();
                   if (htCapabilities.IsSupportedMcs (0))
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1154,7 +1154,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetVhtSupported ())
                 {
                   //check whether the VHT STA supports all MCSs in Basic MCS Set
-                  VhtCapabilities vhtCapabilities = assocReq.GetVhtCapabilities ();
+                  const VhtCapabilities& vhtCapabilities = assocReq.GetVhtCapabilities ();
                   if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1171,7 +1171,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetHeSupported ())
                 {
                   //check whether the HE STA supports all MCSs in Basic MCS Set
-                  HeCapabilities heCapabilities = assocReq.GetHeCapabilities ();
+                  const HeCapabilities& heCapabilities = assocReq.GetHeCapabilities ();
                   if (heCapabilities.GetSupportedMcsAndNss () != 0)
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1188,7 +1188,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetEhtSupported ())
                 {
                   //check whether the EHT STA supports all MCSs in Basic MCS Set
-                  EhtCapabilities ehtCapabilities = assocReq.GetEhtCapabilities ();
+                  // const EhtCapabilities& ehtCapabilities = assocReq.GetEhtCapabilities ();
                   //TODO: to be completed
                 }
               if (problem)
@@ -1213,7 +1213,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetHtSupported ())
                     {
-                      HtCapabilities htCapabilities = assocReq.GetHtCapabilities ();
+                      const HtCapabilities& htCapabilities = assocReq.GetHtCapabilities ();
                       if (htCapabilities.IsSupportedMcs (0))
                         {
                           GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, htCapabilities);
@@ -1221,7 +1221,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetVhtSupported ())
                     {
-                      VhtCapabilities vhtCapabilities = assocReq.GetVhtCapabilities ();
+                      const VhtCapabilities& vhtCapabilities = assocReq.GetVhtCapabilities ();
                       //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
                       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                         {
@@ -1238,12 +1238,12 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetHtSupported ())
                     {
-                      ExtendedCapabilities extendedCapabilities = assocReq.GetExtendedCapabilities ();
+                      // const ExtendedCapabilities& extendedCapabilities = assocReq.GetExtendedCapabilities ();
                       //TODO: to be completed
                     }
                   if (GetHeSupported ())
                     {
-                      HeCapabilities heCapabilities = assocReq.GetHeCapabilities ();
+                      const HeCapabilities& heCapabilities = assocReq.GetHeCapabilities ();
                       if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
                           GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, heCapabilities);
@@ -1259,7 +1259,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetEhtSupported ())
                     {
-                      EhtCapabilities ehtCapabilities = assocReq.GetEhtCapabilities ();
+                      const EhtCapabilities& ehtCapabilities = assocReq.GetEhtCapabilities ();
                       //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
                       GetWifiRemoteStationManager ()->AddStationEhtCapabilities (from, ehtCapabilities);
                       for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_EHT))
@@ -1282,9 +1282,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               //rate set is compatible with our Basic Rate set
               MgtReassocRequestHeader reassocReq;
               packet->PeekHeader (reassocReq);
-              CapabilityInformation capabilities = reassocReq.GetCapabilities ();
+              const CapabilityInformation& capabilities = reassocReq.GetCapabilities ();
               GetWifiRemoteStationManager ()->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
-              SupportedRates rates = reassocReq.GetSupportedRates ();
+              const SupportedRates& rates = reassocReq.GetSupportedRates ();
               bool problem = false;
               if (rates.GetNRates () == 0)
                 {
@@ -1293,7 +1293,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetHtSupported ())
                 {
                   //check whether the HT STA supports all MCSs in Basic MCS Set
-                  HtCapabilities htCapabilities = reassocReq.GetHtCapabilities ();
+                  const HtCapabilities& htCapabilities = reassocReq.GetHtCapabilities ();
                   if (htCapabilities.IsSupportedMcs (0))
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1310,7 +1310,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetVhtSupported ())
                 {
                   //check whether the VHT STA supports all MCSs in Basic MCS Set
-                  VhtCapabilities vhtCapabilities = reassocReq.GetVhtCapabilities ();
+                  const VhtCapabilities& vhtCapabilities = reassocReq.GetVhtCapabilities ();
                   if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1327,7 +1327,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetHeSupported ())
                 {
                   //check whether the HE STA supports all MCSs in Basic MCS Set
-                  HeCapabilities heCapabilities = reassocReq.GetHeCapabilities ();
+                  const HeCapabilities& heCapabilities = reassocReq.GetHeCapabilities ();
                   if (heCapabilities.GetSupportedMcsAndNss () != 0)
                     {
                       for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
@@ -1344,7 +1344,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               if (GetEhtSupported ())
                 {
                   //check whether the EHT STA supports all MCSs in Basic MCS Set
-                  EhtCapabilities ehtCapabilities = reassocReq.GetEhtCapabilities ();
+                  // const EhtCapabilities& ehtCapabilities = reassocReq.GetEhtCapabilities ();
                   //TODO: to be completed
                 }
               if (problem)
@@ -1369,7 +1369,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetHtSupported ())
                     {
-                      HtCapabilities htCapabilities = reassocReq.GetHtCapabilities ();
+                      const HtCapabilities& htCapabilities = reassocReq.GetHtCapabilities ();
                       if (htCapabilities.IsSupportedMcs (0))
                         {
                           GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, htCapabilities);
@@ -1377,7 +1377,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetVhtSupported ())
                     {
-                      VhtCapabilities vhtCapabilities = reassocReq.GetVhtCapabilities ();
+                      const VhtCapabilities& vhtCapabilities = reassocReq.GetVhtCapabilities ();
                       //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
                       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                         {
@@ -1394,12 +1394,12 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetHtSupported ())
                     {
-                      ExtendedCapabilities extendedCapabilities = reassocReq.GetExtendedCapabilities ();
+                      // const ExtendedCapabilities& extendedCapabilities = reassocReq.GetExtendedCapabilities ();
                       //TODO: to be completed
                     }
                   if (GetHeSupported ())
                     {
-                      HeCapabilities heCapabilities = reassocReq.GetHeCapabilities ();
+                      const HeCapabilities& heCapabilities = reassocReq.GetHeCapabilities ();
                       if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
                           GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, heCapabilities);
@@ -1415,7 +1415,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     }
                   if (GetEhtSupported ())
                     {
-                      EhtCapabilities ehtCapabilities = reassocReq.GetEhtCapabilities ();
+                      const EhtCapabilities& ehtCapabilities = reassocReq.GetEhtCapabilities ();
                       //TODO: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
                       GetWifiRemoteStationManager ()->AddStationEhtCapabilities (from, ehtCapabilities);
                       for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
