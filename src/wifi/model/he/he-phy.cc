@@ -211,48 +211,12 @@ HePhy::GetSigBDuration (const WifiTxVector& txVector) const
   if (txVector.IsDlMu ()) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
     {
       NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
-      /*
-       * Compute the number of bits used by common field.
-       * Assume that compression bit in HE-SIG-A is not set (i.e. not
-       * full band MU-MIMO); the field is present.
-       */
-      uint16_t bw = txVector.GetChannelWidth ();
-      std::size_t commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-      if (bw <= 40)
-        {
-          commonFieldSize += 8; //only one allocation subfield
-        }
-      else
-        {
-          commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
-        }
 
-      /*
-       * Compute the number of bits used by user-specific field.
-       * MU-MIMO is not supported; only one station per RU.
-       * The user-specific field is composed of N user block fields
-       * spread over each corresponding HE-SIG-B content channel.
-       * Each user block field contains either two or one users' data
-       * (the latter being for odd number of stations per content channel).
-       * Padding will be handled further down in the code.
-       */
-      std::pair<std::size_t, std::size_t> numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel ();
-      std::size_t maxNumStaPerContentChannel = std::max (numStaPerContentChannel.first, numStaPerContentChannel.second);
-      std::size_t maxNumUserBlockFields = maxNumStaPerContentChannel / 2; //handle last user block with single user, if any, further down
-      std::size_t userSpecificFieldSize = maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
-      if (maxNumStaPerContentChannel % 2 != 0)
-        {
-          userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
-        }
-
-      /*
-       * Compute duration of HE-SIG-B considering that padding
-       * is added up to the next OFDM symbol.
-       * Nss = 1 and GI = 800 ns for HE-SIG-B.
-       */
-      Time symbolDuration = MicroSeconds (4);
-      double numDataBitsPerSymbol = GetSigBMode (txVector).GetDataRate (20, 800, 1) * symbolDuration.GetNanoSeconds () / 1e9;
-      double numSymbols = ceil ((commonFieldSize + userSpecificFieldSize) / numDataBitsPerSymbol);
+      auto sigBSize = GetSigBFieldSize (txVector);
+      auto symbolDuration = MicroSeconds (4);
+      // Number of data bits per symbol
+      auto ndbps = GetSigBMode (txVector).GetDataRate (20, 800, 1) * symbolDuration.GetNanoSeconds () / 1e9;
+      auto numSymbols = ceil ((sigBSize) / ndbps);
 
       return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
     }
@@ -1585,7 +1549,41 @@ HePhy::GetMaxPsduSize (void) const
   return 6500631;
 }
 
-} //namespace ns3
+uint32_t
+HePhy::GetSigBFieldSize (const WifiTxVector& txVector)
+{
+  NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
+  NS_ASSERT (txVector.IsDlMu ());
+
+   // Compute the number of bits used by common field.
+   // Assume that compression bit in HE-SIG-A is not set (i.e. not
+   // full band MU-MIMO); the field is present.
+  auto bw              = txVector.GetChannelWidth ();
+  auto commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+  if (bw <= 40)
+  {
+    commonFieldSize += 8; // only one allocation subfield
+  }
+  else
+  {
+    commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+  }
+
+  auto numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel ();
+  auto maxNumStaPerContentChannel =
+      std::max (numStaPerContentChannel.first, numStaPerContentChannel.second);
+  auto maxNumUserBlockFields = maxNumStaPerContentChannel /
+                               2; // handle last user block with single user, if any, further down
+  std::size_t userSpecificFieldSize =
+      maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
+  if (maxNumStaPerContentChannel % 2 != 0)
+  {
+    userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
+  }
+
+  return commonFieldSize + userSpecificFieldSize;
+}
+} // namespace ns3
 
 namespace {
 

@@ -400,6 +400,13 @@ public:
    */
   static bool IsAllowed (const WifiTxVector& txVector);
 
+  /**
+   * Get variable length HE SIG-B field size based on TX Vector
+   * \param txVector WiFi TX Vector
+   * \return field size in bytes
+   */
+  static uint32_t GetSigBFieldSize (const WifiTxVector& txVector);
+
 protected:
   PhyFieldRxStatus ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field) override;
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
