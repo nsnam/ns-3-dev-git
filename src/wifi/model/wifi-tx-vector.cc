@@ -89,7 +89,8 @@ WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
     m_bssColor (txVector.m_bssColor),
     m_length (txVector.m_length),
     m_modeInitialized (txVector.m_modeInitialized),
-    m_inactiveSubchannels (txVector.m_inactiveSubchannels)
+    m_inactiveSubchannels (txVector.m_inactiveSubchannels),
+    m_sigBMcs (txVector.m_sigBMcs)
 {
   m_muUserInfos.clear ();
   if (!txVector.m_muUserInfos.empty ()) //avoids crashing for loop
@@ -332,6 +333,18 @@ uint16_t
 WifiTxVector::GetLength (void) const
 {
   return m_length;
+}
+
+void
+WifiTxVector::SetSigBMode (const WifiMode& mode)
+{
+  m_sigBMcs = mode;
+}
+
+WifiMode
+WifiTxVector::GetSigBMode () const
+{
+  return m_sigBMcs;
 }
 
 bool

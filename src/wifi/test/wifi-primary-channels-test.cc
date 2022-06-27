@@ -724,6 +724,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu (uint8_t bss, uint16_t txChannelWidth, HeR
       hdr.SetAddr1 (staDev->GetMac ()->GetAddress ());
       psduMap[staId] = Create<const WifiPsdu> (Create<Packet> (1000), hdr);
     }
+  txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
   apDev->GetPhy ()->Send (psduMap, txVector);
 }
 

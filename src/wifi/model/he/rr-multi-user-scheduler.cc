@@ -705,6 +705,11 @@ RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
       candidateIt++;
     }
 
+  auto hePhy = DynamicCast<HePhy> (m_apMac->GetWifiPhy ()->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  NS_ASSERT (hePhy);
+  auto sigBMode = hePhy->GetSigBMode (txVector);
+  txVector.SetSigBMode (sigBMode);
+
   // remove candidates that will not be served
   m_candidates.erase (candidateIt, m_candidates.end ());
 }

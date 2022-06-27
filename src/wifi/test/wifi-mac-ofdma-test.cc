@@ -308,6 +308,7 @@ TestMultiUserScheduler::ComputeWifiTxVector (void)
       m_txVector.SetHeMuUserInfo (sta.first,
                                   {{ruType, ruIndex++, primary80}, WifiMode ("HeMcs11"), 1});
     }
+  m_txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
 }
 
 MultiUserScheduler::DlMuInfo

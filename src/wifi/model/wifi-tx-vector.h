@@ -406,6 +406,18 @@ public:
     */
    const std::vector<bool>& GetInactiveSubchannels (void) const;
 
+  /**
+   * Set the MCS used for SIG-B
+   * \param mode MCS used for SIG-B
+   */
+  void SetSigBMode (const WifiMode& mode);
+
+  /**
+   * Get MCS used for SIG-B
+   * \return MCS for SIG-B
+   */
+  WifiMode GetSigBMode () const;
+
 private:
   WifiMode m_mode;               /**< The DATARATE parameter in Table 15-4.
                                  It is the value that will be passed
@@ -432,7 +444,9 @@ private:
                                       indexed by station ID (STA-ID) corresponding
                                       to the 11 LSBs of the AID of the recipient STA
                                       This list shall be used only for HE MU */
-  std::vector<bool> m_inactiveSubchannels;/**< Bitmap of inactive subchannels used for preamble puncturing */
+  std::vector<bool> m_inactiveSubchannels; /**< Bitmap of inactive subchannels used for preamble puncturing */
+
+  WifiMode m_sigBMcs; //<! MCS_SIG_B per Table 27-1 IEEE 802.11ax-2021
 };
 
 /**
@@ -443,7 +457,7 @@ private:
  *
  * \return ouput stream
  */
-std::ostream & operator << (std::ostream & os,const WifiTxVector &v);
+std::ostream & operator << (std::ostream & os, const WifiTxVector &v);
 
 } //namespace ns3
 

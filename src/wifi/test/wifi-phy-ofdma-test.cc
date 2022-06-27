@@ -493,6 +493,8 @@ TestDlOfdmaPhyTransmission::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2)
       NS_ASSERT_MSG (false, "Unsupported channel width");
     }
 
+  txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
+
   HeRu::RuSpec ru1 (ruType, 1, true);
   txVector.SetRu (ru1, rxStaId1);
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
@@ -1128,6 +1130,8 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2, cons
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
 
+  txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
+
   Ptr<Packet> pkt1 = Create<Packet> (1000);
   WifiMacHeader hdr1;
   hdr1.SetType (WIFI_MAC_QOSDATA);
@@ -1670,6 +1674,7 @@ TestUlOfdmaPpduUid::SendMuPpdu (void)
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
+  txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
 
   Ptr<Packet> pkt1 = Create<Packet> (1000);
   WifiMacHeader hdr1;

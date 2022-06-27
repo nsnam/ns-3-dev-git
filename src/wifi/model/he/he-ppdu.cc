@@ -98,6 +98,7 @@ HePpdu::SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration)
   if (txVector.IsDlMu ())
     {
       m_heSig.SetMuFlag (true);
+      m_heSig.SetMcs (txVector.GetSigBMode ().GetMcsValue ());
     }
   else if (!txVector.IsUlMu ())
     {
@@ -124,6 +125,10 @@ HePpdu::DoGetTxVector (void) const
   for (auto const& muUserInfo : m_muUserInfos)
     {
       txVector.SetHeMuUserInfo (muUserInfo.first, muUserInfo.second);
+    }
+  if (txVector.IsDlMu ())
+    {
+      txVector.SetSigBMode (HePhy::GetVhtMcs (m_heSig.GetMcs ()));
     }
   return txVector;
 }
