@@ -96,11 +96,11 @@
 //
 // 6 - Run the server side:
 //
-// server host: $ ./ns3 run="fd-emu-onoff --serverMode=1"
+// server host: $ ./ns3 run "fd-emu-onoff --serverMode=1"
 //
 // 7 - Run the client side:
 //
-// client host: $ ./ns3 run="fd-emu-onoff"
+// client host: $ ./ns3 run "fd-emu-onoff"
 //
 
 #include <iostream>

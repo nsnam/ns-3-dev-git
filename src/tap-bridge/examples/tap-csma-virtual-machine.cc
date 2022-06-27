@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   // devices installed on both of the nodes.  The data rate and delay for the
   // channel can be set through the command-line parser.  For example,
   //
-  // ./ns3 run "tap=csma-virtual-machine --ns3::CsmaChannel::DataRate=10000000"
+  // ./ns3 run "tap-csma-virtual-machine --ns3::CsmaChannel::DataRate=10000000"
   //
   CsmaHelper csma;
   NetDeviceContainer devices = csma.Install (nodes);

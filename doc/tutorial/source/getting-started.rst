@@ -1429,7 +1429,7 @@ For example, to run your |ns3| program ``hello-simulator`` with the arguments
 
 .. sourcecode:: console
 
-  $ ./ns3 run=hello-simulator --command-template="gdb %s --args <args>"
+  $ ./ns3 run hello-simulator --command-template="gdb %s --args <args>"
 
 Notice that the |ns3| program name goes with the ``--run`` argument,
 and the control utility (here ``gdb``) is the first token

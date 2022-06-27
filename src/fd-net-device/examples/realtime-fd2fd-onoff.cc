@@ -37,7 +37,7 @@
 //
 // Steps to run the experiment:
 //
-// $ ./ns3 run="fd2fd-onoff"
+// $ ./ns3 run "fd2fd-onoff"
 //
 
 #include <sys/socket.h>

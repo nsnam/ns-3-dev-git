@@ -33,10 +33,10 @@
 //   "tcp-star-server-$n-$i.pcap" where n and i represent node and interface
 //   numbers respectively
 // Usage examples for things you might want to tweak:
-//       ./ns3 run="tcp-star-server"
-//       ./ns3 run="tcp-star-server --nNodes=25"
-//       ./ns3 run="tcp-star-server --ns3::OnOffApplication::DataRate=10000"
-//       ./ns3 run="tcp-star-server --ns3::OnOffApplication::PacketSize=500"
+//       ./ns3 run "tcp-star-server"
+//       ./ns3 run "tcp-star-server --nNodes=25"
+//       ./ns3 run "tcp-star-server --ns3::OnOffApplication::DataRate=10000"
+//       ./ns3 run "tcp-star-server --ns3::OnOffApplication::PacketSize=500"
 // See the ns-3 tutorial for more info on the command line:
 // http://www.nsnam.org/tutorials.html
 

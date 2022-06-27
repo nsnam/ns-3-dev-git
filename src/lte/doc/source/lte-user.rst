@@ -2188,7 +2188,7 @@ appending the parameters and their values to the ``ns3`` call when starting each
 individual simulation. So the ``ns3`` calls for invoking our 3 simulations would
 look as below::
 
-   $ ./ns3 run="lena-dual-stripe
+   $ ./ns3 run "lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
@@ -2198,7 +2198,7 @@ look as below::
      --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
      --RngRun=1" > no-op.txt
 
-   $ ./ns3 run="lena-dual-stripe
+   $ ./ns3 run "lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::A3RsrpHandoverAlgorithm
@@ -2208,7 +2208,7 @@ look as below::
      --ns3::PhyStatsCalculator::UlSinrFilename=a3-rsrp-UlSinrStats.txt
      --RngRun=1" > a3-rsrp.txt
 
-   $ ./ns3 run="lena-dual-stripe
+   $ ./ns3 run "lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::A2A4RsrqHandoverAlgorithm
@@ -2415,7 +2415,7 @@ along entire system bandwidth.
 User needs to specify FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
 Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented below::
 
-   $ ./ns3 run="lena-dual-stripe
+   $ ./ns3 run "lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
@@ -2429,7 +2429,7 @@ Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented 
 Example command to generate REM for RB 1 in data channel from ``lena-dual-stripe`` scenario
 with Hard FR algorithm is presented below::
 
-   $ ./ns3 run="lena-dual-stripe
+   $ ./ns3 run "lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
      --epc=0 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
      --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm

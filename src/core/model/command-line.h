@@ -156,19 +156,19 @@ namespace ns3 {
  * Here is the output from a few runs of that program:
  *
  * \verbatim
-   $ ./ns3 run="command-line-example"
+   $ ./ns3 run "command-line-example"
    intArg:   1
    boolArg:  false
    strArg:   "strArg default"
    cbArg:    "cbArg default"
 
-   $ ./ns3 run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
+   $ ./ns3 run "command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
    intArg:   2
    boolArg:  true
    strArg:   "Hello"
    cbArg:    "World"
 
-   $ ./ns3 run="command-line-example --help"
+   $ ./ns3 run "command-line-example --help"
    ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
 
    CommandLine example program.
