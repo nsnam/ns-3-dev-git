@@ -19,6 +19,7 @@ Changes from ns-3.36 to ns-3.37
 ### New API
 
 * Added a new attribute **MaxTbPpduDelay** in HeConfiguration for configuring the maximum delay with which a TB PPDU can arrive at the AP after the first TB PPDU in order to be decoded properly. If the delay is higher than **MaxTbPpduDelay**, the TB PPDU is discarded and treated as interference.
+* Added new methods (**ConfigHtOptions**, **ConfigVhtOptions**, **ConfigHeOptions** and **ConfigEhtOptions**) to `WifiHelper` to configure HT/VHT/HE/EHT options listed as attributes of the respective Configuration classes through the wifi helper.
 * Added new attributes (**AccessReqInterval**, **AccessReqAc** and **DelayAccessReqUponAccess**) to the MultiUserScheduler to allow a wifi AP to coordinate UL MU transmissions even without DL traffic.
 * `WifiNetDevice` has a new **Phys** attribute, which is primarily intended to select a specific PHY object of an 11be multi-link device when using path names.
 

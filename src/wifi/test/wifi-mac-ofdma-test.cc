@@ -384,6 +384,8 @@ public:
 private:
   void DoRun (void) override;
 
+  static constexpr uint16_t m_muTimerRes = 8192; ///< MU timer resolution in usec
+
   /// Information about transmitted frames
   struct FrameInfo
   {
@@ -1046,7 +1048,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
             {
               NS_TEST_EXPECT_MSG_GT_OR_EQ (m_txPsdus[i].startTx.GetMicroSeconds (),
                                            m_edcaDisabledStartTime.GetMicroSeconds ()
-                                           + m_muEdcaParameterSet.muTimer * 8192,
+                                           + m_muEdcaParameterSet.muTimer * m_muTimerRes,
                                            "A station transmitted before the MU EDCA timer expired");
               break;
             }
@@ -1106,28 +1108,20 @@ OfdmaAckSequenceTest::DoRun (void)
         NS_ABORT_MSG ("Invalid channel bandwidth (must be 20, 40, 80 or 160)");
     }
 
-  Config::SetDefault ("ns3::HeConfiguration::MuBeAifsn",
-                      UintegerValue (m_muEdcaParameterSet.muAifsn));
-  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMin",
-                      UintegerValue (m_muEdcaParameterSet.muCwMin));
-  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMax",
-                      UintegerValue (m_muEdcaParameterSet.muCwMax));
-  Config::SetDefault ("ns3::HeConfiguration::BeMuEdcaTimer",
-                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
-  // MU EDCA timers must be either all null or all non-null
-  Config::SetDefault ("ns3::HeConfiguration::BkMuEdcaTimer",
-                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
-  Config::SetDefault ("ns3::HeConfiguration::ViMuEdcaTimer",
-                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
-  Config::SetDefault ("ns3::HeConfiguration::VoMuEdcaTimer",
-                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
-
   // increase MSDU lifetime so that it does not expire before the MU EDCA timer ends
   Config::SetDefault ("ns3::WifiMacQueue::MaxDelay", TimeValue (Seconds (2)));
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211ax);
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+  wifi.ConfigHeOptions ("MuBeAifsn", UintegerValue (m_muEdcaParameterSet.muAifsn),
+                        "MuBeCwMin", UintegerValue (m_muEdcaParameterSet.muCwMin),
+                        "MuBeCwMax", UintegerValue (m_muEdcaParameterSet.muCwMax),
+                        "BeMuEdcaTimer", TimeValue (MicroSeconds (m_muTimerRes * m_muEdcaParameterSet.muTimer)),
+                        // MU EDCA timers must be either all null or all non-null
+                        "BkMuEdcaTimer", TimeValue (MicroSeconds (m_muTimerRes * m_muEdcaParameterSet.muTimer)),
+                        "ViMuEdcaTimer", TimeValue (MicroSeconds (m_muTimerRes * m_muEdcaParameterSet.muTimer)),
+                        "VoMuEdcaTimer", TimeValue (MicroSeconds (m_muTimerRes * m_muEdcaParameterSet.muTimer)));
 
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");

@@ -139,6 +139,8 @@ int main (int argc, char *argv[])
               oss << "VhtMcs" << mcs;
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
                                             "ControlMode", StringValue (oss.str ()));
+              // Set guard interval
+              wifi.ConfigHtOptions ("ShortGuardIntervalSupported", BooleanValue (sgi));
 
               Ssid ssid = Ssid ("ns3-80211ac");
 
@@ -154,9 +156,6 @@ int main (int argc, char *argv[])
 
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);
-
-              // Set guard interval
-              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (sgi));
 
               // mobility.
               MobilityHelper mobility;

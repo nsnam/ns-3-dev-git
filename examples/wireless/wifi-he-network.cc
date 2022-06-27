@@ -205,6 +205,9 @@ int main (int argc, char *argv[])
               oss << "HeMcs" << mcs;
               wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (oss.str ()),
                                             "ControlMode", StringValue (oss.str ()));
+              // Set guard interval and MPDU buffer size
+              wifi.ConfigHeOptions ("GuardInterval", TimeValue (NanoSeconds (gi)),
+                                    "MpduBufferSize", UintegerValue (useExtendedBlockAck ? 256 : 64));
 
               Ssid ssid = Ssid ("ns3-80211ax");
 
@@ -261,10 +264,6 @@ int main (int argc, char *argv[])
               int64_t streamNumber = 100;
               streamNumber += wifi.AssignStreams (apDevice, streamNumber);
               streamNumber += wifi.AssignStreams (staDevices, streamNumber);
-
-              // Set guard interval and MPDU buffer size
-              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (gi)));
-              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/MpduBufferSize", UintegerValue (useExtendedBlockAck ? 256 : 64));
 
               // mobility.
               MobilityHelper mobility;
