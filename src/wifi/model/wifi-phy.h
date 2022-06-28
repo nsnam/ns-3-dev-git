@@ -849,6 +849,17 @@ public:
    */
   void SetOperatingChannel (const ChannelTuple& channelTuple);
   /**
+   * Configure whether it is prohibited to change PHY band after initialization.
+   *
+   * \param enable true to prohibit changing PHY band after initialization,
+   *        false otherwise
+   */
+  void SetFixedPhyBand (bool enable);
+  /**
+   * \return whether it is prohibited to change PHY band after initialization
+   */
+  bool HasFixedPhyBand (void) const;
+  /**
    * \return the operating center frequency (MHz)
    */
   uint16_t GetFrequency (void) const;
@@ -1344,6 +1355,7 @@ private:
   WifiPhyBand m_band;                       //!< WifiPhyBand
   ChannelTuple m_channelSettings;           //!< Store operating channel settings until initialization
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
+  bool m_fixedPhyBand;                      //!< True to prohibit changing PHY band after initialization
 
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slot;                              //!< Slot duration

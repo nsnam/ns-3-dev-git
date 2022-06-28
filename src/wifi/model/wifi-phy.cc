@@ -113,6 +113,12 @@ WifiPhy::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::GetPrimary20Index),
                    MakeUintegerChecker<uint8_t> (0, 7))
+    .AddAttribute ("FixedPhyBand",
+                   "If set to true, changing PHY band is prohibited after initialization.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&WifiPhy::SetFixedPhyBand,
+                                        &WifiPhy::HasFixedPhyBand),
+                   MakeBooleanChecker ())
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal. "
@@ -972,6 +978,18 @@ WifiPhy::GetPrimary20Index (void) const
 }
 
 void
+WifiPhy::SetFixedPhyBand (bool enable)
+{
+  m_fixedPhyBand = enable;
+}
+
+bool
+WifiPhy::HasFixedPhyBand (void) const
+{
+  return m_fixedPhyBand;
+}
+
+void
 WifiPhy::SetOperatingChannel (const ChannelTuple& channelTuple)
 {
   // the generic operator<< for tuples does not give a pretty result
@@ -1087,6 +1105,9 @@ WifiPhy::DoChannelSwitch (void)
   // are changing PHY band. Checking if the new PHY band is different than the
   // previous one covers both cases because initially the PHY band is unspecified
   bool changingPhyBand = (static_cast<WifiPhyBand> (std::get<2> (m_channelSettings)) != m_band);
+
+  NS_ABORT_MSG_IF (IsInitialized () && m_fixedPhyBand && changingPhyBand,
+                   "Trying to change PHY band while prohibited.");
 
   m_band = static_cast<WifiPhyBand> (std::get<2> (m_channelSettings));
 
