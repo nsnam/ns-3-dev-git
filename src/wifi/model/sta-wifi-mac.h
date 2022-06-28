@@ -142,6 +142,11 @@ public:
     MgtFrameType m_frame;              ///< The body of the management frame used to update AP info
     WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
     uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
+    /**
+     * list of (local link ID, AP link ID) pairs identifying the links to setup between MLDs.
+     * The (Re)Association Request frame is sent on the link at the head of the list
+     */
+    std::list<std::pair<std::uint8_t, uint8_t>> m_setupLinks;
   };
 
   /**

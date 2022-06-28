@@ -237,4 +237,107 @@ WifiAssocManager::ScanningTimeout (void)
   m_mac->ScanningTimeout (std::move (bestAp));
 }
 
+std::list<std::pair<std::uint8_t, uint8_t>>&
+WifiAssocManager::GetSetupLinks (const StaWifiMac::ApInfo& apInfo)
+{
+  return const_cast<std::list<std::pair<std::uint8_t, uint8_t>>&> (apInfo.m_setupLinks);
+}
+
+bool
+WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, Ptr<ReducedNeighborReport>& rnr)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_mac->GetNLinks () == 1 || GetSortedList ().empty ())
+    {
+      return false;
+    }
+
+  // Get the Multi-Link Element and the RNR element, if present,
+  // from Beacon or Probe Response
+  if (auto beacon = std::get_if<MgtBeaconHeader> (&m_apList.begin ()->m_frame); beacon)
+    {
+      mle = beacon->GetMultiLinkElement ();
+      rnr = beacon->GetReducedNeighborReport ();
+    }
+  else
+    {
+      auto probeResp = std::get_if<MgtProbeResponseHeader> (&m_apList.begin ()->m_frame);
+      NS_ASSERT (probeResp);
+      mle = probeResp->GetMultiLinkElement ();
+      rnr = probeResp->GetReducedNeighborReport ();
+    }
+
+  if (mle == nullptr)
+    {
+      NS_LOG_DEBUG ("No Multi-Link Element in Beacon/Probe Response");
+      return false;
+    }
+
+  if (rnr == nullptr || rnr->GetNNbrApInfoFields () == 0)
+    {
+      NS_LOG_DEBUG ("No Reduced Neighbor Report Element in Beacon/Probe Response");
+      return false;
+    }
+
+  // The Multi-Link Element must contain the MLD MAC Address subfield and the
+  // Link ID Info subfield
+  if (!mle->HasLinkIdInfo ())
+    {
+      NS_LOG_DEBUG ("No Link ID Info subfield in the Multi-Link Element");
+      return false;
+    }
+
+  return true;
+}
+
+std::optional<WifiAssocManager::RnrLinkInfo>
+WifiAssocManager::GetNextAffiliatedAp (const ReducedNeighborReport& rnr, std::size_t nbrApInfoId)
+{
+  NS_LOG_FUNCTION (nbrApInfoId);
+
+  while (nbrApInfoId < rnr.GetNNbrApInfoFields ())
+    {
+      if (!rnr.HasMldParameters (nbrApInfoId))
+        {
+          // this Neighbor AP Info field is not suitable to setup a link
+          nbrApInfoId++;
+          continue;
+        }
+
+      std::size_t tbttInfoFieldIndex = 0;
+      while (tbttInfoFieldIndex < rnr.GetNTbttInformationFields (nbrApInfoId)
+              && rnr.GetMldId (nbrApInfoId, tbttInfoFieldIndex) != 0)
+        {
+          tbttInfoFieldIndex++;
+        }
+
+      if (tbttInfoFieldIndex < rnr.GetNTbttInformationFields (nbrApInfoId))
+        {
+          // this Neighbor AP Info field contains an AP affiliated to the
+          // same AP MLD as the reporting AP
+          return RnrLinkInfo {nbrApInfoId, tbttInfoFieldIndex};
+        }
+      nbrApInfoId++;
+    }
+
+  return std::nullopt;
+}
+
+std::list<WifiAssocManager::RnrLinkInfo>
+WifiAssocManager::GetAllAffiliatedAps (const ReducedNeighborReport& rnr)
+{
+  std::list<WifiAssocManager::RnrLinkInfo> apList;
+  std::size_t nbrApInfoId = 0;
+  std::optional<WifiAssocManager::RnrLinkInfo> next;
+
+  while ((next = GetNextAffiliatedAp (rnr, nbrApInfoId)).has_value ())
+    {
+      apList.push_back ({*next});
+      nbrApInfoId = next->m_nbrApInfoId + 1;
+    }
+
+  return apList;
+}
+
 } //namespace ns3

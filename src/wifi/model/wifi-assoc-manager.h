@@ -67,6 +67,16 @@ class WifiAssocManager : public Object
 
 public:
   /**
+   * Struct to identify a specific TBTT Information field of a Neighbor AP Information
+   * field in a Reduced Neighbor Report element.
+   */
+  struct RnrLinkInfo
+  {
+    std::size_t m_nbrApInfoId;            ///< Neighbor AP Information field index
+    std::size_t m_tbttInfoFieldId;        ///< TBTT Information field index
+  };
+
+  /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
@@ -113,6 +123,28 @@ public:
    */
   virtual bool Compare (const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const = 0;
 
+  /**
+   * Search the given RNR element for APs affiliated to the same AP MLD as the
+   * reporting AP. The search starts at the given Neighbor AP Information field.
+   *
+   * \param rnr the given RNR element
+   * \param nbrApInfoId the index of the given Neighbor AP Information field
+   * \return the index of the Neighbor AP Information field and the index of the
+   *         TBTT Information field containing the next affiliated AP, if any.
+   */
+  static std::optional<WifiAssocManager::RnrLinkInfo> GetNextAffiliatedAp (const ReducedNeighborReport& rnr,
+                                                                           std::size_t nbrApInfoId);
+
+  /**
+   * Find all the APs affiliated to the same AP MLD as the reporting AP that sent
+   * the given RNR element.
+   *
+   * \param rnr the given RNR element
+   * \return a list containing the index of the Neighbor AP Information field and the index of the
+   *         TBTT Information field containing all the affiliated APs
+   */
+  static std::list<WifiAssocManager::RnrLinkInfo> GetAllAffiliatedAps (const ReducedNeighborReport& rnr);
+
 protected:
   /**
    * Constructor (protected as this is an abstract base class)
@@ -127,6 +159,15 @@ protected:
    * \return a const reference to the sorted list of ApInfo objects.
    */
   const SortedList& GetSortedList (void) const;
+
+  /**
+   * Get a reference to the list of the links to setup with the given AP. This method
+   * allows subclasses to modify such a list.
+   *
+   * \param apInfo the info about the given AP
+   * \return a reference to the list of the links to setup with the given AP
+   */
+  std::list<std::pair<std::uint8_t, uint8_t>>& GetSetupLinks (const StaWifiMac::ApInfo& apInfo);
 
   /**
    * \return the scanning parameters.
@@ -164,6 +205,19 @@ protected:
    * is completed.
    */
   void ScanningTimeout (void);
+
+  /**
+   * Check whether 11be Multi-Link setup can be established with the current best AP.
+   *
+   * \param[out] mle pointer to the Multi-Link Element present in the
+   *                 Beacon/Probe Response received from the best AP, if any.
+   *                 Otherwise, the pointer is not modified.
+   * \param[out] rnr pointer to the Reduced Neighbor Report Element present in the
+   *                 Beacon/Probe Response received from the best AP, if any
+   *                 Otherwise, the pointer is not modified.
+   * \return whether 11be Multi-Link setup can be established with the current best AP
+   */
+  bool CanSetupMultiLink (Ptr<MultiLinkElement>& mle, Ptr<ReducedNeighborReport>& rnr);
 
   Ptr<StaWifiMac> m_mac;                                ///< pointer to the STA wifi MAC
 
