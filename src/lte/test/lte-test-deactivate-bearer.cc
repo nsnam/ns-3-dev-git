@@ -46,6 +46,7 @@
 #include <ns3/lte-ue-phy.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
+#include <ns3/rng-seed-manager.h>
 
 #include "ns3/point-to-point-epc-helper.h"
 #include "ns3/network-module.h"
@@ -128,6 +129,11 @@ LenaDeactivateBearerTestCase::~LenaDeactivateBearerTestCase ()
 void
 LenaDeactivateBearerTestCase::DoRun (void)
 {
+  uint32_t originalSeed = RngSeedManager::GetSeed ();
+  uint32_t originalRun = RngSeedManager::GetRun ();
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+
   if (!m_errorModelEnabled)
     {
       Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
@@ -196,9 +202,14 @@ LenaDeactivateBearerTestCase::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
+  int64_t stream = 1;
+
   lteHelper->SetSchedulerType ("ns3::PssFfMacScheduler");
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  stream += lteHelper->AssignStreams (enbDevs, stream);
+
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
+  stream += lteHelper->AssignStreams (ueDevs, stream);
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -346,5 +357,8 @@ LenaDeactivateBearerTestCase::DoRun (void)
     }
 
   Simulator::Destroy ();
+
+  RngSeedManager::SetSeed (originalSeed);
+  RngSeedManager::SetRun (originalRun);
 }
 }
