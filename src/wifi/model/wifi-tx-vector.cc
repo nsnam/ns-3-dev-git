@@ -452,67 +452,8 @@ std::pair<std::size_t, std::size_t>
 WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
 {
   //MU-MIMO is not handled for now, i.e. one station per RU
-
-  if (m_channelWidth == 20)
-    {
-      return std::make_pair (m_muUserInfos.size (), 0); //all RUs are in HE-SIG-B content channel 1
-    }
-
-  HeRu::SubcarrierGroup toneRangesContentChannel1, toneRangesContentChannel2;
-  // See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0 for tone ranges per HE-SIG-B content channel
-  switch (m_channelWidth)
-    {
-      case 40:
-        toneRangesContentChannel1.push_back (std::make_pair (-244, -3));
-        toneRangesContentChannel2.push_back (std::make_pair (3, 244));
-        break;
-      case 80:
-        toneRangesContentChannel1.push_back (std::make_pair (-500, -259));
-        toneRangesContentChannel2.push_back (std::make_pair (-258, -17));
-        toneRangesContentChannel1.push_back (std::make_pair (-16, -4)); //first part of center carrier (in HE-SIG-B content channel 1)
-        toneRangesContentChannel1.push_back (std::make_pair (4, 16)); //second part of center carrier (in HE-SIG-B content channel 1)
-        toneRangesContentChannel1.push_back (std::make_pair (17, 258));
-        toneRangesContentChannel2.push_back (std::make_pair (259, 500));
-        break;
-      case 160:
-        toneRangesContentChannel1.push_back (std::make_pair (-1012, -771));
-        toneRangesContentChannel2.push_back (std::make_pair (-770, -529));
-        toneRangesContentChannel1.push_back (std::make_pair (-528, -516)); //first part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
-        toneRangesContentChannel1.push_back (std::make_pair (-508, -496)); //second part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
-        toneRangesContentChannel1.push_back (std::make_pair (-495, -254));
-        toneRangesContentChannel2.push_back (std::make_pair (-253, -12));
-        toneRangesContentChannel1.push_back (std::make_pair (12, 253));
-        toneRangesContentChannel2.push_back (std::make_pair (254, 495));
-        toneRangesContentChannel2.push_back (std::make_pair (496, 508)); //first part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
-        toneRangesContentChannel2.push_back (std::make_pair (516, 528)); //second part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
-        toneRangesContentChannel1.push_back (std::make_pair (529, 770));
-        toneRangesContentChannel2.push_back (std::make_pair (771, 1012));
-        break;
-      default:
-        NS_ABORT_MSG ("Unknown channel width: " << m_channelWidth);
-    }
-
-  std::size_t numRusContentChannel1 = 0;
-  std::size_t numRusContentChannel2 = 0;
-  for (auto & userInfo : m_muUserInfos)
-    {
-      HeRu::RuSpec ru = userInfo.second.ru;
-      if (!ru.IsPhyIndexSet ())
-        {
-          // this method can be called when calculating the TX duration of a frame
-          // and at that time the RU PHY index may have not been set yet
-          ru.SetPhyIndex (m_channelWidth, 0);
-        }
-      if (HeRu::DoesOverlap (m_channelWidth, ru, toneRangesContentChannel1))
-        {
-          numRusContentChannel1++;
-        }
-      if (HeRu::DoesOverlap (m_channelWidth, ru, toneRangesContentChannel2))
-        {
-          numRusContentChannel2++;
-        }
-    }
-  return std::make_pair (numRusContentChannel1, numRusContentChannel2);
+  auto channelAlloc = GetContentChannelAllocation ();
+  return {channelAlloc[0].size (), (m_channelWidth == 20) ? 0 : channelAlloc[1].size ()};
 }
 
 void
@@ -598,4 +539,102 @@ HeMuUserInfo::operator!= (const HeMuUserInfo& other) const
   return !(*this == other);
 }
 
-} //namespace ns3
+ContentChannelAllocation
+WifiTxVector::GetContentChannelAllocation () const
+{
+  ContentChannelAllocation channelAlloc {{}};
+  SubcarrierGroups toneRanges {};
+
+  if (m_channelWidth > 20)
+  {
+    toneRanges = GetContentChannelSubcarriers ();
+    NS_ASSERT_MSG (toneRanges.size () >= WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS,
+                   "Wrong number of content channels: " << toneRanges.size ());
+    channelAlloc.push_back ({});
+  }
+
+  for (const auto& [staId, userInfo] : m_muUserInfos)
+  {
+    if (m_channelWidth == 20)
+      {
+        // All RUs are in HE-SIG-B content channel 1
+        channelAlloc[0].push_back (staId);
+        continue;
+    }
+
+    auto ru = userInfo.ru;
+    if (!ru.IsPhyIndexSet ())
+    {
+      // This method can be called when calculating the TX duration of a frame
+      // and at that time the RU PHY index may have not been set yet
+      ru.SetPhyIndex (m_channelWidth, 0);
+    }
+
+    if (HeRu::DoesOverlap (m_channelWidth, ru, toneRanges[0]))
+    {
+      channelAlloc[0].push_back (staId);
+    }
+    if (HeRu::DoesOverlap (m_channelWidth, ru, toneRanges[1]))
+    {
+      channelAlloc[1].push_back (staId);
+    }
+  }
+  return channelAlloc;
+}
+
+SubcarrierGroups
+WifiTxVector::GetContentChannelSubcarriers () const
+{
+  SubcarrierGroups toneRanges {{}};
+
+  if (m_channelWidth > 20)
+  {
+    toneRanges.push_back ({});
+  }
+
+  switch (m_channelWidth)
+    {
+      case 20:
+        toneRanges[0].push_back (std::make_pair (-122, 122));
+        break;
+      case 40:
+        toneRanges[0].push_back (std::make_pair (-244, -3));
+        toneRanges[1].push_back (std::make_pair (3, 244));
+        break;
+      case 80:
+        toneRanges[0].push_back (std::make_pair (-500, -259));
+        toneRanges[1].push_back (std::make_pair (-258, -17));
+        toneRanges[0].push_back (
+            std::make_pair (-16, -4)); // first part of center carrier (in HE-SIG-B content channel 1)
+        toneRanges[0].push_back (
+            std::make_pair (4, 16)); // second part of center carrier (in HE-SIG-B content channel 1)
+        toneRanges[0].push_back (std::make_pair (17, 258));
+        toneRanges[1].push_back (std::make_pair (259, 500));
+        break;
+      case 160:
+        toneRanges[0].push_back (std::make_pair (-1012, -771));
+        toneRanges[1].push_back (std::make_pair (-770, -529));
+        toneRanges[0].push_back (std::make_pair (
+            -528, -516)); // first part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
+        toneRanges[0].push_back (std::make_pair (-508,
+                                             -496)); // second part of center carrier of lower 80
+                                                     // MHz band (in HE-SIG-B content channel 1)
+        toneRanges[0].push_back (std::make_pair (-495, -254));
+        toneRanges[1].push_back (std::make_pair (-253, -12));
+        toneRanges[0].push_back (std::make_pair (12, 253));
+        toneRanges[1].push_back (std::make_pair (254, 495));
+        toneRanges[1].push_back (std::make_pair (
+          496, 508)); // first part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
+        toneRanges[1].push_back (std::make_pair (
+          516, 528)); // second part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
+        toneRanges[0].push_back (std::make_pair (529, 770));
+        toneRanges[1].push_back (std::make_pair (771, 1012));
+        break;
+      default:
+        NS_ABORT_MSG ("Unknown channel width: " << m_channelWidth);
+    }
+
+  return toneRanges;
+}
+
+} // namespace ns3

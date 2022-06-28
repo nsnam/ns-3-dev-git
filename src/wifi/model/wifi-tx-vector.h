@@ -53,6 +53,11 @@ struct HeMuUserInfo
   bool operator!= (const HeMuUserInfo& other) const;
 };
 
+/// HE SIG-B Content Channels STA ID Allocation
+using SubcarrierGroups = std::vector<HeRu::SubcarrierGroup>;
+constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
+using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
+
 /**
  * This class mimics the TXVECTOR which is to be
  * passed to the PHY in order to define the parameters which are to be
@@ -417,6 +422,20 @@ public:
    * \return MCS for SIG-B
    */
   WifiMode GetSigBMode () const;
+
+  /**
+   * Get the HE SIG-B content channel STA ID allocation
+   * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+   * \return content channel allocation
+   */
+  ContentChannelAllocation GetContentChannelAllocation () const;
+
+  /**
+   * Get HE SIG-B content channels tone ranges
+   * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+   * \return Subcarrier group per content channel
+   */
+  SubcarrierGroups GetContentChannelSubcarriers () const;
 
 private:
   WifiMode m_mode;               /**< The DATARATE parameter in Table 15-4.
