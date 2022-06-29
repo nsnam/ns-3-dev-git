@@ -18,6 +18,7 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include <optional>
 #include "he-ru.h"
 #include "ns3/abort.h"
 #include "ns3/assert.h"
@@ -148,6 +149,263 @@ const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups =
   { {80, HeRu::RU_996_TONE}, { /* 1 */ {{-500, -3}, {3, 500}} } }
 };
 
+// Table 27-26 IEEE802.11ax-2021
+const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {
+    // clang-format off
+    {0,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {1,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {2,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {3,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {4,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {5,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {6,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {7,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {8,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {9,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {10,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {11,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {12,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {13,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {14,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {15,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {16,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {24,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {32,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {40,
+     {HeRu::RuSpec{HeRu::RU_26_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {48,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 4, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {56,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {64,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {72,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 6, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 7, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {80,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 8, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 9, true}}},
+    {88,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {96,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {112,
+     {HeRu::RuSpec{HeRu::RU_52_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 2, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 3, true},
+      HeRu::RuSpec{HeRu::RU_52_TONE, 4, true}}},
+    {128,
+     {HeRu::RuSpec{HeRu::RU_106_TONE, 1, true},
+      HeRu::RuSpec{HeRu::RU_26_TONE, 5, true},
+      HeRu::RuSpec{HeRu::RU_106_TONE, 2, true}}},
+    {192,
+      {HeRu::RuSpec{HeRu::RU_242_TONE, 1, true}}},
+    {200,
+      {HeRu::RuSpec{HeRu::RU_484_TONE, 1, true}}},
+    {208,
+      {HeRu::RuSpec{HeRu::RU_996_TONE, 1, true}}},
+  // clang-formt on
+};
+
+std::vector<HeRu::RuSpec>
+HeRu::GetRuSpecs (uint8_t ruAllocation)
+{
+  std::optional<std::size_t> idx;
+  switch (ruAllocation)
+    {
+      case 0 ... 15:
+      case 112:
+        idx = ruAllocation;
+        break;
+      case 16 ... 95:
+      case 192 ... 215:
+        idx = ruAllocation & 0xF8;
+        break;
+      case 96 ... 111:
+        idx = ruAllocation & 0xF0;
+        break;
+      case 113 ... 115:
+        break;
+      case 128 ... 191:
+        idx = ruAllocation & 0xC0;
+        break;
+      default:
+        NS_FATAL_ERROR ("Reserved RU allocation " << +ruAllocation);
+    }
+  return idx.has_value () ?
+         m_heRuAllocations.at (idx.value ()) :
+         std::vector<HeRu::RuSpec> {};
+}
+
+uint8_t
+HeRu::GetEqualizedRuAllocation (RuType ruType, bool isOdd)
+{
+  switch (ruType)
+    {
+      case HeRu::RU_26_TONE:
+        return 0;
+      case HeRu::RU_52_TONE:
+        return isOdd? 15 : 112;
+      case HeRu::RU_106_TONE:
+        return isOdd? 128 : 96;
+      case HeRu::RU_242_TONE:
+        return 192;
+      case HeRu::RU_484_TONE:
+        return 200;
+      default:
+        return 208;
+    }
+}
 
 HeRu::RuSpec::RuSpec ()
   : m_index (0)    // indicates undefined RU

@@ -246,12 +246,12 @@ TxDurationTest::CheckMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUser
 
   uint16_t staId = 1;
   for (const auto & userInfo : userInfos)
-    {
-      txVector.SetHeMuUserInfo (staId, userInfo);
-      staIds.push_back (staId++);
-    }
-
+  {
+    txVector.SetHeMuUserInfo (staId, userInfo);
+    staIds.push_back (staId++);
+  }
   txVector.SetSigBMode (VhtPhy::GetVhtMcs0 ());
+  txVector.SetRuAllocation ({192, 192});
 
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   std::list<WifiPhyBand> testedBands {WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ, WIFI_PHY_BAND_2_4GHZ}; //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
@@ -626,6 +626,7 @@ HeSigBDurationTest::DoRun (void)
   userInfos.push_back ({{HeRu::RU_106_TONE, 2, true}, HePhy::GetHeMcs10 (), 4});
   WifiTxVector txVector = BuildTxVector (20, userInfos);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
+  txVector.SetRuAllocation ({96});
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetSigMode (WIFI_PPDU_FIELD_SIG_B, txVector), VhtPhy::GetVhtMcs5 (), "HE-SIG-B should be sent at MCS 5");
   std::pair<std::size_t, std::size_t> numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Both users should be on HE-SIG-B content channel 1");
@@ -639,6 +640,7 @@ HeSigBDurationTest::DoRun (void)
   userInfos.push_back ({{HeRu::RU_52_TONE, 8, true}, HePhy::GetHeMcs6 (), 2});
   txVector = BuildTxVector (40, userInfos);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs4 ());
+  txVector.SetRuAllocation ({96, 112});
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetSigMode (WIFI_PPDU_FIELD_SIG_B, txVector), VhtPhy::GetVhtMcs4 (), "HE-SIG-B should be sent at MCS 4");
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Two users should be on HE-SIG-B content channel 1");
@@ -646,9 +648,10 @@ HeSigBDurationTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (4), "HE-SIG-B should only last one OFDM symbol");
 
   //40 MHz band, odd number of users per HE-SIG-B content channel
-  userInfos.push_back ({{HeRu::RU_26_TONE, 13, true}, HePhy::GetHeMcs3 (), 1});
+  userInfos.push_back ({{HeRu::RU_26_TONE, 14, true}, HePhy::GetHeMcs3 (), 1});
   txVector = BuildTxVector (40, userInfos);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs3 ());
+  txVector.SetRuAllocation ({96, 15});
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetSigMode (WIFI_PPDU_FIELD_SIG_B, txVector), VhtPhy::GetVhtMcs3 (), "HE-SIG-B should be sent at MCS 3");
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Two users should be on HE-SIG-B content channel 1");
@@ -660,6 +663,7 @@ HeSigBDurationTest::DoRun (void)
   userInfos.push_back ({{HeRu::RU_242_TONE, 4, true}, HePhy::GetHeMcs4 (), 1});
   txVector = BuildTxVector (80, userInfos);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs1 ());
+  txVector.SetRuAllocation ({96, 15, 192, 192});
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetSigMode (WIFI_PPDU_FIELD_SIG_B, txVector), VhtPhy::GetVhtMcs1 (), "HE-SIG-B should be sent at MCS 1");
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 3, "Three users should be on HE-SIG-B content channel 1");
@@ -670,6 +674,7 @@ HeSigBDurationTest::DoRun (void)
   userInfos.push_back ({{HeRu::RU_996_TONE, 1, false}, HePhy::GetHeMcs1 (), 1});
   txVector = BuildTxVector (160, userInfos);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs1 ());
+  txVector.SetRuAllocation ({96, 15, 192, 192, 208, 208, 208, 208});
   NS_TEST_EXPECT_MSG_EQ (hePhy->GetSigMode (WIFI_PPDU_FIELD_SIG_B, txVector), VhtPhy::GetVhtMcs1 (), "HE-SIG-B should be sent at MCS 1");
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 4, "Four users should be on HE-SIG-B content channel 1");
@@ -920,7 +925,6 @@ PhyHeaderSectionsTest::DoRun (void)
                                                    { 2, { {HeRu::RU_106_TONE, 1, true}, HePhy::GetHeMcs9 (), 1 } } };
   sigAMode = HePhy::GetVhtMcs0 ();
   sigBMode = HePhy::GetVhtMcs4 (); //because of first user info map
-  txVector.SetSigBMode (sigBMode);
 
   // -> HE SU format
   txVector.SetPreambleType (WIFI_PREAMBLE_HE_SU);
@@ -962,6 +966,8 @@ PhyHeaderSectionsTest::DoRun (void)
 
   // -> HE MU format
   txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
+  txVector.SetSigBMode (sigBMode);
+  txVector.SetRuAllocation ({96});
   sections[WIFI_PPDU_FIELD_SIG_A] = { { ppduStart + MicroSeconds (24),
                                         ppduStart + MicroSeconds (32) },
                                       sigAMode };
@@ -973,6 +979,8 @@ PhyHeaderSectionsTest::DoRun (void)
                                          sigBMode };
   CheckPhyHeaderSections (phyEntity->GetPhyHeaderSections (txVector, ppduStart), sections);
   txVector.SetChannelWidth (160); //shouldn't have any impact
+  txVector.SetRuAllocation ({96, 113, 113, 113, 113, 113, 113, 113});
+
   CheckPhyHeaderSections (phyEntity->GetPhyHeaderSections (txVector, ppduStart), sections);
 
   // ==================================================================================
@@ -1002,6 +1010,7 @@ PhyHeaderSectionsTest::DoRun (void)
 
   // -> EHT MU format
   txVector.SetPreambleType (WIFI_PREAMBLE_EHT_MU);
+  txVector.SetRuAllocation ({96});
   sections[WIFI_PPDU_FIELD_U_SIG] = { { ppduStart + MicroSeconds (24),
                                         ppduStart + MicroSeconds (32) },
                                       uSigMode };
@@ -1013,6 +1022,8 @@ PhyHeaderSectionsTest::DoRun (void)
                                          ehtSigMode };
   CheckPhyHeaderSections (phyEntity->GetPhyHeaderSections (txVector, ppduStart), sections);
   txVector.SetChannelWidth (160); //shouldn't have any impact
+  txVector.SetRuAllocation ({96, 113, 113, 113, 113, 113, 113, 113});
+
   CheckPhyHeaderSections (phyEntity->GetPhyHeaderSections (txVector, ppduStart), sections);
 }
 

@@ -271,6 +271,7 @@ protected:
 
   WifiTxVector::HeMuUserInfoMap m_muUserInfos;    //!< HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
   ContentChannelAllocation m_contentChannelAlloc; //!< HE SIG-B Content Channel allocation (to be removed once HE-SIG-B headers are implemented)
+  RuAllocation m_ruAllocation;                    //!< RU_ALLOCATION in SIG-B common field (to be removed once HE-SIG-B headers are implemented)
 }; //class HePpdu
 
 /**

@@ -39,7 +39,9 @@ WifiTxVector::WifiTxVector ()
     m_ldpc (false),
     m_bssColor (0),
     m_length (0),
-    m_modeInitialized (false)
+    m_modeInitialized (false),
+    m_inactiveSubchannels (),
+    m_ruAllocation ()
 {
 }
 
@@ -70,7 +72,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_bssColor (bssColor),
     m_length (length),
     m_modeInitialized (true),
-    m_inactiveSubchannels ()
+    m_inactiveSubchannels (),
+    m_ruAllocation ()
 {
 }
 
@@ -90,7 +93,8 @@ WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
     m_length (txVector.m_length),
     m_modeInitialized (txVector.m_modeInitialized),
     m_inactiveSubchannels (txVector.m_inactiveSubchannels),
-    m_sigBMcs (txVector.m_sigBMcs)
+    m_sigBMcs (txVector.m_sigBMcs),
+    m_ruAllocation (txVector.m_ruAllocation)
 {
   m_muUserInfos.clear ();
   if (!txVector.m_muUserInfos.empty ()) //avoids crashing for loop
@@ -347,6 +351,26 @@ WifiTxVector::GetSigBMode () const
   return m_sigBMcs;
 }
 
+void
+WifiTxVector::SetRuAllocation (const RuAllocation& ruAlloc)
+{
+  if (IsDlMu () && !m_muUserInfos.empty ())
+    {
+      NS_ASSERT (ruAlloc == DeriveRuAllocation ());
+    }
+  m_ruAllocation = ruAlloc;
+}
+
+const RuAllocation&
+WifiTxVector::GetRuAllocation () const
+{
+  if (IsDlMu () && m_ruAllocation.empty ())
+    {
+      m_ruAllocation = DeriveRuAllocation ();
+    }
+  return m_ruAllocation;
+}
+
 bool
 WifiTxVector::IsValid (void) const
 {
@@ -432,6 +456,7 @@ WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
   NS_ABORT_MSG_IF (userInfo.mcs.GetModulationClass () < WIFI_MOD_CLASS_HE, "Only HE (or newer) modes authorized for MU");
   m_muUserInfos[staId] = userInfo;
   m_modeInitialized = true;
+  m_ruAllocation.clear ();
 }
 
 const WifiTxVector::HeMuUserInfoMap&
@@ -445,6 +470,7 @@ WifiTxVector::HeMuUserInfoMap&
 WifiTxVector::GetHeMuUserInfoMap (void)
 {
   NS_ABORT_MSG_IF (!IsMu (), "HE MU user info map only available for MU");
+  m_ruAllocation.clear ();
   return m_muUserInfos;
 }
 
@@ -452,8 +478,42 @@ std::pair<std::size_t, std::size_t>
 WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
 {
   //MU-MIMO is not handled for now, i.e. one station per RU
-  auto channelAlloc = GetContentChannelAllocation ();
-  return {channelAlloc[0].size (), (m_channelWidth == 20) ? 0 : channelAlloc[1].size ()};
+  auto ruAllocation = GetRuAllocation ();
+  NS_ASSERT_MSG (!ruAllocation.empty (), "RU allocation is not set");
+  if (ruAllocation.size () != m_channelWidth / 20)
+    {
+      ruAllocation = DeriveRuAllocation ();
+    }
+  NS_ASSERT_MSG (ruAllocation.size () == m_channelWidth / 20,
+                 "RU allocation is not consistent with packet bandwidth");
+
+  std::pair<std::size_t /* number of RUs in content channel 1 */,
+            std::size_t /* number of RUs in content channel 2 */> chSize {0, 0};
+
+  switch (GetChannelWidth ())
+    {
+      case 40:
+        chSize.second += HeRu::GetRuSpecs (ruAllocation[1]).size ();
+        [[fallthrough]];
+      case 20:
+        chSize.first += HeRu::GetRuSpecs (ruAllocation[0]).size ();
+        break;
+      default:
+        for (auto n = 0; n < m_channelWidth / 20;)
+          {
+            chSize.first += HeRu::GetRuSpecs (ruAllocation[n]).size ();
+            chSize.second += HeRu::GetRuSpecs (ruAllocation[n + 1]).size ();
+            if (ruAllocation[n] >= 208)
+              {
+                // 996 tone RU occupies 80 MHz
+                n += 4;
+                continue;
+              }
+            n += 2;
+          }
+        break;
+    }
+  return chSize;
 }
 
 void
@@ -542,99 +602,96 @@ HeMuUserInfo::operator!= (const HeMuUserInfo& other) const
 ContentChannelAllocation
 WifiTxVector::GetContentChannelAllocation () const
 {
-  ContentChannelAllocation channelAlloc {{}};
-  SubcarrierGroups toneRanges {};
+   ContentChannelAllocation channelAlloc {{}};
 
-  if (m_channelWidth > 20)
-  {
-    toneRanges = GetContentChannelSubcarriers ();
-    NS_ASSERT_MSG (toneRanges.size () >= WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS,
-                   "Wrong number of content channels: " << toneRanges.size ());
-    channelAlloc.push_back ({});
-  }
+   if (m_channelWidth > 20)
+   {
+     channelAlloc.push_back ({});
+   }
 
   for (const auto& [staId, userInfo] : m_muUserInfos)
-  {
-    if (m_channelWidth == 20)
-      {
-        // All RUs are in HE-SIG-B content channel 1
-        channelAlloc[0].push_back (staId);
-        continue;
+    {
+      auto ruType = userInfo.ru.GetRuType ();
+      auto ruIdx = userInfo.ru.GetIndex ();
+
+      if ((ruType == HeRu::RU_484_TONE) || (ruType == HeRu::RU_996_TONE))
+        {
+          channelAlloc[0].push_back (staId);
+          channelAlloc[1].push_back (staId);
+          continue;
+        }
+
+      size_t numRus {1};
+      if (ruType < HeRu::RU_242_TONE)
+        {
+          numRus = HeRu::m_heRuSubcarrierGroups.at ({20, ruType}).size ();
+        }
+
+      if (((ruIdx - 1) / numRus) % 2 == 0)
+        {
+          channelAlloc[0].push_back (staId);
+        }
+      else
+        {
+         channelAlloc[1].push_back (staId);
+        }
     }
 
-    auto ru = userInfo.ru;
-    if (!ru.IsPhyIndexSet ())
-    {
-      // This method can be called when calculating the TX duration of a frame
-      // and at that time the RU PHY index may have not been set yet
-      ru.SetPhyIndex (m_channelWidth, 0);
-    }
-
-    if (HeRu::DoesOverlap (m_channelWidth, ru, toneRanges[0]))
-    {
-      channelAlloc[0].push_back (staId);
-    }
-    if (HeRu::DoesOverlap (m_channelWidth, ru, toneRanges[1]))
-    {
-      channelAlloc[1].push_back (staId);
-    }
-  }
   return channelAlloc;
 }
 
-SubcarrierGroups
-WifiTxVector::GetContentChannelSubcarriers () const
+RuAllocation
+WifiTxVector::DeriveRuAllocation () const
 {
-  SubcarrierGroups toneRanges {{}};
-
-  if (m_channelWidth > 20)
-  {
-    toneRanges.push_back ({});
-  }
-
-  switch (m_channelWidth)
+  std::all_of (m_muUserInfos.cbegin (), m_muUserInfos.cend (),
+      [&](const auto& userInfo) {
+          return userInfo.second.ru.GetRuType () == m_muUserInfos.cbegin ()->second.ru.GetRuType () ; });
+  RuAllocation ruAllocations (m_channelWidth / 20, HeRu::EMPTY_242_TONE_RU);
+  std::vector<HeRu::RuType> ruTypes{};
+  ruTypes.resize (ruAllocations.size ());
+  for (auto it = m_muUserInfos.begin (); it != m_muUserInfos.end (); ++it)
     {
-      case 20:
-        toneRanges[0].push_back (std::make_pair (-122, 122));
-        break;
-      case 40:
-        toneRanges[0].push_back (std::make_pair (-244, -3));
-        toneRanges[1].push_back (std::make_pair (3, 244));
-        break;
-      case 80:
-        toneRanges[0].push_back (std::make_pair (-500, -259));
-        toneRanges[1].push_back (std::make_pair (-258, -17));
-        toneRanges[0].push_back (
-            std::make_pair (-16, -4)); // first part of center carrier (in HE-SIG-B content channel 1)
-        toneRanges[0].push_back (
-            std::make_pair (4, 16)); // second part of center carrier (in HE-SIG-B content channel 1)
-        toneRanges[0].push_back (std::make_pair (17, 258));
-        toneRanges[1].push_back (std::make_pair (259, 500));
-        break;
-      case 160:
-        toneRanges[0].push_back (std::make_pair (-1012, -771));
-        toneRanges[1].push_back (std::make_pair (-770, -529));
-        toneRanges[0].push_back (std::make_pair (
-            -528, -516)); // first part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
-        toneRanges[0].push_back (std::make_pair (-508,
-                                             -496)); // second part of center carrier of lower 80
-                                                     // MHz band (in HE-SIG-B content channel 1)
-        toneRanges[0].push_back (std::make_pair (-495, -254));
-        toneRanges[1].push_back (std::make_pair (-253, -12));
-        toneRanges[0].push_back (std::make_pair (12, 253));
-        toneRanges[1].push_back (std::make_pair (254, 495));
-        toneRanges[1].push_back (std::make_pair (
-          496, 508)); // first part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
-        toneRanges[1].push_back (std::make_pair (
-          516, 528)); // second part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
-        toneRanges[0].push_back (std::make_pair (529, 770));
-        toneRanges[1].push_back (std::make_pair (771, 1012));
-        break;
-      default:
-        NS_ABORT_MSG ("Unknown channel width: " << m_channelWidth);
+      const auto ruType = it->second.ru.GetRuType ();
+      const auto ruBw = HeRu::GetBandwidth (ruType);
+      const auto isPrimary80MHz = it->second.ru.GetPrimary80MHz ();
+      const auto rusPerSubchannel = HeRu::GetRusOfType (ruBw > 20 ? ruBw : 20, ruType);
+      auto ruIndex = it->second.ru.GetIndex ();
+      if (!isPrimary80MHz)
+        {
+          ruIndex *= 2;
+        }
+      const auto index = (ruBw < 20) ?
+                         ((ruIndex - 1)/ rusPerSubchannel.size ()) :
+                         ((ruIndex - 1) * (ruBw / 20));
+      const auto numSubchannelsForRu = (ruBw < 20) ? 1 : (ruBw / 20);
+      NS_ASSERT (index < (m_channelWidth / 20));
+      auto ruAlloc = HeRu::GetEqualizedRuAllocation (ruType, false);
+      if (ruAllocations.at (index) != HeRu::EMPTY_242_TONE_RU)
+        {
+          if (ruType == ruTypes.at (index))
+            {
+              continue;
+            }
+          if (ruType == HeRu::RU_26_TONE)
+            {
+              ruAlloc = HeRu::GetEqualizedRuAllocation (ruTypes.at (index), true);
+            }
+          else if (ruTypes.at (index) == HeRu::RU_26_TONE)
+            {
+              ruAlloc = HeRu::GetEqualizedRuAllocation (ruType, true);
+            }
+          else
+            {
+              NS_ASSERT_MSG (false, "unsupported RU combination");
+            }
+        }
+      for (auto i = 0; i < numSubchannelsForRu; ++i)
+        {
+          ruTypes.at (index + i) = ruType;
+          ruAllocations.at (index + i) = ruAlloc;
+        }
     }
-
-  return toneRanges;
+  return ruAllocations;
 }
 
 } // namespace ns3

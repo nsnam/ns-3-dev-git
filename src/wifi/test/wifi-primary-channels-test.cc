@@ -725,6 +725,14 @@ WifiPrimaryChannelsTest::SendDlMuPpdu (uint8_t bss, uint16_t txChannelWidth, HeR
       psduMap[staId] = Create<const WifiPsdu> (Create<Packet> (1000), hdr);
     }
   txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
+  RuAllocation ruAllocations;
+  auto numRuAllocs = txChannelWidth / 20;
+  ruAllocations.resize (numRuAllocs);
+  auto IsOddNum = (nRus / numRuAllocs) % 2 == 1;
+  auto ruAlloc = HeRu::GetEqualizedRuAllocation (ruType, IsOddNum);
+  std::fill_n (ruAllocations.begin (), numRuAllocs, ruAlloc);
+  txVector.SetRuAllocation (ruAllocations);
+
   apDev->GetPhy ()->Send (psduMap, txVector);
 }
 

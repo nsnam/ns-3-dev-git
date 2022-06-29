@@ -584,6 +584,11 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
   auto staIt = m_staListDl[primaryAc].begin ();
   m_candidates.clear ();
 
+  std::vector<uint8_t> ruAllocations;
+  auto numRuAllocs = m_txParams.m_txVector.GetChannelWidth () / 20;
+  ruAllocations.resize (numRuAllocs);
+  NS_ASSERT ((m_candidates.size () % numRuAllocs) == 0);
+
   while (staIt != m_staListDl[primaryAc].end ()
          && m_candidates.size () < std::min (static_cast<std::size_t> (m_nStations), count + nCentral26TonesRus))
     {
@@ -704,11 +709,6 @@ RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
                                  mapIt->second.mcs, mapIt->second.nss});
       candidateIt++;
     }
-
-  auto hePhy = DynamicCast<HePhy> (m_apMac->GetWifiPhy ()->GetPhyEntity (WIFI_MOD_CLASS_HE));
-  NS_ASSERT (hePhy);
-  auto sigBMode = hePhy->GetSigBMode (txVector);
-  txVector.SetSigBMode (sigBMode);
 
   // remove candidates that will not be served
   m_candidates.erase (candidateIt, m_candidates.end ());

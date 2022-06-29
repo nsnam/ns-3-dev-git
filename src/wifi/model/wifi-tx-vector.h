@@ -58,6 +58,8 @@ using SubcarrierGroups = std::vector<HeRu::SubcarrierGroup>;
 constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
 using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
 
+using RuAllocation = std::vector<uint8_t>; //<! 8 bit RU_ALLOCATION per 20 MHz
+
 /**
  * This class mimics the TXVECTOR which is to be
  * passed to the PHY in order to define the parameters which are to be
@@ -424,20 +426,33 @@ public:
   WifiMode GetSigBMode () const;
 
   /**
+   * Set RU Allocation of SIG-B common field
+   * \param ruAlloc 8 bit RU_ALLOCATION per 20 MHz
+   */
+  void SetRuAllocation (const RuAllocation& ruAlloc);
+
+  /**
+   * Get RU Allocation of SIG-B
+   * \return 8 bit RU_ALLOCATION per 20 MHz
+   */
+  const RuAllocation& GetRuAllocation () const;
+
+  /**
    * Get the HE SIG-B content channel STA ID allocation
    * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
    * \return content channel allocation
    */
   ContentChannelAllocation GetContentChannelAllocation () const;
 
-  /**
-   * Get HE SIG-B content channels tone ranges
-   * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
-   * \return Subcarrier group per content channel
-   */
-  SubcarrierGroups GetContentChannelSubcarriers () const;
-
 private:
+  /**
+   * Derive the RU allocation from the TXVECTOR for which its RU allocation has not been set yet.
+   * This is valid only for allocations of RUs of the same size.
+   *
+   * \return the RU allocation
+   */
+  RuAllocation DeriveRuAllocation () const;
+
   WifiMode m_mode;               /**< The DATARATE parameter in Table 15-4.
                                  It is the value that will be passed
                                  to PMD_RATE.request */
@@ -466,6 +481,9 @@ private:
   std::vector<bool> m_inactiveSubchannels; /**< Bitmap of inactive subchannels used for preamble puncturing */
 
   WifiMode m_sigBMcs; //<! MCS_SIG_B per Table 27-1 IEEE 802.11ax-2021
+
+  mutable RuAllocation m_ruAllocation; /**< RU allocations that are going to be carried
+                                            in SIG-B common field per Table 27-1 IEEE */
 };
 
 /**

@@ -18,6 +18,8 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include "ns3/log.h"
 #include "ns3/test.h"
@@ -475,18 +477,22 @@ TestDlOfdmaPhyTransmission::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2)
   if (m_channelWidth == 20)
     {
       ruType = HeRu::RU_106_TONE;
+      txVector.SetRuAllocation ({96});
     }
   else if (m_channelWidth == 40)
     {
       ruType = HeRu::RU_242_TONE;
+      txVector.SetRuAllocation ({192, 192});
     }
   else if (m_channelWidth == 80)
     {
       ruType = HeRu::RU_484_TONE;
+      txVector.SetRuAllocation ({200, 200, 200, 200});
     }
   else if (m_channelWidth == 160)
     {
       ruType = HeRu::RU_996_TONE;
+      txVector.SetRuAllocation ({208, 208, 208, 208, 208, 208, 208, 208});
     }
   else
     {
@@ -1092,7 +1098,7 @@ TestDlOfdmaPhyPuncturing::TestDlOfdmaPhyPuncturing ()
     m_countRxBytesSta2 (0),
     m_frequency (5210),
     m_channelWidth (80),
-   m_indexSubchannel (0),
+    m_indexSubchannel (0),
     m_expectedPpduDuration20Mhz (NanoSeconds (156800)),
     m_expectedPpduDuration40Mhz (NanoSeconds (102400))
 {
@@ -1130,6 +1136,20 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2, cons
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
 
+  std::vector<uint8_t> ruAlloc;
+  if (puncturedSubchannels.empty ())
+    {
+      std::fill_n (std::back_inserter (ruAlloc), 4, 200);
+    }
+  else
+    {
+      ruAlloc.push_back (puncturedSubchannels.at (1) ? 192 : 200);
+      ruAlloc.push_back (puncturedSubchannels.at (1) ? 113 : 200);
+      ruAlloc.push_back (puncturedSubchannels.at (2) ? 113 : (puncturedSubchannels.at (3) ? 192 : 200));
+      ruAlloc.push_back (puncturedSubchannels.at (2) ? 192 : (puncturedSubchannels.at (3) ? 113 : 200));
+    }
+
+  txVector.SetRuAllocation (ruAlloc);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
 
   Ptr<Packet> pkt1 = Create<Packet> (1000);
@@ -1664,17 +1684,18 @@ TestUlOfdmaPpduUid::SendMuPpdu (void)
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_MU, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
 
   uint16_t rxStaId1 = 1;
-  HeRu::RuSpec ru1 (HeRu::RU_106_TONE, 1, false);
+  HeRu::RuSpec ru1 (HeRu::RU_106_TONE, 1, true);
   txVector.SetRu (ru1, rxStaId1);
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector.SetNss (1, rxStaId1);
 
   uint16_t rxStaId2 = 2;
-  HeRu::RuSpec ru2 (HeRu::RU_106_TONE, 2, false);
+  HeRu::RuSpec ru2 (HeRu::RU_106_TONE, 2, true);
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
   txVector.SetSigBMode (VhtPhy::GetVhtMcs5 ());
+  txVector.SetRuAllocation ({96});
 
   Ptr<Packet> pkt1 = Create<Packet> (1000);
   WifiMacHeader hdr1;

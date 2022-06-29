@@ -65,6 +65,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, ui
           NS_ABORT_MSG_IF (!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }
       m_contentChannelAlloc = txVector.GetContentChannelAllocation ();
+      m_ruAllocation = txVector.GetRuAllocation ();
     }
   SetPhyHeaders (txVector, ppduDuration);
   SetTxPsdFlag (flag);
@@ -130,6 +131,7 @@ HePpdu::DoGetTxVector (void) const
   if (txVector.IsDlMu ())
     {
       txVector.SetSigBMode (HePhy::GetVhtMcs (m_heSig.GetMcs ()));
+      txVector.SetRuAllocation (m_ruAllocation);
     }
   return txVector;
 }

@@ -634,6 +634,13 @@ HeFrameExchangeManager::ForwardPsduMapDown (WifiConstPsduMap psduMap, WifiTxVect
 {
   NS_LOG_FUNCTION (this << psduMap << txVector);
 
+  if (txVector.IsDlMu ())
+    {
+      auto hePhy = StaticCast<HePhy> (m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
+      auto sigBMode = hePhy->GetSigBMode (txVector);
+      txVector.SetSigBMode (sigBMode);
+    }
+
   for (const auto& psdu : psduMap)
     {
       NS_LOG_DEBUG ("Transmitting: [STAID=" << psdu.first << ", " << *psdu.second << "]");
