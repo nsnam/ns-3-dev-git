@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "sta-wifi-mac.h"
 #include "wifi-default-assoc-manager.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
 
@@ -76,7 +77,7 @@ WifiDefaultAssocManager::DoStartScanning (void)
   // do not perform scanning
   if (!GetSortedList ().empty ())
     {
-      Simulator::ScheduleNow (&WifiDefaultAssocManager::ScanningTimeout, this);
+      Simulator::ScheduleNow (&WifiDefaultAssocManager::EndScanning, this);
       return;
     }
 
@@ -88,15 +89,115 @@ WifiDefaultAssocManager::DoStartScanning (void)
       Simulator::Schedule (GetScanParams ().probeDelay, &StaWifiMac::SendProbeRequest, m_mac);
       m_probeRequestEvent = Simulator::Schedule (GetScanParams ().probeDelay
                                                  + GetScanParams().maxChannelTime,
-                                                 &WifiDefaultAssocManager::ScanningTimeout,
+                                                 &WifiDefaultAssocManager::EndScanning,
                                                  this);
     }
   else
     {
       m_waitBeaconEvent = Simulator::Schedule (GetScanParams ().maxChannelTime,
-                                               &WifiDefaultAssocManager::ScanningTimeout,
+                                               &WifiDefaultAssocManager::EndScanning,
                                                this);
     }
+}
+
+void
+WifiDefaultAssocManager::EndScanning (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<MultiLinkElement> mle;
+  Ptr<ReducedNeighborReport> rnr;
+  std::list<WifiAssocManager::RnrLinkInfo> apList;
+
+  // If multi-link setup is not possible, just call ScanningTimeout() and return
+  if (!CanSetupMultiLink (mle, rnr) || (apList = GetAllAffiliatedAps (*rnr)).empty ())
+    {
+      ScanningTimeout ();
+      return;
+    }
+
+  auto& bestAp = *GetSortedList ().begin ();
+
+  // store AP MLD MAC address in the WifiRemoteStationManager associated with
+  // the link on which the Beacon/Probe Response was received
+  m_mac->GetWifiRemoteStationManager (bestAp.m_linkId)->SetMldAddress (bestAp.m_apAddr,
+                                                                       mle->GetMldMacAddress ());
+  auto& setupLinks = GetSetupLinks (bestAp);
+
+  setupLinks.clear ();
+  setupLinks.push_back ({bestAp.m_linkId, mle->GetLinkIdInfo ()});
+
+  // sort local PHY objects so that radios with constrained PHY band comes first,
+  // then radios with no constraint
+  std::list<uint8_t> localLinkIds;
+
+  for (uint8_t linkId = 0; linkId < m_mac->GetNLinks (); linkId++)
+    {
+      if (linkId == bestAp.m_linkId)
+        {
+          // this link has been already added (it is the link on which the Beacon/Probe
+          // Response was received)
+          continue;
+        }
+
+      if (m_mac->GetWifiPhy (linkId)->HasFixedPhyBand ())
+        {
+          localLinkIds.push_front (linkId);
+        }
+      else
+        {
+          localLinkIds.push_back (linkId);
+        }
+    }
+
+  // iterate over all the local links and find if we can setup a link for each of them
+  for (const auto& linkId : localLinkIds)
+    {
+      auto apIt = apList.begin ();
+
+      while (apIt != apList.end ())
+        {
+          auto apChannel = rnr->GetOperatingChannel (apIt->m_nbrApInfoId);
+
+          // we cannot setup a link with this affiliated AP if this PHY object is
+          // constrained to operate in the current PHY band and this affiliated AP
+          // is operating in a different PHY band than this PHY object
+          if (m_mac->GetWifiPhy (linkId)->HasFixedPhyBand ()
+              && m_mac->GetWifiPhy (linkId)->GetPhyBand () != apChannel.GetPhyBand ())
+            {
+              apIt++;
+              continue;
+            }
+
+          // if we get here, it means we can setup a link with this affiliated AP
+          // set the BSSID for this link
+          Mac48Address bssid = rnr->GetBssid (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
+          NS_LOG_DEBUG ("Setting BSSID=" << bssid << " for link " << +linkId);
+          m_mac->SetBssid (bssid, linkId);
+          // store AP MLD MAC address in the WifiRemoteStationManager associated with
+          // the link requested to setup
+          m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->GetMldMacAddress ());
+          setupLinks.push_back ({linkId, rnr->GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
+
+          // switch this link to using the channel used by a reported AP
+          // TODO check if the STA only supports a narrower channel width
+          NS_LOG_DEBUG ("Switch link " << +linkId << " to using channel " << +apChannel.GetNumber ()
+                        << " in band " << apChannel.GetPhyBand () << " frequency "
+                        << apChannel.GetFrequency () << "MHz width " << apChannel.GetWidth () << "MHz");
+          WifiPhy::ChannelTuple chTuple {apChannel.GetNumber (), apChannel.GetWidth (),
+                                          apChannel.GetPhyBand (),
+                                          apChannel.GetPrimaryChannelIndex (20)};
+          m_mac->GetWifiPhy (linkId)->SetOperatingChannel (chTuple);
+
+          // remove the affiliated AP with which we are going to setup a link and move
+          // to the next local linkId
+          apList.erase (apIt);
+          break;
+        }
+    }
+
+  // we are done
+  ScanningTimeout ();
 }
 
 bool

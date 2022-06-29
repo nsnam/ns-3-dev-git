@@ -51,6 +51,12 @@ protected:
   bool CanBeInserted (const StaWifiMac::ApInfo& apInfo) const override;
   bool CanBeReturned (const StaWifiMac::ApInfo& apInfo) const override;
 
+  /**
+   * Perform operations to do at the end of a scanning procedure, such as
+   * identifying the links to setup in case of 11be MLD devices.
+   */
+  void EndScanning (void);
+
 private:
   void DoStartScanning (void) override;
 
