@@ -223,6 +223,21 @@ public:
    */
   void SetTxPsdFlag (TxPsdFlag flag);
 
+  /**
+   * Check if STA ID is in HE SIG-B Content Channel ID
+   * \param staId STA ID
+   * \param channelId Content Channel ID
+   * \return true if STA ID in content channel ID, false otherwise
+   */
+  bool IsStaInContentChannel (uint16_t staId, size_t channelId) const;
+
+  /**
+   * Check if STA ID is allocated
+   * \param staId STA ID
+   * \return true if allocated, false otherwise
+   */
+  bool IsAllocated (uint16_t staId) const;
+
 protected:
   std::string PrintPayload (void) const override;
   WifiTxVector DoGetTxVector (void) const override;
@@ -254,7 +269,8 @@ protected:
   HeSigHeader m_heSig;   //!< the HE-SIG PHY header
   TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
-  WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
+  WifiTxVector::HeMuUserInfoMap m_muUserInfos;    //!< HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
+  ContentChannelAllocation m_contentChannelAlloc; //!< HE SIG-B Content Channel allocation (to be removed once HE-SIG-B headers are implemented)
 }; //class HePpdu
 
 /**

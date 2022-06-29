@@ -64,6 +64,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, ui
           auto [it, ret] = m_muUserInfos.emplace (heMuUserInfo);
           NS_ABORT_MSG_IF (!ret, "STA-ID " << heMuUserInfo.first << " already present");
         }
+      m_contentChannelAlloc = txVector.GetContentChannelAllocation ();
     }
   SetPhyHeaders (txVector, ppduDuration);
   SetTxPsdFlag (flag);
@@ -271,6 +272,20 @@ HePpdu::SetTxPsdFlag (TxPsdFlag flag)
 {
   NS_LOG_FUNCTION (this << flag);
   m_txPsdFlag = flag;
+}
+
+bool
+HePpdu::IsAllocated (uint16_t staId) const
+{
+  return (m_muUserInfos.find (staId) != m_muUserInfos.cend ());
+}
+
+bool
+HePpdu::IsStaInContentChannel (uint16_t staId, std::size_t channelId) const
+{
+  NS_ASSERT_MSG (channelId < m_contentChannelAlloc.size (), "Invalid content channel ID " << channelId);
+  const auto& channelAlloc = m_contentChannelAlloc.at (channelId);
+  return (std::find (channelAlloc.cbegin (), channelAlloc.cend (), staId) != channelAlloc.cend ());
 }
 
 std::string
