@@ -275,13 +275,13 @@ bool DataRate::operator != (const DataRate& rhs) const
 Time DataRate::CalculateBytesTxTime (uint32_t bytes) const
 {
   NS_LOG_FUNCTION (this << bytes);
-  return Seconds (bytes * 8) / m_bps;
+  return CalculateBitsTxTime (bytes * 8);
 }
 
 Time DataRate::CalculateBitsTxTime (uint32_t bits) const
 {
   NS_LOG_FUNCTION (this << bits);
-  return Seconds (bits) / m_bps;
+  return Seconds (int64x64_t (bits) / m_bps);
 }
 
 uint64_t DataRate::GetBitRate () const
