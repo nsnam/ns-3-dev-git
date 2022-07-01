@@ -2587,3 +2587,165 @@ compiler check. The currently checked compilers are ``GCC`` and ``CLANG``
     add_compile_options(-unique_flag)
   endif()
 
+
+
+CCache and Precompiled Headers
+******************************
+
+.. _CCache: https://ccache.dev/
+.. _PCHs: https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html
+
+
+There are a few ways of speeding up the build of ns-3 and its modules.
+Partially rebuilding only changed modules is one of the ways, and
+this is already handled by the build system.
+
+However, cleaning up the build and cmake cache directories removes
+the intermediate and final files that could be used to skip the build
+of unchanged modules.
+
+In this case, `CCache`_ is recommended. It acts as a compiler and stores the
+intermediate and final object files and libraries on a cache artifact directory.
+
+Note: for ease of use, CCache is enabled by default if found by the build system.
+
+The cache artifact directory of CCACHE can be set by changing the
+``CCACHE_BASEDIR`` environment variable.
+
+The CCache artifact cache is separated per directory, to prevent incompatible
+artifacts, which may depend on different working directories ``CWD`` to work properly
+from getting mixed and producing binaries that will start running from a different directory.
+
+Note: to reuse CCache artifacts from different directories,
+set the ``CCACHE_NOHASHDIR`` environment variable to ``true``.
+
+A different way of speeding up builds is by using Precompiled Headers (`PCHs`_).
+PCHs drastically reduce parsing times of C and C++ headers by precompiling their symbols,
+which are imported instead of re-parsing the same headers again and again,
+for each compilation unit (.cc file).
+
+Note: for ease of use, PCH is enabled by default if supported. It can be manually disabled
+by setting ``NS3_PRECOMPILE_HEADERS`` to ``OFF``.
+
+When both CCache and PCH are used together, there is a set of settings that must be
+properly configured, otherwise timestamps built into the PCH can invalidate the CCache
+artifacts, forcing a new build of unmodified modules/programs.
+
+Compiler settings required by PCH and CCache are set in the PCH block in macros-and-definitions.cmake.
+
+.. sourcecode:: cmake
+
+  if(${PRECOMPILE_HEADERS_ENABLED})
+    if(CLANG)
+      # Clang adds a timestamp to the PCH, which prevents ccache from working
+      # correctly
+      # https://github.com/ccache/ccache/issues/539#issuecomment-664198545
+      add_definitions(-Xclang -fno-pch-timestamp)
+    endif()
+
+    if(${XCODE})
+      # XCode is weird and messes up with the PCH, requiring this flag
+      # https://github.com/ccache/ccache/issues/156
+      add_definitions(-Xclang -fno-validate-pch)
+    endif()
+
+    # Headers that will be compiled into the PCH
+    # Only worth for frequently included headers
+    set(precompiled_header_libraries
+        <algorithm>
+        <cstdlib>
+        <cstring>
+        <exception>
+        <fstream>
+        <iostream>
+        <limits>
+        <list>
+        <map>
+        <math.h>
+        <ostream>
+        <set>
+        <sstream>
+        <stdint.h>
+        <stdlib.h>
+        <string>
+        <unordered_map>
+        <vector>
+    )
+
+    # PCHs can be reused by similar targets (libraries or executables)
+    # We have a PCH for libraries, compiled with the -fPIC flag
+    add_library(stdlib_pch OBJECT ${PROJECT_SOURCE_DIR}/build-support/empty.cc)
+    target_precompile_headers(
+      stdlib_pch PUBLIC "${precompiled_header_libraries}"
+    )
+
+    # And another PCH for executables, compiled with the -fPIE flag
+    add_executable(
+      stdlib_pch_exec ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
+    )
+    target_precompile_headers(
+      stdlib_pch_exec PUBLIC "${precompiled_header_libraries}"
+    )
+    set_runtime_outputdirectory(stdlib_pch_exec ${CMAKE_BINARY_DIR}/ "")
+  endif()
+
+The CCache settings required to work with PCH are set in the main CMakeLists.txt file:
+
+.. sourcecode:: cmake
+
+  # Use ccache if available
+  mark_as_advanced(CCACHE)
+  find_program(CCACHE ccache)
+  if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    message(STATUS "CCache is enabled.")
+
+    # Changes user-wide settings from CCache to make it ignore:
+    # - PCH definitions,
+    # - time related macros that could bake timestamps into cached artifacts,
+    # - source file creation and modification timestamps,
+    #    forcing it to check for content changes instead
+    execute_process(
+      COMMAND
+        ${CCACHE} --set-config
+        sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
+    )
+  endif()
+
+Note: you can use the following commands to manually check
+and restore the CCache sloppiness settings.
+
+.. sourcecode:: console
+
+  ~$ ccache --get-config sloppiness
+  include_file_mtime, include_file_ctime, time_macros, pch_defines
+  ~$ ccache --set-config sloppiness=""
+  ~$ ccache --get-config sloppiness
+
+  ~$
+
+The PCHs can be reused later with one of the following.
+
+.. sourcecode:: cmake
+
+  add_library(example_lib example_lib.cc)
+  target_precompile_headers(example_lib REUSE_FROM stdlib_pch)
+
+  add_executable(example_exec example_exec.cc)
+  target_precompile_headers(example_exec REUSE_FROM stdlib_pch_exec)
+
+If if you have problems with the build times when the PCH is enabled,
+you can diagnose issues with CCache by clearing the cache statistics (``ccache -z``),
+then cleaning, configuring, building, and finally printing the CCache statistics (``ccache -s``).
+
+.. sourcecode:: console
+
+  ccache -z
+  ./ns3 clean
+  ./ns3 configure
+  ./ns3 build
+  ccache -s
+
+If you have changed any compiler flag, the cache hit rate should be very low.
+Repeat the same commands once more.
+If the cache hit rate is at 100%, it means everything is working as it should.
