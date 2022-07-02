@@ -285,3 +285,10 @@ build_example(
     ${libbridge}
     ${libapplications}
 )
+
+build_example(
+  NAME wifi-ofdm-eht-validation
+  SOURCE_FILES wifi-ofdm-eht-validation.cc
+  LIBRARIES_TO_LINK ${libwifi}
+)
+
