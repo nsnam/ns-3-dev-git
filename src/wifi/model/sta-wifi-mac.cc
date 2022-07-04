@@ -228,7 +228,7 @@ StaWifiMac::SendProbeRequest (void)
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
-  probe.SetSupportedRates (GetSupportedRates ());
+  probe.SetSupportedRates (GetSupportedRates (SINGLE_LINK_OP_ID));
   if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
@@ -281,8 +281,8 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
     {
       MgtAssocRequestHeader assoc;
       assoc.SetSsid (GetSsid ());
-      assoc.SetSupportedRates (GetSupportedRates ());
-      assoc.SetCapabilities (GetCapabilities ());
+      assoc.SetSupportedRates (GetSupportedRates (SINGLE_LINK_OP_ID));
+      assoc.SetCapabilities (GetCapabilities (SINGLE_LINK_OP_ID));
       assoc.SetListenInterval (0);
       if (GetHtSupported ())
         {
@@ -308,8 +308,8 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       MgtReassocRequestHeader reassoc;
       reassoc.SetCurrentApAddress (GetBssid (0));  // TODO use appropriate linkId
       reassoc.SetSsid (GetSsid ());
-      reassoc.SetSupportedRates (GetSupportedRates ());
-      reassoc.SetCapabilities (GetCapabilities ());
+      reassoc.SetSupportedRates (GetSupportedRates (SINGLE_LINK_OP_ID));
+      reassoc.SetCapabilities (GetCapabilities (SINGLE_LINK_OP_ID));
       reassoc.SetListenInterval (0);
       if (GetHtSupported ())
         {
@@ -1006,18 +1006,18 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
 }
 
 SupportedRates
-StaWifiMac::GetSupportedRates (void) const
+StaWifiMac::GetSupportedRates (uint8_t linkId) const
 {
   SupportedRates rates;
-  for (const auto & mode : GetWifiPhy ()->GetModeList ())
+  for (const auto & mode : GetWifiPhy (linkId)->GetModeList ())
     {
-      uint64_t modeDataRate = mode.GetDataRate (GetWifiPhy ()->GetChannelWidth ());
+      uint64_t modeDataRate = mode.GetDataRate (GetWifiPhy (linkId)->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
     }
   if (GetHtSupported ())
     {
-      for (const auto & selector : GetWifiPhy ()->GetBssMembershipSelectorList ())
+      for (const auto & selector : GetWifiPhy (linkId)->GetBssMembershipSelectorList ())
         {
           rates.AddBssMembershipSelectorRate (selector);
         }
@@ -1026,11 +1026,11 @@ StaWifiMac::GetSupportedRates (void) const
 }
 
 CapabilityInformation
-StaWifiMac::GetCapabilities (void) const
+StaWifiMac::GetCapabilities (uint8_t linkId) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (GetWifiPhy ()->GetShortPhyPreambleSupported () || GetErpSupported (SINGLE_LINK_OP_ID));
-  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported (SINGLE_LINK_OP_ID));
+  capabilities.SetShortPreamble (GetWifiPhy (linkId)->GetShortPhyPreambleSupported () || GetErpSupported (linkId));
+  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported (linkId));
   return capabilities;
 }
 

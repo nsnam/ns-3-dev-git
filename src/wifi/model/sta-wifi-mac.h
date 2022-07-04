@@ -372,9 +372,10 @@ private:
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.
    *
+   * \param linkId the ID of the link for which the request is made
    * \return SupportedRates all rates that we support
    */
-  SupportedRates GetSupportedRates (void) const;
+  SupportedRates GetSupportedRates (uint8_t linkId) const;
   /**
    * Set the current MAC state.
    *
@@ -402,11 +403,12 @@ private:
    */
   void SetMuEdcaParameters (AcIndex ac, uint16_t cwMin, uint16_t cwMax, uint8_t aifsn, Time muEdcaTimer);
   /**
-   * Return the Capability information of the current STA.
+   * Return the Capability information for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the Capability information that we support
    */
-  CapabilityInformation GetCapabilities (void) const;
+  CapabilityInformation GetCapabilities (uint8_t linkId) const;
 
   /**
    * Indicate that PHY capabilities have changed.
