@@ -388,6 +388,15 @@ private:
    */
   SupportedRates GetSupportedRates (uint8_t linkId) const;
   /**
+   * Return the Multi-Link Element to include in the management frames transmitted
+   * on the given link
+   *
+   * \param isReassoc whether the Multi-Link Element is included in a Reassociation Request
+   * \param linkId the ID of the given link
+   * \return the Multi-Link Element
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (bool isReassoc, uint8_t linkId) const;
+  /**
    * Set the current MAC state.
    *
    * \param value the new state
