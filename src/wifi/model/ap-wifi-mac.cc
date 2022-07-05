@@ -118,7 +118,6 @@ ApWifiMac::ApWifiMac ()
 ApWifiMac::~ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_staList.clear ();
 }
 
 void
@@ -241,7 +240,7 @@ ApWifiMac::UpdateShortSlotTimeEnabled (void)
   NS_LOG_FUNCTION (this);
   if (GetErpSupported (SINGLE_LINK_OP_ID) && GetShortSlotTimeSupported () && (m_numNonErpStations == 0))
     {
-      for (const auto& sta : m_staList)
+      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
         {
           if (!GetWifiRemoteStationManager ()->GetShortSlotTimeSupported (sta.second))
             {
@@ -263,7 +262,7 @@ ApWifiMac::UpdateShortPreambleEnabled (void)
   NS_LOG_FUNCTION (this);
   if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiPhy ()->GetShortPhyPreambleSupported ())
     {
-      for (const auto& sta : m_staList)
+      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
         {
           if (!GetWifiRemoteStationManager ()->GetErpOfdmSupported (sta.second) ||
               !GetWifiRemoteStationManager ()->GetShortPreambleSupported (sta.second))
@@ -668,7 +667,7 @@ ApWifiMac::GetHtOperation (void) const
       uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedTxSpatialStreams ();
       auto mcsList = GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT);
       uint8_t nMcs = mcsList.size ();
-      for (const auto& sta : m_staList)
+      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
         {
           if (GetWifiRemoteStationManager ()->GetHtSupported (sta.second))
             {
@@ -744,7 +743,7 @@ ApWifiMac::GetVhtOperation (void) const
       // which the VHT BSS operates.
       operation.SetChannelCenterFrequencySegment1 ((bssBandwidth == 160) ? GetWifiPhy ()->GetChannelNumber () : 0);
       uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
-      for (const auto& sta : m_staList)
+      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
         {
           if (GetWifiRemoteStationManager ()->GetVhtSupported (sta.second))
             {
@@ -772,7 +771,7 @@ ApWifiMac::GetHeOperation (void) const
     {
       operation.SetHeSupported (1);
       uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
-      for (const auto& sta : m_staList)
+      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
         {
           if (GetWifiRemoteStationManager ()->GetHeSupported (sta.second))
             {
@@ -908,7 +907,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
       bool found = false;
       if (isReassoc)
         {
-          for (const auto& sta : m_staList)
+          for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
             {
               if (sta.second == to)
                 {
@@ -920,8 +919,8 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
         }
       if (!found)
         {
-          aid = GetNextAssociationId ();
-          m_staList.insert (std::make_pair (aid, to));
+          aid = GetNextAssociationId ({SINGLE_LINK_OP_ID});
+          GetLink (SINGLE_LINK_OP_ID).staList.insert (std::make_pair (aid, to));
           m_assocLogger (aid, to);
           GetWifiRemoteStationManager ()->SetAssociationId (to, aid);
           if (GetWifiRemoteStationManager ()->GetDsssSupported (to) && !GetWifiRemoteStationManager ()->GetErpOfdmSupported (to))
@@ -1251,11 +1250,12 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
             {
               NS_LOG_DEBUG ("Disassociation received from " << from);
               GetWifiRemoteStationManager ()->RecordDisassociated (from);
-              for (auto it = m_staList.begin (); it != m_staList.end (); ++it)
+              auto& staList = GetLink (SINGLE_LINK_OP_ID).staList;
+              for (auto it = staList.begin (); it != staList.end (); ++it)
                 {
                   if (it->second == from)
                     {
-                      m_staList.erase (it);
+                      staList.erase (it);
                       m_deAssocLogger (it->first, it->second);
                       if (GetWifiRemoteStationManager ()->GetDsssSupported (from) && !GetWifiRemoteStationManager ()->GetErpOfdmSupported (from))
                         {
@@ -1505,12 +1505,17 @@ ApWifiMac::GetUseNonErpProtection (void) const
 }
 
 uint16_t
-ApWifiMac::GetNextAssociationId (void)
+ApWifiMac::GetNextAssociationId (std::list<uint8_t> linkIds)
 {
-  //Return the first free AID value between 1 and 2007
+  // Return the first AID value between 1 and 2007 that is free for all the given links
   for (uint16_t nextAid = 1; nextAid <= 2007; nextAid++)
     {
-      if (m_staList.find (nextAid) == m_staList.end ())
+      if (std::all_of (linkIds.begin (), linkIds.end (),
+                       [&](auto&& linkId)
+                       {
+                         auto& staList = GetLink (linkId).staList;
+                         return staList.find (nextAid) == staList.end ();
+                       }))
         {
           return nextAid;
         }
@@ -1520,9 +1525,9 @@ ApWifiMac::GetNextAssociationId (void)
 }
 
 const std::map<uint16_t, Mac48Address>&
-ApWifiMac::GetStaList (void) const
+ApWifiMac::GetStaList (uint8_t linkId) const
 {
-  return m_staList;
+  return GetLink (linkId).staList;
 }
 
 uint16_t

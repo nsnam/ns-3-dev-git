@@ -98,13 +98,14 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
-   * Get a const reference to the map of associated stations. Each station is
-   * specified by an (association ID, MAC address) pair. Make sure not to use
-   * the returned reference after that this object has been deallocated.
+   * Get a const reference to the map of associated stations on the given link.
+   * Each station is specified by an (association ID, MAC address) pair. Make sure
+   * not to use the returned reference after that this object has been deallocated.
    *
+   * \param linkId the ID of the given link
    * \return a const reference to the map of associated stations
    */
-  const std::map<uint16_t, Mac48Address>& GetStaList (void) const;
+  const std::map<uint16_t, Mac48Address>& GetStaList (uint8_t linkId = SINGLE_LINK_OP_ID) const;
   /**
    * \param addr the address of the associated station
    * \return the Association ID allocated by the AP to the station, SU_STA_ID if unallocated
@@ -159,7 +160,9 @@ protected:
     /// Destructor (a virtual method is needed to make this struct polymorphic)
     virtual ~ApLinkEntity ();
 
-    EventId beaconEvent;                     //!< Event to generate one beacon
+    EventId beaconEvent;                      //!< Event to generate one beacon
+    std::map<uint16_t, Mac48Address> staList; //!< Map of all stations currently associated
+                                              //!< to the AP with their association ID
   };
 
   /**
@@ -369,16 +372,16 @@ private:
   void DoInitialize (void) override;
 
   /**
-   * \return the next Association ID to be allocated by the AP
+   * \param linkIds the IDs of the links for which the next Association ID is requested
+   * \return the next Association ID to be allocated by the AP on the given links
    */
-  uint16_t GetNextAssociationId (void);
+  uint16_t GetNextAssociationId (std::list<uint8_t> linkIds);
 
   Ptr<Txop> m_beaconTxop;                    //!< Dedicated Txop for beacons
   bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
   Time m_beaconInterval;                     //!< Beacon interval
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
-  std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
   uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
   uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
   bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS
