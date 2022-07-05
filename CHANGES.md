@@ -33,6 +33,12 @@ Changes from ns-3.36 to ns-3.37
 
 ### Changes to build system
 
+* Enabled precompiled headers (`NS3_PRECOMPILE_HEADERS`) by default when CCache is found.
+* Added a `./ns3 show targets` option to list buildable/runnable targets.
+* Replaced `./ns3 --check-config` with `./ns3 show config`.
+* Replaced `./ns3 --check-profile` with `./ns3 show profile`.
+* Replaced `./ns3 --check-version` with `./ns3 show version`.
+
 ### Changed behavior
 
 * Lr-wpan: **LrWpanPhy** now change to TRX_OFF after a CSMA-CA failure when the RxOnWhenIdle flag is set to false in the **LrWpanMac**.
