@@ -443,6 +443,21 @@ StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
 
   NS_LOG_DEBUG ("Attempting to associate with AP: " << *bestAp);
   UpdateApInfo (bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
+  // reset info on links to setup
+  for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
+    {
+      auto& link = GetLink (linkId);
+      link.apLinkId = std::nullopt;
+      link.sendAssocReq = false;
+    }
+  // send Association Request on the link where the Beacon/Probe Response was received
+  GetLink (bestAp->m_linkId).sendAssocReq = true;
+  // update info on links to setup
+  for (const auto& [localLinkId, apLinkid] : bestAp->m_setupLinks)
+    {
+      NS_LOG_DEBUG ("Setting up link (local ID=" << +localLinkId << ", AP ID=" << +apLinkid << ")");
+      GetLink (localLinkId).apLinkId = apLinkid;
+    }
   // lambda to get beacon interval from Beacon or Probe Response
   auto getBeaconInterval =
     [](auto&& frame)

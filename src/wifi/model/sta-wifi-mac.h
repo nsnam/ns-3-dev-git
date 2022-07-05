@@ -236,6 +236,7 @@ protected:
 
     std::optional<uint8_t> apLinkId;           //!< ID (as set by the AP) of the link we have
                                                //!< setup or are setting up
+    bool sendAssocReq;                         //!< whether this link is used to send the Association Request
   };
 
   /**
