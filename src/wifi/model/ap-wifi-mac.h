@@ -26,6 +26,7 @@
 #include "wifi-mac.h"
 #include "wifi-mac-header.h"
 #include <unordered_map>
+#include <variant>
 
 namespace ns3 {
 
@@ -42,6 +43,12 @@ class VhtOperation;
 class HeOperation;
 class CfParameterSet;
 class UniformRandomVariable;
+class MgtAssocRequestHeader;
+class MgtReassocRequestHeader;
+
+/// variant holding a  reference to a (Re)Association Request
+using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
+                                        std::reference_wrapper<MgtReassocRequestHeader>>;
 
 /**
  * \brief Wi-Fi AP state machine
@@ -167,6 +174,20 @@ private:
   std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
   void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)  override;
+  /**
+   * Check whether the supported rate set included in the received (Re)Association
+   * Request frame is compatible with our Basic Rate Set. If so, record all the station's
+   * supported modes in its associated WifiRemoteStation and return true.
+   * Otherwise, return false.
+   *
+   * \param assoc the frame body of the received (Re)Association Request
+   * \param from the Transmitter Address field of the frame
+   * \param linkId the ID of the link on which the frame was received
+   * \return true if the (Re)Association request can be accepted, false otherwise
+   */
+  bool ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Address& from,
+                            uint8_t linkId);
+
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet

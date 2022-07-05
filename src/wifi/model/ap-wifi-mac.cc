@@ -1225,316 +1225,26 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
         }
       else if (hdr->GetAddr1 () == GetAddress ())
         {
-          if (hdr->IsAssocReq ())
+          if (hdr->IsAssocReq () || hdr->IsReassocReq ())
             {
-              NS_LOG_DEBUG ("Association request received from " << from);
-              //first, verify that the the station's supported
-              //rate set is compatible with our Basic Rate set
+              NS_LOG_DEBUG (((hdr->IsAssocReq ()) ? "Association" : "Reassociation")
+                            << " request received from " << from
+                            << ((GetNLinks () > 1) ? " on link ID " + std::to_string (linkId) : ""));
+
               MgtAssocRequestHeader assocReq;
-              packet->PeekHeader (assocReq);
-              const CapabilityInformation& capabilities = assocReq.GetCapabilities ();
-              GetWifiRemoteStationManager ()->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
-              const SupportedRates& rates = assocReq.GetSupportedRates ();
-              bool problem = false;
-              if (rates.GetNRates () == 0)
-                {
-                  problem = true;
-                }
-              if (GetHtSupported ())
-                {
-                  //check whether the HT STA supports all MCSs in Basic MCS Set
-                  const HtCapabilities& htCapabilities = assocReq.GetHtCapabilities ();
-                  if (htCapabilities.IsSupportedMcs (0))
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetVhtSupported ())
-                {
-                  //check whether the VHT STA supports all MCSs in Basic MCS Set
-                  const VhtCapabilities& vhtCapabilities = assocReq.GetVhtCapabilities ();
-                  if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetHeSupported ())
-                {
-                  //check whether the HE STA supports all MCSs in Basic MCS Set
-                  const HeCapabilities& heCapabilities = assocReq.GetHeCapabilities ();
-                  if (heCapabilities.GetSupportedMcsAndNss () != 0)
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetEhtSupported ())
-                {
-                  //check whether the EHT STA supports all MCSs in Basic MCS Set
-                  // const EhtCapabilities& ehtCapabilities = assocReq.GetEhtCapabilities ();
-                  //TODO: to be completed
-                }
-              if (problem)
-                {
-                  NS_LOG_DEBUG ("One of the Basic Rate set mode is not supported by the station: send association response with an error status");
-                  SendAssocResp (hdr->GetAddr2 (), false, false);
-                }
-              else
-                {
-                  NS_LOG_DEBUG ("The Basic Rate set modes are supported by the station");
-                  //record all its supported modes in its associated WifiRemoteStation
-                  for (const auto & mode : GetWifiPhy ()->GetModeList ())
-                    {
-                      if (rates.IsSupportedRate (mode.GetDataRate (GetWifiPhy ()->GetChannelWidth ())))
-                        {
-                          GetWifiRemoteStationManager ()->AddSupportedMode (from, mode);
-                        }
-                    }
-                  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
-                    {
-                      GetWifiRemoteStationManager ()->AddSupportedErpSlotTime (from, true);
-                    }
-                  if (GetHtSupported ())
-                    {
-                      const HtCapabilities& htCapabilities = assocReq.GetHtCapabilities ();
-                      if (htCapabilities.IsSupportedMcs (0))
-                        {
-                          GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, htCapabilities);
-                        }
-                    }
-                  if (GetVhtSupported ())
-                    {
-                      const VhtCapabilities& vhtCapabilities = assocReq.GetVhtCapabilities ();
-                      //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
-                      if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
-                        {
-                          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, vhtCapabilities);
-                          for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
-                            {
-                              if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                                {
-                                  GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                                  //here should add a control to add basic MCS when it is implemented
-                                }
-                            }
-                        }
-                    }
-                  if (GetHtSupported ())
-                    {
-                      // const ExtendedCapabilities& extendedCapabilities = assocReq.GetExtendedCapabilities ();
-                      //TODO: to be completed
-                    }
-                  if (GetHeSupported ())
-                    {
-                      const HeCapabilities& heCapabilities = assocReq.GetHeCapabilities ();
-                      if (heCapabilities.GetSupportedMcsAndNss () != 0)
-                        {
-                          GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, heCapabilities);
-                          for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
-                            {
-                              if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                                {
-                                  GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                                  //here should add a control to add basic MCS when it is implemented
-                                }
-                            }
-                        }
-                    }
-                  if (GetEhtSupported ())
-                    {
-                      const EhtCapabilities& ehtCapabilities = assocReq.GetEhtCapabilities ();
-                      //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
-                      GetWifiRemoteStationManager ()->AddStationEhtCapabilities (from, ehtCapabilities);
-                      for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_EHT))
-                        {
-                          //TODO: Add check whether MCS is supported from the capabilities
-                          GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                          //here should add a control to add basic MCS when it is implemented
-                        }
-                    }
-                  GetWifiRemoteStationManager ()->RecordWaitAssocTxOk (from);
-                  NS_LOG_DEBUG ("Send association response with success status");
-                  SendAssocResp (hdr->GetAddr2 (), true, false);
-                }
-              return;
-            }
-          else if (hdr->IsReassocReq ())
-            {
-              NS_LOG_DEBUG ("Reassociation request received from " << from);
-              //first, verify that the the station's supported
-              //rate set is compatible with our Basic Rate set
               MgtReassocRequestHeader reassocReq;
-              packet->PeekHeader (reassocReq);
-              const CapabilityInformation& capabilities = reassocReq.GetCapabilities ();
-              GetWifiRemoteStationManager ()->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
-              const SupportedRates& rates = reassocReq.GetSupportedRates ();
-              bool problem = false;
-              if (rates.GetNRates () == 0)
+              AssocReqRefVariant frame = assocReq;
+              if (hdr->IsAssocReq ())
                 {
-                  problem = true;
-                }
-              if (GetHtSupported ())
-                {
-                  //check whether the HT STA supports all MCSs in Basic MCS Set
-                  const HtCapabilities& htCapabilities = reassocReq.GetHtCapabilities ();
-                  if (htCapabilities.IsSupportedMcs (0))
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetVhtSupported ())
-                {
-                  //check whether the VHT STA supports all MCSs in Basic MCS Set
-                  const VhtCapabilities& vhtCapabilities = reassocReq.GetVhtCapabilities ();
-                  if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetHeSupported ())
-                {
-                  //check whether the HE STA supports all MCSs in Basic MCS Set
-                  const HeCapabilities& heCapabilities = reassocReq.GetHeCapabilities ();
-                  if (heCapabilities.GetSupportedMcsAndNss () != 0)
-                    {
-                      for (uint8_t i = 0; i < GetWifiRemoteStationManager ()->GetNBasicMcs (); i++)
-                        {
-                          WifiMode mcs = GetWifiRemoteStationManager ()->GetBasicMcs (i);
-                          if (!heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                            {
-                              problem = true;
-                              break;
-                            }
-                        }
-                    }
-                }
-              if (GetEhtSupported ())
-                {
-                  //check whether the EHT STA supports all MCSs in Basic MCS Set
-                  // const EhtCapabilities& ehtCapabilities = reassocReq.GetEhtCapabilities ();
-                  //TODO: to be completed
-                }
-              if (problem)
-                {
-                  NS_LOG_DEBUG ("One of the Basic Rate set mode is not supported by the station: send reassociation response with an error status");
-                  SendAssocResp (hdr->GetAddr2 (), false, true);
+                  packet->PeekHeader (assocReq);
                 }
               else
                 {
-                  NS_LOG_DEBUG ("The Basic Rate set modes are supported by the station");
-                  //update all its supported modes in its associated WifiRemoteStation
-                  for (const auto & mode : GetWifiPhy ()->GetModeList ())
-                    {
-                      if (rates.IsSupportedRate (mode.GetDataRate (GetWifiPhy ()->GetChannelWidth ())))
-                        {
-                          GetWifiRemoteStationManager ()->AddSupportedMode (from, mode);
-                        }
-                    }
-                  if (GetErpSupported (SINGLE_LINK_OP_ID) && GetWifiRemoteStationManager ()->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
-                    {
-                      GetWifiRemoteStationManager ()->AddSupportedErpSlotTime (from, true);
-                    }
-                  if (GetHtSupported ())
-                    {
-                      const HtCapabilities& htCapabilities = reassocReq.GetHtCapabilities ();
-                      if (htCapabilities.IsSupportedMcs (0))
-                        {
-                          GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, htCapabilities);
-                        }
-                    }
-                  if (GetVhtSupported ())
-                    {
-                      const VhtCapabilities& vhtCapabilities = reassocReq.GetVhtCapabilities ();
-                      //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
-                      if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
-                        {
-                          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, vhtCapabilities);
-                          for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
-                            {
-                              if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                                {
-                                  GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                                  //here should add a control to add basic MCS when it is implemented
-                                }
-                            }
-                        }
-                    }
-                  if (GetHtSupported ())
-                    {
-                      // const ExtendedCapabilities& extendedCapabilities = reassocReq.GetExtendedCapabilities ();
-                      //TODO: to be completed
-                    }
-                  if (GetHeSupported ())
-                    {
-                      const HeCapabilities& heCapabilities = reassocReq.GetHeCapabilities ();
-                      if (heCapabilities.GetSupportedMcsAndNss () != 0)
-                        {
-                          GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, heCapabilities);
-                          for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
-                            {
-                              if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
-                                {
-                                  GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                                  //here should add a control to add basic MCS when it is implemented
-                                }
-                            }
-                        }
-                    }
-                  if (GetEhtSupported ())
-                    {
-                      const EhtCapabilities& ehtCapabilities = reassocReq.GetEhtCapabilities ();
-                      //TODO: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-                      GetWifiRemoteStationManager ()->AddStationEhtCapabilities (from, ehtCapabilities);
-                      for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HE))
-                        {
-                          //TODO: Add check whether MCS is supported from the capabilities
-                          GetWifiRemoteStationManager ()->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                          //here should add a control to add basic MCS when it is implemented
-                        }
-                    }
-                  GetWifiRemoteStationManager ()->RecordWaitAssocTxOk (from);
-                  NS_LOG_DEBUG ("Send reassociation response with success status");
-                  SendAssocResp (hdr->GetAddr2 (), true, true);
+                  packet->PeekHeader (reassocReq);
+                  frame = reassocReq;
                 }
+              bool success = ReceiveAssocRequest (frame, from, linkId);
+              SendAssocResp (hdr->GetAddr2 (), success, hdr->IsReassocReq ());
               return;
             }
           else if (hdr->IsDisassociation ())
@@ -1569,6 +1279,171 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
   WifiMac::Receive (Create<WifiMpdu> (packet, *hdr), linkId);
+}
+
+bool
+ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Address& from, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << from << +linkId);
+
+  auto remoteStationManager = GetWifiRemoteStationManager (linkId);
+
+  auto failure = [&](const std::string& msg) -> bool
+                    {
+                      NS_LOG_DEBUG ("Association Request from " << from << " refused: " << msg);
+                      remoteStationManager->RecordAssocRefused (from);
+                      return false;
+                    };
+
+  // lambda to process received (Re)Association Request
+  auto recvAssocRequest =
+    [&](auto&& frameRefWrapper) -> bool
+    {
+      const auto& frame = frameRefWrapper.get ();
+
+      //first, verify that the the station's supported
+      //rate set is compatible with our Basic Rate set
+      const CapabilityInformation& capabilities = frame.GetCapabilities ();
+      remoteStationManager->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
+      const SupportedRates& rates = frame.GetSupportedRates ();
+
+      if (rates.GetNRates () == 0)
+        {
+          return failure ("STA's supported rate set not compatible with our Basic Rate set");
+        }
+
+      if (GetHtSupported ())
+        {
+          //check whether the HT STA supports all MCSs in Basic MCS Set
+          const HtCapabilities& htCapabilities = frame.GetHtCapabilities ();
+          if (htCapabilities.IsSupportedMcs (0))
+            {
+              for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
+                {
+                  WifiMode mcs = remoteStationManager->GetBasicMcs (i);
+                  if (!htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+                    {
+                      return failure ("HT STA does not support all MCSs in Basic MCS Set");
+                    }
+                }
+            }
+        }
+      if (GetVhtSupported ())
+        {
+          //check whether the VHT STA supports all MCSs in Basic MCS Set
+          const VhtCapabilities& vhtCapabilities = frame.GetVhtCapabilities ();
+          if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
+            {
+              for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
+                {
+                  WifiMode mcs = remoteStationManager->GetBasicMcs (i);
+                  if (!vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                    {
+                      return failure ("VHT STA does not support all MCSs in Basic MCS Set");
+                    }
+                }
+            }
+        }
+      if (GetHeSupported ())
+        {
+          //check whether the HE STA supports all MCSs in Basic MCS Set
+          const HeCapabilities& heCapabilities = frame.GetHeCapabilities ();
+          if (heCapabilities.GetSupportedMcsAndNss () != 0)
+            {
+              for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
+                {
+                  WifiMode mcs = remoteStationManager->GetBasicMcs (i);
+                  if (!heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                    {
+                      return failure ("HE STA does not support all MCSs in Basic MCS Set");
+                    }
+                }
+            }
+        }
+      if (GetEhtSupported ())
+        {
+          //check whether the EHT STA supports all MCSs in Basic MCS Set
+          // const EhtCapabilities& ehtCapabilities = frame.GetEhtCapabilities ();
+          //TODO: to be completed
+        }
+
+      // The association request from the station can be accepted.
+      // Record all its supported modes in its associated WifiRemoteStation
+      auto phy = GetWifiPhy (linkId);
+
+      for (const auto & mode : phy->GetModeList ())
+        {
+          if (rates.IsSupportedRate (mode.GetDataRate (phy->GetChannelWidth ())))
+            {
+              remoteStationManager->AddSupportedMode (from, mode);
+            }
+        }
+      if (GetErpSupported (linkId) && remoteStationManager->GetErpOfdmSupported (from) && capabilities.IsShortSlotTime ())
+        {
+          remoteStationManager->AddSupportedErpSlotTime (from, true);
+        }
+      if (GetHtSupported ())
+        {
+          const HtCapabilities& htCapabilities = frame.GetHtCapabilities ();
+          if (htCapabilities.IsSupportedMcs (0))
+            {
+              remoteStationManager->AddStationHtCapabilities (from, htCapabilities);
+            }
+          // const ExtendedCapabilities& extendedCapabilities = frame.GetExtendedCapabilities ();
+          //TODO: to be completed
+        }
+      if (GetVhtSupported ())
+        {
+          const VhtCapabilities& vhtCapabilities = frame.GetVhtCapabilities ();
+          //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
+          if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
+            {
+              remoteStationManager->AddStationVhtCapabilities (from, vhtCapabilities);
+              for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_VHT))
+                {
+                  if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                    {
+                      remoteStationManager->AddSupportedMcs (from, mcs);
+                      //here should add a control to add basic MCS when it is implemented
+                    }
+                }
+            }
+        }
+      if (GetHeSupported ())
+        {
+          const HeCapabilities& heCapabilities = frame.GetHeCapabilities ();
+          if (heCapabilities.GetSupportedMcsAndNss () != 0)
+            {
+              remoteStationManager->AddStationHeCapabilities (from, heCapabilities);
+              for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))
+                {
+                  if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                    {
+                      remoteStationManager->AddSupportedMcs (from, mcs);
+                      //here should add a control to add basic MCS when it is implemented
+                    }
+                }
+            }
+        }
+      if (GetEhtSupported ())
+        {
+          const EhtCapabilities& ehtCapabilities = frame.GetEhtCapabilities ();
+          //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
+          remoteStationManager->AddStationEhtCapabilities (from, ehtCapabilities);
+          for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_EHT))
+            {
+              //TODO: Add check whether MCS is supported from the capabilities
+              remoteStationManager->AddSupportedMcs (from, mcs);
+              //here should add a control to add basic MCS when it is implemented
+            }
+        }
+
+      NS_LOG_DEBUG ("Association Request from " << from << " accepted");
+      remoteStationManager->RecordWaitAssocTxOk (from);
+      return true;;
+    };
+
+  return std::visit (recvAssocRequest, assoc);
 }
 
 void
