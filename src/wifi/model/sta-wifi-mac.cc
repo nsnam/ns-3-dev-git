@@ -265,70 +265,89 @@ StaWifiMac::SendProbeRequest (void)
     }
 }
 
-void
-StaWifiMac::SendAssociationRequest (bool isReassoc)
+std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>
+StaWifiMac::GetAssociationRequest (bool isReassoc, uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this << GetBssid (0) << isReassoc);  // TODO use appropriate linkId
-  WifiMacHeader hdr;
-  hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-  hdr.SetAddr1 (GetBssid (0));  // TODO use appropriate linkId
-  hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetBssid (0));  // TODO use appropriate linkId
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  Ptr<Packet> packet = Create<Packet> ();
-  if (!isReassoc)
+  NS_LOG_FUNCTION (this << isReassoc << +linkId);
+
+  std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader> mgtFrame;
+
+  if (isReassoc)
     {
-      MgtAssocRequestHeader assoc;
-      assoc.SetSsid (GetSsid ());
-      assoc.SetSupportedRates (GetSupportedRates (SINGLE_LINK_OP_ID));
-      assoc.SetCapabilities (GetCapabilities (SINGLE_LINK_OP_ID));
-      assoc.SetListenInterval (0);
-      if (GetHtSupported ())
-        {
-          assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
-          assoc.SetHtCapabilities (GetHtCapabilities ());
-        }
-      if (GetVhtSupported ())
-        {
-          assoc.SetVhtCapabilities (GetVhtCapabilities ());
-        }
-      if (GetHeSupported ())
-        {
-          assoc.SetHeCapabilities (GetHeCapabilities ());
-        }
-      if (GetEhtSupported ())
-        {
-          assoc.SetEhtCapabilities (GetEhtCapabilities ());
-        }
-      packet->AddHeader (assoc);
+      MgtReassocRequestHeader reassoc;
+      reassoc.SetCurrentApAddress (GetBssid (linkId));
+      mgtFrame = std::move (reassoc);
     }
   else
     {
-      MgtReassocRequestHeader reassoc;
-      reassoc.SetCurrentApAddress (GetBssid (0));  // TODO use appropriate linkId
-      reassoc.SetSsid (GetSsid ());
-      reassoc.SetSupportedRates (GetSupportedRates (SINGLE_LINK_OP_ID));
-      reassoc.SetCapabilities (GetCapabilities (SINGLE_LINK_OP_ID));
-      reassoc.SetListenInterval (0);
+      mgtFrame = MgtAssocRequestHeader ();
+    }
+
+  // lambda to set the fields of the (Re)Association Request
+  auto fill =
+    [&](auto&& frame)
+    {
+      frame.SetSsid (GetSsid ());
+      frame.SetSupportedRates (GetSupportedRates (linkId));
+      frame.SetCapabilities (GetCapabilities (linkId));
+      frame.SetListenInterval (0);
       if (GetHtSupported ())
         {
-          reassoc.SetExtendedCapabilities (GetExtendedCapabilities ());
-          reassoc.SetHtCapabilities (GetHtCapabilities ());
+          frame.SetExtendedCapabilities (GetExtendedCapabilities ());
+          frame.SetHtCapabilities (GetHtCapabilities ());
         }
       if (GetVhtSupported ())
         {
-          reassoc.SetVhtCapabilities (GetVhtCapabilities ());
+          frame.SetVhtCapabilities (GetVhtCapabilities ());
         }
       if (GetHeSupported ())
         {
-          reassoc.SetHeCapabilities (GetHeCapabilities ());
+          frame.SetHeCapabilities (GetHeCapabilities ());
         }
       if (GetEhtSupported ())
         {
-          reassoc.SetEhtCapabilities (GetEhtCapabilities ());
+          frame.SetEhtCapabilities (GetEhtCapabilities ());
         }
-      packet->AddHeader (reassoc);
+    };
+
+  std::visit (fill, mgtFrame);
+  return mgtFrame;
+}
+
+void
+StaWifiMac::SendAssociationRequest (bool isReassoc)
+{
+  // find the link where the (Re)Association Request has to be sent
+  uint8_t linkId = 0;
+  while (linkId < GetNLinks ())
+    {
+      if (GetLink (linkId).sendAssocReq)
+        {
+          break;
+        }
+      linkId++;
+    }
+  NS_ABORT_MSG_IF (linkId == GetNLinks (), "No link selected to send the (Re)Association Request");
+
+  NS_LOG_FUNCTION (this << GetBssid (linkId) << isReassoc);
+  WifiMacHeader hdr;
+  hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+  hdr.SetAddr1 (GetBssid (linkId));
+  hdr.SetAddr2 (GetLink (linkId).feManager->GetAddress ());
+  hdr.SetAddr3 (GetBssid (linkId));
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  Ptr<Packet> packet = Create<Packet> ();
+
+  auto frame = GetAssociationRequest (isReassoc, linkId);
+
+  if (!isReassoc)
+    {
+      packet->AddHeader (std::get<MgtAssocRequestHeader> (frame));
+    }
+  else
+    {
+      packet->AddHeader (std::get<MgtReassocRequestHeader> (frame));
     }
 
   if (!GetQosSupported ())
@@ -342,7 +361,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   //   AC_BE should be selected.
   // — If category AC_BE was not selected by the previous step, category AC_VO
   //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-  else if (!GetWifiRemoteStationManager ()->GetQosSupported (GetBssid (0)))  // TODO use appropriate linkId
+  else if (!GetWifiRemoteStationManager (linkId)->GetQosSupported (GetBssid (linkId)))
     {
       GetBEQueue ()->Queue (packet, hdr);
     }

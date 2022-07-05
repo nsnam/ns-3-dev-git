@@ -325,6 +325,17 @@ private:
                      const Mac48Address& bssid, uint8_t linkId);
 
   /**
+   * Get the (Re)Association Request frame to send on a given link. The returned frame
+   * never includes a Multi-Link Element.
+   *
+   * \param isReassoc whether a Reassociation Request has to be returned
+   * \param linkId the ID of the given link
+   * \return the (Re)Association Request frame
+   */
+  std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader> GetAssociationRequest (bool isReassoc,
+                                                                                      uint8_t linkId) const;
+
+  /**
    * Forward an association or reassociation request packet to the DCF.
    * The standard is not clear on the correct queue for management frames if QoS is supported.
    * We always use the DCF.
