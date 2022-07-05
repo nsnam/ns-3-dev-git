@@ -244,4 +244,10 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
     }
 }
 
+bool
+IsEht(WifiPreamble preamble)
+{
+    return ((preamble == WIFI_PREAMBLE_EHT_MU) || (preamble == WIFI_PREAMBLE_EHT_TB));
+}
+
 } // namespace ns3

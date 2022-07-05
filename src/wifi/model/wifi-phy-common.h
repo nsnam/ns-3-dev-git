@@ -539,6 +539,14 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  */
 uint16_t GetMaximumChannelWidth(WifiModulationClass modulation);
 
+/**
+ * Return true if a preamble corresponds to an EHT transmission.
+ *
+ * \param preamble the preamble
+ * \return true if the provided preamble corresponds to an EHT transmission
+ */
+bool IsEht(WifiPreamble preamble);
+
 } // namespace ns3
 
 #endif /* WIFI_PHY_COMMON_H */
