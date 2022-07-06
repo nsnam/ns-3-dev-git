@@ -615,15 +615,52 @@ ApWifiMac::GetReducedNeighborReport (uint8_t linkId) const
 }
 
 Ptr<MultiLinkElement>
-ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType) const
+ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType, const Mac48Address& to)
 {
-  NS_LOG_FUNCTION (this << +linkId);
+  NS_LOG_FUNCTION (this << +linkId << frameType << to);
   NS_ABORT_IF (GetNLinks () == 1);
 
   auto mle = Create<MultiLinkElement> (MultiLinkElement::BASIC_VARIANT, frameType);
   mle->SetMldMacAddress (GetAddress ());
   mle->SetLinkIdInfo (linkId);
   mle->SetBssParamsChangeCount (0);
+
+  // if the Multi-Link Element is being inserted in a (Re)Association Response frame
+  // and the remote station is affiliated with an MLD, try multi-link setup
+  if (auto staMldAddress = GetWifiRemoteStationManager (linkId)->GetMldAddress (to);
+      (frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE
+       || frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE)
+      && staMldAddress.has_value ())
+    {
+      for (uint8_t i = 0; i < GetNLinks (); i++)
+        {
+          auto remoteStationManager = GetWifiRemoteStationManager (i);
+          if (auto staAddress = remoteStationManager->GetAffiliatedStaAddress (*staMldAddress);
+              i != linkId
+              && staAddress.has_value ()
+              && (remoteStationManager->IsWaitAssocTxOk (*staAddress)
+                  || remoteStationManager->IsAssocRefused (*staAddress)))
+            {
+              // For each requested link in addition to the link on which the
+              // (Re)Association Response frame is transmitted, the Link Info field
+              // of the Basic Multi-Link element carried in the (Re)Association
+              // Response frame shall contain the corresponding Per-STA Profile
+              // subelement(s) (Sec. 35.3.5.4 of 802.11be D2.0)
+              mle->AddPerStaProfileSubelement ();
+              auto& perStaProfile = mle->GetPerStaProfile (mle->GetNPerStaProfileSubelements () - 1);
+              // The Link ID subfield of the STA Control field of the Per-STA Profile
+              // subelement for the AP corresponding to a link is set to the link ID
+              // of the AP affiliated with the AP MLD that is operating on that link.
+              perStaProfile.SetLinkId (i);
+              perStaProfile.SetCompleteProfile ();
+              // For each Per-STA Profile subelement included in the Link Info field,
+              // the Complete Profile subfield of the STA Control field shall be set to 1
+              perStaProfile.SetStaMacAddress (GetFrameExchangeManager (i)->GetAddress ());
+              perStaProfile.SetAssocResponse (GetAssocResp (*staAddress,
+                                                            frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE, i));
+            }
+        }
+    }
 
   return mle;
 }
@@ -983,6 +1020,18 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
   hdr.SetDsNotTo ();
 
   MgtAssocResponseHeader assoc = GetAssocResp (to, isReassoc, linkId);
+
+  // The AP that is affiliated with the AP MLD and that responds to an (Re)Association
+  // Request frame that carries a Basic Multi-Link element shall include a Basic
+  // Multi-Link element in the (Re)Association Response frame that it transmits
+  // (Sec. 35.3.5.4 of 802.11be D2.0)
+  // If the STA included a Multi-Link Element in the (Re)Association Request, we
+  // stored its MLD address in the remote station manager
+  if (GetNLinks () > 1
+      && GetWifiRemoteStationManager (linkId)->GetMldAddress (to).has_value ())
+    {
+      assoc.SetMultiLinkElement (GetMultiLinkElement (linkId, hdr.GetType (), to));
+    }
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (assoc);

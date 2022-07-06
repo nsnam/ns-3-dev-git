@@ -326,9 +326,11 @@ private:
    *
    * \param linkId the ID of the link to send the Multi-Link Element onto
    * \param frameType the type of the frame containing the Multi-Link Element
+   * \param to the Receiver Address of the frame containing the Multi-Link Element
    * \return the Multi-Link Element
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (uint8_t linkId, WifiMacType frameType) const;
+  Ptr<MultiLinkElement> GetMultiLinkElement (uint8_t linkId, WifiMacType frameType,
+                                             const Mac48Address& to = Mac48Address::GetBroadcast ());
   /**
    * Return the HT operation of the current AP.
    *
