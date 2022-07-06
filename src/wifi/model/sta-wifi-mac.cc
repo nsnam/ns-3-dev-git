@@ -38,6 +38,7 @@
 #include "wifi-net-device.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/he-configuration.h"
+#include <numeric>
 
 namespace ns3 {
 
@@ -597,6 +598,7 @@ StaWifiMac::Disassociated (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("Set state to UNASSOCIATED and start scanning");
   SetState (UNASSOCIATED);
+  m_aid = 0;  // reset AID
   TryToEnsureAssociated ();
 }
 
@@ -890,22 +892,97 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
     {
       SetState (ASSOCIATED);
       m_aid = assocResp.GetAssociationId ();
-      if (hdr.IsReassocResp ())
-        {
-          NS_LOG_DEBUG ("reassociation done");
-        }
-      else
-        {
-          NS_LOG_DEBUG ("association completed");
-        }
+      NS_LOG_DEBUG ((hdr.IsReassocResp () ? "reassociation done" : "association completed"));
       UpdateApInfo (assocResp, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
       if (!m_linkUp.IsNull ())
         {
           m_linkUp ();
         }
     }
-  else
+
+  // if this is an MLD, check if we can setup (other) links
+  if (GetNLinks () > 1)
     {
+      // create a list of all local Link IDs. IDs are removed as we find a corresponding
+      // Per-STA Profile Subelements indicating successful association. Links with
+      // remaining IDs are not setup
+      std::list<uint8_t> setupLinks (GetNLinks ());
+      std::iota (setupLinks.begin (), setupLinks.end (), 0);
+      if (assocResp.GetStatusCode ().IsSuccess ())
+        {
+          setupLinks.remove (linkId);
+        }
+
+      // if a Multi-Link Element is present, check its content
+      if (auto mle = assocResp.GetMultiLinkElement (); mle != nullptr)
+        {
+          NS_ABORT_MSG_IF (!GetLink (linkId).apLinkId.has_value (),
+                          "The link on which the Association Response was received "
+                          "is not a link we requested to setup");
+          NS_ABORT_MSG_IF (*GetLink (linkId).apLinkId != mle->GetLinkIdInfo (),
+                          "The link ID of the AP that transmitted the Association "
+                          "Response does not match the stored link ID");
+          NS_ABORT_MSG_IF (GetWifiRemoteStationManager (linkId)->GetMldAddress (hdr.GetAddr2 ())
+                          != mle->GetMldMacAddress (),
+                          "The AP MLD MAC address in the received Multi-Link Element does not "
+                          "match the address stored in the station manager for link " << +linkId);
+          // process the Per-STA Profile Subelements in the Multi-Link Element
+          for (std::size_t elem = 0; elem < mle->GetNPerStaProfileSubelements (); elem++)
+            {
+              auto& perStaProfile = mle->GetPerStaProfile (elem);
+              uint8_t apLinkId = perStaProfile.GetLinkId ();
+              uint8_t staLinkid = 0;
+              while (staLinkid < GetNLinks ())
+                {
+                  if (GetLink (staLinkid).apLinkId == apLinkId)
+                    {
+                      break;
+                    }
+                  staLinkid++;
+                }
+              NS_ABORT_MSG_IF (staLinkid == GetNLinks (),
+                              "Setup for AP link ID " << apLinkId << " was not requested");
+              NS_ABORT_MSG_IF (GetBssid (staLinkid) != perStaProfile.GetStaMacAddress (),
+                              "The BSSID in the Per-STA Profile for link ID " << +staLinkid
+                              << " does not match the stored BSSID");
+              NS_ABORT_MSG_IF (GetWifiRemoteStationManager (staLinkid)->GetMldAddress (perStaProfile.GetStaMacAddress ())
+                              != mle->GetMldMacAddress (),
+                              "The AP MLD MAC address in the received Multi-Link Element does not "
+                              "match the address stored in the station manager for link " << +staLinkid);
+              // process the Association Response contained in this Per-STA Profile
+              MgtAssocResponseHeader assoc = perStaProfile.GetAssocResponse ();
+              if (assoc.GetStatusCode ().IsSuccess ())
+                {
+                  SetState (ASSOCIATED);
+                  NS_ABORT_MSG_IF (m_aid != 0 && m_aid != assoc.GetAssociationId (),
+                                  "AID should be the same for all the links");
+                  m_aid = assoc.GetAssociationId ();
+                  NS_LOG_DEBUG ("Setup on link " << staLinkid << " completed");
+                  UpdateApInfo (assoc, GetBssid (staLinkid), GetBssid (staLinkid), staLinkid);
+                  if (!m_linkUp.IsNull ())
+                    {
+                      m_linkUp ();
+                    }
+                }
+              // remove the ID of the link we setup
+              setupLinks.remove (staLinkid);
+            }
+        }
+      // remaining links in setupLinks are not setup and hence must be disabled
+      for (const auto& id : setupLinks)
+        {
+          GetLink (id).apLinkId = std::nullopt;
+          // if at least one link was setup, disable the links that were not setup (if any)
+          if (m_state == ASSOCIATED)
+            {
+              GetLink (id).phy->SetOffMode ();
+            }
+        }
+    }
+
+  if (m_state == WAIT_ASSOC_RESP)
+    {
+      // if we didn't transition to ASSOCIATED, the request was refused
       NS_LOG_DEBUG ("association refused");
       SetState (REFUSED);
       StartScanning ();
