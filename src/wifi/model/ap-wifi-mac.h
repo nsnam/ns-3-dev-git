@@ -192,6 +192,19 @@ private:
                             uint8_t linkId);
 
   /**
+   * Given a (Re)Association Request frame body containing a Multi-Link Element,
+   * check if a link can be setup with each of the reported stations (STA MAC address
+   * and a (Re)Association Request frame body must be present, the Link ID identifies
+   * a valid link other than the one the frame was received on and the supported
+   * rates are compatible with our basic rate set).
+   *
+   * \param assoc the frame body of the received (Re)Association Request
+   * \param from the Transmitter Address field of the frame
+   * \param linkId the ID of the link on which the frame was received
+   */
+  void ParseReportedStaInfo (const AssocReqRefVariant& assoc, Mac48Address from, uint8_t linkId);
+
+  /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet
    * was an association response to the receiver, we record that

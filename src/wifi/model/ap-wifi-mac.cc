@@ -1243,6 +1243,10 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
                   frame = reassocReq;
                 }
               bool success = ReceiveAssocRequest (frame, from, linkId);
+              if (GetNLinks () > 1)
+                {
+                  ParseReportedStaInfo (frame, from, linkId);
+                }
               SendAssocResp (hdr->GetAddr2 (), success, hdr->IsReassocReq ());
               return;
             }
@@ -1444,6 +1448,55 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
     };
 
   return std::visit (recvAssocRequest, assoc);
+}
+
+void
+ApWifiMac::ParseReportedStaInfo (const AssocReqRefVariant& assoc,
+                                 Mac48Address from, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << from << +linkId);
+
+  // lambda to process received Multi-Link Element
+  auto recvMle =
+    [&](auto&& frame)
+    {
+      Ptr<MultiLinkElement> mle = frame.get ().GetMultiLinkElement ();
+
+      if (mle == nullptr)
+        {
+          return;
+        }
+
+      GetWifiRemoteStationManager (linkId)->SetMldAddress (from, mle->GetMldMacAddress ());
+
+      for (std::size_t i = 0; i < mle->GetNPerStaProfileSubelements (); i++)
+        {
+          auto& perStaProfile = mle->GetPerStaProfile (i);
+          if (!perStaProfile.HasStaMacAddress ())
+            {
+              NS_LOG_DEBUG ("[i=" << i << "] Cannot setup a link if the STA MAC address is missing");
+              continue;
+            }
+          uint8_t newLinkId = perStaProfile.GetLinkId ();
+          if (newLinkId == linkId || newLinkId >= GetNLinks ())
+            {
+              NS_LOG_DEBUG ("[i=" << i << "] Link ID " << newLinkId << " not valid");
+              continue;
+            }
+          if (!perStaProfile.HasAssocRequest () && !perStaProfile.HasReassocRequest ())
+            {
+              NS_LOG_DEBUG ("[i=" << i << "] No (Re)Association Request frame body present");
+              continue;
+            }
+
+          ReceiveAssocRequest (perStaProfile.GetAssocRequest(), perStaProfile.GetStaMacAddress (),
+                               newLinkId);
+          GetWifiRemoteStationManager (newLinkId)->SetMldAddress (perStaProfile.GetStaMacAddress (),
+                                                                  mle->GetMldMacAddress ());
+        }
+    };
+
+  std::visit (recvMle, assoc);
 }
 
 void
