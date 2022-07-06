@@ -1159,11 +1159,36 @@ ApWifiMac::TxOk (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
-  if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
-      && GetWifiRemoteStationManager ()->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+
+  if (hdr.IsAssocResp () || hdr.IsReassocResp ())
     {
-      NS_LOG_DEBUG ("associated with sta=" << hdr.GetAddr1 ());
-      GetWifiRemoteStationManager ()->RecordGotAssocTxOk (hdr.GetAddr1 ());
+      auto linkId = GetLinkIdByAddress (hdr.GetAddr2 ());
+      NS_ABORT_MSG_IF (!linkId.has_value (), "No link ID matching the TA");
+
+      if (GetWifiRemoteStationManager (*linkId)->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+        {
+          NS_LOG_DEBUG ("AP=" << hdr.GetAddr2 () << " associated with STA=" << hdr.GetAddr1 ());
+          GetWifiRemoteStationManager (*linkId)->RecordGotAssocTxOk (hdr.GetAddr1 ());
+        }
+
+      if (auto staMldAddress = GetWifiRemoteStationManager (*linkId)->GetMldAddress (hdr.GetAddr1 ());
+          staMldAddress.has_value ())
+        {
+          // the STA is affiliated with an MLD
+          for (uint8_t i = 0; i < GetNLinks (); i++)
+            {
+              auto stationManager = GetWifiRemoteStationManager (i);
+              if (auto staAddress = stationManager->GetAffiliatedStaAddress (*staMldAddress);
+                  staAddress.has_value ()
+                  && i != *linkId
+                  && stationManager->IsWaitAssocTxOk (*staAddress))
+                {
+                  NS_LOG_DEBUG ("AP=" << GetFrameExchangeManager (i)->GetAddress ()
+                                << " associated with STA=" << *staAddress);
+                  stationManager->RecordGotAssocTxOk (*staAddress);
+                }
+            }
+        }
     }
 }
 
@@ -1173,11 +1198,35 @@ ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
   NS_LOG_FUNCTION (this << +timeoutReason << *mpdu);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
 
-  if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
-      && GetWifiRemoteStationManager ()->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+  if (hdr.IsAssocResp () || hdr.IsReassocResp ())
     {
-      NS_LOG_DEBUG ("association failed with sta=" << hdr.GetAddr1 ());
-      GetWifiRemoteStationManager ()->RecordGotAssocTxFailed (hdr.GetAddr1 ());
+      auto linkId = GetLinkIdByAddress (hdr.GetAddr2 ());
+      NS_ABORT_MSG_IF (!linkId.has_value (), "No link ID matching the TA");
+
+      if (GetWifiRemoteStationManager (*linkId)->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+        {
+          NS_LOG_DEBUG ("AP=" << hdr.GetAddr2 () << " association failed with STA=" << hdr.GetAddr1 ());
+          GetWifiRemoteStationManager (*linkId)->RecordGotAssocTxFailed (hdr.GetAddr1 ());
+        }
+
+      if (auto staMldAddress = GetWifiRemoteStationManager (*linkId)->GetMldAddress (hdr.GetAddr1 ());
+          staMldAddress.has_value ())
+        {
+          // the STA is affiliated with an MLD
+          for (uint8_t i = 0; i < GetNLinks (); i++)
+            {
+              auto stationManager = GetWifiRemoteStationManager (i);
+              if (auto staAddress = stationManager->GetAffiliatedStaAddress (*staMldAddress);
+                  staAddress.has_value ()
+                  && i != *linkId
+                  && stationManager->IsWaitAssocTxOk (*staAddress))
+                {
+                  NS_LOG_DEBUG ("AP=" << GetFrameExchangeManager (i)->GetAddress ()
+                                << " association failed with STA=" << *staAddress);
+                  stationManager->RecordGotAssocTxFailed (*staAddress);
+                }
+            }
+        }
     }
 }
 
