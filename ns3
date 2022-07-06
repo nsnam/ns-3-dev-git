@@ -290,10 +290,20 @@ def parse_args(argv):
                                dest='verbose',
                                default_value=False)
 
-    # Parse known arguments and separate from unknown arguments
-    args, unknown_args = parser.parse_known_args(argv)
+    # Try to split -- separated arguments into two lists for ns3 and for the runnable target
+    try:
+        args_separator_index = argv.index('--')
+        ns3_args = argv[:args_separator_index]
+        runnable_args = argv[args_separator_index + 1:]
+    except ValueError:
+        ns3_args = argv
+        runnable_args = []
 
-    if args.run == '':
+    # Parse known arguments and separate from unknown arguments
+    args, unknown_args = parser.parse_known_args(ns3_args)
+
+    # If run doesn't have a target, print the help message of the run parser
+    if "run" in args and args.run == '':
         parser_run.print_help()
         exit(-1)
 
@@ -342,22 +352,20 @@ def parse_args(argv):
     if args.run and args.enable_sudo is None:
         args.enable_sudo = True
 
-    # Filter arguments before --
-    setattr(args, "program_args", [])
+    # Save runnable target arguments
+    setattr(args, "program_args", runnable_args)
+
+    # Emit error in case of unknown arguments
     if unknown_args:
-        try:
-            args_separator_index = argv.index('--')
-            args.program_args = argv[args_separator_index + 1:]
-        except ValueError:
-            msg = "Unknown options were given: {options}.\n" \
-                  "To see the allowed options add the `--help` option.\n" \
-                  "To forward configuration or runtime options, put them after '--'.\n"
-            if args.run:
-                msg += "Try: ./ns3 run {target} -- {options}\n"
-            if args.configure:
-                msg += "Try: ./ns3 configure -- {options}\n"
-            msg = msg.format(options=", ".join(unknown_args), target=args.run)
-            raise Exception(msg)
+        msg = ("Unknown options were given: {options}.\n"
+               "To see the allowed options add the `--help` option.\n"
+               "To forward configuration or runtime options, put them after '--'.\n")
+        if args.run:
+            msg += "Try: ./ns3 run {target} -- {options}\n"
+        if args.configure:
+            msg += "Try: ./ns3 configure -- {options}\n"
+        msg = msg.format(options=", ".join(unknown_args), target=args.run)
+        raise Exception(msg)
     return args
 
 
@@ -1078,7 +1086,7 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
         large_items = list(filter(lambda x: len(x) >= columnwidth, l))
 
         # Then filter the targets with names shorter than the column width
-        small_items = sorted(list(set(l)-set(large_items)))
+        small_items = sorted(list(set(l) - set(large_items)))
 
         prev_new_line = 0
         output = "\n"
