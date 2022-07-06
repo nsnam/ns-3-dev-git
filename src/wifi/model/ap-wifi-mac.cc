@@ -886,28 +886,20 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
     }
 }
 
-void
-ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
+MgtAssocResponseHeader
+ApWifiMac::GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << to << success << isReassoc);
-  WifiMacHeader hdr;
-  hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_RESPONSE : WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
-  hdr.SetAddr1 (to);
-  hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetAddress ());
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  Ptr<Packet> packet = Create<Packet> ();
   MgtAssocResponseHeader assoc;
   StatusCode code;
-  if (success)
+  auto remoteStationManager = GetWifiRemoteStationManager (linkId);
+  if (remoteStationManager->IsWaitAssocTxOk (to))
     {
       code.SetSuccess ();
       uint16_t aid = 0;
       bool found = false;
       if (isReassoc)
         {
-          for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
+          for (const auto& sta : GetLink (linkId).staList)
             {
               if (sta.second == to)
                 {
@@ -919,15 +911,15 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
         }
       if (!found)
         {
-          aid = GetNextAssociationId ({SINGLE_LINK_OP_ID});
-          GetLink (SINGLE_LINK_OP_ID).staList.insert (std::make_pair (aid, to));
+          aid = GetNextAssociationId ({linkId});
+          GetLink (linkId).staList.insert (std::make_pair (aid, to));
           m_assocLogger (aid, to);
-          GetWifiRemoteStationManager ()->SetAssociationId (to, aid);
-          if (GetWifiRemoteStationManager ()->GetDsssSupported (to) && !GetWifiRemoteStationManager ()->GetErpOfdmSupported (to))
+          remoteStationManager->SetAssociationId (to, aid);
+          if (remoteStationManager->GetDsssSupported (to) && !remoteStationManager->GetErpOfdmSupported (to))
             {
               m_numNonErpStations++;
             }
-          if (!GetWifiRemoteStationManager ()->GetHtSupported (to))
+          if (!remoteStationManager->GetHtSupported (to))
             {
               m_numNonHtStations++;
             }
@@ -938,18 +930,21 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
     }
   else
     {
+      NS_ABORT_IF (!remoteStationManager->IsAssocRefused (to));
+      // reset state
+      remoteStationManager->RecordDisassociated (to);
       code.SetFailure ();
     }
   assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
   assoc.SetCapabilities (GetCapabilities ());
-  if (GetErpSupported (SINGLE_LINK_OP_ID))
+  if (GetErpSupported (linkId))
     {
-      assoc.SetErpInformation (GetErpInformation (SINGLE_LINK_OP_ID));
+      assoc.SetErpInformation (GetErpInformation (linkId));
     }
   if (GetQosSupported ())
     {
-      assoc.SetEdcaParameterSet (GetEdcaParameterSet (SINGLE_LINK_OP_ID));
+      assoc.SetEdcaParameterSet (GetEdcaParameterSet (linkId));
     }
   if (GetHtSupported ())
     {
@@ -972,6 +967,24 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
     {
       assoc.SetEhtCapabilities (GetEhtCapabilities ());
     }
+  return assoc;
+}
+
+void
+ApWifiMac::SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << to << isReassoc << +linkId);
+  WifiMacHeader hdr;
+  hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_RESPONSE : WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
+  hdr.SetAddr1 (to);
+  hdr.SetAddr2 (GetFrameExchangeManager (linkId)->GetAddress ());
+  hdr.SetAddr3 (GetFrameExchangeManager (linkId)->GetAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+
+  MgtAssocResponseHeader assoc = GetAssocResp (to, isReassoc, linkId);
+
+  Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (assoc);
 
   if (!GetQosSupported ())
@@ -985,7 +998,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   //   AC_BE should be selected.
   // — If category AC_BE was not selected by the previous step, category AC_VO
   //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-  else if (!GetWifiRemoteStationManager ()->GetQosSupported (to))
+  else if (!GetWifiRemoteStationManager (linkId)->GetQosSupported (to))
     {
       GetBEQueue ()->Queue (packet, hdr);
     }
@@ -1242,12 +1255,12 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
                   packet->PeekHeader (reassocReq);
                   frame = reassocReq;
                 }
-              bool success = ReceiveAssocRequest (frame, from, linkId);
+              ReceiveAssocRequest (frame, from, linkId);
               if (GetNLinks () > 1)
                 {
                   ParseReportedStaInfo (frame, from, linkId);
                 }
-              SendAssocResp (hdr->GetAddr2 (), success, hdr->IsReassocReq ());
+              SendAssocResp (hdr->GetAddr2 (), hdr->IsReassocReq (), linkId);
               return;
             }
           else if (hdr->IsDisassociation ())

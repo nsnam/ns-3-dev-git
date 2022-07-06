@@ -45,6 +45,7 @@ class CfParameterSet;
 class UniformRandomVariable;
 class MgtAssocRequestHeader;
 class MgtReassocRequestHeader;
+class MgtAssocResponseHeader;
 
 /// variant holding a  reference to a (Re)Association Request
 using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
@@ -260,15 +261,23 @@ private:
    */
   void SendProbeResp (Mac48Address to, uint8_t linkId);
   /**
-   * Forward an association or a reassociation response packet to the DCF.
-   * The standard is not clear on the correct queue for management frames if QoS is supported.
-   * We always use the DCF.
+   * Get the Association Response frame to send on a given link. The returned frame
+   * never includes a Multi-Link Element.
    *
    * \param to the address of the STA we are sending an association response to
-   * \param success indicates whether the association was successful or not
    * \param isReassoc indicates whether it is a reassociation response
+   * \param linkId the ID of the given link
+   * \return the Association Response frame
    */
-  void SendAssocResp (Mac48Address to, bool success, bool isReassoc);
+  MgtAssocResponseHeader GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId);
+  /**
+   * Forward an association or a reassociation response packet to the DCF/EDCA.
+   *
+   * \param to the address of the STA we are sending an association response to
+   * \param isReassoc indicates whether it is a reassociation response
+   * \param linkId the ID of the link on which the association response must be sent
+   */
+  void SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId);
   /**
    * Forward a beacon packet to the beacon special DCF for transmission
    * on the given link.
