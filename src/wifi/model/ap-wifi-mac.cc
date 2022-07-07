@@ -1333,7 +1333,7 @@ ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
             }
           return;
         }
-      else if (hdr->GetAddr1 () == GetAddress ())
+      else if (hdr->GetAddr1 () == GetFrameExchangeManager (linkId)->GetAddress ())
         {
           if (hdr->IsAssocReq () || hdr->IsReassocReq ())
             {

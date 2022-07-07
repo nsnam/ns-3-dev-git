@@ -710,13 +710,13 @@ StaWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   Ptr<const Packet> packet = mpdu->GetPacket ();
   NS_ASSERT (!hdr->IsCtl ());
-  if (hdr->GetAddr3 () == GetAddress ())
+  Mac48Address myAddr = hdr->IsData () ? GetAddress () : GetFrameExchangeManager (linkId)->GetAddress ();
+  if (hdr->GetAddr3 () == myAddr)
     {
       NS_LOG_LOGIC ("packet sent by us.");
       return;
     }
-  if (hdr->GetAddr1 () != GetAddress ()
-           && !hdr->GetAddr1 ().IsGroup ())
+  if (hdr->GetAddr1 () != myAddr && !hdr->GetAddr1 ().IsGroup ())
     {
       NS_LOG_LOGIC ("packet is not for us");
       NotifyRxDrop (packet);
