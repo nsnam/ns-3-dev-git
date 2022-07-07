@@ -181,7 +181,7 @@ public:
   void DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface);
 
   /**
-   * \brief Send a Neighbor Adverstisement.
+   * \brief Send a Neighbor Advertisement.
    * \param src source IPv6 address
    * \param dst destination IPv6 address
    * \param hardwareAddress our MAC address
