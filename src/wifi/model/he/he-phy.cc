@@ -73,7 +73,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Exte
 HePhy::HePhy (bool buildModeList /* = true */)
   : VhtPhy (false), //don't add VHT modes to list
     m_trigVectorExpirationTime (Seconds (0)),
-    m_rxHeTbPpdus (0)
+    m_rxHeTbPpdus (0),
+    m_lastPer20MHzDurations ()
 {
   NS_LOG_FUNCTION (this << buildModeList);
   m_bssMembershipSelector = HE_PHY;
@@ -1016,11 +1017,46 @@ HePhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
 }
 
 void
+HePhy::SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu)
+{
+  const auto ccaIndication = GetCcaIndication (ppdu);
+  const auto per20MHzDurations = GetPer20MHzDurations (ppdu);
+  if (ccaIndication.has_value ())
+    {
+      NS_LOG_DEBUG ("CCA busy for " << ccaIndication.value ().second << " during " << ccaIndication.value ().first.As (Time::S));
+      NotifyCcaBusy (ccaIndication.value ().first, ccaIndication.value ().second, per20MHzDurations);
+      return;
+    }
+  if (ppdu)
+    {
+      SwitchMaybeToCcaBusy (nullptr);
+      return;
+    }
+  if (per20MHzDurations != m_lastPer20MHzDurations)
+    {
+      /*
+       * 8.3.5.12.3: For Clause 27 PHYs, this primitive is generated when (...) the per20bitmap parameter changes.
+       */
+      NS_LOG_DEBUG ("per-20MHz CCA durations changed");
+      NotifyCcaBusy (Seconds (0), WIFI_CHANLIST_PRIMARY, per20MHzDurations);
+    }
+}
+
+void
 HePhy::NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration, WifiChannelListType channelType)
 {
   NS_LOG_FUNCTION (this << duration << channelType);
   NS_LOG_DEBUG ("CCA busy for " << channelType << " during " << duration.As (Time::S));
-  m_state->SwitchMaybeToCcaBusy (duration, channelType, GetPer20MHzDurations (ppdu));
+  const auto per20MHzDurations = GetPer20MHzDurations (ppdu);
+  NotifyCcaBusy (duration, channelType, per20MHzDurations);
+}
+
+void
+HePhy::NotifyCcaBusy (Time duration, WifiChannelListType channelType, const std::vector<Time>& per20MHzDurations)
+{
+  NS_LOG_FUNCTION (this << duration << channelType);
+  m_state->SwitchMaybeToCcaBusy (duration, channelType, per20MHzDurations);
+  m_lastPer20MHzDurations = per20MHzDurations;
 }
 
 std::vector<Time>

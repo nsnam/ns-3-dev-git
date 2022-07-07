@@ -103,6 +103,7 @@ public:
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<const WifiPpdu> ppdu) override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
+  void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu) override;
   double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const override;
   void NotifyCcaBusy (const Ptr<const WifiPpdu> ppdu, Time duration, WifiChannelListType channelType) override;
 
@@ -480,6 +481,15 @@ private:
   Time GetSymbolDuration (const WifiTxVector& txVector) const override;
 
   /**
+   * Notify PHY state helper to switch to CCA busy state,
+   *
+   * \param duration the duration of the CCA state
+   * \param channelType the channel type for which the CCA busy state is reported.
+   * \param per20MHzDurations the per-20 MHz CCA durations vector
+   */
+  void NotifyCcaBusy (Time duration, WifiChannelListType channelType, const std::vector<Time>& per20MHzDurations);
+
+  /**
    * Compute the per-20 MHz CCA durations vector that indicates
    * for how long each 20 MHz subchannel (corresponding to the
    * index of the element in the vector) is busy and where a zero duration
@@ -516,8 +526,9 @@ private:
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 
-  std::size_t m_rxHeTbPpdus; //!< Number of successfully received HE TB PPDUS
-  Ptr<ObssPdAlgorithm> m_obssPdAlgorithm; //!< OBSS-PD algorithm
+  std::size_t m_rxHeTbPpdus;                 //!< Number of successfully received HE TB PPDUS
+  Ptr<ObssPdAlgorithm> m_obssPdAlgorithm;    //!< OBSS-PD algorithm
+  std::vector<Time> m_lastPer20MHzDurations; //!< Hold the last per-20 MHz CCA durations vector
 }; //class HePhy
 
 } //namespace ns3
