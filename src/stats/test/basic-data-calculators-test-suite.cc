@@ -25,7 +25,8 @@
 
 using namespace ns3;
 
-const double TOLERANCE = 1e-14;
+// See issue #698 for discussion of this tolerance
+const double TOLERANCE = 1e-13;
 
 /**
  * \ingroup stats-tests
