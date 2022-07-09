@@ -35,6 +35,11 @@
 #include <map>
 
 // ns3 includes
+#ifdef __WIN32__
+#include "ns3/bs-net-device.h"
+#include "ns3/csma-net-device.h"
+#include "ns3/wave-net-device.h"
+#endif
 #include "ns3/animation-interface.h"
 #include "ns3/channel.h"
 #include "ns3/config.h"
@@ -92,6 +97,29 @@ AnimationInterface::AnimationInterface (const std::string fn)
 {
   initialized = true;
   StartAnimation ();
+
+#ifdef __WIN32__
+  /**
+   * Shared libraries are handled differently on Windows and
+   * need to be explicitly loaded via LoadLibrary("library.dll").
+   *
+   * Otherwise, static import libraries .dll.a/.lib (MinGW/MSVC)
+   * can be linked to the executables to perform the loading of
+   * their respective .dll implicitly during static initialization.
+   *
+   * The .dll.a/.lib however, only gets linked if we instantiate at
+   * least one symbol exported by the .dll.
+   *
+   * To ensure TypeIds from the Csma, Uan, Wave, Wifi and Wimax
+   * modules are registered during runtime, we need to instantiate
+   * at least one symbol exported by each of these module libraries.
+   */
+  static BaseStationNetDevice b;
+  static CsmaNetDevice c;
+  static WifiNetDevice w;
+  static UanNetDevice u;
+  static WaveNetDevice wv;
+#endif
 }
 
 AnimationInterface::~AnimationInterface ()
