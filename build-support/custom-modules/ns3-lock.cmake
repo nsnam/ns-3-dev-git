@@ -82,6 +82,9 @@ function(write_lock)
   string(APPEND lock_contents "APPNAME = 'ns'\n")
   string(APPEND lock_contents "BUILD_PROFILE = '${build_profile}'\n")
   string(APPEND lock_contents "VERSION = '${NS3_VER}' \n")
+  string(APPEND lock_contents
+         "BUILD_VERSION_STRING = '${BUILD_VERSION_STRING}' \n"
+  )
   string(APPEND lock_contents "PYTHON = ['${Python3_EXECUTABLE}']\n")
 
   mark_as_advanced(VALGRIND)

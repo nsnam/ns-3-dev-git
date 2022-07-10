@@ -76,6 +76,7 @@ function(configure_embedded_version)
       check-version COMMAND echo Build version feature disabled. Reconfigure
                             ns-3 with NS3_ENABLE_BUILD_VERSION=ON
     )
+    set(BUILD_VERSION_STRING PARENT_SCOPE)
     return()
   endif()
 
@@ -195,6 +196,7 @@ function(configure_embedded_version)
   )
   string(REPLACE "\"" "" version "${version}")
   add_custom_target(check-version COMMAND echo ns-3 version: ${version})
+  set(BUILD_VERSION_STRING ${version} PARENT_SCOPE)
 
   # Enable embedding build version
   add_definitions(-DENABLE_BUILD_VERSION=1)

@@ -263,8 +263,8 @@ def parse_args(argv):
     parser_show.add_argument('show',
                              help=('Print the current ns-3 build profile type, configuration or version, '
                                    'or a list of buildable/runnable targets'),
-                             choices=["profile", "version", "config", "targets"],
-                             action="store", type=str, default=None)
+                             choices=["profile", "version", "config", "targets", "all"],
+                             action="store", type=str, nargs="?", default="all")
 
     add_argument_to_subparsers(
         [parser, parser_build, parser_configure, parser_clean, parser_docs, parser_run, parser_show],
@@ -382,6 +382,7 @@ def check_lock_data(output_directory):
                   "ENABLE_EXAMPLES": False,
                   "ENABLE_SUDO": False,
                   "ENABLE_TESTS": False,
+                  "BUILD_VERSION_STRING": None
                   }
     if output_directory and os.path.exists(lock_file):
         exec(open(lock_file).read(), globals(), build_info)
@@ -1072,6 +1073,22 @@ def run_step(args, target_to_run, target_args):
         exit(0)
 
 
+def non_ambiguous_program_target_list(programs: dict) -> list:
+    # Assembles a dictionary of all the possible shortcuts a program have
+    list_of_shortcuts = {}
+    for (shortcut, possible_programs) in programs.items():
+        if len(possible_programs) == 1:
+            if possible_programs[0] not in list_of_shortcuts:
+                list_of_shortcuts[possible_programs[0]] = [shortcut]
+            else:
+                list_of_shortcuts[possible_programs[0]].append(shortcut)
+    # Select the shortest non-ambiguous shortcut for each program
+    final_list = []
+    for shortcuts in list_of_shortcuts.values():
+        final_list.append(sorted(shortcuts, key=lambda x: len(x))[0])
+    return final_list
+
+
 def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
     def list_to_table(l: list) -> str:
         # Set column width and check how much is space is left at the end
@@ -1109,27 +1126,43 @@ def print_targets_list(ns3_modules: list, ns3_programs: dict) -> None:
             output += large_item + "\n"
         return output
 
-    def non_ambiguous_target_list(programs: dict) -> list:
-        # Assembles a dictionary of all the possible shortcuts a program have
-        list_of_shortcuts = {}
-        for (shortcut, possible_programs) in programs.items():
-            if len(possible_programs) == 1:
-                if possible_programs[0] not in list_of_shortcuts:
-                    list_of_shortcuts[possible_programs[0]] = [shortcut]
-                else:
-                    list_of_shortcuts[possible_programs[0]].append(shortcut)
-        # Select the shortest non-ambiguous shortcut for each program
-        final_list = []
-        for shortcuts in list_of_shortcuts.values():
-            final_list.append(sorted(shortcuts, key=lambda x: len(x))[0])
-        return final_list
-
     print("""Buildable targets:{buildables}\n\nRunnable/Buildable targets:{runnables}
                   """.format(buildables=list_to_table(sorted(ns3_modules)),
-                             runnables=list_to_table(non_ambiguous_target_list(ns3_programs))
+                             runnables=list_to_table(non_ambiguous_program_target_list(ns3_programs))
                              )
           )
     return
+
+
+def show_profile(build_profile, exit_early=True):
+    if build_profile:
+        print("Build profile: %s" % build_profile)
+    else:
+        project_not_configured()
+
+    if exit_early:
+        exit(0)
+
+
+def show_build_version(build_version_string, exit_early=True):
+    if build_version_string is None:
+        project_not_configured()
+
+    if build_version_string == '' and shutil.which("git") and os.path.exists(os.path.join(ns3_path, ".git")):
+        try:
+            build_version_string = subprocess.check_output(["git", "describe", "--dirty"], cwd=ns3_path).decode()
+            build_version_string += ("Reconfigure with './ns3 configure --enable-build-version' "
+                                     "to bake the version into the libraries.")
+        except subprocess.CalledProcessError:
+            pass
+
+    if build_version_string == '':
+        print("Build version feature disabled. Reconfigure ns-3 with ./ns3 configure --enable-build-version")
+    else:
+        print("ns-3 version: %s" % build_version_string)
+
+    if exit_early:
+        exit(0)
 
 
 # Debugging this with PyCharm is a no no. It refuses to work hanging indefinitely
@@ -1254,6 +1287,7 @@ def main():
     # Get build profile and other settings
     build_info, ns3_modules = check_lock_data(out_dir)
     build_profile = build_info["BUILD_PROFILE"]
+    build_version_string = build_info["BUILD_VERSION_STRING"]
     enable_sudo = build_info["ENABLE_SUDO"]
     ns3_version = build_info["VERSION"]
 
@@ -1267,13 +1301,10 @@ def main():
             exit(1)
 
     if args.show == "profile":
-        if build_profile:
-            print("Build profile: %s" % build_profile)
-        else:
-            project_not_configured()
+        show_profile(build_profile)
 
     if args.show == "version":
-        args.build = ["check-version"]
+        show_build_version(build_version_string)
 
     # Check if running something or reconfiguring ns-3
     run_only = False
@@ -1309,7 +1340,7 @@ def main():
         if args.show == "config":
             check_config(current_cmake_cache_folder)
             # We end things earlier if only checking the current project configuration
-            return
+            exit(0)
 
         # Check for changes in scratch sources and trigger a reconfiguration if sources changed
         if current_cmake_cache_folder:
@@ -1344,6 +1375,16 @@ def main():
 
     if args.show == "targets":
         print_targets_list(ns3_modules, ns3_programs)
+        exit(0)
+
+    if args.show == "all":
+        show_profile(build_profile, exit_early=False)
+        show_build_version(build_version_string, exit_early=False)
+        check_config(current_cmake_cache_folder)
+        print("---- Summary of buildable targets:")
+        print("Buildable targets:          %4.d" % len(ns3_modules))
+        print("Runnable/Buildable targets: %4.d" % len(non_ambiguous_program_target_list(ns3_programs)))
+
         exit(0)
 
     def check_ambiguous_target(target_type, target_to_check, programs):
