@@ -69,6 +69,7 @@ MeshInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   Buffer::Iterator i = start;
   uint8_t id = i.ReadU8 ();
   uint8_t length = i.ReadU8 ();
+  i.Prev (2);
   Ptr<WifiInformationElement> newElement;
   switch (id)
     {
@@ -103,17 +104,13 @@ MeshInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
       newElement = Create<dot11s::IePeeringProtocol> ();
       break;
     default:
-      // We peeked at the ID and length, so we need to back up the
-      // pointer before deferring to our parent.
-      i.Prev (2);
       return WifiInformationElementVector::DeserializeSingleIe (i);
     }
   if (GetSize () + length > m_maxSize)
     {
       NS_FATAL_ERROR ("Check max size for information element!");
     }
-  newElement->DeserializeInformationField (i, length);
-  i.Next (length);
+  i = newElement->Deserialize (i);
   m_elements.push_back (newElement);
   return i.GetDistanceFrom (start);
 }

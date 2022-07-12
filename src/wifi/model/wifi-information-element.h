@@ -292,25 +292,6 @@ public:
    * \return the length of serialized information
    */
   virtual uint8_t GetInformationFieldSize () const = 0;
-  /**
-   * Serialize information (i.e., the body of the IE, not including
-   * the Element ID and length octets)
-   *
-   * \param start an iterator which points to where the information should
-   *        be written.
-   */
-  virtual void SerializeInformationField (Buffer::Iterator start) const = 0;
-  /**
-   * Deserialize information (i.e., the body of the IE, not including
-   * the Element ID and length octets)
-   *
-   * \param start an iterator which points to where the information should be written.
-   * \param length
-   *
-   * \return the number of bytes read
-   */
-  virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                               uint8_t length) = 0;
 
   /**
    * Get the wifi information element ID extension
@@ -336,6 +317,26 @@ public:
    */
   virtual bool operator== (WifiInformationElement const & a) const;
 
+private:
+  /**
+   * Serialize information (i.e., the body of the IE, not including
+   * the Element ID and length octets)
+   *
+   * \param start an iterator which points to where the information should
+   *        be written.
+   */
+  virtual void SerializeInformationField (Buffer::Iterator start) const = 0;
+  /**
+   * Deserialize information (i.e., the body of the IE, not including
+   * the Element ID and length octets)
+   *
+   * \param start an iterator which points to where the information should be written.
+   * \param length
+   *
+   * \return the number of bytes read
+   */
+  virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
+                                               uint8_t length) = 0;
 };
 
 } //namespace ns3
