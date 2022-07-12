@@ -83,8 +83,7 @@ HtCapabilities::HtCapabilities ()
     m_antennaIndicesFeedbackCapable (0),
     m_rxASelCapable (0),
     m_txSoundingPpdusCapable (0),
-    m_reservedASel (0),
-    m_htSupported (0)
+    m_reservedASel (0)
 {
   for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
     {
@@ -96,12 +95,6 @@ WifiInformationElementId
 HtCapabilities::ElementId () const
 {
   return IE_HT_CAPABILITIES;
-}
-
-void
-HtCapabilities::SetHtSupported (uint8_t htSupported)
-{
-  m_htSupported = htSupported;
 }
 
 void
@@ -255,29 +248,7 @@ HtCapabilities::GetRxHighestSupportedAntennas (void) const
 uint8_t
 HtCapabilities::GetInformationFieldSize () const
 {
-  //we should not be here if HT is not supported
-  NS_ASSERT (m_htSupported > 0);
   return 26;
-}
-
-Buffer::Iterator
-HtCapabilities::Serialize (Buffer::Iterator i) const
-{
-  if (m_htSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-HtCapabilities::GetSerializedSize () const
-{
-  if (m_htSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
 }
 
 uint16_t
@@ -503,17 +474,14 @@ HtCapabilities::SetAntennaSelectionCapabilities (uint8_t ctrl)
 void
 HtCapabilities::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_htSupported == 1)
-    {
-      //write the corresponding value for each bit
-      start.WriteHtolsbU16 (GetHtCapabilitiesInfo ());
-      start.WriteU8 (GetAmpduParameters ());
-      start.WriteHtolsbU64 (GetSupportedMcsSet1 ());
-      start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
-      start.WriteU16 (GetExtendedHtCapabilities ());
-      start.WriteU32 (GetTxBfCapabilities ());
-      start.WriteU8 (GetAntennaSelectionCapabilities ());
-    }
+  //write the corresponding value for each bit
+  start.WriteHtolsbU16 (GetHtCapabilitiesInfo ());
+  start.WriteU8 (GetAmpduParameters ());
+  start.WriteHtolsbU64 (GetSupportedMcsSet1 ());
+  start.WriteHtolsbU64 (GetSupportedMcsSet2 ());
+  start.WriteU16 (GetExtendedHtCapabilities ());
+  start.WriteU32 (GetTxBfCapabilities ());
+  start.WriteU8 (GetAntennaSelectionCapabilities ());
 }
 
 uint8_t

@@ -161,11 +161,11 @@ public:
    */
   const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
-   * Return the HT capabilities.
+   * Return the HT capabilities, if present.
    *
-   * \return HT capabilities
+   * \return HT capabilities, if present
    */
-  const HtCapabilities& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
    * Return the VHT capabilities.
    *
@@ -229,7 +229,7 @@ private:
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
-  HtCapabilities m_htCapability;      //!< HT capabilities
+  std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
@@ -354,11 +354,11 @@ public:
    */
   const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
-   * Return the HT capabilities.
+   * Return the HT capabilities, if present.
    *
-   * \return HT capabilities
+   * \return HT capabilities, if present
    */
-  const HtCapabilities& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
    * Return the VHT capabilities.
    *
@@ -428,7 +428,7 @@ private:
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
   ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
-  HtCapabilities m_htCapability;      //!< HT capabilities
+  std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
@@ -472,11 +472,11 @@ public:
    */
   const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
-   * Return the HT capabilities.
+   * Return the HT capabilities, if present.
    *
-   * \return HT capabilities
+   * \return HT capabilities, if present
    */
-  const HtCapabilities& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
    * Return the HT operation.
    *
@@ -714,7 +714,7 @@ private:
   StatusCode m_code; //!< Status code
   uint16_t m_aid; //!< AID
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
-  HtCapabilities m_htCapability; //!< HT capabilities
+  std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   HtOperation m_htOperation; //!< HT operation
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
   VhtOperation m_vhtOperation; //!< VHT operation
@@ -829,11 +829,11 @@ public:
   const ExtendedCapabilities& GetExtendedCapabilities (void) const;
 
   /**
-   * Return the HT capabilities.
+   * Return the HT capabilities, if present.
    *
-   * \return HT capabilities
+   * \return HT capabilities, if present
    */
-  const HtCapabilities& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
 
   /**
    * Return the VHT capabilities.
@@ -872,7 +872,7 @@ private:
   Ssid m_ssid;                     //!< Service Set ID (SSID)
   SupportedRates m_rates;          //!< List of supported rates
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
-  HtCapabilities m_htCapability;   //!< HT capabilities
+  std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
   HeCapabilities m_heCapability;   //!< HE capabilities
   EhtCapabilities m_ehtCapability; //!< EHT capabilities
@@ -926,11 +926,11 @@ public:
    */
   const ExtendedCapabilities& GetExtendedCapabilities (void) const;
   /**
-   * Return the HT capabilities.
+   * Return the HT capabilities, if present.
    *
-   * \return HT capabilities
+   * \return HT capabilities, if present
    */
-  const HtCapabilities& GetHtCapabilities (void) const;
+  const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
    * Return the HT operation.
    *
@@ -1196,7 +1196,7 @@ private:
   CapabilityInformation m_capability;  //!< Capability information
   DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
-  HtCapabilities m_htCapability;       //!< HT capabilities
+  std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   HtOperation m_htOperation;           //!< HT operation
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities
   VhtOperation m_vhtOperation;         //!< VHT operation

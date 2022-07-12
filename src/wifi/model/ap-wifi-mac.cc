@@ -1430,13 +1430,13 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
       if (GetHtSupported ())
         {
           //check whether the HT STA supports all MCSs in Basic MCS Set
-          const HtCapabilities& htCapabilities = frame.GetHtCapabilities ();
-          if (htCapabilities.IsSupportedMcs (0))
+          const auto& htCapabilities = frame.GetHtCapabilities ();
+          if (htCapabilities.has_value () && htCapabilities->IsSupportedMcs (0))
             {
               for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
                 {
                   WifiMode mcs = remoteStationManager->GetBasicMcs (i);
-                  if (!htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+                  if (!htCapabilities->IsSupportedMcs (mcs.GetMcsValue ()))
                     {
                       return failure ("HT STA does not support all MCSs in Basic MCS Set");
                     }
@@ -1499,10 +1499,10 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
         }
       if (GetHtSupported ())
         {
-          const HtCapabilities& htCapabilities = frame.GetHtCapabilities ();
-          if (htCapabilities.IsSupportedMcs (0))
+          const auto& htCapabilities = frame.GetHtCapabilities ();
+          if (htCapabilities.has_value () && htCapabilities->IsSupportedMcs (0))
             {
-              remoteStationManager->AddStationHtCapabilities (from, htCapabilities);
+              remoteStationManager->AddStationHtCapabilities (from, *htCapabilities);
             }
           // const ExtendedCapabilities& extendedCapabilities = frame.GetExtendedCapabilities ();
           //TODO: to be completed

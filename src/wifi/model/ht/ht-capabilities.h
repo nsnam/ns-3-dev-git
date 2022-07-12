@@ -49,19 +49,6 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const override;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length) override;
-  /* This information element is a bit special in that it is only
-     included if the STA is an HT STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
-  /**
-   * Set the HT supported field.
-   *
-   * \param htSupported the HT supported field
-   */
-  void SetHtSupported (uint8_t htSupported);
 
   /**
    * Set the HT Capabilities Info field in the HT Capabilities information element.
@@ -344,9 +331,6 @@ private:
   uint8_t m_rxASelCapable;                            ///< receive antenna selection capable
   uint8_t m_txSoundingPpdusCapable;                   ///< sounding PPDUS capable
   uint8_t m_reservedASel;                             ///< reserved ASEL
-
-  /// This is used to decide whether this element should be added to the frame or not
-  uint8_t m_htSupported;
 };
 
 /**
