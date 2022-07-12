@@ -23,7 +23,6 @@
 namespace ns3 {
 
 EhtCapabilities::EhtCapabilities ()
-  : m_ehtSupported (0)
 {
 }
 
@@ -39,47 +38,16 @@ EhtCapabilities::ElementIdExt () const
   return IE_EXT_EHT_CAPABILITIES;
 }
 
-void
-EhtCapabilities::SetEhtSupported (uint8_t ehtSupported)
-{
-  m_ehtSupported = ehtSupported;
-}
-
 uint8_t
 EhtCapabilities::GetInformationFieldSize () const
 {
-  //we should not be here if EHT is not supported
-  NS_ASSERT (m_ehtSupported > 0);
-  return 0; //FIXME
-}
-
-Buffer::Iterator
-EhtCapabilities::Serialize (Buffer::Iterator i) const
-{
-  if (m_ehtSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-EhtCapabilities::GetSerializedSize () const
-{
-  if (m_ehtSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
+  return 1; //FIXME
 }
 
 void
 EhtCapabilities::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_ehtSupported == 1)
-    {
-      //TODO
-    }
+  //TODO
 }
 
 uint8_t

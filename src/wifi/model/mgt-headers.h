@@ -179,11 +179,11 @@ public:
    */
   const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
-   * Return the EHT capabilities.
+   * Return the EHT capabilities, if present.
    *
-   * \return EHT capabilities
+   * \return EHT capabilities, if present
    */
-  const EhtCapabilities& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -233,7 +233,7 @@ private:
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
-  EhtCapabilities m_ehtCapability;    //!< EHT capabilities
+  std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
@@ -372,11 +372,11 @@ public:
    */
   const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
-   * Return the EHT capabilities.
+   * Return the EHT capabilities, if present.
    *
-   * \return EHT capabilities
+   * \return EHT capabilities, if present
    */
-  const EhtCapabilities& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -432,7 +432,7 @@ private:
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
-  EhtCapabilities m_ehtCapability;    //!< EHT capabilities
+  std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
@@ -508,11 +508,11 @@ public:
    */
   const HeOperation& GetHeOperation (void) const;
   /**
-   * Return the EHT capabilities.
+   * Return the EHT capabilities, if present.
    *
-   * \return EHT capabilities
+   * \return EHT capabilities, if present
    */
-  const EhtCapabilities& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
    * Return the Multi-Link Element information element, if present, or a null
    * pointer, otherwise.
@@ -723,7 +723,7 @@ private:
   std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
   HeOperation m_heOperation; //!< HE operation
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
-  EhtCapabilities m_ehtCapability; //!< EHT capabilities
+  std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
@@ -850,11 +850,11 @@ public:
   const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
 
   /**
-   * Return the EHT capabilities.
+   * Return the EHT capabilities, if present.
    *
-   * \return EHT capabilities
+   * \return EHT capabilities, if present
    */
-  const EhtCapabilities& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
 
   /**
    * Register this type.
@@ -875,7 +875,7 @@ private:
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
-  EhtCapabilities m_ehtCapability; //!< EHT capabilities
+  std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
 };
 
 
@@ -962,11 +962,11 @@ public:
    */
   const HeOperation& GetHeOperation (void) const;
   /**
-   * Return the EHT capabilities.
+   * Return the EHT capabilities, if present.
    *
-   * \return EHT capabilities
+   * \return EHT capabilities, if present
    */
-  const EhtCapabilities& GetEhtCapabilities (void) const;
+  const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
    * Return the ERP information.
    *
@@ -1205,7 +1205,7 @@ private:
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
-  EhtCapabilities m_ehtCapability;     //!< EHT capabilities
+  std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };

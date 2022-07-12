@@ -1518,11 +1518,9 @@ EhtCapabilities
 WifiMac::GetEhtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetEhtSupported ());
   EhtCapabilities capabilities;
-  if (GetEhtSupported ())
-    {
-      //TODO: fill in EHT capabilities
-    }
+  // TODO: fill in EHT capabilities
   return capabilities;
 }
 

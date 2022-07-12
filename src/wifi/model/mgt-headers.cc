@@ -150,7 +150,7 @@ MgtProbeRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
   m_ehtCapability = std::move (ehtCapabilities);
 }
 
-const EhtCapabilities&
+const std::optional<EhtCapabilities>&
 MgtProbeRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -173,7 +173,7 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  size += m_ehtCapability.GetSerializedSize ();
+  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   return size;
 }
 
@@ -203,7 +203,7 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  os << "EHT Capabilities=" << m_ehtCapability;
+  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
 }
 
 void
@@ -217,7 +217,7 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  i = m_ehtCapability.Serialize (i);
+  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
 }
 
 uint32_t
@@ -231,7 +231,7 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
-  i = m_ehtCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   return i.GetDistanceFrom (start);
 }
 
@@ -430,7 +430,7 @@ MgtProbeResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
   m_ehtCapability = std::move (ehtCapabilities);
 }
 
-const EhtCapabilities&
+const std::optional<EhtCapabilities>&
 MgtProbeResponseHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -600,7 +600,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   size += m_heOperation.GetSerializedSize ();
   size += m_muEdcaParameterSet.GetSerializedSize ();
-  size += m_ehtCapability.GetSerializedSize ();
+  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_reducedNeighborReport != nullptr) size += m_reducedNeighborReport->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
@@ -618,8 +618,8 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   os << "VHT Operation=" << m_vhtOperation << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  os << "HE Operation=" << m_heOperation << " , "
-     << "EHT Capabilities=" << m_ehtCapability;
+  os << "HE Operation=" << m_heOperation << " , ";
+  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
 }
 
 void
@@ -643,7 +643,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   i = m_heOperation.Serialize (i);
   i = m_muEdcaParameterSet.Serialize (i);
-  i = m_ehtCapability.Serialize (i);
+  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_reducedNeighborReport != nullptr) i = m_reducedNeighborReport->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
@@ -670,7 +670,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = m_heOperation.DeserializeIfPresent (i);
   i = m_muEdcaParameterSet.DeserializeIfPresent (i);
-  i = m_ehtCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   i = (m_reducedNeighborReport = Create<ReducedNeighborReport> ())->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_reducedNeighborReport = nullptr;
   i = (m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_BEACON))->DeserializeIfPresent (tmp = i);
@@ -846,7 +846,7 @@ MgtAssocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
   m_ehtCapability = std::move (ehtCapabilities);
 }
 
-const EhtCapabilities&
+const std::optional<EhtCapabilities>&
 MgtAssocRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -912,7 +912,7 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  size += m_ehtCapability.GetSerializedSize ();
+  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
@@ -926,7 +926,7 @@ MgtAssocRequestHeader::Print (std::ostream &os) const
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  os << "EHT Capabilities=" << m_ehtCapability;
+  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
 }
 
 void
@@ -942,7 +942,7 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  i = m_ehtCapability.Serialize (i);
+  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
@@ -959,7 +959,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
-  i = m_ehtCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_REQUEST);
   i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
@@ -1114,7 +1114,7 @@ MgtReassocRequestHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
   m_ehtCapability = std::move (ehtCapabilities);
 }
 
-const EhtCapabilities&
+const std::optional<EhtCapabilities>&
 MgtReassocRequestHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -1187,7 +1187,7 @@ MgtReassocRequestHeader::GetSerializedSize (void) const
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  size += m_ehtCapability.GetSerializedSize ();
+  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
@@ -1202,7 +1202,7 @@ MgtReassocRequestHeader::Print (std::ostream &os) const
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  os << "EHT Capabilities=" << m_ehtCapability;
+  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
 }
 
 void
@@ -1219,7 +1219,7 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  i = m_ehtCapability.Serialize (i);
+  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
@@ -1237,7 +1237,7 @@ MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
-  i = m_ehtCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_REASSOCIATION_REQUEST);
   i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
@@ -1446,7 +1446,7 @@ MgtAssocResponseHeader::SetEhtCapabilities (EhtCapabilities&& ehtCapabilities)
   m_ehtCapability = std::move (ehtCapabilities);
 }
 
-const EhtCapabilities&
+const std::optional<EhtCapabilities>&
 MgtAssocResponseHeader::GetEhtCapabilities (void) const
 {
   return m_ehtCapability;
@@ -1566,7 +1566,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   size += m_heOperation.GetSerializedSize ();
   size += m_muEdcaParameterSet.GetSerializedSize ();
-  size += m_ehtCapability.GetSerializedSize ();
+  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
@@ -1584,8 +1584,8 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   os << "VHT Operation=" << m_vhtOperation << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  os << "HE Operation=" << m_heOperation << " , "
-     << "EHT Capabilities=" << m_ehtCapability;
+  os << "HE Operation=" << m_heOperation << " , ";
+  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
 }
 
 void
@@ -1607,7 +1607,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   i = m_heOperation.Serialize (i);
   i = m_muEdcaParameterSet.Serialize (i);
-  i = m_ehtCapability.Serialize (i);
+  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
@@ -1630,7 +1630,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = m_heOperation.DeserializeIfPresent (i);
   i = m_muEdcaParameterSet.DeserializeIfPresent (i);
-  i = m_ehtCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
   i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;

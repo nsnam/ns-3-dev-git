@@ -34,12 +34,6 @@ class EhtCapabilities : public WifiInformationElement
 {
 public:
   EhtCapabilities ();
-  /**
-   * Set EHT supported
-   * \param ehtSupported the EHT supported indicator
-   */
-  void SetEhtSupported (uint8_t ehtSupported);
-
   // Implementations of pure virtual methods, or overridden from base class.
   WifiInformationElementId ElementId () const;
   WifiInformationElementId ElementIdExt () const;
@@ -47,21 +41,8 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const;
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
 
-  /*
-   * This information element is a bit special in that it is only
-   * included if the STA is an EHT STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  uint16_t GetSerializedSize () const;
-
-
 private:
   //TODO: add fields
-
-  /// This is used to decide if this element should be added to the frame or not
-  uint8_t m_ehtSupported;
 };
 
 /**

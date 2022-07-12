@@ -1179,9 +1179,9 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
 
       if (!GetEhtSupported ()) return;
       /* EHT station */
-      const EhtCapabilities& ehtCapabilities = frame.GetEhtCapabilities ();
+      const auto& ehtCapabilities = frame.GetEhtCapabilities ();
       //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
-      GetWifiRemoteStationManager (linkId)->AddStationEhtCapabilities (apAddr, ehtCapabilities);
+      GetWifiRemoteStationManager (linkId)->AddStationEhtCapabilities (apAddr, *ehtCapabilities);
     };
 
   // process Information Elements included in the current frame variant
