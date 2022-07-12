@@ -41,23 +41,6 @@ public:
   uint8_t GetInformationFieldSize () const override;
   void SerializeInformationField (Buffer::Iterator start) const override;
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
-  /* This information element is a bit special in that it is only
-     included if the STA is a QoS STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
-  /**
-   * Set QOS supported function
-   * \param qosSupported the QOS supported indicator
-   */
-  void SetQosSupported (uint8_t qosSupported);
-  /**
-   * Is QOS supported function
-   * \returns the is QOS supported indicator
-   */
-  uint8_t IsQosSupported (void) const;
 
   /**
    * Set the QoS Info field in the EdcaParameterSet information element.
@@ -297,9 +280,6 @@ private:
   uint32_t m_acBK;    ///< AC_BK
   uint32_t m_acVI;    ///< AC_VI
   uint32_t m_acVO;    ///< AC_VO
-
-  /// This is used to decide whether this element should be added to the frame or not
-  bool m_qosSupported;
 };
 
 } //namespace ns3

@@ -29,8 +29,7 @@ EdcaParameterSet::EdcaParameterSet ()
     m_acBE (0),
     m_acBK (0),
     m_acVI (0),
-    m_acVO (0),
-    m_qosSupported (0)
+    m_acVO (0)
 {
 }
 
@@ -38,18 +37,6 @@ WifiInformationElementId
 EdcaParameterSet::ElementId () const
 {
   return IE_EDCA_PARAMETER_SET;
-}
-
-void
-EdcaParameterSet::SetQosSupported (uint8_t qosSupported)
-{
-  m_qosSupported = qosSupported;
-}
-
-uint8_t
-EdcaParameterSet::IsQosSupported (void) const
-{
-  return ((m_acBE != 0) || (m_acBK != 0) || (m_acVI != 0) || (m_acVO != 0));
 }
 
 void
@@ -299,42 +286,18 @@ EdcaParameterSet::GetVoTxopLimit (void) const
 uint8_t
 EdcaParameterSet::GetInformationFieldSize () const
 {
-  NS_ASSERT (m_qosSupported);
   return 18;
-}
-
-Buffer::Iterator
-EdcaParameterSet::Serialize (Buffer::Iterator i) const
-{
-  if (!m_qosSupported)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-EdcaParameterSet::GetSerializedSize () const
-{
-  if (!m_qosSupported)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
 }
 
 void
 EdcaParameterSet::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_qosSupported)
-    {
-      start.WriteU8 (GetQosInfo ());
-      start.WriteU8 (m_reserved);
-      start.WriteU32 (m_acBE);
-      start.WriteU32 (m_acBK);
-      start.WriteU32 (m_acVI);
-      start.WriteU32 (m_acVO);
-    }
+  start.WriteU8 (GetQosInfo ());
+  start.WriteU8 (m_reserved);
+  start.WriteU32 (m_acBE);
+  start.WriteU32 (m_acBK);
+  start.WriteU32 (m_acVI);
+  start.WriteU32 (m_acVO);
 }
 
 uint8_t

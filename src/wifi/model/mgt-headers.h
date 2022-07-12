@@ -534,11 +534,11 @@ public:
    */
   const std::optional<ErpInformation>& GetErpInformation (void) const;
   /**
-   * Return the EDCA Parameter Set.
+   * Return the EDCA Parameter Set, if present.
    *
-   * \return the EDCA Parameter Set
+   * \return the EDCA Parameter Set, if present
    */
-  const EdcaParameterSet& GetEdcaParameterSet (void) const;
+  const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
   /**
    * Return the MU EDCA Parameter Set.
    *
@@ -719,7 +719,7 @@ private:
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   std::optional<VhtOperation> m_vhtOperation;     //!< VHT operation
   std::optional<ErpInformation> m_erpInformation; //!< ERP information
-  EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
+  std::optional<EdcaParameterSet> m_edcaParameterSet; //!< EDCA Parameter Set
   std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
   std::optional<HeOperation> m_heOperation;     //!< HE operation
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
@@ -974,11 +974,11 @@ public:
    */
   const std::optional<ErpInformation>& GetErpInformation (void) const;
   /**
-   * Return the EDCA Parameter Set.
+   * Return the EDCA Parameter Set, if present.
    *
-   * \return the EDCA Parameter Set
+   * \return the EDCA Parameter Set, if present
    */
-  const EdcaParameterSet& GetEdcaParameterSet (void) const;
+  const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
   /**
    * Return the MU EDCA Parameter Set.
    *
@@ -1203,7 +1203,7 @@ private:
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   std::optional<HeOperation> m_heOperation;       //!< HE operation
   std::optional<ErpInformation> m_erpInformation; //!< ERP information
-  EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
+  std::optional<EdcaParameterSet> m_edcaParameterSet; //!< EDCA Parameter Set
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
