@@ -801,27 +801,26 @@ HeOperation
 ApWifiMac::GetHeOperation (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetHeSupported ());
   HeOperation operation;
-  if (GetHeSupported ())
+
+  uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
+  for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
     {
-      operation.SetHeSupported (1);
-      uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
-      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
+      if (GetWifiRemoteStationManager ()->GetHeSupported (sta.second))
         {
-          if (GetWifiRemoteStationManager ()->GetHeSupported (sta.second))
+          if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
             {
-              if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
-                {
-                  maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
-                }
+              maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
             }
         }
-      for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
-        {
-          operation.SetMaxHeMcsPerNss (nss, 11); //TBD: hardcode to 11 for now since we assume all MCS values are supported
-        }
-      operation.SetBssColor (GetHeConfiguration ()->GetBssColor ());
     }
+  for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
+    {
+      operation.SetMaxHeMcsPerNss (nss, 11); //TBD: hardcode to 11 for now since we assume all MCS values are supported
+    }
+  operation.SetBssColor (GetHeConfiguration ()->GetBssColor ());
+
   return operation;
 }
 

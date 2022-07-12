@@ -1153,7 +1153,6 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
       if (heCapabilities.has_value () && heCapabilities->GetSupportedMcsAndNss () != 0)
         {
           GetWifiRemoteStationManager (linkId)->AddStationHeCapabilities (apAddr, *heCapabilities);
-          HeOperation heOperation = frame.GetHeOperation ();
           for (const auto & mcs : GetWifiPhy (linkId)->GetMcsList (WIFI_MOD_CLASS_HE))
             {
               if (heCapabilities->IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -1161,7 +1160,10 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
                   GetWifiRemoteStationManager (linkId)->AddSupportedMcs (apAddr, mcs);
                 }
             }
-          GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
+          if (const auto& heOperation = frame.GetHeOperation (); heOperation.has_value ())
+            {
+              GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation->GetBssColor ()));
+            }
         }
 
       const MuEdcaParameterSet& muEdcaParameters = frame.GetMuEdcaParameterSet ();

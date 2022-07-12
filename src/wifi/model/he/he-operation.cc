@@ -32,8 +32,7 @@ HeOperation::HeOperation ()
     m_txBssidIndicator (0),
     m_bssColorDisabled (0),
     m_dualBeacon (0),
-    m_basicHeMcsAndNssSet (0),
-    m_heSupported (0)
+    m_basicHeMcsAndNssSet (0)
 {
 }
 
@@ -49,17 +48,9 @@ HeOperation::ElementIdExt () const
   return IE_EXT_HE_OPERATION;
 }
 
-void
-HeOperation::SetHeSupported (uint8_t heSupported)
-{
-  m_heSupported = heSupported;
-}
-
 uint8_t
 HeOperation::GetInformationFieldSize () const
 {
-  //we should not be here if he is not supported
-  NS_ASSERT (m_heSupported > 0);
   return 7;
 }
 
@@ -133,36 +124,13 @@ HeOperation::GetBssColor (void) const
   return m_bssColor;
 }
 
-Buffer::Iterator
-HeOperation::Serialize (Buffer::Iterator i) const
-{
-  if (m_heSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-HeOperation::GetSerializedSize () const
-{
-  if (m_heSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
-}
-
 void
 HeOperation::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_heSupported == 1)
-    {
-      //write the corresponding value for each bit
-      start.WriteHtolsbU32 (GetHeOperationParameters ());
-      start.WriteU16 (GetBasicHeMcsAndNssSet ());
-      //todo: VHT Operation Information (variable)
-    }
+  //write the corresponding value for each bit
+  start.WriteHtolsbU32 (GetHeOperationParameters ());
+  start.WriteU16 (GetBasicHeMcsAndNssSet ());
+  //todo: VHT Operation Information (variable)
 }
 
 uint8_t
