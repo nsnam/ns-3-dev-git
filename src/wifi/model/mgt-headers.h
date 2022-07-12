@@ -478,11 +478,11 @@ public:
    */
   const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
-   * Return the HT operation.
+   * Return the HT operation, if present.
    *
-   * \return HT operation
+   * \return HT operation, if present
    */
-  const HtOperation& GetHtOperation (void) const;
+  const std::optional<HtOperation>& GetHtOperation (void) const;
   /**
    * Return the VHT capabilities, if present.
    *
@@ -715,7 +715,7 @@ private:
   uint16_t m_aid; //!< AID
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
-  HtOperation m_htOperation; //!< HT operation
+  std::optional<HtOperation> m_htOperation;       //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   VhtOperation m_vhtOperation; //!< VHT operation
   ErpInformation m_erpInformation; //!< ERP information
@@ -932,11 +932,11 @@ public:
    */
   const std::optional<HtCapabilities>& GetHtCapabilities (void) const;
   /**
-   * Return the HT operation.
+   * Return the HT operation, if present.
    *
-   * \return HT operation
+   * \return HT operation, if present
    */
-  const HtOperation& GetHtOperation (void) const;
+  const std::optional<HtOperation>& GetHtOperation (void) const;
   /**
    * Return the VHT capabilities, if present.
    *
@@ -1197,7 +1197,7 @@ private:
   DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
-  HtOperation m_htOperation;           //!< HT operation
+  std::optional<HtOperation> m_htOperation;       //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   VhtOperation m_vhtOperation;         //!< VHT operation
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities

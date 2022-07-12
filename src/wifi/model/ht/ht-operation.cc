@@ -48,8 +48,7 @@ HtOperation::HtOperation ()
     m_txRxMcsSetUnequal (0),
     m_txMaxNSpatialStreams (0),
     m_txUnequalModulation (0),
-    m_reservedMcsSet3 (0),
-    m_htSupported (0)
+    m_reservedMcsSet3 (0)
 {
   for (uint8_t k = 0; k < MAX_SUPPORTED_MCS; k++)
     {
@@ -63,17 +62,9 @@ HtOperation::ElementId () const
   return IE_HT_OPERATION;
 }
 
-void
-HtOperation::SetHtSupported (uint8_t htSupported)
-{
-  m_htSupported = htSupported;
-}
-
 uint8_t
 HtOperation::GetInformationFieldSize () const
 {
-  //we should not be here if HT is not supported
-  NS_ASSERT (m_htSupported > 0);
   return 22;
 }
 
@@ -309,26 +300,6 @@ HtOperation::GetTxUnequalModulation (void) const
   return m_txUnequalModulation;
 }
 
-Buffer::Iterator
-HtOperation::Serialize (Buffer::Iterator i) const
-{
-  if (m_htSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-HtOperation::GetSerializedSize () const
-{
-  if (m_htSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
-}
-
 uint8_t
 HtOperation::GetInformationSubset1 (void) const
 {
@@ -458,16 +429,13 @@ HtOperation::GetBasicMcsSet2 (void) const
 void
 HtOperation::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_htSupported == 1)
-    {
-      //write the corresponding value for each bit
-      start.WriteU8 (GetPrimaryChannel ());
-      start.WriteU8 (GetInformationSubset1 ());
-      start.WriteU16 (GetInformationSubset2 ());
-      start.WriteU16 (GetInformationSubset3 ());
-      start.WriteHtolsbU64 (GetBasicMcsSet1 ());
-      start.WriteHtolsbU64 (GetBasicMcsSet2 ());
-    }
+  //write the corresponding value for each bit
+  start.WriteU8 (GetPrimaryChannel ());
+  start.WriteU8 (GetInformationSubset1 ());
+  start.WriteU16 (GetInformationSubset2 ());
+  start.WriteU16 (GetInformationSubset3 ());
+  start.WriteHtolsbU64 (GetBasicMcsSet1 ());
+  start.WriteHtolsbU64 (GetBasicMcsSet2 ());
 }
 
 uint8_t

@@ -58,19 +58,6 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const override;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length) override;
-  /* This information element is a bit special in that it is only
-     included if the STA is an HT STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
-  /**
-   * Set the HT Supported.
-   *
-   * \param htSupported the HT Supported flag
-   */
-  void SetHtSupported (uint8_t htSupported);
 
   /**
    * Set the Primary Channel field in the HT Operation information element.
@@ -404,9 +391,6 @@ private:
   uint8_t m_txUnequalModulation;             ///< transmit unequal modulation
   uint32_t m_reservedMcsSet3;                ///< reserved MCS set 3
   uint8_t m_rxMcsBitmask[MAX_SUPPORTED_MCS]; ///< receive MCS bitmask
-
-  /// This is used to decide whether this element should be added to the frame or not
-  uint8_t m_htSupported;
 };
 
 /**

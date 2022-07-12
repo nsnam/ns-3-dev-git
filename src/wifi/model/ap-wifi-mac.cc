@@ -669,88 +669,87 @@ HtOperation
 ApWifiMac::GetHtOperation (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetHtSupported ());
   HtOperation operation;
-  if (GetHtSupported ())
+
+  operation.SetPrimaryChannel (GetWifiPhy ()->GetPrimaryChannelNumber (20));
+  operation.SetRifsMode (false);
+  operation.SetNonGfHtStasPresent (true);
+  if (GetWifiPhy ()->GetChannelWidth () > 20)
     {
-      operation.SetHtSupported (1);
-      operation.SetPrimaryChannel (GetWifiPhy ()->GetPrimaryChannelNumber (20));
-      operation.SetRifsMode (false);
-      operation.SetNonGfHtStasPresent (true);
-      if (GetWifiPhy ()->GetChannelWidth () > 20)
-        {
-          operation.SetSecondaryChannelOffset (1);
-          operation.SetStaChannelWidth (1);
-        }
-      if (m_numNonHtStations == 0)
-        {
-          operation.SetHtProtection (NO_PROTECTION);
-        }
-      else
-        {
-          operation.SetHtProtection (MIXED_MODE_PROTECTION);
-        }
-      uint64_t maxSupportedRate = 0; //in bit/s
-      for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT))
-        {
-          uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
-          NS_ASSERT (nss > 0 && nss < 5);
-          uint64_t dataRate = mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth (), GetHtConfiguration ()->GetShortGuardIntervalSupported () ? 400 : 800, nss);
-          if (dataRate > maxSupportedRate)
-            {
-              maxSupportedRate = dataRate;
-              NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
-            }
-        }
-      uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedTxSpatialStreams ();
-      auto mcsList = GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT);
-      uint8_t nMcs = mcsList.size ();
-      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
-        {
-          if (GetWifiRemoteStationManager ()->GetHtSupported (sta.second))
-            {
-              uint64_t maxSupportedRateByHtSta = 0; //in bit/s
-              auto itMcs = mcsList.begin ();
-              for (uint8_t j = 0; j < (std::min (nMcs, GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second))); j++)
-                {
-                  WifiMode mcs = *itMcs++;
-                  uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
-                  NS_ASSERT (nss > 0 && nss < 5);
-                  uint64_t dataRate = mcs.GetDataRate (GetWifiRemoteStationManager ()->GetChannelWidthSupported (sta.second),
-                                                       GetWifiRemoteStationManager ()->GetShortGuardIntervalSupported (sta.second) ? 400 : 800, nss);
-                  if (dataRate > maxSupportedRateByHtSta)
-                    {
-                      maxSupportedRateByHtSta = dataRate;
-                    }
-                }
-              if (maxSupportedRateByHtSta < maxSupportedRate)
-                {
-                  maxSupportedRate = maxSupportedRateByHtSta;
-                }
-              if (GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second) < nMcs)
-                {
-                  nMcs = GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second);
-                }
-              if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
-                {
-                  maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
-                }
-            }
-        }
-      operation.SetRxHighestSupportedDataRate (static_cast<uint16_t> (maxSupportedRate / 1e6)); //in Mbit/s
-      operation.SetTxMcsSetDefined (nMcs > 0);
-      operation.SetTxMaxNSpatialStreams (maxSpatialStream);
-      //To be filled in once supported
-      operation.SetObssNonHtStasPresent (0);
-      operation.SetDualBeacon (0);
-      operation.SetDualCtsProtection (0);
-      operation.SetStbcBeacon (0);
-      operation.SetLSigTxopProtectionFullSupport (0);
-      operation.SetPcoActive (0);
-      operation.SetPhase (0);
-      operation.SetRxMcsBitmask (0);
-      operation.SetTxRxMcsSetUnequal (0);
-      operation.SetTxUnequalModulation (0);
+      operation.SetSecondaryChannelOffset (1);
+      operation.SetStaChannelWidth (1);
     }
+  if (m_numNonHtStations == 0)
+    {
+      operation.SetHtProtection (NO_PROTECTION);
+    }
+  else
+    {
+      operation.SetHtProtection (MIXED_MODE_PROTECTION);
+    }
+  uint64_t maxSupportedRate = 0; //in bit/s
+  for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT))
+    {
+      uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
+      NS_ASSERT (nss > 0 && nss < 5);
+      uint64_t dataRate = mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth (), GetHtConfiguration ()->GetShortGuardIntervalSupported () ? 400 : 800, nss);
+      if (dataRate > maxSupportedRate)
+        {
+          maxSupportedRate = dataRate;
+          NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
+        }
+    }
+  uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedTxSpatialStreams ();
+  auto mcsList = GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_HT);
+  uint8_t nMcs = mcsList.size ();
+  for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
+    {
+      if (GetWifiRemoteStationManager ()->GetHtSupported (sta.second))
+        {
+          uint64_t maxSupportedRateByHtSta = 0; //in bit/s
+          auto itMcs = mcsList.begin ();
+          for (uint8_t j = 0; j < (std::min (nMcs, GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second))); j++)
+            {
+              WifiMode mcs = *itMcs++;
+              uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
+              NS_ASSERT (nss > 0 && nss < 5);
+              uint64_t dataRate = mcs.GetDataRate (GetWifiRemoteStationManager ()->GetChannelWidthSupported (sta.second),
+                                                    GetWifiRemoteStationManager ()->GetShortGuardIntervalSupported (sta.second) ? 400 : 800, nss);
+              if (dataRate > maxSupportedRateByHtSta)
+                {
+                  maxSupportedRateByHtSta = dataRate;
+                }
+            }
+          if (maxSupportedRateByHtSta < maxSupportedRate)
+            {
+              maxSupportedRate = maxSupportedRateByHtSta;
+            }
+          if (GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second) < nMcs)
+            {
+              nMcs = GetWifiRemoteStationManager ()->GetNMcsSupported (sta.second);
+            }
+          if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
+            {
+              maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
+            }
+        }
+    }
+  operation.SetRxHighestSupportedDataRate (static_cast<uint16_t> (maxSupportedRate / 1e6)); //in Mbit/s
+  operation.SetTxMcsSetDefined (nMcs > 0);
+  operation.SetTxMaxNSpatialStreams (maxSpatialStream);
+  //To be filled in once supported
+  operation.SetObssNonHtStasPresent (0);
+  operation.SetDualBeacon (0);
+  operation.SetDualCtsProtection (0);
+  operation.SetStbcBeacon (0);
+  operation.SetLSigTxopProtectionFullSupport (0);
+  operation.SetPcoActive (0);
+  operation.SetPhase (0);
+  operation.SetRxMcsBitmask (0);
+  operation.SetTxRxMcsSetUnequal (0);
+  operation.SetTxUnequalModulation (0);
+
   return operation;
 }
 
