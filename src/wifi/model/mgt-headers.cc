@@ -78,7 +78,7 @@ MgtProbeRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedC
   m_extendedCapability = std::move (extendedCapabilities);
 }
 
-const ExtendedCapabilities&
+const std::optional<ExtendedCapabilities>&
 MgtProbeRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
@@ -169,7 +169,7 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-  size += m_extendedCapability.GetSerializedSize ();
+  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
@@ -198,8 +198,8 @@ void
 MgtProbeRequestHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
-     << "rates=" << m_rates << ", "
-     << "Extended Capabilities=" << m_extendedCapability << " , ";
+     << "rates=" << m_rates << ", ";
+  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
@@ -213,7 +213,7 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
-  i = m_extendedCapability.Serialize (i);
+  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
@@ -227,7 +227,7 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
-  i = m_extendedCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
@@ -304,7 +304,7 @@ MgtProbeResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extended
   m_extendedCapability = std::move (extendedCapabilities);
 }
 
-const ExtendedCapabilities&
+const std::optional<ExtendedCapabilities>&
 MgtProbeResponseHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
@@ -592,7 +592,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
-  size += m_extendedCapability.GetSerializedSize ();
+  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_htOperation.has_value ()) size += m_htOperation->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
@@ -612,7 +612,7 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", ";
   if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
-  os << "Extended Capabilities=" << m_extendedCapability << " , ";
+  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
@@ -635,7 +635,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
   i = m_rates.extended.Serialize (i);
   if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
-  i = m_extendedCapability.Serialize (i);
+  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_htOperation.has_value ()) i = m_htOperation->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
@@ -662,7 +662,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = WifiInformationElement::DeserializeIfPresent (m_edcaParameterSet, i);
-  i = m_extendedCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
@@ -774,7 +774,7 @@ MgtAssocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extendedC
   m_extendedCapability = std::move (extendedCapabilities);
 }
 
-const ExtendedCapabilities&
+const std::optional<ExtendedCapabilities>&
 MgtAssocRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
@@ -908,7 +908,7 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-  size += m_extendedCapability.GetSerializedSize ();
+  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
@@ -921,8 +921,8 @@ void
 MgtAssocRequestHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
-     << "rates=" << m_rates << ", "
-     << "Extended Capabilities=" << m_extendedCapability << " , ";
+     << "rates=" << m_rates << ", ";
+  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
@@ -938,7 +938,7 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
-  i = m_extendedCapability.Serialize (i);
+  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
@@ -955,7 +955,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
-  i = m_extendedCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
@@ -1042,7 +1042,7 @@ MgtReassocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities&& extende
   m_extendedCapability = std::move (extendedCapabilities);
 }
 
-const ExtendedCapabilities&
+const std::optional<ExtendedCapabilities>&
 MgtReassocRequestHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
@@ -1183,7 +1183,7 @@ MgtReassocRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
-  size += m_extendedCapability.GetSerializedSize ();
+  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
@@ -1197,8 +1197,8 @@ MgtReassocRequestHeader::Print (std::ostream &os) const
 {
   os << "current AP address=" << m_currentApAddr << ", "
      << "ssid=" << m_ssid << ", "
-     << "rates=" << m_rates << ", "
-     << "Extended Capabilities=" << m_extendedCapability << " , ";
+     << "rates=" << m_rates << ", ";
+  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
   if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
@@ -1215,7 +1215,7 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
-  i = m_extendedCapability.Serialize (i);
+  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
@@ -1233,7 +1233,7 @@ MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
-  i = m_extendedCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
@@ -1320,7 +1320,7 @@ MgtAssocResponseHeader::SetExtendedCapabilities (ExtendedCapabilities&& extended
   m_extendedCapability = std::move (extendedCapabilities);
 }
 
-const ExtendedCapabilities&
+const std::optional<ExtendedCapabilities>&
 MgtAssocResponseHeader::GetExtendedCapabilities (void) const
 {
   return m_extendedCapability;
@@ -1558,7 +1558,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
-  size += m_extendedCapability.GetSerializedSize ();
+  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_htOperation.has_value ()) size += m_htOperation->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
@@ -1578,7 +1578,7 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
      << "aid=" << m_aid << ", "
      << "rates=" << m_rates << ", ";
   if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
-  os << "Extended Capabilities=" << m_extendedCapability << " , ";
+  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
@@ -1599,7 +1599,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
   i = m_rates.extended.Serialize (i);
   if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
-  i = m_extendedCapability.Serialize (i);
+  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_htOperation.has_value ()) i = m_htOperation->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
@@ -1622,7 +1622,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = WifiInformationElement::DeserializeIfPresent (m_edcaParameterSet, i);
-  i = m_extendedCapability.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);

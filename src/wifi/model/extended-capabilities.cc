@@ -115,26 +115,6 @@ ExtendedCapabilities::GetInformationFieldSize () const
   return 8;
 }
 
-Buffer::Iterator
-ExtendedCapabilities::Serialize (Buffer::Iterator i) const
-{
-  if (m_htSupported < 1 && m_vhtSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-ExtendedCapabilities::GetSerializedSize () const
-{
-  if (m_htSupported < 1 && m_vhtSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
-}
-
 void
 ExtendedCapabilities::SetExtendedCapabilitiesByte1 (uint8_t ctrl)
 {

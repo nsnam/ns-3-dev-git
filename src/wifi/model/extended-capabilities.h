@@ -42,13 +42,6 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const override;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length) override;
-  /* This information element is a bit special in that it is only
-     included if the STA is a HT STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
   /**
    * Set the HT Supported flag.
    *
