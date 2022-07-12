@@ -1149,14 +1149,14 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
 
       if (!GetHeSupported ()) return;
       /* HE station */
-      const HeCapabilities& heCapabilities = frame.GetHeCapabilities ();
-      if (heCapabilities.GetSupportedMcsAndNss () != 0)
+      const auto& heCapabilities = frame.GetHeCapabilities ();
+      if (heCapabilities.has_value () && heCapabilities->GetSupportedMcsAndNss () != 0)
         {
-          GetWifiRemoteStationManager (linkId)->AddStationHeCapabilities (apAddr, heCapabilities);
+          GetWifiRemoteStationManager (linkId)->AddStationHeCapabilities (apAddr, *heCapabilities);
           HeOperation heOperation = frame.GetHeOperation ();
           for (const auto & mcs : GetWifiPhy (linkId)->GetMcsList (WIFI_MOD_CLASS_HE))
             {
-              if (heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+              if (heCapabilities->IsSupportedRxMcs (mcs.GetMcsValue ()))
                 {
                   GetWifiRemoteStationManager (linkId)->AddSupportedMcs (apAddr, mcs);
                 }

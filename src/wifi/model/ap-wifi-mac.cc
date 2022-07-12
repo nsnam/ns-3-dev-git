@@ -1462,13 +1462,13 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
       if (GetHeSupported ())
         {
           //check whether the HE STA supports all MCSs in Basic MCS Set
-          const HeCapabilities& heCapabilities = frame.GetHeCapabilities ();
-          if (heCapabilities.GetSupportedMcsAndNss () != 0)
+          const auto& heCapabilities = frame.GetHeCapabilities ();
+          if (heCapabilities.has_value () && heCapabilities->GetSupportedMcsAndNss () != 0)
             {
               for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
                 {
                   WifiMode mcs = remoteStationManager->GetBasicMcs (i);
-                  if (!heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                  if (!heCapabilities->IsSupportedTxMcs (mcs.GetMcsValue ()))
                     {
                       return failure ("HE STA does not support all MCSs in Basic MCS Set");
                     }
@@ -1526,13 +1526,13 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
         }
       if (GetHeSupported ())
         {
-          const HeCapabilities& heCapabilities = frame.GetHeCapabilities ();
-          if (heCapabilities.GetSupportedMcsAndNss () != 0)
+          const auto& heCapabilities = frame.GetHeCapabilities ();
+          if (heCapabilities.has_value () && heCapabilities->GetSupportedMcsAndNss () != 0)
             {
-              remoteStationManager->AddStationHeCapabilities (from, heCapabilities);
+              remoteStationManager->AddStationHeCapabilities (from, *heCapabilities);
               for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))
                 {
-                  if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                  if (heCapabilities->IsSupportedTxMcs (mcs.GetMcsValue ()))
                     {
                       remoteStationManager->AddSupportedMcs (from, mcs);
                       //here should add a control to add basic MCS when it is implemented

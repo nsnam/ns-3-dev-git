@@ -173,11 +173,11 @@ public:
    */
   const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
   /**
-   * Return the HE capabilities.
+   * Return the HE capabilities, if present.
    *
-   * \return HE capabilities
+   * \return HE capabilities, if present
    */
-  const HeCapabilities& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
    * Return the EHT capabilities.
    *
@@ -231,7 +231,7 @@ private:
   ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
-  HeCapabilities m_heCapability;      //!< HE capabilities
+  std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   EhtCapabilities m_ehtCapability;    //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
@@ -366,11 +366,11 @@ public:
    */
   const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
   /**
-   * Return the HE capabilities.
+   * Return the HE capabilities, if present.
    *
-   * \return HE capabilities
+   * \return HE capabilities, if present
    */
-  const HeCapabilities& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
    * Return the EHT capabilities.
    *
@@ -430,7 +430,7 @@ private:
   ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
-  HeCapabilities m_heCapability;      //!< HE capabilities
+  std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   EhtCapabilities m_ehtCapability;    //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
@@ -496,11 +496,11 @@ public:
    */
   const VhtOperation& GetVhtOperation (void) const;
   /**
-   * Return the HE capabilities.
+   * Return the HE capabilities, if present.
    *
-   * \return HE capabilities
+   * \return HE capabilities, if present
    */
-  const HeCapabilities& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
    * Return the HE operation.
    *
@@ -720,7 +720,7 @@ private:
   VhtOperation m_vhtOperation; //!< VHT operation
   ErpInformation m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
-  HeCapabilities m_heCapability; //!< HE capabilities
+  std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
   HeOperation m_heOperation; //!< HE operation
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   EhtCapabilities m_ehtCapability; //!< EHT capabilities
@@ -843,11 +843,11 @@ public:
   const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
 
   /**
-   * Return the HE capabilities.
+   * Return the HE capabilities, if present.
    *
-   * \return HE capabilities
+   * \return HE capabilities, if present
    */
-  const HeCapabilities& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
 
   /**
    * Return the EHT capabilities.
@@ -874,7 +874,7 @@ private:
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
-  HeCapabilities m_heCapability;   //!< HE capabilities
+  std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   EhtCapabilities m_ehtCapability; //!< EHT capabilities
 };
 
@@ -950,11 +950,11 @@ public:
    */
   const VhtOperation& GetVhtOperation (void) const;
   /**
-   * Return the HE capabilities.
+   * Return the HE capabilities, if present.
    *
-   * \return HE capabilities
+   * \return HE capabilities, if present
    */
-  const HeCapabilities& GetHeCapabilities (void) const;
+  const std::optional<HeCapabilities>& GetHeCapabilities (void) const;
   /**
    * Return the HE operation.
    *
@@ -1200,7 +1200,7 @@ private:
   HtOperation m_htOperation;           //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   VhtOperation m_vhtOperation;         //!< VHT operation
-  HeCapabilities m_heCapability;       //!< HE capabilities
+  std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   HeOperation m_heOperation;           //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set

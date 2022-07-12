@@ -1464,54 +1464,53 @@ HeCapabilities
 WifiMac::GetHeCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetHeSupported ());
   HeCapabilities capabilities;
-  if (GetHeSupported ())
+
+  Ptr<WifiPhy> phy = GetLink (SINGLE_LINK_OP_ID).phy;
+  Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
+  Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
+  uint8_t channelWidthSet = 0;
+  if ((phy->GetChannelWidth () >= 40) && (phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
     {
-      Ptr<WifiPhy> phy = GetLink (SINGLE_LINK_OP_ID).phy;
-      Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
-      Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
-      capabilities.SetHeSupported (1);
-      uint8_t channelWidthSet = 0;
-      if ((phy->GetChannelWidth () >= 40) && (phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
-        {
-          channelWidthSet |= 0x01;
-        }
-      if ((phy->GetChannelWidth () >= 80) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
-        {
-          channelWidthSet |= 0x02;
-        }
-      if ((phy->GetChannelWidth () >= 160) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
-        {
-          channelWidthSet |= 0x04;
-        }
-      capabilities.SetChannelWidthSet (channelWidthSet);
-      capabilities.SetLdpcCodingInPayload (htConfiguration->GetLdpcSupported ());
-      if (heConfiguration->GetGuardInterval () == NanoSeconds (800))
-        {
-          //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
-          //todo: Assuming reception support for both 1x HE LTF and 4x HE LTF 800 ns
-          capabilities.SetHeSuPpdu1xHeLtf800nsGi (true);
-          capabilities.SetHePpdu4xHeLtf800nsGi (true);
-        }
-
-      uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
-                                           m_beMaxAmpduSize, m_bkMaxAmpduSize});
-      // round to the next power of two minus one
-      maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
-      // The maximum A-MPDU length in HE capabilities elements ranges from 2^20-1 to 2^23-1
-      capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
-
-      uint8_t maxMcs = 0;
-      for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))
-        {
-          if (mcs.GetMcsValue () > maxMcs)
-            {
-              maxMcs = mcs.GetMcsValue ();
-            }
-        }
-      capabilities.SetHighestMcsSupported (maxMcs);
-      capabilities.SetHighestNssSupported (phy->GetMaxSupportedTxSpatialStreams ());
+      channelWidthSet |= 0x01;
     }
+  if ((phy->GetChannelWidth () >= 80) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
+    {
+      channelWidthSet |= 0x02;
+    }
+  if ((phy->GetChannelWidth () >= 160) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
+    {
+      channelWidthSet |= 0x04;
+    }
+  capabilities.SetChannelWidthSet (channelWidthSet);
+  capabilities.SetLdpcCodingInPayload (htConfiguration->GetLdpcSupported ());
+  if (heConfiguration->GetGuardInterval () == NanoSeconds (800))
+    {
+      //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
+      //todo: Assuming reception support for both 1x HE LTF and 4x HE LTF 800 ns
+      capabilities.SetHeSuPpdu1xHeLtf800nsGi (true);
+      capabilities.SetHePpdu4xHeLtf800nsGi (true);
+    }
+
+  uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
+                                        m_beMaxAmpduSize, m_bkMaxAmpduSize});
+  // round to the next power of two minus one
+  maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
+  // The maximum A-MPDU length in HE capabilities elements ranges from 2^20-1 to 2^23-1
+  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
+
+  uint8_t maxMcs = 0;
+  for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))
+    {
+      if (mcs.GetMcsValue () > maxMcs)
+        {
+          maxMcs = mcs.GetMcsValue ();
+        }
+    }
+  capabilities.SetHighestMcsSupported (maxMcs);
+  capabilities.SetHighestNssSupported (phy->GetMaxSupportedTxSpatialStreams ());
+
   return capabilities;
 }
 
