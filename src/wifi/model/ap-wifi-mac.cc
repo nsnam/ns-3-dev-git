@@ -1446,13 +1446,13 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
       if (GetVhtSupported ())
         {
           //check whether the VHT STA supports all MCSs in Basic MCS Set
-          const VhtCapabilities& vhtCapabilities = frame.GetVhtCapabilities ();
-          if (vhtCapabilities.GetVhtCapabilitiesInfo () != 0)
+          const auto& vhtCapabilities = frame.GetVhtCapabilities ();
+          if (vhtCapabilities.has_value () && vhtCapabilities->GetVhtCapabilitiesInfo () != 0)
             {
               for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs (); i++)
                 {
                   WifiMode mcs = remoteStationManager->GetBasicMcs (i);
-                  if (!vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                  if (!vhtCapabilities->IsSupportedTxMcs (mcs.GetMcsValue ()))
                     {
                       return failure ("VHT STA does not support all MCSs in Basic MCS Set");
                     }
@@ -1509,14 +1509,14 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
         }
       if (GetVhtSupported ())
         {
-          const VhtCapabilities& vhtCapabilities = frame.GetVhtCapabilities ();
+          const auto& vhtCapabilities = frame.GetVhtCapabilities ();
           //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
-          if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
+          if (vhtCapabilities.has_value () && vhtCapabilities->GetRxHighestSupportedLgiDataRate () > 0)
             {
-              remoteStationManager->AddStationVhtCapabilities (from, vhtCapabilities);
+              remoteStationManager->AddStationVhtCapabilities (from, *vhtCapabilities);
               for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_VHT))
                 {
-                  if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                  if (vhtCapabilities->IsSupportedTxMcs (mcs.GetMcsValue ()))
                     {
                       remoteStationManager->AddSupportedMcs (from, mcs);
                       //here should add a control to add basic MCS when it is implemented

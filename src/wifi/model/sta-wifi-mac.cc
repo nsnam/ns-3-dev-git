@@ -1131,15 +1131,15 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
       // the 2.4 GHz band do not support VHT
       if (GetVhtSupported ())
         {
-          const VhtCapabilities& vhtCapabilities = frame.GetVhtCapabilities ();
+          const auto& vhtCapabilities = frame.GetVhtCapabilities ();
           //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
-          if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
+          if (vhtCapabilities.has_value () && vhtCapabilities->GetRxHighestSupportedLgiDataRate () > 0)
             {
-              GetWifiRemoteStationManager (linkId)->AddStationVhtCapabilities (apAddr, vhtCapabilities);
+              GetWifiRemoteStationManager (linkId)->AddStationVhtCapabilities (apAddr, *vhtCapabilities);
               VhtOperation vhtOperation = frame.GetVhtOperation ();
               for (const auto & mcs : GetWifiPhy (linkId)->GetMcsList (WIFI_MOD_CLASS_VHT))
                 {
-                  if (vhtCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+                  if (vhtCapabilities->IsSupportedRxMcs (mcs.GetMcsValue ()))
                     {
                       GetWifiRemoteStationManager (linkId)->AddSupportedMcs (apAddr, mcs);
                     }

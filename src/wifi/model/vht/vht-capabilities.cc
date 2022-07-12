@@ -44,8 +44,7 @@ VhtCapabilities::VhtCapabilities ()
     m_rxAntennaPatternConsistency (0),
     m_txAntennaPatternConsistency (0),
     m_rxHighestSupportedLongGuardIntervalDataRate (0),
-    m_txHighestSupportedLongGuardIntervalDataRate (0),
-    m_vhtSupported (0)
+    m_txHighestSupportedLongGuardIntervalDataRate (0)
 {
   m_rxMcsMap.resize (8,0);
   m_txMcsMap.resize (8,0);
@@ -62,49 +61,18 @@ VhtCapabilities::ElementId () const
   return IE_VHT_CAPABILITIES;
 }
 
-void
-VhtCapabilities::SetVhtSupported (uint8_t vhtSupported)
-{
-  m_vhtSupported = vhtSupported;
-}
-
 uint8_t
 VhtCapabilities::GetInformationFieldSize () const
 {
-  //we should not be here if VHT is not supported
-  NS_ASSERT (m_vhtSupported > 0);
   return 12;
-}
-
-Buffer::Iterator
-VhtCapabilities::Serialize (Buffer::Iterator i) const
-{
-  if (m_vhtSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-VhtCapabilities::GetSerializedSize () const
-{
-  if (m_vhtSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
 }
 
 void
 VhtCapabilities::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_vhtSupported == 1)
-    {
-      //write the corresponding value for each bit
-      start.WriteHtolsbU32 (GetVhtCapabilitiesInfo ());
-      start.WriteHtolsbU64 (GetSupportedMcsAndNssSet ());
-    }
+  //write the corresponding value for each bit
+  start.WriteHtolsbU32 (GetVhtCapabilitiesInfo ());
+  start.WriteHtolsbU64 (GetSupportedMcsAndNssSet ());
 }
 
 uint8_t

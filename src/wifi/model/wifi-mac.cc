@@ -1387,77 +1387,76 @@ VhtCapabilities
 WifiMac::GetVhtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetVhtSupported ());
   VhtCapabilities capabilities;
-  if (GetVhtSupported ())
-    {
-      Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
-      NS_ABORT_MSG_IF (!htConfiguration->Get40MHzOperationSupported (),
-                       "VHT stations have to support 40 MHz operation");
-      Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration ();
-      bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
-      capabilities.SetVhtSupported (1);
-      capabilities.SetSupportedChannelWidthSet (vhtConfiguration->Get160MHzOperationSupported () ? 1 : 0);
-      // Set Maximum MPDU Length subfield
-      uint16_t maxAmsduSize = std::max ({m_voMaxAmsduSize, m_viMaxAmsduSize,
-                                         m_beMaxAmsduSize, m_bkMaxAmsduSize});
-      if (maxAmsduSize <= 3839)
-        {
-          capabilities.SetMaxMpduLength (3895);
-        }
-      else if (maxAmsduSize <= 7935)
-        {
-          capabilities.SetMaxMpduLength (7991);
-        }
-      else
-        {
-          capabilities.SetMaxMpduLength (11454);
-        }
-      uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
-                                           m_beMaxAmpduSize, m_bkMaxAmpduSize});
-      // round to the next power of two minus one
-      maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
-      // The maximum A-MPDU length in VHT capabilities elements ranges from 2^13-1 to 2^20-1
-      capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191u), 1048575u));
 
-      capabilities.SetRxLdpc (htConfiguration->GetLdpcSupported ());
-      capabilities.SetShortGuardIntervalFor80Mhz ((GetWifiPhy ()->GetChannelWidth () == 80) && sgiSupported);
-      capabilities.SetShortGuardIntervalFor160Mhz ((GetWifiPhy ()->GetChannelWidth () == 160) && sgiSupported);
-      uint8_t maxMcs = 0;
-      for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
-        {
-          if (mcs.GetMcsValue () > maxMcs)
-            {
-              maxMcs = mcs.GetMcsValue ();
-            }
-        }
-      // Support same MaxMCS for each spatial stream
-      for (uint8_t nss = 1; nss <= GetWifiPhy ()->GetMaxSupportedRxSpatialStreams (); nss++)
-        {
-          capabilities.SetRxMcsMap (maxMcs, nss);
-        }
-      for (uint8_t nss = 1; nss <= GetWifiPhy ()->GetMaxSupportedTxSpatialStreams (); nss++)
-        {
-          capabilities.SetTxMcsMap (maxMcs, nss);
-        }
-      uint64_t maxSupportedRateLGI = 0; //in bit/s
-      for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
-        {
-          if (!mcs.IsAllowed (GetWifiPhy ()->GetChannelWidth (), 1))
-            {
-              continue;
-            }
-          if (mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth ()) > maxSupportedRateLGI)
-            {
-              maxSupportedRateLGI = mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth ());
-              NS_LOG_DEBUG ("Updating maxSupportedRateLGI to " << maxSupportedRateLGI);
-            }
-        }
-      capabilities.SetRxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
-      capabilities.SetTxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
-      //To be filled in once supported
-      capabilities.SetRxStbc (0);
-      capabilities.SetTxStbc (0);
+  Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
+  NS_ABORT_MSG_IF (!htConfiguration->Get40MHzOperationSupported (),
+                    "VHT stations have to support 40 MHz operation");
+  Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration ();
+  bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
+  capabilities.SetSupportedChannelWidthSet (vhtConfiguration->Get160MHzOperationSupported () ? 1 : 0);
+  // Set Maximum MPDU Length subfield
+  uint16_t maxAmsduSize = std::max ({m_voMaxAmsduSize, m_viMaxAmsduSize,
+                                      m_beMaxAmsduSize, m_bkMaxAmsduSize});
+  if (maxAmsduSize <= 3839)
+    {
+      capabilities.SetMaxMpduLength (3895);
     }
+  else if (maxAmsduSize <= 7935)
+    {
+      capabilities.SetMaxMpduLength (7991);
+    }
+  else
+    {
+      capabilities.SetMaxMpduLength (11454);
+    }
+  uint32_t maxAmpduLength = std::max ({m_voMaxAmpduSize, m_viMaxAmpduSize,
+                                        m_beMaxAmpduSize, m_bkMaxAmpduSize});
+  // round to the next power of two minus one
+  maxAmpduLength = (1ul << static_cast<uint32_t> (std::ceil (std::log2 (maxAmpduLength + 1)))) - 1;
+  // The maximum A-MPDU length in VHT capabilities elements ranges from 2^13-1 to 2^20-1
+  capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191u), 1048575u));
+
+  capabilities.SetRxLdpc (htConfiguration->GetLdpcSupported ());
+  capabilities.SetShortGuardIntervalFor80Mhz ((GetWifiPhy ()->GetChannelWidth () == 80) && sgiSupported);
+  capabilities.SetShortGuardIntervalFor160Mhz ((GetWifiPhy ()->GetChannelWidth () == 160) && sgiSupported);
+  uint8_t maxMcs = 0;
+  for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
+    {
+      if (mcs.GetMcsValue () > maxMcs)
+        {
+          maxMcs = mcs.GetMcsValue ();
+        }
+    }
+  // Support same MaxMCS for each spatial stream
+  for (uint8_t nss = 1; nss <= GetWifiPhy ()->GetMaxSupportedRxSpatialStreams (); nss++)
+    {
+      capabilities.SetRxMcsMap (maxMcs, nss);
+    }
+  for (uint8_t nss = 1; nss <= GetWifiPhy ()->GetMaxSupportedTxSpatialStreams (); nss++)
+    {
+      capabilities.SetTxMcsMap (maxMcs, nss);
+    }
+  uint64_t maxSupportedRateLGI = 0; //in bit/s
+  for (const auto & mcs : GetWifiPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
+    {
+      if (!mcs.IsAllowed (GetWifiPhy ()->GetChannelWidth (), 1))
+        {
+          continue;
+        }
+      if (mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth ()) > maxSupportedRateLGI)
+        {
+          maxSupportedRateLGI = mcs.GetDataRate (GetWifiPhy ()->GetChannelWidth ());
+          NS_LOG_DEBUG ("Updating maxSupportedRateLGI to " << maxSupportedRateLGI);
+        }
+    }
+  capabilities.SetRxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
+  capabilities.SetTxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
+  //To be filled in once supported
+  capabilities.SetRxStbc (0);
+  capabilities.SetTxStbc (0);
+
   return capabilities;
 }
 
