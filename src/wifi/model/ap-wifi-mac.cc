@@ -463,21 +463,20 @@ ErpInformation
 ApWifiMac::GetErpInformation (uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << +linkId);
+  NS_ASSERT (GetErpSupported (linkId));
   ErpInformation information;
-  information.SetErpSupported (1);
-  if (GetErpSupported (linkId))
+
+  information.SetNonErpPresent (m_numNonErpStations > 0);
+  information.SetUseProtection (GetUseNonErpProtection ());
+  if (m_shortPreambleEnabled)
     {
-      information.SetNonErpPresent (m_numNonErpStations > 0);
-      information.SetUseProtection (GetUseNonErpProtection ());
-      if (m_shortPreambleEnabled)
-        {
-          information.SetBarkerPreambleMode (0);
-        }
-      else
-        {
-          information.SetBarkerPreambleMode (1);
-        }
+      information.SetBarkerPreambleMode (0);
     }
+  else
+    {
+      information.SetBarkerPreambleMode (1);
+    }
+
   return information;
 }
 

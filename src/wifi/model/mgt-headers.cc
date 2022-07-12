@@ -496,7 +496,7 @@ MgtProbeResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
   m_erpInformation = std::move (erpInformation);
 }
 
-const ErpInformation&
+const std::optional<ErpInformation>&
 MgtProbeResponseHeader::GetErpInformation (void) const
 {
   return m_erpInformation;
@@ -589,7 +589,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_dsssParameterSet.GetSerializedSize ();
-  size += m_erpInformation.GetSerializedSize ();
+  if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   size += m_edcaParameterSet.GetSerializedSize ();
   size += m_extendedCapability.GetSerializedSize ();
@@ -610,9 +610,9 @@ void
 MgtProbeResponseHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
-     << "rates=" << m_rates << ", "
-     << "ERP information=" << m_erpInformation << ", "
-     << "Extended Capabilities=" << m_extendedCapability << " , ";
+     << "rates=" << m_rates << ", ";
+  if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
+  os << "Extended Capabilities=" << m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
@@ -632,7 +632,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_dsssParameterSet.Serialize (i);
-  i = m_erpInformation.Serialize (i);
+  if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
   i = m_rates.extended.Serialize (i);
   i = m_edcaParameterSet.Serialize (i);
   i = m_extendedCapability.Serialize (i);
@@ -659,7 +659,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_dsssParameterSet.DeserializeIfPresent (i);
-  i = m_erpInformation.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = m_edcaParameterSet.DeserializeIfPresent (i);
   i = m_extendedCapability.DeserializeIfPresent (i);
@@ -1488,7 +1488,7 @@ MgtAssocResponseHeader::SetErpInformation (ErpInformation&& erpInformation)
   m_erpInformation = std::move (erpInformation);
 }
 
-const ErpInformation&
+const std::optional<ErpInformation>&
 MgtAssocResponseHeader::GetErpInformation (void) const
 {
   return m_erpInformation;
@@ -1555,7 +1555,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_code.GetSerializedSize ();
   size += 2; //aid
   size += m_rates.GetSerializedSize ();
-  size += m_erpInformation.GetSerializedSize ();
+  if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   size += m_edcaParameterSet.GetSerializedSize ();
   size += m_extendedCapability.GetSerializedSize ();
@@ -1576,9 +1576,9 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
 {
   os << "status code=" << m_code << ", "
      << "aid=" << m_aid << ", "
-     << "rates=" << m_rates << ", "
-     << "ERP information=" << m_erpInformation << ", "
-     << "Extended Capabilities=" << m_extendedCapability << " , ";
+     << "rates=" << m_rates << ", ";
+  if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
+  os << "Extended Capabilities=" << m_extendedCapability << " , ";
   if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
   if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
   if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
@@ -1596,7 +1596,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_code.Serialize (i);
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
-  i = m_erpInformation.Serialize (i);
+  if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
   i = m_rates.extended.Serialize (i);
   i = m_edcaParameterSet.Serialize (i);
   i = m_extendedCapability.Serialize (i);
@@ -1619,7 +1619,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_code.Deserialize (i);
   m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
-  i = m_erpInformation.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = m_edcaParameterSet.DeserializeIfPresent (i);
   i = m_extendedCapability.DeserializeIfPresent (i);

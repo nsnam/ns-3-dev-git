@@ -43,20 +43,6 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length) override;
 
-  /* This information element is a bit special in that it is only
-     included if the STA is an ERP STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
-  /**
-   * Set the ERP supported field.
-   *
-   * \param erpSupported the ERP supported field in the ErpInformation information element
-   */
-  void SetErpSupported (uint8_t erpSupported);
-
   /**
    * Set the Barker_Preamble_Mode field in the ErpInformation information element.
    *
@@ -98,9 +84,6 @@ public:
 
 private:
   uint8_t m_erpInformation; ///< ERP information
-
-  /// This is used to decide whether this element should be added to the frame or not
-  bool m_erpSupported;
 };
 
 /**

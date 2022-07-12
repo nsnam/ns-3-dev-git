@@ -528,11 +528,11 @@ public:
    */
   uint16_t GetAssociationId (void) const;
   /**
-   * Return the ERP information.
+   * Return the ERP information, if present.
    *
-   * \return the ERP information
+   * \return the ERP information, if present
    */
-  const ErpInformation& GetErpInformation (void) const;
+  const std::optional<ErpInformation>& GetErpInformation (void) const;
   /**
    * Return the EDCA Parameter Set.
    *
@@ -718,7 +718,7 @@ private:
   std::optional<HtOperation> m_htOperation;       //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
   std::optional<VhtOperation> m_vhtOperation;     //!< VHT operation
-  ErpInformation m_erpInformation; //!< ERP information
+  std::optional<ErpInformation> m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
   std::optional<HeOperation> m_heOperation;     //!< HE operation
@@ -968,11 +968,11 @@ public:
    */
   const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
-   * Return the ERP information.
+   * Return the ERP information, if present.
    *
-   * \return the ERP information
+   * \return the ERP information, if present
    */
-  const ErpInformation& GetErpInformation (void) const;
+  const std::optional<ErpInformation>& GetErpInformation (void) const;
   /**
    * Return the EDCA Parameter Set.
    *
@@ -1202,7 +1202,7 @@ private:
   std::optional<VhtOperation> m_vhtOperation;     //!< VHT operation
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   std::optional<HeOperation> m_heOperation;       //!< HE operation
-  ErpInformation m_erpInformation;     //!< ERP information
+  std::optional<ErpInformation> m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities

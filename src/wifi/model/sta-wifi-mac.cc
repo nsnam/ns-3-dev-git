@@ -1070,11 +1070,11 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
         }
 
       bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-      if (GetErpSupported (linkId))
+      if (const auto& erpInformation = frame.GetErpInformation ();
+          erpInformation.has_value () && GetErpSupported (linkId))
         {
-          const ErpInformation& erpInformation = frame.GetErpInformation ();
-          isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
-          if (erpInformation.GetUseProtection () != 0)
+          isShortPreambleEnabled &= !erpInformation->GetBarkerPreambleMode ();
+          if (erpInformation->GetUseProtection () != 0)
             {
               GetWifiRemoteStationManager (linkId)->SetUseNonErpProtection (true);
             }
