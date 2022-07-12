@@ -22,6 +22,7 @@
 #define WIFI_INFORMATION_ELEMENT_H
 
 #include "ns3/header.h"
+#include <optional>
 
 namespace ns3 {
 
@@ -270,6 +271,24 @@ public:
    */
   Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
   /**
+   * Deserialize an IE that is optionally present. The iterator passed in
+   * must be pointing at the Element ID of an information element. If
+   * the Element ID is not the requested one, the same iterator will
+   * be returned. Otherwise, an iterator pointing to the octet after
+   * the end of the information element is returned.
+   *
+   * \tparam IE \deduced Information Element type
+   * \tparam Args \deduced type of the arguments to forward to the constructor of the IE
+   * \param[out] optElem an object that contains the information element, if present
+   * \param i an iterator which points to where the IE should be read
+   * \param args arguments to forward to the constructor of the IE.
+   * \return the input iterator, if the requested IE is not present, or an iterator
+   *         pointing to the octet after the end of the information element, otherwise
+   */
+  template <typename IE, typename... Args>
+  static Buffer::Iterator DeserializeIfPresent (std::optional<IE>& optElem, Buffer::Iterator i,
+                                                Args&&... args);
+  /**
    * Get the size of the serialized IE including Element ID and
    * length fields.
    *
@@ -340,5 +359,34 @@ private:
 };
 
 } //namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
+
+template <typename IE, typename... Args>
+Buffer::Iterator
+WifiInformationElement::DeserializeIfPresent (std::optional<IE>& optElem, Buffer::Iterator i,
+                                              Args&&... args)
+{
+  optElem = std::nullopt;
+  IE elem (std::forward<Args> (args)...);
+
+  Buffer::Iterator start = i;
+  i = elem.DeserializeIfPresent (i);
+
+  if (i.GetDistanceFrom (start) != 0)
+    {
+      // the element is present and has been deserialized
+      optElem = elem;
+    }
+
+  return i;
+}
+
+} // namespace ns3
 
 #endif /* WIFI_INFORMATION_ELEMENT_H */
