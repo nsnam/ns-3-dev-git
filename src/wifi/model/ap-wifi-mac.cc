@@ -757,44 +757,43 @@ VhtOperation
 ApWifiMac::GetVhtOperation (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetVhtSupported ());
   VhtOperation operation;
-  if (GetVhtSupported ())
+
+  const uint16_t bssBandwidth = GetWifiPhy ()->GetChannelWidth ();
+  // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
+  // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
+  operation.SetChannelWidth ((bssBandwidth > 40) ? 1 : 0);
+  // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
+  // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
+  // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+  // indicates the channel center frequency index of the 80 MHz channel
+  // segment that contains the primary channel.
+  operation.SetChannelCenterFrequencySegment0 ((bssBandwidth == 160) ?
+                                                GetWifiPhy ()->GetOperatingChannel ().GetPrimaryChannelNumber (80, WIFI_STANDARD_80211ac) :
+                                                GetWifiPhy ()->GetChannelNumber ());
+  // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
+  // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+  // indicates the channel center frequency index of the 160 MHz channel on
+  // which the VHT BSS operates.
+  operation.SetChannelCenterFrequencySegment1 ((bssBandwidth == 160) ? GetWifiPhy ()->GetChannelNumber () : 0);
+  uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
+  for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
     {
-      operation.SetVhtSupported (1);
-      const uint16_t bssBandwidth = GetWifiPhy ()->GetChannelWidth ();
-      // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
-      // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
-      operation.SetChannelWidth ((bssBandwidth > 40) ? 1 : 0);
-      // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
-      // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
-      // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
-      // indicates the channel center frequency index of the 80 MHz channel
-      // segment that contains the primary channel.
-      operation.SetChannelCenterFrequencySegment0 ((bssBandwidth == 160) ?
-                                                   GetWifiPhy ()->GetOperatingChannel ().GetPrimaryChannelNumber (80, WIFI_STANDARD_80211ac) :
-                                                   GetWifiPhy ()->GetChannelNumber ());
-      // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
-      // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
-      // indicates the channel center frequency index of the 160 MHz channel on
-      // which the VHT BSS operates.
-      operation.SetChannelCenterFrequencySegment1 ((bssBandwidth == 160) ? GetWifiPhy ()->GetChannelNumber () : 0);
-      uint8_t maxSpatialStream = GetWifiPhy ()->GetMaxSupportedRxSpatialStreams ();
-      for (const auto& sta : GetLink (SINGLE_LINK_OP_ID).staList)
+      if (GetWifiRemoteStationManager ()->GetVhtSupported (sta.second))
         {
-          if (GetWifiRemoteStationManager ()->GetVhtSupported (sta.second))
+          if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
             {
-              if (GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second) < maxSpatialStream)
-                {
-                  maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
-                }
+              maxSpatialStream = GetWifiRemoteStationManager ()->GetNumberOfSupportedStreams (sta.second);
             }
         }
-      for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
-        {
-          uint8_t maxMcs = 9; //TBD: hardcode to 9 for now since we assume all MCS values are supported
-          operation.SetMaxVhtMcsPerNss (nss, maxMcs);
-        }
     }
+  for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
+    {
+      uint8_t maxMcs = 9; //TBD: hardcode to 9 for now since we assume all MCS values are supported
+      operation.SetMaxVhtMcsPerNss (nss, maxMcs);
+    }
+
   return operation;
 }
 

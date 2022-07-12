@@ -490,11 +490,11 @@ public:
    */
   const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
   /**
-   * Return the VHT operation.
+   * Return the VHT operation, if present.
    *
-   * \return VHT operation
+   * \return VHT operation, if present
    */
-  const VhtOperation& GetVhtOperation (void) const;
+  const std::optional<VhtOperation>& GetVhtOperation (void) const;
   /**
    * Return the HE capabilities, if present.
    *
@@ -717,7 +717,7 @@ private:
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<HtOperation> m_htOperation;       //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
-  VhtOperation m_vhtOperation; //!< VHT operation
+  std::optional<VhtOperation> m_vhtOperation;     //!< VHT operation
   ErpInformation m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
@@ -944,11 +944,11 @@ public:
    */
   const std::optional<VhtCapabilities>& GetVhtCapabilities (void) const;
   /**
-   * Return the VHT operation.
+   * Return the VHT operation, if present.
    *
-   * \return VHT operation
+   * \return VHT operation, if present
    */
-  const VhtOperation& GetVhtOperation (void) const;
+  const std::optional<VhtOperation>& GetVhtOperation (void) const;
   /**
    * Return the HE capabilities, if present.
    *
@@ -1199,7 +1199,7 @@ private:
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<HtOperation> m_htOperation;       //!< HT operation
   std::optional<VhtCapabilities> m_vhtCapability; //!< VHT capabilities
-  VhtOperation m_vhtOperation;         //!< VHT operation
+  std::optional<VhtOperation> m_vhtOperation;     //!< VHT operation
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   HeOperation m_heOperation;           //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information

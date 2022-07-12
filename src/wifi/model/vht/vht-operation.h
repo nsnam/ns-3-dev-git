@@ -42,19 +42,6 @@ public:
   uint8_t GetInformationFieldSize () const override;
   void SerializeInformationField (Buffer::Iterator start) const override;
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
-  /* This information element is a bit special in that it is only
-     included if the STA is a VHT STA. To support this we
-     override the Serialize and GetSerializedSize methods of
-     WifiInformationElement. */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const override;
-  uint16_t GetSerializedSize () const override;
-
-  /**
-   * Set the VHT supported information element.
-   *
-   * \param vhtSupported the VHT supported information element
-   */
-  void SetVhtSupported (uint8_t vhtSupported);
 
   /**
    * Set the Channel Width field in the VHT Operation information element.
@@ -123,9 +110,6 @@ private:
 
   //Basic VHT-MCS and NSS Set
   uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
-
-  /// This is used to decide whether this element should be added to the frame or not
-  uint8_t m_vhtSupported;
 };
 
 /**

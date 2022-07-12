@@ -1136,7 +1136,7 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
           if (vhtCapabilities.has_value () && vhtCapabilities->GetRxHighestSupportedLgiDataRate () > 0)
             {
               GetWifiRemoteStationManager (linkId)->AddStationVhtCapabilities (apAddr, *vhtCapabilities);
-              VhtOperation vhtOperation = frame.GetVhtOperation ();
+              // const auto& vhtOperation = frame.GetVhtOperation ();
               for (const auto & mcs : GetWifiPhy (linkId)->GetMcsList (WIFI_MOD_CLASS_VHT))
                 {
                   if (vhtCapabilities->IsSupportedRxMcs (mcs.GetMcsValue ()))

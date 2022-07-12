@@ -26,8 +26,7 @@ VhtOperation::VhtOperation ()
   : m_channelWidth (0),
     m_channelCenterFrequencySegment0 (0),
     m_channelCenterFrequencySegment1 (0),
-    m_basicVhtMcsAndNssSet (0),
-    m_vhtSupported (0)
+    m_basicVhtMcsAndNssSet (0)
 {
 }
 
@@ -37,17 +36,9 @@ VhtOperation::ElementId () const
   return IE_VHT_OPERATION;
 }
 
-void
-VhtOperation::SetVhtSupported (uint8_t vhtSupported)
-{
-  m_vhtSupported = vhtSupported;
-}
-
 uint8_t
 VhtOperation::GetInformationFieldSize () const
 {
-  //we should not be here if VHT is not supported
-  NS_ASSERT (m_vhtSupported > 0);
   return 5;
 }
 
@@ -113,37 +104,14 @@ VhtOperation::GetBasicVhtMcsAndNssSet (void) const
   return m_basicVhtMcsAndNssSet;
 }
 
-Buffer::Iterator
-VhtOperation::Serialize (Buffer::Iterator i) const
-{
-  if (m_vhtSupported < 1)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-VhtOperation::GetSerializedSize () const
-{
-  if (m_vhtSupported < 1)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
-}
-
 void
 VhtOperation::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_vhtSupported == 1)
-    {
-      //write the corresponding value for each bit
-      start.WriteU8 (GetChannelWidth ());
-      start.WriteU8 (GetChannelCenterFrequencySegment0 ());
-      start.WriteU8 (GetChannelCenterFrequencySegment1 ());
-      start.WriteU16 (GetBasicVhtMcsAndNssSet ());
-    }
+  //write the corresponding value for each bit
+  start.WriteU8 (GetChannelWidth ());
+  start.WriteU8 (GetChannelCenterFrequencySegment0 ());
+  start.WriteU8 (GetChannelCenterFrequencySegment1 ());
+  start.WriteU16 (GetBasicVhtMcsAndNssSet ());
 }
 
 uint8_t
