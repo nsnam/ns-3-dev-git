@@ -1166,17 +1166,17 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
             }
         }
 
-      const MuEdcaParameterSet& muEdcaParameters = frame.GetMuEdcaParameterSet ();
-      if (muEdcaParameters.IsPresent ())
+      const auto& muEdcaParameters = frame.GetMuEdcaParameterSet ();
+      if (muEdcaParameters.has_value ())
         {
-          SetMuEdcaParameters (AC_BE, muEdcaParameters.GetMuCwMin (AC_BE), muEdcaParameters.GetMuCwMax (AC_BE),
-                              muEdcaParameters.GetMuAifsn (AC_BE), muEdcaParameters.GetMuEdcaTimer (AC_BE));
-          SetMuEdcaParameters (AC_BK, muEdcaParameters.GetMuCwMin (AC_BK), muEdcaParameters.GetMuCwMax (AC_BK),
-                              muEdcaParameters.GetMuAifsn (AC_BK), muEdcaParameters.GetMuEdcaTimer (AC_BK));
-          SetMuEdcaParameters (AC_VI, muEdcaParameters.GetMuCwMin (AC_VI), muEdcaParameters.GetMuCwMax (AC_VI),
-                              muEdcaParameters.GetMuAifsn (AC_VI), muEdcaParameters.GetMuEdcaTimer (AC_VI));
-          SetMuEdcaParameters (AC_VO, muEdcaParameters.GetMuCwMin (AC_VO), muEdcaParameters.GetMuCwMax (AC_VO),
-                              muEdcaParameters.GetMuAifsn (AC_VO), muEdcaParameters.GetMuEdcaTimer (AC_VO));
+          SetMuEdcaParameters (AC_BE, muEdcaParameters->GetMuCwMin (AC_BE), muEdcaParameters->GetMuCwMax (AC_BE),
+                              muEdcaParameters->GetMuAifsn (AC_BE), muEdcaParameters->GetMuEdcaTimer (AC_BE));
+          SetMuEdcaParameters (AC_BK, muEdcaParameters->GetMuCwMin (AC_BK), muEdcaParameters->GetMuCwMax (AC_BK),
+                              muEdcaParameters->GetMuAifsn (AC_BK), muEdcaParameters->GetMuEdcaTimer (AC_BK));
+          SetMuEdcaParameters (AC_VI, muEdcaParameters->GetMuCwMin (AC_VI), muEdcaParameters->GetMuCwMax (AC_VI),
+                              muEdcaParameters->GetMuAifsn (AC_VI), muEdcaParameters->GetMuEdcaTimer (AC_VI));
+          SetMuEdcaParameters (AC_VO, muEdcaParameters->GetMuCwMin (AC_VO), muEdcaParameters->GetMuCwMax (AC_VO),
+                              muEdcaParameters->GetMuAifsn (AC_VO), muEdcaParameters->GetMuEdcaTimer (AC_VO));
         }
 
       if (!GetEhtSupported ()) return;

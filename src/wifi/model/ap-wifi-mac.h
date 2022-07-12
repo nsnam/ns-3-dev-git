@@ -308,11 +308,11 @@ private:
    */
   EdcaParameterSet GetEdcaParameterSet (uint8_t linkId) const;
   /**
-   * Return the MU EDCA Parameter Set of the current AP.
+   * Return the MU EDCA Parameter Set of the current AP, if one needs to be advertised
    *
-   * \return the MU EDCA Parameter Set that we support
+   * \return the MU EDCA Parameter Set that needs to be advertised (if any)
    */
-  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  std::optional<MuEdcaParameterSet> GetMuEdcaParameterSet (void) const;
   /**
    * Return the Reduced Neighbor Report (RNR) element that the current AP sends
    * on the given link

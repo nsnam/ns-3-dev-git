@@ -37,11 +37,6 @@ class MuEdcaParameterSet : public WifiInformationElement
 {
 public:
   MuEdcaParameterSet ();
-  /**
-   * Return true if a valid MU EDCA Parameter Set is present in this object
-   * \return true if a valid MU EDCA Parameter Set is present in this object
-   */
-  bool IsPresent (void) const;
 
   /**
    * Set the QoS Info field in the MuEdcaParameterSet information element.
@@ -155,25 +150,6 @@ public:
    * \return the size
    */
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA is an HE STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start iterator start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this EDCA Parameter Set.
-   *
-   * \return the serialized size of this EDCA Parameter Set
-   */
-  uint16_t GetSerializedSize () const;
-
 
 private:
   /**

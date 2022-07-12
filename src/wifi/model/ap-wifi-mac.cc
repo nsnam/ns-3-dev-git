@@ -527,58 +527,71 @@ ApWifiMac::GetEdcaParameterSet (uint8_t linkId) const
   return edcaParameters;
 }
 
-MuEdcaParameterSet
+std::optional<MuEdcaParameterSet>
 ApWifiMac::GetMuEdcaParameterSet (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetHeSupported ());
+
+  Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
+  NS_ASSERT (heConfiguration);
+
   MuEdcaParameterSet muEdcaParameters;
-  if (GetHeSupported ())
+  muEdcaParameters.SetQosInfo (0);
+
+  UintegerValue uintegerValue;
+  TimeValue timeValue;
+
+  heConfiguration->GetAttribute ("MuBeAifsn", uintegerValue);
+  muEdcaParameters.SetMuAifsn (AC_BE, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuBeCwMin", uintegerValue);
+  muEdcaParameters.SetMuCwMin (AC_BE, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuBeCwMax", uintegerValue);
+  muEdcaParameters.SetMuCwMax (AC_BE, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("BeMuEdcaTimer", timeValue);
+  muEdcaParameters.SetMuEdcaTimer (AC_BE, timeValue.Get ());
+
+  heConfiguration->GetAttribute ("MuBkAifsn", uintegerValue);
+  muEdcaParameters.SetMuAifsn (AC_BK, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuBkCwMin", uintegerValue);
+  muEdcaParameters.SetMuCwMin (AC_BK, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuBkCwMax", uintegerValue);
+  muEdcaParameters.SetMuCwMax (AC_BK, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("BkMuEdcaTimer", timeValue);
+  muEdcaParameters.SetMuEdcaTimer (AC_BK, timeValue.Get ());
+
+  heConfiguration->GetAttribute ("MuViAifsn", uintegerValue);
+  muEdcaParameters.SetMuAifsn (AC_VI, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuViCwMin", uintegerValue);
+  muEdcaParameters.SetMuCwMin (AC_VI, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuViCwMax", uintegerValue);
+  muEdcaParameters.SetMuCwMax (AC_VI, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("ViMuEdcaTimer", timeValue);
+  muEdcaParameters.SetMuEdcaTimer (AC_VI, timeValue.Get ());
+
+  heConfiguration->GetAttribute ("MuVoAifsn", uintegerValue);
+  muEdcaParameters.SetMuAifsn (AC_VO, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuVoCwMin", uintegerValue);
+  muEdcaParameters.SetMuCwMin (AC_VO, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("MuVoCwMax", uintegerValue);
+  muEdcaParameters.SetMuCwMax (AC_VO, uintegerValue.Get ());
+  heConfiguration->GetAttribute ("VoMuEdcaTimer", timeValue);
+  muEdcaParameters.SetMuEdcaTimer (AC_VO, timeValue.Get ());
+
+  // The timers of the MU EDCA Parameter Set must be either all zero or all
+  // non-zero. The information element is advertised if all timers are non-zero
+  auto timerNotNull = [&muEdcaParameters](uint8_t aci)
+                      { return !muEdcaParameters.GetMuEdcaTimer (aci).IsZero (); };
+  auto aci = {0, 1, 2, 3};
+  if (std::all_of (aci.begin (), aci.end (), timerNotNull))
     {
-      Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
-      NS_ASSERT (heConfiguration);
-
-      muEdcaParameters.SetQosInfo (0);
-
-      UintegerValue uintegerValue;
-      TimeValue timeValue;
-
-      heConfiguration->GetAttribute ("MuBeAifsn", uintegerValue);
-      muEdcaParameters.SetMuAifsn (AC_BE, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuBeCwMin", uintegerValue);
-      muEdcaParameters.SetMuCwMin (AC_BE, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuBeCwMax", uintegerValue);
-      muEdcaParameters.SetMuCwMax (AC_BE, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("BeMuEdcaTimer", timeValue);
-      muEdcaParameters.SetMuEdcaTimer (AC_BE, timeValue.Get ());
-
-      heConfiguration->GetAttribute ("MuBkAifsn", uintegerValue);
-      muEdcaParameters.SetMuAifsn (AC_BK, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuBkCwMin", uintegerValue);
-      muEdcaParameters.SetMuCwMin (AC_BK, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuBkCwMax", uintegerValue);
-      muEdcaParameters.SetMuCwMax (AC_BK, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("BkMuEdcaTimer", timeValue);
-      muEdcaParameters.SetMuEdcaTimer (AC_BK, timeValue.Get ());
-
-      heConfiguration->GetAttribute ("MuViAifsn", uintegerValue);
-      muEdcaParameters.SetMuAifsn (AC_VI, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuViCwMin", uintegerValue);
-      muEdcaParameters.SetMuCwMin (AC_VI, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuViCwMax", uintegerValue);
-      muEdcaParameters.SetMuCwMax (AC_VI, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("ViMuEdcaTimer", timeValue);
-      muEdcaParameters.SetMuEdcaTimer (AC_VI, timeValue.Get ());
-
-      heConfiguration->GetAttribute ("MuVoAifsn", uintegerValue);
-      muEdcaParameters.SetMuAifsn (AC_VO, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuVoCwMin", uintegerValue);
-      muEdcaParameters.SetMuCwMin (AC_VO, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("MuVoCwMax", uintegerValue);
-      muEdcaParameters.SetMuCwMax (AC_VO, uintegerValue.Get ());
-      heConfiguration->GetAttribute ("VoMuEdcaTimer", timeValue);
-      muEdcaParameters.SetMuEdcaTimer (AC_VO, timeValue.Get ());
+      return muEdcaParameters;
     }
-  return muEdcaParameters;
+
+  NS_ABORT_MSG_UNLESS (std::none_of (aci.begin (), aci.end (), timerNotNull),
+                      "MU EDCA Timers must be all zero if the IE is not advertised.");
+
+  return std::nullopt;
 }
 
 Ptr<ReducedNeighborReport>
@@ -868,7 +881,10 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
     {
       probe.SetHeCapabilities (GetHeCapabilities ());
       probe.SetHeOperation (GetHeOperation ());
-      probe.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
+      if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
+        {
+          probe.SetMuEdcaParameterSet (std::move (*muEdcaParameterSet));
+        }
     }
   if (GetEhtSupported ())
     {
@@ -993,7 +1009,10 @@ ApWifiMac::GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
     {
       assoc.SetHeCapabilities (GetHeCapabilities ());
       assoc.SetHeOperation (GetHeOperation ());
-      assoc.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
+      if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
+        {
+          assoc.SetMuEdcaParameterSet (std::move (*muEdcaParameterSet));
+        }
     }
   if (GetEhtSupported ())
     {
@@ -1098,7 +1117,10 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
     {
       beacon.SetHeCapabilities (GetHeCapabilities ());
       beacon.SetHeOperation (GetHeOperation ());
-      beacon.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
+      if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
+        {
+          beacon.SetMuEdcaParameterSet (std::move (*muEdcaParameterSet));
+        }
     }
   if (GetEhtSupported ())
     {

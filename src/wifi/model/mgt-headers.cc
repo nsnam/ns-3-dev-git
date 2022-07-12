@@ -544,7 +544,7 @@ MgtProbeResponseHeader::GetEdcaParameterSet (void) const
   return m_edcaParameterSet;
 }
 
-const MuEdcaParameterSet&
+const std::optional<MuEdcaParameterSet>&
 MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
 {
   return m_muEdcaParameterSet;
@@ -599,7 +599,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   if (m_vhtOperation.has_value ()) size += m_vhtOperation->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
-  size += m_muEdcaParameterSet.GetSerializedSize ();
+  if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_reducedNeighborReport != nullptr) size += m_reducedNeighborReport->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
@@ -642,7 +642,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_vhtOperation.has_value ()) i = m_vhtOperation->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
-  i = m_muEdcaParameterSet.Serialize (i);
+  if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_reducedNeighborReport != nullptr) i = m_reducedNeighborReport->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
@@ -669,7 +669,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_vhtOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heOperation, i);
-  i = m_muEdcaParameterSet.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_muEdcaParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   i = (m_reducedNeighborReport = Create<ReducedNeighborReport> ())->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_reducedNeighborReport = nullptr;
@@ -1524,7 +1524,7 @@ MgtAssocResponseHeader::GetEdcaParameterSet (void) const
   return m_edcaParameterSet;
 }
 
-const MuEdcaParameterSet&
+const std::optional<MuEdcaParameterSet>&
 MgtAssocResponseHeader::GetMuEdcaParameterSet (void) const
 {
   return m_muEdcaParameterSet;
@@ -1565,7 +1565,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   if (m_vhtOperation.has_value ()) size += m_vhtOperation->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
-  size += m_muEdcaParameterSet.GetSerializedSize ();
+  if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
@@ -1606,7 +1606,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_vhtOperation.has_value ()) i = m_vhtOperation->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
-  i = m_muEdcaParameterSet.Serialize (i);
+  if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
@@ -1629,7 +1629,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_vhtOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heOperation, i);
-  i = m_muEdcaParameterSet.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_muEdcaParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
   m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
   i = m_multiLinkElement->DeserializeIfPresent (tmp = i);

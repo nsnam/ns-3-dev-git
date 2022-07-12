@@ -540,11 +540,11 @@ public:
    */
   const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
   /**
-   * Return the MU EDCA Parameter Set.
+   * Return the MU EDCA Parameter Set, if present.
    *
-   * \return the MU EDCA Parameter Set
+   * \return the MU EDCA Parameter Set, if present
    */
-  const MuEdcaParameterSet& GetMuEdcaParameterSet (void) const;
+  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet (void) const;
   /**
    * Set the Capability information.
    *
@@ -722,7 +722,7 @@ private:
   std::optional<EdcaParameterSet> m_edcaParameterSet; //!< EDCA Parameter Set
   std::optional<HeCapabilities> m_heCapability; //!< HE capabilities
   std::optional<HeOperation> m_heOperation;     //!< HE operation
-  MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
+  std::optional<MuEdcaParameterSet> m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
@@ -980,11 +980,11 @@ public:
    */
   const std::optional<EdcaParameterSet>& GetEdcaParameterSet (void) const;
   /**
-   * Return the MU EDCA Parameter Set.
+   * Return the MU EDCA Parameter Set, if present.
    *
-   * \return the MU EDCA Parameter Set
+   * \return the MU EDCA Parameter Set, if present
    */
-  const MuEdcaParameterSet& GetMuEdcaParameterSet (void) const;
+  const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet (void) const;
 
   /**
    * Return the Reduced Neighbor Report information element.
@@ -1204,7 +1204,7 @@ private:
   std::optional<HeOperation> m_heOperation;       //!< HE operation
   std::optional<ErpInformation> m_erpInformation; //!< ERP information
   std::optional<EdcaParameterSet> m_edcaParameterSet; //!< EDCA Parameter Set
-  MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
+  std::optional<MuEdcaParameterSet> m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
