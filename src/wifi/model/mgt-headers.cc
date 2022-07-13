@@ -478,7 +478,7 @@ MgtProbeResponseHeader::SetDsssParameterSet (DsssParameterSet&& dsssParameterSet
   m_dsssParameterSet = std::move (dsssParameterSet);
 }
 
-const DsssParameterSet&
+const std::optional<DsssParameterSet>&
 MgtProbeResponseHeader::GetDsssParameterSet (void) const
 {
   return m_dsssParameterSet;
@@ -588,7 +588,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_capability.GetSerializedSize ();
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += m_dsssParameterSet.GetSerializedSize ();
+  if (m_dsssParameterSet.has_value ()) size += m_dsssParameterSet->GetSerializedSize ();
   if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
@@ -631,7 +631,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  i = m_dsssParameterSet.Serialize (i);
+  if (m_dsssParameterSet.has_value ()) i = m_dsssParameterSet->Serialize (i);
   if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
   i = m_rates.extended.Serialize (i);
   if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
@@ -658,7 +658,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_capability.Deserialize (i);
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  i = m_dsssParameterSet.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_dsssParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = WifiInformationElement::DeserializeIfPresent (m_edcaParameterSet, i);

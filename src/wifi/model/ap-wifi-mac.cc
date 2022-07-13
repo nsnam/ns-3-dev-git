@@ -439,12 +439,9 @@ DsssParameterSet
 ApWifiMac::GetDsssParameterSet (uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << +linkId);
+  NS_ASSERT (GetDsssSupported (linkId));
   DsssParameterSet dsssParameters;
-  if (GetDsssSupported (linkId))
-    {
-      dsssParameters.SetDsssSupported (1);
-      dsssParameters.SetCurrentChannel (GetWifiPhy (linkId)->GetChannelNumber ());
-    }
+  dsssParameters.SetCurrentChannel (GetWifiPhy (linkId)->GetChannelNumber ());
   return dsssParameters;
 }
 

@@ -23,8 +23,7 @@
 namespace ns3 {
 
 DsssParameterSet::DsssParameterSet ()
-  : m_currentChannel (0),
-    m_dsssSupported (0)
+  : m_currentChannel (0)
 {
 }
 
@@ -32,12 +31,6 @@ WifiInformationElementId
 DsssParameterSet::ElementId () const
 {
   return IE_DSSS_PARAMETER_SET;
-}
-
-void
-DsssParameterSet::SetDsssSupported (uint8_t dsssSupported)
-{
-  m_dsssSupported = dsssSupported;
 }
 
 void
@@ -49,37 +42,13 @@ DsssParameterSet::SetCurrentChannel (uint8_t currentChannel)
 uint8_t
 DsssParameterSet::GetInformationFieldSize () const
 {
-  NS_ASSERT (m_dsssSupported);
   return 1;
-}
-
-Buffer::Iterator
-DsssParameterSet::Serialize (Buffer::Iterator i) const
-{
-  if (!m_dsssSupported)
-    {
-      return i;
-    }
-  return WifiInformationElement::Serialize (i);
-}
-
-uint16_t
-DsssParameterSet::GetSerializedSize () const
-{
-  if (!m_dsssSupported)
-    {
-      return 0;
-    }
-  return WifiInformationElement::GetSerializedSize ();
 }
 
 void
 DsssParameterSet::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_dsssSupported)
-    {
-      start.WriteU8 (m_currentChannel);
-    }
+  start.WriteU8 (m_currentChannel);
 }
 
 uint8_t

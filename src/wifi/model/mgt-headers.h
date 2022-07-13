@@ -914,11 +914,11 @@ public:
    */
   const CapabilityInformation& GetCapabilities (void) const;
   /**
-   * Return the DSSS Parameter Set.
+   * Return the DSSS Parameter Set, if present.
    *
-   * \return the DSSS Parameter Set
+   * \return the DSSS Parameter Set, if present
    */
-  const DsssParameterSet& GetDsssParameterSet (void) const;
+  const std::optional<DsssParameterSet>& GetDsssParameterSet (void) const;
   /**
    * Return the extended capabilities, if present.
    *
@@ -1194,7 +1194,7 @@ private:
   uint64_t m_beaconInterval;           //!< Beacon interval
   SupportedRates m_rates;              //!< List of supported rates
   CapabilityInformation m_capability;  //!< Capability information
-  DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
+  std::optional<DsssParameterSet> m_dsssParameterSet; //!< DSSS Parameter Set
   std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities
   std::optional<HtCapabilities> m_htCapability; //!< HT capabilities
   std::optional<HtOperation> m_htOperation;       //!< HT operation
