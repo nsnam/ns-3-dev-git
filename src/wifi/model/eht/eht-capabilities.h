@@ -35,11 +35,11 @@ class EhtCapabilities : public WifiInformationElement
 public:
   EhtCapabilities ();
   // Implementations of pure virtual methods, or overridden from base class.
-  WifiInformationElementId ElementId () const;
-  WifiInformationElementId ElementIdExt () const;
-  uint8_t GetInformationFieldSize () const;
-  void SerializeInformationField (Buffer::Iterator start) const;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
+  WifiInformationElementId ElementId () const override;
+  WifiInformationElementId ElementIdExt () const override;
+  uint8_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator start) const override;
+  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
 
 private:
   //TODO: add fields
