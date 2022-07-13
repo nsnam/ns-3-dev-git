@@ -291,15 +291,6 @@ public:
    * \returns the wifi information element ID
    */
   virtual WifiInformationElementId ElementId () const = 0;
-  /**
-   * Length of serialized information (i.e., the length of the body
-   * of the IE, not including the Element ID and length octets. This
-   * is the value that will appear in the second octet of the entire
-   * IE - the length field)
-   *
-   * \return the length of serialized information
-   */
-  virtual uint8_t GetInformationFieldSize () const = 0;
 
   /**
    * Get the wifi information element ID extension
@@ -337,6 +328,15 @@ private:
    * \return an iterator
    */
   Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
+  /**
+   * Length of serialized information (i.e., the length of the body
+   * of the IE, not including the Element ID and length octets. This
+   * is the value that will appear in the second octet of the entire
+   * IE - the length field)
+   *
+   * \return the length of serialized information
+   */
+  virtual uint8_t GetInformationFieldSize () const = 0;
   /**
    * Serialize information (i.e., the body of the IE, not including
    * the Element ID and length octets)

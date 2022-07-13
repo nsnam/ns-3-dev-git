@@ -146,7 +146,7 @@ WifiInformationElementVector::End ()
 bool
 WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement> element)
 {
-  if (element->GetInformationFieldSize () + 2 + GetSize () > m_maxSize)
+  if (element->GetSerializedSize () + GetSize () > m_maxSize)
     {
       return false;
     }
@@ -173,7 +173,7 @@ WifiInformationElementVector::GetSize () const
   uint32_t size = 0;
   for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {
-      size += ((*i)->GetInformationFieldSize () + 2);
+      size += (*i)->GetSerializedSize ();
     }
   return size;
 }
