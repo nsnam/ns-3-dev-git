@@ -78,6 +78,9 @@ class HigherLayerTxVectorTag : public Tag
 
   private:
     WifiTxVector m_txVector; ///< transmit vector
+    WifiMode m_mode;         ///< wifi mode
+    WifiPreamble m_preamble; ///< wifi preamble
+    uint16_t m_channelWidth; ///< channel width in MHz
     bool m_adaptable;        ///< adaptable
 };
 
