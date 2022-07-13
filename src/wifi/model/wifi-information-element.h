@@ -188,7 +188,9 @@ typedef uint8_t WifiInformationElementId;
 #define IE_REDUCED_NEIGHBOR_REPORT              ((WifiInformationElementId)201)
 // TODO Add 202 to 220. See Table 9-92 of 802.11-2020
 #define IE_VENDOR_SPECIFIC                      ((WifiInformationElementId)221)
-// 222 to 254 are reserved
+// TODO Add 222 to 241. See Table 9-92 of 802.11-2020
+#define IE_FRAGMENT                             ((WifiInformationElementId)242)
+// 243 to 254 are reserved
 #define IE_EXTENSION                            ((WifiInformationElementId)255)
 
 #define IE_EXT_HE_CAPABILITIES                  ((WifiInformationElementId)35)
@@ -233,6 +235,12 @@ typedef uint8_t WifiInformationElementId;
  * Length field specifies the number of octets in the Information
  * field.
  *
+ * Fragmentation of an Information Element is handled transparently by the base
+ * class. Subclasses can simply serialize/deserialize their data into/from a
+ * single large buffer. It is the base class that takes care of splitting
+ * serialized data into multiple fragments (when serializing) or reconstructing
+ * data from multiple fragments when deserializing.
+ *
  * This class is pure virtual and acts as base for classes which know
  * how to serialize specific IEs.
  */
@@ -241,7 +249,8 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 public:
   virtual ~WifiInformationElement ();
   /**
-   * Serialize entire IE including Element ID and length fields
+   * Serialize entire IE including Element ID and length fields. Handle
+   * fragmentation of the IE if needed.
    *
    * \param i an iterator which points to where the IE should be written.
    *
@@ -249,10 +258,10 @@ public:
    */
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   /**
-   * Deserialize entire IE, which must be present. The iterator
-   * passed in must be pointing at the Element ID (i.e., the very
-   * first octet) of the correct type of information element,
-   * otherwise this method will generate a fatal error.
+   * Deserialize entire IE (which may possibly be fragmented into multiple
+   * elements), which must be present. The iterator passed in must be pointing
+   * at the Element ID (i.e., the very first octet) of the correct type of
+   * information element, otherwise this method will generate a fatal error.
    *
    * \param i an iterator which points to where the IE should be read.
    *
@@ -260,7 +269,8 @@ public:
    */
   Buffer::Iterator Deserialize (Buffer::Iterator i);
   /**
-   * Deserialize an IE that is optionally present. The iterator passed in
+   * Deserialize an entire IE (which may possibly be fragmented into multiple
+   * elements) that is optionally present. The iterator passed in
    * must be pointing at the Element ID of an information element. If
    * the Element ID is not the requested one, the same iterator will
    * be returned. Otherwise, an iterator pointing to the octet after
@@ -279,7 +289,7 @@ public:
                                                 Args&&... args);
   /**
    * Get the size of the serialized IE including Element ID and
-   * length fields.
+   * length fields (for every element this IE is possibly fragmented into).
    *
    * \return the size of the serialized IE in bytes
    */
@@ -318,7 +328,8 @@ public:
 
 private:
   /**
-   * Deserialize entire IE if it is present. The iterator passed in
+   * Deserialize entire IE (which may possibly be fragmented into multiple
+   * elements) if it is present. The iterator passed in
    * must be pointing at the Element ID of an information element. If
    * the Element ID is not the one that the given class is interested
    * in then it will return the same iterator.
@@ -329,10 +340,27 @@ private:
    */
   Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
   /**
+   * Serialize an IE that needs to be fragmented.
+   *
+   * \param i an iterator which points to where the IE should be written.
+   * \param size the size of the body of the IE
+   * \return an iterator pointing to past the IE that was serialized
+   */
+  Buffer::Iterator SerializeFragments (Buffer::Iterator i, uint16_t size) const;
+  /**
+   * Deserialize the Information field of an IE. Also handle the case in which
+   * the IE is fragmented.
+   *
+   * \param i an iterator which points to where the Information field should be read.
+   * \param length the expected number of bytes to read
+   * \return an iterator pointing to past the IE that was deserialized
+   */
+  Buffer::Iterator DoDeserialize (Buffer::Iterator i, uint16_t length);
+  /**
    * Length of serialized information (i.e., the length of the body
    * of the IE, not including the Element ID and length octets. This
    * is the value that will appear in the second octet of the entire
-   * IE - the length field)
+   * IE - the length field - if the IE is not fragmented)
    *
    * \return the length of serialized information
    */
