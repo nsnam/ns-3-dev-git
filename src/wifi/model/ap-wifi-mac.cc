@@ -591,32 +591,32 @@ ApWifiMac::GetMuEdcaParameterSet (void) const
   return std::nullopt;
 }
 
-Ptr<ReducedNeighborReport>
+std::optional<ReducedNeighborReport>
 ApWifiMac::GetReducedNeighborReport (uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << +linkId);
 
   if (GetNLinks () <= 1)
     {
-      return nullptr;
+      return std::nullopt;
     }
 
   NS_ABORT_IF (!GetEhtSupported ());
-  auto rnr = Create<ReducedNeighborReport> ();
+  ReducedNeighborReport rnr;
 
   for (uint8_t index = 0; index < GetNLinks (); ++index)
     {
       if (index != linkId)  // all links but the one used to send this Beacon frame
         {
-          rnr->AddNbrApInfoField ();
-          std::size_t nbrId = rnr->GetNNbrApInfoFields () - 1;
-          rnr->SetOperatingChannel (nbrId, GetLink (index).phy->GetOperatingChannel ());
-          rnr->AddTbttInformationField (nbrId);
-          rnr->SetBssid (nbrId, 0, GetLink (index).feManager->GetAddress ());
-          rnr->SetShortSsid (nbrId, 0, 0);
-          rnr->SetBssParameters (nbrId, 0, 0);
-          rnr->SetPsd20MHz (nbrId, 0, 0);
-          rnr->SetMldParameters (nbrId, 0, 0, index, 0);
+          rnr.AddNbrApInfoField ();
+          std::size_t nbrId = rnr.GetNNbrApInfoFields () - 1;
+          rnr.SetOperatingChannel (nbrId, GetLink (index).phy->GetOperatingChannel ());
+          rnr.AddTbttInformationField (nbrId);
+          rnr.SetBssid (nbrId, 0, GetLink (index).feManager->GetAddress ());
+          rnr.SetShortSsid (nbrId, 0, 0);
+          rnr.SetBssParameters (nbrId, 0, 0);
+          rnr.SetPsd20MHz (nbrId, 0, 0);
+          rnr.SetMldParameters (nbrId, 0, 0, index, 0);
         }
     }
   return rnr;
@@ -896,7 +896,10 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
            * TBTT Information Length field set to 16 or higher, for each of the other APs
            * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
            */
-          probe.SetReducedNeighborReport (GetReducedNeighborReport (linkId));
+          if (auto rnr = GetReducedNeighborReport (linkId); rnr.has_value ())
+            {
+              probe.SetReducedNeighborReport (std::move (*rnr));
+            }
           /*
            * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
            * shall include, in a Beacon frame or a Probe Response frame, which is not a
@@ -1132,7 +1135,10 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
            * TBTT Information Length field set to 16 or higher, for each of the other APs
            * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
            */
-          beacon.SetReducedNeighborReport (GetReducedNeighborReport (linkId));
+          if (auto rnr = GetReducedNeighborReport (linkId); rnr.has_value ())
+            {
+              beacon.SetReducedNeighborReport (std::move (*rnr));
+            }
           /*
            * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
            * shall include, in a Beacon frame or a Probe Response frame, which is not a

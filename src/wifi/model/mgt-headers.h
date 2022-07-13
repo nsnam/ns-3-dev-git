@@ -987,11 +987,11 @@ public:
   const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet (void) const;
 
   /**
-   * Return the Reduced Neighbor Report information element.
+   * Return the Reduced Neighbor Report information element, if present.
    *
-   * \return the Reduced Neighbor Report information element
+   * \return the Reduced Neighbor Report information element, if present
    */
-  Ptr<ReducedNeighborReport> GetReducedNeighborReport (void) const;
+  const std::optional<ReducedNeighborReport>& GetReducedNeighborReport (void) const;
   /**
    * Return the Multi-Link Element information element, if present, or a null
    * pointer, otherwise.
@@ -1162,7 +1162,11 @@ public:
    *
    * \param reducedNeighborReport the Reduced Neighbor Report information element
    */
-  void SetReducedNeighborReport (Ptr<ReducedNeighborReport> reducedNeighborReport);
+  void SetReducedNeighborReport (const ReducedNeighborReport& reducedNeighborReport);
+
+  /** \copydoc SetReducedNeighborReport */
+  void SetReducedNeighborReport (ReducedNeighborReport&& reducedNeighborReport);
+
   /**
    * Set the Multi-Link Element information element
    *
@@ -1206,7 +1210,7 @@ private:
   std::optional<EdcaParameterSet> m_edcaParameterSet; //!< EDCA Parameter Set
   std::optional<MuEdcaParameterSet> m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
-  Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
+  std::optional<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
   Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 

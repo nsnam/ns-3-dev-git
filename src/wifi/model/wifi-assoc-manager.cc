@@ -244,7 +244,7 @@ WifiAssocManager::GetSetupLinks (const StaWifiMac::ApInfo& apInfo)
 }
 
 bool
-WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, Ptr<ReducedNeighborReport>& rnr)
+WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, OptRnrConstRef& rnr)
 {
   NS_LOG_FUNCTION (this);
 
@@ -274,7 +274,7 @@ WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, Ptr<ReducedNeig
       return false;
     }
 
-  if (rnr == nullptr || rnr->GetNNbrApInfoFields () == 0)
+  if (!rnr.has_value () || rnr->get ().GetNNbrApInfoFields () == 0)
     {
       NS_LOG_DEBUG ("No Reduced Neighbor Report Element in Beacon/Probe Response");
       return false;

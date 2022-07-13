@@ -527,9 +527,15 @@ MgtProbeResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParame
 }
 
 void
-MgtProbeResponseHeader::SetReducedNeighborReport (Ptr<ReducedNeighborReport> reducedNeighborReport)
+MgtProbeResponseHeader::SetReducedNeighborReport (const ReducedNeighborReport& reducedNeighborReport)
 {
   m_reducedNeighborReport = reducedNeighborReport;
+}
+
+void
+MgtProbeResponseHeader::SetReducedNeighborReport (ReducedNeighborReport&& reducedNeighborReport)
+{
+  m_reducedNeighborReport = std::move (reducedNeighborReport);
 }
 
 void
@@ -550,7 +556,7 @@ MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
   return m_muEdcaParameterSet;
 }
 
-Ptr<ReducedNeighborReport>
+const std::optional<ReducedNeighborReport>&
 MgtProbeResponseHeader::GetReducedNeighborReport (void) const
 {
   return m_reducedNeighborReport;
@@ -597,11 +603,11 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   if (m_htOperation.has_value ()) size += m_htOperation->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_vhtOperation.has_value ()) size += m_vhtOperation->GetSerializedSize ();
+  if (m_reducedNeighborReport.has_value ()) size += m_reducedNeighborReport->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
   if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
-  if (m_reducedNeighborReport != nullptr) size += m_reducedNeighborReport->GetSerializedSize ();
   if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
@@ -640,11 +646,11 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_htOperation.has_value ()) i = m_htOperation->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_vhtOperation.has_value ()) i = m_vhtOperation->Serialize (i);
+  if (m_reducedNeighborReport.has_value ()) i = m_reducedNeighborReport->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
   if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
-  if (m_reducedNeighborReport != nullptr) i = m_reducedNeighborReport->Serialize (i);
   if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
@@ -667,12 +673,11 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtOperation, i);
+  i = WifiInformationElement::DeserializeIfPresent (m_reducedNeighborReport, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_muEdcaParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
-  i = (m_reducedNeighborReport = Create<ReducedNeighborReport> ())->DeserializeIfPresent (tmp = i);
-  if (i.GetDistanceFrom (tmp) == 0) m_reducedNeighborReport = nullptr;
   i = (m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_BEACON))->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
 

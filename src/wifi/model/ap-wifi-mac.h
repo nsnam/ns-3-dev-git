@@ -315,12 +315,12 @@ private:
   std::optional<MuEdcaParameterSet> GetMuEdcaParameterSet (void) const;
   /**
    * Return the Reduced Neighbor Report (RNR) element that the current AP sends
-   * on the given link
+   * on the given link, if one needs to be advertised.
    *
    * \param linkId the ID of the link to send the RNR element onto
    * \return the Reduced Neighbor Report element
    */
-  Ptr<ReducedNeighborReport> GetReducedNeighborReport (uint8_t linkId) const;
+  std::optional<ReducedNeighborReport> GetReducedNeighborReport (uint8_t linkId) const;
   /**
    * Return the Multi-Link Element that the current AP includes in the management
    * frames of the given type it transmits on the given link.

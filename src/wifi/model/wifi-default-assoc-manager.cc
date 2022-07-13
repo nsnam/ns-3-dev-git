@@ -106,7 +106,7 @@ WifiDefaultAssocManager::EndScanning (void)
   NS_LOG_FUNCTION (this);
 
   Ptr<MultiLinkElement> mle;
-  Ptr<ReducedNeighborReport> rnr;
+  OptRnrConstRef rnr;
   std::list<WifiAssocManager::RnrLinkInfo> apList;
 
   // If multi-link setup is not possible, just call ScanningTimeout() and return
@@ -157,7 +157,7 @@ WifiDefaultAssocManager::EndScanning (void)
 
       while (apIt != apList.end ())
         {
-          auto apChannel = rnr->GetOperatingChannel (apIt->m_nbrApInfoId);
+          auto apChannel = rnr->get ().GetOperatingChannel (apIt->m_nbrApInfoId);
 
           // we cannot setup a link with this affiliated AP if this PHY object is
           // constrained to operate in the current PHY band and this affiliated AP
@@ -171,13 +171,13 @@ WifiDefaultAssocManager::EndScanning (void)
 
           // if we get here, it means we can setup a link with this affiliated AP
           // set the BSSID for this link
-          Mac48Address bssid = rnr->GetBssid (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
+          Mac48Address bssid = rnr->get ().GetBssid (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
           NS_LOG_DEBUG ("Setting BSSID=" << bssid << " for link " << +linkId);
           m_mac->SetBssid (bssid, linkId);
           // store AP MLD MAC address in the WifiRemoteStationManager associated with
           // the link requested to setup
           m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->GetMldMacAddress ());
-          setupLinks.push_back ({linkId, rnr->GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
+          setupLinks.push_back ({linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
 
           // switch this link to using the channel used by a reported AP
           // TODO check if the STA only supports a narrower channel width

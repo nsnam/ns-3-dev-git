@@ -206,18 +206,20 @@ protected:
    */
   void ScanningTimeout (void);
 
+  /// typedef for an optional const reference to a ReducedNeighborReport object
+  using OptRnrConstRef = std::optional<std::reference_wrapper<const ReducedNeighborReport>>;
+
   /**
    * Check whether 11be Multi-Link setup can be established with the current best AP.
    *
    * \param[out] mle pointer to the Multi-Link Element present in the
    *                 Beacon/Probe Response received from the best AP, if any.
    *                 Otherwise, the pointer is not modified.
-   * \param[out] rnr pointer to the Reduced Neighbor Report Element present in the
-   *                 Beacon/Probe Response received from the best AP, if any
-   *                 Otherwise, the pointer is not modified.
+   * \param[out] rnr const reference to the Reduced Neighbor Report Element present
+   *                 in the Beacon/Probe Response received from the best AP, if any.
    * \return whether 11be Multi-Link setup can be established with the current best AP
    */
-  bool CanSetupMultiLink (Ptr<MultiLinkElement>& mle, Ptr<ReducedNeighborReport>& rnr);
+  bool CanSetupMultiLink (Ptr<MultiLinkElement>& mle, OptRnrConstRef& rnr);
 
   Ptr<StaWifiMac> m_mac;                                ///< pointer to the STA wifi MAC
 
