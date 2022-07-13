@@ -83,7 +83,7 @@ PeerLinkOpenStart::GetSerializedSize () const
   uint32_t size =0; //Peering protocol
   size += 2; //capability
   size += m_rates.GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   size += m_meshId.GetInformationFieldSize () + 2;
   size += m_config.GetInformationFieldSize () + 2;
   return size;
@@ -95,7 +95,7 @@ PeerLinkOpenStart::Serialize (Buffer::Iterator start) const
 
   i.WriteHtolsbU16 (m_capability);
   i = m_rates.Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   i = m_meshId.Serialize (i);
   i = m_config.Serialize (i);
 }
@@ -106,7 +106,7 @@ PeerLinkOpenStart::Deserialize (Buffer::Iterator start)
 
   m_capability = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i);
   uint8_t id = i.ReadU8 ();
   uint8_t length = i.ReadU8 ();
   m_meshId.DeserializeInformationField (i, length);
@@ -262,7 +262,7 @@ PeerLinkConfirmStart::GetSerializedSize () const
   size += 2; //capability
   size += 2; //AID of remote peer
   size += m_rates.GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   size += m_config.GetInformationFieldSize () + 2;
   return size;
 }
@@ -274,7 +274,7 @@ PeerLinkConfirmStart::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_capability);
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   i = m_config.Serialize (i);
 }
 uint32_t
@@ -285,7 +285,7 @@ PeerLinkConfirmStart::Deserialize (Buffer::Iterator start)
   m_capability = i.ReadLsbtohU16 ();
   m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i);
   uint8_t id = i.ReadU8 ();
   uint8_t length = i.ReadU8 ();
   m_config.DeserializeInformationField (i, length);

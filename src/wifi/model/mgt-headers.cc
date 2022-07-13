@@ -168,7 +168,7 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   uint32_t size = 0;
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
@@ -212,7 +212,7 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
@@ -226,7 +226,7 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i, &m_rates);
   i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
@@ -590,7 +590,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_rates.GetSerializedSize ();
   if (m_dsssParameterSet.has_value ()) size += m_dsssParameterSet->GetSerializedSize ();
   if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
   if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
@@ -633,7 +633,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_rates.Serialize (i);
   if (m_dsssParameterSet.has_value ()) i = m_dsssParameterSet->Serialize (i);
   if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
   if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
@@ -660,7 +660,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_rates.Deserialize (i);
   i = WifiInformationElement::DeserializeIfPresent (m_dsssParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i, &m_rates);
   i = WifiInformationElement::DeserializeIfPresent (m_edcaParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
@@ -907,7 +907,7 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += 2;
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
@@ -937,7 +937,7 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_listenInterval);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
@@ -954,7 +954,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   m_listenInterval = i.ReadLsbtohU16 ();
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i, &m_rates);
   i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
@@ -1182,7 +1182,7 @@ MgtReassocRequestHeader::GetSerializedSize (void) const
   size += 6; //current AP address
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
@@ -1214,7 +1214,7 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   WriteTo (i, m_currentApAddr);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
@@ -1232,7 +1232,7 @@ MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
   ReadFrom (i, m_currentApAddr);
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i, &m_rates);
   i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
@@ -1556,7 +1556,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += 2; //aid
   size += m_rates.GetSerializedSize ();
   if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
-  size += m_rates.extended.GetSerializedSize ();
+  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
   if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
   if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
@@ -1597,7 +1597,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
   if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
-  i = m_rates.extended.Serialize (i);
+  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
   if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
   if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
@@ -1620,7 +1620,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
   i = WifiInformationElement::DeserializeIfPresent (m_erpInformation, i);
-  i = m_rates.extended.DeserializeIfPresent (i);
+  i = WifiInformationElement::DeserializeIfPresent (m_rates.extended, i, &m_rates);
   i = WifiInformationElement::DeserializeIfPresent (m_edcaParameterSet, i);
   i = WifiInformationElement::DeserializeIfPresent (m_extendedCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
