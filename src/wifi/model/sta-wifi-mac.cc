@@ -314,21 +314,21 @@ StaWifiMac::GetAssociationRequest (bool isReassoc, uint8_t linkId) const
   return mgtFrame;
 }
 
-Ptr<MultiLinkElement>
+MultiLinkElement
 StaWifiMac::GetMultiLinkElement (bool isReassoc, uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << isReassoc << +linkId);
 
-  auto multiLinkElement = Create<MultiLinkElement> (MultiLinkElement::BASIC_VARIANT,
-                                                    isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST
-                                                              : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+  MultiLinkElement multiLinkElement (MultiLinkElement::BASIC_VARIANT,
+                                     isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST
+                                               : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
   // The Common info field of the Basic Multi-Link element carried in the (Re)Association
   // Request frame shall include the MLD MAC address, the MLD Capabilities and Operations,
   // and the EML Capabilities subfields, and shall not include the Link ID Info, the BSS
   // Parameters Change Count, and the Medium Synchronization Delay Information subfields
   // (Sec. 35.3.5.4 of 802.11be D2.0)
   // TODO Add the MLD Capabilities and Operations and the EML Capabilities subfields
-  multiLinkElement->SetMldMacAddress (GetAddress ());
+  multiLinkElement.SetMldMacAddress (GetAddress ());
   // For each requested link in addition to the link on which the (Re)Association Request
   // frame is transmitted, the Link Info field of the Basic Multi-Link element carried
   // in the (Re)Association Request frame shall contain the corresponding Per-STA Profile
@@ -338,8 +338,8 @@ StaWifiMac::GetMultiLinkElement (bool isReassoc, uint8_t linkId) const
       auto& link = GetLink (index);
       if (index != linkId && link.apLinkId.has_value ())
         {
-          multiLinkElement->AddPerStaProfileSubelement ();
-          auto& perStaProfile = multiLinkElement->GetPerStaProfile (multiLinkElement->GetNPerStaProfileSubelements () - 1);
+          multiLinkElement.AddPerStaProfileSubelement ();
+          auto& perStaProfile = multiLinkElement.GetPerStaProfile (multiLinkElement.GetNPerStaProfileSubelements () - 1);
           // The Link ID subfield of the STA Control field of the Per-STA Profile subelement
           // for the corresponding non-AP STA that requests a link for multi-link (re)setup
           // with the AP MLD is set to the link ID of the AP affiliated with the AP MLD that
@@ -941,7 +941,7 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
         }
 
       // if a Multi-Link Element is present, check its content
-      if (auto mle = assocResp.GetMultiLinkElement (); mle != nullptr)
+      if (const auto& mle = assocResp.GetMultiLinkElement (); mle.has_value ())
         {
           NS_ABORT_MSG_IF (!GetLink (linkId).apLinkId.has_value (),
                           "The link on which the Association Response was received "

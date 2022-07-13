@@ -244,7 +244,7 @@ WifiAssocManager::GetSetupLinks (const StaWifiMac::ApInfo& apInfo)
 }
 
 bool
-WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, OptRnrConstRef& rnr)
+WifiAssocManager::CanSetupMultiLink (OptMleConstRef& mle, OptRnrConstRef& rnr)
 {
   NS_LOG_FUNCTION (this);
 
@@ -268,7 +268,7 @@ WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, OptRnrConstRef&
       rnr = probeResp->GetReducedNeighborReport ();
     }
 
-  if (mle == nullptr)
+  if (!mle.has_value ())
     {
       NS_LOG_DEBUG ("No Multi-Link Element in Beacon/Probe Response");
       return false;
@@ -282,7 +282,7 @@ WifiAssocManager::CanSetupMultiLink (Ptr<MultiLinkElement>& mle, OptRnrConstRef&
 
   // The Multi-Link Element must contain the MLD MAC Address subfield and the
   // Link ID Info subfield
-  if (!mle->HasLinkIdInfo ())
+  if (!mle->get ().HasLinkIdInfo ())
     {
       NS_LOG_DEBUG ("No Link ID Info subfield in the Multi-Link Element");
       return false;

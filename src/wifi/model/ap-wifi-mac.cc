@@ -622,16 +622,16 @@ ApWifiMac::GetReducedNeighborReport (uint8_t linkId) const
   return rnr;
 }
 
-Ptr<MultiLinkElement>
+MultiLinkElement
 ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType, const Mac48Address& to)
 {
   NS_LOG_FUNCTION (this << +linkId << frameType << to);
   NS_ABORT_IF (GetNLinks () == 1);
 
-  auto mle = Create<MultiLinkElement> (MultiLinkElement::BASIC_VARIANT, frameType);
-  mle->SetMldMacAddress (GetAddress ());
-  mle->SetLinkIdInfo (linkId);
-  mle->SetBssParamsChangeCount (0);
+  MultiLinkElement mle (MultiLinkElement::BASIC_VARIANT, frameType);
+  mle.SetMldMacAddress (GetAddress ());
+  mle.SetLinkIdInfo (linkId);
+  mle.SetBssParamsChangeCount (0);
 
   // if the Multi-Link Element is being inserted in a (Re)Association Response frame
   // and the remote station is affiliated with an MLD, try multi-link setup
@@ -654,8 +654,8 @@ ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType, const Mac
               // of the Basic Multi-Link element carried in the (Re)Association
               // Response frame shall contain the corresponding Per-STA Profile
               // subelement(s) (Sec. 35.3.5.4 of 802.11be D2.0)
-              mle->AddPerStaProfileSubelement ();
-              auto& perStaProfile = mle->GetPerStaProfile (mle->GetNPerStaProfileSubelements () - 1);
+              mle.AddPerStaProfileSubelement ();
+              auto& perStaProfile = mle.GetPerStaProfile (mle.GetNPerStaProfileSubelements () - 1);
               // The Link ID subfield of the STA Control field of the Per-STA Profile
               // subelement for the AP corresponding to a link is set to the link ID
               // of the AP affiliated with the AP MLD that is operating on that link.
@@ -1591,9 +1591,9 @@ ApWifiMac::ParseReportedStaInfo (const AssocReqRefVariant& assoc,
   auto recvMle =
     [&](auto&& frame)
     {
-      Ptr<MultiLinkElement> mle = frame.get ().GetMultiLinkElement ();
+      const auto& mle = frame.get ().GetMultiLinkElement ();
 
-      if (mle == nullptr)
+      if (!mle.has_value ())
         {
           return;
         }

@@ -405,7 +405,7 @@ private:
    * \param linkId the ID of the given link
    * \return the Multi-Link Element
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (bool isReassoc, uint8_t linkId) const;
+  MultiLinkElement GetMultiLinkElement (bool isReassoc, uint8_t linkId) const;
   /**
    * Set the current MAC state.
    *

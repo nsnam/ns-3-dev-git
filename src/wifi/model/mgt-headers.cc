@@ -539,9 +539,15 @@ MgtProbeResponseHeader::SetReducedNeighborReport (ReducedNeighborReport&& reduce
 }
 
 void
-MgtProbeResponseHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+MgtProbeResponseHeader::SetMultiLinkElement (const MultiLinkElement& multiLinkElement)
 {
   m_multiLinkElement = multiLinkElement;
+}
+
+void
+MgtProbeResponseHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement)
+{
+  m_multiLinkElement = std::move (multiLinkElement);
 }
 
 const std::optional<EdcaParameterSet>&
@@ -562,7 +568,7 @@ MgtProbeResponseHeader::GetReducedNeighborReport (void) const
   return m_reducedNeighborReport;
 }
 
-Ptr<MultiLinkElement>
+const std::optional<MultiLinkElement>&
 MgtProbeResponseHeader::GetMultiLinkElement (void) const
 {
   return m_multiLinkElement;
@@ -607,8 +613,8 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
   if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
+  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
-  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -650,8 +656,8 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
   if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
+  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
-  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
@@ -677,9 +683,8 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_muEdcaParameterSet, i);
+  i = WifiInformationElement::DeserializeIfPresent (m_multiLinkElement, i, WIFI_MAC_MGT_BEACON);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
-  i = (m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_BEACON))->DeserializeIfPresent (tmp = i);
-  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
 
   return i.GetDistanceFrom (start);
 }
@@ -858,12 +863,18 @@ MgtAssocRequestHeader::GetEhtCapabilities (void) const
 }
 
 void
-MgtAssocRequestHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+MgtAssocRequestHeader::SetMultiLinkElement (const MultiLinkElement& multiLinkElement)
 {
   m_multiLinkElement = multiLinkElement;
 }
 
-Ptr<MultiLinkElement>
+void
+MgtAssocRequestHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement)
+{
+  m_multiLinkElement = std::move (multiLinkElement);
+}
+
+const std::optional<MultiLinkElement>&
 MgtAssocRequestHeader::GetMultiLinkElement (void) const
 {
   return m_multiLinkElement;
@@ -917,8 +928,8 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
+  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
-  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -947,8 +958,8 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
+  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
-  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
@@ -964,10 +975,9 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
+  i = WifiInformationElement::DeserializeIfPresent (m_multiLinkElement, i,
+                                                    WIFI_MAC_MGT_ASSOCIATION_REQUEST);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
-  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
-  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 
@@ -1126,12 +1136,18 @@ MgtReassocRequestHeader::GetEhtCapabilities (void) const
 }
 
 void
-MgtReassocRequestHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+MgtReassocRequestHeader::SetMultiLinkElement (const MultiLinkElement& multiLinkElement)
 {
   m_multiLinkElement = multiLinkElement;
 }
 
-Ptr<MultiLinkElement>
+void
+MgtReassocRequestHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement)
+{
+  m_multiLinkElement = std::move (multiLinkElement);
+}
+
+const std::optional<MultiLinkElement>&
 MgtReassocRequestHeader::GetMultiLinkElement (void) const
 {
   return m_multiLinkElement;
@@ -1192,8 +1208,8 @@ MgtReassocRequestHeader::GetSerializedSize (void) const
   if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
   if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
+  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
-  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -1224,8 +1240,8 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
   if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
+  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
-  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
@@ -1242,10 +1258,9 @@ MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_htCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_vhtCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
+  i = WifiInformationElement::DeserializeIfPresent (m_multiLinkElement, i,
+                                                    WIFI_MAC_MGT_REASSOCIATION_REQUEST);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
-  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_REASSOCIATION_REQUEST);
-  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
-  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 
@@ -1458,12 +1473,18 @@ MgtAssocResponseHeader::GetEhtCapabilities (void) const
 }
 
 void
-MgtAssocResponseHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+MgtAssocResponseHeader::SetMultiLinkElement (const MultiLinkElement& multiLinkElement)
 {
   m_multiLinkElement = multiLinkElement;
 }
 
-Ptr<MultiLinkElement>
+void
+MgtAssocResponseHeader::SetMultiLinkElement (MultiLinkElement&& multiLinkElement)
+{
+  m_multiLinkElement = std::move (multiLinkElement);
+}
+
+const std::optional<MultiLinkElement>&
 MgtAssocResponseHeader::GetMultiLinkElement (void) const
 {
   return m_multiLinkElement;
@@ -1571,8 +1592,8 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
   if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
   if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
+  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
   if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
-  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -1612,8 +1633,8 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
   if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
   if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
+  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
   if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
-  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
@@ -1635,10 +1656,9 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = WifiInformationElement::DeserializeIfPresent (m_heCapability, i);
   i = WifiInformationElement::DeserializeIfPresent (m_heOperation, i);
   i = WifiInformationElement::DeserializeIfPresent (m_muEdcaParameterSet, i);
+  i = WifiInformationElement::DeserializeIfPresent (m_multiLinkElement, i,
+                                                    WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
   i = WifiInformationElement::DeserializeIfPresent (m_ehtCapability, i);
-  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
-  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
-  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 

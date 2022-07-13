@@ -147,7 +147,11 @@ public:
    *
    * \param multiLinkElement the Multi-Link Element information element
    */
-  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  void SetMultiLinkElement (const MultiLinkElement& multiLinkElement);
+
+  /** \copydoc SetMultiLinkElement */
+  void SetMultiLinkElement (MultiLinkElement&& multiLinkElement);
+
   /**
    * Return the Capability information.
    *
@@ -203,13 +207,11 @@ public:
    */
   uint16_t GetListenInterval (void) const;
   /**
-   * Return the Multi-Link Element information element, if present, or a null
-   * pointer, otherwise.
+   * Return the Multi-Link Element information element, if present.
    *
-   * \return the Multi-Link Element information element, if present, or a null
-   *         pointer, otherwise
+   * \return the Multi-Link Element information element, if present
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
 
   /**
    * Register this type.
@@ -234,7 +236,7 @@ private:
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
-  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
+  std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -340,7 +342,11 @@ public:
    *
    * \param multiLinkElement the Multi-Link Element information element
    */
-  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  void SetMultiLinkElement (const MultiLinkElement& multiLinkElement);
+
+  /** \copydoc SetMultiLinkElement */
+  void SetMultiLinkElement (MultiLinkElement&& multiLinkElement);
+
   /**
    * Return the Capability information.
    *
@@ -390,13 +396,11 @@ public:
    */
   const SupportedRates& GetSupportedRates (void) const;
   /**
-   * Return the Multi-Link Element information element, if present, or a null
-   * pointer, otherwise.
+   * Return the Multi-Link Element information element, if present.
    *
-   * \return the Multi-Link Element information element, if present, or a null
-   *         pointer, otherwise
+   * \return the Multi-Link Element information element, if present
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
   /**
    * Return the listen interval.
    *
@@ -433,7 +437,7 @@ private:
   std::optional<HeCapabilities> m_heCapability;   //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
-  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
+  std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -514,13 +518,11 @@ public:
    */
   const std::optional<EhtCapabilities>& GetEhtCapabilities (void) const;
   /**
-   * Return the Multi-Link Element information element, if present, or a null
-   * pointer, otherwise.
+   * Return the Multi-Link Element information element, if present.
    *
-   * \return the Multi-Link Element information element, if present, or a null
-   *         pointer, otherwise
+   * \return the Multi-Link Element information element, if present
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
   /**
    * Return the association ID.
    *
@@ -694,7 +696,10 @@ public:
    *
    * \param multiLinkElement the Multi-Link Element information element
    */
-  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  void SetMultiLinkElement (const MultiLinkElement& multiLinkElement);
+
+  /** \copydoc SetMultiLinkElement */
+  void SetMultiLinkElement (MultiLinkElement&& multiLinkElement);
 
   /**
    * Register this type.
@@ -724,7 +729,7 @@ private:
   std::optional<HeOperation> m_heOperation;     //!< HE operation
   std::optional<MuEdcaParameterSet> m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
-  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
+  std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -993,13 +998,11 @@ public:
    */
   const std::optional<ReducedNeighborReport>& GetReducedNeighborReport (void) const;
   /**
-   * Return the Multi-Link Element information element, if present, or a null
-   * pointer, otherwise.
+   * Return the Multi-Link Element information element, if present.
    *
-   * \return the Multi-Link Element information element, if present, or a null
-   *         pointer, otherwise
+   * \return the Multi-Link Element information element, if present
    */
-  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  const std::optional<MultiLinkElement>& GetMultiLinkElement (void) const;
   /**
    * Set the Capability information.
    *
@@ -1172,7 +1175,11 @@ public:
    *
    * \param multiLinkElement the Multi-Link Element information element
    */
-  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  void SetMultiLinkElement (const MultiLinkElement& multiLinkElement);
+
+  /** \copydoc SetMultiLinkElement */
+  void SetMultiLinkElement (MultiLinkElement&& multiLinkElement);
+
   /**
    * Return the time stamp.
    *
@@ -1211,7 +1218,7 @@ private:
   std::optional<MuEdcaParameterSet> m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   std::optional<EhtCapabilities> m_ehtCapability; //!< EHT capabilities
   std::optional<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
-  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
+  std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 

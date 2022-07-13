@@ -105,7 +105,7 @@ WifiDefaultAssocManager::EndScanning (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<MultiLinkElement> mle;
+  OptMleConstRef mle;
   OptRnrConstRef rnr;
   std::list<WifiAssocManager::RnrLinkInfo> apList;
 
@@ -121,11 +121,11 @@ WifiDefaultAssocManager::EndScanning (void)
   // store AP MLD MAC address in the WifiRemoteStationManager associated with
   // the link on which the Beacon/Probe Response was received
   m_mac->GetWifiRemoteStationManager (bestAp.m_linkId)->SetMldAddress (bestAp.m_apAddr,
-                                                                       mle->GetMldMacAddress ());
+                                                                       mle->get ().GetMldMacAddress ());
   auto& setupLinks = GetSetupLinks (bestAp);
 
   setupLinks.clear ();
-  setupLinks.push_back ({bestAp.m_linkId, mle->GetLinkIdInfo ()});
+  setupLinks.push_back ({bestAp.m_linkId, mle->get ().GetLinkIdInfo ()});
 
   // sort local PHY objects so that radios with constrained PHY band comes first,
   // then radios with no constraint
@@ -176,7 +176,7 @@ WifiDefaultAssocManager::EndScanning (void)
           m_mac->SetBssid (bssid, linkId);
           // store AP MLD MAC address in the WifiRemoteStationManager associated with
           // the link requested to setup
-          m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->GetMldMacAddress ());
+          m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->get ().GetMldMacAddress ());
           setupLinks.push_back ({linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
 
           // switch this link to using the channel used by a reported AP
