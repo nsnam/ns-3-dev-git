@@ -48,7 +48,7 @@ HeOperation::ElementIdExt () const
   return IE_EXT_HE_OPERATION;
 }
 
-uint8_t
+uint16_t
 HeOperation::GetInformationFieldSize () const
 {
   return 7;
@@ -133,8 +133,8 @@ HeOperation::SerializeInformationField (Buffer::Iterator start) const
   //todo: VHT Operation Information (variable)
 }
 
-uint8_t
-HeOperation::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+HeOperation::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   uint32_t heOperationParameters = i.ReadLsbtohU32 ();

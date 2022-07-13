@@ -283,7 +283,7 @@ EdcaParameterSet::GetVoTxopLimit (void) const
   return (m_acVO >> 16);
 }
 
-uint8_t
+uint16_t
 EdcaParameterSet::GetInformationFieldSize () const
 {
   return 18;
@@ -300,8 +300,8 @@ EdcaParameterSet::SerializeInformationField (Buffer::Iterator start) const
   start.WriteU32 (m_acVO);
 }
 
-uint8_t
-EdcaParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+EdcaParameterSet::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_qosInfo = i.ReadU8 ();

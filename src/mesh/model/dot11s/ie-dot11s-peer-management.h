@@ -115,9 +115,9 @@ public:
 
   // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
-  virtual uint8_t GetInformationFieldSize (void) const;
+  virtual uint16_t GetInformationFieldSize (void) const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
+  virtual uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length);
   virtual void Print (std::ostream& os) const;
 
 private:

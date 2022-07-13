@@ -64,8 +64,8 @@ IePerr::SerializeInformationField (Buffer::Iterator i) const
       i.WriteU8 (0);
     }
 }
-uint8_t
-IePerr::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IePerr::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   i.Next (1); //TTL //Mode flags is not used now
@@ -84,10 +84,10 @@ IePerr::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 
-uint8_t
+uint16_t
 IePerr::GetInformationFieldSize () const
 {
-  uint8_t retval = 1 //TTL   //ModeFlags
+  uint16_t retval = 1 //TTL   //ModeFlags
     + 1   //NumOfDests
     + 1  * m_addressUnits.size () //ModeFlags
     + (6 + 4) * m_addressUnits.size ()

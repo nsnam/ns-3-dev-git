@@ -61,7 +61,7 @@ VhtCapabilities::ElementId () const
   return IE_VHT_CAPABILITIES;
 }
 
-uint8_t
+uint16_t
 VhtCapabilities::GetInformationFieldSize () const
 {
   return 12;
@@ -75,9 +75,9 @@ VhtCapabilities::SerializeInformationField (Buffer::Iterator start) const
   start.WriteHtolsbU64 (GetSupportedMcsAndNssSet ());
 }
 
-uint8_t
+uint16_t
 VhtCapabilities::DeserializeInformationField (Buffer::Iterator start,
-                                              uint8_t length)
+                                              uint16_t length)
 {
   Buffer::Iterator i = start;
   uint32_t vhtinfo = i.ReadLsbtohU32 ();

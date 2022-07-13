@@ -132,7 +132,7 @@ MuEdcaParameterSet::GetMuEdcaTimer (uint8_t aci) const
   return MicroSeconds (m_records[aci].muEdcaTimer * 8192);
 }
 
-uint8_t
+uint16_t
 MuEdcaParameterSet::GetInformationFieldSize () const
 {
   // ElementIdExt (1) + QoS Info (1) + MU Parameter Records (4 * 3)
@@ -151,8 +151,8 @@ MuEdcaParameterSet::SerializeInformationField (Buffer::Iterator start) const
     }
 }
 
-uint8_t
-MuEdcaParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+MuEdcaParameterSet::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_qosInfo = i.ReadU8 ();

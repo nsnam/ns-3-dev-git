@@ -135,7 +135,7 @@ HeCapabilities::ElementIdExt () const
   return IE_EXT_HE_CAPABILITIES;
 }
 
-uint8_t
+uint16_t
 HeCapabilities::GetInformationFieldSize () const
 {
   // IEEE 802.11ax-2021 9.4.2.248 HE Capabilities element
@@ -160,8 +160,8 @@ HeCapabilities::SerializeInformationField (Buffer::Iterator start) const
   // TODO: optional PPE Threshold field (variable length)
 }
 
-uint8_t
-HeCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+HeCapabilities::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   uint32_t macCapabilities1 = i.ReadLsbtohU32 ();

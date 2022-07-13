@@ -38,9 +38,6 @@ public:
   // Implementations of pure virtual methods of WifiInformationElement
   WifiInformationElementId ElementId () const override;
   WifiInformationElementId ElementIdExt () const override;
-  uint8_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator start) const override;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
 
   /**
    * Set the HE MAC Capabilities Info field in the HE Capabilities information element.
@@ -210,6 +207,10 @@ public:
 
 
 private:
+  uint16_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator start) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+
   // MAC Capabilities Info fields
   // IEEE 802.11ax-2021 9.4.2.248.2 HE MAC Capabilities Information field
   uint8_t m_plusHtcHeSupport;                            //!< HTC HE support

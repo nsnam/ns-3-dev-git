@@ -178,9 +178,9 @@ public:
 
   WifiInformationElementId ElementId () const override;
   WifiInformationElementId ElementIdExt () const override;
-  uint8_t GetInformationFieldSize () const override;
+  uint16_t GetInformationFieldSize () const override;
   void SerializeInformationField (Buffer::Iterator start) const override;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
 
   /**
    * Get the Multi-Link element variant
@@ -460,9 +460,9 @@ public:
     uint8_t GetStaInfoLength (void) const;
 
   private:
-    uint8_t GetInformationFieldSize () const override;
+    uint16_t GetInformationFieldSize () const override;
     void SerializeInformationField (Buffer::Iterator start) const override;
-    uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
+    uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
 
     Variant m_variant;                    //!< Multi-Link element variant
     WifiMacType m_frameType;              //!< type of the frame containing the Multi-Link Element

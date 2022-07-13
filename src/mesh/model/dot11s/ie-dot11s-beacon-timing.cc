@@ -122,7 +122,7 @@ IeBeaconTiming::ClearTimingElement ()
     }
   m_neighbours.clear ();
 }
-uint8_t
+uint16_t
 IeBeaconTiming::GetInformationFieldSize () const
 {
   return (5 * m_numOfUnits );
@@ -148,8 +148,8 @@ IeBeaconTiming::SerializeInformationField (Buffer::Iterator i) const
       i.WriteHtolsbU16 ((*j)->GetBeaconInterval ());
     }
 }
-uint8_t
-IeBeaconTiming::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IeBeaconTiming::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_numOfUnits = length / 5;

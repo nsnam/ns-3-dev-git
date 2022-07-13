@@ -157,8 +157,8 @@ IePrep::SerializeInformationField (Buffer::Iterator i) const
   WriteTo (i, m_originatorAddress);
   i.WriteHtolsbU32 (m_originatorSeqNumber);
 }
-uint8_t
-IePrep::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IePrep::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -172,7 +172,7 @@ IePrep::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
   m_originatorSeqNumber = i.ReadLsbtohU32 ();
   return i.GetDistanceFrom (start);
 }
-uint8_t
+uint16_t
 IePrep::GetInformationFieldSize () const
 {
   uint32_t retval = 1 //Flags

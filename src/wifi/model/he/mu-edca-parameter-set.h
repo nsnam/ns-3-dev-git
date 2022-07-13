@@ -38,6 +38,9 @@ class MuEdcaParameterSet : public WifiInformationElement
 public:
   MuEdcaParameterSet ();
 
+  WifiInformationElementId ElementId () const override;
+  WifiInformationElementId ElementIdExt () const override;
+
   /**
    * Set the QoS Info field in the MuEdcaParameterSet information element.
    *
@@ -123,35 +126,11 @@ public:
    */
   Time GetMuEdcaTimer (uint8_t aci) const;
 
-  /**
-   * Get the wifi information element ID
-   * \return the wifi information element ID
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Get the wifi information element ID extension
-   * \return the wifi information element ID extension
-   */
-  WifiInformationElementId ElementIdExt () const;
-  /**
-   * Get information field size function
-   * \return the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize information field function
-   * \param start the iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Deserialize information field function
-   * \param start the iterator
-   * \param length the length
-   * \return the size
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-
 private:
+  uint16_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator start) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+
   /**
    * MU AC Parameter Record type
    */

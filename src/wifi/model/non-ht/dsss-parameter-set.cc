@@ -39,7 +39,7 @@ DsssParameterSet::SetCurrentChannel (uint8_t currentChannel)
   m_currentChannel = currentChannel;
 }
 
-uint8_t
+uint16_t
 DsssParameterSet::GetInformationFieldSize () const
 {
   return 1;
@@ -51,8 +51,8 @@ DsssParameterSet::SerializeInformationField (Buffer::Iterator start) const
   start.WriteU8 (m_currentChannel);
 }
 
-uint8_t
-DsssParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+DsssParameterSet::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_currentChannel = i.ReadU8 ();

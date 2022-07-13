@@ -92,7 +92,7 @@ Ssid::ElementId () const
   return IE_SSID;
 }
 
-uint8_t
+uint16_t
 Ssid::GetInformationFieldSize () const
 {
   return m_length;
@@ -105,9 +105,9 @@ Ssid::SerializeInformationField (Buffer::Iterator start) const
   start.Write (m_ssid, m_length);
 }
 
-uint8_t
+uint16_t
 Ssid::DeserializeInformationField (Buffer::Iterator start,
-                                   uint8_t length)
+                                   uint16_t length)
 {
   m_length = length;
   NS_ASSERT (m_length <= 32);

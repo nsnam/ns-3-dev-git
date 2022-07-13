@@ -179,7 +179,7 @@ SupportedRates::ElementId () const
   return IE_SUPPORTED_RATES;
 }
 
-uint8_t
+uint16_t
 SupportedRates::GetInformationFieldSize () const
 {
   //The Supported Rates Information Element contains only the first 8
@@ -197,9 +197,9 @@ SupportedRates::SerializeInformationField (Buffer::Iterator start) const
   start.Write (m_rates, m_nRates > 8 ? 8 : m_nRates);
 }
 
-uint8_t
+uint16_t
 SupportedRates::DeserializeInformationField (Buffer::Iterator start,
-                                             uint8_t length)
+                                             uint16_t length)
 {
   NS_ASSERT (length <= 8);
   m_nRates = length;
@@ -228,7 +228,7 @@ ExtendedSupportedRatesIE::SetSupportedRates (SupportedRates *sr)
   m_supportedRates = sr;
 }
 
-uint8_t
+uint16_t
 ExtendedSupportedRatesIE::GetInformationFieldSize () const
 {
   // If there are 8 or fewer rates then we don't need an Extended Supported
@@ -251,9 +251,9 @@ ExtendedSupportedRatesIE::SerializeInformationField (Buffer::Iterator start) con
   start.Write (m_supportedRates->m_rates + 8, m_supportedRates->m_nRates - 8);
 }
 
-uint8_t
+uint16_t
 ExtendedSupportedRatesIE::DeserializeInformationField (Buffer::Iterator start,
-                                                       uint8_t length)
+                                                       uint16_t length)
 {
   NS_ASSERT (length > 0);
   NS_ASSERT (m_supportedRates->m_nRates + length <= SupportedRates::MAX_SUPPORTED_RATES);

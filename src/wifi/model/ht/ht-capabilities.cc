@@ -245,7 +245,7 @@ HtCapabilities::GetRxHighestSupportedAntennas (void) const
   return 4;
 }
 
-uint8_t
+uint16_t
 HtCapabilities::GetInformationFieldSize () const
 {
   return 26;
@@ -484,9 +484,9 @@ HtCapabilities::SerializeInformationField (Buffer::Iterator start) const
   start.WriteU8 (GetAntennaSelectionCapabilities ());
 }
 
-uint8_t
+uint16_t
 HtCapabilities::DeserializeInformationField (Buffer::Iterator start,
-                                             uint8_t length)
+                                             uint16_t length)
 {
   Buffer::Iterator i = start;
   uint16_t htinfo = i.ReadLsbtohU16 ();

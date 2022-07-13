@@ -96,9 +96,9 @@ public:
 
   // Implementations of pure virtual methods of WifiInformationElement
   WifiInformationElementId ElementId () const override;
-  uint8_t GetInformationFieldSize () const override;
+  uint16_t GetInformationFieldSize () const override;
   void SerializeInformationField (Buffer::Iterator start) const override;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
 
   /**
    * Get the number of Neighbor AP Information fields

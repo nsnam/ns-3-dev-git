@@ -82,7 +82,7 @@ IeMeshId::PeekString (void) const
 {
   return (char *) m_meshId;
 }
-uint8_t
+uint16_t
 IeMeshId::GetInformationFieldSize (void) const
 {
   uint8_t size = 0;
@@ -103,8 +103,8 @@ IeMeshId::SerializeInformationField (Buffer::Iterator i) const
       size++;
     }
 }
-uint8_t
-IeMeshId::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IeMeshId::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   NS_ASSERT (length <= 32);

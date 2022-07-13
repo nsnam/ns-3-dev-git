@@ -249,8 +249,8 @@ IePreq::SerializeInformationField (Buffer::Iterator i) const
         }
     }
 }
-uint8_t
-IePreq::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IePreq::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -291,10 +291,10 @@ IePreq::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
     }
   return i.GetDistanceFrom (start);
 }
-uint8_t
+uint16_t
 IePreq::GetInformationFieldSize () const
 {
-  uint8_t retval = 1 //Flags
+  uint16_t retval = 1 //Flags
     + 1   //Hopcount
     + 1   //TTL
     + 4   //PREQ ID

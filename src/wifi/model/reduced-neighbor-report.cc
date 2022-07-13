@@ -586,10 +586,10 @@ ReducedNeighborReport::ReadTbttInformationCount (std::size_t nbrApInfoId) const
   return 1 + m_nbrApInfoFields.at (nbrApInfoId).tbttInfoHdr.tbttInfoCount;
 }
 
-uint8_t
+uint16_t
 ReducedNeighborReport::GetInformationFieldSize () const
 {
-  uint8_t size = 0;
+  uint16_t size = 0;
 
   for (const auto& neighborApInfo : m_nbrApInfoFields)
     {
@@ -676,11 +676,11 @@ ReducedNeighborReport::SerializeInformationField (Buffer::Iterator start) const
     }
 }
 
-uint8_t
-ReducedNeighborReport::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+ReducedNeighborReport::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
-  uint8_t count = 0;
+  uint16_t count = 0;
 
   while (count < length)
     {

@@ -38,9 +38,6 @@ public:
 
   // Implementations of pure virtual methods of WifiInformationElement
   WifiInformationElementId ElementId () const override;
-  uint8_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator start) const override;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
 
   /**
    * Set the VHT Capabilities Info field in the VHT Capabilities information element.
@@ -211,6 +208,10 @@ public:
 
 
 private:
+  uint16_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator start) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+
   //Capabilities Info fields
   uint8_t m_maxMpduLength;               ///< maximum MPDU length
   uint8_t m_supportedChannelWidthSet;    ///< supported channel width set

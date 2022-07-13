@@ -69,7 +69,7 @@ ErpInformation::GetNonErpPresent (void) const
   return (m_erpInformation & 0x01);
 }
 
-uint8_t
+uint16_t
 ErpInformation::GetInformationFieldSize () const
 {
   return 1;
@@ -81,9 +81,9 @@ ErpInformation::SerializeInformationField (Buffer::Iterator start) const
   start.WriteU8 (m_erpInformation);
 }
 
-uint8_t
+uint16_t
 ErpInformation::DeserializeInformationField (Buffer::Iterator start,
-                                             uint8_t length)
+                                             uint16_t length)
 {
   Buffer::Iterator i = start;
   m_erpInformation = i.ReadU8 ();

@@ -79,7 +79,7 @@ IePeerManagement::GetPeerLinkId () const
   return m_peerLinkId;
 }
 
-uint8_t
+uint16_t
 IePeerManagement::GetInformationFieldSize (void) const
 {
   return m_length;
@@ -119,8 +119,8 @@ IePeerManagement::SerializeInformationField (Buffer::Iterator i) const
       i.WriteHtolsbU16 (m_reasonCode);
     }
 }
-uint8_t
-IePeerManagement::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+IePeerManagement::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   m_subtype = i.ReadU8 ();

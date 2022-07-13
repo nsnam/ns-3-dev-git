@@ -62,7 +62,7 @@ HtOperation::ElementId () const
   return IE_HT_OPERATION;
 }
 
-uint8_t
+uint16_t
 HtOperation::GetInformationFieldSize () const
 {
   return 22;
@@ -438,9 +438,9 @@ HtOperation::SerializeInformationField (Buffer::Iterator start) const
   start.WriteHtolsbU64 (GetBasicMcsSet2 ());
 }
 
-uint8_t
+uint16_t
 HtOperation::DeserializeInformationField (Buffer::Iterator start,
-                                          uint8_t length)
+                                          uint16_t length)
 {
   Buffer::Iterator i = start;
   uint8_t primarychannel = i.ReadU8 ();

@@ -336,7 +336,7 @@ private:
    *
    * \return the length of serialized information
    */
-  virtual uint8_t GetInformationFieldSize () const = 0;
+  virtual uint16_t GetInformationFieldSize () const = 0;
   /**
    * Serialize information (i.e., the body of the IE, not including
    * the Element ID and length octets)
@@ -350,12 +350,12 @@ private:
    * the Element ID and length octets)
    *
    * \param start an iterator which points to where the information should be written.
-   * \param length
+   * \param length the expected number of bytes to read
    *
    * \return the number of bytes read
    */
-  virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                               uint8_t length) = 0;
+  virtual uint16_t DeserializeInformationField (Buffer::Iterator start,
+                                               uint16_t length) = 0;
 };
 
 } //namespace ns3

@@ -103,7 +103,7 @@ ExtendedCapabilities::SetVhtSupported (uint8_t vhtSupported)
   m_vhtSupported = vhtSupported;
 }
 
-uint8_t
+uint16_t
 ExtendedCapabilities::GetInformationFieldSize () const
 {
   //we should not be here if it is not supported
@@ -347,8 +347,8 @@ ExtendedCapabilities::SerializeInformationField (Buffer::Iterator start) const
     }
 }
 
-uint8_t
-ExtendedCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+ExtendedCapabilities::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   uint8_t byte1 = i.ReadU8 ();

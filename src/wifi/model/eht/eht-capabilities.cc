@@ -38,7 +38,7 @@ EhtCapabilities::ElementIdExt () const
   return IE_EXT_EHT_CAPABILITIES;
 }
 
-uint8_t
+uint16_t
 EhtCapabilities::GetInformationFieldSize () const
 {
   return 1; //FIXME
@@ -50,8 +50,8 @@ EhtCapabilities::SerializeInformationField (Buffer::Iterator start) const
   //TODO
 }
 
-uint8_t
-EhtCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+EhtCapabilities::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   //TODO
   return length;

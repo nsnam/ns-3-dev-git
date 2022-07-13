@@ -37,11 +37,12 @@ public:
   // Implementations of pure virtual methods, or overridden from base class.
   WifiInformationElementId ElementId () const override;
   WifiInformationElementId ElementIdExt () const override;
-  uint8_t GetInformationFieldSize () const override;
-  void SerializeInformationField (Buffer::Iterator start) const override;
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length) override;
 
 private:
+  uint16_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator start) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+
   //TODO: add fields
 };
 

@@ -21,7 +21,7 @@
 #include "ie-dot11s-peering-protocol.h"
 namespace ns3 {
 namespace dot11s {
-uint8_t
+uint16_t
 IePeeringProtocol::GetInformationFieldSize () const
 {
   return 1;
@@ -40,8 +40,8 @@ IePeeringProtocol::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (m_protocol);
 }
-uint8_t
-IePeeringProtocol::DeserializeInformationField (Buffer::Iterator i, uint8_t length)
+uint16_t
+IePeeringProtocol::DeserializeInformationField (Buffer::Iterator i, uint16_t length)
 {
   Buffer::Iterator start = i;
   m_protocol = i.ReadU8 ();

@@ -91,7 +91,7 @@ WifiInformationElement::DeserializeIfPresent (Buffer::Iterator i)
       return start;
     }
 
-  uint8_t length = i.ReadU8 ();
+  uint16_t length = i.ReadU8 ();
   if (ElementId () == IE_EXTENSION)
   {
     uint8_t elementIdExt = i.ReadU8 ();

@@ -518,10 +518,10 @@ MultiLinkElement::PerStaProfileSubelement::ElementId () const
   return PER_STA_PROFILE_SUBELEMENT_ID;
 }
 
-uint8_t
+uint16_t
 MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize (void) const
 {
-  uint8_t ret = 2;   // STA Control field
+  uint16_t ret = 2;   // STA Control field
 
   ret += GetStaInfoLength ();
 
@@ -550,11 +550,11 @@ MultiLinkElement::PerStaProfileSubelement::SerializeInformationField (Buffer::It
     }
 }
 
-uint8_t
-MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
-  uint8_t count = 0;
+  uint16_t count = 0;
 
   m_staControl = i.ReadLsbtohU16 ();
   count += 2;
@@ -622,10 +622,10 @@ MultiLinkElement::GetPerStaProfile (std::size_t i) const
   return m_perStaProfileSubelements.at (i);
 }
 
-uint8_t
+uint16_t
 MultiLinkElement::GetInformationFieldSize () const
 {
-  uint8_t ret = 3;  // ElementIdExt (1) + Multi-Link Control (2)
+  uint16_t ret = 3;  // ElementIdExt (1) + Multi-Link Control (2)
 
   // add the Common Info field size (dependent on the Multi-Link Element variant)
   ret += std::visit ([](auto&& arg) -> uint8_t
@@ -676,11 +676,11 @@ MultiLinkElement::SerializeInformationField (Buffer::Iterator start) const
     }
 }
 
-uint8_t
-MultiLinkElement::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+MultiLinkElement::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
-  uint8_t count = 0;
+  uint16_t count = 0;
 
   uint16_t mlControl = i.ReadLsbtohU16 ();
   count += 2;

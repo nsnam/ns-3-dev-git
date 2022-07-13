@@ -36,7 +36,7 @@ VhtOperation::ElementId () const
   return IE_VHT_OPERATION;
 }
 
-uint8_t
+uint16_t
 VhtOperation::GetInformationFieldSize () const
 {
   return 5;
@@ -114,8 +114,8 @@ VhtOperation::SerializeInformationField (Buffer::Iterator start) const
   start.WriteU16 (GetBasicVhtMcsAndNssSet ());
 }
 
-uint8_t
-VhtOperation::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
+uint16_t
+VhtOperation::DeserializeInformationField (Buffer::Iterator start, uint16_t length)
 {
   Buffer::Iterator i = start;
   uint8_t channelWidth = i.ReadU8 ();

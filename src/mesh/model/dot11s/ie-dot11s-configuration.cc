@@ -104,7 +104,7 @@ IeConfiguration::IeConfiguration () :
     SYNC_NEIGHBOUR_OFFSET), m_APId (AUTH_NULL), m_neighbors (0)
 {
 }
-uint8_t
+uint16_t
 IeConfiguration::GetInformationFieldSize () const
 {
    return 0   // Version
@@ -132,8 +132,8 @@ IeConfiguration::SerializeInformationField (Buffer::Iterator i) const
   i.WriteU8 (m_neighbors << 1);
   m_meshCap.Serialize (i);
 }
-uint8_t
-IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint8_t length)
+uint16_t
+IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint16_t length)
 {
   Buffer::Iterator start = i;
   // Active Path Selection Protocol ID:
