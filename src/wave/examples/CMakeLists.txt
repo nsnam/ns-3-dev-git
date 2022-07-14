@@ -29,6 +29,7 @@ build_lib_example(
     ${libcore}
     ${libaodv}
     ${libapplications}
+    ${libconfig-store}
     ${libdsr}
     ${libdsdv}
     ${libflow-monitor}

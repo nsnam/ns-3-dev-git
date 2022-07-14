@@ -30,10 +30,8 @@ build_lib(
     model/oh-buildings-propagation-loss-model.h
     model/random-walk-2d-outdoor-mobility-model.h
     model/three-gpp-v2v-channel-condition-model.h
-  LIBRARIES_TO_LINK
-    ${libmobility}
-    ${libpropagation}
-    ${libconfig-store}
+  LIBRARIES_TO_LINK ${libmobility}
+                    ${libpropagation}
   TEST_SOURCES
     test/building-position-allocator-test.cc
     test/buildings-helper-test.cc

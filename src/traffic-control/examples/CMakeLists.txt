@@ -62,6 +62,7 @@ build_lib_example(
     ${libinternet}
     ${libapplications}
     ${libtraffic-control}
+    ${libconfig-store}
 )
 
 build_lib_example(

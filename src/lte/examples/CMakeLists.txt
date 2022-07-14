@@ -32,6 +32,7 @@ foreach(
     NAME ${example}
     SOURCE_FILES ${example}.cc
     LIBRARIES_TO_LINK ${liblte}
+                      ${libconfig-store}
   )
 endforeach()
 
@@ -39,7 +40,9 @@ if(${ENABLE_EMU})
   build_lib_example(
     NAME lena-simple-epc-emu
     SOURCE_FILES lena-simple-epc-emu.cc
-    LIBRARIES_TO_LINK ${liblte}
-                      ${fd-net-device}
+    LIBRARIES_TO_LINK
+      ${liblte}
+      ${fd-net-device}
+      ${libconfig-store}
   )
 endif()
