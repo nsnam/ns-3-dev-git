@@ -50,7 +50,7 @@ SpectrumSignalParameters::SpectrumSignalParameters (const SpectrumSignalParamete
 }
 
 Ptr<SpectrumSignalParameters>
-SpectrumSignalParameters::Copy ()
+SpectrumSignalParameters::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<SpectrumSignalParameters> (*this);

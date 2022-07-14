@@ -42,7 +42,7 @@ WifiSpectrumSignalParameters::WifiSpectrumSignalParameters (const WifiSpectrumSi
 }
 
 Ptr<SpectrumSignalParameters>
-WifiSpectrumSignalParameters::Copy ()
+WifiSpectrumSignalParameters::Copy () const
 {
   NS_LOG_FUNCTION (this);
   // Ideally we would use:

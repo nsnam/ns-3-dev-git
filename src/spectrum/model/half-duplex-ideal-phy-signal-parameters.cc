@@ -40,7 +40,7 @@ HalfDuplexIdealPhySignalParameters::HalfDuplexIdealPhySignalParameters (const Ha
 }
 
 Ptr<SpectrumSignalParameters>
-HalfDuplexIdealPhySignalParameters::Copy ()
+HalfDuplexIdealPhySignalParameters::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<HalfDuplexIdealPhySignalParameters> (*this);

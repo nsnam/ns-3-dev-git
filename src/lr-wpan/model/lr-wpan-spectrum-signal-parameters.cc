@@ -39,7 +39,7 @@ LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (const LrWpanSpec
 }
 
 Ptr<SpectrumSignalParameters>
-LrWpanSpectrumSignalParameters::Copy (void)
+LrWpanSpectrumSignalParameters::Copy (void) const
 {
   NS_LOG_FUNCTION (this);
   return Create<LrWpanSpectrumSignalParameters> (*this);

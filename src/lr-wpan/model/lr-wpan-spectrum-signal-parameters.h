@@ -35,9 +35,7 @@ class PacketBurst;
  */
 struct LrWpanSpectrumSignalParameters : public SpectrumSignalParameters
 {
-
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy (void);
+  Ptr<SpectrumSignalParameters> Copy (void) const override;
 
   /**
    * default constructor

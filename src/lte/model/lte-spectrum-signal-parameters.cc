@@ -43,13 +43,11 @@ LteSpectrumSignalParameters::LteSpectrumSignalParameters (const LteSpectrumSigna
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParameters::Copy ()
+LteSpectrumSignalParameters::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<LteSpectrumSignalParameters> (*this);
 }
-
-
 
 LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame ()
 {
@@ -69,7 +67,7 @@ LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame (cons
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersDataFrame::Copy ()
+LteSpectrumSignalParametersDataFrame::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<LteSpectrumSignalParametersDataFrame> (*this);
@@ -92,7 +90,7 @@ LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame (
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersDlCtrlFrame::Copy ()
+LteSpectrumSignalParametersDlCtrlFrame::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<LteSpectrumSignalParametersDlCtrlFrame> (*this);
@@ -112,16 +110,10 @@ LteSpectrumSignalParametersUlSrsFrame::LteSpectrumSignalParametersUlSrsFrame (co
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersUlSrsFrame::Copy ()
+LteSpectrumSignalParametersUlSrsFrame::Copy () const
 {
   NS_LOG_FUNCTION (this);
   return Create<LteSpectrumSignalParametersUlSrsFrame> (*this);
 }
-
-
-
-
-
-
 
 } // namespace ns3
