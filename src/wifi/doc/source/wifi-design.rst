@@ -362,14 +362,14 @@ layer, and allows other objects to hook as *listeners* to monitor PHY
 state.  The main use of listeners is for the MAC layer to know when
 the PHY is busy or not (for transmission and collision avoidance).
 
-The PHY layer can be in one of seven states:
+The PHY layer can be in one of these states:
 
 #. TX: the PHY is currently transmitting a signal on behalf of its associated
    MAC
 #. RX: the PHY is synchronized on a signal and is waiting until it has received
    its last bit to forward it to the MAC.
+#. CCA_BUSY: the PHY is issuing a PHY-CCA.indication(BUSY) indication for the primary channel.
 #. IDLE: the PHY is not in the TX, RX, or CCA_BUSY states.
-#. CCA_BUSY: the PHY is not in TX or RX state but the measured energy is higher than the energy detection threshold.
 #. SWITCHING: the PHY is switching channels.
 #. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
 #. OFF: the PHY is powered off and cannot send nor receive frames.
@@ -427,7 +427,8 @@ The ``PhyEntity::EndReceiveField ()`` method will check the correct reception
 of the current preamble and header field and, if so, calls ``PhyEntity::StartReceiveField ()``
 for the next field,
 otherwise the reception is aborted and PHY is put either in IDLE state or in CCA_BUSY state,
-depending on whether the measured energy is higher than the energy detection threshold.
+depending on whether a PHY-CCA.indication(BUSY) is being issued on not for the primary channel
+.
 
 The next event at ``PhyEntity::StartReceiveField ()`` checks, using the interference
 helper and error model, whether the header was successfully decoded, and if so,
@@ -452,17 +453,19 @@ the PHY being in a state in which it cannot receive a packet, the packet
 is added to the interference helper, and the aggregate of the energy of
 all such signals is compared against an energy detection threshold to
 determine whether the PHY should enter a CCA_BUSY state.
-The ``WifiPhy::CcaEdThreshold`` attribute
-corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
-In section 16.4.8.5 in the 802.11-2012 standard: "CCA Mode 1: Energy above
-threshold. CCA shall report a busy medium upon detection of any energy above
-the ED threshold." By default, this value is set to the -62 dBm level specified
-in the standard for 20 MHz channels. When using ``YansWifiPhy``, there are no
-non-Wi-Fi signals, so it is unlikely that this attribute would play much of a
-role in Yans wifi models if left at the default value, but if there is a strong
-Wi-Fi signal that is not otherwise being received by the model, it has
-the possibility to raise the CCA_BUSY while the overall energy exceeds
-this threshold.
+
+A PHY-CCA.indication(BUSY) is issued if a signal occupying the primary channel with a received
+power above ``WifiPhy::CcaSensitivity`` (defaulted to -82 dBm) has been received by the PHY or if the
+measured energy on the primary channel is higher than the energy detection threshold ``WifiPhy::CcaEdThreshold``
+(defaulted to -62 dBm).
+
+When channel bonding is used, CCA indication for signals not occupying the primary channel is also reported.
+Since 802.11ac and above needs to sense CCA sensitivity for secondary channels larger than 20 MHz, CCA sensitivity thresholds
+can be adjusted per secondary channel width using ``VhtConfiguration::SecondaryCcaSensitivityThresholds`` attribute.
+
+For 802.11ax and above, and if the operational bandwidth is equal or larger than 40 MHz, each 20 MHz subchannel of the operational bandwidth
+is being sensed and PHY-CCA.indication also reports a CCA_BUSY duration indication for each of these 20 MHz subchannel. A zero duration for
+a given 20 MHz subchannel indicates the 20 MHz subchannel is IDLE.
 
 The above describes the case in which the packet is a single MPDU.  For
 more recent Wi-Fi standards using MPDU aggregation, ``StartReceivePayload``
@@ -476,8 +479,8 @@ InterferenceHelper
 
 The InterferenceHelper is an object that tracks all incoming packets and
 calculates probability of error values for packets being received, and
-also evaluates whether energy on the channel rises above the CCA
-threshold.
+also evaluates whether and for how long energy on the channel rises above
+a given threshold.
 
 The basic operation of probability of error calculations is shown in Figure
 :ref:`snir`.  Packets are represented as bits (not symbols) in the |ns3|
