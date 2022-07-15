@@ -53,6 +53,7 @@ doxygen:
   artifacts:
     paths:
       - doc/doxygen.warnings.log
+    when: always
 #  tags:
 #    - nsnam
 #    - linux
