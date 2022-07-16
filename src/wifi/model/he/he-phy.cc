@@ -1163,6 +1163,14 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
+  const auto& puncturedSubchannels = txVector.GetInactiveSubchannels ();
+  if (!puncturedSubchannels.empty ())
+    {
+      const auto p20Index = m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20);
+      const auto& indices =  m_wifiPhy->GetOperatingChannel ().GetAll20MHzChannelIndicesInPrimary (channelWidth);
+      const auto p20IndexInBitmap = p20Index - *(indices.cbegin ());
+      NS_ASSERT (!puncturedSubchannels.at (p20IndexInBitmap)); //the primary channel cannot be punctured
+    }
   auto hePpdu = DynamicCast<const HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
