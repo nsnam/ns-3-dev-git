@@ -97,6 +97,22 @@ public:
                                                               double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
 
   /**
+   * Create a transmit power spectral density corresponding to OFDM duplicated over multiple 20 MHz subchannels.
+   * Channel width may vary between 20, 40, 80, and 160 MHz.
+   *
+   * \param centerFrequency center frequency (MHz)
+   * \param channelWidth channel width (MHz)
+   * \param txPowerW  transmit power (W) to allocate
+   * \param guardBandwidth width of the guard band (MHz)
+   * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
+   * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
+   * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
+   * \return a pointer to a newly allocated SpectrumValue representing the duplicated 20 MHz OFDM Transmit Power Spectral Density in W/Hz for each Band
+   */
+  static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
+                                                                         double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
+
+  /**
    * Create a transmit power spectral density corresponding to OFDM
    * High Throughput (HT) (802.11n/ac).  Channel width may vary between
    * 20, 40, 80, and 160 MHz.

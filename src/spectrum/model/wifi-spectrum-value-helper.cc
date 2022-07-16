@@ -212,6 +212,111 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
 }
 
 Ptr<SpectrumValue>
+WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
+                                                                      double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr)
+{
+  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr << minOuterBandDbr << lowestPointDbr);
+  uint32_t bandBandwidth = 312500;
+  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
+  uint32_t nGuardBands = static_cast<uint32_t> (((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
+  uint32_t nAllocatedBands = static_cast<uint32_t> (((channelWidth * 1e6) / bandBandwidth) + 0.5);
+  NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
+  std::size_t numAllocatedSubcarriersPer20MHz = 52;
+  double txPowerPerBandW = (txPowerW / numAllocatedSubcarriersPer20MHz) / (channelWidth / 20);
+  NS_LOG_DEBUG ("Power per band " << txPowerPerBandW << "W");
+  std::size_t numSubcarriersPer20MHz = (20 * 1e6) / bandBandwidth;
+  std::size_t numUnallocatedSubcarriersPer20MHz = numSubcarriersPer20MHz - numAllocatedSubcarriersPer20MHz;
+  uint32_t start1 = (nGuardBands / 2) + (numUnallocatedSubcarriersPer20MHz / 2);
+  uint32_t stop1 = start1 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start2 = stop1 + 2;
+  uint32_t stop2 = start2 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start3 = stop2 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop3 = start3 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start4 = stop3 + 2;
+  uint32_t stop4 = start4 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start5 = stop4 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop5 = start5 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start6 = stop5 + 2;
+  uint32_t stop6 = start6 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start7 = stop6 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop7 = start7 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start8 = stop7 + 2;
+  uint32_t stop8 = start8 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start9 = stop8 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop9 = start9 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start10 = stop9 + 2;
+  uint32_t stop10 = start10 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start11 = stop10 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop11 = start11 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start12 = stop11 + 2;
+  uint32_t stop12 = start12 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start13 = stop12 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop13 = start13 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start14 = stop13 + 2;
+  uint32_t stop14 = start14 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start15 = stop14 + numUnallocatedSubcarriersPer20MHz;
+  uint32_t stop15 = start15 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+  uint32_t start16 = stop15 + 2;
+  uint32_t stop16 = start16 + (numAllocatedSubcarriersPer20MHz / 2) - 1;
+
+  //Prepare spectrum mask specific variables
+  uint32_t innerSlopeWidth = static_cast<uint32_t> ((2e6 / bandBandwidth) + 0.5); //size in number of subcarriers of the 0dBr<->20dBr slope (2MHz for HT/VHT)
+  std::vector <WifiSpectrumBand> subBands; //list of data/pilot-containing subBands (sent at 0dBr)
+  WifiSpectrumBand maskBand (0, nAllocatedBands + nGuardBands);
+  switch (channelWidth)
+    {
+    case 20:
+      subBands.push_back (std::make_pair (start1, stop1));
+      subBands.push_back (std::make_pair (start2, stop2));
+      break;
+    case 40:
+      subBands.push_back (std::make_pair (start1, stop1));
+      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.push_back (std::make_pair (start3, stop3));
+      subBands.push_back (std::make_pair (start4, stop4));
+      break;
+    case 80:
+      subBands.push_back (std::make_pair (start1, stop1));
+      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.push_back (std::make_pair (start3, stop3));
+      subBands.push_back (std::make_pair (start4, stop4));
+      subBands.push_back (std::make_pair (start5, stop5));
+      subBands.push_back (std::make_pair (start6, stop6));
+      subBands.push_back (std::make_pair (start7, stop7));
+      subBands.push_back (std::make_pair (start8, stop8));
+      break;
+    case 160:
+      NS_ASSERT (lowestPointDbr == -40.0);
+      subBands.push_back (std::make_pair (start1, stop1));
+      subBands.push_back (std::make_pair (start2, stop2));
+      subBands.push_back (std::make_pair (start3, stop3));
+      subBands.push_back (std::make_pair (start4, stop4));
+      subBands.push_back (std::make_pair (start5, stop5));
+      subBands.push_back (std::make_pair (start6, stop6));
+      subBands.push_back (std::make_pair (start7, stop7));
+      subBands.push_back (std::make_pair (start8, stop8));
+      subBands.push_back (std::make_pair (start9, stop9));
+      subBands.push_back (std::make_pair (start10, stop10));
+      subBands.push_back (std::make_pair (start11, stop11));
+      subBands.push_back (std::make_pair (start12, stop12));
+      subBands.push_back (std::make_pair (start13, stop13));
+      subBands.push_back (std::make_pair (start14, stop14));
+      subBands.push_back (std::make_pair (start15, stop15));
+      subBands.push_back (std::make_pair (start16, stop16));
+      break;
+    }
+
+  //Build transmit spectrum mask
+  CreateSpectrumMaskForOfdm (c, subBands, maskBand,
+                             txPowerPerBandW, nGuardBands,
+                             innerSlopeWidth, minInnerBandDbr,
+                             minOuterBandDbr, lowestPointDbr);
+  NormalizeSpectrumMask (c, txPowerW);
+  NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed");
+  return c;
+}
+
+Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
                                                              double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr)
 {
