@@ -1493,7 +1493,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Time ppduDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand (), staId);
   Ptr<HePpdu> ppdu = Create<HePpdu> (psdus, txVector, DEFAULT_FREQUENCY,
                                      ppduDuration, WIFI_PHY_BAND_5GHZ, uid,
-                                     HePpdu::PSD_HE_TB_NON_OFDMA_PORTION, 0);
+                                     HePpdu::PSD_NON_HE_PORTION, 0);
 
   //Send non-OFDMA part
   Time nonOfdmaDuration = m_phy->GetHePhy ()->CalculateNonOfdmaDurationForHeTb (txVector);
@@ -1517,7 +1517,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
 
   //Schedule OFDMA part
   Ptr<HePpdu> ppduOfdma = DynamicCast<HePpdu> (ppdu->Copy ()); //since flag will be modified
-  ppduOfdma->SetTxPsdFlag (HePpdu::PSD_HE_TB_OFDMA_PORTION);
+  ppduOfdma->SetTxPsdFlag (HePpdu::PSD_HE_PORTION);
   WifiSpectrumBand band = m_phy->GetHePhy ()->GetRuBandForRx (txVector, staId);
   Ptr<SpectrumValue> rxPsdOfdma = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH, band);
   Ptr<WifiSpectrumSignalParameters> rxParamsOfdma = Create<WifiSpectrumSignalParameters> ();

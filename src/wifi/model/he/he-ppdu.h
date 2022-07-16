@@ -152,14 +152,12 @@ public:
 
   /**
    * The transmit power spectral density flag, namely used
-   * to correctly build PSD for HE TB PPDU non-OFDMA and
-   * OFDMA portions.
+   * to correctly build PSDs for pre-HE and HE portions.
    */
   enum TxPsdFlag
   {
-    PSD_NON_HE_TB = 0,           //!< non-HE TB PPDU transmissions
-    PSD_HE_TB_NON_OFDMA_PORTION, //!< preamble of HE TB PPDU, which should only be sent on minimum subset of 20 MHz channels containing RU
-    PSD_HE_TB_OFDMA_PORTION      //!< OFDMA portion of HE TB PPDU, which should only be sent on RU
+    PSD_NON_HE_PORTION, //!< Non-HE portion of an HE PPDU
+    PSD_HE_PORTION      //!< HE portion of an HE PPDU
   };
 
   /**

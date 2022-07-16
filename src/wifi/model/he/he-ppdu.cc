@@ -35,12 +35,10 @@ std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag)
 {
   switch (flag)
     {
-      case HePpdu::PSD_NON_HE_TB:
-        return (os << "PSD_NON_HE_TB");
-      case HePpdu::PSD_HE_TB_NON_OFDMA_PORTION:
-        return (os << "PSD_HE_TB_NON_OFDMA_PORTION");
-      case HePpdu::PSD_HE_TB_OFDMA_PORTION:
-        return (os << "PSD_HE_TB_OFDMA_PORTION");
+      case HePpdu::PSD_NON_HE_PORTION:
+        return (os << "PSD_NON_HE_PORTION");
+      case HePpdu::PSD_HE_PORTION:
+        return (os << "PSD_HE_PORTION");
       default:
         NS_FATAL_ERROR ("Invalid PSD flag");
         return (os << "INVALID");
@@ -78,7 +76,7 @@ HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint16_t
   NS_LOG_FUNCTION (this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
   NS_ASSERT (!IsMu ());
   SetPhyHeaders (txVector, ppduDuration);
-  SetTxPsdFlag (PSD_NON_HE_TB);
+  SetTxPsdFlag (PSD_NON_HE_PORTION);
 }
 
 HePpdu::~HePpdu ()
@@ -233,9 +231,8 @@ HePpdu::GetTransmissionChannelWidth (void) const
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && GetStaId () != SU_STA_ID)
     {
       TxPsdFlag flag = GetTxPsdFlag ();
-      NS_ASSERT (flag > PSD_NON_HE_TB);
       uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (GetStaId ()).GetRuType ());
-      uint16_t channelWidth = (flag == PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
+      uint16_t channelWidth = (flag == PSD_NON_HE_PORTION && ruWidth < 20) ? 20 : ruWidth;
       NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << GetStaId ()
                                        << " for " << flag);
       return channelWidth;
@@ -268,7 +265,6 @@ void
 HePpdu::SetTxPsdFlag (TxPsdFlag flag)
 {
   NS_LOG_FUNCTION (this << flag);
-  NS_ASSERT ((IsUlMu () && flag > PSD_NON_HE_TB) || (!IsUlMu () && flag == PSD_NON_HE_TB));
   m_txPsdFlag = flag;
 }
 

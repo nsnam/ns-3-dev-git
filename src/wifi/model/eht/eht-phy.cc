@@ -122,13 +122,10 @@ Ptr<WifiPpdu>
 EhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
-  HePpdu::TxPsdFlag flag = (IsUlMu (txVector.GetPreambleType ())) ?
-    HePpdu::PSD_HE_TB_NON_OFDMA_PORTION :
-    HePpdu::PSD_NON_HE_TB;
   return Create<EhtPpdu> (psdus, txVector,
                           m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
                           ppduDuration, m_wifiPhy->GetPhyBand (),
-                          ObtainNextUid (txVector), flag,
+                          ObtainNextUid (txVector), HePpdu::PSD_NON_HE_PORTION,
                           m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 }
 

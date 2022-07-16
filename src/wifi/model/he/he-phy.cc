@@ -334,20 +334,10 @@ Ptr<WifiPpdu>
 HePhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
-  HePpdu::TxPsdFlag flag;
-  if (txVector.IsUlMu ())
-    {
-      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
-      flag = HePpdu::PSD_HE_TB_NON_OFDMA_PORTION;
-    }
-  else
-    {
-      flag = HePpdu::PSD_NON_HE_TB;
-    }
   return Create<HePpdu> (psdus, txVector,
                          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
                          ppduDuration, m_wifiPhy->GetPhyBand (),
-                         ObtainNextUid (txVector), flag,
+                         ObtainNextUid (txVector), HePpdu::PSD_NON_HE_PORTION,
                          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 }
 
@@ -360,7 +350,7 @@ HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand
   auto hePpdu = DynamicCast<const HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag ();
-  if (txVector.IsUlMu () && psdFlag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
+  if (txVector.IsUlMu () && psdFlag == HePpdu::PSD_HE_PORTION)
     {
       NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
       if (m_currentHeTbPpduUid == ppdu->GetUid ()
@@ -1177,14 +1167,14 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
   Ptr<SpectrumValue> v;
-  if (flag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
+  if ((ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU) && (flag == HePpdu::PSD_HE_PORTION))
     {
       WifiSpectrumBand band = GetRuBandForTx (txVector, GetStaId (hePpdu));
       v = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth), band);
     }
   else
     {
-      if (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION)
+      if ((ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU) && (flag == HePpdu::PSD_NON_HE_PORTION))
         {
           //non-OFDMA portion is sent only on the 20 MHz channels covering the RU
           uint16_t staId = GetStaId (hePpdu);
@@ -1234,7 +1224,7 @@ HePhy::StartTx (Ptr<const WifiPpdu> ppdu)
       //OFDMA part
       auto hePpdu = DynamicCast<HePpdu> (ppdu->Copy ()); //since flag will be modified
       NS_ASSERT (hePpdu);
-      hePpdu->SetTxPsdFlag (HePpdu::PSD_HE_TB_OFDMA_PORTION);
+      hePpdu->SetTxPsdFlag (HePpdu::PSD_HE_PORTION);
       Time ofdmaDuration = ppdu->GetTxDuration () - nonOfdmaDuration;
       Simulator::Schedule (nonOfdmaDuration, &PhyEntity::Transmit, this, ofdmaDuration, hePpdu, "OFDMA transmission");
     }
