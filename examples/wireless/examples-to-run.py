@@ -50,7 +50,7 @@ cpp_examples = [
     ("wifi-he-network --simulationTime=0.25 --frequency=2.4 --useRts=0 --minExpectedThroughput=6 --maxExpectedThroughput=238", "True", "True"),
     ("wifi-he-network --simulationTime=0.3 --frequency=2.4 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=223", "True", "True"),
     ("wifi-he-network --simulationTime=0.3 --udp=0 --downlink=1 --useRts=0 --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=0 --mcs=4 --minExpectedThroughput=20 --maxExpectedThroughput=212", "True", "True"),
-    ("wifi-he-network --simulationTime=0.3 --udp=0 --downlink=1 --useRts=1 --nStations=5 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=5 --minExpectedThroughput=27 --maxExpectedThroughput=247", "True", "True"),
+    ("wifi-he-network --simulationTime=0.3 --frequency=2.4 --udp=0 --downlink=1 --useRts=1 --nStations=5 --dlAckType=MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=5 --minExpectedThroughput=27 --maxExpectedThroughput=50", "True", "True"),
     ("wifi-he-network --simulationTime=0.3 --udp=0 --downlink=1 --useRts=0 --nStations=5 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=0 --mcs=6 --muSchedAccessReqInterval=50ms --minExpectedThroughput=31 --maxExpectedThroughput=290", "True", "True"),
     ("wifi-he-network --simulationTime=0.3 --udp=1 --downlink=0 --useRts=1 --nStations=5 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mcs=5 --muSchedAccessReqInterval=50ms --minExpectedThroughput=46 --maxExpectedThroughput=327", "True", "True"),
     ("wifi-simple-ht-hidden-stations --simulationTime=1 --enableRts=0 --nMpdus=32 --minExpectedThroughput=59 --maxExpectedThroughput=60", "True", "True"),
