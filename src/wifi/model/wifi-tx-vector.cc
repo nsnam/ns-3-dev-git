@@ -22,6 +22,8 @@
 #include "wifi-tx-vector.h"
 #include "wifi-phy-common.h"
 #include "ns3/abort.h"
+#include <algorithm>
+#include <iterator>
 
 namespace ns3 {
 
@@ -67,7 +69,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_ldpc (ldpc),
     m_bssColor (bssColor),
     m_length (length),
-    m_modeInitialized (true)
+    m_modeInitialized (true),
+    m_inactiveSubchannels ()
 {
 }
 
@@ -85,7 +88,8 @@ WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
     m_ldpc (txVector.m_ldpc),
     m_bssColor (txVector.m_bssColor),
     m_length (txVector.m_length),
-    m_modeInitialized (txVector.m_modeInitialized)
+    m_modeInitialized (txVector.m_modeInitialized),
+    m_inactiveSubchannels (txVector.m_inactiveSubchannels)
 {
   m_muUserInfos.clear ();
   if (!txVector.m_muUserInfos.empty ()) //avoids crashing for loop
@@ -498,6 +502,24 @@ WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
   return std::make_pair (numRusContentChannel1, numRusContentChannel2);
 }
 
+void
+WifiTxVector::SetInactiveSubchannels (const std::vector<bool>& inactiveSubchannels)
+{
+  NS_ABORT_MSG_IF (m_preamble < WIFI_PREAMBLE_HE_SU,
+                   "Only HE (or later) authorized for preamble puncturing");
+  NS_ABORT_MSG_IF (m_channelWidth < 80,
+                   "Preamble puncturing only possible for transmission bandwidth of 80 MHz or larger");
+  NS_ABORT_MSG_IF (inactiveSubchannels.size () != (m_channelWidth / 20),
+                   "The size of the inactive subchannnels bitmap should be equal to the number of 20 MHz subchannels");
+  m_inactiveSubchannels = inactiveSubchannels;
+}
+
+const std::vector<bool>&
+WifiTxVector::GetInactiveSubchannels (void) const
+{
+  return m_inactiveSubchannels;
+}
+
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   if (!v.IsValid ())
@@ -538,6 +560,13 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     {
       os << " mode: " << v.GetMode ()
          << " Nss: " << +v.GetNss ();
+    }
+  const auto& puncturedSubchannels = v.GetInactiveSubchannels ();
+  if (!puncturedSubchannels.empty ())
+    {
+      os << " Punctured subchannels: ";
+      std::copy (puncturedSubchannels.cbegin (), puncturedSubchannels.cend(),
+                 std::ostream_iterator<bool>(os, ", "));
     }
   return os;
 }
