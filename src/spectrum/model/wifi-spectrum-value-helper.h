@@ -107,10 +107,13 @@ public:
    * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
    * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
    * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
+   * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
    * \return a pointer to a newly allocated SpectrumValue representing the duplicated 20 MHz OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
-                                                                         double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
+  static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth,
+                                                                         double txPowerW, uint16_t guardBandwidth,
+                                                                         double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40,
+                                                                         const std::vector<bool>& puncturedSubchannels = std::vector<bool> {});
 
   /**
    * Create a transmit power spectral density corresponding to OFDM

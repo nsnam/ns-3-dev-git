@@ -213,7 +213,8 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
 
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
-                                                                      double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr)
+                                                                      double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr,
+                                                                      const std::vector<bool>& puncturedSubchannels)
 {
   NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr << minOuterBandDbr << lowestPointDbr);
   uint32_t bandBandwidth = 312500;
@@ -223,6 +224,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t c
   NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
   std::size_t num20MhzBands = channelWidth / 20;
   std::size_t numAllocatedSubcarriersPer20MHz = 52;
+  NS_ASSERT (puncturedSubchannels.empty () || (puncturedSubchannels.size () == num20MhzBands));
   double txPowerPerBandW = (txPowerW / numAllocatedSubcarriersPer20MHz) / num20MhzBands;
   NS_LOG_DEBUG ("Power per band " << txPowerPerBandW << "W");
 
@@ -232,8 +234,16 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (uint32_t c
   subBands.resize (num20MhzBands * 2); //the center subcarrier is skipped, hence 2 subbands per 20 MHz subchannel
   uint32_t start = (nGuardBands / 2) + (numUnallocatedSubcarriersPer20MHz / 2);
   uint32_t stop;
+  uint8_t index = 0;
   for (auto it = subBands.begin (); it != subBands.end (); )
   {
+    if (!puncturedSubchannels.empty () && puncturedSubchannels.at (index++))
+      {
+        //if subchannel is punctured, skip it and go the next one
+        NS_LOG_DEBUG ("20 MHz subchannel " << +index << " is punctured");
+        it += 2;
+        continue;
+      }
     stop = start + (numAllocatedSubcarriersPer20MHz / 2) - 1;
     *it = std::make_pair (start, stop);
     ++it;
