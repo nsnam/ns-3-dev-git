@@ -32,7 +32,7 @@
 
 using namespace ns3;
 
-/// Const string used to build the test name.
+/// \return A const string used to build the test name.
 const std::string suite ("type-id: ");
 
 /**

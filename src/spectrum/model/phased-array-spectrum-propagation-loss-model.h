@@ -64,7 +64,7 @@ public:
   /**
    * This method is to be called to calculate
    *
-   * @param params the spectrum signal parameters.
+   * @param txPsd the spectrum signal parameters.
    * @param a sender mobility
    * @param b receiver mobility
    * @param aPhasedArrayModel the instance of the phased antenna array of the sender
@@ -112,5 +112,3 @@ private:
 } // namespace ns3
 
 #endif /* PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H */
-
-

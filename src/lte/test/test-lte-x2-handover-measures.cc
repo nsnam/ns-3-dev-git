@@ -88,7 +88,6 @@ public:
    * \param admitHo
    * \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
    *
-   * \return
    */
   LteX2HandoverMeasuresTestCase (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
                                  std::list<CheckPointEvent> checkPointEventList,

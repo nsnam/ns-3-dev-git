@@ -160,7 +160,6 @@ public:
 
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
-   * \returns the L4Protocol effectively added.
    *
    * Invoke Copy on the input template to get a copy of the input
    * protocol which can be used on the Node on which this L4 Demux

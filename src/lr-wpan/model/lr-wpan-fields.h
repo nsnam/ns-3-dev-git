@@ -372,6 +372,7 @@ public:
   Buffer::Iterator Deserialize (Buffer::Iterator i);
   /**
    * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional Device (RFD).
+   * \return True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional Device (RFD).
    */
   bool IsDeviceTypeFfd (void) const;
   /**
