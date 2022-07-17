@@ -24,6 +24,7 @@
 
 #include <map>
 #include <cmath>
+#include <sstream>
 #include "wifi-spectrum-value-helper.h"
 #include "ns3/log.h"
 #include "ns3/fatal-error.h"
@@ -316,8 +317,10 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
-                                                             double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr)
+WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth,
+                                                             double txPowerW, uint16_t guardBandwidth,
+                                                             double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr,
+                                                             const std::vector<bool>& puncturedSubchannels)
 {
   NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr << minOuterBandDbr << lowestPointDbr);
   uint32_t bandBandwidth = 78125;
@@ -401,11 +404,28 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
       break;
     }
 
+  //Create punctured bands
+  uint32_t puncturedSlopeWidth = static_cast<uint32_t> ((500e3 / bandBandwidth) + 0.5); //size in number of subcarriers of the punctured slope band
+  std::vector <WifiSpectrumBand> puncturedBands;
+  std::size_t subcarriersPerSuband = (20 * 1e6 / bandBandwidth);
+  uint32_t start = (nGuardBands / 2);
+  uint32_t stop = start + subcarriersPerSuband - 1;
+  for (auto puncturedSubchannel : puncturedSubchannels)
+  {
+    if (puncturedSubchannel)
+      {
+        puncturedBands.push_back (std::make_pair (start, stop));
+      }
+    start = stop + 1;
+    stop = start + subcarriersPerSuband - 1;
+  }
+
   //Build transmit spectrum mask
   CreateSpectrumMaskForOfdm (c, subBands, maskBand,
                              txPowerPerBandW, nGuardBands,
                              innerSlopeWidth, minInnerBandDbr,
-                             minOuterBandDbr, lowestPointDbr);
+                             minOuterBandDbr, lowestPointDbr,
+                             puncturedBands, puncturedSlopeWidth);
   NormalizeSpectrumMask (c, txPowerW);
   NS_ASSERT_MSG (std::abs (txPowerW - Integral (*c)) < 1e-6, "Power allocation failed");
   return c;
@@ -483,12 +503,14 @@ WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint16_t tota
 }
 
 void
-WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::vector <WifiSpectrumBand> allocatedSubBands, WifiSpectrumBand maskBand,
-                                                    double txPowerPerBandW, uint32_t nGuardBands, uint32_t innerSlopeWidth,
-                                                    double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr)
+WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, const std::vector<WifiSpectrumBand>& allocatedSubBands,
+                                                    WifiSpectrumBand maskBand, double txPowerPerBandW,
+                                                    uint32_t nGuardBands, uint32_t innerSlopeWidth,
+                                                    double minInnerBandDbr, double minOuterBandDbr, double lowestPointDbr,
+                                                    const std::vector<WifiSpectrumBand>& puncturedBands, uint32_t puncturedSlopeWidth)
 {
   NS_LOG_FUNCTION (c << allocatedSubBands.front ().first << allocatedSubBands.back ().second << maskBand.first << maskBand.second <<
-                   txPowerPerBandW << nGuardBands << innerSlopeWidth << minInnerBandDbr << minOuterBandDbr << lowestPointDbr);
+                   txPowerPerBandW << nGuardBands << innerSlopeWidth << minInnerBandDbr << minOuterBandDbr << lowestPointDbr << puncturedSlopeWidth);
   uint32_t numSubBands = allocatedSubBands.size ();
   uint32_t numBands = c->GetSpectrumModel ()->GetNumBands ();
   uint32_t numMaskBands = maskBand.second - maskBand.first + 1;
@@ -520,15 +542,21 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
                                    allocatedSubBands.back ().second + innerSlopeWidth);
   WifiSpectrumBand flatJunctionRight (innerBandRight.second + 1,
                                       middleBandRight.first - 1);
-  NS_LOG_DEBUG ("outerBandLeft=[" << outerBandLeft.first << ";" << outerBandLeft.second << "] " <<
-                "middleBandLeft=[" << middleBandLeft.first << ";" << middleBandLeft.second << "] " <<
-                "flatJunctionLeft=[" << flatJunctionLeft.first << ";" << flatJunctionLeft.second << "] " <<
-                "innerBandLeft=[" << innerBandLeft.first << ";" << innerBandLeft.second << "] " <<
-                "subBands=[" << allocatedSubBands.front ().first << ";" << allocatedSubBands.back ().second << "] " <<
-                "innerBandRight=[" << innerBandRight.first << ";" << innerBandRight.second << "] " <<
-                "flatJunctionRight=[" << flatJunctionRight.first << ";" << flatJunctionRight.second << "] " <<
-                "middleBandRight=[" << middleBandRight.first << ";" << middleBandRight.second << "] " <<
-                "outerBandRight=[" << outerBandRight.first << ";" << outerBandRight.second << "] ");
+  std::ostringstream ss;
+  ss << "outerBandLeft=[" << outerBandLeft.first << ";" << outerBandLeft.second << "] " <<
+        "middleBandLeft=[" << middleBandLeft.first << ";" << middleBandLeft.second << "] " <<
+        "flatJunctionLeft=[" << flatJunctionLeft.first << ";" << flatJunctionLeft.second << "] " <<
+        "innerBandLeft=[" << innerBandLeft.first << ";" << innerBandLeft.second << "] " <<
+        "subBands=[" << allocatedSubBands.front ().first << ";" << allocatedSubBands.back ().second << "] ";
+  if (!puncturedBands.empty ())
+    {
+      ss << "puncturedBands=[" << puncturedBands.front ().first << ";" << puncturedBands.back ().second << "] ";
+    }
+  ss << "innerBandRight=[" << innerBandRight.first << ";" << innerBandRight.second << "] " <<
+        "flatJunctionRight=[" << flatJunctionRight.first << ";" << flatJunctionRight.second << "] " <<
+        "middleBandRight=[" << middleBandRight.first << ";" << middleBandRight.second << "] " <<
+  "outerBandRight=[" << outerBandRight.first << ";" << outerBandRight.second << "] ";
+  NS_LOG_DEBUG (ss.str ());
   NS_ASSERT (numMaskBands == ((allocatedSubBands.back ().second - allocatedSubBands.front ().first + 1)  //equivalent to allocatedBand (includes notches and DC)
                               + 2 * (innerSlopeWidth + middleSlopeWidth + outerSlopeWidth)
                               + (flatJunctionLeft.second - flatJunctionLeft.first + 1) //flat junctions
@@ -538,11 +566,13 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
   double innerSlope = (-1 * minInnerBandDbr) / innerSlopeWidth;
   double middleSlope = (-1 * (minOuterBandDbr - minInnerBandDbr)) / middleSlopeWidth;
   double outerSlope = (txPowerMiddleBandMinDbm - txPowerOuterBandMinDbm) / outerSlopeWidth;
+  double puncturedSlope = (-1 * minInnerBandDbr) / puncturedSlopeWidth;
 
   //Build spectrum mask
   Values::iterator vit = c->ValuesBegin ();
   Bands::const_iterator bit = c->ConstBandsBegin ();
   double txPowerW = 0.0;
+  double previousTxPowerW = 0.0;
   for (size_t i = 0; i < numBands; i++, vit++, bit++)
     {
       if (i < maskBand.first || i > maskBand.second) //outside the spectrum mask
@@ -563,7 +593,9 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
         }
       else if (i <= innerBandLeft.second && i >= innerBandLeft.first)
         {
-          txPowerW = DbmToW (txPowerInnerBandMinDbm + ((i - innerBandLeft.first) * innerSlope));
+          txPowerW = (!puncturedBands.empty () && (puncturedBands.front ().first <= allocatedSubBands.front ().first)) ?
+                     DbmToW (txPowerInnerBandMinDbm) : //first 20 MHz band is punctured
+                     DbmToW (txPowerInnerBandMinDbm + ((i - innerBandLeft.first) * innerSlope));
         }
       else if (i <= allocatedSubBands.back ().second && i >= allocatedSubBands.front ().first) //roughly in allocated band
         {
@@ -574,7 +606,28 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
             }
           if (insideSubBand)
             {
-              txPowerW = txPowerPerBandW;
+              bool insidePuncturedSubBand = false;
+              uint32_t j = 0;
+              for (; !insidePuncturedSubBand && j < puncturedBands.size (); j++) //continue until inside a punctured sub-band
+                {
+                  insidePuncturedSubBand = (i <= puncturedBands[j].second) && (i >= puncturedBands[j].first);
+                }
+              if (insidePuncturedSubBand)
+                {
+                  uint32_t startPuncturedSlope = (puncturedBands[puncturedBands.size () - 1].second - puncturedSlopeWidth); //only consecutive subchannels can be punctured
+                  if (i >= startPuncturedSlope)
+                    {
+                      txPowerW = DbmToW (txPowerInnerBandMinDbm + ((i - startPuncturedSlope) * puncturedSlope));
+                    }
+                  else
+                    {
+                      txPowerW = std::max (DbmToW (txPowerInnerBandMinDbm), DbmToW (txPowerRefDbm - ((i - puncturedBands[0].first) * puncturedSlope)));
+                    }
+                }
+              else
+                {
+                  txPowerW = txPowerPerBandW;
+                }
             }
           else
             {
@@ -583,7 +636,8 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
         }
       else if (i <= innerBandRight.second && i >= innerBandRight.first)
         {
-          txPowerW = DbmToW (txPowerRefDbm - ((i - innerBandRight.first + 1) * innerSlope)); // +1 so as to be symmetric with left slope
+          //take min to handle the case where last 20 MHz band is punctured
+          txPowerW = std::min (previousTxPowerW, DbmToW (txPowerRefDbm - ((i - innerBandRight.first + 1) * innerSlope))); // +1 so as to be symmetric with left slope
         }
       else if (i <= flatJunctionRight.second && i >= flatJunctionRight.first)
         {
@@ -604,6 +658,7 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::v
       double txPowerDbr = 10 * std::log10 (txPowerW / txPowerPerBandW);
       NS_LOG_LOGIC (uint32_t (i) << " -> " << txPowerDbr);
       *vit = txPowerW / (bit->fh - bit->fl);
+      previousTxPowerW = txPowerW;
     }
   NS_LOG_INFO ("Added signal power to subbands " << allocatedSubBands.front ().first << "-" << allocatedSubBands.back ().second);
 }
