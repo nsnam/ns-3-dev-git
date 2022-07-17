@@ -1221,7 +1221,8 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
                                                                                            GetGuardBandwidth (channelWidth),
                                                                                            std::get<0> (txMaskRejectionParams),
                                                                                            std::get<1> (txMaskRejectionParams),
-                                                                                           std::get<2> (txMaskRejectionParams));
+                                                                                           std::get<2> (txMaskRejectionParams),
+                                                                                           puncturedSubchannels);
             }
           else
             {
@@ -1244,7 +1245,8 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
                                                                                            GetGuardBandwidth (channelWidth),
                                                                                            std::get<0> (txMaskRejectionParams),
                                                                                            std::get<1> (txMaskRejectionParams),
-                                                                                           std::get<2> (txMaskRejectionParams));
+                                                                                           std::get<2> (txMaskRejectionParams),
+                                                                                           puncturedSubchannels);
             }
           else
             {
@@ -1254,7 +1256,8 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
                                                                                   GetGuardBandwidth (channelWidth),
                                                                                   std::get<0> (txMaskRejectionParams),
                                                                                   std::get<1> (txMaskRejectionParams),
-                                                                                  std::get<2> (txMaskRejectionParams));
+                                                                                  std::get<2> (txMaskRejectionParams),
+                                                                                  puncturedSubchannels);
             }
         }
       case WIFI_PPDU_TYPE_SU:
