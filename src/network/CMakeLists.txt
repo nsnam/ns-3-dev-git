@@ -98,6 +98,7 @@ set(header_files
     model/tag-buffer.h
     model/tag.h
     model/trailer.h
+    test/header-serialization-test.h
     utils/address-utils.h
     utils/bit-deserializer.h
     utils/bit-serializer.h

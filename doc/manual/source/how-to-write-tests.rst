@@ -214,6 +214,41 @@ keep up-to-date.  Output as little as needed for the example and
 include only behavioral state that is important for determining if the
 example has run correctly.
 
+Testing (de)serialization of Headers
+************************************
+Implementing serialization and deserialization of Headers is often prone to
+errors. A generic approach to test these operations is to start from a given
+Header, serialize the given header in a buffer, then create a new header by
+deserializing from the buffer and serialize the new header into a second buffer.
+If everything is correct, the two buffers have the same size and the same content.
+
+The ``HeaderSerializationTestCase`` class enables to perform such a test in an
+easy manner. Test cases willing to exploit such an approach have to inherit from
+``HeaderSerializationTestCase`` instead of ``TestCase`` and pass a Header object
+to the ``TestHeaderSerialization`` method (along with arguments that may be
+needed to construct the new header that is going to be deserialized).
+
+Note that such an approach is not restricted to Header subclasses, but it is
+available for all classes that provide (de)serialization operations, such as
+the wifi Information Elements.
+
+::
+
+   #include "ns3/header-serialization-test.h"
+   class BasicMultiLinkElementTest : public HeaderSerializationTestCase
+   {
+     ...
+   };
+   void
+   BasicMultiLinkElementTest::DoRun (void)
+   {
+     MultiLinkElement mle (WIFI_MAC_MGT_BEACON);
+     // Fill in the Multi-Link Element
+     TestHeaderSerialization (mle, WIFI_MAC_MGT_BEACON);
+   }
+
+Examples of this approach are found, e.g., in ``src/wifi/test/wifi-eht-info-elems-test.cc``
+
 Testing for boolean outcomes
 ****************************
 
