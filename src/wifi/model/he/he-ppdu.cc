@@ -141,6 +141,7 @@ HePpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
 void
 HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
 {
+    heSig.SetFormat(m_preamble);
     if (ns3::IsDlMu(m_preamble))
     {
         heSig.SetMuFlag(true);
@@ -444,7 +445,7 @@ HePpdu::PrintPayload() const
 }
 
 HePpdu::HeSigHeader::HeSigHeader()
-    : m_format(1),
+    : m_format(0),
       m_bssColor(0),
       m_ul_dl(0),
       m_mcs(0),
@@ -496,6 +497,12 @@ void
 HePpdu::HeSigHeader::SetMuFlag(bool mu)
 {
     m_mu = mu;
+}
+
+void
+HePpdu::HeSigHeader::SetFormat(WifiPreamble preamble)
+{
+    m_format = preamble == WIFI_PREAMBLE_HE_TB ? 0 : 1;
 }
 
 void

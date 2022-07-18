@@ -72,6 +72,13 @@ class HePpdu : public OfdmPpdu
         void SetMuFlag(bool mu);
 
         /**
+         * Fill the FORMAT field of HE-SIG-A1 for HE SU, HE ER SU and HE TB PPDUs.
+         *
+         * \param preamble the preamble from which the FORMAT field is deduced
+         */
+        void SetFormat(WifiPreamble preamble);
+
+        /**
          * Fill the MCS field of HE-SIG-A1.
          *
          * \param mcs the MCS field of HE-SIG-A1
