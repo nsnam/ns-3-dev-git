@@ -54,7 +54,7 @@ public:
 
   /**
    * \returns the number of Ptr<Ipv6> and interface pairs stored in this
-   * Ipv4InterfaceContainer.
+   * Ipv6InterfaceContainer.
    *
    * Pairs can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
@@ -119,7 +119,7 @@ public:
    * for-loop to run through the pairs
    *
    * \code
-   *   Ipv4InterfaceContainer::Iterator i;
+   *   Ipv6InterfaceContainer::Iterator i;
    *   for (i = container.Begin (); i != container.End (); ++i)
    *     {
    *       std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
@@ -165,6 +165,29 @@ public:
    * \param interface interface index to add
    */
   void Add (std::string ipv6Name, uint32_t interface);
+
+  /**
+   * Get the std::pair of an Ptr<Ipv6> and interface stored at the location
+   * specified by the index.
+   *
+   * \param i the index of the container entry to retrieve.
+   * \return the std::pair of a Ptr<Ipv6> and an interface index
+   *
+   * \note The returned Ptr<Ipv6> cannot be used directly to fetch the
+   *       Ipv6Interface using the returned index (the GetInterface () method
+   *       is provided in class Ipv6L3Protocol, and not class Ipv6). An
+   *       example usage is provided below.
+   *
+   * \code
+   *   Ipv6InterfaceContainer c;
+   *   ...
+   *   std::pair<Ptr<Ipv6>, uint32_t> returnValue = c.Get (0);
+   *   Ptr<Ipv6> ipv6 = returnValue.first;
+   *   uint32_t index = returnValue.second;
+   *   Ptr<Ipv6Interface> iface =  ipv6->GetObject<Ipv6L3Protocol> ()->GetInterface (index);
+   * \endcode
+   */
+  std::pair<Ptr<Ipv6>, uint32_t> Get (uint32_t i) const;
 
   /**
    * \brief Set the state of the stack (act as a router or as an host) for the specified index.

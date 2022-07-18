@@ -80,6 +80,12 @@ void Ipv6InterfaceContainer::Add (const Ipv6InterfaceContainer& c)
     }
 }
 
+std::pair<Ptr<Ipv6>, uint32_t>
+Ipv6InterfaceContainer::Get (uint32_t i) const
+{
+  return m_interfaces[i];
+}
+
 void Ipv6InterfaceContainer::SetForwarding (uint32_t i, bool router)
 {
   Ptr<Ipv6> ipv6 = m_interfaces[i].first;
