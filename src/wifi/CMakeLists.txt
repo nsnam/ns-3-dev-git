@@ -327,6 +327,7 @@ build_lib(
     test/wifi-dynamic-bw-op-test.cc
     test/wifi-eht-info-elems-test.cc
     test/wifi-error-rate-models-test.cc
+    test/wifi-ie-fragment-test.cc
     test/wifi-mac-ofdma-test.cc
     test/wifi-mac-queue-test.cc
     test/wifi-mlo-test.cc
