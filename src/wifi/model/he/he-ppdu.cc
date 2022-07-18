@@ -447,9 +447,7 @@ HePpdu::PrintPayload() const
 HePpdu::HeSigHeader::HeSigHeader()
     : m_format(0),
       m_bssColor(0),
-      m_ul_dl(0),
       m_mcs(0),
-      m_spatialReuse(0),
       m_bandwidth(0),
       m_gi_ltf_size(0),
       m_nsts(0),
@@ -630,12 +628,10 @@ HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 {
     // HE-SIG-A1
     uint8_t byte = m_format & 0x01;
-    byte |= ((m_ul_dl & 0x01) << 2);
     byte |= ((m_mcs & 0x0f) << 3);
     start.WriteU8(byte);
     uint16_t bytes = (m_bssColor & 0x3f);
     bytes |= (0x01 << 6); // Reserved set to 1
-    bytes |= ((m_spatialReuse & 0x0f) << 7);
     bytes |= ((m_bandwidth & 0x03) << 11);
     bytes |= ((m_gi_ltf_size & 0x03) << 13);
     bytes |= ((m_nsts & 0x01) << 15);
@@ -662,11 +658,9 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
     // HE-SIG-A1
     uint8_t byte = i.ReadU8();
     m_format = (byte & 0x01);
-    m_ul_dl = ((byte >> 2) & 0x01);
     m_mcs = ((byte >> 3) & 0x0f);
     uint16_t bytes = i.ReadU16();
     m_bssColor = (bytes & 0x3f);
-    m_spatialReuse = ((bytes >> 7) & 0x0f);
     m_bandwidth = ((bytes >> 11) & 0x03);
     m_gi_ltf_size = ((bytes >> 13) & 0x03);
     m_nsts = ((bytes >> 15) & 0x01);
