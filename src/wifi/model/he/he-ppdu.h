@@ -140,6 +140,19 @@ class HePpdu : public OfdmPpdu
          */
         uint8_t GetNStreams() const;
 
+        /**
+         * Fill the HE-SIG-B MCS field of HE-SIG-A1.
+         *
+         * \param mcs the HE-SIG-B MCS field of HE-SIG-A1
+         */
+        void SetSigBMcs(uint8_t mcs);
+        /**
+         * Return the HE-SIG-B MCS field of HE-SIG-A1.
+         *
+         * \return the HE-SIG-B MCS field of HE-SIG-A1
+         */
+        uint8_t GetSigBMcs() const;
+
       private:
         // HE-SIG-A1 fields
         uint8_t m_format;      ///< Format bit
@@ -148,6 +161,7 @@ class HePpdu : public OfdmPpdu
         uint8_t m_bandwidth;   ///< Bandwidth field
         uint8_t m_gi_ltf_size; ///< GI+LTF Size field
         uint8_t m_nsts;        ///< NSTS
+        uint8_t m_sigBMcs;     ///< HE-SIG-B MCS
 
         /// This is used to decide whether MU SIG-B should be added or not
         bool m_mu;

@@ -151,7 +151,7 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
     if (txVector.IsDlMu())
     {
         heSig.SetMuFlag(true);
-        heSig.SetMcs(txVector.GetSigBMode().GetMcsValue());
+        heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
     }
     else
     {
@@ -227,7 +227,7 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     }
     if (txVector.IsDlMu())
     {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetMcs()));
+        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
         txVector.SetRuAllocation(m_ruAllocation);
     }
 }
@@ -463,6 +463,7 @@ HePpdu::HeSigHeader::HeSigHeader()
       m_bandwidth(0),
       m_gi_ltf_size(0),
       m_nsts(0),
+      m_sigBMcs(0),
       m_mu(false)
 {
 }
@@ -636,6 +637,19 @@ HePpdu::HeSigHeader::GetNStreams() const
 }
 
 void
+HePpdu::HeSigHeader::SetSigBMcs(uint8_t mcs)
+{
+    NS_ASSERT(mcs <= 5);
+    m_sigBMcs = mcs;
+}
+
+uint8_t
+HePpdu::HeSigHeader::GetSigBMcs() const
+{
+    return m_sigBMcs;
+}
+
+void
 HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
 {
     // HE-SIG-A1
@@ -663,6 +677,7 @@ HePpdu::HeSigHeader::Serialize(Buffer::Iterator start) const
     else
     {
         // HE MU PPDU
+        sigA1 |= ((m_sigBMcs & 0x07) << 1);
         sigA1 |= ((m_bssColor & 0x3f) << 5);
         sigA1 |= ((m_bandwidth & 0x03) << 15);
         sigA1 |= ((m_gi_ltf_size & 0x03) << 23);
@@ -714,6 +729,7 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
     else
     {
         // HE MU PPDU
+        m_sigBMcs = ((sigA1 >> 1) & 0x07);
         m_bssColor = ((sigA1 >> 5) & 0x3f);
         m_bandwidth = ((sigA1 >> 15) & 0x03);
         m_gi_ltf_size = ((sigA1 >> 23) & 0x03);

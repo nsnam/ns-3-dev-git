@@ -107,7 +107,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     }
     if (ns3::IsDlMu(m_preamble))
     {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetMcs()));
+        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
         txVector.SetRuAllocation(m_ruAllocation);
     }
 }
