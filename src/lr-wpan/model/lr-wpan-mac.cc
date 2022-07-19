@@ -36,6 +36,8 @@
 #include <ns3/random-variable-stream.h>
 #include <ns3/double.h>
 
+
+
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                   \
   std::clog << "[address " << m_shortAddress << "] ";
@@ -43,16 +45,8 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanMac");
-
 NS_OBJECT_ENSURE_REGISTERED (LrWpanMac);
 
-//IEEE 802.15.4-2011 Table 51
-const uint32_t LrWpanMac::aMinMPDUOverhead = 9;
-const uint32_t LrWpanMac::aBaseSlotDuration = 60;
-const uint32_t LrWpanMac::aNumSuperframeSlots = 16;
-const uint32_t LrWpanMac::aBaseSuperframeDuration = aBaseSlotDuration * aNumSuperframeSlots;
-const uint32_t LrWpanMac::aMaxLostBeacons = 4;
-const uint32_t LrWpanMac::aMaxSIFSFrameSize = 18;
 
 TypeId
 LrWpanMac::GetTypeId (void)
@@ -162,6 +156,8 @@ LrWpanMac::LrWpanMac ()
 
   m_macRxOnWhenIdle = true;
   m_macPanId = 0xffff;
+  m_macCoordShortAddress = Mac16Address ("ff:ff");
+  m_macCoordExtendedAddress = Mac64Address ("ff:ff:ff:ff:ff:ff:ff:ed");
   m_deviceCapability = DeviceType::FFD;
   m_associationStatus = ASSOCIATED;
   m_selfExt = Mac64Address::Allocate ();
@@ -177,7 +173,7 @@ LrWpanMac::LrWpanMac ()
 
   m_macBeaconOrder = 15;
   m_macSuperframeOrder = 15;
-  m_macTransactionPersistanceTime = 500; //0x01F5
+  m_macTransactionPersistenceTime = 500; //0x01F5
   m_macAutoRequest = true;
 
   m_incomingBeaconOrder = 15;
@@ -458,31 +454,11 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
         }
       else
         {
-          IndTxQueueElement *indTxQElement = new IndTxQueueElement;
-          uint64_t unitPeriodSymbols;
-          Time   expireTime;
-
-          if (m_macBeaconOrder == 15)
-            {
-              unitPeriodSymbols = aBaseSuperframeDuration;
-            }
-          else
-            {
-              unitPeriodSymbols = ((uint64_t) 1 << m_macBeaconOrder) * aBaseSuperframeDuration;
-            }
-
-          //TODO:  check possible incorrect expire time here.
-
-          expireTime = Simulator::Now () + m_macTransactionPersistanceTime
-            * MicroSeconds (unitPeriodSymbols * 1000 * 1000 / m_phy->GetDataOrSymbolRate (false));
-          indTxQElement->expireTime = expireTime;
-          indTxQElement->txQMsduHandle = params.m_msduHandle;
-          indTxQElement->txQPkt = p;
-
-          m_indTxQueue.push_back (indTxQElement);
-
-          std::cout << "Indirect Transmission Pushed | Elements in the queue: " << m_indTxQueue.size ()
-                    << " " << "Element to expire in: " << expireTime.GetSeconds () << "secs\n";
+          NS_LOG_ERROR (this << " Indirect transmissions not currently supported");
+          // Note: The current Pending transaction list should work for indirect transmissions.
+          // However, this is not tested yet. For now, we block the use of indirect transmissions.
+          // TODO: Save packet in the Pending Transaction list.
+          // EnqueueInd (p);
         }
     }
   else
@@ -1229,6 +1205,18 @@ LrWpanMac::SetMcpsDataIndicationCallback (McpsDataIndicationCallback c)
 }
 
 void
+LrWpanMac::SetMlmeAssociateIndicationCallback (MlmeAssociateIndicationCallback c)
+{
+  m_mlmeAssociateIndicationCallback = c;
+}
+
+void
+LrWpanMac::SetMlmeCommStatusIndicationCallback (MlmeCommStatusIndicationCallback c)
+{
+  m_mlmeCommStatusIndicationCallback = c;
+}
+
+void
 LrWpanMac::SetMcpsDataConfirmCallback (McpsDataConfirmCallback c)
 {
   m_mcpsDataConfirmCallback = c;
@@ -1244,6 +1232,12 @@ void
 LrWpanMac::SetMlmeScanConfirmCallback (MlmeScanConfirmCallback c)
 {
   m_mlmeScanConfirmCallback = c;
+}
+
+void
+LrWpanMac::SetMlmeAssociateConfirmCallback (MlmeAssociateConfirmCallback c)
+{
+  m_mlmeAssociateConfirmCallback = c;
 }
 
 void
@@ -1863,6 +1857,179 @@ LrWpanMac::PrepareRetransmission (void)
       // Start next CCA process for this packet.
       return true;
     }
+}
+
+void
+LrWpanMac::EnqueueInd (Ptr<Packet> p)
+{
+  std::unique_ptr <IndTxQueueElement> indTxQElement =  std::make_unique <IndTxQueueElement>();
+  LrWpanMacHeader peekedMacHdr;
+  p->PeekHeader (peekedMacHdr);
+
+  PurgeInd ();
+
+  NS_ASSERT (peekedMacHdr.GetDstAddrMode () == SHORT_ADDR || peekedMacHdr.GetDstAddrMode () == EXT_ADDR);
+
+  if (peekedMacHdr.GetDstAddrMode () == SHORT_ADDR)
+    {
+      indTxQElement->dstShortAddress = peekedMacHdr.GetShortDstAddr ();
+    }
+  else
+    {
+      indTxQElement->dstExtAddress = peekedMacHdr.GetExtDstAddr ();
+    }
+
+  indTxQElement->seqNum = peekedMacHdr.GetSeqNum ();
+
+  // See IEEE 802.15.4-2006, Table 86
+  uint32_t unit = 0; // The persistence time in symbols
+  if (m_macBeaconOrder == 15)
+    {
+      //Non-beacon enabled mode
+      unit = aBaseSuperframeDuration * m_macTransactionPersistenceTime;
+    }
+  else
+    {
+      //Beacon-enabled mode
+      unit = ((static_cast<uint32_t> (1) << m_macBeaconOrder) * aBaseSuperframeDuration) * m_macTransactionPersistenceTime;
+    }
+
+  double symbolRate = m_phy->GetDataOrSymbolRate (false);
+  Time expireTime = Seconds (unit / symbolRate);
+  expireTime += Simulator::Now ();
+
+  indTxQElement->expireTime = expireTime;
+  indTxQElement->txQPkt = p;
+
+  m_indTxQueue.push_back (std::move(indTxQElement));
+}
+
+bool
+LrWpanMac::DequeueInd (Mac64Address dst, IndTxQueueElement * entry)
+{
+  PurgeInd ();
+
+  for (uint32_t i = 0; i < m_indTxQueue.size (); i++)
+    {
+      if (m_indTxQueue[i]->dstExtAddress == dst)
+        {
+          *entry = *m_indTxQueue[i];
+          return true;
+        }
+    }
+  return false;
+}
+
+void
+LrWpanMac::PurgeInd ()
+{
+  for (uint32_t i = 0; i < m_indTxQueue.size (); )
+    {
+      if (Simulator::Now () > m_indTxQueue[i]->expireTime)
+        {
+          // Transaction expired, remove and send proper confirmation/indication to a higher layer
+          LrWpanMacHeader peekedMacHdr;
+          m_indTxQueue[i]->txQPkt->Copy ()->PeekHeader (peekedMacHdr);
+
+          if (peekedMacHdr.IsCommand ())
+            {
+              // IEEE 802.15.4-2006 (Section 7.1.3.3.3)
+              if (!m_mlmeCommStatusIndicationCallback.IsNull ())
+                {
+                  MlmeCommStatusIndicationParams commStatusParams;
+                  commStatusParams.m_panId = m_macPanId;
+                  commStatusParams.m_srcAddrMode = LrWpanMacHeader::EXTADDR;
+                  commStatusParams.m_srcExtAddr = peekedMacHdr.GetExtSrcAddr ();
+                  commStatusParams.m_dstAddrMode = LrWpanMacHeader::EXTADDR;
+                  commStatusParams.m_dstExtAddr = peekedMacHdr.GetExtDstAddr ();
+                  commStatusParams.m_status = LrWpanMlmeCommStatus::MLMECOMMSTATUS_TRANSACTION_EXPIRED;
+                  m_mlmeCommStatusIndicationCallback (commStatusParams);
+                }
+            }
+          else if (peekedMacHdr.IsData())
+            {
+              // IEEE 802.15.4-2006 (Section 7.1.1.1.3)
+              if (! m_mcpsDataConfirmCallback.IsNull ())
+                {
+                  McpsDataConfirmParams confParams;
+                  confParams.m_status = IEEE_802_15_4_TRANSACTION_EXPIRED;
+                  m_mcpsDataConfirmCallback (confParams);
+                }
+            }
+          m_macTxDropTrace (m_indTxQueue[i]->txQPkt);
+          m_indTxQueue.erase (m_indTxQueue.begin () + i);
+        }
+      else
+        {
+          i++;
+        }
+    }
+}
+
+void
+LrWpanMac::PrintPendTxQ (std::ostream &os) const
+{
+  LrWpanMacHeader peekedMacHdr;
+
+  os << "Pending Transaction List ["
+     << GetShortAddress ()
+     << " | " << GetExtendedAddress () << "] | CurrentTime: "
+     << Simulator::Now ().As (Time::S) << "\n"
+     << "       Destination        | Sequence Number |   Frame type    | Expire time\n";
+
+  for (uint32_t i = 0; i < m_indTxQueue.size (); i++)
+    {
+      m_indTxQueue[i]->txQPkt->PeekHeader (peekedMacHdr);
+      os << m_indTxQueue[i]->dstExtAddress << "           " << static_cast <uint32_t> (m_indTxQueue[i]->seqNum) << "          ";
+
+      if (peekedMacHdr.IsCommand ())
+        {
+          os << "Cmd Frame    ";
+        }
+      else if (peekedMacHdr.IsData ())
+        {
+          os << "Data Frame   ";
+        }
+      else
+        {
+          os << "Unk Frame    ";
+        }
+
+      os << m_indTxQueue[i]->expireTime.As (Time::S) << "\n";
+    }
+}
+
+void
+LrWpanMac::RemovePendTxQElement (Ptr<Packet> p)
+{
+  LrWpanMacHeader peekedMacHdr;
+  p->PeekHeader (peekedMacHdr);
+
+  for (auto it = m_indTxQueue.begin (); it != m_indTxQueue.end (); it++)
+    {
+      if (peekedMacHdr.GetDstAddrMode () == EXT_ADDR)
+        {
+          if (((*it)->dstExtAddress == peekedMacHdr.GetExtDstAddr ())
+              && ((*it)->seqNum == peekedMacHdr.GetSeqNum ()))
+            {
+              m_macPendTxDequeueTrace (p);
+              m_indTxQueue.erase (it);
+              break;
+            }
+        }
+      else if (peekedMacHdr.GetDstAddrMode () == SHORT_ADDR)
+        {
+          if (((*it)->dstShortAddress == peekedMacHdr.GetShortDstAddr ())
+              && ((*it)->seqNum == peekedMacHdr.GetSeqNum ()))
+            {
+              m_macPendTxDequeueTrace (p);
+              m_indTxQueue.erase (it);
+              break;
+            }
+        }
+    }
+
+  p = 0;
 }
 
 void

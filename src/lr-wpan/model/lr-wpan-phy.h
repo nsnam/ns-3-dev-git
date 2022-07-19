@@ -456,7 +456,7 @@ public:
 
   /**
    * implement PLME SetAttribute confirm SAP
-   * bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
+   * bit rate is in bit/s.  Symbol rate is in symbol/s.
    * @param isData is true for data rate or false for symbol rate
    * @return the rate value of this PHY
    */

@@ -22,6 +22,7 @@
  *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
  *  Alberto Gallegos Ramonet <ramonet@fc.ritsumei.ac.jp>
  */
+
 #ifndef LR_WPAN_MAC_H
 #define LR_WPAN_MAC_H
 
@@ -35,6 +36,7 @@
 #include <ns3/lr-wpan-fields.h>
 #include <ns3/event-id.h>
 #include <deque>
+#include <memory>
 
 
 namespace ns3 {
@@ -243,6 +245,25 @@ typedef enum
 /**
  * \ingroup lr-wpan
  *
+ * Table 12 of IEEE 802.15.4-2011
+ */
+typedef enum
+{
+  MLMEASSOC_SUCCESS                 = 0,
+  MLMEASSOC_FULL_CAPACITY           = 1,
+  MLMEASSOC_ACCESS_DENIED           = 2,
+  MLMEASSOC_CHANNEL_ACCESS_FAILURE  = 3,
+  MLMEASSOC_NO_ACK                  = 4,
+  MLMEASSOC_NO_DATA                 = 5,
+  MLMEASSOC_COUNTER_ERROR           = 6,
+  MLMEASSOC_FRAME_TOO_LONG          = 7,
+  MLMEASSOC_UNSUPPORTED_LEGACY      = 8,
+  MLMEASSOC_INVALID_PARAMETER       = 9
+} LrWpanMlmeAssociateConfirmStatus;
+
+/**
+ * \ingroup lr-wpan
+ *
  * Table 37 of IEEE 802.15.4-2011
  */
 typedef enum
@@ -253,6 +274,22 @@ typedef enum
   MLMESYNCLOSS_SUPERFRAME_OVERLAP = 3
 } LrWpanSyncLossReason;
 
+/**
+ * \ingroup lr-wpan
+ *
+ * Table 18 of IEEE 802.15.4-2011
+ */
+typedef enum
+{
+  MLMECOMMSTATUS_SUCCESS                = 0,
+  MLMECOMMSTATUS_TRANSACTION_OVERFLOW   = 1,
+  MLMECOMMSTATUS_TRANSACTION_EXPIRED    = 2,
+  MLMECOMMSTATUS_CHANNEL_ACCESS_FAILURE = 3,
+  MLMECOMMSTATUS_NO_ACK                 = 4,
+  MLMECOMMSTATUS_COUNTER_ERROR          = 5,
+  MLMECOMMSTATUS_FRAME_TOO_LONG         = 6,
+  MLMECOMMSTATUS_INVALID_PARAMETER      = 7
+} LrWpanMlmeCommStatus;
 
 /**
  * \ingroup lr-wpan
@@ -298,21 +335,13 @@ struct PanDescriptor
  */
 struct McpsDataRequestParams
 {
-  McpsDataRequestParams ()
-    : m_srcAddrMode (SHORT_ADDR),
-      m_dstAddrMode (SHORT_ADDR),
-      m_dstPanId (0),
-      m_dstAddr (),
-      m_msduHandle (0),
-      m_txOptions (0)
-  {}
-  LrWpanAddressMode m_srcAddrMode; //!< Source address mode
-  LrWpanAddressMode m_dstAddrMode; //!< Destination address mode
-  uint16_t m_dstPanId;             //!< Destination PAN identifier
-  Mac16Address m_dstAddr;          //!< Destination address
-  Mac64Address m_dstExtAddr;       //!< Destination extended address
-  uint8_t m_msduHandle;            //!< MSDU handle
-  uint8_t m_txOptions;             //!< Tx Options (bitfield)
+  LrWpanAddressMode m_srcAddrMode {SHORT_ADDR}; //!< Source address mode
+  LrWpanAddressMode m_dstAddrMode {SHORT_ADDR}; //!< Destination address mode
+  uint16_t m_dstPanId {0};                      //!< Destination PAN identifier
+  Mac16Address m_dstAddr;                       //!< Destination address
+  Mac64Address m_dstExtAddr;                    //!< Destination extended address
+  uint8_t m_msduHandle {0};                     //!< MSDU handle
+  uint8_t m_txOptions {0};                      //!< Tx Options (bitfield)
 };
 
 /**
@@ -325,6 +354,7 @@ struct McpsDataConfirmParams
   uint8_t m_msduHandle; //!< MSDU handle
   LrWpanMcpsDataConfirmStatus m_status; //!< The status of the last MSDU transmission
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -343,6 +373,30 @@ struct McpsDataIndicationParams
   uint8_t m_mpduLinkQuality;  //!< LQI value measured during reception of the MPDU
   uint8_t m_dsn;              //!< The DSN of the received data frame
 };
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ASSOCIATE.indication params. See 802.15.4-2011 6.2.2.2.
+ */
+struct MlmeAssociateIndicationParams
+{
+  Mac64Address m_extDevAddr;        //!< The extended address of the device requesting association
+  CapabilityField capabilityInfo;   //!< The operational capabilities of the device requesting association.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ASSOCIATE.response params. See 802.15.4-2011 6.2.2.3.
+ */
+struct MlmeAssociateResponseParams
+{
+  Mac64Address m_extDevAddr;        //!< The extended address of the device requesting association
+  Mac16Address m_assocShortAddr;    //!< The short address allocated by the coordinator on succesful assoc. FF:FF = Unsuccessful
+  LrWpanAssociationStatus m_status; //!< The status of the association attempt (As defined on Table 83 IEEE 802.15.4-2006)
+};
+
 /**
  * \ingroup lr-wpan
  *
@@ -350,27 +404,17 @@ struct McpsDataIndicationParams
  */
 struct MlmeStartRequestParams
 {
-  MlmeStartRequestParams ()
-    : m_PanId (0),
-      m_logCh (11),
-      m_logChPage (0),
-      m_startTime (0),
-      m_bcnOrd (15),
-      m_sfrmOrd (15),
-      m_panCoor (false),
-      m_battLifeExt (false),
-      m_coorRealgn (false)
-  {}
-  uint16_t m_PanId;                //!< Pan Identifier used by the device.
-  uint8_t m_logCh;                 //!< Logical channel on which to start using the new superframe configuration.
-  uint32_t m_logChPage;            //!< Logical channel page on which to start using the new superframe configuration.
-  uint32_t m_startTime;            //!< Time at which to begin transmitting beacons (Used by Coordinator not PAN Coordinators). The time is specified in symbols.
-  uint8_t m_bcnOrd;                //!< Beacon Order, Used to calculate the beacon interval, a value of 15 indicates no periodic beacons will be transmitted.
-  uint8_t m_sfrmOrd;               //!< Superframe Order, indicates the length of the CAP in time slots.
-  bool m_panCoor;                  //!< On true this device will become coordinator.
-  bool m_battLifeExt;              //!< Flag indicating whether or not the Battery life extension (BLE) features are used.
-  bool m_coorRealgn;               //!< True if a realignment request command is to be transmitted prior changing the superframe.
+  uint16_t m_PanId {0};            //!< Pan Identifier used by the device.
+  uint8_t m_logCh {11};            //!< Logical channel on which to start using the new superframe configuration.
+  uint32_t m_logChPage {0};        //!< Logical channel page on which to start using the new superframe configuration.
+  uint32_t m_startTime {0};        //!< Time at which to begin transmitting beacons (Used by Coordinator not PAN Coordinators). The time is specified in symbols.
+  uint8_t m_bcnOrd {15};           //!< Beacon Order, Used to calculate the beacon interval, a value of 15 indicates no periodic beacons will be transmitted.
+  uint8_t m_sfrmOrd {15};          //!< Superframe Order, indicates the length of the CAP in time slots.
+  bool m_panCoor {false};          //!< On true this device will become coordinator.
+  bool m_battLifeExt {false};      //!< Flag indicating whether or not the Battery life extension (BLE) features are used.
+  bool m_coorRealgn {false};       //!< True if a realignment request command is to be transmitted prior changing the superframe.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -378,13 +422,10 @@ struct MlmeStartRequestParams
  */
 struct MlmeSyncRequestParams
 {
-  MlmeSyncRequestParams ()
-    : m_logCh (),
-      m_trackBcn (false)
-  {}
   uint8_t m_logCh;                //!< The channel number on which to attempt coordinator synchronization.
-  bool m_trackBcn;                //!< True if the mlme sync with the next beacon and attempts to track future beacons. False if mlme sync only the next beacon.
+  bool m_trackBcn {false};        //!< True if the mlme sync with the next beacon and attempts to track future beacons. False if mlme sync only the next beacon.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -392,19 +433,12 @@ struct MlmeSyncRequestParams
  */
 struct MlmePollRequestParams
 {
-  MlmePollRequestParams ()
-    : m_coorAddrMode (SHORT_ADDR),
-      m_coorPanId (0),
-      m_coorShortAddr (),
-      m_coorExtAddr ()
-  {}
-  LrWpanAddressMode m_coorAddrMode; //!< The addressing mode of the coordinator to which the pool is intended.
-  uint16_t m_coorPanId;             //!< The PAN id of the coordinator to which the poll is intended.
-  Mac16Address m_coorShortAddr;     //!< Coordintator short address.
-  Mac64Address m_coorExtAddr;       //!< Coordinator extended address.
-
-
+  LrWpanAddressMode m_coorAddrMode {SHORT_ADDR}; //!< The addressing mode of the coordinator to which the pool is intended.
+  uint16_t m_coorPanId {0};                      //!< The PAN id of the coordinator to which the poll is intended.
+  Mac16Address m_coorShortAddr;                  //!< Coordinator short address.
+  Mac64Address m_coorExtAddr;                    //!< Coordinator extended address.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -417,6 +451,7 @@ struct MlmeScanRequestParams
   uint8_t m_scanDuration {14};         //!< A value used to calculate the length of time to spend scanning [aBaseSuperframeDuration * (2^m_scanDuration +)].
   uint32_t m_chPage;                   //!< The channel page on which to perform scan.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -431,6 +466,34 @@ struct MlmeScanConfirmParams
   std::vector <uint8_t> m_energyDetList;       //!< A list of energy measurements, one for each channel searched during ED scan (Not valid for Active, Passive or Orphan Scans)
   std::vector <PanDescriptor> m_panDescList;   //!< A list of PAN descriptor, one for each beacon found (Not valid for ED and Orphan scans).
 };
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ASSOCIATE.request params. See 802.15.4-2011  Section 6.2.2.1
+ */
+struct MlmeAssociateRequestParams
+{
+  uint8_t m_chNum {11};                  //!< The channel number on which to attempt association.
+  uint32_t m_chPage {0};                 //!< The channel page on which to attempt association.
+  uint8_t m_coordAddrMode {SHORT_ADDR};  //!< The coordinator addressing mode for this primitive and subsequent MPDU.
+  uint16_t m_coordPanId {0};             //!< The identifier of the PAN with which to associate.
+  Mac16Address m_coordShortAddr;         //!< The short address of the coordinator with which to associate.
+  Mac64Address m_coordExtAddr;           //!< The extended address of the coordinator with which to associate.
+  CapabilityField m_capabilityInfo;      //!< Specifies the operational capabilities of the associating device.
+};
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-ASSOCIATE.confirm params. See 802.15.4-2011  Section 6.2.2.4
+ */
+struct MlmeAssociateConfirmParams
+{
+  Mac16Address m_assocShortAddr;             //!< The short address used in the association request
+  LrWpanMlmeAssociateConfirmStatus m_status; //!< The status of a MLME-associate.request
+};
+
 /**
  * \ingroup lr-wpan
  *
@@ -440,6 +503,7 @@ struct MlmeStartConfirmParams
 {
   LrWpanMlmeStartConfirmStatus m_status; //!< The status of a MLME-start.request
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -453,6 +517,7 @@ struct MlmeBeaconNotifyIndicationParams
   uint32_t m_sduLength;           //!< The number of octets contained in the beacon payload.
   Ptr<Packet> m_sdu;              //!< The set of octets comprising the beacon payload.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -464,6 +529,24 @@ struct MlmeSyncLossIndicationParams
   uint16_t m_panId;                    //!< The PAN identifier with which the device lost synchronization or to which it was realigned.
   uint8_t  m_logCh;                    //!< The channel number on which the device lost synchronization or to which it was realigned.
 };
+
+/**
+ * \ingroup lr-wpan
+ *
+ * MLME-COMM-STATUS.indication params. See  802.15.4-2011   Section 6.2.4.2 Table 18
+ */
+struct MlmeCommStatusIndicationParams
+{
+  uint16_t m_panId;             //!< The PAN identifier of the device from which the frame was received or to which the frame was being sent.
+  uint8_t  m_srcAddrMode;       //!< The source addressing mode for this primitive
+  Mac16Address m_srcShortAddr;  //!< The short address of the entity from which the frame causing the error originated.
+  Mac64Address m_srcExtAddr;    //!< The extended address of the entity from which the frame causing the error originated.
+  uint8_t m_dstAddrMode;        //!< The destination addressing mode for this primitive.
+  Mac16Address m_dstShortAddr;  //!< The short address of the device for which the frame was intended.
+  Mac64Address m_dstExtAddr;    //!< The extended address of the device for which the frame was intended.
+  LrWpanMlmeCommStatus m_status; //!< The communication status
+};
+
 /**
  * \ingroup lr-wpan
  *
@@ -473,6 +556,7 @@ struct MlmePollConfirmParams
 {
   LrWpanMlmePollConfirmStatus m_status; //!< The confirmation status resulting from a MLME-poll.request.
 };
+
 /**
  * \ingroup lr-wpan
  *
@@ -481,6 +565,7 @@ struct MlmePollConfirmParams
  * transmission request
  */
 typedef Callback<void, McpsDataConfirmParams> McpsDataConfirmCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -491,6 +576,7 @@ typedef Callback<void, McpsDataConfirmParams> McpsDataConfirmCallback;
  *  802.15.4-2006 7.1.1.3.1 but just send up the packet.
  */
 typedef Callback<void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicationCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -499,6 +585,7 @@ typedef Callback<void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicatio
  * transmission request
  */
 typedef Callback<void, MlmeStartConfirmParams> MlmeStartConfirmCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -509,6 +596,7 @@ typedef Callback<void, MlmeStartConfirmParams> MlmeStartConfirmCallback;
  *  802.15.4-2006 6.2.4.1 but just send up the packet.
  */
 typedef Callback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet> > MlmeBeaconNotifyIndicationCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -519,6 +607,7 @@ typedef Callback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet> > MlmeBeaco
  *  See IEEE 802.15.4-2011 6.2.13.2.
  */
 typedef Callback<void, MlmeSyncLossIndicationParams> MlmeSyncLossIndicationCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -527,6 +616,7 @@ typedef Callback<void, MlmeSyncLossIndicationParams> MlmeSyncLossIndicationCallb
  * transmission request
  */
 typedef Callback<void, MlmePollConfirmParams> MlmePollConfirmCallback;
+
 /**
  * \ingroup lr-wpan
  *
@@ -534,6 +624,37 @@ typedef Callback<void, MlmePollConfirmParams> MlmePollConfirmCallback;
  * the higher layer.  It returns a status of the outcome of the scan.
  */
 typedef Callback<void, MlmeScanConfirmParams> MlmeScanConfirmCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a MlmeAssociateRequest has been called from
+ * the higher layer. It returns a status of the outcome of the
+ * association request
+ */
+typedef Callback<void, MlmeAssociateConfirmParams> MlmeAssociateConfirmCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a Mlme has successfully received a command
+ *  frame and wants to deliver it to the higher layer.
+ *
+ *  Security related parameters and not handle.
+ *  See 802.15.4-2011 6.2.2.2.
+ */
+typedef Callback<void, MlmeAssociateIndicationParams> MlmeAssociateIndicationCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called by the MLME and issued to its next higher layer following
+ * a transmission instigated through a response primitive.
+ *
+ *  Security related parameters and not handle.
+ *  See 802.15.4-2011 6.2.4.2
+ */
+typedef Callback<void, MlmeCommStatusIndicationParams> MlmeCommStatusIndicationCallback;
 /**
  * \ingroup lr-wpan
  *
@@ -553,54 +674,62 @@ public:
    * The minimum number of octets added by the MAC sublayer to the PSDU.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aMinMPDUOverhead;
+  static constexpr uint32_t aMinMPDUOverhead = 9;
+
   /**
    * Length of a superframe slot in symbols. Defaults to 60 symbols in each
    * superframe slot.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aBaseSlotDuration;
+  static constexpr uint32_t aBaseSlotDuration = 60;
+
   /**
    * Number of a superframe slots per superframe. Defaults to 16.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aNumSuperframeSlots;
+  static constexpr uint32_t aNumSuperframeSlots = 16;
+
   /**
    * Length of a superframe in symbols. Defaults to
    * aBaseSlotDuration * aNumSuperframeSlots in symbols.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aBaseSuperframeDuration;
+  static constexpr uint32_t aBaseSuperframeDuration = aBaseSlotDuration * aNumSuperframeSlots;
+
   /**
    * The number of consecutive lost beacons that will
    * cause the MAC sublayer of a receiving device to
    * declare a loss of synchronization.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aMaxLostBeacons;
+  static constexpr uint32_t aMaxLostBeacons = 4;
+
   /**
    * The maximum size of an MPDU, in octets, that can be
    * followed by a Short InterFrame Spacing (SIFS) period.
    * See IEEE 802.15.4-2011, section 6.4.1, Table 51.
    */
-  static const uint32_t aMaxSIFSFrameSize;
+  static constexpr uint32_t aMaxSIFSFrameSize = 18;
   /**
    * Default constructor.
    */
   LrWpanMac (void);
   virtual ~LrWpanMac (void);
+
   /**
    * Check if the receiver will be enabled when the MAC is idle.
    *
    * \return true, if the receiver is enabled during idle periods, false otherwise
    */
   bool GetRxOnWhenIdle (void);
+
   /**
    * Set if the receiver should be enabled when the MAC is idle.
    *
    * \param rxOnWhenIdle set to true to enable the receiver during idle periods
    */
   void SetRxOnWhenIdle (bool rxOnWhenIdle);
+
   // XXX these setters will become obsolete if we use the attribute system
   /**
    * Set the short address of this MAC.
@@ -608,36 +737,42 @@ public:
    * \param address the new address
    */
   void SetShortAddress (Mac16Address address);
+
   /**
    * Get the short address of this MAC.
    *
    * \return the short address
    */
   Mac16Address GetShortAddress (void) const;
+
   /**
    * Set the extended address of this MAC.
    *
    * \param address the new address
    */
   void SetExtendedAddress (Mac64Address address);
+
   /**
    * Get the extended address of this MAC.
    *
    * \return the extended address
    */
   Mac64Address GetExtendedAddress (void) const;
+
   /**
    * Set the PAN id used by this MAC.
    *
    * \param panId the new PAN id.
    */
   void SetPanId (uint16_t panId);
+
   /**
    * Get the PAN id used by this MAC.
    *
    * \return the PAN id.
    */
   uint16_t GetPanId (void) const;
+
   /**
    *  IEEE 802.15.4-2006, section 7.1.1.1
    *  MCPS-DATA.request
@@ -647,6 +782,7 @@ public:
    *  \param p the packet to be transmitted
    */
   void McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p);
+
   /**
    *  IEEE 802.15.4-2006, section 7.1.14.1
    *  MLME-START.request
@@ -656,6 +792,7 @@ public:
    *  \param params the request parameters
    */
   void MlmeStartRequest (MlmeStartRequestParams params);
+
   /**
     *  IEEE 802.15.4-2011, section 6.2.10.1
     *  MLME-SCAN.request
@@ -664,6 +801,7 @@ public:
     *  \param params the scan request parameters
     */
   void MlmeScanRequest (MlmeScanRequestParams params);
+
   /**
    *  IEEE 802.15.4-2011, section 6.2.13.1
    *  MLME-SYNC.request
@@ -673,6 +811,7 @@ public:
    *  \param params the request parameters
    */
   void MlmeSyncRequest (MlmeSyncRequestParams params);
+
   /**
    *  IEEE 802.15.4-2011, section 6.2.14.2
    *  MLME-POLL.request
@@ -681,24 +820,28 @@ public:
    *  \param params the request parameters
    */
   void MlmePollRequest (MlmePollRequestParams params);
+
   /**
    * Set the CSMA/CA implementation to be used by the MAC.
    *
    * \param csmaCa the CSMA/CA implementation
    */
   void SetCsmaCa (Ptr<LrWpanCsmaCa> csmaCa);
+
   /**
    * Set the underlying PHY for the MAC.
    *
    * \param phy the PHY
    */
   void SetPhy (Ptr<LrWpanPhy> phy);
+
   /**
    * Get the underlying PHY of the MAC.
    *
    * \return the PHY
    */
   Ptr<LrWpanPhy> GetPhy (void);
+
   /**
    * Set the callback for the indication of an incoming data packet.
    * The callback implements MCPS-DATA.indication SAP of IEEE 802.15.4-2006,
@@ -707,6 +850,25 @@ public:
    * \param c the callback
    */
   void SetMcpsDataIndicationCallback (McpsDataIndicationCallback c);
+
+  /**
+   * Set the callback for the indication of an incoming associate request command.
+   * The callback implements MLME-ASSOCIATE.indication SAP of IEEE 802.15.4-2011,
+   * section 6.2.2.2.
+   *
+   * \param c the callback
+   */
+  void SetMlmeAssociateIndicationCallback (MlmeAssociateIndicationCallback c);
+
+  /**
+   * Set the callback for the indication to a response primitive.
+   * The callback implements MLME-COMM-STATUS.indication SAP of IEEE 802.15.4-2011,
+   * section 6.2.4.2.
+   *
+   * \param c the callback
+   */
+  void SetMlmeCommStatusIndicationCallback (MlmeCommStatusIndicationCallback c);
+
   /**
    * Set the callback for the confirmation of a data transmission request.
    * The callback implements MCPS-DATA.confirm SAP of IEEE 802.15.4-2006,
@@ -715,6 +877,7 @@ public:
    * \param c the callback
    */
   void SetMcpsDataConfirmCallback (McpsDataConfirmCallback c);
+
   /**
     * Set the callback for the confirmation of a data transmission request.
     * The callback implements MLME-START.confirm SAP of IEEE 802.15.4-2006,
@@ -723,6 +886,7 @@ public:
     * \param c the callback
     */
   void SetMlmeStartConfirmCallback (MlmeStartConfirmCallback c);
+
   /**
     * Set the callback for the confirmation of a data transmission request.
     * The callback implements MLME-SCAN.confirm SAP of IEEE 802.15.4-2011,
@@ -731,6 +895,16 @@ public:
     * \param c the callback
     */
   void SetMlmeScanConfirmCallback (MlmeScanConfirmCallback c);
+
+  /**
+   * Set the callback for the confirmation of a data transmission request.
+   * The callback implements MLME-ASSOCIATE.confirm SAP of IEEE 802.15.4-2011,
+   * section 6.2.2.4.
+   *
+   * \param c the callback
+   */
+  void SetMlmeAssociateConfirmCallback (MlmeAssociateConfirmCallback c);
+
   /**
    * Set the callback for the indication of an incoming beacon packet.
    * The callback implements MLME-BEACON-NOTIFY.indication SAP of IEEE 802.15.4-2011,
@@ -739,6 +913,7 @@ public:
    * \param c the callback
    */
   void SetMlmeBeaconNotifyIndicationCallback (MlmeBeaconNotifyIndicationCallback c);
+
   /**
    * Set the callback for the loss of synchronization with a coordinator.
    * The callback implements MLME-BEACON-NOTIFY.indication SAP of IEEE 802.15.4-2011,
@@ -747,6 +922,7 @@ public:
    * \param c the callback
    */
   void SetMlmeSyncLossIndicationCallback (MlmeSyncLossIndicationCallback c);
+
   /**
     * Set the callback for the confirmation of a data transmission request.
     * The callback implements MLME-POLL.confirm SAP of IEEE 802.15.4-2011,
@@ -767,6 +943,7 @@ public:
    *  @param lqi Link quality (LQI) value measured during reception of the PPDU
    */
   void PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.1.2
    *  Confirm the end of transmission of an MPDU to MAC
@@ -774,12 +951,14 @@ public:
    *         PHY PD-DATA.confirm status
    */
   void PdDataConfirm (LrWpanPhyEnumeration status);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.2
    *  PLME-CCA.confirm status
    *  @param status TRX_OFF, BUSY or IDLE
    */
   void PlmeCcaConfirm (LrWpanPhyEnumeration status);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.4
    *  PLME-ED.confirm status and energy level
@@ -787,6 +966,7 @@ public:
    *  @param energyLevel 0x00-0xff ED level for the channel
    */
   void PlmeEdConfirm (LrWpanPhyEnumeration status, uint8_t energyLevel);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.6
    *  PLME-GET.confirm
@@ -798,6 +978,7 @@ public:
   void PlmeGetAttributeConfirm (LrWpanPhyEnumeration status,
                                 LrWpanPibAttributeIdentifier id,
                                 LrWpanPhyPibAttributes* attribute);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.8
    *  PLME-SET-TRX-STATE.confirm
@@ -805,6 +986,7 @@ public:
    *  @param status in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
    */
   void PlmeSetTRXStateConfirm (LrWpanPhyEnumeration status);
+
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.10
    *  PLME-SET.confirm
@@ -814,12 +996,14 @@ public:
    */
   void PlmeSetAttributeConfirm (LrWpanPhyEnumeration status,
                                 LrWpanPibAttributeIdentifier id);
+
   /**
    * CSMA-CA algorithm calls back the MAC after executing channel assessment.
    *
    * \param macState indicate BUSY oder IDLE channel condition
    */
   void SetLrWpanMacState (LrWpanMacState macState);
+
   /**
    * Get the current association status.
    *
@@ -843,6 +1027,7 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   Time m_macBeaconTxTime;
+
   /**
    * The time that the device received its last bit of the beacon frame.
    * It does not indicate the start of the Active Period in the Incoming superframe.
@@ -850,6 +1035,7 @@ public:
    * Its purpose is somehow similar to m_macBeaconTxTime
    */
   Time m_macBeaconRxTime;
+
   /**
    * The short address of the coordinator through which the device is
    * associated.
@@ -858,17 +1044,20 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   Mac16Address m_macCoordShortAddress;
+
   /**
    * The extended address of the coordinator through which the device
    * is associated.
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   Mac64Address m_macCoordExtendedAddress;
+
   /**
    * Symbol boundary is same as m_macBeaconTxTime.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   uint64_t m_macSyncSymbolOffset;
+
   /**
    * Used by a PAN coordinator or coordinator.
    * Defines how often the coordinator transmits its beacon
@@ -876,6 +1065,7 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint8_t m_macBeaconOrder;
+
   /**
    * Used by a PAN coordinator or coordinator. The length of the active portion
    * of the outgoing superframe, including the beacon frame.
@@ -883,27 +1073,36 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint8_t m_macSuperframeOrder;
+
   /**
-   * The maximum time (in superframe periods) that a transaction is stored by a
-   * coordinator and indicated in its beacon.
-   * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+   * The maximum time (in UNIT periods) that a transaction is stored by a
+   * coordinator and indicated in its beacon. This value establish the expiration
+   * time of the packets stored in the pending transaction list (indirect transmissions).
+   * 1 Unit Period:
+   * Beacon-enabled = aBaseSuperframeDuration * 2^BO
+   * Non-beacon enabled = aBaseSuperframeDuration
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
-  uint16_t m_macTransactionPersistanceTime;
+  uint16_t m_macTransactionPersistenceTime;
+
   /**
    * The total size of the received beacon in symbols.
    * Its value is used to calculate the end CAP time of the incoming superframe.
    */
   uint64_t m_rxBeaconSymbols;
+
   /**
    * Indication of the Slot where the CAP portion of the OUTGOING Superframe ends.
    */
   uint8_t m_fnlCapSlot;
+
   /**
    * The beaconOrder value of the INCOMING frame. Used by all devices that have a parent.
    * Specification of how often the parent coordinator transmits its beacon.
    * 0 - 15 with 15 means the parent is not currently transmitting beacons.
    */
   uint8_t m_incomingBeaconOrder;
+
   /**
    * Used by all devices that have a parent.
    * The length of the active portion of the INCOMING superframe, including the
@@ -911,58 +1110,69 @@ public:
    * 0 - 15 with 15 meaning the superframe will not be active after the beacon.
    */
   uint8_t m_incomingSuperframeOrder;
+
   /**
    * Indication of the Slot where the CAP portion of the INCOMING Superframe ends.
    */
   uint8_t m_incomingFnlCapSlot;
+
   /**
    * Indicates if MAC sublayer is in receive all mode. True mean accept all
    * frames from PHY.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   bool m_macPromiscuousMode;
+
   /**
    * 16 bits id of PAN on which this device is operating. 0xffff means not
    * associated.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   uint16_t m_macPanId;
+
   /**
    * Temporally stores the value of the current m_macPanId when a MLME-SCAN.request is performed.
    * See IEEE 802.15.4-2011, section 5.1.2.1.2.
    */
   uint16_t m_macPanIdScan;
+
   /**
    * Sequence number added to transmitted data or MAC command frame, 00-ff.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   SequenceNumber8 m_macDsn;
+
   /**
    * Sequence number added to transmitted beacon frame, 00-ff.
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   SequenceNumber8 m_macBsn;
+
   /**
    * The maximum number of retries allowed after a transmission failure.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   uint8_t m_macMaxFrameRetries;
+
   /**
    * Indication of whether the MAC sublayer is to enable its receiver during
    * idle periods.
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   bool m_macRxOnWhenIdle;
+
   /**
    * The minimum time forming a Long InterFrame Spacing (LIFS) period.
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint32_t m_macLIFSPeriod;
+
   /**
    * The minimum time forming a Short InterFrame Spacing (SIFS) period.
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint32_t m_macSIFSPeriod;
+
   /**
    * Indication of whether a device automatically sends data request command
    * if its address is listed in the beacon frame.
@@ -971,108 +1181,135 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   bool m_macAutoRequest;
+
   /**
    * The maximum energy level detected during ED scan on the current channel.
    */
   uint8_t m_maxEnergyLevel;
+
   /**
    * The value of the necessary InterFrame Space after the transmission of a packet.
    */
   uint32_t m_ifs;
+
   /**
    * Indication of whether the current device is the PAN coordinator
    */
   bool m_panCoor;
+
   /**
    * Indication of the Interval used by the coordinator to transmit beacon frames
    * expressed in symbols.
    */
   uint32_t m_beaconInterval;
+
   /**
    * Indication of the superframe duration in symbols.
    * (e.g. 1 symbol = 4 bits in a 250kbps O-QPSK PHY)
    */
   uint32_t m_superframeDuration;
+
   /**
    * Indication of the interval a node should receive a superframe
    * expressed in symbols.
    */
   uint32_t m_incomingBeaconInterval;
+
   /**
    * Indication of the superframe duration in symbols
    * (e.g. 1 symbol = 4 bits in a 250kbps O-QPSK PHY)
    */
   uint32_t m_incomingSuperframeDuration;
+
   /**
    * Indication of current device capability (FFD or RFD)
    */
   uint8_t m_deviceCapability;
+
   /**
    * Indication of whether the current device is tracking incoming beacons.
    */
   bool m_beaconTrackingOn;
+
   /**
    * The number of consecutive loss beacons in a beacon tracking operation.
    */
   uint8_t  m_numLostBeacons;
+
   /**
    * Get the macAckWaitDuration attribute value.
    *
    * \return the maximum number symbols to wait for an acknowledgment frame
    */
   uint64_t GetMacAckWaitDuration (void) const;
+
   /**
    * Get the macMaxFrameRetries attribute value.
    *
    * \return the maximum number of retries
    */
   uint8_t GetMacMaxFrameRetries (void) const;
+
   /**
    * Print the number of elements in the packet transmit queue.
    */
   void PrintTransmitQueueSize (void);
+
   /**
    * Set the macMaxFrameRetries attribute value.
    *
    * \param retries the maximum number of retries
    */
   void SetMacMaxFrameRetries (uint8_t retries);
+
   /**
    * Check if the packet destination is its coordinator
    *
    * \return True if m_txPkt (packet awaiting to be sent) destination is its coordinator
    */
   bool isCoordDest (void);
+
   /**
    * Check if the packet destination is its coordinator
    *
    *\param mac The coordinator short MAC Address
    */
   void SetAssociatedCoor (Mac16Address mac);
+
   /**
    * Check if the packet destination is its coordinator
    *
    *\param mac The coordinator extended MAC Address
    */
   void SetAssociatedCoor (Mac64Address mac);
+
   /**
    * Get the size of the Interframe Space according to MPDU size (m_txPkt).
    *
    * \return the IFS size in symbols
    */
   uint32_t GetIfsSize ();
+
   /**
    * Obtain the number of symbols in the packet which is currently being sent by the MAC layer.
    *
    *\return packet number of symbols
    * */
   uint64_t GetTxPacketSymbols (void);
+
   /**
    * Check if the packet to transmit requires acknowledgment
    *
    *\return True if the Tx packet requires acknowledgment
    * */
   bool isTxAckReq (void);
+
+  /**
+   * Print the Pending transaction list.
+   * \param os The reference to the output stream used by this print function.
+   */
+  void PrintPendTxQ (std::ostream &os) const;
+
   /**
    * TracedCallback signature for sent packets.
    *
@@ -1099,6 +1336,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+
   /**
    * Helper structure for managing transmission queue elements.
    */
@@ -1108,35 +1346,44 @@ private:
     Ptr<Packet> txQPkt;    //!< Queued packet
 
   };
+
   /**
-   * Helper structure for managing indirect transmission queue elements.
+   * Helper structure for managing pending transaction list elements (Indirect transmissions).
    */
   struct IndTxQueueElement
   {
-    uint8_t txQMsduHandle; //!< MSDU Handle.
-    Ptr<Packet> txQPkt;    //!< Queued packet.
-    Time expireTime;       //!< The expiration time of the packet in the indirect transmission queue.
+    uint8_t seqNum;                   //!< The sequence number of  the queued packet
+    Mac16Address dstShortAddress;     //!< The destination short Mac Address
+    Mac64Address dstExtAddress;       //!< The destination extended Mac Address
+    Ptr<Packet> txQPkt;               //!< Queued packet.
+    Time expireTime;                  //!< The expiration time of the packet in the indirect transmission queue.
   };
+
   /**
    * Called to send a single beacon frame.
    */
   void SendOneBeacon (void);
+
   /**
    * Called to send a beacon request command.
    */
   void SendBeaconRequestCommand (void);
+
   /**
    * Called to end a MLME-START.request after changing the page and channel number.
    */
   void EndStartRequest (void);
+
   /**
    * Called at the end of the current channel scan (Active or Passive) for a given duration.
    */
   void EndChannelScan (void);
+
   /**
    * Called at the end of one ED channel scan.
    */
   void EndChannelEnergyScan (void);
+
   /**
    * Called to begin the Contention Free Period (CFP) in a
    * beacon-enabled mode.
@@ -1144,6 +1391,7 @@ private:
    * \param superframeType The incoming or outgoing superframe reference
    */
   void StartCFP (SuperframeType superframeType);
+
   /**
    * Called to begin the Contention Access Period (CAP) in a
    * beacon-enabled mode.
@@ -1151,6 +1399,7 @@ private:
    * \param superframeType The incoming or outgoing superframe reference
    */
   void StartCAP (SuperframeType superframeType);
+
   /**
    * Start the Inactive Period in a beacon-enabled mode.
    *
@@ -1158,37 +1407,44 @@ private:
    *
    */
   void StartInactivePeriod (SuperframeType superframeType);
+
   /**
    * Called after the end of an INCOMING superframe to start the moment a
    * device waits for a new incoming beacon.
    */
   void AwaitBeacon (void);
+
   /**
    * Called if the device is unable to locate a beacon in the time set by MLME-SYNC.request.
    */
   void BeaconSearchTimeout (void);
+
   /**
    * Send an acknowledgment packet for the given sequence number.
    *
    * \param seqno the sequence number for the ACK
    */
   void SendAck (uint8_t seqno);
+
   /**
    * Remove the tip of the transmission queue, including clean up related to the
    * last packet transmission.
    */
   void RemoveFirstTxQElement ();
+
   /**
    * Change the current MAC state to the given new state.
    *
    * \param newState the new state
    */
   void ChangeMacState (LrWpanMacState newState);
+
   /**
    * Handle an ACK timeout with a packet retransmission, if there are
    * retransmission left, or a packet drop.
    */
   void AckWaitTimeout (void);
+
   /**
    * After a successful transmission of a frame (beacon, data) or an ack frame reception,
    * the mac layer wait an Interframe Space (IFS) time and triggers this function
@@ -1197,6 +1453,7 @@ private:
    * \param ifsTime IFS time
    */
   void IfsWaitTimeout (Time ifsTime);
+
   /**
    * Check for remaining retransmissions for the packet currently being sent.
    * Drop the packet, if there are no retransmissions left.
@@ -1204,12 +1461,41 @@ private:
    * \return true, if the packet should be retransmitted, false otherwise.
    */
   bool PrepareRetransmission (void);
+
+  /**
+   * Adds a packet to the pending transactions list (Indirect transmissions).
+   *
+   * \param p The packet added to pending transaction list.
+   */
+  void EnqueueInd (Ptr<Packet> p);
+
+  /**
+   * Extracts a packet from pending transactions list (Indirect transmissions).
+   * \param dst The extended address used an index to obtain an element from the pending transaction list.
+   * \param entry The dequeued element from the pending transaction list.
+   * \return The status of the dequeue
+   */
+  bool DequeueInd (Mac64Address dst, IndTxQueueElement * entry);
+
+  /**
+   * Purge expired transactions from the pending transactions list.
+   */
+  void PurgeInd (void);
+
+  /**
+   * Remove an element from the pending transaction list.
+   *
+   * \param p The packet to be removed from the pending transaction list.
+   */
+  void RemovePendTxQElement (Ptr<Packet> p);
+
   /**
    * Check the transmission queue. If there are packets in the transmission
    * queue and the MAC is idle, pick the first one and initiate a packet
    * transmission.
    */
   void CheckQueue (void);
+
   /**
    * Constructs a Superframe specification field from the local information,
    * the superframe Specification field is necessary to create a beacon frame.
@@ -1217,6 +1503,7 @@ private:
    * \returns the Superframe specification field
    */
   SuperframeField GetSuperframeField (void);
+
   /**
    * Constructs the Guaranteed Time Slots (GTS) Fields from local information.
    * The GTS Fields are part of the beacon frame.
@@ -1224,6 +1511,7 @@ private:
    * \returns the Guaranteed Time Slots (GTS) Fields
    */
   GtsFields GetGtsFields (void);
+
   /**
    * Constructs Pending Address Fields from the local information,
    * the Pending Address Fields are part of the beacon frame.
@@ -1236,6 +1524,7 @@ private:
    * The trace source is fired at the end of any Interframe Space (IFS).
    */
   TracedCallback<Time> m_macIfsEndTrace;
+
   /**
    * The trace source fired when packets are considered as successfully sent
    * or the transmission has been given up.
@@ -1247,6 +1536,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, uint8_t, uint8_t > m_sentPktTrace;
+
   /**
    * The trace source fired when packets come into the "top" of the device
    * at the L3/L2 transition, when being queued for transmission.
@@ -1254,6 +1544,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxEnqueueTrace;
+
   /**
    * The trace source fired when packets are dequeued from the
    * L3/l2 transmission queue.
@@ -1261,12 +1552,22 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxDequeueTrace;
+
+  /**
+   * The trace source fired when packets are dequeued from the
+   * L3/l2 pending transaction list.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macPendTxDequeueTrace;
+
   /**
    * The trace source fired when packets are being sent down to L1.
    *
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxTrace;
+
   /**
    * The trace source fired when packets where successfully transmitted, that is
    * an acknowledgment was received, if requested, or the packet was
@@ -1275,6 +1576,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxOkTrace;
+
   /**
    * The trace source fired when packets are dropped due to missing ACKs or
    * because of transmission failures in L1.
@@ -1282,6 +1584,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
+
   /**
    * The trace source fired for packets successfully received by the device
    * immediately before being forwarded up to higher layers (at the L2/L3
@@ -1290,6 +1593,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
+
   /**
    * The trace source fired for packets successfully received by the device
    * immediately before being forwarded up to higher layers (at the L2/L3
@@ -1298,6 +1602,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macRxTrace;
+
   /**
    * The trace source fired for packets successfully received by the device
    * but dropped before being forwarded up to higher layers (at the L2/L3
@@ -1306,6 +1611,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macRxDropTrace;
+
   /**
    * A trace source that emulates a non-promiscuous protocol sniffer connected
    * to the device.  Unlike your average everyday sniffer, this trace source
@@ -1345,6 +1651,7 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
+
   /**
    * A trace source that fires when the LrWpanMac changes states.
    * Parameters are the old mac state and the new mac state.
@@ -1354,169 +1661,225 @@ private:
    * TracedValue.
    */
   TracedCallback<LrWpanMacState, LrWpanMacState> m_macStateLogger;
+
   /**
    * The PHY associated with this MAC.
    */
   Ptr<LrWpanPhy> m_phy;
+
   /**
    * The CSMA/CA implementation used by this MAC.
    */
   Ptr<LrWpanCsmaCa> m_csmaCa;
+
   /**
    * This callback is used to notify incoming beacon packets to the upper layers.
    * See IEEE 802.15.4-2011, section 6.2.4.1.
    */
   MlmeBeaconNotifyIndicationCallback m_mlmeBeaconNotifyIndicationCallback;
+
   /**
    * This callback is used to indicate the loss of synchronization with a coordinator.
    * See IEEE 802.15.4-2011, section 6.2.13.2.
    */
   MlmeSyncLossIndicationCallback m_mlmeSyncLossIndicationCallback;
+
   /**
    * This callback is used to report the result of a scan on a group of channels for the
    * selected channel page.
    * See IEEE 802.15.4-2011, section 6.2.10.2.
    */
   MlmeScanConfirmCallback m_mlmeScanConfirmCallback;
+
+  /**
+   * This callback is used to report the status after a device request an association with
+   * a coordinator.
+   * See IEEE 802.15.4-2011, section 6.2.2.4.
+   */
+  MlmeAssociateConfirmCallback m_mlmeAssociateConfirmCallback;
+
   /**
    * This callback is used to report the status after a device send data command request to
    * the coordinator to transmit data.
    * See IEEE 802.15.4-2011, section 6.2.14.2.
    */
   MlmePollConfirmCallback m_mlmePollConfirmCallback;
+
   /**
    * This callback is used to report the start of a new PAN or
    * the begin of a new superframe configuration.
    * See IEEE 802.15.4-2006, section 7.1.14.2.
    */
   MlmeStartConfirmCallback m_mlmeStartConfirmCallback;
+
   /**
    * This callback is used to notify incoming packets to the upper layers.
    * See IEEE 802.15.4-2006, section 7.1.1.3.
    */
   McpsDataIndicationCallback m_mcpsDataIndicationCallback;
+
+  /**
+   * This callback is used to indicate the reception of an association request command.
+   * See IEEE 802.15.4-2011, section 6.2.2.2
+   */
+  MlmeAssociateIndicationCallback m_mlmeAssociateIndicationCallback;
+
+  /**
+   * This callback is instigated through a response primitive.
+   * See IEEE 802.15.4-2011, section 6.2.4.2
+   */
+  MlmeCommStatusIndicationCallback m_mlmeCommStatusIndicationCallback;
+
   /**
    * This callback is used to report data transmission request status to the
    * upper layers.
    * See IEEE 802.15.4-2006, section 7.1.1.2.
    */
   McpsDataConfirmCallback m_mcpsDataConfirmCallback;
+
   /**
    * The current state of the MAC layer.
    */
   TracedValue<LrWpanMacState> m_lrWpanMacState;
+
   /**
    * The current period of the incoming superframe.
    */
   TracedValue<SuperframeStatus> m_incSuperframeStatus;
+
   /**
    * The current period of the outgoing superframe.
    */
   TracedValue<SuperframeStatus> m_outSuperframeStatus;
+
   /**
    * The current association status of the MAC layer.
    */
   LrWpanAssociationStatus m_associationStatus;
+
   /**
    * The packet which is currently being sent by the MAC layer.
    */
   Ptr<Packet> m_txPkt;  // XXX need packet buffer instead of single packet
+
   /**
    * The short address used by this MAC. Currently we do not have complete
    * extended address support in the MAC, nor do we have the association
    * primitives, so this address has to be configured manually.
    */
   Mac16Address m_shortAddress;
+
   /**
    * The extended address used by this MAC. Extended addresses are currently not
    * really supported.
    */
   Mac64Address m_selfExt;
+
   /**
    * The transmit queue used by the MAC.
    */
   std::deque<TxQueueElement*> m_txQueue;
+
   /**
    * The indirect transmit queue used by the MAC pending messages.
    */
-  std::deque<IndTxQueueElement*> m_indTxQueue;
+  std::deque<std::unique_ptr <IndTxQueueElement> > m_indTxQueue;
+
   /**
    * The list of PAN descriptors accumulated during channel scans, used to select a PAN to associate.
    */
   std::vector<PanDescriptor> m_panDescriptorList;
+
   /**
    * The list of energy measurements, one for each channel searched during an ED scan.
    */
   std::vector<uint8_t> m_energyDetectList;
+
   /**
    * The parameters used during a MLME-SCAN.request. These parameters are stored here while
    * PLME-SET operations (set channel page, set channel number) and multiple ed scans take place.
    */
   MlmeScanRequestParams m_scanParams;
+
   /**
    * The parameters used during a MLME-START.request. These parameters are stored here while
    * PLME-SET operations (set channel page, set channel number) take place.
    */
   MlmeStartRequestParams m_startParams;
+
   /**
    * The channel list index used to obtain the current scanned channel.
    */
   uint16_t m_channelScanIndex;
+
   /**
    * Indicates the pending primitive when PLME.SET operation (page or channel switch) is called from
    * within another MLME primitive (e.g. Association, Scan, Sync, Start).
    */
   PendingPrimitiveStatus m_pendPrimitive;
+
   /**
    * The number of already used retransmission for the currently transmitted
    * packet.
    */
   uint8_t m_retransmission;
+
   /**
    * The number of CSMA/CA retries used for sending the current packet.
    */
   uint8_t m_numCsmacaRetry;
+
   /**
    * Scheduler event for the ACK timeout of the currently transmitted data
    * packet.
    */
   EventId m_ackWaitTimeout;
+
   /**
    * Scheduler event for a deferred MAC state change.
    */
   EventId m_setMacState;
+
   /**
    * Scheduler event for Interframe spacing wait time.
    */
   EventId m_ifsEvent;
+
   /**
    * Scheduler event for generation of one beacon.
    */
   EventId m_beaconEvent;
+
   /**
    * Scheduler event for the end of the outgoing superframe CAP.
    **/
   EventId m_capEvent;
+
   /**
    * Scheduler event for the end of the outgoing superframe CFP.
    */
   EventId m_cfpEvent;
+
   /**
    * Scheduler event for the end of the incoming superframe CAP.
    **/
   EventId m_incCapEvent;
+
   /**
    * Scheduler event for the end of the incoming superframe CFP.
    */
   EventId m_incCfpEvent;
+
   /**
    * Scheduler event to track the incoming beacons.
    */
   EventId m_trackingEvent;
+
   /**
    * Scheduler event for the end of a channel scan.
    */
   EventId m_scanEvent;
+
   /**
    * Scheduler event for the end of a ED channel scan.
    */

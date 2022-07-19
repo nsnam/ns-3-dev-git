@@ -142,21 +142,13 @@ The implemented ns-3 MAC supports scanning. Typically, a scanning request is pre
 by an association request but these can be used independently.
 IEEE 802.15.4 supports 4 types of scanning:
 
-* Energy Detection (ED) Scan: In an energy scan, a device or a coordinator scan a set number of channels
-looking for traces of energy. The maximum energy registered during a given amount of time is stored.
-Energy scan is typically used to measure the quality of a channel at any given time. For this reason,
-coordinators often use this scan before initiating a PAN on a channel.
+* *Energy Detection (ED) Scan:* In an energy scan, a device or a coordinator scan a set number of channels looking for traces of energy. The maximum energy registered during a given amount of time is stored. Energy scan is typically used to measure the quality of a channel at any given time. For this reason, coordinators often use this scan before initiating a PAN on a channel.
 
-* Active Scan: A device sends beacon requests on a set number of channels looking for a PAN coordinator.
-               The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests.
-               The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process
-               devices extract the information in the PAN descriptors from the collected beacons and
-               based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
+* *Active Scan:* A device sends beacon requests on a set number of channels looking for a PAN coordinator. The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests. The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process devices extract the information in the PAN descriptors from the collected beacons and based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
 
-* Passive Scan: In a passive scan, no beacon requests are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode).
-                Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
+* *Passive Scan:* In a passive scan, no beacon requests are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode). Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
 
-* Orphan Scan: <Not supported by ns-3>
+* *Orphan Scan:* <Not supported by ns-3>
 
 In active and passive scans, the link quality indicator (LQI) is the main parameter used to
 determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality

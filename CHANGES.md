@@ -31,6 +31,7 @@ Changes from ns-3.36 to ns-3.37
 * Adds support for **LrWpanMac** energy detection (ED) scan.
 * IPv6 Router Solicitations (RS) are now retransmitted up to 4 times, following RFC 5779.
 * Adds support for **LrWpanMac** active and passive scan.
+* Add supporting association structures: parameters, callbacks and the pending transaction list to **LrWpanMac**.
 
 
 ### Changes to build system
