@@ -287,6 +287,95 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
         self.assertListEqual([], list(unused_sources))
 
 
+class NS3DependenciesTestCase(unittest.TestCase):
+    """!
+    ns-3 tests related to dependencies
+    """
+
+    def test_01_CheckIfIncludedHeadersMatchLinkedModules(self):
+        """!
+        Checks if headers from different modules (src/A, contrib/B) that are included by
+        the current module (src/C) source files correspond to the list of linked modules
+        LIBNAME C
+        LIBRARIES_TO_LINK A (missing B)
+        @return None
+        """
+        modules = {}
+        headers_to_modules = {}
+        module_paths = glob.glob(ns3_path + "/src/*/") + glob.glob(ns3_path + "/contrib/*/")
+
+        for path in module_paths:
+            # Open the module CMakeLists.txt and read it
+            cmake_path = os.path.join(path, "CMakeLists.txt")
+            with open(cmake_path, "r") as f:
+                cmake_contents = f.readlines()
+
+            module_name = os.path.relpath(path, ns3_path)
+            module_name_nodir = module_name.replace("src/", "").replace("contrib/", "")
+            modules[module_name_nodir] = {"sources": set(),
+                                          "headers": set(),
+                                          "libraries": set(),
+                                          "included_headers": set(),
+                                          "included_libraries": set(),
+                                          }
+
+            # Separate list of source files and header files
+            for line in cmake_contents:
+                base_name = os.path.basename(line[:-1])
+                if not os.path.exists(os.path.join(path, line.strip())):
+                    continue
+
+                if ".h" in line:
+                    # Register all module headers as module headers and sources
+                    modules[module_name_nodir]["headers"].add(base_name)
+                    modules[module_name_nodir]["sources"].add(base_name)
+
+                    # Register the header as part of the current module
+                    headers_to_modules[base_name] = module_name_nodir
+
+                if ".cc" in line:
+                    # Register the source file as part of the current module
+                    modules[module_name_nodir]["sources"].add(base_name)
+
+                if ".cc" in line or ".h" in line:
+                    # Extract includes from headers and source files and then add to a list of included headers
+                    source_file = os.path.join(ns3_path, module_name, line.strip())
+                    with open(source_file, "r", encoding="utf-8") as f:
+                        source_contents = f.read()
+                    modules[module_name_nodir]["included_headers"].update(map(lambda x: x.replace("ns3/", ""),
+                                                                              re.findall("#include.*[\"|<](.*)[\"|>]",
+                                                                                         source_contents)
+                                                                              )
+                                                                          )
+                    continue
+
+            # Extract libraries linked to the module
+            modules[module_name_nodir]["libraries"].update(re.findall("\\${lib(.*)}", "".join(cmake_contents)))
+
+        # Now that we have all the information we need, check if we have all the included libraries linked
+        all_project_headers = set(headers_to_modules.keys())
+
+        sys.stderr.flush()
+        print(file=sys.stderr)
+        for module in sorted(modules):
+            external_headers = modules[module]["included_headers"].difference(all_project_headers)
+            project_headers_included = modules[module]["included_headers"].difference(external_headers)
+            modules[module]["included_libraries"] = set(
+                [headers_to_modules[x] for x in project_headers_included]).difference(
+                {module})
+
+            diff = modules[module]["included_libraries"].difference(modules[module]["libraries"])
+            if len(diff) > 0:
+                print("Module %s includes modules that are not linked: %s" % (module, ", ".join(list(diff))),
+                      file=sys.stderr)
+                sys.stderr.flush()
+            # Uncomment this to turn into a real test
+            # self.assertEqual(len(diff), 0,
+            #                 msg="Module %s includes modules that are not linked: %s" % (module, ", ".join(list(diff)))
+            #                 )
+        self.assertTrue(True)
+
+
 class NS3StyleTestCase(unittest.TestCase):
     """!
     ns-3 tests to check if the source code, whitespaces and CMake formatting
@@ -2410,7 +2499,9 @@ def main():
                      NS3BuildBaseTestCase,
                      NS3ExpectedUseTestCase,
                      NS3QualityControlTestCase,
-                     ]
+                     ],
+        "extras": [NS3DependenciesTestCase,
+                   ]
     }
 
     import argparse
