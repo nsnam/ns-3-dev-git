@@ -383,6 +383,13 @@ CounterCalculator<T>::Output (DataOutputCallback &callback) const
   // end CounterCalculator::Output
 }
 
+// The following explicit template instantiation declaration prevents modules
+// including this header file from implicitly instantiating CounterCalculator<uint32_t>.
+// This would cause some examples on Windows to crash at runtime with the
+// following error message: "Trying to allocate twice the same UID:
+// ns3::CounterCalculator<uint32_t>"
+extern template class CounterCalculator<uint32_t>;
+
 // end namespace ns3
 };
 

@@ -20,6 +20,7 @@ set(source_files
     helper/file-helper.cc
     helper/gnuplot-helper.cc
     model/boolean-probe.cc
+    model/basic-data-calculators.cc
     model/data-calculator.cc
     model/data-collection-object.cc
     model/data-collector.cc
