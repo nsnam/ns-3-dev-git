@@ -237,6 +237,8 @@ protected:
     std::optional<uint8_t> apLinkId;           //!< ID (as set by the AP) of the link we have
                                                //!< setup or are setting up
     bool sendAssocReq;                         //!< whether this link is used to send the Association Request
+    EventId beaconWatchdog;                    //!< beacon watchdog
+    Time beaconWatchdogEnd {0};                //!< beacon watchdog end
   };
 
   /**
@@ -367,14 +369,18 @@ private:
   bool IsWaitAssocResp (void) const;
   /**
    * This method is called after we have not received a beacon from the AP
+   * on the given link.
+   *
+   * \param linkId the ID of the given link
    */
-  void MissedBeacons (void);
+  void MissedBeacons (uint8_t linkId);
   /**
-   * Restarts the beacon timer.
+   * Restarts the beacon timer for the given link.
    *
    * \param delay the delay before the watchdog fires
+   * \param linkId the ID of the given link
    */
-  void RestartBeaconWatchdog (Time delay);
+  void RestartBeaconWatchdog (Time delay, uint8_t linkId);
   /**
    * Take actions after disassociation.
    */
@@ -454,8 +460,6 @@ private:
   Time m_probeRequestTimeout;  ///< probe request timeout
   Time m_assocRequestTimeout;  ///< association request timeout
   EventId m_assocRequestEvent; ///< association request event
-  EventId m_beaconWatchdog;    ///< beacon watchdog
-  Time m_beaconWatchdogEnd;    ///< beacon watchdog end
   uint32_t m_maxMissedBeacons; ///< maximum missed beacons
   bool m_activeProbing;        ///< active probing
   Ptr<RandomVariableStream> m_probeDelay;  ///< RandomVariable used to randomize the time

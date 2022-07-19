@@ -103,8 +103,7 @@ StaWifiMac::GetTypeId (void)
 StaWifiMac::StaWifiMac ()
   : m_state (UNASSOCIATED),
     m_aid (0),
-    m_assocRequestEvent (),
-    m_beaconWatchdogEnd (Seconds (0))
+    m_assocRequestEvent ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -553,7 +552,14 @@ StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
     };
   Time beaconInterval = std::visit (getBeaconInterval, bestAp->m_frame);
   Time delay = beaconInterval * m_maxMissedBeacons;
-  RestartBeaconWatchdog (delay);
+  // restart beacon watchdog for all links to setup
+  for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
+    {
+      if (GetLink (linkId).apLinkId.has_value () || GetNLinks () == 1)
+        {
+          RestartBeaconWatchdog (delay, linkId);
+        }
+    }
   SetState (WAIT_ASSOC_RESP);
   SendAssociationRequest (false);
 }
@@ -567,17 +573,18 @@ StaWifiMac::AssocRequestTimeout (void)
 }
 
 void
-StaWifiMac::MissedBeacons (void)
+StaWifiMac::MissedBeacons (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
-  if (m_beaconWatchdogEnd > Simulator::Now ())
+  NS_LOG_FUNCTION (this << +linkId);
+  auto& link = GetLink (linkId);
+  if (link.beaconWatchdogEnd > Simulator::Now ())
     {
-      if (m_beaconWatchdog.IsRunning ())
+      if (link.beaconWatchdog.IsRunning ())
         {
-          m_beaconWatchdog.Cancel ();
+          link.beaconWatchdog.Cancel ();
         }
-      m_beaconWatchdog = Simulator::Schedule (m_beaconWatchdogEnd - Simulator::Now (),
-                                              &StaWifiMac::MissedBeacons, this);
+      link.beaconWatchdog = Simulator::Schedule (link.beaconWatchdogEnd - Simulator::Now (),
+                                                 &StaWifiMac::MissedBeacons, this, linkId);
       return;
     }
   NS_LOG_DEBUG ("beacon missed");
@@ -585,9 +592,9 @@ StaWifiMac::MissedBeacons (void)
   // a frame, wait until the RX is completed (otherwise, crashes may occur if
   // we are receiving a MU frame because its reception requires the STA-ID)
   Time delay = Seconds (0);
-  if (GetWifiPhy ()->IsStateRx ())
+  if (GetWifiPhy (linkId)->IsStateRx ())
     {
-      delay = GetWifiPhy ()->GetDelayUntilIdle ();
+      delay = GetWifiPhy (linkId)->GetDelayUntilIdle ();
     }
   Simulator::Schedule (delay, &StaWifiMac::Disassociated, this);
 }
@@ -603,15 +610,16 @@ StaWifiMac::Disassociated (void)
 }
 
 void
-StaWifiMac::RestartBeaconWatchdog (Time delay)
+StaWifiMac::RestartBeaconWatchdog (Time delay, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << delay);
-  m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
-  if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay
-      && m_beaconWatchdog.IsExpired ())
+  NS_LOG_FUNCTION (this << delay << +linkId);
+  auto& link = GetLink (linkId);
+  link.beaconWatchdogEnd = std::max (Simulator::Now () + delay, link.beaconWatchdogEnd);
+  if (Simulator::GetDelayLeft (link.beaconWatchdog) < delay
+      && link.beaconWatchdog.IsExpired ())
     {
       NS_LOG_DEBUG ("really restart watchdog.");
-      m_beaconWatchdog = Simulator::Schedule (delay, &StaWifiMac::MissedBeacons, this);
+      link.beaconWatchdog = Simulator::Schedule (delay, &StaWifiMac::MissedBeacons, this, linkId);
     }
 }
 
@@ -827,7 +835,7 @@ StaWifiMac::ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId)
     {
       m_beaconArrival (Simulator::Now ());
       Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-      RestartBeaconWatchdog (delay);
+      RestartBeaconWatchdog (delay, linkId);
       UpdateApInfo (beacon, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
     }
   else
