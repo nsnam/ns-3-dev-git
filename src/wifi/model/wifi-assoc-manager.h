@@ -112,6 +112,13 @@ public:
   virtual void NotifyApInfo (const StaWifiMac::ApInfo&& apInfo);
 
   /**
+   * Notify that the given link has completed channel switching.
+   *
+   * \param linkId the ID of the given link
+   */
+  virtual void NotifyChannelSwitched (uint8_t linkId) = 0;
+
+  /**
    * Compare two ApInfo objects for the purpose of keeping a sorted list of
    * ApInfo objects.
    *

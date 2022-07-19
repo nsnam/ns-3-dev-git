@@ -1278,6 +1278,9 @@ StaWifiMac::NotifyChannelSwitching (uint8_t linkId)
     {
       Disassociated (linkId);
     }
+
+  // notify association manager
+  m_assocManager->NotifyChannelSwitched (linkId);
 }
 
 std::ostream & operator << (std::ostream &os, const StaWifiMac::ApInfo& apInfo)

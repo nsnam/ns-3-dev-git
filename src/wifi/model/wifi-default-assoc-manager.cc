@@ -24,6 +24,7 @@
 #include "sta-wifi-mac.h"
 #include "wifi-default-assoc-manager.h"
 #include "wifi-phy.h"
+#include <algorithm>
 
 namespace ns3 {
 
@@ -38,6 +39,13 @@ WifiDefaultAssocManager::GetTypeId (void)
     .SetParent<WifiAssocManager> ()
     .AddConstructor<WifiDefaultAssocManager> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("ChannelSwitchTimeout",
+                   "After requesting a channel switch on a link to setup that link, "
+                   "wait at most this amount of time. If a channel switch is not "
+                   "notified within this amount of time, we give up setting up that link.",
+                   TimeValue (MilliSeconds (5)),
+                   MakeTimeAccessor (&WifiDefaultAssocManager::m_channelSwitchTimeout),
+                   MakeTimeChecker (Seconds (0)))
   ;
   return tid;
 }
@@ -153,6 +161,7 @@ WifiDefaultAssocManager::EndScanning (void)
   // iterate over all the local links and find if we can setup a link for each of them
   for (const auto& linkId : localLinkIds)
     {
+      auto phy = m_mac->GetWifiPhy (linkId);
       auto apIt = apList.begin ();
 
       while (apIt != apList.end ())
@@ -162,9 +171,26 @@ WifiDefaultAssocManager::EndScanning (void)
           // we cannot setup a link with this affiliated AP if this PHY object is
           // constrained to operate in the current PHY band and this affiliated AP
           // is operating in a different PHY band than this PHY object
-          if (m_mac->GetWifiPhy (linkId)->HasFixedPhyBand ()
-              && m_mac->GetWifiPhy (linkId)->GetPhyBand () != apChannel.GetPhyBand ())
+          if (phy->HasFixedPhyBand () && phy->GetPhyBand () != apChannel.GetPhyBand ())
             {
+              apIt++;
+              continue;
+            }
+
+          bool needChannelSwitch = false;
+          if (const auto& channel = phy->GetOperatingChannel ();
+              channel.GetNumber () != apChannel.GetNumber ()
+              || channel.GetWidth () != apChannel.GetWidth ()
+              || channel.GetPhyBand () != apChannel.GetPhyBand ())
+            {
+              needChannelSwitch = true;
+            }
+
+          if (needChannelSwitch && phy->IsStateSwitching ())
+            {
+              // skip this affiliated AP, which is operating on a different channel
+              // than ours, because we are already switching channel and cannot
+              // schedule another channel switch to match the affiliated AP channel
               apIt++;
               continue;
             }
@@ -179,15 +205,33 @@ WifiDefaultAssocManager::EndScanning (void)
           m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->get ().GetMldMacAddress ());
           setupLinks.push_back ({linkId, rnr->get ().GetLinkId (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId)});
 
-          // switch this link to using the channel used by a reported AP
-          // TODO check if the STA only supports a narrower channel width
-          NS_LOG_DEBUG ("Switch link " << +linkId << " to using channel " << +apChannel.GetNumber ()
-                        << " in band " << apChannel.GetPhyBand () << " frequency "
-                        << apChannel.GetFrequency () << "MHz width " << apChannel.GetWidth () << "MHz");
-          WifiPhy::ChannelTuple chTuple {apChannel.GetNumber (), apChannel.GetWidth (),
-                                          apChannel.GetPhyBand (),
-                                          apChannel.GetPrimaryChannelIndex (20)};
-          m_mac->GetWifiPhy (linkId)->SetOperatingChannel (chTuple);
+          if (needChannelSwitch)
+            {
+              if (phy->IsStateSleep ())
+                {
+                  // switching channel while a PHY is in sleep state fails
+                  phy->ResumeFromSleep ();
+                }
+              // switch this link to using the channel used by a reported AP
+              // TODO check if the STA only supports a narrower channel width
+              NS_LOG_DEBUG ("Switch link " << +linkId
+                            << " to using channel " << +apChannel.GetNumber ()
+                            << " in band " << apChannel.GetPhyBand ()
+                            << " frequency " << apChannel.GetFrequency ()
+                            << "MHz width " << apChannel.GetWidth () << "MHz");
+              WifiPhy::ChannelTuple chTuple {apChannel.GetNumber (), apChannel.GetWidth (),
+                                              apChannel.GetPhyBand (),
+                                              apChannel.GetPrimaryChannelIndex (20)};
+              phy->SetOperatingChannel (chTuple);
+              // actual channel switching may be delayed, thus setup a channel switch timer
+              m_channelSwitchInfo.resize (m_mac->GetNLinks ());
+              m_channelSwitchInfo[linkId].timer.Cancel ();
+              m_channelSwitchInfo[linkId].timer = Simulator::Schedule (m_channelSwitchTimeout,
+                                                                       &WifiDefaultAssocManager::ChannelSwitchTimeout,
+                                                                       this, linkId);
+              m_channelSwitchInfo[linkId].apLinkAddress = bssid;
+              m_channelSwitchInfo[linkId].apMldAddress = mle->get ().GetMldMacAddress ();
+            }
 
           // remove the affiliated AP with which we are going to setup a link and move
           // to the next local linkId
@@ -196,8 +240,56 @@ WifiDefaultAssocManager::EndScanning (void)
         }
     }
 
-  // we are done
-  ScanningTimeout ();
+  if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
+                    [](auto &&info){ return info.timer.IsRunning (); }))
+    {
+      // we are done
+      ScanningTimeout ();
+    }
+}
+
+void
+WifiDefaultAssocManager::NotifyChannelSwitched (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  if (m_channelSwitchInfo.size () > linkId  && m_channelSwitchInfo[linkId].timer.IsRunning ())
+    {
+      // we were waiting for this notification
+      m_channelSwitchInfo[linkId].timer.Cancel ();
+
+      // the remote station manager has been reset after switching, hence store
+      // information about AP link address and AP MLD address
+      m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (m_channelSwitchInfo[linkId].apLinkAddress,
+                                                                  m_channelSwitchInfo[linkId].apMldAddress);
+
+      if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
+                        [](auto &&info){ return info.timer.IsRunning (); }))
+        {
+          // we are done
+          ScanningTimeout ();
+        }
+    }
+}
+
+void
+WifiDefaultAssocManager::ChannelSwitchTimeout (uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << +linkId);
+
+  // we give up setting up this link
+  auto& bestAp = *GetSortedList ().begin ();
+  auto& setupLinks = GetSetupLinks (bestAp);
+  auto it = std::find_if (setupLinks.begin (), setupLinks.end (),
+                          [&linkId](auto&& linkIds){ return linkIds.first == linkId; });
+  NS_ASSERT (it != setupLinks.end ());
+  setupLinks.erase (it);
+
+  if (std::none_of (m_channelSwitchInfo.begin (), m_channelSwitchInfo.end (),
+                    [](auto &&info){ return info.timer.IsRunning (); }))
+    {
+      // we are done
+      ScanningTimeout ();
+    }
 }
 
 bool
