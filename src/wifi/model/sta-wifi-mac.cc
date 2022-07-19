@@ -596,16 +596,35 @@ StaWifiMac::MissedBeacons (uint8_t linkId)
     {
       delay = GetWifiPhy (linkId)->GetDelayUntilIdle ();
     }
-  Simulator::Schedule (delay, &StaWifiMac::Disassociated, this);
+  Simulator::Schedule (delay, &StaWifiMac::Disassociated, this, linkId);
 }
 
 void
-StaWifiMac::Disassociated (void)
+StaWifiMac::Disassociated (uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << +linkId);
+
+  // disable the given link
+  GetLink (linkId).apLinkId = std::nullopt;
+  GetLink (linkId).phy->SetOffMode ();
+
+  for (uint8_t id = 0; id < GetNLinks (); id++)
+    {
+      if (GetLink (id).apLinkId.has_value ())
+        {
+          // found an enabled link
+          return;
+        }
+    }
+
   NS_LOG_DEBUG ("Set state to UNASSOCIATED and start scanning");
   SetState (UNASSOCIATED);
   m_aid = 0;  // reset AID
+  // ensure all links are on
+  for (uint8_t id = 0; id < GetNLinks (); id++)
+    {
+      GetLink (id).phy->ResumeFromOff ();
+    }
   TryToEnsureAssociated ();
 }
 
@@ -1251,10 +1270,9 @@ StaWifiMac::NotifyChannelSwitching (uint8_t linkId)
 
   WifiMac::NotifyChannelSwitching (linkId);
 
-  if (IsInitialized ())
+  if (IsInitialized () && IsAssociated ())
     {
-      // TODO handle deassociation of a link in ML setup
-      Disassociated ();
+      Disassociated (linkId);
     }
 }
 

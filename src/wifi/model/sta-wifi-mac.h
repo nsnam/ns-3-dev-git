@@ -382,9 +382,13 @@ private:
    */
   void RestartBeaconWatchdog (Time delay, uint8_t linkId);
   /**
-   * Take actions after disassociation.
+   * Check if any enabled link remains after the given link is disabled (because,
+   * e.g., the maximum number of beacons is missed or the channel is switched).
+   * If no enabled link remains, proceed with disassociation.
+   *
+   * \param linkId the ID of the given link
    */
-  void Disassociated (void);
+  void Disassociated (uint8_t linkId);
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.
