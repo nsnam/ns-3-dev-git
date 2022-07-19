@@ -201,7 +201,7 @@ public:
    *   std::pair<Ptr<Ipv4>, uint32_t> returnValue = c.Get (0);
    *   Ptr<Ipv4> ipv4 = returnValue.first;
    *   uint32_t index = returnValue.second;
-   *   Ptr<Ipv4Interface> iface =  ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
+   *   Ptr<Ipv4Interface> iface =  DynamicCast<Ipv4L3Protocol> (ipv4)->GetInterface (index);
    * \endcode
    */
   std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t i) const;

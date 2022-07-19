@@ -184,7 +184,7 @@ public:
    *   std::pair<Ptr<Ipv6>, uint32_t> returnValue = c.Get (0);
    *   Ptr<Ipv6> ipv6 = returnValue.first;
    *   uint32_t index = returnValue.second;
-   *   Ptr<Ipv6Interface> iface =  ipv6->GetObject<Ipv6L3Protocol> ()->GetInterface (index);
+   *   Ptr<Ipv6Interface> iface =  DynamicCast<Ipv6L3Protocol> (ipv6)->GetInterface (index);
    * \endcode
    */
   std::pair<Ptr<Ipv6>, uint32_t> Get (uint32_t i) const;
