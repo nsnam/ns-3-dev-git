@@ -521,7 +521,7 @@ HeFrameExchangeManager::SendPsduMap (void)
       NS_ASSERT (m_psduMap.size () == 1);
       timerType = WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU;
       NS_ASSERT (m_staMac && m_staMac->IsAssociated ());
-      txVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (m_psduMap.begin ()->second->GetAddr1 (),
+      txVector = GetWifiRemoteStationManager ()->GetBlockAckTxVector (m_psduMap.begin ()->second->GetAddr1 (),
                                                                              m_txParams.m_txVector);
       responseTxVector = &txVector;
     }
@@ -938,7 +938,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
     {
       // no station replied, the transmission failed
       // call ReportDataFailed to increase SRC/LRC
-      m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (*psduMap->begin ()->second->begin ());
+      GetWifiRemoteStationManager ()->ReportDataFailed (*psduMap->begin ()->second->begin ());
       resetCw = false;
     }
   else
@@ -993,7 +993,7 @@ HeFrameExchangeManager::BlockAckAfterTbPpduTimeout (Ptr<WifiPsdu> psdu, const Wi
   bool resetCw;
 
   // call ReportDataFailed to increase SRC/LRC
-  m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (*psdu->begin ());
+  GetWifiRemoteStationManager ()->ReportDataFailed (*psdu->begin ());
 
   MissedBlockAck (psdu, m_txParams.m_txVector, resetCw);
 
@@ -1091,7 +1091,7 @@ HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address
       return v;
     }
 
-  uint8_t powerLevel = m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ();
+  uint8_t powerLevel = GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ();
   /**
    * Get the transmit power to use for an HE TB PPDU
    * considering:
@@ -1109,7 +1109,7 @@ HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address
    *
    * Refer to section 27.3.14.2 (Power pre-correction) of 802.11ax Draft 4.0 for more details.
    */
-  int8_t pathLossDb = trigger.GetApTxPower () - static_cast<int8_t> (m_mac->GetWifiRemoteStationManager ()->GetMostRecentRssi (triggerSender)); //cast RSSI to be on equal footing with AP Tx power information
+  int8_t pathLossDb = trigger.GetApTxPower () - static_cast<int8_t> (GetWifiRemoteStationManager ()->GetMostRecentRssi (triggerSender)); //cast RSSI to be on equal footing with AP Tx power information
   double reqTxPowerDbm = static_cast<double> (userInfoIt->GetUlTargetRssi () + pathLossDb);
 
   //Convert the transmit power to a power level
@@ -1142,13 +1142,13 @@ HeFrameExchangeManager::SetTargetRssi (CtrlTriggerHeader& trigger) const
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_apMac);
 
-  trigger.SetApTxPower (static_cast<int8_t> (m_phy->GetPowerDbm (m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ())));
+  trigger.SetApTxPower (static_cast<int8_t> (m_phy->GetPowerDbm (GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ())));
   for (auto& userInfo : trigger)
     {
       const auto staList = m_apMac->GetStaList ();
       auto itAidAddr = staList.find (userInfo.GetAid12 ());
       NS_ASSERT (itAidAddr != staList.end ());
-      int8_t rssi = static_cast<int8_t> (m_mac->GetWifiRemoteStationManager ()->GetMostRecentRssi (itAidAddr->second));
+      int8_t rssi = static_cast<int8_t> (GetWifiRemoteStationManager ()->GetMostRecentRssi (itAidAddr->second));
       rssi = (rssi >= -20) ? -20 : ((rssi <= -110) ? -110 : rssi); //cap so as to keep within [-110; -20] dBm
       userInfo.SetUlTargetRssi (rssi);
     }
@@ -1589,8 +1589,8 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalIn
 
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
-          m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_psduMap.begin ()->second->GetHeader (0),
+          GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
+          GetWifiRemoteStationManager ()->ReportRtsOk (m_psduMap.begin ()->second->GetHeader (0),
                                                               rxSignalInfo.snr, txVector.GetMode (), tag.Get ());
 
           m_txTimer.Cancel ();
@@ -1637,7 +1637,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalIn
           uint8_t tid = blockAck.GetTidInfo ();
           std::pair<uint16_t,uint16_t> ret = GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (),
                                                                                     {tid});
-          m_mac->GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first, ret.second,
+          GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first, ret.second,
                                                                       rxSignalInfo.snr, tag.Get (), m_txParams.m_txVector);
 
           // remove the sender from the set of stations that are expected to send a BlockAck
@@ -1715,7 +1715,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalIn
                   std::pair<uint16_t,uint16_t> ret = GetBaManager (tid)->NotifyGotBlockAck (blockAck,
                                                                                             hdr.GetAddr2 (),
                                                                                             {tid}, index);
-                  m_mac->GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first,
+                  GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first,
                                                                               ret.second, rxSignalInfo.snr,
                                                                               tag.Get (staId),  m_txParams.m_txVector);
                 }
@@ -1784,7 +1784,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalIn
             {
               Mac48Address sender = hdr.GetAddr2 ();
               NS_LOG_DEBUG ("Received MU-BAR Trigger Frame from=" << sender);
-              m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
+              GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
 
               auto userInfoIt = trigger.FindUserInfoWithAid (staId);
               NS_ASSERT (userInfoIt != trigger.end ());

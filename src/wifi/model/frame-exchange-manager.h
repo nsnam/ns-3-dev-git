@@ -265,6 +265,11 @@ protected:
   void DoDispose () override;
 
   /**
+   * \return the remote station manager operating on our link
+   */
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+
+  /**
    * Fragment the given MPDU if needed. If fragmentation is needed, return the
    * first fragment; otherwise, return the given MPDU. Note that, if fragmentation
    * is applied, the given MPDU is dequeued from the MAC queue and the first

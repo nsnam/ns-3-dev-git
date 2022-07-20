@@ -95,7 +95,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
   cfEnd.SetAddr1 (Mac48Address::GetBroadcast ());
   cfEnd.SetAddr2 (m_self);
 
-  WifiTxVector cfEndTxVector = m_mac->GetWifiRemoteStationManager ()->GetRtsTxVector (cfEnd.GetAddr1 ());
+  WifiTxVector cfEndTxVector = GetWifiRemoteStationManager ()->GetRtsTxVector (cfEnd.GetAddr1 ());
 
   Time txDuration = m_phy->CalculateTxDuration (cfEnd.GetSize () + WIFI_MAC_FCS_LENGTH,
                                                 cfEndTxVector, m_phy->GetPhyBand ());
@@ -276,7 +276,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
     }
 
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
+  txParams.m_txVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
 
   Ptr<WifiMpdu> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
 

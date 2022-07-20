@@ -164,6 +164,12 @@ FrameExchangeManager::SetChannelAccessManager (const Ptr<ChannelAccessManager> c
   m_channelAccessManager = channelAccessManager;
 }
 
+Ptr<WifiRemoteStationManager>
+FrameExchangeManager::GetWifiRemoteStationManager (void) const
+{
+  return m_mac->GetWifiRemoteStationManager (m_linkId);
+}
+
 void
 FrameExchangeManager::SetWifiPhy (Ptr<WifiPhy> phy)
 {
@@ -335,7 +341,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   NS_ASSERT (m_protectionManager);
   NS_ASSERT (m_ackManager);
   WifiTxParameters txParams;
-  txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
+  txParams.m_txVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
   txParams.m_protection = m_protectionManager->TryAddMpdu (mpdu, txParams);
   txParams.m_acknowledgment = m_ackManager->TryAddMpdu (mpdu, txParams);
   txParams.AddMpdu (mpdu);
@@ -356,12 +362,12 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMpdu> mpdu)
       // a fragment cannot be further fragmented
       NS_ASSERT (m_fragmentedPacket);
     }
-  else if (m_mac->GetWifiRemoteStationManager ()->NeedFragmentation (mpdu))
+  else if (GetWifiRemoteStationManager ()->NeedFragmentation (mpdu))
     {
       NS_LOG_DEBUG ("Fragmenting the MSDU");
       m_fragmentedPacket = mpdu->GetPacket ()->Copy ();
       // create the first fragment
-      Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, m_mac->GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
+      Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
       // enqueue the first fragment
       Ptr<WifiMpdu> item = Create<WifiMpdu> (fragment, mpdu->GetHeader ());
       item->GetHeader ().SetMoreFragments ();
@@ -575,7 +581,7 @@ FrameExchangeManager::GetFrameDurationId (const WifiMacHeader& header, uint32_t 
       uint32_t nextFragmentOffset = (header.GetFragmentNumber () + 1) * payloadSize;
       uint32_t nextFragmentSize = std::min (fragmentedPacket->GetSize () - nextFragmentOffset,
                                             payloadSize);
-      WifiTxVector ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (header.GetAddr1 (),
+      WifiTxVector ackTxVector = GetWifiRemoteStationManager ()->GetAckTxVector (header.GetAddr1 (),
                                                                                         txParams.m_txVector);
 
       durationId += 2 * m_phy->GetSifs ()
@@ -591,7 +597,7 @@ FrameExchangeManager::GetRtsDurationId (const WifiTxVector& rtsTxVector, Time tx
   NS_LOG_FUNCTION (this << rtsTxVector << txDuration << response);
 
   WifiTxVector ctsTxVector;
-  ctsTxVector = m_mac->GetWifiRemoteStationManager ()->GetCtsTxVector (m_self, rtsTxVector.GetMode ());
+  ctsTxVector = GetWifiRemoteStationManager ()->GetCtsTxVector (m_self, rtsTxVector.GetMode ());
 
   return m_phy->GetSifs ()
          + m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, m_phy->GetPhyBand ()) /* CTS */
@@ -675,7 +681,7 @@ FrameExchangeManager::SendCtsAfterRts (const WifiMacHeader& rtsHdr, WifiMode rts
 {
   NS_LOG_FUNCTION (this << rtsHdr << rtsTxMode << rtsSnr);
 
-  WifiTxVector ctsTxVector = m_mac->GetWifiRemoteStationManager ()->GetCtsTxVector (rtsHdr.GetAddr2 (), rtsTxMode);
+  WifiTxVector ctsTxVector = GetWifiRemoteStationManager ()->GetCtsTxVector (rtsHdr.GetAddr2 (), rtsTxMode);
   DoSendCtsAfterRts (rtsHdr, ctsTxVector, rtsSnr);
 }
 
@@ -721,7 +727,7 @@ FrameExchangeManager::SendNormalAck (const WifiMacHeader& hdr, const WifiTxVecto
 {
   NS_LOG_FUNCTION (this << hdr << dataTxVector << dataSnr);
 
-  WifiTxVector ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (hdr.GetAddr2 (), dataTxVector);
+  WifiTxVector ackTxVector = GetWifiRemoteStationManager ()->GetAckTxVector (hdr.GetAddr2 (), dataTxVector);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
@@ -810,15 +816,15 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMpdu> mpdu, const WifiTxVector& 
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
 
-  m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
+  GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
 
-  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
+  if (!GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
     {
       NS_LOG_DEBUG ("Missed Ack, discard MPDU");
       NotifyPacketDiscarded (mpdu);
       // Dequeue the MPDU if it is stored in a queue
       DequeueMpdu (mpdu);
-      m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
+      GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
       m_dcf->ResetCw (m_linkId);
     }
   else
@@ -853,12 +859,12 @@ FrameExchangeManager::DoCtsTimeout (Ptr<WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
 
-  m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (psdu->GetHeader (0));
+  GetWifiRemoteStationManager ()->ReportRtsFailed (psdu->GetHeader (0));
 
-  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (*psdu->begin ()))
+  if (!GetWifiRemoteStationManager ()->NeedRetransmission (*psdu->begin ()))
     {
       NS_LOG_DEBUG ("Missed CTS, discard MPDU(s)");
-      m_mac->GetWifiRemoteStationManager ()->ReportFinalRtsFailed (psdu->GetHeader (0));
+      GetWifiRemoteStationManager ()->ReportFinalRtsFailed (psdu->GetHeader (0));
       for (const auto& mpdu : *PeekPointer (psdu))
         {
           // Dequeue the MPDU if it is stored in a queue
@@ -919,14 +925,14 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
       if (mpdu->GetHeader ().HasData ()
           && !mpdu->GetHeader ().GetAddr1 ().IsGroup ())
         {
-          m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
+          GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
         }
 
       if (!mpdu->GetHeader ().GetAddr1 ().IsGroup ()
-          && !m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
+          && !GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
         {
           NS_LOG_DEBUG ("reset DCF");
-          m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
+          GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
           DequeueMpdu (mpdu);
           NotifyPacketDiscarded (mpdu);
           txop->ResetCw (m_linkId);
@@ -1003,7 +1009,7 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
       // Ack and CTS do not carry Addr2
       if (!psdu->GetHeader (0).IsAck () && !psdu->GetHeader (0).IsCts ())
         {
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (psdu->GetHeader (0).GetAddr2 (),
+          GetWifiRemoteStationManager ()->ReportRxOk (psdu->GetHeader (0).GetAddr2 (),
                                                              rxSignalInfo, txVector);
         }
       ReceiveMpdu (*(psdu->begin ()), rxSignalInfo, txVector, perMpduStatus.empty ());
@@ -1131,8 +1137,8 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo
 
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
-          m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_mpdu->GetHeader (),
+          GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
+          GetWifiRemoteStationManager ()->ReportRtsOk (m_mpdu->GetHeader (),
                                                               rxSnr, txVector.GetMode (), tag.Get ());
 
           m_txTimer.Cancel ();
@@ -1198,8 +1204,8 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMpdu> mpdu, const WifiTxVector&
   // When fragmentation is used, only update manager when the last fragment is acknowledged
   if (!mpdu->GetHeader ().IsMoreFragments ())
     {
-      m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxInfo, ackTxVector);
-      m_mac->GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxInfo.snr, ackTxVector.GetMode (),
+      GetWifiRemoteStationManager ()->ReportRxOk (sender, rxInfo, ackTxVector);
+      GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxInfo.snr, ackTxVector.GetMode (),
                                                            snr, txVector);
     }
   // cancel the timer
