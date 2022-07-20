@@ -31,6 +31,7 @@ namespace ns3 {
 class WifiTxParameters;
 class WifiMpdu;
 class WifiMac;
+class WifiRemoteStationManager;
 
 /**
  * \ingroup wifi
@@ -90,6 +91,11 @@ public:
 
 protected:
   virtual void DoDispose (void);
+
+  /**
+   * \return the remote station manager operating on our link
+   */
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager
   uint8_t m_linkId;   //!< ID of the link this Protection Manager is operating on

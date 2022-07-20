@@ -32,6 +32,7 @@ class WifiTxParameters;
 class WifiMpdu;
 class WifiPsdu;
 class WifiMac;
+class WifiRemoteStationManager;
 
 /**
  * \ingroup wifi
@@ -107,6 +108,11 @@ public:
 
 protected:
   void DoDispose (void) override;
+
+  /**
+   * \return the remote station manager operating on our link
+   */
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   Ptr<WifiMac> m_mac; //!< MAC which is using this Acknowledgment Manager
   uint8_t m_linkId;   //!< ID of the link this Acknowledgment Manager is operating on

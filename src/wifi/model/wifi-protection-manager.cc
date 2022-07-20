@@ -65,6 +65,12 @@ WifiProtectionManager::SetWifiMac (Ptr<WifiMac> mac)
   m_mac = mac;
 }
 
+Ptr<WifiRemoteStationManager>
+WifiProtectionManager::GetWifiRemoteStationManager (void) const
+{
+  return m_mac->GetWifiRemoteStationManager (m_linkId);
+}
+
 void
 WifiProtectionManager::SetLinkId (uint8_t linkId)
 {

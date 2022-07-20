@@ -66,6 +66,12 @@ WifiAckManager::SetWifiMac (Ptr<WifiMac> mac)
   m_mac = mac;
 }
 
+Ptr<WifiRemoteStationManager>
+WifiAckManager::GetWifiRemoteStationManager (void) const
+{
+  return m_mac->GetWifiRemoteStationManager (m_linkId);
+}
+
 void
 WifiAckManager::SetLinkId (uint8_t linkId)
 {

@@ -158,21 +158,21 @@ WifiDefaultProtectionManager::GetPsduProtection (const WifiMacHeader& hdr, uint3
     }
 
   // check if RTS/CTS is needed
-  if (m_mac->GetWifiRemoteStationManager ()->NeedRts (hdr, size))
+  if (GetWifiRemoteStationManager ()->NeedRts (hdr, size))
     {
       WifiRtsCtsProtection* protection = new WifiRtsCtsProtection;
-      protection->rtsTxVector = m_mac->GetWifiRemoteStationManager ()->GetRtsTxVector (hdr.GetAddr1 ());
-      protection->ctsTxVector = m_mac->GetWifiRemoteStationManager ()->GetCtsTxVector (hdr.GetAddr1 (),
+      protection->rtsTxVector = GetWifiRemoteStationManager ()->GetRtsTxVector (hdr.GetAddr1 ());
+      protection->ctsTxVector = GetWifiRemoteStationManager ()->GetCtsTxVector (hdr.GetAddr1 (),
                                                                                        protection->rtsTxVector.GetMode ());
       return std::unique_ptr<WifiProtection> (protection);
     }
 
   // check if CTS-to-Self is needed
-  if (m_mac->GetWifiRemoteStationManager ()->GetUseNonErpProtection ()
-      && m_mac->GetWifiRemoteStationManager ()->NeedCtsToSelf (txVector))
+  if (GetWifiRemoteStationManager ()->GetUseNonErpProtection ()
+      && GetWifiRemoteStationManager ()->NeedCtsToSelf (txVector))
     {
       WifiCtsToSelfProtection* protection = new WifiCtsToSelfProtection;
-      protection->ctsTxVector = m_mac->GetWifiRemoteStationManager ()->GetCtsToSelfTxVector ();
+      protection->ctsTxVector = GetWifiRemoteStationManager ()->GetCtsToSelfTxVector ();
       return std::unique_ptr<WifiProtection> (protection);
     }
 
