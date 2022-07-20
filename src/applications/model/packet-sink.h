@@ -27,6 +27,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/address.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/seq-ts-size-header.h"
 #include <unordered_map>
 
@@ -158,14 +159,24 @@ private:
      *
      * Should this method go in address.h?
      *
-     * It calculates the hash taking the uint32_t hash value of the ipv4 address.
-     * It works only for InetSocketAddresses (Ipv4 version)
+     * It calculates the hash taking the uint32_t hash value of the IPv4 or IPv6 address.
+     * It works only for InetSocketAddresses (IPv4 version) or Inet6SocketAddresses (IPv6 version)
      */
     size_t operator() (const Address &x) const
     {
-      NS_ABORT_IF (!InetSocketAddress::IsMatchingType (x));
-      InetSocketAddress a = InetSocketAddress::ConvertFrom (x);
-      return std::hash<uint32_t>()(a.GetIpv4 ().Get ());
+      if (InetSocketAddress::IsMatchingType (x))
+        {
+          InetSocketAddress a = InetSocketAddress::ConvertFrom (x);
+          return Ipv4AddressHash()(a.GetIpv4 ());
+        }
+      else if (Inet6SocketAddress::IsMatchingType (x))
+        {
+          Inet6SocketAddress a = Inet6SocketAddress::ConvertFrom (x);
+          return Ipv6AddressHash()(a.GetIpv6 ());
+        }
+
+      NS_ABORT_MSG ("PacketSink: unexpected address type, neither IPv4 nor IPv6");
+      return 0; //silence the warnings.
     }
   };
 
