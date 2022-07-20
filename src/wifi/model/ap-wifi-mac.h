@@ -109,9 +109,10 @@ public:
   const std::map<uint16_t, Mac48Address>& GetStaList (uint8_t linkId = SINGLE_LINK_OP_ID) const;
   /**
    * \param addr the address of the associated station
+   * \param linkId the ID of the link on which the station is associated
    * \return the Association ID allocated by the AP to the station, SU_STA_ID if unallocated
    */
-  uint16_t GetAssociationId (Mac48Address addr) const;
+  uint16_t GetAssociationId (Mac48Address addr, uint8_t linkId) const;
 
   /**
    * Return the value of the Queue Size subfield of the last QoS Data or QoS Null

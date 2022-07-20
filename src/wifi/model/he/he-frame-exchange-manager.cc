@@ -350,7 +350,7 @@ HeFrameExchangeManager::SendPsduMap (void)
           while (staIt != acknowledgment->stationsReplyingWithBlockAck.end ())
             {
               NS_ASSERT (m_apMac);
-              uint16_t staId = m_apMac->GetAssociationId (staIt->first);
+              uint16_t staId = m_apMac->GetAssociationId (staIt->first, m_linkId);
 
               m_trigVector.SetHeMuUserInfo (staId, staIt->second.blockAckTxVector.GetHeMuUserInfo (staId));
               recipients.emplace (staId, staIt->second.barHeader);
@@ -878,7 +878,7 @@ HeFrameExchangeManager::GetTxDuration (uint32_t ppduPayloadSize, Mac48Address re
       ppduPayloadSize = MpduAggregator::GetSizeIfAggregated (info->second.muBarSize, ppduPayloadSize);
     }
 
-  uint16_t staId = (txParams.m_txVector.IsDlMu () ? m_apMac->GetAssociationId (receiver)
+  uint16_t staId = (txParams.m_txVector.IsDlMu () ? m_apMac->GetAssociationId (receiver, m_linkId)
                                                   : m_staMac->GetAssociationId ());
   Time psduDuration = m_phy->CalculateTxDuration (ppduPayloadSize, txParams.m_txVector,
                                                   m_phy->GetPhyBand (), staId);
@@ -1177,7 +1177,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck (const WifiTxParameters& txParams)
       uint8_t tid = staInfo.first.second;
       std::size_t index = staInfo.second;
 
-      blockAck.SetAid11 (m_apMac->GetAssociationId (receiver), index);
+      blockAck.SetAid11 (m_apMac->GetAssociationId (receiver, m_linkId), index);
       blockAck.SetTidInfo (tid, index);
 
       if (tid == 14)
@@ -1607,7 +1607,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalIn
           WifiDlMuBarBaSequence* acknowledgment = static_cast<WifiDlMuBarBaSequence*> (m_txParams.m_acknowledgment.get ());
           NS_ASSERT (acknowledgment->stationsReplyingWithNormalAck.size () == 1);
           NS_ASSERT (m_apMac);
-          uint16_t staId = m_apMac->GetAssociationId (acknowledgment->stationsReplyingWithNormalAck.begin ()->first);
+          uint16_t staId = m_apMac->GetAssociationId (acknowledgment->stationsReplyingWithNormalAck.begin ()->first, m_linkId);
           auto it = m_psduMap.find (staId);
           NS_ASSERT (it != m_psduMap.end ());
           NS_ASSERT (it->second->GetAddr1 () == acknowledgment->stationsReplyingWithNormalAck.begin ()->first);

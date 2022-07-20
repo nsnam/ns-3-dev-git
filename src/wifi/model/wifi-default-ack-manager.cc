@@ -494,7 +494,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMpdu> mpdu,
       // we get here if this is the first MPDU for this receiver.
       Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
       NS_ABORT_MSG_IF (!apMac, "HE APs only can send DL MU PPDUs");
-      uint16_t staId = apMac->GetAssociationId (receiver);
+      uint16_t staId = apMac->GetAssociationId (receiver, m_linkId);
 
       NS_ABORT_MSG_IF (!hdr.IsQosData (),
                       "QoS data frames only can be aggregated when transmitting a "
@@ -578,7 +578,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMpdu> mpdu,
       // we get here if this is the first MPDU for this receiver.
       Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
       NS_ABORT_MSG_IF (!apMac, "HE APs only can send DL MU PPDUs");
-      uint16_t staId = apMac->GetAssociationId (receiver);
+      uint16_t staId = apMac->GetAssociationId (receiver, m_linkId);
 
       NS_ABORT_MSG_IF (!hdr.IsQosData (),
                       "QoS data frames only can be aggregated when transmitting a "

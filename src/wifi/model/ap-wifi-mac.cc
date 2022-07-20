@@ -1695,9 +1695,9 @@ ApWifiMac::GetStaList (uint8_t linkId) const
 }
 
 uint16_t
-ApWifiMac::GetAssociationId (Mac48Address addr) const
+ApWifiMac::GetAssociationId (Mac48Address addr, uint8_t linkId) const
 {
-  return GetWifiRemoteStationManager ()->GetAssociationId (addr);
+  return GetWifiRemoteStationManager (linkId)->GetAssociationId (addr);
 }
 
 uint8_t
