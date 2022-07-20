@@ -65,6 +65,9 @@ public:
                     Mac48Address realto);
 
 protected:
+  /**
+   * Dispose of this Object.
+   */
   virtual void DoDispose (void);
 
   // end class PacketCounterCalculator
