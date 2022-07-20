@@ -57,20 +57,17 @@ public:
    * \param standard selected standard
    * \param band selected PHY band
    * \param bw bandwidth
-   * \param maskRefsLeft vector of expected power values and corresponding indexes of generated PSD
-   *                     (only start and stop indexes/values given) for left guard bandwidth
-   * \param maskRefsRight vector of expected power values and corresponding indexes of generated PSD
-   *                      (only start and stop indexes/values given) for right guard bandwidth
+   * \param maskRefs vector of expected power values and corresponding indexes of generated PSD
+   *                     (only start and stop indexes/values given)
    * \param tol tolerance (in dB)
    */
   WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
-                              IndexPowerVect maskRefsLeft, IndexPowerVect maskRefsRight, double tol);
+                              const IndexPowerVect& maskRefs, double tol);
   virtual ~WifiOfdmMaskSlopesTestCase ();
 
 protected:
   Ptr<SpectrumValue> m_actualSpectrum; ///< actual spectrum value
-  IndexPowerVect m_expectedLeftPsd;    ///< expected power values for left guard bandwidth
-  IndexPowerVect m_expectedRightPsd;   ///< expected power values for right guard bandwidth
+  IndexPowerVect m_expectedPsd;        ///< expected power values
   double m_tolerance;                  ///< tolerance (in dB)
 
 private:
@@ -90,11 +87,11 @@ private:
 };
 
 WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
-                                                        IndexPowerVect maskRefsLeft, IndexPowerVect maskRefsRight, double tol)
+                                                        const IndexPowerVect& maskRefs, double tol)
   :   TestCase (std::string ("SpectrumValue ") + str)
 {
   NS_LOG_FUNCTION (this << str << standard << band << +bw << tol);
-  NS_ASSERT (maskRefsLeft.size () % 2 == 0 && maskRefsRight.size () % 2 == 0); //start/stop pairs expected
+  NS_ASSERT (maskRefs.size () % 2 == 0); //start/stop pairs expected
   uint16_t freq = 5170 + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
   double refTxPowerW = 1; // have to work in dBr when comparing though
   m_tolerance = tol; // in dB
@@ -152,20 +149,11 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiSta
       break;
     }
 
-  NS_LOG_INFO ("Build expected left PSD");
-  for (uint32_t i = 0; i < maskRefsLeft.size (); i = i + 2)
+  NS_LOG_INFO ("Build expected PSD");
+  for (uint32_t i = 0; i < maskRefs.size (); i = i + 2)
     {
-      InterpolateAndAppendValues (m_expectedLeftPsd, maskRefsLeft[i], maskRefsLeft[i + 1], tol);
+      InterpolateAndAppendValues (m_expectedPsd, maskRefs[i], maskRefs[i + 1], tol);
     }
-  NS_ASSERT (m_expectedLeftPsd.size () == (m_expectedLeftPsd.back ().first - m_expectedLeftPsd.front ().first + 1));
-
-  NS_LOG_INFO ("Build expected right PSD");
-  for (uint32_t i = 0; i < maskRefsRight.size (); i = i + 2)
-    {
-      InterpolateAndAppendValues (m_expectedRightPsd, maskRefsRight[i], maskRefsRight[i + 1], tol);
-    }
-  NS_ASSERT (m_expectedRightPsd.size () == (m_expectedRightPsd.back ().first - m_expectedRightPsd.front ().first + 1));
-
 }
 
 WifiOfdmMaskSlopesTestCase::~WifiOfdmMaskSlopesTestCase ()
@@ -173,7 +161,8 @@ WifiOfdmMaskSlopesTestCase::~WifiOfdmMaskSlopesTestCase ()
 }
 
 void
-WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect, IndexPowerPair start, IndexPowerPair stop,
+WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect,
+                                                        IndexPowerPair start, IndexPowerPair stop,
                                                         double tol)
 {
   NS_LOG_FUNCTION (start.first << start.second << stop.first << stop.second);
@@ -209,21 +198,13 @@ WifiOfdmMaskSlopesTestCase::DoRun (void)
       maxPowerW = std::max (maxPowerW, *vit);
     }
 
-  NS_LOG_INFO ("Compare expected left PSD");
-  for (IndexPowerVect::const_iterator it = m_expectedLeftPsd.begin (); it != m_expectedLeftPsd.end (); it++)
+  NS_LOG_INFO ("Compare expected PSD");
+  for (IndexPowerVect::const_iterator it = m_expectedPsd.begin (); it != m_expectedPsd.end (); it++)
     {
       currentPowerDbr = 10.0 * std::log10 ((*m_actualSpectrum)[it->first] / maxPowerW);
       NS_LOG_LOGIC ("For " << it->first << ", expected: " << it->second << " vs obtained: " << currentPowerDbr);
       NS_TEST_EXPECT_MSG_EQ_TOL (currentPowerDbr, it->second, m_tolerance,
-                                 "Spectrum value mismatch for left guard band (" << it->first << ")");
-    }
-  NS_LOG_INFO ("Compare expected right PSD");
-  for (IndexPowerVect::const_iterator it = m_expectedRightPsd.begin (); it != m_expectedRightPsd.end (); it++)
-    {
-      currentPowerDbr = 10.0 * std::log10 ((*m_actualSpectrum)[it->first] / maxPowerW);
-      NS_LOG_LOGIC ("For " << it->first << ", expected: " << it->second << " vs obtained: " << currentPowerDbr);
-      NS_TEST_EXPECT_MSG_EQ_TOL (currentPowerDbr, it->second, m_tolerance,
-                                 "Spectrum value mismatch for right guard band (" << it->first << ")");
+                                 "Spectrum value mismatch for guard band (" << it->first << ")");
     }
 }
 
@@ -252,458 +233,488 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
 
   NS_LOG_INFO ("Creating WifiTransmitMaskTestSuite");
 
-  WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopesLeft;
-  WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopesRight;
+  WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopes;
   double tol = 0.001; // in dB
 
   // ============================================================================================
   // 11p 5MHz
   NS_LOG_FUNCTION ("Check slopes for 11p 5MHz");
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 5MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
-                                               5, maskSlopesLeft, maskSlopesRight, tol),
+                                               5, maskSlopes, tol),
                TestCase::QUICK);
-
   // 11p 10MHz
   NS_LOG_FUNCTION ("Check slopes for 11p 10MHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 10MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
-                                               10, maskSlopesLeft, maskSlopesRight, tol),
+                                               10, maskSlopes, tol),
                TestCase::QUICK);
 
 
   // ============================================================================================
   // 11a
   NS_LOG_FUNCTION ("Check slopes for 11a");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (63, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (69, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (123, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (128, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (129, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11a", WIFI_STANDARD_80211a, WIFI_PHY_BAND_5GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11g
   NS_LOG_FUNCTION ("Check slopes for 11g");
   // same slppes as 11g
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11g", WIFI_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
 
   // ============================================================================================
   // 11n 20MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 20MHz @ 2.4GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.531)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.531)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -45.000)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.531)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.531)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -45.000)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 20MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11n 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 20MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 20MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11n 40MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 40MHz @ 2.4GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -28.266)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (321, -28.266)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (384, -45.000)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (63, -28.266)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (321, -28.266)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (384, -45.000)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_2.4GHz 40MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ,
-                                               40, maskSlopesLeft, maskSlopesRight, tol),
+                                               40, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11n 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 40MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -28.188)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (63, -28.188)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 40MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
-                                               40, maskSlopesLeft, maskSlopesRight, tol),
+                                               40, maskSlopes, tol),
                TestCase::QUICK);
 
 
   // ============================================================================================
   // 11ac 20MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 20MHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (31, -28.375)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (32, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (60, -20.276)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (61, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (62, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (67, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (130, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (131, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (132, -20.276)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (160, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (161, -28.375)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (192, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 20MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ac 20MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 40MHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (63, -28.188)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (63, -28.188)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (64, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (124, -20.131)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (125, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (126, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (131, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (258, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (259, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (260, -20.131)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (320, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (321, -28.188)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (384, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 40MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
-                                               40, maskSlopesLeft, maskSlopesRight, tol),
+                                               40, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ac 80MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 80MHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (127, -28.094)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (253, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (254, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (259, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (509, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (514, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (515, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (127, -28.094)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (253, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (254, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (259, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (509, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (514, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (515, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 80MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
-                                               80, maskSlopesLeft, maskSlopesRight, tol),
+                                               80, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ac 20MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 160MHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (255, -28.047)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (508, -20.032)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (509, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (509, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (510, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (515, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (1021, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (1026, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1027, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (1027, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1028, -20.032)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (255, -28.047)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (508, -20.032)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (509, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (509, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (510, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (515, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (1021, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (1026, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (1027, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (1027, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (1028, -20.032)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ac 160MHz", WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ,
-                                               160, maskSlopesLeft, maskSlopesRight, tol),
+                                               160, maskSlopes, tol),
                TestCase::QUICK);
-
 
   // ============================================================================================
   // 11ax 20MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 20MHz @ 2.4GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (127, -28.133)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (255, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (256, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (261, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (507, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (512, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (513, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (641, -28.133)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (768, -45.000)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (127, -28.133)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (255, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (256, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (261, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (262, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (382, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (383, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (385, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (386, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (506, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (507, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (512, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (513, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (641, -28.133)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (768, -45.000)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 20MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 20MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (127, -28.094)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (255, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (256, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (261, -3.333)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (507, -3.333)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (512, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (513, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (127, -28.094)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (128, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (252, -20.064)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (253, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (255, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (256, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (261, -3.333)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (262, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (382, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (383, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (385, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (386, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (506, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (507, -3.333)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (512, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (513, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (515, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (516, -20.064)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (640, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (641, -28.094)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (768, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 20MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
-                                               20, maskSlopesLeft, maskSlopesRight, tol),
+                                               20, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 40MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 40MHz @ 2.4GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (255, -28.066)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (505, -20.032)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (506, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (510, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (511, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (523, -1.538)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (1013, -1.538)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (1025, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1026, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (1030, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1031, -20.032)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1281, -28.066)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (1536, -45.000)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (255, -28.066)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (505, -20.032)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (506, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (510, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (511, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (523, -1.538)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (524, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (765, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (766, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (770, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (771, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (1012, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (1013, -1.538)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (1025, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (1026, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (1030, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (1031, -20.032)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (1281, -28.066)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (1536, -45.000)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 40MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
-                                               40, maskSlopesLeft, maskSlopesRight, tol),
+                                               40, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 40MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 40MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (255, -28.047)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (505, -20.032)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (506, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (510, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (511, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (523, -1.538)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (1013, -1.538)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (1025, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1026, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (1030, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1031, -20.032)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (255, -28.047)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (256, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (505, -20.032)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (506, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (510, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (511, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (523, -1.538)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (524, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (765, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (766, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (770, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (771, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (1012, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (1013, -1.538)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (1025, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (1026, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (1030, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (1031, -20.032)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (1280, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (1281, -28.047)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (1536, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 40MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
-                                               40, maskSlopesLeft, maskSlopesRight, tol),
+                                               40, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 80MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 2.4GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (511, -28.033)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (512, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1017, -20.016)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (1018, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1022, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (1023, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1035, -1.538)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (2037, -1.538)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (2049, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2050, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (2054, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2055, -20.016)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2561, -28.033)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (3072, -45.000)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -45.000)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (511, -28.033)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (512, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (1017, -20.016)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (1018, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (1022, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (1023, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (1035, -1.538)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (1036, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (1533, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (1534, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (1538, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (1539, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (2036, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (2037, -1.538)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (2049, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (2050, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (2054, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (2055, -20.016)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (2561, -28.033)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (3072, -45.000)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_2.4GHz 80MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ,
-                                               80, maskSlopesLeft, maskSlopesRight, tol),
+                                               80, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 80MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (511, -28.023)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (512, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1017, -20.016)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (1018, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1022, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (1023, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1035, -1.538)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (2037, -1.538)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (2049, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2050, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (2054, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2055, -20.016)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (2561, -28.023)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (3072, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (511, -28.023)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (512, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (1017, -20.016)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (1018, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (1022, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (1023, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (1035, -1.538)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (1036, 0.0)); // allocated band left (start)
+  maskSlopes.push_back (std::make_pair (1533, 0.0)); // allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (1534, -20.0)); // DC band (start)
+  maskSlopes.push_back (std::make_pair (1538, -20.0)); // DC band (stop)
+  maskSlopes.push_back (std::make_pair (1539, 0.0)); // allocated band right (start)
+  maskSlopes.push_back (std::make_pair (2036, 0.0)); // allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (2037, -1.538)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (2049, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (2050, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (2054, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (2055, -20.016)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (2560, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (2561, -28.023)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (3072, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 80MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
-                                               80, maskSlopesLeft, maskSlopesRight, tol),
+                                               80, maskSlopes, tol),
                TestCase::QUICK);
 
   // 11ax 160MHz @ 2.4GHz -> not enough space so skip
 
   // 11ax 160MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz");
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
-  maskSlopesLeft.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
-  maskSlopesLeft.push_back (std::make_pair (1023, -28.012)); // Outer band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (1024, -28.000)); // Middle band left (start)
-  maskSlopesLeft.push_back (std::make_pair (2041, -20.008)); // Middle band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (2042, -20.0)); // Flat junction band left (start)
-  maskSlopesLeft.push_back (std::make_pair (2046, -20.0)); // Flat junction band left (stop)
-  maskSlopesLeft.push_back (std::make_pair (2047, -20.0)); // Inner band left (start)
-  maskSlopesLeft.push_back (std::make_pair (2059, -1.538)); // Inner band left (stop)
-  maskSlopesRight.push_back (std::make_pair (4085, -1.538)); // Inner band right (start)
-  maskSlopesRight.push_back (std::make_pair (4097, -20.0)); // Inner band right (stop)
-  maskSlopesRight.push_back (std::make_pair (4098, -20.0)); // Flat junction band right (start)
-  maskSlopesRight.push_back (std::make_pair (4102, -20.0)); // Flat junction band right (stop)
-  maskSlopesRight.push_back (std::make_pair (4103, -20.008)); // Middle band right (start)
-  maskSlopesRight.push_back (std::make_pair (5120, -28.000)); // Middle band right (stop)
-  maskSlopesRight.push_back (std::make_pair (5121, -28.012)); // Outer band right (start)
-  maskSlopesRight.push_back (std::make_pair (6144, -40.0)); // Outer band right (stop)
+  maskSlopes.clear ();
+  maskSlopes.push_back (std::make_pair (0, -40.0)); // Outer band left (start)
+  maskSlopes.push_back (std::make_pair (1023, -28.012)); // Outer band left (stop)
+  maskSlopes.push_back (std::make_pair (1024, -28.000)); // Middle band left (start)
+  maskSlopes.push_back (std::make_pair (2041, -20.008)); // Middle band left (stop)
+  maskSlopes.push_back (std::make_pair (2042, -20.0)); // Flat junction band left (start)
+  maskSlopes.push_back (std::make_pair (2046, -20.0)); // Flat junction band left (stop)
+  maskSlopes.push_back (std::make_pair (2047, -20.0)); // Inner band left (start)
+  maskSlopes.push_back (std::make_pair (2059, -1.538)); // Inner band left (stop)
+  maskSlopes.push_back (std::make_pair (2060, 0.0)); // first 80 MHz allocated band left (start)
+  maskSlopes.push_back (std::make_pair (2557, 0.0)); // first 80 MHz allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (2558, -20.0)); // first 80 MHz DC band (start)
+  maskSlopes.push_back (std::make_pair (2562, -20.0)); // first 80 MHz DC band (stop)
+  maskSlopes.push_back (std::make_pair (2563, 0.0)); // first 80 MHz allocated band right (start)
+  maskSlopes.push_back (std::make_pair (3060, 0.0)); // first 80 MHz allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (3061, -20.0)); // gap between 80 MHz bands (start)
+  maskSlopes.push_back (std::make_pair (3083, -20.0)); // gap between 80 MHz bands (start)
+  maskSlopes.push_back (std::make_pair (3084, 0.0)); // second 80 MHz allocated band left (start)
+  maskSlopes.push_back (std::make_pair (3581, 0.0)); // second 80 MHz allocated band left (stop)
+  maskSlopes.push_back (std::make_pair (3582, -20.0)); // second 80 MHz DC band (start)
+  maskSlopes.push_back (std::make_pair (3586, -20.0)); // second 80 MHz DC band (stop)
+  maskSlopes.push_back (std::make_pair (3587, 0.0)); // second 80 MHz allocated band right (start)
+  maskSlopes.push_back (std::make_pair (4084, 0.0)); // second 80 MHz allocated band right (stop)
+  maskSlopes.push_back (std::make_pair (4085, -1.538)); // Inner band right (start)
+  maskSlopes.push_back (std::make_pair (4097, -20.0)); // Inner band right (stop)
+  maskSlopes.push_back (std::make_pair (4098, -20.0)); // Flat junction band right (start)
+  maskSlopes.push_back (std::make_pair (4102, -20.0)); // Flat junction band right (stop)
+  maskSlopes.push_back (std::make_pair (4103, -20.008)); // Middle band right (start)
+  maskSlopes.push_back (std::make_pair (5120, -28.000)); // Middle band right (stop)
+  maskSlopes.push_back (std::make_pair (5121, -28.012)); // Outer band right (start)
+  maskSlopes.push_back (std::make_pair (6144, -40.0)); // Outer band right (stop)
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 160MHz", WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
-                                               160, maskSlopesLeft, maskSlopesRight, tol),
+                                               160, maskSlopes, tol),
                TestCase::QUICK);
-
-  maskSlopesLeft.clear ();
-  maskSlopesRight.clear ();
 }
