@@ -20,6 +20,10 @@ weekly-build-alpine-latest-default:
   before_script:
     - apk update
     - apk upgrade
-    - apk add bash ccache cmake g++ iproute2 ninja python3 linux-headers
+    - apk add
+      g++ cmake ninja ccache
+      python3
+      bash
+      iproute2 linux-headers
   variables:
     MODE: default

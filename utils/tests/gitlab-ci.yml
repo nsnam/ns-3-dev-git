@@ -72,7 +72,9 @@ per-commit-compile-debug:
     MODE: debug
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
+      base-devel cmake ninja ccache
+      python
+      boost gsl gtk3
 
 per-commit-compile-default:
   extends: .base-build
@@ -87,7 +89,9 @@ per-commit-compile-default:
     MODE: default
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
+      base-devel cmake ninja ccache
+      python
+      boost gsl gtk3
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -102,7 +106,9 @@ per-commit-compile-optimized:
     MODE: optimized
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
+      base-devel cmake ninja ccache
+      python
+      boost gsl gtk3
 
 # Weekly jobs for other distribution and compilers
 include:

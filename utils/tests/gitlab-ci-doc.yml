@@ -5,8 +5,9 @@
   stage: documentation
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel ninja cmake python ccache gsl gtk3 boost --noconfirm
-    - pacman -Sy git doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx --noconfirm
+      base-devel ninja cmake python ccache gsl gtk3 boost
+      git
+      doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
 #    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml

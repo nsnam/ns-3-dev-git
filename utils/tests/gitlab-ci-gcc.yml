@@ -14,9 +14,20 @@
       - $RELEASE == "weekly"
       - $GCC_BUILD_ENABLE == "True"
   before_script:
-    - apt-get --quiet update --yes
+    - apt update
     - update-alternatives --install /usr/bin/gfortran gfortran /usr/local/bin/gfortran 999
-    - apt-get --quiet install gcc g++ cmake ninja-build python3 python3-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev ssh --yes
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++ cmake ninja-build ccache
+      python3 python3-dev
+      libgsl0-dev gsl-bin
+      libboost-all-dev
+      libgtk-3-dev
+      libfl-dev
+      libxml2 libxml2-dev
+      libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
+      libsqlite3-dev sqlite3
+      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+      bison flex ssh
   variables:
     COMPILER: g++
     ENABLE_MPI: --enable-mpi

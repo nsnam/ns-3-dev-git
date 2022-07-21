@@ -7,8 +7,12 @@ cppyy-22.04:
     - nsnam
     - linux
   before_script:
-    - apt-get update
-    - DEBIAN_FRONTEND=noninteractive apt-get install -y g++ cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git python3 python3-pip
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++ cmake ninja-build ccache
+      python3 python3-pip
+      libboost-dev libgsl-dev libgtk-3-dev
+      git wget
     - pip install cppyy matplotlib numpy
   script:
     - ./ns3 configure -G Ninja --enable-python-bindings
@@ -29,7 +33,6 @@ cppyy-22.04:
     - ./ns3 run ./utils/python-unit-tests.py
   timeout: 9h
 
-
 cppyy-20.04:
   image: ubuntu:20.04 # python 3.8
   only:
@@ -39,8 +42,12 @@ cppyy-20.04:
     - nsnam
     - linux
   before_script:
-    - apt-get update
-    - DEBIAN_FRONTEND=noninteractive apt-get install -y g++ cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git python3 python3-pip
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++ cmake ninja-build ccache
+      python3 python3-pip
+      libboost-dev libgsl-dev libgtk-3-dev
+      git wget
     - pip install cppyy
   script:
     - ./ns3 configure -G Ninja --enable-python-bindings
@@ -60,11 +67,15 @@ cppyy-18.04:
     - nsnam
     - linux
   before_script:
-    - apt-get update
-    - apt-get install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test --yes
-    - apt-get update
-    - DEBIAN_FRONTEND=noninteractive apt-get install -y cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git g++-9 gcc-9 python3 python3-pip llvm-dev libclang-dev
+    - apt update
+    - apt install -y software-properties-common
+    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++-9 gcc-9 cmake ninja-build ccache libclang-dev llvm-dev
+      python3 python3-pip
+      libboost-dev libgsl-dev libgtk-3-dev
+      git wget
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
     - pip3 install cppyy-cling cppyy-backend CPyCppyy cppyy # older python version may install dependencies in the wrong order
   script:
