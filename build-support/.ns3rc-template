@@ -2,19 +2,19 @@
 # Modules that depend on the listed modules will be enabled also.
 #
 # All modules can be enabled by emptying the list.
-set(ns3rc_enabled_modules)
+set(ns3rc_enabled_modules @ns3rc_enabled_modules@)
 
 # A list of the modules that will be disabled when ns-3 is run.
 # Modules that depend on the listed modules will be disabled also.
 #
 # If the list is empty, no module will be disabled.
-set(ns3rc_disabled_modules)
+set(ns3rc_disabled_modules @ns3rc_disabled_modules@)
 
 # Set this equal to ON if you want examples to be run.
-set(ns3rc_examples_enabled OFF)
+set(ns3rc_examples_enabled @ns3rc_examples_enabled@)
 
 # Set this equal to ON if you want tests to be run.
-set(ns3rc_tests_enabled OFF)
+set(ns3rc_tests_enabled @ns3rc_tests_enabled@)
 
 # Override other ns-3 settings by setting their values below
 # Note: command-line settings will also be overridden.

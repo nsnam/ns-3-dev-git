@@ -1628,8 +1628,14 @@ function(recursive_dependency module_name)
   endforeach()
 endfunction()
 
-macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
-      NS3_ENABLED_MODULES NS3_DISABLED_MODULES ns3rc_enabled_modules
+macro(
+  filter_enabled_and_disabled_modules
+  libs_to_build
+  contrib_libs_to_build
+  NS3_ENABLED_MODULES
+  NS3_DISABLED_MODULES
+  ns3rc_enabled_modules
+  ns3rc_disabled_modules
 )
   mark_as_advanced(ns3-all-enabled-modules)
 
@@ -1676,7 +1682,14 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
     endif()
   endif()
 
-  if(${NS3_DISABLED_MODULES})
+  if(${NS3_DISABLED_MODULES} OR ${ns3rc_disabled_modules})
+    # List of disabled modules passed by the command line overwrites list read
+    # from ns3rc
+
+    if(${NS3_DISABLED_MODULES})
+      set(ns3rc_disabled_modules ${${NS3_DISABLED_MODULES}})
+    endif()
+
     set(all_libs ${${libs_to_build}};${${contrib_libs_to_build}})
 
     # We then use the recursive dependency finding to get all dependencies of
@@ -1689,7 +1702,7 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
     endforeach()
 
     # Now we can begin removing libraries that require disabled dependencies
-    set(disabled_libs "${${NS3_DISABLED_MODULES}}")
+    set(disabled_libs "${${ns3rc_disabled_modules}}")
     foreach(libo ${all_libs})
       foreach(lib ${all_libs})
         foreach(disabled_lib ${disabled_libs})
@@ -1735,61 +1748,98 @@ macro(filter_enabled_and_disabled_modules libs_to_build contrib_libs_to_build
 endmacro()
 
 # Parse .ns3rc
-function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
-  set(ns3rc ${PROJECT_SOURCE_DIR}/.ns3rc)
-  # Set parent scope variables with default values (all modules, no examples nor
-  # tests)
-  set(${enabled_modules} "" PARENT_SCOPE)
-  set(${examples_enabled} "FALSE" PARENT_SCOPE)
-  set(${tests_enabled} "FALSE" PARENT_SCOPE)
-  if(EXISTS ${ns3rc})
-    # If ns3rc exists in ns-3-dev, read it
-    file(READ ${ns3rc} ns3rc_contents)
+macro(parse_ns3rc enabled_modules disabled_modules examples_enabled
+      tests_enabled
+)
+  # Try to find .ns3rc
+  find_file(NS3RC .ns3rc PATHS /etc $ENV{HOME} $ENV{USERPROFILE}
+                               ${PROJECT_SOURCE_DIR} NO_CACHE
+  )
 
-    # Match modules_enabled list
-    if(ns3rc_contents MATCHES "modules_enabled.*\\[(.*).*\\]")
-      set(${enabled_modules} ${CMAKE_MATCH_1})
-      if(${enabled_modules} MATCHES "all_modules")
-        # If all modules, just clean the filter and all modules will get built
-        # by default
-        set(${enabled_modules})
-      else()
-        # If modules are listed, remove quotes and replace commas with
-        # semicolons transforming a string into a cmake list
-        string(REPLACE "," ";" ${enabled_modules} "${${enabled_modules}}")
-        string(REPLACE "'" "" ${enabled_modules} "${${enabled_modules}}")
-        string(REPLACE "\"" "" ${enabled_modules} "${${enabled_modules}}")
-        string(REPLACE " " "" ${enabled_modules} "${${enabled_modules}}")
-        string(REPLACE "\n" ";" ${enabled_modules} "${${enabled_modules}}")
-        list(SORT ${enabled_modules})
+  # Set variables with default values (all modules, no examples nor tests)
+  set(${enabled_modules} "")
+  set(${disabled_modules} "")
+  set(${examples_enabled} "FALSE")
+  set(${tests_enabled} "FALSE")
 
-        # Remove possibly empty entry
-        list(REMOVE_ITEM ${enabled_modules} "")
-        foreach(element ${${enabled_modules}})
-          # Inspect each element for comments
-          if(${element} MATCHES "#.*")
-            list(REMOVE_ITEM ${enabled_modules} ${element})
-          endif()
-        endforeach()
-      endif()
+  if(NOT (${NS3RC} STREQUAL "NS3RC-NOTFOUND"))
+    message(${HIGHLIGHTED_STATUS}
+            "Configuration file .ns3rc being used : ${NS3RC}"
+    )
+    file(READ ${NS3RC} ns3rc_contents)
+    # Check if ns3rc file is CMake or Python based and act accordingly
+    if(ns3rc_contents MATCHES "ns3rc_*")
+      include(${NS3RC})
+    else()
+      parse_python_ns3rc(
+        "${ns3rc_contents}" ${enabled_modules} ${examples_enabled}
+        ${tests_enabled} ${NS3RC}
+      )
     endif()
-
-    # Match examples_enabled flag
-    if(ns3rc_contents MATCHES "examples_enabled = (True|False)")
-      set(${examples_enabled} ${CMAKE_MATCH_1})
-    endif()
-
-    # Match tests_enabled flag
-    if(ns3rc_contents MATCHES "tests_enabled = (True|False)")
-      set(${tests_enabled} ${CMAKE_MATCH_1})
-    endif()
-
-    # Save variables to parent scope
-    set(${enabled_modules} "${${enabled_modules}}" PARENT_SCOPE)
-    set(${examples_enabled} "${${examples_enabled}}" PARENT_SCOPE)
-    set(${tests_enabled} "${${tests_enabled}}" PARENT_SCOPE)
   endif()
-endfunction(parse_ns3rc)
+endmacro(parse_ns3rc)
+
+function(parse_python_ns3rc ns3rc_contents enabled_modules examples_enabled
+         tests_enabled ns3rc_location
+)
+  # Save .ns3rc backup
+  file(WRITE ${ns3rc_location}.backup ${ns3rc_contents})
+
+  # Match modules_enabled list
+  if(ns3rc_contents MATCHES "modules_enabled.*\\[(.*).*\\]")
+    set(${enabled_modules} ${CMAKE_MATCH_1})
+    if(${enabled_modules} MATCHES "all_modules")
+      # If all modules, just clean the filter and all modules will get built by
+      # default
+      set(${enabled_modules})
+    else()
+      # If modules are listed, remove quotes and replace commas with semicolons
+      # transforming a string into a cmake list
+      string(REPLACE "," ";" ${enabled_modules} "${${enabled_modules}}")
+      string(REPLACE "'" "" ${enabled_modules} "${${enabled_modules}}")
+      string(REPLACE "\"" "" ${enabled_modules} "${${enabled_modules}}")
+      string(REPLACE " " "" ${enabled_modules} "${${enabled_modules}}")
+      string(REPLACE "\n" ";" ${enabled_modules} "${${enabled_modules}}")
+      list(SORT ${enabled_modules})
+
+      # Remove possibly empty entry
+      list(REMOVE_ITEM ${enabled_modules} "")
+      foreach(element ${${enabled_modules}})
+        # Inspect each element for comments
+        if(${element} MATCHES "#.*")
+          list(REMOVE_ITEM ${enabled_modules} ${element})
+        endif()
+      endforeach()
+    endif()
+  endif()
+
+  string(REPLACE "True" "ON" ns3rc_contents ${ns3rc_contents})
+  string(REPLACE "False" "OFF" ns3rc_contents ${ns3rc_contents})
+
+  # Match examples_enabled flag
+  if(ns3rc_contents MATCHES "examples_enabled = (ON|OFF)")
+    set(${examples_enabled} ${CMAKE_MATCH_1})
+  endif()
+
+  # Match tests_enabled flag
+  if(ns3rc_contents MATCHES "tests_enabled = (ON|OFF)")
+    set(${tests_enabled} ${CMAKE_MATCH_1})
+  endif()
+
+  # Save variables to parent scope
+  set(${enabled_modules} "${${enabled_modules}}" PARENT_SCOPE)
+  set(${examples_enabled} "${${examples_enabled}}" PARENT_SCOPE)
+  set(${tests_enabled} "${${tests_enabled}}" PARENT_SCOPE)
+
+  # Save updated .ns3rc file
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "The python-based .ns3rc file format is deprecated and was updated to the CMake format"
+  )
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/build-support/.ns3rc-template ${ns3rc_location} @ONLY
+  )
+endfunction(parse_python_ns3rc)
 
 function(log_find_searched_paths)
   # Parse arguments

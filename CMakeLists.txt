@@ -109,12 +109,15 @@ subdirlist(libs_to_build ${CMAKE_CURRENT_SOURCE_DIR}/src)
 subdirlist(contrib_libs_to_build ${CMAKE_CURRENT_SOURCE_DIR}/contrib)
 
 # Before filtering, we need to load settings from .ns3rc
-parse_ns3rc(ns3rc_enabled_modules ns3rc_examples_enabled ns3rc_tests_enabled)
+parse_ns3rc(
+  ns3rc_enabled_modules ns3rc_disabled_modules ns3rc_examples_enabled
+  ns3rc_tests_enabled
+)
 
 # After scanning modules, we can filter enabled and disabled ones
 filter_enabled_and_disabled_modules(
   libs_to_build contrib_libs_to_build NS3_ENABLED_MODULES NS3_DISABLED_MODULES
-  ns3rc_enabled_modules
+  ns3rc_enabled_modules ns3rc_disabled_modules
 )
 
 # ##############################################################################

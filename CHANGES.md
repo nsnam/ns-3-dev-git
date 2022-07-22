@@ -55,6 +55,9 @@ Changes from ns-3.36 to ns-3.37
 * Replaced `./ns3 --check-profile` with `./ns3 show profile`.
 * Replaced `./ns3 --check-version` with `./ns3 show version`.
 * Added the `build_exec` macro to declare new executables.
+* Replaced Python-based .ns3rc with a CMake-based version.
+* Deprecated .ns3rc files will be updated to the new CMake-based format and a backup will be placed alongside it.
+
 
 ### Changed behavior
 

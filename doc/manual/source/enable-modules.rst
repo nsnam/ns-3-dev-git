@@ -91,39 +91,55 @@ Assuming that you are in the top level |ns3| directory, you can get a copy of th
 
 The .ns3rc file should now be in your top level |ns3| directory, and it contains the following:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-  #! /usr/bin/env python
+    # A list of the modules that will be enabled when ns-3 is run.
+    # Modules that depend on the listed modules will be enabled also.
+    #
+    # All modules can be enabled by emptying the list.
+    set(ns3rc_enabled_modules)
 
-  # A list of the modules that will be enabled when ns-3 is run.
-  # Modules that depend on the listed modules will be enabled also.
-  #
-  # All modules can be enabled by choosing 'all_modules'.
-  modules_enabled = ['all_modules']
+    # A list of the modules that will be disabled when ns-3 is run.
+    # Modules that depend on the listed modules will be disabled also.
+    #
+    # If the list is empty, no module will be disabled.
+    set(ns3rc_disabled_modules)
 
-  # Set this equal to true if you want examples to be run.
-  examples_enabled = False
+    # Set this equal to ON if you want examples to be run.
+    set(ns3rc_examples_enabled OFF)
 
-  # Set this equal to true if you want tests to be run.
-  tests_enabled = False
+    # Set this equal to ON if you want tests to be run.
+    set(ns3rc_tests_enabled OFF)
+
+    # Override other ns-3 settings by setting their values below
+    # Note: command-line settings will also be overridden.
+    #set(NS3_LOG ON)
 
 Use your favorite editor to modify the .ns3rc file to only enable the core module with examples and tests like this:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-  #! /usr/bin/env python
+    # A list of the modules that will be enabled when ns-3 is run.
+    # Modules that depend on the listed modules will be enabled also.
+    #
+    # All modules can be enabled by emptying the list.
+    set(ns3rc_enabled_modules core)
 
-  # A list of the modules that will be enabled when ns-3 is run.
-  # Modules that depend on the listed modules will be enabled also.
-  #
-  # All modules can be enabled by choosing 'all_modules'.
-  modules_enabled = ['core']
+    # A list of the modules that will be disabled when ns-3 is run.
+    # Modules that depend on the listed modules will be disabled also.
+    #
+    # If the list is empty, no module will be disabled.
+    set(ns3rc_disabled_modules)
 
-  # Set this equal to true if you want examples to be run.
-  examples_enabled = True
+    # Set this equal to ON if you want examples to be run.
+    set(ns3rc_examples_enabled ON)
 
-  # Set this equal to true if you want tests to be run.
-  tests_enabled = True
+    # Set this equal to ON if you want tests to be run.
+    set(ns3rc_tests_enabled ON)
+
+    # Override other ns-3 settings by setting their values below
+    # Note: command-line settings will also be overridden.
+    #set(NS3_LOG ON)
 
 Only the core module will be enabled now if you try these commands: ::
 

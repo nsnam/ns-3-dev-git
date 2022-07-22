@@ -834,101 +834,144 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         Test loading settings from the ns3rc config file
         @return None
         """
-        ns3rc_template = "# ! /usr/bin/env python\
-                          \
-                          # A list of the modules that will be enabled when ns-3 is run.\
-                          # Modules that depend on the listed modules will be enabled also.\
-                          #\
-                          # All modules can be enabled by choosing 'all_modules'.\
-                          modules_enabled = [{modules}]\
-                          \
-                          # Set this equal to true if you want examples to be run.\
-                          examples_enabled = {examples}\
-                          \
-                          # Set this equal to true if you want tests to be run.\
-                          tests_enabled = {tests}\
-                          "
 
-        # Now we repeat the command line tests but with the ns3rc file.
-        with open(ns3rc_script, "w") as f:
-            f.write(ns3rc_template.format(modules="'lte'", examples="False", tests="True"))
+        class ns3rc_str:
+            ## python-based ns3rc template # noqa
+            ns3rc_python_template = "# ! /usr/bin/env python\
+                                 \
+                                 # A list of the modules that will be enabled when ns-3 is run.\
+                                 # Modules that depend on the listed modules will be enabled also.\
+                                 #\
+                                 # All modules can be enabled by choosing 'all_modules'.\
+                                 modules_enabled = [{modules}]\
+                                 \
+                                 # Set this equal to true if you want examples to be run.\
+                                 examples_enabled = {examples}\
+                                 \
+                                 # Set this equal to true if you want tests to be run.\
+                                 tests_enabled = {tests}\
+                                 "
 
-        # Reconfigure.
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.config_ok(return_code, stdout)
+            ## cmake-based ns3rc template # noqa
+            ns3rc_cmake_template = "set(ns3rc_tests_enabled {tests})\
+                                    \nset(ns3rc_examples_enabled {examples})\
+                                    \nset(ns3rc_enabled_modules {modules})\
+                                    "
 
-        # Check.
-        enabled_modules = get_enabled_modules()
-        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
-        self.assertIn("ns3-lte", enabled_modules)
-        self.assertTrue(get_test_enabled())
-        self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
+            ## map ns3rc templates to types # noqa
+            ns3rc_templates = {
+                "python": ns3rc_python_template,
+                "cmake": ns3rc_cmake_template
+            }
 
-        # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
-        with open(ns3rc_script, "w") as f:
-            f.write(ns3rc_template.format(modules="'wifi'", examples="True", tests="False"))
+            def __init__(self, ns3rc_type):
+                self.type = ns3rc_type
 
-        # Reconfigure
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.config_ok(return_code, stdout)
+            def format(self, **args):
+                # Convert arguments from python-based ns3rc format to CMake
+                if self.type == "cmake":
+                    args["modules"] = args["modules"].replace("'", "").replace("\"", "").replace(",", " ")
+                    args["examples"] = "ON" if args["examples"] == "True" else "OFF"
+                    args["tests"] = "ON" if args["tests"] == "True" else "OFF"
 
-        # Check
-        enabled_modules = get_enabled_modules()
-        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
-        self.assertIn("ns3-wifi", enabled_modules)
-        self.assertFalse(get_test_enabled())
-        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+                formatted_string = ns3rc_str.ns3rc_templates[self.type].format(**args)
 
-        # Replace the ns3rc file with multiple modules
-        with open(ns3rc_script, "w") as f:
-            f.write(ns3rc_template.format(modules="'core','network'", examples="True", tests="False"))
+                # Return formatted string
+                return formatted_string
 
-        # Reconfigure
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.config_ok(return_code, stdout)
+            @staticmethod
+            def types():
+                return ns3rc_str.ns3rc_templates.keys()
 
-        # Check
-        enabled_modules = get_enabled_modules()
-        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
-        self.assertIn("ns3-core", enabled_modules)
-        self.assertIn("ns3-network", enabled_modules)
-        self.assertFalse(get_test_enabled())
-        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+        for ns3rc_type in ns3rc_str.types():
+            # Replace default format method from string with a custom one
+            ns3rc_template = ns3rc_str(ns3rc_type)
 
-        # Replace the ns3rc file with multiple modules,
-        # in various different ways and with comments
-        with open(ns3rc_script, "w") as f:
-            f.write(ns3rc_template.format(modules="""'core', #comment
-            'lte',
-            #comment2,
-            #comment3
-            'network', 'internet','wimax'""", examples="True", tests="True"))
+            # Now we repeat the command line tests but with the ns3rc file.
+            with open(ns3rc_script, "w") as f:
+                f.write(ns3rc_template.format(modules="'lte'", examples="False", tests="True"))
 
-        # Reconfigure
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.config_ok(return_code, stdout)
+            # Reconfigure.
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            self.config_ok(return_code, stdout)
 
-        # Check
-        enabled_modules = get_enabled_modules()
-        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
-        self.assertIn("ns3-core", enabled_modules)
-        self.assertIn("ns3-internet", enabled_modules)
-        self.assertIn("ns3-lte", enabled_modules)
-        self.assertIn("ns3-wimax", enabled_modules)
-        self.assertTrue(get_test_enabled())
-        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+            # Check.
+            enabled_modules = get_enabled_modules()
+            self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+            self.assertIn("ns3-lte", enabled_modules)
+            self.assertTrue(get_test_enabled())
+            self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
 
-        # Then we roll back by removing the ns3rc config file
-        os.remove(ns3rc_script)
+            # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
+            with open(ns3rc_script, "w") as f:
+                f.write(ns3rc_template.format(modules="'wifi'", examples="True", tests="False"))
 
-        # Reconfigure
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.config_ok(return_code, stdout)
+            # Reconfigure
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            self.config_ok(return_code, stdout)
 
-        # Check
-        self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
-        self.assertFalse(get_test_enabled())
-        self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
+            # Check
+            enabled_modules = get_enabled_modules()
+            self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+            self.assertIn("ns3-wifi", enabled_modules)
+            self.assertFalse(get_test_enabled())
+            self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+            # Replace the ns3rc file with multiple modules
+            with open(ns3rc_script, "w") as f:
+                f.write(ns3rc_template.format(modules="'core','network'", examples="True", tests="False"))
+
+            # Reconfigure
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            self.config_ok(return_code, stdout)
+
+            # Check
+            enabled_modules = get_enabled_modules()
+            self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+            self.assertIn("ns3-core", enabled_modules)
+            self.assertIn("ns3-network", enabled_modules)
+            self.assertFalse(get_test_enabled())
+            self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+            # Replace the ns3rc file with multiple modules,
+            # in various different ways and with comments
+            with open(ns3rc_script, "w") as f:
+                if ns3rc_type == "python":
+                    f.write(ns3rc_template.format(modules="""'core', #comment
+                    'lte',
+                    #comment2,
+                    #comment3
+                    'network', 'internet','wimax'""", examples="True", tests="True"))
+                else:
+                    f.write(ns3rc_template.format(modules="'core', 'lte', 'network', 'internet', 'wimax'",
+                                                  examples="True",
+                                                  tests="True")
+                            )
+            # Reconfigure
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            self.config_ok(return_code, stdout)
+
+            # Check
+            enabled_modules = get_enabled_modules()
+            self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+            self.assertIn("ns3-core", enabled_modules)
+            self.assertIn("ns3-internet", enabled_modules)
+            self.assertIn("ns3-lte", enabled_modules)
+            self.assertIn("ns3-wimax", enabled_modules)
+            self.assertTrue(get_test_enabled())
+            self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+            # Then we roll back by removing the ns3rc config file
+            os.remove(ns3rc_script)
+
+            # Reconfigure
+            return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+            self.config_ok(return_code, stdout)
+
+            # Check
+            self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
+            self.assertFalse(get_test_enabled())
+            self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
 
     def test_08_DryRun(self):
         """!
