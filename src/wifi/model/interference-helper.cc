@@ -448,7 +448,8 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
   Time previous = j->first;
   WifiMode payloadMode = event->GetTxVector ().GetMode (staId);
   Time phyPayloadStart = j->first;
-  if (event->GetPpdu ()->GetType () != WIFI_PPDU_TYPE_UL_MU) //j->first corresponds to the start of the UL-OFDMA payload
+  if (event->GetPpdu ()->GetType () != WIFI_PPDU_TYPE_UL_MU &&
+      event->GetPpdu ()->GetType () != WIFI_PPDU_TYPE_DL_MU) //j->first corresponds to the start of the OFDMA payload
     {
       phyPayloadStart = j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration (event->GetTxVector ());
     }

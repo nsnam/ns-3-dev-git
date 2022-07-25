@@ -142,6 +142,13 @@ public:
   Time CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const;
 
   /**
+   * \param txVector the transmission parameters used for the HE MU PPDU
+   *
+   * \return the duration of the non-OFDMA portion of the HE MU PPDU.
+   */
+  Time CalculateNonOfdmaDurationForHeMu (const WifiTxVector& txVector) const;
+
+  /**
    * Get the band in the TX spectrum associated with the RU used by the PSDU
    * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
    *
@@ -467,7 +474,7 @@ protected:
   static Time GetSymbolDuration (Time guardInterval);
 
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
-  uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
+  uint64_t m_currentMuPpduUid;     //!< UID of the HE MU or HE TB PPDU being received
 
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 

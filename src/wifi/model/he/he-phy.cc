@@ -80,7 +80,7 @@ HePhy::HePhy (bool buildModeList /* = true */)
   m_bssMembershipSelector = HE_PHY;
   m_maxMcsIndexPerSs = 11;
   m_maxSupportedMcsIndexPerSs = m_maxMcsIndexPerSs;
-  m_currentHeTbPpduUid = UINT64_MAX;
+  m_currentMuPpduUid = UINT64_MAX;
   m_previouslyTxPpduUid = UINT64_MAX;
   if (buildModeList)
     {
@@ -308,6 +308,17 @@ HePhy::CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const
   return duration;
 }
 
+Time
+HePhy::CalculateNonOfdmaDurationForHeMu (const WifiTxVector& txVector) const
+{
+  NS_ABORT_IF (!txVector.IsDlMu () || (txVector.GetModulationClass () < WIFI_MOD_CLASS_HE));
+  Time duration = GetDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector)
+    + GetDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector)
+    + GetDuration (WIFI_PPDU_FIELD_SIG_A, txVector)
+    + GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector);
+  return duration;
+}
+
 uint8_t
 HePhy::GetNumberBccEncoders (const WifiTxVector& /* txVector */) const
 {
@@ -350,10 +361,10 @@ HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand
   auto hePpdu = DynamicCast<const HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag ();
-  if (txVector.IsUlMu () && psdFlag == HePpdu::PSD_HE_PORTION)
+  if (psdFlag == HePpdu::PSD_HE_PORTION)
     {
       NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
-      if (m_currentHeTbPpduUid == ppdu->GetUid ()
+      if (m_currentMuPpduUid == ppdu->GetUid ()
           && GetCurrentEvent ())
         {
           //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayload)
@@ -369,9 +380,9 @@ HePhy::StartReceivePreamble (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand
       else
         {
           //PHY receives the OFDMA payload while having dropped the preamble
-          NS_LOG_INFO ("Consider OFDMA part of the HE TB PPDU as interference since device dropped the preamble");
+          NS_LOG_INFO ("Consider OFDMA part of the PPDU as interference since device dropped the preamble");
           CreateInterferenceEvent (ppdu, txVector, rxDuration, rxPowersW);
-          //the OFDMA part of the HE TB PPDUs will be noise _after_ the completion of the current event
+          //the OFDMA part of the PPDU will be noise _after_ the completion of the current event
           ErasePreambleEvent (ppdu, rxDuration);
         }
     }
@@ -486,6 +497,13 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowers
           event = CreateInterferenceEvent (ppdu, txVector, rxDuration, rxPowersW);
           AddPreambleEvent (event);
         }
+    }
+  else if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU)
+    {
+      const WifiTxVector& txVector = ppdu->GetTxVector ();
+      Time rxDuration = CalculateNonOfdmaDurationForHeMu (txVector); //the OFDMA part of the transmission will be added later on
+      event = CreateInterferenceEvent (ppdu, ppdu->GetTxVector (), rxDuration, rxPowersW);
+      AddPreambleEvent (event);
     }
   else
     {
@@ -621,7 +639,7 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
               return PhyFieldRxStatus (false, FILTERED, DROP);
             }
 
-          m_currentHeTbPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
+          m_currentMuPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
         }
 
       if (ppdu->GetType () != WIFI_PPDU_TYPE_DL_MU && !GetAddressedPsduInPpdu (ppdu)) //Final decision on STA-ID correspondence of DL MU is delayed to end of SIG-B
@@ -669,6 +687,7 @@ HePhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
           return PhyFieldRxStatus (false, FILTERED, DROP);
         }
     }
+  m_currentMuPpduUid = event->GetPpdu ()->GetUid (); //to be able to correctly schedule start of OFDMA payload
   return status;
 }
 
@@ -710,14 +729,23 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   const WifiTxVector& txVector = event->GetTxVector ();
-  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-  if (!txVector.IsUlMu ())
+
+  if (!txVector.IsMu ())
     {
 
       return PhyEntity::DoStartReceivePayload (event);
     }
 
   NS_ASSERT (txVector.GetModulationClass () >= WIFI_MOD_CLASS_HE);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+
+  if (txVector.IsDlMu ())
+    {
+      Time payloadDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+      NotifyPayloadBegin (txVector, payloadDuration);
+      return payloadDuration;
+    }
+
   // TX duration is determined by the Length field of TXVECTOR
   Time payloadDuration = ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (),
                                                               txVector,
@@ -867,8 +895,9 @@ HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
   Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
   ScheduleEndOfMpdus (event);
   m_endRxPayloadEvents.push_back (Simulator::Schedule (payloadDuration, &PhyEntity::EndReceivePayload, this, event));
-  m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), SignalNoiseDbm ()});
-  m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), std::vector<bool> ()});
+  uint16_t staId = GetStaId (ppdu);
+  m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
+  m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
   // Notify the MAC about the start of a new HE TB PPDU, so that it can reschedule the timeout
   NotifyPayloadBegin (ppdu->GetTxVector (), payloadDuration);
 }
@@ -956,7 +985,7 @@ HePhy::GetNonOfdmaWidth (HeRu::RuSpec ru) const
 uint64_t
 HePhy::GetCurrentHeTbPpduUid (void) const
 {
-  return m_currentHeTbPpduUid;
+  return m_currentMuPpduUid;
 }
 
 uint16_t
@@ -1223,10 +1252,13 @@ void
 HePhy::StartTx (Ptr<const WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
-  if (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU)
+  if (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU ||
+      ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU)
     {
       //non-OFDMA part
-      Time nonOfdmaDuration = CalculateNonOfdmaDurationForHeTb (ppdu->GetTxVector ());
+      Time nonOfdmaDuration = ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU ?
+                              CalculateNonOfdmaDurationForHeTb (ppdu->GetTxVector ()) :
+                              CalculateNonOfdmaDurationForHeMu (ppdu->GetTxVector ());
       Transmit (nonOfdmaDuration, ppdu, "non-OFDMA transmission");
 
       //OFDMA part
