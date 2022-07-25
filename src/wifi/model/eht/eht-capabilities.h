@@ -26,6 +26,43 @@ namespace ns3
 {
 
 /**
+ * EHT MAC Capabilities Info subfield.
+ * See IEEE 802.11be D1.5 9.4.2.313.2 EHT MAC Capabilities Information subfield
+ */
+struct EhtMacCapabilities
+{
+    uint8_t epcsPriorityAccessSupported : 1;      //!< EPCS Priority Access Supported
+    uint8_t ehtOmControlSupport : 1;              //!< EHT OM Control Support
+    uint8_t triggeredTxopSharingMode1Support : 1; //!< Triggered TXOP Sharing Mode 1 Support
+    uint8_t triggeredTxopSharingMode2Support : 1; //!< Triggered TXOP Sharing Mode 2 Support
+    uint8_t restrictedTwtSupport : 1;             //!< Restricted TWT Support
+    uint8_t scsTrafficDescriptionSupport : 1;     //!< SCS Traffic Description Support
+    uint8_t maxMpduLength : 2;                    //!< Maximum MPDU Length
+    uint8_t maxAmpduLengthExponentExtension : 1;  //!< Maximum A-MPDU length exponent extension
+
+    /**
+     * Get the size of the serialized EHT MAC capabilities subfield
+     *
+     * \return the size of the serialized EHT MAC capabilities subfield
+     */
+    uint16_t GetSize() const;
+    /**
+     * Serialize the EHT MAC capabilities subfield
+     *
+     * \param start iterator pointing to where the EHT MAC capabilities subfield should be written
+     * to
+     */
+    void Serialize(Buffer::Iterator& start) const;
+    /**
+     * Deserialize the EHT MAC capabilities subfield
+     *
+     * \param start iterator pointing to where the EHT MAC capabilities subfield should be read from
+     * \return the number of bytes read
+     */
+    uint16_t Deserialize(Buffer::Iterator start);
+};
+
+/**
  * \ingroup wifi
  *
  * The IEEE 802.11be EHT Capabilities
@@ -38,12 +75,14 @@ class EhtCapabilities : public WifiInformationElement
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
 
+    EhtMacCapabilities m_macCapabilities; //!< EHT MAC Capabilities Info subfield
+
   private:
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
-    // TODO: add fields
+    friend std::ostream& operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilities);
 };
 
 /**
@@ -56,4 +95,4 @@ std::ostream& operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilitie
 
 } // namespace ns3
 
-#endif /* HE_CAPABILITY_H */
+#endif /* EHT_CAPABILITIES_H */
