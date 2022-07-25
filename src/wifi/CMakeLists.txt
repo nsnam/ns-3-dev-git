@@ -29,6 +29,7 @@ set(source_files
     model/eht/eht-configuration.cc
     model/eht/eht-frame-exchange-manager.cc
     model/eht/eht-operation.cc
+    model/eht/tid-to-link-mapping-element.cc
     model/eht/eht-phy.cc
     model/eht/eht-ppdu.cc
     model/eht/multi-link-element.cc
@@ -177,6 +178,7 @@ set(header_files
     model/eht/eht-configuration.h
     model/eht/eht-frame-exchange-manager.h
     model/eht/eht-operation.h
+    model/eht/tid-to-link-mapping-element.h
     model/eht/eht-phy.h
     model/eht/eht-ppdu.h
     model/eht/multi-link-element.h
