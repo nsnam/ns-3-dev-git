@@ -158,11 +158,6 @@ public:
    * \param ppdu the PPDU to send
    */
   void StartTx (Ptr<const WifiPpdu> ppdu) override;
-  /**
-   * \param currentChannelWidth channel width of the current transmission (MHz)
-   * \return the width of the guard band (MHz) set to 2
-   */
-  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
 
   /**
    * Set the global PPDU UID counter.
@@ -273,14 +268,6 @@ std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
 OfdmaSpectrumWifiPhy::GetCurrentPreambleEvents (void)
 {
   return m_currentPreambleEvents;
-}
-
-uint16_t
-OfdmaSpectrumWifiPhy::GetGuardBandwidth (uint16_t currentChannelWidth) const
-{
-  // return a small enough value to avoid having too much out of band transmission
-  // knowing that slopes are not configurable yet.
-  return 1;
 }
 
 Ptr<Event>
@@ -2556,6 +2543,10 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
       phy->SetAttribute ("TxPowerEnd", DoubleValue (16.0));
       phy->SetAttribute ("PowerDensityLimit", DoubleValue (100.0)); //no impact by default
       phy->SetAttribute ("RxGain", DoubleValue (2.0));
+      //test assumes no rejection power for simplicity
+      phy->SetAttribute ("TxMaskInnerBandMinimumRejection", DoubleValue (-100.0));
+      phy->SetAttribute ("TxMaskOuterBandMinimumRejection", DoubleValue (-100.0));
+      phy->SetAttribute ("TxMaskOuterBandMaximumRejection", DoubleValue (-100.0));
     }
 }
 

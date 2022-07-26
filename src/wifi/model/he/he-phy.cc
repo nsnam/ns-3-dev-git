@@ -1203,27 +1203,73 @@ HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) con
   auto hePpdu = DynamicCast<const HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
-  Ptr<SpectrumValue> v;
-  if ((ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU) && (flag == HePpdu::PSD_HE_PORTION))
+  const auto& txMaskRejectionParams = GetTxMaskRejectionParams ();
+  switch (ppdu->GetType ())
     {
-      WifiSpectrumBand band = GetRuBandForTx (txVector, GetStaId (hePpdu));
-      v = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth), band);
-    }
-  else
-    {
-      if ((ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU) && (flag == HePpdu::PSD_NON_HE_PORTION))
+      case WIFI_PPDU_TYPE_UL_MU:
         {
-          //non-OFDMA portion is sent only on the 20 MHz channels covering the RU
-          uint16_t staId = GetStaId (hePpdu);
-          centerFrequency = GetCenterFrequencyForNonOfdmaPart (txVector, staId);
-          uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).GetRuType ());
-          channelWidth = ruWidth < 20 ? 20 : ruWidth;
+          if (flag == HePpdu::PSD_NON_HE_PORTION)
+            {
+              //non-OFDMA portion is sent only on the 20 MHz channels covering the RU
+              const uint16_t staId = GetStaId (hePpdu);
+              centerFrequency = GetCenterFrequencyForNonOfdmaPart (txVector, staId);
+              const uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).GetRuType ());
+              channelWidth = (ruWidth < 20) ? 20 : ruWidth;
+              return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (centerFrequency,
+                                                                                           channelWidth,
+                                                                                           txPowerW,
+                                                                                           GetGuardBandwidth (channelWidth),
+                                                                                           std::get<0> (txMaskRejectionParams),
+                                                                                           std::get<1> (txMaskRejectionParams),
+                                                                                           std::get<2> (txMaskRejectionParams));
+            }
+          else
+            {
+              const auto band = GetRuBandForTx (txVector, GetStaId (hePpdu));
+              return WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency,
+                                                                                    channelWidth,
+                                                                                    txPowerW,
+                                                                                    GetGuardBandwidth (channelWidth),
+                                                                                    band);
+            }
+
         }
-      const auto & txMaskRejectionParams = GetTxMaskRejectionParams ();
-      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                       std::get<0> (txMaskRejectionParams), std::get<1> (txMaskRejectionParams), std::get<2> (txMaskRejectionParams));
+      case WIFI_PPDU_TYPE_DL_MU:
+        {
+          if (flag == HePpdu::PSD_NON_HE_PORTION)
+            {
+              return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity (centerFrequency,
+                                                                                           channelWidth,
+                                                                                           txPowerW,
+                                                                                           GetGuardBandwidth (channelWidth),
+                                                                                           std::get<0> (txMaskRejectionParams),
+                                                                                           std::get<1> (txMaskRejectionParams),
+                                                                                           std::get<2> (txMaskRejectionParams));
+            }
+          else
+            {
+              return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency,
+                                                                                  channelWidth,
+                                                                                  txPowerW,
+                                                                                  GetGuardBandwidth (channelWidth),
+                                                                                  std::get<0> (txMaskRejectionParams),
+                                                                                  std::get<1> (txMaskRejectionParams),
+                                                                                  std::get<2> (txMaskRejectionParams));
+            }
+        }
+      case WIFI_PPDU_TYPE_SU:
+      default:
+        {
+          NS_ASSERT (puncturedSubchannels.empty ());
+          return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency,
+                                                                              channelWidth,
+                                                                              txPowerW,
+                                                                              GetGuardBandwidth (channelWidth),
+                                                                              std::get<0> (txMaskRejectionParams),
+                                                                              std::get<1> (txMaskRejectionParams),
+                                                                              std::get<2> (txMaskRejectionParams));
+        }
     }
-  return v;
 }
 
 uint16_t
