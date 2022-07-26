@@ -75,6 +75,34 @@ class EhtCapabilities : public WifiInformationElement
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
 
+    /**
+     * Set the maximum MPDU length.
+     *
+     * \param length the maximum MPDU length (3895, 7991 or 11454)
+     */
+    void SetMaxMpduLength(uint16_t length);
+
+    /**
+     * Set the maximum A-MPDU length.
+     *
+     * \param maxAmpduLength 2^(23 + x) - 1, x in the range 0 to 3
+     */
+    void SetMaxAmpduLength(uint32_t maxAmpduLength);
+
+    /**
+     * Return the maximum A-MPDU length.
+     *
+     * \return the maximum A-MPDU length
+     */
+    uint32_t GetMaxAmpduLength() const;
+
+    /**
+     * Get the maximum MPDU length.
+     *
+     * \return the maximum MPDU length in bytes
+     */
+    uint16_t GetMaxMpduLength() const;
+
     EhtMacCapabilities m_macCapabilities; //!< EHT MAC Capabilities Info subfield
 
   private:

@@ -82,6 +82,63 @@ EhtCapabilities::GetInformationFieldSize() const
 }
 
 void
+EhtCapabilities::SetMaxMpduLength(uint16_t length)
+{
+    switch (length)
+    {
+    case 3895:
+        m_macCapabilities.maxMpduLength = 0;
+        break;
+    case 7991:
+        m_macCapabilities.maxMpduLength = 1;
+        break;
+    case 11454:
+        m_macCapabilities.maxMpduLength = 2;
+        break;
+    default:
+        NS_ABORT_MSG("Invalid MPDU Max Length value");
+    }
+}
+
+uint16_t
+EhtCapabilities::GetMaxMpduLength() const
+{
+    switch (m_macCapabilities.maxMpduLength)
+    {
+    case 0:
+        return 3895;
+    case 1:
+        return 7991;
+    case 2:
+        return 11454;
+    default:
+        NS_ABORT_MSG("The value 3 is reserved");
+    }
+    return 0;
+}
+
+void
+EhtCapabilities::SetMaxAmpduLength(uint32_t maxAmpduLength)
+{
+    for (uint8_t i = 0; i <= 1; i++)
+    {
+        if ((1UL << (23 + i)) - 1 == maxAmpduLength)
+        {
+            m_macCapabilities.maxAmpduLengthExponentExtension = i;
+            return;
+        }
+    }
+    NS_ABORT_MSG("Invalid A-MPDU Max Length value");
+}
+
+uint32_t
+EhtCapabilities::GetMaxAmpduLength() const
+{
+    return std::min<uint32_t>((1UL << (23 + m_macCapabilities.maxAmpduLengthExponentExtension)) - 1,
+                              15523200);
+}
+
+void
 EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     m_macCapabilities.Serialize(start);
