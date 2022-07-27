@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <list>
-#include <unordered_map>
+#include <map>
 
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
@@ -431,11 +431,11 @@ protected:
   /**
    * \brief Neighbor Discovery Cache container
    */
-  typedef std::unordered_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash> Cache;
+  typedef std::map<Ipv6Address, NdiscCache::Entry *> Cache;
   /**
    * \brief Neighbor Discovery Cache container iterator
    */
-  typedef std::unordered_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash>::iterator CacheI;
+  typedef std::map<Ipv6Address, NdiscCache::Entry *>::iterator CacheI;
 
   /**
    * \brief A list of Entry.
