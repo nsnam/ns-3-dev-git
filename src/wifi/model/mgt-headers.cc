@@ -490,6 +490,24 @@ MgtProbeResponseHeader::GetEhtCapabilities() const
 }
 
 void
+MgtProbeResponseHeader::SetEhtOperation(const EhtOperation& ehtOperation)
+{
+    m_ehtOperation = ehtOperation;
+}
+
+void
+MgtProbeResponseHeader::SetEhtOperation(EhtOperation&& ehtOperation)
+{
+    m_ehtOperation = std::move(ehtOperation);
+}
+
+const std::optional<EhtOperation>&
+MgtProbeResponseHeader::GetEhtOperation() const
+{
+    return m_ehtOperation;
+}
+
+void
 MgtProbeResponseHeader::SetSsid(const Ssid& ssid)
 {
     m_ssid = ssid;
@@ -712,6 +730,10 @@ MgtProbeResponseHeader::GetSerializedSize() const
     {
         size += m_ehtCapability->GetSerializedSize();
     }
+    if (m_ehtOperation.has_value())
+    {
+        size += m_ehtOperation->GetSerializedSize();
+    }
     return size;
 }
 
@@ -755,6 +777,10 @@ MgtProbeResponseHeader::Print(std::ostream& os) const
     if (m_ehtCapability.has_value())
     {
         os << "EHT Capabilities=" << *m_ehtCapability;
+    }
+    if (m_ehtOperation.has_value())
+    {
+        os << "EHT Operation=" << *m_ehtOperation;
     }
 }
 
@@ -827,6 +853,10 @@ MgtProbeResponseHeader::Serialize(Buffer::Iterator start) const
     {
         i = m_ehtCapability->Serialize(i);
     }
+    if (m_ehtOperation.has_value())
+    {
+        i = m_ehtOperation->Serialize(i);
+    }
 }
 
 uint32_t
@@ -858,6 +888,7 @@ MgtProbeResponseHeader::Deserialize(Buffer::Iterator start)
         1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
                                  // Capabilities IE once the later is implemented
     i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtOperation, i);
 
     return i.GetDistanceFrom(start);
 }
@@ -1763,6 +1794,24 @@ MgtAssocResponseHeader::GetEhtCapabilities() const
 }
 
 void
+MgtAssocResponseHeader::SetEhtOperation(const EhtOperation& ehtOperation)
+{
+    m_ehtOperation = ehtOperation;
+}
+
+void
+MgtAssocResponseHeader::SetEhtOperation(EhtOperation&& ehtOperation)
+{
+    m_ehtOperation = std::move(ehtOperation);
+}
+
+const std::optional<EhtOperation>&
+MgtAssocResponseHeader::GetEhtOperation() const
+{
+    return m_ehtOperation;
+}
+
+void
 MgtAssocResponseHeader::SetMultiLinkElement(const MultiLinkElement& multiLinkElement)
 {
     m_multiLinkElement = multiLinkElement;
@@ -1922,6 +1971,10 @@ MgtAssocResponseHeader::GetSerializedSize() const
     {
         size += m_ehtCapability->GetSerializedSize();
     }
+    if (m_ehtOperation.has_value())
+    {
+        size += m_ehtOperation->GetSerializedSize();
+    }
     return size;
 }
 
@@ -1966,6 +2019,10 @@ MgtAssocResponseHeader::Print(std::ostream& os) const
     if (m_ehtCapability.has_value())
     {
         os << "EHT Capabilities=" << *m_ehtCapability;
+    }
+    if (m_ehtOperation.has_value())
+    {
+        os << "EHT Operation=" << *m_ehtOperation;
     }
 }
 
@@ -2029,6 +2086,10 @@ MgtAssocResponseHeader::Serialize(Buffer::Iterator start) const
     {
         i = m_ehtCapability->Serialize(i);
     }
+    if (m_ehtOperation.has_value())
+    {
+        i = m_ehtOperation->Serialize(i);
+    }
 }
 
 uint32_t
@@ -2058,6 +2119,7 @@ MgtAssocResponseHeader::Deserialize(Buffer::Iterator start)
         1000000 /* 1 Mbit/s */); // TODO: use presence of VHT capabilities IE and HE 6 GHz Band
                                  // Capabilities IE once the later is implemented
     i = WifiInformationElement::DeserializeIfPresent(m_ehtCapability, i, is2_4Ghz, m_heCapability);
+    i = WifiInformationElement::DeserializeIfPresent(m_ehtOperation, i);
     return i.GetDistanceFrom(start);
 }
 

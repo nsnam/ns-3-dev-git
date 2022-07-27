@@ -32,6 +32,7 @@
 
 #include "ns3/dsss-parameter-set.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/eht-operation.h"
 #include "ns3/erp-information.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/he-operation.h"
@@ -515,6 +516,12 @@ class MgtAssocResponseHeader : public Header
      */
     const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
     /**
+     * Return the EHT operation, if present.
+     *
+     * \return EHT operation, if present
+     */
+    const std::optional<EhtOperation>& GetEhtOperation() const;
+    /**
      * Return the Multi-Link Element information element, if present.
      *
      * \return the Multi-Link Element information element, if present
@@ -689,6 +696,16 @@ class MgtAssocResponseHeader : public Header
     void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
 
     /**
+     * Set the EHT operation.
+     *
+     * \param ehtOperation HE operation
+     */
+    void SetEhtOperation(const EhtOperation& ehtOperation);
+
+    /** \copydoc SetEhtOperation */
+    void SetEhtOperation(EhtOperation&& ehtOperation);
+
+    /**
      * Set the Multi-Link Element information element
      *
      * \param multiLinkElement the Multi-Link Element information element
@@ -725,6 +742,7 @@ class MgtAssocResponseHeader : public Header
     std::optional<HeOperation> m_heOperation;                 //!< HE operation
     std::optional<MuEdcaParameterSet> m_muEdcaParameterSet;   //!< MU EDCA Parameter Set
     std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
+    std::optional<EhtOperation> m_ehtOperation;               //!< EHT Operation
     std::optional<MultiLinkElement> m_multiLinkElement;       //!< Multi-Link Element
 };
 
@@ -966,6 +984,12 @@ class MgtProbeResponseHeader : public Header
      */
     const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
     /**
+     * Return the EHT operation, if present.
+     *
+     * \return EHT operation, if present
+     */
+    const std::optional<EhtOperation>& GetEhtOperation() const;
+    /**
      * Return the ERP information, if present.
      *
      * \return the ERP information, if present
@@ -1085,6 +1109,16 @@ class MgtProbeResponseHeader : public Header
 
     /** \copydoc SetEhtCapabilities */
     void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
+
+    /**
+     * Set the EHT operation.
+     *
+     * \param ehtOperation HE operation
+     */
+    void SetEhtOperation(const EhtOperation& ehtOperation);
+
+    /** \copydoc SetEhtOperation */
+    void SetEhtOperation(EhtOperation&& ehtOperation);
 
     /**
      * Set the Service Set Identifier (SSID).
@@ -1209,6 +1243,7 @@ class MgtProbeResponseHeader : public Header
     std::optional<EdcaParameterSet> m_edcaParameterSet;       //!< EDCA Parameter Set
     std::optional<MuEdcaParameterSet> m_muEdcaParameterSet;   //!< MU EDCA Parameter Set
     std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
+    std::optional<EhtOperation> m_ehtOperation;               //!< EHT Operation
     std::optional<ReducedNeighborReport>
         m_reducedNeighborReport;                        //!< Reduced Neighbor Report information
     std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
