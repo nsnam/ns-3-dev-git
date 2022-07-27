@@ -1156,12 +1156,6 @@ macro(process_options)
     add_definitions(-DNS3_ASSERT_ENABLE)
   endif()
 
-  # Enable examples as tests suites
-  if(${ENABLE_EXAMPLES})
-    set(NS3_ENABLE_EXAMPLES "1")
-    add_definitions(-DNS3_ENABLE_EXAMPLES -DCMAKE_EXAMPLE_AS_TEST)
-  endif()
-
   set(ENABLE_TAP OFF)
   if(${NS3_TAP})
     set(ENABLE_TAP ON)
