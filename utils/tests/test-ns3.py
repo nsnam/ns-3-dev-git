@@ -43,9 +43,10 @@ usual_lib_outdir = os.sep.join([usual_outdir, "lib"])
 os.chdir(ns3_path)
 
 # Cmake commands
+num_threads = max(1, os.cpu_count() - 1)
 cmake_build_project_command = "cmake --build . -j".format(ns3_path=ns3_path)
 cmake_build_target_command = partial("cmake --build . -j {jobs} --target {target}".format,
-                                     jobs=max(1, os.cpu_count() - 1)
+                                     jobs=num_threads
                                      )
 
 
@@ -1111,8 +1112,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Try to build them with ns3 and cmake
         for path in test_files+backup_files:
             path = path.replace(".cc", "")
-            return_code1, stdout1, stderr1 = run_program("cmake", "--build . --target %s"
-                                                         % path.replace("/", "_"),
+            return_code1, stdout1, stderr1 = run_program("cmake", "--build . --target %s -j %d"
+                                                         % (path.replace("/", "_"), num_threads),
                                                          cwd=os.path.join(ns3_path, "cmake-cache"))
             return_code2, stdout2, stderr2 = run_ns3("build %s" % path)
             if "main" in path and ".main" not in path:
