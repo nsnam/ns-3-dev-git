@@ -165,6 +165,10 @@ protected:
     EventId beaconEvent;                      //!< Event to generate one beacon
     std::map<uint16_t, Mac48Address> staList; //!< Map of all stations currently associated
                                               //!< to the AP with their association ID
+    uint16_t numNonHtStations {0};            //!< Number of non-HT stations currently associated to the AP
+    uint16_t numNonErpStations {0};           //!< Number of non-ERP stations currently associated to the AP
+    bool shortSlotTimeEnabled {false};        //!< Flag whether short slot time is enabled within the BSS
+    bool shortPreambleEnabled {false};        //!< Flag whether short preamble is enabled in the BSS
   };
 
   /**
@@ -288,11 +292,12 @@ private:
   void SendOneBeacon (uint8_t linkId);
 
   /**
-   * Return the Capability information of the current AP.
+   * Return the Capability information of the current AP for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the Capability information that we support
    */
-  CapabilityInformation GetCapabilities (void) const;
+  CapabilityInformation GetCapabilities (uint8_t linkId) const;
   /**
    * Return the ERP information of the current AP for the given link.
    *
@@ -333,30 +338,34 @@ private:
   MultiLinkElement GetMultiLinkElement (uint8_t linkId, WifiMacType frameType,
                                         const Mac48Address& to = Mac48Address::GetBroadcast ());
   /**
-   * Return the HT operation of the current AP.
+   * Return the HT operation of the current AP for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the HT operation that we support
    */
-  HtOperation GetHtOperation (void) const;
+  HtOperation GetHtOperation (uint8_t linkId) const;
   /**
-   * Return the VHT operation of the current AP.
+   * Return the VHT operation of the current AP for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the VHT operation that we support
    */
-  VhtOperation GetVhtOperation (void) const;
+  VhtOperation GetVhtOperation (uint8_t linkId) const;
   /**
-   * Return the HE operation of the current AP.
+   * Return the HE operation of the current AP for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the HE operation that we support
    */
-  HeOperation GetHeOperation (void) const;
+  HeOperation GetHeOperation (uint8_t linkId) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
-   * including HT rates.
+   * for the given link (including HT rates).
    *
-   * \return SupportedRates all rates that we support
+   * \param linkId the ID of the given link
+   * \return all rates that we support
    */
-  SupportedRates GetSupportedRates (void) const;
+  SupportedRates GetSupportedRates (uint8_t linkId) const;
   /**
    * Return the DSSS Parameter Set that we support on the given link
    *
@@ -372,26 +381,34 @@ private:
   void SetBeaconGeneration (bool enable);
 
   /**
-   * Update whether short slot time should be enabled or not in the BSS.
+   * Update whether short slot time should be enabled or not in the BSS
+   * corresponding to the given link.
    * Typically, short slot time is enabled only when there is no non-ERP station
    * associated  to the AP, and that short slot time is supported by the AP and by all
    * other ERP stations that are associated to the AP. Otherwise, it is disabled.
+   *
+   * \param linkId the ID of the given link
    */
-  void UpdateShortSlotTimeEnabled (void);
+  void UpdateShortSlotTimeEnabled (uint8_t linkId);
   /**
-   * Update whether short preamble should be enabled or not in the BSS.
+   * Update whether short preamble should be enabled or not in the BSS
+   * corresponding to the given link.
    * Typically, short preamble is enabled only when the AP and all associated
    * stations support short PHY preamble. Otherwise, it is disabled.
+   *
+   * \param linkId the ID of the given link
    */
-  void UpdateShortPreambleEnabled (void);
+  void UpdateShortPreambleEnabled (uint8_t linkId);
 
   /**
-   * Return whether protection for non-ERP stations is used in the BSS.
+   * Return whether protection for non-ERP stations is used in the BSS
+   * corresponding to the given link.
    *
+   * \param linkId the ID of the given link
    * \return true if protection for non-ERP stations is used in the BSS,
    *         false otherwise
    */
-  bool GetUseNonErpProtection (void) const;
+  bool GetUseNonErpProtection (uint8_t linkId) const;
 
   void DoDispose (void) override;
   void DoInitialize (void) override;
@@ -407,10 +424,6 @@ private:
   Time m_beaconInterval;                     //!< Beacon interval
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
-  uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
-  uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
-  bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS
-  bool m_shortPreambleEnabled;               //!< Flag whether short preamble is enabled in the BSS
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
   Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
   /// store value and timestamp for each Buffer Status Report
