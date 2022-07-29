@@ -270,11 +270,24 @@ private:
    * never includes a Multi-Link Element.
    *
    * \param to the address of the STA we are sending an association response to
-   * \param isReassoc indicates whether it is a reassociation response
    * \param linkId the ID of the given link
    * \return the Association Response frame
    */
-  MgtAssocResponseHeader GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId);
+  MgtAssocResponseHeader GetAssocResp (Mac48Address to, uint8_t linkId);
+  /**
+   * Set the AID field of the given Association Response frame, which is going
+   * to be sent to the STA with the given address on the given link. In case of
+   * multi-link setup, the selected AID value must be assigned to all the STAs
+   * corresponding to the setup links. The AID value is selected among the AID
+   * values that are possibly already assigned to the STAs affiliated with the
+   * non-AP MLD we are associating with. If no STA has an assigned AID value,
+   * a new AID value is selected.
+   *
+   * \param assoc the given Association Response frame
+   * \param to the address of the STA receiving the Association Response frame
+   * \param linkId the ID of the given link
+   */
+  void SetAid (MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t linkId);
   /**
    * Forward an association or a reassociation response packet to the DCF/EDCA.
    *

@@ -662,8 +662,7 @@ ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType, const Mac
               // For each Per-STA Profile subelement included in the Link Info field,
               // the Complete Profile subfield of the STA Control field shall be set to 1
               perStaProfile.SetStaMacAddress (GetFrameExchangeManager (i)->GetAddress ());
-              perStaProfile.SetAssocResponse (GetAssocResp (*staAddress,
-                                                            frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE, i));
+              perStaProfile.SetAssocResponse (GetAssocResp (*staAddress, i));
             }
         }
     }
@@ -938,47 +937,14 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
 }
 
 MgtAssocResponseHeader
-ApWifiMac::GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
+ApWifiMac::GetAssocResp (Mac48Address to, uint8_t linkId)
 {
   MgtAssocResponseHeader assoc;
   StatusCode code;
   auto remoteStationManager = GetWifiRemoteStationManager (linkId);
-  auto& link = GetLink (linkId);
   if (remoteStationManager->IsWaitAssocTxOk (to))
     {
       code.SetSuccess ();
-      uint16_t aid = 0;
-      bool found = false;
-      if (isReassoc)
-        {
-          for (const auto& sta : link.staList)
-            {
-              if (sta.second == to)
-                {
-                  aid = sta.first;
-                  found = true;
-                  break;
-                }
-            }
-        }
-      if (!found)
-        {
-          aid = GetNextAssociationId ({linkId});
-          link.staList.insert (std::make_pair (aid, to));
-          m_assocLogger (aid, to);
-          remoteStationManager->SetAssociationId (to, aid);
-          if (remoteStationManager->GetDsssSupported (to) && !remoteStationManager->GetErpOfdmSupported (to))
-            {
-              link.numNonErpStations++;
-            }
-          if (!remoteStationManager->GetHtSupported (to))
-            {
-              link.numNonHtStations++;
-            }
-          UpdateShortSlotTimeEnabled (linkId);
-          UpdateShortPreambleEnabled (linkId);
-        }
-      assoc.SetAssociationId (aid);
     }
   else
     {
@@ -1026,6 +992,159 @@ ApWifiMac::GetAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
 }
 
 void
+ApWifiMac::SetAid (MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t linkId)
+{
+  NS_LOG_FUNCTION (this << to << +linkId);
+
+  // find all the links to setup (i.e., those for which status code is success)
+  std::list<std::reference_wrapper<MgtAssocResponseHeader>> assocResponses;
+  std::map<uint8_t /* link ID */, Mac48Address> linkIdStaAddrMap;
+
+  if (assoc.GetStatusCode ().IsSuccess ())
+    {
+      assocResponses.push_back (std::ref (assoc));
+      linkIdStaAddrMap[linkId] = to;
+    }
+
+  const auto& mle = assoc.GetMultiLinkElement ();
+  if (mle.has_value ())
+    {
+      const auto staMldAddress = GetWifiRemoteStationManager (linkId)->GetMldAddress (to);
+      NS_ABORT_MSG_IF (!staMldAddress.has_value (),
+                       "Sending a Multi-Link Element to a single link device");
+      for (std::size_t idx = 0; idx < mle->GetNPerStaProfileSubelements (); idx++)
+        {
+          auto& perStaProfile = mle->GetPerStaProfile (idx);
+          if (perStaProfile.HasAssocResponse ()
+              && perStaProfile.GetAssocResponse ().GetStatusCode ().IsSuccess ())
+            {
+              assocResponses.push_back (perStaProfile.GetAssocResponse ());
+              uint8_t otherLinkId = perStaProfile.GetLinkId ();
+              auto staAddress = GetWifiRemoteStationManager (otherLinkId)->GetAffiliatedStaAddress (*staMldAddress);
+              NS_ABORT_MSG_IF (!staAddress.has_value (),
+                               "No STA to associate with on link " << +otherLinkId);
+              const auto [it, inserted] = linkIdStaAddrMap.insert ({otherLinkId, *staAddress});
+              NS_ABORT_MSG_IF (!inserted, "More than one Association Response to MLD "
+                               << *staMldAddress << " on link ID " << +otherLinkId);
+            }
+        }
+    }
+
+  if (assocResponses.empty ())
+    {
+      // no link to setup, nothing to do
+      return;
+    }
+
+  // check if AIDs are already allocated to the STAs that are associating
+  std::set<uint16_t> aids;
+  std::map<uint8_t /* link ID */, uint16_t /* AID */> linkIdAidMap;
+
+  for (const auto& [id, staAddr] : linkIdStaAddrMap)
+    {
+      for (const auto& [aid, addr] : GetLink (id).staList)
+        {
+          if (addr == staAddr)
+            {
+              aids.insert (aid);
+              linkIdAidMap[id] = aid;
+              break;
+            }
+        }
+    }
+
+  // check if an AID already assigned to an STA can be assigned to all other STAs
+  // affiliated with the non-AP MLD we are associating with
+  while (!aids.empty ())
+    {
+      const uint16_t aid = *aids.begin ();
+      bool good = true;
+
+      for (const auto& [id, staAddr] : linkIdStaAddrMap)
+        {
+          if (auto it = GetLink (id).staList.find (aid);
+              it != GetLink (id).staList.end ()
+              && it->second != staAddr)
+            {
+              // the AID is already assigned to an STA other than the one affiliated
+              // with the non-AP MLD we are associating with
+              aids.erase (aids.begin ());
+              good = false;
+              break;
+            }
+        }
+
+      if (good)
+        {
+          break;
+        }
+    }
+
+  uint16_t aid = 0;
+
+  if (!aids.empty ())
+    {
+      // one of the AIDs already assigned to an STA can be assigned to all the other
+      // STAs affiliated with the non-AP MLD we are associating with
+      aid = *aids.begin ();
+    }
+  else
+    {
+      std::list<uint8_t> linkIds;
+      std::transform (linkIdStaAddrMap.cbegin (), linkIdStaAddrMap.cend (),
+                      std::back_inserter (linkIds),
+                      [](auto&& linkIdStaAddrPair){ return linkIdStaAddrPair.first; });
+      aid = GetNextAssociationId (linkIds);
+    }
+
+  for (const auto& [id, staAddr] : linkIdStaAddrMap)
+    {
+      auto remoteStationManager = GetWifiRemoteStationManager (id);
+      auto& link = GetLink (id);
+
+      if (auto it = linkIdAidMap.find (id);
+          it == linkIdAidMap.end () || it->second != aid)
+        {
+          // the STA on this link has no AID assigned or has a different AID assigned
+          link.staList.insert (std::make_pair (aid, staAddr));
+          m_assocLogger (aid, staAddr);
+          remoteStationManager->SetAssociationId (staAddr, aid);
+
+          if (it == linkIdAidMap.end ())
+            {
+              // the STA on this link had no AID assigned
+              if (remoteStationManager->GetDsssSupported (staAddr)
+                  && !remoteStationManager->GetErpOfdmSupported (staAddr))
+                {
+                  link.numNonErpStations++;
+                }
+              if (!remoteStationManager->GetHtSupported (staAddr))
+                {
+                  link.numNonHtStations++;
+                }
+              UpdateShortSlotTimeEnabled (id);
+              UpdateShortPreambleEnabled (id);
+            }
+          else
+            {
+              // the STA on this link had a different AID assigned
+              link.staList.erase (it->second); // free the previous AID
+            }
+        }
+    }
+
+  // set the AID in all the Association Responses. NOTE that the Association
+  // Responses included in the Per-STA Profile Subelements of the Multi-Link
+  // Element must not contain the AID field. We set the AID field in such
+  // Association Responses anyway, in order to ease future implementation of
+  // the inheritance mechanism.
+  for (auto& assocResp : assocResponses)
+    {
+      assocResp.get ().SetAssociationId (aid);
+    }
+}
+
+void
 ApWifiMac::SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << to << isReassoc << +linkId);
@@ -1037,7 +1156,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
 
-  MgtAssocResponseHeader assoc = GetAssocResp (to, isReassoc, linkId);
+  MgtAssocResponseHeader assoc = GetAssocResp (to, linkId);
 
   // The AP that is affiliated with the AP MLD and that responds to an (Re)Association
   // Request frame that carries a Basic Multi-Link element shall include a Basic
@@ -1050,6 +1169,8 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool isReassoc, uint8_t linkId)
     {
       assoc.SetMultiLinkElement (GetMultiLinkElement (linkId, hdr.GetType (), to));
     }
+
+  SetAid (assoc, to, linkId);
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (assoc);
