@@ -101,6 +101,26 @@ typedef std::map<InterfacePairIpv6, Ptr<OutputStreamWrapper> > InterfaceStreamMa
 static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
 static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
 
+static bool g_scheduledDestroyInterfaceStreamMaps = false; /**< A flag to indicate DestroyInterfaceStreamMaps was scheduled at the simulator destruction */
+
+// This function cleans up the references stored in the maps
+// at the end of the simulation.
+// This is necessary in case there are references allocated
+// by the Cppyy python bindings, which can be freed before
+// static destructors are called resulting in a segmentation
+// violation.
+/**
+   * \brief Clear interface to output stream maps
+   */
+void DestroyInterfaceStreamMaps()
+{
+  g_interfaceFileMapIpv4.clear();
+  g_interfaceStreamMapIpv4.clear();
+  g_interfaceFileMapIpv6.clear();
+  g_interfaceStreamMapIpv6.clear();
+  g_scheduledDestroyInterfaceStreamMaps = false;
+}
+
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
     m_routingv6 (0),
@@ -110,6 +130,11 @@ InternetStackHelper::InternetStackHelper ()
     m_ipv6NsRsJitterEnabled (true)
 
 {
+  if (!g_scheduledDestroyInterfaceStreamMaps)
+    {
+      Simulator::ScheduleDestroy(&DestroyInterfaceStreamMaps);
+      g_scheduledDestroyInterfaceStreamMaps = true;
+    }
   Initialize ();
 }
 
