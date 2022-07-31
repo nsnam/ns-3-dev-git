@@ -1709,116 +1709,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         NS3BuildBaseTestCase.cleaned_once = False
 
-    def test_10_PybindgenBindings(self):
-        """!
-        Test if cmake is calling pybindgen through modulegen to generate
-        the bindings source files correctly
-        @return None
-        """
-
-        # Skip this test if pybindgen is not available
-        try:
-            import pybindgen
-        except ImportError:
-            self.skipTest("Pybindgen is not available")
-
-        # Check if the number of runnable python scripts is equal to 0
-        python_scripts = read_lock_entry("ns3_runnable_scripts")
-        self.assertEqual(len(python_scripts), 0)
-
-        # First we enable python bindings
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --enable-tests --enable-python-bindings")
-        self.assertEqual(return_code, 0)
-
-        # Then look for python bindings sources
-        core_bindings_generated_sources_path = os.path.join(ns3_path, "build", "src", "core", "bindings")
-        core_bindings_sources_path = os.path.join(ns3_path, "src", "core", "bindings")
-        core_bindings_path = os.path.join(ns3_path, "build", "bindings", "python", "ns")
-        core_bindings_header = os.path.join(core_bindings_generated_sources_path, "ns3module.h")
-        core_bindings_source = os.path.join(core_bindings_generated_sources_path, "ns3module.cc")
-        self.assertTrue(os.path.exists(core_bindings_header))
-        self.assertTrue(os.path.exists(core_bindings_source))
-
-        # Then try to build the bindings for the core module
-        return_code, stdout, stderr = run_ns3("build core-bindings")
-        self.assertEqual(return_code, 0)
-
-        # Then check if it was built
-        self.assertGreater(len(list(filter(lambda x: "_core" in x, os.listdir(core_bindings_path)))), 0)
-
-        # Now enable python bindings scanning
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" -- -DNS3_SCAN_PYTHON_BINDINGS=ON")
-        self.assertEqual(return_code, 0)
-
-        # Get the file status for the current scanned bindings
-        bindings_sources = os.listdir(core_bindings_sources_path)
-        bindings_sources = [os.path.join(core_bindings_sources_path, y) for y in bindings_sources]
-        timestamps = {}
-        [timestamps.update({x: os.stat(x)}) for x in bindings_sources]
-
-        # Try to scan the bindings for the core module
-        return_code, stdout, stderr = run_ns3("build core-apiscan")
-        self.assertEqual(return_code, 0)
-
-        # Check if they exist, are not empty and have a different timestamp
-        generated_python_files = ["callbacks_list.py", "modulegen__gcc_LP64.py"]
-        for binding_file in timestamps.keys():
-            if os.path.basename(binding_file) in generated_python_files:
-                self.assertTrue(os.path.exists(binding_file))
-                self.assertGreater(os.stat(binding_file).st_size, 0)
-                new_fstat = os.stat(binding_file)
-                self.assertNotEqual(timestamps[binding_file].st_mtime, new_fstat.st_mtime)
-
-        # Then delete the old bindings sources
-        for f in os.listdir(core_bindings_generated_sources_path):
-            os.remove(os.path.join(core_bindings_generated_sources_path, f))
-
-        # Reconfigure to recreate the source files
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-        self.assertEqual(return_code, 0)
-
-        # Check again if they exist
-        self.assertTrue(os.path.exists(core_bindings_header))
-        self.assertTrue(os.path.exists(core_bindings_source))
-
-        # Build the core bindings again
-        return_code, stdout, stderr = run_ns3("build core-bindings")
-        self.assertEqual(return_code, 0)
-
-        # Then check if it was built
-        self.assertGreater(len(list(filter(lambda x: "_core" in x, os.listdir(core_bindings_path)))), 0)
-
-        # We are on python anyway, so we can just try to load it from here
-        sys.path.insert(0, os.path.join(core_bindings_path, ".."))
-        try:
-            from ns import core
-        except ImportError:
-            self.assertTrue(True)
-
-        # Check if ns3 can find and run the python example
-        return_code, stdout, stderr = run_ns3("run sample-simulator.py")
-        self.assertEqual(return_code, 0)
-
-        # Check if test.py can find and run the python example
-        return_code, stdout, stderr = run_program("./test.py", "-p src/core/examples/sample-simulator.py", python=True)
-        self.assertEqual(return_code, 0)
-
-        # Since python examples do not require recompilation,
-        # test if we still can run the python examples after disabling examples
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --disable-examples")
-        self.assertEqual(return_code, 0)
-
-        # Check if the lock file has python runnable python scripts (it should)
-        python_scripts = read_lock_entry("ns3_runnable_scripts")
-        self.assertGreater(len(python_scripts), 0)
-
-        # Try to run an example
-        return_code, stdout, stderr = run_ns3("run sample-simulator.py")
-        self.assertEqual(return_code, 0)
-
-        NS3BuildBaseTestCase.cleaned_once = False
-
-    def test_11_AmbiguityCheck(self):
+    def test_10_AmbiguityCheck(self):
         """!
         Test if ns3 can alert correctly in case a shortcut collision happens
         @return None
@@ -1874,7 +1765,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         NS3BuildBaseTestCase.cleaned_once = False
 
-    def test_12_StaticBuilds(self):
+    def test_11_StaticBuilds(self):
         """!
         Test if we can build a static ns-3 library and link it to static programs
         @return None
