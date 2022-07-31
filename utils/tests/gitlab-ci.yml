@@ -63,7 +63,7 @@ per-commit-compile-debug:
   extends: .base-build
   except:
     variables:
-      - $PYBINDGEN == "True"
+      - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
@@ -78,7 +78,7 @@ per-commit-compile-default:
   extends: .base-build
   except:
     variables:
-      - $PYBINDGEN == "True"
+      - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
@@ -93,7 +93,7 @@ per-commit-compile-optimized:
   extends: .base-build
   except:
     variables:
-      - $PYBINDGEN == "True"
+      - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
@@ -114,4 +114,4 @@ include:
   - 'utils/tests/gitlab-ci-test.yml'
   - 'utils/tests/gitlab-ci-coding-style.yml'
   - 'utils/tests/gitlab-ci-doc.yml'
-  - 'utils/tests/gitlab-ci-pybindgen.yml'
+  - 'utils/tests/gitlab-ci-cppyy.yml'

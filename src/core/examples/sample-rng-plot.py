@@ -25,7 +25,15 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+import argparse
 from ns import ns
+
+parser = argparse.ArgumentParser("sample-rng-plot")
+parser.add_argument("--not-blocking",
+                    action="store_true",
+                    default=False)
+args = parser.parse_args(sys.argv[1:])
 
 # mu, var = 100, 225
 
@@ -54,4 +62,4 @@ plt.title('ns-3 histogram')
 plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
 plt.axis([40, 160, 0, 0.03])
 plt.grid(True)
-plt.show()
+plt.show(block=not args.not_blocking)

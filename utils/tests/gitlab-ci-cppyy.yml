@@ -1,5 +1,5 @@
-pybindgen-21.04:
-  image: ubuntu:21.04 # python 3.9
+cppyy-22.04:
+  image: ubuntu:22.04 # python 3.10
   only:
     variables:
       - $RELEASE == "weekly"
@@ -9,24 +9,28 @@ pybindgen-21.04:
   before_script:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get install -y g++ cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git python3 python3-pip
-    - pip install cxxfilt pygccxml pybindgen castxml
+    - pip install cppyy matplotlib numpy
   script:
-    - ./ns3 configure -G Ninja -- -DNS3_SCAN_PYTHON_BINDINGS=ON
-    - ./ns3 build apiscan-all
-    - ./ns3 configure --enable-python-bindings
+    - ./ns3 configure -G Ninja
     - ./ns3 build
     - ./ns3 run first.py
     - ./ns3 run second.py
     - ./ns3 run third.py
+    - ./ns3 run wifi-ap.py
+    - ./ns3 run simple-routing-ping6.py
+    - ./ns3 run realtime-udp-echo.py
+    - ./ns3 run bianchi11ax.py
+    - ./ns3 run sample-simulator.py
+    - ./ns3 run "sample-rng-plot.py --not-blocking"
+    - ./ns3 run csma-bridge.py
+    - ./ns3 run wifi-olsr-flowmon.py
+    - ./ns3 run "flowmon-parse-results.py output.xml"
+    - ./ns3 run mixed-wired-wireless.py
     - ./ns3 run ./utils/python-unit-tests.py
-    - git diff src > pybindgen_new2104.patch
-  artifacts:
-    paths:
-      - pybindgen_new2104.patch
   timeout: 9h
 
 
-pybindgen-20.04:
+cppyy-20.04:
   image: ubuntu:20.04 # python 3.8
   only:
     variables:
@@ -37,23 +41,17 @@ pybindgen-20.04:
   before_script:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get install -y g++ cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git python3 python3-pip
-    - pip install cxxfilt pygccxml pybindgen castxml
+    - pip install cppyy
   script:
-    - ./ns3 configure -G Ninja -- -DNS3_SCAN_PYTHON_BINDINGS=ON
-    - ./ns3 build apiscan-all
-    - ./ns3 configure --enable-python-bindings
+    - ./ns3 configure -G Ninja
     - ./ns3 build
     - ./ns3 run first.py
     - ./ns3 run second.py
     - ./ns3 run third.py
     - ./ns3 run ./utils/python-unit-tests.py
-    - git diff src > pybindgen_new2004.patch
-  artifacts:
-    paths:
-      - pybindgen_new2004.patch
   timeout: 9h
 
-pybindgen-18.04:
+cppyy-18.04:
   image: ubuntu:18.04 # python 3.6
   only:
     variables:
@@ -68,28 +66,12 @@ pybindgen-18.04:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get install -y cmake ninja-build ccache libgsl-dev libgtk-3-dev libboost-dev wget git g++-9 gcc-9 python3 python3-pip llvm-dev libclang-dev
     - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-    - pip3 install setuptools distro requests cxxfilt
-    - git clone https://gitlab.com/nsnam/bake.git
-    - export PATH=$PATH:`pwd`/bake/build/bin
-    - export PYTHONPATH=$PYTHONPATH:`pwd`/bake/build/lib
-    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/bake/build/lib
-    - cd bake
-    - mkdir -p build/lib
-    - ./bake.py configure -e pygccxml -e pybindgen
-    - ./bake.py download
-    - ./bake.py build
-    - cd ..
+    - pip3 install cppyy-cling cppyy-backend CPyCppyy cppyy # older python version may install dependencies in the wrong order
   script:
-    - CXX=g++-9 ./ns3 configure -G Ninja -- -DNS3_SCAN_PYTHON_BINDINGS=ON
-    - ./ns3 build apiscan-all
-    - ./ns3 configure --enable-python-bindings
+    - CXX=g++-9 ./ns3 configure -G Ninja
     - ./ns3 build
     - ./ns3 run first.py
     - ./ns3 run second.py
     - ./ns3 run third.py
     - ./ns3 run ./utils/python-unit-tests.py
-    - git diff src > pybindgen_new1804.patch
-  artifacts:
-    paths:
-      - pybindgen_new1804.patch
   timeout: 9h
