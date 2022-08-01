@@ -150,6 +150,12 @@ public:
    */
   virtual void SetAddress (Mac48Address address);
   /**
+   * Get the MAC address.
+   *
+   * \return the MAC address
+   */
+  Mac48Address GetAddress (void) const;
+  /**
    * Set the Basic Service Set Identification.
    *
    * \param bssid the BSSID

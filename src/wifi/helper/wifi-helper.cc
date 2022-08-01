@@ -776,14 +776,15 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           auto ehtConfiguration = m_ehtConfig.Create<EhtConfiguration> ();
           device->SetEhtConfiguration (ehtConfiguration);
         }
-      Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      device->SetRemoteStationManager (manager);
+      std::vector<Ptr<WifiRemoteStationManager>> managers;
       std::vector<Ptr<WifiPhy>> phys = phyHelper.Create (node, device);
       device->SetPhys (phys);
       for (std::size_t i = 0; i < phys.size (); i++)
         {
           phys[i]->ConfigureStandard (m_standard);
+          managers.push_back (m_stationManager.Create<WifiRemoteStationManager> ());
         }
+      device->SetRemoteStationManagers (managers);
       Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       if ((m_standard >= WIFI_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {

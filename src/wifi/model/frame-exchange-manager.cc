@@ -192,6 +192,12 @@ FrameExchangeManager::SetAddress (Mac48Address address)
   m_self = address;
 }
 
+Mac48Address
+FrameExchangeManager::GetAddress (void) const
+{
+  return m_self;
+}
+
 void
 FrameExchangeManager::SetBssid (Mac48Address bssid)
 {

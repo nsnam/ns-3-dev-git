@@ -75,6 +75,17 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
       ackManager->SetWifiMac (mac);
       ackManager->SetLinkId (linkId);
       fem->SetAckManager (ackManager);
+
+      // 11be MLDs require a MAC address to be assigned to each STA. Note that
+      // FrameExchangeManager objects are created by WifiMac::SetupFrameExchangeManager
+      // (which is invoked by WifiMac::ConfigureStandard, which is called above),
+      // which sets the FrameExchangeManager's address to the address held by WifiMac.
+      // Hence, in case the number of PHY objects is 1, the FrameExchangeManager's
+      // address equals the WifiMac's address.
+      if (device->GetNPhys () > 1)
+        {
+          fem->SetAddress (Mac48Address::Allocate ());
+        }
     }
 
   // create and install the Multi User Scheduler if this is an HE AP
