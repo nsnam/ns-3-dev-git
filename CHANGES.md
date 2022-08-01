@@ -35,6 +35,7 @@ Changes from ns-3.36 to ns-3.37
 
 ### Changes to build system
 
+* Replaced the Pybindgen python bindings framework with Cppyy.
 * Enabled precompiled headers (`NS3_PRECOMPILE_HEADERS`) by default when CCache is found.
 * Added a `./ns3 show targets` option to list buildable/runnable targets.
 * Replaced `./ns3 --check-config` with `./ns3 show config`.

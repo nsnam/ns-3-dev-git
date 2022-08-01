@@ -33,7 +33,7 @@ and/or the buildbots have been testing
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
      are reporting 'pass' state, based on the tip of the repository
    - revise and check in AUTHORS, RELEASE_NOTES.md, and CHANGES.html
-   - required versions for related libraries (netanim, pybindgen)
+   - required versions for related libraries (netanim, cppyy)
      are correct
    - confirm that Doxygen builds cleanly (./ns3 doxygen),
    - confirm that the new bake configurations for the release work correctly

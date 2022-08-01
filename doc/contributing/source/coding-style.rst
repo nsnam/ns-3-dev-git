@@ -337,11 +337,7 @@ Language features
 *****************
 
 As of ns-3.36, |ns3| permits the use of C++-17 (or earlier) features
-in the implementation files. Because the |ns3| public APIs are scanned by a
-a `Python bindings framework <https://github.com/gjcarneiro/pybindgen>`_ that
-doesn't support even all of the C++-11 features, the |ns3| project is more
-conservative in using newer C++ standards in the APIs, and may ask
-to rework some APIs to retain compatibility with pybindgen.
+in the implementation files.
 
 If a developer would like to propose to raise this bar to include more
 features than this, please email the developers list. We will move this
