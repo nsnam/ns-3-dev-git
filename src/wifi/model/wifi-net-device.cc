@@ -75,8 +75,14 @@ WifiNetDevice::GetTypeId (void)
     .AddAttribute ("RemoteStationManager", "The station manager attached to this device.",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
-                                        &WifiNetDevice::GetRemoteStationManager),
+                                        (Ptr<WifiRemoteStationManager> (WifiNetDevice::*) (void) const) &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
+    .AddAttribute ("RemoteStationManagers",
+                   "The remote station managers attached to this device (11be multi-link devices only).",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&WifiNetDevice::GetRemoteStationManager,
+                                             &WifiNetDevice::GetNRemoteStationManagers),
+                   MakeObjectVectorChecker<WifiPhy> ())
     .AddAttribute ("HtConfiguration",
                    "The HtConfiguration object.",
                    PointerValue (),
@@ -132,11 +138,15 @@ WifiNetDevice::DoDispose (void)
         }
     }
   m_phys.clear ();
-  if (m_stationManager)
+  for (auto& stationManager : m_stationManagers)
     {
-      m_stationManager->Dispose ();
-      m_stationManager = 0;
+      if (stationManager != nullptr)
+        {
+          stationManager->Dispose ();
+          stationManager = nullptr;
+        }
     }
+  m_stationManagers.clear ();
   if (m_htConfiguration)
     {
       m_htConfiguration->Dispose ();
@@ -176,9 +186,12 @@ WifiNetDevice::DoInitialize (void)
     {
       m_mac->Initialize ();
     }
-  if (m_stationManager)
+  for (const auto& stationManager : m_stationManagers)
     {
-      m_stationManager->Initialize ();
+      if (stationManager)
+        {
+          stationManager->Initialize ();
+        }
     }
   NetDevice::DoInitialize ();
 }
@@ -188,19 +201,23 @@ WifiNetDevice::CompleteConfig (void)
 {
   if (m_mac == 0
       || m_phys.empty ()
-      || m_stationManager == 0
+      || m_stationManagers.empty ()
       || m_node == 0
       || m_configComplete)
     {
       return;
     }
-  m_mac->SetWifiRemoteStationManager (m_stationManager);
+  NS_ABORT_IF (m_phys.size () != m_stationManagers.size ());
   m_mac->SetWifiPhys (m_phys);
+  m_mac->SetWifiRemoteStationManagers (m_stationManagers);
   m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
-  m_stationManager->SetupPhy (m_phys[SINGLE_LINK_OP_ID]);
-  m_stationManager->SetupMac (m_mac);
+  for (uint8_t linkId = 0; linkId < m_stationManagers.size (); linkId++)
+    {
+      m_stationManagers.at (linkId)->SetupPhy (m_phys.at (linkId));
+      m_stationManagers.at (linkId)->SetupMac (m_mac);
+    }
   m_configComplete = true;
 }
 
@@ -246,7 +263,17 @@ WifiNetDevice::SetPhys (const std::vector<Ptr<WifiPhy>>& phys)
 void
 WifiNetDevice::SetRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
 {
-  m_stationManager = manager;
+  m_stationManagers.clear ();
+  m_stationManagers.push_back (manager);
+  CompleteConfig ();
+}
+
+void
+WifiNetDevice::SetRemoteStationManagers (const std::vector<Ptr<WifiRemoteStationManager>>& managers)
+{
+  NS_ABORT_MSG_IF (managers.size () > 1 && m_ehtConfiguration == nullptr,
+                   "Multiple remote station managers only allowed for 11be multi-link devices");
+  m_stationManagers = managers;
   CompleteConfig ();
 }
 
@@ -284,7 +311,26 @@ WifiNetDevice::GetNPhys (void) const
 Ptr<WifiRemoteStationManager>
 WifiNetDevice::GetRemoteStationManager (void) const
 {
-  return m_stationManager;
+  return GetRemoteStationManager (0);
+}
+
+Ptr<WifiRemoteStationManager>
+WifiNetDevice::GetRemoteStationManager (uint8_t linkId) const
+{
+  NS_ASSERT (linkId < GetRemoteStationManagers ().size ());
+  return GetRemoteStationManagers ().at (linkId);
+}
+
+const std::vector<Ptr<WifiRemoteStationManager>>&
+WifiNetDevice::GetRemoteStationManagers (void) const
+{
+  return m_stationManagers;
+}
+
+uint8_t
+WifiNetDevice::GetNRemoteStationManagers (void) const
+{
+  return GetRemoteStationManagers ().size ();
 }
 
 void

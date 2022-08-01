@@ -280,9 +280,14 @@ public:
    */
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   /**
-   * \return the station manager attached to this MAC.
+   * \param stationManagers the station managers attached to this MAC.
    */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+  void SetWifiRemoteStationManagers (const std::vector<Ptr<WifiRemoteStationManager>>& stationManagers);
+  /**
+   * \param linkId the ID (starting at 0) of the link of the RemoteStationManager object to retrieve
+   * \return the remote station manager operating on the given link
+   */
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (uint8_t linkId = 0) const;
 
   /**
    * This type defines the callback of a higher layer that a
@@ -576,6 +581,8 @@ protected:
     Ptr<WifiPhy> phy;                               //!< Wifi PHY object
     Ptr<ChannelAccessManager> channelAccessManager; //!< channel access manager object
     Ptr<FrameExchangeManager> feManager;            //!< Frame Exchange Manager object
+    Ptr<WifiRemoteStationManager> stationManager;   /**< Remote station manager (rate control, RTS/CTS/
+                                                         fragmentation thresholds etc.) */
     bool erpSupported {false};                      /**< set to \c true iff this WifiMac is
                                                          to model 802.11g */
     bool dsssSupported {false};                     /**< set to \c true iff this WifiMac is
@@ -726,7 +733,6 @@ private:
   TypeOfStation m_typeOfStation; //!< the type of station
 
   Ptr<WifiNetDevice> m_device;                    //!< Pointer to the device
-  Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
   std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of Link objects
 
   Mac48Address m_address; //!< MAC address of this station

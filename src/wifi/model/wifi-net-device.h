@@ -99,6 +99,10 @@ public:
    */
   void SetRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
+   * \param managers the managers to use (for 11be multi-link devices only)
+   */
+  void SetRemoteStationManagers (const std::vector<Ptr<WifiRemoteStationManager>>& managers);
+  /**
    * \returns the MAC we are currently using.
    */
   Ptr<WifiMac> GetMac (void) const;
@@ -123,8 +127,25 @@ public:
   uint8_t GetNPhys (void) const;
   /**
    * \returns the remote station manager we are currently using.
+   *
+   * This GetRemoteStationManager variant is needed to keep using "RemoteStationManager"
+   * in the path names.
    */
   Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
+  /**
+   * \param linkId the ID (starting at 0) of the link of the RemoteStationManager
+   *               object to retrieve
+   * \returns the requested remote station manager
+   */
+  Ptr<WifiRemoteStationManager> GetRemoteStationManager (uint8_t linkId) const;
+  /**
+   * \returns a const reference to the vector of remote station managers
+   */
+  virtual const std::vector<Ptr<WifiRemoteStationManager>>& GetRemoteStationManagers (void) const;
+  /**
+   * \returns the number of remote station managers
+   */
+  uint8_t GetNRemoteStationManagers (void) const;
 
   /**
    * \param htConfiguration pointer to HtConfiguration
@@ -218,7 +239,7 @@ private:
   Ptr<Node> m_node; //!< the node
   std::vector<Ptr<WifiPhy>> m_phys; //!< the phy objects
   Ptr<WifiMac> m_mac; //!< the MAC
-  Ptr<WifiRemoteStationManager> m_stationManager; //!< the station manager
+  std::vector<Ptr<WifiRemoteStationManager>> m_stationManagers; //!< the station managers
   Ptr<HtConfiguration> m_htConfiguration; //!< the HtConfiguration
   Ptr<VhtConfiguration> m_vhtConfiguration; //!< the VhtConfiguration
   Ptr<HeConfiguration> m_heConfiguration; //!< the HeConfiguration

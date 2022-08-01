@@ -354,7 +354,6 @@ WifiMac::DoDispose ()
       it->second = 0;
     }
 
-  m_stationManager = 0;
   m_device = 0;
 }
 
@@ -518,7 +517,7 @@ WifiMac::NotifyChannelSwitching (void)
   // SetupPhy not only resets the remote station manager, but also sets the
   // default TX mode and MCS, which is required when switching to a channel
   // in a different band
-  m_stationManager->SetupPhy (GetLink (SINGLE_LINK_OP_ID).phy);
+  GetLink (SINGLE_LINK_OP_ID).stationManager->SetupPhy (GetLink (SINGLE_LINK_OP_ID).phy);
 }
 
 void
@@ -794,13 +793,36 @@ void
 WifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
 {
   NS_LOG_FUNCTION (this << stationManager);
-  m_stationManager = stationManager;
+  SetWifiRemoteStationManagers ({stationManager});
+}
+
+void
+WifiMac::SetWifiRemoteStationManagers (const std::vector<Ptr<WifiRemoteStationManager>>& stationManagers)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_UNLESS (m_links.size () == 0 || m_links.size () == stationManagers.size (),
+                       "If links have been already created, the number of provided "
+                       "Remote Manager objects (" << stationManagers.size () << ") must "
+                       "match the number of links (" << m_links.size () << ")");
+
+  for (std::size_t i = 0; i < stationManagers.size (); i++)
+    {
+      // the link may already exist in case PHY objects were configured first
+      if (i == m_links.size ())
+        {
+          m_links.push_back (CreateLinkEntity ());
+          m_links.back ()->id = i;
+        }
+      NS_ABORT_IF (i != m_links[i]->id);
+      m_links[i]->stationManager = stationManagers[i];
+    }
 }
 
 Ptr<WifiRemoteStationManager>
-WifiMac::GetWifiRemoteStationManager () const
+WifiMac::GetWifiRemoteStationManager (uint8_t linkId) const
 {
-  return m_stationManager;
+  return GetLink (linkId).stationManager;
 }
 
 std::unique_ptr<WifiMac::LinkEntity>
@@ -838,6 +860,7 @@ WifiMac::SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys)
     {
       // the link may already exist in case we are setting new PHY objects
       // (ResetWifiPhys just nullified the PHY(s) but left the links)
+      // or the remote station managers were configured first
       if (i == m_links.size ())
         {
           m_links.push_back (CreateLinkEntity ());
