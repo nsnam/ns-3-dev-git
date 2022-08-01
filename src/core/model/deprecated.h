@@ -68,6 +68,13 @@
 
 /**
  * \ingroup core
+ * \def NS_DEPRECATED_3_37
+ * Tag for things deprecated in version ns-3.37.
+ */
+#define NS_DEPRECATED_3_37(msg) NS_DEPRECATED(msg)
+
+/**
+ * \ingroup core
  * \def NS_DEPRECATED_3_36
  * Tag for things deprecated in version ns-3.36.
  */
