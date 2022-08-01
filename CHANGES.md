@@ -22,6 +22,7 @@ Changes from ns-3.36 to ns-3.37
 * Added new methods (**ConfigHtOptions**, **ConfigVhtOptions**, **ConfigHeOptions** and **ConfigEhtOptions**) to `WifiHelper` to configure HT/VHT/HE/EHT options listed as attributes of the respective Configuration classes through the wifi helper.
 * Added new attributes (**AccessReqInterval**, **AccessReqAc** and **DelayAccessReqUponAccess**) to the MultiUserScheduler to allow a wifi AP to coordinate UL MU transmissions even without DL traffic.
 * `WifiNetDevice` has a new **Phys** attribute, which is primarily intended to select a specific PHY object of an 11be multi-link device when using path names.
+* `Txop` class (wifi module) has new attributes (**MinCws**, **MaxCws**, **Aifsns** and **TxopLimits**) to set minimum CW, maximum CW, AIFSN and TXOP limit for all the links of a multi-link device.
 
 ### Changes to existing API
 
@@ -32,6 +33,7 @@ Changes from ns-3.36 to ns-3.37
 * IPv6 Router Solicitations (RS) are now retransmitted up to 4 times, following RFC 5779.
 * Adds support for **LrWpanMac** active and passive scan.
 * Add supporting association structures: parameters, callbacks and the pending transaction list to **LrWpanMac**.
+* The **TxopTrace** trace source of wifi `QosTxop` now has an additional argument (the third one) indicating the ID of the link the TXOP refers to (for non-MLDs, this value is zero).
 
 
 ### Changes to build system

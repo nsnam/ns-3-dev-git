@@ -32,6 +32,7 @@ Release 3-dev
 - (wifi) Notify RX end only for the last received HE TB PPDU
 - (wifi) Correctly compute the time to RX end to be passed to WifiPhyStateHelper::SwitchToRx()
 - (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
+- (wifi) Align default TXOP limit for VI and VO to 802.11-2020
 
 Release 3.36.1
 --------------
