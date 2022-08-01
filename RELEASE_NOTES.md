@@ -31,6 +31,7 @@ Release 3-dev
 - (wifi) Only include QoS Null frames for TIDs for which a BA agreement exists in responses to BSRP TFs
 - (wifi) Notify RX end only for the last received HE TB PPDU
 - (wifi) Correctly compute the time to RX end to be passed to WifiPhyStateHelper::SwitchToRx()
+- (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
 
 Release 3.36.1
 --------------
