@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "wifi-phy-common.h"
 
 namespace ns3 {
