@@ -20,7 +20,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** (2.4, 5 and 6 GHz bands) physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
 * QoS-based EDCA and queueing extensions of **802.11e**
@@ -36,7 +36,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
 packet-level abstraction of the PHY-level for different PHYs, corresponding to
-802.11a/b/e/g/n/ac/ax specifications.
+802.11a/b/e/g/n/ac/ax/be specifications.
 
 In |ns3|, nodes can have multiple WifiNetDevices on separate channels, and the
 WifiNetDevice can coexist with other device types.
@@ -164,18 +164,17 @@ packets.  Interference from other wireless technologies is only modeled
 when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ax MU-RTS/CTS is not yet supported
-* 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
-* 802.11n/ac/ax beamforming is not supported
+* 802.11ax/be MU-RTS/CTS is not yet supported
+* 802.11ac/ax/be MU-MIMO is not supported, and no more than 4 antennas can be configured
+* 802.11n/ac/ax/be beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
 * Channel Switch Announcement is not supported
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* Channel bonding implementation only supports the use of the configured channel width
-  and does not perform CCA on secondary channels
-* Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
+* Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE/EHT formats are not supported
 * Energy consumption model does not consider MIMO
+* Only minimal 802.11be PHY is supported (no MAC layer yet)
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
@@ -268,7 +267,7 @@ considering the size and complexity of the corresponding files.
 In addition, adding and maintaining new PHY amendments had become a complex
 task (especially those implemented inside other modules, e.g. DMG).
 The adopted solution was to have ``PhyEntity`` classes that contain the "clause"
-specific (i.e. HT/VHT/HE etc) parts of the PHY process.
+specific (i.e. HT/VHT/HE/EHT etc) parts of the PHY process.
 
 The notion of "PHY entity" is in the standard at the beginning of each PHY
 layer description clause, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -295,6 +294,7 @@ the IEEE 802.11 standard. The currently implemented PHY entities are:
 * ``ns3::HtPhy``: PHY entity for HT (11n)
 * ``ns3::VhtPhy``: PHY entity for VHT (11ac)
 * ``ns3::HePhy``: PHY entity for HE (11ax)
+* ``ns3::EhtPhy``: PHY entity for EHT (11be)
 
 Their inheritance diagram is given in Figure :ref:`phyentity-hierarchy` and
 closely follows the standard's logic, e.g. section 21.1.1 of IEEE 802.11-2016:
@@ -328,6 +328,7 @@ specialized into the following amendment-specific PPDUs:
 * ``ns3::HtPpdu``: PPDU for HT (11n)
 * ``ns3::VhtPpdu``: PPDU for VHT (11ac)
 * ``ns3::HePpdu``: PPDU for HE (11ax)
+* ``ns3::EhtPpdu``: PPDU for EHT (11be)
 
 Their inheritance diagram is given in Figure :ref:`wifippdu-hierarchy` and
 closely follows the standard's logic, e.g. section 21.3.8.1 of IEEE 802.11-2016:
