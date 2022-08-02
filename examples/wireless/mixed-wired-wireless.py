@@ -235,7 +235,7 @@ def main(argv):
     #  Reset the address base-- all of the 802.11 networks will be in
     #  the "10.0" address space
     ipAddrs.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
-
+    tempRef = []  # list of references to be held to prevent garbage collection
     for i in range(backboneNodes):
         print ("Configuring wireless network for backbone node ", i)
         #
@@ -279,11 +279,18 @@ def main(argv):
         #  the network mask initialized above
         #
         ipAddrs.NewNetwork()
+
+        # This call returns an instance that needs to be stored in the outer scope
+        # not to be garbage collected when overwritten in the next iteration
+        subnetAlloc = ns.mobility.ListPositionAllocator()
+
+        # Appending the object to a list is enough to prevent the garbage collection
+        tempRef.append(subnetAlloc)
+
         #
         #  The new wireless nodes need a mobility model so we aggregate one
         #  to each of the nodes we just finished building.
         #
-        subnetAlloc = ns.mobility.ListPositionAllocator()
         for j in range(infra.GetN()):
             subnetAlloc.Add(ns.core.Vector(0.0, j, 0.0))
 

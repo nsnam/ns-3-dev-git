@@ -214,6 +214,8 @@ class TestSimulator(unittest.TestCase):
         self.assertTrue(self._received_packet is not None)
         self.assertEqual(self._received_packet.GetSize(), 19)
 
+        # Delete Ptr<>'s on the python side to let C++ clean them
+        del internet
 
     def testAttributes(self):
         """! Test attributes function
@@ -243,6 +245,9 @@ class TestSimulator(unittest.TestCase):
         mobility.GetAttribute("PositionAllocator", ptr2)
         self.assertNotEqual(ptr.GetObject(), ns.core.Ptr["Object"](ns.cppyy.nullptr))
 
+        # Delete Ptr<>'s on the python side to let C++ clean them
+        del queue, mobility, ptr, ptr2
+
     def testIdentity(self):
         """! Test identify
         @param self this object
@@ -256,6 +261,9 @@ class TestSimulator(unittest.TestCase):
         c2 = csma.GetChannel()
 
         self.assertEqual(c1, c2)
+
+        # Delete Ptr<>'s on the python side to let C++ clean them
+        del csma, channel
 
     def testTypeId(self):
         """! Test type ID
