@@ -351,6 +351,7 @@ WifiPrimaryChannelsTest::DoSetup (void)
   WifiMacHelper mac;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (Ssid ("non-existent-ssid")),
+	       "MaxMissedBeacons", UintegerValue (20),
                "WaitBeaconTimeout", TimeValue (MicroSeconds (102400))); // same as BeaconInterval
 
   TupleValue<UintegerValue, UintegerValue, EnumValue, UintegerValue> channelValue;
