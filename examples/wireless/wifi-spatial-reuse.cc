@@ -278,7 +278,6 @@ main (int argc, char *argv[])
   packetSocket.Install (wifiApNodes);
   packetSocket.Install (wifiStaNodes);
   ApplicationContainer apps;
-  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
 
   //BSS 1
   {
