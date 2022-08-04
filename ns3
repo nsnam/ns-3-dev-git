@@ -233,7 +233,7 @@ def parse_args(argv):
     parser_run.add_argument('--lldb',
                             help='Change the default command template to run programs with lldb',
                             action="store_true", default=None)
-    parser_run.add_argument('--valgrind',
+    parser_run.add_argument('-g', '--valgrind',
                             help='Change the default command template to run programs with valgrind',
                             action="store_true", default=None)
     parser_run.add_argument('--vis', '--visualize',
@@ -1015,7 +1015,7 @@ def run_step(args, target_to_run, target_args):
 
         # running valgrind?
         if args.valgrind:
-            debugging_software.extend([shutil.which("valgrind"), "--leak-check=full"])
+            debugging_software.extend([shutil.which("valgrind"), "--leak-check=full", "--show-leak-kinds=all"])
 
         # running gdb?
         if args.gdb:
