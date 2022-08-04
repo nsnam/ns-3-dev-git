@@ -82,44 +82,26 @@ NS_LOG_COMPONENT_DEFINE ("InternetStackHelper");
 // callback per drop event, and the trace source will provide the interface
 // which we filter on in the trace sink.
 //
-// This has got to continue to work properly after the helper has been
-// destroyed; but must be cleaned up at the end of time to avoid leaks.
-// Global maps of protocol/interface pairs to file objects seems to fit the
-// bill.
+// The use of global maps allows this to continue to work properly even if
+// the helper is destroyed before the simulation completes.  If the maps
+// are populated, the reference counting smart pointers to
+// OutputStreamWrapper and PcapFileWrapper will cause those objects to be
+// destroyed at static object destruction time; i.e., the simulator does
+// not explicitly clear these maps before the program ends.
 //
-typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePairIpv4;  /**< Ipv4/interface pair */
+typedef std::pair<uint32_t, uint32_t> InterfacePairIpv4;  /**< Ipv4/interface pair */
 typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;  /**< Ipv4/interface and Pcap file wrapper container */
 typedef std::map<InterfacePairIpv4, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv4;  /**< Ipv4/interface and output stream container */
 
 static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; /**< A mapping of Ipv4/interface pairs to pcap files */
 static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
 
-typedef std::pair<Ptr<Ipv6>, uint32_t> InterfacePairIpv6;  /**< Ipv6/interface pair */
+typedef std::pair<uint32_t, uint32_t> InterfacePairIpv6;  /**< Ipv6/interface pair */
 typedef std::map<InterfacePairIpv6, Ptr<PcapFileWrapper> > InterfaceFileMapIpv6;  /**< Ipv6/interface and Pcap file wrapper container */
 typedef std::map<InterfacePairIpv6, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv6;  /**< Ipv6/interface and output stream container */
 
 static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
 static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
-
-static bool g_scheduledDestroyInterfaceStreamMaps = false; /**< A flag to indicate DestroyInterfaceStreamMaps was scheduled at the simulator destruction */
-
-// This function cleans up the references stored in the maps
-// at the end of the simulation.
-// This is necessary in case there are references allocated
-// by the Cppyy python bindings, which can be freed before
-// static destructors are called resulting in a segmentation
-// violation.
-/**
-   * \brief Clear interface to output stream maps
-   */
-void DestroyInterfaceStreamMaps()
-{
-  g_interfaceFileMapIpv4.clear();
-  g_interfaceStreamMapIpv4.clear();
-  g_interfaceFileMapIpv6.clear();
-  g_interfaceStreamMapIpv6.clear();
-  g_scheduledDestroyInterfaceStreamMaps = false;
-}
 
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
@@ -130,11 +112,6 @@ InternetStackHelper::InternetStackHelper ()
     m_ipv6NsRsJitterEnabled (true)
 
 {
-  if (!g_scheduledDestroyInterfaceStreamMaps)
-    {
-      Simulator::ScheduleDestroy(&DestroyInterfaceStreamMaps);
-      g_scheduledDestroyInterfaceStreamMaps = true;
-    }
   Initialize ();
 }
 
@@ -404,7 +381,7 @@ Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceFileMapIpv4.find (pair) == g_interfaceFileMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -422,7 +399,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv4> ipv4)
          i != g_interfaceFileMapIpv4.end ();
          ++i)
     {
-      if ((*i).first.first == ipv4)
+      if ((*i).first.first == ipv4->GetObject<Node> ()->GetId ())
         {
           return true;
         }
@@ -482,7 +459,7 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
                      "Unable to connect ipv4L3Protocol \"Rx\"");
     }
 
-  g_interfaceFileMapIpv4[std::make_pair (ipv4, interface)] = file;
+  g_interfaceFileMapIpv4[std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface)] = file;
 }
 
 /**
@@ -502,7 +479,7 @@ Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceFileMapIpv6.find (pair) == g_interfaceFileMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -520,7 +497,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv6> ipv6)
          i != g_interfaceFileMapIpv6.end ();
          ++i)
     {
-      if ((*i).first.first == ipv6)
+      if ((*i).first.first == ipv6->GetObject<Node> ()->GetId ())
         {
           return true;
         }
@@ -580,7 +557,7 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
                      "Unable to connect ipv6L3Protocol \"Rx\"");
     }
 
-  g_interfaceFileMapIpv6[std::make_pair (ipv6, interface)] = file;
+  g_interfaceFileMapIpv6[std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface)] = file;
 }
 
 /**
@@ -607,7 +584,7 @@ Ipv4L3ProtocolDropSinkWithoutContext (
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -633,13 +610,13 @@ Ipv4L3ProtocolTxSinkWithoutContext (
   Ptr<Ipv4> ipv4,
   uint32_t interface)
 {
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
+
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
       return;
     }
-
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
 }
 
@@ -657,7 +634,7 @@ Ipv4L3ProtocolRxSinkWithoutContext (
   Ptr<Ipv4> ipv4,
   uint32_t interface)
 {
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -693,7 +670,7 @@ Ipv4L3ProtocolDropSinkWithContext (
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -726,7 +703,7 @@ Ipv4L3ProtocolTxSinkWithContext (
   Ptr<Ipv4> ipv4,
   uint32_t interface)
 {
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -757,7 +734,7 @@ Ipv4L3ProtocolRxSinkWithContext (
   Ptr<Ipv4> ipv4,
   uint32_t interface)
 {
-  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -779,7 +756,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv4> ipv4)
          i != g_interfaceStreamMapIpv4.end ();
          ++i)
     {
-      if ((*i).first.first == ipv4)
+      if ((*i).first.first == ipv4->GetObject<Node> ()->GetId ())
         {
           return true;
         }
@@ -873,7 +850,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
                          "Unable to connect ipv4L3Protocol \"Rx\"");
         }
 
-      g_interfaceStreamMapIpv4[std::make_pair (ipv4, interface)] = theStream;
+      g_interfaceStreamMapIpv4[std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface)] = theStream;
       return;
     }
 
@@ -918,7 +895,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
       Config::Connect (oss.str (), MakeBoundCallback (&Ipv4L3ProtocolRxSinkWithContext, stream));
     }
 
-  g_interfaceStreamMapIpv4[std::make_pair (ipv4, interface)] = stream;
+  g_interfaceStreamMapIpv4[std::make_pair (ipv4->GetObject<Node> ()->GetId (), interface)] = stream;
 }
 
 /**
@@ -945,7 +922,7 @@ Ipv6L3ProtocolDropSinkWithoutContext (
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -971,7 +948,7 @@ Ipv6L3ProtocolTxSinkWithoutContext (
   Ptr<Ipv6> ipv6,
   uint32_t interface)
 {
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -995,7 +972,7 @@ Ipv6L3ProtocolRxSinkWithoutContext (
   Ptr<Ipv6> ipv6,
   uint32_t interface)
 {
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -1031,7 +1008,7 @@ Ipv6L3ProtocolDropSinkWithContext (
   // We need to filter this to only report interfaces for which the user
   // has expressed interest.
   //
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -1064,7 +1041,7 @@ Ipv6L3ProtocolTxSinkWithContext (
   Ptr<Ipv6> ipv6,
   uint32_t interface)
 {
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -1095,7 +1072,7 @@ Ipv6L3ProtocolRxSinkWithContext (
   Ptr<Ipv6> ipv6,
   uint32_t interface)
 {
-  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  InterfacePairIpv6 pair = std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface);
   if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
@@ -1117,7 +1094,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv6> ipv6)
          i != g_interfaceStreamMapIpv6.end ();
          ++i)
     {
-      if ((*i).first.first == ipv6)
+      if ((*i).first.first == ipv6->GetObject<Node> ()->GetId ())
         {
           return true;
         }
@@ -1203,7 +1180,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
                          "Unable to connect ipv6L3Protocol \"Rx\"");
         }
 
-      g_interfaceStreamMapIpv6[std::make_pair (ipv6, interface)] = theStream;
+      g_interfaceStreamMapIpv6[std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface)] = theStream;
       return;
     }
 
@@ -1235,7 +1212,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
       Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolRxSinkWithContext, stream));
     }
 
-  g_interfaceStreamMapIpv6[std::make_pair (ipv6, interface)] = stream;
+  g_interfaceStreamMapIpv6[std::make_pair (ipv6->GetObject<Node> ()->GetId (), interface)] = stream;
 }
 
 } // namespace ns3
