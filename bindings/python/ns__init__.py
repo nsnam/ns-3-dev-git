@@ -3,43 +3,31 @@ import os.path
 import sys
 import re
 
-def find_ns3_directory():
+
+def find_ns3_lock():
     # Get the absolute path to this file
     path_to_this_init_file = os.path.dirname(os.path.abspath(__file__))
     path_to_lock = path_to_this_init_file
     lock_file = (".lock-ns3_%s_build" % sys.platform)
 
-    # Go back and scan each folder until the c4che folder is found
-    found = False
-    while not found:
-        for f in os.listdir(path_to_lock):
-            # Skip files
-            if not os.path.isfile(f):
-                continue
-            # Search for lock
-            if lock_file in f:
-                path_to_lock += os.sep + f
-                found = True
-                break
-        if found:
-            break
-
-        # Move to the directory above if we haven't found it yet
-        old_path = path_to_lock
+    # Move upwards until we reach the directory with the ns3 script
+    while "ns3" not in os.listdir(path_to_lock):
         path_to_lock = os.path.dirname(path_to_lock)
 
-        # We give up if we can't move to the directory above
-        if path_to_lock == old_path:
-            raise Exception("ns-3 lock file firectory was not found.\n"
-                            "Are you sure %s is inside your ns-3 directory?" % path_to_this_init_file)
+    # We should be now at the directory that contains a lock if the project is configured
+    if lock_file in os.listdir(path_to_lock):
+        path_to_lock += os.sep + lock_file
+    else:
+        raise Exception("ns-3 lock file was not found.\n"
+                        "Are you sure %s is inside your ns-3 directory?" % path_to_this_init_file)
     return path_to_lock
 
 
-def load_modules(ns3_directory):
-    # Load NS3_ENABLED_MODULES from _cache.py file inside the build directory
+def load_modules():
+    # Load NS3_ENABLED_MODULES from the lock file inside the build directory
     values = {}
 
-    exec(open(find_ns3_directory()).read(), {}, values)
+    exec(open(find_ns3_lock()).read(), {}, values)
     suffix = "-" + values["BUILD_PROFILE"] if values["BUILD_PROFILE"] != "release" else ""
     required_modules = [module.replace("ns3-", "") for module in values["NS3_ENABLED_MODULES"]]
     ns3_output_directory = values["out_dir"]
@@ -81,7 +69,7 @@ def load_modules(ns3_directory):
     for module in required_modules:
         setattr(cppyy.gbl.ns3, module.replace("-", "_"), cppyy.gbl.ns3)
 
-    # Setup a few tricks
+    # Set up a few tricks
     cppyy.cppdef("""
         using namespace ns3;
         bool Time_ge(Time& a, Time& b){ return a >= b;}
@@ -104,10 +92,11 @@ def load_modules(ns3_directory):
     #
     # Search for NodeList::Add (this)
     cppyy.gbl.ns3.__nodes_pending_deletion = []
-    def Nodedel(self: cppyy.gbl.ns3.Node) -> None:
+
+    def Node_del(self: cppyy.gbl.ns3.Node) -> None:
         cppyy.gbl.ns3.__nodes_pending_deletion.append(self)
         return None
-    cppyy.gbl.ns3.Node.__del__ = Nodedel
+    cppyy.gbl.ns3.Node.__del__ = Node_del
 
     # Define ns.cppyy.gbl.addressFromIpv4Address and others
     cppyy.cppdef("""using namespace ns3;
@@ -127,13 +116,7 @@ def load_modules(ns3_directory):
     cppyy.cppdef(
         """using namespace ns3; Callback<bool, std::string> null_callback(){ return MakeNullCallback<bool, std::string>(); };""")
     setattr(cppyy.gbl.ns3, "null_callback", cppyy.gbl.null_callback)
-    #cppyy.cppdef(
-    #    """using namespace ns3; template <typename T> Ptr<T> getAggregatedObject(Ptr<Object> parentPtr, T param))
-    #       {
-    #            return parentPtr->GetObject<T>();
-    #       }
-    #    """
-    #)
+
     cppyy.cppdef("""
         using namespace ns3;
         std::tuple<bool, TypeId> LookupByNameFailSafe(std::string name)
@@ -144,6 +127,7 @@ def load_modules(ns3_directory):
         }
     """)
     setattr(cppyy.gbl.ns3, "LookupByNameFailSafe", cppyy.gbl.LookupByNameFailSafe)
+
     def CreateObject(className):
         try:
             try:
@@ -214,5 +198,5 @@ def load_modules(ns3_directory):
 
 
 # Load all modules and make them available via a built-in
-ns = load_modules(find_ns3_directory())  # can be imported via 'from ns import ns'
+ns = load_modules()  # can be imported via 'from ns import ns'
 builtins.__dict__['ns'] = ns  # or be made widely available with 'from ns import *'
