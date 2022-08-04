@@ -49,7 +49,6 @@ public:
    * \param ecnCapable ECN capable flag
    */
   PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
-  virtual ~PieQueueDiscTestItem ();
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   PieQueueDiscTestItem () = delete;
@@ -83,10 +82,6 @@ private:
 
 PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable)
   : QueueDiscItem (p, addr, 0), m_ecnCapablePacket (ecnCapable)
-{
-}
-
-PieQueueDiscTestItem::~PieQueueDiscTestItem ()
 {
 }
 

@@ -684,9 +684,14 @@ Ptr<T>::Ptr (T *ptr, bool ref)
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o)
-  : m_ptr (PeekPointer (o))
+  : m_ptr (nullptr)
 {
-  Acquire ();
+  T* ptr = PeekPointer (o);
+  if (ptr != 0)
+    {
+       m_ptr = ptr;
+       Acquire ();
+    }
 }
 template <typename T>
 template <typename U>

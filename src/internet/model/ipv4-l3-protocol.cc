@@ -1575,11 +1575,6 @@ Ipv4L3Protocol::Fragments::Fragments ()
   NS_LOG_FUNCTION (this);
 }
 
-Ipv4L3Protocol::Fragments::~Fragments ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
 void
 Ipv4L3Protocol::Fragments::AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset, bool moreFragment)
 {

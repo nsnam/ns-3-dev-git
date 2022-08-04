@@ -47,7 +47,6 @@ public:
    * \param ecnCapable ECN capable flag
    */
   RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
-  virtual ~RedQueueDiscTestItem ();
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   RedQueueDiscTestItem () = delete;
@@ -64,10 +63,6 @@ private:
 RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable)
   : QueueDiscItem (p, addr, 0),
     m_ecnCapablePacket (ecnCapable)
-{
-}
-
-RedQueueDiscTestItem::~RedQueueDiscTestItem ()
 {
 }
 

@@ -443,8 +443,6 @@ public:
   FunctorCallbackImpl (T const &functor)
     : m_functor (functor)
   {}
-  virtual ~FunctorCallbackImpl ()
-  {}
   /**
    * Functor with varying numbers of arguments
    * @{
@@ -606,8 +604,6 @@ public:
    */
   MemPtrCallbackImpl (OBJ_PTR const&objPtr, MEM_PTR memPtr)
     : m_objPtr (objPtr), m_memPtr (memPtr)
-  {}
-  virtual ~MemPtrCallbackImpl ()
   {}
   /**
    * Functor with varying numbers of arguments
@@ -777,8 +773,6 @@ public:
   BoundFunctorCallbackImpl (FUNCTOR functor, ARG a)
     : m_functor (functor), m_a (a)
   {}
-  virtual ~BoundFunctorCallbackImpl ()
-  {}
   /**
    * Functor with varying numbers of arguments
    * @{
@@ -935,8 +929,6 @@ public:
   TwoBoundFunctorCallbackImpl (FUNCTOR functor, ARG1 arg1, ARG2 arg2)
     : m_functor (functor), m_a1 (arg1), m_a2 (arg2)
   {}
-  virtual ~TwoBoundFunctorCallbackImpl ()
-  {}
   /**
    * Functor with varying numbers of arguments
    * @{
@@ -1082,8 +1074,6 @@ public:
   template <typename FUNCTOR, typename ARG1, typename ARG2, typename ARG3>
   ThreeBoundFunctorCallbackImpl (FUNCTOR functor, ARG1 arg1, ARG2 arg2, ARG3 arg3)
     : m_functor (functor), m_a1 (arg1), m_a2 (arg2), m_a3 (arg3)
-  {}
-  virtual ~ThreeBoundFunctorCallbackImpl ()
   {}
   /**
    * Functor with varying numbers of arguments

@@ -531,11 +531,6 @@ private:
     Fragments ();
 
     /**
-     * \brief Destructor.
-     */
-    ~Fragments ();
-
-    /**
      * \brief Add a fragment.
      * \param fragment the fragment
      * \param fragmentOffset the offset of the fragment

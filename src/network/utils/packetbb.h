@@ -1127,7 +1127,6 @@ private:
 class PbbMessageIpv4 : public PbbMessage {
 public:
   PbbMessageIpv4 ();
-  virtual ~PbbMessageIpv4 ();
 
 protected:
   /**
@@ -1155,7 +1154,6 @@ protected:
 class PbbMessageIpv6 : public PbbMessage {
 public:
   PbbMessageIpv6 ();
-  virtual ~PbbMessageIpv6 ();
 
 protected:
   /**

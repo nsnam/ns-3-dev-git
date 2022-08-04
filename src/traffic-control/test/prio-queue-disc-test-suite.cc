@@ -50,7 +50,6 @@ public:
    * \param priority the packet priority
    */
   PrioQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint8_t priority);
-  virtual ~PrioQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark (void);
 };
@@ -61,10 +60,6 @@ PrioQueueDiscTestItem::PrioQueueDiscTestItem (Ptr<Packet> p, const Address & add
   SocketPriorityTag priorityTag;
   priorityTag.SetPriority (priority);
   p->ReplacePacketTag (priorityTag);
-}
-
-PrioQueueDiscTestItem::~PrioQueueDiscTestItem ()
-{
 }
 
 void

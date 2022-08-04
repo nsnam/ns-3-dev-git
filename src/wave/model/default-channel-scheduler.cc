@@ -42,9 +42,6 @@ public:
     : m_scheduler (scheduler)
   {
   }
-  virtual ~CoordinationListener ()
-  {
-  }
   virtual void NotifyCchSlotStart (Time duration)
   {
     m_scheduler->NotifyCchSlotStart (duration);

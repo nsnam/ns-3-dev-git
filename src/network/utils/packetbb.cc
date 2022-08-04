@@ -1728,11 +1728,6 @@ PbbMessageIpv4::PbbMessageIpv4 ()
   NS_LOG_FUNCTION (this);
 }
 
-PbbMessageIpv4::~PbbMessageIpv4 ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
 PbbAddressLength
 PbbMessageIpv4::GetAddressLength (void) const
 {
@@ -1780,11 +1775,6 @@ PbbMessageIpv4::AddressBlockDeserialize (Buffer::Iterator &start) const
 /* End PbbMessageIpv4 Class */
 
 PbbMessageIpv6::PbbMessageIpv6 ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-PbbMessageIpv6::~PbbMessageIpv6 ()
 {
   NS_LOG_FUNCTION (this);
 }
