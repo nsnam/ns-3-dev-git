@@ -1,4 +1,6 @@
-if(NOT ${ENABLE_EMU})
+if(NOT
+   ${ENABLE_EMU}
+)
   message(
     ${HIGHLIGHTED_STATUS}
     "tap-bridge requires emulation feature"

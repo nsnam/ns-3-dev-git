@@ -756,12 +756,14 @@ macro(process_options)
         )
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
-
-        set(destination_dir ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns)
-        configure_file(
-          bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
-        )
       endif()
+
+      # Copy the bindings file if we have python, which will prevent python
+      # scripts from failing due to the missing ns package
+      set(destination_dir ${CMAKE_OUTPUT_DIRECTORY}/bindings/python/ns)
+      configure_file(
+        bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
+      )
     endif()
   endif()
 

@@ -33,7 +33,13 @@ def load_modules():
     ns3_output_directory = values["out_dir"]
     libraries = {x.split(".")[0]: x for x in os.listdir(os.path.join(ns3_output_directory, "lib"))}
 
-    import cppyy
+    # Try to import Cppyy and warn the user in case it is not found
+    try:
+        import cppyy
+    except ModuleNotFoundError:
+        print("Cppyy is required by the ns-3 python bindings.")
+        print("You can install it with the following command: pip install cppyy")
+        exit(-1)
 
     # Enable full logs for debugging
     # cppyy.set_debug(True)

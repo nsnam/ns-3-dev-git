@@ -291,4 +291,3 @@ build_example(
   SOURCE_FILES wifi-ofdm-eht-validation.cc
   LIBRARIES_TO_LINK ${libwifi}
 )
-
