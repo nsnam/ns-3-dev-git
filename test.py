@@ -1594,52 +1594,51 @@ def run_tests():
     #
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "pyexample":
-            if ENABLE_EXAMPLES:
-                for test, do_run in python_tests:
-                    # Remove any arguments and directory names from test.
-                    test_name = test.split(' ', 1)[0]
-                    test_name = os.path.basename(test_name)
+            for test, do_run in python_tests:
+                # Remove any arguments and directory names from test.
+                test_name = test.split(' ', 1)[0]
+                test_name = os.path.basename(test_name)
 
-                    # Don't try to run this example if it isn't runnable.
-                    if test_name in ns3_runnable_scripts:
-                        if eval(do_run):
-                            job = Job()
-                            job.set_is_example(False)
-                            job.set_is_pyexample(True)
-                            job.set_display_name(test)
-                            job.set_tmp_file_name("")
-                            job.set_cwd(testpy_output_dir)
-                            job.set_basedir(os.getcwd())
-                            job.set_tempdir(testpy_output_dir)
-                            job.set_shell_command(test)
-                            job.set_build_path("")
+                # Don't try to run this example if it isn't runnable.
+                if test_name in ns3_runnable_scripts:
+                    if eval(do_run):
+                        job = Job()
+                        job.set_is_example(False)
+                        job.set_is_pyexample(True)
+                        job.set_display_name(test)
+                        job.set_tmp_file_name("")
+                        job.set_cwd(testpy_output_dir)
+                        job.set_basedir(os.getcwd())
+                        job.set_tempdir(testpy_output_dir)
+                        job.set_shell_command(test)
+                        job.set_build_path("")
 
-                            #
-                            # Python programs and valgrind do not work and play
-                            # well together, so we skip them under valgrind.
-                            # We go through the trouble of doing all of this
-                            # work to report the skipped tests in a consistent
-                            # way through the output formatter.
-                            #
-                            if options.valgrind:
-                                job.set_is_skip(True)
-                                job.set_skip_reason("skip in valgrind runs")
+                        #
+                        # Python programs and valgrind do not work and play
+                        # well together, so we skip them under valgrind.
+                        # We go through the trouble of doing all of this
+                        # work to report the skipped tests in a consistent
+                        # way through the output formatter.
+                        #
+                        if options.valgrind:
+                            job.set_is_skip(True)
+                            job.set_skip_reason("skip in valgrind runs")
 
-                            #
-                            # The user can disable python bindings, so we need
-                            # to pay attention to that and give some feedback
-                            # that we're not testing them
-                            #
-                            if not ENABLE_PYTHON_BINDINGS:
-                                job.set_is_skip(True)
-                                job.set_skip_reason("requires Python bindings")
+                        #
+                        # The user can disable python bindings, so we need
+                        # to pay attention to that and give some feedback
+                        # that we're not testing them
+                        #
+                        if not ENABLE_PYTHON_BINDINGS:
+                            job.set_is_skip(True)
+                            job.set_skip_reason("requires Python bindings")
 
-                            if options.verbose:
-                                print("Queue %s" % test)
+                        if options.verbose:
+                            print("Queue %s" % test)
 
-                            input_queue.put(job)
-                            jobs = jobs + 1
-                            total_tests = total_tests + 1
+                        input_queue.put(job)
+                        jobs = jobs + 1
+                        total_tests = total_tests + 1
 
     elif len(options.pyexample):
         # Don't try to run this example if it isn't runnable.
