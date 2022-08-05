@@ -1093,7 +1093,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         backup_files = ["scratch/.main.cc"]  # hidden files should be ignored
 
         # Create test scratch files
-        for path in test_files+backup_files:
+        for path in test_files + backup_files:
             filepath = os.path.join(ns3_path, path)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "w") as f:
@@ -1110,7 +1110,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 0)
 
         # Try to build them with ns3 and cmake
-        for path in test_files+backup_files:
+        for path in test_files + backup_files:
             path = path.replace(".cc", "")
             return_code1, stdout1, stderr1 = run_program("cmake", "--build . --target %s -j %d"
                                                          % (path.replace("/", "_"), num_threads),
@@ -1133,7 +1133,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 self.assertEqual(return_code, 1)
 
         # Delete the test files and reconfigure to clean them up
-        for path in test_files+backup_files:
+        for path in test_files + backup_files:
             source_absolute_path = os.path.join(ns3_path, path)
             os.remove(source_absolute_path)
             if "empty" in path or ".main" in path:
@@ -1771,7 +1771,8 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         @return None
         """
         # First enable examples and static build
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --disable-gtk --enable-static")
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"Unix Makefiles\" --enable-examples --disable-gtk --enable-static")
 
         # If configuration passes, we are half way done
         self.assertEqual(return_code, 0)
@@ -2068,7 +2069,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # If we are on Windows, these permissions mean absolutely nothing,
         # and on Fuse builds they might not make any sense, so we need to skip before failing
         likely_fuse_mount = ((prev_fstat.st_mode & stat.S_ISUID) == (fstat.st_mode & stat.S_ISUID)) and \
-                            prev_fstat.st_uid == 0 # noqa
+                            prev_fstat.st_uid == 0  # noqa
 
         if sys.platform == "win32" or likely_fuse_mount:
             self.skipTest("Windows or likely a FUSE mount")
@@ -2277,7 +2278,7 @@ class NS3QualityControlTestCase(unittest.TestCase):
                         continue
 
                     # Search for new unique URLs and add keep track of their associated source file
-                    for url in set(urls)-unique_urls-whitelisted_urls:
+                    for url in set(urls) - unique_urls - whitelisted_urls:
                         unique_urls.add(url)
                         files_and_urls.add((filepath, url))
 
@@ -2287,7 +2288,8 @@ class NS3QualityControlTestCase(unittest.TestCase):
         validate_url = URLValidator()
 
         # User agent string to make ACM and Elsevier let us check if links to papers are working
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
         def test_file_url(args):
             filepath, url = args
@@ -2357,7 +2359,8 @@ class NS3QualityControlTestCase(unittest.TestCase):
         Test if all tests can be executed without hitting major memory bugs
         @return None
         """
-        return_code, stdout, stderr = run_ns3("configure --enable-tests --enable-examples --enable-sanitizers -d optimized")
+        return_code, stdout, stderr = run_ns3(
+            "configure --enable-tests --enable-examples --enable-sanitizers -d optimized")
         self.assertEqual(return_code, 0)
 
         test_return_code, stdout, stderr = run_program("test.py", "", python=True)
@@ -2365,6 +2368,38 @@ class NS3QualityControlTestCase(unittest.TestCase):
         return_code, stdout, stderr = run_ns3("clean")
         self.assertEqual(return_code, 0)
         self.assertEqual(test_return_code, 0)
+
+    def test_03_CheckImageBrightness(self):
+        """!
+        Check if images in the docs are above a brightness threshold.
+        This should prevent screenshots with dark UI themes.
+        @return None
+        """
+        if shutil.which("convert") is None:
+            self.skipTest("Imagemagick was not found")
+
+        from pathlib import Path
+
+        # Scan for images
+        image_extensions = ["png", "jpg"]
+        images = []
+        for extension in image_extensions:
+            images += list(Path("./doc").glob("**/figures/*.{ext}".format(ext=extension)))
+            images += list(Path("./doc").glob("**/figures/**/*.{ext}".format(ext=extension)))
+
+        # Get the brightness of an image on a scale of 0-100%
+        imagemagick_get_image_brightness = \
+            'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
+
+        # We could invert colors of target image to increase its brightness
+        # convert source.png -channel RGB -negate target.png
+        brightness_threshold = 50
+        for image in images:
+            brightness = subprocess.check_output(imagemagick_get_image_brightness.format(image=image).split())
+            brightness = float(brightness.decode().strip("'\""))
+            self.assertGreater(brightness, brightness_threshold,
+                               "Image darker than threshold (%d < %d): %s" % (brightness, brightness_threshold, image)
+                               )
 
 
 def main():
