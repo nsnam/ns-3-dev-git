@@ -438,12 +438,12 @@ class NS3StyleTestCase(unittest.TestCase):
         @return None
         """
 
-        for required_program in ["bash", "ls", "xargs", "uncrustify"]:
+        for required_program in ["bash", "find", "xargs", "uncrustify"]:
             if shutil.which(required_program) is None:
                 self.skipTest("%s was not found" % required_program)
 
         # Run in-place uncrustify for each *.cc and *.h file
-        uncrustify_cmd = """-c "ls ./**/*.cc ./**/**/*.cc ./**/*.h ./**/**/*.h | xargs ./utils/check-style.py -i -f" """
+        uncrustify_cmd = """-c "find . -type f -name '*.[cc|h]' | xargs -I{} ./utils/check-style.py -i -f {}" """
         return_code, stdout, stderr = run_program("bash", uncrustify_cmd)
         self.assertEqual(return_code, 0)
 
