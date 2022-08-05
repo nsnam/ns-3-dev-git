@@ -171,11 +171,11 @@ OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
       if (GetHtSupported () || GetVhtSupported ())
         {
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (to);
-          GetWifiRemoteStationManager ()->AddStationHtCapabilities (to, GetHtCapabilities());
+          GetWifiRemoteStationManager ()->AddStationHtCapabilities (to, GetHtCapabilities(SINGLE_LINK_OP_ID));
         }
       if (GetVhtSupported ())
         {
-          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (to, GetVhtCapabilities());
+          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (to, GetVhtCapabilities(SINGLE_LINK_OP_ID));
         }
       GetWifiRemoteStationManager ()->AddAllSupportedModes (to);
       GetWifiRemoteStationManager ()->RecordDisassociated (to);
@@ -263,11 +263,11 @@ OcbWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
       if (GetHtSupported () || GetVhtSupported ())
         {
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (from);
-          GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, GetHtCapabilities());
+          GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, GetHtCapabilities(SINGLE_LINK_OP_ID));
         }
       if (GetVhtSupported ())
         {
-          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, GetVhtCapabilities());
+          GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, GetVhtCapabilities(SINGLE_LINK_OP_ID));
         }
       GetWifiRemoteStationManager ()->AddAllSupportedModes (from);
       GetWifiRemoteStationManager ()->RecordDisassociated (from);

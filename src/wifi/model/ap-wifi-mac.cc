@@ -868,17 +868,17 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
   if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
-      probe.SetHtCapabilities (GetHtCapabilities ());
+      probe.SetHtCapabilities (GetHtCapabilities (linkId));
       probe.SetHtOperation (GetHtOperation (linkId));
     }
   if (GetVhtSupported ())
     {
-      probe.SetVhtCapabilities (GetVhtCapabilities ());
+      probe.SetVhtCapabilities (GetVhtCapabilities (linkId));
       probe.SetVhtOperation (GetVhtOperation (linkId));
     }
   if (GetHeSupported ())
     {
-      probe.SetHeCapabilities (GetHeCapabilities ());
+      probe.SetHeCapabilities (GetHeCapabilities (linkId));
       probe.SetHeOperation (GetHeOperation (linkId));
       if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
         {
@@ -887,7 +887,7 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
     }
   if (GetEhtSupported ())
     {
-      probe.SetEhtCapabilities (GetEhtCapabilities ());
+      probe.SetEhtCapabilities (GetEhtCapabilities (linkId));
 
       if (GetNLinks () > 1)
         {
@@ -967,17 +967,17 @@ ApWifiMac::GetAssocResp (Mac48Address to, uint8_t linkId)
   if (GetHtSupported ())
     {
       assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
-      assoc.SetHtCapabilities (GetHtCapabilities ());
+      assoc.SetHtCapabilities (GetHtCapabilities (linkId));
       assoc.SetHtOperation (GetHtOperation (linkId));
     }
   if (GetVhtSupported ())
     {
-      assoc.SetVhtCapabilities (GetVhtCapabilities ());
+      assoc.SetVhtCapabilities (GetVhtCapabilities (linkId));
       assoc.SetVhtOperation (GetVhtOperation (linkId));
     }
   if (GetHeSupported ())
     {
-      assoc.SetHeCapabilities (GetHeCapabilities ());
+      assoc.SetHeCapabilities (GetHeCapabilities (linkId));
       assoc.SetHeOperation (GetHeOperation (linkId));
       if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
         {
@@ -986,7 +986,7 @@ ApWifiMac::GetAssocResp (Mac48Address to, uint8_t linkId)
     }
   if (GetEhtSupported ())
     {
-      assoc.SetEhtCapabilities (GetEhtCapabilities ());
+      assoc.SetEhtCapabilities (GetEhtCapabilities (linkId));
     }
   return assoc;
 }
@@ -1231,17 +1231,17 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
   if (GetHtSupported ())
     {
       beacon.SetExtendedCapabilities (GetExtendedCapabilities ());
-      beacon.SetHtCapabilities (GetHtCapabilities ());
+      beacon.SetHtCapabilities (GetHtCapabilities (linkId));
       beacon.SetHtOperation (GetHtOperation (linkId));
     }
   if (GetVhtSupported ())
     {
-      beacon.SetVhtCapabilities (GetVhtCapabilities ());
+      beacon.SetVhtCapabilities (GetVhtCapabilities (linkId));
       beacon.SetVhtOperation (GetVhtOperation (linkId));
     }
   if (GetHeSupported ())
     {
-      beacon.SetHeCapabilities (GetHeCapabilities ());
+      beacon.SetHeCapabilities (GetHeCapabilities (linkId));
       beacon.SetHeOperation (GetHeOperation (linkId));
       if (auto muEdcaParameterSet = GetMuEdcaParameterSet (); muEdcaParameterSet.has_value ())
         {
@@ -1250,7 +1250,7 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
     }
   if (GetEhtSupported ())
     {
-      beacon.SetEhtCapabilities (GetEhtCapabilities ());
+      beacon.SetEhtCapabilities (GetEhtCapabilities (linkId));
 
       if (GetNLinks () > 1)
         {

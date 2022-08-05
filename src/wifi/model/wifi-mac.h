@@ -416,29 +416,33 @@ public:
    */
   ExtendedCapabilities GetExtendedCapabilities (void) const;
   /**
-   * Return the HT capabilities of the device.
+   * Return the HT capabilities of the device for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the HT capabilities that we support
    */
-  HtCapabilities GetHtCapabilities (void) const;
+  HtCapabilities GetHtCapabilities (uint8_t linkId) const;
   /**
-   * Return the VHT capabilities of the device.
+   * Return the VHT capabilities of the device for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the VHT capabilities that we support
    */
-  VhtCapabilities GetVhtCapabilities (void) const;
+  VhtCapabilities GetVhtCapabilities (uint8_t linkId) const;
   /**
-   * Return the HE capabilities of the device.
+   * Return the HE capabilities of the device for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the HE capabilities that we support
    */
-  HeCapabilities GetHeCapabilities (void) const;
+  HeCapabilities GetHeCapabilities (uint8_t linkId) const;
   /**
-   * Return the EHT capabilities of the device.
+   * Return the EHT capabilities of the device for the given link.
    *
+   * \param linkId the ID of the given link
    * \return the EHT capabilities that we support
    */
-  EhtCapabilities GetEhtCapabilities (void) const;
+  EhtCapabilities GetEhtCapabilities (uint8_t linkId) const;
 
   /**
    * Return whether the device supports QoS.

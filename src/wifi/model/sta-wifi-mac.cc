@@ -232,19 +232,19 @@ StaWifiMac::SendProbeRequest (void)
   if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
-      probe.SetHtCapabilities (GetHtCapabilities ());
+      probe.SetHtCapabilities (GetHtCapabilities (SINGLE_LINK_OP_ID));
     }
   if (GetVhtSupported ())
     {
-      probe.SetVhtCapabilities (GetVhtCapabilities ());
+      probe.SetVhtCapabilities (GetVhtCapabilities (SINGLE_LINK_OP_ID));
     }
   if (GetHeSupported ())
     {
-      probe.SetHeCapabilities (GetHeCapabilities ());
+      probe.SetHeCapabilities (GetHeCapabilities (SINGLE_LINK_OP_ID));
     }
   if (GetEhtSupported ())
     {
-      probe.SetEhtCapabilities (GetEhtCapabilities ());
+      probe.SetEhtCapabilities (GetEhtCapabilities (SINGLE_LINK_OP_ID));
     }
   packet->AddHeader (probe);
 
@@ -294,19 +294,19 @@ StaWifiMac::GetAssociationRequest (bool isReassoc, uint8_t linkId) const
       if (GetHtSupported ())
         {
           frame.SetExtendedCapabilities (GetExtendedCapabilities ());
-          frame.SetHtCapabilities (GetHtCapabilities ());
+          frame.SetHtCapabilities (GetHtCapabilities (linkId));
         }
       if (GetVhtSupported ())
         {
-          frame.SetVhtCapabilities (GetVhtCapabilities ());
+          frame.SetVhtCapabilities (GetVhtCapabilities (linkId));
         }
       if (GetHeSupported ())
         {
-          frame.SetHeCapabilities (GetHeCapabilities ());
+          frame.SetHeCapabilities (GetHeCapabilities (linkId));
         }
       if (GetEhtSupported ())
         {
-          frame.SetEhtCapabilities (GetEhtCapabilities ());
+          frame.SetEhtCapabilities (GetEhtCapabilities (linkId));
         }
     };
 
