@@ -208,9 +208,10 @@ TestMultiUserScheduler::SelectTxFormat (void)
               return SU_TX;
             }
 
-          Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
-                                                                                 m_availableTime,
-                                                                                 m_initialFrame);
+          Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (SINGLE_LINK_OP_ID,
+                                                                         peeked, m_txParams,
+                                                                         m_availableTime,
+                                                                         m_initialFrame);
           if (!mpdu)
             {
               NS_LOG_DEBUG ("Not enough time to send frames to all the stations");

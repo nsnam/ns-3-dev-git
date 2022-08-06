@@ -437,11 +437,11 @@ QosTxop::PeekNextMpdu (uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<
 }
 
 Ptr<WifiMpdu>
-QosTxop::GetNextMpdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
-                      Time availableTime, bool initialFrame)
+QosTxop::GetNextMpdu (uint8_t linkId, Ptr<WifiMpdu> peekedItem,
+                      WifiTxParameters& txParams, Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem);
-  NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime << initialFrame);
+  NS_LOG_FUNCTION (this << +linkId << *peekedItem << &txParams << availableTime << initialFrame);
 
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
 
@@ -451,7 +451,7 @@ QosTxop::GetNextMpdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
   Time actualAvailableTime = (initialFrame && txParams.GetSize (recipient) == 0
                               ? Time::Min () : availableTime);
 
-  auto qosFem = StaticCast<QosFrameExchangeManager> (m_mac->GetFrameExchangeManager ());
+  auto qosFem = StaticCast<QosFrameExchangeManager> (m_mac->GetFrameExchangeManager (linkId));
   if (!qosFem->TryAddMpdu (peekedItem, txParams, actualAvailableTime))
     {
       return nullptr;

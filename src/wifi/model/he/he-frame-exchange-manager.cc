@@ -1315,7 +1315,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
       if (Ptr<WifiMpdu> mpdu;
           (mpdu = edca->PeekNextMpdu (m_linkId, tid, hdr.GetAddr2 ())))
         {
-          Ptr<WifiMpdu> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false);
+          Ptr<WifiMpdu> item = edca->GetNextMpdu (m_linkId, mpdu, txParams, ppduDuration, false);
 
           if (item)
             {

@@ -278,7 +278,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
   WifiTxParameters txParams;
   txParams.m_txVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
 
-  Ptr<WifiMpdu> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
+  Ptr<WifiMpdu> item = edca->GetNextMpdu (m_linkId, mpdu, txParams, availableTime, initialFrame);
 
   if (!item)
     {

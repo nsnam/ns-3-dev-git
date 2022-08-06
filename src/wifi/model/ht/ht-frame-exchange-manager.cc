@@ -477,7 +477,7 @@ HtFrameExchangeManager::SendDataFrame (Ptr<WifiMpdu> peekedItem,
   Ptr<QosTxop> edca = m_mac->GetQosTxop (peekedItem->GetHeader ().GetQosTid ());
   WifiTxParameters txParams;
   txParams.m_txVector = GetWifiRemoteStationManager ()->GetDataTxVector (peekedItem->GetHeader (), m_allowedWidth);
-  Ptr<WifiMpdu> mpdu = edca->GetNextMpdu (peekedItem, txParams, availableTime, initialFrame);
+  Ptr<WifiMpdu> mpdu = edca->GetNextMpdu (m_linkId, peekedItem, txParams, availableTime, initialFrame);
 
   if (!mpdu)
     {

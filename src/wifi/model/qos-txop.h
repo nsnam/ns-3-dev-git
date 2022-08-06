@@ -306,8 +306,8 @@ public:
                                       Mac48Address recipient = Mac48Address::GetBroadcast (),
                                       Ptr<WifiMpdu> item = nullptr);
   /**
-   * Prepare the frame to transmit starting from the MPDU that has been previously
-   * peeked by calling PeekNextMpdu. A frame is only returned if it meets the
+   * Prepare the frame to transmit on the given link starting from the MPDU that has been
+   * previously peeked by calling PeekNextMpdu. A frame is only returned if it meets the
    * constraint on the maximum A-MPDU size (by assuming that the frame has to be
    * aggregated to an existing A-MPDU as specified by the TX parameters) and its
    * transmission time does not exceed the given PPDU duration limit (if distinct from
@@ -315,6 +315,7 @@ public:
    * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
    * above) and assign a sequence number to the dequeued frame.
    *
+   * \param linkId the ID of the given link
    * \param peekedItem the peeked frame.
    * \param txParams the TX parameters for the frame
    * \param availableTime the time available for the transmission of the frame
@@ -323,8 +324,8 @@ public:
    * \param initialFrame true if the frame is the initial PPDU of a TXOP
    * \return the frame to transmit or a null pointer if no frame meets the time constraints
    */
-  Ptr<WifiMpdu> GetNextMpdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
-                                     Time availableTime, bool initialFrame);
+  Ptr<WifiMpdu> GetNextMpdu (uint8_t linkId, Ptr<WifiMpdu> peekedItem,
+                             WifiTxParameters& txParams, Time availableTime, bool initialFrame);
 
   /**
    * Assign a sequence number to the given MPDU, if it is not a fragment

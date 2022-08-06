@@ -236,7 +236,7 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams,
               // and duration limit are met. Note that the returned MPDU differs from
               // the peeked MPDU if A-MSDU aggregation is enabled.
               NS_LOG_DEBUG ("Trying to aggregate another MPDU");
-              nextMpdu = qosTxop->GetNextMpdu (peekedMpdu, txParams, availableTime, false);
+              nextMpdu = qosTxop->GetNextMpdu (SINGLE_LINK_OP_ID, peekedMpdu, txParams, availableTime, false);
             }
         }
 
