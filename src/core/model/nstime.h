@@ -25,6 +25,7 @@
 #include "attribute-helper.h"
 #include "event-id.h"
 #include "int64x64.h"
+#include "type-name.h"
 #include <stdint.h>
 #include <limits>
 #include <cmath>
@@ -1375,6 +1376,14 @@ private:
   friend std::ostream & operator << (std::ostream & os, const TimeWithUnit & timeU);
 
 };  // class TimeWithUnit
+
+/**
+ * \ingroup time
+ *
+ * ns3::TypeNameGet<Time>() specialization.
+ * \returns The type name as a string.
+ */
+TYPENAMEGET_DEFINE (Time);
 
 } // namespace ns3
 

@@ -21,6 +21,8 @@
 #ifndef NS3_SEQ_NUM_H
 #define NS3_SEQ_NUM_H
 
+#include "ns3/type-name.h"
+
 #include <limits>
 #include <iostream>
 #include <stdint.h>
@@ -431,8 +433,14 @@ typedef void (* SequenceNumber32)(SequenceNumber32 oldValue,
 
 }  // namespace TracedValueCallback
 
+/**
+ * \ingroup seq-counters
+ *
+ * ns3::TypeNameGet<SequenceNumber32>() specialization.
+ * \returns The type name as a string.
+ */
+TYPENAMEGET_DEFINE (SequenceNumber32);
+
 } // namespace ns3
 
 #endif /* NS3_SEQ_NUM_H */
-
-
