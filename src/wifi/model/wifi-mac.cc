@@ -1198,43 +1198,28 @@ WifiMac::GetEhtConfiguration (void) const
 }
 
 bool
-WifiMac::GetHtSupported () const
+WifiMac::GetHtSupported (void) const
 {
-  if (GetHtConfiguration ())
-    {
-      return true;
-    }
-  return false;
+  return bool (GetDevice ()->GetHtConfiguration ());
 }
 
 bool
-WifiMac::GetVhtSupported () const
+WifiMac::GetVhtSupported (uint8_t linkId) const
 {
-  if (GetVhtConfiguration ())
-    {
-      return true;
-    }
-  return false;
+  return (GetDevice ()->GetVhtConfiguration ()
+          && GetWifiPhy (linkId)->GetPhyBand () != WIFI_PHY_BAND_2_4GHZ);
 }
 
 bool
 WifiMac::GetHeSupported () const
 {
-  if (GetHeConfiguration ())
-    {
-      return true;
-    }
-  return false;
+  return bool (GetDevice ()->GetHeConfiguration ());
 }
 
 bool
 WifiMac::GetEhtSupported () const
 {
-  if (GetEhtConfiguration ())
-    {
-      return true;
-    }
-  return false;
+  return bool (GetDevice ()->GetEhtConfiguration ());
 }
 
 void
@@ -1323,7 +1308,7 @@ WifiMac::GetExtendedCapabilities (void) const
   NS_LOG_FUNCTION (this);
   ExtendedCapabilities capabilities;
   capabilities.SetHtSupported (GetHtSupported ());
-  capabilities.SetVhtSupported (GetVhtSupported ());
+  capabilities.SetVhtSupported (GetVhtSupported (SINGLE_LINK_OP_ID));
   //TODO: to be completed
   return capabilities;
 }
@@ -1388,7 +1373,7 @@ VhtCapabilities
 WifiMac::GetVhtCapabilities (uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << +linkId);
-  NS_ASSERT (GetVhtSupported ());
+  NS_ASSERT (GetVhtSupported (linkId));
   VhtCapabilities capabilities;
 
   auto phy = GetWifiPhy (linkId);

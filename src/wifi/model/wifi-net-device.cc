@@ -593,8 +593,7 @@ WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
 Ptr<VhtConfiguration>
 WifiNetDevice::GetVhtConfiguration (void) const
 {
-  return (m_standard >= WIFI_STANDARD_80211ac && m_phys[SINGLE_LINK_OP_ID]->GetPhyBand () == WIFI_PHY_BAND_5GHZ
-          ? m_vhtConfiguration : nullptr);
+  return (m_standard >= WIFI_STANDARD_80211ac ? m_vhtConfiguration : nullptr);
 }
 
 void

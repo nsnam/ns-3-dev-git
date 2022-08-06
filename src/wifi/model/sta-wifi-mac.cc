@@ -234,7 +234,7 @@ StaWifiMac::SendProbeRequest (void)
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities (SINGLE_LINK_OP_ID));
     }
-  if (GetVhtSupported ())
+  if (GetVhtSupported (SINGLE_LINK_OP_ID))
     {
       probe.SetVhtCapabilities (GetVhtCapabilities (SINGLE_LINK_OP_ID));
     }
@@ -296,7 +296,7 @@ StaWifiMac::GetAssociationRequest (bool isReassoc, uint8_t linkId) const
           frame.SetExtendedCapabilities (GetExtendedCapabilities ());
           frame.SetHtCapabilities (GetHtCapabilities (linkId));
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (linkId))
         {
           frame.SetVhtCapabilities (GetVhtCapabilities (linkId));
         }
@@ -1129,7 +1129,7 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
 
       // we do not return if VHT is not supported because HE STAs operating in
       // the 2.4 GHz band do not support VHT
-      if (GetVhtSupported ())
+      if (GetVhtSupported (linkId))
         {
           const auto& vhtCapabilities = frame.GetVhtCapabilities ();
           //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT

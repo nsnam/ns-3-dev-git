@@ -76,7 +76,7 @@ AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (to);
           GetWifiRemoteStationManager ()->AddStationHtCapabilities (to, GetHtCapabilities (SINGLE_LINK_OP_ID));
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (to, GetVhtCapabilities (SINGLE_LINK_OP_ID));
         }
@@ -180,7 +180,7 @@ AdhocWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (from);
           GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, GetHtCapabilities (SINGLE_LINK_OP_ID));
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, GetVhtCapabilities (SINGLE_LINK_OP_ID));
         }

@@ -471,11 +471,12 @@ public:
    */
   bool GetHtSupported () const;
   /**
-   * Return whether the device supports VHT.
+   * Return whether the device supports VHT on the given link.
    *
+   * \param linkId the ID of the given link.
    * \return true if VHT is supported, false otherwise
    */
-  bool GetVhtSupported () const;
+  bool GetVhtSupported (uint8_t linkId) const;
   /**
    * Return whether the device supports HE.
    *

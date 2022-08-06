@@ -764,7 +764,7 @@ VhtOperation
 ApWifiMac::GetVhtOperation (uint8_t linkId) const
 {
   NS_LOG_FUNCTION (this << +linkId);
-  NS_ASSERT (GetVhtSupported ());
+  NS_ASSERT (GetVhtSupported (linkId));
   VhtOperation operation;
   auto phy = GetWifiPhy (linkId);
   auto remoteStationManager = GetWifiRemoteStationManager (linkId);
@@ -871,7 +871,7 @@ ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
       probe.SetHtCapabilities (GetHtCapabilities (linkId));
       probe.SetHtOperation (GetHtOperation (linkId));
     }
-  if (GetVhtSupported ())
+  if (GetVhtSupported (SINGLE_LINK_OP_ID))
     {
       probe.SetVhtCapabilities (GetVhtCapabilities (linkId));
       probe.SetVhtOperation (GetVhtOperation (linkId));
@@ -970,7 +970,7 @@ ApWifiMac::GetAssocResp (Mac48Address to, uint8_t linkId)
       assoc.SetHtCapabilities (GetHtCapabilities (linkId));
       assoc.SetHtOperation (GetHtOperation (linkId));
     }
-  if (GetVhtSupported ())
+  if (GetVhtSupported (linkId))
     {
       assoc.SetVhtCapabilities (GetVhtCapabilities (linkId));
       assoc.SetVhtOperation (GetVhtOperation (linkId));
@@ -1234,7 +1234,7 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
       beacon.SetHtCapabilities (GetHtCapabilities (linkId));
       beacon.SetHtOperation (GetHtOperation (linkId));
     }
-  if (GetVhtSupported ())
+  if (GetVhtSupported (linkId))
     {
       beacon.SetVhtCapabilities (GetVhtCapabilities (linkId));
       beacon.SetVhtOperation (GetVhtOperation (linkId));
@@ -1589,7 +1589,7 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
                 }
             }
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (linkId))
         {
           //check whether the VHT STA supports all MCSs in Basic MCS Set
           const auto& vhtCapabilities = frame.GetVhtCapabilities ();
@@ -1653,7 +1653,7 @@ ApWifiMac::ReceiveAssocRequest (const AssocReqRefVariant& assoc, const Mac48Addr
           // const ExtendedCapabilities& extendedCapabilities = frame.GetExtendedCapabilities ();
           //TODO: to be completed
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (linkId))
         {
           const auto& vhtCapabilities = frame.GetVhtCapabilities ();
           //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT

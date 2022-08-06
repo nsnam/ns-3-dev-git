@@ -168,12 +168,12 @@ OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
     {
       //In ad hoc mode, we assume that every destination supports all
       //the rates we support.
-      if (GetHtSupported () || GetVhtSupported ())
+      if (GetHtSupported () || GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (to);
           GetWifiRemoteStationManager ()->AddStationHtCapabilities (to, GetHtCapabilities(SINGLE_LINK_OP_ID));
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (to, GetVhtCapabilities(SINGLE_LINK_OP_ID));
         }
@@ -216,7 +216,7 @@ OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
       hdr.SetType (WIFI_MAC_DATA);
     }
 
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported () || GetVhtSupported (SINGLE_LINK_OP_ID))
     {
       hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
     }
@@ -260,12 +260,12 @@ OcbWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
     {
       //In ad hoc mode, we assume that every destination supports all
       //the rates we support.
-      if (GetHtSupported () || GetVhtSupported ())
+      if (GetHtSupported () || GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddAllSupportedMcs (from);
           GetWifiRemoteStationManager ()->AddStationHtCapabilities (from, GetHtCapabilities(SINGLE_LINK_OP_ID));
         }
-      if (GetVhtSupported ())
+      if (GetVhtSupported (SINGLE_LINK_OP_ID))
         {
           GetWifiRemoteStationManager ()->AddStationVhtCapabilities (from, GetVhtCapabilities(SINGLE_LINK_OP_ID));
         }

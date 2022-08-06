@@ -238,7 +238,8 @@ WifiRemoteStationManager::GetHtSupported (void) const
 bool
 WifiRemoteStationManager::GetVhtSupported (void) const
 {
-  return bool (m_wifiPhy->GetDevice ()->GetVhtConfiguration ());
+  return (m_wifiPhy->GetDevice ()->GetVhtConfiguration ()
+          && m_wifiPhy->GetPhyBand () != WIFI_PHY_BAND_2_4GHZ);
 }
 
 bool
