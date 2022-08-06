@@ -1609,6 +1609,13 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
     // The maximum A-MPDU length in EHT capabilities elements ranges from 2^23-1 to 2^24-1
     capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduLength, 8388607U), 16777215U));
 
+    // Set the PHY capabilities
+    const bool support4096Qam = phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, 12);
+    capabilities.m_phyCapabilities.supportTx1024And4096QamForRuSmallerThan242Tones =
+        support4096Qam ? 1 : 0;
+    capabilities.m_phyCapabilities.supportRx1024And4096QamForRuSmallerThan242Tones =
+        support4096Qam ? 1 : 0;
+
     return capabilities;
 }
 
