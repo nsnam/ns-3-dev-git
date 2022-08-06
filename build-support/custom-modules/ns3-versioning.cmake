@@ -80,31 +80,22 @@ function(configure_embedded_version)
     return()
   endif()
 
+  set(HAS_NS3_TAGS False)
   mark_as_advanced(GIT)
   find_program(GIT git)
   if("${GIT}" STREQUAL "GIT-NOTFOUND")
     message(
-      STATUS "Git was not found. Version related targets won't be enabled"
+      STATUS
+        "Git was not found. Build version embedding won't be enabled if version.cache is not found."
     )
-    return()
+  else()
+    if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
+      # If the git history exists, check if ns-3 git tags were found
+      check_git_repo_has_ns3_tags(HAS_NS3_TAGS NS3_VERSION_TAG)
+    endif()
   endif()
 
-  check_git_repo_has_ns3_tags(HAS_NS3_TAGS NS3_VERSION_TAG)
-
-  set(version_cache_file_template
-      ${PROJECT_SOURCE_DIR}/build-support/version.cache.in
-  )
   set(version_cache_file ${PROJECT_SOURCE_DIR}/src/core/model/version.cache)
-
-  # Check if ns-3 git tags were found or at least version.cache file exists in
-  # the src/core/model
-  if((NOT HAS_NS3_TAGS) AND (NOT (EXISTS ${version_cache_file})))
-    message(
-      FATAL_ERROR
-        "The ns-3 git commit history or the version.cache file are required to embed build version into libraries."
-    )
-    return()
-  endif()
 
   # If git tags were found, extract the information
   if(HAS_NS3_TAGS)
@@ -150,9 +141,24 @@ function(configure_embedded_version)
     endif()
     set(NS3_VERSION_BUILD_PROFILE ${cmakeBuildType})
 
+    set(version_cache_file_template
+        ${PROJECT_SOURCE_DIR}/build-support/version.cache.in
+    )
+
     # Create version.cache file
     configure_file(${version_cache_file_template} ${version_cache_file} @ONLY)
   else()
+    # If we could not find the Git executable, or there were not ns-3 tags in
+    # the git history, we fallback to the version.cache file
+    if(EXISTS ${version_cache_file})
+      message(STATUS "The version.cache file was found.")
+    else()
+      message(
+        FATAL_ERROR
+          "The version.cache file was not found and is required to embed the build version."
+      )
+    endif()
+
     # Consume version.cache created previously
     file(STRINGS ${version_cache_file} version_cache_contents)
     foreach(line ${version_cache_contents})

@@ -1339,6 +1339,100 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("--profiling-format=google-trace --profiling-output=../cmake_performance_trace.log", stdout)
         self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake_performance_trace.log")))
 
+    def test_18_CheckBuildVersionAndVersionCache(self):
+        """!
+        Check if ENABLE_BUILD_VERSION and version.cache are working
+        as expected
+        @return None
+        """
+
+        try:
+            from python_on_whales import docker
+            from python_on_whales.exceptions import DockerException
+        except ModuleNotFoundError:
+            self.skipTest("python-on-whales was not found")
+
+        # Import rootless docker settings from .bashrc
+        with open(os.path.expanduser("~/.bashrc"), "r") as f:
+            docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
+            for setting in docker_settings:
+                key, value = setting.split("=")
+                os.environ[key] = value
+            del docker_settings, setting, key, value
+
+        # Create Docker client instance and start it
+        with docker.run("ubuntu:22.04", interactive=True, detach=True, tty=False, volumes=[(ns3_path, "/ns-3-dev")]) as container:
+            # Redefine the execute command of the container
+            def split_exec(self, cmd):
+                return self._execute(cmd.split(), workdir="/ns-3-dev")
+            container._execute = container.execute
+            container.execute = partial(split_exec, container)
+
+            # Install basic packages
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 ninja-build cmake g++")
+
+            # Clean ns-3 artifacts
+            container.execute("./ns3 clean")
+
+            # Set path to version.cache file
+            version_cache_file = os.path.join(ns3_path, "src/core/model/version.cache")
+
+            # First case: try without a version cache or Git
+            if os.path.exists(version_cache_file):
+                os.remove(version_cache_file)
+
+            # We need to catch the exception since the command will fail
+            try:
+                container.execute("./ns3 configure -G Ninja --enable-build-version")
+            except DockerException:
+                pass
+            self.assertFalse(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+
+            # Second case: try with a version cache file but without Git (it should succeed)
+            version_cache_contents = ("CLOSEST_TAG = '\"ns-3.0.0\"'\n"
+                                      "VERSION_COMMIT_HASH = '\"0000000000\"'\n"
+                                      "VERSION_DIRTY_FLAG = '0'\n"
+                                      "VERSION_MAJOR = '3'\n"
+                                      "VERSION_MINOR = '0'\n"
+                                      "VERSION_PATCH = '0'\n"
+                                      "VERSION_RELEASE_CANDIDATE = '\"\"'\n"
+                                      "VERSION_TAG = '\"ns-3.0.0\"'\n"
+                                      "VERSION_TAG_DISTANCE = '0'\n"
+                                      "VERSION_BUILD_PROFILE = 'debug'\n"
+                                      )
+            with open(version_cache_file, "w") as version:
+                version.write(version_cache_contents)
+
+            # Configuration should now succeed
+            container.execute("./ns3 clean")
+            container.execute("./ns3 configure -G Ninja --enable-build-version")
+            self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+
+            # And contents of version cache should be unchanged
+            with open(version_cache_file, "r") as version:
+                self.assertEqual(version.read(), version_cache_contents)
+
+            # Third case: we rename the .git directory temporarily and reconfigure
+            # to check if it gets configured successfully when Git is found but
+            # there is not .git history
+            os.rename(os.path.join(ns3_path, ".git"), os.path.join(ns3_path, "temp_git"))
+            try:
+                container.execute("apt-get install -y git")
+                container.execute("./ns3 clean")
+                container.execute("./ns3 configure -G Ninja --enable-build-version")
+            except Exception:
+                pass
+            os.rename(os.path.join(ns3_path, "temp_git"), os.path.join(ns3_path, ".git"))
+            self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+
+            # Fourth case: test with Git and git history. Now the version.cache should be replaced.
+            container.execute("./ns3 clean")
+            container.execute("./ns3 configure -G Ninja --enable-build-version")
+            self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+            with open(version_cache_file, "r") as version:
+                self.assertNotEqual(version.read(), version_cache_contents)
+
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
