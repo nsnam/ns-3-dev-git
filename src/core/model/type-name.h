@@ -80,8 +80,6 @@ TYPENAMEGET_DEFINE (uint32_t);
 TYPENAMEGET_DEFINE (uint64_t);
 TYPENAMEGET_DEFINE (float);
 TYPENAMEGET_DEFINE (double);
-TYPENAMEGET_DEFINE (long long);
-TYPENAMEGET_DEFINE (unsigned long long);
 TYPENAMEGET_DEFINE (long double);
 /** @} */
 
