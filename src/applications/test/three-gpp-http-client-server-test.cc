@@ -639,8 +639,8 @@ ThreeGppHttpObjectTestCase::ServerRxCallback (Ptr<const Packet> packet,
    * Request objects are assumed to be small and to not typically split. So we
    * immediately follow by concluding the receive of a whole request object.
    */
-  uint32_t txSize;
-  uint32_t rxSize;
+  uint32_t txSize = 0;
+  uint32_t rxSize = 0;
   bool isSent = m_requestObjectTracker.ObjectReceived (txSize, rxSize);
   NS_TEST_ASSERT_MSG_EQ (isSent, true,
                          "Server receives one too many request object");
@@ -679,8 +679,9 @@ ThreeGppHttpObjectTestCase::ClientRxMainObjectCallback (Ptr<const ThreeGppHttpCl
                          "Main object's client TS is unexpectedly non-positive");
   NS_TEST_ASSERT_MSG_GT (httpHeader.GetServerTs (), Seconds (0.0),
                          "Main object's server TS is unexpectedly non-positive");
-  uint32_t txSize;
-  uint32_t rxSize;
+
+  uint32_t txSize = 0;
+  uint32_t rxSize = 0;
   bool isSent = m_mainObjectTracker.ObjectReceived (txSize, rxSize);
   NS_TEST_ASSERT_MSG_EQ (isSent, true,
                          "Client receives one too many main object");
@@ -722,8 +723,8 @@ ThreeGppHttpObjectTestCase::ClientRxEmbeddedObjectCallback (Ptr<const ThreeGppHt
   NS_TEST_ASSERT_MSG_GT (httpHeader.GetServerTs (), Seconds (0.0),
                          "Embedded object's server TS is unexpectedly non-positive");
 
-  uint32_t txSize;
-  uint32_t rxSize;
+  uint32_t txSize = 0;
+  uint32_t rxSize = 0;
   bool isSent = m_embeddedObjectTracker.ObjectReceived (txSize, rxSize);
   NS_TEST_ASSERT_MSG_EQ (isSent, true,
                          "Client receives one too many embedded object");
@@ -909,4 +910,3 @@ private:
 
 /// The global instance of the `three-gpp-http-client-server` system test.
 static ThreeGppHttpClientServerTestSuite g_httpClientServerTestSuiteInstance;
-
