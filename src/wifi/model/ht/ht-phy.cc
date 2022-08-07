@@ -797,7 +797,7 @@ HtPhy::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
     {
       return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY); //if Primary is busy, ignore CCA for Secondary
     }
-  if (ppdu != nullptr)
+  if (ppdu)
     {
       const uint16_t primaryWidth = 20;
       uint16_t p20MinFreq =
@@ -814,11 +814,19 @@ HtPhy::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
         }
     }
 
-  ccaThresholdDbm = GetCcaThreshold (ppdu, WIFI_CHANLIST_SECONDARY);
-  delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, GetSecondaryBand (20));
-  if (delayUntilCcaEnd.IsStrictlyPositive ())
+  const uint16_t secondaryWidth = 20;
+  uint16_t s20MinFreq =
+      m_wifiPhy->GetOperatingChannel ().GetSecondaryChannelCenterFrequency (secondaryWidth) - (secondaryWidth / 2);
+  uint16_t s20MaxFreq =
+      m_wifiPhy->GetOperatingChannel ().GetSecondaryChannelCenterFrequency (secondaryWidth) + (secondaryWidth / 2);
+  if (!ppdu || ppdu->DoesOverlapChannel (s20MinFreq, s20MaxFreq))
     {
-       return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_SECONDARY);
+      ccaThresholdDbm = GetCcaThreshold (ppdu, WIFI_CHANLIST_SECONDARY);
+      delayUntilCcaEnd = GetDelayUntilCcaEnd (ccaThresholdDbm, GetSecondaryBand (20));
+      if (delayUntilCcaEnd.IsStrictlyPositive ())
+        {
+           return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_SECONDARY);
+        }
     }
 
   return std::nullopt;

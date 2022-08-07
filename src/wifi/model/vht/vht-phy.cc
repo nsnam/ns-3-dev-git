@@ -532,7 +532,7 @@ VhtPhy::GetMaxPsduSize (void) const
 double
 VhtPhy::GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
-  if (ppdu != nullptr)
+  if (ppdu)
     {
       const uint16_t ppduBw = ppdu->GetTxVector ().GetChannelWidth ();
       switch (channelType)
@@ -586,7 +586,7 @@ VhtPhy::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
       return std::make_pair (delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY); //if Primary is busy, ignore CCA for Secondary
     }
 
-  if (ppdu != nullptr)
+  if (ppdu)
     {
       const uint16_t primaryWidth = 20;
       uint16_t p20MinFreq =
@@ -604,7 +604,7 @@ VhtPhy::GetCcaIndication (const Ptr<const WifiPpdu> ppdu)
     }
 
   std::vector<uint16_t> secondaryWidthsToCheck;
-  if (ppdu != nullptr)
+  if (ppdu)
     {
       for (const auto& secondaryChannel : secondaryChannels)
         {
