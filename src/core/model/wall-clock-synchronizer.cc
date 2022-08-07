@@ -18,6 +18,7 @@
 
 #include <ctime>       // clock_t
 #include <chrono>
+#include <sys/time.h>
 
 #include "log.h"
 #include "wall-clock-synchronizer.h"

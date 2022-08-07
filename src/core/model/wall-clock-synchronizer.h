@@ -24,6 +24,9 @@
 #include <condition_variable>
 #include <mutex>
 
+// Forward declaration
+struct timeval;
+
 /**
  * @file
  * @ingroup realtime
