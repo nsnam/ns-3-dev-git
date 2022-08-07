@@ -249,6 +249,27 @@ class EhtCapabilities : public WifiInformationElement
      */
     uint16_t GetMaxMpduLength() const;
 
+    /**
+     * Set a subfield of the Supported EHT-MCS And NSS Set.
+     *
+     * \param mapType the type of the subfield
+     * \param upperMcs the upper MCS of the range
+     * \param maxNss the maximum NSS supported for transmission in the MCS range
+     */
+    void SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapType,
+                                    uint8_t upperMcs,
+                                    uint8_t maxNss);
+    /**
+     * Set a subfield of the Supported EHT-MCS And NSS Set.
+     *
+     * \param mapType the type of the subfield
+     * \param upperMcs the upper MCS of the range
+     * \param maxNss the maximum NSS supported for reception in the MCS range
+     */
+    void SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapType,
+                                    uint8_t upperMcs,
+                                    uint8_t maxNss);
+
     EhtMacCapabilities m_macCapabilities;       //!< EHT MAC Capabilities Info subfield
     EhtPhyCapabilities m_phyCapabilities;       //!< EHT PHY Capabilities Info subfield
     EhtMcsAndNssSet m_supportedEhtMcsAndNssSet; //!< Supported EHT-MCS And NSS Set subfield

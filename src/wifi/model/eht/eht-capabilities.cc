@@ -364,6 +364,111 @@ EhtCapabilities::GetMaxAmpduLength() const
 }
 
 void
+EhtCapabilities::SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapType,
+                                            uint8_t upperMcs,
+                                            uint8_t maxNss)
+{
+    NS_ASSERT_MSG(maxNss <= 8, "Invalid maximum NSS " << maxNss);
+    std::size_t index = 0;
+    switch (upperMcs)
+    {
+    case 7:
+        NS_ASSERT(mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY);
+        index = 0;
+        break;
+    case 9:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 1 : 0;
+        break;
+    case 11:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 2 : 1;
+        break;
+    case 13:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 3 : 2;
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Invalid upper MCS " << +upperMcs);
+    }
+    uint8_t nBytes = 0;
+    switch (mapType)
+    {
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY:
+        nBytes = 4;
+        break;
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ:
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ:
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ:
+        nBytes = 3;
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Invalid map type " << mapType);
+    }
+    auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
+    if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.end())
+    {
+        m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet[mapType].resize(nBytes);
+        m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet[mapType][index] = (maxNss & 0x0f);
+    }
+    else
+    {
+        NS_ASSERT(it->second.size() == nBytes);
+        it->second[index] |= (maxNss & 0x0f);
+    }
+}
+
+void
+EhtCapabilities::SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapType,
+                                            uint8_t upperMcs,
+                                            uint8_t maxNss)
+{
+    NS_ASSERT_MSG(maxNss <= 8, "Invalid maximum NSS " << maxNss);
+    std::size_t index = 0;
+    switch (upperMcs)
+    {
+    case 7:
+        NS_ASSERT(mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY);
+        index = 0;
+        break;
+    case 9:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 1 : 0;
+        break;
+    case 11:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 2 : 1;
+        break;
+    case 13:
+        index = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 3 : 2;
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Invalid upper MCS " << upperMcs);
+    }
+    uint8_t nBytes = 0;
+    switch (mapType)
+    {
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY:
+        nBytes = 4;
+        break;
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ:
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ:
+    case EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ:
+        nBytes = 3;
+        break;
+    default:
+        NS_ASSERT_MSG(false, "Invalid map type " << mapType);
+    }
+    auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
+    if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.end())
+    {
+        m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet[mapType].resize(nBytes);
+        m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet[mapType][index] =
+            ((maxNss & 0x0f) << 4);
+    }
+    else
+    {
+        NS_ASSERT(it->second.size() == nBytes);
+        it->second[index] |= ((maxNss & 0x0f) << 4);
+    }
+}
+
+void
 EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     m_macCapabilities.Serialize(start);

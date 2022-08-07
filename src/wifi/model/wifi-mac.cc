@@ -1616,6 +1616,58 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
     capabilities.m_phyCapabilities.supportRx1024And4096QamForRuSmallerThan242Tones =
         support4096Qam ? 1 : 0;
 
+    const uint8_t maxTxNss = phy->GetMaxSupportedTxSpatialStreams();
+    const uint8_t maxRxNss = phy->GetMaxSupportedRxSpatialStreams();
+    if (phy->GetChannelWidth() == 20)
+    {
+        for (auto maxMcs : {7, 9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    else
+    {
+        if (phy->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ)
+        {
+            NS_ABORT_MSG_IF(phy->GetChannelWidth() == 40,
+                            "A 802.11be STA cannot support 40 MHz without supporting 80 MHz except "
+                            "in 2.4 GHz band");
+        }
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    if (phy->GetChannelWidth() >= 160)
+    {
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_160_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
+    // 320 MHz not supported yet
+
     return capabilities;
 }
 
