@@ -23,7 +23,9 @@
 #include "ns3/he-capabilities.h"
 #include "ns3/wifi-information-element.h"
 
+#include <map>
 #include <optional>
+#include <vector>
 
 namespace ns3
 {
@@ -147,6 +149,56 @@ struct EhtPhyCapabilities
 };
 
 /**
+ * EHT MCS and NSS Set subfield.
+ * See IEEE 802.11be D1.5 9.4.2.313.4 Supported EHT-MCS And NSS Set subfield
+ */
+struct EhtMcsAndNssSet
+{
+    /**
+     * The different EHT-MCS map types as defined in 9.4.2.313.4 Supported EHT-MCS And NSS Set
+     * field.
+     */
+    enum EhtMcsMapType
+    {
+        EHT_MCS_MAP_TYPE_20_MHZ_ONLY = 0,
+        EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
+        EHT_MCS_MAP_TYPE_160_MHZ,
+        EHT_MCS_MAP_TYPE_320_MHZ
+    };
+
+    std::map<EhtMcsMapType, std::vector<uint8_t>>
+        supportedEhtMcsAndNssSet; //!< Supported EHT-MCS And NSS Set
+
+    /**
+     * Get the size of the serialized Supported EHT-MCS And NSS Set subfield
+     *
+     * \return the size of the serialized Supported EHT-MCS And NSS Set  subfield
+     */
+    uint16_t GetSize() const;
+    /**
+     * Serialize the Supported EHT-MCS And NSS Set subfield
+     *
+     * \param start iterator pointing to where the Supported EHT-MCS And NSS Set subfield should be
+     * written to
+     */
+    void Serialize(Buffer::Iterator& start) const;
+    /**
+     * Deserialize the Supported EHT-MCS And NSS Set subfield
+     *
+     * \param start iterator pointing to where the Supported EHT-MCS And NSS Set subfield should be
+     * read from \param is2_4Ghz indicating whether PHY is operating in 2.4 GHz based on previously
+     * serialized IEs \param heSupportedChannelWidthSet supported channel width set based on
+     * previously deserialized HE capabilities IE \param support320MhzIn6Ghz flag whether 320 MHz is
+     * supported in 6 GHz band based on EHT PHY capabilities subfield \return the number of bytes
+     * read
+     */
+    uint16_t Deserialize(Buffer::Iterator start,
+                         bool is2_4Ghz,
+                         uint8_t heSupportedChannelWidthSet,
+                         bool support320MhzIn6Ghz);
+};
+
+/**
  * \ingroup wifi
  *
  * The IEEE 802.11be EHT Capabilities
@@ -197,8 +249,9 @@ class EhtCapabilities : public WifiInformationElement
      */
     uint16_t GetMaxMpduLength() const;
 
-    EhtMacCapabilities m_macCapabilities; //!< EHT MAC Capabilities Info subfield
-    EhtPhyCapabilities m_phyCapabilities; //!< EHT PHY Capabilities Info subfield
+    EhtMacCapabilities m_macCapabilities;       //!< EHT MAC Capabilities Info subfield
+    EhtPhyCapabilities m_phyCapabilities;       //!< EHT PHY Capabilities Info subfield
+    EhtMcsAndNssSet m_supportedEhtMcsAndNssSet; //!< Supported EHT-MCS And NSS Set subfield
 
   private:
     uint16_t GetInformationFieldSize() const override;

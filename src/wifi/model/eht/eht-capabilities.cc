@@ -153,9 +153,123 @@ EhtPhyCapabilities::Deserialize(Buffer::Iterator start)
     return 9;
 }
 
+uint16_t
+EhtMcsAndNssSet::GetSize() const
+{
+    if (supportedEhtMcsAndNssSet.empty())
+    {
+        return 0;
+    }
+    uint16_t size = 0;
+    for (const auto& ehtMcsAndNssSet : supportedEhtMcsAndNssSet)
+    {
+        size += ehtMcsAndNssSet.second.size();
+    }
+    return size;
+}
+
+void
+EhtMcsAndNssSet::Serialize(Buffer::Iterator& start) const
+{
+    NS_ASSERT(!supportedEhtMcsAndNssSet.empty());
+    for (const auto& ehtMcsAndNssSet : supportedEhtMcsAndNssSet)
+    {
+        for (const auto& byte : ehtMcsAndNssSet.second)
+        {
+            start.WriteU8(byte);
+        }
+    }
+}
+
+uint16_t
+EhtMcsAndNssSet::Deserialize(Buffer::Iterator start,
+                             bool is2_4Ghz,
+                             uint8_t heSupportedChannelWidthSet,
+                             bool support320MhzIn6Ghz)
+{
+    Buffer::Iterator i = start;
+    uint16_t count = 0;
+    supportedEhtMcsAndNssSet.clear();
+    std::vector<uint8_t> bytes;
+    if (is2_4Ghz)
+    {
+        if ((heSupportedChannelWidthSet & 0x01) == 0)
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 4; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_20_MHZ_ONLY] = bytes;
+        }
+        else
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 3; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ] = bytes;
+        }
+    }
+    else
+    {
+        if ((heSupportedChannelWidthSet & 0x0e) == 0)
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 4; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_20_MHZ_ONLY] = bytes;
+        }
+        if ((heSupportedChannelWidthSet & 0x02) != 0)
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 3; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ] = bytes;
+        }
+        if ((heSupportedChannelWidthSet & 0x04) != 0)
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 3; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_160_MHZ] = bytes;
+        }
+        if (support320MhzIn6Ghz)
+        {
+            bytes.clear();
+            for (std::size_t j = 0; j < 3; ++j)
+            {
+                uint8_t byte = i.ReadU8();
+                bytes.push_back(byte);
+                count++;
+            }
+            supportedEhtMcsAndNssSet[EHT_MCS_MAP_TYPE_320_MHZ] = bytes;
+        }
+    }
+    return count;
+}
+
 EhtCapabilities::EhtCapabilities()
     : m_macCapabilities{},
       m_phyCapabilities{},
+      m_supportedEhtMcsAndNssSet{},
       m_is2_4Ghz{false},
       m_heCapabilities{std::nullopt}
 {
@@ -164,6 +278,7 @@ EhtCapabilities::EhtCapabilities()
 EhtCapabilities::EhtCapabilities(bool is2_4Ghz, const std::optional<HeCapabilities>& heCapabilities)
     : m_macCapabilities{},
       m_phyCapabilities{},
+      m_supportedEhtMcsAndNssSet{},
       m_is2_4Ghz{is2_4Ghz},
       m_heCapabilities{heCapabilities}
 {
@@ -185,8 +300,9 @@ uint16_t
 EhtCapabilities::GetInformationFieldSize() const
 {
     uint16_t size = 1 + // ElementIdExt
-                    m_macCapabilities.GetSize() + m_phyCapabilities.GetSize();
-    // FIXME: currently only EHT MAC and PHY Capabilities Information
+                    m_macCapabilities.GetSize() + m_phyCapabilities.GetSize() +
+                    m_supportedEhtMcsAndNssSet.GetSize();
+    // FIXME: PPE thresholds not implemented yet
     return size;
 }
 
@@ -252,6 +368,7 @@ EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     m_macCapabilities.Serialize(start);
     m_phyCapabilities.Serialize(start);
+    m_supportedEhtMcsAndNssSet.Serialize(start);
 }
 
 uint16_t
@@ -264,7 +381,16 @@ EhtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t le
     i.Next(nBytes);
     count += nBytes;
 
-    count += m_phyCapabilities.Deserialize(i);
+    nBytes = m_phyCapabilities.Deserialize(i);
+    i.Next(nBytes);
+    count += nBytes;
+
+    NS_ASSERT(m_heCapabilities.has_value());
+    count += m_supportedEhtMcsAndNssSet.Deserialize(i,
+                                                    m_is2_4Ghz,
+                                                    m_heCapabilities->GetChannelWidthSet(),
+                                                    m_phyCapabilities.support320MhzIn6Ghz);
+
     return count;
 }
 
