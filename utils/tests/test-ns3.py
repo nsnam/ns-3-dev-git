@@ -1199,7 +1199,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         Test if CMake and ns3 fail in the expected ways when:
         - examples from modules or general examples fail if they depend on a
         library with a name shorter than 4 characters or are disabled when
-        a library is non-existant
+        a library is nonexistent
         - a module library passes the configuration but fails to build due to
         a missing library
         @return None
@@ -1210,7 +1210,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Test if configuration succeeds and building the module library fails
         with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
             f.write("")
-        for invalid_or_non_existant_library in ["", "gsd", "lib", "libfi", "calibre"]:
+        for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/CMakeLists.txt", "w") as f:
                 f.write("""
                         build_lib(
@@ -1218,33 +1218,33 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                             LIBRARIES_TO_LINK ${libcore} %s
                         )
-                        """ % invalid_or_non_existant_library)
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples")
-            if invalid_or_non_existant_library in ["", "gsd", "libfi", "calibre"]:
+            if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 0)
-            elif invalid_or_non_existant_library in ["lib"]:
+            elif invalid_or_nonexistent_library in ["lib"]:
                 self.assertEqual(return_code, 1)
-                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+                self.assertIn("Invalid library name: %s" % invalid_or_nonexistent_library, stderr)
             else:
                 pass
 
             return_code, stdout, stderr = run_ns3("build borked")
-            if invalid_or_non_existant_library in [""]:
+            if invalid_or_nonexistent_library in [""]:
                 self.assertEqual(return_code, 0)
-            elif invalid_or_non_existant_library in ["lib"]:
+            elif invalid_or_nonexistent_library in ["lib"]:
                 self.assertEqual(return_code, 2)  # should fail due to invalid library name
-                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
-            elif invalid_or_non_existant_library in ["gsd", "libfi", "calibre"]:
+                self.assertIn("Invalid library name: %s" % invalid_or_nonexistent_library, stderr)
+            elif invalid_or_nonexistent_library in ["gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 2)  # should fail due to missing library
-                self.assertIn("cannot find -l%s" % invalid_or_non_existant_library, stderr)
+                self.assertIn("cannot find -l%s" % invalid_or_nonexistent_library, stderr)
             else:
                 pass
 
         # Now test if the example can be built with:
         # - no additional library (should work)
         # - invalid library names (should fail to configure)
-        # - valid library names but inexistent libraries (should not create a target)
+        # - valid library names but nonexistent libraries (should not create a target)
         with open("contrib/borked/CMakeLists.txt", "w") as f:
             f.write("""
                     build_lib(
@@ -1253,7 +1253,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                         LIBRARIES_TO_LINK ${libcore}
                     )
                     """)
-        for invalid_or_non_existant_library in ["", "gsd", "lib", "libfi", "calibre"]:
+        for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/examples/CMakeLists.txt", "w") as f:
                 f.write("""
                         build_lib_example(
@@ -1261,24 +1261,24 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
                             LIBRARIES_TO_LINK ${libborked} %s
                         )
-                        """ % invalid_or_non_existant_library)
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
-            if invalid_or_non_existant_library in ["", "gsd", "libfi", "calibre"]:
+            if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 0)  # should be able to configure
-            elif invalid_or_non_existant_library in ["lib"]:
+            elif invalid_or_nonexistent_library in ["lib"]:
                 self.assertEqual(return_code, 1)  # should fail to even configure
-                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
+                self.assertIn("Invalid library name: %s" % invalid_or_nonexistent_library, stderr)
             else:
                 pass
 
             return_code, stdout, stderr = run_ns3("build borked-example")
-            if invalid_or_non_existant_library in [""]:
+            if invalid_or_nonexistent_library in [""]:
                 self.assertEqual(return_code, 0)  # should be able to build
-            elif invalid_or_non_existant_library in ["libf"]:
+            elif invalid_or_nonexistent_library in ["libf"]:
                 self.assertEqual(return_code, 2)  # should fail due to missing configuration
-                self.assertIn("Invalid library name: %s" % invalid_or_non_existant_library, stderr)
-            elif invalid_or_non_existant_library in ["gsd", "libfi", "calibre"]:
+                self.assertIn("Invalid library name: %s" % invalid_or_nonexistent_library, stderr)
+            elif invalid_or_nonexistent_library in ["gsd", "libfi", "calibre"]:
                 self.assertEqual(return_code, 1)  # should fail to find target
                 self.assertIn("Target to build does not exist: borked-example", stdout)
             else:
@@ -1361,10 +1361,15 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             del docker_settings, setting, key, value
 
         # Create Docker client instance and start it
-        with docker.run("ubuntu:22.04", interactive=True, detach=True, tty=False, volumes=[(ns3_path, "/ns-3-dev")]) as container:
+        with docker.run("ubuntu:22.04",
+                        interactive=True, detach=True,
+                        tty=False,
+                        volumes=[(ns3_path, "/ns-3-dev")]
+                        ) as container:
             # Redefine the execute command of the container
             def split_exec(self, cmd):
                 return self._execute(cmd.split(), workdir="/ns-3-dev")
+
             container._execute = container.execute
             container.execute = partial(split_exec, container)
 
@@ -2176,7 +2181,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3('configure --enable-sudo')
         self.assertEqual(return_code, 0)
 
-        # Check if it was properly set in the buildstatus file
+        # Check if it was properly set in the lock file
         enable_sudo = read_lock_entry("ENABLE_SUDO")
         self.assertTrue(enable_sudo)
 
@@ -2383,7 +2388,8 @@ class NS3QualityControlTestCase(unittest.TestCase):
 
         # User agent string to make ACM and Elsevier let us check if links to papers are working
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        }
 
         def test_file_url(args):
             filepath, url = args

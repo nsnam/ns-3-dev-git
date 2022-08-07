@@ -126,7 +126,7 @@ def parse_args(argv):
     on_off_options = [
         ("asserts", "the asserts regardless of the compile mode"),
         ("des-metrics", "Logging all events in a json file with the name of the executable "
-                        "(which must call CommandLine::Parse(argc, argv)"
+                        "(which must call CommandLine::Parse(argc, argv))"
          ),
         ("build-version", "embedding git changes as a build version during build"),
         ("dpdk", "the fd-net-device DPDK features"),
@@ -165,8 +165,8 @@ def parse_args(argv):
                                   action="store_true", default=None)
     parser_configure.add_argument('--lcov-zerocounters',
                                   help=('Zero the lcov counters'
-                                        '(use this option before rerunning a program'
-                                        'when generating repeated lcov reports)'),
+                                        ' (use this option before rerunning a program'
+                                        ' when generating repeated lcov reports)'),
                                   action="store_true", default=None)
 
     parser_configure.add_argument('--out', '--output-directory',
@@ -185,7 +185,7 @@ def parse_args(argv):
                                   type=str, default=None)
     parser_configure.add_argument('--force-refresh',
                                   help='Force refresh the CMake cache by deleting'
-                                       'the cache and reconfiguring the project',
+                                       ' the cache and reconfiguring the project',
                                   action="store_true", default=None)
     parser_configure.add_argument('--prefix',
                                   help='Target output directory to install',

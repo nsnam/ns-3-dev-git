@@ -1,7 +1,7 @@
 # NS3 CI script for ubuntu
 
 # Any scheduled pipeline for Ubuntu should define a variable, named
-# "RELEASE", that has a value "weekly". Also, the variale "UBUNTU" should be
+# "RELEASE", that has a value "weekly". Also, the variable "UBUNTU" should be
 # set to True.
 
 # Please take a look at .gitlab-ci.yml to check the dependencies of Ubuntu jobs.

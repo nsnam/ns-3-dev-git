@@ -1,7 +1,7 @@
 # NS3 CI script for Alpine
 
 # Any scheduled pipeline for Alpine should define a variable, named
-# "RELEASE", that has a value "weekly". Also, the variale "ALPINE" should be
+# "RELEASE", that has a value "weekly". Also, the variable "ALPINE" should be
 # set to True.
 
 # Alpine base
