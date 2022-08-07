@@ -115,7 +115,36 @@ WifiPpdu::DoesOverlapChannel (uint16_t minFreq, uint16_t maxFreq) const
   uint16_t txChannelWidth = GetTxVector ().GetChannelWidth ();
   uint16_t minTxFreq = m_txCenterFreq - txChannelWidth / 2;
   uint16_t maxTxFreq = m_txCenterFreq + txChannelWidth / 2;
-  if (minTxFreq > minFreq || maxTxFreq < maxFreq)
+  /**
+   * The PPDU does not overlap the channel in two cases.
+   *
+   * First non-overlapping case:
+   *
+   *                                        ┌─────────┐
+   *                                PPDU    │ Nominal │
+   *                                        │  Band   │
+   *                                        └─────────┘
+   *                                   minTxFreq   maxTxFreq
+   *
+   *       minFreq                       maxFreq
+   *         ┌──────────────────────────────┐
+   *         │           Channel            │
+   *         └──────────────────────────────┘
+   *
+   * Second non-overlapping case:
+   *
+   *         ┌─────────┐
+   * PPDU    │ Nominal │
+   *         │  Band   │
+   *         └─────────┘
+   *    minTxFreq   maxTxFreq
+   *
+   *                 minFreq                       maxFreq
+   *                   ┌──────────────────────────────┐
+   *                   │           Channel            │
+   *                   └──────────────────────────────┘
+   */
+  if (minTxFreq >= maxFreq || maxTxFreq <= minFreq)
     {
       return false;
     }
