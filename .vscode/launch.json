@@ -28,8 +28,8 @@
                     "ignoreFailures": true
                 }
             ]
-         },
-         {
+        },
+        {
             "name": "(lldb) Launch from scratch",
             "type": "cppdbg",
             "request": "launch",
@@ -46,13 +46,15 @@
             ],
             "externalConsole": false,
             "MIMode": "lldb"
-         },
-         {
+        },
+        {
             "name": "(gdb) Launch testrunner",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-debug",
-            "args": ["--suite=${selectedText}"],
+            "args": [
+                "--suite=${selectedText}"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
@@ -71,13 +73,15 @@
                     "ignoreFailures": true
                 }
             ]
-         },
-         {
+        },
+        {
             "name": "(lldb) Launch testrunner",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/utils/ns3-dev-test-runner-debug",
-            "args": ["--suite=${selectedText}"],
+            "args": [
+                "--suite=${selectedText}"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
@@ -89,6 +93,6 @@
             ],
             "externalConsole": false,
             "MIMode": "lldb"
-         }
+        }
     ]
 }
