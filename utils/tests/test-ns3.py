@@ -1412,6 +1412,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Configuration should now succeed
             container.execute("./ns3 clean")
             container.execute("./ns3 configure -G Ninja --enable-build-version")
+            container.execute("./ns3 build core")
             self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
 
             # And contents of version cache should be unchanged
@@ -1426,6 +1427,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 container.execute("apt-get install -y git")
                 container.execute("./ns3 clean")
                 container.execute("./ns3 configure -G Ninja --enable-build-version")
+                container.execute("./ns3 build core")
             except Exception:
                 pass
             os.rename(os.path.join(ns3_path, "temp_git"), os.path.join(ns3_path, ".git"))
@@ -1434,6 +1436,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Fourth case: test with Git and git history. Now the version.cache should be replaced.
             container.execute("./ns3 clean")
             container.execute("./ns3 configure -G Ninja --enable-build-version")
+            container.execute("./ns3 build core")
             self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
             with open(version_cache_file, "r") as version:
                 self.assertNotEqual(version.read(), version_cache_contents)

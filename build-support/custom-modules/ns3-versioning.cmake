@@ -180,7 +180,7 @@ function(configure_embedded_version)
 
       # If value is empty, replace with an empty string, assume its the release
       # candidate string
-      if(NOT varvalue)
+      if((NOT varvalue) AND (NOT varvalue STREQUAL "0"))
         set(varvalue "\"\"")
       endif()
 
