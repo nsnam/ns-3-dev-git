@@ -18,7 +18,6 @@
 
 #include <ctime>       // clock_t
 #include <chrono>
-#include <sys/time.h>
 
 #include "log.h"
 #include "wall-clock-synchronizer.h"
@@ -391,40 +390,6 @@ WallClockSynchronizer::GetNormalizedRealtime (void)
 {
   NS_LOG_FUNCTION (this);
   return GetRealtime () - m_realtimeOriginNano;
-}
-
-void
-WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
-{
-  NS_LOG_FUNCTION (this << ns << tv);
-  NS_ASSERT ((ns % US_PER_NS) == 0);
-  tv->tv_sec = static_cast<long> (ns / NS_PER_SEC);
-  tv->tv_usec = (ns % NS_PER_SEC) / US_PER_NS;
-}
-
-uint64_t
-WallClockSynchronizer::TimevalToNs (struct timeval *tv)
-{
-  NS_LOG_FUNCTION (this << tv);
-  uint64_t nsResult = tv->tv_sec * NS_PER_SEC + tv->tv_usec * US_PER_NS;
-  NS_ASSERT ((nsResult % US_PER_NS) == 0);
-  return nsResult;
-}
-
-void
-WallClockSynchronizer::TimevalAdd (
-  struct timeval *tv1,
-  struct timeval *tv2,
-  struct timeval *result)
-{
-  NS_LOG_FUNCTION (this << tv1 << tv2 << result);
-  result->tv_sec = tv1->tv_sec + tv2->tv_sec;
-  result->tv_usec = tv1->tv_usec + tv2->tv_usec;
-  if (result->tv_usec > (int64_t)US_PER_SEC)
-    {
-      ++result->tv_sec;
-      result->tv_usec %= US_PER_SEC;
-    }
 }
 
 } // namespace ns3

@@ -24,9 +24,6 @@
 #include <condition_variable>
 #include <mutex>
 
-// Forward declaration
-struct timeval;
-
 /**
  * @file
  * @ingroup realtime
@@ -67,10 +64,6 @@ namespace ns3 {
  *
  * @todo Add more on jiffies, sleep, processes, etc.
  *
- * @internal
- * Nanosleep takes a <tt>struct timeval</tt> as an input so we have to
- * deal with conversion between Time and @c timeval here.
- * They are both interpreted as elapsed times.
  */
 class WallClockSynchronizer : public Synchronizer
 {
@@ -167,33 +160,6 @@ protected:
    * @returns The current normalized real time, in ns.
    */
   uint64_t GetNormalizedRealtime (void);
-
-  /**
-   * @brief Convert an absolute time in ns to a @c timeval
-   *
-   * @param [in] ns Absolute time in ns.
-   * @param [out] tv Converted @c timeval.
-   */
-  void NsToTimeval (int64_t ns, struct timeval *tv);
-  /**
-   * @brief Convert a @c timeval to absolute time, in ns.
-   *
-   * @param [in] tv The input @c timeval.
-   * @returns The absolute time, in ns.
-   */
-  uint64_t TimevalToNs (struct timeval *tv);
-
-  /**
-   * @brief Add two @c timeval.
-   *
-   * @param [in]  tv1 The first @c timeval.
-   * @param [in]  tv2 The second @c timeval.
-   * @param [out] result The sum of @c tv1 and @c tv2.
-   */
-  void TimevalAdd (
-    struct timeval *tv1,
-    struct timeval *tv2,
-    struct timeval *result);
 
   /** Size of the system clock tick, as reported by @c clock_getres, in ns. */
   uint64_t m_jiffy;
