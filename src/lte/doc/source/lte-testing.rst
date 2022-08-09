@@ -1429,7 +1429,7 @@ The test suite ``lte-handover-failure`` tests the proper operation of a number
 of handover failure cases by inducing the conditions leading to the following
 eight failure modes:
 
-1. Maximum number of RACH transmissions exceeded from UE to target eNB 
+1. Maximum number of RACH transmissions exceeded from UE to target eNB
 2. Non-allocation of non-contention-based preamble at the target eNB, due to the maximum number reached
 3. HANDOVER JOINING timeout before reception of RRC CONNECTION RECONFIGURATION at source eNB
 4. HANDOVER JOINING timeout before completion of non-contention RACH process to target eNB

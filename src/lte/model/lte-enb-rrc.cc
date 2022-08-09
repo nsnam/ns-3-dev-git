@@ -3316,7 +3316,7 @@ LteEnbRrc::IsMaxSrsReached ()
   NS_ASSERT(m_srsCurrentPeriodicityId < SRS_ENTRIES);
   NS_LOG_DEBUG(this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
   if (m_ueSrsConfigurationIndexSet.size () >= g_srsPeriodicity[m_srsCurrentPeriodicityId])
-    {      
+    {
       return true;
     }
   else
@@ -3325,7 +3325,7 @@ LteEnbRrc::IsMaxSrsReached ()
     }
 }
 
-uint8_t 
+uint8_t
 LteEnbRrc::GetLogicalChannelGroup (EpsBearer bearer)
 {
   if (bearer.IsGbr ())

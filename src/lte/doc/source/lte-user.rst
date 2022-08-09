@@ -1621,11 +1621,11 @@ Handover failure events can also be traced by trace sink functions with
 a similar signature as above (including IMSI, cell ID, and RNTI). Four
 different failure events are traced:
 
-1. HandoverFailureNoPreamble: Handover failure due to non allocation of 
+1. HandoverFailureNoPreamble: Handover failure due to non allocation of
    non-contention-based preamble at eNB
 2. HandoverFailureMaxRach: Handover failure due to maximum RACH attempts
 3. HandoverFailureLeaving: Handover leaving timeout at source eNB
-4. HandoverFailureJoining: Handover joining timeout at target eNB 
+4. HandoverFailureJoining: Handover joining timeout at target eNB
 
 Similarly, one can hook up methods to the corresponding trace sources
 like this::

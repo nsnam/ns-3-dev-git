@@ -266,9 +266,9 @@ public:
    */
   void RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
 
-  /** 
+  /**
    * Take the necessary actions in response to the reception of an X2 UE CONTEXT RELEASE message
-   * 
+   *
    * \param params the SN STATUS
    */
   void RecvHandoverCancel (EpcX2SapUser::HandoverCancelParams params);

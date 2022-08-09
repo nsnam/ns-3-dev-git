@@ -484,7 +484,7 @@ public:
   /**
    * Receive handover cancel function
    * \param params the receive handover cancel parameters
-   * 
+   *
    */
   virtual void RecvHandoverCancel (HandoverCancelParams params) = 0;
 };
@@ -711,7 +711,7 @@ public:
   /**
    * Receive handover cancel function
    * \param params the receive handover cancel parameters
-   * 
+   *
    */
   virtual void RecvHandoverCancel (HandoverCancelParams params);
 

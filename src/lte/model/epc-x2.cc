@@ -362,30 +362,30 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           m_x2SapUser->RecvResourceStatusUpdate (params);
         }
     }
-   else if (procedureCode == EpcX2Header::HandoverCancel) 
+   else if (procedureCode == EpcX2Header::HandoverCancel)
      {
        if (messageType == EpcX2Header::SuccessfulOutcome)
          {
             NS_LOG_LOGIC("Recv X2 message: HANDOVER CANCEL");
- 
+
             EpcX2HandoverCancelHeader x2HoCancelHeader;
             packet->RemoveHeader (x2HoCancelHeader);
- 
+
             NS_LOG_INFO("X2 HandoverCancel header: " << x2HoCancelHeader);
- 
+
             EpcX2SapUser::HandoverCancelParams params;
             params.oldEnbUeX2apId = x2HoCancelHeader.GetOldEnbUeX2apId ();
             params.newEnbUeX2apId = x2HoCancelHeader.GetNewEnbUeX2apId ();
             params.sourceCellId   = cellsInfo->m_localCellIds.at (0);
             params.targetCellId   = cellsInfo->m_remoteCellIds.at (0);
             params.cause = x2HoCancelHeader.GetCause ();
- 
+
             NS_LOG_LOGIC("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
             NS_LOG_LOGIC("newEnbUeX2apId = " << params.newEnbUeX2apId);
             NS_LOG_LOGIC("sourceCellId = " << params.sourceCellId);
             NS_LOG_LOGIC("targetCellId = " << params.targetCellId);
             NS_LOG_LOGIC("cause = " << params.cause);
- 
+
             m_x2SapUser->RecvHandoverCancel (params);
          }
      }
