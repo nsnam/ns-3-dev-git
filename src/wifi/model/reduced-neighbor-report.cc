@@ -281,9 +281,45 @@ ReducedNeighborReport::GetOperatingChannel (std::size_t nbrApInfoId) const
           && primaryChannelCenterFrequency > std::get<1> (channel) - width / 2
           && primaryChannelCenterFrequency < std::get<1> (channel) + width / 2)
         {
-          channelNumber = std::get<0> (channel);
-          frequency = std::get<1> (channel);
-          break;
+          // the center frequency of the primary channel falls into the frequency
+          // range of this channel
+          bool found = false;
+
+          if (band != WIFI_PHY_BAND_2_4GHZ)
+            {
+              found = true;
+            }
+          else
+            {
+              // frequency channels overlap in the 2.4 GHz band, hence we have to check
+              // that the given primary channel center frequency can be the center frequency
+              // of the primary20 channel of the channel under consideration
+              switch (width)
+                {
+                case 20:
+                  if (std::get<1> (channel) == primaryChannelCenterFrequency)
+                    {
+                      found = true;
+                    }
+                  break;
+                case 40:
+                  if (std::get<1> (channel) == primaryChannelCenterFrequency + 10
+                      || std::get<1> (channel) == primaryChannelCenterFrequency - 10)
+                    {
+                      found = true;
+                    }
+                  break;
+                default:
+                  NS_ABORT_MSG ("No channel of width " << width << " MHz in the 2.4 GHz band");
+                }
+            }
+
+          if (found)
+            {
+              channelNumber = std::get<0> (channel);
+              frequency = std::get<1> (channel);
+              break;
+            }
         }
     }
 
