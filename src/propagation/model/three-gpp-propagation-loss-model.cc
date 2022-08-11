@@ -702,7 +702,7 @@ ThreeGppUmaPropagationLossModel::DoAssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this);
 
   m_normRandomVariable->SetStream (stream);
-  m_uniformVar->SetStream (stream);
+  m_uniformVar->SetStream (stream + 1);
   return 2;
 }
 
