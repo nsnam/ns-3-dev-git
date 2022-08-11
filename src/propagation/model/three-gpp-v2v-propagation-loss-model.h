@@ -112,6 +112,8 @@ private:
    */
   virtual double GetShadowingCorrelationDistance (ChannelCondition::LosConditionValue cond) const override;
 
+  virtual int64_t DoAssignStreams (int64_t stream) override;
+
   double m_percType3Vehicles; //!< percentage of Type 3 vehicles in the scenario (i.e., trucks)
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
   Ptr<LogNormalRandomVariable> m_logNorVar; //!< log normal random variable

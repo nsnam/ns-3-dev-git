@@ -195,6 +195,17 @@ ThreeGppV2vUrbanPropagationLossModel::GetShadowingCorrelationDistance (ChannelCo
   return correlationDistance;
 }
 
+int64_t
+ThreeGppV2vUrbanPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_normRandomVariable->SetStream (stream);
+  m_uniformVar->SetStream (stream + 1);
+  m_logNorVar->SetStream (stream + 2);
+  return 3;
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppV2vHighwayPropagationLossModel);
