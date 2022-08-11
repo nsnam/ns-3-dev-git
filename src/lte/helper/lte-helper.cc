@@ -1481,6 +1481,10 @@ LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
           currentStream += ueMac->AssignStreams (currentStream);
         }
     }
+  if (m_epcHelper)
+    {
+      currentStream += m_epcHelper->AssignStreams (currentStream);
+    }
   return (currentStream - stream);
 }
 

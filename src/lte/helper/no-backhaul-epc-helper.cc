@@ -568,4 +568,18 @@ NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4
   enbApp->SetS1apSapMme (m_mmeApp->GetS1apSapMme ());
 }
 
+int64_t
+NoBackhaulEpcHelper::AssignStreams (int64_t stream)
+{
+  int64_t currentStream = stream;
+  NS_ABORT_MSG_UNLESS (m_pgw && m_sgw && m_mme, "Running AssignStreams on empty node pointers");
+  InternetStackHelper internet;
+  NodeContainer nc;
+  nc.Add (m_pgw);
+  nc.Add (m_sgw);
+  nc.Add (m_mme);
+  currentStream += internet.AssignStreams (nc, currentStream);
+  return (currentStream - stream);
+}
+
 } // namespace ns3

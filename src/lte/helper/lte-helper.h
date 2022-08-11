@@ -652,6 +652,9 @@ public:
    * If TraceFadingLossModel has been set as the fading model type, this method
    * will also assign a stream number to it, if none has been assigned before.
    *
+   * If an EPC has been configured, streams will be assigned on the EPC
+   * nodes as well via EpcHelper::AssignStreams ().
+   *
    * \param c NetDeviceContainer of the set of net devices for which the
    *          LteNetDevice should be modified to use a fixed stream
    * \param stream first stream index to use
