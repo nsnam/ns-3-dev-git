@@ -922,14 +922,18 @@ For UL OFDMA, both BSRP Trigger Frames and Basic Trigger Frames are supported, a
 Figure :ref:`fig-ul-ofdma-80211ax`. A BSRP Trigger Frame is sent by an AP to solicit stations
 to send QoS Null frames containing Buffer Status Reports. A Basic Trigger Frame is sent by an AP
 to solicit stations to send data frames in TB PPDUs, which are acknowledged by the AP via a
-Multi-STA BlockAck frame.
+Multi-STA BlockAck frame. Note that, in order for the two frame exchange sequences to be separated
+by a SIFS (as shown in Figure :ref:`fig-ul-ofdma-80211ax`), it is necessary that the transmitting
+Access Category has a non-zero TXOP Limit, there is enough remaining time in the TXOP to perform
+the frame exchange sequence initiated by the Basic Trigger Frame and the Multi-User scheduler
+(described next) chooses to send a Basic Trigger Frame after a BSRP Trigger Frame.
 
 .. _fig-ul-ofdma-80211ax:
 
 .. figure:: figures/ul-ofdma.*
    :align: center
 
-   Acknowledgment of DL MU frames via aggregated MU-BAR Trigger Frames
+   Frame exchange sequences using UL OFDMA
 
 Multi-User Scheduler
 ####################
