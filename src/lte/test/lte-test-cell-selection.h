@@ -95,12 +95,10 @@ public:
    * \param interSiteDistance the distance between eNodeB in meters
    * \param ueSetupList a list of UE configuration to be installed in the
    *                    simulation
-   * \param rngRun the number of run to be used by the random number generator
    */
   LteCellSelectionTestCase (std::string name, bool isEpcMode, bool isIdealRrc,
                             double interSiteDistance,
-                            std::vector<UeSetup_t> ueSetupList,
-                            uint64_t rngRun);
+                            std::vector<UeSetup_t> ueSetupList);
 
   virtual ~LteCellSelectionTestCase ();
 
@@ -163,7 +161,6 @@ private:
   bool m_isIdealRrc; ///< whether the LTE is configured to use ideal RRC
   double m_interSiteDistance; ///< inter site distance
   std::vector<UeSetup_t> m_ueSetupList; ///< UE setup list
-  uint64_t m_rngRun; ///< rng run
 
   /// The current UE RRC state.
   std::vector<LteUeRrc::State> m_lastState;

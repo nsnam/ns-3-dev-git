@@ -26,6 +26,7 @@
 #include <ns3/boolean.h>
 #include <ns3/double.h>
 #include <ns3/integer.h>
+#include <ns3/rng-seed-manager.h>
 
 #include <ns3/mobility-helper.h>
 #include <ns3/lte-helper.h>
@@ -48,7 +49,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteCellSelectionTest");
 
 /*
- * Test Suite
+ * This test suite sets up four cells (four eNBs) and six UEs.  Two of the
+ * cells are CSG and two are non-CSG.  The six UEs associate with cells
+ * based on their positions and random access procedures.  The test checks
+ * that the UEs, at specirfic simulation times, are associated to expected
+ * cells.  See the header Doxygen for more specific descriptions.
+ *
+ * The test conditions that are checked rely on the RA preamble values
+ * (randomly selected) being unique for the six UEs.  For most values of
+ * random seed and run number, this will be the case, but certain values
+ * will cause a collision (same RA preamble drawn for two UEs).  Therefore,
+ * this test fixes the RngSeed and RngRun values, and uses AssignStreams,
+ * to ensure that an RA preamble collision does not occur.
  */
 
 
@@ -75,9 +87,8 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
                                                     MilliSeconds (283), 4, 0));
 
-  AddTestCase (new LteCellSelectionTestCase ("EPC, real RRC, RngNum=1",
-                                             true, false, 60.0, w, 1),
-               //                                        isd       rngrun
+  AddTestCase (new LteCellSelectionTestCase ("EPC, real RRC",
+                                             true, false, 60.0 /* isd */, w),
                TestCase::QUICK);
 
   // IDEAL RRC PROTOCOL
@@ -98,9 +109,8 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
                                                     MilliSeconds (266), 4, 0));
 
-  AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC, RngNum=1",
-                                             true, true, 60.0, w, 1),
-               //                                        isd      rngrun
+  AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC",
+                                             true, true, 60.0 /* isd */, w),
                TestCase::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
@@ -130,13 +140,12 @@ LteCellSelectionTestCase::UeSetup_t::UeSetup_t (
 LteCellSelectionTestCase::LteCellSelectionTestCase (
   std::string name, bool isEpcMode, bool isIdealRrc,
   double interSiteDistance,
-  std::vector<UeSetup_t> ueSetupList, uint64_t rngRun)
+  std::vector<UeSetup_t> ueSetupList)
   : TestCase (name),
     m_isEpcMode (isEpcMode),
     m_isIdealRrc (isIdealRrc),
     m_interSiteDistance (interSiteDistance),
-    m_ueSetupList (ueSetupList),
-    m_rngRun (rngRun)
+    m_ueSetupList (ueSetupList)
 {
   NS_LOG_FUNCTION (this << GetName ());
   m_lastState.resize (m_ueSetupList.size (), LteUeRrc::NUM_STATES);
@@ -154,7 +163,16 @@ LteCellSelectionTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
 
-  Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
+  // In ns-3 test suite operation, static variables persist across all
+  // tests (all test suites execute within a single ns-3 process).
+  // Therefore, to fix a seed and run number for a specific test, the
+  // current values of seed and run number should be saved and restored
+  // after the test is run.
+  uint32_t previousSeed = RngSeedManager::GetSeed ();
+  uint64_t previousRun = RngSeedManager::GetRun ();
+  // Values of 1 and 2 here will prevent RA preamble collisions
+  Config::SetGlobal ("RngSeed", UintegerValue (1));
+  Config::SetGlobal ("RngRun", UintegerValue (2));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel",
@@ -353,6 +371,10 @@ LteCellSelectionTestCase::DoRun ()
 
   NS_LOG_INFO ("Simulation ends");
   Simulator::Destroy ();
+
+  // Restore the seed and run number that were in effect before this test
+  Config::SetGlobal ("RngSeed", UintegerValue (previousSeed));
+  Config::SetGlobal ("RngRun", UintegerValue (previousRun));
 
 } // end of void LteCellSelectionTestCase::DoRun ()
 

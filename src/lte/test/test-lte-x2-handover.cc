@@ -202,7 +202,12 @@ LteX2HandoverTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << BuildNameString (m_nUes, m_nDedicatedBearers, m_handoverEventListName, m_schedulerType, m_admitHo, m_useIdealRrc));
 
+  uint32_t previousSeed = RngSeedManager::GetSeed ();
+  uint64_t previousRun = RngSeedManager::GetRun ();
   Config::Reset ();
+  // This test is sensitive to random variable stream assigments
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (2);
   Config::SetDefault ("ns3::UdpClient::Interval",  TimeValue (m_udpClientInterval));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));
@@ -377,7 +382,8 @@ LteX2HandoverTestCase::DoRun ()
                 EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
                 m_lteHelper->ActivateDedicatedEpsBearer (ueDevices.Get (u), bearer, tft);
               }
-              Time startTime = Seconds (startTimeSeconds->GetValue ());
+              double d = startTimeSeconds->GetValue ();
+              Time startTime = Seconds (d);
               serverApps.Start (startTime);
               clientApps.Start (startTime);
 
@@ -476,6 +482,11 @@ LteX2HandoverTestCase::DoRun ()
 
   Simulator::Destroy ();
 
+  // Undo changes to default settings
+  Config::Reset ();
+  // Restore the previous settings of RngSeed and RngRun
+  RngSeedManager::SetSeed (previousSeed);
+  RngSeedManager::SetRun (previousRun);
 }
 
 void
