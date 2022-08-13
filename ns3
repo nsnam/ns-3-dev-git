@@ -372,8 +372,6 @@ def parse_args(argv):
 def check_lock_data(output_directory):
     # Check the .lock-ns3 for the build type (in case there are multiple cmake cache folders
     ns3_modules_tests = []
-    ns3_modules_apiscan = []
-    ns3_modules_bindings = []
     ns3_modules = None
 
     build_info = {"NS3_ENABLED_MODULES": [],
@@ -391,11 +389,7 @@ def check_lock_data(output_directory):
             ns3_modules.extend(build_info["NS3_ENABLED_CONTRIBUTED_MODULES"])
             if build_info["ENABLE_TESTS"]:
                 ns3_modules_tests = [x + "-test" for x in ns3_modules]
-            if build_info["ENABLE_PYTHON_BINDINGS"]:
-                ns3_modules_bindings = [x + "-bindings" for x in ns3_modules]
-            if "ENABLE_SCAN_PYTHON_BINDINGS" in build_info and build_info["ENABLE_SCAN_PYTHON_BINDINGS"]:
-                ns3_modules_apiscan = [x + "-apiscan" for x in ns3_modules]
-            ns3_modules = ns3_modules + ns3_modules_tests + ns3_modules_apiscan + ns3_modules_bindings
+            ns3_modules = ns3_modules + ns3_modules_tests
     return build_info, ns3_modules
 
 
@@ -926,8 +920,7 @@ def build_step(args,
 
     # If we are building specific targets, we build them one by one
     if "build" in args:
-        non_executable_targets = ["apiscan-all",
-                                  "check-version",
+        non_executable_targets = ["check-version",
                                   "cmake-format",
                                   "docs",
                                   "doxygen",
