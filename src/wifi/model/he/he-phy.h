@@ -101,7 +101,7 @@ public:
   void CancelAllEvents (void) override;
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
-  void StartTx (Ptr<const WifiPpdu> ppdu) override;
+  void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
   void SwitchMaybeToCcaBusy (const Ptr<const WifiPpdu> ppdu) override;
   double GetCcaThreshold (const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const override;
@@ -414,7 +414,7 @@ protected:
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
   uint64_t ObtainNextUid (const WifiTxVector& txVector) override;
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) const override;
   uint32_t GetMaxPsduSize (void) const override;
   WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
 

@@ -145,8 +145,9 @@ public:
 
   /**
    * \param ppdu the PPDU to send
+   * \param txVector the TXVECTOR to use to send the PPDU
    */
-  virtual void StartTx (Ptr<const WifiPpdu> ppdu) = 0;
+  virtual void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) = 0;
 
   /**
    * Put in sleep mode.

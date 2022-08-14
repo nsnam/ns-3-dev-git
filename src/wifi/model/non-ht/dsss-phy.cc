@@ -245,9 +245,8 @@ DsssPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 }
 
 Ptr<SpectrumValue>
-DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
+DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu */, const WifiTxVector& txVector) const
 {
-  const WifiTxVector& txVector = ppdu->GetTxVector ();
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);

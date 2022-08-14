@@ -1132,24 +1132,24 @@ PhyEntity::NotifyPayloadBegin (const WifiTxVector& txVector, const Time& payload
 }
 
 void
-PhyEntity::StartTx (Ptr<const WifiPpdu> ppdu)
+PhyEntity::StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this << ppdu);
-  Transmit (ppdu->GetTxDuration (), ppdu, "transmission");
+  NS_LOG_FUNCTION (this << ppdu << txVector);
+  Transmit (ppdu->GetTxDuration (), ppdu, txVector, "transmission");
 }
 
 void
-PhyEntity::Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, std::string type)
+PhyEntity::Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, std::string type)
 {
-  NS_LOG_FUNCTION (this << txDuration << ppdu << type);
+  NS_LOG_FUNCTION (this << txDuration << ppdu << txVector << type);
   double txPowerWatts = DbmToW (m_wifiPhy->GetTxPowerForTransmission (ppdu) + m_wifiPhy->GetTxGain ());
   NS_LOG_DEBUG ("Start " << type << ": signal power before antenna gain=" << WToDbm (txPowerWatts) << "dBm");
-  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu);
+  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu, txVector);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = txDuration;
   txParams->psd = txPowerSpectrum;
   txParams->ppdu = ppdu;
-  txParams->txCenterFreq = GetCenterFrequencyForChannelWidth (ppdu->GetTxVector ());
+  txParams->txCenterFreq = GetCenterFrequencyForChannelWidth (txVector);
   NS_LOG_DEBUG ("Starting " << type << " with power " << WToDbm (txPowerWatts) << " dBm on channel " << +m_wifiPhy->GetChannelNumber () << " for " << txParams->duration.As (Time::MS));
   NS_LOG_DEBUG ("Starting " << type << " with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   auto spectrumWifiPhy = DynamicCast<SpectrumWifiPhy> (m_wifiPhy);

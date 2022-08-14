@@ -156,8 +156,9 @@ public:
 
   /**
    * \param ppdu the PPDU to send
+   * \param txVector the TXVECTOR used for the transmission of the PPDU
    */
-  void StartTx (Ptr<const WifiPpdu> ppdu) override;
+  void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;
 
   /**
    * Set the global PPDU UID counter.
@@ -258,10 +259,10 @@ OfdmaSpectrumWifiPhy::SetTriggerFrameUid (uint64_t uid)
 }
 
 void
-OfdmaSpectrumWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu)
+OfdmaSpectrumWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
 {
   m_phyTxPpduUidTrace (ppdu->GetUid ());
-  SpectrumWifiPhy::StartTx (ppdu);
+  SpectrumWifiPhy::StartTx (ppdu, txVector);
 }
 
 std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &

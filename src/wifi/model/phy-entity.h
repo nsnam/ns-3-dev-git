@@ -447,8 +447,9 @@ public:
    * \see SpectrumWifiPhy::StartTx
    *
    * \param ppdu the PPDU to send
+   * \param txVector the TXVECTOR used for the transmission of the PPDU
    */
-  virtual void StartTx (Ptr<const WifiPpdu> ppdu);
+  virtual void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector);
 
   /**
    * This function prepares most of the WifiSpectrumSignalParameters
@@ -457,9 +458,10 @@ public:
    *
    * \param txDuration the duration of the transmission
    * \param ppdu the PPDU to send
+   * \param txVector the TXVECTOR used for the transmission of the PPDU
    * \param type the type of transmission (for logging)
    */
-  void Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, std::string type);
+  void Transmit (Time txDuration, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, std::string type);
 
   /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID
@@ -776,12 +778,13 @@ protected:
   /**
    * \param txPowerW power in W to spread across the bands
    * \param ppdu the PPDU that will be transmitted
+   * \param txVector the transmission parameters
    * \return Pointer to SpectrumValue
    *
    * This is a helper function to create the right TX PSD corresponding
    * to the amendment of this PHY.
    */
-  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const = 0;
+  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) const = 0;
 
   /**
    * Get the center frequency of the channel corresponding the current TxVector rather than

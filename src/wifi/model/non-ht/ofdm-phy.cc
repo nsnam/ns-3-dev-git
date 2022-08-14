@@ -338,9 +338,8 @@ OfdmPhy::IsAllConfigSupported (WifiPpduField /* field */, Ptr<const WifiPpdu> pp
 }
 
 Ptr<SpectrumValue>
-OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
+OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> /* ppdu */, const WifiTxVector& txVector) const
 {
-  const WifiTxVector& txVector = ppdu->GetTxVector ();
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);

@@ -402,10 +402,10 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 }
 
 void
-SpectrumWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu)
+SpectrumWifiPhy::StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << ppdu);
-  GetPhyEntity (ppdu->GetModulation ())->StartTx (ppdu);
+  GetPhyEntity (ppdu->GetModulation ())->StartTx (ppdu, txVector);
 }
 
 void
