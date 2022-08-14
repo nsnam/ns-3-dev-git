@@ -155,7 +155,17 @@ EhtPhyCapabilities::Deserialize(Buffer::Iterator start)
 
 EhtCapabilities::EhtCapabilities()
     : m_macCapabilities{},
-      m_phyCapabilities{}
+      m_phyCapabilities{},
+      m_is2_4Ghz{false},
+      m_heCapabilities{std::nullopt}
+{
+}
+
+EhtCapabilities::EhtCapabilities(bool is2_4Ghz, const std::optional<HeCapabilities>& heCapabilities)
+    : m_macCapabilities{},
+      m_phyCapabilities{},
+      m_is2_4Ghz{is2_4Ghz},
+      m_heCapabilities{heCapabilities}
 {
 }
 

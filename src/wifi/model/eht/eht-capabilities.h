@@ -20,10 +20,15 @@
 #ifndef EHT_CAPABILITIES_H
 #define EHT_CAPABILITIES_H
 
+#include "ns3/he-capabilities.h"
 #include "ns3/wifi-information-element.h"
+
+#include <optional>
 
 namespace ns3
 {
+
+class HeCapabilities;
 
 /**
  * EHT MAC Capabilities Info subfield.
@@ -149,7 +154,17 @@ struct EhtPhyCapabilities
 class EhtCapabilities : public WifiInformationElement
 {
   public:
+    /**
+     * Constructor
+     */
     EhtCapabilities();
+    /**
+     * Constructor
+     *
+     * \param is2_4Ghz indicating whether PHY is operating in 2.4 GHz based on previously serialized
+     * IEs \param heCapabilities the optional HE capabilities contained in the same management frame
+     */
+    EhtCapabilities(bool is2_4Ghz, const std::optional<HeCapabilities>& heCapabilities);
     // Implementations of pure virtual methods, or overridden from base class.
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
@@ -191,6 +206,11 @@ class EhtCapabilities : public WifiInformationElement
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
     friend std::ostream& operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilities);
+
+    bool m_is2_4Ghz; //!< flag indicating whether PHY is operating in 2.4 GHz based on other IEs
+                     //!< contained in the same management frame
+    std::optional<HeCapabilities>
+        m_heCapabilities; //!< HE capabilities contained in the same management frame if present
 };
 
 /**
