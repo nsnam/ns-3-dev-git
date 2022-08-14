@@ -497,12 +497,12 @@ SpectrumWifiPhy::GetBand (uint16_t bandWidth, uint8_t bandIndex)
   NS_ASSERT_MSG ((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
   WifiSpectrumBand band;
   band.first = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
+  band.second = band.first + numBandsInBand - 1;
   if (band.first >= totalNumBands / 2)
     {
       //step past DC
       band.first += 1;
     }
-  band.second = band.first + numBandsInBand - 1;
   return band;
 }
 
