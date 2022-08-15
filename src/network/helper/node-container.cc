@@ -55,40 +55,6 @@ NodeContainer::NodeContainer (uint32_t n, uint32_t systemId /* = 0 */)
   Create (n, systemId);
 }
 
-NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
-{
-  Add (a);
-  Add (b);
-}
-
-NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
-                              const NodeContainer &c)
-{
-  Add (a);
-  Add (b);
-  Add (c);
-}
-
-NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
-                              const NodeContainer &c, const NodeContainer &d)
-{
-  Add (a);
-  Add (b);
-  Add (c);
-  Add (d);
-}
-
-NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
-                              const NodeContainer &c, const NodeContainer &d,
-                              const NodeContainer &e)
-{
-  Add (a);
-  Add (b);
-  Add (c);
-  Add (d);
-  Add (e);
-}
-
 NodeContainer::Iterator
 NodeContainer::Begin (void) const
 {
@@ -132,9 +98,9 @@ NodeContainer::Create (uint32_t n, uint32_t systemId)
 }
 
 void
-NodeContainer::Add (NodeContainer other)
+NodeContainer::Add (const NodeContainer& nc)
 {
-  for (Iterator i = other.Begin (); i != other.End (); i++)
+  for (Iterator i = nc.Begin (); i != nc.End (); i++)
     {
       m_nodes.push_back (*i);
     }

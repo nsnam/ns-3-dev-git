@@ -20,6 +20,7 @@
 #ifndef NODE_CONTAINER_H
 #define NODE_CONTAINER_H
 
+#include <type_traits>
 #include <vector>
 #include "ns3/node.h"
 
@@ -93,79 +94,23 @@ public:
   NodeContainer (uint32_t n, uint32_t systemId = 0);
 
   /**
-   * Create a node container which is a concatenation of two input
+   * Create a node container which is a concatenation of multiple input
    * NodeContainers.
    *
-   * \param a The first NodeContainer
-   * \param b The second NodeContainer
+   * \tparam Ts \deduced Template type parameter pack for the multiple
+   *         NodeContainers
+   * \param nc The first NodeContainer
+   * \param args The remaining NodeContainers
    *
    * \note A frequently seen idiom that uses these constructors involves the
-   * implicit conversion by constructor of Ptr<Node>.  When used, two
-   * Ptr<Node> will be passed to this constructor instead of NodeContainer&.
+   * implicit conversion by constructor of Ptr<Node>.  When used, Ptr<Node>
+   * will be passed to this constructor instead of NodeContainer&.
    * C++ will notice the implicit conversion path that goes through the
    * NodeContainer (Ptr<Node> node) constructor above.  Using this conversion
-   * one may provide optionally provide arguments of Ptr<Node> to these
-   * constructors.
+   * one may optionally provide arguments of Ptr<Node> to these constructors.
    */
-  NodeContainer (const NodeContainer &a, const NodeContainer &b);
-
-  /**
-   * Create a node container which is a concatenation of three input
-   * NodeContainers.
-   *
-   * \param a The first NodeContainer
-   * \param b The second NodeContainer
-   * \param c The third NodeContainer
-   *
-   * \note A frequently seen idiom that uses these constructors involves the
-   * implicit conversion by constructor of Ptr<Node>.  When used, two
-   * Ptr<Node> will be passed to this constructor instead of NodeContainer&.
-   * C++ will notice the implicit conversion path that goes through the
-   * NodeContainer (Ptr<Node> node) constructor above.  Using this conversion
-   * one may provide optionally provide arguments of Ptr<Node> to these
-   * constructors.
-   */
-  NodeContainer (const NodeContainer &a, const NodeContainer &b, const NodeContainer &c);
-
-  /**
-   * Create a node container which is a concatenation of four input
-   * NodeContainers.
-   *
-   * \param a The first NodeContainer
-   * \param b The second NodeContainer
-   * \param c The third NodeContainer
-   * \param d The fourth NodeContainer
-   *
-   * \note A frequently seen idiom that uses these constructors involves the
-   * implicit conversion by constructor of Ptr<Node>.  When used, two
-   * Ptr<Node> will be passed to this constructor instead of NodeContainer&.
-   * C++ will notice the implicit conversion path that goes through the
-   * NodeContainer (Ptr<Node> node) constructor above.  Using this conversion
-   * one may provide optionally provide arguments of Ptr<Node> to these
-   * constructors.
-   */
-  NodeContainer (const NodeContainer &a, const NodeContainer &b, const NodeContainer &c, const NodeContainer &d);
-
-  /**
-   * Create a node container which is a concatenation of five input
-   * NodeContainers.
-   *
-   * \param a The first NodeContainer
-   * \param b The second NodeContainer
-   * \param c The third NodeContainer
-   * \param d The fourth NodeContainer
-   * \param e The fifth NodeContainer
-   *
-   * \note A frequently seen idiom that uses these constructors involves the
-   * implicit conversion by constructor of Ptr<Node>.  When used, two
-   * Ptr<Node> will be passed to this constructor instead of NodeContainer&.
-   * C++ will notice the implicit conversion path that goes through the
-   * NodeContainer (Ptr<Node> node) constructor above.  Using this conversion
-   * one may provide optionally provide arguments of Ptr<Node> to these
-   * constructors.
-   */
-  NodeContainer (const NodeContainer &a, const NodeContainer &b, const NodeContainer &c, const NodeContainer &d,
-                 const NodeContainer &e);
+  template <typename... Ts>
+  NodeContainer (const NodeContainer& nc, Ts&&... args);
 
   /**
    * \brief Get an iterator which refers to the first Node in the
@@ -284,9 +229,21 @@ public:
    * \brief Append the contents of another NodeContainer to the end of
    * this container.
    *
-   * \param other The NodeContainer to append.
+   * \param nc The NodeContainer to append.
    */
-  void Add (NodeContainer other);
+  void Add (const NodeContainer& nc);
+
+  /**
+   * \brief Append the contents of another NodeContainer to the end of
+   * this container.
+   *
+   * \tparam Ts \deduced Template type parameter pack for the multiple
+   *         NodeContainer
+   * \param nc The NodeContainer to append
+   * \param args The remaining NodeContainers to append
+   */
+  template <typename... Ts>
+  void Add (const NodeContainer& nc, Ts&&... args);
 
   /**
    * \brief Append a single Ptr<Node> to this container.
@@ -314,6 +271,34 @@ public:
 private:
   std::vector<Ptr<Node>> m_nodes; //!< Nodes smart pointers
 };
+
+} // namespace ns3
+
+///////////////////////////////////////////////////////////
+// Implementation of the templates declared above
+///////////////////////////////////////////////////////////
+
+namespace ns3 {
+
+template <typename... Ts>
+NodeContainer::NodeContainer (const NodeContainer& nc, Ts&&... args)
+{
+  static_assert (std::conjunction_v<std::is_convertible<Ts, NodeContainer>...>,
+                 "Variable types are not convertible to NodeContainer");
+
+  Add (nc, std::forward<Ts> (args)...);
+}
+
+template <typename... Ts>
+void
+NodeContainer::Add (const NodeContainer& nc, Ts&&... args)
+{
+  static_assert (std::conjunction_v<std::is_convertible<Ts, NodeContainer>...>,
+                 "Variable types are not convertible to NodeContainer");
+
+  Add (nc);
+  Add (std::forward<Ts> (args)...);
+}
 
 } // namespace ns3
 
