@@ -20,7 +20,6 @@
 #ifndef NODE_CONTAINER_H
 #define NODE_CONTAINER_H
 
-#include <stdint.h>
 #include <vector>
 #include "ns3/node.h"
 
@@ -39,7 +38,7 @@ class NodeContainer
 {
 public:
   /// Node container iterator
-  typedef std::vector<Ptr<Node> >::const_iterator Iterator;
+  typedef std::vector<Ptr<Node>>::const_iterator Iterator;
 
   /**
    * Create an empty NodeContainer.
@@ -66,11 +65,13 @@ public:
   /**
    * Create a NodeContainer with the requested number of Nodes.
    *
-   * This is syntatic sugar for
+   * This is syntactic sugar for
    *
-   *     NodeContainer nodes;
-   *     nodes.Create (size);
-   *     // or nodes.Create (size, systemId);
+   * \code
+   *   NodeContainer nodes;
+   *   nodes.Create (size);
+   *   // or nodes.Create (size, systemId);
+   * \endcode
    *
    * \param [in] n The number of nodes to create.
    * \param [in] systemId The system id or rank associated with this node
@@ -205,9 +206,9 @@ public:
    *
    * \code
    *   uint32_t nNodes = container.GetN ();
-   *   for (uint32_t i = 0 i < nNodes; ++i)
+   *   for (uint32_t i = 0; i < nNodes; ++i)
    *     {
-   *       Ptr<Node> p = container.Get (i)
+   *       Ptr<Node> p = container.Get (i);
    *       i->method ();  // some Node method
    *     }
    * \endcode
@@ -223,13 +224,13 @@ public:
    * Nodes can be retrieved from the container in two ways.  First,
    * directly by an index into the container, and second, using an iterator.
    * This method is used in the direct method and is used to retrieve the
-   * indexed Ptr<Appliation>.
+   * indexed Ptr<Node>.
    *
    * \code
    *   uint32_t nNodes = container.GetN ();
-   *   for (uint32_t i = 0 i < nNodes; ++i)
+   *   for (uint32_t i = 0; i < nNodes; ++i)
    *     {
-   *       Ptr<Node> p = container.Get (i)
+   *       Ptr<Node> p = container.Get (i);
    *       i->method ();  // some Node method
    *     }
    * \endcode
@@ -298,20 +299,20 @@ public:
    * nodes in one place.  This method creates a NodeContainer that is
    * initialized to contain all of the simulation nodes,
    *
-   * \returns a NoceContainer which contains a list of all Nodes.
+   * \returns a NodeContainer which contains a list of all Nodes.
    */
   static NodeContainer GetGlobal (void);
 
   /**
    * \brief Return true if container contains a Node with index id
    *
-   * \return whether the NodeContainer contains a node with index id
    * \param id Node Id
+   * \return whether the NodeContainer contains a node with index id
    */
   bool Contains (uint32_t id) const;
 
 private:
-  std::vector<Ptr<Node> > m_nodes; //!< Nodes smart pointers
+  std::vector<Ptr<Node>> m_nodes; //!< Nodes smart pointers
 };
 
 } // namespace ns3

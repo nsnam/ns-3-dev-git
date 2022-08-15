@@ -31,21 +31,25 @@ NodeContainer::NodeContainer (Ptr<Node> node)
 {
   m_nodes.push_back (node);
 }
+
 NodeContainer::NodeContainer (std::string nodeName)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   m_nodes.push_back (node);
 }
+
 NodeContainer::NodeContainer (uint32_t n, uint32_t systemId /* = 0 */)
 {
   m_nodes.reserve (n);
   Create (n, systemId);
 }
+
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
 {
   Add (a);
   Add (b);
 }
+
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
                               const NodeContainer &c)
 {
@@ -53,6 +57,7 @@ NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
   Add (b);
   Add (c);
 }
+
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
                               const NodeContainer &c, const NodeContainer &d)
 {
@@ -78,6 +83,7 @@ NodeContainer::Begin (void) const
 {
   return m_nodes.begin ();
 }
+
 NodeContainer::Iterator
 NodeContainer::End (void) const
 {
@@ -89,11 +95,13 @@ NodeContainer::GetN (void) const
 {
   return m_nodes.size ();
 }
+
 Ptr<Node>
 NodeContainer::Get (uint32_t i) const
 {
   return m_nodes[i];
 }
+
 void
 NodeContainer::Create (uint32_t n)
 {
@@ -102,6 +110,7 @@ NodeContainer::Create (uint32_t n)
       m_nodes.push_back (CreateObject<Node> ());
     }
 }
+
 void
 NodeContainer::Create (uint32_t n, uint32_t systemId)
 {
@@ -110,6 +119,7 @@ NodeContainer::Create (uint32_t n, uint32_t systemId)
       m_nodes.push_back (CreateObject<Node> (systemId));
     }
 }
+
 void
 NodeContainer::Add (NodeContainer other)
 {
@@ -118,11 +128,13 @@ NodeContainer::Add (NodeContainer other)
       m_nodes.push_back (*i);
     }
 }
+
 void
 NodeContainer::Add (Ptr<Node> node)
 {
   m_nodes.push_back (node);
 }
+
 void
 NodeContainer::Add (std::string nodeName)
 {
