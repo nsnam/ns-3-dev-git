@@ -838,6 +838,14 @@ a result, the backoff timer has a zero value, the EDCAF cannot immediately
 transmit, but it has to wait for another slotTime of idle medium before transmission
 can start.
 
+When the Channel Access Manager determines that channel access can be granted, it
+determines the largest primary channel that is considered idle based on the CCA-BUSY
+indication provided by the PHY. Such an information is passed to the Frame Exchange
+Manager, which in turn informs the Multi-User Scheduler (if any) and the Wifi Remote
+Station Manager. As a result, PPDUs are transmitted on the largest idle primary channel.
+For example, if a STA is operating on a 40 MHz channel and the secondary20 channel
+is indicated to be busy, transmissions will occur on the primary20 channel.
+
 The higher-level MAC functions are implemented in a set of other C++ classes and
 deal with:
 

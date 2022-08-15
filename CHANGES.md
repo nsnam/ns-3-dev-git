@@ -37,6 +37,7 @@ Changes from ns-3.36 to ns-3.37
 * Adds support for **LrWpanMac** active and passive scan.
 * Add supporting association structures: parameters, callbacks and the pending transaction list to **LrWpanMac**.
 * The **TxopTrace** trace source of wifi `QosTxop` now has an additional argument (the third one) indicating the ID of the link the TXOP refers to (for non-MLDs, this value is zero).
+* The maximum allowed channel width (in MHz) for a data transmission is passed to the **GetDataTxVector** method of the `WifiRemoteStationManager`.
 
 
 ### Changes to build system
