@@ -19,6 +19,9 @@
 
 #include "eht-capabilities.h"
 
+#include <bitset>
+#include <cmath>
+
 namespace ns3
 {
 
@@ -266,10 +269,133 @@ EhtMcsAndNssSet::Deserialize(Buffer::Iterator start,
     return count;
 }
 
+uint16_t
+EhtPpeThresholds::GetSize() const
+{
+    const auto numBitsSet = std::bitset<5>(ruIndexBitmask).count();
+    const uint64_t nBitsNoPadding = 4 + 5 + (6 * numBitsSet * (nssPe + 1));
+    return std::ceil(static_cast<double>(nBitsNoPadding) / 8.0);
+}
+
+void
+EhtPpeThresholds::Serialize(Buffer::Iterator& start) const
+{
+    uint64_t nBitsNoPadding = 0;
+    uint8_t val = nssPe | ((ruIndexBitmask & 0x0f) << 4);
+    start.WriteU8(val);
+    nBitsNoPadding += 8;
+    val = (ruIndexBitmask & 0x10) >> 4;
+    nBitsNoPadding += 1;
+    uint8_t bitsPerPpet = 3;
+    for (const auto& info : ppeThresholdsInfo)
+    {
+        uint8_t offset = nBitsNoPadding % 8;
+        uint8_t bitsLeft = (8 - offset);
+        uint8_t bitMask = (0x01 << bitsLeft) - 0x01;
+        val |= (info.ppetMax & bitMask) << offset;
+        nBitsNoPadding += std::min(bitsLeft, bitsPerPpet);
+        if (nBitsNoPadding % 8 == 0)
+        {
+            start.WriteU8(val);
+            if (bitsLeft < 3)
+            {
+                const uint8_t remainingBits = (3 - bitsLeft);
+                bitMask = (0x01 << remainingBits) - 0x01;
+                val = (info.ppetMax >> bitsLeft) & bitMask;
+                nBitsNoPadding += remainingBits;
+            }
+            else
+            {
+                val = 0;
+            }
+        }
+        offset = nBitsNoPadding % 8;
+        bitsLeft = (8 - offset);
+        bitMask = (0x01 << bitsLeft) - 0x01;
+        val |= (info.ppet8 & bitMask) << offset;
+        nBitsNoPadding += std::min(bitsLeft, bitsPerPpet);
+        if (nBitsNoPadding % 8 == 0)
+        {
+            start.WriteU8(val);
+            if (bitsLeft < 3)
+            {
+                const uint8_t remainingBits = (3 - bitsLeft);
+                bitMask = (0x01 << remainingBits) - 0x01;
+                val = (info.ppet8 >> bitsLeft) & bitMask;
+                nBitsNoPadding += remainingBits;
+            }
+            else
+            {
+                val = 0;
+            }
+        }
+    }
+    if (nBitsNoPadding % 8 > 0)
+    {
+        start.WriteU8(val);
+    }
+}
+
+uint16_t
+EhtPpeThresholds::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+    uint64_t nBitsNoPadding = 0;
+    uint8_t val = i.ReadU8();
+    nssPe = val & 0x0f;
+    ruIndexBitmask = ((val >> 4) & 0x0f);
+    nBitsNoPadding += 8;
+    val = i.ReadU8();
+    ruIndexBitmask |= ((val & 0x01) << 4);
+    nBitsNoPadding += 1;
+    const auto numBitsSet = std::bitset<5>(ruIndexBitmask).count();
+    const uint64_t bitsToDeserialize = (4 + 5 + (6 * numBitsSet * (nssPe + 1)));
+    uint8_t bitsPerPpet = 3;
+    while (nBitsNoPadding < bitsToDeserialize)
+    {
+        EhtPpeThresholdsInfo info;
+        uint8_t offset = nBitsNoPadding % 8;
+        uint8_t bitsLeft = (8 - offset);
+        uint8_t bitMask = (1 << bitsLeft) - 1;
+        info.ppetMax = ((val >> offset) & bitMask);
+        nBitsNoPadding += std::min(bitsLeft, bitsPerPpet);
+        if (nBitsNoPadding % 8 == 0)
+        {
+            val = i.ReadU8();
+            if (bitsLeft < 3)
+            {
+                const uint8_t remainingBits = (3 - bitsLeft);
+                bitMask = (1 << remainingBits) - 1;
+                info.ppetMax |= ((val & bitMask) << bitsLeft);
+                nBitsNoPadding += remainingBits;
+            }
+        }
+        offset = nBitsNoPadding % 8;
+        bitsLeft = (8 - offset);
+        bitMask = (1 << bitsLeft) - 1;
+        info.ppet8 = ((val >> offset) & bitMask);
+        nBitsNoPadding += std::min(bitsLeft, bitsPerPpet);
+        if (nBitsNoPadding % 8 == 0)
+        {
+            val = i.ReadU8();
+            if (bitsLeft < 3)
+            {
+                const uint8_t remainingBits = (3 - bitsLeft);
+                bitMask = (1 << remainingBits) - 1;
+                info.ppet8 |= ((val & bitMask) << bitsLeft);
+                nBitsNoPadding += remainingBits;
+            }
+        }
+        ppeThresholdsInfo.push_back(info);
+    }
+    return std::ceil(static_cast<double>(bitsToDeserialize) / 8.0);
+}
+
 EhtCapabilities::EhtCapabilities()
     : m_macCapabilities{},
       m_phyCapabilities{},
       m_supportedEhtMcsAndNssSet{},
+      m_ppeThresholds{},
       m_is2_4Ghz{false},
       m_heCapabilities{std::nullopt}
 {
@@ -279,6 +405,7 @@ EhtCapabilities::EhtCapabilities(bool is2_4Ghz, const std::optional<HeCapabiliti
     : m_macCapabilities{},
       m_phyCapabilities{},
       m_supportedEhtMcsAndNssSet{},
+      m_ppeThresholds{},
       m_is2_4Ghz{is2_4Ghz},
       m_heCapabilities{heCapabilities}
 {
@@ -302,7 +429,10 @@ EhtCapabilities::GetInformationFieldSize() const
     uint16_t size = 1 + // ElementIdExt
                     m_macCapabilities.GetSize() + m_phyCapabilities.GetSize() +
                     m_supportedEhtMcsAndNssSet.GetSize();
-    // FIXME: PPE thresholds not implemented yet
+    if (m_phyCapabilities.ppeThresholdsPresent)
+    {
+        size += m_ppeThresholds.GetSize();
+    }
     return size;
 }
 
@@ -474,6 +604,10 @@ EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
     m_macCapabilities.Serialize(start);
     m_phyCapabilities.Serialize(start);
     m_supportedEhtMcsAndNssSet.Serialize(start);
+    if (m_phyCapabilities.ppeThresholdsPresent)
+    {
+        m_ppeThresholds.Serialize(start);
+    }
 }
 
 uint16_t
@@ -491,10 +625,17 @@ EhtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t le
     count += nBytes;
 
     NS_ASSERT(m_heCapabilities.has_value());
-    count += m_supportedEhtMcsAndNssSet.Deserialize(i,
+    nBytes = m_supportedEhtMcsAndNssSet.Deserialize(i,
                                                     m_is2_4Ghz,
                                                     m_heCapabilities->GetChannelWidthSet(),
                                                     m_phyCapabilities.support320MhzIn6Ghz);
+    i.Next(nBytes);
+    count += nBytes;
+
+    if (m_phyCapabilities.ppeThresholdsPresent)
+    {
+        count += m_ppeThresholds.Deserialize(i);
+    }
 
     return count;
 }

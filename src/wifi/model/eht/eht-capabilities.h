@@ -199,6 +199,46 @@ struct EhtMcsAndNssSet
 };
 
 /**
+ * EHT PPE Thresholds subfield.
+ * See IEEE 802.11be D1.5 9.4.2.313.5 EHT PPE Thresholds subfield
+ */
+struct EhtPpeThresholds
+{
+    /**
+     * EHT PPE Thresholds Info
+     */
+    struct EhtPpeThresholdsInfo
+    {
+        uint8_t ppetMax : 3; //!< PPETmax
+        uint8_t ppet8 : 3;   //!< PPE8
+    };
+
+    uint8_t nssPe : 4;                                   //!< NSS_PE
+    uint8_t ruIndexBitmask : 5;                          //!< RU Index Bitmask
+    std::vector<EhtPpeThresholdsInfo> ppeThresholdsInfo; //!< PPE Thresholds Info
+
+    /**
+     * Get the size of the serialized EHT PPE Thresholds subfield
+     *
+     * \return the size of the serialized EHT PPE Thresholds subfield
+     */
+    uint16_t GetSize() const;
+    /**
+     * Serialize the EHT PPE Thresholds subfield
+     *
+     * \param start iterator pointing to where the EHT PPE Thresholds subfield should be written to
+     */
+    void Serialize(Buffer::Iterator& start) const;
+    /**
+     * Deserialize the EHT PPE Thresholds subfield
+     *
+     * \param start iterator pointing to where the EHT PPE Thresholds subfield should be read from
+     * \return the number of bytes read
+     */
+    uint16_t Deserialize(Buffer::Iterator start);
+};
+
+/**
  * \ingroup wifi
  *
  * The IEEE 802.11be EHT Capabilities
@@ -273,6 +313,7 @@ class EhtCapabilities : public WifiInformationElement
     EhtMacCapabilities m_macCapabilities;       //!< EHT MAC Capabilities Info subfield
     EhtPhyCapabilities m_phyCapabilities;       //!< EHT PHY Capabilities Info subfield
     EhtMcsAndNssSet m_supportedEhtMcsAndNssSet; //!< Supported EHT-MCS And NSS Set subfield
+    EhtPpeThresholds m_ppeThresholds;           //!< EHT PPE Threshold Info subfield
 
   private:
     uint16_t GetInformationFieldSize() const override;
