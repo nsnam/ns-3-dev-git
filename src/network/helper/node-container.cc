@@ -23,6 +23,17 @@
 
 namespace ns3 {
 
+NodeContainer
+NodeContainer::GetGlobal ()
+{
+  NodeContainer c;
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+    {
+      c.Add (*i);
+    }
+  return c;
+}
+
 NodeContainer::NodeContainer ()
 {
 }
@@ -140,17 +151,6 @@ NodeContainer::Add (std::string nodeName)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   m_nodes.push_back (node);
-}
-
-NodeContainer
-NodeContainer::GetGlobal (void)
-{
-  NodeContainer c;
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
-    {
-      c.Add (*i);
-    }
-  return c;
 }
 
 bool

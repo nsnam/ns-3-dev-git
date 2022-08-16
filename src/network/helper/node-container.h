@@ -41,6 +41,20 @@ public:
   typedef std::vector<Ptr<Node>>::const_iterator Iterator;
 
   /**
+   * \brief Create a NodeContainer that contains a list of _all_ nodes
+   * created through NodeContainer::Create() and stored in the
+   * ns3::NodeList.
+   *
+   * Whenever a Node is created, a Ptr<Node> is added to a global list of all
+   * nodes in the system.  It is sometimes useful to be able to get to all
+   * nodes in one place.  This method creates a NodeContainer that is
+   * initialized to contain all of the simulation nodes,
+   *
+   * \returns a NodeContainer which contains a list of all Nodes.
+   */
+  static NodeContainer GetGlobal ();
+
+  /**
    * Create an empty NodeContainer.
    */
   NodeContainer ();
@@ -288,20 +302,6 @@ public:
    * \param nodeName The name of the Node Object to add to the container.
    */
   void Add (std::string nodeName);
-
-  /**
-   * \brief Create a NodeContainer that contains a list of _all_ nodes
-   * created through NodeContainer::Create() and stored in the
-   * ns3::NodeList.
-   *
-   * Whenever a Node is created, a Ptr<Node> is added to a global list of all
-   * nodes in the system.  It is sometimes useful to be able to get to all
-   * nodes in one place.  This method creates a NodeContainer that is
-   * initialized to contain all of the simulation nodes,
-   *
-   * \returns a NodeContainer which contains a list of all Nodes.
-   */
-  static NodeContainer GetGlobal (void);
 
   /**
    * \brief Return true if container contains a Node with index id
