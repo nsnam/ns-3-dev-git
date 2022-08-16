@@ -103,10 +103,10 @@ set(NS3_DISABLED_MODULES ""
 include(build-support/macros-and-definitions.cmake)
 
 # Scan module libraries
-subdirlist(libs_to_build ${CMAKE_SOURCE_DIR}/src)
+subdirlist(libs_to_build ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Scan contribution libraries
-subdirlist(contrib_libs_to_build ${CMAKE_SOURCE_DIR}/contrib)
+subdirlist(contrib_libs_to_build ${CMAKE_CURRENT_SOURCE_DIR}/contrib)
 
 # Before filtering, we need to load settings from .ns3rc
 parse_ns3rc(ns3rc_enabled_modules ns3rc_examples_enabled ns3rc_tests_enabled)
