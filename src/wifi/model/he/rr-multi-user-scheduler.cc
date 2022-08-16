@@ -246,7 +246,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu (Func canbeSolicited)
 
   if (txVector.GetHeMuUserInfoMap ().empty ())
     {
-      // No suitable station
+      NS_LOG_DEBUG ("No suitable station");
       return txVector;
     }
 
@@ -659,7 +659,9 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 void
 RrMultiUserScheduler::FinalizeTxVector (WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this << txVector);
+  // Do not log txVector because GetTxVectorForUlMu() left RUs undefined and
+  // printing them will crash the simulation
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (txVector.GetHeMuUserInfoMap ().size () == m_candidates.size ());
 
   // compute how many stations can be granted an RU and the RU size
