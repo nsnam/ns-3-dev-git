@@ -472,6 +472,7 @@ private:
   TracedCallback<Mac48Address> m_assocLogger;   ///< association logger
   TracedCallback<Mac48Address> m_deAssocLogger; ///< disassociation logger
   TracedCallback<Time>         m_beaconArrival; ///< beacon arrival logger
+  TracedCallback<ApInfo>       m_beaconInfo;    ///< beacon info logger
 };
 
 

@@ -96,6 +96,10 @@ StaWifiMac::GetTypeId (void)
                      "Time of beacons arrival from associated AP",
                      MakeTraceSourceAccessor (&StaWifiMac::m_beaconArrival),
                      "ns3::Time::TracedCallback")
+    .AddTraceSource ("ReceivedBeaconInfo",
+                     "Information about every received Beacon frame",
+                     MakeTraceSourceAccessor (&StaWifiMac::m_beaconInfo),
+                     "ns3::ApInfo::TracedCallback")
   ;
   return tid;
 }
@@ -845,6 +849,21 @@ StaWifiMac::ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId)
       goodBeacon = CheckSupportedRates (beacon, linkId);
     }
 
+  SnrTag snrTag;
+  bool found = mpdu->GetPacket ()->PeekPacketTag (snrTag);
+  NS_ASSERT (found);
+  ApInfo apInfo = {.m_bssid = hdr.GetAddr3 (),
+                   .m_apAddr = hdr.GetAddr2 (),
+                   .m_snr = snrTag.Get (),
+                   .m_frame = std::move (beacon),
+                   .m_channel = {GetCurrentChannel (linkId)},
+                   .m_linkId = linkId};
+
+  if (!m_beaconInfo.IsEmpty ())
+    {
+      m_beaconInfo (apInfo);
+    }
+
   if (!goodBeacon)
     {
       NS_LOG_LOGIC ("Beacon is not for us");
@@ -853,22 +872,14 @@ StaWifiMac::ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId)
   if (m_state == ASSOCIATED)
     {
       m_beaconArrival (Simulator::Now ());
-      Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
+      Time delay = MicroSeconds (std::get<MgtBeaconHeader> (apInfo.m_frame).GetBeaconIntervalUs () * m_maxMissedBeacons);
       RestartBeaconWatchdog (delay, linkId);
-      UpdateApInfo (beacon, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
+      UpdateApInfo (apInfo.m_frame, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
     }
   else
     {
       NS_LOG_DEBUG ("Beacon received from " << hdr.GetAddr2 ());
-      SnrTag snrTag;
-      bool found = mpdu->GetPacket ()->PeekPacketTag (snrTag);
-      NS_ASSERT (found);
-      m_assocManager->NotifyApInfo (ApInfo {.m_bssid = hdr.GetAddr3 (),
-                                            .m_apAddr = hdr.GetAddr2 (),
-                                            .m_snr = snrTag.Get (),
-                                            .m_frame = std::move (beacon),
-                                            .m_channel = {GetCurrentChannel (linkId)},
-                                            .m_linkId = linkId});
+      m_assocManager->NotifyApInfo (std::move (apInfo));
     }
 }
 
