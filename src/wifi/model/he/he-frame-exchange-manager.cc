@@ -111,7 +111,7 @@ HeFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
   NS_LOG_FUNCTION (this << edca << availableTime << initialFrame);
 
   MultiUserScheduler::TxFormat txFormat = MultiUserScheduler::SU_TX;
-  Ptr<const WifiMacQueueItem> mpdu = edca->PeekNextMpdu ();
+  Ptr<const WifiMacQueueItem> mpdu;
 
   /*
    * We consult the Multi-user Scheduler (if available) to know the type of transmission to make if:
@@ -122,7 +122,7 @@ HeFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
    */
   if (m_muScheduler
       && !edca->GetBaManager ()->GetBar (false)
-      && (!mpdu
+      && (!(mpdu = edca->PeekNextMpdu ())
           || (mpdu->GetHeader ().IsQosData ()
               && !mpdu->GetHeader ().GetAddr1 ().IsGroup ()
               && edca->GetBaAgreementEstablished (mpdu->GetHeader ().GetAddr1 (), mpdu->GetHeader ().GetQosTid ()))))
