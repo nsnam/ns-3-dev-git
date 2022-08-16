@@ -41,7 +41,7 @@ def main(argv):
 
     from ctypes import c_int, c_bool
     NumNodesSide = c_int(2)
-    Plot = c_bool(True)
+    Plot = c_bool(False)
     Results = "output.xml"
     cmd = ns.cppyy.gbl.GetCommandLine(__file__, NumNodesSide, Plot, Results)
     cmd.Parse(argv)
@@ -170,7 +170,7 @@ def main(argv):
         print (monitor.SerializeToXmlFile(Results, True, True))
 
 
-    if Plot is not None:
+    if Plot:
         import pylab
         delays = []
         for flow_id, flow_stats in monitor.GetFlowStats():

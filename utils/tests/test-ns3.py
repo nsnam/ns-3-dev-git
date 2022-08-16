@@ -1887,6 +1887,35 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Maybe check the built binary for shared library references? Using objdump, otool, etc
         NS3BuildBaseTestCase.cleaned_once = False
 
+    def test_12_CppyyBindings(self):
+        """!
+        Test if we can use python bindings
+        @return None
+        """
+        try:
+            import cppyy
+        except ModuleNotFound:
+            self.skipTest("Cppyy was not found")
+
+        # First enable examples and static build
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"Unix Makefiles\" --enable-python-bindings")
+
+        # If configuration passes, we are half way done
+        self.assertEqual(return_code, 0)
+
+        # Then build and run tests
+        return_code, stdout, stderr = run_program("test.py", "", python=True)
+        self.assertEqual(return_code, 0)
+
+        # Then try to run a specific test
+        return_code, stdout, stderr = run_program("test.py", "-p mixed-wired-wireless", python=True)
+        self.assertEqual(return_code, 0)
+
+        # Then try to run a specific test with the full relative path
+        return_code, stdout, stderr = run_program("test.py", "-p ./examples/wireless/mixed-wired-wireless", python=True)
+        self.assertEqual(return_code, 0)
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!

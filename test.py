@@ -1641,10 +1641,19 @@ def run_tests():
                         total_tests = total_tests + 1
 
     elif len(options.pyexample):
+        # Find the full relative path to file if only a partial path has been given.
+        if not os.path.exists(options.pyexample):
+            import glob
+            files = glob.glob("./**/%s" % options.pyexample, recursive=True)
+            if files:
+                options.pyexample = files[0]
+
         # Don't try to run this example if it isn't runnable.
         example_name = os.path.basename(options.pyexample)
         if example_name not in ns3_runnable_scripts:
             print("Example %s is not runnable." % example_name)
+        elif not os.path.exists(options.pyexample):
+            print("Example %s does not exist." % example_name)
         else:
             #
             # If you tell me to run a python example, I will try and run the example
