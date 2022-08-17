@@ -94,6 +94,12 @@ public:
   BlockAckManager &operator= (const BlockAckManager &) = delete;
 
   /**
+   * Provide information about all the Block Ack Managers installed on this device.
+   *
+   * \param bamMap an AC-indexed map of all the Block Ack Managers installed on this device
+   */
+  void SetBlockAckManagerMap (const std::map<AcIndex, Ptr<BlockAckManager>>& bamMap);
+  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
@@ -480,6 +486,7 @@ private:
 
   std::list<Bar> m_bars; ///< list of BARs
 
+  std::map<AcIndex, Ptr<BlockAckManager>> m_bamMap; ///< AC-indexed map of all Block Ack Managers
   uint8_t m_blockAckThreshold; ///< block ack threshold
   Ptr<WifiMacQueue> m_queue;   ///< queue
   Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout; ///< BlockAck inactivity timeout callback

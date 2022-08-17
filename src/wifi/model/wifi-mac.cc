@@ -944,6 +944,16 @@ WifiMac::SetQosSupported (bool enable)
       SetupEdcaQueue (AC_VI);
       SetupEdcaQueue (AC_BE);
       SetupEdcaQueue (AC_BK);
+
+      std::map<AcIndex, Ptr<BlockAckManager>> bamMap;
+      for (const auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
+        {
+          bamMap[ac] = GetQosTxop (ac)->GetBaManager ();
+        }
+      for (const auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
+        {
+          GetQosTxop (ac)->GetBaManager ()->SetBlockAckManagerMap (bamMap);
+        }
     }
 }
 

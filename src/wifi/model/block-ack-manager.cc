@@ -80,6 +80,13 @@ BlockAckManager::DoDispose ()
   m_agreements.clear ();
   m_bars.clear ();
   m_queue = nullptr;
+  m_bamMap.clear ();
+}
+
+void
+BlockAckManager::SetBlockAckManagerMap (const std::map<AcIndex, Ptr<BlockAckManager>>& bamMap)
+{
+  m_bamMap = bamMap;
 }
 
 bool
