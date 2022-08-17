@@ -293,7 +293,8 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
         }
       if (nextBar->bar->GetHeader ().IsBlockAckReq ())
         {
-          AgreementsI it = m_agreements.find (std::make_pair (recipient, nextBar->tid));
+          auto bam = m_bamMap.at (QosUtilsMapTidToAc (nextBar->tid));
+          AgreementsI it = bam->m_agreements.find (std::make_pair (recipient, nextBar->tid));
           if (it == m_agreements.end ())
             {
               // BA agreement was torn down; remove this BAR and continue

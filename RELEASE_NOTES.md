@@ -38,6 +38,7 @@ Release 3-dev
 - (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
 - (wifi) Align default TXOP limit for VI and VO to 802.11-2020
 - (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
+- (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
 
 Release 3.36.1
 --------------
