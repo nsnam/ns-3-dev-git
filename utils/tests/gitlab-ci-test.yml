@@ -9,6 +9,7 @@
   stage: test
   image: archlinux
   before_script:
+    - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache valgrind
       python
@@ -17,8 +18,6 @@
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    # workaround for Valgrind on Archlinux https://bbs.archlinux.org/viewtopic.php?pid=2036171#p2036171
-    - export DEBUGINFOD_URLS="https://debuginfod.archlinux.org"
     # missing the flag --disable-python
     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
     - ./ns3 build
@@ -32,6 +31,8 @@
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
     VALGRIND_FLAG: ""
     FULLNESS: ""
+    # workaround for Valgrind on Archlinux https://bbs.archlinux.org/viewtopic.php?pid=2036171#p2036171
+    DEBUGINFOD_URLS: "https://debuginfod.archlinux.org"
 
 # Run the test.py script with files compiled in debug mode
 daily-test-debug:

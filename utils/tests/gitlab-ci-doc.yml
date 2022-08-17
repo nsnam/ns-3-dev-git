@@ -4,6 +4,7 @@
 .doc:
   stage: documentation
   before_script:
+    - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel ninja cmake python ccache gsl gtk3 boost
       git
