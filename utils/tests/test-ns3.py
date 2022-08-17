@@ -1519,15 +1519,21 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # move file back.
         shutil.move(attribute_cc_bak_path, attribute_cc_path)
 
-        # build should work again.
+        # Build should work again.
         return_code, stdout, stderr = run_ns3("build")
         self.assertEqual(return_code, 0)
+
+        # Reset flag to let it clean the build
+        NS3BuildBaseTestCase.cleaned_once = False
 
     def test_06_TestVersionFile(self):
         """!
         Test if changing the version file affects the library names
         @return None
         """
+        run_ns3("build")
+        self.ns3_libraries = get_libraries_list()
+
         version_file = os.sep.join([ns3_path, "VERSION"])
         with open(version_file, "w") as f:
             f.write("3-00\n")
