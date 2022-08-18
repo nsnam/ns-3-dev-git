@@ -80,6 +80,7 @@ public:
 
 private:
   void DoSetup (void) override;
+  void DoTeardown (void) override;
   void DoRun (void) override;
 
   /**
@@ -125,6 +126,7 @@ private:
    */
   void VerifyCcaThreshold (const Ptr<PhyEntity> phy, const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType, double expectedCcaThresholdDbm);
 
+  Ptr<WifiNetDevice> m_device;              ///< The WifiNetDevice
   Ptr<SpectrumWifiPhy> m_phy;               ///< The spectrum PHY
   Ptr<ObssPdAlgorithm> m_obssPdAlgorithm;   ///< The OBSS-PD algorithm
   Ptr<VhtConfiguration> m_vhtConfiguration; ///< The VHT configuration
@@ -203,28 +205,30 @@ WifiPhyCcaThresholdsTest::DoSetup (void)
   //WifiHelper::EnableLogComponents ();
   //LogComponentEnable ("WifiPhyCcaTest", LOG_LEVEL_ALL);
 
-  Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-  device->SetStandard (WIFI_STANDARD_80211ax);
+  m_device = CreateObject<WifiNetDevice> ();
+  m_device->SetStandard (WIFI_STANDARD_80211ax);
   m_vhtConfiguration = CreateObject<VhtConfiguration> ();
-  device->SetVhtConfiguration (m_vhtConfiguration);
+  m_device->SetVhtConfiguration (m_vhtConfiguration);
 
   m_phy = Create<SpectrumWifiPhy> ();
-  m_phy->SetDevice (device);
-  device->SetPhy (m_phy);
+  m_phy->SetDevice (m_device);
+  m_device->SetPhy (m_phy);
 
   auto channelNum = std::get<0> (*WifiPhyOperatingChannel::FindFirst (0, P20_CENTER_FREQUENCY, 20, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ));
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, 20, WIFI_PHY_BAND_5GHZ, 0});
   m_phy->SetOperatingChannel (WifiPhy::ChannelTuple {channelNum, 20, WIFI_PHY_BAND_5GHZ, 0});
   m_phy->ConfigureStandard (WIFI_STANDARD_80211ax);
 
-  m_phy->GetPhyEntity (WIFI_MOD_CLASS_OFDM) = m_phy->GetPhyEntity (WIFI_MOD_CLASS_OFDM);
-  m_phy->GetPhyEntity (WIFI_MOD_CLASS_HT) = m_phy->GetPhyEntity (WIFI_MOD_CLASS_HT);
-  m_phy->GetPhyEntity (WIFI_MOD_CLASS_VHT) = m_phy->GetPhyEntity (WIFI_MOD_CLASS_VHT);
-  m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE) = m_phy->GetPhyEntity (WIFI_MOD_CLASS_HE);
-
   m_obssPdAlgorithm = CreateObject<ConstantObssPdAlgorithm> ();
-  device->AggregateObject (m_obssPdAlgorithm);
-  m_obssPdAlgorithm->ConnectWifiNetDevice (device);
+  m_device->AggregateObject (m_obssPdAlgorithm);
+  m_obssPdAlgorithm->ConnectWifiNetDevice (m_device);
+}
+
+void
+WifiPhyCcaThresholdsTest::DoTeardown (void)
+{
+  m_device->Dispose ();
+  m_device = 0;
 }
 
 void
@@ -429,6 +433,8 @@ WifiPhyCcaThresholdsTest::DoRun (void)
   m_secondaryCcaSensitivityThresholds = std::make_tuple (-70.0, -70.0, -70.0);
   m_obssPdLevel = -70.0;
   RunOne ();
+
+  Simulator::Destroy ();
 }
 
 
