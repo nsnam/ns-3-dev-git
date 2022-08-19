@@ -39,6 +39,7 @@ Release 3-dev
 - (wifi) Align default TXOP limit for VI and VO to 802.11-2020
 - (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
 - (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
+- (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 
 Release 3.36.1
 --------------

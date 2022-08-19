@@ -1394,7 +1394,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trig
       if (!m_mac->GetQosTxop (tid)->GetBaAgreementEstablished (hdr.GetAddr2 (), tid))
         {
           NS_LOG_DEBUG ("Skipping tid=" << +tid << " because no agreement established");
-          ++tid;
+          header.SetQosTid (++tid);
           continue;
         }
 
