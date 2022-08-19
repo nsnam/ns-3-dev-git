@@ -18,29 +18,28 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
-#include "ns3/test.h"
-#include "ns3/string.h"
-#include "ns3/qos-utils.h"
-#include "ns3/packet.h"
-#include "ns3/wifi-net-device.h"
-#include "ns3/wifi-mac-header.h"
-#include "ns3/he-frame-exchange-manager.h"
-#include "ns3/wifi-acknowledgment.h"
-#include "ns3/wifi-mac-queue.h"
-#include "ns3/wifi-protection.h"
+#include "ns3/config.h"
 #include "ns3/he-configuration.h"
+#include "ns3/he-frame-exchange-manager.h"
+#include "ns3/he-phy.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/spectrum-wifi-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
-#include "ns3/packet-socket-server.h"
+#include "ns3/multi-user-scheduler.h"
+#include "ns3/packet.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
-#include "ns3/config.h"
-#include "ns3/pointer.h"
+#include "ns3/packet-socket-server.h"
+#include "ns3/qos-utils.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/spectrum-wifi-helper.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
+#include "ns3/wifi-acknowledgment.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-mac-queue.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/wifi-protection.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/multi-user-scheduler.h"
-#include "ns3/he-phy.h"
 
 using namespace ns3;
 
@@ -200,18 +199,28 @@ TestMultiUserScheduler::SelectTxFormat (void)
 
       for (auto& sta : staList)
         {
-          auto peeked = m_apMac->GetQosTxop (AC_BE)->PeekNextMpdu (SINGLE_LINK_OP_ID, 0, sta.second);
+          Ptr<WifiMpdu> peeked;
+          uint8_t tid;
+
+          for (tid = 0; tid < 8; tid++)
+            {
+              peeked = m_apMac->GetQosTxop (tid)->PeekNextMpdu (SINGLE_LINK_OP_ID, tid, sta.second);
+              if (peeked)
+                {
+                  break;
+                }
+            }
 
           if (!peeked)
             {
-              NS_LOG_DEBUG ("No frame to send");
-              return SU_TX;
+              NS_LOG_DEBUG ("No frame to send to " << sta.second);
+              continue;
             }
 
-          Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (SINGLE_LINK_OP_ID,
-                                                                         peeked, m_txParams,
-                                                                         m_availableTime,
-                                                                         m_initialFrame);
+          Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop (tid)->GetNextMpdu (SINGLE_LINK_OP_ID,
+                                                                       peeked, m_txParams,
+                                                                       m_availableTime,
+                                                                       m_initialFrame);
           if (!mpdu)
             {
               NS_LOG_DEBUG ("Not enough time to send frames to all the stations");
@@ -229,6 +238,12 @@ TestMultiUserScheduler::SelectTxFormat (void)
             {
               m_psduMap[sta.first] = Create<WifiPsdu> (mpdu, true);
             }
+        }
+
+      if (m_psduMap.empty ())
+        {
+          NS_LOG_DEBUG ("No frame to send");
+          return SU_TX;
         }
 
       m_txFormat = DL_MU_TX;
@@ -398,7 +413,8 @@ private:
 
   uint16_t m_nStations;                      ///< number of stations
   NetDeviceContainer m_staDevices;           ///< stations' devices
-  Ptr<NetDevice> m_apDevice;                 ///< AP's device
+  Ptr<WifiNetDevice> m_apDevice;             ///< AP's device
+  std::vector<PacketSocketAddress> m_sockets;///< packet socket addresses for STAs
   uint16_t m_channelWidth;                   ///< PHY channel bandwidth in MHz
   std::vector<FrameInfo> m_txPsdus;          ///< transmitted PSDUs
   WifiAcknowledgment::Method m_dlMuAckType;  ///< DL MU ack sequence type
@@ -406,6 +422,7 @@ private:
   uint16_t m_txopLimit;                      ///< TXOP limit in microseconds
   uint16_t m_nPktsPerSta;                    ///< number of packets to send to each station
   MuEdcaParameterSet m_muEdcaParameterSet;   ///< MU EDCA Parameter Set
+  bool m_ulPktsGenerated;                    ///< whether UL packets for HE TB PPDUs have been generated
   uint16_t m_received;                       ///< number of packets received by the stations
   uint16_t m_flushed;                        ///< number of DL packets flushed after DL MU PPDU
   Time m_edcaDisabledStartTime;              ///< time when disabling EDCA started
@@ -418,12 +435,14 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::
                                             MuEdcaParameterSet muEdcaParameterSet)
   : TestCase ("Check correct operation of DL OFDMA acknowledgment sequences"),
     m_nStations (4),
+    m_sockets (m_nStations),
     m_channelWidth (width),
     m_dlMuAckType (dlType),
     m_maxAmpduSize (maxAmpduSize),
     m_txopLimit (txopLimit),
     m_nPktsPerSta (nPktsPerSta),
     m_muEdcaParameterSet (muEdcaParameterSet),
+    m_ulPktsGenerated (false),
     m_received (0),
     m_flushed (0),
     m_edcaDisabledStartTime (Seconds (0)),
@@ -461,19 +480,20 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
   // skip beacon frames and frames transmitted before 1.5s (association
   // request/response, ADDBA request, ...)
   if (!psduMap.begin ()->second->GetHeader (0).IsBeacon ()
-      && Simulator::Now () > Seconds (1.5))
+      && Simulator::Now () >= Seconds (1.5))
     {
       Time txDuration = WifiPhy::CalculateTxDuration (psduMap, txVector, WIFI_PHY_BAND_5GHZ);
       m_txPsdus.push_back ({Simulator::Now (),
                             Simulator::Now () + txDuration,
                             psduMap, txVector});
 
-      for (const auto& psduPair : psduMap)
+      for (const auto& [staId, psdu] : psduMap)
         {
-          NS_LOG_INFO ("Sending " << psduPair.second->GetHeader (0).GetTypeString ()
-                        << " #MPDUs " << psduPair.second->GetNMpdus ()
+          NS_LOG_INFO ("Sending " << psdu->GetHeader (0).GetTypeString ()
+                        << " #MPDUs " << psdu->GetNMpdus ()
+                        << (psdu->GetHeader (0).IsQosData () ? " TID " + std::to_string (*psdu->GetTids().begin ()) : "")
                         << " txDuration " << txDuration
-                        << " duration/ID " << psduPair.second->GetHeader (0).GetDuration ()
+                        << " duration/ID " << psdu->GetHeader (0).GetDuration ()
                         << " #TX PSDUs = " << m_txPsdus.size ());
         }
     }
@@ -482,16 +502,15 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
   // further transmissions)
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
     {
-      auto dev = DynamicCast<WifiNetDevice> (m_apDevice);
-      Ptr<WifiMacQueue> queue = dev->GetMac ()->GetQosTxop (AC_BE)->GetWifiMacQueue ();
       m_flushed = 0;
       for (uint32_t i = 0; i < m_staDevices.GetN (); i++)
         {
+          auto queue = m_apDevice->GetMac ()->GetQosTxop (static_cast<AcIndex> (i))->GetWifiMacQueue ();
           auto staDev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
           Ptr<const WifiMpdu> lastInFlight = nullptr;
           Ptr<const WifiMpdu> mpdu;
 
-          while ((mpdu = queue->PeekByTidAndAddress (0, staDev->GetMac ()->GetAddress (),
+          while ((mpdu = queue->PeekByTidAndAddress (i * 2, staDev->GetMac ()->GetAddress (),
                                                      lastInFlight)) != nullptr)
             {
               if (mpdu->IsInFlight ())
@@ -517,7 +536,7 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
 
           if (dev->GetAddress () == sender)
             {
-              Ptr<QosTxop> qosTxop = dev->GetMac ()->GetQosTxop (AC_BE);
+              Ptr<QosTxop> qosTxop = dev->GetMac ()->GetQosTxop (static_cast<AcIndex> (i));
 
               if (m_muEdcaParameterSet.muTimer > 0 && m_muEdcaParameterSet.muAifsn > 0)
                 {
@@ -551,6 +570,30 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
           // AP is transmitting a multi-STA BlockAck and stations have to disable EDCA,
           // record the starting time
           m_edcaDisabledStartTime = Simulator::Now () + m_txPsdus.back ().endTx - m_txPsdus.back ().startTx;
+        }
+    }
+  else if (!txVector.IsMu () && psduMap.begin ()->second->GetHeader (0).IsTrigger () && !m_ulPktsGenerated)
+    {
+      CtrlTriggerHeader trigger;
+      psduMap.begin ()->second->GetPayload (0)->PeekHeader (trigger);
+      if (trigger.IsBasic ())
+        {
+          // the AP is starting the transmission of the Basic Trigger frame, so generate
+          // the configured number of packets at STAs, which are sent in HE TB PPDUs
+          for (uint16_t i = 0; i < m_nStations; i++)
+            {
+              Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
+              client->SetAttribute ("PacketSize", UintegerValue (1400 + i * 100));
+              client->SetAttribute ("MaxPackets", UintegerValue (m_nPktsPerSta));
+              client->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+              client->SetAttribute ("Priority", UintegerValue (i * 2));  // 0, 2, 4 and 6
+              client->SetRemote (m_sockets[i]);
+              m_staDevices.Get (i)->GetNode ()->AddApplication (client);
+              client->SetStartTime (Seconds (0));  // start now
+              client->SetStopTime (Seconds (1.0)); // stop in a second
+              client->Initialize ();
+            }
+          m_ulPktsGenerated = true;
         }
     }
 }
@@ -600,8 +643,17 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[1].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
-    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+    uint8_t staId;
+    for (staId = 0; staId < m_nStations; staId++)
+      {
+        if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
+          {
+            break;
+          }
+      }
+    NS_TEST_EXPECT_MSG_NE (+staId, m_nStations, "Sender not found among stations");
+    uint8_t tid = staId * 2;
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), +tid, "Expected a TID equal to " << +tid);
   }
   tEnd = m_txPsdus[0].endTx;
   navEnd = tEnd + m_txPsdus[0].psduMap[SU_STA_ID]->GetDuration ();
@@ -618,8 +670,17 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[2].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
-    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+    uint8_t staId;
+    for (staId = 0; staId < m_nStations; staId++)
+      {
+        if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
+          {
+            break;
+          }
+      }
+    NS_TEST_EXPECT_MSG_NE (+staId, m_nStations, "Sender not found among stations");
+    uint8_t tid = staId * 2;
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), +tid, "Expected a TID equal to " << +tid);
   }
   tStart = m_txPsdus[2].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
@@ -634,8 +695,17 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[3].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
-    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+    uint8_t staId;
+    for (staId = 0; staId < m_nStations; staId++)
+      {
+        if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
+          {
+            break;
+          }
+      }
+    NS_TEST_EXPECT_MSG_NE (+staId, m_nStations, "Sender not found among stations");
+    uint8_t tid = staId * 2;
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), +tid, "Expected a TID equal to " << +tid);
   }
   tStart = m_txPsdus[3].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
@@ -650,8 +720,17 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[4].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), 0, "Expected a TID equal to 0");
-    NS_TEST_EXPECT_MSG_GT (+hdr.GetQosQueueSize (), 0, "Expected a non null queue size for TID 0");
+    uint8_t staId;
+    for (staId = 0; staId < m_nStations; staId++)
+      {
+        if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
+          {
+            break;
+          }
+      }
+    NS_TEST_EXPECT_MSG_NE (+staId, m_nStations, "Sender not found among stations");
+    uint8_t tid = staId * 2;
+    NS_TEST_EXPECT_MSG_EQ (+hdr.GetQosTid (), +tid, "Expected a TID equal to " << +tid);
   }
   tStart = m_txPsdus[4].startTx;
   NS_TEST_EXPECT_MSG_LT (tEnd + sifs, tStart, "QoS Null frame in HE TB PPDU sent too early");
@@ -1082,8 +1161,10 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
 void
 OfdmaAckSequenceTest::DoRun (void)
 {
-  RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (1);
+  uint32_t previousSeed = RngSeedManager::GetSeed ();
+  uint64_t previousRun = RngSeedManager::GetRun ();
+  Config::SetGlobal ("RngSeed", UintegerValue (1));
+  Config::SetGlobal ("RngRun", UintegerValue (1));
   int64_t streamNumber = 20;
 
   NodeContainer wifiApNode;
@@ -1120,6 +1201,42 @@ OfdmaAckSequenceTest::DoRun (void)
         NS_ABORT_MSG ("Invalid channel bandwidth (must be 20, 40, 80 or 160)");
     }
 
+  Config::SetDefault ("ns3::HeConfiguration::MuBeAifsn",
+                      UintegerValue (m_muEdcaParameterSet.muAifsn));
+  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMin",
+                      UintegerValue (m_muEdcaParameterSet.muCwMin));
+  Config::SetDefault ("ns3::HeConfiguration::MuBeCwMax",
+                      UintegerValue (m_muEdcaParameterSet.muCwMax));
+  Config::SetDefault ("ns3::HeConfiguration::BeMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+
+  Config::SetDefault ("ns3::HeConfiguration::MuBkAifsn",
+                      UintegerValue (m_muEdcaParameterSet.muAifsn));
+  Config::SetDefault ("ns3::HeConfiguration::MuBkCwMin",
+                      UintegerValue (m_muEdcaParameterSet.muCwMin));
+  Config::SetDefault ("ns3::HeConfiguration::MuBkCwMax",
+                      UintegerValue (m_muEdcaParameterSet.muCwMax));
+  Config::SetDefault ("ns3::HeConfiguration::BkMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+
+  Config::SetDefault ("ns3::HeConfiguration::MuViAifsn",
+                      UintegerValue (m_muEdcaParameterSet.muAifsn));
+  Config::SetDefault ("ns3::HeConfiguration::MuViCwMin",
+                      UintegerValue (m_muEdcaParameterSet.muCwMin));
+  Config::SetDefault ("ns3::HeConfiguration::MuViCwMax",
+                      UintegerValue (m_muEdcaParameterSet.muCwMax));
+  Config::SetDefault ("ns3::HeConfiguration::ViMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+
+  Config::SetDefault ("ns3::HeConfiguration::MuVoAifsn",
+                      UintegerValue (m_muEdcaParameterSet.muAifsn));
+  Config::SetDefault ("ns3::HeConfiguration::MuVoCwMin",
+                      UintegerValue (m_muEdcaParameterSet.muCwMin));
+  Config::SetDefault ("ns3::HeConfiguration::MuVoCwMax",
+                      UintegerValue (m_muEdcaParameterSet.muCwMax));
+  Config::SetDefault ("ns3::HeConfiguration::VoMuEdcaTimer",
+                      TimeValue (MicroSeconds (8192 * m_muEdcaParameterSet.muTimer)));
+
   // increase MSDU lifetime so that it does not expire before the MU EDCA timer ends
   Config::SetDefault ("ns3::WifiMacQueue::MaxDelay", TimeValue (Seconds (2)));
 
@@ -1138,24 +1255,36 @@ OfdmaAckSequenceTest::DoRun (void)
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::StaWifiMac",
-               "BE_MaxAmsduSize", UintegerValue (0),
-               "BE_MaxAmpduSize", UintegerValue (0),
                "Ssid", SsidValue (ssid),
+               "BE_MaxAmsduSize", UintegerValue (0),
+               "BE_MaxAmpduSize", UintegerValue (m_maxAmpduSize),
                /* setting blockack threshold for sta's BE queue */
                "BE_BlockAckThreshold", UintegerValue (2),
+               "BK_MaxAmsduSize", UintegerValue (0),
+               "BK_MaxAmpduSize", UintegerValue (m_maxAmpduSize),
+               /* setting blockack threshold for sta's BK queue */
+               "BK_BlockAckThreshold", UintegerValue (2),
+               "VI_MaxAmsduSize", UintegerValue (0),
+               "VI_MaxAmpduSize", UintegerValue (m_maxAmpduSize),
+               /* setting blockack threshold for sta's VI queue */
+               "VI_BlockAckThreshold", UintegerValue (2),
+               "VO_MaxAmsduSize", UintegerValue (0),
+               "VO_MaxAmpduSize", UintegerValue (m_maxAmpduSize),
+               /* setting blockack threshold for sta's VO queue */
+               "VO_BlockAckThreshold", UintegerValue (2),
                "ActiveProbing", BooleanValue (false));
 
   m_staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
   mac.SetType ("ns3::ApWifiMac",
-               "BE_MaxAmsduSize", UintegerValue (0),
-               "BE_MaxAmpduSize", UintegerValue (0),
-               "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
-  mac.SetMultiUserScheduler ("ns3::TestMultiUserScheduler");
+  mac.SetMultiUserScheduler ("ns3::TestMultiUserScheduler",
+                             // request channel access at 1.5s
+                             "AccessReqInterval", TimeValue (Seconds (1.5)),
+                             "DelayAccessReqUponAccess", BooleanValue (false));
   mac.SetAckManager ("ns3::WifiDefaultAckManager", "DlMuAckSequenceType", EnumValue (m_dlMuAckType));
 
-  m_apDevice = wifi.Install (phy, mac, wifiApNode).Get (0);
+  m_apDevice = DynamicCast<WifiNetDevice> (wifi.Install (phy, mac, wifiApNode).Get (0));
 
   // Assign fixed streams to random variables in use
   streamNumber += wifi.AssignStreams (NetDeviceContainer (m_apDevice), streamNumber);
@@ -1175,22 +1304,21 @@ OfdmaAckSequenceTest::DoRun (void)
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNodes);
 
-  Ptr<WifiNetDevice> dev;
-
-  // Set maximum A-MPDU size
-  for (uint32_t i = 0; i < m_staDevices.GetN (); i++)
+  NetDeviceContainer allDevices (NetDeviceContainer (m_apDevice), m_staDevices);
+  for (uint32_t i = 0; i < allDevices.GetN (); i++)
     {
-      dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
-      dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (m_maxAmpduSize));
+      auto dev = DynamicCast<WifiNetDevice> (allDevices.Get (i));
+      // set the same TXOP limit on all ACs
+      dev->GetMac ()->GetQosTxop (AC_BE)->SetTxopLimit (MicroSeconds (m_txopLimit));
+      dev->GetMac ()->GetQosTxop (AC_BK)->SetTxopLimit (MicroSeconds (m_txopLimit));
+      dev->GetMac ()->GetQosTxop (AC_VI)->SetTxopLimit (MicroSeconds (m_txopLimit));
+      dev->GetMac ()->GetQosTxop (AC_VO)->SetTxopLimit (MicroSeconds (m_txopLimit));
+      // set the same AIFSN on all ACs (just to be able to check inter-frame spaces)
+      dev->GetMac ()->GetQosTxop (AC_BE)->SetAifsn (3);
+      dev->GetMac ()->GetQosTxop (AC_BK)->SetAifsn (3);
+      dev->GetMac ()->GetQosTxop (AC_VI)->SetAifsn (3);
+      dev->GetMac ()->GetQosTxop (AC_VO)->SetAifsn (3);
     }
-  dev = DynamicCast<WifiNetDevice> (m_apDevice);
-  dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (m_maxAmpduSize));
-
-  PointerValue ptr;
-  dev->GetMac ()->GetAttribute ("BE_Txop", ptr);
-  Ptr<QosTxop> apBeQosTxop = ptr.Get<QosTxop> ();
-  // set the TXOP limit on BE AC
-  apBeQosTxop->SetTxopLimit (MicroSeconds (m_txopLimit));
 
   PacketSocketHelper packetSocket;
   packetSocket.Install (wifiApNode);
@@ -1210,6 +1338,7 @@ OfdmaAckSequenceTest::DoRun (void)
       client1->SetAttribute ("PacketSize", UintegerValue (1400));
       client1->SetAttribute ("MaxPackets", UintegerValue (2));
       client1->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+      client1->SetAttribute ("Priority", UintegerValue (i * 2));  // 0, 2, 4 and 6
       client1->SetRemote (socket);
       wifiApNode.Get (0)->AddApplication (client1);
       client1->SetStartTime (Seconds (1) + i * MilliSeconds (1));
@@ -1221,9 +1350,10 @@ OfdmaAckSequenceTest::DoRun (void)
       client2->SetAttribute ("PacketSize", UintegerValue (1400 + i * 100));
       client2->SetAttribute ("MaxPackets", UintegerValue (m_nPktsPerSta));
       client2->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+      client2->SetAttribute ("Priority", UintegerValue (i * 2));  // 0, 2, 4 and 6
       client2->SetRemote (socket);
       wifiApNode.Get (0)->AddApplication (client2);
-      client2->SetStartTime (Seconds (1.5));
+      client2->SetStartTime (Seconds (1.5003));
       client2->SetStopTime (Seconds (2.5));
 
       Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
@@ -1236,10 +1366,9 @@ OfdmaAckSequenceTest::DoRun (void)
   // UL Traffic
   for (uint16_t i = 0; i < m_nStations; i++)
     {
-      PacketSocketAddress socket;
-      socket.SetSingleDevice (m_staDevices.Get (i)->GetIfIndex ());
-      socket.SetPhysicalAddress (m_apDevice->GetAddress ());
-      socket.SetProtocol (1);
+      m_sockets[i].SetSingleDevice (m_staDevices.Get (i)->GetIfIndex ());
+      m_sockets[i].SetPhysicalAddress (m_apDevice->GetAddress ());
+      m_sockets[i].SetProtocol (1);
 
       // the first client application generates two packets in order
       // to trigger the establishment of a Block Ack agreement
@@ -1247,24 +1376,17 @@ OfdmaAckSequenceTest::DoRun (void)
       client1->SetAttribute ("PacketSize", UintegerValue (1400));
       client1->SetAttribute ("MaxPackets", UintegerValue (2));
       client1->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
-      client1->SetRemote (socket);
+      client1->SetAttribute ("Priority", UintegerValue (i * 2));  // 0, 2, 4 and 6
+      client1->SetRemote (m_sockets[i]);
       wifiStaNodes.Get (i)->AddApplication (client1);
       client1->SetStartTime (Seconds (1.005) + i * MilliSeconds (1));
       client1->SetStopTime (Seconds (2.0));
 
-      // the second client application generates the selected number of packets,
-      // which are sent in HE TB PPDUs.
-      Ptr<PacketSocketClient> client2 = CreateObject<PacketSocketClient> ();
-      client2->SetAttribute ("PacketSize", UintegerValue (1400 + i * 100));
-      client2->SetAttribute ("MaxPackets", UintegerValue (m_nPktsPerSta));
-      client2->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
-      client2->SetRemote (socket);
-      wifiStaNodes.Get (i)->AddApplication (client2);
-      client2->SetStartTime (Seconds (1.50011));  // start before sending QoS Null frames
-      client2->SetStopTime (Seconds (2.5));
+      // packets to be included in HE TB PPDUs are generated (by Transmit()) when
+      // the first Basic Trigger Frame is sent by the AP
 
       Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
-      server->SetLocal (socket);
+      server->SetLocal (m_sockets[i]);
       wifiApNode.Get (0)->AddApplication (server);
       server->SetStartTime (Seconds (0.0));
       server->SetStopTime (Seconds (3.0));
@@ -1279,10 +1401,15 @@ OfdmaAckSequenceTest::DoRun (void)
   Simulator::Stop (Seconds (3));
   Simulator::Run ();
 
-  CheckResults (dev->GetMac ()->GetWifiPhy ()->GetSifs (), dev->GetMac ()->GetWifiPhy ()->GetSlot (),
-                apBeQosTxop->Txop::GetAifsn ());
+  CheckResults (m_apDevice->GetMac ()->GetWifiPhy ()->GetSifs (),
+                m_apDevice->GetMac ()->GetWifiPhy ()->GetSlot (),
+                m_apDevice->GetMac ()->GetQosTxop (AC_BE)->Txop::GetAifsn ());
 
   Simulator::Destroy ();
+
+  // Restore the seed and run number that were in effect before this test
+  Config::SetGlobal ("RngSeed", UintegerValue (previousSeed));
+  Config::SetGlobal ("RngRun", UintegerValue (previousRun));
 }
 
 
