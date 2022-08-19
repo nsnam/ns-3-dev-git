@@ -444,6 +444,8 @@ TestCase::CreateTempDirFilename (std::string filename)
           current = current->m_parent;
         }
       std::string tempDir = SystemPath::Append (m_runner->GetTempDir (), SystemPath::Join (names.begin (), names.end ()));
+      tempDir = SystemPath::CreateValidSystemPath (tempDir);
+
       SystemPath::MakeDirectories (tempDir);
       return SystemPath::Append (tempDir, filename);
     }

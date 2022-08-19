@@ -19,29 +19,18 @@
  */
 #include "system-path.h"
 #include "fatal-error.h"
-#include "assert.h"
 #include "log.h"
-#include "ns3/core-config.h"
+#include "assert.h"
 
 #include <algorithm>
-#include <cstdlib>  // getenv
-#include <cerrno>
-#include <cstring>  // strlen
+#include <cstdlib> // getenv
+#include <cstring> // strlen
+#include <filesystem>
 #include <tuple>
-
-#if defined (HAVE_DIRENT_H) && defined (HAVE_SYS_TYPES_H)
-/** Do we have an \c opendir function? */
-#define HAVE_OPENDIR
-#include <sys/types.h>
-#include <dirent.h>
-#endif
-#if defined (HAVE_SYS_STAT_H) && defined (HAVE_SYS_TYPES_H)
-/** Do we have a \c makedir function? */
-#define HAVE_MKDIR_H
-#include <sys/types.h>
-#include <sys/stat.h>
-#endif
 #include <sstream>
+#include <ctime>
+#include <regex>
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif /* __APPLE__ */
@@ -55,11 +44,17 @@
 #include <unistd.h>
 #endif
 
+#ifdef __WIN32__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <regex>
+#endif
+
 /**
  * \def SYSTEM_PATH_SEP
  * System-specific path separator used between directory names.
  */
-#if defined (__win32__)
+#if defined(__WIN32__)
 #define SYSTEM_PATH_SEP "\\"
 #else
 #define SYSTEM_PATH_SEP "/"
@@ -84,43 +79,22 @@ namespace {
  * \param [in] path A path which identifies a directory
  * \return Tuple with a list of the filenames which are located in the input directory or error flag \c true if directory doesn't exist.
  */
-std::tuple<std::list<std::string>, bool> ReadFilesNoThrow (std::string path)
+std::tuple<std::list<std::string>, bool>
+ReadFilesNoThrow (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> files;
-
-#if defined HAVE_OPENDIR
-  DIR *dp = opendir (path.c_str ());
-  if (dp == NULL)
+  if (!std::filesystem::exists (path))
     {
       return std::make_tuple (files, true);
     }
-  struct dirent *de = readdir (dp);
-  while (de != 0)
+  for (auto &it : std::filesystem::directory_iterator (path))
     {
-      files.push_back (de->d_name);
-      de = readdir (dp);
+      if (!it.is_directory ())
+        {
+          files.push_back (it.path ().filename ().string ());
+        }
     }
-  closedir (dp);
-#elif defined (HAVE_FIND_FIRST_FILE)
-  /** \todo untested */
-  HANDLE hFind;
-  WIN32_FIND_DATA fileData;
-
-  hFind = FindFirstFile (path.c_str (), &FindFileData);
-  if (hFind == INVALID_HANDLE_VALUE)
-    {
-      return std::make_tuple (files, true);
-    }
-  do
-    {
-      files.push_back (fileData.cFileName);
-    }
-  while (FindNextFile (hFind, &fileData));
-  FindClose (hFind);
-#else
-#error "No support for reading a directory on this platform"
-#endif
   return std::make_tuple (files, false);
 }
 
@@ -138,7 +112,8 @@ namespace SystemPath {
  * \param [in] path The full path to a file.
  * \returns The full path to the containing directory.
  */
-std::string Dirname (std::string path)
+std::string
+Dirname (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> elements = Split (path);
@@ -147,7 +122,8 @@ std::string Dirname (std::string path)
   return Join (elements.begin (), last);
 }
 
-std::string FindSelfDirectory (void)
+std::string
+FindSelfDirectory (void)
 {
   /**
    * This function returns the path to the running $PREFIX.
@@ -163,7 +139,7 @@ std::string FindSelfDirectory (void)
 #if defined(__linux__)
   {
     ssize_t size = 1024;
-    char *buffer = (char*)malloc (size);
+    char *buffer = (char *) malloc (size);
     memset (buffer, 0, size);
     int status;
     while (true)
@@ -175,7 +151,7 @@ std::string FindSelfDirectory (void)
           }
         size *= 2;
         free (buffer);
-        buffer = (char*)malloc (size);
+        buffer = (char *) malloc (size);
         memset (buffer, 0, size);
       }
     if (status == -1)
@@ -185,26 +161,24 @@ std::string FindSelfDirectory (void)
     filename = buffer;
     free (buffer);
   }
-#elif defined (__win32__)
+#elif defined(__WIN32__)
   {
-    /** \todo untested. it should work if code is compiled with
-     *  LPTSTR = char *
-     */
+    //  LPTSTR = char *
     DWORD size = 1024;
-    LPTSTR lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
-    DWORD status = GetModuleFilename (0, lpFilename, size);
+    LPTSTR lpFilename = (LPTSTR) malloc (sizeof (TCHAR) * size);
+    DWORD status = GetModuleFileName (0, lpFilename, size);
     while (status == size)
       {
         size = size * 2;
         free (lpFilename);
-        lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
-        status = GetModuleFilename (0, lpFilename, size);
+        lpFilename = (LPTSTR) malloc (sizeof (TCHAR) * size);
+        status = GetModuleFileName (0, lpFilename, size);
       }
     NS_ASSERT (status != 0);
     filename = lpFilename;
     free (lpFilename);
   }
-#elif defined (__APPLE__)
+#elif defined(__APPLE__)
   {
     uint32_t bufsize = 1024;
     char *buffer = (char *) malloc (bufsize);
@@ -220,11 +194,11 @@ std::string FindSelfDirectory (void)
     filename = buffer;
     free (buffer);
   }
-#elif defined (__FreeBSD__)
+#elif defined(__FreeBSD__)
   {
-    int     mib[4];
-    std::size_t  bufSize = 1024;
-    char   *buf = (char *) malloc (bufSize);
+    int mib[4];
+    std::size_t bufSize = 1024;
+    char *buf = (char *) malloc (bufSize);
 
     mib[0] = CTL_KERN;
     mib[1] = KERN_PROC;
@@ -238,7 +212,8 @@ std::string FindSelfDirectory (void)
   return Dirname (filename);
 }
 
-std::string Append (std::string left, std::string right)
+std::string
+Append (std::string left, std::string right)
 {
   // removing trailing separators from 'left'
   NS_LOG_FUNCTION (left << right);
@@ -255,7 +230,8 @@ std::string Append (std::string left, std::string right)
   return retval;
 }
 
-std::list<std::string> Split (std::string path)
+std::list<std::string>
+Split (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> retval;
@@ -273,8 +249,9 @@ std::list<std::string> Split (std::string path)
   return retval;
 }
 
-std::string Join (std::list<std::string>::const_iterator begin,
-                  std::list<std::string>::const_iterator end)
+std::string
+Join (std::list<std::string>::const_iterator begin,
+      std::list<std::string>::const_iterator end)
 {
   NS_LOG_FUNCTION (*begin << *end);
   std::string retval = "";
@@ -297,7 +274,8 @@ std::string Join (std::list<std::string>::const_iterator begin,
   return retval;
 }
 
-std::list<std::string> ReadFiles (std::string path)
+std::list<std::string>
+ReadFiles (std::string path)
 {
   NS_LOG_FUNCTION (path);
   bool err;
@@ -362,30 +340,15 @@ MakeDirectories (std::string path)
 {
   NS_LOG_FUNCTION (path);
 
-  // Make sure all directories on the path exist
-  std::list<std::string> elements = Split (path);
-  auto i = elements.begin ();
-  while (i != elements.end ())
+  std::error_code ec;
+  if (!std::filesystem::exists (path))
     {
-      if (*i == "")
-        {
-          NS_LOG_LOGIC ("skipping empty directory name");
-          ++i;
-          continue;
-        }
-      NS_LOG_LOGIC ("creating directory " << *i);
-      ++i;  // Now points to one past the directory we want to create
-      std::string tmp = Join (elements.begin (), i);
-      bool makeDirErr = false;
+      std::filesystem::create_directories (path, ec);
+    }
 
-#if defined(HAVE_MKDIR_H)
-      makeDirErr = mkdir (tmp.c_str (), S_IRWXU);
-#endif
-
-      if (makeDirErr)
-        {
-          NS_LOG_ERROR ("failed creating directory " << tmp);
-        }
+  if (ec.value ())
+    {
+      NS_FATAL_ERROR ("failed creating directory " << path);
     }
 }
 
@@ -432,8 +395,21 @@ Exists (const std::string path)
   NS_LOG_LOGIC ("file itself exists: " << file);
   return true;
 
-}  // Exists()
+} // Exists()
 
+std::string
+CreateValidSystemPath (const std::string path)
+{
+  // Windows and its file systems, e.g. NTFS and (ex)FAT(12|16|32),
+  // do not like paths with empty spaces or special symbols.
+  // Some of these symbols are allowed in test names, checked in TestCase::AddTestCase.
+  // We replace them with underlines to ensure they work on Windows.
+  std::regex incompatible_characters (" |:[^\\\\]|<|>|\\*");
+  std::string valid_path;
+  std::regex_replace (std::back_inserter (valid_path), path.begin(),
+                      path.end(), incompatible_characters, "_");
+  return valid_path;
+} // CreateValidSystemPath
 
 } // namespace SystemPath
 
