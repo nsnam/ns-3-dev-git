@@ -329,7 +329,7 @@ bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
 
 /** Specialization for comparison to nullptr */
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
 operator == (Ptr<T1> const &lhs, T2 nullPtr);
 /**@}*/
 
@@ -365,7 +365,7 @@ bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
 
 /** Specialization for comparison to nullptr */
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
 operator != (Ptr<T1> const &lhs, T2 nullPtr);
 /**@}*/
 
@@ -540,14 +540,14 @@ operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 }
 
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
 operator == (Ptr<T1> const &lhs, T2 nullPtr)
 {
   return PeekPointer (lhs) == nullptr;
 }
 
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, nullptr_t>::value, bool>::type
+typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
 operator != (Ptr<T1> const &lhs, T2 nullPtr)
 {
   return PeekPointer (lhs) != nullptr;
