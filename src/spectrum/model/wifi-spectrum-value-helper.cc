@@ -269,27 +269,26 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
   uint32_t nAllocatedBands = static_cast<uint32_t> (((channelWidth * 1e6) / bandBandwidth) + 0.5);
   NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
   std::size_t num20MhzBands = channelWidth / 20;
-  double txPowerPerBandW = (txPowerW / 52) / num20MhzBands;
+  std::size_t numAllocatedSubcarriersPer20MHz = 56;
+  double txPowerPerBandW = (txPowerW / numAllocatedSubcarriersPer20MHz) / num20MhzBands;
   NS_LOG_DEBUG ("Power per band " << txPowerPerBandW << "W");
 
-  // skip the guard band and 4 subbands, then place power in 28 subbands, then
-  // skip the center subband, then place power in 28 subbands, then skip
-  // the final 4 subbands and the guard band.
-  // Repeat for each 20 MHz band.
+  std::size_t numSubcarriersPer20MHz = (20 * 1e6) / bandBandwidth;
+  std::size_t numUnallocatedSubcarriersPer20MHz = numSubcarriersPer20MHz - numAllocatedSubcarriersPer20MHz;
   std::vector <WifiSpectrumBand> subBands; //list of data/pilot-containing subBands (sent at 0dBr)
   subBands.resize (num20MhzBands * 2); //the center subcarrier is skipped, hence 2 subbands per 20 MHz subchannel
-  uint32_t start = (nGuardBands / 2) + 4;
+  uint32_t start = (nGuardBands / 2) + (numUnallocatedSubcarriersPer20MHz / 2);
   uint32_t stop;
   for (auto it = subBands.begin (); it != subBands.end (); )
   {
-    stop = start + 28 - 1;
+    stop = start + (numAllocatedSubcarriersPer20MHz / 2) - 1;
     *it = std::make_pair (start, stop);
     ++it;
     start = stop + 2; //skip center subcarrier
-    stop = start + 28 - 1;
+    stop = start + (numAllocatedSubcarriersPer20MHz / 2) - 1;
     *it = std::make_pair (start, stop);
     ++it;
-    start = stop + (2 * 4);
+    start = stop + numUnallocatedSubcarriersPer20MHz;
   }
 
   //Prepare spectrum mask specific variables
