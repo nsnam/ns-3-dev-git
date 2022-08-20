@@ -174,6 +174,7 @@ The following details pertain to the physical layer and channel models:
 * Processing delays are not modeled
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE/EHT formats are not supported
 * Energy consumption model does not consider MIMO
+* 802.11ax preamble puncturing is supported by the PHY but is currently not exploited by the MAC
 * Only minimal 802.11be PHY is supported (no MAC layer yet)
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
