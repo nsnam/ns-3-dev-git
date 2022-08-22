@@ -91,7 +91,7 @@ public:
    * \param [in] n The number of nodes to create.
    * \param [in] systemId The system id or rank associated with this node
    */
-  NodeContainer (uint32_t n, uint32_t systemId = 0);
+  explicit NodeContainer (uint32_t n, uint32_t systemId = 0);
 
   /**
    * Create a node container which is a concatenation of multiple input
