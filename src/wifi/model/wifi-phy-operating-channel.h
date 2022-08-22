@@ -43,10 +43,20 @@ typedef std::tuple<uint8_t, uint16_t, uint16_t, FrequencyChannelType, WifiPhyBan
 class WifiPhyOperatingChannel
 {
 public:
+  /// Typedef for a const iterator pointing to a channel in the set of available channels
+  typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
+
   /**
    * Create an uninitialized PHY operating channel.
    */
   WifiPhyOperatingChannel ();
+
+  /**
+   * Create a PHY operating channel from an iterator pointing to a channel in the set of available channels.
+   *
+   * \param it the iterator pointing to a channel in the set of available channels
+   */
+  WifiPhyOperatingChannel (ConstIterator it);
 
   virtual ~WifiPhyOperatingChannel ();
 
@@ -216,9 +226,6 @@ public:
    *         exists, or an empty set, otherwise
    */
   std::set<uint8_t> GetAll20MHzChannelIndicesInSecondary (const std::set<uint8_t>& primaryIndices) const;
-
-  /// Typedef for a const iterator pointing to a channel in the set of available channels
-  typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
 
   /**
    * Find the first channel matching the specified parameters.

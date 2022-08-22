@@ -265,7 +265,12 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
 };
 
 WifiPhyOperatingChannel::WifiPhyOperatingChannel ()
-  : m_channelIt (m_frequencyChannels.end ()),
+  : WifiPhyOperatingChannel (m_frequencyChannels.end ())
+{
+}
+
+WifiPhyOperatingChannel::WifiPhyOperatingChannel (ConstIterator it)
+  : m_channelIt (it),
     m_primary20Index (0)
 {
   NS_LOG_FUNCTION (this);
