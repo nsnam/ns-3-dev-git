@@ -599,6 +599,22 @@ EhtCapabilities::SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapTy
 }
 
 void
+EhtCapabilities::SetPpeThresholds(uint8_t nssPe,
+                                  uint8_t ruIndexBitmask,
+                                  const std::vector<std::pair<uint8_t, uint8_t>>& ppeThresholds)
+{
+    NS_ASSERT(ppeThresholds.size() == (std::bitset<5>(ruIndexBitmask).count() * (nssPe + 1)));
+    m_phyCapabilities.ppeThresholdsPresent = 1;
+    m_ppeThresholds.nssPe = nssPe;
+    m_ppeThresholds.ruIndexBitmask = ruIndexBitmask;
+    m_ppeThresholds.ppeThresholdsInfo.clear();
+    for (const auto& [ppetMax, ppet8] : ppeThresholds)
+    {
+        m_ppeThresholds.ppeThresholdsInfo.push_back({ppetMax, ppet8});
+    }
+}
+
+void
 EhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     m_macCapabilities.Serialize(start);

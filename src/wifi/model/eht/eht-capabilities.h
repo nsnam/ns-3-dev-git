@@ -310,6 +310,17 @@ class EhtCapabilities : public WifiInformationElement
                                     uint8_t upperMcs,
                                     uint8_t maxNss);
 
+    /**
+     * Set the EHT PPE threshold info subfield
+     *
+     * \param nssPe the NSS_PE subfield
+     * \param ruIndexBitmask the RU Index Bitmask subfield
+     * \param ppeThresholds the PPE thresholds made of pairs (PPETmax, PPET8)
+     */
+    void SetPpeThresholds(uint8_t nssPe,
+                          uint8_t ruIndexBitmask,
+                          const std::vector<std::pair<uint8_t, uint8_t>>& ppeThresholds);
+
     EhtMacCapabilities m_macCapabilities;       //!< EHT MAC Capabilities Info subfield
     EhtPhyCapabilities m_phyCapabilities;       //!< EHT PHY Capabilities Info subfield
     EhtMcsAndNssSet m_supportedEhtMcsAndNssSet; //!< Supported EHT-MCS And NSS Set subfield
