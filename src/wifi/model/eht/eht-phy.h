@@ -259,6 +259,9 @@ class EhtPhy : public HePhy
                                 PhyFieldRxStatus status,
                                 WifiPpduField field) override;
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
+    Time CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const override;
+    Time CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const override;
+
     /**
      * Create and return the EHT MCS corresponding to
      * the provided index.

@@ -116,6 +116,27 @@ EhtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
     }
 }
 
+Time
+EhtPhy::CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const
+{
+    NS_ABORT_IF(!txVector.IsUlMu() || (txVector.GetModulationClass() < WIFI_MOD_CLASS_EHT));
+    Time duration = GetDuration(WIFI_PPDU_FIELD_PREAMBLE, txVector) +
+                    GetDuration(WIFI_PPDU_FIELD_NON_HT_HEADER, txVector) +
+                    GetDuration(WIFI_PPDU_FIELD_U_SIG, txVector);
+    return duration;
+}
+
+Time
+EhtPhy::CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const
+{
+    NS_ABORT_IF(!txVector.IsDlMu() || (txVector.GetModulationClass() < WIFI_MOD_CLASS_EHT));
+    Time duration = GetDuration(WIFI_PPDU_FIELD_PREAMBLE, txVector) +
+                    GetDuration(WIFI_PPDU_FIELD_NON_HT_HEADER, txVector) +
+                    GetDuration(WIFI_PPDU_FIELD_U_SIG, txVector) +
+                    GetDuration(WIFI_PPDU_FIELD_EHT_SIG, txVector);
+    return duration;
+}
+
 const PhyEntity::PpduFormats&
 EhtPhy::GetPpduFormats() const
 {

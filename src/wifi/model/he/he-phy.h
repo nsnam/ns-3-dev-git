@@ -151,14 +151,14 @@ class HePhy : public VhtPhy
      *
      * \return the duration of the non-OFDMA portion of the HE TB PPDU.
      */
-    Time CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const;
+    virtual Time CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const;
 
     /**
      * \param txVector the transmission parameters used for the HE MU PPDU
      *
      * \return the duration of the non-OFDMA portion of the HE MU PPDU.
      */
-    Time CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const;
+    virtual Time CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const;
 
     /**
      * Get the band in the TX spectrum associated with the RU used by the PSDU
