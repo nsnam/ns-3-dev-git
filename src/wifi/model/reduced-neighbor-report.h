@@ -291,15 +291,27 @@ public:
    */
   uint8_t GetLinkId (std::size_t nbrApInfoId, std::size_t index) const;
 
+private:
+  /**
+   * Set the TBTT Information Count field of the given Neighbor AP Information field
+   * based on the size of the tbttInformationSet field.
+   *
+   * This method is marked as const because it needs to be called within the
+   * SerializeInformationField method. In fact, only when serializing this object
+   * we can set the TBTT Information Count field based on the number of TBTT Information
+   * fields included in the given Neighbor AP Information field.
+   *
+   * \param nbrApInfoId identifier of the given Neighbor AP Information field
+   */
+  void WriteTbttInformationCount (std::size_t nbrApInfoId) const;
   /**
    * Get the TBTT Information Count field of the given Neighbor AP Information field.
    *
    * \param nbrApInfoId identifier of the given Neighbor AP Information field
    * \return the TBTT Information Count
    */
-  uint8_t GetTbttInformationCount (std::size_t nbrApInfoId) const;
+  uint8_t ReadTbttInformationCount (std::size_t nbrApInfoId) const;
 
-private:
   /**
    * Set the TBTT Information Length field of the given Neighbor AP Information field
    * based on the xxxPresent flags of the NeighborApInformation struct

@@ -347,9 +347,6 @@ ReducedNeighborReport::AddTbttInformationField (std::size_t nbrApInfoId)
 {
   NS_ASSERT (nbrApInfoId < m_nbrApInfoFields.size ());
   m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.push_back (TbttInformation ());
-
-  // set the TBTT Information Count field
-  m_nbrApInfoFields.at (nbrApInfoId).tbttInfoHdr.tbttInfoCount = m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.size () - 1;
 }
 
 void
@@ -568,8 +565,18 @@ ReducedNeighborReport::GetLinkId (std::size_t nbrApInfoId, std::size_t index) co
   return m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.at (index).mldParameters.linkId & 0x0f;
 }
 
+void
+ReducedNeighborReport::WriteTbttInformationCount (std::size_t nbrApInfoId) const
+{
+  NS_ASSERT (nbrApInfoId < m_nbrApInfoFields.size ());
+  NS_ASSERT (!m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.empty ());
+
+  // set the TBTT Information Count field
+  m_nbrApInfoFields.at (nbrApInfoId).tbttInfoHdr.tbttInfoCount = m_nbrApInfoFields.at (nbrApInfoId).tbttInformationSet.size () - 1;
+}
+
 uint8_t
-ReducedNeighborReport::GetTbttInformationCount (std::size_t nbrApInfoId) const
+ReducedNeighborReport::ReadTbttInformationCount (std::size_t nbrApInfoId) const
 {
   NS_ASSERT (nbrApInfoId < m_nbrApInfoFields.size ());
 
@@ -617,6 +624,7 @@ ReducedNeighborReport::SerializeInformationField (Buffer::Iterator start) const
 {
   for (std::size_t id = 0; id < m_nbrApInfoFields.size (); ++ id)
     {
+      WriteTbttInformationCount (id);
       WriteTbttInformationLength (id);
     }
 
@@ -688,7 +696,7 @@ ReducedNeighborReport::DeserializeInformationField (Buffer::Iterator start, uint
       std::size_t neighborId = m_nbrApInfoFields.size () - 1;
       ReadTbttInformationLength (neighborId);
 
-      for (uint8_t j = 0; j < GetTbttInformationCount (neighborId); j++)
+      for (uint8_t j = 0; j < ReadTbttInformationCount (neighborId); j++)
         {
           AddTbttInformationField (neighborId);
 
