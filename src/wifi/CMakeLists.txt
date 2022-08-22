@@ -329,6 +329,7 @@ build_lib(
     test/wifi-error-rate-models-test.cc
     test/wifi-mac-ofdma-test.cc
     test/wifi-mac-queue-test.cc
+    test/wifi-mlo-test.cc
     test/wifi-phy-ofdma-test.cc
     test/wifi-phy-reception-test.cc
     test/wifi-phy-thresholds-test.cc
