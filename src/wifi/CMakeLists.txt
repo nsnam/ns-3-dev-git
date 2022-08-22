@@ -312,6 +312,7 @@ build_lib(
     test/tx-duration-test.cc
     test/wifi-aggregation-test.cc
     test/wifi-dynamic-bw-op-test.cc
+    test/wifi-eht-info-elems-test.cc
     test/wifi-error-rate-models-test.cc
     test/wifi-mac-ofdma-test.cc
     test/wifi-mac-queue-test.cc
