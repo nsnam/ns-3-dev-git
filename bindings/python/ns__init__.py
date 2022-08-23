@@ -11,27 +11,87 @@ def find_ns3_lock():
     lock_file = (".lock-ns3_%s_build" % sys.platform)
 
     # Move upwards until we reach the directory with the ns3 script
+    prev_path = None
     while "ns3" not in os.listdir(path_to_lock):
+        prev_path = path_to_lock
         path_to_lock = os.path.dirname(path_to_lock)
+        if prev_path == path_to_lock:
+            break
 
     # We should be now at the directory that contains a lock if the project is configured
     if lock_file in os.listdir(path_to_lock):
         path_to_lock += os.sep + lock_file
     else:
-        raise Exception("ns-3 lock file was not found.\n"
-                        "Are you sure %s is inside your ns-3 directory?" % path_to_this_init_file)
+        path_to_lock = None
     return path_to_lock
 
 
 def load_modules():
-    # Load NS3_ENABLED_MODULES from the lock file inside the build directory
-    values = {}
+    lock_file = find_ns3_lock()
 
-    exec(open(find_ns3_lock()).read(), {}, values)
-    suffix = "-" + values["BUILD_PROFILE"] if values["BUILD_PROFILE"] != "release" else ""
-    required_modules = [module.replace("ns3-", "") for module in values["NS3_ENABLED_MODULES"]]
-    ns3_output_directory = values["out_dir"]
-    libraries = {x.split(".")[0]: x for x in os.listdir(os.path.join(ns3_output_directory, "lib"))}
+    if lock_file:
+        # Load NS3_ENABLED_MODULES from the lock file inside the build directory
+        values = {}
+
+        # If we find a lock file, load the ns-3 modules from it
+        # Should be the case when running from the source directory
+        exec(open(lock_file).read(), {}, values)
+        suffix = "-" + values["BUILD_PROFILE"] if values["BUILD_PROFILE"] != "release" else ""
+        modules = [module.replace("ns3-", "") for module in values["NS3_ENABLED_MODULES"]]
+        prefix = values["out_dir"]
+        libraries = {x.split(".")[0]: x for x in os.listdir(os.path.join(prefix, "lib"))}
+        version = values["VERSION"]
+    else:
+        # Otherwise, search for ns-3 libraries
+        # Should be the case when ns-3 is installed as a package
+        import glob
+        env_sep = ";" if sys.platform == "win32" else ":"
+
+        # Search in default directories PATH and LD_LIBRARY_PATH
+        library_search_paths = os.getenv("PATH", "").split(env_sep)
+        library_search_paths += os.getenv("LD_LIBRARY_PATH", "").split(env_sep)
+        if "" in library_search_paths:
+            library_search_paths.remove("")
+        del env_sep
+
+        # And the current working directory too
+        library_search_paths += [os.path.abspath(os.getcwd())]
+
+        # And finally the directories containing this file and its parent directory
+        library_search_paths += [os.path.abspath(os.path.dirname(__file__))]
+        library_search_paths += [os.path.dirname(library_search_paths[-1])]
+        library_search_paths += [os.path.dirname(library_search_paths[-1])]
+
+        # Search for the core library in the search paths
+        libraries = []
+        for search_path in library_search_paths:
+            libraries += glob.glob("%s/**/libns3*" % search_path, recursive=True)
+        del search_path, library_search_paths
+
+        if not libraries:
+            raise Exception("ns-3 libraries were not found.")
+
+        # The prefix is the directory with the lib directory
+        # libns3-dev-core.so/../../
+        prefix = os.path.dirname(os.path.dirname(libraries[0]))
+
+        # Extract version and build suffix (if it exists)
+        def filter_module_name(library):
+            library = os.path.basename(library)
+            # Drop extension and libns3.version prefix
+            components = ".".join(library.split(".")[:-1]).split("-")[1:]
+
+            # Drop build profile suffix and test libraries
+            if components[0] == "dev":
+                components.pop(0)
+            if components[-1] in ["debug", "default", "optimized", "release", "relwithdebinfo"]:
+                components.pop(-1)
+            if components[-1] == "test":
+                components.pop(-1)
+            return "-".join(components)
+
+        # Filter out module names
+        modules = set([filter_module_name(library) for library in libraries])
 
     # Try to import Cppyy and warn the user in case it is not found
     try:
@@ -49,30 +109,37 @@ def load_modules():
     libcppyy.AddSmartPtrType('Ptr')
 
     # Import ns-3 libraries
-    cppyy.add_library_path("%s/lib" % ns3_output_directory)
-    cppyy.add_include_path("%s/include" % ns3_output_directory)
+    prefix = os.path.abspath(prefix)
+    cppyy.add_library_path("%s/lib" % prefix)
+    cppyy.add_include_path("%s/include" % prefix)
 
-    for module in required_modules:
+    for module in modules:
         cppyy.include("ns3/%s-module.h" % module)
 
-    for module in required_modules:
-        library_name = "libns{version}-{module}{suffix}".format(
-            version=values["VERSION"],
-            module=module,
-            suffix=suffix
-        )
-        if library_name not in libraries:
-            raise Exception("Missing library %s\n" % library_name,
-                            "Build all modules with './ns3 build'"
-                            )
-        cppyy.load_library(libraries[library_name])
+    if lock_file:
+        # When we have the lock file, we assemble the correct library name
+        for module in modules:
+            library_name = "libns{version}-{module}{suffix}".format(
+                version=version,
+                module=module,
+                suffix=suffix
+            )
+            if library_name not in libraries:
+                raise Exception("Missing library %s\n" % library_name,
+                                "Build all modules with './ns3 build'"
+                                )
+            cppyy.load_library(libraries[library_name])
+    else:
+        # When we don't have the lock, we just load the known libraries
+        for library in libraries:
+            cppyy.load_library(os.path.basename(library))
 
     # We expose cppyy to consumers of this module as ns.cppyy
     setattr(cppyy.gbl.ns3, "cppyy", cppyy)
 
     # To maintain compatibility with pybindgen scripts,
     # we set an attribute per module that just redirects to the upper object
-    for module in required_modules:
+    for module in modules:
         setattr(cppyy.gbl.ns3, module.replace("-", "_"), cppyy.gbl.ns3)
 
     # Set up a few tricks
@@ -102,6 +169,7 @@ def load_modules():
     def Node_del(self: cppyy.gbl.ns3.Node) -> None:
         cppyy.gbl.ns3.__nodes_pending_deletion.append(self)
         return None
+
     cppyy.gbl.ns3.Node.__del__ = Node_del
 
     # Define ns.cppyy.gbl.addressFromIpv4Address and others
@@ -172,6 +240,7 @@ def load_modules():
                 except Exception as e:
                     exit(-1)
         return getattr(cppyy.gbl, func)()
+
     setattr(cppyy.gbl.ns3, "CreateObject", CreateObject)
 
     def GetObject(parentObject, aggregatedObject):
@@ -199,6 +268,7 @@ def load_modules():
             """ % (aggregatedType, aggregatedType, aggregatedType, aggregatedType)
         )
         return cppyy.gbl.getAggregatedObject(parentObject, aggregatedObject if aggregatedIsClass else aggregatedObject.__class__)
+
     setattr(cppyy.gbl.ns3, "GetObject", GetObject)
     return cppyy.gbl.ns3
 

@@ -39,3 +39,26 @@ foreach(
     COPYONLY
   )
 endforeach()
+
+if(NOT
+   NS3_BINDINGS_INSTALL_DIR
+)
+  message(
+    ${HIGHLIGHTED_STATUS}
+    "NS3_BINDINGS_INSTALL_DIR was not set. The visualizer python module won't be installed with ./ns3 install."
+  )
+else()
+  install(
+    DIRECTORY ./visualizer
+    DESTINATION ${NS3_BINDINGS_INSTALL_DIR}/
+  )
+
+  add_custom_target(
+    uninstall_visualizer
+    COMMAND rm -R ${NS3_BINDINGS_INSTALL_DIR}/visualizer
+  )
+  add_dependencies(
+    uninstall
+    uninstall_visualizer
+  )
+endif()

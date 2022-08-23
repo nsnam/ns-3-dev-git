@@ -832,6 +832,35 @@ macro(process_options)
       configure_file(
         bindings/python/ns__init__.py ${destination_dir}/__init__.py COPYONLY
       )
+
+      # And create an install target for the bindings
+      if(NOT NS3_BINDINGS_INSTALL_DIR)
+        # If the installation directory for the python bindings is not set,
+        # suggest the user site-packages directory
+        execute_process(
+          COMMAND python3 -m site --user-site
+          OUTPUT_VARIABLE SUGGESTED_BINDINGS_INSTALL_DIR
+        )
+        string(STRIP "${SUGGESTED_BINDINGS_INSTALL_DIR}"
+                     SUGGESTED_BINDINGS_INSTALL_DIR
+        )
+        message(
+          ${HIGHLIGHTED_STATUS}
+          "NS3_BINDINGS_INSTALL_DIR was not set. The python bindings won't be installed with ./ns3 install."
+        )
+        message(
+          ${HIGHLIGHTED_STATUS}
+          "Set NS3_BINDINGS_INSTALL_DIR=\"${SUGGESTED_BINDINGS_INSTALL_DIR}\" to install it to the default location."
+        )
+      else()
+        install(FILES bindings/python/ns__init__.py
+                DESTINATION ${NS3_BINDINGS_INSTALL_DIR}/ns RENAME __init__.py
+        )
+        add_custom_target(
+          uninstall_bindings COMMAND rm -R ${NS3_BINDINGS_INSTALL_DIR}/ns
+        )
+        add_dependencies(uninstall uninstall_bindings)
+      endif()
     endif()
   endif()
 
