@@ -193,7 +193,7 @@ public:
    * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TXVECTOR of the PSDU
    */
-  void NotifyRxMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
+  void NotifyRxMpdu (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
   /**
    * Handle the successful reception of a PSDU.
    *
@@ -203,7 +203,7 @@ public:
    * \param staId the station ID of the PSDU (only used for MU)
    * \param statusPerMpdu reception status per MPDU
    */
-  void NotifyRxPsduSucceeded (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void NotifyRxPsduSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                               const WifiTxVector& txVector, uint16_t staId,
                               const std::vector<bool>& statusPerMpdu);
   /**
@@ -212,7 +212,7 @@ public:
    * \param psdu the PSDU that we failed to received
    * \param snr the SNR of the received PSDU in linear scale
    */
-  void NotifyRxPsduFailed (Ptr<WifiPsdu> psdu, double snr);
+  void NotifyRxPsduFailed (Ptr<const WifiPsdu> psdu, double snr);
   /**
    * Switch from RX after the reception was successful.
    */

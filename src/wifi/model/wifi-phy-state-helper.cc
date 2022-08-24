@@ -457,7 +457,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::NotifyRxMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector)
+WifiPhyStateHelper::NotifyRxMpdu (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
   if (!m_rxOkCallback.IsNull ())
@@ -467,7 +467,7 @@ WifiPhyStateHelper::NotifyRxMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
 }
 
 void
-WifiPhyStateHelper::NotifyRxPsduSucceeded (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+WifiPhyStateHelper::NotifyRxPsduSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                            const WifiTxVector& txVector, uint16_t staId,
                                            const std::vector<bool>& statusPerMpdu)
 {
@@ -486,7 +486,7 @@ WifiPhyStateHelper::NotifyRxPsduSucceeded (Ptr<WifiPsdu> psdu, RxSignalInfo rxSi
 }
 
 void
-WifiPhyStateHelper::NotifyRxPsduFailed (Ptr<WifiPsdu> psdu, double snr)
+WifiPhyStateHelper::NotifyRxPsduFailed (Ptr<const WifiPsdu> psdu, double snr)
 {
   NS_LOG_FUNCTION (this << *psdu << snr);
   if (!m_rxErrorTrace.IsEmpty ())
