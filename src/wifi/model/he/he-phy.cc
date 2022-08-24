@@ -800,7 +800,7 @@ HePhy::RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                            const std::vector<bool>& statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
-  m_state->NotifyRxPsduSucceeded (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpdu);
+  m_state->NotifyRxPsduSucceeded (psdu, rxSignalInfo, txVector, staId, statusPerMpdu);
   if (!IsUlMu (txVector.GetPreambleType ()))
     {
       m_state->SwitchFromRxEndOk ();
@@ -815,7 +815,7 @@ void
 HePhy::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector << snr);
-  m_state->NotifyRxPsduFailed (Copy (psdu), snr);
+  m_state->NotifyRxPsduFailed (psdu, snr);
   if (!txVector.IsUlMu ())
     {
       m_state->SwitchFromRxEndError ();

@@ -626,7 +626,7 @@ PhyEntity::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduInd
   if (rxInfo.first && GetAddressedPsduInPpdu (ppdu)->GetNMpdus () > 1)
     {
       //only done for correct MPDU that is part of an A-MPDU
-      m_state->NotifyRxMpdu (Copy (psdu), rxSignalInfo, txVector);
+      m_state->NotifyRxMpdu (psdu, rxSignalInfo, txVector);
     }
 }
 
@@ -675,7 +675,7 @@ PhyEntity::RxPayloadSucceeded (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalIn
                                const std::vector<bool>& statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
-  m_state->NotifyRxPsduSucceeded (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpdu);
+  m_state->NotifyRxPsduSucceeded (psdu, rxSignalInfo, txVector, staId, statusPerMpdu);
   m_state->SwitchFromRxEndOk ();
 }
 
@@ -683,7 +683,7 @@ void
 PhyEntity::RxPayloadFailed (Ptr<const WifiPsdu> psdu, double snr, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector << snr);
-  m_state->NotifyRxPsduFailed (Copy (psdu), snr);
+  m_state->NotifyRxPsduFailed (psdu, snr);
   m_state->SwitchFromRxEndError ();
 }
 
