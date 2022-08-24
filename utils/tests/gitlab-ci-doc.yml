@@ -39,8 +39,8 @@ doxygen:
 #    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
     - doc/doxygen.warnings.report.sh
 # Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
-    - python3 utils/trim-trailing-whitespace.py --check doc/introspected-doxygen.h
-    - python3 utils/trim-trailing-whitespace.py --check doc/introspected-command-line.h
+    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h
+    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-command-line.h
 #    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
   cache:

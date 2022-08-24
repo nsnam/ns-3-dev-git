@@ -2,11 +2,13 @@
 #
 # Contains jobs to check the coding style of the codebase.
 
-.base-coding-style:
+check-style-clang-format:
   stage: coding-style
-
-trailing-whitespace:
-  extends: .base-coding-style
-  image: python:slim
+  image: ubuntu:latest
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      python3
+      clang-format-14
   script:
-    - python3 utils/trim-trailing-whitespace.py --check .
+    - python3 utils/check-style-clang-format.py .
