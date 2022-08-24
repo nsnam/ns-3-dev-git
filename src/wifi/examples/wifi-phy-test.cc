@@ -70,7 +70,7 @@ private:
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                 WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_tx; ///< transmit
   struct Input m_input; ///< input
@@ -90,7 +90,7 @@ PsrExperiment::Send (void)
 }
 
 void
-PsrExperiment::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+PsrExperiment::Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                         WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   m_output.received++;
@@ -194,7 +194,7 @@ private:
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                 WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_txA; ///< transmit A
   Ptr<WifiPhy> m_txB; ///< transmit B
@@ -229,7 +229,7 @@ CollisionExperiment::SendB (void) const
 }
 
 void
-CollisionExperiment::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+CollisionExperiment::Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                               WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   FlowIdTag tag;

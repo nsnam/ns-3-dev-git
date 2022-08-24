@@ -313,7 +313,7 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccessSta1 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                       WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Receive success function for STA 2
@@ -322,7 +322,7 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccessSta2 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                       WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Receive success function for STA 3
@@ -331,24 +331,24 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccessSta3 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccessSta3 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                       WifiTxVector txVector, std::vector<bool> statusPerMpdu);
 
   /**
    * Receive failure function for STA 1
    * \param psdu the PSDU
    */
-  void RxFailureSta1 (Ptr<WifiPsdu> psdu);
+  void RxFailureSta1 (Ptr<const WifiPsdu> psdu);
   /**
    * Receive failure function for STA 2
    * \param psdu the PSDU
    */
-  void RxFailureSta2 (Ptr<WifiPsdu> psdu);
+  void RxFailureSta2 (Ptr<const WifiPsdu> psdu);
   /**
    * Receive failure function for STA 3
    * \param psdu the PSDU
    */
-  void RxFailureSta3 (Ptr<WifiPsdu> psdu);
+  void RxFailureSta3 (Ptr<const WifiPsdu> psdu);
 
   /**
    * Check the results for STA 1
@@ -544,7 +544,7 @@ TestDlOfdmaPhyTransmission::~TestDlOfdmaPhyTransmission ()
 }
 
 void
-TestDlOfdmaPhyTransmission::RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestDlOfdmaPhyTransmission::RxSuccessSta1 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                            WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -553,7 +553,7 @@ TestDlOfdmaPhyTransmission::RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSi
 }
 
 void
-TestDlOfdmaPhyTransmission::RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestDlOfdmaPhyTransmission::RxSuccessSta2 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                            WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -562,7 +562,7 @@ TestDlOfdmaPhyTransmission::RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSi
 }
 
 void
-TestDlOfdmaPhyTransmission::RxSuccessSta3 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestDlOfdmaPhyTransmission::RxSuccessSta3 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                            WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -571,21 +571,21 @@ TestDlOfdmaPhyTransmission::RxSuccessSta3 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSi
 }
 
 void
-TestDlOfdmaPhyTransmission::RxFailureSta1 (Ptr<WifiPsdu> psdu)
+TestDlOfdmaPhyTransmission::RxFailureSta1 (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailureSta1++;
 }
 
 void
-TestDlOfdmaPhyTransmission::RxFailureSta2 (Ptr<WifiPsdu> psdu)
+TestDlOfdmaPhyTransmission::RxFailureSta2 (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailureSta2++;
 }
 
 void
-TestDlOfdmaPhyTransmission::RxFailureSta3 (Ptr<WifiPsdu> psdu)
+TestDlOfdmaPhyTransmission::RxFailureSta3 (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailureSta3++;
@@ -974,7 +974,7 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccessSta1 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                       WifiTxVector txVector, const std::vector<bool> statusPerMpdu);
 
   /**
@@ -984,20 +984,20 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccessSta2 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                       WifiTxVector txVector, std::vector<bool> statusPerMpdu);
 
   /**
    * Receive failure function for STA 1
    * \param psdu the PSDU
    */
-  void RxFailureSta1 (Ptr<WifiPsdu> psdu);
+  void RxFailureSta1 (Ptr<const WifiPsdu> psdu);
 
   /**
    * Receive failure function for STA 2
    * \param psdu the PSDU
    */
-  void RxFailureSta2 (Ptr<WifiPsdu> psdu);
+  void RxFailureSta2 (Ptr<const WifiPsdu> psdu);
 
   /**
    * Check the results for STA 1
@@ -1172,7 +1172,7 @@ TestDlOfdmaPhyPuncturing::StopInterference (void)
 }
 
 void
-TestDlOfdmaPhyPuncturing::RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestDlOfdmaPhyPuncturing::RxSuccessSta1 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                          WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -1181,7 +1181,7 @@ TestDlOfdmaPhyPuncturing::RxSuccessSta1 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSign
 }
 
 void
-TestDlOfdmaPhyPuncturing::RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestDlOfdmaPhyPuncturing::RxSuccessSta2 (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                          WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -1190,14 +1190,14 @@ TestDlOfdmaPhyPuncturing::RxSuccessSta2 (Ptr<WifiPsdu> psdu, RxSignalInfo rxSign
 }
 
 void
-TestDlOfdmaPhyPuncturing::RxFailureSta1 (Ptr<WifiPsdu> psdu)
+TestDlOfdmaPhyPuncturing::RxFailureSta1 (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailureSta1++;
 }
 
 void
-TestDlOfdmaPhyPuncturing::RxFailureSta2 (Ptr<WifiPsdu> psdu)
+TestDlOfdmaPhyPuncturing::RxFailureSta2 (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailureSta2++;
@@ -2441,13 +2441,13 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
 
   /**
    * Receive failure function
    * \param psdu the PSDU
    */
-  void RxFailure (Ptr<WifiPsdu> psdu);
+  void RxFailure (Ptr<const WifiPsdu> psdu);
 
   /**
    * Schedule test to perform.
@@ -2737,7 +2737,7 @@ TestUlOfdmaPhyTransmission::~TestUlOfdmaPhyTransmission ()
 }
 
 void
-TestUlOfdmaPhyTransmission::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
+TestUlOfdmaPhyTransmission::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << psdu->GetAddr2 () << rxSignalInfo << txVector);
   if (psdu->GetAddr2 () == Mac48Address ("00:00:00:00:00:01"))
@@ -2753,7 +2753,7 @@ TestUlOfdmaPhyTransmission::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignal
 }
 
 void
-TestUlOfdmaPhyTransmission::RxFailure (Ptr<WifiPsdu> psdu)
+TestUlOfdmaPhyTransmission::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu << psdu->GetAddr2 ());
   if (psdu->GetAddr2 () == Mac48Address ("00:00:00:00:00:01"))
@@ -3680,13 +3680,13 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
 
   /**
    * Receive failure function
    * \param psdu the PSDU
    */
-  void RxFailure (Ptr<WifiPsdu> psdu);
+  void RxFailure (Ptr<const WifiPsdu> psdu);
 
   Ptr<OfdmaSpectrumWifiPhy> m_phyAp;   ///< PHY of AP
   Ptr<OfdmaSpectrumWifiPhy> m_phySta1; ///< PHY of STA 1
@@ -3773,7 +3773,7 @@ TestPhyPaddingExclusion::~TestPhyPaddingExclusion ()
 }
 
 void
-TestPhyPaddingExclusion::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
+TestPhyPaddingExclusion::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_LOG_FUNCTION (this << *psdu << psdu->GetAddr2 () << rxSignalInfo << txVector);
   if (psdu->GetAddr2 () == Mac48Address ("00:00:00:00:00:01"))
@@ -3789,7 +3789,7 @@ TestPhyPaddingExclusion::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInf
 }
 
 void
-TestPhyPaddingExclusion::RxFailure (Ptr<WifiPsdu> psdu)
+TestPhyPaddingExclusion::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu << psdu->GetAddr2 ());
   if (psdu->GetAddr2 () == Mac48Address ("00:00:00:00:00:01"))
@@ -4116,7 +4116,7 @@ private:
    * \param txVector the TXVECTOR used for the packet
    * \param statusPerMpdu reception status per MPDU
    */
-  void ReceiveOkCallbackAtAp (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void ReceiveOkCallbackAtAp (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                               WifiTxVector txVector, std::vector<bool> statusPerMpdu);
 
   uint8_t m_bssColor;           ///< BSS color
@@ -4268,7 +4268,7 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 }
 
 void
-TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                             WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
 {
   NS_TEST_ASSERT_MSG_EQ (txVector.GetPreambleType (), WIFI_PREAMBLE_HE_TB, "HE TB PPDU expected");

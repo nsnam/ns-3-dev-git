@@ -86,13 +86,13 @@ protected:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  virtual void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  virtual void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                           WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * PHY receive failure callback function
    * \param psdu the PSDU
    */
-  virtual void RxFailure (Ptr<WifiPsdu> psdu);
+  virtual void RxFailure (Ptr<const WifiPsdu> psdu);
   /**
    * PHY dropped packet callback function
    * \param p the packet
@@ -187,7 +187,7 @@ WifiPhyThresholdsTest::SendSignal (double txPowerWatts, bool wifiSignal)
 }
 
 void
-WifiPhyThresholdsTest::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+WifiPhyThresholdsTest::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                   WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -195,7 +195,7 @@ WifiPhyThresholdsTest::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
 }
 
 void
-WifiPhyThresholdsTest::RxFailure (Ptr<WifiPsdu> psdu)
+WifiPhyThresholdsTest::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_rxFailure++;

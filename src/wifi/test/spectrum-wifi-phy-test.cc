@@ -90,13 +90,13 @@ protected:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void SpectrumWifiPhyRxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void SpectrumWifiPhyRxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                  WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Spectrum wifi receive failure function
    * \param psdu the PSDU
    */
-  void SpectrumWifiPhyRxFailure (Ptr<WifiPsdu> psdu);
+  void SpectrumWifiPhyRxFailure (Ptr<const WifiPsdu> psdu);
   uint32_t m_count; ///< count
 
 private:
@@ -152,7 +152,7 @@ SpectrumWifiPhyBasicTest::SendSignal (double txPowerWatts)
 }
 
 void
-SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                                     WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -160,7 +160,7 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<WifiPsdu> psdu, RxSignal
 }
 
 void
-SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<WifiPsdu> psdu)
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_count++;

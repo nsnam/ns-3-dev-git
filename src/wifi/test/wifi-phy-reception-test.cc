@@ -87,13 +87,13 @@ protected:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Spectrum wifi receive failure function
    * \param psdu the PSDU
    */
-  void RxFailure (Ptr<WifiPsdu> psdu);
+  void RxFailure (Ptr<const WifiPsdu> psdu);
   uint32_t m_countRxSuccess; ///< count RX success
   uint32_t m_countRxFailure; ///< count RX failure
 
@@ -182,7 +182,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::CheckRxPacketCount (uint32_t 
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestThresholdPreambleDetectionWithoutFrameCapture::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                                               WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -190,7 +190,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::RxSuccess (Ptr<WifiPsdu> psdu
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::RxFailure (Ptr<WifiPsdu> psdu)
+TestThresholdPreambleDetectionWithoutFrameCapture::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailure++;
@@ -455,13 +455,13 @@ protected:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Spectrum wifi receive failure function
    * \param psdu the PSDU
    */
-  void RxFailure (Ptr<WifiPsdu> psdu);
+  void RxFailure (Ptr<const WifiPsdu> psdu);
   uint32_t m_countRxSuccess; ///< count RX success
   uint32_t m_countRxFailure; ///< count RX failure
 
@@ -550,7 +550,7 @@ TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount (uint32_t exp
 }
 
 void
-TestThresholdPreambleDetectionWithFrameCapture::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestThresholdPreambleDetectionWithFrameCapture::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                                            WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
@@ -558,7 +558,7 @@ TestThresholdPreambleDetectionWithFrameCapture::RxSuccess (Ptr<WifiPsdu> psdu, R
 }
 
 void
-TestThresholdPreambleDetectionWithFrameCapture::RxFailure (Ptr<WifiPsdu> psdu)
+TestThresholdPreambleDetectionWithFrameCapture::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   m_countRxFailure++;
@@ -972,7 +972,7 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * RX dropped function
@@ -1046,7 +1046,7 @@ TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
 }
 
 void
-TestSimpleFrameCaptureModel::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestSimpleFrameCaptureModel::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                         WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -1466,13 +1466,13 @@ private:
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * RX failure function
    * \param psdu the PSDU
    */
-  void RxFailure (Ptr<WifiPsdu> psdu);
+  void RxFailure (Ptr<const WifiPsdu> psdu);
   /**
    * RX dropped function
    * \param p the packet
@@ -1582,7 +1582,7 @@ TestAmpduReception::ResetBitmaps()
 }
 
 void
-TestAmpduReception::RxSuccess (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+TestAmpduReception::RxSuccess (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
@@ -1636,7 +1636,7 @@ TestAmpduReception::IncrementSuccessBitmap (uint32_t size)
 }
 
 void
-TestAmpduReception::RxFailure (Ptr<WifiPsdu> psdu)
+TestAmpduReception::RxFailure (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
   for (auto mpdu = psdu->begin (); mpdu != psdu->end (); ++mpdu)

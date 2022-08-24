@@ -89,7 +89,7 @@ public:
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                 WifiTxVector txVector, std::vector<bool> perMpduStatus);
 
   /**

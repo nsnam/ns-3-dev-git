@@ -188,7 +188,7 @@ FrameExchangeManager::ResetPhy (void)
     {
       m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
                                             MakeCallback (&FrameExchangeManager::RxStartIndication, this));
-      m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>> ());
+      m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<const WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>> ());
       m_phy = nullptr;
     }
 }
@@ -977,7 +977,7 @@ FrameExchangeManager::NotifyOffNow (void)
 }
 
 void
-FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+FrameExchangeManager::Receive (Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                WifiTxVector txVector, std::vector<bool> perMpduStatus)
 {
   NS_LOG_FUNCTION (this << psdu << rxSignalInfo << txVector << perMpduStatus.size ()

@@ -129,7 +129,7 @@ public:
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  void ReceiveDl (uint8_t bss, uint8_t station, Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void ReceiveDl (uint8_t bss, uint8_t station, Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> perMpduStatus);
   /**
    * Callback invoked when an AP receives an UL PPDU.
@@ -140,7 +140,7 @@ public:
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  void ReceiveUl (uint8_t bss, Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+  void ReceiveUl (uint8_t bss, Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                   WifiTxVector txVector, std::vector<bool> perMpduStatus);
   /**
    * Check that all stations associated with an AP.
@@ -235,7 +235,7 @@ WifiPrimaryChannelsTest::Transmit (std::string context, WifiConstPsduMap psduMap
 }
 
 void
-WifiPrimaryChannelsTest::ReceiveDl (uint8_t bss, uint8_t station, Ptr<WifiPsdu> psdu,
+WifiPrimaryChannelsTest::ReceiveDl (uint8_t bss, uint8_t station, Ptr<const WifiPsdu> psdu,
                                     RxSignalInfo rxSignalInfo, WifiTxVector txVector,
                                     std::vector<bool> perMpduStatus)
 {
@@ -264,7 +264,7 @@ WifiPrimaryChannelsTest::ReceiveDl (uint8_t bss, uint8_t station, Ptr<WifiPsdu> 
 }
 
 void
-WifiPrimaryChannelsTest::ReceiveUl (uint8_t bss, Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+WifiPrimaryChannelsTest::ReceiveUl (uint8_t bss, Ptr<const WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                     WifiTxVector txVector, std::vector<bool> perMpduStatus)
 {
   // if the BSS color is zero, this AP might receive the frame sent by another AP. Given that
