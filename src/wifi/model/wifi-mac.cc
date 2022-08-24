@@ -1059,7 +1059,7 @@ WifiMac::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to
 }
 
 void
-WifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
+WifiMac::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << linkId);
 
@@ -1173,7 +1173,7 @@ WifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 }
 
 void
-WifiMac::DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu)
+WifiMac::DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   for (auto& msduPair : *PeekPointer (mpdu))

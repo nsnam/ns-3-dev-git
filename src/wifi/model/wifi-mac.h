@@ -585,7 +585,7 @@ protected:
    * \param mpdu the MPDU that has been received.
    * \param linkId the ID of the given link
    */
-  virtual void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
+  virtual void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
   /**
    * Forward the packet up to the device.
    *
@@ -601,7 +601,7 @@ protected:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  virtual void DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu);
+  virtual void DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu);
 
   /**
    * Structure holding information specific to a single link. Here, the meaning of

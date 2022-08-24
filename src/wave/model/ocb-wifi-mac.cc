@@ -243,7 +243,7 @@ OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
  * here we only care about data packet and vsa management frame
  */
 void
-OcbWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
+OcbWifiMac::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();

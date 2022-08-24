@@ -128,13 +128,13 @@ public:
    *
    * \return a constant iterator pointing to the first MSDU in the list of aggregated MSDUs
    */
-  DeaggregatedMsdusCI begin (void);
+  DeaggregatedMsdusCI begin (void) const;
   /**
    * \brief Get a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs.
    *
    * \return a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs
    */
-  DeaggregatedMsdusCI end (void);
+  DeaggregatedMsdusCI end (void) const;
 
   /// Const iterator typedef
   typedef std::list<WifiMacQueueElem>::iterator Iterator;

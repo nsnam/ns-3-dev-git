@@ -233,15 +233,15 @@ WifiMpdu::IsInFlight (void) const
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::begin (void)
+WifiMpdu::begin (void) const
 {
-  return m_msduList.begin ();
+  return m_msduList.cbegin ();
 }
 
 WifiMpdu::DeaggregatedMsdusCI
-WifiMpdu::end (void)
+WifiMpdu::end (void) const
 {
-  return m_msduList.end ();
+  return m_msduList.cend ();
 }
 
 void

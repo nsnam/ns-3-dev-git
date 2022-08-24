@@ -44,7 +44,7 @@ public:
   /**
    * typedef for callback
    */
-  typedef Callback<void, Ptr<WifiMpdu>, uint8_t /* link ID */> ForwardUpCallback;
+  typedef Callback<void, Ptr<const WifiMpdu>, uint8_t /* link ID */> ForwardUpCallback;
 
   MacRxMiddle ();
   ~MacRxMiddle ();

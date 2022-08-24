@@ -1377,7 +1377,7 @@ ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
 }
 
 void
-ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
+ApWifiMac::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
@@ -1757,7 +1757,7 @@ ApWifiMac::ParseReportedStaInfo (const AssocReqRefVariant& assoc,
 }
 
 void
-ApWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu)
+ApWifiMac::DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   for (auto& i : *PeekPointer (mpdu))

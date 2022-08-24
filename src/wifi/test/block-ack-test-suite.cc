@@ -673,11 +673,11 @@ public:
    * \param mpdu an MPDU that is forwarded up
    * \param linkId the ID of the given link
    */
-  void ForwardUp (Ptr<WifiMpdu> mpdu, uint8_t linkId);
+  void ForwardUp (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
 private:
   uint16_t m_ssn;                          //!< the Starting Sequence Number used to initialize WinStartB
-  std::list<Ptr<WifiMpdu>> m_fwup; //!< list of MPDUs that have been forwarded up
+  std::list<Ptr<const WifiMpdu>> m_fwup; //!< list of MPDUs that have been forwarded up
 };
 
 BlockAckRecipientBufferTest::BlockAckRecipientBufferTest (uint16_t ssn)
@@ -691,7 +691,7 @@ BlockAckRecipientBufferTest::~BlockAckRecipientBufferTest ()
 }
 
 void
-BlockAckRecipientBufferTest::ForwardUp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
+BlockAckRecipientBufferTest::ForwardUp (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
   m_fwup.push_back (mpdu);
 }

@@ -186,7 +186,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  virtual void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
+  virtual void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
   virtual std::optional<uint8_t> GetLinkIdByAddress (const Mac48Address& address) const;
 
   VendorSpecificContentManager m_vscManager; ///< VSC manager

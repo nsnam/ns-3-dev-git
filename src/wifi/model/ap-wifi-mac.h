@@ -182,7 +182,7 @@ protected:
 private:
   std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
-  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)  override;
+  void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)  override;
   /**
    * Check whether the supported rate set included in the received (Re)Association
    * Request frame is compatible with our Basic Rate Set. If so, record all the station's
@@ -238,7 +238,7 @@ private:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  void DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu) override;
+  void DeaggregateAmsduAndForward (Ptr<const WifiMpdu> mpdu) override;
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.
