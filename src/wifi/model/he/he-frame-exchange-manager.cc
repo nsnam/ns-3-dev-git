@@ -1439,7 +1439,7 @@ HeFrameExchangeManager::SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVec
 }
 
 void
-HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+HeFrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station

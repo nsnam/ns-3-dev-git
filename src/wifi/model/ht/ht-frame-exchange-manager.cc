@@ -1310,7 +1310,7 @@ HtFrameExchangeManager::GetBlockAckType (Mac48Address originator, uint8_t tid) c
 }
 
 void
-HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+HtFrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station

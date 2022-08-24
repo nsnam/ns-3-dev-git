@@ -93,7 +93,7 @@ public:
 protected:
   void DoDispose () override;
 
-  void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+  void ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
   Time GetFrameDurationId (const WifiMacHeader& header, uint32_t size,

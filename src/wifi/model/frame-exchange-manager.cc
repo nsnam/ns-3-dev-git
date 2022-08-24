@@ -1094,7 +1094,7 @@ FrameExchangeManager::NavResetTimeout (void)
 }
 
 void
-FrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+FrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                    const WifiTxVector& txVector, bool inAmpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu << rxSignalInfo << txVector << inAmpdu);

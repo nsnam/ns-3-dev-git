@@ -658,7 +658,7 @@ QosFrameExchangeManager::SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVe
 }
 
 void
-QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+QosFrameExchangeManager::ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                       const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station

@@ -311,7 +311,7 @@ protected:
    * \param txVector TxVector of the received PSDU
    * \param inAmpdu true if the MPDU is part of an A-MPDU
    */
-  virtual void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+  virtual void ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu);
 
   /**

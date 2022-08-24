@@ -94,7 +94,7 @@ public:
 protected:
   void DoDispose () override;
 
-  void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
+  void ReceiveMpdu (Ptr<const WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                         const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
