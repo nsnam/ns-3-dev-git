@@ -115,7 +115,7 @@ RecipientBlockAckAgreement::PassBufferedMpdusWithSeqNumberLessThan (uint16_t new
 }
 
 void
-RecipientBlockAckAgreement::NotifyReceivedMpdu (Ptr<WifiMpdu> mpdu)
+RecipientBlockAckAgreement::NotifyReceivedMpdu (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
