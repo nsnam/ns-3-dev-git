@@ -296,7 +296,7 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
 }
 
 void
-MacRxMiddle::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
+MacRxMiddle::Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (*mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();

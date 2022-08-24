@@ -62,7 +62,7 @@ public:
    * \param mpdu the MPDU
    * \param linkId the ID of the given link
    */
-  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
+  void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
 
 private:
