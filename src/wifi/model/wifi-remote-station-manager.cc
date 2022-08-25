@@ -1510,15 +1510,11 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from, HeCapabili
         // todo: Using 3200ns, default value for HeConfiguration::GuardInterval
         state->m_guardInterval = 3200;
     }
-    for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams(); i++)
+    for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_HE))
     {
-        for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_HE))
+        if (heCapabilities.GetHighestMcsSupported() >= mcs.GetMcsValue())
         {
-            if (heCapabilities.GetHighestNssSupported() >= i &&
-                heCapabilities.GetHighestMcsSupported() >= mcs.GetMcsValue())
-            {
-                AddSupportedMcs(from, mcs);
-            }
+            AddSupportedMcs(from, mcs);
         }
     }
     state->m_heCapabilities = Create<const HeCapabilities>(heCapabilities);
@@ -1532,7 +1528,17 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
     // Used by all stations to record EHT capabilities of remote stations
     NS_LOG_FUNCTION(this << from << ehtCapabilities);
     auto state = LookupState(from);
-    // TODO: to be completed
+    for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_EHT))
+    {
+        for (uint8_t mapType = 0; mapType < EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_MAX; ++mapType)
+        {
+            if (ehtCapabilities.GetHighestSupportedRxMcs(
+                    static_cast<EhtMcsAndNssSet::EhtMcsMapType>(mapType)) >= mcs.GetMcsValue())
+            {
+                AddSupportedMcs(from, mcs);
+            }
+        }
+    }
     state->m_ehtCapabilities = Create<const EhtCapabilities>(ehtCapabilities);
     SetQosSupport(from, true);
 }

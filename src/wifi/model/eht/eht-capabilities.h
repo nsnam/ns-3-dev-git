@@ -158,12 +158,13 @@ struct EhtMcsAndNssSet
      * The different EHT-MCS map types as defined in 9.4.2.313.4 Supported EHT-MCS And NSS Set
      * field.
      */
-    enum EhtMcsMapType
+    enum EhtMcsMapType : uint8_t
     {
         EHT_MCS_MAP_TYPE_20_MHZ_ONLY = 0,
         EHT_MCS_MAP_TYPE_NOT_LARGER_THAN_80_MHZ,
         EHT_MCS_MAP_TYPE_160_MHZ,
-        EHT_MCS_MAP_TYPE_320_MHZ
+        EHT_MCS_MAP_TYPE_320_MHZ,
+        EHT_MCS_MAP_TYPE_MAX
     };
 
     std::map<EhtMcsMapType, std::vector<uint8_t>>
@@ -309,6 +310,21 @@ class EhtCapabilities : public WifiInformationElement
     void SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapType,
                                     uint8_t upperMcs,
                                     uint8_t maxNss);
+
+    /**
+     * Get the highest supported RX MCS for a given EHT-MCS map type.
+     *
+     * \param mapType the EHT-MCS map type
+     * \return the highest supported RX MCS for the given EHT-MCS map type
+     */
+    uint8_t GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType);
+    /**
+     * Get the highest supported TX MCS for a given EHT-MCS map type.
+     *
+     * \param mapType the EHT-MCS map type
+     * \return the highest supported TX MCS for the given EHT-MCS map type
+     */
+    uint8_t GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType);
 
     /**
      * Set the EHT PPE threshold info subfield

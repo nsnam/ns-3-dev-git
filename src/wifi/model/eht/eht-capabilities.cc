@@ -598,6 +598,76 @@ EhtCapabilities::SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapTy
     }
 }
 
+uint8_t
+EhtCapabilities::GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType)
+{
+    const auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
+    if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.cend())
+    {
+        return 0;
+    }
+    int8_t index = -1;
+    for (int8_t i = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 3 : 2; i >= 0; i--)
+    {
+        if ((it->second[i] & 0x0f) > 0)
+        {
+            index = i;
+            break;
+        }
+    }
+    NS_ASSERT_MSG(index >= 0, "Supported EHT-MCS And NSS Set subfield is incorrect");
+    switch (index)
+    {
+    case 0:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 7 : 9;
+    case 1:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 9 : 11;
+    case 2:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 11 : 13;
+    case 3:
+        NS_ASSERT(mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY);
+        return 13;
+    default:
+        NS_ASSERT(false);
+    }
+    return 0;
+}
+
+uint8_t
+EhtCapabilities::GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType)
+{
+    const auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
+    if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.cend())
+    {
+        return 0;
+    }
+    int8_t index = -1;
+    for (int8_t i = (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 3 : 2; i >= 0; i--)
+    {
+        if ((it->second[i] & 0xf0) > 0)
+        {
+            index = i;
+            break;
+        }
+    }
+    NS_ASSERT_MSG(index >= 0, "Supported EHT-MCS And NSS Set subfield is incorrect");
+    switch (index)
+    {
+    case 0:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 7 : 9;
+    case 1:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 9 : 11;
+    case 2:
+        return (mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY) ? 11 : 13;
+    case 3:
+        NS_ASSERT(mapType == EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY);
+        return 13;
+    default:
+        NS_ASSERT(false);
+    }
+    return 0;
+}
+
 void
 EhtCapabilities::SetPpeThresholds(uint8_t nssPe,
                                   uint8_t ruIndexBitmask,
