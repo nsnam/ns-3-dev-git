@@ -920,7 +920,8 @@ def build_step(args,
 
     # If we are building specific targets, we build them one by one
     if "build" in args:
-        non_executable_targets = ["check-version",
+        non_executable_targets = ["assemble-introspected-command-line",
+                                  "check-version",
                                   "cmake-format",
                                   "docs",
                                   "doxygen",
