@@ -9,11 +9,14 @@
   stage: test
   image: archlinux
   before_script:
+    # add the core-debug repo to pacman.conf
+    - printf "\n%s\n%s\n" "[core-debug]" "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
     - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache valgrind
       python
       boost gsl gtk3
+      glibc-debug
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
