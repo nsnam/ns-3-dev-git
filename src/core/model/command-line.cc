@@ -65,7 +65,6 @@ Encode (const std::string & source)
 
   for(size_t pos = 0; pos != source.size (); ++pos)
     {
-      /* *NS_CHECK_STYLE_OFF* */
       switch (source[pos])
         {
         case '&':  buffer.append ("&amp;");          break;
@@ -91,7 +90,6 @@ Encode (const std::string & source)
 
         default:   buffer.append (&source[pos], 1);  break;
         }
-      /* *NS_CHECK_STYLE_ON* */
     }
   return buffer;
 }

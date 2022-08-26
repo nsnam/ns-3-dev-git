@@ -40,7 +40,6 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate-ac.plt");
   std::ofstream tablefile ("table-frame-success-rate-ac.plt");
 
-  // clang-format off
   const std::vector<std::string> modes {
     "VhtMcs0",
     "VhtMcs1",
@@ -52,7 +51,6 @@ int main (int argc, char *argv[])
     "VhtMcs7",
     "VhtMcs8",
   };
-  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);

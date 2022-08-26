@@ -45,8 +45,6 @@ namespace ns3 {
  * A way to extract data from simple csv files.
  */
 
-// *NS_CHECK_STYLE_OFF*  Style checker trims blank lines in code blocks
-
 /**
  * \ingroup csvreader
  *
@@ -231,7 +229,6 @@ namespace ns3 {
  *     foo, "String with ""embedded"" quotes"
  * \endcode
  */
-// *NS_CHECK_STYLE_ON*
 class CsvReader
 {
 public:

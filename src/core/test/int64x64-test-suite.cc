@@ -811,6 +811,8 @@ Int64x64Bug1786TestCase::DoRun (void)
   // by one count in the last place
   // because operator<< truncates the last output digit,
   // instead of rounding.
+
+  // clang-format off
   Check (                 1ULL, "+0.0000000000000000000542");
   Check (                 2ULL, "+0.0000000000000000001084");
   Check (                 3ULL, "+0.0000000000000000001626");
@@ -871,6 +873,7 @@ Int64x64Bug1786TestCase::DoRun (void)
   Check (0xFFFFFFFFFFFFFFFDULL, "+0.9999999999999999998374", tolerance);
   Check (0xFFFFFFFFFFFFFFFEULL, "+0.9999999999999999998916", tolerance);
   Check (0xFFFFFFFFFFFFFFFFULL, "+0.9999999999999999999458", tolerance);
+  // clang-format on
 }
 
 
@@ -1558,12 +1561,10 @@ Int64x64ImplTestCase::DoRun (void)
   std::cout << "int64x64_t::implementation: ";
   switch (int64x64_t::implementation)
     {
-      /* *NS_CHECK_STYLE_OFF* */
     case (int64x64_t::int128_impl) : std::cout << "int128_impl"; break;
     case (int64x64_t::cairo_impl)  : std::cout << "cairo_impl";  break;
     case (int64x64_t::ld_impl)     : std::cout << "ld_impl";     break;
     default :                        std::cout << "unknown!";
-      /* *NS_CHECK_STYLE_ON* */
     }
   std::cout << std::endl;
 

@@ -49,7 +49,7 @@
 // extern const char * cairo_impl64;
 // extern const char * cairo_impl128;
 
-// *NS_CHECK_STYLE_OFF*
+// clang-format off
 
 /*for compatibility with MacOS and Cygwin*/
 #ifndef HAVE_STDINT_H
@@ -360,6 +360,6 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
 };
 #endif
 
-// *NS_CHECK_STYLE_ON*
+    // clang-format on
 
 #endif /* CAIRO_WIDEINT_H */

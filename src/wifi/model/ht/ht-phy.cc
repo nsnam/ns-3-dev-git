@@ -36,7 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("HtPhy");
  *       HT PHY (IEEE 802.11-2016, clause 19)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
   { WIFI_PREAMBLE_HT_MF, { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
                            WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
@@ -44,7 +45,8 @@ const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
                            WIFI_PPDU_FIELD_TRAINING,      //HT-STF + HT-LTFs
                            WIFI_PPDU_FIELD_DATA } }
 };
-/* *NS_CHECK_STYLE_ON* */
+
+// clang-format on
 
 HtPhy::HtPhy (uint8_t maxNss /* = 1 */, bool buildModeList /* = true */)
   : OfdmPhy (OFDM_PHY_DEFAULT, false) //don't add OFDM modes to list

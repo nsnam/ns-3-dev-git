@@ -44,7 +44,8 @@ NS_LOG_COMPONENT_DEFINE ("HePhy");
  *       HE PHY (P802.11ax/D4.0, clause 27)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Extension)
   { WIFI_PREAMBLE_HE_SU,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
                               WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
@@ -68,7 +69,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Exte
                               WIFI_PPDU_FIELD_TRAINING,      //HE-STF + HE-LTFs
                               WIFI_PPDU_FIELD_DATA } }
 };
-/* *NS_CHECK_STYLE_ON* */
+
+// clang-format on
 
 HePhy::HePhy (bool buildModeList /* = true */)
   : VhtPhy (false), //don't add VHT modes to list

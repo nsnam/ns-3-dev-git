@@ -35,22 +35,24 @@
 
 namespace {
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 /// Function with one int parameter.
-void bari (int) {}
+void bari (int) {};
 /// Function with two int parameters.
-void bar2i (int, int) {}
+void bar2i (int, int) {};
 /// Function with three int parameters.
-void bar3i (int, int, int) {}
+void bar3i (int, int, int) {};
 /// Function with four int parameters.
-void bar4i (int, int, int, int) {}
+void bar4i (int, int, int, int) {};
 /// Function with five int parameters.
-void bar5i (int, int, int, int, int) {}
+void bar5i (int, int, int, int, int) {};
 /// Function with one const int reference parameter.
-void barcir (const int &) {}
+void barcir (const int &) {};
 /// Function with one int reference parameter.
-void barir (int &) {}
-/* *NS_CHECK_STYLE_ON* */
+void barir (int &) {};
+
+// clang-format on
 
 } // anonymous namespace
 
@@ -117,28 +119,26 @@ public:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  /* *NS_CHECK_STYLE_OFF* */
   /// Member function with one int parameter.
-  void bazi (int) {}
+  void bazi (int) {};
   /// Member function with two int parameters.
-  void baz2i (int, int) {}
+  void baz2i (int, int) {};
   /// Member function with three int parameters.
-  void baz3i (int, int, int) {}
+  void baz3i (int, int, int) {};
   /// Member function with four int parameters.
-  void baz4i (int, int, int, int) {}
+  void baz4i (int, int, int, int) {};
   /// Member function with five int parameters.
-  void baz5i (int, int, int, int, int) {}
+  void baz5i (int, int, int, int, int) {};
   /// Member function with six int parameters.
-  void baz6i (int, int, int, int, int, int) {}
+  void baz6i (int, int, int, int, int, int) {};
   /// Member function with one const int reference parameter.
-  void bazcir (const int&) {}
+  void bazcir (const int&) {};
   /// Member function with one int reference parameter.
-  void bazir (int&) {}
+  void bazir (int&) {};
   /// Member function with one int pointer parameter.
-  void bazip (int *) {}
+  void bazip (int *) {};
   /// Member function with one const int pointer parameter.
-  void bazcip (const int *) {}
-  /* *NS_CHECK_STYLE_ON* */
+  void bazcip (const int *) {};
 };
 
 TimerTemplateTestCase::TimerTemplateTestCase ()

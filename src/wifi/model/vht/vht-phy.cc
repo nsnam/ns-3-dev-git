@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("VhtPhy");
  *       VHT PHY (IEEE 802.11-2016, clause 21)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats VhtPhy::m_vhtPpduFormats {
   { WIFI_PREAMBLE_VHT_SU, { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
                             WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
@@ -89,7 +90,7 @@ const std::map<uint16_t, WifiChannelListType> secondaryChannels {
   {80, WIFI_CHANLIST_SECONDARY80}
 };
 
-/* *NS_CHECK_STYLE_ON* */
+// clang-format on
 
 VhtPhy::VhtPhy (bool buildModeList /* = true */)
   : HtPhy (1, false) //don't add HT modes to list

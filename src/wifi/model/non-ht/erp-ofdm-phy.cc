@@ -36,7 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("ErpOfdmPhy");
  *       ERP-OFDM PHY (IEEE 802.11-2016, clause 18)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::ModulationLookupTable ErpOfdmPhy::m_erpOfdmModulationLookupTable {
   // Unique name           Code rate           Constellation size
   { "ErpOfdmRate6Mbps",  { WIFI_CODE_RATE_1_2, 2 } },
@@ -54,7 +55,7 @@ static const std::array<uint64_t, 8> s_erpOfdmRatesBpsList =
     {  6000000,  9000000, 12000000, 18000000,
       24000000, 36000000, 48000000, 54000000};
 
-/* *NS_CHECK_STYLE_ON* */
+// clang-format on
 
 /**
  * Get the array of possible ERP OFDM rates.

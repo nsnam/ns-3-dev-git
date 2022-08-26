@@ -456,7 +456,6 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
 
   switch (unit)
     {
-      // *NS_CHECK_STYLE_OFF*
     case Time::Y:    label = "y";    break;
     case Time::D:    label = "d";    break;
     case Time::H:    label = "h";    break;
@@ -467,7 +466,6 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
     case Time::NS:   label = "ns";   break;
     case Time::PS:   label = "ps";   break;
     case Time::FS:   label = "fs";   break;
-      // *NS_CHECK_STYLE_ON*
 
     case Time::LAST:
     case Time::AUTO:

@@ -49,7 +49,7 @@ NS_LOG_COMPONENT_DEFINE ("RngStream");
 /** Namespace for MRG32k3a implementation details. */
 namespace MRG32k3a {
 
-// *NS_CHECK_STYLE_OFF*
+// clang-format off
 
 /** Type for 3x3 matrix of doubles. */
 typedef double Matrix[3][3];
@@ -325,7 +325,7 @@ void PowerOfTwoMatrix (int n, Matrix a1p, Matrix a2p)
 
 } // namespace MRG32k3a
 
-// *NS_CHECK_STYLE_ON*
+// clang-format on
 
 
 namespace ns3 {

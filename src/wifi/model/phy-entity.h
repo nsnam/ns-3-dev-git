@@ -111,7 +111,6 @@ public:
    */
   struct PhyFieldRxStatus
   {
-    /* *NS_CHECK_STYLE_OFF* */
     bool isSuccess {true}; //!< outcome (\c true if success) of the reception
     WifiPhyRxfailureReason reason {UNKNOWN}; //!< failure reason
     PhyRxFailureAction actionIfFailure {DROP}; //!< action to perform in case of failure \see PhyRxFailureAction
@@ -120,7 +119,7 @@ public:
      *
      * \param s \c true if success
      */
-    PhyFieldRxStatus (bool s) : isSuccess (s) {};
+    PhyFieldRxStatus (bool s) : isSuccess (s) {}
     /**
      * Constructor.
      *
@@ -128,8 +127,7 @@ public:
      * \param r reason of failure
      * \param a action to perform in case of failure
      */
-    PhyFieldRxStatus (bool s, WifiPhyRxfailureReason r, PhyRxFailureAction a) : isSuccess (s), reason (r), actionIfFailure (a) {};
-    /* *NS_CHECK_STYLE_ON* */
+    PhyFieldRxStatus (bool s, WifiPhyRxfailureReason r, PhyRxFailureAction a) : isSuccess (s), reason (r), actionIfFailure (a) {}
   };
 
   /**
@@ -142,14 +140,14 @@ public:
     /**
      * Default constructor.
      */
-    SnrPer () {};
+    SnrPer () {}
     /**
      * Constructor for SnrPer.
      *
      * \param s the SNR in linear scale
      * \param p the PER
      */
-    SnrPer (double s, double p) : snr (s), per (p) {};
+    SnrPer (double s, double p) : snr (s), per (p) {}
   };
 
   /**

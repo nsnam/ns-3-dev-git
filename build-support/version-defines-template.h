@@ -18,6 +18,8 @@
  * Authors: Mathew Bielejeski <bielejeski1@llnl.gov>
  */
 
+// clang-format off
+
 #ifndef NS3_VERSION_DEFINES_H_
 #define NS3_VERSION_DEFINES_H_
 
@@ -143,3 +145,5 @@
 /** @} */
 
 #endif
+
+// clang-format on

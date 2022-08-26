@@ -43,12 +43,10 @@ DefaultTimePrinter (std::ostream &os)
   os << std::fixed;
   switch (Time::GetResolution ())
     {
-      // *NS_CHECK_STYLE_OFF*
     case Time::US :    os << std::setprecision (6);   break;
     case Time::NS :    os << std::setprecision (9);   break;
     case Time::PS :    os << std::setprecision (12);  break;
     case Time::FS :    os << std::setprecision (15);  break;
-      // *NS_CHECK_STYLE_ON*
 
     default:
       // default C++ precision of 5

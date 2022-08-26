@@ -39,7 +39,6 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate-ax.plt");
   std::ofstream tablefile ("table-frame-success-rate-ax.plt");
 
-  // clang-format off
   const std::vector <std::string> modes {
     "HeMcs0",
     "HeMcs1",
@@ -54,7 +53,6 @@ int main (int argc, char *argv[])
     "HeMcs10",
     "HeMcs11",
   };
-  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);

@@ -236,48 +236,45 @@ public:
 private:
   virtual void DoRun (void);
 
-  /* *NS_CHECK_STYLE_OFF* */
   /**
    * Function used for scheduling.
    *
    * @{
    */
-  void bar0 (void) {}
-  void bar1 (int) {}
-  void bar2 (int, int) {}
-  void bar3 (int, int, int) {}
-  void bar4 (int, int, int, int) {}
-  void bar5 (int, int, int, int, int) {}
-  void baz1 (int &) {}
-  void baz2 (int &, int &) {}
-  void baz3 (int &, int &, int &) {}
-  void baz4 (int &, int &, int &, int &) {}
-  void baz5 (int &, int &, int &, int &, int &) {}
-  void cbaz1 (const int &) {}
-  void cbaz2 (const int &, const int &) {}
-  void cbaz3 (const int &, const int &, const int &) {}
-  void cbaz4 (const int &, const int &, const int &, const int &) {}
-  void cbaz5 (const int &, const int &, const int &, const int &, const int &) {}
+  void bar0 (void) {};
+  void bar1 (int) {};
+  void bar2 (int, int) {};
+  void bar3 (int, int, int) {};
+  void bar4 (int, int, int, int) {};
+  void bar5 (int, int, int, int, int) {};
+  void baz1 (int &) {};
+  void baz2 (int &, int &) {};
+  void baz3 (int &, int &, int &) {};
+  void baz4 (int &, int &, int &, int &) {};
+  void baz5 (int &, int &, int &, int &, int &) {};
+  void cbaz1 (const int &) {};
+  void cbaz2 (const int &, const int &) {};
+  void cbaz3 (const int &, const int &, const int &) {};
+  void cbaz4 (const int &, const int &, const int &, const int &) {};
+  void cbaz5 (const int &, const int &, const int &, const int &, const int &) {};
 
-  void bar0c (void) const {}
-  void bar1c (int) const {}
-  void bar2c (int, int) const {}
-  void bar3c (int, int, int) const {}
-  void bar4c (int, int, int, int) const {}
-  void bar5c (int, int, int, int, int) const {}
-  void baz1c (int &) const {}
-  void baz2c (int &, int &) const {}
-  void baz3c (int &, int &, int &) const {}
-  void baz4c (int &, int &, int &, int &) const {}
-  void baz5c (int &, int &, int &, int &, int &) const {}
-  void cbaz1c (const int &) const {}
-  void cbaz2c (const int &, const int &) const {}
-  void cbaz3c (const int &, const int &, const int &) const {}
-  void cbaz4c (const int &, const int &, const int &, const int &) const {}
-  void cbaz5c (const int &, const int &, const int &, const int &, const int &) const {}
+  void bar0c (void) const {};
+  void bar1c (int) const {};
+  void bar2c (int, int) const {};
+  void bar3c (int, int, int) const {};
+  void bar4c (int, int, int, int) const {};
+  void bar5c (int, int, int, int, int) const {};
+  void baz1c (int &) const {};
+  void baz2c (int &, int &) const {};
+  void baz3c (int &, int &, int &) const {};
+  void baz4c (int &, int &, int &, int &) const {};
+  void baz5c (int &, int &, int &, int &, int &) const {};
+  void cbaz1c (const int &) const {};
+  void cbaz2c (const int &, const int &) const {};
+  void cbaz3c (const int &, const int &, const int &) const {};
+  void cbaz4c (const int &, const int &, const int &, const int &) const {};
+  void cbaz5c (const int &, const int &, const int &, const int &, const int &) const {};
   /** @} */
-  /* *NS_CHECK_STYLE_ON* */
-
 };
 
 /**

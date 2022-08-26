@@ -329,10 +329,11 @@ private:
    *  \param [in] rhs Right hand argument
    *  \return The result of the operator.
    */
-  // *NS_CHECK_STYLE_OFF*
-  friend inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v == rhs._v; };
-  friend inline bool operator <  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v < rhs._v; };
-  friend inline bool operator >  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v > rhs._v; };
+
+
+  friend inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v == rhs._v; }
+  friend inline bool operator <  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v < rhs._v; }
+  friend inline bool operator >  (const int64x64_t & lhs, const int64x64_t & rhs) { return lhs._v > rhs._v; }
 
   friend inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
     {
@@ -354,7 +355,7 @@ private:
       lhs.Div (rhs);
       return lhs;
     };
-  // *NS_CHECK_STYLE_ON*
+
   /**@}*/
 
   /**

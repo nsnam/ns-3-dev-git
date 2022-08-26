@@ -191,11 +191,9 @@ public:
 
     switch (m_bits)
       {
-        /* *NS_CHECK_STYLE_OFF* */
       case Bits32:   name += " (32-bit version)";  break;
       case Bits64:   name += " (64-bit version)";  break;
       default:       name += " (unknown!?!)";
-        /* *NS_CHECK_STYLE_ON* */
       }
     return name;
   }

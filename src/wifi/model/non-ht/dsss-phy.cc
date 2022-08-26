@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("DsssPhy");
  *       HR/DSSS PHY (IEEE 802.11-2016, clause 16)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats DsssPhy::m_dsssPpduFormats {
   { WIFI_PREAMBLE_LONG,  { WIFI_PPDU_FIELD_PREAMBLE,      //PHY preamble
                            WIFI_PPDU_FIELD_NON_HT_HEADER, //PHY header
@@ -55,7 +56,8 @@ const PhyEntity::ModulationLookupTable DsssPhy::m_dsssModulationLookupTable {
   { "DsssRate5_5Mbps", { WIFI_CODE_RATE_UNDEFINED, 16 } },
   { "DsssRate11Mbps",  { WIFI_CODE_RATE_UNDEFINED, 256 } }
 };
-/* *NS_CHECK_STYLE_ON* */
+
+// clang-format on
 
 /// DSSS rates in bits per second
 static const std::array<uint64_t, 4> s_dsssRatesBpsList = {1000000,  2000000, 5500000, 11000000};

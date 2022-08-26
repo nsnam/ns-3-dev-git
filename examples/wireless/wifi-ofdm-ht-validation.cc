@@ -39,7 +39,6 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate-n.plt");
   std::ofstream tablefile ("table-frame-success-rate-n.plt");
 
-  // clang-format off
   const std::vector <std::string> modes {
     "HtMcs0",
     "HtMcs1",
@@ -50,7 +49,6 @@ int main (int argc, char *argv[])
     "HtMcs6",
     "HtMcs7",
   };
-  // clang-format on
 
 
   CommandLine cmd (__FILE__);

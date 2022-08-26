@@ -1528,6 +1528,7 @@ PrintAttributeImplementations (std::ostream & os)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  // clang-format off
   const AttributeDescriptor attributes [] =
     {
       // Name             Type             see Base  header-file
@@ -1574,6 +1575,7 @@ PrintAttributeImplementations (std::ostream & os)
       { "Uinteger",       "uint64_t",       false, "uinteger.h"         },
       { "",               "",               false, "last placeholder"   }
     };
+  // clang-format on
 
   int i = 0;
   while (attributes[i].m_name != "")

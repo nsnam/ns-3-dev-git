@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("EhtPhy");
  *       EHT PHY (P802.11be/D1.5)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats EhtPhy::m_ehtPpduFormats {
   { WIFI_PREAMBLE_EHT_MU,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
                                WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
@@ -47,7 +48,8 @@ const PhyEntity::PpduFormats EhtPhy::m_ehtPpduFormats {
                                WIFI_PPDU_FIELD_TRAINING,      //EHT-STF + EHT-LTFs
                                WIFI_PPDU_FIELD_DATA } }
 };
-/* *NS_CHECK_STYLE_ON* */
+
+// clang-format on
 
 EhtPhy::EhtPhy (bool buildModeList /* = true */)
   : HePhy (false) //don't add HE modes to list

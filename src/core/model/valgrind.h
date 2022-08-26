@@ -1,4 +1,6 @@
-/* -*- c -*-  *NS_CHECK_STYLE_OFF*
+// clang-format off
+
+/* -*- c -*-
    ----------------------------------------------------------------
 
    Notice that the following BSD-style license applies to this one
@@ -5623,4 +5625,4 @@ VALGRIND_PRINTF_BACKTRACE(const char *format, ...)
 
 #endif   /* __VALGRIND_H */
 
-/* *NS_CHECK_STYLE_ON* */
+// clang-format on

@@ -41,7 +41,6 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate-ofdm.plt");
   std::ofstream tablefile ("table-frame-success-rate-ofdm.plt");
 
-  // clang-format off
   const std::vector <std::string> modes {
     "OfdmRate6Mbps",
     "OfdmRate9Mbps",
@@ -52,7 +51,6 @@ int main (int argc, char *argv[])
     "OfdmRate48Mbps",
     "OfdmRate54Mbps",
   };
-  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);

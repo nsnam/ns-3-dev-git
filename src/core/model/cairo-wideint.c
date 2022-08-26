@@ -40,7 +40,7 @@
  * Implementation of the cairo_x functions which implement high precision arithmetic.
  */
 
-// *NS_CHECK_STYLE_OFF*
+// clang-format off
 
 #if HAVE_UINT64_T
 
@@ -825,3 +825,5 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num, cairo_int64_t den)
 	qr.quo = uqr.quo;
     return qr;
 }
+
+// clang-format on

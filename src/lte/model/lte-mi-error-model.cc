@@ -157,6 +157,7 @@ static const double MI_map_64qam_axis[MI_MAP_64QAM_SIZE] = {
 };
 
 
+// clang-format off
 
 /// BECR table
 static const double bEcrTable [9][38] = {
@@ -243,7 +244,6 @@ static const double bEcrTable [9][38] = {
   },
 };
 
-
 /// CECR table
 static const double cEcrTable [9][38] = {
   // CB of 40 bits
@@ -327,8 +327,9 @@ static const double cEcrTable [9][38] = {
     0.00303, 0.00377, 0.00507, // 64QAM retx
     0.0060, 0.00609, 0.0061, 0.0066, 0.0069, 0.0080, 0.0081, 0.0080, 0.0077, 0.0068, 0.0066, 0.0058 // 64QAM
   }
-
 };
+
+// clang-format on
 
 
 double

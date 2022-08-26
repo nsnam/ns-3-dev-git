@@ -354,7 +354,7 @@ const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {
       {HeRu::RuSpec{HeRu::RU_484_TONE, 1, true}}},
     {208,
       {HeRu::RuSpec{HeRu::RU_996_TONE, 1, true}}},
-  // clang-formt on
+    // clang-format on
 };
 
 std::vector<HeRu::RuSpec>

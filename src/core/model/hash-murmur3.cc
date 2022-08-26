@@ -72,7 +72,7 @@ namespace Murmur3Implementation {
 
 // Adapted from http://code.google.com/p/smhasher/
 
-// Begin Murmur3.cpp -------- *NS_CHECK_STYLE_OFF* ---->
+// clang-format off
 
 //
 //-----------------------------------------------------------------------------
@@ -505,8 +505,7 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
   ((uint32_t *)out)[1] = static_cast<uint32_t> (h2);  //PDB cast
 }
 
-
-// End Murmur3.cpp ---------- *NS_CHECK_STYLE_ON* ----->
+// clang-format on
 
 #undef BIG_CONSTANT
 

@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("OfdmPhy");
  *       OFDM PHY (IEEE 802.11-2016, clause 17)
  *******************************************************/
 
-/* *NS_CHECK_STYLE_OFF* */
+// clang-format off
+
 const PhyEntity::PpduFormats OfdmPhy::m_ofdmPpduFormats {
   { WIFI_PREAMBLE_LONG, { WIFI_PPDU_FIELD_PREAMBLE,      //STF + LTF
                           WIFI_PPDU_FIELD_NON_HT_HEADER, //SIG
@@ -85,7 +86,7 @@ const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
      {  1500000,  2250000,  3000000,  4500000,
         6000000,  9000000, 12000000, 13500000 }}};
 
-/* *NS_CHECK_STYLE_ON* */
+// clang-format on
 
 /**
  * Get the array of possible OFDM rates for each bandwidth (MHz).
