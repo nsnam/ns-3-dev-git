@@ -30,8 +30,8 @@ Here is an example of what might occur::
 
 The error message says that the program terminated unsuccessfuly, but it is
 not clear from this information what might be wrong. To examine more
-closely, try running it under the `gdb debugger
-<https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/user_guide/chap-gdb>`_:
+closely, try running it under the
+`gdb debugger <https://www.nsnam.org/wiki/HOWTO_use_gdb_to_debug_program_errors>`_:
 
 .. sourcecode:: bash
 
