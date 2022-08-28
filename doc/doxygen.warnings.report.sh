@@ -308,7 +308,7 @@ if [ $skip_doxy -eq 1 ]; then
 else
 
     # Modify doxygen.conf to generate all the warnings
-    # We keep dot active to generate graphs in the documentaion
+    # We keep dot active to generate graphs in the documentation
     # (see for example PacketTagList) and warn about ill-formed
     # graphs, but we disable all the doxygen-generated diagrams
     # to shorten the run time.
@@ -433,8 +433,20 @@ addlparam=$(                                  \
     sed 's/^[ \t]*//;s/[ \t]*$//'             \
     )
 
+# Sometimes doxygen can not pinpoint a warning to an exact file.
+# In this case the output is of the form:
+# "<operator==>:1: warning: parameters of member ns3::operator== are not documented"
+# or
+# "<operator==>:1: warning: return type of member ns3::operator== is not documented"
+misplacedWarns=$(                             \
+    grep ">:1:" "$LOG"                      | \
+    wc -l                                   | \
+    sed 's/^[ \t]*//;s/[ \t]*$//'             \
+    )
+
+
 # Total number of warnings
-warncount=$((modwarncount + addlparam))
+warncount=$((modwarncount + addlparam + misplacedWarns))
 
 # List of files appearing in the log
 if [ ! -z "$filter_log_results" ]
@@ -495,6 +507,7 @@ echo "Count Directory"
 echo "----- ----------------------------------"
 echo "$undocmods"
 echo " $addlparam additional undocumented parameters."
+echo " $misplacedWarns additional warnings."
 echo "----------------------------------------"
 printf "%6d total warnings\n" $warncount
 printf "%6d directories with warnings\n" $modcount
