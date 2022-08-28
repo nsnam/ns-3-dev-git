@@ -253,7 +253,7 @@ public:
    * \code
    * bool f (...)
    * {
-   *   Ptr<...> P = ...;
+   *   Ptr<...> p = ...;
    *   return (bool)(p);
    * }
    * \endcode
@@ -326,12 +326,16 @@ bool operator == (T1 const *lhs, Ptr<T2> &rhs);
 
 template <typename T1, typename T2>
 bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+/**@}*/
 
-/** Specialization for comparison to nullptr */
+/**
+ * \ingroup ptr
+ *  Specialization for comparison to \c nullptr
+ * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
+ */
 template <typename T1, typename T2>
 typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
-operator == (Ptr<T1> const &lhs, T2 nullPtr);
-/**@}*/
+operator == (Ptr<T1> const &lhs, T2 rhs);
 
 /**
  * \ingroup ptr
@@ -362,12 +366,16 @@ bool operator != (T1 const *lhs, Ptr<T2> &rhs);
 
 template <typename T1, typename T2>
 bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+/**@}*/
 
-/** Specialization for comparison to nullptr */
+/**
+ * \ingroup ptr
+ * Specialization for comparison to \c nullptr
+ * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
+*/
 template <typename T1, typename T2>
 typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
-operator != (Ptr<T1> const &lhs, T2 nullPtr);
-/**@}*/
+operator != (Ptr<T1> const &lhs, T2 rhs);
 
 
 /**
@@ -541,14 +549,14 @@ operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 
 template <typename T1, typename T2>
 typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
-operator == (Ptr<T1> const &lhs, T2 nullPtr)
+operator == (Ptr<T1> const &lhs, T2 rhs)
 {
   return PeekPointer (lhs) == nullptr;
 }
 
 template <typename T1, typename T2>
 typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
-operator != (Ptr<T1> const &lhs, T2 nullPtr)
+operator != (Ptr<T1> const &lhs, T2 rhs)
 {
   return PeekPointer (lhs) != nullptr;
 }
