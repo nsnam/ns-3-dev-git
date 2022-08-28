@@ -93,10 +93,20 @@
 using namespace ns3;
 
 // Global variables for use in callbacks.
-double g_signalDbmAvg;
-double g_noiseDbmAvg;
-uint32_t g_samples;
+double g_signalDbmAvg;  //!< Average signal power [dBm]
+double g_noiseDbmAvg;   //!< Average noise power [dBm]
+uint32_t g_samples;     //!< Number of samples
 
+/**
+ * Monitor sniffer Rx trace
+ *
+ * \param packet The sensed packet.
+ * \param channelFreqMhz The channel frequancy [MHz].
+ * \param txVector The Tx vector.
+ * \param aMpdu The aMPDU.
+ * \param signalNoise The signal and noise dBm.
+ * \param staId The STA ID.
+ */
 void MonitorSniffRx (Ptr<const Packet> packet,
                      uint16_t channelFreqMhz,
                      WifiTxVector txVector,

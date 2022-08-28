@@ -42,6 +42,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaRawIpSocketExample");
 
+/**
+ * Receive sink function
+ *
+ * \param p the packet.
+ * \param ad the sender's address.
+ */
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   // Enable the below line to see the packet contents printed out at the

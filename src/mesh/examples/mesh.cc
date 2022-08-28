@@ -87,9 +87,14 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("MeshExample");
 
 // Declaring these variables outside of main() for use in trace sinks
-uint32_t g_udpTxCount = 0;
-uint32_t g_udpRxCount = 0;
+uint32_t g_udpTxCount = 0;  //!< Rx packet counter.
+uint32_t g_udpRxCount = 0;  //!< Tx packet counter.
 
+/**
+ * Transmission trace sink.
+ *
+ * \param p The sent packet.
+ */
 void
 TxTrace (Ptr<const Packet> p)
 {
@@ -97,6 +102,11 @@ TxTrace (Ptr<const Packet> p)
   g_udpTxCount++;
 }
 
+/**
+ * Reception trace sink,
+ *
+ * \param p The received packet.
+ */
 void
 RxTrace (Ptr<const Packet> p)
 {

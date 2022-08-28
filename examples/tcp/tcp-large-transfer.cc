@@ -44,12 +44,16 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLargeTransfer");
 
-// The number of bytes to send in this simulation.
+/// The number of bytes to send in this simulation.
 static const uint32_t totalTxBytes = 2000000;
+/// The actual number of sent bytes.
 static uint32_t currentTxBytes = 0;
+
 // Perform series of 1040 byte writes (this is a multiple of 26 since
 // we want to detect data splicing in the output stream)
+/// Write size.
 static const uint32_t writeSize = 1040;
+/// Data to be written.
 uint8_t data[writeSize];
 
 // These are for starting the writing process, and handling the sending
@@ -57,9 +61,29 @@ uint8_t data[writeSize];
 // implement a sending "Application", although not a proper ns3::Application
 // subclass.
 
-void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
-void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
+/**
+ * Start a flow.
+ *
+ * \param localSocket The local (sending) socket.
+ * \param servAddress The server address.
+ * \param servPort The server port.
+ */
+void StartFlow (Ptr<Socket> localSocket, Ipv4Address servAddress, uint16_t servPort);
 
+/**
+ * Write to the buffer, filling it.
+ *
+ * \param localSocket The socket.
+ * \param txSpace The number of bytes to write.
+ */
+void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
+
+/**
+ * Congestion window tracker function.
+ *
+ * \param oldval Old value.
+ * \param newval New value.
+ */
 static void
 CwndTracer (uint32_t oldval, uint32_t newval)
 {

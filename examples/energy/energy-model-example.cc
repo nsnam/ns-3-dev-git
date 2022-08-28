@@ -35,6 +35,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("EnergyExample");
 
+/**
+ * Print a received packet
+ *
+ * \param from sender address
+ * \return a sting with the details of the packet: dst {IP, port}, time.
+ */
 static inline std::string
 PrintReceivedPacket (Address& from)
 {
@@ -93,7 +99,12 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
     }
 }
 
-/// Trace function for remaining energy at node.
+/**
+ * Trace function for remaining energy at node.
+ *
+ * \param oldValue Old value
+ * \param remainingEnergy New value
+ */
 void
 RemainingEnergy (double oldValue, double remainingEnergy)
 {
@@ -101,7 +112,12 @@ RemainingEnergy (double oldValue, double remainingEnergy)
                  << "s Current remaining energy = " << remainingEnergy << "J");
 }
 
-/// Trace function for total energy consumption at node.
+/**
+ * \brief Trace function for total energy consumption at node.
+ *
+ * \param oldValue Old value
+ * \param totalEnergy New value
+ */
 void
 TotalEnergy (double oldValue, double totalEnergy)
 {

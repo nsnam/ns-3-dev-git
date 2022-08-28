@@ -107,14 +107,26 @@ Emitter::Count (void)
   Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
 }
 
-// This is a function to test hooking a raw function to the trace source
+/**
+ * This is a function to test hooking a raw function to the trace source,
+ *
+ * \param context The trace context.
+ * \param oldVal Old value.
+ * \param newVal New value.
+ */
 void
 NotifyViaTraceSource (std::string context, double oldVal, double newVal)
 {
   NS_LOG_DEBUG ("context: " << context << " old " << oldVal << " new " << newVal);
 }
 
-// This is a function to test hooking it to the probe output
+/**
+ * This is a function to test hooking it to the probe output
+ *
+ * \param context The trace context.
+ * \param oldVal Old value.
+ * \param newVal New value.
+ */
 void
 NotifyViaProbe (std::string context, double oldVal, double newVal)
 {

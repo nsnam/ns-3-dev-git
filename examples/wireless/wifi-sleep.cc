@@ -66,6 +66,13 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiSleep");
 
+/**
+ * Remaining energy trace sink
+ *
+ * \tparam node The node ID this trace belongs to.
+ * \param oldValue Old value.
+ * \param newValue New value.
+ */
 template <int node>
 void RemainingEnergyTrace (double oldValue, double newValue)
 {
@@ -77,6 +84,15 @@ void RemainingEnergyTrace (double oldValue, double newValue)
   f << Simulator::Now ().GetSeconds () << "    remaining energy=" << newValue << std::endl;
 }
 
+/**
+ * PHY state trace sink
+ *
+ * \tparam node The node ID this trace belongs to.
+ * \param context The context
+ * \param start Start time for the current state
+ * \param duration Duratio of the current state
+ * \param state State
+ */
 template <int node>
 void PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state)
 {

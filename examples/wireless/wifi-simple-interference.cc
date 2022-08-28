@@ -95,6 +95,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiSimpleInterference");
 
+/**
+ * Print a packer that has been received.
+ *
+ * \param socket The receiving socket.
+ * \return a string with the packet details.
+ */
 static inline std::string PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;
@@ -112,19 +118,32 @@ static inline std::string PrintReceivedPacket (Ptr<Socket> socket)
   return oss.str ();
 }
 
+/**
+ * Function called when a packet is received.
+ *
+ * \param socket The receiving socket.
+ */
 static void ReceivePacket (Ptr<Socket> socket)
 {
   NS_LOG_UNCOND (PrintReceivedPacket (socket));
 }
 
+/**
+ * Generate traffic
+ *
+ * \param socket The seding socket.
+ * \param pktSize The packet size.
+ * \param pktCount The packet counter.
+ * \param pktInterval The interval between two packets.
+ */
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
-                             uint32_t pktCount, Time pktInterval )
+                             uint32_t pktCount, Time pktInterval)
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
       Simulator::Schedule (pktInterval, &GenerateTraffic,
-                           socket, pktSize,pktCount - 1, pktInterval);
+                           socket, pktSize, pktCount - 1, pktInterval);
     }
   else
     {

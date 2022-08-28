@@ -70,8 +70,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("OutdoorGroupMobilityExample");
 
+/// The time series file.
 std::ofstream g_timeSeries;
 
+/**
+ * Print the node position to the time series file.
+ *
+ * \param node The node.
+ */
 void
 PrintPosition (Ptr<Node> node)
 {
@@ -80,9 +86,13 @@ PrintPosition (Ptr<Node> node)
   if (!model) return;
   NS_LOG_LOGIC ("Node: " << node->GetId () << " Position: " << model->GetPosition ());
   g_timeSeries << Simulator::Now ().GetSeconds () << " " << node->GetId () << " " << model->GetPosition () << std::endl;
-
 }
 
+/**
+ * Print the buildings list in a format that can be used by Gnuplot to draw them.
+ *
+ * \param filename The ouput filename.
+ */
 void
 PrintGnuplottableBuildingListToFile (std::string filename)
 {

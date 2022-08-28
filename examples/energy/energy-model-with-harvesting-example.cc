@@ -64,6 +64,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("EnergyWithHarvestingExample");
 
+/**
+ * Print a received packet
+ *
+ * \param from sender address
+ * \return a sting with the details of the packet: dst {IP, port}, time.
+ */
 static inline std::string
 PrintReceivedPacket (Address& from)
 {
@@ -122,7 +128,12 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
     }
 }
 
-/// Trace function for remaining energy at node.
+/**
+ * Trace function for remaining energy at node.
+ *
+ * \param oldValue Old value
+ * \param remainingEnergy New value
+ */
 void
 RemainingEnergy (double oldValue, double remainingEnergy)
 {
@@ -130,15 +141,24 @@ RemainingEnergy (double oldValue, double remainingEnergy)
                  << "s Current remaining energy = " << remainingEnergy << "J");
 }
 
-/// Trace function for total energy consumption at node.
-void
+/**
+ * Trace function for total energy consumption at node.
+ *
+ * \param oldValue Old value
+ * \param totalEnergy New value
+ */void
 TotalEnergy (double oldValue, double totalEnergy)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
                  << "s Total energy consumed by radio = " << totalEnergy << "J");
 }
 
-/// Trace function for the power harvested by the energy harvester.
+/**
+ * Trace function for the power harvested by the energy harvester.
+ *
+ * \param oldValue Old value
+ * \param harvestedPower New value
+ */
 void
 HarvestedPower (double oldValue, double harvestedPower)
 {
@@ -146,15 +166,19 @@ HarvestedPower (double oldValue, double harvestedPower)
                  << "s Current harvested power = " << harvestedPower << " W");
 }
 
-/// Trace function for the total energy harvested by the node.
+/**
+ * Trace function for the total energy harvested by the node.
+ *
+ * \param oldValue Old value
+ * \param totalEnergyHarvested New value
+ */
 void
-TotalEnergyHarvested (double oldValue, double TotalEnergyHarvested)
+TotalEnergyHarvested (double oldValue, double totalEnergyHarvested)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
                  << "s Total energy harvested by harvester = "
-                 << TotalEnergyHarvested << " J");
+                 << totalEnergyHarvested << " J");
 }
-
 
 int
 main (int argc, char *argv[])

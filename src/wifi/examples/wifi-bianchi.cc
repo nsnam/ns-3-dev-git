@@ -54,6 +54,7 @@
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/wifi-mac.h"
 
+/// Avoid std::numbers::pi because it's C++20
 #define PI 3.1415926535
 
 NS_LOG_COMPONENT_DEFINE ("WifiBianchi");
@@ -89,6 +90,7 @@ bool tracing = false;    ///< Flag to enable/disable generation of tracing files
 uint32_t pktSize = 1500; ///< packet size used for the simulation (in bytes)
 uint8_t maxMpdus = 0;    ///< The maximum number of MPDUs in A-MPDUs (0 to disable MPDU aggregation)
 
+/// Table of the expected values for EIFS
 std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsEifs =
 {
 /* 11b */
@@ -301,6 +303,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
     }},
 };
 
+/// Table of the expected values for DIFS
 std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsDifs =
 {
 /* 11b */
@@ -513,7 +516,12 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
     }},
 };
 
-// Parse context strings of the form "/NodeList/x/DeviceList/x/..." to extract the NodeId integer
+/**
+ * Parse context strings of the form "/NodeList/x/DeviceList/x/..." to extract the NodeId integer
+ *
+ * \param context The context to parse.
+ * \return the NodeId
+ */
 uint32_t
 ContextToNodeId (std::string context)
 {
@@ -522,7 +530,12 @@ ContextToNodeId (std::string context)
   return atoi (sub.substr (0, pos).c_str ());
 }
 
-// Parse context strings of the form "/NodeList/x/DeviceList/x/..." and fetch the Mac address
+/**
+ * Parse context strings of the form "/NodeList/x/DeviceList/x/..." and fetch the Mac address
+ *
+ * \param context The context to parse.
+ * \return the device MAC address
+ */
 Mac48Address
 ContextToMac (std::string context)
 {
@@ -544,6 +557,13 @@ ContextToMac (std::string context)
 
 // Functions for tracing.
 
+/**
+ * Incremement the counter for a given address.
+ *
+ * \param [out] counter The counter to increment.
+ * \param addr The address to incremement the counter for.
+ * \param increment The incremement (1 if omitted).
+ */
 void
 IncrementCounter (std::map<Mac48Address, uint64_t> & counter, Mac48Address addr, uint64_t increment = 1)
 {
@@ -558,6 +578,17 @@ IncrementCounter (std::map<Mac48Address, uint64_t> & counter, Mac48Address addr,
    }
 }
 
+/**
+ * Trace a packet reception.
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param channelFreqMhz The channel frequqncy.
+ * \param txVector The TX vector.
+ * \param aMpdu The AMPDU.
+ * \param signalNoise The signal and noise dBm.
+ * \param staId The STA ID.
+ */
 void
 TracePacketReception (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
@@ -599,6 +630,12 @@ TracePacketReception (std::string context, Ptr<const Packet> p, uint16_t channel
     }
 }
 
+/**
+ * Contention window trace.
+ *
+ * \param context The context.
+ * \param cw The contention window.
+ */
 void
 CwTrace (std::string context, uint32_t cw, uint8_t /* linkId */)
 {
@@ -609,6 +646,12 @@ CwTrace (std::string context, uint32_t cw, uint8_t /* linkId */)
     }
 }
 
+/**
+ * Backoff trace.
+ *
+ * \param context The context.
+ * \param newVal The backoff value.
+ */
 void
 BackoffTrace (std::string context, uint32_t newVal, uint8_t /* linkId */)
 {
@@ -619,18 +662,39 @@ BackoffTrace (std::string context, uint32_t newVal, uint8_t /* linkId */)
     }
 }
 
+/**
+ * PHY Rx trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param power The Rx power.
+ */
 void
 PhyRxTrace (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand power)
 {
   NS_LOG_INFO ("PHY-RX-START time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " size=" << p->GetSize ());
 }
 
+/**
+ * PHY Rx trace.
+ *
+ * \param context The context.
+ * \param txVector The TX vector.
+ * \param psduDuration The PDSU diration.
+ */
 void
 PhyRxPayloadTrace (std::string context, WifiTxVector txVector, Time psduDuration)
 {
   NS_LOG_INFO ("PHY-RX-PAYLOAD-START time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " psduDuration=" << psduDuration);
 }
 
+/**
+ * PHY Drop trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param reason The drop reason.
+ */
 void
 PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
@@ -710,12 +774,27 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
     }
 }
 
+/**
+ * PHY RX end trace
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 PhyRxDoneTrace (std::string context, Ptr<const Packet> p)
 {
   NS_LOG_INFO ("PHY-RX-END time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " size=" << p->GetSize ());
 }
 
+/**
+ * PHY successful RX trace
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param snr The SNR.
+ * \param mode The WiFi mode.
+ * \param preamble The preamble.
+ */
 void
 PhyRxOkTrace (std::string context, Ptr<const Packet> p, double snr, WifiMode mode, WifiPreamble preamble)
 {
@@ -742,6 +821,13 @@ PhyRxOkTrace (std::string context, Ptr<const Packet> p, double snr, WifiMode mod
     }
 }
 
+/**
+ * PHY RX error trace
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param snr The SNR.
+ */
 void
 PhyRxErrorTrace (std::string context, Ptr<const Packet> p, double snr)
 {
@@ -753,6 +839,13 @@ PhyRxErrorTrace (std::string context, Ptr<const Packet> p, double snr)
     }
 }
 
+/**
+ * PHY TX trace
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param txPowerW The TX power.
+ */
 void
 PhyTxTrace (std::string context, Ptr<const Packet> p, double txPowerW)
 {
@@ -768,12 +861,24 @@ PhyTxTrace (std::string context, Ptr<const Packet> p, double txPowerW)
     }
 }
 
+/**
+ * PHY TX end trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 PhyTxDoneTrace (std::string context, Ptr<const Packet> p)
 {
   NS_LOG_INFO ("PHY-TX-END time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " " << p->GetSize ());
 }
 
+/**
+ * MAC TX trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 MacTxTrace (std::string context, Ptr<const Packet> p)
 {
@@ -783,6 +888,12 @@ MacTxTrace (std::string context, Ptr<const Packet> p)
     }
 }
 
+/**
+ * MAC RX trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 MacRxTrace (std::string context, Ptr<const Packet> p)
 {
@@ -792,6 +903,13 @@ MacRxTrace (std::string context, Ptr<const Packet> p)
     }
 }
 
+/**
+ * Socket send trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ * \param addr destination address.
+ */
 void
 SocketSendTrace (std::string context, Ptr<const Packet> p, const Address &addr)
 {
@@ -801,6 +919,12 @@ SocketSendTrace (std::string context, Ptr<const Packet> p, const Address &addr)
     }
 }
 
+/**
+ * Association log trace.
+ *
+ * \param context The context.
+ * \param address The MAC address.
+ */
 void
 AssociationLog (std::string context, Mac48Address address)
 {
@@ -817,6 +941,12 @@ AssociationLog (std::string context, Mac48Address address)
     }
 }
 
+/**
+ * Deassociation log trace.
+ *
+ * \param context The context.
+ * \param address The MAC address.
+ */
 void
 DisassociationLog (std::string context, Mac48Address address)
 {
@@ -825,6 +955,9 @@ DisassociationLog (std::string context, Mac48Address address)
   NS_FATAL_ERROR ("Device should not disassociate!");
 }
 
+/**
+ * Reset the stats.
+ */
 void
 RestartCalc ()
 {
@@ -842,6 +975,9 @@ RestartCalc ()
   rxEventAbortedByTx.clear ();
 }
 
+/**
+ * Class to configure and run an experiment.
+ */
 class Experiment
 {
 public:
@@ -1056,6 +1192,13 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   return 0;
 }
 
+/**
+ * Get the Counter associated with a MAC address.
+ *
+ * \param counter The map of counters to inspect.
+ * \param addr The MAC address.
+ * \return the value of the counter,
+ */
 uint64_t
 GetCount (const std::map<Mac48Address, uint64_t> & counter, Mac48Address addr)
 {
@@ -1082,7 +1225,7 @@ int main (int argc, char *argv[])
   std::string phyMode = "OfdmRate54Mbps"; ///< the constant PHY mode string used to transmit frames
   std::string standard ("11a");           ///< the 802.11 standard
   bool validate = false;                  ///< Flag used for regression in order to verify ns-3 results are in the expected boundaries
-  uint16_t plotBianchiModel = 0x01;        ///< First bit corresponds to the DIFS model, second bit to the EIFS model
+  uint16_t plotBianchiModel = 0x01;       ///< First bit corresponds to the DIFS model, second bit to the EIFS model
   double maxRelativeError = 0.015;        ///< Maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)
   double frequency = 5;                   ///< The operating frequency band in GHz: 2.4, 5 or 6
   uint16_t channelWidth = 20;             ///< The constant channel width in MHz (only for 11n/ac/ax)

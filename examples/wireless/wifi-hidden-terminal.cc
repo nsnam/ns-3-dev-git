@@ -47,7 +47,13 @@
 
 using namespace ns3;
 
-/// Run single 10 seconds experiment
+
+/**
+ * Run single 10 seconds experiment
+ *
+ * \param enableCtsRts if true, enable RTS/CTS for packets larget than 100 bytes.
+ * \param wifiManager WiFi manager to use.
+ */
 void experiment (bool enableCtsRts, std::string wifiManager)
 {
   // 0. Enable or disable CTS/RTS

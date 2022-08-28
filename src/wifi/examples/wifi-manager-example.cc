@@ -64,18 +64,30 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("WifiManagerExample");
 
 // 290K @ 20 MHz
-const double NOISE_DBM_Hz = -174.0;
-double noiseDbm = NOISE_DBM_Hz;
+const double NOISE_DBM_Hz = -174.0; //!< Default value for noise.
+double noiseDbm = NOISE_DBM_Hz;     //!< Value for noise.
 
-double g_intervalBytes = 0;
-uint64_t g_intervalRate = 0;
+double g_intervalBytes = 0;   //!< Bytes received in an interval.
+uint64_t g_intervalRate = 0;  //!< Rate in an interval.
 
+/**
+ * Packet received.
+ *
+ * \param pkt The packet.
+ * \param addr The sender address.
+ */
 void
 PacketRx (Ptr<const Packet> pkt, const Address &addr)
 {
   g_intervalBytes += pkt->GetSize ();
 }
 
+/**
+ * Rate changed.
+ *
+ * \param oldVal Old value.
+ * \param newVal New value.
+ */
 void
 RateChange (uint64_t oldVal, uint64_t newVal)
 {
@@ -133,6 +145,15 @@ struct StandardInfo
   double m_yMax;  ///< Y maximum
 };
 
+/**
+ * Change the signal model and report the rate.
+ *
+ * \param rssModel The new RSS model.
+ * \param step The step tp use.
+ * \param rss The RSS.
+ * \param rateDataset The rate dataset.
+ * \param actualDataset The actual dataset.
+ */
 void
 ChangeSignalAndReportRate (Ptr<FixedRssLossModel> rssModel, Step step, double rss, Gnuplot2dDataset& rateDataset, Gnuplot2dDataset& actualDataset)
 {

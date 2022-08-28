@@ -31,6 +31,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LenaX2HandoverExample");
 
+/**
+ * UE Connection established noticication.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The Cell ID.
+ * \param rnti The RNTI.
+ */
 void
 NotifyConnectionEstablishedUe (std::string context,
                                uint64_t imsi,
@@ -44,6 +52,15 @@ NotifyConnectionEstablishedUe (std::string context,
             << std::endl;
 }
 
+/**
+ * UE Start Handover notification.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The actual Cell ID.
+ * \param rnti The RNTI.
+ * \param targetCellId The target Cell ID.
+ */
 void
 NotifyHandoverStartUe (std::string context,
                        uint64_t imsi,
@@ -59,6 +76,14 @@ NotifyHandoverStartUe (std::string context,
             << std::endl;
 }
 
+/**
+ * UE Handover end successful notification.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The Cell ID.
+ * \param rnti The RNTI.
+ */
 void
 NotifyHandoverEndOkUe (std::string context,
                        uint64_t imsi,
@@ -72,6 +97,14 @@ NotifyHandoverEndOkUe (std::string context,
             << std::endl;
 }
 
+/**
+ * eNB Connection established noticication.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The Cell ID.
+ * \param rnti The RNTI.
+ */
 void
 NotifyConnectionEstablishedEnb (std::string context,
                                 uint64_t imsi,
@@ -85,6 +118,15 @@ NotifyConnectionEstablishedEnb (std::string context,
             << std::endl;
 }
 
+/**
+ * eNB Start Handover notification.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The actual Cell ID.
+ * \param rnti The RNTI.
+ * \param targetCellId The target Cell ID.
+ */
 void
 NotifyHandoverStartEnb (std::string context,
                         uint64_t imsi,
@@ -100,6 +142,14 @@ NotifyHandoverStartEnb (std::string context,
             << std::endl;
 }
 
+/**
+ * eNB Handover end successful notification.
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The Cell ID.
+ * \param rnti The RNTI.
+ */
 void
 NotifyHandoverEndOkEnb (std::string context,
                         uint64_t imsi,

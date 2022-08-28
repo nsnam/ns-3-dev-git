@@ -42,6 +42,13 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LenaDualStripe");
 
+/**
+ * Check if two boxes are overlapping.
+ *
+ * \param a First box.
+ * \param b Second box.
+ * \return true if the boxes are overlapping, false otherwise.
+ */
 bool AreOverlapping (Box a, Box b)
 {
   return !((a.xMin > b.xMax) || (b.xMin > a.xMax) || (a.yMin > b.yMax) || (b.yMin > a.yMax));
@@ -159,6 +166,11 @@ FemtocellBlockAllocator::OverlapsWithAnyPrevious (Box box)
   return false;
 }
 
+/**
+ * Print a list of buildings that can be plotted using Gnuplot.
+ *
+ * \param filename the output file name.
+ */
 void
 PrintGnuplottableBuildingListToFile (std::string filename)
 {
@@ -182,6 +194,11 @@ PrintGnuplottableBuildingListToFile (std::string filename)
     }
 }
 
+/**
+ * Print a list of UEs that can be plotted using Gnuplot.
+ *
+ * \param filename the output file name.
+ */
 void
 PrintGnuplottableUeListToFile (std::string filename)
 {
@@ -210,6 +227,11 @@ PrintGnuplottableUeListToFile (std::string filename)
     }
 }
 
+/**
+ * Print a list of ENBs that can be plotted using Gnuplot.
+ *
+ * \param filename the output file name.
+ */
 void
 PrintGnuplottableEnbListToFile (std::string filename)
 {
@@ -239,134 +261,190 @@ PrintGnuplottableEnbListToFile (std::string filename)
     }
 }
 
-
+/// Number of femtocell blocks
 static ns3::GlobalValue g_nBlocks ("nBlocks",
                                    "Number of femtocell blocks",
                                    ns3::UintegerValue (1),
                                    ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Number of apartments along the X axis in a femtocell block
 static ns3::GlobalValue g_nApartmentsX ("nApartmentsX",
                                         "Number of apartments along the X axis in a femtocell block",
                                         ns3::UintegerValue (10),
                                         ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Number of floors
 static ns3::GlobalValue g_nFloors ("nFloors",
                                    "Number of floors",
                                    ns3::UintegerValue (1),
                                    ns3::MakeUintegerChecker<uint32_t> ());
+
+/// How many macro sites there are
 static ns3::GlobalValue g_nMacroEnbSites ("nMacroEnbSites",
                                           "How many macro sites there are",
                                           ns3::UintegerValue (3),
                                           ns3::MakeUintegerChecker<uint32_t> ());
+
+/// (minimum) number of sites along the X-axis of the hex grid
 static ns3::GlobalValue g_nMacroEnbSitesX ("nMacroEnbSitesX",
                                            "(minimum) number of sites along the X-axis of the hex grid",
                                            ns3::UintegerValue (1),
                                            ns3::MakeUintegerChecker<uint32_t> ());
+
+/// min distance between two nearby macro cell sites
 static ns3::GlobalValue g_interSiteDistance ("interSiteDistance",
                                              "min distance between two nearby macro cell sites",
                                              ns3::DoubleValue (500),
                                              ns3::MakeDoubleChecker<double> ());
+
+/// how much the UE area extends outside the macrocell grid, expressed as fraction of the interSiteDistance
 static ns3::GlobalValue g_areaMarginFactor ("areaMarginFactor",
                                             "how much the UE area extends outside the macrocell grid, "
                                             "expressed as fraction of the interSiteDistance",
                                             ns3::DoubleValue (0.5),
                                             ns3::MakeDoubleChecker<double> ());
+
+/// How many macrocell UEs there are per square meter
 static ns3::GlobalValue g_macroUeDensity ("macroUeDensity",
                                           "How many macrocell UEs there are per square meter",
                                           ns3::DoubleValue (0.00002),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// The HeNB deployment ratio as per 3GPP R4-092042
 static ns3::GlobalValue g_homeEnbDeploymentRatio ("homeEnbDeploymentRatio",
                                                   "The HeNB deployment ratio as per 3GPP R4-092042",
                                                   ns3::DoubleValue (0.2),
                                                   ns3::MakeDoubleChecker<double> ());
+
+/// The HeNB activation ratio as per 3GPP R4-092042
 static ns3::GlobalValue g_homeEnbActivationRatio ("homeEnbActivationRatio",
                                                   "The HeNB activation ratio as per 3GPP R4-092042",
                                                   ns3::DoubleValue (0.5),
                                                   ns3::MakeDoubleChecker<double> ());
+
+/// How many (on average) home UEs per HeNB there are in the simulation
 static ns3::GlobalValue g_homeUesHomeEnbRatio ("homeUesHomeEnbRatio",
                                                "How many (on average) home UEs per HeNB there are in the simulation",
                                                ns3::DoubleValue (1.0),
                                                ns3::MakeDoubleChecker<double> ());
+
+/// TX power [dBm] used by macro eNBs
 static ns3::GlobalValue g_macroEnbTxPowerDbm ("macroEnbTxPowerDbm",
                                               "TX power [dBm] used by macro eNBs",
                                               ns3::DoubleValue (46.0),
                                               ns3::MakeDoubleChecker<double> ());
+
+/// TX power [dBm] used by HeNBs
 static ns3::GlobalValue g_homeEnbTxPowerDbm ("homeEnbTxPowerDbm",
                                              "TX power [dBm] used by HeNBs",
                                              ns3::DoubleValue (20.0),
                                              ns3::MakeDoubleChecker<double> ());
+
+/// DL EARFCN used by macro eNBs
 static ns3::GlobalValue g_macroEnbDlEarfcn ("macroEnbDlEarfcn",
                                             "DL EARFCN used by macro eNBs",
                                             ns3::UintegerValue (100),
                                             ns3::MakeUintegerChecker<uint16_t> ());
+
+/// DL EARFCN used by HeNBs
 static ns3::GlobalValue g_homeEnbDlEarfcn ("homeEnbDlEarfcn",
                                            "DL EARFCN used by HeNBs",
                                            ns3::UintegerValue (100),
                                            ns3::MakeUintegerChecker<uint16_t> ());
+
+/// Bandwidth [num RBs] used by macro eNBs
 static ns3::GlobalValue g_macroEnbBandwidth ("macroEnbBandwidth",
                                              "bandwidth [num RBs] used by macro eNBs",
                                              ns3::UintegerValue (25),
                                              ns3::MakeUintegerChecker<uint16_t> ());
+
+/// Bandwidth [num RBs] used by HeNBs
 static ns3::GlobalValue g_homeEnbBandwidth ("homeEnbBandwidth",
                                             "bandwidth [num RBs] used by HeNBs",
                                             ns3::UintegerValue (25),
                                             ns3::MakeUintegerChecker<uint16_t> ());
+
+/// Total duration of the simulation [s]
 static ns3::GlobalValue g_simTime ("simTime",
                                    "Total duration of the simulation [s]",
                                    ns3::DoubleValue (0.25),
                                    ns3::MakeDoubleChecker<double> ());
+
+/// If true, will generate a REM and then abort the simulation
 static ns3::GlobalValue g_generateRem ("generateRem",
                                        "if true, will generate a REM and then abort the simulation;"
                                        "if false, will run the simulation normally (without generating any REM)",
                                        ns3::BooleanValue (false),
                                        ns3::MakeBooleanChecker ());
+
+/// Resource Block Id of Data Channel, for which REM will be generated.
 static ns3::GlobalValue g_remRbId ("remRbId",
                                    "Resource Block Id of Data Channel, for which REM will be generated;"
                                    "default value is -1, what means REM will be averaged from all RBs of "
                                    "Control Channel",
                                    ns3::IntegerValue (-1),
                                    MakeIntegerChecker<int32_t> ());
+
+/// If true, will setup the EPC to simulate an end-to-end topology.
 static ns3::GlobalValue g_epc ("epc",
                                "If true, will setup the EPC to simulate an end-to-end topology, "
                                "with real IP applications over PDCP and RLC UM (or RLC AM by changing "
                                "the default value of EpsBearerToRlcMapping e.g. to RLC_AM_ALWAYS). "
-                               "If false, only the LTE radio access will be simulated with RLC SM. ",
+                               "If false, only the LTE radio access will be simulated with RLC SM.",
                                ns3::BooleanValue (false),
                                ns3::MakeBooleanChecker ());
+
+/// if true, will activate data flows in the downlink when EPC is being used.
 static ns3::GlobalValue g_epcDl ("epcDl",
                                  "if true, will activate data flows in the downlink when EPC is being used. "
                                  "If false, downlink flows won't be activated. "
                                  "If EPC is not used, this parameter will be ignored.",
                                  ns3::BooleanValue (true),
                                  ns3::MakeBooleanChecker ());
+
+/// if true, will activate data flows in the uplink when EPC is being used.
 static ns3::GlobalValue g_epcUl ("epcUl",
                                  "if true, will activate data flows in the uplink when EPC is being used. "
                                  "If false, uplink flows won't be activated. "
                                  "If EPC is not used, this parameter will be ignored.",
                                  ns3::BooleanValue (true),
                                  ns3::MakeBooleanChecker ());
+
+/// if true, the UdpClient application will be used.
 static ns3::GlobalValue g_useUdp ("useUdp",
                                   "if true, the UdpClient application will be used. "
                                   "Otherwise, the BulkSend application will be used over a TCP connection. "
                                   "If EPC is not used, this parameter will be ignored.",
                                   ns3::BooleanValue (true),
                                   ns3::MakeBooleanChecker ());
+
+/// The path of the fading trace (by default no fading trace is loaded, i.e., fading is not considered)
 static ns3::GlobalValue g_fadingTrace ("fadingTrace",
                                        "The path of the fading trace (by default no fading trace "
                                        "is loaded, i.e., fading is not considered)",
                                        ns3::StringValue (""),
                                        ns3::MakeStringChecker ());
+
+/// How many bearers per UE there are in the simulation
 static ns3::GlobalValue g_numBearersPerUe ("numBearersPerUe",
                                            "How many bearers per UE there are in the simulation",
                                            ns3::UintegerValue (1),
                                            ns3::MakeUintegerChecker<uint16_t> ());
+
+/// SRS Periodicity (has to be at least greater than the number of UEs per eNB)
 static ns3::GlobalValue g_srsPeriodicity ("srsPeriodicity",
                                           "SRS Periodicity (has to be at least "
                                           "greater than the number of UEs per eNB)",
                                           ns3::UintegerValue (80),
                                           ns3::MakeUintegerChecker<uint16_t> ());
+
+/// Minimum speed value of macro UE with random waypoint model [m/s].
 static ns3::GlobalValue g_outdoorUeMinSpeed ("outdoorUeMinSpeed",
                                              "Minimum speed value of macro UE with random waypoint model [m/s].",
                                              ns3::DoubleValue (0.0),
                                              ns3::MakeDoubleChecker<double> ());
+
+/// Maximum speed value of macro UE with random waypoint model [m/s].
 static ns3::GlobalValue g_outdoorUeMaxSpeed ("outdoorUeMaxSpeed",
                                              "Maximum speed value of macro UE with random waypoint model [m/s].",
                                              ns3::DoubleValue (0.0),

@@ -99,10 +99,20 @@
 using namespace ns3;
 
 // Global variables for use in callbacks.
-double g_signalDbmAvg;
-double g_noiseDbmAvg;
-uint32_t g_samples;
+double g_signalDbmAvg;  //!< Average signal power [dBm]
+double g_noiseDbmAvg;   //!< Average noise power [dBm]
+uint32_t g_samples;     //!< Number of samples
 
+/**
+ * Monitor sniffer Rx trace
+ *
+ * \param packet The sensed packet.
+ * \param channelFreqMhz The channel frequancy [MHz].
+ * \param txVector The Tx vector.
+ * \param aMpdu The aMPDU.
+ * \param signalNoise The signal and noise dBm.
+ * \param staId The STA ID.
+ */
 void MonitorSniffRx (Ptr<const Packet> packet,
                      uint16_t channelFreqMhz,
                      WifiTxVector txVector,
@@ -118,7 +128,8 @@ void MonitorSniffRx (Ptr<const Packet> packet,
 
 NS_LOG_COMPONENT_DEFINE ("WifiSpectrumPerInterference");
 
-Ptr<SpectrumModel> SpectrumModelWifi5180MHz, SpectrumModelWifi5190MHz;
+Ptr<SpectrumModel> SpectrumModelWifi5180MHz; //!< Spectrum model at 5180 MHz.
+Ptr<SpectrumModel> SpectrumModelWifi5190MHz; //!< Spectrum model at 5190 MHz.
 
 /** Initializer for a static spectrum model centered around 5180 MHz */
 class static_SpectrumModelWifi5180MHz_initializer
@@ -137,7 +148,9 @@ public:
     SpectrumModelWifi5180MHz = Create<SpectrumModel> (bands);
   }
 
-} static_SpectrumModelWifi5180MHz_initializer_instance;
+};
+/// Static instance to initizlize the spectrum model around 5180 MHz.
+static_SpectrumModelWifi5180MHz_initializer static_SpectrumModelWifi5180MHz_initializer_instance;
 
 /** Initializer for a static spectrum model centered around 5190 MHz */
 class static_SpectrumModelWifi5190MHz_initializer
@@ -156,7 +169,9 @@ public:
     SpectrumModelWifi5190MHz = Create<SpectrumModel> (bands);
   }
 
-} static_SpectrumModelWifi5190MHz_initializer_instance;
+};
+/// Static instance to initizlize the spectrum model around 5190 MHz.
+static_SpectrumModelWifi5190MHz_initializer static_SpectrumModelWifi5190MHz_initializer_instance;
 
 int main (int argc, char *argv[])
 {

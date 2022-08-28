@@ -41,8 +41,16 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 
+/// Ouput stream.
 std::ofstream g_os;
 
+/**
+ * Rx sink
+ *
+ * \param path The context.
+ * \param p The packet.
+ * \param address The sender address.
+ */
 static void
 SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {

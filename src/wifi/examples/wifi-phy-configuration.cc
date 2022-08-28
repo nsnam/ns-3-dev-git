@@ -39,6 +39,12 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhyConfigurationExample");
 
+/**
+ * Get the Yans Wifi Phy Ptr object for the 1st node in the NodeContainer
+ *
+ * \param nc The node container.
+ * \return the Yans Wifi Phy Ptr object of the 1st node in the NodeContainer
+ */
 Ptr<YansWifiPhy>
 GetYansWifiPhyPtr (const NetDeviceContainer &nc)
 {
@@ -47,6 +53,11 @@ GetYansWifiPhyPtr (const NetDeviceContainer &nc)
   return wp->GetObject<YansWifiPhy> ();
 }
 
+/**
+ * Print the attributes to a file.
+ *
+ * \param enabled Enable printing.
+ */
 void
 PrintAttributesIfEnabled (bool enabled)
 {

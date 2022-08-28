@@ -92,6 +92,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiSimpleInfra");
 
+/**
+ * Function called when a packet is received.
+ *
+ * \param socket The receiving socket.
+ */
 void ReceivePacket (Ptr<Socket> socket)
 {
   while (socket->Recv ())
@@ -100,6 +105,14 @@ void ReceivePacket (Ptr<Socket> socket)
     }
 }
 
+/**
+ * Generate traffic.
+ *
+ * \param socket The sending socket.
+ * \param pktSize The packet size.
+ * \param pktCount The packet count.
+ * \param pktInterval The interval between two packets.
+ */
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {

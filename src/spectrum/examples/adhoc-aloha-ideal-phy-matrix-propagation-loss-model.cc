@@ -45,9 +45,15 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
-static bool g_verbose = false;
-static uint64_t g_rxBytes;
+static bool g_verbose = false; //!< True if verbose output.
+static uint64_t g_rxBytes;  //!< Rx bytes counter.
 
+/**
+ * Trace for PHY Rx successful end.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 {

@@ -29,25 +29,19 @@
 
 using namespace ns3;
 
-// position functions insipred by /examples/wireless/wifi-ap.cc
-static void
-SetPosition (Ptr<Node> node, Vector position)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  mobility->SetPosition (position);
-}
-
-static Vector
-GetPosition (Ptr<Node> node)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  return mobility->GetPosition ();
-}
-
+/**
+ * Change the position of a node.
+ *
+ * This function will move a node with a x coordinate greater than 10 m
+ * to a x equal to 5 m, and less than or equal to 10 m to 10 Km
+ *
+ * \param node The node to move.
+ */
 static void
 ChangePosition (Ptr<Node> node)
 {
-  Vector pos = GetPosition (node);
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
+  Vector pos = mobility->GetPosition ();
 
   if (pos.x <= 10.0)
     {
@@ -57,8 +51,7 @@ ChangePosition (Ptr<Node> node)
     {
       pos.x = 5.0;
     }
-  SetPosition (node, pos);
-
+  mobility->SetPosition (pos);
 }
 
 int main (int argc, char *argv[])

@@ -62,12 +62,23 @@ NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
 //
 
 
+/**
+ * Congestion window change callback
+ *
+ * \param oldCwnd Old congestion window.
+ * \param newCwnd New congestion window.
+ */
 static void
 CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
 }
 
+/**
+ * Rx drop callback
+ *
+ * \param p The dropped packet.
+ */
 static void
 RxDrop (Ptr<const Packet> p)
 {

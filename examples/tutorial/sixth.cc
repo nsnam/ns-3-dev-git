@@ -62,6 +62,13 @@ NS_LOG_COMPONENT_DEFINE ("SixthScriptExample");
 //
 
 
+/**
+ * Congestion window change callback
+ *
+ * \param stream The ouput stream file.
+ * \param oldCwnd Old congestion window.
+ * \param newCwnd New congestion window.
+ */
 static void
 CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
 {
@@ -69,6 +76,12 @@ CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 }
 
+/**
+ * Rx drop callback
+ *
+ * \param file The ouput PCAP file.
+ * \param p The dropped packet.
+ */
 static void
 RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {

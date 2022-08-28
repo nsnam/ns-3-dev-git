@@ -34,8 +34,15 @@
 
 using namespace ns3;
 
+/// True for verbose output.
 static bool g_verbose = true;
 
+/**
+ * MAC-level TX trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 DevTxTrace (std::string context, Ptr<const Packet> p)
 {
@@ -44,6 +51,13 @@ DevTxTrace (std::string context, Ptr<const Packet> p)
       std::cout << " TX p: " << *p << std::endl;
     }
 }
+
+/**
+ * MAC-level RX trace.
+ *
+ * \param context The context.
+ * \param p The packet.
+ */
 void
 DevRxTrace (std::string context, Ptr<const Packet> p)
 {
@@ -52,6 +66,16 @@ DevRxTrace (std::string context, Ptr<const Packet> p)
       std::cout << " RX p: " << *p << std::endl;
     }
 }
+
+/**
+ * PHY-level RX OK trace
+ *
+ * \param context The context.
+ * \param packet The packet.
+ * \param snr The SNR.
+ * \param mode The wifi mode.
+ * \param preamble The preamble.
+ */
 void
 PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble)
 {
@@ -60,6 +84,14 @@ PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMod
       std::cout << "PHYRXOK mode=" << mode << " snr=" << snr << " " << *packet << std::endl;
     }
 }
+
+/**
+ * PHY-level RX error trace
+ *
+ * \param context The context.
+ * \param packet The packet.
+ * \param snr The SNR.
+ */
 void
 PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
 {
@@ -68,6 +100,16 @@ PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
       std::cout << "PHYRXERROR snr=" << snr << " " << *packet << std::endl;
     }
 }
+
+/**
+ * PHY-level TX trace.
+ *
+ * \param context The context.
+ * \param packet The packet.
+ * \param mode The wifi mode.
+ * \param preamble The preamble.
+ * \param txPower The TX power.
+ */
 void
 PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
 {
@@ -76,6 +118,15 @@ PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPr
       std::cout << "PHYTX mode=" << mode << " " << *packet << std::endl;
     }
 }
+
+/**
+ * PHY state trace.
+ *
+ * \param context The context.
+ * \param start Start time of the state.
+ * \param duration Duration of the state.
+ * \param state The state.
+ */
 void
 PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state)
 {
@@ -85,30 +136,22 @@ PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState stat
     }
 }
 
-static void
-SetPosition (Ptr<Node> node, Vector position)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  mobility->SetPosition (position);
-}
-
-static Vector
-GetPosition (Ptr<Node> node)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  return mobility->GetPosition ();
-}
-
+/**
+ * Move a node position by 5m on the x axis every second, up to 210m.
+ *
+ * \param node The node.
+ */
 static void
 AdvancePosition (Ptr<Node> node)
 {
-  Vector pos = GetPosition (node);
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
+  Vector pos = mobility->GetPosition ();
   pos.x += 5.0;
   if (pos.x >= 210.0)
     {
       return;
     }
-  SetPosition (node, pos);
+  mobility->SetPosition (pos);
 
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
 }

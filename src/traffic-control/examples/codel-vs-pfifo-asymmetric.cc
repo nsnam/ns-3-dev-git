@@ -69,12 +69,24 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastAsymmetricTest");
 
+/**
+ * TCP Congestion window tracker.
+ *
+ * \param stream The ouput stream.
+ * \param oldval Old value.
+ * \param newval New value.
+ */
 static void
-CwndTracer (Ptr<OutputStreamWrapper>stream, uint32_t oldval, uint32_t newval)
+CwndTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
 {
   *stream->GetStream () << oldval << " " << newval << std::endl;
 }
 
+/**
+ * Setup for TCP congestion window tracking.
+ *
+ * \param cwndTrFileName Congestion window output file name.
+ */
 static void
 TraceCwnd (std::string cwndTrFileName)
 {
@@ -91,12 +103,23 @@ TraceCwnd (std::string cwndTrFileName)
     }
 }
 
+/**
+ * Traffic Control Sojourn tracker.
+ *
+ * \param stream The ouput stream.
+ * \param newval New value.
+ */
 static void
-SojournTracer (Ptr<OutputStreamWrapper>stream, Time newval)
+SojournTracer (Ptr<OutputStreamWrapper> stream, Time newval)
 {
   *stream->GetStream () << newval << std::endl;
 }
 
+/**
+ * Setup for Traffic Control Sojourn time tracking.
+ *
+ * \param sojournTrFileName Sojourn time output file name.
+ */
 static void
 TraceSojourn (std::string sojournTrFileName)
 {
@@ -113,12 +136,24 @@ TraceSojourn (std::string sojournTrFileName)
     }
 }
 
+/**
+ * Traffic Control Queue length tracker.
+ *
+ * \param stream The ouput stream.
+ * \param oldval Old value.
+ * \param newval New value.
+ */
 static void
-QueueLengthTracer (Ptr<OutputStreamWrapper>stream, uint32_t oldval, uint32_t newval)
+QueueLengthTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
 {
   *stream->GetStream () << oldval << " " << newval << std::endl;
 }
 
+/**
+ * Setup for Traffic Control Queue length tracking.
+ *
+ * \param queueLengthTrFileName Queue length output file name.
+ */
 static void
 TraceQueueLength (std::string queueLengthTrFileName)
 {
@@ -135,12 +170,23 @@ TraceQueueLength (std::string queueLengthTrFileName)
     }
 }
 
+/**
+ * Traffic control drop trace.
+ *
+ * \param stream The ouput stream.
+ * \param item The dropped item.
+ */
 static void
-EveryDropTracer (Ptr<OutputStreamWrapper>stream, Ptr<const QueueDiscItem> item)
+EveryDropTracer (Ptr<OutputStreamWrapper> stream, Ptr<const QueueDiscItem> item)
 {
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << item << std::endl;
 }
 
+/**
+ * Setup for Traffic Control drop tracking.
+ *
+ * \param everyDropTrFileName TC drop output file name.
+ */
 static void
 TraceEveryDrop (std::string everyDropTrFileName)
 {
@@ -157,8 +203,15 @@ TraceEveryDrop (std::string everyDropTrFileName)
     }
 }
 
+/**
+ * Traffic Control Dropping state trace.
+ *
+ * \param stream The ouput stream.
+ * \param oldVal Old value.
+ * \param newVal New value.
+ */
 static void
-DroppingStateTracer (Ptr<OutputStreamWrapper>stream, bool oldVal, bool newVal)
+DroppingStateTracer (Ptr<OutputStreamWrapper> stream, bool oldVal, bool newVal)
 {
   if (oldVal == false && newVal == true)
     {
@@ -172,6 +225,11 @@ DroppingStateTracer (Ptr<OutputStreamWrapper>stream, bool oldVal, bool newVal)
     }
 }
 
+/**
+ * Setup for Traffic Control dropping tracking.
+ *
+ * \param dropStateTrFileName TC drop state output file name.
+ */
 static void
 TraceDroppingState (std::string dropStateTrFileName)
 {
@@ -184,10 +242,18 @@ TraceDroppingState (std::string dropStateTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/CwndTracer$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
     }
 }
 
+/**
+ * Create a Bulk Flow application
+ *
+ * \param remoteAddress Remote address.
+ * \param sender Sender node.
+ * \param pktSize Pakcet size.
+ * \param stopTime Stop time.
+ */
 void
 CreateBulkFlow (AddressValue remoteAddress, Ptr<Node> sender, uint32_t pktSize, float stopTime)
 {
@@ -200,6 +266,13 @@ CreateBulkFlow (AddressValue remoteAddress, Ptr<Node> sender, uint32_t pktSize, 
   sourceApp.Stop (Seconds (stopTime - 3));
 }
 
+/**
+ * Create a On Off Flow application.
+ *
+ * \param remoteAddress Remote address.
+ * \param sender Sender node.
+ * \param stopTime Stop time.
+ */
 void
 CreateOnOffFlow (AddressValue remoteAddress, Ptr<Node> sender, float stopTime)
 {

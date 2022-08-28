@@ -39,11 +39,23 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaPingExample");
 
+/**
+ * Rx sink
+ *
+ * \param p The packer.
+ * \param ad The sender address.
+ */
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   //std::cout << *p << std::endl;
 }
 
+/**
+ * Ping RTT trace sink
+ *
+ * \param context The context.
+ * \param rtt The RTT.
+ */
 static void PingRtt (std::string context, Time rtt)
 {
   //std::cout << context << " " << rtt << std::endl;

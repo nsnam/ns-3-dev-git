@@ -417,11 +417,27 @@ NodeStatistics::GetBusyTime ()
   return m_totalBusyTime + m_totalRxTime;
 }
 
+/**
+ * Callback called by WifiNetDevice/RemoteStationManager/x/PowerChange.
+ *
+ * \param path The trace path.
+ * \param oldPower Old Tx power.
+ * \param newPower Actual Tx power.
+ * \param dest Destination of the transmission.
+ */
 void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest)
 {
   NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Old power=" << oldPower << " New power=" << newPower);
 }
 
+/**
+ * \brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
+ *
+ * \param path The trace path.
+ * \param oldRate Old rate.
+ * \param newRate Actual rate.
+ * \param dest Destination of the transmission.
+ */
 void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest)
 {
   NS_LOG_INFO ((Simulator::Now ()).GetSeconds () << " " << dest << " Old rate=" << oldRate << " New rate=" <<  newRate);

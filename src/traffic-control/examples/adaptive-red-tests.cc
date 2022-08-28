@@ -76,32 +76,37 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("AdaptiveRedTests");
 
-uint32_t checkTimes;
-double avgQueueDiscSize;
+uint32_t checkTimes; //!< Number of times the queues have been checked.
+double avgQueueDiscSize; //!< Average QueueDisc size.
 
 // The times
-double global_start_time;
-double global_stop_time;
-double sink_start_time;
-double sink_stop_time;
-double client_start_time;
-double client_stop_time;
+double global_start_time; //!< Global start time
+double global_stop_time;  //!< Global stop time.
+double sink_start_time;   //!< Sink start time.
+double sink_stop_time;    //!< Sink stop time.
+double client_start_time; //!< Client start time.
+double client_stop_time;  //!< Client stop time.
 
-NodeContainer n0n2;
-NodeContainer n1n2;
-NodeContainer n2n3;
-NodeContainer n3n4;
-NodeContainer n3n5;
+NodeContainer n0n2; //!< Nodecontainer n0 + n2.
+NodeContainer n1n2; //!< Nodecontainer n1 + n2.
+NodeContainer n2n3; //!< Nodecontainer n2 + n3.
+NodeContainer n3n4; //!< Nodecontainer n3 + n4.
+NodeContainer n3n5; //!< Nodecontainer n3 + n5.
 
-Ipv4InterfaceContainer i0i2;
-Ipv4InterfaceContainer i1i2;
-Ipv4InterfaceContainer i2i3;
-Ipv4InterfaceContainer i3i4;
-Ipv4InterfaceContainer i3i5;
+Ipv4InterfaceContainer i0i2; //!< IPv4 interface container i0 + i2.
+Ipv4InterfaceContainer i1i2; //!< IPv4 interface container i1 + i2.
+Ipv4InterfaceContainer i2i3; //!< IPv4 interface container i2 + i3.
+Ipv4InterfaceContainer i3i4; //!< IPv4 interface container i3 + i4.
+Ipv4InterfaceContainer i3i5; //!< IPv4 interface container i3 + i5.
 
-std::stringstream filePlotQueueDisc;
-std::stringstream filePlotQueueDiscAvg;
+std::stringstream filePlotQueueDisc;  //!< Output file name for queue disc size.
+std::stringstream filePlotQueueDiscAvg; //!< Output file name for queue disc average.
 
+/**
+ * Check the queue disc size and write its stats to the output files.
+ *
+ * \param queue The queue to check.
+ */
 void
 CheckQueueDiscSize (Ptr<QueueDisc> queue)
 {
@@ -122,6 +127,11 @@ CheckQueueDiscSize (Ptr<QueueDisc> queue)
   fPlotQueueDiscAvg.close ();
 }
 
+/**
+ * Setup the apps.
+ *
+ * \param test The test number.
+ */
 void
 BuildAppsTest (uint32_t test)
 {

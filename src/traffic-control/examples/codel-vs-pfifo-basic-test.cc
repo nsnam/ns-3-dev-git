@@ -54,12 +54,26 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CoDelPfifoFastBasicTest");
 
+/**
+ * Function called when Congestion Window is changed.
+ *
+ * \param stream Output stream.
+ * \param oldval Old value.
+ * \param newval New value.
+ */
 static void
-CwndTracer (Ptr<OutputStreamWrapper>stream, uint32_t oldval, uint32_t newval)
+CwndTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32_t newval)
 {
   *stream->GetStream () << oldval << " " << newval << std::endl;
 }
 
+/**
+ * Function to enable the Congestion window tracing.
+ *
+ * Note that you can not hook to the trace before the socket is created.
+ *
+ * \param cwndTrFileName Name of the output file.
+ */
 static void
 TraceCwnd (std::string cwndTrFileName)
 {

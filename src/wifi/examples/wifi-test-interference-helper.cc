@@ -72,9 +72,9 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("test-interference-helper");
 
-bool checkResults = false;
-bool expectRxASuccessfull = false;
-bool expectRxBSuccessfull = false;
+bool checkResults = false; //!< True if results have to be checked.
+bool expectRxASuccessfull = false; //!< True if Rx from A is expected to be successful.
+bool expectRxBSuccessfull = false; //!< True if Rx from B is expected to be successful.
 
 /// InterferenceExperiment
 class InterferenceExperiment

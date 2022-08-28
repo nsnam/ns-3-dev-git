@@ -428,18 +428,18 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
     }
 }
 
-static inline Vector
-GetPosition (Ptr<Node> node)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  return mobility->GetPosition ();
-}
-
+/**
+ * Print the position of two nodes.
+ *
+ * \param client Client node.
+ * \param server Server node.
+ * \return a string with the nodes data and positions
+ */
 static inline std::string
 PrintPosition (Ptr<Node> client, Ptr<Node> server)
 {
-  Vector serverPos = GetPosition (server);
-  Vector clientPos = GetPosition (client);
+  Vector serverPos = server->GetObject<MobilityModel> ()->GetPosition ();
+  Vector clientPos = client->GetObject<MobilityModel> ()->GetPosition ();
 
   Ptr<Ipv4> ipv4Server = server->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4Client = client->GetObject<Ipv4> ();
