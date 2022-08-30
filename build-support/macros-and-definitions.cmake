@@ -495,6 +495,15 @@ macro(process_options)
     )
   endif()
 
+  # Honor CMAKE_CXX_STANDARD in check_cxx_source_compiles
+  # https://cmake.org/cmake/help/latest/policy/CMP0067.html
+  cmake_policy(SET CMP0066 NEW)
+  cmake_policy(SET CMP0067 NEW)
+
+  # After setting the correct CXX version, we can proceed to check for compiler
+  # workarounds
+  include(build-support/custom-modules/ns3-compiler-workarounds.cmake)
+
   if(${NS3_DES_METRICS})
     add_definitions(-DENABLE_DES_METRICS)
   endif()
