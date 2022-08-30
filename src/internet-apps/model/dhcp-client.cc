@@ -58,7 +58,7 @@ DhcpClient::GetTypeId (void)
                    MakeTimeAccessor (&DhcpClient::m_nextoffer),
                    MakeTimeChecker ())
     .AddAttribute ("Transactions",
-                   "The possible value of transaction numbers ",
+                   "The possible value of transaction numbers",
                    StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000000.0]"),
                    MakePointerAccessor (&DhcpClient::m_ran),
                    MakePointerChecker<RandomVariableStream> ())

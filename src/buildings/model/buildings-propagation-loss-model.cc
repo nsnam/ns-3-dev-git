@@ -69,18 +69,18 @@ BuildingsPropagationLossModel::GetTypeId (void)
 
 
     .AddAttribute ("ShadowSigmaOutdoor",
-                   "Standard deviation of the normal distribution used for calculate the shadowing for outdoor nodes",
+                   "Standard deviation of the normal distribution used to calculate the shadowing for outdoor nodes",
                    DoubleValue (7.0),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaOutdoor),
                    MakeDoubleChecker<double> ())
 
     .AddAttribute ("ShadowSigmaIndoor",
-                   "Standard deviation of the normal distribution used for calculate the shadowing for indoor nodes ",
+                   "Standard deviation of the normal distribution used to calculate the shadowing for indoor nodes",
                    DoubleValue (8.0),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaIndoor),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ShadowSigmaExtWalls",
-                   "Standard deviation of the normal distribution used for calculate the shadowing due to ext walls ",
+                   "Standard deviation of the normal distribution used to calculate the shadowing due to ext walls",
                    DoubleValue (5.0),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaExtWalls),
                    MakeDoubleChecker<double> ())

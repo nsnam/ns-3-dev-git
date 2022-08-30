@@ -120,51 +120,62 @@ RoutingProtocol::GetTypeId (void)
     .SetParent<Ipv4RoutingProtocol> ()
     .SetGroupName ("Dsdv")
     .AddConstructor<RoutingProtocol> ()
-    .AddAttribute ("PeriodicUpdateInterval","Periodic interval between exchange of full routing tables among nodes. ",
+    .AddAttribute ("PeriodicUpdateInterval",
+                   "Periodic interval between exchange of full routing tables among nodes.",
                    TimeValue (Seconds (15)),
                    MakeTimeAccessor (&RoutingProtocol::m_periodicUpdateInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("SettlingTime", "Minimum time an update is to be stored in adv table before sending out"
+    .AddAttribute ("SettlingTime",
+                   "Minimum time an update is to be stored in adv table before sending out "
                    "in case of change in metric (in seconds)",
                    TimeValue (Seconds (5)),
                    MakeTimeAccessor (&RoutingProtocol::m_settlingTime),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxQueueLen", "Maximum number of packets that we allow a routing protocol to buffer.",
+    .AddAttribute ("MaxQueueLen",
+                   "Maximum number of packets that we allow a routing protocol to buffer.",
                    UintegerValue (500 /*assuming maximum nodes in simulation is 100*/),
                    MakeUintegerAccessor (&RoutingProtocol::m_maxQueueLen),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxQueuedPacketsPerDst", "Maximum number of packets that we allow per destination to buffer.",
+    .AddAttribute ("MaxQueuedPacketsPerDst",
+                   "Maximum number of packets that we allow per destination to buffer.",
                    UintegerValue (5),
                    MakeUintegerAccessor (&RoutingProtocol::m_maxQueuedPacketsPerDst),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxQueueTime","Maximum time packets can be queued (in seconds)",
+    .AddAttribute ("MaxQueueTime",
+                   "Maximum time packets can be queued (in seconds)",
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&RoutingProtocol::m_maxQueueTime),
                    MakeTimeChecker ())
-    .AddAttribute ("EnableBuffering","Enables buffering of data packets if no route to destination is available",
+    .AddAttribute ("EnableBuffering",
+                   "Enables buffering of data packets if no route to destination is available",
                    BooleanValue (true),
                    MakeBooleanAccessor (&RoutingProtocol::SetEnableBufferFlag,
                                         &RoutingProtocol::GetEnableBufferFlag),
                    MakeBooleanChecker ())
-    .AddAttribute ("EnableWST","Enables Weighted Settling Time for the updates before advertising",
+    .AddAttribute ("EnableWST",
+                   "Enables Weighted Settling Time for the updates before advertising",
                    BooleanValue (true),
                    MakeBooleanAccessor (&RoutingProtocol::SetWSTFlag,
                                         &RoutingProtocol::GetWSTFlag),
                    MakeBooleanChecker ())
-    .AddAttribute ("Holdtimes","Times the forwarding Interval to purge the route.",
+    .AddAttribute ("Holdtimes",
+                   "Times the forwarding Interval to purge the route.",
                    UintegerValue (3),
                    MakeUintegerAccessor (&RoutingProtocol::Holdtimes),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("WeightedFactor","WeightedFactor for the settling time if Weighted Settling Time is enabled",
+    .AddAttribute ("WeightedFactor",
+                   "WeightedFactor for the settling time if Weighted Settling Time is enabled",
                    DoubleValue (0.875),
                    MakeDoubleAccessor (&RoutingProtocol::m_weightedFactor),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("EnableRouteAggregation","Enables Weighted Settling Time for the updates before advertising",
+    .AddAttribute ("EnableRouteAggregation",
+                   "Enables Weighted Settling Time for the updates before advertising",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RoutingProtocol::SetEnableRAFlag,
                                         &RoutingProtocol::GetEnableRAFlag),
                    MakeBooleanChecker ())
-    .AddAttribute ("RouteAggregationTime","Time to aggregate updates before sending them out (in seconds)",
+    .AddAttribute ("RouteAggregationTime",
+                   "Time to aggregate updates before sending them out (in seconds)",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&RoutingProtocol::m_routeAggregationTime),
                    MakeTimeChecker ());

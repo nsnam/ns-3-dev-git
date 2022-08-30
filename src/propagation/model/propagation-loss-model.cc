@@ -150,7 +150,7 @@ FriisPropagationLossModel::GetTypeId (void)
     .SetGroupName ("Propagation")
     .AddConstructor<FriisPropagationLossModel> ()
     .AddAttribute ("Frequency",
-                   "The carrier frequency (in Hz) at which propagation occurs  (default is 5.15 GHz).",
+                   "The carrier frequency (in Hz) at which propagation occurs (default is 5.15 GHz).",
                    DoubleValue (5.150e9),
                    MakeDoubleAccessor (&FriisPropagationLossModel::SetFrequency,
                                        &FriisPropagationLossModel::GetFrequency),
@@ -160,7 +160,7 @@ FriisPropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MinLoss",
-                   "The minimum value (dB) of the total loss, used at short ranges. Note: ",
+                   "The minimum value (dB) of the total loss, used at short ranges.",
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&FriisPropagationLossModel::SetMinLoss,
                                        &FriisPropagationLossModel::GetMinLoss),

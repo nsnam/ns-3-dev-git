@@ -1788,7 +1788,7 @@ LteEnbRrc::GetTypeId (void)
                    MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("EpsBearerToRlcMapping",
-                   "Specify which type of RLC will be used for each type of EPS bearer. ",
+                   "Specify which type of RLC will be used for each type of EPS bearer.",
                    EnumValue (RLC_SM_ALWAYS),
                    MakeEnumAccessor (&LteEnbRrc::m_epsBearerToRlcMapping),
                    MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
@@ -1866,7 +1866,7 @@ LteEnbRrc::GetTypeId (void)
                    MakeIntegerAccessor (&LteEnbRrc::m_qRxLevMin),
                    MakeIntegerChecker<int8_t> (-70, -22))
     .AddAttribute ("NumberOfComponentCarriers",
-                   "Number of Component Carriers ",
+                   "Number of Component Carriers",
                    UintegerValue (1),
                    MakeIntegerAccessor (&LteEnbRrc::m_numberOfComponentCarriers),
                    MakeIntegerChecker<int16_t> (MIN_NO_CC, MAX_NO_CC))
@@ -3213,4 +3213,3 @@ LteEnbRrc::IsRandomAccessCompleted (uint16_t rnti)
 
 
 } // namespace ns3
-

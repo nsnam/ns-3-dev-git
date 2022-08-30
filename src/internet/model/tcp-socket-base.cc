@@ -230,7 +230,7 @@ TcpSocketBase::GetTypeId (void)
                      MakeTraceSourceAccessor (&TcpSocketBase::m_ecnEchoSeq),
                      "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("EcnCeSeq",
-                     "Sequence of last received CE ",
+                     "Sequence of last received CE",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_ecnCESeq),
                      "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("EcnCwrSeq",

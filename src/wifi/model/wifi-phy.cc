@@ -81,7 +81,7 @@ WifiPhy::GetTypeId (void)
                    "standard and band are used. If the channel number is 0, the default "
                    "channel number for the configured standard, band and channel width is used."
                    "Note that the channel width can be left unspecified (0) if the channel "
-                   "number uniquely identify a frequency channel for the given standard and band. ",
+                   "number uniquely identify a frequency channel for the given standard and band.",
                    StringValue ("{0, 0, BAND_UNSPECIFIED, 0}"),
                    MakeTupleAccessor <UintegerValue, UintegerValue, EnumValue, UintegerValue> (&WifiPhy::SetOperatingChannel),
                    MakeTupleChecker<UintegerValue, UintegerValue, EnumValue, UintegerValue>

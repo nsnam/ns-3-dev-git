@@ -161,8 +161,8 @@ TypeId LteHelper::GetTypeId (void)
                    MakeBooleanAccessor (&LteHelper::m_isAnrEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("UsePdschForCqiGeneration",
-                   "If true, DL-CQI will be calculated from PDCCH as signal and PDSCH as interference "
-                   "If false, DL-CQI will be calculated from PDCCH as signal and PDCCH as interference  ",
+                   "If true, DL-CQI will be calculated from PDCCH as signal and PDSCH as interference. "
+                   "If false, DL-CQI will be calculated from PDCCH as signal and PDCCH as interference.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteHelper::m_usePdschForCqiGeneration),
                    MakeBooleanChecker ())
@@ -183,14 +183,14 @@ TypeId LteHelper::GetTypeId (void)
                                        &LteHelper::GetUeComponentCarrierManagerType),
                    MakeStringChecker ())
     .AddAttribute ("UseCa",
-                   "If true, Carrier Aggregation feature is enabled and a valid Component Carrier Map is expected."
+                   "If true, Carrier Aggregation feature is enabled and a valid Component Carrier Map is expected. "
                    "If false, single carrier simulation.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&LteHelper::m_useCa),
                    MakeBooleanChecker ())
     .AddAttribute ("NumberOfComponentCarriers",
-                   "Set the number of Component carrier to use "
-                   "If it is more than one and m_useCa is false, it will raise an error ",
+                   "Set the number of Component carrier to use. "
+                   "If it is more than one and m_useCa is false, it will raise an error.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteHelper::m_noOfCcs),
                    MakeUintegerChecker<uint16_t> (MIN_NO_CC, MAX_NO_CC))

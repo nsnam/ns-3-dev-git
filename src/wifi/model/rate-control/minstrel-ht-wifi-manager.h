@@ -620,7 +620,7 @@ private:
   uint8_t m_lookAroundRate;      //!< The % to try other rates than our current rate.
   uint8_t m_ewmaLevel;           //!< Exponential weighted moving average level (or coefficient).
   uint8_t m_nSampleCol;          //!< Number of sample columns.
-  uint32_t m_frameLength;        //!< Frame length used for calculate modes TxTime in bytes.
+  uint32_t m_frameLength;        //!< Frame length used to calculate modes TxTime in bytes.
   uint8_t m_numGroups;           //!< Number of groups Minstrel should consider.
   uint8_t m_numRates;            //!< Number of rates per group Minstrel should consider.
   bool m_useLatestAmendmentOnly; //!< Flag if only the latest supported amendment by both peers should be used.

@@ -54,7 +54,7 @@ MinstrelWifiManager::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddConstructor<MinstrelWifiManager> ()
     .AddAttribute ("UpdateStatistics",
-                   "The interval between updating statistics table ",
+                   "The interval between updating statistics table",
                    TimeValue (Seconds (0.1)),
                    MakeTimeAccessor (&MinstrelWifiManager::m_updateStats),
                    MakeTimeChecker ())

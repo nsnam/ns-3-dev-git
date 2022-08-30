@@ -61,7 +61,7 @@ Cost231PropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_SSAntennaHeight),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MinDistance",
-                   "The distance under which the propagation model refuses to give results (m) ",
+                   "The distance under which the propagation model refuses to give results (m).",
                    DoubleValue (0.5),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::SetMinDistance, &Cost231PropagationLossModel::GetMinDistance),
                    MakeDoubleChecker<double> ());

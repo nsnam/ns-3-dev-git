@@ -65,7 +65,7 @@ SpectrumChannel::GetTypeId (void)
                    "the computational load by not propagating signals "
                    "that are far beyond the interference range. Note that "
                    "the default value corresponds to considering all signals "
-                   "for reception. Tune this value with care. ",
+                   "for reception. Tune this value with care.",
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
@@ -79,11 +79,11 @@ SpectrumChannel::GetTypeId (void)
     .AddTraceSource ("Gain",
                      "This trace is fired whenever a new path loss value "
                      "is calculated. The parameters to this trace are : "
-                     "Pointer to the mobility model of the transmitter"
-                     "Pointer to the mobility model of the receiver"
-                     "Tx antenna gain"
-                     "Rx antenna gain"
-                     "Propagation gain"
+                     "Pointer to the mobility model of the transmitter, "
+                     "Pointer to the mobility model of the receiver, "
+                     "Tx antenna gain, "
+                     "Rx antenna gain, "
+                     "Propagation gain, "
                      "Pathloss",
                      MakeTraceSourceAccessor (&SpectrumChannel::m_gainTrace),
                      "ns3::SpectrumChannel::GainTracedCallback")
@@ -99,12 +99,12 @@ SpectrumChannel::GetTypeId (void)
                      "AntennaModels and the PropagationLossModel. "
                      "In particular, note that SpectrumPropagationLossModel "
                      "(even if present) is never used to evaluate the "
-                     "loss value reported in this trace. ",
+                     "loss value reported in this trace.",
                      MakeTraceSourceAccessor (&SpectrumChannel::m_pathLossTrace),
                      "ns3::SpectrumChannel::LossTracedCallback")
 
     .AddTraceSource ("TxSigParams",
-                     "This trace is fired whenever a signal is transmitted."
+                     "This trace is fired whenever a signal is transmitted. "
                      "The sole parameter is a pointer to a copy of the "
                      "SpectrumSignalParameters provided by the transmitter.",
                      MakeTraceSourceAccessor (&SpectrumChannel::m_txSigParamsTrace),

@@ -93,7 +93,7 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("DlEarfcn",
                    "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3. ",
+                   "as per 3GPP 36.101 Section 5.7.3.",
                    UintegerValue (100),
                    MakeUintegerAccessor (&LteUeNetDevice::SetDlEarfcn,
                                          &LteUeNetDevice::GetDlEarfcn),
@@ -102,7 +102,7 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    "The Closed Subscriber Group (CSG) identity that this UE is associated with, "
                    "i.e., giving the UE access to cells which belong to this particular CSG. "
                    "This restriction only applies to initial cell selection and EPC-enabled simulation. "
-                   "This does not revoke the UE's access to non-CSG cells. ",
+                   "This does not revoke the UE's access to non-CSG cells.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteUeNetDevice::SetCsgId,
                                          &LteUeNetDevice::GetCsgId),

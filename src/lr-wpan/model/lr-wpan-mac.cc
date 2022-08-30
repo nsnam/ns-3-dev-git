@@ -136,7 +136,7 @@ LrWpanMac::GetTypeId (void)
                      "ns3::LrWpanMac::SentTracedCallback")
     .AddTraceSource ("IfsEnd",
                      "Trace source reporting the end of an "
-                     "Interframe space (IFS) ",
+                     "Interframe space (IFS)",
                      MakeTraceSourceAccessor (&LrWpanMac::m_macIfsEndTrace),
                      "ns3::Packet::TracedCallback")
   ;

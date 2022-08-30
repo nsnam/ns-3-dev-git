@@ -114,12 +114,14 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                    UintegerValue (100),
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_yRes),
                    MakeUintegerChecker<uint16_t> (2,std::numeric_limits<uint16_t>::max ()))
-    .AddAttribute ("Z", "The value of the z coordinate for which the map is to be generated",
-		   DoubleValue (0.0),
+    .AddAttribute ("Z",
+                   "The value of the z coordinate for which the map is to be generated",
+                   DoubleValue (0.0),
                    MakeDoubleAccessor (&RadioEnvironmentMapHelper::m_z),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("StopWhenDone", "If true, Simulator::Stop () will be called as soon as the REM has been generated",
-		   BooleanValue (true),
+    .AddAttribute ("StopWhenDone",
+                   "If true, Simulator::Stop () will be called as soon as the REM has been generated",
+                   BooleanValue (true),
                    MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_stopWhenDone),
                    MakeBooleanChecker ())
     .AddAttribute ("NoisePower",
@@ -133,7 +135,7 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> (1,std::numeric_limits<uint32_t>::max ()))
     .AddAttribute ("Earfcn",
                    "E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3. ",
+                   "as per 3GPP 36.101 Section 5.7.3.",
                    UintegerValue (100),
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_earfcn),
                    MakeUintegerChecker<uint16_t> ())
@@ -144,12 +146,12 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                                          &RadioEnvironmentMapHelper::GetBandwidth),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("UseDataChannel",
-                   "If true, REM will be generated for PDSCH and for PDCCH otherwise ",
+                   "If true, REM will be generated for PDSCH and for PDCCH otherwise",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_useDataChannel),
                    MakeBooleanChecker ())
     .AddAttribute ("RbId",
-                   "Resource block Id, for which REM will be generated,"
+                   "Resource block Id, for which REM will be generated, "
                    "default value is -1, what means REM will be averaged from all RBs",
                    IntegerValue (-1),
                    MakeIntegerAccessor (&RadioEnvironmentMapHelper::m_rbId),
