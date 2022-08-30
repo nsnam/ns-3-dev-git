@@ -201,8 +201,8 @@ private:
   Time m_sifs;             //!< Value of SIFS configured in the device.
   Time m_difs;             //!< Value of DIFS configured in the device.
 
-  uint32_t m_frameLength;  //!< Data frame length used for calculate mode TxTime (in bytes).
-  uint32_t m_ackLength;    //!< Ack frame length used for calculate mode TxTime (in bytes).
+  uint32_t m_frameLength;  //!< Data frame length used to calculate mode TxTime (in bytes).
+  uint32_t m_ackLength;    //!< Ack frame length used to calculate mode TxTime (in bytes).
 
   bool m_basic;            //!< If using the basic algorithm (without RTS/CTS).
   Time m_timeout;          //!< Timeout for the RRAA BASIC loss estimation block.

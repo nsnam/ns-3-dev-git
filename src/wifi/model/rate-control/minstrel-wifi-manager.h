@@ -342,7 +342,7 @@ private:
   uint8_t m_lookAroundRate; ///< the % to try other rates than our current rate
   uint8_t m_ewmaLevel;      ///< exponential weighted moving average
   uint8_t m_sampleCol;      ///< number of sample columns
-  uint32_t m_pktLen;        ///< packet length used for calculate mode TxTime
+  uint32_t m_pktLen;        ///< packet length used to calculate mode TxTime
   bool m_printStats;        ///< whether statistics table should be printed.
   bool m_printSamples;      ///< whether samples table should be printed.
 

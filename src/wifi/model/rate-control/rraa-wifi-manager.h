@@ -178,8 +178,8 @@ private:
   Time m_sifs;             //!< Value of SIFS configured in the device.
   Time m_difs;             //!< Value of DIFS configured in the device.
 
-  uint32_t m_frameLength;  //!< Data frame length used for calculate mode TxTime.
-  uint32_t m_ackLength;    //!< Ack frame length used for calculate mode TxTime.
+  uint32_t m_frameLength;  //!< Data frame length used to calculate mode TxTime.
+  uint32_t m_ackLength;    //!< Ack frame length used to calculate mode TxTime.
 
   bool m_basic;    ///< basic
   Time m_timeout;  ///< timeout
