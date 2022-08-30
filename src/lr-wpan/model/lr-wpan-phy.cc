@@ -285,7 +285,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
             }
         }
 
-      Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
+      m_rxEvent = Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
       return;
     }
 
@@ -369,9 +369,9 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
     }
 
   // Always call EndRx to update the interference.
-  // \todo: Do we need to keep track of these events to unschedule them when disposing off the PHY?
+  // We keep track of this event, and if necessary cancel this event when a TX of a packet.
 
-  Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
+  m_rxEvent = Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
 }
 
 void
@@ -603,6 +603,13 @@ LrWpanPhy::PlmeCcaRequest (void)
 }
 
 void
+LrWpanPhy::CcaCancel (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_ccaRequest.Cancel ();
+}
+
+void
 LrWpanPhy::PlmeEdRequest (void)
 {
   NS_LOG_FUNCTION (this);
@@ -753,6 +760,7 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
               //incomplete reception -- force packet discard
               NS_LOG_DEBUG ("force TX_ON, terminate reception");
               m_currentRxPacket.second = true;
+              m_rxEvent.Cancel();
             }
 
           // If CCA is in progress, cancel CCA and return BUSY.
@@ -768,8 +776,6 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
           m_trxStatePending = IEEE_802_15_4_PHY_TX_ON;
 
           // Delay for turnaround time
-          // TODO: Does it also take aTurnaroundTime to switch the transceiver state,
-          //       even when the receiver is not busy? (6.9.2)
           Time setTime = Seconds ( (double) aTurnaroundTime / GetDataOrSymbolRate (false));
           m_setTRXState = Simulator::Schedule (setTime, &LrWpanPhy::EndSetTRXState, this);
           return;
@@ -809,6 +815,7 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
                 //incomplete reception -- force packet discard
               NS_LOG_DEBUG ("force TRX_OFF, terminate reception");
               m_currentRxPacket.second = true;
+              m_rxEvent.Cancel();
             }
           if (m_trxState == IEEE_802_15_4_PHY_BUSY_TX)
             {
@@ -1675,6 +1682,13 @@ LrWpanPhy::GetPhySymbolsPerOctet (void) const
   return dataSymbolRates [m_phyOption].symbolRate / (dataSymbolRates [m_phyOption].bitRate / 8);
 }
 
+double
+LrWpanPhy::GetCurrentSignalPsd (void)
+{
+  double powerWatts = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd (), m_phyPIBAttributes.phyCurrentChannel);
+  return WToDbm (powerWatts);
+}
+
 int8_t
 LrWpanPhy::GetNominalTxPowerFromPib (uint8_t phyTransmitPower)
 {
@@ -1697,6 +1711,17 @@ LrWpanPhy::GetNominalTxPowerFromPib (uint8_t phyTransmitPower)
   return nominalTxPower;
 }
 
+double
+LrWpanPhy::WToDbm (double watt)
+{
+  return (10 * log10 (1000 * watt));
+}
+
+double
+LrWpanPhy::DbmToW (double dbm)
+{
+  return (pow (10.0, dbm / 10.0) / 1000.0);
+}
 
 int64_t
 LrWpanPhy::AssignStreams (int64_t stream)

@@ -316,16 +316,16 @@ typedef enum
  */
 struct PanDescriptor
 {
-  LrWpanAddressMode m_coorAddrMode; //!< The coordinator addressing mode corresponding to the received beacon frame.
-  uint16_t m_coorPanId;             //!< The PAN ID of the coordinator as specified in the received beacon frame.
-  Mac16Address m_coorShortAddr;     //!< The coordinator short address as specified in the coordinator address mode.
-  Mac64Address m_coorExtAddr;       //!< The coordinator extended address as specified in the coordinator address mode.
-  uint8_t m_logCh;                  //!< The current channel number occupied by the network.
-  uint8_t m_logChPage;              //!< The current channel page occupied by the network.
-  SuperframeField m_superframeSpec; //!< The superframe specification as specified in the received beacon frame.
-  bool m_gtsPermit;                 //!< TRUE if the beacon is from the PAN coordinator that is accepting GTS requests.
-  uint8_t m_linkQuality;            //!< The LQI at which the network beacon was received. Lower values represent lower LQI.
-  Time m_timeStamp;                 //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid precision problems.
+  LrWpanAddressMode m_coorAddrMode {SHORT_ADDR}; //!< The coordinator addressing mode corresponding to the received beacon frame.
+  uint16_t m_coorPanId {0xffff};                 //!< The PAN ID of the coordinator as specified in the received beacon frame.
+  Mac16Address m_coorShortAddr;                  //!< The coordinator short address as specified in the coordinator address mode.
+  Mac64Address m_coorExtAddr;                    //!< The coordinator extended address as specified in the coordinator address mode.
+  uint8_t m_logCh {11};                          //!< The current channel number occupied by the network.
+  uint8_t m_logChPage {0};                       //!< The current channel page occupied by the network.
+  SuperframeField m_superframeSpec;              //!< The superframe specification as specified in the received beacon frame.
+  bool m_gtsPermit {false};                      //!< TRUE if the beacon is from the PAN coordinator that is accepting GTS requests.
+  uint8_t m_linkQuality {0};                     //!< The LQI at which the network beacon was received. Lower values represent lower LQI.
+  Time m_timeStamp ;                             //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid precision problems.
 };
 
 /**
@@ -351,8 +351,8 @@ struct McpsDataRequestParams
  */
 struct McpsDataConfirmParams
 {
-  uint8_t m_msduHandle; //!< MSDU handle
-  LrWpanMcpsDataConfirmStatus m_status; //!< The status of the last MSDU transmission
+  uint8_t m_msduHandle {0};                                                //!< MSDU handle
+  LrWpanMcpsDataConfirmStatus m_status {IEEE_802_15_4_INVALID_PARAMETER};  //!< The status of the last MSDU transmission
 };
 
 /**
@@ -362,16 +362,16 @@ struct McpsDataConfirmParams
  */
 struct McpsDataIndicationParams
 {
-  uint8_t m_srcAddrMode;      //!< Source address mode
-  uint16_t m_srcPanId;        //!< Source PAN identifier
-  Mac16Address m_srcAddr;     //!< Source address
-  Mac64Address m_srcExtAddr;  //!< Source extended address
-  uint8_t m_dstAddrMode;      //!< Destination address mode
-  uint16_t m_dstPanId;        //!< Destination PAN identifier
-  Mac16Address m_dstAddr;     //!< Destination address
-  Mac64Address m_dstExtAddr;  //!< Destination extended address
-  uint8_t m_mpduLinkQuality;  //!< LQI value measured during reception of the MPDU
-  uint8_t m_dsn;              //!< The DSN of the received data frame
+  uint8_t m_srcAddrMode {SHORT_ADDR}; //!< Source address mode
+  uint16_t m_srcPanId {0};            //!< Source PAN identifier
+  Mac16Address m_srcAddr;             //!< Source address
+  Mac64Address m_srcExtAddr;          //!< Source extended address
+  uint8_t m_dstAddrMode {SHORT_ADDR}; //!< Destination address mode
+  uint16_t m_dstPanId {0};            //!< Destination PAN identifier
+  Mac16Address m_dstAddr;             //!< Destination address
+  Mac64Address m_dstExtAddr;          //!< Destination extended address
+  uint8_t m_mpduLinkQuality {0};      //!< LQI value measured during reception of the MPDU
+  uint8_t m_dsn {0};                  //!< The DSN of the received data frame
 };
 
 /**
@@ -381,8 +381,8 @@ struct McpsDataIndicationParams
  */
 struct MlmeAssociateIndicationParams
 {
-  Mac64Address m_extDevAddr;        //!< The extended address of the device requesting association
-  CapabilityField capabilityInfo;   //!< The operational capabilities of the device requesting association.
+  Mac64Address m_extDevAddr; //!< The extended address of the device requesting association
+  CapabilityField capabilityInfo; //!< The operational capabilities of the device requesting association.
 };
 
 /**
@@ -392,9 +392,9 @@ struct MlmeAssociateIndicationParams
  */
 struct MlmeAssociateResponseParams
 {
-  Mac64Address m_extDevAddr;        //!< The extended address of the device requesting association
-  Mac16Address m_assocShortAddr;    //!< The short address allocated by the coordinator on succesful assoc. FF:FF = Unsuccessful
-  LrWpanAssociationStatus m_status; //!< The status of the association attempt (As defined on Table 83 IEEE 802.15.4-2006)
+  Mac64Address m_extDevAddr;     //!< The extended address of the device requesting association
+  Mac16Address m_assocShortAddr; //!< The short address allocated by the coordinator on successful assoc. FF:FF = Unsuccessful
+  LrWpanAssociationStatus m_status {DISASSOCIATED}; //!< The status of the association attempt (As defined on Table 83 IEEE 802.15.4-2006)
 };
 
 /**
@@ -422,8 +422,8 @@ struct MlmeStartRequestParams
  */
 struct MlmeSyncRequestParams
 {
-  uint8_t m_logCh;                //!< The channel number on which to attempt coordinator synchronization.
-  bool m_trackBcn {false};        //!< True if the mlme sync with the next beacon and attempts to track future beacons. False if mlme sync only the next beacon.
+  uint8_t m_logCh {11};    //!< The channel number on which to attempt coordinator synchronization.
+  bool m_trackBcn {false}; //!< True if the mlme sync with the next beacon and attempts to track future beacons. False if mlme sync only the next beacon.
 };
 
 /**
@@ -446,10 +446,10 @@ struct MlmePollRequestParams
  */
 struct MlmeScanRequestParams
 {
-  LrWpanMlmeScanType m_scanType {};    //!< Indicates the type of scan performed as described in IEEE 802.15.4-2011 (5.1.2.1).
-  uint32_t m_scanChannels {0x7FFFFFF}; //!< The channel numbers to be scanned.
-  uint8_t m_scanDuration {14};         //!< A value used to calculate the length of time to spend scanning [aBaseSuperframeDuration * (2^m_scanDuration +)].
-  uint32_t m_chPage;                   //!< The channel page on which to perform scan.
+  LrWpanMlmeScanType m_scanType {MLMESCAN_PASSIVE}; //!< Indicates the type of scan performed as described in IEEE 802.15.4-2011 (5.1.2.1).
+  uint32_t m_scanChannels {0x7FFFFFF};              //!< The channel numbers to be scanned.
+  uint8_t m_scanDuration {14};                      //!< A value used to calculate the length of time to spend scanning [aBaseSuperframeDuration * (2^m_scanDuration +)].
+  uint32_t m_chPage {0};                            //!< The channel page on which to perform scan.
 };
 
 /**
@@ -459,9 +459,9 @@ struct MlmeScanRequestParams
  */
 struct MlmeScanConfirmParams
 {
-  LrWpanMlmeScanConfirmStatus m_status;        //!< The status of the scan request.
-  LrWpanMlmeScanType m_scanType;               //!< Indicates the type of scan performed (ED,ACTIVE,PASSIVE,ORPHAN).
-  uint32_t m_chPage;                           //!< The channel page on which the scan was performed.
+  LrWpanMlmeScanConfirmStatus m_status {MLMESCAN_INVALID_PARAMETER }; //!< The status of the scan request.
+  LrWpanMlmeScanType m_scanType {MLMESCAN_PASSIVE};                   //!< Indicates the type of scan performed (ED,ACTIVE,PASSIVE,ORPHAN).
+  uint32_t m_chPage {0};                                              //!< The channel page on which the scan was performed.
   std::vector <uint8_t> m_unscannedCh;         //!< A list of channels given in the request which were not scanned (Not valid for ED scans).
   std::vector <uint8_t> m_energyDetList;       //!< A list of energy measurements, one for each channel searched during ED scan (Not valid for Active, Passive or Orphan Scans)
   std::vector <PanDescriptor> m_panDescList;   //!< A list of PAN descriptor, one for each beacon found (Not valid for ED and Orphan scans).
@@ -474,13 +474,13 @@ struct MlmeScanConfirmParams
  */
 struct MlmeAssociateRequestParams
 {
-  uint8_t m_chNum {11};                  //!< The channel number on which to attempt association.
-  uint32_t m_chPage {0};                 //!< The channel page on which to attempt association.
-  uint8_t m_coordAddrMode {SHORT_ADDR};  //!< The coordinator addressing mode for this primitive and subsequent MPDU.
-  uint16_t m_coordPanId {0};             //!< The identifier of the PAN with which to associate.
-  Mac16Address m_coordShortAddr;         //!< The short address of the coordinator with which to associate.
-  Mac64Address m_coordExtAddr;           //!< The extended address of the coordinator with which to associate.
-  CapabilityField m_capabilityInfo;      //!< Specifies the operational capabilities of the associating device.
+  uint8_t m_chNum {11};                                    //!< The channel number on which to attempt association.
+  uint32_t m_chPage {0};                                   //!< The channel page on which to attempt association.
+  uint8_t m_coordAddrMode {SHORT_ADDR};                    //!< The coordinator addressing mode for this primitive and subsequent MPDU.
+  uint16_t m_coordPanId {0};                               //!< The identifier of the PAN with which to associate.
+  Mac16Address m_coordShortAddr;                           //!< The short address of the coordinator with which to associate.
+  Mac64Address m_coordExtAddr;                             //!< The extended address of the coordinator with which to associate.
+  CapabilityField m_capabilityInfo;                        //!< Specifies the operational capabilities of the associating device.
 };
 
 /**
@@ -490,8 +490,8 @@ struct MlmeAssociateRequestParams
  */
 struct MlmeAssociateConfirmParams
 {
-  Mac16Address m_assocShortAddr;             //!< The short address used in the association request
-  LrWpanMlmeAssociateConfirmStatus m_status; //!< The status of a MLME-associate.request
+  Mac16Address m_assocShortAddr;                                           //!< The short address used in the association request
+  LrWpanMlmeAssociateConfirmStatus m_status {MLMEASSOC_INVALID_PARAMETER}; //!< The status of a MLME-associate.request
 };
 
 /**
@@ -501,7 +501,7 @@ struct MlmeAssociateConfirmParams
  */
 struct MlmeStartConfirmParams
 {
-  LrWpanMlmeStartConfirmStatus m_status; //!< The status of a MLME-start.request
+  LrWpanMlmeStartConfirmStatus m_status {MLMESTART_INVALID_PARAMETER}; //!< The status of a MLME-start.request
 };
 
 /**
@@ -511,11 +511,10 @@ struct MlmeStartConfirmParams
  */
 struct MlmeBeaconNotifyIndicationParams
 {
-  uint8_t m_bsn;                  //!< The beacon sequence number.
-  PanDescriptor m_panDescriptor;  //!< The PAN descriptor for the received beacon.
-
-  uint32_t m_sduLength;           //!< The number of octets contained in the beacon payload.
-  Ptr<Packet> m_sdu;              //!< The set of octets comprising the beacon payload.
+  uint8_t m_bsn {0};             //!< The beacon sequence number.
+  PanDescriptor m_panDescriptor; //!< The PAN descriptor for the received beacon.
+  uint32_t m_sduLength {0};      //!< The number of octets contained in the beacon payload.
+  Ptr<Packet> m_sdu;             //!< The set of octets comprising the beacon payload.
 };
 
 /**
@@ -525,9 +524,9 @@ struct MlmeBeaconNotifyIndicationParams
  */
 struct MlmeSyncLossIndicationParams
 {
-  LrWpanSyncLossReason m_lossReason;   //!< The reason for the lost of synchronization.
-  uint16_t m_panId;                    //!< The PAN identifier with which the device lost synchronization or to which it was realigned.
-  uint8_t  m_logCh;                    //!< The channel number on which the device lost synchronization or to which it was realigned.
+  LrWpanSyncLossReason m_lossReason {MLMESYNCLOSS_PAN_ID_CONFLICT}; //!< The reason for the lost of synchronization.
+  uint16_t m_panId {0};  //!< The PAN identifier with which the device lost synchronization or to which it was realigned.
+  uint8_t  m_logCh {11}; //!< The channel number on which the device lost synchronization or to which it was realigned.
 };
 
 /**
@@ -537,14 +536,14 @@ struct MlmeSyncLossIndicationParams
  */
 struct MlmeCommStatusIndicationParams
 {
-  uint16_t m_panId;             //!< The PAN identifier of the device from which the frame was received or to which the frame was being sent.
-  uint8_t  m_srcAddrMode;       //!< The source addressing mode for this primitive
-  Mac16Address m_srcShortAddr;  //!< The short address of the entity from which the frame causing the error originated.
-  Mac64Address m_srcExtAddr;    //!< The extended address of the entity from which the frame causing the error originated.
-  uint8_t m_dstAddrMode;        //!< The destination addressing mode for this primitive.
-  Mac16Address m_dstShortAddr;  //!< The short address of the device for which the frame was intended.
-  Mac64Address m_dstExtAddr;    //!< The extended address of the device for which the frame was intended.
-  LrWpanMlmeCommStatus m_status; //!< The communication status
+  uint16_t m_panId {0};                                             //!< The PAN identifier of the device from which the frame was received or to which the frame was being sent.
+  uint8_t  m_srcAddrMode {SHORT_ADDR};                              //!< The source addressing mode for this primitive
+  Mac16Address m_srcShortAddr;                                      //!< The short address of the entity from which the frame causing the error originated.
+  Mac64Address m_srcExtAddr;                                        //!< The extended address of the entity from which the frame causing the error originated.
+  uint8_t m_dstAddrMode {SHORT_ADDR};                               //!< The destination addressing mode for this primitive.
+  Mac16Address m_dstShortAddr;                                      //!< The short address of the device for which the frame was intended.
+  Mac64Address m_dstExtAddr;                                        //!< The extended address of the device for which the frame was intended.
+  LrWpanMlmeCommStatus m_status {MLMECOMMSTATUS_INVALID_PARAMETER}; //!< The communication status
 };
 
 /**
@@ -554,7 +553,7 @@ struct MlmeCommStatusIndicationParams
  */
 struct MlmePollConfirmParams
 {
-  LrWpanMlmePollConfirmStatus m_status; //!< The confirmation status resulting from a MLME-poll.request.
+  LrWpanMlmePollConfirmStatus m_status {MLMEPOLL_INVALID_PARAMETER}; //!< The confirmation status resulting from a MLME-poll.request.
 };
 
 /**
@@ -774,6 +773,20 @@ public:
   uint16_t GetPanId (void) const;
 
   /**
+   *  Get the coordinator short address currently associated to this device.
+   *
+   *  \return The coordinator short address
+   */
+  Mac16Address GetCoordShortAddress (void) const;
+
+  /**
+   *  Get the coordinator extended address currently associated to this device.
+   *
+   *  \return The coordinator extended address
+   */
+  Mac64Address GetCoordExtAddress (void) const;
+
+  /**
    *  IEEE 802.15.4-2006, section 7.1.1.1
    *  MCPS-DATA.request
    *  Request to transfer a MSDU.
@@ -801,6 +814,26 @@ public:
     *  \param params the scan request parameters
     */
   void MlmeScanRequest (MlmeScanRequestParams params);
+
+  /**
+   *  IEEE 802.15.4-2011, section 6.2.2.1
+   *  MLME-ASSOCIATE.request
+   *  Request primitive used by a device to request an association with
+   *  a coordinator.
+   *
+   *  \param params the request parameters
+   */
+  void MlmeAssociateRequest (MlmeAssociateRequestParams params);
+
+  /**
+    *  IEEE 802.15.4-2011, section 6.2.2.3
+    *  MLME-ASSOCIATE.response
+    *  Primitive used to initiate a response to an MLME-ASSOCIATE.indication
+    *  primitive.
+    *
+    *  \param params the associate response parameters
+    */
+  void MlmeAssociateResponse (MlmeAssociateResponseParams params);
 
   /**
    *  IEEE 802.15.4-2011, section 6.2.13.1
@@ -1037,6 +1070,21 @@ public:
   Time m_macBeaconRxTime;
 
   /**
+   * The maximum time, in multiples of aBaseSuperframeDuration, a device
+   * shall wait for a response command frame to be available following a
+   * request command frame.
+   */
+  uint64_t m_macResponseWaitTime;
+
+  /**
+   * The maximum wait time for an association response command after the reception
+   * of data request command ACK during the association process. Not explicitly
+   * listed by the standard but its use is required for a device to react to the lost
+   * of the association response (failure of the association: NO_DATA)
+   */
+  uint64_t m_assocRespCmdWaitTime;
+
+  /**
    * The short address of the coordinator through which the device is
    * associated.
    * 0xFFFF indicates this value is unknown.
@@ -1172,6 +1220,13 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint32_t m_macSIFSPeriod;
+
+  /**
+   * Indication of whether a coordinator is currently allowing association.
+   * A value of TRUE indicates that the association is permitted.
+   * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
+   */
+  bool m_macAssociationPermit;
 
   /**
    * Indication of whether a device automatically sends data request command
@@ -1311,6 +1366,12 @@ public:
   void PrintPendTxQ (std::ostream &os) const;
 
   /**
+   * Print the Transmit Queue.
+   * \param os The reference to the output stream used by this print function.
+   */
+  void PrintTxQueue (std::ostream &os) const;
+
+  /**
    * TracedCallback signature for sent packets.
    *
    * \param [in] packet The packet.
@@ -1365,6 +1426,28 @@ private:
   void SendOneBeacon (void);
 
   /**
+   * Called to send an associate request command.
+   */
+  void SendAssocRequestCommand (void);
+
+  /**
+   * Used to send a data request command (i.e. Request the coordinator to send the association response)
+   */
+  void SendDataRequestCommand (void);
+
+  /**
+    * Called to send an associate response command.
+    *
+    * \param rxDataReqPkt The received data request pkt that instigated the Association response command.
+    */
+  void SendAssocResponseCommand (Ptr<Packet> rxDataReqPkt);
+
+  /**
+   * Called after m_assocRespCmdWaitTime timeout while waiting for an association response command.
+   */
+  void LostAssocRespCommand (void);
+
+  /**
    * Called to send a beacon request command.
    */
   void SendBeaconRequestCommand (void);
@@ -1383,6 +1466,11 @@ private:
    * Called at the end of one ED channel scan.
    */
   void EndChannelEnergyScan (void);
+
+  /**
+   * Called to end an MLME-ASSOCIATE.request after changing the page and channel number.
+   */
+  void EndAssociateRequest (void);
 
   /**
    * Called to begin the Contention Free Period (CFP) in a
@@ -1763,6 +1851,12 @@ private:
   Ptr<Packet> m_txPkt;  // XXX need packet buffer instead of single packet
 
   /**
+   * The command request packet received. Briefly stored to proceed with operations
+   * that take place after ACK messages.
+   */
+  Ptr<Packet> m_rxPkt;
+
+  /**
    * The short address used by this MAC. Currently we do not have complete
    * extended address support in the MAC, nor do we have the association
    * primitives, so this address has to be configured manually.
@@ -1808,6 +1902,12 @@ private:
   MlmeStartRequestParams m_startParams;
 
   /**
+   * The parameters used during a MLME-ASSOCIATE.request. These parameters are stored here while
+   * PLME-SET operations (set channel page, set channel number) take place.
+   */
+  MlmeAssociateRequestParams m_associateParams;
+
+  /**
    * The channel list index used to obtain the current scanned channel.
    */
   uint16_t m_channelScanIndex;
@@ -1834,6 +1934,16 @@ private:
    * packet.
    */
   EventId m_ackWaitTimeout;
+
+  /**
+   * Scheduler event for a response to a request command frame.
+   */
+  EventId m_respWaitTimeout;
+
+  /**
+   * Scheduler event for the lost of a association response command frame.
+   */
+  EventId m_assocResCmdWaitTimeout;
 
   /**
    * Scheduler event for a deferred MAC state change.

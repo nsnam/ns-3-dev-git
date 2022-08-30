@@ -25,6 +25,8 @@ Release 3-dev
 - (internet) Add auto-generate ARP/NDISC cache, as the outcome of GSoC 2022 project.
 - (wifi) Add support for fragmentation of Information Elements.
 - (wifi) Implement 802.11be Multi-link discovery and setup
+- (lr-wpan) !1072 - Adds support for association (network bootstrap)
+- (lr-wpan) Adds support for PAN Id compression (IEEE 802.15.4-2006 (7.5.6.1))
 
 ### Bugs fixed
 
@@ -169,6 +171,7 @@ This release has discontinued support for g++-7 compilers.
 - (wifi) #507 - Set CS Required field according to 802.11ax specs
 - (wifi) #600 - Fix HT Operation Primary Channel setting
 - (wifi) #609 - STA checks that a Multi-STA BA is sent by the AP it is associated with
+- (lr-wpan) #742 - Add default values to non-initialized structs with primitive variables in ``LrWpanPhy``
 
 Release 3.35
 ------------

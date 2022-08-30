@@ -31,3 +31,10 @@ build_lib_example(
   LIBRARIES_TO_LINK ${liblr-wpan}
                     ${libstats}
 )
+
+build_lib_example(
+  NAME lr-wpan-bootstrap
+  SOURCE_FILES lr-wpan-bootstrap.cc
+  LIBRARIES_TO_LINK ${liblr-wpan}
+                    ${libnetanim}
+)

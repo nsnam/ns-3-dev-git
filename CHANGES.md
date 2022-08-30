@@ -46,7 +46,8 @@ Changes from ns-3.36 to ns-3.37
 * The maximum allowed channel width (in MHz) for a data transmission is passed to the **GetDataTxVector** method of the `WifiRemoteStationManager`.
 * The **WifiMacQueueItem** class has been renamed as **WifiMpdu**.
 * The **Assoc** and **DeAssoc** trace sources of `StaWifiMac` provide the AP MLD address in case (de)association takes place between a non-AP MLD and an AP MLD.
-
+* Adds support for **LrWpanMac** devices association.
+* Pan Id compression is now possible in **LrWpanMac** when transmitting data frames. i.e. When src and dst pan ID are the same, only one PanId is used, making the MAC header 2 bytes smaller. See IEEE 802.15.4-2006 (7.5.6.1).
 
 ### Changes to build system
 

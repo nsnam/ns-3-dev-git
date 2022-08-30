@@ -126,7 +126,7 @@ void
 LrWpanCsmaCa::SetMacMinBE (uint8_t macMinBE)
 {
   NS_LOG_FUNCTION (this << macMinBE);
-  NS_ASSERT_MSG (macMinBE <= m_macMaxBE,"MacMinBE ("<<macMinBE<<") should be <= MacMaxBE ("<<m_macMaxBE<<")");
+  NS_ASSERT_MSG (macMinBE <= m_macMaxBE,"MacMinBE (" << macMinBE << ") should be <= MacMaxBE (" << m_macMaxBE << ")");
   m_macMinBE = macMinBE;
 }
 
@@ -141,7 +141,7 @@ void
 LrWpanCsmaCa::SetMacMaxBE (uint8_t macMaxBE)
 {
   NS_LOG_FUNCTION (this << macMaxBE);
-  NS_ASSERT_MSG (macMaxBE >= 3 && macMaxBE <= 8, "MacMaxBE ("<<macMaxBE<<") should be >= 3 and <= 8");
+  NS_ASSERT_MSG (macMaxBE >= 3 && macMaxBE <= 8, "MacMaxBE (" << macMaxBE << ") should be >= 3 and <= 8");
   m_macMaxBE = macMaxBE;
 }
 
@@ -287,6 +287,7 @@ LrWpanCsmaCa::Cancel ()
   m_randomBackoffEvent.Cancel ();
   m_requestCcaEvent.Cancel ();
   m_canProceedEvent.Cancel ();
+  m_mac->GetPhy ()->CcaCancel ();
 }
 
 
@@ -430,7 +431,7 @@ LrWpanCsmaCa::CanProceed ()
   else
     {
       //time the PHY takes to switch from Rx to Tx and Tx to Rx
-      transactionSymbols += (m_mac->GetPhy ()->aTurnaroundTime *2);
+      transactionSymbols += (m_mac->GetPhy ()->aTurnaroundTime * 2);
     }
   transactionSymbols +=  m_mac->GetIfsSize ();
 

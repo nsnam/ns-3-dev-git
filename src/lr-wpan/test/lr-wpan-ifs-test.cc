@@ -265,6 +265,10 @@ LrWpanDataIfsTestCase::DoRun ()
 
   Time ifsSize;
 
+  // NOTE: // For all the test , PAN SRC and DST are the same (PAN compression is ON) therefore MAC header
+           // is 2 bytes smaller than the usual 11 bytes
+           // (see IEEE 802.15.4 Section 7.5.6.1)
+
   ////////////////////////  SIFS ///////////////////////////
 
   Simulator::ScheduleWithContext (1, Seconds (0.0),
@@ -274,8 +278,8 @@ LrWpanDataIfsTestCase::DoRun ()
 
   Simulator::Run ();
 
-  // MPDU = MAC header (11 bytes) + MSDU (2 bytes)+ MAC trailer (2 bytes)  = 15)
-  // MPDU (15 bytes) < 18 bytes therefore IFS = SIFS
+  // MPDU = MAC header (9 bytes) + MSDU (2 bytes)+ MAC trailer (2 bytes)  = 13)
+  // MPDU (13 bytes) < 18 bytes therefore IFS = SIFS
   // SIFS = 12 symbols (192 Microseconds on a 2.4Ghz O-QPSK PHY)
   ifsSize = m_endIfs - m_lastTxTime;
   NS_TEST_EXPECT_MSG_EQ (ifsSize, Time (MicroSeconds (192)), "Wrong Short InterFrame Space (SIFS) Size after dataframe Tx");
@@ -283,7 +287,7 @@ LrWpanDataIfsTestCase::DoRun ()
 
   ////////////////////////  LIFS ///////////////////////////
 
-  p0 = Create<Packet> (6);
+  p0 = Create<Packet> (8);
 
   Simulator::ScheduleWithContext (1, Seconds (0.0),
                                   &LrWpanMac::McpsDataRequest,
@@ -292,7 +296,8 @@ LrWpanDataIfsTestCase::DoRun ()
 
   Simulator::Run ();
 
-  // MPDU = MAC header (11 bytes) + MSDU (6 bytes)+ MAC trailer (2 bytes)  = 19)
+
+  // MPDU = MAC header (9 bytes) + MSDU (8 bytes)+ MAC trailer (2 bytes)  = 19)
   // MPDU (19 bytes) > 18 bytes therefore IFS = LIFS
   // LIFS = 40 symbols (640 Microseconds on a 2.4Ghz O-QPSK PHY)
   ifsSize = m_endIfs - m_lastTxTime;
@@ -310,8 +315,8 @@ LrWpanDataIfsTestCase::DoRun ()
 
   Simulator::Run ();
 
-  // MPDU = MAC header (11 bytes) + MSDU (2 bytes)+ MAC trailer (2 bytes)  = 15)
-  // MPDU (15 bytes) < 18 bytes therefore IFS = SIFS
+  // MPDU = MAC header (9 bytes) + MSDU (2 bytes)+ MAC trailer (2 bytes)  = 13)
+  // MPDU (13 bytes) < 18 bytes therefore IFS = SIFS
   // SIFS = 12 symbols (192 Microseconds on a 2.4Ghz O-QPSK PHY)
   ifsSize = m_endIfs - m_ackRxTime;
   NS_TEST_EXPECT_MSG_EQ (ifsSize, Time (MicroSeconds (192)), "Wrong Short InterFrame Space (SIFS) Size after ACK Rx");
@@ -320,7 +325,7 @@ LrWpanDataIfsTestCase::DoRun ()
   ////////////////////////  LIFS after ACK //////////////////
 
   params.m_txOptions = TX_OPTION_ACK;
-  p0 = Create<Packet> (6);
+  p0 = Create<Packet> (8);
 
   Simulator::ScheduleWithContext (1, Seconds (0.0),
                                   &LrWpanMac::McpsDataRequest,
@@ -329,7 +334,7 @@ LrWpanDataIfsTestCase::DoRun ()
 
   Simulator::Run ();
 
-  // MPDU = MAC header (11 bytes) + MSDU (6 bytes)+ MAC trailer (2 bytes)  = 19)
+  // MPDU = MAC header (9 bytes) + MSDU (8 bytes)+ MAC trailer (2 bytes)  = 19)
   // MPDU (19 bytes) > 18 bytes therefore IFS = LIFS
   // LIFS = 40 symbols (640 Microseconds on a 2.4Ghz O-QPSK PHY)
   ifsSize = m_endIfs - m_ackRxTime;

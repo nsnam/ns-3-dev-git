@@ -353,6 +353,11 @@ public:
   void PlmeCcaRequest (void);
 
   /**
+   *  Cancel an ongoing CCA request.
+   */
+  void CcaCancel (void);
+
+  /**
    *  IEEE 802.15.4-2006 section 6.2.2.3
    *  PLME-ED.request
    *  Perform an ED per section 6.9.7
@@ -491,6 +496,14 @@ public:
    * \return the number of symbols per octet
    */
   double GetPhySymbolsPerOctet (void) const;
+
+  /**
+   * Get the current accumulated sum of signals in the transceiver including
+   * signals considered as interference.
+   *
+   * \return the accumulated signal power spectral density value in Dbm.
+   */
+  double GetCurrentSignalPsd (void);
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -720,6 +733,22 @@ private:
   int8_t GetNominalTxPowerFromPib (uint8_t phyTransmitPower);
 
   /**
+   * Transform watts (W) to decibels milliwatts (DBm).
+   *
+   * \param watt The Watts that will be converted to DBm.
+   * \return The value of Watts in DBm.
+   */
+  double WToDbm (double watt);
+
+  /**
+   * Transforms decibels milliwatts (dBm) to watts (W).
+   *
+   * \param dbm The DBm that will be converted to Watts.
+   * \return The value of DBm in Watts.
+   */
+  double DbmToW (double dbm);
+
+  /**
    * The mobility model used by the PHY.
    */
   Ptr<MobilityModel> m_mobility;
@@ -881,6 +910,13 @@ private:
    * Scheduler event of a currently running data transmission request.
    */
   EventId m_pdDataRequest;
+
+  /**
+   * Scheduler event for a currently running data reception. It makes possible to
+   * cancel the reception of a packet in case a packet with higher priority needs to
+   * be transmitted (i.e. Beacon or ACK ).
+   */
+  EventId m_rxEvent;
 
   /**
    * Uniform random variable stream.

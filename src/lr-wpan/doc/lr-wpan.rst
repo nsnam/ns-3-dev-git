@@ -32,8 +32,8 @@ show the scope of the model.
 
 The Spectrum NetDevice from Nicola Baldo is the basis for the implementation.
 
-The implementation also plans to borrow from the ns-2 models developed by
-Zheng and Lee in the future.
+The implementation also borrows some ideas from the ns-2 models developed by
+Zheng and Lee.
 
 APIs
 ####
@@ -90,7 +90,7 @@ This maps to |ns3| classes and methods such as:::
   ...
   }
 
-The primitives currently supported by the ns-3 model are:
+The primitives currently supported by the |ns3| model are:
 
 MAC Primitives
 ++++++++++++++
@@ -103,6 +103,16 @@ MAC Primitives
 * MLME-SCAN.Request
 * MLME-SCAN.Confirm
 * MLME-BEACON-NOFIFY.Indication
+* MLME-ASSOCIATE.Request
+* MLME-ASSOCIATE.Confirm
+* MLME-ASSOCIATE.Response
+* MLME-ASSOCIATE.Indication
+* MLME-POLL.Confirm
+* MLME-COMM-STATUS.Indication
+* MLME-SYNC.Request
+* MLME-SYNC-LOSS.Indication
+
+
 
 PHY Primitives
 ++++++++++++++
@@ -114,6 +124,8 @@ PHY Primitives
 * PD-DATA.Indication
 * PLME-SET-TRX-STATE.Request
 * PLME-SET-TRX-STATE.Confirm
+
+For more information on primitives, See IEEE 802.15.4-2011, Table 8.
 
 MAC
 ###
@@ -151,9 +163,17 @@ IEEE 802.15.4 supports 4 types of scanning:
 * *Orphan Scan:* <Not supported by ns-3>
 
 In active and passive scans, the link quality indicator (LQI) is the main parameter used to
-determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality
-link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
+determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
 
+In LR-WPAN, association is used to join or leave PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the begining of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
+
+Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
+
+.. _fig-assocSequence:
+
+.. figure:: figures/assocSequence.*
+
+Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
 
 PHY
 ###
@@ -187,7 +207,7 @@ after the packet was completely transmitted. Other packets arriving during
 reception will add up to the interference/noise.
 
 Currently the receiver sensitivity is set to a fixed value of -106.58 dBm. This
-corresponds to a packet error rate of 1% for 20 byte reference packets for this
+corresponds to a packet error rate of 1% for 20 byte PSDU reference packets for this
 signal power, according to IEEE Std 802.15.4-2006, section 6.1.7. In the future
 we will provide support for changing the sensitivity to different values.
 
@@ -217,9 +237,6 @@ Contrary to other technologies, a IEEE 802.15.4 has 2 different kind of addresse
 The 64-bit addresses are unique worldwide, and set by the device vendor (in a real device).
 The 16-bit addresses are not guaranteed to be unique, and they are typically either assigned
 during the devices deployment, or assigned dynamically during the device bootstrap.
-
-In |ns3| the device bootstrap is not (yet) present. Hence, both addresses are set when the
-device is created.
 
 The other relavant "address" to consider is the PanId (16 bits), which represents the PAN
 the device is attached to.
@@ -268,9 +285,8 @@ Scope and Limitations
 Future versions of this document will contain a PICS proforma similar to
 Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
 running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
-Association with PAN coordinators is not yet supported, nor the
-use of extended addressing. Interference is modeled as AWGN but this is
-currently not thoroughly tested.
+Indirect data transmissions are not supported but planned for a future update.
+Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
 
 The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
 
@@ -285,6 +301,7 @@ References
 
 * Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
 * J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, Chapter 4, pp. 218-237, 2006.
+* Alberto Gallegos Ramonet and Taku Noguchi. 2020. LR-WPAN: Beacon Enabled Direct Transmissions on Ns-3. In 2020 the 6th International Conference on Communication and Information Processing (ICCIP 2020). Association for Computing Machinery, New York, NY, USA, 115–122. https://doi.org/10.1145/3442555.3442574.
 
 Usage
 *****
@@ -318,6 +335,9 @@ The following examples have been written, which can be found in ``src/lr-wpan/ex
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
 * ``lr-wpan-ed-scan.cc``:  Simple example showing the use of energy detection (ED) scan in the MAC.
 * ``lr-wpan-active-scan.cc``:  A simple example showing the use of an active scan in the MAC.
+* ``lr-wpan-mlme.cc``: Demonstrates the use of lr-wpan beacon mode. Nodes use a manual association (i.e. No bootstrap) in this example.
+* ``lr-wpan-bootstrap.cc``:  Demonstrates the use of scanning and association working together to initiate a PAN.
+
 
 In particular, the module enables a very simplified end-to-end data
 transfer scenario, implemented in ``lr-wpan-data.cc``.  The figure

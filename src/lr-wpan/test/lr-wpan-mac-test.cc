@@ -134,7 +134,7 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun ()
   //
   // Test Setup:
   //
-  // Start the test with a transmission from node 3 to node 1,
+  // Start the test with a transmission from node 2 to node 1,
   // soon after, node 0 will attempt to transmit a packet to node 1 as well but
   // it will fail because node 2 is still transmitting.
   //
