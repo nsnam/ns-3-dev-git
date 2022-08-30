@@ -111,6 +111,7 @@ SpectrumWifiPhy::DoInitialize()
     WifiPhy::DoInitialize();
     m_wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
     m_wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
+    m_wifiSpectrumPhyInterface->SetChannel(m_channel);
     if (GetDevice())
     {
         m_wifiSpectrumPhyInterface->SetDevice(GetDevice());
@@ -233,6 +234,10 @@ void
 SpectrumWifiPhy::SetChannel(const Ptr<SpectrumChannel> channel)
 {
     m_channel = channel;
+    if (m_wifiSpectrumPhyInterface)
+    {
+        m_wifiSpectrumPhyInterface->SetChannel(channel);
+    }
 }
 
 void
