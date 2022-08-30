@@ -67,6 +67,7 @@ HtFrameExchangeManager::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_agreements.clear ();
+  m_pendingAgreements.clear ();
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   m_psdu = 0;
@@ -317,7 +318,7 @@ HtFrameExchangeManager::CreateBlockAckAgreement (const MgtAddBaResponseHeader *r
                                                          this, originator, tid, false);
     }
 
-  m_agreements.insert ({{originator, tid}, agreement});
+  m_pendingAgreements.insert_or_assign ({originator, tid}, agreement);
 }
 
 void
@@ -573,6 +574,19 @@ HtFrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu)
               Simulator::Schedule (edca->GetAddBaResponseTimeout (),
                                    &QosTxop::AddBaResponseTimeout, edca,
                                    mpdu->GetHeader ().GetAddr1 (), addBa.GetTid ());
+            }
+          else if (actionHdr.GetAction ().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
+            {
+              // The recipient Block Ack agreement can be moved from the pending queue
+              // to the queue of established Block Ack agreements
+              MgtAddBaResponseHeader addBa;
+              p->PeekHeader (addBa);
+              AgreementKey key (mpdu->GetHeader ().GetAddr1 (), addBa.GetTid ());
+              auto nh = m_pendingAgreements.extract (key);
+              NS_ASSERT_MSG (!nh.empty (), "Pending agreement {" << key.first
+                                           << ", " << +key.second << "} not found");
+              m_agreements.erase (nh.key ());
+              m_agreements.insert (std::move (nh));
             }
         }
     }
