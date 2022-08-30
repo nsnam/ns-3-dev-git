@@ -242,7 +242,7 @@ TraceDroppingState (std::string dropStateTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dropStateTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/CwndTracer$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/DropState", MakeBoundCallback (&DroppingStateTracer, stream));
     }
 }
 
