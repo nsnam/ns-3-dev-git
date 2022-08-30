@@ -7,7 +7,9 @@
     - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel ninja cmake python ccache gsl gtk3 boost
-      doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx
+      doxygen graphviz imagemagick texlive-core texlive-bin texlive-latexextra python-sphinx
+    # dia is self-hosted
+    - pacman --noconfirm -U https://www.nsnam.org/wp-content/uploads/2022/dia-0.97.3-9-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
 #    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
