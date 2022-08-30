@@ -48,6 +48,9 @@ NS_LOG_COMPONENT_DEFINE ("PrintIntrospectedDoxygen");
 
 namespace
 {
+  /** Are we generating text or Doxygen? */
+  bool outputText = false;
+
   /**
    * Markup tokens.
    * @{
@@ -105,7 +108,7 @@ namespace
  * \param [in] outputText true for text output, false for doxygen output.
  */
 void
-SetMarkup (bool outputText)
+SetMarkup ()
 {
   NS_LOG_FUNCTION (outputText);
   if (outputText)
@@ -124,7 +127,7 @@ SetMarkup (bool outputText)
       commentStart                 = "===============================================================\n";
       commentStop                  = "";
       copyDoc                      = "  See: ";
-      file                         = "File: ";
+      file                         = "File: introspected-doxygen.txt";
       flagSpanStart                = "";
       flagSpanStop                 = "";
       functionStart                = "";
@@ -145,7 +148,7 @@ SetMarkup (bool outputText)
       reference                    = " ";
       referenceNo                  = " ";
       returns                      = "  Returns: ";
-      sectionStart                 = "Section ";
+      sectionStart                 = "Section:  ";
       seeAlso                      = "  See: ";
       subSectionStart              = "Subsection ";
       templArgDeduced              = "[deduced]  ";
@@ -169,7 +172,7 @@ SetMarkup (bool outputText)
       commentStart                 = "/*!\n";
       commentStop                  = "*/\n";
       copyDoc                      = "\\copydoc ";
-      file                         = "\\file ";
+      file                         = "\\file";
       flagSpanStart                = "<span class=\"mlabel\">";
       flagSpanStop                 = "</span>";
       functionStart                = "\\fn ";
@@ -692,7 +695,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 	 <<   boldStart << info.name << boldStop << ": "
 	 <<   info.help
 	 <<   std::endl;
-      os <<   "  "
+      os <<   indentHtmlOnly
 	 <<   listStart << std::endl;
       os <<     "    "
 	 <<     listLineStart
@@ -700,6 +703,8 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 	 <<       info.checker->GetValueTypeName ()
 	 <<     listLineStop
 	 << std::endl;
+
+      std::string underType;
       if (info.checker->HasUnderlyingTypeInformation ())
 	{
 	  os << "    "
@@ -707,12 +712,11 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 	     <<   "Underlying type: ";
 
           std::string valType = info.checker->GetValueTypeName ();
-          std::string underType = info.checker->GetUnderlyingTypeInformation ();
+          underType = info.checker->GetUnderlyingTypeInformation ();
+          bool handled = false;
 	  if ((valType   != "ns3::EnumValue") && (underType != "std::string"))
 	    {
 	      // Indirect cases to handle
-	      bool handled = false;
-
 	      if (valType == "ns3::PointerValue")
 		{
 		  const PointerChecker *ptrChecker =
@@ -763,39 +767,50 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
                   os << underType;
                   handled = true;
                 }
-	      if (! handled)
-		{
-		  os << reference << underType;
-		}
-	    }
+            }
+          if (! handled)
+            {
+              os << codeWord << underType;
+            }
 	  os << listLineStop << std::endl;
 	}
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
 	{
+          std::string value = info.initialValue->SerializeToString (info.checker);
+          if (underType == "std::string" && value == "")
+            {
+              value = "\"\"";
+            }
 	  os << "    "
 	     << listLineStart
 	     <<   "Initial value: "
-	     <<   info.initialValue->SerializeToString (info.checker)
+	     <<   value
 	     << listLineStop
 	     << std::endl;
 	}
+      bool moreFlags {false};
       os << "    " << listLineStart << "Flags: ";
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
 	{
-	  os << flagSpanStart << "construct " << flagSpanStop;
+	  os << flagSpanStart << "construct" << flagSpanStop;
+          moreFlags = true;
 	}
       if (info.flags & TypeId::ATTR_SET && info.accessor->HasSetter ())
 	{
-	  os << flagSpanStart << "write " << flagSpanStop;
+	  os << (outputText && moreFlags ? ", " : "")
+             << flagSpanStart << "write" << flagSpanStop;
+          moreFlags = true;
 	}
       if (info.flags & TypeId::ATTR_GET && info.accessor->HasGetter ())
 	{
-	  os << flagSpanStart << "read " << flagSpanStop;
+	  os << (outputText && moreFlags ? ", " : "")
+             << flagSpanStart << "read" << flagSpanStop;
+          moreFlags = true;
 	}
       os << listLineStop << std::endl;
-      os << "  "
+      os << indentHtmlOnly
 	 << listStop
-	 << " " << std::endl;
+	 << std::endl;
 
     }
   os << listStop << std::endl;
@@ -868,9 +883,13 @@ PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
       struct TypeId::TraceSourceInformation info = tid.GetTraceSource (i);
       os << listLineStart
 	 <<   boldStart << info.name << boldStop << ": "
-	 <<   info.help << breakBoth
-	//    '%' prevents doxygen from linking to the Callback class...
-	 <<   "%Callback signature: "
+	 <<   info.help << breakBoth;
+      if (!outputText)
+        {
+          //    '%' prevents doxygen from linking to the Callback class...
+          os <<   "%";
+        }
+      os << "Callback signature: "
 	 <<   info.callback
 	 <<   std::endl;
       os << listLineStop << std::endl;
@@ -1125,7 +1144,7 @@ PrintAllGlobals (std::ostream & os)
          <<       hrefStop
 	 <<     boldStop
 	 <<     ": " << (*i)->GetHelp ()
-	 <<     ".  Default value: " << val.Get () << ". "
+	 <<     ".  Default value: " << val.Get () << "."
 	 <<   listLineStop
 	 << std::endl;
     }
@@ -1169,13 +1188,17 @@ PrintAllLogComponents (std::ostream & os)
         }
       widthR  = std::max (widthR, file.size ());
     }
-  const std::string sep (" | ");
+  const std::string tLeft ("| ");
+  const std::string tMid (" | ");
+  const std::string tRight (" |");
 
-  os << std::setw (widthL) << std::left << "Log Component" << sep
-    // Header line has to be padded to same length as separator line
-     << std::setw (widthR) << std::left << "File " << std::endl;
-  os << ":" << std::string (widthL - 1, '-') << sep
-     << ":" << std::string (widthR - 1, '-') << std::endl;
+  // Header line has to be padded to same length as separator line
+  os << tLeft << std::setw (widthL) << std::left << "Log Component"
+     << tMid  << std::setw (widthR) << std::left << "File" << tRight
+     << std::endl;
+  os << tLeft << ":" << std::string (widthL - 1, '-')
+     << tMid  << ":" << std::string (widthR - 1, '-') << tRight
+     << std::endl;
 
   LogComponent::ComponentList::const_iterator it;
   for (auto it : (*logs))
@@ -1188,7 +1211,9 @@ PrintAllLogComponents (std::ostream & os)
           file = file.substr (3);
         }
 
-      os << std::setw (widthL) << std::left << it.first << sep << file << std::endl;
+      os << tLeft << std::setw (widthL) << std::left << it.first
+         << tMid << std::setw (widthR) << file << tRight
+         << std::endl;
     }
   os << std::right << std::endl;
   os << commentStop << std::endl;
@@ -1596,7 +1621,6 @@ PrintAttributeImplementations (std::ostream & os)
 int main (int argc, char *argv[])
 {
   NS_LOG_FUNCTION_NOARGS ();
-  bool outputText = false;
 
   CommandLine cmd (__FILE__);
   cmd.Usage ("Generate documentation for all ns-3 registered types, "
@@ -1604,7 +1628,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("output-text", "format output as plain text", outputText);
   cmd.Parse (argc, argv);
 
-  SetMarkup (outputText);
+  SetMarkup ();
 
 
   // Create a Node, to force linking and instantiation of our TypeIds
@@ -1619,7 +1643,6 @@ int main (int argc, char *argv[])
 		<< std::endl;
     }
 
-  // Doxygen file header
   std::cout << std::endl;
   std::cout << commentStart
             << file << "\n"
