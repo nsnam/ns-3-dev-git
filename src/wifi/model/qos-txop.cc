@@ -583,7 +583,12 @@ QosTxop::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
-  m_queue->PushFront (Create<WifiMacQueueItem> (packet, hdr));
+  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (packet, hdr);
+  if (!m_queue->PushFront (mpdu))
+    {
+      NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");
+      m_queue->Replace (m_queue->Peek (), mpdu);
+    }
   if (HasFramesToTransmit () && GetLink (0).access == NOT_REQUESTED)  // TODO use appropriate linkId
     {
       m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->RequestAccess (this);
