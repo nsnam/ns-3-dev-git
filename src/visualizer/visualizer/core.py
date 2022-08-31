@@ -1073,10 +1073,10 @@ class Visualizer(GObject.GObject):
 
         # Play button
         self.play_button = GObject.new(Gtk.ToggleButton,
-                                       image=GObject.new(Gtk.Image, stock=Gtk.STOCK_MEDIA_PLAY, visible=True),
                                        label="Simulate (F3)",
                                        relief=Gtk.ReliefStyle.NONE, focus_on_click=False,
-                                       use_stock=True, visible=True)
+                                       visible=True)
+        load_button_icon(self.play_button, "media-playback-start")
         accel_group = Gtk.AccelGroup()
         self.window.add_accel_group(accel_group)
         self.play_button.add_accelerator("clicked", accel_group,
