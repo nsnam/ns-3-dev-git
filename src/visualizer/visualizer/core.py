@@ -1051,14 +1051,12 @@ class Visualizer(GObject.GObject):
         hbox.pack_start(screenshot_button, False, False, 4)
 
         def load_button_icon(button, icon_name):
-            try:
-                import gnomedesktop
-            except ImportError:
-                sys.stderr.write("Could not load icon %s due to missing gnomedesktop Python module\n" % icon_name)
-            else:
-                icon = gnomedesktop.find_icon(Gtk.IconTheme.get_default(), icon_name, 16, 0)
-                if icon is not None:
-                    button.props.image = GObject.new(Gtk.Image, file=icon, visible=True)
+            if not Gtk.IconTheme.get_default().has_icon(icon_name):
+                print(f"Could not load icon {icon_name}", file=sys.stderr)
+                return
+            image = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
+            button.set_image(image)
+            button.props.always_show_image = True
 
         load_button_icon(screenshot_button, "applets-screenshooter")
         screenshot_button.connect("clicked", self._take_screenshot)
