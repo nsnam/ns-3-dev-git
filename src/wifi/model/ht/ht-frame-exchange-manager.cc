@@ -374,7 +374,7 @@ HtFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTim
       return true;
     }
 
-  Ptr<const WifiMacQueueItem> peekedItem = edca->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> peekedItem = edca->PeekNextMpdu ();
 
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be
@@ -469,7 +469,7 @@ HtFrameExchangeManager::SendMpduFromBaManager (Ptr<QosTxop> edca, Time available
 }
 
 bool
-HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
+HtFrameExchangeManager::SendDataFrame (Ptr<WifiMacQueueItem> peekedItem,
                                        Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem && peekedItem->GetHeader ().IsQosData ()

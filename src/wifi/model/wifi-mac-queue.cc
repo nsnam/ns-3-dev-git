@@ -222,7 +222,7 @@ WifiMacQueue::Peek (void) const
   return 0;
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<WifiMacQueueItem>
 WifiMacQueue::PeekByAddress (Mac48Address dest, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << dest << item);
@@ -248,7 +248,7 @@ WifiMacQueue::PeekByAddress (Mac48Address dest, Ptr<const WifiMacQueueItem> item
   return nullptr;
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<WifiMacQueueItem>
 WifiMacQueue::PeekByTid (uint8_t tid, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << +tid << item);
@@ -273,7 +273,7 @@ WifiMacQueue::PeekByTid (uint8_t tid, Ptr<const WifiMacQueueItem> item) const
   return nullptr;
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<WifiMacQueueItem>
 WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest, Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << +tid << dest << item);
@@ -299,7 +299,7 @@ WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest, Ptr<const Wif
   return nullptr;
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<WifiMacQueueItem>
 WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets,
                                   Ptr<const WifiMacQueueItem> item) const
 {

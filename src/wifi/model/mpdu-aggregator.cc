@@ -223,7 +223,7 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txPa
           mpduList.push_back (nextMpdu);
 
           // If allowed by the BA agreement, get the next MPDU
-          Ptr<const WifiMacQueueItem> peekedMpdu;
+          Ptr<WifiMacQueueItem> peekedMpdu;
           peekedMpdu = qosTxop->PeekNextMpdu (tid, recipient, nextMpdu);
           nextMpdu = 0;
 

@@ -194,7 +194,7 @@ AmpduAggregationTest::DoRun (void)
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
 
-  Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
@@ -425,7 +425,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1500), hdr));
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1500), hdr));
 
-  Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
@@ -689,7 +689,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
       m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
   }
 
-  Ptr<const WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu ();
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);

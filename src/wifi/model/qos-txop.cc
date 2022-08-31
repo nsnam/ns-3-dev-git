@@ -352,13 +352,13 @@ QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
   return false;
 }
 
-Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQueueItem> item)
+Ptr<WifiMacQueueItem>
+QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<WifiMacQueueItem> item)
 {
   NS_LOG_FUNCTION (this << +tid << recipient << item);
 
   // lambda to peek the next frame
-  auto peek = [this, &tid, &recipient, &item] () -> Ptr<const WifiMacQueueItem>
+  auto peek = [this, &tid, &recipient, &item] () -> Ptr<WifiMacQueueItem>
     {
       if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
         {
@@ -439,7 +439,7 @@ QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<const WifiMacQue
 }
 
 Ptr<WifiMacQueueItem>
-QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+QosTxop::GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
                       Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem);

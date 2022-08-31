@@ -144,8 +144,8 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<const WifiMacQueueItem> PeekByAddress (Mac48Address dest,
-                                             Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMacQueueItem> PeekByAddress (Mac48Address dest,
+                                       Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Search and return, if present in the queue, the first packet having the
    * TID equal to <i>tid</i>. If <i>item</i> is not a null pointer, the search
@@ -158,8 +158,8 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<const WifiMacQueueItem> PeekByTid (uint8_t tid,
-                                         Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMacQueueItem> PeekByTid (uint8_t tid,
+                                   Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Search and return, if present in the queue, the first packet having the
    * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
@@ -175,8 +175,8 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<const WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid, Mac48Address dest,
-                                                   Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid, Mac48Address dest,
+                                             Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Return first available packet for transmission. If <i>item</i> is not a null
    * pointer, the search starts from the packet following <i>item</i> in the queue;
@@ -188,8 +188,8 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<const WifiMacQueueItem> PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
-                                                  Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMacQueueItem> PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
+                                            Ptr<const WifiMacQueueItem> item = nullptr) const;
   /**
    * Remove the packet in the front of the queue.
    *

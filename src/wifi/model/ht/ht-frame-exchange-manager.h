@@ -314,7 +314,7 @@ protected:
    *                     limit can be exceeded
    * \return true if frame is transmitted, false otherwise
    */
-  virtual bool SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
+  virtual bool SendDataFrame (Ptr<WifiMacQueueItem> peekedItem,
                               Time availableTime, bool initialFrame);
 
   /**

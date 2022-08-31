@@ -1281,7 +1281,6 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
         }
     }
 
-  Ptr<const WifiMacQueueItem> mpdu;
   Ptr<WifiPsdu> psdu;
   WifiTxParameters txParams;
   WifiTxVector tbTxVector = GetHeTbTxVector (trigger, hdr.GetAddr2 ());
@@ -1303,7 +1302,8 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
       txParams.m_txVector = tbTxVector;
 
       // first, check if there is a pending BlockAckReq frame
-      if ((mpdu = edca->GetBaManager ()->GetBar (false, tid, hdr.GetAddr2 ()))
+      if (Ptr<const WifiMacQueueItem> mpdu;
+          (mpdu = edca->GetBaManager ()->GetBar (false, tid, hdr.GetAddr2 ()))
           && TryAddMpdu (mpdu, txParams, ppduDuration))
         {
           NS_LOG_DEBUG ("Sending a BAR within a TB PPDU");
@@ -1312,7 +1312,8 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
         }
 
       // otherwise, check if a suitable data frame is available
-      if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())))
+      if (Ptr<WifiMacQueueItem> mpdu;
+          (mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())))
         {
           Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false);
 

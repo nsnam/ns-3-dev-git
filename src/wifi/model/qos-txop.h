@@ -308,9 +308,9 @@ public:
    * \param item the item after which the search starts from
    * \returns the peeked frame.
    */
-  Ptr<const WifiMacQueueItem> PeekNextMpdu (uint8_t tid = 8,
-                                            Mac48Address recipient = Mac48Address::GetBroadcast (),
-                                            Ptr<const WifiMacQueueItem> item = nullptr);
+  Ptr<WifiMacQueueItem> PeekNextMpdu (uint8_t tid = 8,
+                                      Mac48Address recipient = Mac48Address::GetBroadcast (),
+                                      Ptr<WifiMacQueueItem> item = nullptr);
   /**
    * Prepare the frame to transmit starting from the MPDU that has been previously
    * peeked by calling PeekNextMpdu. A frame is only returned if it meets the
@@ -329,7 +329,7 @@ public:
    * \param initialFrame true if the frame is the initial PPDU of a TXOP
    * \return the frame to transmit or a null pointer if no frame meets the time constraints
    */
-  Ptr<WifiMacQueueItem> GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+  Ptr<WifiMacQueueItem> GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
                                      Time availableTime, bool initialFrame);
 
   /**

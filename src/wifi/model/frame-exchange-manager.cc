@@ -907,8 +907,8 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
   // sent. As an approximation, we consider the frame peeked from the queues of the AC.
   Ptr<QosTxop> qosTxop = (txop->IsQosTxop () ? StaticCast<QosTxop> (txop) : nullptr);
 
-  Ptr<const WifiMacQueueItem> mpdu = (qosTxop ? qosTxop->PeekNextMpdu ()
-                                                         : txop->GetWifiMacQueue ()->Peek ());
+  auto mpdu = (qosTxop ? StaticCast<const WifiMacQueueItem> (qosTxop->PeekNextMpdu ())
+                       : txop->GetWifiMacQueue ()->Peek ());
 
   if (mpdu)
     {
