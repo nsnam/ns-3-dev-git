@@ -83,7 +83,7 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
 }
 
 Ptr<WifiMacQueueItem>
-MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+MsduAggregator::GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
                               Time availableTime) const
 {
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
@@ -117,7 +117,7 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
       return nullptr;
     }
 
-  Ptr<WifiMacQueueItem> amsdu = peekedItem->GetItem ();  // amsdu points to the peeked MPDU, but it's non-const
+  Ptr<WifiMacQueueItem> amsdu = peekedItem;
   uint8_t nMsdu = 1;
   peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
 

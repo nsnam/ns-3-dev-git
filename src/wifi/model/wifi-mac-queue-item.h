@@ -62,15 +62,6 @@ public:
   virtual ~WifiMacQueueItem ();
 
   /**
-   * Get a pointer to this WifiMacQueueItem object. This method is useful to convert
-   * a pointer to const WifiMacQueueItem into a pointer to non-const WifiMacQueueItem.
-   * This method can only be called if this item is stored in a wifi MAC queue.
-   *
-   * \return a pointer to this WifiMacQueueItem object
-   */
-  Ptr<WifiMacQueueItem> GetItem (void) const;
-
-  /**
    * \brief Get the packet stored in this item
    * \return the packet stored in this item.
    */

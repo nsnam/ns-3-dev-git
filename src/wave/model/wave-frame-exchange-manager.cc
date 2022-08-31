@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "ns3/abort.h"
+#include "ns3/qos-blocked-destinations.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "wave-frame-exchange-manager.h"
@@ -134,7 +135,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
     }
 
   m_dcf->NotifyChannelAccessed (0);
-  Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
+  Ptr<WifiMacQueueItem> mpdu = queue->PeekFirstAvailable ();
   NS_ASSERT (mpdu);
 
   // assign a sequence number if this is not a fragment nor a retransmission

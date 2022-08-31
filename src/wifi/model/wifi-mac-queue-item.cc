@@ -55,13 +55,6 @@ WifiMacQueueItem::~WifiMacQueueItem ()
 {
 }
 
-Ptr<WifiMacQueueItem>
-WifiMacQueueItem::GetItem (void) const
-{
-  NS_ASSERT (IsQueued ());
-  return *m_queueIt;
-}
-
 Ptr<const Packet>
 WifiMacQueueItem::GetPacket (void) const
 {

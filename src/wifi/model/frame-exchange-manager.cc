@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "frame-exchange-manager.h"
+#include "qos-blocked-destinations.h"
 #include "wifi-utils.h"
 #include "snr-tag.h"
 #include "wifi-mac-queue.h"
@@ -310,7 +311,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
     }
 
   m_dcf->NotifyChannelAccessed (m_linkId);
-  Ptr<WifiMacQueueItem> mpdu = queue->Peek ()->GetItem ();
+  Ptr<WifiMacQueueItem> mpdu = queue->PeekFirstAvailable ();
   NS_ASSERT (mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 

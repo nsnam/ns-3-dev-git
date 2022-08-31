@@ -98,7 +98,7 @@ public:
    * \param availableTime the time available for the frame exchange
    * \return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
    */
-  Ptr<WifiMacQueueItem> GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+  Ptr<WifiMacQueueItem> GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
                                       Time availableTime) const;
 
   /**

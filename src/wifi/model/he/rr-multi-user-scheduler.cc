@@ -540,7 +540,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   uint8_t currTid = wifiAcList.at (primaryAc).GetHighTid ();
 
-  Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
+  Ptr<WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
 
   if (mpdu && mpdu->GetHeader ().IsQosData ())
     {
@@ -768,7 +768,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
   FinalizeTxVector (dlMuInfo.txParams.m_txVector);
 
   m_txParams.Clear ();
-  Ptr<const WifiMacQueueItem> mpdu;
+  Ptr<WifiMacQueueItem> mpdu;
 
   // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
   Time actualAvailableTime = (m_initialFrame ? Time::Min () : m_availableTime);
@@ -797,7 +797,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       NS_ASSERT (receiver == candidate.first->address);
 
       NS_ASSERT (mpdu->IsQueued ());
-      Ptr<WifiMacQueueItem> item = mpdu->GetItem ();
+      Ptr<WifiMacQueueItem> item = mpdu;
 
       if (!mpdu->GetHeader ().IsRetry ())
         {
@@ -808,7 +808,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
           if (!item)
             {
               // A-MSDU aggregation failed or disabled
-              item = mpdu->GetItem ();
+              item = mpdu;
             }
           m_apMac->GetQosTxop (QosUtilsMapTidToAc (tid))->AssignSequenceNumber (item);
         }

@@ -407,7 +407,7 @@ QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient, Ptr<WifiMacQueueItem
   if (item)
     {
       NS_ASSERT (!item->IsInFlight ());
-      WifiMacHeader& hdr = item->GetItem ()->GetHeader ();
+      WifiMacHeader& hdr = item->GetHeader ();
 
       // peek the next sequence number and check if it is within the transmit window
       // in case of QoS data frame
@@ -494,7 +494,7 @@ QosTxop::GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txPara
 
   if (!mpdu)
     {
-      mpdu = peekedItem->GetItem ();
+      mpdu = peekedItem;
     }
 
   // Assign a sequence number if this is not a fragment nor a retransmission
