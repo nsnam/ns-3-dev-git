@@ -68,6 +68,7 @@ HtFrameExchangeManager::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_agreements.clear ();
   m_pendingAgreements.clear ();
+  m_pendingAddBaResp.clear ();
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   m_psdu = 0;
@@ -240,6 +241,31 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
   CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
 
   auto mpdu = Create<WifiMacQueueItem> (packet, hdr);
+
+  /*
+   * It is possible (though, unlikely) that at this point there are other ADDBA_RESPONSE frame(s)
+   * in the MAC queue. This may happen if the recipient receives an ADDBA_REQUEST frame, enqueues
+   * an ADDBA_RESPONSE frame, but is not able to successfully transmit it before the timer to
+   * wait for ADDBA_RESPONSE expires at the originator. The latter may then send another
+   * ADDBA_REQUEST frame, which triggers the creation of another ADDBA_RESPONSE frame.
+   * The first ADDBA_RESPONSE frame that is acknowledged causes the Block Ack agreement to be
+   * moved from the queue of pending agreements to the queue of establish agreements; the next
+   * one will find no pending agreement, thus causing the simulation to abort.
+   * As a solution, we keep track of the previously enqueued ADDBA_RESPONSE frame (if any), dequeue
+   * it and replace it with the new ADDBA_RESPONSE frame.
+   */
+
+  // remove any pending ADDBA_RESPONSE frame
+  AgreementKey key (originator, reqHdr->GetTid ());
+  if (auto it = m_pendingAddBaResp.find (key);
+      it != m_pendingAddBaResp.end ())
+    {
+      NS_ASSERT_MSG (it->second, "The pointer to the pending ADDBA_RESPONSE cannot be null");
+      DequeueMpdu (it->second);
+      m_pendingAddBaResp.erase (it);
+    }
+  // store the new ADDBA_RESPONSE frame
+  m_pendingAddBaResp[key] = mpdu;
 
   //It is unclear which queue this frame should go into. For now we
   //bung it into the queue corresponding to the TID for which we are
@@ -589,6 +615,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu)
                                            << ", " << +key.second << "} not found");
               m_agreements.erase (nh.key ());
               m_agreements.insert (std::move (nh));
+              m_pendingAddBaResp.erase (key);
             }
         }
     }

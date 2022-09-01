@@ -385,6 +385,9 @@ protected:
   Ptr<MsduAggregator> m_msduAggregator;              //!< A-MSDU aggregator
   Ptr<MpduAggregator> m_mpduAggregator;              //!< A-MPDU aggregator
 
+  /// pending ADDBA_RESPONSE frames indexed by agreement key
+  std::map<AgreementKey, Ptr<WifiMacQueueItem>> m_pendingAddBaResp;
+
 private:
   /**
    * Send the current PSDU, which can be acknowledged by a BlockAck frame or
