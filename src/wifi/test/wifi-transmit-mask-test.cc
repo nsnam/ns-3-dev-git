@@ -53,26 +53,23 @@ public:
   /**
    * Constructor
    *
-   * \param str test reference name
+   * \param name test reference name
    * \param standard selected standard
    * \param band selected PHY band
-   * \param bw bandwidth
+   * \param channelWidth channel width (in MHz)
    * \param maskRefs vector of expected power values and corresponding indexes of generated PSD
    *                     (only start and stop indexes/values given)
-   * \param tol tolerance (in dB)
+   * \param tolerance tolerance (in dB)
    * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not (only for 802.11ax and later)
    */
-  WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
-                              const IndexPowerVect& maskRefs, double tol,
+  WifiOfdmMaskSlopesTestCase (const std::string& name, WifiStandard standard,
+                              WifiPhyBand band, uint16_t channelWidth,
+                              const IndexPowerVect& maskRefs, double tolerance,
                               const std::vector<bool>& puncturedSubchannels = std::vector<bool>{});
-  virtual ~WifiOfdmMaskSlopesTestCase ();
-
-protected:
-  Ptr<SpectrumValue> m_actualSpectrum; ///< actual spectrum value
-  IndexPowerVect m_expectedPsd;        ///< expected power values
-  double m_tolerance;                  ///< tolerance (in dB)
+  virtual ~WifiOfdmMaskSlopesTestCase () = default;
 
 private:
+  void DoSetup (void) override;
   void DoRun (void) override;
   /**
    * Interpolate PSD values for indexes between provided start and stop and append to provided
@@ -82,91 +79,124 @@ private:
                  should be appended
    * \param start pair of sub-band index and relative power value (dBr) for interval start
    * \param stop pair of sub-band index and relative power value (dBr) for interval stop
-   * \param tol tolerance (in dB)
+   * \param tolerance tolerance (in dB)
   */
   static void InterpolateAndAppendValues (IndexPowerVect &vect, IndexPowerPair start, IndexPowerPair stop,
                                           double tol);
+
+  WifiStandard m_standard;                  ///< the wifi standard to use for the test
+  WifiPhyBand m_band;                       ///< the wifi PHY band to use for the test
+  uint16_t m_channelWidth;                  ///< the channel width in MHz to use for the test
+  std::vector<bool> m_puncturedSubchannels; ///< bitmap indicating whether a 20 MHz subchannel is punctured or not (only used for 802.11ax and later)
+  Ptr<SpectrumValue> m_actualSpectrum;      ///< actual spectrum value
+  IndexPowerVect m_expectedPsd;             ///< expected power values
+  double m_tolerance;                       ///< tolerance (in dB)
 };
 
-WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiStandard standard, WifiPhyBand band, uint8_t bw,
-                                                        const IndexPowerVect& maskRefs, double tol,
+WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const std::string& name, WifiStandard standard, WifiPhyBand band, uint16_t channelWidth,
+                                                        const IndexPowerVect& maskRefs, double tolerance,
                                                         const std::vector<bool>& puncturedSubchannels)
-  :   TestCase (std::string ("SpectrumValue ") + str)
+  : TestCase (std::string ("SpectrumValue ") + name),
+    m_standard {standard},
+    m_band {band},
+    m_channelWidth {channelWidth},
+    m_puncturedSubchannels {puncturedSubchannels},
+    m_actualSpectrum {},
+    m_expectedPsd {maskRefs},
+    m_tolerance {tolerance}
 {
-  NS_LOG_FUNCTION (this << str << standard << band << +bw << tol << puncturedSubchannels.size ());
-  NS_ASSERT (maskRefs.size () % 2 == 0); //start/stop pairs expected
-  uint16_t freq = 5170 + (bw / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
-  double refTxPowerW = 1; // have to work in dBr when comparing though
-  m_tolerance = tol; // in dB
-  double outerBandMaximumRejection = -40; // in dBr
+  NS_LOG_FUNCTION (this << name << standard << band << channelWidth << tolerance << puncturedSubchannels.size ());
+}
 
-  switch (standard)
+void
+WifiOfdmMaskSlopesTestCase::DoSetup (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_expectedPsd.size () % 2 == 0); //start/stop pairs expected
+
+  uint16_t freq = 0;
+  double outerBandMaximumRejection = 0.0;
+  switch (m_band)
     {
-    case WIFI_STANDARD_80211p:
-      NS_ASSERT ((bw == 5) || (bw == 10));
-      freq = 5860;
-      m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
-      break;
+      default:
+      case WIFI_PHY_BAND_5GHZ:
+        freq = 5170 + (m_channelWidth / 2); // so as to have 5180/5190/5210/5250 for 20/40/80/160
+        outerBandMaximumRejection = -40; // in dBr
+        break;
+      case WIFI_PHY_BAND_2_4GHZ:
+        freq = 2402 + (m_channelWidth / 2); //so as to have 2412/2422 for 20/40
+        outerBandMaximumRejection = (m_standard >= WIFI_STANDARD_80211n) ? -45 : -40; // in dBr
+        break;
+      case WIFI_PHY_BAND_6GHZ:
+        freq = 5945 + (m_channelWidth / 2); // so as to have 5945/5955/5975/6015 for 20/40/80/160
+        outerBandMaximumRejection = -40; // in dBr
+        break;
+    }
 
-    // 11g and 11a
-    case WIFI_STANDARD_80211g:
-      freq = 2412;
-    // no break on purpose
-    case WIFI_STANDARD_80211a:
-      NS_ASSERT (bw == 20);
-      m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
-      break;
+  double refTxPowerW = 1; // have to work in dBr when comparing though
+  switch (m_standard)
+    {
+      case WIFI_STANDARD_80211p:
+        NS_ASSERT (m_band == WIFI_PHY_BAND_5GHZ);
+        NS_ASSERT ((m_channelWidth == 5) || (m_channelWidth == 10));
+        freq = 5860;
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, m_channelWidth, refTxPowerW, m_channelWidth, -20.0, -28.0, outerBandMaximumRejection);
+        break;
 
-    // 11n
-    case WIFI_STANDARD_80211n:
-      if (band == WIFI_PHY_BAND_2_4GHZ)
-        {
-          freq = 2402 + (bw / 2); //so as to have 2412/2422 for 20/40
-          outerBandMaximumRejection = -45;
-        }
-      NS_ASSERT (bw == 20 || bw == 40);
-      m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
-      break;
+      case WIFI_STANDARD_80211g:
+        NS_ASSERT (m_band == WIFI_PHY_BAND_2_4GHZ);
+        NS_ASSERT (m_channelWidth == 20);
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, m_channelWidth, refTxPowerW, m_channelWidth, -20.0, -28.0, outerBandMaximumRejection);
+        break;
 
-    // 11ac
-    case WIFI_STANDARD_80211ac:
-      NS_ASSERT (bw == 20 || bw == 40 || bw == 80 || bw == 160);
-      m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection);
-      break;
+      case WIFI_STANDARD_80211a:
+        NS_ASSERT (m_band == WIFI_PHY_BAND_5GHZ);
+        NS_ASSERT (m_channelWidth == 20);
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (freq, m_channelWidth, refTxPowerW, m_channelWidth, -20.0, -28.0, outerBandMaximumRejection);
+        break;
 
-    // 11ax
-    case WIFI_STANDARD_80211ax:
-      if (band == WIFI_PHY_BAND_2_4GHZ)
-        {
-          NS_ASSERT (bw != 160); // not enough space in 2.4 GHz bands
-          freq = 2402 + (bw / 2); //so as to have 2412/2422 for 20/40
-          outerBandMaximumRejection = -45;
-        }
-      NS_ASSERT (bw == 20 || bw == 40 || bw == 80 || bw == 160);
-      m_actualSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw, -20.0, -28.0, outerBandMaximumRejection, puncturedSubchannels);
-      break;
+      case WIFI_STANDARD_80211n:
+        NS_ASSERT (m_channelWidth == 20 || m_channelWidth == 40);
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, m_channelWidth, refTxPowerW, m_channelWidth, -20.0, -28.0, outerBandMaximumRejection);
+        break;
 
-    // other
-    default:
-      NS_FATAL_ERROR ("Standard unknown or non-OFDM");
-      break;
+      case WIFI_STANDARD_80211ac:
+        NS_ASSERT (m_band == WIFI_PHY_BAND_5GHZ);
+        NS_ASSERT (m_channelWidth == 20 || m_channelWidth == 40 || m_channelWidth == 80 || m_channelWidth == 160);
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, m_channelWidth, refTxPowerW, m_channelWidth, -20.0, -28.0, outerBandMaximumRejection);
+        break;
+
+      case WIFI_STANDARD_80211ax:
+        NS_ASSERT ((m_band != WIFI_PHY_BAND_2_4GHZ) || (m_channelWidth != 160)); // not enough space in 2.4 GHz bands
+        NS_ASSERT (m_channelWidth == 20 || m_channelWidth == 40 || m_channelWidth == 80 || m_channelWidth == 160);
+        m_actualSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (freq,
+                                                                                        m_channelWidth,
+                                                                                        refTxPowerW,
+                                                                                        m_channelWidth,
+                                                                                        -20.0,
+                                                                                        -28.0,
+                                                                                        outerBandMaximumRejection,
+                                                                                        m_puncturedSubchannels);
+        break;
+
+      default:
+        NS_FATAL_ERROR ("Standard unknown or non-OFDM");
+        break;
     }
 
   NS_LOG_INFO ("Build expected PSD");
-  for (uint32_t i = 0; i < maskRefs.size (); i = i + 2)
+  IndexPowerVect builtPsd;
+  for (uint32_t i = 0; i < m_expectedPsd.size (); i+= 2)
     {
-      InterpolateAndAppendValues (m_expectedPsd, maskRefs[i], maskRefs[i + 1], tol);
+      InterpolateAndAppendValues (builtPsd, m_expectedPsd[i], m_expectedPsd[i + 1], m_tolerance);
     }
-}
-
-WifiOfdmMaskSlopesTestCase::~WifiOfdmMaskSlopesTestCase ()
-{
+  m_expectedPsd = builtPsd;
 }
 
 void
 WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect,
                                                         IndexPowerPair start, IndexPowerPair stop,
-                                                        double tol)
+                                                        double tolerance)
 {
   NS_LOG_FUNCTION (start.first << start.second << stop.first << stop.second);
   NS_ASSERT (start.first <= stop.first);
@@ -187,7 +217,7 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect,
       NS_LOG_LOGIC ("Append (" << i << ", " << val << ")");
     }
   NS_ASSERT (vect.back ().first == stop.first
-             && TestDoubleIsEqual (vect.back ().second, stop.second, tol));
+             && TestDoubleIsEqual (vect.back ().second, stop.second, tolerance));
 }
 
 void
@@ -196,21 +226,20 @@ WifiOfdmMaskSlopesTestCase::DoRun (void)
   NS_LOG_FUNCTION (this);
   double currentPowerDbr = 0.0; //have to work in dBr so as to compare with expected slopes
   double maxPowerW = (*m_actualSpectrum)[0];
-  for (Values::const_iterator vit = m_actualSpectrum->ConstValuesBegin (); vit != m_actualSpectrum->ConstValuesEnd (); vit++)
+  for (auto&& vit = m_actualSpectrum->ConstValuesBegin (); vit != m_actualSpectrum->ConstValuesEnd (); ++vit)
     {
       maxPowerW = std::max (maxPowerW, *vit);
     }
 
   NS_LOG_INFO ("Compare expected PSD");
-  for (IndexPowerVect::const_iterator it = m_expectedPsd.begin (); it != m_expectedPsd.end (); it++)
+  for (const auto& [subcarrier, expectedValue] : m_expectedPsd)
     {
-      currentPowerDbr = 10.0 * std::log10 ((*m_actualSpectrum)[it->first] / maxPowerW);
-      NS_LOG_LOGIC ("For " << it->first << ", expected: " << it->second << " vs obtained: " << currentPowerDbr);
-      NS_TEST_EXPECT_MSG_EQ_TOL (currentPowerDbr, it->second, m_tolerance,
-                                 "Spectrum value mismatch for guard band (" << it->first << ")");
+      currentPowerDbr = 10.0 * std::log10 ((*m_actualSpectrum)[subcarrier] / maxPowerW);
+      NS_LOG_LOGIC ("For " << subcarrier << ", expected: " << expectedValue << " vs obtained: " << currentPowerDbr);
+      NS_TEST_EXPECT_MSG_EQ_TOL (currentPowerDbr, expectedValue, m_tolerance,
+                                 "Spectrum value mismatch for subcarrier " << subcarrier);
     }
 }
-
 
 
 /**
@@ -262,6 +291,8 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 5MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
                                                5, maskSlopes, tol),
                TestCase::QUICK);
+
+  // ============================================================================================
   // 11p 10MHz
   NS_LOG_FUNCTION ("Check slopes for 11p 10MHz");
   maskSlopes.clear ();
@@ -284,7 +315,6 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11p 10MHz", WIFI_STANDARD_80211p, WIFI_PHY_BAND_5GHZ,
                                                10, maskSlopes, tol),
                TestCase::QUICK);
-
 
   // ============================================================================================
   // 11a
@@ -310,13 +340,13 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11g
   NS_LOG_FUNCTION ("Check slopes for 11g");
-  // same slppes as 11g
+  // same slopes as 11a
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11g", WIFI_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ,
                                                20, maskSlopes, tol),
                TestCase::QUICK);
-
 
   // ============================================================================================
   // 11n 20MHz @ 2.4GHz
@@ -342,6 +372,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11n 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 20MHz @ 5GHz");
   maskSlopes.clear ();
@@ -365,6 +396,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11n 40MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 40MHz @ 2.4GHz");
   maskSlopes.clear ();
@@ -388,6 +420,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                40, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11n 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11n 40MHz @ 5GHz");
   maskSlopes.clear ();
@@ -410,7 +443,6 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11n_5GHz 40MHz", WIFI_STANDARD_80211n, WIFI_PHY_BAND_5GHZ,
                                                40, maskSlopes, tol),
                TestCase::QUICK);
-
 
   // ============================================================================================
   // 11ac 20MHz
@@ -436,6 +468,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ac 20MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 40MHz");
   maskSlopes.clear ();
@@ -459,6 +492,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                40, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ac 80MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 80MHz");
   maskSlopes.clear ();
@@ -483,6 +517,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ac 20MHz
   NS_LOG_FUNCTION ("Check slopes for 11ac 160MHz");
   maskSlopes.clear ();
@@ -536,6 +571,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 20MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 20MHz @ 5GHz");
   maskSlopes.clear ();
@@ -566,6 +602,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                20, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 40MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 40MHz @ 2.4GHz");
   maskSlopes.clear ();
@@ -595,6 +632,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                40, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 40MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 40MHz @ 5GHz");
   maskSlopes.clear ();
@@ -624,6 +662,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                40, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 2.4GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 2.4GHz");
   maskSlopes.clear ();
@@ -653,6 +692,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz");
   maskSlopes.clear ();
@@ -682,8 +722,10 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 160MHz @ 2.4GHz -> not enough space so skip
 
+  // ============================================================================================
   // 11ax 160MHz @ 5GHz
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz");
   maskSlopes.clear ();
@@ -721,6 +763,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                160, maskSlopes, tol),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 5GHz - first 20 MHz subchannel punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz with first 20 MHz subchannel punctured");
   maskSlopes.clear ();
@@ -752,6 +795,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol, {1, 0, 0, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 5GHz - second 20 MHz subchannel punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz with second 20 MHz subchannel punctured");
   maskSlopes.clear ();
@@ -787,6 +831,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol, {0, 1, 0, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 5GHz - third 20 MHz subchannel punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz with third 20 MHz subchannel punctured");
   maskSlopes.clear ();
@@ -822,6 +867,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol, {0, 0, 1, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 80MHz @ 5GHz - last 20 MHz subchannel punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 80MHz @ 5GHz with last 20 MHz subchannel punctured");
   maskSlopes.clear ();
@@ -853,6 +899,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                80, maskSlopes, tol, {0, 0, 0, 1}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 160MHz @ 5GHz - first two 20 MHz subchannels punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz with two first 20 MHz subchannels punctured");
   maskSlopes.clear ();
@@ -890,6 +937,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                160, maskSlopes, tol, {1, 1, 0, 0, 0, 0, 0, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 160MHz @ 5GHz - third and fourth 20 MHz subchannels punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz with third and fourth 20 MHz subchannels punctured");
   maskSlopes.clear ();
@@ -929,6 +977,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                160, maskSlopes, tol, {0, 0, 1, 1, 0, 0, 0, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 160MHz @ 5GHz - fifth and sixth 20 MHz subchannels punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz with fifth and sixth 20 MHz subchannels punctured");
   maskSlopes.clear ();
@@ -968,6 +1017,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
                                                160, maskSlopes, tol, {0, 0, 0, 0, 1, 1, 0, 0}),
                TestCase::QUICK);
 
+  // ============================================================================================
   // 11ax 160MHz @ 5GHz - last two 20 MHz subchannels punctured
   NS_LOG_FUNCTION ("Check slopes for 11ax 160MHz @ 5GHz with two last 20 MHz subchannels punctured");
   maskSlopes.clear ();
