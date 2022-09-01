@@ -625,6 +625,14 @@ be enabled/disabled through the attribute "ShadowingEnabled".
 Other scenario-related parameters can be configured through attributes of the
 derived classes.
 
+One other attribute, "EnforceParameterRanges", can be set to true if the
+model is configured with parameters that fall outside of the applicability
+range specified in TR38.901.  By default, the simulator will only warn
+(if logging is enabled) if a value is outside of the applicability range.
+If this parameter is set to true, the simulation will abort with an
+error message (instead of just logging a warning) if the applicability range
+is exceeded.
+
 **Implementation details**
 
 The method DoCalcRxPower computes the propagation loss considering the path loss
@@ -660,7 +668,7 @@ It is possible to configure some scenario-related parameters through the attribu
 As specified in the TR, the 2D distance between the transmitter and the receiver
 should be between 10 m and 10 km for the LOS case, or between 10 m and 5 km for
 the NLOS case, otherwise the model may not be accurate (a warning message is
-printed if the user has enabled logging on the model). Also, the height of the
+printed if the user has enabled logging on the model, or the simulation aborts, depending on whether "EnforceParameterRanges" is set to true). Also, the height of the
 base station (hBS) should be between 10 m and 150 m, while the height of the
 user terminal (hUT) should be between 1 m and 10 m.
 
@@ -673,7 +681,7 @@ between 0.5 and 100 GHz.
 
 As specified in the TR, the 2D distance between the transmitter and the receiver
 should be between 10 m and 5 km both for the LOS and NLOS cases, otherwise the model may not be
-accurate (a warning message is printed if the user has enabled logging on the model).
+accurate (a warning message is printed if the user has enabled logging on the model, or the simulation aborts, depending on whether "EnforceParameterRanges" is set to true).
 Also, the height of the base station (hBS) should be 25 m and the height of the
 user terminal (hUT) should be between 1.5 m and 22.5 m.
 
@@ -687,7 +695,7 @@ supports frequencies between 0.5 and 100 GHz.
 As specified in the TR, the 2D distance between the transmitter and the receiver
 should be between 10 m and 5 km both for the LOS and NLOS cases, otherwise the model may not be
 accurate (a warning message is printed if the user has enabled logging on
-the model). Also, the height of the base station (hBS) should be 10 m and the
+the model, or the simulation aborts, depending on whether "EnforceParameterRanges" is set to true). Also, the height of the base station (hBS) should be 10 m and the
 height of the user terminal (hUT) should be between 1.5 m and 10 m (the validity
 range is reduced because we assume that the height of the UT nodes is always
 lower that the height of the BS nodes).
@@ -702,7 +710,7 @@ frequencies between 0.5 and 100 GHz.
 As specified in the TR, the 3D distance between the transmitter and the receiver
 should be between 1 m and 150 m both for the LOS and NLOS cases, otherwise the
 model may not be accurate (a warning log message is printed if the user has
-enabled logging on the model).
+enabled logging on the model, or the simulation aborts, depending on whether "EnforceParameterRanges" is set to true).
 
 Testing
 ```````

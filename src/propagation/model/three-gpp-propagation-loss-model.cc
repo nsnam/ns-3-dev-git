@@ -58,6 +58,10 @@ ThreeGppPropagationLossModel::GetTypeId (void)
                    MakePointerAccessor (&ThreeGppPropagationLossModel::SetChannelConditionModel,
                                         &ThreeGppPropagationLossModel::GetChannelConditionModel),
                    MakePointerChecker<ChannelConditionModel> ())
+    .AddAttribute ("EnforceParameterRanges", "Whether to strictly enforce TR38.901 applicability ranges",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&ThreeGppPropagationLossModel::m_enforceRanges),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -339,11 +343,13 @@ ThreeGppRmaPropagationLossModel::GetLossLos (double distance2D, double distance3
   // check if hBS and hUT are within the specified validity range
   if (hUt < 1.0 || hUt > 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Rma UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1 and 10 m (see TR 38.901, Table 7.4.1-1)");
     }
 
   if (hBs < 10.0 || hBs > 150.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Rma BS height out of range");
       NS_LOG_WARN ("The height of the BS should be between 10 and 150 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -356,10 +362,12 @@ ThreeGppRmaPropagationLossModel::GetLossLos (double distance2D, double distance3
 
   double distanceBp = GetBpDistance (m_frequency, hBs, hUt);
   NS_LOG_DEBUG ("breakpoint distance " << distanceBp);
+  NS_ABORT_MSG_UNLESS (distanceBp > 0, "Breakpoint distance is zero (divide-by-zero below); are either hBs or hUt = 0?");
 
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 10.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Rma distance2D out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -390,11 +398,13 @@ ThreeGppRmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // check if hBs and hUt are within the validity range
   if (hUt < 1.0 || hUt > 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Rma UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1 and 10 m (see TR 38.901, Table 7.4.1-1)");
     }
 
   if (hBs < 10.0 || hBs > 150.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Rma BS height out of range");
       NS_LOG_WARN ("The height of the BS should be between 10 and 150 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -408,6 +418,7 @@ ThreeGppRmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "distance2D out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -569,11 +580,13 @@ ThreeGppUmaPropagationLossModel::GetLossLos (double distance2D, double distance3
   // check if hBS and hUT are within the validity range
   if (hUt < 1.5 || hUt > 22.5)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1.5 and 22.5 m (see TR 38.901, Table 7.4.1-1)");
     }
 
   if (hBs != 25.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma BS height out of range");
       NS_LOG_WARN ("The height of the BS should be equal to 25 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -591,6 +604,7 @@ ThreeGppUmaPropagationLossModel::GetLossLos (double distance2D, double distance3
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma 2D distance out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -620,11 +634,13 @@ ThreeGppUmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // check if hBS and hUT are within the vaalidity range
   if (hUt < 1.5 || hUt > 22.5)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1.5 and 22.5 m (see TR 38.901, Table 7.4.1-1)");
     }
 
   if (hBs != 25.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma BS height out of range");
       NS_LOG_WARN ("The height of the BS should be equal to 25 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -638,6 +654,7 @@ ThreeGppUmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "Uma 2D distance out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -757,11 +774,13 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossLos (double distance2D, doub
   // check if hBS and hUT are within the validity range
   if (hUt < 1.5 || hUt >= 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1.5 and 22.5 m (see TR 38.901, Table 7.4.1-1). We further assume hUT < hBS, then hUT is upper bounded by hBS, which should be 10 m");
     }
 
   if (hBs != 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon BS height out of range");
       NS_LOG_WARN ("The height of the BS should be equal to 10 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -779,6 +798,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossLos (double distance2D, doub
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon 2D distance out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -808,11 +828,13 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossNlos (double distance2D, dou
   // check if hBS and hUT are within the validity range
   if (hUt < 1.5 || hUt >= 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon UT height out of range");
       NS_LOG_WARN ("The height of the UT should be between 1.5 and 22.5 m (see TR 38.901, Table 7.4.1-1). We further assume hUT < hBS, then hUT is upper bounded by hBS, which should be 10 m");
     }
 
   if (hBs != 10.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon BS height out of range");
       NS_LOG_WARN ("The height of the BS should be equal to 10 m (see TR 38.901, Table 7.4.1-1)");
     }
 
@@ -826,6 +848,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossNlos (double distance2D, dou
   // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "UmiStreetCanyon 2D distance out of range");
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -952,6 +975,7 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossLos ([[maybe_unused]] double di
   // check if the distance is outside the validity range
   if (distance3D < 1.0 || distance3D > 150.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "IndoorOffice 3D distance out of range");
       NS_LOG_WARN ("The 3D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
@@ -971,6 +995,7 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossNlos (double distance2D, double
   // check if the distance is outside the validity range
   if (distance3D < 1.0 || distance3D > 150.0)
     {
+      NS_ABORT_MSG_IF (m_enforceRanges, "IndoorOffice 3D distance out of range");
       NS_LOG_WARN ("The 3D distance is outside the validity range, the pathloss value may not be accurate");
     }
 

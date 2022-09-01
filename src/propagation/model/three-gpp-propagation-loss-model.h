@@ -217,6 +217,7 @@ protected:
   Ptr<ChannelConditionModel> m_channelConditionModel; //!< pointer to the channel condition model
   double m_frequency; //!< operating frequency in Hz
   bool m_shadowingEnabled; //!< enable/disable shadowing
+  bool m_enforceRanges; //!< strictly enforce TR 38.901 parameter ranges
   Ptr<NormalRandomVariable> m_normRandomVariable; //!< normal random variable
 
   /** Define a struct for the m_shadowingMap entries */
