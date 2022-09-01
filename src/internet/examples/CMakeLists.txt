@@ -6,3 +6,13 @@ build_lib_example(
     ${libinternet}
     ${libapplications}
 )
+
+build_lib_example(
+  NAME neighbor-cache-example
+  SOURCE_FILES neighbor-cache-example.cc
+  LIBRARIES_TO_LINK
+    ${libapplications}
+    ${libcsma}
+    ${libinternet}
+    ${libnetwork}
+)

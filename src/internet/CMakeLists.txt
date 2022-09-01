@@ -12,6 +12,7 @@ set(source_files
     helper/ipv6-list-routing-helper.cc
     helper/ipv6-routing-helper.cc
     helper/ipv6-static-routing-helper.cc
+    helper/neighbor-cache-helper.cc
     helper/rip-helper.cc
     helper/ripng-helper.cc
     model/arp-cache.cc
@@ -143,6 +144,7 @@ set(header_files
     helper/ipv6-list-routing-helper.h
     helper/ipv6-routing-helper.h
     helper/ipv6-static-routing-helper.h
+    helper/neighbor-cache-helper.h
     helper/rip-helper.h
     helper/ripng-helper.h
     model/arp-cache.h
@@ -279,6 +281,7 @@ set(test_sources
     test/ipv6-raw-test.cc
     test/ipv6-ripng-test.cc
     test/ipv6-test.cc
+    test/neighbor-cache-test.cc
     test/rtt-test.cc
     test/tcp-advertised-window-test.cc
     test/tcp-bbr-test.cc
