@@ -43,7 +43,7 @@ include(${PROJECT_SOURCE_DIR}/build-support/3rd-party/colored-messages.cmake)
 # WSLv1 doesn't support tap features
 if(EXISTS "/proc/version")
   file(READ "/proc/version" CMAKE_LINUX_DISTRO)
-  string(FIND ${CMAKE_LINUX_DISTRO} "Microsoft" res)
+  string(FIND "${CMAKE_LINUX_DISTRO}" "Microsoft" res)
   if(res EQUAL -1)
     set(WSLv1 False)
   else()
