@@ -212,13 +212,12 @@ public:
   void ResetBa (Mac48Address recipient, uint8_t tid);
 
   /**
-   * \param packet packet to send.
-   * \param hdr header of packet to send.
+   * \param mpdu the given MPDU
    *
-   * Store the packet in the front of the internal queue until it
+   * Store the given MPDU in the front of the internal queue until it
    * can be sent safely.
    */
-  void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  void PushFront (Ptr<WifiMacQueueItem> mpdu);
 
   /**
    * Set threshold for block ack mechanism. If number of packets in the

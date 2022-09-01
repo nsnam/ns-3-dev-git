@@ -579,11 +579,10 @@ QosTxop::GetRemainingTxop (uint8_t linkId) const
 }
 
 void
-QosTxop::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+QosTxop::PushFront (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << &hdr);
-  WifiMacTrailer fcs;
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (packet, hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+
   if (!m_queue->PushFront (mpdu))
     {
       NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");

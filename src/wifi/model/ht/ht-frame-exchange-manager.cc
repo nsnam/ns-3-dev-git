@@ -239,10 +239,12 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
 
   CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
 
+  auto mpdu = Create<WifiMacQueueItem> (packet, hdr);
+
   //It is unclear which queue this frame should go into. For now we
   //bung it into the queue corresponding to the TID for which we are
   //establishing an agreement, and push it to the head.
-  m_mac->GetQosTxop (reqHdr->GetTid ())->PushFront (packet, hdr);
+  m_mac->GetQosTxop (reqHdr->GetTid ())->PushFront (mpdu);
 }
 
 uint16_t
