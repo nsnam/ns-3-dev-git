@@ -882,6 +882,30 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
     return operation;
 }
 
+EhtOperation
+ApWifiMac::GetEhtOperation(uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << +linkId);
+    NS_ASSERT(GetEhtSupported());
+    EhtOperation operation;
+    auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+
+    auto maxSpatialStream = GetWifiPhy(linkId)->GetMaxSupportedRxSpatialStreams();
+    for (const auto& sta : GetLink(linkId).staList)
+    {
+        if (remoteStationManager->GetEhtSupported(sta.second))
+        {
+            if (remoteStationManager->GetNumberOfSupportedStreams(sta.second) < maxSpatialStream)
+            {
+                maxSpatialStream = remoteStationManager->GetNumberOfSupportedStreams(sta.second);
+            }
+        }
+    }
+    operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+    operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+    return operation;
+}
+
 void
 ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
 {
@@ -938,6 +962,7 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     if (GetEhtSupported())
     {
         probe.SetEhtCapabilities(GetEhtCapabilities(linkId));
+        probe.SetEhtOperation(GetEhtOperation(linkId));
 
         if (GetNLinks() > 1)
         {
@@ -1037,6 +1062,7 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     if (GetEhtSupported())
     {
         assoc.SetEhtCapabilities(GetEhtCapabilities(linkId));
+        assoc.SetEhtOperation(GetEhtOperation(linkId));
     }
     return assoc;
 }
@@ -1355,6 +1381,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     if (GetEhtSupported())
     {
         beacon.SetEhtCapabilities(GetEhtCapabilities(linkId));
+        beacon.SetEhtOperation(GetEhtOperation(linkId));
 
         if (GetNLinks() > 1)
         {

@@ -42,6 +42,7 @@ class MultiLinkElement;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
+class EhtOperation;
 class CfParameterSet;
 class UniformRandomVariable;
 class MgtAssocRequestHeader;
@@ -411,6 +412,13 @@ class ApWifiMac : public WifiMac
      * \return the HE operation that we support
      */
     HeOperation GetHeOperation(uint8_t linkId) const;
+    /**
+     * Return the EHT operation of the current AP for the given link.
+     *
+     * \param linkId the ID of the given link
+     * \return the EHT operation that we support
+     */
+    EhtOperation GetEhtOperation(uint8_t linkId) const;
     /**
      * Return an instance of SupportedRates that contains all rates that we support
      * for the given link (including HT rates).
