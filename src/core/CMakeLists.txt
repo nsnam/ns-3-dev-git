@@ -225,7 +225,6 @@ set(header_files
     model/deprecated.h
     model/des-metrics.h
     model/double.h
-    model/empty.h
     model/enum.h
     model/event-id.h
     model/event-impl.h

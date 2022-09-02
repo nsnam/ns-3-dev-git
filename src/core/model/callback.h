@@ -24,7 +24,6 @@
 
 #include "ptr.h"
 #include "fatal-error.h"
-#include "empty.h"
 #include "attribute.h"
 #include "attribute-helper.h"
 #include "simple-ref-count.h"
