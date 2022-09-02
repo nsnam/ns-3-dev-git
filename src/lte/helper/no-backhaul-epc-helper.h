@@ -62,22 +62,22 @@ public:
    *  \return The object TypeId.
    */
   static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId () const;
-  virtual void DoDispose ();
+  TypeId GetInstanceTypeId () const override;
+  void DoDispose () override;
 
   // inherited from EpcHelper
-  virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds);
-  virtual void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi);
-  virtual void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
-  virtual void AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, std::vector<uint16_t> cellIds);
-  virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
-  virtual Ptr<Node> GetSgwNode () const;
-  virtual Ptr<Node> GetPgwNode () const;
-  virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
-  virtual Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices);
-  virtual Ipv4Address GetUeDefaultGatewayAddress ();
-  virtual Ipv6Address GetUeDefaultGatewayAddress6 ();
-  virtual int64_t AssignStreams (int64_t stream) override;
+  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds) override;
+  void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi) override;
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2) override;
+  void AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, std::vector<uint16_t> cellIds) override;
+  uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) override;
+  Ptr<Node> GetSgwNode () const override;
+  Ptr<Node> GetPgwNode () const override;
+  Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices) override;
+  Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices) override;
+  Ipv4Address GetUeDefaultGatewayAddress () override;
+  Ipv6Address GetUeDefaultGatewayAddress6 () override;
+  int64_t AssignStreams (int64_t stream) override;
 
 protected:
   /**
