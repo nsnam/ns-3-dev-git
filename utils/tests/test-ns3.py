@@ -2579,6 +2579,10 @@ def main():
                         action="store",
                         default=None,
                         type=str)
+    parser.add_argument("-rtn", "--resume-from-test-name",
+                        action="store",
+                        default=None,
+                        type=str)
     parser.add_argument("-q", "--quiet",
                         action="store_true",
                         default=False)
@@ -2600,6 +2604,16 @@ def main():
         tests_to_remove = set(tests) - set(tests_to_run)
         for test_to_remove in tests_to_remove:
             suite._tests.remove(tests[test_to_remove])
+
+    # Filter tests after a specific name (e.g. to restart from a failing test)
+    if args.resume_from_test_name:
+        # Generate a dictionary of test names and their objects
+        tests = dict(map(lambda x: (x._testMethodName, x), suite._tests))
+        keys = list(tests.keys())
+
+        while not args.resume_from_test_name in keys[0] and len(tests) > 0:
+                suite._tests.remove(tests[keys[0]])
+                keys.pop(0)
 
     # Before running, check if ns3rc exists and save it
     ns3rc_script_bak = ns3rc_script + ".bak"
