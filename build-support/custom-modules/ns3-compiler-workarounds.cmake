@@ -50,10 +50,9 @@ if(${MISSING_OSTREAM_NULLPTR_OPERATOR})
 endif()
 
 # Some compilers (e.g. GCC < 9.1 and Clang < 9) do not link
-# std::filesystem/std::experimental::filesystem by default.
-# If the sample program can be linked, it means it is
-# indeed linked by default. Otherwise, we link it manually.
-# https://en.cppreference.com/w/cpp/filesystem
+# std::filesystem/std::experimental::filesystem by default. If the sample
+# program can be linked, it means it is indeed linked by default. Otherwise, we
+# link it manually. https://en.cppreference.com/w/cpp/filesystem
 check_cxx_source_compiles(
   "
   # ifdef __cpp_lib_filesystem

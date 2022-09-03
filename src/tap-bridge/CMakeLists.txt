@@ -37,13 +37,10 @@ build_lib(
 add_definitions(
   -DTAP_CREATOR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/ns${NS3_VER}-tap-creator${build_profile_suffix}"
 )
-add_executable(
-  tap-creator
-  model/tap-creator.cc
-  model/tap-encode-decode.cc
-)
-set_runtime_outputdirectory(
-  tap-creator
-  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/
-  ""
+build_exec(
+  EXECNAME tap-creator
+  SOURCE_FILES model/tap-creator.cc
+               model/tap-encode-decode.cc
+  EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/
+  INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_LIBEXECDIR}/ns3
 )

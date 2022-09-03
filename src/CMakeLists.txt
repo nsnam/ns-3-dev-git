@@ -58,11 +58,8 @@ if(${NS3_STATIC})
   endif()
 
   target_link_libraries(
-    ${lib-ns3-static}
-    ${STATIC_LINK_FLAGS}
-    ${LIB_AS_NEEDED_PRE_STATIC}
-    ${ns3-external-static-libs}
-    ${LIB_AS_NEEDED_POST_STATIC}
+    ${lib-ns3-static} ${STATIC_LINK_FLAGS} ${LIB_AS_NEEDED_PRE_STATIC}
+    ${ns3-external-static-libs} ${LIB_AS_NEEDED_POST_STATIC}
   )
   if(${NS3_CLANG_TIMETRACE})
     add_dependencies(timeTraceReport ${lib-ns3-static})

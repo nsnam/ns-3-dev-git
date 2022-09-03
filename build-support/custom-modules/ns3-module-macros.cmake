@@ -315,36 +315,23 @@ function(build_lib_example)
     missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}"
   )
   if(NOT missing_dependencies)
-    # Create shared library with sources and headers
-    add_executable(
-      "${BLIB_EXAMPLE_NAME}" ${BLIB_EXAMPLE_SOURCE_FILES}
-                             ${BLIB_EXAMPLE_HEADER_FILES}
-    )
-
-    if(${NS3_STATIC})
-      target_link_libraries(
-        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
-      )
-    elseif(${NS3_MONOLIB})
-      target_link_libraries(
-        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
-        ${LIB_AS_NEEDED_POST}
-      )
-    else()
-      target_link_libraries(
-        ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_EXAMPLE_LIBNAME}}
-        ${BLIB_EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
-        ${LIB_AS_NEEDED_POST}
-      )
+    # Convert boolean into text to forward argument
+    if(${BLIB_EXAMPLE_IGNORE_PCH})
+      set(IGNORE_PCH IGNORE_PCH)
     endif()
-
-    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_EXAMPLE_IGNORE_PCH}))
-      target_precompile_headers(${BLIB_EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
-    endif()
-
-    set_runtime_outputdirectory(
-      ${BLIB_EXAMPLE_NAME} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/ ""
+    # Create executable with sources and headers
+    # cmake-format: off
+    build_exec(
+      EXECNAME ${BLIB_EXAMPLE_NAME}
+      SOURCE_FILES ${BLIB_EXAMPLE_SOURCE_FILES}
+      HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
+      LIBRARIES_TO_LINK
+        ${lib${BLIB_EXAMPLE_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
+        ${optional_visualizer_lib}
+      EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
+      ${IGNORE_PCH}
     )
+    # cmake-format: on
   endif()
 endfunction()
 

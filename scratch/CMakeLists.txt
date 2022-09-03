@@ -44,20 +44,12 @@ function(create_scratch source_files)
   string(REPLACE "${PROJECT_SOURCE_DIR}" "${CMAKE_OUTPUT_DIRECTORY}"
                  scratch_directory ${scratch_absolute_directory}
   )
-  add_executable(${target_prefix}${scratch_name} "${source_files}")
-  if(${NS3_STATIC})
-    target_link_libraries(
-      ${target_prefix}${scratch_name} ${LIB_AS_NEEDED_PRE_STATIC}
-      ${lib-ns3-static}
-    )
-  else()
-    target_link_libraries(
-      ${target_prefix}${scratch_name} ${LIB_AS_NEEDED_PRE} "${ns3-libs}" "${ns3-contrib-libs}"
-      "${ns3-external-libs}" ${LIB_AS_NEEDED_POST}
-    )
-  endif()
-  set_runtime_outputdirectory(
-    ${scratch_name} ${scratch_directory}/ ${target_prefix}
+  build_exec(
+          EXECNAME ${scratch_name}
+          EXECNAME_PREFIX ${target_prefix}
+          SOURCE_FILES "${source_files}"
+          LIBRARIES_TO_LINK "${ns3-libs}" "${ns3-contrib-libs}"
+          EXECUTABLE_DIRECTORY_PATH ${scratch_directory}/
   )
 endfunction()
 

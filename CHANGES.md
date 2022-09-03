@@ -49,6 +49,7 @@ Changes from ns-3.36 to ns-3.37
 * Replaced `./ns3 --check-config` with `./ns3 show config`.
 * Replaced `./ns3 --check-profile` with `./ns3 show profile`.
 * Replaced `./ns3 --check-version` with `./ns3 show version`.
+* Added the `build_exec` macro to declare new executables.
 
 ### Changed behavior
 

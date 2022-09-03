@@ -1,4 +1,16 @@
 additional_commands:
+    build_exec:
+        flags: [IGNORE_PCH]
+        kwargs:
+            EXECNAME : '1'
+            EXECNAME_PREFIX : '1'
+            EXECUTABLE_DIRECTORY_PATH : '1'
+            INSTALL_DIRECTORY_PATH : '1'
+            SOURCE_FILES : '*'
+            HEADER_FILES : '*'
+            LIBRARIES_TO_LINK : '*'
+            DEFINITIONS : '*'
+
     build_lib:
         flags: [IGNORE_PCH]
         kwargs:
@@ -19,6 +31,7 @@ additional_commands:
             LIBRARIES_TO_LINK : '*'
 
     build_example:
+        flags: [IGNORE_PCH]
         kwargs:
             NAME : '1'
             SOURCE_FILES : '*'

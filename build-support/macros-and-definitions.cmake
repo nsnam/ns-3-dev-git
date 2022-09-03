@@ -942,10 +942,10 @@ macro(process_options)
       # works on CMake 3.18 or newer > COMMAND ${CMAKE_COMMAND} -E cat
       # ${PROJECT_SOURCE_DIR}/testpy-output/*.command-line >
       # ${PROJECT_SOURCE_DIR}/doc/introspected-command-line.h
-      COMMAND ${cat_command}
-              ${CMAKE_BINARY_DIR}/introspected-command-line-preamble.h
-              ${PROJECT_SOURCE_DIR}/testpy-output/*.command-line
-              > ${PROJECT_SOURCE_DIR}/doc/introspected-command-line.h 2> NULL
+      COMMAND
+        ${cat_command} ${CMAKE_BINARY_DIR}/introspected-command-line-preamble.h
+        ${PROJECT_SOURCE_DIR}/testpy-output/*.command-line >
+        ${PROJECT_SOURCE_DIR}/doc/introspected-command-line.h 2> NULL
       DEPENDS run-introspected-command-line
     )
 
@@ -1260,6 +1260,10 @@ macro(process_options)
 endmacro()
 
 function(set_runtime_outputdirectory target_name output_directory target_prefix)
+  # Prevent duplicate '/' in EXECUTABLE_DIRECTORY_PATH, since it gets translated
+  # to doubled underlines and will cause the ns3 script to fail
+  string(REPLACE "//" "/" output_directory "${output_directory}")
+
   set(ns3-exec-outputname ns${NS3_VER}-${target_name}${build_profile_suffix})
   set(ns3-execs "${output_directory}${ns3-exec-outputname};${ns3-execs}"
       CACHE INTERNAL "list of c++ executables"
@@ -1308,6 +1312,73 @@ function(set_runtime_outputdirectory target_name output_directory target_prefix)
     add_dependencies(timeTraceReport ${target_prefix}${target_name})
   endif()
 endfunction(set_runtime_outputdirectory)
+
+function(build_exec)
+  # Argument parsing
+  set(options IGNORE_PCH)
+  set(oneValueArgs EXECNAME EXECNAME_PREFIX EXECUTABLE_DIRECTORY_PATH
+                   INSTALL_DIRECTORY_PATH
+  )
+  set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK DEFINITIONS)
+  cmake_parse_arguments(
+    "BEXEC" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+  )
+
+  add_executable(
+    ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} "${BEXEC_SOURCE_FILES}"
+  )
+
+  target_compile_definitions(
+    ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} PUBLIC ${BEXEC_DEFINITIONS}
+  )
+
+  if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BEXEC_IGNORE_PCH}))
+    target_precompile_headers(
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} REUSE_FROM stdlib_pch_exec
+    )
+  endif()
+
+  if(${NS3_STATIC})
+    target_link_libraries(
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${LIB_AS_NEEDED_PRE_STATIC}
+      ${lib-ns3-static}
+    )
+  elseif(${NS3_MONOLIB})
+    target_link_libraries(
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${LIB_AS_NEEDED_PRE}
+      ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
+    )
+  else()
+    target_link_libraries(
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${LIB_AS_NEEDED_PRE}
+      "${BEXEC_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
+    )
+  endif()
+
+  set_runtime_outputdirectory(
+    "${BEXEC_EXECNAME}" "${BEXEC_EXECUTABLE_DIRECTORY_PATH}/"
+    "${BEXEC_EXECNAME_PREFIX}"
+  )
+
+  if(BEXEC_INSTALL_DIRECTORY_PATH)
+    install(TARGETS ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME}
+            EXPORT ns3ExportTargets
+            RUNTIME DESTINATION ${BEXEC_INSTALL_DIRECTORY_PATH}
+    )
+    get_property(
+      filename TARGET ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME}
+      PROPERTY RUNTIME_OUTPUT_NAME
+    )
+    add_custom_target(
+      uninstall_${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME}
+      COMMAND
+        rm ${CMAKE_INSTALL_PREFIX}/${BEXEC_INSTALL_DIRECTORY_PATH}/${filename}
+    )
+    add_dependencies(
+      uninstall uninstall_${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME}
+    )
+  endif()
+endfunction(build_exec)
 
 function(scan_python_examples path)
   # Skip python examples search in case the bindings are disabled
@@ -1428,7 +1499,7 @@ include(build-support/custom-modules/ns3-contributions.cmake)
 
 # Macro to build examples in ns-3-dev/examples/
 macro(build_example)
-  set(options)
+  set(options IGNORE_PCH)
   set(oneValueArgs NAME)
   set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
   cmake_parse_arguments(
@@ -1440,36 +1511,22 @@ macro(build_example)
   )
 
   if(NOT missing_dependencies)
-    # Create shared library with sources and headers
-    add_executable(
-      ${EXAMPLE_NAME} "${EXAMPLE_SOURCE_FILES}" "${EXAMPLE_HEADER_FILES}"
-    )
-
-    if(${NS3_STATIC})
-      target_link_libraries(
-        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
-      )
-    elseif(${NS3_MONOLIB})
-      target_link_libraries(
-        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
-        ${LIB_AS_NEEDED_POST}
-      )
-    else()
-      # Link the shared library with the libraries passed
-      target_link_libraries(
-        ${EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${EXAMPLE_LIBRARIES_TO_LINK}
-        ${optional_visualizer_lib} ${LIB_AS_NEEDED_POST}
-      )
+    # Convert boolean into text to forward argument
+    if(${EXAMPLE_IGNORE_PCH})
+      set(IGNORE_PCH IGNORE_PCH)
     endif()
-
-    if(${PRECOMPILE_HEADERS_ENABLED})
-      target_precompile_headers(${EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
-    endif()
-
-    set_runtime_outputdirectory(
-      ${EXAMPLE_NAME}
-      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/ ""
+    # Create example library with sources and headers
+    # cmake-format: off
+    build_exec(
+      EXECNAME ${EXAMPLE_NAME}
+      SOURCE_FILES ${EXAMPLE_SOURCE_FILES}
+      HEADER_FILES ${EXAMPLE_HEADER_FILES}
+      LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
+      EXECUTABLE_DIRECTORY_PATH
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/
+      ${IGNORE_PCH}
     )
+    # cmake-format: on
   endif()
 endmacro()
 
