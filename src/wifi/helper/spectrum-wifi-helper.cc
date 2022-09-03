@@ -27,6 +27,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/names.h"
 #include "ns3/preamble-detection-model.h"
+#include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/wifi-net-device.h"
 

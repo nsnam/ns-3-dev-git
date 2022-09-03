@@ -63,6 +63,13 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     void StartRx(Ptr<SpectrumSignalParameters> params) override;
 
     /**
+     * Get the spectrum channel this interface is attached to
+     *
+     * \return the spectrum channel this interface is attached to
+     */
+    Ptr<SpectrumChannel> GetChannel() const;
+
+    /**
      * Start transmission over the spectrum channel
      *
      * \param params the parameters of the signal to transmit

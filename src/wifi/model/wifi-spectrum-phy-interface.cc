@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/net-device.h"
+#include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-value.h"
 
 NS_LOG_COMPONENT_DEFINE("WifiSpectrumPhyInterface");
@@ -99,6 +100,12 @@ WifiSpectrumPhyInterface::SetRxSpectrumModel(Ptr<const SpectrumModel> rxSpectrum
 {
     NS_LOG_FUNCTION(this << rxSpectrumModel);
     m_rxSpectrumModel = rxSpectrumModel;
+}
+
+Ptr<SpectrumChannel>
+WifiSpectrumPhyInterface::GetChannel() const
+{
+    return m_channel;
 }
 
 Ptr<const SpectrumModel>

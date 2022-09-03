@@ -35,6 +35,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
+#include "ns3/spectrum-channel.h"
 #include "ns3/wifi-net-device.h"
 
 namespace ns3
@@ -83,6 +84,8 @@ SpectrumWifiPhy::GetTypeId()
 }
 
 SpectrumWifiPhy::SpectrumWifiPhy()
+    : m_spectrumPhyInterfaces{},
+      m_currentSpectrumPhyInterface{nullptr}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -96,8 +99,8 @@ void
 SpectrumWifiPhy::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_channel = nullptr;
-    m_wifiSpectrumPhyInterface = nullptr;
+    m_spectrumPhyInterfaces.clear();
+    m_currentSpectrumPhyInterface = nullptr;
     m_antenna = nullptr;
     m_ruBands.clear();
     WifiPhy::DoDispose();
@@ -114,7 +117,7 @@ void
 SpectrumWifiPhy::UpdateInterferenceHelperBands()
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT(m_wifiSpectrumPhyInterface);
+    NS_ASSERT(!m_spectrumPhyInterfaces.empty());
     uint16_t channelWidth = GetChannelWidth();
     m_interference->RemoveBands();
     if (channelWidth < 20)
@@ -188,20 +191,22 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands()
 Ptr<Channel>
 SpectrumWifiPhy::GetChannel() const
 {
-    return m_channel;
+    NS_ABORT_IF(!m_currentSpectrumPhyInterface);
+    return m_currentSpectrumPhyInterface->GetChannel();
 }
 
 void
 SpectrumWifiPhy::SetChannel(const Ptr<SpectrumChannel> channel)
 {
-    m_channel = channel;
-    m_wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
-    m_wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
-    m_wifiSpectrumPhyInterface->SetChannel(m_channel);
+    NS_LOG_FUNCTION(this << channel);
+    auto wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
+    wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
+    wifiSpectrumPhyInterface->SetChannel(channel);
     if (GetDevice())
     {
-        m_wifiSpectrumPhyInterface->SetDevice(GetDevice());
+        wifiSpectrumPhyInterface->SetDevice(GetDevice());
     }
+    m_spectrumPhyInterfaces.insert({WHOLE_WIFI_SPECTRUM, wifiSpectrumPhyInterface});
 }
 
 void
@@ -209,19 +214,13 @@ SpectrumWifiPhy::ResetSpectrumModel()
 {
     NS_LOG_FUNCTION(this);
 
-    const uint16_t frequency = GetFrequency();
-    const uint16_t channelWidth = GetChannelWidth();
-    NS_LOG_DEBUG("Run-time change of spectrum model to frequency/width pair of ("
-                 << frequency << ", " << channelWidth << ")");
-
     // Replace existing spectrum model with new one
-    NS_ASSERT(m_wifiSpectrumPhyInterface);
-    m_wifiSpectrumPhyInterface->SetRxSpectrumModel(
-        WifiSpectrumValueHelper::GetSpectrumModel(frequency,
+    const auto channelWidth = GetChannelWidth();
+    m_currentSpectrumPhyInterface->SetRxSpectrumModel(
+        WifiSpectrumValueHelper::GetSpectrumModel(GetFrequency(),
                                                   channelWidth,
                                                   GetBandBandwidth(),
                                                   GetGuardBandwidth(channelWidth)));
-
     UpdateInterferenceHelperBands();
 }
 
@@ -229,13 +228,44 @@ void
 SpectrumWifiPhy::DoChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
+    const auto frequencyBefore = GetOperatingChannel().IsSet() ? GetFrequency() : 0;
+    const auto widthBefore = GetOperatingChannel().IsSet() ? GetChannelWidth() : 0;
     WifiPhy::DoChannelSwitch();
-    if (m_wifiSpectrumPhyInterface)
+    const auto frequencyAfter = GetFrequency();
+    const auto widthAfter = GetChannelWidth();
+    if ((frequencyBefore == frequencyAfter) && (widthBefore == widthAfter))
     {
-        m_channel->RemoveRx(m_wifiSpectrumPhyInterface);
+        NS_LOG_DEBUG("Same RF channel as before, do nothing");
+        return;
     }
+
+    auto newSpectrumPhyInterface = GetInterfaceCoveringChannelBand(frequencyAfter, widthAfter);
+
+    NS_ABORT_MSG_IF(!newSpectrumPhyInterface,
+                    "No spectrum channel covers frequency range ["
+                        << frequencyAfter - (widthAfter / 2) << " MHz - "
+                        << frequencyAfter + (widthAfter / 2) << " MHz]");
+
+    if (newSpectrumPhyInterface != m_currentSpectrumPhyInterface)
+    {
+        NS_LOG_DEBUG("Switch to existing RF interface with frequency/width pair of ("
+                     << frequencyAfter << ", " << widthAfter << ")");
+        if (m_currentSpectrumPhyInterface)
+        {
+            m_currentSpectrumPhyInterface->GetChannel()->RemoveRx(m_currentSpectrumPhyInterface);
+        }
+    }
+
+    // We have to reset the spectrum model because we changed RF channel. Consequently,
+    // we also have to add the spectrum interface to the spectrum channel again because
+    // MultiModelSpectrumChannel keeps spectrum interfaces in a map indexed by the RX
+    // spectrum model UID (which has changed after channel switching).
+    // Both SingleModelSpectrumChannel and MultiModelSpectrumChannel ensure not to keep
+    // duplicated spectrum interfaces (the latter removes the spectrum interface and adds
+    // it again in the entry associated with the new RX spectrum model UID)
+    m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
     ResetSpectrumModel();
-    m_channel->AddRx(m_wifiSpectrumPhyInterface);
+    m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
 }
 
 bool
@@ -411,10 +441,11 @@ SpectrumWifiPhy::SetAntenna(const Ptr<AntennaModel> a)
 void
 SpectrumWifiPhy::SetDevice(const Ptr<WifiNetDevice> device)
 {
+    NS_LOG_FUNCTION(this << device);
     WifiPhy::SetDevice(device);
-    if (m_wifiSpectrumPhyInterface)
+    for (auto& spectrumPhyInterface : m_spectrumPhyInterfaces)
     {
-        m_wifiSpectrumPhyInterface->SetDevice(device);
+        spectrumPhyInterface.second->SetDevice(device);
     }
 }
 
@@ -429,7 +460,8 @@ void
 SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
 {
     NS_LOG_FUNCTION(this << txParams);
-    m_wifiSpectrumPhyInterface->StartTx(txParams);
+    NS_ABORT_IF(!m_currentSpectrumPhyInterface);
+    m_currentSpectrumPhyInterface->StartTx(txParams);
 }
 
 uint32_t
@@ -503,8 +535,8 @@ SpectrumWifiPhy::GetBand(uint16_t bandWidth, uint8_t bandIndex)
     {
         numBandsInChannel += 1; // symmetry around center frequency
     }
-    NS_ASSERT(m_wifiSpectrumPhyInterface);
-    size_t totalNumBands = m_wifiSpectrumPhyInterface->GetRxSpectrumModel()->GetNumBands();
+    NS_ABORT_IF(!m_currentSpectrumPhyInterface);
+    size_t totalNumBands = m_currentSpectrumPhyInterface->GetRxSpectrumModel()->GetNumBands();
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
     NS_ASSERT_MSG((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
@@ -562,6 +594,24 @@ SpectrumWifiPhy::GetTxMaskRejectionParams() const
     return std::make_tuple(m_txMaskInnerBandMinimumRejection,
                            m_txMaskOuterBandMinimumRejection,
                            m_txMaskOuterBandMaximumRejection);
+}
+
+Ptr<WifiSpectrumPhyInterface>
+SpectrumWifiPhy::GetInterfaceCoveringChannelBand(uint16_t frequency, uint16_t width) const
+{
+    const auto lowFreq = frequency - (width / 2);
+    const auto highFreq = frequency + (width / 2);
+    const auto it = std::find_if(m_spectrumPhyInterfaces.cbegin(),
+                                 m_spectrumPhyInterfaces.cend(),
+                                 [lowFreq, highFreq](const auto& item) {
+                                     return ((lowFreq >= item.first.minFrequency) &&
+                                             (highFreq <= item.first.maxFrequency));
+                                 });
+    if (it == std::end(m_spectrumPhyInterfaces))
+    {
+        return nullptr;
+    }
+    return it->second;
 }
 
 } // namespace ns3

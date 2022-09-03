@@ -501,6 +501,8 @@ class WifiPhy : public Object
 
     /**
      * Configure the PHY-level parameters for different Wi-Fi standard.
+     * Note that, in case a Spectrum PHY is used, this method must be called after adding
+     * a spectrum channel covering the operating channel bandwidth.
      *
      * \param standard the Wi-Fi standard
      */
@@ -875,6 +877,10 @@ class WifiPhy : public Object
      * schedule another call to this method when channel switch can be performed.
      * Otherwise, set the operating channel based on the given channel settings and
      * call ConfigureStandard if the PHY band has changed.
+     *
+     * Note that, in case a Spectrum PHY is used, a spectrum channel covering the
+     * operating channel bandwidth must have been already added when actually setting
+     * the operating channel.
      *
      * \param channelTuple the given channel settings
      */

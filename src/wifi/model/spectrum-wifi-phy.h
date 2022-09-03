@@ -28,7 +28,6 @@
 #include "wifi-phy.h"
 
 #include "ns3/antenna-model.h"
-#include "ns3/spectrum-channel.h"
 
 #include <map>
 
@@ -37,6 +36,8 @@ class SpectrumWifiPhyFilterTest;
 namespace ns3
 {
 
+class SpectrumChannel;
+struct SpectrumSignalParameters;
 class WifiSpectrumPhyInterface;
 struct WifiSpectrumSignalParameters;
 
@@ -160,6 +161,13 @@ class SpectrumWifiPhy : public WifiPhy
      */
     WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
 
+    std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>
+        m_spectrumPhyInterfaces; //!< Spectrum PHY interfaces
+
+    Ptr<WifiSpectrumPhyInterface>
+        m_currentSpectrumPhyInterface; //!< The current Spectrum PHY interface (held for performance
+                                       //!< reasons)
+
   private:
     /**
      * \param bandWidth the width (MHz) of the band used for the OFDMA transmission. Must be
@@ -197,10 +205,17 @@ class SpectrumWifiPhy : public WifiPhy
      */
     bool CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const;
 
-    Ptr<SpectrumChannel> m_channel; //!< SpectrumChannel that this SpectrumWifiPhy is connected to
+    /**
+     * Get the spectrum PHY interface that covers a band portion of the RF channel
+     *
+     * \param frequency the center frequency in MHz of the RF channel band
+     * \param width the width in MHz of the RF channel band
+     * \return the spectrum PHY interface that covers the indicated band of the RF channel
+     */
+    Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(uint16_t frequency,
+                                                                  uint16_t width) const;
 
-    Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum PHY interface
-    Ptr<AntennaModel> m_antenna;                              //!< antenna model
+    Ptr<AntennaModel> m_antenna; //!< antenna model
 
     /// Map a spectrum band associated with an RU to the RU specification
     typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;
