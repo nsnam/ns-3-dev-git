@@ -99,6 +99,11 @@ function(pkgconfig_module libname)
 
   # Set file to be installed
   install(FILES ${pkgconfig_file} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+  add_custom_target(
+    uninstall_pkgconfig_${module_name}
+    COMMAND rm ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig/ns3-${module_name}.pc
+  )
+  add_dependencies(uninstall uninstall_pkgconfig_${module_name})
 endfunction()
 
 function(ns3_cmake_package)
