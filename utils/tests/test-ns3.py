@@ -1797,9 +1797,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         targets = {"scratch/scratch-simulator": "scratch-simulator",
                    "scratch/scratch-simulator.cc": "scratch-simulator",
                    "scratch-simulator": "scratch-simulator",
-                   "scratch/subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
-                   "subdir/scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
-                   "scratch-simulator-subdir": "subdir_scratch-simulator-subdir",
+                   "scratch/subdir/scratch-subdir": "subdir_scratch-subdir",
+                   "subdir/scratch-subdir": "subdir_scratch-subdir",
+                   "scratch-subdir": "subdir_scratch-subdir",
                    }
         for (target_to_run, target_cmake) in targets.items():
             # Test if build is working.
