@@ -154,6 +154,7 @@ ReducedNeighborReport::SetOperatingChannel (std::size_t nbrApInfoId,
         }
       break;
     case WIFI_PHY_BAND_UNSPECIFIED:
+    default:
       NS_ABORT_MSG ("The provided channel has an unspecified PHY band");
       break;
     }
@@ -177,6 +178,7 @@ ReducedNeighborReport::SetOperatingChannel (std::size_t nbrApInfoId,
       startingFreq = 5940;
       break;
     case WIFI_PHY_BAND_UNSPECIFIED:
+    default:
       NS_ABORT_MSG ("The provided channel has an unspecified PHY band");
       break;
     }
@@ -263,6 +265,7 @@ ReducedNeighborReport::GetOperatingChannel (std::size_t nbrApInfoId) const
       startingFreq = 5940;
       break;
     case WIFI_PHY_BAND_UNSPECIFIED:
+    default:
       NS_ABORT_MSG ("Unspecified band");
       break;
     }
