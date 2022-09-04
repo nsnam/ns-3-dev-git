@@ -45,33 +45,38 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     SpectrumWifiPhyHelper(uint8_t nLinks = 1);
 
     /**
-     * \param channel the channel to associate to this helper
+     * \param channel the default spectrum channel to associate to this helper
      *
-     * Every PHY created by a call to Install is associated to this channel.
+     * Every PHY created by a call to Install is associated to this default spectrum channel.
      */
-    void SetChannel(Ptr<SpectrumChannel> channel);
+    void SetChannel(const Ptr<SpectrumChannel> channel);
     /**
-     * \param channelName The name of the channel to associate to this helper
+     * \param channelName The name of the default spectrum channel to associate to this helper
      *
-     * Every PHY created by a call to Install is associated to this channel.
+     * Every PHY created by a call to Install is associated to this default spectrum channel.
      */
-    void SetChannel(std::string channelName);
+    void SetChannel(const std::string& channelName);
+
     /**
-     * \param channel the channel to associate to this helper
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
+     * \param channel the spectrum channel to add to this helper
+     * \param freqRange the frequency range, bounded by a minFrequency and a maxFrequency in MHz
      *
-     * The PHY associated with the given link and created by a call to Install
-     * is associated to this channel.
+     * Every PHY created by a call to Install is added to this spectrum channel.
+     * If a PHY is requested to operate or scan a channel with the specified frequency and width
+     * combination, it will activate that channel and deactivate the current channel for that PHY.
      */
-    void SetChannel(uint8_t linkId, Ptr<SpectrumChannel> channel);
+    void AddChannel(const Ptr<SpectrumChannel> channel,
+                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
     /**
-     * \param channelName The name of the channel to associate to this helper
-     * \param linkId ID of the link to configure (>0 only for 11be devices)
+     * \param channelName The name of the spectrum channel to add to this helper
+     * \param freqRange the frequency range, bounded by a minFrequency and a maxFrequency in MHz
      *
-     * The PHY associated with the given link and created by a call to Install
-     * is associated to this channel.
+     * Every PHY created by a call to Install is added to this spectrum channel.
+     * If a PHY is requested to operate or scan a channel with the specified frequency and width
+     * combination, it will activate that channel and deactivate the current channel for that PHY.
      */
-    void SetChannel(uint8_t linkId, std::string channelName);
+    void AddChannel(const std::string& channelName,
+                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
 
   private:
     /**
@@ -83,7 +88,7 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
      */
     std::vector<Ptr<WifiPhy>> Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
 
-    std::vector<Ptr<SpectrumChannel>> m_channels; ///< the channels
+    std::map<FrequencyRange, Ptr<SpectrumChannel>> m_channels; ///< the spectrum channels
 };
 
 } // namespace ns3

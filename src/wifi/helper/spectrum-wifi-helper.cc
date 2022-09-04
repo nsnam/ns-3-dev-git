@@ -30,6 +30,7 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 
 namespace ns3
 {
@@ -44,41 +45,35 @@ SpectrumWifiPhyHelper::SpectrumWifiPhyHelper(uint8_t nLinks)
     {
         phy.SetTypeId("ns3::SpectrumWifiPhy");
     }
-    m_channels.resize(m_phy.size());
     SetInterferenceHelper("ns3::InterferenceHelper");
     SetErrorRateModel("ns3::TableBasedErrorRateModel");
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel(Ptr<SpectrumChannel> channel)
+SpectrumWifiPhyHelper::SetChannel(const Ptr<SpectrumChannel> channel)
 {
-    for (auto& ch : m_channels)
-    {
-        ch = channel;
-    }
+    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel(std::string channelName)
+SpectrumWifiPhyHelper::SetChannel(const std::string& channelName)
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
-    for (auto& ch : m_channels)
-    {
-        ch = channel;
-    }
+    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel(uint8_t linkId, Ptr<SpectrumChannel> channel)
+SpectrumWifiPhyHelper::AddChannel(const Ptr<SpectrumChannel> channel,
+                                  const FrequencyRange& freqRange)
 {
-    m_channels.at(linkId) = channel;
+    m_channels[freqRange] = channel;
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel(uint8_t linkId, std::string channelName)
+SpectrumWifiPhyHelper::AddChannel(const std::string& channelName, const FrequencyRange& freqRange)
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
-    m_channels.at(linkId) = channel;
+    AddChannel(channel, freqRange);
 }
 
 std::vector<Ptr<WifiPhy>>
@@ -104,7 +99,10 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
                 m_preambleDetectionModel.at(i).Create<PreambleDetectionModel>();
             phy->SetPreambleDetectionModel(preambleDetection);
         }
-        phy->AddChannel(m_channels.at(i));
+        for (const auto& [freqRange, channel] : m_channels)
+        {
+            phy->AddChannel(channel, freqRange);
+        }
         phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);
