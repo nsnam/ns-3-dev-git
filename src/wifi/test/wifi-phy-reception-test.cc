@@ -182,7 +182,7 @@ WifiPhyReceptionTest::DoSetup()
     Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
     m_phy->SetErrorRateModel(error);
     m_phy->SetDevice(dev);
-    m_phy->SetChannel(spectrumChannel);
+    m_phy->AddChannel(spectrumChannel);
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
     dev->SetPhy(m_phy);
@@ -4418,7 +4418,7 @@ TestUnsupportedBandwidthReception::DoSetup()
     auto rxErrorRateModel = CreateObject<NistErrorRateModel>();
     m_rxPhy->SetErrorRateModel(rxErrorRateModel);
     m_rxPhy->SetDevice(dev);
-    m_rxPhy->SetChannel(spectrumChannel);
+    m_rxPhy->AddChannel(spectrumChannel);
     m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     dev->SetPhy(m_rxPhy);
     node->AddDevice(dev);
@@ -4436,7 +4436,7 @@ TestUnsupportedBandwidthReception::DoSetup()
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
     auto txErrorRateModel = CreateObject<NistErrorRateModel>();
     m_txPhy->SetErrorRateModel(txErrorRateModel);
-    m_txPhy->SetChannel(spectrumChannel);
+    m_txPhy->AddChannel(spectrumChannel);
     m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
 }
 
@@ -4570,7 +4570,7 @@ TestPrimary20CoveredByPpdu::DoSetup()
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
     auto rxErrorRateModel = CreateObject<NistErrorRateModel>();
     m_rxPhy->SetErrorRateModel(rxErrorRateModel);
-    m_rxPhy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
+    m_rxPhy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
     m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
 
     m_txPhy = CreateObject<SpectrumWifiPhy>();
@@ -4578,7 +4578,7 @@ TestPrimary20CoveredByPpdu::DoSetup()
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
     auto txErrorRateModel = CreateObject<NistErrorRateModel>();
     m_txPhy->SetErrorRateModel(txErrorRateModel);
-    m_txPhy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
+    m_txPhy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
     m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
 }
 

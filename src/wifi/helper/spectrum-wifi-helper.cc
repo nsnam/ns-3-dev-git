@@ -104,7 +104,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
                 m_preambleDetectionModel.at(i).Create<PreambleDetectionModel>();
             phy->SetPreambleDetectionModel(preambleDetection);
         }
-        phy->SetChannel(m_channels.at(i));
+        phy->AddChannel(m_channels.at(i));
         phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);

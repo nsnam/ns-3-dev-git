@@ -623,7 +623,7 @@ ChannelAccessManagerTest<TxopType>::StartTest(uint64_t slotTime,
     // to initialize
     m_phy = CreateObject<SpectrumWifiPhy>();
     m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
-    m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
+    m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_UNSPECIFIED, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211ac); // required to use 160 MHz channels
     m_ChannelAccessManager->SetupPhyListener(m_phy);
@@ -1500,7 +1500,7 @@ LargestIdlePrimaryChannelTest::DoRun()
                 // create a new PHY operating on a channel of the current width
                 m_phy = CreateObject<SpectrumWifiPhy>();
                 m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
-                m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
+                m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
                 m_phy->SetOperatingChannel(
                     WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_5GHZ, 0});
                 m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);

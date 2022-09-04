@@ -196,9 +196,24 @@ SpectrumWifiPhy::GetChannel() const
 }
 
 void
-SpectrumWifiPhy::SetChannel(const Ptr<SpectrumChannel> channel)
+SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyRange& freqRange)
 {
-    NS_LOG_FUNCTION(this << channel);
+    NS_LOG_FUNCTION(this << channel << freqRange);
+
+    const auto foundOverlappingChannel =
+        std::any_of(m_spectrumPhyInterfaces.cbegin(),
+                    m_spectrumPhyInterfaces.cend(),
+                    [freqRange, channel](const auto& item) {
+                        const auto spectrumRange = item.first;
+                        const auto noOverlap =
+                            ((freqRange.minFrequency >= spectrumRange.maxFrequency) ||
+                             (freqRange.maxFrequency <= spectrumRange.minFrequency));
+                        return (!noOverlap);
+                    });
+    NS_ABORT_MSG_IF(foundOverlappingChannel,
+                    "Added a wifi spectrum channel that overlaps with another existing wifi "
+                    "spectrum channel");
+
     auto wifiSpectrumPhyInterface = CreateObject<WifiSpectrumPhyInterface>();
     wifiSpectrumPhyInterface->SetSpectrumWifiPhy(this);
     wifiSpectrumPhyInterface->SetChannel(channel);
@@ -206,7 +221,7 @@ SpectrumWifiPhy::SetChannel(const Ptr<SpectrumChannel> channel)
     {
         wifiSpectrumPhyInterface->SetDevice(GetDevice());
     }
-    m_spectrumPhyInterfaces.insert({WHOLE_WIFI_SPECTRUM, wifiSpectrumPhyInterface});
+    m_spectrumPhyInterfaces.emplace(freqRange, wifiSpectrumPhyInterface);
 }
 
 void

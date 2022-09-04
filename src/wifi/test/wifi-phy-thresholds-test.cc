@@ -265,7 +265,7 @@ WifiPhyThresholdsTest::DoSetup()
     Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
     m_phy->SetErrorRateModel(error);
     m_phy->SetDevice(dev);
-    m_phy->SetChannel(spectrumChannel);
+    m_phy->AddChannel(spectrumChannel);
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{CHANNEL_NUMBER, 0, WIFI_PHY_BAND_5GHZ, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phy->SetReceiveOkCallback(MakeCallback(&WifiPhyThresholdsTest::RxSuccess, this));

@@ -430,7 +430,7 @@ TestNonHtDuplicatePhyReception::DoSetup()
     auto apErrorModel = CreateObject<NistErrorRateModel>();
     m_phyAp->SetErrorRateModel(apErrorModel);
     m_phyAp->SetDevice(apDev);
-    m_phyAp->SetChannel(spectrumChannel);
+    m_phyAp->AddChannel(spectrumChannel);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     auto apMobility = CreateObject<ConstantPositionMobilityModel>();
     m_phyAp->SetMobility(apMobility);
@@ -448,7 +448,7 @@ TestNonHtDuplicatePhyReception::DoSetup()
         auto sta1ErrorModel = CreateObject<NistErrorRateModel>();
         staPhy->SetErrorRateModel(sta1ErrorModel);
         staPhy->SetDevice(staDev);
-        staPhy->SetChannel(spectrumChannel);
+        staPhy->AddChannel(spectrumChannel);
         staPhy->ConfigureStandard(std::get<0>(staParams));
         staPhy->SetReceiveOkCallback(
             MakeCallback(&TestNonHtDuplicatePhyReception::RxSuccess, this).Bind(m_phyStas.size()));
@@ -803,7 +803,7 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
     auto apErrorModel = CreateObject<NistErrorRateModel>();
     m_phyAp->SetErrorRateModel(apErrorModel);
     m_phyAp->SetDevice(apDev);
-    m_phyAp->SetChannel(spectrumChannel);
+    m_phyAp->AddChannel(spectrumChannel);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phyAp->AssignStreams(streamNumber);
 
@@ -837,7 +837,7 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         auto staErrorModel = CreateObject<NistErrorRateModel>();
         phySta->SetErrorRateModel(staErrorModel);
         phySta->SetDevice(staDev);
-        phySta->SetChannel(spectrumChannel);
+        phySta->AddChannel(spectrumChannel);
         phySta->ConfigureStandard(WIFI_STANDARD_80211ax);
         phySta->AssignStreams(streamNumber);
         phySta->SetTxPowerStart(m_stasTxPowerDbm);

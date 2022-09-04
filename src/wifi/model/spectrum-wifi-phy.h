@@ -76,11 +76,13 @@ class SpectrumWifiPhy : public WifiPhy
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
 
     /**
-     * Set the SpectrumChannel this SpectrumWifiPhy is to be connected to.
+     * Attach a SpectrumChannel to use for a given frequency range.
      *
-     * \param channel the SpectrumChannel this SpectrumWifiPhy is to be connected to
+     * \param channel the SpectrumChannel to attach
+     * \param freqRange the frequency range, bounded by a minFrequency and a maxFrequency in MHz
      */
-    void SetChannel(const Ptr<SpectrumChannel> channel);
+    void AddChannel(const Ptr<SpectrumChannel> channel,
+                    const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
 
     /**
      * Input method for delivering a signal from the spectrum channel

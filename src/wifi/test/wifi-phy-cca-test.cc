@@ -244,7 +244,7 @@ WifiPhyCcaThresholdsTest::DoSetup()
     m_phy->SetDevice(m_device);
     m_device->SetPhy(m_phy);
     m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
-    m_phy->SetChannel(CreateObject<MultiModelSpectrumChannel>());
+    m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
 
     auto channelNum = std::get<0>(
         *WifiPhyOperatingChannel::FindFirst(0, 0, 160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ));
@@ -1026,7 +1026,7 @@ WifiPhyCcaIndicationTest::DoSetup()
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
     m_rxPhy->SetPreambleDetectionModel(preambleDetectionModel);
-    m_rxPhy->SetChannel(spectrumChannel);
+    m_rxPhy->AddChannel(spectrumChannel);
     m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_rxPhy->SetDevice(rxDev);
     rxDev->SetPhy(m_rxPhy);
@@ -1040,7 +1040,7 @@ WifiPhyCcaIndicationTest::DoSetup()
     m_txPhy->SetInterferenceHelper(txInterferenceHelper);
     Ptr<ErrorRateModel> txErrorModel = CreateObject<NistErrorRateModel>();
     m_txPhy->SetErrorRateModel(txErrorModel);
-    m_txPhy->SetChannel(spectrumChannel);
+    m_txPhy->AddChannel(spectrumChannel);
     m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_txPhy->SetDevice(txDev);
     txDev->SetPhy(m_txPhy);

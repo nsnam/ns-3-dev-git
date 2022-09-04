@@ -263,9 +263,9 @@ InterferenceExperiment::Run(struct InterferenceExperiment::Input input)
     rx->SetInterferenceHelper(interferenceRx);
     Ptr<ErrorRateModel> errorRx = CreateObject<NistErrorRateModel>();
     rx->SetErrorRateModel(errorRx);
-    m_txA->SetChannel(channel);
-    m_txB->SetChannel(channel);
-    rx->SetChannel(channel);
+    m_txA->AddChannel(channel);
+    m_txB->AddChannel(channel);
+    rx->AddChannel(channel);
     m_txA->SetMobility(posTxA);
     m_txB->SetMobility(posTxB);
     rx->SetMobility(posRx);
