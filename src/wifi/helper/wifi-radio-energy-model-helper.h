@@ -105,7 +105,7 @@ private:
 template <typename... Ts>
 void WifiRadioEnergyModelHelper::SetTxCurrentModel (std::string name, Ts&&... args)
 {
-  m_txCurrentModel = ObjectFactory (name, std::forward<Ts> (args)...); 
+  m_txCurrentModel = ObjectFactory (name, std::forward<Ts> (args)...);
 }
 
 

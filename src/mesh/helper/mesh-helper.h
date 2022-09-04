@@ -62,10 +62,10 @@ public:
 
   /**
    * \brief Set the Mac Attributes.
-   * 
+   *
    * All the attributes specified in this method should exist
    * in the requested mac.
-   * 
+   *
    * \tparam Ts \deduced Argument types
    * \param [in] args Name and AttributeValue pairs to set.
    */
@@ -73,10 +73,10 @@ public:
   void SetMacType (Ts&&... args);
   /**
    * \brief Set the remote station manager type and Attributes.
-   * 
+   *
    * All the attributes specified in this method should exist
    * in the requested station manager.
-   * 
+   *
    * \tparam Ts \deduced Argument types
    * \param type the type of remote station manager to use.
    * \param [in] args Name and AttributeValue pairs to set.
@@ -125,7 +125,7 @@ public:
   Install (const WifiPhyHelper &phyHelper, NodeContainer c) const;
   /**
    * \brief Set the MeshStack type to use.
-   * 
+   *
    * \tparam Ts \deduced Argument types
    * \param type the type of ns3::MeshStack.
    * \param [in] args Name and AttributeValue pairs to set.

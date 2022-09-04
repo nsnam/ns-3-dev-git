@@ -119,7 +119,7 @@ public:
    *
    * Calls to MobilityHelper::Install will create an instance of a matching
    * mobility model for each node.
-   * 
+   *
    * \tparam Ts \deduced Argument types
    * \param type the type of mobility model to use.
    * \param [in] args Name and AttributeValue pairs to set.

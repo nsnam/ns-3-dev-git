@@ -164,9 +164,9 @@ void YansWifiChannelHelper::AddPropagationLoss (std::string name, Ts&&... args)
 template <typename... Ts>
 void YansWifiChannelHelper::SetPropagationDelay (std::string name, Ts&&... args)
 {
-  m_propagationDelay = ObjectFactory (name, std::forward<Ts> (args)...); 
+  m_propagationDelay = ObjectFactory (name, std::forward<Ts> (args)...);
 }
-  
+
 
 } //namespace ns3
 
