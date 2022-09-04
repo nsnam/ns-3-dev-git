@@ -32,7 +32,16 @@ namespace ns3 {
 template <typename T>
 NixVectorHelper<T>::NixVectorHelper ()
 {
-  std::string name = (IsIpv4::value ? "Ipv4" : "Ipv6");
+  std::string name;
+  if constexpr (IsIpv4)
+    {
+      name = "Ipv4";
+    }
+  else
+    {
+      name = "Ipv6";
+    }
+
   m_agentFactory.SetTypeId ("ns3::" + name + "NixVectorRouting");
 }
 
@@ -41,8 +50,8 @@ NixVectorHelper<T>::NixVectorHelper (const NixVectorHelper<T> &o)
   : m_agentFactory (o.m_agentFactory)
 {
   // Check if the T is Ipv4RoutingHelper or Ipv6RoutingHelper.
-  NS_ASSERT_MSG ((IsIpv4::value || std::is_same <Ipv6RoutingHelper, T>::value),
-                  "Template parameter is not Ipv4RoutingHelper or Ipv6Routing Helper");
+  static_assert ((std::is_same_v<Ipv4RoutingHelper, T> || std::is_same_v<Ipv6RoutingHelper, T>),
+                 "Template parameter is not Ipv4RoutingHelper or Ipv6Routing Helper");
 }
 
 template <typename T>

@@ -64,34 +64,34 @@ namespace ns3 {
  * exposed here; it is in nix-vector-routing.cc.
  */
 template <typename T>
-class NixVectorRouting : public std::enable_if<std::is_same<Ipv4RoutingProtocol, T>::value || std::is_same<Ipv6RoutingProtocol, T>::value, T>::type
+class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol, T> || std::is_same_v<Ipv6RoutingProtocol, T>, T>
 {
   /// Alias for determining whether the parent is Ipv4RoutingProtocol or Ipv6RoutingProtocol
-  using IsIpv4 = std::is_same <Ipv4RoutingProtocol, T>;
+  static constexpr bool IsIpv4 = std::is_same_v<Ipv4RoutingProtocol, T>;
 
   /// Alias for Ipv4 and Ipv6 classes
-  using Ip = typename std::conditional <IsIpv4::value, Ipv4, Ipv6>::type;
+  using Ip = typename std::conditional_t<IsIpv4, Ipv4, Ipv6>;
 
   /// Alias for Ipv4Address and Ipv6Address classes
-  using IpAddress = typename std::conditional<IsIpv4::value, Ipv4Address, Ipv6Address>::type;
+  using IpAddress = typename std::conditional_t<IsIpv4, Ipv4Address, Ipv6Address>;
 
   /// Alias for Ipv4Route and Ipv6Route classes
-  using IpRoute = typename std::conditional<IsIpv4::value, Ipv4Route, Ipv6Route>::type;
+  using IpRoute = typename std::conditional_t<IsIpv4, Ipv4Route, Ipv6Route>;
 
   /// Alias for Ipv4AddressHash and Ipv6AddressHash classes
-  using IpAddressHash = typename std::conditional<IsIpv4::value, Ipv4AddressHash, Ipv6AddressHash>::type;
+  using IpAddressHash = typename std::conditional_t<IsIpv4, Ipv4AddressHash, Ipv6AddressHash>;
 
   /// Alias for Ipv4Header and Ipv6Header classes
-  using IpHeader = typename std::conditional<IsIpv4::value, Ipv4Header, Ipv6Header>::type;
+  using IpHeader = typename std::conditional_t<IsIpv4, Ipv4Header, Ipv6Header>;
 
   /// Alias for Ipv4InterfaceAddress and Ipv6InterfaceAddress classes
-  using IpInterfaceAddress = typename std::conditional<IsIpv4::value, Ipv4InterfaceAddress, Ipv6InterfaceAddress>::type;
+  using IpInterfaceAddress = typename std::conditional_t<IsIpv4, Ipv4InterfaceAddress, Ipv6InterfaceAddress>;
 
   /// Alias for Ipv4Interface and Ipv6Interface classes
-  using IpInterface = typename std::conditional<IsIpv4::value, Ipv4Interface, Ipv6Interface>::type;
+  using IpInterface = typename std::conditional_t<IsIpv4, Ipv4Interface, Ipv6Interface>;
 
   /// Alias for Ipv4L3Protocol and Ipv4L3Protocol classes
-  using IpL3Protocol = typename std::conditional<IsIpv4::value, Ipv4L3Protocol, Ipv6L3Protocol>::type;
+  using IpL3Protocol = typename std::conditional_t<IsIpv4, Ipv4L3Protocol, Ipv6L3Protocol>;
 
 public:
   NixVectorRouting ();
@@ -284,7 +284,7 @@ private:
   typedef Callback<void, Ptr<const NetDevice>, Ptr<IpRoute>, Ptr<const Packet>, const IpHeader &> UnicastForwardCallbackv6;
 
   /// Callback for unicast packets to be forwarded
-  typedef typename std::conditional<IsIpv4::value, UnicastForwardCallbackv4, UnicastForwardCallbackv6>::type UnicastForwardCallback;
+  typedef typename std::conditional_t<IsIpv4, UnicastForwardCallbackv4, UnicastForwardCallbackv6> UnicastForwardCallback;
 
   /// Callback for IPv4 multicast packets to be forwarded
   typedef Callback<void, Ptr<Ipv4MulticastRoute>, Ptr<const Packet>, const IpHeader &> MulticastForwardCallbackv4;
@@ -293,7 +293,7 @@ private:
   typedef Callback<void, Ptr<const NetDevice>, Ptr<Ipv6MulticastRoute>, Ptr<const Packet>, const IpHeader &> MulticastForwardCallbackv6;
 
   /// Callback for multicast packets to be forwarded
-  typedef typename std::conditional<IsIpv4::value, MulticastForwardCallbackv4, MulticastForwardCallbackv6>::type MulticastForwardCallback;
+  typedef typename std::conditional_t<IsIpv4, MulticastForwardCallbackv4, MulticastForwardCallbackv6> MulticastForwardCallback;
 
   /// Callback for packets to be locally delivered
   typedef Callback<void, Ptr<const Packet>, const IpHeader &, uint32_t > LocalDeliverCallback;

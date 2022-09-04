@@ -389,7 +389,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
           for (uint32_t j = 0; j < netDeviceAddresses; ++j)
             {
               IpInterfaceAddress netDeviceIfAddr = netDeviceInterface->GetAddress (j);
-              if constexpr (!IsIpv4::value)
+              if constexpr (!IsIpv4)
                 {
                   if (netDeviceIfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
                     {
@@ -399,7 +399,7 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
               for (uint32_t k = 0; k < remoteDeviceAddresses; ++k)
                 {
                   IpInterfaceAddress remoteDeviceIfAddr = remoteDeviceInterface->GetAddress (k);
-                  if constexpr (!IsIpv4::value)
+                  if constexpr (!IsIpv4)
                     {
                       if (remoteDeviceIfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
                         {
@@ -711,7 +711,7 @@ NixVectorRouting<T>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<Net
       return rtentry;
     }
 
-  if constexpr (!IsIpv4::value)
+  if constexpr (!IsIpv4)
     {
       /* when sending on link-local multicast, there have to be interface specified */
       if (destAddress.IsLinkLocalMulticast ())
@@ -858,7 +858,7 @@ NixVectorRouting<T>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Pt
 
   IpAddress destAddress = header.GetDestination ();
 
-  if constexpr (IsIpv4::value)
+  if constexpr (IsIpv4)
     {
       // Local delivery
       if (m_ip->IsDestinationAddress (destAddress, iif))
@@ -955,7 +955,7 @@ NixVectorRouting<T>::RouteInput (Ptr<const Packet> p, const IpHeader &header, Pt
   // local deliver is handled by Ipv4StaticRoutingImpl
   // so this code is never even called if the packet is
   // destined for this node.
-  if constexpr (IsIpv4::value)
+  if constexpr (IsIpv4)
     {
       ucb (rtentry, p, header);
     }
