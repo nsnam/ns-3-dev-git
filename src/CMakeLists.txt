@@ -59,9 +59,7 @@ if(${NS3_STATIC})
 
   target_link_libraries(
     ${lib-ns3-static}
-    -static
-    -static-libstdc++
-    -static-libgcc
+    ${STATIC_LINK_FLAGS}
     ${LIB_AS_NEEDED_PRE_STATIC}
     ${ns3-external-static-libs}
     ${LIB_AS_NEEDED_POST_STATIC}
