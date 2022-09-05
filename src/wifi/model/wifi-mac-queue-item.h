@@ -30,10 +30,23 @@
 #include "amsdu-subframe-header.h"
 #include "qos-utils.h"
 #include <list>
+#include <optional>
 
 namespace ns3 {
 
 class QosBlockedDestinations;
+
+/**
+ * \ingroup wifi
+ *
+ * Tag used to allow (only) WifiMacQueue to access the queue iterator stored
+ * by a WifiMacQueueItem.
+ */
+class WmqIteratorTag
+{
+  friend class WifiMacQueue;
+  WmqIteratorTag () = default;
+};
 
 /**
  * \ingroup wifi
@@ -141,7 +154,20 @@ public:
   DeaggregatedMsdusCI end (void);
 
   /// Const iterator typedef
-  typedef std::list<Ptr<WifiMacQueueItem>>::const_iterator ConstIterator;
+  typedef std::list<Ptr<WifiMacQueueItem>>::iterator Iterator;
+
+  /**
+   * Set the queue iterator stored by this object.
+   *
+   * \param queueIt the queue iterator for this object
+   * \param tag a wifi MAC queue iterator tag (allows only WifiMacQueue to call this method)
+   */
+  void SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag);
+  /**
+   * \param tag a wifi MAC queue iterator tag (allows only WifiMacQueue to call this method)
+   * \return the queue iterator stored by this object
+   */
+  Iterator GetQueueIt (WmqIteratorTag tag) const;
 
   /**
    * Return true if this item is stored in some queue, false otherwise.
@@ -201,7 +227,7 @@ private:
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
   Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
-  ConstIterator m_queueIt;                      //!< Queue iterator pointing to this MPDU, if queued
+  Iterator m_queueIt;                           //!< Queue iterator pointing to this MPDU, if queued
   AcIndex m_queueAc;                            //!< AC associated with the queue this MPDU is stored into
   bool m_inFlight;                              //!< whether the MPDU is in flight
 };

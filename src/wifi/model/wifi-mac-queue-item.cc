@@ -207,6 +207,18 @@ WifiMacQueueItem::IsQueued (void) const
   return m_queueAc != AC_UNDEF;
 }
 
+void
+WifiMacQueueItem::SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag)
+{
+  // empty for now
+}
+
+WifiMacQueueItem::Iterator
+WifiMacQueueItem::GetQueueIt (WmqIteratorTag tag) const
+{
+  return m_queueIt;
+}
+
 AcIndex
 WifiMacQueueItem::GetQueueAc (void) const
 {

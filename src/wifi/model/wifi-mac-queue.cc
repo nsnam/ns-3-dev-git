@@ -93,7 +93,7 @@ bool
 WifiMacQueue::TtlExceeded (Ptr<const WifiMacQueueItem> item, const Time& now)
 {
   NS_ASSERT (item && item->IsQueued ());
-  auto it = item->m_queueIt;
+  ConstIterator it = item->m_queueIt;
   return TtlExceeded (it, now);
 }
 
