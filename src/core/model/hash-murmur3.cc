@@ -72,6 +72,7 @@ namespace Murmur3Implementation {
 
 // Adapted from http://code.google.com/p/smhasher/
 
+// NOLINTBEGIN
 // clang-format off
 
 //
@@ -506,6 +507,7 @@ void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
 }
 
 // clang-format on
+// NOLINTEND
 
 #undef BIG_CONSTANT
 

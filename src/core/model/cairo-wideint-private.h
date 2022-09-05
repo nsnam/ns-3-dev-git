@@ -49,6 +49,7 @@
 // extern const char * cairo_impl64;
 // extern const char * cairo_impl128;
 
+// NOLINTBEGIN
 // clang-format off
 
 /*for compatibility with MacOS and Cygwin*/
@@ -361,5 +362,6 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
 #endif
 
     // clang-format on
+    // NOLINTEND
 
 #endif /* CAIRO_WIDEINT_H */

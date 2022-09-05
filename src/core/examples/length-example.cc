@@ -113,6 +113,7 @@ void EqualityOperators ()
   Length twoMeter = Meters (2);
   Length threeMeter = Meters (3);
 
+  // NOLINTBEGIN(misc-redundant-expression)
   std::cout << "\n"
             << "Comparison Operations:\n" << std::boolalpha
             << "Equality: " << oneMeter << " == " << oneMeter << " is " << (oneMeter == oneMeter)
@@ -134,6 +135,7 @@ void EqualityOperators ()
             << "Greater: " << oneMeter << " > " << twoMeter << " is " << (oneMeter > twoMeter)
             << "\n"
             << "Greater: " << threeMeter << " > " << oneMeter << " is " << (threeMeter > oneMeter) << std::endl;
+  // NOLINTEND(misc-redundant-expression)
 }
 
 /**

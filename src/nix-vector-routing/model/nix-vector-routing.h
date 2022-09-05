@@ -45,6 +45,8 @@
 #include <map>
 #include <unordered_map>
 
+// NOLINTBEGIN(modernize-use-override)
+
 namespace ns3 {
 
 /**
@@ -496,5 +498,7 @@ typedef NixVectorRouting<Ipv4RoutingProtocol> Ipv4NixVectorRouting;
  */
 typedef NixVectorRouting<Ipv6RoutingProtocol> Ipv6NixVectorRouting;
 } // namespace ns3
+
+// NOLINTEND(modernize-use-override)
 
 #endif /* NIX_VECTOR_ROUTING_H */

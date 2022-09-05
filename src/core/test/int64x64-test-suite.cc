@@ -498,6 +498,7 @@ Int64x64ArithmeticTestCase::DoRun (void)
   std::cout << GetParent ()->GetName () << " Arithmetic: " << GetName ()
             << std::endl;
 
+  // NOLINTBEGIN(misc-redundant-expression)
   Check ( 0,   zero  -   zero,   zero  );
   Check ( 1,   zero  -   one,   -one   );
   Check ( 2,   one   -   one,    zero  );
@@ -522,6 +523,7 @@ Int64x64ArithmeticTestCase::DoRun (void)
   Check (19, (-one ) * (-one ),   one   );
 
   Check (20,  (two  * thre ) / thre, two  );
+  // NOLINTEND(misc-redundant-expression)
 
   const int64x64_t frac  = int64x64_t (0, 0xc000000000000000ULL);  // 0.75
   const int64x64_t fplf2 = frac + frac * frac;  // 1.3125
@@ -534,8 +536,8 @@ Int64x64ArithmeticTestCase::DoRun (void)
   const int64x64_t twof  = two  + frac;
   const int64x64_t thref = thre + frac;
 
+  // NOLINTBEGIN(misc-redundant-expression)
   Check (23,   zerof,             frac);
-
 
   Check (24,   zerof -   zerof,   zero );
   Check (25,   zerof -   onef,   -one  );
@@ -562,6 +564,7 @@ Int64x64ArithmeticTestCase::DoRun (void)
   Check (43,   onef  *   onef,    onef  + fplf2 );
   Check (44,   onef  * (-onef),  -onef  - fplf2 );
   Check (45, (-onef) * (-onef),   onef  + fplf2 );
+  // NOLINTEND(misc-redundant-expression)
 
 
   // Multiplication followed by division is exact:
@@ -812,6 +815,7 @@ Int64x64Bug1786TestCase::DoRun (void)
   // because operator<< truncates the last output digit,
   // instead of rounding.
 
+  // NOLINTBEGIN(misc-redundant-expression)
   // clang-format off
   Check(                 1ULL, "+0.0000000000000000000542");
   Check(                 2ULL, "+0.0000000000000000001084");
@@ -874,6 +878,7 @@ Int64x64Bug1786TestCase::DoRun (void)
   Check(0xFFFFFFFFFFFFFFFEULL, "+0.9999999999999999998916", tolerance);
   Check(0xFFFFFFFFFFFFFFFFULL, "+0.9999999999999999999458", tolerance);
   // clang-format on
+  // NOLINTEND(misc-redundant-expression)
 }
 
 
@@ -932,6 +937,7 @@ Int64x64CompareTestCase::DoRun (void)
   const int64x64_t monef = mone - frac;
   const int64x64_t mtwof = mtwo - frac;
 
+  // NOLINTBEGIN(misc-redundant-expression)
   Check ( zerof    == zerof, true,  "equality, zero");
   Check ( onef     == onef,  true,  "equality, positive");
   Check ( mtwof    == mtwof, true,  "equality, negative");
@@ -990,6 +996,7 @@ Int64x64CompareTestCase::DoRun (void)
   Check ( (!one)   == false, true,  "!one   == false");
   Check ( (+onef)  == onef,  true, "unary positive");
   Check ( (-onef)  == monef, true, "unary negative");
+  // NOLINTEND(misc-redundant-expression)
 }
 
 

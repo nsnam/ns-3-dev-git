@@ -69,6 +69,7 @@ extern "C" {
 // Changes from FNV distribution are marked with `//PDB'
 //
 
+// NOLINTBEGIN
 // clang-format off
 
 /*
@@ -728,6 +729,7 @@ fnv_64a_str(char *str, Fnv64_t hval)
 }
 
 // clang-format on
+// NOLINTEND
 
 } /* extern "C" */
 
