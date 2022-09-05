@@ -123,7 +123,7 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&Icmpv6L4Protocol::m_rsMaxRetransmissionDuration),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -164,7 +164,7 @@ int64_t Icmpv6L4Protocol::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_solicitationJitter->SetStream (stream);
-  m_rsRetransmissionJitter->SetStream (stream+1);
+  m_rsRetransmissionJitter->SetStream (stream + 1);
   return 2;
 }
 
@@ -264,50 +264,50 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6H
 
   switch (type)
     {
-    case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
-      if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
-        {
-          HandleRS (p, header.GetSource (), header.GetDestination (), interface);
-        }
-      break;
-    case Icmpv6Header::ICMPV6_ND_ROUTER_ADVERTISEMENT:
-      if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
-        {
-          HandleRA (p, header.GetSource (), header.GetDestination (), interface);
-        }
-      break;
-    case Icmpv6Header::ICMPV6_ND_NEIGHBOR_SOLICITATION:
-      HandleNS (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ND_NEIGHBOR_ADVERTISEMENT:
-      HandleNA (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ND_REDIRECTION:
-      HandleRedirection (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ECHO_REQUEST:
-      HandleEchoRequest (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ECHO_REPLY:
-      // EchoReply does not contain any info about L4
-      // so we can not forward it up.
-      /// \todo implement request / reply consistency check.
-      break;
-    case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
-      HandleDestinationUnreachable (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ERROR_PACKET_TOO_BIG:
-      HandlePacketTooBig (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED:
-      HandleTimeExceeded (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    case Icmpv6Header::ICMPV6_ERROR_PARAMETER_ERROR:
-      HandleParameterError (p, header.GetSource (), header.GetDestination (), interface);
-      break;
-    default:
-      NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << type);
-      break;
+      case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
+        if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
+          {
+            HandleRS (p, header.GetSource (), header.GetDestination (), interface);
+          }
+        break;
+      case Icmpv6Header::ICMPV6_ND_ROUTER_ADVERTISEMENT:
+        if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
+          {
+            HandleRA (p, header.GetSource (), header.GetDestination (), interface);
+          }
+        break;
+      case Icmpv6Header::ICMPV6_ND_NEIGHBOR_SOLICITATION:
+        HandleNS (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ND_NEIGHBOR_ADVERTISEMENT:
+        HandleNA (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ND_REDIRECTION:
+        HandleRedirection (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ECHO_REQUEST:
+        HandleEchoRequest (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ECHO_REPLY:
+        // EchoReply does not contain any info about L4
+        // so we can not forward it up.
+        /// \todo implement request / reply consistency check.
+        break;
+      case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
+        HandleDestinationUnreachable (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ERROR_PACKET_TOO_BIG:
+        HandlePacketTooBig (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED:
+        HandleTimeExceeded (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      case Icmpv6Header::ICMPV6_ERROR_PARAMETER_ERROR:
+        HandleParameterError (p, header.GetSource (), header.GetDestination (), interface);
+        break;
+      default:
+        NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << type);
+        break;
     }
 
   return IpL4Protocol::RX_OK;
@@ -376,7 +376,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   p->RemoveHeader (raHeader);
 
-  if (raHeader.GetLifeTime())
+  if (raHeader.GetLifeTime ())
     {
       defaultRouter = src;
     }
@@ -388,33 +388,33 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
       switch (type)
         {
-        case Icmpv6Header::ICMPV6_OPT_PREFIX:
-          p->RemoveHeader (prefixHdr);
-          ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (),
-                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), defaultRouter);
-          break;
-        case Icmpv6Header::ICMPV6_OPT_MTU:
-          /* take in account the first MTU option */
-          if (!hasMtu)
-            {
-              p->RemoveHeader (mtuHdr);
-              hasMtu = true;
-              /** \todo case of multiple prefix on single interface */
-              /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
-            }
-          break;
-        case Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE:
-          /* take in account the first LLA option */
-          if (!hasLla)
-            {
-              p->RemoveHeader (llaHdr);
-              ReceiveLLA (llaHdr, src, dst, interface);
-              hasLla = true;
-            }
-          break;
-        default:
-          /* unknown option, quit */
-          next = false;
+          case Icmpv6Header::ICMPV6_OPT_PREFIX:
+            p->RemoveHeader (prefixHdr);
+            ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (),
+                                            prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), defaultRouter);
+            break;
+          case Icmpv6Header::ICMPV6_OPT_MTU:
+            /* take in account the first MTU option */
+            if (!hasMtu)
+              {
+                p->RemoveHeader (mtuHdr);
+                hasMtu = true;
+                /** \todo case of multiple prefix on single interface */
+                /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
+              }
+            break;
+          case Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE:
+            /* take in account the first LLA option */
+            if (!hasLla)
+              {
+                p->RemoveHeader (llaHdr);
+                ReceiveLLA (llaHdr, src, dst, interface);
+                hasLla = true;
+              }
+            break;
+          default:
+            /* unknown option, quit */
+            next = false;
         }
     }
 }
@@ -440,47 +440,83 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
   else
     {
       std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting;
-      if (entry->IsIncomplete ())
+      switch (entry->m_state)
         {
-          entry->StopNudTimer ();
-          // mark it to reachable
-          waiting = entry->MarkReachable (lla.GetAddress ());
-          entry->StartReachableTimer ();
-          // send out waiting packet
-          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+          case NdiscCache::Entry::INCOMPLETE:
             {
-              cache->GetInterface ()->Send (it->first, it->second, src);
+              entry->StopNudTimer ();
+              // mark it to reachable
+              waiting = entry->MarkReachable (lla.GetAddress ());
+              entry->StartReachableTimer ();
+              // send out waiting packet
+              for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                {
+                  cache->GetInterface ()->Send (it->first, it->second, src);
+                }
+              entry->ClearWaitingPacket ();
+              return;
             }
-          entry->ClearWaitingPacket ();
-        }
-      else
-        {
-          if (entry->GetMacAddress () != lla.GetAddress ())
+          case NdiscCache::Entry::STALE:
+          case NdiscCache::Entry::DELAY:
             {
-              entry->SetMacAddress (lla.GetAddress ());
-              entry->MarkStale ();
-              entry->SetRouter (true);
-            }
-          else
-            {
-              if (!entry->IsReachable () || !entry->IsPermanent ())
+              if (entry->GetMacAddress () != lla.GetAddress ())
+                {
+                  entry->SetMacAddress (lla.GetAddress ());
+                  entry->MarkStale ();
+                  entry->SetRouter (true);
+                }
+              else
                 {
                   entry->StopNudTimer ();
                   waiting = entry->MarkReachable (lla.GetAddress ());
-                  if (entry->IsProbe ())
-                    {
-                      for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
-                        {
-                          cache->GetInterface ()->Send (it->first, it->second, src);
-                        }
-                    }
-                  if (!entry->IsPermanent ())
-                    {
-                      entry->StartReachableTimer ();
-                    }
+                  entry->StartReachableTimer ();
                 }
+              return;
+            }
+          case NdiscCache::Entry::PROBE:
+            {
+              if (entry->GetMacAddress () != lla.GetAddress ())
+                {
+                  entry->SetMacAddress (lla.GetAddress ());
+                  entry->MarkStale ();
+                  entry->SetRouter (true);
+                }
+              else
+                {
+                  entry->StopNudTimer ();
+                  waiting = entry->MarkReachable (lla.GetAddress ());
+                  for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                    {
+                      cache->GetInterface ()->Send (it->first, it->second, src);
+                    }
+                  entry->StartReachableTimer ();
+                }
+              return;
+            }
+          case NdiscCache::Entry::REACHABLE:
+            {
+              if (entry->GetMacAddress () != lla.GetAddress ())
+                {
+                  entry->SetMacAddress (lla.GetAddress ());
+                  entry->MarkStale ();
+                  entry->SetRouter (true);
+                }
+              entry->StartReachableTimer ();
+              return;
+            }
+          case NdiscCache::Entry::PERMANENT:
+          case NdiscCache::Entry::STATIC_AUTOGENERATED:
+            {
+              if (entry->GetMacAddress () != lla.GetAddress ())
+                {
+                  entry->SetMacAddress (lla.GetAddress ());
+                  entry->MarkStale ();
+                  entry->SetRouter (true);
+                }
+              return;
             }
         }
+      return;  // Silence compiler warning
     }
 }
 
@@ -760,75 +796,52 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
     }
   packet->RemoveHeader (lla);
 
-  if (entry->IsIncomplete ())
+  /* we receive a NA so stop the probe timer or delay timer if any */
+  entry->StopNudTimer ();
+  switch (entry->m_state)
     {
-      /* we receive a NA so stop the retransmission timer */
-      entry->StopNudTimer ();
-
-      if (naHeader.GetFlagS ())
+      case NdiscCache::Entry::INCOMPLETE:
         {
-          /* mark it to reachable */
-          waiting = entry->MarkReachable (lla.GetAddress ());
-          entry->StartReachableTimer ();
-          /* send out waiting packet */
-          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+          /* we receive a NA so stop the retransmission timer */
+          entry->StopNudTimer ();
+
+          if (naHeader.GetFlagS ())
             {
-              cache->GetInterface ()->Send (it->first, it->second, src);
+              /* mark it to reachable */
+              waiting = entry->MarkReachable (lla.GetAddress ());
+              entry->StartReachableTimer ();
+              /* send out waiting packet */
+              for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                {
+                  cache->GetInterface ()->Send (it->first, it->second, src);
+                }
+              entry->ClearWaitingPacket ();
             }
-          entry->ClearWaitingPacket ();
-        }
-      else
-        {
-          entry->MarkStale (lla.GetAddress ());
-        }
-
-      if (naHeader.GetFlagR ())
-        {
-          entry->SetRouter (true);
-        }
-    }
-  else
-    {
-      /* we receive a NA so stop the probe timer or delay timer if any */
-      entry->StopNudTimer ();
-
-      /* if the Flag O is clear and mac address differs from the cache */
-      if (!naHeader.GetFlagO () && lla.GetAddress () != entry->GetMacAddress ())
-        {
-          if (entry->IsReachable ())
+          else
             {
-              entry->MarkStale ();
+              entry->MarkStale (lla.GetAddress ());
+            }
+
+          if (naHeader.GetFlagR ())
+            {
+              entry->SetRouter (true);
             }
           return;
         }
-      else
+      case NdiscCache::Entry::REACHABLE:
         {
-          if ((!naHeader.GetFlagO () && lla.GetAddress () == entry->GetMacAddress ()) || naHeader.GetFlagO ()) /* XXX lake "no target link-layer address option supplied" */
+          /* if the Flag O is clear and mac address differs from the cache */
+          if (!naHeader.GetFlagO () && lla.GetAddress () != entry->GetMacAddress ())
+            {
+              entry->MarkStale ();
+              return;
+            }
+          else
             {
               entry->SetMacAddress (lla.GetAddress ());
-
               if (naHeader.GetFlagS ())
                 {
-                  if (!entry->IsReachable () || !entry->IsPermanent ())
-                    {
-                      if (entry->IsProbe ())
-                        {
-                          waiting = entry->MarkReachable (lla.GetAddress ());
-                          for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
-                            {
-                              cache->GetInterface ()->Send (it->first, it->second, src);
-                            }
-                          entry->ClearWaitingPacket ();
-                        }
-                      else
-                        {
-                          entry->MarkReachable (lla.GetAddress ());
-                        }
-                    }
-                  if (!entry->IsPermanent () )
-                    {
-                      entry->StartReachableTimer ();
-                    }
+                  entry->StartReachableTimer ();
                 }
               else if (lla.GetAddress () != entry->GetMacAddress ())
                 {
@@ -836,8 +849,67 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
                 }
               entry->SetRouter (naHeader.GetFlagR ());
             }
+          break;
+        }
+      case NdiscCache::Entry::STALE:
+      case NdiscCache::Entry::DELAY:
+        {
+          /* if the Flag O is clear and mac address differs from the cache */
+          if (naHeader.GetFlagO () || lla.GetAddress () == entry->GetMacAddress ())
+            {
+              entry->SetMacAddress (lla.GetAddress ());
+              if (naHeader.GetFlagS ())
+                {
+                  entry->MarkReachable (lla.GetAddress ());
+                  entry->StartReachableTimer ();
+                }
+              else if (lla.GetAddress () != entry->GetMacAddress ())
+                {
+                  entry->MarkStale ();
+                }
+              entry->SetRouter (naHeader.GetFlagR ());
+            }
+          return;
+        }
+      case NdiscCache::Entry::PROBE:
+        {
+          if (naHeader.GetFlagO () || lla.GetAddress () == entry->GetMacAddress ())
+            {
+              entry->SetMacAddress (lla.GetAddress ());
+              if (naHeader.GetFlagS ())
+                {
+                  waiting = entry->MarkReachable (lla.GetAddress ());
+                  for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                    {
+                      cache->GetInterface ()->Send (it->first, it->second, src);
+                    }
+                  entry->ClearWaitingPacket ();
+                  entry->StartReachableTimer ();
+                }
+              else if (lla.GetAddress () != entry->GetMacAddress ())
+                {
+                  entry->MarkStale ();
+                }
+              entry->SetRouter (naHeader.GetFlagR ());
+            }
+          return;
+        }
+      case NdiscCache::Entry::PERMANENT:
+      case NdiscCache::Entry::STATIC_AUTOGENERATED:
+        {
+          if (naHeader.GetFlagO () || lla.GetAddress () == entry->GetMacAddress ())
+            {
+              entry->SetMacAddress (lla.GetAddress ());
+              if (lla.GetAddress () != entry->GetMacAddress ())
+                {
+                  entry->MarkStale ();
+                }
+              entry->SetRouter (naHeader.GetFlagR ());
+            }
+          return;
         }
     }
+    return;  // Silence compiler warning
 }
 
 void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -1159,7 +1231,7 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst, Address hardwar
         }
       m_rsPrevRetransmissionTimeout = rsTimeout;
       Simulator::Schedule (rsDelay, &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
-      m_handleRsTimeoutEvent = Simulator::Schedule (rsDelay+m_rsPrevRetransmissionTimeout, &Icmpv6L4Protocol::HandleRsTimeout, this, src, dst, hardwareAddress);
+      m_handleRsTimeoutEvent = Simulator::Schedule (rsDelay + m_rsPrevRetransmissionTimeout, &Icmpv6L4Protocol::HandleRsTimeout, this, src, dst, hardwareAddress);
     }
 }
 
@@ -1174,7 +1246,7 @@ void Icmpv6L4Protocol::HandleRsTimeout (Ipv6Address src, Ipv6Address dst,  Addre
     }
   else
     {
-      m_rsRetransmissionCount ++;
+      m_rsRetransmissionCount++;
       if (m_rsRetransmissionCount > m_rsMaxRetransmissionCount)
         {
           NS_LOG_LOGIC ("Maximum number of multicast RS reached, giving up.");
@@ -1182,12 +1254,12 @@ void Icmpv6L4Protocol::HandleRsTimeout (Ipv6Address src, Ipv6Address dst,  Addre
         }
     }
 
-    if (m_rsMaxRetransmissionDuration != Time (0) &&
-        Simulator::Now () - m_rsInitialRetransmissionTime > m_rsMaxRetransmissionDuration)
-      {
-          NS_LOG_LOGIC ("Maximum RS retransmission time reached, giving up.");
-          return;
-      }
+  if (m_rsMaxRetransmissionDuration != Time (0)
+      && Simulator::Now () - m_rsInitialRetransmissionTime > m_rsMaxRetransmissionDuration)
+    {
+      NS_LOG_LOGIC ("Maximum RS retransmission time reached, giving up.");
+      return;
+    }
 
   SendRS (src, dst, hardwareAddress);
 }
