@@ -395,25 +395,31 @@ int main (int argc, char *argv[])
                       exit (1);
                     }
                 }
-              //test previous throughput is smaller (for the same mcs)
-              if (throughput * (1 + tolerance) > previous)
+              // Skip comparisons with previous cases if more than one stations are present
+              // because, e.g., random collisions in the establishment of Block Ack agreements
+              // have an impact on throughput
+              if (nStations == 1)
                 {
-                  previous = throughput;
-                }
-              else if (throughput > 0)
-                {
-                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                  exit (1);
-                }
-              //test previous throughput is smaller (for the same channel width and GI)
-              if (throughput * (1 + tolerance) > prevThroughput [index])
-                {
-                  prevThroughput [index] = throughput;
-                }
-              else if (throughput > 0)
-                {
-                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                  exit (1);
+                  //test previous throughput is smaller (for the same mcs)
+                  if (throughput * (1 + tolerance) > previous)
+                    {
+                      previous = throughput;
+                    }
+                  else if (throughput > 0)
+                    {
+                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                      exit (1);
+                    }
+                  //test previous throughput is smaller (for the same channel width and GI)
+                  if (throughput * (1 + tolerance) > prevThroughput [index])
+                    {
+                      prevThroughput [index] = throughput;
+                    }
+                  else if (throughput > 0)
+                    {
+                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
+                      exit (1);
+                    }
                 }
               index++;
               gi /= 2;
