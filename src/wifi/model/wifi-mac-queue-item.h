@@ -63,14 +63,6 @@ public:
    */
   WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header);
 
-  /**
-   * \brief Create a Wifi MAC queue item containing a packet and a Wifi MAC header.
-   * \param p the const packet included in the created item.
-   * \param header the Wifi MAC header included in the created item.
-   * \param tstamp the timestamp associated with the created item.
-   */
-  WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp);
-
   virtual ~WifiMacQueueItem ();
 
   /**
@@ -96,12 +88,6 @@ public:
    * \return the destination address
    */
   Mac48Address GetDestinationAddress (void) const;
-
-  /**
-   * \brief Get the timestamp included in this item
-   * \return the timestamp included in this item.
-   */
-  Time GetTimeStamp (void) const;
 
   /**
    * \brief Return the size of the packet stored by this item, including header
@@ -226,7 +212,6 @@ private:
 
   Ptr<const Packet> m_packet;                   //!< The packet (MSDU or A-MSDU) contained in this queue item
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
-  Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
   std::optional<Iterator> m_queueIt;            //!< Queue iterator pointing to this MPDU, if queued
   bool m_inFlight;                              //!< whether the MPDU is in flight

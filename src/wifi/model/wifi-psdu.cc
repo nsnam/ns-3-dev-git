@@ -280,12 +280,6 @@ WifiPsdu::GetPayload (std::size_t i) const
   return m_mpduList.at (i)->GetPacket ();
 }
 
-Time
-WifiPsdu::GetTimeStamp (std::size_t i) const
-{
-  return m_mpduList.at (i)->GetTimeStamp ();
-}
-
 Ptr<Packet>
 WifiPsdu::GetAmpduSubframe (std::size_t i) const
 {

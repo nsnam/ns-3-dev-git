@@ -117,13 +117,6 @@ public:
   Ptr<const Packet> GetPayload (std::size_t i) const;
 
   /**
-   * \brief Get the timestamp of the i-th MPDU
-   * \param i index in the list of MPDUs
-   * \return the timestamp of the i-th MPDU.
-   */
-  Time GetTimeStamp (std::size_t i) const;
-
-  /**
    * \brief Get a copy of the i-th A-MPDU subframe (includes subframe header, MPDU, and possibly padding)
    * \param i the index in the list of A-MPDU subframes
    * \return the i-th A-MPDU subframe.

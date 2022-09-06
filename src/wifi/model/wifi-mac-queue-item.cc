@@ -34,14 +34,8 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiMacQueueItem");
 
 WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header)
-  : WifiMacQueueItem (p, header, Simulator::Now ())
-{
-}
-
-WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp)
   : m_packet (p),
-    m_header (header),
-    m_tstamp (tstamp)
+    m_header (header)
 {
   if (header.IsQosData () && header.IsQosAmsdu ())
     {
@@ -76,12 +70,6 @@ Mac48Address
 WifiMacQueueItem::GetDestinationAddress (void) const
 {
   return m_header.GetAddr1 ();
-}
-
-Time
-WifiMacQueueItem::GetTimeStamp (void) const
-{
-  return m_tstamp;
 }
 
 uint32_t
@@ -191,13 +179,6 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
   amsduSubframe->AddHeader (hdr);
   amsdu->AddAtEnd (amsduSubframe);
   m_packet = amsdu;
-
-  /* "The expiration of the A-MSDU lifetime timer occurs only when the lifetime
-    * timer of all of the constituent MSDUs of the A-MSDU have expired" (Section
-    * 10.12 of 802.11-2016)
-    */
-  // The timestamp of the A-MSDU is the most recent among those of the MSDUs
-  m_tstamp = Max (m_tstamp, msdu->GetTimeStamp ());
 }
 
 bool
@@ -270,8 +251,7 @@ WifiMacQueueItem::Print (std::ostream& os) const
      << ", payloadSize=" << GetPacketSize ()
      << ", to=" << m_header.GetAddr1 ()
      << ", seqN=" << m_header.GetSequenceNumber ()
-     << ", duration/ID=" << m_header.GetDuration ()
-     << ", lifetime=" << (Simulator::Now () - m_tstamp).As (Time::US);
+     << ", duration/ID=" << m_header.GetDuration ();
   if (m_header.IsQosData ())
     {
       os << ", tid=" << +m_header.GetQosTid ();
@@ -288,9 +268,13 @@ WifiMacQueueItem::Print (std::ostream& os) const
           os << ", ack=BlockAck";
         }
     }
-  os << ", packet=" << m_packet
-     << ", queued=" << IsQueued ()
-     << ", inflight=" << IsInFlight ();
+  os << ", queued=" << IsQueued ();
+  if (IsQueued ())
+    {
+      os << ", residualLifetime=" << (GetExpiryTime () - Simulator::Now ()).As (Time::US)
+         << ", inflight=" << IsInFlight ();
+    }
+  os << ", packet=" << m_packet;
 }
 
 std::ostream & operator << (std::ostream &os, const WifiMacQueueItem &item)
