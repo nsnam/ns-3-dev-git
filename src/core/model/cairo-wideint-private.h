@@ -26,7 +26,7 @@
  * The Initial Developer of the Original Code is Keith Packard
  *
  * Contributor(s):
- *	Keith R. Packard <keithp@keithp.com>
+ *     Keith R. Packard <keithp@keithp.com>
  *
  */
 
