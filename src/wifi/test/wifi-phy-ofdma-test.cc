@@ -1241,9 +1241,6 @@ TestDlOfdmaPhyPuncturing::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPh
 void
 TestDlOfdmaPhyPuncturing::DoSetup (void)
 {
-  WifiHelper::EnableLogComponents ();
-  LogComponentEnable ("WifiPhyOfdmaTest", LOG_LEVEL_ALL);
-
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
   lossModel->SetFrequency (m_frequency * 1e6);
