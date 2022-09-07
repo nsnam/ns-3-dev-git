@@ -347,6 +347,13 @@ public:
    * can be sent safely.
    */
   virtual void Queue (Ptr<Packet> packet, const WifiMacHeader &hdr);
+  /**
+   * \param mpdu the given MPDU
+   *
+   * Store the given MPDU in the internal queue until it
+   * can be sent safely.
+   */
+  virtual void Queue (Ptr<WifiMacQueueItem> mpdu);
 
   /**
    * Called by the FrameExchangeManager to notify that channel access has

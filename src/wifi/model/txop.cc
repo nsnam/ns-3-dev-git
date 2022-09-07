@@ -488,11 +488,18 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
   packet->RemovePacketTag (priorityTag);
+  Queue (Create<WifiMacQueueItem> (packet, hdr));
+}
+
+void
+Txop::Queue (Ptr<WifiMacQueueItem> mpdu)
+{
+  NS_LOG_FUNCTION (this << *mpdu);
   if (m_mac->GetChannelAccessManager (SINGLE_LINK_OP_ID)->NeedBackoffUponAccess (this))
     {
       GenerateBackoff (SINGLE_LINK_OP_ID);
     }
-  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
+  m_queue->Enqueue (mpdu);
   StartAccessIfNeeded (0);  // TODO use appropriate linkId
 }
 
