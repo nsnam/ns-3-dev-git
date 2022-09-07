@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "rr-multi-user-scheduler.h"
+#include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/wifi-psdu.h"
@@ -137,7 +138,7 @@ RrMultiUserScheduler::SelectTxFormat (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
+  Ptr<const WifiMpdu> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
 
   if (mpdu && !GetWifiRemoteStationManager ()->GetHeSupported (mpdu->GetHeader ().GetAddr1 ()))
     {
@@ -540,7 +541,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
 
   uint8_t currTid = wifiAcList.at (primaryAc).GetHighTid ();
 
-  Ptr<WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
+  Ptr<WifiMpdu> mpdu = m_edca->PeekNextMpdu (SINGLE_LINK_OP_ID);
 
   if (mpdu && mpdu->GetHeader ().IsQosData ())
     {
@@ -768,7 +769,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
   FinalizeTxVector (dlMuInfo.txParams.m_txVector);
 
   m_txParams.Clear ();
-  Ptr<WifiMacQueueItem> mpdu;
+  Ptr<WifiMpdu> mpdu;
 
   // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
   Time actualAvailableTime = (m_initialFrame ? Time::Min () : m_availableTime);
@@ -797,7 +798,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       NS_ASSERT (receiver == candidate.first->address);
 
       NS_ASSERT (mpdu->IsQueued ());
-      Ptr<WifiMacQueueItem> item = mpdu;
+      Ptr<WifiMpdu> item = mpdu;
 
       if (!mpdu->GetHeader ().IsRetry ())
         {
@@ -814,7 +815,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
         }
 
       // Now, let's try A-MPDU aggregation if possible
-      std::vector<Ptr<WifiMacQueueItem>> mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (item, dlMuInfo.txParams, m_availableTime);
+      std::vector<Ptr<WifiMpdu>> mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (item, dlMuInfo.txParams, m_availableTime);
 
       if (mpduList.size () > 1)
         {

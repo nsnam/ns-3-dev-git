@@ -51,8 +51,8 @@ FcfsWifiQueueScheduler::FcfsWifiQueueScheduler ()
 {
 }
 
-Ptr<WifiMacQueueItem>
-FcfsWifiQueueScheduler::HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMacQueueItem> mpdu)
+Ptr<WifiMpdu>
+FcfsWifiQueueScheduler::HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
   auto queue = GetWifiMacQueue (ac);
   if (queue->QueueBase::GetNPackets () < queue->GetMaxSize ().GetValue ())
@@ -81,7 +81,7 @@ FcfsWifiQueueScheduler::HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMacQueue
 }
 
 void
-FcfsWifiQueueScheduler::DoNotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu)
+FcfsWifiQueueScheduler::DoNotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << +ac << *mpdu);
 
@@ -101,7 +101,7 @@ FcfsWifiQueueScheduler::DoNotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-FcfsWifiQueueScheduler::DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus)
+FcfsWifiQueueScheduler::DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus)
 {
   NS_LOG_FUNCTION (this << +ac);
 
@@ -128,7 +128,7 @@ FcfsWifiQueueScheduler::DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMac
 }
 
 void
-FcfsWifiQueueScheduler::DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus)
+FcfsWifiQueueScheduler::DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus)
 {
   NS_LOG_FUNCTION (this << +ac);
 

@@ -19,10 +19,10 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/sequence-number.h"
 #include "ns3/packet.h"
+#include "ns3/sequence-number.h"
 #include "mac-rx-middle.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 
 namespace ns3 {
 
@@ -296,7 +296,7 @@ MacRxMiddle::HandleFragments (Ptr<const Packet> packet, const WifiMacHeader *hdr
 }
 
 void
-MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+MacRxMiddle::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (*mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
@@ -347,7 +347,7 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
       // A-MSDUs saves us the time to deaggregate the A-MSDU in MSDUs (which are
       // kept separate in the received mpdu) and allows us to pass the originally
       // transmitted packets (i.e., with the same UID) to the receiver.
-      m_callback (Create<WifiMacQueueItem> (aggregate, *hdr), linkId);
+      m_callback (Create<WifiMpdu> (aggregate, *hdr), linkId);
     }
 }
 

@@ -49,7 +49,7 @@ public:
   bool CanForwardPacketsTo (Mac48Address to) const override;
 
 private:
-  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
+  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId) override;
 };
 
 } //namespace ns3

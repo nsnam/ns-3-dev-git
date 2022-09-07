@@ -20,7 +20,7 @@
 
 #include "ns3/log.h"
 #include "wifi-tx-timer.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include "wifi-tx-vector.h"
 #include "wifi-psdu.h"
 
@@ -144,7 +144,7 @@ WifiTxTimer::SetMpduResponseTimeoutCallback (MpduResponseTimeout callback) const
 }
 
 void
-WifiTxTimer::FeedTraceSource (Ptr<WifiMacQueueItem> item, WifiTxVector txVector)
+WifiTxTimer::FeedTraceSource (Ptr<WifiMpdu> item, WifiTxVector txVector)
 {
   if (!m_mpduResponseTimeoutCallback.IsNull ())
     {

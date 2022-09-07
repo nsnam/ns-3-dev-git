@@ -35,7 +35,7 @@ class WifiMacQueueDropOldestTest;
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiMacQueue;
 
 /**
@@ -75,13 +75,13 @@ public:
   /** \copydoc ns3::WifiMacQueueScheduler::SetLinkIds */
   void SetLinkIds (AcIndex ac, const WifiContainerQueueId& queueId, const std::list<uint8_t>& linkIds) final;
   /** \copydoc ns3::WifiMacQueueScheduler::HasToDropBeforeEnqueue */
-  Ptr<WifiMacQueueItem> HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) final;
+  Ptr<WifiMpdu> HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) final;
   /** \copydoc ns3::WifiMacQueueScheduler::NotifyEnqueue */
-  void NotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) final;
+  void NotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) final;
   /** \copydoc ns3::WifiMacQueueScheduler::NotifyDequeue */
-  void NotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) final;
+  void NotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) final;
   /** \copydoc ns3::WifiMacQueueScheduler::NotifyRemove */
-  void NotifyRemove (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) final;
+  void NotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) final;
 
 protected:
 
@@ -193,7 +193,7 @@ private:
    * \param mpdu the MPDU to enqueue
    * \return a pointer to the MPDU to drop, if any, or a null pointer, otherwise
    */
-  virtual Ptr<WifiMacQueueItem> HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) = 0;
+  virtual Ptr<WifiMpdu> HasToDropBeforeEnqueuePriv (AcIndex ac, Ptr<WifiMpdu> mpdu) = 0;
   /**
    * Notify the scheduler that the given MPDU has been enqueued by the given Access
    * Category. The container queue in which the MPDU has been enqueued must be
@@ -202,7 +202,7 @@ private:
    * \param ac the Access Category of the enqueued MPDU
    * \param mpdu the enqueued MPDU
    */
-  virtual void DoNotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) = 0;
+  virtual void DoNotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) = 0;
   /**
    * Notify the scheduler that the given list of MPDUs have been dequeued by the
    * given Access Category. The container queues which became empty after dequeuing
@@ -211,7 +211,7 @@ private:
    * \param ac the Access Category of the dequeued MPDUs
    * \param mpdus the list of dequeued MPDUs
    */
-  virtual void DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) = 0;
+  virtual void DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) = 0;
   /**
    * Notify the scheduler that the given list of MPDUs have been removed by the
    * given Access Category. The container queues which became empty after removing
@@ -220,7 +220,7 @@ private:
    * \param ac the Access Category of the removed MPDUs
    * \param mpdus the list of removed MPDUs
    */
-  virtual void DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) = 0;
+  virtual void DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) = 0;
 
   std::vector<PerAcInfo> m_perAcInfo {AC_UNDEF};    //!< vector of per-AC information
   NS_LOG_TEMPLATE_DECLARE;                          //!< the log component
@@ -457,8 +457,8 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext (AcIndex ac, uint8_t lin
 }
 
 template <class Priority, class Compare>
-Ptr<WifiMacQueueItem>
-WifiMacQueueSchedulerImpl<Priority, Compare>::HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu)
+Ptr<WifiMpdu>
+WifiMacQueueSchedulerImpl<Priority, Compare>::HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << +ac << *mpdu);
   return HasToDropBeforeEnqueuePriv (ac, mpdu);
@@ -466,7 +466,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::HasToDropBeforeEnqueue (AcIndex ac
 
 template <class Priority, class Compare>
 void
-WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu)
+WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << +ac << *mpdu);
   NS_ASSERT (static_cast<uint8_t> (ac) < AC_UNDEF);
@@ -484,7 +484,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyEnqueue (AcIndex ac, Ptr<Wif
 template <class Priority, class Compare>
 void
 WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyDequeue (AcIndex ac,
-                                                             const std::list<Ptr<WifiMacQueueItem>>& mpdus)
+                                                             const std::list<Ptr<WifiMpdu>>& mpdus)
 {
   NS_LOG_FUNCTION (this << +ac);
   NS_ASSERT (static_cast<uint8_t> (ac) < AC_UNDEF);
@@ -518,7 +518,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyDequeue (AcIndex ac,
 template <class Priority, class Compare>
 void
 WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyRemove (AcIndex ac,
-                                                            const std::list<Ptr<WifiMacQueueItem>>& mpdus)
+                                                            const std::list<Ptr<WifiMpdu>>& mpdus)
 {
   NS_LOG_FUNCTION (this << +ac);
   NS_ASSERT (static_cast<uint8_t> (ac) < AC_UNDEF);

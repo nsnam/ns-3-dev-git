@@ -27,7 +27,7 @@
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "block-ack-type.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include "wifi-tx-vector.h"
 
 namespace ns3 {
@@ -55,8 +55,8 @@ struct Bar
    * \param tid the Traffic ID
    * \param skipIfNoDataQueued true to hold this BAR if there is no data queued
    */
-  Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid, bool skipIfNoDataQueued = false);
-  Ptr<const WifiMacQueueItem> bar;  ///< BlockAckRequest or MU-BAR Trigger Frame
+  Bar (Ptr<const WifiMpdu> bar, uint8_t tid, bool skipIfNoDataQueued = false);
+  Ptr<const WifiMpdu> bar;  ///< BlockAckRequest or MU-BAR Trigger Frame
   uint8_t tid;                      ///< TID (unused if MU-BAR)
   bool skipIfNoDataQueued;          ///< do not send if there is no data queued (unused if MU-BAR)
 };
@@ -147,7 +147,7 @@ public:
    * Stores <i>mpdu</i> for a possible future retransmission. Retransmission occurs
    * if the packet, in a BlockAck frame, is indicated by recipient as not received.
    */
-  void StorePacket (Ptr<WifiMacQueueItem> mpdu);
+  void StorePacket (Ptr<WifiMpdu> mpdu);
   /**
    * Returns the next BlockAckRequest or MU-BAR Trigger Frame to send, if any.
    * If the given recipient is not the broadcast address and the given TID is less
@@ -160,7 +160,7 @@ public:
    *
    * \return the next BAR to be sent, if any
    */
-  Ptr<const WifiMacQueueItem> GetBar (bool remove = true, uint8_t tid = 8,
+  Ptr<const WifiMpdu> GetBar (bool remove = true, uint8_t tid = 8,
                                       Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
    * Invoked upon receipt of an Ack frame after the transmission of a QoS data frame
@@ -170,7 +170,7 @@ public:
    *
    * \param mpdu The acknowledged MPDU.
    */
-  void NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyGotAck (Ptr<const WifiMpdu> mpdu);
   /**
    * Invoked upon missed reception of an Ack frame after the transmission of a
    * QoS data frame sent under an established block ack agreement. Remove the
@@ -179,7 +179,7 @@ public:
    *
    * \param mpdu The unacknowledged MPDU.
    */
-  void NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu);
+  void NotifyMissedAck (Ptr<WifiMpdu> mpdu);
   /**
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
@@ -346,15 +346,15 @@ public:
   /**
    * typedef for a callback to invoke when an MPDU is successfully ack'ed.
    */
-  typedef Callback <void, Ptr<const WifiMacQueueItem>> TxOk;
+  typedef Callback <void, Ptr<const WifiMpdu>> TxOk;
   /**
    * typedef for a callback to invoke when an MPDU is negatively ack'ed.
    */
-  typedef Callback <void, Ptr<const WifiMacQueueItem>> TxFailed;
+  typedef Callback <void, Ptr<const WifiMpdu>> TxFailed;
   /**
    * typedef for a callback to invoke when an MPDU is dropped.
    */
-  typedef Callback <void, Ptr<const WifiMacQueueItem>> DroppedOldMpdu;
+  typedef Callback <void, Ptr<const WifiMpdu>> DroppedOldMpdu;
 
   /**
    * \param callback the callback to invoke when a
@@ -391,7 +391,7 @@ public:
    * retransmit queue and from the queue of the block ack agreement, and (ii) the
    * scheduling of a BlockAckRequest.
    */
-  void NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyDiscardedMpdu (Ptr<const WifiMpdu> mpdu);
 
   /**
    * \param recipient the recipient
@@ -412,7 +412,7 @@ public:
    * in the queue, it is replaced by the new one. If the given BAR is retransmitted,
    * it is placed at the head of the queue, otherwise at the tail.
    */
-  void ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued = false);
+  void ScheduleBar (Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued = false);
 
 protected:
   void DoDispose () override;
@@ -426,17 +426,17 @@ private:
   void InactivityTimeout (Mac48Address recipient, uint8_t tid);
 
   /**
-   * typedef for a list of WifiMacQueueItem.
+   * typedef for a list of WifiMpdu.
    */
-  typedef std::list<Ptr<WifiMacQueueItem>> PacketQueue;
+  typedef std::list<Ptr<WifiMpdu>> PacketQueue;
   /**
    * typedef for an iterator for PacketQueue.
    */
-  typedef std::list<Ptr<WifiMacQueueItem>>::iterator PacketQueueI;
+  typedef std::list<Ptr<WifiMpdu>>::iterator PacketQueueI;
   /**
    * typedef for a const iterator for PacketQueue.
    */
-  typedef std::list<Ptr<WifiMacQueueItem>>::const_iterator PacketQueueCI;
+  typedef std::list<Ptr<WifiMpdu>>::const_iterator PacketQueueCI;
   /**
    * typedef for a map between MAC address and block ack agreement.
    */

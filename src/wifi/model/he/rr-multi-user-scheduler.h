@@ -149,7 +149,7 @@ private:
   /**
    * Information stored for candidate stations
    */
-  typedef std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMacQueueItem>> CandidateInfo;
+  typedef std::pair<std::list<MasterInfo>::iterator, Ptr<WifiMpdu>> CandidateInfo;
 
   uint8_t m_nStations;                                  //!< Number of stations/slots to fill
   bool m_enableTxopSharing;                             //!< allow A-MPDUs of different TIDs in a DL MU PPDU

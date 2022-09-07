@@ -27,7 +27,7 @@
 namespace ns3 {
 
 class WifiTxParameters;
-class WifiMacQueueItem;
+class WifiMpdu;
 
 /**
  * \ingroup wifi
@@ -46,9 +46,9 @@ public:
   WifiDefaultAckManager ();
   virtual ~WifiDefaultAckManager ();
 
-  virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                           const WifiTxParameters& txParams) override;
-  virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+  virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                                 const WifiTxParameters& txParams) override;
 
   /**
@@ -64,7 +64,7 @@ public:
    *         numbers of the given MPDU and of all the QoS data frames included in
    *         the given TX parameters
    */
-  uint16_t GetMaxDistFromStartingSeq (Ptr<const WifiMacQueueItem> mpdu,
+  uint16_t GetMaxDistFromStartingSeq (Ptr<const WifiMpdu> mpdu,
                                       const WifiTxParameters& txParams) const;
 
 protected:
@@ -77,7 +77,7 @@ protected:
    * \param txParams the given TX parameters.
    * \return true if the given PSDU requires an immediate response
    */
-  bool IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
+  bool IsResponseNeeded (Ptr<const WifiMpdu> mpdu,
                          const WifiTxParameters& txParams) const;
 private:
   /**
@@ -93,7 +93,7 @@ private:
    * \return the new acknowledgment method or a null pointer if the acknowledgment method
    *         is unchanged
    */
-  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfBarBaSequence (Ptr<const WifiMpdu> mpdu,
                                                                          const WifiTxParameters& txParams);
   /**
    * Compute the information about the acknowledgment of the current multi-user frame
@@ -108,7 +108,7 @@ private:
    * \return the new acknowledgment method or a null pointer if the acknowledgment method
    *         is unchanged
    */
-  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfTfMuBar (Ptr<const WifiMpdu> mpdu,
                                                                    const WifiTxParameters& txParams);
   /**
    * Compute the information about the acknowledgment of the current multi-user frame
@@ -124,7 +124,7 @@ private:
    * \return the new acknowledgment method or a null pointer if the acknowledgment method
    *         is unchanged
    */
-  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfAggregatedMuBar (Ptr<const WifiMpdu> mpdu,
                                                                            const WifiTxParameters& txParams);
 
   /**
@@ -135,7 +135,7 @@ private:
    * \param txParams the current TX parameters (just the TXVECTOR needs to be set)
    * \return the acknowledgment method for the TB PPDUs solicited by the given Trigger Frame
    */
-  virtual std::unique_ptr<WifiAcknowledgment> TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> TryUlMuTransmission (Ptr<const WifiMpdu> mpdu,
                                                                    const WifiTxParameters& txParams);
 
   bool m_useExplicitBar;                    //!< true for sending BARs, false for using Implicit BAR policy

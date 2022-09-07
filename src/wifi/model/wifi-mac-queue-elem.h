@@ -27,29 +27,29 @@
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 
 /**
  * \ingroup wifi
  * Type of elements stored in a WifiMacQueue container.
  *
  * Such elements can be accessed by the WifiMacQueue (via iterators) and
- * by the WifiMacQueueItem itself (via the iterator it stores).
+ * by the WifiMpdu itself (via the iterator it stores).
  */
 struct WifiMacQueueElem
 {
-  Ptr<WifiMacQueueItem> mpdu;                    ///< MPDU stored by this element
+  Ptr<WifiMpdu> mpdu;                    ///< MPDU stored by this element
   Time expiryTime;                               ///< expiry time of the MPDU (set by WifiMacQueue)
   AcIndex ac;                                    ///< the Access Category associated with the queue
                                                  ///< storing this element (set by WifiMacQueue)
   bool expired;                                  ///< whether this MPDU has been marked as expired
-  Callback<void, Ptr<WifiMacQueueItem>> deleter; ///< reset the iterator stored by the MPDU
+  Callback<void, Ptr<WifiMpdu>> deleter; ///< reset the iterator stored by the MPDU
 
   /**
    * Constructor.
    * \param item the MPDU stored by this queue element
    */
-  WifiMacQueueElem (Ptr<WifiMacQueueItem> item);
+  WifiMacQueueElem (Ptr<WifiMpdu> item);
 
   ~WifiMacQueueElem ();
 };

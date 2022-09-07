@@ -277,11 +277,11 @@ WifiMac::GetTypeId (void)
                      "An MPDU that was successfully acknowledged, via either a "
                      "Normal Ack or a Block Ack.",
                      MakeTraceSourceAccessor (&WifiMac::m_ackedMpduCallback),
-                     "ns3::WifiMacQueueItem::TracedCallback")
+                     "ns3::WifiMpdu::TracedCallback")
     .AddTraceSource ("NAckedMpdu",
                      "An MPDU that was negatively acknowledged via a Block Ack.",
                      MakeTraceSourceAccessor (&WifiMac::m_nackedMpduCallback),
-                     "ns3::WifiMacQueueItem::TracedCallback")
+                     "ns3::WifiMpdu::TracedCallback")
     .AddTraceSource ("DroppedMpdu",
                      "An MPDU that was dropped for the given reason (see WifiMacDropReason).",
                      MakeTraceSourceAccessor (&WifiMac::m_droppedMpduCallback),
@@ -1052,7 +1052,7 @@ WifiMac::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to
 }
 
 void
-WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+WifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << linkId);
 
@@ -1166,7 +1166,7 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 }
 
 void
-WifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
+WifiMac::DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   for (auto& msduPair : *PeekPointer (mpdu))

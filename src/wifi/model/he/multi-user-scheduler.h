@@ -25,7 +25,6 @@
 #include "he-ru.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/ap-wifi-mac.h"
-#include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-tx-parameters.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include <unordered_map>
@@ -128,7 +127,7 @@ protected:
    * \param trigger the given Trigger Frame
    * \return an MPDU containing the given Trigger Frame
    */
-  Ptr<WifiMacQueueItem> GetTriggerFrame (const CtrlTriggerHeader& trigger) const;
+  Ptr<WifiMpdu> GetTriggerFrame (const CtrlTriggerHeader& trigger) const;
 
   /**
    * Get the format of the last transmission, as determined by the last call

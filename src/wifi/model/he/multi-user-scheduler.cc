@@ -231,7 +231,7 @@ MultiUserScheduler::GetUlMuInfo (void)
   return m_ulInfo;
 }
 
-Ptr<WifiMacQueueItem>
+Ptr<WifiMpdu>
 MultiUserScheduler::GetTriggerFrame (const CtrlTriggerHeader& trigger) const
 {
   NS_LOG_FUNCTION (this);
@@ -254,7 +254,7 @@ MultiUserScheduler::GetTriggerFrame (const CtrlTriggerHeader& trigger) const
   hdr.SetDsNotTo ();
   hdr.SetDsNotFrom ();
 
-  return Create<WifiMacQueueItem> (packet, hdr);
+  return Create<WifiMpdu> (packet, hdr);
 }
 
 void

@@ -44,7 +44,7 @@ class WifiPhy;
 class WifiMac;
 class WifiMacHeader;
 class Packet;
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiTxVector;
 
 struct WifiRemoteStationState;
@@ -807,7 +807,7 @@ public:
    *
    * \param mpdu the MPDU whose transmission failed
    */
-  void ReportDataFailed (Ptr<const WifiMacQueueItem> mpdu);
+  void ReportDataFailed (Ptr<const WifiMpdu> mpdu);
   /**
    * Should be invoked whenever we receive the CTS associated to an RTS
    * we just sent. Note that we also get the SNR of the RTS we sent since
@@ -830,7 +830,7 @@ public:
    * \param dataSnr the SNR of the DATA we sent
    * \param dataTxVector the TXVECTOR of the DATA we sent
    */
-  void ReportDataOk (Ptr<const WifiMacQueueItem> mpdu, double ackSnr,
+  void ReportDataOk (Ptr<const WifiMpdu> mpdu, double ackSnr,
                      WifiMode ackMode, double dataSnr, WifiTxVector dataTxVector);
   /**
    * Should be invoked after calling ReportRtsFailed if
@@ -845,7 +845,7 @@ public:
    *
    * \param mpdu the MPDU which was discarded
    */
-  void ReportFinalDataFailed (Ptr<const WifiMacQueueItem> mpdu);
+  void ReportFinalDataFailed (Ptr<const WifiMpdu> mpdu);
   /**
    * Typically called per A-MPDU, either when a Block ACK was successfully
    * received or when a BlockAckTimeout has elapsed.
@@ -894,35 +894,35 @@ public:
    * \return true if we want to resend a packet after a failed transmission attempt,
    *         false otherwise.
    */
-  bool NeedRetransmission (Ptr<const WifiMacQueueItem> mpdu);
+  bool NeedRetransmission (Ptr<const WifiMpdu> mpdu);
   /**
    * \param mpdu the MPDU to send
    *
    * \return true if this packet should be fragmented,
    *         false otherwise.
    */
-  bool NeedFragmentation (Ptr<const WifiMacQueueItem> mpdu);
+  bool NeedFragmentation (Ptr<const WifiMpdu> mpdu);
   /**
    * \param mpdu the MPDU to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    *
    * \return the size of the corresponding fragment.
    */
-  uint32_t GetFragmentSize (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber);
+  uint32_t GetFragmentSize (Ptr<const WifiMpdu> mpdu, uint32_t fragmentNumber);
   /**
    * \param mpdu the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    *
    * \return the offset within the original packet where this fragment starts.
    */
-  uint32_t GetFragmentOffset (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber);
+  uint32_t GetFragmentOffset (Ptr<const WifiMpdu> mpdu, uint32_t fragmentNumber);
   /**
    * \param mpdu the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    *
    * \return true if this is the last fragment, false otherwise.
    */
-  bool IsLastFragment (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber);
+  bool IsLastFragment (Ptr<const WifiMpdu> mpdu, uint32_t fragmentNumber);
 
   /**
    * \return the default transmission power
@@ -1349,7 +1349,7 @@ private:
    *
    * \return the number of fragments needed
    */
-  uint32_t GetNFragments (Ptr<const WifiMacQueueItem> mpdu);
+  uint32_t GetNFragments (Ptr<const WifiMpdu> mpdu);
 
   /**
    * This is a pointer to the WifiPhy associated with this

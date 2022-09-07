@@ -27,7 +27,7 @@
 namespace ns3 {
 
 class WifiTxParameters;
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiMacHeader;
 
 /**
@@ -48,9 +48,9 @@ public:
   WifiDefaultProtectionManager ();
   virtual ~WifiDefaultProtectionManager ();
 
-  virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                       const WifiTxParameters& txParams) override;
-  virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+  virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                             const WifiTxParameters& txParams) override;
 
 protected:

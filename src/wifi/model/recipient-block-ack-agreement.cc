@@ -20,11 +20,11 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
-#include "recipient-block-ack-agreement.h"
-#include "wifi-mac-queue-item.h"
-#include "wifi-utils.h"
-#include "mac-rx-middle.h"
 #include "ctrl-headers.h"
+#include "mac-rx-middle.h"
+#include "recipient-block-ack-agreement.h"
+#include "wifi-mpdu.h"
+#include "wifi-utils.h"
 #include <algorithm>
 
 namespace ns3 {
@@ -115,7 +115,7 @@ RecipientBlockAckAgreement::PassBufferedMpdusWithSeqNumberLessThan (uint16_t new
 }
 
 void
-RecipientBlockAckAgreement::NotifyReceivedMpdu (Ptr<WifiMacQueueItem> mpdu)
+RecipientBlockAckAgreement::NotifyReceivedMpdu (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 

@@ -927,7 +927,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("WifiDefaultProtectionManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueue", LOG_LEVEL_ALL);
-  LogComponentEnable ("WifiMacQueueItem", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiMpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);

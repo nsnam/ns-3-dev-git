@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "wifi-default-ack-manager.h"
 #include "wifi-tx-parameters.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include "qos-utils.h"
 #include "wifi-mac-queue.h"
 #include "wifi-protection.h"
@@ -88,7 +88,7 @@ WifiDefaultAckManager::~WifiDefaultAckManager ()
 }
 
 uint16_t
-WifiDefaultAckManager::GetMaxDistFromStartingSeq (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::GetMaxDistFromStartingSeq (Ptr<const WifiMpdu> mpdu,
                                                   const WifiTxParameters& txParams) const
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -132,7 +132,7 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq (Ptr<const WifiMacQueueItem> mp
 }
 
 bool
-WifiDefaultAckManager::IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::IsResponseNeeded (Ptr<const WifiMpdu> mpdu,
                                          const WifiTxParameters& txParams) const
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -164,7 +164,7 @@ WifiDefaultAckManager::IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                    const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -329,7 +329,7 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+WifiDefaultAckManager::TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                          const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *msdu << &txParams);
@@ -339,7 +339,7 @@ WifiDefaultAckManager::TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMpdu> mpdu,
                                                   const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -468,7 +468,7 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mp
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMpdu> mpdu,
                                             const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -552,7 +552,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMpdu> mpdu,
                                                     const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -635,7 +635,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> 
 }
 
 std::unique_ptr<WifiAcknowledgment>
-WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMpdu> mpdu,
                                             const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);

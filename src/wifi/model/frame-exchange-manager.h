@@ -62,11 +62,11 @@ public:
   /**
    * typedef for a callback to invoke when an MPDU is dropped.
    */
-  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpdu;
+  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMpdu>> DroppedMpdu;
   /**
    * typedef for a callback to invoke when an MPDU is successfully acknowledged.
    */
-  typedef Callback <void, Ptr<const WifiMacQueueItem>> AckedMpdu;
+  typedef Callback <void, Ptr<const WifiMpdu>> AckedMpdu;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.
@@ -273,7 +273,7 @@ protected:
    * \param mpdu the given MPDU
    * \return the first fragment if fragmentation is needed, the given MPDU otherwise
    */
-  Ptr<WifiMacQueueItem> GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu);
+  Ptr<WifiMpdu> GetFirstFragmentIfNeeded (Ptr<WifiMpdu> mpdu);
 
   /**
    * Send an MPDU with the given TX parameters (with the specified protection).
@@ -283,7 +283,7 @@ protected:
    * \param mpdu the MPDU to send
    * \param txParams the TX parameters to use to transmit the MPDU
    */
-  void SendMpduWithProtection (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txParams);
+  void SendMpduWithProtection (Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams);
 
   /**
    * Update the NAV, if needed, based on the Duration/ID of the given <i>psdu</i>.
@@ -306,7 +306,7 @@ protected:
    * \param txVector TxVector of the received PSDU
    * \param inAmpdu true if the MPDU is part of an A-MPDU
    */
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+  virtual void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu);
 
   /**
@@ -330,7 +330,7 @@ protected:
    * \param rxInfo the info on the received signal (\see RxSignalInfo)
    * \param snr the SNR at the receiver for the MPDU that was acknowledged
    */
-  virtual void ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
+  virtual void ReceivedNormalAck (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector,
                                   const WifiTxVector& ackTxVector, const RxSignalInfo& rxInfo, double snr);
 
   /**
@@ -338,14 +338,14 @@ protected:
    *
    * \param mpdu the MPDU that was acknowledged
    */
-  virtual void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu);
+  virtual void NotifyReceivedNormalAck (Ptr<WifiMpdu> mpdu);
 
   /**
    * Retransmit an MPDU that was not acknowledged.
    *
    * \param mpdu the MPDU to retransmit
    */
-  virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const;
+  virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMpdu> mpdu) const;
 
   /**
    * Make the sequence number of the given MPDU available again if the MPDU has
@@ -353,7 +353,7 @@ protected:
    *
    * \param mpdu the given MPDU
    */
-  virtual void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
+  virtual void ReleaseSequenceNumber (Ptr<WifiMpdu> mpdu) const;
 
   /**
    * Pass the given MPDU, discarded because of the max retry limit was reached,
@@ -361,7 +361,7 @@ protected:
    *
    * \param mpdu the discarded MPDU
    */
-  virtual void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu);
+  virtual void NotifyPacketDiscarded (Ptr<const WifiMpdu> mpdu);
 
   /**
    * Perform actions that are possibly needed when receiving any frame,
@@ -404,7 +404,7 @@ protected:
    * \param txVector the given TXVECTOR
    * \return the size of the MPDU
    */
-  virtual uint32_t GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const;
+  virtual uint32_t GetPsduSize (Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const;
 
   Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
   WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
@@ -429,14 +429,14 @@ protected:
    * \param mpdu the MPDU to forward down
    * \param txVector the TXVECTOR used to transmit the MPDU
    */
-  virtual void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector);
+  virtual void ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector);
 
   /**
    * Dequeue the given MPDU from the queue in which it is stored.
    *
    * \param mpdu the given MPDU
    */
-  virtual void DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  virtual void DequeueMpdu (Ptr<const WifiMpdu> mpdu);
 
   /**
    * Compute how to set the Duration/ID field of a frame being transmitted with
@@ -523,7 +523,7 @@ protected:
    *
    * \return the next fragment of the current MSDU.
    */
-  Ptr<WifiMacQueueItem> GetNextFragment (void);
+  Ptr<WifiMpdu> GetNextFragment (void);
 
   /**
    * Take necessary actions upon a transmission success. A non-QoS station
@@ -543,7 +543,7 @@ protected:
    * \param mpdu the MPDU that solicited a Normal Ack response
    * \param txVector the TXVECTOR used to transmit the frame soliciting the Normal Ack
    */
-  virtual void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
+  virtual void NormalAckTimeout (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector);
 
   /**
    * Called when the CTS timeout expires.
@@ -551,7 +551,7 @@ protected:
    * \param rts the RTS that solicited a CTS response
    * \param txVector the TXVECTOR used to transmit the RTS frame
    */
-  virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector);
+  virtual void CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVector);
   /**
    * Take required actions when the CTS timer fired after sending an RTS to
    * protect the given PSDU expires.
@@ -583,7 +583,7 @@ private:
    */
   virtual void Reset (void);
 
-  Ptr<WifiMacQueueItem> m_mpdu;                   //!< the MPDU being transmitted
+  Ptr<WifiMpdu> m_mpdu;                   //!< the MPDU being transmitted
   WifiTxParameters m_txParams;                    //!< the TX parameters for the current frame
   Ptr<Packet> m_fragmentedPacket;                 //!< the MSDU being fragmented
   bool m_moreFragments;                           //!< true if a fragment has to be sent after a SIFS

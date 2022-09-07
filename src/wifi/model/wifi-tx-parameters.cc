@@ -19,7 +19,7 @@
  */
 
 #include "wifi-tx-parameters.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include "wifi-mac-trailer.h"
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
@@ -95,7 +95,7 @@ WifiTxParameters::GetPsduInfoMap (void) const
 }
 
 void
-WifiTxParameters::AddMpdu (Ptr<const WifiMacQueueItem> mpdu)
+WifiTxParameters::AddMpdu (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -144,7 +144,7 @@ WifiTxParameters::AddMpdu (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 uint32_t
-WifiTxParameters::GetSizeIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu) const
+WifiTxParameters::GetSizeIfAddMpdu (Ptr<const WifiMpdu> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -171,7 +171,7 @@ WifiTxParameters::GetSizeIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu) const
 }
 
 void
-WifiTxParameters::AggregateMsdu (Ptr<const WifiMacQueueItem> msdu)
+WifiTxParameters::AggregateMsdu (Ptr<const WifiMpdu> msdu)
 {
   NS_LOG_FUNCTION (this << *msdu);
 
@@ -184,7 +184,7 @@ WifiTxParameters::AggregateMsdu (Ptr<const WifiMacQueueItem> msdu)
 }
 
 std::pair<uint32_t, uint32_t>
-WifiTxParameters::GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) const
+WifiTxParameters::GetSizeIfAggregateMsdu (Ptr<const WifiMpdu> msdu) const
 {
   NS_LOG_FUNCTION (this << *msdu);
 

@@ -21,7 +21,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/simulator.h"
 #include "wifi-mac-queue-container.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 
 
 namespace ns3 {
@@ -35,7 +35,7 @@ WifiMacQueueContainer::clear (void)
 }
 
 WifiMacQueueContainer::iterator
-WifiMacQueueContainer::insert (const_iterator pos, Ptr<WifiMacQueueItem> item)
+WifiMacQueueContainer::insert (const_iterator pos, Ptr<WifiMpdu> item)
 {
   WifiContainerQueueId queueId = GetQueueId (item);
 
@@ -65,14 +65,14 @@ WifiMacQueueContainer::erase (const_iterator pos)
   return m_queues[queueId].erase (pos);
 }
 
-Ptr<WifiMacQueueItem>
+Ptr<WifiMpdu>
 WifiMacQueueContainer::GetItem (const const_iterator it) const
 {
   return it->mpdu;
 }
 
 WifiContainerQueueId
-WifiMacQueueContainer::GetQueueId (Ptr<const WifiMacQueueItem> mpdu)
+WifiMacQueueContainer::GetQueueId (Ptr<const WifiMpdu> mpdu)
 {
   const WifiMacHeader& hdr = mpdu->GetHeader ();
   NS_ABORT_IF (hdr.IsCtl ());

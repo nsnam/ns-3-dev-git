@@ -490,11 +490,11 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
   packet->RemovePacketTag (priorityTag);
-  Queue (Create<WifiMacQueueItem> (packet, hdr));
+  Queue (Create<WifiMpdu> (packet, hdr));
 }
 
 void
-Txop::Queue (Ptr<WifiMacQueueItem> mpdu)
+Txop::Queue (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   const auto linkIds = m_mac->GetMacQueueScheduler ()->GetLinkIds (m_queue->GetAc (),

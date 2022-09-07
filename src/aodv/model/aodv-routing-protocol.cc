@@ -39,7 +39,7 @@
 #include "ns3/udp-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
-#include "ns3/wifi-mac-queue-item.h"
+#include "ns3/wifi-mpdu.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 #include <algorithm>
@@ -730,7 +730,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 }
 
 void
-RoutingProtocol::NotifyTxError (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu)
+RoutingProtocol::NotifyTxError (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 {
   m_nb.GetTxErrorCallback ()(mpdu->GetHeader ());
 }

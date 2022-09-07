@@ -24,12 +24,12 @@
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
-#include "wifi-mac-queue-item.h"
-#include "wifi-mac-queue-container.h"
-#include "ns3/queue.h"
-#include <unordered_map>
 #include "qos-utils.h"
+#include "wifi-mac-queue-container.h"
+#include "wifi-mpdu.h"
+#include "ns3/queue.h"
 #include <functional>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -37,11 +37,11 @@ class QosBlockedDestinations;
 class WifiMacQueueScheduler;
 
 // The following explicit template instantiation declaration prevents modules
-// including this header file from implicitly instantiating Queue<WifiMacQueueItem>.
+// including this header file from implicitly instantiating Queue<WifiMpdu>.
 // This would cause python examples using wifi to crash at runtime with the
 // following error message: "Trying to allocate twice the same UID:
-// ns3::Queue<WifiMacQueueItem>"
-extern template class Queue<WifiMacQueueItem, ns3::WifiMacQueueContainer>;
+// ns3::Queue<WifiMpdu>"
+extern template class Queue<WifiMpdu, ns3::WifiMacQueueContainer>;
 
 
 /**
@@ -62,7 +62,7 @@ extern template class Queue<WifiMacQueueItem, ns3::WifiMacQueueContainer>;
  * Compiling python bindings fails if the namespace (ns3) is not
  * specified for WifiMacQueueContainerT.
  */
-class WifiMacQueue : public Queue<WifiMacQueueItem, ns3::WifiMacQueueContainer>
+class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
 {
 public:
   /**
@@ -81,11 +81,11 @@ public:
   ~WifiMacQueue ();
 
   /// allow the usage of iterators and const iterators
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::ConstIterator;
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::Iterator;
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::IsEmpty;
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::GetNPackets;
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::GetNBytes;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::ConstIterator;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::Iterator;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::IsEmpty;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::GetNPackets;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::GetNBytes;
 
   /**
    * Get the Access Category of the packets stored in this queue
@@ -120,25 +120,25 @@ public:
    * \param item the Wifi MAC queue item to be enqueued at the end
    * \return true if success, false if the packet has been dropped
    */
-  bool Enqueue (Ptr<WifiMacQueueItem> item) override;
+  bool Enqueue (Ptr<WifiMpdu> item) override;
   /**
    * Dequeue the packet in the front of the queue.
    *
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> Dequeue (void) override;
+  Ptr<WifiMpdu> Dequeue (void) override;
   /**
    * Dequeue the given MPDUs if they are stored in this queue.
    *
    * \param mpdus the given MPDUs
    */
-  void DequeueIfQueued (const std::list<Ptr<const WifiMacQueueItem>>& mpdus);
+  void DequeueIfQueued (const std::list<Ptr<const WifiMpdu>>& mpdus);
   /**
    * Peek the packet in the front of the queue. The packet is not removed.
    *
    * \return the packet
    */
-  Ptr<const WifiMacQueueItem> Peek (void) const override;
+  Ptr<const WifiMpdu> Peek (void) const override;
   /**
    * Peek the packet in the front of the queue for transmission on the given
    * link. The packet is not removed.
@@ -146,7 +146,7 @@ public:
    * \param linkId the ID of the link onto which we can transmit a packet
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> Peek (uint8_t linkId) const;
+  Ptr<WifiMpdu> Peek (uint8_t linkId) const;
   /**
    * Search and return, if present in the queue, the first packet having the
    * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
@@ -162,8 +162,8 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid, Mac48Address dest,
-                                             Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMpdu> PeekByTidAndAddress (uint8_t tid, Mac48Address dest,
+                                             Ptr<const WifiMpdu> item = nullptr) const;
   /**
    * Search and return the first packet present in the container queue identified
    * by the given queue ID. If <i>item</i> is a null pointer, the search starts from
@@ -178,8 +178,8 @@ public:
    * \param item the item after which the search starts from
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<WifiMacQueueItem> PeekByQueueId (const WifiContainerQueueId& queueId,
-                                       Ptr<const WifiMacQueueItem> item = nullptr) const;
+  Ptr<WifiMpdu> PeekByQueueId (const WifiContainerQueueId& queueId,
+                                       Ptr<const WifiMpdu> item = nullptr) const;
 
   /**
    * Return first available packet for transmission on the given link. If <i>item</i>
@@ -193,15 +193,15 @@ public:
    *
    * \return the peeked packet or nullptr if no packet was found
    */
-  Ptr<WifiMacQueueItem> PeekFirstAvailable (uint8_t linkId,
+  Ptr<WifiMpdu> PeekFirstAvailable (uint8_t linkId,
                                             const Ptr<QosBlockedDestinations> blockedPackets = nullptr,
-                                            Ptr<const WifiMacQueueItem> item = nullptr) const;
+                                            Ptr<const WifiMpdu> item = nullptr) const;
   /**
    * Remove the packet in the front of the queue.
    *
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> Remove (void) override;
+  Ptr<WifiMpdu> Remove (void) override;
   /**
    * Remove the given item from the queue and return the item following the
    * removed one, if any, or a null pointer otherwise. If <i>removeExpired</i> is
@@ -211,7 +211,7 @@ public:
    * \param item the item to be removed
    * \return the removed item
    */
-  Ptr<WifiMacQueueItem> Remove (Ptr<const WifiMacQueueItem> item);
+  Ptr<WifiMpdu> Remove (Ptr<const WifiMpdu> item);
 
   /**
    * Replace the given current item with the given new item. Actually, the current
@@ -221,7 +221,7 @@ public:
    * \param currentItem the given current item
    * \param newItem the given new item
    */
-  void Replace (Ptr<const WifiMacQueueItem> currentItem, Ptr<WifiMacQueueItem> newItem);
+  void Replace (Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem);
 
   /**
    * Get the number of MPDUs currently stored in the container queue identified
@@ -249,7 +249,7 @@ public:
    * \param now a copy of Simulator::Now()
    * \return true if the item is removed, false otherwise
    */
-  bool TtlExceeded (Ptr<const WifiMacQueueItem> item, const Time& now);
+  bool TtlExceeded (Ptr<const WifiMpdu> item, const Time& now);
 
   /**
    * Move MPDUs with expired lifetime from the container queue identified by the
@@ -279,7 +279,7 @@ public:
   void WipeAllExpiredMpdus (void);
 
 protected:
-  using Queue<WifiMacQueueItem, WifiMacQueueContainer>::GetContainer;
+  using Queue<WifiMpdu, WifiMacQueueContainer>::GetContainer;
 
   void DoDispose (void) override;
 
@@ -288,7 +288,7 @@ private:
    * \param mpdu the given MPDU
    * \return the queue iterator stored by the given MPDU
    */
-  Iterator GetIt (Ptr<const WifiMacQueueItem> mpdu) const;
+  Iterator GetIt (Ptr<const WifiMpdu> mpdu) const;
 
   /**
    * Enqueue the given Wifi MAC queue item before the given position.
@@ -297,7 +297,7 @@ private:
    * \param item the Wifi MAC queue item to be enqueued
    * \return true if success, false if the packet has been dropped
    */
-  bool Insert (ConstIterator pos, Ptr<WifiMacQueueItem> item);
+  bool Insert (ConstIterator pos, Ptr<WifiMpdu> item);
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
@@ -307,7 +307,7 @@ private:
    * \param item the item to enqueue
    * \return true if success, false if the packet has been dropped.
    */
-  bool DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item);
+  bool DoEnqueue (ConstIterator pos, Ptr<WifiMpdu> item);
   /**
    * Wrapper for the DoDequeue method provided by the base class that additionally
    * resets the iterator field of the dequeued items and notifies the scheduler, if
@@ -324,14 +324,14 @@ private:
    * \param pos the position of the item to drop
    * \return the dropped item.
    */
-  Ptr<WifiMacQueueItem> DoRemove (ConstIterator pos);
+  Ptr<WifiMpdu> DoRemove (ConstIterator pos);
 
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   AcIndex m_ac;                             //!< the access category
   Ptr<WifiMacQueueScheduler> m_scheduler;   //!< the MAC queue scheduler
 
   /// Traced callback: fired when a packet is dropped due to lifetime expiration
-  TracedCallback<Ptr<const WifiMacQueueItem> > m_traceExpired;
+  TracedCallback<Ptr<const WifiMpdu> > m_traceExpired;
 
   NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
 };

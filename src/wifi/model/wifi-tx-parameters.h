@@ -30,7 +30,7 @@
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 struct WifiProtection;
 struct WifiAcknowledgment;
 
@@ -75,7 +75,7 @@ public:
    *
    * \param mpdu the MPDU being added
    */
-  void AddMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  void AddMpdu (Ptr<const WifiMpdu> mpdu);
 
   /**
    * Record that an MSDU is being aggregated to the last MPDU added to the frame
@@ -83,7 +83,7 @@ public:
    *
    * \param msdu the MSDU being aggregated
    */
-  void AggregateMsdu (Ptr<const WifiMacQueueItem> msdu);
+  void AggregateMsdu (Ptr<const WifiMpdu> msdu);
 
   /**
    * Get the size in bytes of the frame in case the given MPDU is added.
@@ -91,7 +91,7 @@ public:
    * \param mpdu the given MPDU
    * \return the size in bytes of the frame in case the given MPDU is added
    */
-  uint32_t GetSizeIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu) const;
+  uint32_t GetSizeIfAddMpdu (Ptr<const WifiMpdu> mpdu) const;
 
   /**
    * Get the size in bytes of the frame in case the given MSDU is aggregated.
@@ -100,7 +100,7 @@ public:
    * \return a pair (size in bytes of the current A-MSDU, size in bytes of the frame)
              in case the given MSDU is aggregated
    */
-  std::pair<uint32_t, uint32_t> GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) const;
+  std::pair<uint32_t, uint32_t> GetSizeIfAggregateMsdu (Ptr<const WifiMpdu> msdu) const;
 
   /**
    * Get the size in bytes of the (A-)MPDU addressed to the given receiver.

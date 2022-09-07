@@ -121,12 +121,12 @@ set(source_files
     model/wifi-mac-header.cc
     model/wifi-mac-queue-container.cc
     model/wifi-mac-queue-elem.cc
-    model/wifi-mac-queue-item.cc
     model/wifi-mac-queue-scheduler.cc
     model/wifi-mac-queue.cc
     model/wifi-mac-trailer.cc
     model/wifi-mac.cc
     model/wifi-mode.cc
+    model/wifi-mpdu.cc
     model/wifi-net-device.cc
     model/wifi-phy.cc
     model/wifi-phy-common.cc
@@ -268,7 +268,6 @@ set(header_files
     model/wifi-mac-header.h
     model/wifi-mac-queue-container.h
     model/wifi-mac-queue-elem.h
-    model/wifi-mac-queue-item.h
     model/wifi-mac-queue-scheduler-impl.h
     model/wifi-mac-queue-scheduler.h
     model/wifi-mac-queue.h
@@ -276,6 +275,7 @@ set(header_files
     model/wifi-mac.h
     model/wifi-mode.h
     model/wifi-mpdu-type.h
+    model/wifi-mpdu.h
     model/wifi-net-device.h
     model/wifi-phy-band.h
     model/wifi-phy-common.h

@@ -263,7 +263,7 @@ QosTxop::GetBaStartingSequence (Mac48Address address, uint8_t tid) const
   return m_baManager->GetOriginatorStartingSequence (address, tid);
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<const WifiMpdu>
 QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
@@ -282,11 +282,11 @@ QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
   hdr.SetNoRetry ();
   hdr.SetNoMoreFragments ();
 
-  return Create<const WifiMacQueueItem> (bar, hdr);
+  return Create<const WifiMpdu> (bar, hdr);
 }
 
 void
-QosTxop::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
+QosTxop::ScheduleBar (Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
 {
   m_baManager->ScheduleBar (bar, skipIfNoDataQueued);
 }
@@ -325,7 +325,7 @@ QosTxop::PeekNextSequenceNumberFor (const WifiMacHeader *hdr)
 }
 
 bool
-QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
+QosTxop::IsQosOldPacket (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -350,13 +350,13 @@ QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
   return false;
 }
 
-Ptr<WifiMacQueueItem>
-QosTxop::PeekNextMpdu (uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<WifiMacQueueItem> item)
+Ptr<WifiMpdu>
+QosTxop::PeekNextMpdu (uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<WifiMpdu> item)
 {
   NS_LOG_FUNCTION (this << +linkId << +tid << recipient << item);
 
   // lambda to peek the next frame
-  auto peek = [this, &linkId, &tid, &recipient, &item] () -> Ptr<WifiMacQueueItem>
+  auto peek = [this, &linkId, &tid, &recipient, &item] () -> Ptr<WifiMpdu>
     {
       if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
         {
@@ -436,8 +436,8 @@ QosTxop::PeekNextMpdu (uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<
   return nullptr;
 }
 
-Ptr<WifiMacQueueItem>
-QosTxop::GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+Ptr<WifiMpdu>
+QosTxop::GetNextMpdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
                       Time availableTime, bool initialFrame)
 {
   NS_ASSERT (peekedItem);
@@ -458,7 +458,7 @@ QosTxop::GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txPara
     }
 
   NS_ASSERT (peekedItem->IsQueued ());
-  Ptr<WifiMacQueueItem> mpdu;
+  Ptr<WifiMpdu> mpdu;
 
   // If it is a non-broadcast QoS Data frame and it is not a retransmission nor a fragment,
   // attempt A-MSDU aggregation
@@ -503,7 +503,7 @@ QosTxop::GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txPara
 }
 
 void
-QosTxop::AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const
+QosTxop::AssignSequenceNumber (Ptr<WifiMpdu> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -620,7 +620,7 @@ QosTxop::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient)
 }
 
 void
-QosTxop::CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu)
+QosTxop::CompleteMpduTx (Ptr<WifiMpdu> mpdu)
 {
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
   // If there is an established BA agreement, store the packet in the queue of outstanding packets

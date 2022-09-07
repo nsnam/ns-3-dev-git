@@ -218,7 +218,7 @@ private:
    * \param mpdu the received MPDU
    * \param linkId the ID of the link the frame was received over
    */
-  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
   /**
    * Send frame. Frame is supposed to be tagged by routing information.
    *

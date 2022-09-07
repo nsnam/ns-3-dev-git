@@ -21,7 +21,7 @@
 
 #include "ns3/log.h"
 #include "originator-block-ack-agreement.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include "wifi-utils.h"
 
 namespace ns3 {
@@ -107,7 +107,7 @@ OriginatorBlockAckAgreement::AdvanceTxWindow (void)
 }
 
 void
-OriginatorBlockAckAgreement::NotifyTransmittedMpdu (Ptr<const WifiMacQueueItem> mpdu)
+OriginatorBlockAckAgreement::NotifyTransmittedMpdu (Ptr<const WifiMpdu> mpdu)
 {
   uint16_t mpduSeqNumber = mpdu->GetHeader ().GetSequenceNumber ();
   uint16_t distance = GetDistance (mpduSeqNumber);
@@ -132,7 +132,7 @@ OriginatorBlockAckAgreement::NotifyTransmittedMpdu (Ptr<const WifiMacQueueItem> 
 }
 
 void
-OriginatorBlockAckAgreement::NotifyAckedMpdu (Ptr<const WifiMacQueueItem> mpdu)
+OriginatorBlockAckAgreement::NotifyAckedMpdu (Ptr<const WifiMpdu> mpdu)
 {
   uint16_t mpduSeqNumber = mpdu->GetHeader ().GetSequenceNumber ();
   uint16_t distance = GetDistance (mpduSeqNumber);
@@ -155,7 +155,7 @@ OriginatorBlockAckAgreement::NotifyAckedMpdu (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 void
-OriginatorBlockAckAgreement::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
+OriginatorBlockAckAgreement::NotifyDiscardedMpdu (Ptr<const WifiMpdu> mpdu)
 {
   uint16_t mpduSeqNumber = mpdu->GetHeader ().GetSequenceNumber ();
   uint16_t distance = GetDistance (mpduSeqNumber);

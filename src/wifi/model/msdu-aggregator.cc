@@ -82,8 +82,8 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
   return amsduSize + CalculatePadding (amsduSize) + 14 + msduSize;
 }
 
-Ptr<WifiMacQueueItem>
-MsduAggregator::GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+Ptr<WifiMpdu>
+MsduAggregator::GetNextAmsdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
                               Time availableTime) const
 {
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
@@ -117,7 +117,7 @@ MsduAggregator::GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters
       return nullptr;
     }
 
-  Ptr<WifiMacQueueItem> amsdu = peekedItem;
+  Ptr<WifiMpdu> amsdu = peekedItem;
   uint8_t nMsdu = 1;
   peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
 
@@ -125,7 +125,7 @@ MsduAggregator::GetNextAmsdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters
          && m_htFem->TryAggregateMsdu (peekedItem, txParams, availableTime))
     {
       // find the next MPDU before dequeuing the current one
-      Ptr<const WifiMacQueueItem> msdu = peekedItem;
+      Ptr<const WifiMpdu> msdu = peekedItem;
       peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
       queue->DequeueIfQueued ({amsdu});
       // perform A-MSDU aggregation
@@ -216,11 +216,11 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   return maxAmsduSize;
 }
 
-WifiMacQueueItem::DeaggregatedMsdus
+WifiMpdu::DeaggregatedMsdus
 MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  WifiMacQueueItem::DeaggregatedMsdus set;
+  WifiMpdu::DeaggregatedMsdus set;
 
   AmsduSubframeHeader hdr;
   Ptr<Packet> extractedMsdu = Create<Packet> ();

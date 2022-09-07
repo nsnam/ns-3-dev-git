@@ -22,8 +22,8 @@
 #define MPDU_AGGREGATOR_H
 
 #include "ns3/object.h"
+#include "qos-utils.h"
 #include "wifi-mode.h"
-#include "wifi-mac-queue-item.h"
 #include "ns3/nstime.h"
 #include <vector>
 
@@ -34,6 +34,7 @@ class WifiTxVector;
 class QosTxop;
 class Packet;
 class WifiMac;
+class WifiMpdu;
 class WifiTxParameters;
 
 /**
@@ -65,7 +66,7 @@ public:
    * \param ampdu the A-MPDU.
    * \param isSingle whether it is a single MPDU.
    */
-  static void Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, bool isSingle);
+  static void Aggregate (Ptr<const WifiMpdu> mpdu, Ptr<Packet> ampdu, bool isSingle);
 
   /**
    * Compute the size of the A-MPDU resulting from the aggregation of an MPDU of
@@ -120,7 +121,7 @@ public:
    * \param availableTime the time available for the frame exchange
    * \return the resulting A-MPDU, if aggregation is possible.
    */
-  std::vector<Ptr<WifiMacQueueItem>> GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu,
+  std::vector<Ptr<WifiMpdu>> GetNextAmpdu (Ptr<WifiMpdu> mpdu,
                                                    WifiTxParameters& txParams,
                                                    Time availableTime) const;
 

@@ -157,7 +157,7 @@ PowerRateAdaptationTest::TestParf ()
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (packet, packetHeader);
+  Ptr<WifiMpdu> mpdu = Create<WifiMpdu> (packet, packetHeader);
   WifiMode ackMode;
 
   /*
@@ -379,7 +379,7 @@ PowerRateAdaptationTest::TestAparf ()
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (packet, packetHeader);
+  Ptr<WifiMpdu> mpdu = Create<WifiMpdu> (packet, packetHeader);
   WifiMode ackMode;
 
   /*
@@ -623,7 +623,7 @@ PowerRateAdaptationTest::TestRrpaa ()
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (packet, packetHeader);
+  Ptr<WifiMpdu> mpdu = Create<WifiMpdu> (packet, packetHeader);
   WifiMode ackMode;
 
   /*

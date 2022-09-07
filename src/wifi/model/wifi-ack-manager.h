@@ -29,7 +29,7 @@
 namespace ns3 {
 
 class WifiTxParameters;
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiPsdu;
 class WifiMac;
 
@@ -69,7 +69,7 @@ public:
    * \param item the MPDU
    * \param acknowledgment the WifiAcknowledgment object storing the QoS Ack policy to set
    */
-  static void SetQosAckPolicy (Ptr<WifiMacQueueItem> item, const WifiAcknowledgment* acknowledgment);
+  static void SetQosAckPolicy (Ptr<WifiMpdu> item, const WifiAcknowledgment* acknowledgment);
 
   /**
    * Set the QoS Ack policy for the given PSDU, which must include at least a QoS data frame.
@@ -89,7 +89,7 @@ public:
    * \return a null pointer if the acknowledgment method is unchanged or the new
    *         acknowledgment method otherwise
    */
-  virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                           const WifiTxParameters& txParams) = 0;
 
   /**
@@ -102,7 +102,7 @@ public:
    * \return a null pointer if the acknowledgment method is unchanged or the new
    *         acknowledgment method otherwise
    */
-  virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+  virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                                 const WifiTxParameters& txParams) = 0;
 
 protected:

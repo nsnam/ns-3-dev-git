@@ -23,7 +23,7 @@
 
 #include "ns3/nstime.h"
 #include "wifi-mac-header.h"
-#include "wifi-mac-queue-item.h"
+#include "wifi-mpdu.h"
 #include <vector>
 #include <set>
 
@@ -57,7 +57,7 @@ public:
    * \param mpdu the MPDU.
    * \param isSingle true for an S-MPDU
    */
-  WifiPsdu (Ptr<WifiMacQueueItem> mpdu, bool isSingle);
+  WifiPsdu (Ptr<WifiMpdu> mpdu, bool isSingle);
 
   /**
    * Create a PSDU storing an MPDU or S-MPDU. Typically used for QoS data
@@ -66,14 +66,14 @@ public:
    * \param mpdu the MPDU.
    * \param isSingle true for an S-MPDU
    */
-  WifiPsdu (Ptr<const WifiMacQueueItem> mpdu, bool isSingle);
+  WifiPsdu (Ptr<const WifiMpdu> mpdu, bool isSingle);
 
   /**
    * Create a PSDU storing an S-MPDU or A-MPDU.
    *
    * \param mpduList the list of constituent MPDUs.
    */
-  WifiPsdu (std::vector<Ptr<WifiMacQueueItem>> mpduList);
+  WifiPsdu (std::vector<Ptr<WifiMpdu>> mpduList);
 
   virtual ~WifiPsdu ();
 
@@ -214,28 +214,28 @@ public:
    *
    * \return a const iterator to the first MPDU.
    */
-  std::vector<Ptr<WifiMacQueueItem>>::const_iterator begin (void) const;
+  std::vector<Ptr<WifiMpdu>>::const_iterator begin (void) const;
 
   /**
    * \brief Return an iterator to the first MPDU
    *
    * \return an iterator to the first MPDU.
    */
-  std::vector<Ptr<WifiMacQueueItem>>::iterator begin (void);
+  std::vector<Ptr<WifiMpdu>>::iterator begin (void);
 
   /**
    * \brief Return a const iterator to past-the-last MPDU
    *
    * \return a const iterator to past-the-last MPDU.
    */
-  std::vector<Ptr<WifiMacQueueItem>>::const_iterator end (void) const;
+  std::vector<Ptr<WifiMpdu>>::const_iterator end (void) const;
 
   /**
    * \brief Return an iterator to past-the-last MPDU
    *
    * \return an iterator to past-the-last MPDU.
    */
-  std::vector<Ptr<WifiMacQueueItem>>::iterator end (void);
+  std::vector<Ptr<WifiMpdu>>::iterator end (void);
 
   /**
    * \brief Print the PSDU contents.
@@ -245,7 +245,7 @@ public:
 
 private:
   bool m_isSingle;                                //!< true for an S-MPDU
-  std::vector<Ptr<WifiMacQueueItem>> m_mpduList;  //!< list of constituent MPDUs
+  std::vector<Ptr<WifiMpdu>> m_mpduList;  //!< list of constituent MPDUs
   uint32_t m_size;                                //!< the size of the PSDU in bytes
 };
 

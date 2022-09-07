@@ -28,7 +28,7 @@ class OriginatorBlockAckWindowTest;
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 
 /**
  * \ingroup wifi
@@ -178,21 +178,21 @@ public:
    *
    * \param mpdu the transmitted MPDU
    */
-  void NotifyTransmittedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyTransmittedMpdu (Ptr<const WifiMpdu> mpdu);
   /**
    * Record that the given MPDU has been acknowledged and advance the transmit
    * window if possible.
    *
    * \param mpdu the acknowledged MPDU
    */
-  void NotifyAckedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyAckedMpdu (Ptr<const WifiMpdu> mpdu);
   /**
    * Advance the transmit window beyond the MPDU that has been reported to
    * be discarded.
    *
    * \param mpdu the discarded MPDU
    */
-  void NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyDiscardedMpdu (Ptr<const WifiMpdu> mpdu);
 
 
 private:

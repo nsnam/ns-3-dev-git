@@ -33,7 +33,7 @@ using namespace ns3;
  *
  * This test verifies the correctness of DROP_OLDEST policy when packets
  * are pushed into the front of the queue. This case is not handled
- * by the underlying ns3::Queue<WifiMacQueueItem>.
+ * by the underlying ns3::Queue<WifiMpdu>.
  */
 class WifiMacQueueDropOldestTest : public TestCase
 {
@@ -72,7 +72,7 @@ WifiMacQueueDropOldestTest::DoRun ()
       header.SetAddr1 (addr1);
       header.SetQosTid (0);
       auto packet = Create<Packet> ();
-      auto item = Create<WifiMacQueueItem> (packet, header);
+      auto item = Create<WifiMpdu> (packet, header);
       wifiMacQueue->Enqueue (item);
 
       packetUids.push_back (packet->GetUid ());
@@ -95,7 +95,7 @@ WifiMacQueueDropOldestTest::DoRun ()
   header.SetAddr1 (addr1);
   header.SetQosTid (0);
   auto packet = Create<Packet> ();
-  auto item = Create<WifiMacQueueItem> (packet, header);
+  auto item = Create<WifiMpdu> (packet, header);
   wifiMacQueue->Enqueue (item);
 
   // Update the list of expected packet UIDs.

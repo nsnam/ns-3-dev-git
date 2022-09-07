@@ -29,7 +29,7 @@
 namespace ns3 {
 
 class WifiTxParameters;
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiMac;
 
 /**
@@ -72,7 +72,7 @@ public:
    * \return a null pointer if the protection method is unchanged or the new
    *         protection method otherwise
    */
-  virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+  virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                       const WifiTxParameters& txParams) = 0;
 
   /**
@@ -85,7 +85,7 @@ public:
    * \return a null pointer if the protection method is unchanged or the new
    *         protection method otherwise
    */
-  virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+  virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                             const WifiTxParameters& txParams) = 0;
 
 protected:

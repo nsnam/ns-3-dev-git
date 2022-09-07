@@ -33,11 +33,11 @@ NS_LOG_COMPONENT_DEFINE ("WifiPsdu");
 WifiPsdu::WifiPsdu (Ptr<const Packet> p, const WifiMacHeader & header)
   : m_isSingle (false)
 {
-  m_mpduList.push_back (Create<WifiMacQueueItem> (p, header));
+  m_mpduList.push_back (Create<WifiMpdu> (p, header));
   m_size = header.GetSerializedSize () + p->GetSize () + WIFI_MAC_FCS_LENGTH;
 }
 
-WifiPsdu::WifiPsdu (Ptr<WifiMacQueueItem> mpdu, bool isSingle)
+WifiPsdu::WifiPsdu (Ptr<WifiMpdu> mpdu, bool isSingle)
   : m_isSingle (isSingle)
 {
   m_mpduList.push_back (mpdu);
@@ -49,12 +49,12 @@ WifiPsdu::WifiPsdu (Ptr<WifiMacQueueItem> mpdu, bool isSingle)
     }
 }
 
-WifiPsdu::WifiPsdu (Ptr<const WifiMacQueueItem> mpdu, bool isSingle)
-  : WifiPsdu (Create<WifiMacQueueItem> (*mpdu), isSingle)
+WifiPsdu::WifiPsdu (Ptr<const WifiMpdu> mpdu, bool isSingle)
+  : WifiPsdu (Create<WifiMpdu> (*mpdu), isSingle)
 {
 }
 
-WifiPsdu::WifiPsdu (std::vector<Ptr<WifiMacQueueItem>> mpduList)
+WifiPsdu::WifiPsdu (std::vector<Ptr<WifiMpdu>> mpduList)
   : m_isSingle (mpduList.size () == 1),
     m_mpduList (mpduList)
 {
@@ -315,25 +315,25 @@ WifiPsdu::GetNMpdus (void) const
   return m_mpduList.size ();
 }
 
-std::vector<Ptr<WifiMacQueueItem>>::const_iterator
+std::vector<Ptr<WifiMpdu>>::const_iterator
 WifiPsdu::begin (void) const
 {
   return m_mpduList.begin ();
 }
 
-std::vector<Ptr<WifiMacQueueItem>>::iterator
+std::vector<Ptr<WifiMpdu>>::iterator
 WifiPsdu::begin (void)
 {
   return m_mpduList.begin ();
 }
 
-std::vector<Ptr<WifiMacQueueItem>>::const_iterator
+std::vector<Ptr<WifiMpdu>>::const_iterator
 WifiPsdu::end (void) const
 {
   return m_mpduList.end ();
 }
 
-std::vector<Ptr<WifiMacQueueItem>>::iterator
+std::vector<Ptr<WifiMpdu>>::iterator
 WifiPsdu::end (void)
 {
   return m_mpduList.end ();

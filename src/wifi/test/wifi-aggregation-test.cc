@@ -68,7 +68,7 @@ private:
    * \param reason the reason why the MPDU was discarded
    * \param mpdu the discarded MPDU
    */
-  void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+  void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
   void DoRun (void) override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
@@ -86,7 +86,7 @@ AmpduAggregationTest::AmpduAggregationTest ()
 }
 
 void
-AmpduAggregationTest::MpduDiscarded (WifiMacDropReason, Ptr<const WifiMacQueueItem>)
+AmpduAggregationTest::MpduDiscarded (WifiMacDropReason, Ptr<const WifiMpdu>)
 {
   m_discarded = true;
 }
@@ -194,12 +194,12 @@ AmpduAggregationTest::DoRun (void)
   Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager> (fem);
   Ptr<MpduAggregator> mpduAggregator = htFem->GetMpduAggregator ();
 
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt, hdr));
 
-  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
+  Ptr<WifiMpdu> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
-  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
+  Ptr<WifiMpdu> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
 
@@ -227,8 +227,8 @@ AmpduAggregationTest::DoRun (void)
   hdr2.SetType (WIFI_MAC_QOSDATA);
   hdr2.SetQosTid (0);
 
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt1, hdr1));
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt2, hdr2));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt1, hdr1));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt2, hdr2));
 
   item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
   mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
@@ -274,9 +274,9 @@ AmpduAggregationTest::DoRun (void)
   hdr3.SetType (WIFI_MAC_QOSDATA);
   hdr3.SetQosTid (0);
 
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt1, hdr1));
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt2, hdr2));
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt3, hdr3));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt1, hdr1));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt2, hdr2));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt3, hdr3));
 
   peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
   txParams.Clear ();
@@ -424,15 +424,15 @@ TwoLevelAggregationTest::DoRun (void)
   Ptr<MsduAggregator> msduAggregator = htFem->GetMsduAggregator ();
   Ptr<MpduAggregator> mpduAggregator = htFem->GetMpduAggregator ();
 
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1500), hdr));
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1500), hdr));
-  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1500), hdr));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (Create<Packet> (1500), hdr));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (Create<Packet> (1500), hdr));
+  m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (Create<Packet> (1500), hdr));
 
-  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
+  Ptr<WifiMpdu> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
   htFem->TryAddMpdu (peeked, txParams, Time::Min ());
-  Ptr<WifiMacQueueItem> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
+  Ptr<WifiMpdu> item = msduAggregator->GetNextAmsdu (peeked, txParams, Time::Min ());
 
   bool result {item};
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
@@ -501,7 +501,7 @@ TwoLevelAggregationTest::DoRun (void)
   // Add 10 MSDUs to the EDCA queue
   for (uint8_t i = 0; i < 10; i++)
     {
-      m_mac->GetVIQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (Create<Packet> (1300), hdr));
+      m_mac->GetVIQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (Create<Packet> (1300), hdr));
     }
 
   peeked = m_mac->GetVIQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
@@ -690,13 +690,13 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
       hdr.SetType (WIFI_MAC_QOSDATA);
       hdr.SetQosTid (0);
 
-      m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
+      m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMpdu> (pkt, hdr));
   }
 
-  Ptr<WifiMacQueueItem> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
+  Ptr<WifiMpdu> peeked = m_mac->GetBEQueue ()->PeekNextMpdu (SINGLE_LINK_OP_ID);
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peeked->GetHeader (), m_phy->GetChannelWidth ());
-  Ptr<WifiMacQueueItem> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
+  Ptr<WifiMpdu> item = m_mac->GetBEQueue ()->GetNextMpdu (peeked, txParams, Time::Min (), true);
 
   auto mpduList = mpduAggregator->GetNextAmpdu (item, txParams, Time::Min ());
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);

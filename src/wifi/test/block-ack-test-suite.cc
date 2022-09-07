@@ -39,7 +39,7 @@
 #include "ns3/mac-rx-middle.h"
 #include "ns3/qos-txop.h"
 #include "ns3/originator-block-ack-agreement.h"
-#include "ns3/wifi-mac-queue-item.h"
+#include "ns3/wifi-mpdu.h"
 #include <list>
 
 using namespace ns3;
@@ -300,7 +300,7 @@ OriginatorBlockAckWindowTest::DoRun (void)
   // Notify the acknowledgment of 5 packets
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (Create<Packet> (), hdr);
+  Ptr<WifiMpdu> mpdu = Create<WifiMpdu> (Create<Packet> (), hdr);
   uint16_t seqNumber = startingSeq;
   mpdu->GetHeader ().SetSequenceNumber (seqNumber);
   agreement.NotifyAckedMpdu (mpdu);
@@ -673,11 +673,11 @@ public:
    * \param mpdu an MPDU that is forwarded up
    * \param linkId the ID of the given link
    */
-  void ForwardUp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void ForwardUp (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
 private:
   uint16_t m_ssn;                          //!< the Starting Sequence Number used to initialize WinStartB
-  std::list<Ptr<WifiMacQueueItem>> m_fwup; //!< list of MPDUs that have been forwarded up
+  std::list<Ptr<WifiMpdu>> m_fwup; //!< list of MPDUs that have been forwarded up
 };
 
 BlockAckRecipientBufferTest::BlockAckRecipientBufferTest (uint16_t ssn)
@@ -691,7 +691,7 @@ BlockAckRecipientBufferTest::~BlockAckRecipientBufferTest ()
 }
 
 void
-BlockAckRecipientBufferTest::ForwardUp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+BlockAckRecipientBufferTest::ForwardUp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   m_fwup.push_back (mpdu);
 }
@@ -714,7 +714,7 @@ BlockAckRecipientBufferTest::DoRun (void)
 
   // Notify the reception of an MPDU with SN = SSN.
   hdr.SetSequenceNumber (m_ssn);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // This MPDU is forwarded up and WinStartB is set to SSN + 1.
   NS_TEST_ASSERT_MSG_EQ (m_fwup.size (), 1, "MPDU with SN=SSN must have been forwarded up");
@@ -729,31 +729,31 @@ BlockAckRecipientBufferTest::DoRun (void)
   //                      |
   //                   SSN + 1
   hdr.SetSequenceNumber ((m_ssn + 4) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 2) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 5) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 3) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 10) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 7) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // No MPDU is forwarded up because the one with SN = SSN + 1 is missing
   NS_TEST_ASSERT_MSG_EQ (m_fwup.empty (), true, "No MPDU must have been forwarded up");
 
   // Notify the reception of an "old" MPDU (SN = SSN)
   hdr.SetSequenceNumber (m_ssn);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // No MPDU is forwarded up
   NS_TEST_ASSERT_MSG_EQ (m_fwup.empty (), true, "No MPDU must have been forwarded up");
 
   // Notify the reception of a duplicate MPDU (SN = SSN + 2)
   hdr.SetSequenceNumber ((m_ssn + 2) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(10), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(10), hdr));
 
   // No MPDU is forwarded up
   NS_TEST_ASSERT_MSG_EQ (m_fwup.empty (), true, "No MPDU must have been forwarded up");
@@ -764,7 +764,7 @@ BlockAckRecipientBufferTest::DoRun (void)
   //                      |
   //                   SSN + 1
   hdr.SetSequenceNumber ((m_ssn + 1) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // All the MPDUs with SN = SSN + {1, 2, 3, 4, 5} must have been forwarded up in order
   NS_TEST_ASSERT_MSG_EQ (m_fwup.size (), 5, "5 MPDUs must have been forwarded up");
@@ -802,7 +802,7 @@ BlockAckRecipientBufferTest::DoRun (void)
   //                   SSN + 6           SSN + 15
   // Notify the reception of an MPDU beyond the current window (SN = SSN + 17)
   hdr.SetSequenceNumber ((m_ssn + 17) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // WinStartB is set to SSN + 8 (so that WinEndB = SSN + 17). The MPDU with
   // SN = SSN + 7 is forwarded up, irrespective of the missed reception of the
@@ -836,9 +836,9 @@ BlockAckRecipientBufferTest::DoRun (void)
   //                      |                 |
   //                   SSN + 8           SSN + 17
   hdr.SetSequenceNumber ((m_ssn + 9) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
   hdr.SetSequenceNumber ((m_ssn + 11) % SEQNO_SPACE_SIZE);
-  agreement.NotifyReceivedMpdu (Create<WifiMacQueueItem> (Create<Packet>(), hdr));
+  agreement.NotifyReceivedMpdu (Create<WifiMpdu> (Create<Packet>(), hdr));
 
   // No MPDU is forwarded up because the one with SN = SSN + 8 is missing
   NS_TEST_ASSERT_MSG_EQ (m_fwup.empty (), true, "No MPDU must have been forwarded up");

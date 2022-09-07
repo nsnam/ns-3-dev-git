@@ -63,7 +63,7 @@ WaveFrameExchangeManager::SetWaveNetDevice (Ptr<WaveNetDevice> device)
 }
 
 WifiTxVector
-WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
+WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMpdu> item) const
 {
   NS_LOG_FUNCTION (this << *item);
   HigherLayerTxVectorTag datatag;
@@ -135,7 +135,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidt
     }
 
   m_dcf->NotifyChannelAccessed (0);
-  Ptr<WifiMacQueueItem> mpdu = queue->PeekFirstAvailable (0);
+  Ptr<WifiMpdu> mpdu = queue->PeekFirstAvailable (0);
   NS_ASSERT (mpdu);
 
   // assign a sequence number if this is not a fragment nor a retransmission

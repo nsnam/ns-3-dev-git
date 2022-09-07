@@ -21,8 +21,8 @@
  *          Stefano Avallone <stavallo@unina.it>
  */
 
-#ifndef WIFI_MAC_QUEUE_ITEM_H
-#define WIFI_MAC_QUEUE_ITEM_H
+#ifndef WIFI_MPDU_H
+#define WIFI_MPDU_H
 
 #include "ns3/packet.h"
 #include "amsdu-subframe-header.h"
@@ -33,13 +33,11 @@
 
 namespace ns3 {
 
-class QosBlockedDestinations;
-
 /**
  * \ingroup wifi
  *
  * Tag used to allow (only) WifiMacQueue to access the queue iterator stored
- * by a WifiMacQueueItem.
+ * by a WifiMpdu.
  */
 class WmqIteratorTag
 {
@@ -50,10 +48,10 @@ class WmqIteratorTag
 /**
  * \ingroup wifi
  *
- * WifiMacQueueItem stores (const) packets along with their Wifi MAC headers
+ * WifiMpdu stores (const) packets along with their Wifi MAC headers
  * and the time when they were enqueued.
  */
-class WifiMacQueueItem : public SimpleRefCount<WifiMacQueueItem>
+class WifiMpdu : public SimpleRefCount<WifiMpdu>
 {
 public:
   /**
@@ -61,9 +59,9 @@ public:
    * \param p the const packet included in the created item.
    * \param header the Wifi MAC header included in the created item.
    */
-  WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header);
+  WifiMpdu (Ptr<const Packet> p, const WifiMacHeader & header);
 
-  virtual ~WifiMacQueueItem ();
+  virtual ~WifiMpdu ();
 
   /**
    * \brief Get the packet stored in this item
@@ -75,13 +73,13 @@ public:
    * \brief Get the header stored in this item
    * \return the header stored in this item.
    */
-  const WifiMacHeader & GetHeader (void) const;
+  const WifiMacHeader& GetHeader (void) const;
 
   /**
    * \brief Get the header stored in this item
    * \return the header stored in this item.
    */
-  WifiMacHeader & GetHeader (void);
+  WifiMacHeader& GetHeader (void);
 
   /**
    * \brief Return the destination address present in the header
@@ -118,7 +116,7 @@ public:
    *        an A-MSDU.
    * \param msdu the MPDU containing the MSDU to aggregate
    */
-  void Aggregate (Ptr<const WifiMacQueueItem> msdu);
+  void Aggregate (Ptr<const WifiMpdu> msdu);
 
   /// DeaggregatedMsdus typedef
   typedef std::list<std::pair<Ptr<const Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
@@ -208,7 +206,7 @@ private:
    *        an A-MSDU.
    * \param msdu the MPDU containing the MSDU to aggregate
    */
-  void DoAggregate (Ptr<const WifiMacQueueItem> msdu);
+  void DoAggregate (Ptr<const WifiMpdu> msdu);
 
   Ptr<const Packet> m_packet;                   //!< The packet (MSDU or A-MSDU) contained in this queue item
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
@@ -221,11 +219,11 @@ private:
  * \brief Stream insertion operator.
  *
  * \param os the output stream
- * \param item the WifiMacQueueItem
+ * \param item the WifiMpdu
  * \returns a reference to the stream
  */
-std::ostream& operator<< (std::ostream& os, const WifiMacQueueItem &item);
+std::ostream& operator<< (std::ostream& os, const WifiMpdu &item);
 
 } //namespace ns3
 
-#endif /* WIFI_MAC_QUEUE_ITEM_H */
+#endif /* WIFI_MPDU_H */

@@ -171,7 +171,7 @@ public:
    * corresponding to the given TID. A block ack agreement with the given recipient
    * for the given TID must have been established by such QosTxop.
    */
-  Ptr<const WifiMacQueueItem> PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const;
+  Ptr<const WifiMpdu> PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const;
   /**
    * \param bar the BlockAckRequest to schedule
    * \param skipIfNoDataQueued do not send if there is no data queued
@@ -179,7 +179,7 @@ public:
    * Request the block ack manager to schedule the transmission of the given
    * BlockAckRequest.
    */
-  void ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued = false);
+  void ScheduleBar (Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued = false);
 
   /* Event handlers */
   /**
@@ -243,7 +243,7 @@ public:
    *
    * \param mpdu received MPDU.
    */
-  void CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu);
+  void CompleteMpduTx (Ptr<WifiMpdu> mpdu);
   /**
    * Set the timeout to wait for ADDBA response.
    *
@@ -302,9 +302,9 @@ public:
    * \param item the item after which the search starts from
    * \returns the peeked frame.
    */
-  Ptr<WifiMacQueueItem> PeekNextMpdu (uint8_t linkId, uint8_t tid = 8,
+  Ptr<WifiMpdu> PeekNextMpdu (uint8_t linkId, uint8_t tid = 8,
                                       Mac48Address recipient = Mac48Address::GetBroadcast (),
-                                      Ptr<WifiMacQueueItem> item = nullptr);
+                                      Ptr<WifiMpdu> item = nullptr);
   /**
    * Prepare the frame to transmit starting from the MPDU that has been previously
    * peeked by calling PeekNextMpdu. A frame is only returned if it meets the
@@ -323,7 +323,7 @@ public:
    * \param initialFrame true if the frame is the initial PPDU of a TXOP
    * \return the frame to transmit or a null pointer if no frame meets the time constraints
    */
-  Ptr<WifiMacQueueItem> GetNextMpdu (Ptr<WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+  Ptr<WifiMpdu> GetNextMpdu (Ptr<WifiMpdu> peekedItem, WifiTxParameters& txParams,
                                      Time availableTime, bool initialFrame);
 
   /**
@@ -332,7 +332,7 @@ public:
    *
    * \param mpdu the MPDU
    */
-  void AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
+  void AssignSequenceNumber (Ptr<WifiMpdu> mpdu) const;
 
   /**
    * Get the value for the Queue Size subfield of the QoS Control field of a
@@ -483,7 +483,7 @@ private:
    * \param mpdu the given MPDU
    * \return true if the MPDU is to be considered old, false otherwise
    */
-  bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
+  bool IsQosOldPacket (Ptr<const WifiMpdu> mpdu);
 
   AcIndex m_ac;                                         //!< the access category
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations

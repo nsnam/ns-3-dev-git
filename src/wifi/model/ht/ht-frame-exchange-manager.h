@@ -87,7 +87,7 @@ public:
    * \param ppduDurationLimit the constraint on the PPDU transmission time
    * \return true if the size and time constraints are met, false otherwise
    */
-  bool IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+  bool IsWithinLimitsIfAddMpdu (Ptr<const WifiMpdu> mpdu,
                                 const WifiTxParameters& txParams,
                                 Time ppduDurationLimit) const override;
 
@@ -119,7 +119,7 @@ public:
    * \return true if aggregating an MSDU to the current PSDU does not violate the
    *         size and time constraints
    */
-  virtual bool TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu, WifiTxParameters& txParams,
+  virtual bool TryAggregateMsdu (Ptr<const WifiMpdu> msdu, WifiTxParameters& txParams,
                                  Time availableTime) const;
 
   /**
@@ -133,7 +133,7 @@ public:
    * \param ppduDurationLimit the constraint on the PPDU transmission time
    * \return true if the size and time constraints are met, false otherwise
    */
-  virtual bool IsWithinLimitsIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+  virtual bool IsWithinLimitsIfAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                               const WifiTxParameters& txParams,
                                               Time ppduDurationLimit) const;
 
@@ -211,16 +211,16 @@ public:
 protected:
   void DoDispose () override;
 
-  void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+  void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                         const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
-  void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu) override;
-  void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu) override;
-  void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const override;
-  void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const override;
-  void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
-  void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
+  void NotifyReceivedNormalAck (Ptr<WifiMpdu> mpdu) override;
+  void NotifyPacketDiscarded (Ptr<const WifiMpdu> mpdu) override;
+  void RetransmitMpduAfterMissedAck (Ptr<WifiMpdu> mpdu) const override;
+  void ReleaseSequenceNumber (Ptr<WifiMpdu> mpdu) const override;
+  void ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
+  void CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
   void TransmissionSucceeded (void) override;
 
   /**
@@ -230,7 +230,7 @@ protected:
    * \param txVector the TXVECTOR to use to send the MPDU
    * \return a PSDU containing the given MPDU
    */
-  virtual Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const;
+  virtual Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const;
 
   /**
    * Get the Block Ack Manager handling the given TID.
@@ -314,7 +314,7 @@ protected:
    *                     limit can be exceeded
    * \return true if frame is transmitted, false otherwise
    */
-  virtual bool SendDataFrame (Ptr<WifiMacQueueItem> peekedItem,
+  virtual bool SendDataFrame (Ptr<WifiMpdu> peekedItem,
                               Time availableTime, bool initialFrame);
 
   /**
@@ -386,7 +386,7 @@ protected:
   Ptr<MpduAggregator> m_mpduAggregator;              //!< A-MPDU aggregator
 
   /// pending ADDBA_RESPONSE frames indexed by agreement key
-  std::map<AgreementKey, Ptr<WifiMacQueueItem>> m_pendingAddBaResp;
+  std::map<AgreementKey, Ptr<WifiMpdu>> m_pendingAddBaResp;
 
 private:
   /**

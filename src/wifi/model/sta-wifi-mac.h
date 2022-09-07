@@ -255,7 +255,7 @@ private:
    */
   bool CheckSupportedRates (std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame, uint8_t linkId);
 
-  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId) override;
+  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId) override;
 
   /**
    * Process the Beacon frame received on the given link.
@@ -263,7 +263,7 @@ private:
    * \param mpdu the MPDU containing the Beacon frame
    * \param linkId the ID of the given link
    */
-  void ReceiveBeacon (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
   /**
    * Process the Probe Response frame received on the given link.
@@ -271,7 +271,7 @@ private:
    * \param mpdu the MPDU containing the Probe Response frame
    * \param linkId the ID of the given link
    */
-  void ReceiveProbeResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void ReceiveProbeResp (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
   /**
    * Process the (Re)Association Response frame received on the given link.
@@ -279,7 +279,7 @@ private:
    * \param mpdu the MPDU containing the (Re)Association Response frame
    * \param linkId the ID of the given link
    */
-  void ReceiveAssocResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
   /**
    * Update associated AP's information from the given management frame (Beacon,

@@ -116,7 +116,7 @@ public:
    * \param item the item to insert in the container
    * \return iterator pointing to the inserted item
    */
-  iterator insert (const_iterator pos, Ptr<WifiMacQueueItem> item);
+  iterator insert (const_iterator pos, Ptr<WifiMpdu> item);
 
   /**
    * Erase the specified elements from the container.
@@ -127,12 +127,12 @@ public:
   iterator erase (const_iterator pos);
 
   /**
-   * Return the WifiMacQueueItem included in the element pointed to by the given iterator.
+   * Return the WifiMpdu included in the element pointed to by the given iterator.
    *
    * \param it the given iterator
    * \return the item included in the element pointed to by the given iterator
    */
-  Ptr<WifiMacQueueItem> GetItem (const const_iterator it) const;
+  Ptr<WifiMpdu> GetItem (const const_iterator it) const;
 
   /**
    * Return the QueueId identifying the container queue in which the given MPDU is
@@ -142,7 +142,7 @@ public:
    * \return the QueueId identifying the container queue in which the given MPDU
    *         is (or is to be) enqueued
    */
-  static WifiContainerQueueId GetQueueId (Ptr<const WifiMacQueueItem> mpdu);
+  static WifiContainerQueueId GetQueueId (Ptr<const WifiMpdu> mpdu);
 
   /**
    * Get a const reference to the container queue identified by the given QueueId.

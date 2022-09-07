@@ -166,7 +166,7 @@ protected:
 private:
   std::unique_ptr<LinkEntity> CreateLinkEntity (void) const override;
 
-  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)  override;
+  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)  override;
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet
@@ -175,7 +175,7 @@ private:
    *
    * \param mpdu the MPDU that we successfully sent
    */
-  void TxOk (Ptr<const WifiMacQueueItem> mpdu);
+  void TxOk (Ptr<const WifiMpdu> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we did not receive an Ack from the receiver).  If the packet
@@ -185,7 +185,7 @@ private:
    * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
    * \param mpdu the MPDU that we failed to sent
    */
-  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu);
+  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu);
 
   /**
    * This method is called to de-aggregate an A-MSDU and forward the
@@ -195,7 +195,7 @@ private:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu) override;
+  void DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu) override;
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.

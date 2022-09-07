@@ -59,7 +59,7 @@ public:
    * \param availableTime the time limit on the frame exchange sequence
    * \return true if the given MPDU can be added to the frame being built
    */
-  bool TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxParameters& txParams, Time availableTime) const;
+  bool TryAddMpdu (Ptr<const WifiMpdu> mpdu, WifiTxParameters& txParams, Time availableTime) const;
 
   /**
    * Check whether the given MPDU can be added to the frame being built (as described
@@ -71,7 +71,7 @@ public:
    * \param ppduDurationLimit the time limit on the PPDU transmission duration
    * \return true if the given MPDU can be added to the frame being built
    */
-  virtual bool IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu, const WifiTxParameters& txParams,
+  virtual bool IsWithinLimitsIfAddMpdu (Ptr<const WifiMpdu> mpdu, const WifiTxParameters& txParams,
                                         Time ppduDurationLimit) const;
 
   /**
@@ -93,7 +93,7 @@ public:
 protected:
   void DoDispose () override;
 
-  void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+  void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
   Time GetFrameDurationId (const WifiMacHeader& header, uint32_t size,
@@ -105,7 +105,7 @@ protected:
                                Time response) const override;
   void TransmissionSucceeded (void) override;
   void TransmissionFailed (void) override;
-  void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
+  void ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.

@@ -38,7 +38,7 @@ Bar::Bar ()
   NS_LOG_FUNCTION (this);
 }
 
-Bar::Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid, bool skipIfNoDataQueued)
+Bar::Bar (Ptr<const WifiMpdu> bar, uint8_t tid, bool skipIfNoDataQueued)
   : bar (bar),
     tid (tid),
     skipIfNoDataQueued (skipIfNoDataQueued)
@@ -216,7 +216,7 @@ BlockAckManager::UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Ad
 }
 
 void
-BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
+BlockAckManager::StorePacket (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
@@ -261,11 +261,11 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
   mpdu->SetInFlight ();
 }
 
-Ptr<const WifiMacQueueItem>
+Ptr<const WifiMpdu>
 BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
 {
   Time now = Simulator::Now ();
-  Ptr<const WifiMacQueueItem> bar;
+  Ptr<const WifiMpdu> bar;
   // remove all expired MPDUs from the MAC queue, so that
   // BlockAckRequest frames (if needed) are scheduled
   m_queue->WipeAllExpiredMpdus ();
@@ -308,7 +308,7 @@ BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
               reqHdr.SetStartingSequence (it->second.first.GetStartingSequence ());
               Ptr<Packet> packet = Create<Packet> ();
               packet->AddHeader (reqHdr);
-              nextBar->bar = Create<const WifiMacQueueItem> (packet, nextBar->bar->GetHeader ());
+              nextBar->bar = Create<const WifiMpdu> (packet, nextBar->bar->GetHeader ());
             }
         }
 
@@ -406,7 +406,7 @@ BlockAckManager::HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
 }
 
 void
-BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
+BlockAckManager::NotifyGotAck (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
@@ -433,7 +433,7 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 void
-BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
+BlockAckManager::NotifyMissedAck (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
@@ -495,7 +495,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
 
       NS_ASSERT (blockAck.IsCompressed () || blockAck.IsExtendedCompressed () || blockAck.IsMultiSta ());
       Time now = Simulator::Now ();
-      std::list<Ptr<const WifiMacQueueItem>> acked;
+      std::list<Ptr<const WifiMpdu>> acked;
 
       for (auto queueIt = it->second.second.begin (); queueIt != it->second.second.end (); )
         {
@@ -554,7 +554,7 @@ BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
+BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -624,7 +624,7 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
   hdr.SetNoRetry ();
   hdr.SetNoMoreFragments ();
 
-  ScheduleBar (Create<const WifiMacQueueItem> (bar, hdr));
+  ScheduleBar (Create<const WifiMpdu> (bar, hdr));
 }
 
 CtrlBAckRequestHeader
@@ -642,7 +642,7 @@ BlockAckManager::GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) cons
 }
 
 void
-BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
+BlockAckManager::ScheduleBar (Ptr<const WifiMpdu> bar, bool skipIfNoDataQueued)
 {
   NS_LOG_FUNCTION (this << *bar);
   NS_ASSERT (bar->GetHeader ().IsBlockAckReq () || bar->GetHeader ().IsTrigger ());

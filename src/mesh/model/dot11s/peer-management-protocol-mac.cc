@@ -24,7 +24,7 @@
 #include "peer-management-protocol-mac.h"
 #include "peer-management-protocol.h"
 #include "peer-link-frame.h"
-#include "ns3/wifi-mac-queue-item.h"
+#include "ns3/wifi-mpdu.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-information-element-vector.h"
@@ -54,12 +54,12 @@ PeerManagementProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
   m_parent->TraceConnectWithoutContext ("AckedMpdu",   MakeCallback (&PeerManagementProtocolMac::TxOk,    this));
 }
 void
-PeerManagementProtocolMac::TxError (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu)
+PeerManagementProtocolMac::TxError (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 {
   m_protocol->TransmissionFailure (m_ifIndex, mpdu->GetHeader ().GetAddr1 ());
 }
 void
-PeerManagementProtocolMac::TxOk (Ptr <const WifiMacQueueItem> mpdu)
+PeerManagementProtocolMac::TxOk (Ptr <const WifiMpdu> mpdu)
 {
   m_protocol->TransmissionSuccess (m_ifIndex, mpdu->GetHeader ().GetAddr1 ());
 }

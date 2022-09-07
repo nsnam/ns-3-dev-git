@@ -20,9 +20,9 @@
 
 #include "ns3/log.h"
 #include "wifi-default-protection-manager.h"
-#include "wifi-tx-parameters.h"
-#include "wifi-mac-queue-item.h"
 #include "wifi-mac.h"
+#include "wifi-mpdu.h"
+#include "wifi-tx-parameters.h"
 
 
 namespace ns3 {
@@ -53,7 +53,7 @@ WifiDefaultProtectionManager::~WifiDefaultProtectionManager ()
 }
 
 std::unique_ptr<WifiProtection>
-WifiDefaultProtectionManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+WifiDefaultProtectionManager::TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                           const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
@@ -108,7 +108,7 @@ WifiDefaultProtectionManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
 }
 
 std::unique_ptr<WifiProtection>
-WifiDefaultProtectionManager::TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
+WifiDefaultProtectionManager::TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                 const WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *msdu << &txParams);

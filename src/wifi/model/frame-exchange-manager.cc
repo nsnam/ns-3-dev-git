@@ -249,7 +249,7 @@ FrameExchangeManager::GetWifiTxTimer (void) const
 }
 
 void
-FrameExchangeManager::NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu)
+FrameExchangeManager::NotifyPacketDiscarded (Ptr<const WifiMpdu> mpdu)
 {
   if (!m_droppedMpduCallback.IsNull ())
     {
@@ -304,7 +304,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   // expired and the queue might be empty.
   queue->WipeAllExpiredMpdus ();
 
-  Ptr<WifiMacQueueItem> mpdu = queue->Peek (m_linkId);
+  Ptr<WifiMpdu> mpdu = queue->Peek (m_linkId);
 
   if (!mpdu)
     {
@@ -346,8 +346,8 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth)
   return true;
 }
 
-Ptr<WifiMacQueueItem>
-FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
+Ptr<WifiMpdu>
+FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -363,7 +363,7 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
       // create the first fragment
       Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, m_mac->GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
       // enqueue the first fragment
-      Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (fragment, mpdu->GetHeader ());
+      Ptr<WifiMpdu> item = Create<WifiMpdu> (fragment, mpdu->GetHeader ());
       item->GetHeader ().SetMoreFragments ();
       m_mac->GetTxopQueue (mpdu->GetQueueAc ())->Replace (mpdu, item);
       return item;
@@ -372,7 +372,7 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-FrameExchangeManager::SendMpduWithProtection (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txParams)
+FrameExchangeManager::SendMpduWithProtection (Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams)
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams);
 
@@ -471,7 +471,7 @@ FrameExchangeManager::SendMpdu (void)
 }
 
 void
-FrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector)
+FrameExchangeManager::ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
 
@@ -479,7 +479,7 @@ FrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector&
 }
 
 void
-FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
+FrameExchangeManager::DequeueMpdu (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_DEBUG (this << *mpdu);
 
@@ -490,7 +490,7 @@ FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 uint32_t
-FrameExchangeManager::GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const
+FrameExchangeManager::GetPsduSize (Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const
 {
   return mpdu->GetSize ();
 }
@@ -621,7 +621,7 @@ FrameExchangeManager::SendRts (const WifiTxParameters& txParams)
   NS_ASSERT (txParams.m_txDuration != Time::Min ());
   rts.SetDuration (GetRtsDurationId (rtsCtsProtection->rtsTxVector, txParams.m_txDuration,
                                       txParams.m_acknowledgment->acknowledgmentTime));
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (Create<Packet> (), rts);
+  Ptr<WifiMpdu> mpdu = Create<WifiMpdu> (Create<Packet> (), rts);
 
   // After transmitting an RTS frame, the STA shall wait for a CTSTimeout interval with
   // a value of aSIFSTime + aSlotTime + aRxPHYStartDelay (IEEE 802.11-2016 sec. 10.3.2.7).
@@ -667,7 +667,7 @@ FrameExchangeManager::DoSendCtsAfterRts (const WifiMacHeader& rtsHdr, WifiTxVect
   packet->AddPacketTag (tag);
 
   // CTS should always use non-HT PPDU (HT PPDU cases not supported yet)
-  ForwardMpduDown (Create<WifiMacQueueItem> (packet, cts), ctsTxVector);
+  ForwardMpduDown (Create<WifiMpdu> (packet, cts), ctsTxVector);
 }
 
 void
@@ -708,7 +708,7 @@ FrameExchangeManager::SendCtsToSelf (const WifiTxParameters& txParams)
   cts.SetDuration (GetCtsToSelfDurationId (ctsToSelfProtection->ctsTxVector, txParams.m_txDuration,
                                             txParams.m_acknowledgment->acknowledgmentTime));
 
-  ForwardMpduDown (Create<WifiMacQueueItem> (Create<Packet> (), cts), ctsToSelfProtection->ctsTxVector);
+  ForwardMpduDown (Create<WifiMpdu> (Create<Packet> (), cts), ctsToSelfProtection->ctsTxVector);
 
   Time ctsDuration = m_phy->CalculateTxDuration (GetCtsSize (), ctsToSelfProtection->ctsTxVector,
                                                  m_phy->GetPhyBand ());
@@ -746,10 +746,10 @@ FrameExchangeManager::SendNormalAck (const WifiMacHeader& hdr, const WifiTxVecto
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
 
-  ForwardMpduDown (Create<WifiMacQueueItem> (packet, ack), ackTxVector);
+  ForwardMpduDown (Create<WifiMpdu> (packet, ack), ackTxVector);
 }
 
-Ptr<WifiMacQueueItem>
+Ptr<WifiMpdu>
 FrameExchangeManager::GetNextFragment (void)
 {
   NS_LOG_FUNCTION (this);
@@ -772,7 +772,7 @@ FrameExchangeManager::GetNextFragment (void)
       hdr.SetNoMoreFragments ();
     }
 
-  return Create<WifiMacQueueItem> (m_fragmentedPacket->CreateFragment (startOffset, size), hdr);
+  return Create<WifiMpdu> (m_fragmentedPacket->CreateFragment (startOffset, size), hdr);
 }
 
 void
@@ -806,7 +806,7 @@ FrameExchangeManager::TransmissionFailed (void)
 }
 
 void
-FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
+FrameExchangeManager::NormalAckTimeout (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
 
@@ -834,13 +834,13 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTx
 }
 
 void
-FrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const
+FrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMpdu> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 }
 
 void
-FrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector)
+FrameExchangeManager::CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *rts << txVector);
 
@@ -884,7 +884,7 @@ FrameExchangeManager::DoCtsTimeout (Ptr<WifiPsdu> psdu)
 }
 
 void
-FrameExchangeManager::ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const
+FrameExchangeManager::ReleaseSequenceNumber (Ptr<WifiMpdu> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -1088,7 +1088,7 @@ FrameExchangeManager::NavResetTimeout (void)
 }
 
 void
-FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+FrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                    const WifiTxVector& txVector, bool inAmpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu << rxSignalInfo << txVector << inAmpdu);
@@ -1160,7 +1160,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
           tag.Set (rxSnr);
           Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
           packet->AddPacketTag (tag);
-          mpdu = Create<WifiMacQueueItem> (packet, hdr);
+          mpdu = Create<WifiMpdu> (packet, hdr);
         }
 
       if (hdr.GetAddr1 () == m_self)
@@ -1186,7 +1186,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
 }
 
 void
-FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
+FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector,
                                          const WifiTxVector& ackTxVector, const RxSignalInfo& rxInfo,
                                          double snr)
 {
@@ -1226,7 +1226,7 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
 }
 
 void
-FrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu)
+FrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 

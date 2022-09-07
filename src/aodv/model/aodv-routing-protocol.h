@@ -43,7 +43,7 @@
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
 
 namespace aodv {
@@ -190,7 +190,7 @@ private:
    * \param reason the reason why the MPDU was dropped
    * \param mpdu the dropped MPDU
    */
-  void NotifyTxError (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+  void NotifyTxError (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
   // Protocol parameters.
   uint32_t m_rreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route

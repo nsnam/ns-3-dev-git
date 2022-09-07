@@ -41,7 +41,7 @@ class WifiPsdu;
 class MacRxMiddle;
 class MacTxMiddle;
 class WifiMacQueue;
-class WifiMacQueueItem;
+class WifiMpdu;
 class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
@@ -578,7 +578,7 @@ protected:
    * \param mpdu the MPDU that has been received.
    * \param linkId the ID of the given link
    */
-  virtual void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  virtual void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
   /**
    * Forward the packet up to the device.
    *
@@ -594,7 +594,7 @@ protected:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  virtual void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
+  virtual void DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu);
 
   /**
    * Structure holding information specific to a single link. Here, the meaning of
@@ -838,10 +838,10 @@ private:
    * \param reason the reason why the MPDU was dropped (\see WifiMacDropReason)
    * \param mpdu the dropped MPDU
    */
-  typedef void (* DroppedMpduCallback)(WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+  typedef void (* DroppedMpduCallback)(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
 
   /// TracedCallback for MPDU drop events typedef
-  typedef TracedCallback<WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpduTracedCallback;
+  typedef TracedCallback<WifiMacDropReason, Ptr<const WifiMpdu>> DroppedMpduTracedCallback;
 
   /**
    * This trace indicates that an MPDU was dropped for the given reason.
@@ -849,7 +849,7 @@ private:
   DroppedMpduTracedCallback m_droppedMpduCallback;
 
   /// TracedCallback for acked/nacked MPDUs typedef
-  typedef TracedCallback<Ptr<const WifiMacQueueItem>> MpduTracedCallback;
+  typedef TracedCallback<Ptr<const WifiMpdu>> MpduTracedCallback;
 
   MpduTracedCallback m_ackedMpduCallback;  ///< ack'ed MPDU callback
   MpduTracedCallback m_nackedMpduCallback; ///< nack'ed MPDU callback
@@ -861,11 +861,11 @@ private:
    * \param mpdu the MPDU whose response was not received before the timeout
    * \param txVector the TXVECTOR used to transmit the MPDU
    */
-  typedef void (* MpduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiMacQueueItem> mpdu,
+  typedef void (* MpduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiMpdu> mpdu,
                                                const WifiTxVector& txVector);
 
   /// TracedCallback for MPDU response timeout events typedef
-  typedef TracedCallback<uint8_t, Ptr<const WifiMacQueueItem>, const WifiTxVector&> MpduResponseTimeoutTracedCallback;
+  typedef TracedCallback<uint8_t, Ptr<const WifiMpdu>, const WifiTxVector&> MpduResponseTimeoutTracedCallback;
 
   /**
    * MPDU response timeout traced callback.

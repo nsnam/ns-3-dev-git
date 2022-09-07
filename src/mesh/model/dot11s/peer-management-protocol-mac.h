@@ -25,7 +25,7 @@
 
 namespace ns3 {
 class MeshWifiInterfaceMac;
-class WifiMacQueueItem;
+class WifiMpdu;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
 namespace dot11s {
 class PeerManagementProtocol;
@@ -162,12 +162,12 @@ private:
    * \param reason the reason why the MPDU was dropped
    * \param mpdu the dropped MPDU
    */
-  void TxError (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+  void TxError (WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
   /**
    * Transmit OK function
    * \param mpdu the MPDU
    */
-  void TxOk (Ptr <const WifiMacQueueItem> mpdu);
+  void TxOk (Ptr <const WifiMpdu> mpdu);
   // BCA functionality
   /**
    * Set beacon shift function

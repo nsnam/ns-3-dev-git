@@ -24,16 +24,16 @@
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-mpdu.h"
 #include "wifi-utils.h"
 #include "msdu-aggregator.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("WifiMacQueueItem");
+NS_LOG_COMPONENT_DEFINE ("WifiMpdu");
 
-WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header)
+WifiMpdu::WifiMpdu (Ptr<const Packet> p, const WifiMacHeader & header)
   : m_packet (p),
     m_header (header)
 {
@@ -44,54 +44,54 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
   m_inFlight = false;
 }
 
-WifiMacQueueItem::~WifiMacQueueItem ()
+WifiMpdu::~WifiMpdu ()
 {
 }
 
 Ptr<const Packet>
-WifiMacQueueItem::GetPacket (void) const
+WifiMpdu::GetPacket (void) const
 {
   return m_packet;
 }
 
 const WifiMacHeader&
-WifiMacQueueItem::GetHeader (void) const
+WifiMpdu::GetHeader (void) const
 {
   return m_header;
 }
 
 WifiMacHeader&
-WifiMacQueueItem::GetHeader (void)
+WifiMpdu::GetHeader (void)
 {
   return m_header;
 }
 
 Mac48Address
-WifiMacQueueItem::GetDestinationAddress (void) const
+WifiMpdu::GetDestinationAddress (void) const
 {
   return m_header.GetAddr1 ();
 }
 
 uint32_t
-WifiMacQueueItem::GetPacketSize (void) const
+WifiMpdu::GetPacketSize (void) const
 {
   return m_packet->GetSize ();
 }
 
 uint32_t
-WifiMacQueueItem::GetSize (void) const
+WifiMpdu::GetSize (void) const
 {
   return GetPacketSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
 }
 
 bool
-WifiMacQueueItem::IsFragment (void) const
+WifiMpdu::IsFragment (void) const
 {
   return m_header.IsMoreFragments () || m_header.GetFragmentNumber () > 0;
 }
 
 Ptr<Packet>
-WifiMacQueueItem::GetProtocolDataUnit (void) const
+WifiMpdu::GetProtocolDataUnit (void) const
 {
   Ptr<Packet> mpdu = m_packet->Copy ();
   mpdu->AddHeader (m_header);
@@ -100,7 +100,7 @@ WifiMacQueueItem::GetProtocolDataUnit (void) const
 }
 
 void
-WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
+WifiMpdu::Aggregate (Ptr<const WifiMpdu> msdu)
 {
   NS_ASSERT (msdu);
   NS_LOG_FUNCTION (this << *msdu);
@@ -110,7 +110,7 @@ WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
   if (m_msduList.empty ())
     {
       // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
-      Ptr<const WifiMacQueueItem> firstMsdu = Create<const WifiMacQueueItem> (*this);
+      Ptr<const WifiMpdu> firstMsdu = Create<const WifiMpdu> (*this);
       m_packet = Create<Packet> ();
       DoAggregate (firstMsdu);
 
@@ -134,7 +134,7 @@ WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
 }
 
 void
-WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
+WifiMpdu::DoAggregate (Ptr<const WifiMpdu> msdu)
 {
   NS_LOG_FUNCTION (this << *msdu);
 
@@ -182,70 +182,70 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
 }
 
 bool
-WifiMacQueueItem::IsQueued (void) const
+WifiMpdu::IsQueued (void) const
 {
   return m_queueIt.has_value ();
 }
 
 void
-WifiMacQueueItem::SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag)
+WifiMpdu::SetQueueIt (std::optional<Iterator> queueIt, WmqIteratorTag tag)
 {
   m_queueIt = queueIt;
 }
 
-WifiMacQueueItem::Iterator
-WifiMacQueueItem::GetQueueIt (WmqIteratorTag tag) const
+WifiMpdu::Iterator
+WifiMpdu::GetQueueIt (WmqIteratorTag tag) const
 {
   NS_ASSERT (IsQueued ());
   return m_queueIt.value ();
 }
 
 AcIndex
-WifiMacQueueItem::GetQueueAc (void) const
+WifiMpdu::GetQueueAc (void) const
 {
   NS_ASSERT (IsQueued ());
   return (*m_queueIt)->ac;
 }
 
 Time
-WifiMacQueueItem::GetExpiryTime (void) const
+WifiMpdu::GetExpiryTime (void) const
 {
   NS_ASSERT (IsQueued ());
   return (*m_queueIt)->expiryTime;
 }
 
 void
-WifiMacQueueItem::SetInFlight (void)
+WifiMpdu::SetInFlight (void)
 {
   m_inFlight = true;
 }
 
 void
-WifiMacQueueItem::ResetInFlight (void)
+WifiMpdu::ResetInFlight (void)
 {
   m_inFlight = false;
 }
 
 bool
-WifiMacQueueItem::IsInFlight (void) const
+WifiMpdu::IsInFlight (void) const
 {
   return m_inFlight;
 }
 
-WifiMacQueueItem::DeaggregatedMsdusCI
-WifiMacQueueItem::begin (void)
+WifiMpdu::DeaggregatedMsdusCI
+WifiMpdu::begin (void)
 {
   return m_msduList.begin ();
 }
 
-WifiMacQueueItem::DeaggregatedMsdusCI
-WifiMacQueueItem::end (void)
+WifiMpdu::DeaggregatedMsdusCI
+WifiMpdu::end (void)
 {
   return m_msduList.end ();
 }
 
 void
-WifiMacQueueItem::Print (std::ostream& os) const
+WifiMpdu::Print (std::ostream& os) const
 {
   os << m_header.GetTypeString ()
      << ", payloadSize=" << GetPacketSize ()
@@ -277,7 +277,7 @@ WifiMacQueueItem::Print (std::ostream& os) const
   os << ", packet=" << m_packet;
 }
 
-std::ostream & operator << (std::ostream &os, const WifiMacQueueItem &item)
+std::ostream & operator << (std::ostream &os, const WifiMpdu &item)
 {
   item.Print (os);
   return os;

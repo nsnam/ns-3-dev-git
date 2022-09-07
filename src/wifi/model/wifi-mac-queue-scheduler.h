@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiMac;
 
 /**
@@ -102,7 +102,7 @@ public:
    * \param mpdu the MPDU to enqueue
    * \return a pointer to the MPDU to drop, if any, or a null pointer, otherwise
    */
-  virtual Ptr<WifiMacQueueItem> HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) = 0;
+  virtual Ptr<WifiMpdu> HasToDropBeforeEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) = 0;
   /**
    * Notify the scheduler that the given MPDU has been enqueued by the given Access
    * Category. The container queue in which the MPDU has been enqueued must be
@@ -111,7 +111,7 @@ public:
    * \param ac the Access Category of the enqueued MPDU
    * \param mpdu the enqueued MPDU
    */
-  virtual void NotifyEnqueue (AcIndex ac, Ptr<WifiMacQueueItem> mpdu) = 0;
+  virtual void NotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu) = 0;
   /**
    * Notify the scheduler that the given list of MPDUs have been dequeued by the
    * given Access Category. The container queues which became empty after dequeuing
@@ -120,7 +120,7 @@ public:
    * \param ac the Access Category of the dequeued MPDUs
    * \param mpdus the list of dequeued MPDUs
    */
-  virtual void NotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) = 0;
+  virtual void NotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) = 0;
   /**
    * Notify the scheduler that the given list of MPDUs have been removed by the
    * given Access Category. The container queues which became empty after removing
@@ -129,7 +129,7 @@ public:
    * \param ac the Access Category of the removed MPDUs
    * \param mpdus the list of removed MPDUs
    */
-  virtual void NotifyRemove (AcIndex ac, const std::list<Ptr<WifiMacQueueItem>>& mpdus) = 0;
+  virtual void NotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) = 0;
 
 protected:
   void DoDispose () override;

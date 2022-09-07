@@ -26,6 +26,7 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/wifi-acknowledgment.h"
+#include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-protection.h"
 #include "ns3/he-configuration.h"
 #include "ns3/mobility-helper.h"
@@ -164,7 +165,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
       m_triggerHdr.SetDsNotTo ();
       m_triggerHdr.SetDsNotFrom ();
 
-      auto item = Create<WifiMacQueueItem> (packet, m_triggerHdr);
+      auto item = Create<WifiMpdu> (packet, m_triggerHdr);
 
       m_txParams.Clear ();
       // set the TXVECTOR used to send the Trigger Frame
@@ -207,7 +208,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
               return SU_TX;
             }
 
-          Ptr<WifiMacQueueItem> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
+          Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop (AC_BE)->GetNextMpdu (peeked, m_txParams,
                                                                                  m_availableTime,
                                                                                  m_initialFrame);
           if (!mpdu)
@@ -216,7 +217,7 @@ TestMultiUserScheduler::SelectTxFormat (void)
               return SU_TX;
             }
 
-          std::vector<Ptr<WifiMacQueueItem>> mpduList;
+          std::vector<Ptr<WifiMpdu>> mpduList;
           mpduList = m_heFem->GetMpduAggregator ()->GetNextAmpdu (mpdu, m_txParams, m_availableTime);
 
           if (mpduList.size () > 1)
@@ -486,8 +487,8 @@ OfdmaAckSequenceTest::Transmit (std::string context, WifiConstPsduMap psduMap, W
       for (uint32_t i = 0; i < m_staDevices.GetN (); i++)
         {
           auto staDev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
-          Ptr<const WifiMacQueueItem> lastInFlight = nullptr;
-          Ptr<const WifiMacQueueItem> mpdu;
+          Ptr<const WifiMpdu> lastInFlight = nullptr;
+          Ptr<const WifiMpdu> mpdu;
 
           while ((mpdu = queue->PeekByTidAndAddress (0, staDev->GetMac ()->GetAddress (),
                                                      lastInFlight)) != nullptr)

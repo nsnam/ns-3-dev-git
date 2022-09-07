@@ -30,7 +30,7 @@
 
 namespace ns3 {
 
-class WifiMacQueueItem;
+class WifiMpdu;
 class WifiPsdu;
 class WifiTxVector;
 class Mac48Address;
@@ -133,7 +133,7 @@ public:
   /**
    * MPDU response timeout callback typedef
    */
-  typedef Callback<void, uint8_t, Ptr<const WifiMacQueueItem>, const WifiTxVector&> MpduResponseTimeout;
+  typedef Callback<void, uint8_t, Ptr<const WifiMpdu>, const WifiTxVector&> MpduResponseTimeout;
 
   /**
    * PSDU response timeout callback typedef
@@ -196,7 +196,7 @@ private:
    * \param item the MPDU followed by no response
    * \param txVector the TXVECTOR used to transmit the MPDU
    */
-  void FeedTraceSource (Ptr<WifiMacQueueItem> item, WifiTxVector txVector);
+  void FeedTraceSource (Ptr<WifiMpdu> item, WifiTxVector txVector);
 
   /**
    * This method is called when the timer expires to feed the PSDU response

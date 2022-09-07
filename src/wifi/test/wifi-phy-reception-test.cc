@@ -44,7 +44,7 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/threshold-preamble-detection-model.h"
 #include "ns3/simple-frame-capture-model.h"
-#include "ns3/wifi-mac-queue-item.h"
+#include "ns3/wifi-mpdu.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/he-ppdu.h"
@@ -1760,11 +1760,11 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-  std::vector<Ptr<WifiMacQueueItem>> mpduList;
+  std::vector<Ptr<WifiMpdu>> mpduList;
   for (size_t i = 0; i < 3; ++i)
     {
       Ptr<Packet> p = Create<Packet> (referencePacketSize + i * 100);
-      mpduList.push_back (Create<WifiMacQueueItem> (p, hdr));
+      mpduList.push_back (Create<WifiMpdu> (p, hdr));
     }
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (mpduList);
 

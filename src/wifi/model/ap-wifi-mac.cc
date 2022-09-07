@@ -1094,7 +1094,7 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
 }
 
 void
-ApWifiMac::TxOk (Ptr<const WifiMacQueueItem> mpdu)
+ApWifiMac::TxOk (Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
@@ -1107,7 +1107,7 @@ ApWifiMac::TxOk (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 void
-ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu)
+ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << +timeoutReason << *mpdu);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
@@ -1121,7 +1121,7 @@ ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem
 }
 
 void
-ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+ApWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
@@ -1568,11 +1568,11 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  WifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr), linkId);
+  WifiMac::Receive (Create<WifiMpdu> (packet, *hdr), linkId);
 }
 
 void
-ApWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
+ApWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   for (auto& i : *PeekPointer (mpdu))

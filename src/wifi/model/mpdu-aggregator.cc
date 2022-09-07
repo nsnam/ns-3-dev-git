@@ -26,8 +26,7 @@
 #include "wifi-phy.h"
 #include "wifi-tx-vector.h"
 #include "wifi-remote-station-manager.h"
-#include "wifi-mac-queue-item.h"
-#include "wifi-mac-queue.h"
+#include "wifi-mpdu.h"
 #include "msdu-aggregator.h"
 #include "wifi-net-device.h"
 #include "ns3/ht-capabilities.h"
@@ -79,7 +78,7 @@ MpduAggregator::SetWifiMac (const Ptr<WifiMac> mac)
 }
 
 void
-MpduAggregator::Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, bool isSingle)
+MpduAggregator::Aggregate (Ptr<const WifiMpdu> mpdu, Ptr<Packet> ampdu, bool isSingle)
 {
   NS_LOG_FUNCTION (mpdu << ampdu << isSingle);
   NS_ASSERT (ampdu);
@@ -191,13 +190,13 @@ MpduAggregator::GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle)
   return hdr;
 }
 
-std::vector<Ptr<WifiMacQueueItem>>
-MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txParams,
+std::vector<Ptr<WifiMpdu>>
+MpduAggregator::GetNextAmpdu (Ptr<WifiMpdu> mpdu, WifiTxParameters& txParams,
                               Time availableTime) const
 {
   NS_LOG_FUNCTION (this << *mpdu << &txParams << availableTime);
 
-  std::vector<Ptr<WifiMacQueueItem>> mpduList;
+  std::vector<Ptr<WifiMpdu>> mpduList;
 
   Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
   NS_ASSERT (mpdu->GetHeader ().IsQosData () && !recipient.IsBroadcast ());
@@ -211,7 +210,7 @@ MpduAggregator::GetNextAmpdu (Ptr<WifiMacQueueItem> mpdu, WifiTxParameters& txPa
       && GetMaxAmpduSize (recipient, tid, txParams.m_txVector.GetModulationClass ()) > 0)
     {
       /* here is performed MPDU aggregation */
-      Ptr<WifiMacQueueItem> nextMpdu = mpdu;
+      Ptr<WifiMpdu> nextMpdu = mpdu;
 
       while (nextMpdu)
         {

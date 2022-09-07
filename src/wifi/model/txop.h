@@ -33,7 +33,7 @@ class ChannelAccessManager;
 class MacTxMiddle;
 class WifiMode;
 class WifiMacQueue;
-class WifiMacQueueItem;
+class WifiMpdu;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class WifiMac;
@@ -86,7 +86,7 @@ public:
   /**
    * typedef for a callback to invoke when an MPDU is dropped.
    */
-  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem> > DroppedMpdu;
+  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMpdu> > DroppedMpdu;
 
   /**
    * Enumeration for channel access status
@@ -353,7 +353,7 @@ public:
    * Store the given MPDU in the internal queue until it
    * can be sent safely.
    */
-  virtual void Queue (Ptr<WifiMacQueueItem> mpdu);
+  virtual void Queue (Ptr<WifiMpdu> mpdu);
 
   /**
    * Called by the FrameExchangeManager to notify that channel access has

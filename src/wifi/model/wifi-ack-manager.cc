@@ -74,7 +74,7 @@ WifiAckManager::SetLinkId (uint8_t linkId)
 }
 
 void
-WifiAckManager::SetQosAckPolicy (Ptr<WifiMacQueueItem> item, const WifiAcknowledgment* acknowledgment)
+WifiAckManager::SetQosAckPolicy (Ptr<WifiMpdu> item, const WifiAcknowledgment* acknowledgment)
 {
   NS_LOG_FUNCTION (*item << acknowledgment);
 

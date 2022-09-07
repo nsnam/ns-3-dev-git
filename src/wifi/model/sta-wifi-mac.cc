@@ -591,7 +591,7 @@ StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 }
 
 void
-StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+StaWifiMac::Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
@@ -680,7 +680,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 }
 
 void
-StaWifiMac::ReceiveBeacon (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+StaWifiMac::ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
@@ -733,7 +733,7 @@ StaWifiMac::ReceiveBeacon (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 }
 
 void
-StaWifiMac::ReceiveProbeResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+StaWifiMac::ReceiveProbeResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
@@ -758,7 +758,7 @@ StaWifiMac::ReceiveProbeResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
 }
 
 void
-StaWifiMac::ReceiveAssocResp (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
+StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << *mpdu << +linkId);
   const WifiMacHeader& hdr = mpdu->GetHeader ();

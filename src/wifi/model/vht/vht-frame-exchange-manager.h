@@ -43,8 +43,8 @@ public:
   virtual ~VhtFrameExchangeManager ();
 
 protected:
-  Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const override;
-  uint32_t GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const override;
+  Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const override;
+  uint32_t GetPsduSize (Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const override;
 };
 
 } //namespace ns3

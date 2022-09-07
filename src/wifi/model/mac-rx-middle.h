@@ -31,7 +31,7 @@ class WifiMacHeader;
 class OriginatorRxStatus;
 class Packet;
 class Mac48Address;
-class WifiMacQueueItem;
+class WifiMpdu;
 
 /**
  * \ingroup wifi
@@ -44,7 +44,7 @@ public:
   /**
    * typedef for callback
    */
-  typedef Callback<void, Ptr<WifiMacQueueItem>, uint8_t /* link ID */> ForwardUpCallback;
+  typedef Callback<void, Ptr<WifiMpdu>, uint8_t /* link ID */> ForwardUpCallback;
 
   MacRxMiddle ();
   ~MacRxMiddle ();
@@ -62,7 +62,7 @@ public:
    * \param mpdu the MPDU
    * \param linkId the ID of the given link
    */
-  void Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId);
+  void Receive (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
 
 private:

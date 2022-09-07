@@ -264,7 +264,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
 {
   NS_LOG_FUNCTION (this << edca << availableTime << initialFrame);
 
-  Ptr<WifiMacQueueItem> mpdu = edca->PeekNextMpdu (m_linkId);
+  Ptr<WifiMpdu> mpdu = edca->PeekNextMpdu (m_linkId);
 
   // Even though channel access is requested when the queue is not empty, at
   // the time channel access is granted the lifetime of the packet might be
@@ -278,7 +278,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
 
-  Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
+  Ptr<WifiMpdu> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
 
   if (!item)
     {
@@ -307,7 +307,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
 }
 
 bool
-QosFrameExchangeManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxParameters& txParams,
+QosFrameExchangeManager::TryAddMpdu (Ptr<const WifiMpdu> mpdu, WifiTxParameters& txParams,
                                      Time availableTime) const
 {
   NS_ASSERT (mpdu);
@@ -390,7 +390,7 @@ QosFrameExchangeManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxPar
 }
 
 bool
-QosFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
+QosFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                   const WifiTxParameters& txParams,
                                                   Time ppduDurationLimit) const
 {
@@ -519,7 +519,7 @@ QosFrameExchangeManager::GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector
 }
 
 void
-QosFrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector)
+QosFrameExchangeManager::ForwardMpduDown (Ptr<WifiMpdu> mpdu, WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
 
@@ -658,7 +658,7 @@ QosFrameExchangeManager::SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVe
 }
 
 void
-QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                                       const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station

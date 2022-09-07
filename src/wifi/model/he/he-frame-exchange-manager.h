@@ -94,16 +94,16 @@ public:
 protected:
   void DoDispose () override;
 
-  void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+  void ReceiveMpdu (Ptr<WifiMpdu> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                         const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
   Time GetTxDuration (uint32_t ppduPayloadSize, Mac48Address receiver,
                       const WifiTxParameters& txParams) const override;
   bool SendMpduFromBaManager (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
-  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) override;
+  void NormalAckTimeout (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) override;
   void BlockAckTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector& txVector) override;
-  void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
+  void CtsTimeout (Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
 
   /**
    * Send a map of PSDUs as a DL MU PPDU.
@@ -191,7 +191,7 @@ protected:
    * \param recipients the list of BlockAckReq headers indexed by the station's AID
    * \return the MPDU containing the built MU-BAR
    */
-  Ptr<WifiMacQueueItem> PrepareMuBar (const WifiTxVector& responseTxVector,
+  Ptr<WifiMpdu> PrepareMuBar (const WifiTxVector& responseTxVector,
                                       std::map<uint16_t, CtrlBAckRequestHeader> recipients) const;
 
   /**
@@ -232,7 +232,7 @@ private:
   WifiPsduMap m_psduMap;                              //!< the A-MPDU being transmitted
   WifiTxParameters m_txParams;                        //!< the TX parameters for the current PPDU
   Ptr<MultiUserScheduler> m_muScheduler;              //!< Multi-user Scheduler (HE APs only)
-  Ptr<WifiMacQueueItem> m_triggerFrame;               //!< Trigger Frame being sent
+  Ptr<WifiMpdu> m_triggerFrame;               //!< Trigger Frame being sent
   std::set<Mac48Address> m_staExpectTbPpduFrom;       //!< set of stations expected to send a TB PPDU
   EventId m_multiStaBaEvent;                          //!< Sending a Multi-STA BlockAck event
   MuSnrTag m_muSnrTag;                                //!< Tag to attach to Multi-STA BlockAck frames
