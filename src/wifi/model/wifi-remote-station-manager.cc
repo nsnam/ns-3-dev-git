@@ -986,25 +986,25 @@ WifiRemoteStationManager::NeedRts (const WifiMacHeader &header, uint32_t size)
   NS_LOG_FUNCTION (this << header << size);
   Mac48Address address = header.GetAddr1 ();
   WifiTxVector txVector = GetDataTxVector (header, m_wifiPhy->GetChannelWidth ());
-  WifiMode mode = txVector.GetMode ();
+  const auto modulationClass = txVector.GetModulationClass ();
   if (address.IsGroup ())
     {
       return false;
     }
   if (m_erpProtectionMode == RTS_CTS
-      && ((mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
-          || (mode.GetModulationClass () == WIFI_MOD_CLASS_EHT))
+      && ((modulationClass == WIFI_MOD_CLASS_ERP_OFDM)
+          || (modulationClass == WIFI_MOD_CLASS_HT)
+          || (modulationClass == WIFI_MOD_CLASS_VHT)
+          || (modulationClass == WIFI_MOD_CLASS_HE)
+          || (modulationClass == WIFI_MOD_CLASS_EHT))
       && m_useNonErpProtection)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-ERP stations");
       return true;
     }
   else if (m_htProtectionMode == RTS_CTS
-           && ((mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-               || (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+           && ((modulationClass == WIFI_MOD_CLASS_HT)
+               || (modulationClass == WIFI_MOD_CLASS_VHT))
            && m_useNonHtProtection
            && !(m_erpProtectionMode != RTS_CTS && m_useNonErpProtection))
     {
