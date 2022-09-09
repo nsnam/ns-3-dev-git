@@ -1,6 +1,4 @@
 # -*- Mode: python; coding: utf-8 -*-
-from __future__ import division, print_function
-#from __future__ import with_statement
 from ctypes import c_double
 
 LAYOUT_ALGORITHM = 'neato' # ['neato'|'dot'|'twopi'|'circo'|'fdp'|'nop']
@@ -24,9 +22,6 @@ else:
 import math
 import os
 import sys
-
-if sys.version_info > (3,):
-    long = int
 
 try:
     import gi
@@ -1238,7 +1233,7 @@ class Visualizer(GObject.GObject):
     def center_on_node(self, node):
         if isinstance(node, ns.Node):
             node = self.nodes[node.GetId()]
-        elif isinstance(node, (int, long)):
+        elif isinstance(node, int):
             node = self.nodes[node]
         elif isinstance(node, Node):
             pass
@@ -1658,7 +1653,7 @@ class Visualizer(GObject.GObject):
     def select_node(self, node):
         if isinstance(node, ns.Node):
             node = self.nodes[node.GetId()]
-        elif isinstance(node, (int, long)):
+        elif isinstance(node, int):
             node = self.nodes[node]
         elif isinstance(node, Node):
             pass

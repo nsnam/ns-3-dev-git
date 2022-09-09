@@ -13,7 +13,6 @@ is available at U{http://www.opensource.org/licenses/bsd-license.php}
 # this file is a modified version of source code from the Accerciser project
 # https://wiki.gnome.org/Apps/Accerciser
 
-from __future__ import print_function
 import gtk, gobject
 import re
 import sys

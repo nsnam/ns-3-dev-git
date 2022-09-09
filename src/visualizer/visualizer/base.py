@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from gi.repository import GObject
 import os.path
 import sys
