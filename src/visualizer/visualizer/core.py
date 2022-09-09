@@ -1709,11 +1709,10 @@ class Visualizer(GObject.GObject):
         return False
 
     def _get_export_file_name(self):
-        sel = Gtk.FileChooserDialog("Save...", self.canvas.get_toplevel(),
-                                    Gtk.FileChooserAction.SAVE,
-                                    (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                                     Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
-        sel.set_default_response(Gtk.ResponseType.OK)
+        sel = Gtk.FileChooserNative.new("Save...", self.canvas.get_toplevel(),
+                                        Gtk.FileChooserAction.SAVE,
+                                        "_Save",
+                                        "_Cancel")
         sel.set_local_only(True)
         sel.set_do_overwrite_confirmation(True)
         sel.set_current_name("Unnamed.pdf")
@@ -1734,7 +1733,7 @@ class Visualizer(GObject.GObject):
         sel.add_filter(filter)
 
         resp = sel.run()
-        if resp != Gtk.ResponseType.OK:
+        if resp != Gtk.ResponseType.ACCEPT:
             sel.destroy()
             return None
 

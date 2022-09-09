@@ -130,7 +130,7 @@ class ShowInterfaceStatistics(InformationWindow):
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
                               flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                              buttons=("_Close", Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
         self.win.set_title("Statistics for node %i" % node_index)
         self.visualizer = visualizer
