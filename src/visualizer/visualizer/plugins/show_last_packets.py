@@ -101,7 +101,7 @@ class ShowLastPackets(InformationWindow):
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
                               buttons=("_Close", Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
         self.win.set_title("Last packets for node %i" % node_index)

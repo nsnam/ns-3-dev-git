@@ -29,7 +29,7 @@ class ShowOlsrRoutingTable(InformationWindow):
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
                               buttons=("_Close", Gtk.ResponseType.CLOSE))
         self.win.set_default_size(Gdk.Screen.width()/2, Gdk.Screen.height()/2)
         self.win.connect("response", self._response_cb)
