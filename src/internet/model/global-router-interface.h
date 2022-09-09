@@ -751,22 +751,6 @@ private:
   Ptr<NetDevice> GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const;
 
   /**
-   * \brief Given a node and a net device, find an IPV4 interface index that corresponds
-   *        to that net device.
-   *
-   * This function may fail for various reasons.  If a node
-   * does not have an internet stack (for example if it is a bridge) we won't have
-   * an IPv4 at all.  If the node does have a stack, but the net device in question
-   * is bridged, there will not be an interface associated directly with the device.
-   *
-   * \param node the node
-   * \param nd outgoing NetDevice
-   * \param index the IPV4 interface index
-   * \returns true on success
-   */
-  bool FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
-
-  /**
    * \brief Finds a designated router
    *
    * Given a local net device, we need to walk the channel to which the net device is
