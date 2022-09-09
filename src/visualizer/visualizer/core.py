@@ -1628,7 +1628,7 @@ class Visualizer(GObject.GObject):
     def popup_node_menu(self, node, event):
         menu = Gtk.Menu()
         self.emit("populate-node-menu", node, menu)
-        menu.popup(None, None, None, None, event.button, event.time)
+        menu.popup_at_pointer(event)
 
     def _update_ipython_selected_node(self):
         # If we are running under ipython -gthread, make this new
