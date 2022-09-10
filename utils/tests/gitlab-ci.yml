@@ -18,9 +18,9 @@
 # configuration, still in definition. It will be in the documentation.
 
 stages:
-  - coding-style
   - build
   - test
+  - coding-style
   - documentation
 
 ###################### BUILD STAGE #############################################
