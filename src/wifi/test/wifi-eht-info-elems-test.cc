@@ -22,6 +22,7 @@
 #include "ns3/mgt-headers.h"
 #include "ns3/multi-link-element.h"
 #include "ns3/reduced-neighbor-report.h"
+#include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/wifi-phy-operating-channel.h"
 
 #include <sstream>
@@ -774,6 +775,151 @@ WifiEhtCapabilitiesIeTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test TID-To-Link Mapping information element serialization and deserialization
+ */
+class TidToLinkMappingElementTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of TID-Link mapping pairs
+     * \param direction The direction for the TID-to-link mapping
+     * \param args A sequence of TID-Link mapping pairs
+     */
+    template <typename... Args>
+    TidToLinkMappingElementTest(TidLinkMapDir direction, Args&&... args);
+
+    ~TidToLinkMappingElementTest() override = default;
+
+  private:
+    /**
+     * Set the given TID-Link mapping and recursively call itself to set the remaining pairs.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of TID-Link mapping pairs
+     * \param tid the TID
+     * \param linkIds the IDs of the links on which the given TID is mapped
+     * \param args A sequence of TID-Link mapping pairs
+     */
+    template <typename... Args>
+    void SetLinkMapping(uint8_t tid, const std::list<uint8_t>& linkIds, Args&&... args);
+
+    /**
+     * Base case to stop the recursion performed by the templated version of this method.
+     */
+    void SetLinkMapping()
+    {
+    }
+
+    void DoRun() override;
+
+    TidToLinkMapping m_tidToLinkMapping; ///< TID-To-Link Mapping element
+};
+
+template <typename... Args>
+TidToLinkMappingElementTest::TidToLinkMappingElementTest(TidLinkMapDir direction, Args&&... args)
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of TID-To-Link Mapping elements")
+{
+    m_tidToLinkMapping.m_control.direction = direction;
+    m_tidToLinkMapping.m_control.defaultMapping = true;
+    SetLinkMapping(args...);
+}
+
+template <typename... Args>
+void
+TidToLinkMappingElementTest::SetLinkMapping(uint8_t tid,
+                                            const std::list<uint8_t>& linkIds,
+                                            Args&&... args)
+{
+    m_tidToLinkMapping.m_control.defaultMapping = false;
+    m_tidToLinkMapping.SetLinkMappingOfTid(tid, linkIds);
+    SetLinkMapping(args...);
+}
+
+void
+TidToLinkMappingElementTest::DoRun()
+{
+    TestHeaderSerialization(m_tidToLinkMapping);
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test EHT Operation information element serialization and deserialization
+ */
+class EhtOperationElementTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param params the EHT Operation Parameters field
+     * \param rxMaxNss0_7 RX max NSS that supports EHT MCS 0-7
+     * \param txMaxNss0_7 TX max NSS that supports EHT MCS 0-7
+     * \param rxMaxNss8_9 RX max NSS that supports EHT MCS 8-9
+     * \param txMaxNss8_9 TX max NSS that supports EHT MCS 8-9
+     * \param rxMaxNss10_11 RX max NSS that supports EHT MCS 10-11
+     * \param txMaxNss10_11 TX max NSS that supports EHT MCS 10-11
+     * \param rxMaxNss12_13 RX max NSS that supports EHT MCS 12-13
+     * \param txMaxNss12_13 TX max NSS that supports EHT MCS 12-13
+     * \param opInfo the EHT Operation Information field
+     */
+    EhtOperationElementTest(const EhtOperation::EhtOpParams& params,
+                            uint8_t rxMaxNss0_7,
+                            uint8_t txMaxNss0_7,
+                            uint8_t rxMaxNss8_9,
+                            uint8_t txMaxNss8_9,
+                            uint8_t rxMaxNss10_11,
+                            uint8_t txMaxNss10_11,
+                            uint8_t rxMaxNss12_13,
+                            uint8_t txMaxNss12_13,
+                            std::optional<EhtOperation::EhtOpInfo> opInfo);
+
+    ~EhtOperationElementTest() override = default;
+
+  private:
+    void DoRun() override;
+
+    EhtOperation m_ehtOperation; ///< EHT Operation element
+};
+
+EhtOperationElementTest::EhtOperationElementTest(const EhtOperation::EhtOpParams& params,
+                                                 uint8_t rxMaxNss0_7,
+                                                 uint8_t txMaxNss0_7,
+                                                 uint8_t rxMaxNss8_9,
+                                                 uint8_t txMaxNss8_9,
+                                                 uint8_t rxMaxNss10_11,
+                                                 uint8_t txMaxNss10_11,
+                                                 uint8_t rxMaxNss12_13,
+                                                 uint8_t txMaxNss12_13,
+                                                 std::optional<EhtOperation::EhtOpInfo> opInfo)
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of EHT Operation elements")
+{
+    m_ehtOperation.m_params = params;
+    m_ehtOperation.SetMaxRxNss(rxMaxNss0_7, 0, 7);
+    m_ehtOperation.SetMaxTxNss(txMaxNss0_7, 0, 7);
+    m_ehtOperation.SetMaxRxNss(rxMaxNss8_9, 8, 9);
+    m_ehtOperation.SetMaxTxNss(txMaxNss8_9, 8, 9);
+    m_ehtOperation.SetMaxRxNss(rxMaxNss10_11, 10, 11);
+    m_ehtOperation.SetMaxTxNss(txMaxNss10_11, 10, 11);
+    m_ehtOperation.SetMaxRxNss(rxMaxNss12_13, 12, 13);
+    m_ehtOperation.SetMaxTxNss(txMaxNss12_13, 12, 13);
+    m_ehtOperation.m_opInfo = opInfo;
+}
+
+void
+EhtOperationElementTest::DoRun()
+{
+    TestHeaderSerialization(m_ehtOperation);
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi EHT Information Elements Test Suite
  */
 class WifiEhtInfoElemsTestSuite : public TestSuite
@@ -794,6 +940,58 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
     AddTestCase(new WifiEhtCapabilitiesIeTest(true, 80), TestCase::QUICK);
     AddTestCase(new WifiEhtCapabilitiesIeTest(false, 160), TestCase::QUICK);
     AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::QUICK);
+    AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK), TestCase::QUICK);
+    AddTestCase(
+        new TidToLinkMappingElementTest(TidLinkMapDir::UPLINK, 3, std::list<uint8_t>{0, 4, 6}),
+        TestCase::QUICK);
+    AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::BOTH_DIRECTIONS,
+                                                3,
+                                                std::list<uint8_t>{0, 4, 6},
+                                                6,
+                                                std::list<uint8_t>{3, 7, 11, 14}),
+                TestCase::QUICK);
+    AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK,
+                                                0,
+                                                std::list<uint8_t>{0, 1, 2},
+                                                1,
+                                                std::list<uint8_t>{3, 4, 5},
+                                                2,
+                                                std::list<uint8_t>{6, 7},
+                                                3,
+                                                std::list<uint8_t>{8, 9, 10},
+                                                4,
+                                                std::list<uint8_t>{11, 12, 13},
+                                                5,
+                                                std::list<uint8_t>{14},
+                                                6,
+                                                std::list<uint8_t>{1, 3, 6},
+                                                7,
+                                                std::list<uint8_t>{11, 14}),
+                TestCase::QUICK);
+    AddTestCase(new EhtOperationElementTest({0, 0, 0, 0, 0}, 1, 2, 3, 4, 5, 6, 7, 8, std::nullopt),
+                TestCase::QUICK);
+    AddTestCase(new EhtOperationElementTest({1, 0, 0, 1, 0},
+                                            1,
+                                            2,
+                                            3,
+                                            4,
+                                            5,
+                                            6,
+                                            7,
+                                            8,
+                                            EhtOperation::EhtOpInfo{{1}, 3, 5}),
+                TestCase::QUICK);
+    AddTestCase(new EhtOperationElementTest({1, 1, 1, 1, 2},
+                                            1,
+                                            2,
+                                            3,
+                                            4,
+                                            5,
+                                            6,
+                                            7,
+                                            8,
+                                            EhtOperation::EhtOpInfo{{2}, 4, 6, 3000}),
+                TestCase::QUICK);
 }
 
 static WifiEhtInfoElemsTestSuite g_wifiEhtInfoElemsTestSuite; ///< the test suite
