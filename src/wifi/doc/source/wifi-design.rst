@@ -891,6 +891,37 @@ The features supported by every FrameExchangeManager class are as follows:
 
 .. _wifi-mu-ack-sequences:
 
+MAC queues
+##########
+Each EDCA function (on QoS stations) and the DCF (on non-QoS stations) have their own
+MAC queue (an instance of the ``WifiMacQueue`` class) to store packets received from
+the upper layer and waiting for transmission. On QoS stations, each received packet is
+assigned a User Priority based on the socket priority (see, e.g., the wifi-multi-tos or
+the wifi-mac-ofdma examples), which determines the Access Category that handles the
+packet. By default, wifi MAC queues support flow control, hence upper layers do not
+forward a packet down if there is no room for it in the corresponding MAC queue.
+Packets stay in the wifi MAC queue until they are acknowledged or discarded. A packet
+may be discarded because, e.g., its lifetime expired (i.e., it stayed in the queue for too
+long) or the maximum number of retries was reached. The maximum lifetime for a packet can
+be configured via the ``MaxDelay`` attribute of ``WifiMacQueue``. There are a number of
+traces that can be used to track the outcome of a packet transmission (see the corresponding
+doxygen documentation):
+
+* ``WifiMac`` trace sources: ``AckedMpdu``, ``NAckedMpdu``, ``DroppedMpdu``,
+  ``MpduResponseTimeout``, ``PsduResponseTimeout``, ``PsduMapResponseTimeout``
+* ``WifiMacQueue`` trace source: ``Expired``
+
+Internally, a wifi MAC queue is made of multiple sub-queues, each storing frames of
+a given type (i.e., data or management) and having a given receiver address and TID.
+For single-user transmissions, the next station to serve is determined by a wifi MAC
+queue scheduler (held by the ``WifiMac`` instance). A wifi MAC queue scheduler is
+implemented through a base class (``WifiMacQueueScheduler``) and subclasses defining
+specific scheduling policies. The default scheduler (``FcfsWifiQueueScheduler``)
+gives management frames higher priority than data frames and serves data frames in a
+first come first serve fashion. For multi-user transmissions (see below), scheduling
+is performed by a Multi-User scheduler, which may or may not consult the wifi MAC queue
+scheduler to identify the stations to serve with a Multi-User DL or UL transmission.
+
 Multi-user transmissions
 ########################
 
