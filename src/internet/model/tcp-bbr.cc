@@ -615,7 +615,7 @@ TcpBbr::UpdateBottleneckBandwidth(Ptr<TcpSocketState> tcb, const TcpRateOps::Tcp
 {
     NS_LOG_FUNCTION(this << tcb << rs);
 
-    if (rs.m_deliveryRate == 0)
+    if (rs.m_delivered < 0 || rs.m_interval.IsZero())
     {
         return;
     }
