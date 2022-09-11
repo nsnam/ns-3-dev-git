@@ -1531,7 +1531,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     {
         channelWidthSet |= 0x01;
     }
-    if ((phy->GetChannelWidth() >= 80) &&
+    if (((phy->GetChannelWidth() >= 80) || GetEhtSupported()) &&
         ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
     {
         channelWidthSet |= 0x02;
@@ -1634,12 +1634,6 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
     }
     else
     {
-        if (phy->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ)
-        {
-            NS_ABORT_MSG_IF(phy->GetChannelWidth() == 40,
-                            "A 802.11be STA cannot support 40 MHz without supporting 80 MHz except "
-                            "in 2.4 GHz band");
-        }
         for (auto maxMcs : {9, 11, 13})
         {
             capabilities.SetSupportedRxEhtMcsAndNss(
