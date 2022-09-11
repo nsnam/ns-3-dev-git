@@ -22,14 +22,17 @@
 #define EPC_UE_NAS_H
 
 
+#include "eps-bearer.h"
 #include <ns3/object.h>
 #include <ns3/lte-as-sap.h>
 #include <ns3/epc-tft-classifier.h>
+#include <ns3/traced-callback.h>
 
 namespace ns3 {
 
 
 class EpcHelper;
+class NetDevice;
 
 class EpcUeNas : public Object
 {

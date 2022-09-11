@@ -22,6 +22,7 @@
 #define INTERFERENCE_HELPER_H
 
 #include "phy-entity.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 

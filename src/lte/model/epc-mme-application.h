@@ -23,7 +23,8 @@
 
 #include "ns3/application.h"
 #include "ns3/socket.h"
-#include "ns3/epc-s1ap-sap.h"
+#include "epc-s1ap-sap.h"
+#include "epc-gtpc-header.h"
 
 namespace ns3 {
 

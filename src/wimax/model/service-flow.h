@@ -22,15 +22,17 @@
 #ifndef SERVICE_FLOW_H
 #define SERVICE_FLOW_H
 
-#include <stdint.h>
+#include <cstdint>
 #include "wimax-phy.h"
 #include "wimax-connection.h"
+#include "wimax-mac-header.h"
 #include "cs-parameters.h"
 
 namespace ns3 {
 
 class ServiceFlowRecord;
 class WimaxConnection;
+class WimaxMacQueue;
 
 /**
  * \ingroup wimax

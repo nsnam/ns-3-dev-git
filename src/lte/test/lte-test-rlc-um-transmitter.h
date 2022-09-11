@@ -21,6 +21,8 @@
 #ifndef LTE_TEST_RLC_UM_TRANSMITTER_H
 #define LTE_TEST_RLC_UM_TRANSMITTER_H
 
+#include "ns3/nstime.h"
+#include "ns3/ptr.h"
 #include "ns3/test.h"
 
 namespace ns3 {
@@ -28,6 +30,7 @@ namespace ns3 {
 class LteTestRrc;
 class LteTestMac;
 class LteTestPdcp;
+class LteRlc;
 
 }
 

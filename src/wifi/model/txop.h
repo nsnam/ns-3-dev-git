@@ -21,6 +21,8 @@
 #ifndef TXOP_H
 #define TXOP_H
 
+#include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/traced-value.h"
 #include "wifi-mac-header.h"
 #include <memory>

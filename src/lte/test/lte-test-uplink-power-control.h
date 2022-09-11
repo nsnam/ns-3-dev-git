@@ -22,11 +22,20 @@
 #ifndef LTE_TEST_UPLINK_POWER_CONTROL_H
 #define LTE_TEST_UPLINK_POWER_CONTROL_H
 
+#include "ns3/nstime.h"
+#include "ns3/ptr.h"
 #include "ns3/spectrum-value.h"
 #include "ns3/spectrum-test.h"
 #include "ns3/test.h"
 
 using namespace ns3;
+
+namespace ns3
+{
+class LteFfrSimple;
+class LteUePowerControl;
+class MobilityModel;
+} // namespace ns3
 
 /**
  * \ingroup lte-test

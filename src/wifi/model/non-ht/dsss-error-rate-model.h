@@ -28,6 +28,8 @@
 #include <gsl/gsl_sf_bessel.h>
 #endif
 
+#include <cstdint>
+
 namespace ns3 {
 
 #ifdef HAVE_GSL

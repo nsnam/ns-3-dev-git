@@ -24,6 +24,10 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 
+namespace ns3
+{
+class RadioBearerStatsCalculator;
+}
 
 using namespace ns3;
 

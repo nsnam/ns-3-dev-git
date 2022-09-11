@@ -21,9 +21,13 @@
 #ifndef BUILDINGS_SHADOWING_TEST_H
 #define BUILDINGS_SHADOWING_TEST_H
 
+#include "ns3/ptr.h"
 #include "ns3/test.h"
 
-
+namespace ns3
+{
+class MobilityModel;
+}
 
 using namespace ns3;
 

@@ -22,6 +22,7 @@
 #ifndef TEST_CARRIER_AGGREGATION_H
 #define TEST_CARRIER_AGGREGATION_H
 
+#include "ns3/lte-common.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "fcntl.h"

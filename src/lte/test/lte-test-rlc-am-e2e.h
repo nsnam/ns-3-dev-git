@@ -22,8 +22,13 @@
 #ifndef LTE_TEST_RLC_AM_E2E_H
 #define LTE_TEST_RLC_AM_E2E_H
 
+#include "ns3/ptr.h"
 #include "ns3/test.h"
 
+namespace ns3
+{
+class Packet;
+}
 
 using namespace ns3;
 

@@ -25,6 +25,7 @@
 
 namespace ns3 {
 
+class Packet;
 
 /**
  * This method allows the MAC to instruct the PHY to start a

@@ -23,6 +23,7 @@
 
 #include <map>
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"

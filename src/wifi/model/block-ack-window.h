@@ -21,6 +21,7 @@
 #ifndef BLOCK_ACK_WINDOW_H
 #define BLOCK_ACK_WINDOW_H
 
+#include <cstdint>
 #include <vector>
 
 namespace ns3 {

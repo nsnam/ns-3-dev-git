@@ -21,6 +21,7 @@
 #ifndef BITDESERIALIZER_H_
 #define BITDESERIALIZER_H_
 
+#include <cstdint>
 #include <vector>
 #include <deque>
 

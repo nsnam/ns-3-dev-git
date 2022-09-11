@@ -21,6 +21,7 @@
 #ifndef BITSERIALIZER_H_
 #define BITSERIALIZER_H_
 
+#include <cstdint>
 #include <vector>
 
 namespace ns3 {

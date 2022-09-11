@@ -21,6 +21,7 @@
 #ifndef LTE_TEST_LINK_ADAPTATION_H
 #define LTE_TEST_LINK_ADAPTATION_H
 
+#include "ns3/lte-common.h"
 #include "ns3/test.h"
 
 

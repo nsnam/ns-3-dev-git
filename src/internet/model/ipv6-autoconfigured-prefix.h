@@ -32,6 +32,7 @@
 
 namespace ns3
 {
+class Node;
 
 /**
  * \ingroup ipv6

@@ -21,6 +21,7 @@
 #ifndef LTE_TEST_PATHLOSS_MODEL_H
 #define LTE_TEST_PATHLOSS_MODEL_H
 
+#include "ns3/lte-common.h"
 #include "ns3/spectrum-value.h"
 
 #include "ns3/test.h"

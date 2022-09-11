@@ -22,7 +22,7 @@
 #define THOMPSON_SAMPLING_WIFI_MANAGER_H
 
 #include "ns3/random-variable-stream.h"
-
+#include "ns3/traced-value.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3 {

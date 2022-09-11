@@ -22,6 +22,7 @@
 #ifndef LTE_TEST_CQI_GENERATION_H
 #define LTE_TEST_CQI_GENERATION_H
 
+#include "ns3/lte-common.h"
 #include "ns3/test.h"
 
 using namespace ns3;

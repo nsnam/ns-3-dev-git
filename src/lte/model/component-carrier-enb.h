@@ -29,7 +29,6 @@
 #include "ns3/lte-phy.h"
 #include <ns3/lte-enb-phy.h>
 #include <ns3/pointer.h>
-//#include <ns3/lte-enb-mac.h>
 
 
 namespace ns3 {

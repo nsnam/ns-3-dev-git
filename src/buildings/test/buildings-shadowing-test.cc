@@ -30,6 +30,7 @@
 #include <ns3/mobility-model.h>
 #include <ns3/mobility-building-info.h>
 #include <ns3/constant-position-mobility-model.h>
+#include <ns3/ptr.h>
 
 #include "buildings-shadowing-test.h"
 

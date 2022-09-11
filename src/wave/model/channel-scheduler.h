@@ -20,6 +20,8 @@
 
 #include <map>
 #include "wave-net-device.h"
+#include "ns3/qos-utils.h"
+
 namespace ns3 {
 class WaveNetDevice;
 

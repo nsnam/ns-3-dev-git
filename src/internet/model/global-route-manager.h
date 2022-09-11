@@ -22,6 +22,8 @@
 #ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
+#include <cstdint>
+
 namespace ns3 {
 
 /**

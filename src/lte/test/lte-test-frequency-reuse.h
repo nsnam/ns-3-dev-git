@@ -28,6 +28,12 @@
 
 #include "ns3/spectrum-test.h"
 #include "ns3/lte-spectrum-value-helper.h"
+#include "ns3/node.h"
+
+namespace ns3
+{
+class MobilityModel;
+}
 
 using namespace ns3;
 

@@ -21,6 +21,7 @@
 #ifndef FRAME_CAPTURE_MODEL_H
 #define FRAME_CAPTURE_MODEL_H
 
+#include "ns3/nstime.h"
 #include "ns3/object.h"
 
 namespace ns3 {
