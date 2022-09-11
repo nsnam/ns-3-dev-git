@@ -221,6 +221,12 @@ if(${CLANG} AND APPLE)
   set(STATIC_LINK_FLAGS)
 endif()
 
+# Include CMake files used for compiler checks
+include(CheckIncludeFile) # Used to check a single C header at a time
+include(CheckIncludeFileCXX) # Used to check a single C++ header at a time
+include(CheckIncludeFiles) # Used to check multiple headers at once
+include(CheckFunctionExists)
+
 macro(SUBDIRLIST result curdir)
   file(GLOB children RELATIVE ${curdir} ${curdir}/*)
   set(dirlist "")
@@ -1077,11 +1083,6 @@ macro(process_options)
   if(${NS3_INT64X64} MATCHES "CAIRO")
     set(INT64X64_USE_CAIRO TRUE)
   endif()
-
-  include(CheckIncludeFile) # Used to check a single C header at a time
-  include(CheckIncludeFileCXX) # Used to check a single C++ header at a time
-  include(CheckIncludeFiles) # Used to check multiple headers at once
-  include(CheckFunctionExists)
 
   # Check for required headers and functions, set flags if they're found or warn
   # if they're not found

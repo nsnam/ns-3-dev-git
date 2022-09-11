@@ -48,3 +48,29 @@ if(${MISSING_OSTREAM_NULLPTR_OPERATOR})
     ${CMAKE_CURRENT_SOURCE_DIR}/build-support/compiler-workarounds/ostream-operator-nullptr.h
   )
 endif()
+
+# Some compilers (e.g. GCC < 9.1 and Clang < 9) do not link
+# std::filesystem/std::experimental::filesystem by default.
+# If the sample program can be linked, it means it is
+# indeed linked by default. Otherwise, we link it manually.
+# https://en.cppreference.com/w/cpp/filesystem
+check_cxx_source_compiles(
+  "
+  # ifdef __cpp_lib_filesystem
+    #include <filesystem>
+    namespace fs = std::filesystem;
+  #else
+    #include <experimental/filesystem>
+    namespace fs = std::experimental::filesystem;
+  #endif
+  int main()
+  {
+    std::string path = \"/\";
+    return !fs::exists (path);
+  }
+  "
+  FILESYSTEM_LIBRARY_IS_LINKED
+)
+if(NOT FILESYSTEM_LIBRARY_IS_LINKED)
+  link_libraries(-lstdc++fs)
+endif()

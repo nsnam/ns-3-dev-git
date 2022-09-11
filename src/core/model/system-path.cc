@@ -25,11 +25,27 @@
 #include <algorithm>
 #include <cstdlib> // getenv
 #include <cstring> // strlen
-#include <filesystem>
 #include <tuple>
 #include <sstream>
 #include <ctime>
 #include <regex>
+
+// Some compilers such as GCC < 8 (Ubuntu 18.04
+// ships with GCC 7) do not ship with the
+// std::filesystem header,  but with the
+// std::experimental::filesystem header.
+// Since Clang reuses these headers and the libstdc++
+// from GCC, we need to either use the experimental
+// version or require a more up-to-date GCC.
+// we use the "fs" namespace to prevent collisions
+// with musl libc.
+# ifdef __cpp_lib_filesystem
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#else
+    #include <experimental/filesystem>
+    namespace fs = std::experimental::filesystem;
+#endif
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -84,13 +100,13 @@ ReadFilesNoThrow (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> files;
-  if (!std::filesystem::exists (path))
+  if (!fs::exists (path))
     {
       return std::make_tuple (files, true);
     }
-  for (auto &it : std::filesystem::directory_iterator (path))
+  for (auto &it : fs::directory_iterator (path))
     {
-      if (!it.is_directory ())
+      if (!fs::is_directory(it.path()))
         {
           files.push_back (it.path ().filename ().string ());
         }
@@ -341,9 +357,9 @@ MakeDirectories (std::string path)
   NS_LOG_FUNCTION (path);
 
   std::error_code ec;
-  if (!std::filesystem::exists (path))
+  if (!fs::exists (path))
     {
-      std::filesystem::create_directories (path, ec);
+      fs::create_directories (path, ec);
     }
 
   if (ec.value ())
