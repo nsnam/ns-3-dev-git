@@ -727,14 +727,35 @@ The MAC model
 Infrastructure association
 ##########################
 
-Association in infrastructure mode is a high-level MAC function.
-Either active probing or passive scanning is used (default is passive scan).
-At the start of the simulation, Wi-Fi network devices configured as
-STA will attempt to scan the channel. Depends on whether passive or active
-scanning is selected, STA will attempt to gather beacons, or send a probe
-request and gather probe responses until the respective timeout occurs. The
-end result will be a list of candidate AP to associate to. STA will then try
-to associate to the best AP (i.e., best SNR).
+Association in infrastructure mode is a high-level MAC function performed by
+the Association Manager, which is implemented through a base class (``WifiAssocManager``)
+and a default subclass (``WifiDefaultAssocManager``). The interaction between
+the station MAC, the Association Manager base class and subclass is illustrated
+in Figure :ref:`fig-assoc-manager`.
+
+.. _fig-assoc-manager:
+
+.. figure:: figures/assoc-manager.*
+   :align: center
+
+   Scanning procedure
+
+The STA wifi MAC requests the Association Manager to start a scanning procedure
+with specified parameters, including the type of scanning (active or passive),
+the desired SSID, the list of channels to scan, etc. The STA wifi MAC then expects
+to be notified of the best AP to associate with at the end of the scanning procedure.
+Every Beacon or Probe Response frame received during scanning is forwarded to the
+Association Manager, which keeps a list of candidate APs that match the scanning
+parameters. The sorting criterium for such a list is defined by the Association
+Manager subclass. The default Association Manager sorts APs in decreasing order
+of the SNR of the received Beacon/Probe Response frame.
+
+When notified of the start of a scanning procedure, the default Association Manager
+schedules a call to a method that processes the information included in the frames
+received up to the time such a method is called. When both the AP and the STA have
+multiple links (i.e., they are 802.11be MLDs), the default Association Manager attempts
+to setup as many links as possible. This involves switching operating channel on some of
+the STA's links to match those on which the APs affiliated with the AP MLD are operating.
 
 If association is rejected by the AP for some reason, the STA will try to
 associate to the next best AP until the candidate list is exhausted which

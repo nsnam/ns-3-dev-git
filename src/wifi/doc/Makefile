@@ -23,6 +23,7 @@ IMAGES_EPS = \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
 	$(FIGURES)/FemHierarchy.eps \
+        $(FIGURES)/assoc-manager.eps \
         $(FIGURES)/clear-channel.eps \
         $(FIGURES)/nist-frame-success-rate.eps \
         $(FIGURES)/nist-frame-success-rate-n.eps \

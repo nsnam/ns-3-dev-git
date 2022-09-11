@@ -145,6 +145,7 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.pdf \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.png \
+	$(SRC)/wifi/doc/source/figures/assoc-manager.eps \
 	$(SRC)/wifi/doc/source/figures/mu-bar.pdf \
 	$(SRC)/wifi/doc/source/figures/mu-bar.png \
 	$(SRC)/wifi/doc/source/figures/aggr-mu-bar.pdf \
@@ -449,6 +450,7 @@ IMAGES_EPS = \
 	$(FIGURES)/802-15-4-per-sens.eps \
 	$(FIGURES)/802-15-4-psr-distance.eps \
 	$(FIGURES)/clear-channel.eps \
+	$(FIGURES)/assoc-manager.eps \
 	$(FIGURES)/nist-frame-success-rate.eps \
 	$(FIGURES)/nist-frame-success-rate-n.eps \
 	$(FIGURES)/nist-frame-success-rate-ac.eps \
@@ -527,6 +529,7 @@ $(FIGURES)/nist-frame-success-rate.pdf_width = 12cm
 $(FIGURES)/nist-frame-success-rate-n.pdf_width = 12cm
 $(FIGURES)/nist-frame-success-rate-ac.pdf_width = 12cm
 $(FIGURES)/nist-frame-success-rate-ax.pdf_width = 12cm
+$(FIGURES)/assoc-manager.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
