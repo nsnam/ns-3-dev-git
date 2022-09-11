@@ -85,7 +85,7 @@ FcfsWifiQueueScheduler::DoNotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
   NS_LOG_FUNCTION (this << +ac << *mpdu);
 
-  auto queueId = WifiMacQueueContainer::GetQueueId (mpdu);
+  const auto queueId = WifiMacQueueContainer::GetQueueId (mpdu);
 
   if (GetWifiMacQueue (ac)->GetNPackets (queueId) > 1)
     {
@@ -103,7 +103,7 @@ FcfsWifiQueueScheduler::DoNotifyEnqueue (AcIndex ac, Ptr<WifiMpdu> mpdu)
 void
 FcfsWifiQueueScheduler::DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus)
 {
-  NS_LOG_FUNCTION (this << +ac);
+  NS_LOG_FUNCTION (this << +ac << mpdus.size ());
 
   std::set<WifiContainerQueueId> queueIds;
 
@@ -130,7 +130,7 @@ FcfsWifiQueueScheduler::DoNotifyDequeue (AcIndex ac, const std::list<Ptr<WifiMpd
 void
 FcfsWifiQueueScheduler::DoNotifyRemove (AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus)
 {
-  NS_LOG_FUNCTION (this << +ac);
+  NS_LOG_FUNCTION (this << +ac << mpdus.size ());
 
   std::set<WifiContainerQueueId> queueIds;
 

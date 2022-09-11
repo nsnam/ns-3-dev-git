@@ -31,7 +31,9 @@ class WifiMpdu;
 /**
  * \ingroup wifi
  *
- * WifiMacQueueScheduler ...
+ * FcfsWifiQueueScheduler is a wifi queue scheduler that serves data frames in a
+ * first come first serve fashion. Management frames have higher priority than data
+ * frames, hence the former will be served before the latter.
  */
 class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<Time>
 {
