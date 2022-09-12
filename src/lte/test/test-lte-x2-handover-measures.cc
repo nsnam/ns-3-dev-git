@@ -75,19 +75,18 @@ class LteX2HandoverMeasuresTestCase : public TestCase
 {
 public:
   /**
-   *
+   * Constructor.
    *
    * \param nEnbs number of eNBs in the test
    * \param nUes number of UEs in the test
    * \param nDedicatedBearers number of bearers to be activated per UE
-   * \param checkPointEventList
-   * \param checkPointEventListName
+   * \param checkPointEventList list of check point events
+   * \param checkPointEventListName name of check point event list
    * \param useUdp true if UDP is to be used, false if TCP is to be used
    * \param schedulerType type of scheduler to be used (e.g. "ns3::PfFfMacScheduler")
    * \param handoverAlgorithmType type of handover algorithm to be used (e.g. "ns3::A3RsrpHandoverAlgorithm")
-   * \param admitHo
+   * \param admitHo true if Ho is admitted, false if it is not admitted
    * \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
-   *
    */
   LteX2HandoverMeasuresTestCase (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
                                  std::list<CheckPointEvent> checkPointEventList,
@@ -102,11 +101,11 @@ private:
    * \param nEnbs number of eNBs in the test
    * \param nUes number of UEs in the test
    * \param nDedicatedBearers number of bearers to be activated per UE
-   * \param checkPointEventListName
+   * \param checkPointEventListName name of check point event list
    * \param useUdp true if UDP is to be used, false if TCP is to be used
    * \param schedulerType the scheduler type
    * \param handoverAlgorithmType type of handover algorithm to be used (e.g. "ns3::A3RsrpHandoverAlgorithm")
-   * \param admitHo
+   * \param admitHo true if Ho is admitted, false if it is not admitted
    * \param useIdealRrc true if the ideal RRC should be used
    * \returns the name string
    */
