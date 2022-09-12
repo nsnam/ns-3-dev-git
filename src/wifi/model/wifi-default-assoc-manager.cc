@@ -198,8 +198,6 @@ WifiDefaultAssocManager::EndScanning (void)
           // if we get here, it means we can setup a link with this affiliated AP
           // set the BSSID for this link
           Mac48Address bssid = rnr->get ().GetBssid (apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
-          NS_LOG_DEBUG ("Setting BSSID=" << bssid << " for link " << +linkId);
-          m_mac->SetBssid (bssid, linkId);
           // store AP MLD MAC address in the WifiRemoteStationManager associated with
           // the link requested to setup
           m_mac->GetWifiRemoteStationManager (linkId)->SetMldAddress (bssid, mle->get ().GetMldMacAddress ());

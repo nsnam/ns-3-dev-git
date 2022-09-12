@@ -1,8 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006, 2009 INRIA
- * Copyright (c) 2009 MIRKO BANCHICONFLICT (content): Merge conflict in src/wifi/model/sta-wifi-mac.cc
-
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -378,13 +377,16 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       linkId++;
     }
   NS_ABORT_MSG_IF (linkId == GetNLinks (), "No link selected to send the (Re)Association Request");
+  auto& link = GetLink (linkId);
+  NS_ABORT_MSG_IF (!link.bssid.has_value (),
+                   "No BSSID set for the link on which the (Re)Association Request is to be sent");
 
-  NS_LOG_FUNCTION (this << GetBssid (linkId) << isReassoc);
+  NS_LOG_FUNCTION (this << *link.bssid << isReassoc);
   WifiMacHeader hdr;
   hdr.SetType (isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-  hdr.SetAddr1 (GetBssid (linkId));
-  hdr.SetAddr2 (GetLink (linkId).feManager->GetAddress ());
-  hdr.SetAddr3 (GetBssid (linkId));
+  hdr.SetAddr1 (*link.bssid);
+  hdr.SetAddr2 (link.feManager->GetAddress ());
+  hdr.SetAddr3 (*link.bssid);
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Ptr<Packet> packet = Create<Packet> ();
@@ -394,7 +396,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   // include a Multi-Link Element if this device has multiple links (independently
   // of how many links will be setup) and the AP is a multi-link device
   if (GetNLinks () > 1
-      && GetWifiRemoteStationManager (linkId)->GetMldAddress (GetBssid (linkId)).has_value ())
+      && GetWifiRemoteStationManager (linkId)->GetMldAddress (*link.bssid).has_value ())
     {
       auto addMle = [&](auto&& frame)
                     {
@@ -423,7 +425,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   //   AC_BE should be selected.
   // — If category AC_BE was not selected by the previous step, category AC_VO
   //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-  else if (!GetWifiRemoteStationManager (linkId)->GetQosSupported (GetBssid (linkId)))
+  else if (!GetWifiRemoteStationManager (linkId)->GetQosSupported (*link.bssid))
     {
       GetBEQueue ()->Queue (packet, hdr);
     }
@@ -528,16 +530,28 @@ StaWifiMac::ScanningTimeout (const std::optional<ApInfo>& bestAp)
   for (uint8_t linkId = 0; linkId < GetNLinks (); linkId++)
     {
       auto& link = GetLink (linkId);
-      link.apLinkId = std::nullopt;
       link.sendAssocReq = false;
+      link.apLinkId = std::nullopt;
+      link.bssid = std::nullopt;
     }
   // send Association Request on the link where the Beacon/Probe Response was received
   GetLink (bestAp->m_linkId).sendAssocReq = true;
-  // update info on links to setup
-  for (const auto& [localLinkId, apLinkid] : bestAp->m_setupLinks)
+  GetLink (bestAp->m_linkId).bssid = bestAp->m_bssid;
+  // update info on links to setup (11be MLDs only)
+  for (const auto& [localLinkId, apLinkId] : bestAp->m_setupLinks)
     {
-      NS_LOG_DEBUG ("Setting up link (local ID=" << +localLinkId << ", AP ID=" << +apLinkid << ")");
-      GetLink (localLinkId).apLinkId = apLinkid;
+      NS_LOG_DEBUG ("Setting up link (local ID=" << +localLinkId << ", AP ID=" << +apLinkId << ")");
+      GetLink (localLinkId).apLinkId = apLinkId;
+      if (localLinkId == bestAp->m_linkId)
+        {
+          continue;
+        }
+      auto mldAddress = GetWifiRemoteStationManager (bestAp->m_linkId)->GetMldAddress (bestAp->m_bssid);
+      NS_ABORT_MSG_IF (!mldAddress.has_value (), "AP MLD address not set");
+      auto bssid = GetWifiRemoteStationManager (localLinkId)->GetAffiliatedStaAddress (*mldAddress);
+      NS_ABORT_MSG_IF (!mldAddress.has_value (),
+                        "AP link address not set for local link " << +localLinkId);
+      GetLink (localLinkId).bssid = *bssid;
     }
   // lambda to get beacon interval from Beacon or Probe Response
   auto getBeaconInterval =
@@ -840,7 +854,8 @@ StaWifiMac::ReceiveBeacon (Ptr<WifiMpdu> mpdu, uint8_t linkId)
     {
       // we have to process this Beacon only if sent by the AP we are associated
       // with or from which we are waiting an Association Response frame
-      goodBeacon = (hdr.GetAddr3 () == GetBssid (linkId));
+      auto bssid = GetLink (linkId).bssid;
+      goodBeacon = bssid.has_value () && (hdr.GetAddr3 () == *bssid);
     }
   else
     {
@@ -928,10 +943,12 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
     }
   if (assocResp.GetStatusCode ().IsSuccess ())
     {
-      SetState (ASSOCIATED);
       m_aid = assocResp.GetAssociationId ();
       NS_LOG_DEBUG ((hdr.IsReassocResp () ? "reassociation done" : "association completed"));
       UpdateApInfo (assocResp, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
+      NS_ASSERT (GetLink (linkId).bssid.has_value () && *GetLink (linkId).bssid == hdr.GetAddr3 ());
+      SetBssid (hdr.GetAddr3 (), linkId);
+      SetState (ASSOCIATED);
       if (!m_linkUp.IsNull ())
         {
           m_linkUp ();
@@ -978,9 +995,11 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
                     }
                   staLinkid++;
                 }
-              NS_ABORT_MSG_IF (staLinkid == GetNLinks (),
+              std::optional<Mac48Address> bssid;
+              NS_ABORT_MSG_IF (staLinkid == GetNLinks ()
+                               || !(bssid = GetLink (staLinkid).bssid).has_value (),
                               "Setup for AP link ID " << apLinkId << " was not requested");
-              NS_ABORT_MSG_IF (GetBssid (staLinkid) != perStaProfile.GetStaMacAddress (),
+              NS_ABORT_MSG_IF (*bssid != perStaProfile.GetStaMacAddress (),
                               "The BSSID in the Per-STA Profile for link ID " << +staLinkid
                               << " does not match the stored BSSID");
               NS_ABORT_MSG_IF (GetWifiRemoteStationManager (staLinkid)->GetMldAddress (perStaProfile.GetStaMacAddress ())
@@ -991,12 +1010,13 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
               MgtAssocResponseHeader assoc = perStaProfile.GetAssocResponse ();
               if (assoc.GetStatusCode ().IsSuccess ())
                 {
-                  SetState (ASSOCIATED);
                   NS_ABORT_MSG_IF (m_aid != 0 && m_aid != assoc.GetAssociationId (),
                                   "AID should be the same for all the links");
                   m_aid = assoc.GetAssociationId ();
                   NS_LOG_DEBUG ("Setup on link " << staLinkid << " completed");
-                  UpdateApInfo (assoc, GetBssid (staLinkid), GetBssid (staLinkid), staLinkid);
+                  UpdateApInfo (assoc, *bssid, *bssid, staLinkid);
+                  SetBssid (*bssid, staLinkid);
+                  SetState (ASSOCIATED);
                   if (!m_linkUp.IsNull ())
                     {
                       m_linkUp ();
@@ -1010,6 +1030,7 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
       for (const auto& id : setupLinks)
         {
           GetLink (id).apLinkId = std::nullopt;
+          GetLink (id).bssid = std::nullopt;
           // if at least one link was setup, disable the links that were not setup (if any)
           if (m_state == ASSOCIATED)
             {
@@ -1059,8 +1080,6 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
                           const Mac48Address& bssid, uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << frame.index () << apAddr << bssid << +linkId);
-
-  SetBssid (bssid, linkId);
 
   // lambda processing Information Elements included in all frame types
   auto commonOps =
