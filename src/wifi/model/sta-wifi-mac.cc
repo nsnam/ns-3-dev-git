@@ -85,12 +85,25 @@ StaWifiMac::GetTypeId (void)
                    StringValue ("ns3::UniformRandomVariable[Min=50.0|Max=250.0]"),
                    MakePointerAccessor (&StaWifiMac::m_probeDelay),
                    MakePointerChecker<RandomVariableStream> ())
-    .AddTraceSource ("Assoc", "Associated with an access point.",
+    .AddTraceSource ("Assoc",
+                     "Associated with an access point. If this is an MLD that associated "
+                     "with an AP MLD, the AP MLD address is provided.",
                      MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger),
                      "ns3::Mac48Address::TracedCallback")
-    .AddTraceSource ("DeAssoc", "Association with an access point lost.",
+    .AddTraceSource ("LinkSetupCompleted",
+                     "A link was setup in the context of ML setup with an AP MLD. "
+                     "Provides ID of the setup link and AP MAC address",
+                     MakeTraceSourceAccessor (&StaWifiMac::m_setupCompleted),
+                     "ns3::StaWifiMac::LinkSetupCallback")
+    .AddTraceSource ("DeAssoc", "Association with an access point lost. If this is an MLD "
+                     "that disassociated with an AP MLD, the AP MLD address is provided.",
                      MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger),
                      "ns3::Mac48Address::TracedCallback")
+    .AddTraceSource ("LinkSetupCanceled",
+                     "A link setup in the context of ML setup with an AP MLD was torn down. "
+                     "Provides ID of the setup link and AP MAC address",
+                     MakeTraceSourceAccessor (&StaWifiMac::m_setupCanceled),
+                     "ns3::StaWifiMac::LinkSetupCallback")
     .AddTraceSource ("BeaconArrival",
                      "Time of beacons arrival from associated AP",
                      MakeTraceSourceAccessor (&StaWifiMac::m_beaconArrival),
@@ -622,9 +635,16 @@ StaWifiMac::Disassociated (uint8_t linkId)
 {
   NS_LOG_FUNCTION (this << +linkId);
 
+  auto& link = GetLink (linkId);
+  if (link.apLinkId.has_value ())
+    {
+      // this is a link setup in an ML setup
+      m_setupCanceled (linkId, GetBssid (linkId));
+    }
+
   // disable the given link
-  GetLink (linkId).apLinkId = std::nullopt;
-  GetLink (linkId).phy->SetOffMode ();
+  link.apLinkId = std::nullopt;
+  link.phy->SetOffMode ();
 
   for (uint8_t id = 0; id < GetNLinks (); id++)
     {
@@ -637,6 +657,16 @@ StaWifiMac::Disassociated (uint8_t linkId)
 
   NS_LOG_DEBUG ("Set state to UNASSOCIATED and start scanning");
   SetState (UNASSOCIATED);
+  auto mldAddress = GetWifiRemoteStationManager (linkId)->GetMldAddress (GetBssid (linkId));
+  if (GetNLinks () > 1 && mldAddress.has_value ())
+    {
+      // trace the AP MLD address
+      m_deAssocLogger (*mldAddress);
+    }
+  else
+    {
+      m_deAssocLogger (GetBssid (linkId));
+    }
   m_aid = 0;  // reset AID
   // ensure all links are on
   for (uint8_t id = 0; id < GetNLinks (); id++)
@@ -948,6 +978,16 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
       UpdateApInfo (assocResp, hdr.GetAddr2 (), hdr.GetAddr3 (), linkId);
       NS_ASSERT (GetLink (linkId).bssid.has_value () && *GetLink (linkId).bssid == hdr.GetAddr3 ());
       SetBssid (hdr.GetAddr3 (), linkId);
+      if ((GetNLinks () > 1) && assocResp.GetMultiLinkElement ().has_value ())
+        {
+          // this is an ML setup, trace the MLD address (only once)
+          m_assocLogger (*GetWifiRemoteStationManager (linkId)->GetMldAddress (hdr.GetAddr3 ()));
+          m_setupCompleted (linkId, hdr.GetAddr3 ());
+        }
+      else
+        {
+          m_assocLogger (hdr.GetAddr3 ());
+        }
       SetState (ASSOCIATED);
       if (!m_linkUp.IsNull ())
         {
@@ -1016,6 +1056,11 @@ StaWifiMac::ReceiveAssocResp (Ptr<WifiMpdu> mpdu, uint8_t linkId)
                   NS_LOG_DEBUG ("Setup on link " << staLinkid << " completed");
                   UpdateApInfo (assoc, *bssid, *bssid, staLinkid);
                   SetBssid (*bssid, staLinkid);
+                  if (m_state != ASSOCIATED)
+                    {
+                      m_assocLogger (*GetWifiRemoteStationManager (staLinkid)->GetMldAddress (*bssid));
+                    }
+                  m_setupCompleted (staLinkid, *bssid);
                   SetState (ASSOCIATED);
                   if (!m_linkUp.IsNull ())
                     {
@@ -1252,16 +1297,6 @@ StaWifiMac::GetCapabilities (uint8_t linkId) const
 void
 StaWifiMac::SetState (MacState value)
 {
-  if (value == ASSOCIATED
-      && m_state != ASSOCIATED)
-    {
-      m_assocLogger (GetBssid (0));  // TODO use appropriate linkId
-    }
-  else if (value != ASSOCIATED
-           && m_state == ASSOCIATED)
-    {
-      m_deAssocLogger (GetBssid (0));  // TODO use appropriate linkId
-    }
   m_state = value;
 }
 

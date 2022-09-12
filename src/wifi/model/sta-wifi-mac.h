@@ -468,10 +468,15 @@ private:
   Ptr<RandomVariableStream> m_probeDelay;  ///< RandomVariable used to randomize the time
                                            ///< of the first Probe Response on each channel
 
-  TracedCallback<Mac48Address> m_assocLogger;   ///< association logger
-  TracedCallback<Mac48Address> m_deAssocLogger; ///< disassociation logger
-  TracedCallback<Time>         m_beaconArrival; ///< beacon arrival logger
-  TracedCallback<ApInfo>       m_beaconInfo;    ///< beacon info logger
+  TracedCallback<Mac48Address> m_assocLogger;             ///< association logger
+  TracedCallback<uint8_t, Mac48Address> m_setupCompleted; ///< link setup completed logger
+  TracedCallback<Mac48Address> m_deAssocLogger;           ///< disassociation logger
+  TracedCallback<uint8_t, Mac48Address> m_setupCanceled;  ///< link setup canceled logger
+  TracedCallback<Time> m_beaconArrival;                   ///< beacon arrival logger
+  TracedCallback<ApInfo> m_beaconInfo;                    ///< beacon info logger
+
+  /// TracedCallback signature for link setup completed/canceled events
+  using LinkSetupCallback = void (*)(uint8_t /* link ID */, Mac48Address /* AP address */);
 };
 
 
