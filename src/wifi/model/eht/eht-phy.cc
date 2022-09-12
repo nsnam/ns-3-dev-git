@@ -36,17 +36,17 @@ NS_LOG_COMPONENT_DEFINE ("EhtPhy");
 // clang-format off
 
 const PhyEntity::PpduFormats EhtPhy::m_ehtPpduFormats {
-  { WIFI_PREAMBLE_EHT_MU,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
-                               WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
-                               WIFI_PPDU_FIELD_U_SIG,         //U-SIG
-                               WIFI_PPDU_FIELD_EHT_SIG,       //EHT-SIG
-                               WIFI_PPDU_FIELD_TRAINING,      //EHT-STF + EHT-LTFs
-                               WIFI_PPDU_FIELD_DATA } },
-  { WIFI_PREAMBLE_EHT_TB,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
-                               WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
-                               WIFI_PPDU_FIELD_U_SIG,         //U-SIG
-                               WIFI_PPDU_FIELD_TRAINING,      //EHT-STF + EHT-LTFs
-                               WIFI_PPDU_FIELD_DATA } }
+    { WIFI_PREAMBLE_EHT_MU, { WIFI_PPDU_FIELD_PREAMBLE,      // L-STF + L-LTF
+                              WIFI_PPDU_FIELD_NON_HT_HEADER, // L-SIG + RL-SIG
+                              WIFI_PPDU_FIELD_U_SIG,         // U-SIG
+                              WIFI_PPDU_FIELD_EHT_SIG,       // EHT-SIG
+                              WIFI_PPDU_FIELD_TRAINING,      // EHT-STF + EHT-LTFs
+                              WIFI_PPDU_FIELD_DATA } },
+    { WIFI_PREAMBLE_EHT_TB, { WIFI_PPDU_FIELD_PREAMBLE,      // L-STF + L-LTF
+                              WIFI_PPDU_FIELD_NON_HT_HEADER, // L-SIG + RL-SIG
+                              WIFI_PPDU_FIELD_U_SIG,         // U-SIG
+                              WIFI_PPDU_FIELD_TRAINING,      // EHT-STF + EHT-LTFs
+                              WIFI_PPDU_FIELD_DATA } }
 };
 
 // clang-format on

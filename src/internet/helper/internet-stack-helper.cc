@@ -89,19 +89,19 @@ NS_LOG_COMPONENT_DEFINE ("InternetStackHelper");
 // destroyed at static object destruction time; i.e., the simulator does
 // not explicitly clear these maps before the program ends.
 //
-typedef std::pair<uint32_t, uint32_t> InterfacePairIpv4;  /**< Ipv4/interface pair */
-typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;  /**< Ipv4/interface and Pcap file wrapper container */
-typedef std::map<InterfacePairIpv4, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv4;  /**< Ipv4/interface and output stream container */
+typedef std::pair<uint32_t, uint32_t> InterfacePairIpv4;  //!< Ipv4/interface pair
+typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;  //!< Ipv4/interface and Pcap file wrapper container
+typedef std::map<InterfacePairIpv4, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv4;  //!< Ipv4/interface and output stream container
 
-static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; /**< A mapping of Ipv4/interface pairs to pcap files */
-static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
+static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; //!< A mapping of Ipv4/interface pairs to pcap files
+static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; //!< A mapping of Ipv4/interface pairs to ascii streams
 
-typedef std::pair<uint32_t, uint32_t> InterfacePairIpv6;  /**< Ipv6/interface pair */
-typedef std::map<InterfacePairIpv6, Ptr<PcapFileWrapper> > InterfaceFileMapIpv6;  /**< Ipv6/interface and Pcap file wrapper container */
-typedef std::map<InterfacePairIpv6, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv6;  /**< Ipv6/interface and output stream container */
+typedef std::pair<uint32_t, uint32_t> InterfacePairIpv6;  //!< Ipv6/interface pair
+typedef std::map<InterfacePairIpv6, Ptr<PcapFileWrapper> > InterfaceFileMapIpv6;  //!< Ipv6/interface and Pcap file wrapper container
+typedef std::map<InterfacePairIpv6, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv6;  //!< Ipv6/interface and output stream container
 
-static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
-static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
+static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; //!< A mapping of Ipv6/interface pairs to pcap files
+static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; //!< A mapping of Ipv6/interface pairs to pcap files
 
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),

@@ -140,12 +140,12 @@ public:
    */
   struct TagData
   {
-    struct TagData * next;      /**< Pointer to next in list */
-    uint32_t count;             /**< Number of incoming links */
-    TypeId tid;                 /**< Type of the tag serialized into #data */
-    uint32_t size;              /**< Size of the \c data buffer */
-    uint8_t data[1];            /**< Serialization buffer */
-  };  /* struct TagData */
+    struct TagData * next; //!< Pointer to next in list
+    uint32_t count;        //!< Number of incoming links
+    TypeId tid;            //!< Type of the tag serialized into #data
+    uint32_t size;         //!< Size of the \c data buffer
+    uint8_t data[1];       //!< Serialization buffer
+  };
 
   /**
    * Create a new PacketTagList.

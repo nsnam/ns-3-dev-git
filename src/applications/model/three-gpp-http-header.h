@@ -55,7 +55,7 @@ class Packet;
 class ThreeGppHttpHeader : public Header
 {
 public:
-  /// Creates an empty instance	.
+  /// Creates an empty instance.
   ThreeGppHttpHeader ();
 
   /**

@@ -41,37 +41,37 @@ NS_LOG_COMPONENT_DEFINE ("OfdmPhy");
 // clang-format off
 
 const PhyEntity::PpduFormats OfdmPhy::m_ofdmPpduFormats {
-  { WIFI_PREAMBLE_LONG, { WIFI_PPDU_FIELD_PREAMBLE,      //STF + LTF
-                          WIFI_PPDU_FIELD_NON_HT_HEADER, //SIG
-                          WIFI_PPDU_FIELD_DATA } }
+    { WIFI_PREAMBLE_LONG, { WIFI_PPDU_FIELD_PREAMBLE,      // STF + LTF
+                            WIFI_PPDU_FIELD_NON_HT_HEADER, // SIG
+                            WIFI_PPDU_FIELD_DATA } }
 };
 
 const PhyEntity::ModulationLookupTable OfdmPhy::m_ofdmModulationLookupTable {
-  // Unique name                Code rate           Constellation size
-  { "OfdmRate6Mbps",          { WIFI_CODE_RATE_1_2, 2 } },  // 20 MHz
-  { "OfdmRate9Mbps",          { WIFI_CODE_RATE_3_4, 2 } },  //  |
-  { "OfdmRate12Mbps",         { WIFI_CODE_RATE_1_2, 4 } },  //  V
-  { "OfdmRate18Mbps",         { WIFI_CODE_RATE_3_4, 4 } },
-  { "OfdmRate24Mbps",         { WIFI_CODE_RATE_1_2, 16 } },
-  { "OfdmRate36Mbps",         { WIFI_CODE_RATE_3_4, 16 } },
-  { "OfdmRate48Mbps",         { WIFI_CODE_RATE_2_3, 64 } },
-  { "OfdmRate54Mbps",         { WIFI_CODE_RATE_3_4, 64 } },
-  { "OfdmRate3MbpsBW10MHz",   { WIFI_CODE_RATE_1_2, 2 } },  // 10 MHz
-  { "OfdmRate4_5MbpsBW10MHz", { WIFI_CODE_RATE_3_4, 2 } },  //  |
-  { "OfdmRate6MbpsBW10MHz",   { WIFI_CODE_RATE_1_2, 4 } },  //  V
-  { "OfdmRate9MbpsBW10MHz",   { WIFI_CODE_RATE_3_4, 4 } },
-  { "OfdmRate12MbpsBW10MHz",  { WIFI_CODE_RATE_1_2, 16 } },
-  { "OfdmRate18MbpsBW10MHz",  { WIFI_CODE_RATE_3_4, 16 } },
-  { "OfdmRate24MbpsBW10MHz",  { WIFI_CODE_RATE_2_3, 64 } },
-  { "OfdmRate27MbpsBW10MHz",  { WIFI_CODE_RATE_3_4, 64 } },
-  { "OfdmRate1_5MbpsBW5MHz",  { WIFI_CODE_RATE_1_2, 2 } },  //  5 MHz
-  { "OfdmRate2_25MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 2 } },  //  |
-  { "OfdmRate3MbpsBW5MHz",    { WIFI_CODE_RATE_1_2, 4 } },  //  V
-  { "OfdmRate4_5MbpsBW5MHz",  { WIFI_CODE_RATE_3_4, 4 } },
-  { "OfdmRate6MbpsBW5MHz",    { WIFI_CODE_RATE_1_2, 16 } },
-  { "OfdmRate9MbpsBW5MHz",    { WIFI_CODE_RATE_3_4, 16 } },
-  { "OfdmRate12MbpsBW5MHz",   { WIFI_CODE_RATE_2_3, 64 } },
-  { "OfdmRate13_5MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 64 } }
+    // Unique name                Code rate           Constellation size
+    { "OfdmRate6Mbps",          { WIFI_CODE_RATE_1_2, 2 } },  // 20 MHz
+    { "OfdmRate9Mbps",          { WIFI_CODE_RATE_3_4, 2 } },  //  |
+    { "OfdmRate12Mbps",         { WIFI_CODE_RATE_1_2, 4 } },  //  V
+    { "OfdmRate18Mbps",         { WIFI_CODE_RATE_3_4, 4 } },
+    { "OfdmRate24Mbps",         { WIFI_CODE_RATE_1_2, 16 } },
+    { "OfdmRate36Mbps",         { WIFI_CODE_RATE_3_4, 16 } },
+    { "OfdmRate48Mbps",         { WIFI_CODE_RATE_2_3, 64 } },
+    { "OfdmRate54Mbps",         { WIFI_CODE_RATE_3_4, 64 } },
+    { "OfdmRate3MbpsBW10MHz",   { WIFI_CODE_RATE_1_2, 2 } },  // 10 MHz
+    { "OfdmRate4_5MbpsBW10MHz", { WIFI_CODE_RATE_3_4, 2 } },  //  |
+    { "OfdmRate6MbpsBW10MHz",   { WIFI_CODE_RATE_1_2, 4 } },  //  V
+    { "OfdmRate9MbpsBW10MHz",   { WIFI_CODE_RATE_3_4, 4 } },
+    { "OfdmRate12MbpsBW10MHz",  { WIFI_CODE_RATE_1_2, 16 } },
+    { "OfdmRate18MbpsBW10MHz",  { WIFI_CODE_RATE_3_4, 16 } },
+    { "OfdmRate24MbpsBW10MHz",  { WIFI_CODE_RATE_2_3, 64 } },
+    { "OfdmRate27MbpsBW10MHz",  { WIFI_CODE_RATE_3_4, 64 } },
+    { "OfdmRate1_5MbpsBW5MHz",  { WIFI_CODE_RATE_1_2, 2 } },  //  5 MHz
+    { "OfdmRate2_25MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 2 } },  //  |
+    { "OfdmRate3MbpsBW5MHz",    { WIFI_CODE_RATE_1_2, 4 } },  //  V
+    { "OfdmRate4_5MbpsBW5MHz",  { WIFI_CODE_RATE_3_4, 4 } },
+    { "OfdmRate6MbpsBW5MHz",    { WIFI_CODE_RATE_1_2, 16 } },
+    { "OfdmRate9MbpsBW5MHz",    { WIFI_CODE_RATE_3_4, 16 } },
+    { "OfdmRate12MbpsBW5MHz",   { WIFI_CODE_RATE_2_3, 64 } },
+    { "OfdmRate13_5MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 64 } }
 };
 
 /// OFDM rates in bits per second for each bandwidth (MHz)

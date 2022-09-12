@@ -569,9 +569,12 @@ UanModesList
 UanPhyGen::GetDefaultModes (void)
 {
   UanModesList l;
-  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::FSK, 80,  80,  22000, 4000, 13, "FH-FSK")); // micromodem only
-  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::PSK, 200, 200, 22000, 4000, 4,  "QPSK"));
-  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::PSK, 5000, 5000, 25000, 5000, 4,  "QPSK")); // micromodem2
+
+  // micromodem only
+  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::FSK, 80, 80, 22000, 4000, 13, "FH-FSK"));
+  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::PSK, 200, 200, 22000, 4000, 4, "QPSK"));
+  // micromodem2
+  l.AppendMode (UanTxModeFactory::CreateMode (UanTxMode::PSK, 5000, 5000, 25000, 5000, 4, "QPSK"));
 
   return l;
 }

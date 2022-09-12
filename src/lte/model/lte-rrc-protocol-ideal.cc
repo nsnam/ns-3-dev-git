@@ -331,8 +331,8 @@ LteEnbRrcProtocolIdeal::DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParam
   //             ueRrc = ueDev->GetRrc ();
   //             if ((ueRrc->GetRnti () == rnti) && (ueRrc->GetCellId () == m_cellId))
   //               {
-  //       	  found = true;
-  //       	  break;
+  //                 found = true;
+  //                 break;
   //               }
   //           }
   //       }

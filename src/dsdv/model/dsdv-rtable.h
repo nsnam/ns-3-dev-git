@@ -289,9 +289,9 @@ private:
   uint32_t m_hops;
   /**
    * \brief Expiration or deletion time of the route
-   *	Lifetime field in the routing table plays dual role --
-   *	for an active route it is the expiration time, and for an invalid route
-   *	it is the deletion time.
+   * Lifetime field in the routing table plays dual role --
+   * for an active route it is the expiration time, and for an invalid route
+   * it is the deletion time.
    */
   Time m_lifeTime;
   /** Ip route, include

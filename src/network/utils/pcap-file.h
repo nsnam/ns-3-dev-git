@@ -42,8 +42,8 @@ class Header;
 class PcapFile
 {
 public:
-  static const int32_t  ZONE_DEFAULT    = 0;           /**< Time zone offset for current location */
-  static const uint32_t SNAPLEN_DEFAULT = 65535;       /**< Default value for maximum octets to save per packet */
+  static const int32_t  ZONE_DEFAULT    = 0;     //!< Time zone offset for current location
+  static const uint32_t SNAPLEN_DEFAULT = 65535; //!< Default value for maximum octets to save per packet
 
 public:
   PcapFile ();
@@ -292,23 +292,23 @@ private:
    * \brief Pcap file header
    */
   typedef struct {
-    uint32_t m_magicNumber;   /**< Magic number identifying this as a pcap file */
-    uint16_t m_versionMajor;  /**< Major version identifying the version of pcap used in this file */
-    uint16_t m_versionMinor;  /**< Minor version identifying the version of pcap used in this file */
-    int32_t  m_zone;          /**< Time zone correction to be applied to timestamps of packets */
-    uint32_t m_sigFigs;       /**< Unused by pretty much everybody */
-    uint32_t m_snapLen;       /**< Maximum length of packet data stored in records */
-    uint32_t m_type;          /**< Data link type of packet data */
+    uint32_t m_magicNumber;  //!< Magic number identifying this as a pcap file
+    uint16_t m_versionMajor; //!< Major version identifying the version of pcap used in this file
+    uint16_t m_versionMinor; //!< Minor version identifying the version of pcap used in this file
+    int32_t  m_zone;         //!< Time zone correction to be applied to timestamps of packets
+    uint32_t m_sigFigs;      //!< Unused by pretty much everybody
+    uint32_t m_snapLen;      //!< Maximum length of packet data stored in records
+    uint32_t m_type;         //!< Data link type of packet data
   } PcapFileHeader;
 
   /**
    * \brief Pcap record header
    */
   typedef struct {
-    uint32_t m_tsSec;         /**< seconds part of timestamp */
-    uint32_t m_tsUsec;        /**< microseconds part of timestamp (nsecs for PCAP_NSEC_MAGIC) */
-    uint32_t m_inclLen;       /**< number of octets of packet saved in file */
-    uint32_t m_origLen;       /**< actual length of original packet */
+    uint32_t m_tsSec;   //!< seconds part of timestamp
+    uint32_t m_tsUsec;  //!< microseconds part of timestamp (nsecs for PCAP_NSEC_MAGIC)
+    uint32_t m_inclLen; //!< number of octets of packet saved in file
+    uint32_t m_origLen; //!< actual length of original packet
   } PcapRecordHeader;
 
   /**

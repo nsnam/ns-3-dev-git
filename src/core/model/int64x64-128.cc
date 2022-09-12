@@ -82,7 +82,7 @@ int64x64_t::Umul (const uint128_t a, const uint128_t b)
   uint128_t res1, res2;
 
   // Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
-  //			2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
+  //             2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
   // get the low part a.l b.l
   // multiply the fractional part
   loPart = aL * bL;

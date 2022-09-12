@@ -102,10 +102,10 @@ private:
  */
 enum QueueDiscSizePolicy
 {
-  SINGLE_INTERNAL_QUEUE,       /**< Used by queue discs with single internal queue */
-  SINGLE_CHILD_QUEUE_DISC,     /**< Used by queue discs with single child queue disc */
-  MULTIPLE_QUEUES,             /**< Used by queue discs with multiple internal queues/child queue discs */
-  NO_LIMITS                    /**< Used by queue discs with unlimited size */
+  SINGLE_INTERNAL_QUEUE,   //!< Used by queue discs with single internal queue
+  SINGLE_CHILD_QUEUE_DISC, //!< Used by queue discs with single child queue disc
+  MULTIPLE_QUEUES,         //!< Used by queue discs with multiple internal queues/child queue discs
+  NO_LIMITS                //!< Used by queue discs with unlimited size
 };
 
 

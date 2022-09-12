@@ -24,8 +24,8 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
-#define DEFAULT_BIN_WIDTH       1
-// #define RESERVED_BINS_INC	10
+#define DEFAULT_BIN_WIDTH 1
+// #define RESERVED_BINS_INC 10
 
 
 namespace ns3 {

@@ -369,17 +369,17 @@ public:
    */
   enum HeMuFlags1
   {
-    HE_MU_FLAGS1_SIGB_MCS                = 0x000f, /**< SIG-B MCS (from SIG-A) */
-    HE_MU_FLAGS1_SIGB_MCS_KNOWN          = 0x0010, /**< SIG-B MCS known */
-    HE_MU_FLAGS1_SIGB_DCM                = 0x0020, /**< SIG-B DCM (from SIG-A) */
-    HE_MU_FLAGS1_SIGB_DCM_KNOWN          = 0x0040, /**< SIG-B DCM known */
-    HE_MU_FLAGS1_CH2_CENTER_26T_RU_KNOWN = 0x0080, /**< (Channel 2) Center 26-tone RU bit known */
-    HE_MU_FLAGS1_CH1_RUS_KNOWN           = 0x0100, /**< Channel 1 RUs known (which depends on BW) */
-    HE_MU_FLAGS1_CH2_RUS_KNOWN           = 0x0200, /**< Channel 2 RUs known (which depends on BW) */
-    HE_MU_FLAGS1_CH1_CENTER_26T_RU_KNOWN = 0x1000, /**< (Channel 1) Center 26-tone RU bit known */
-    HE_MU_FLAGS1_CH1_CENTER_26T_RU       = 0x2000, /**< (Channel 1) Center 26-tone RU value */
-    HE_MU_FLAGS1_SIGB_COMPRESSION_KNOWN  = 0x4000, /**< SIG-B Compression known */
-    HE_MU_FLAGS1_NUM_SIGB_SYMBOLS_KNOWN  = 0x8000, /**< # of HE-SIG-B Symbols/MU-MIMO Users known */
+    HE_MU_FLAGS1_SIGB_MCS = 0x000f,                //!< SIG-B MCS (from SIG-A)
+    HE_MU_FLAGS1_SIGB_MCS_KNOWN = 0x0010,          //!< SIG-B MCS known
+    HE_MU_FLAGS1_SIGB_DCM = 0x0020,                //!< SIG-B DCM (from SIG-A)
+    HE_MU_FLAGS1_SIGB_DCM_KNOWN = 0x0040,          //!< SIG-B DCM known
+    HE_MU_FLAGS1_CH2_CENTER_26T_RU_KNOWN = 0x0080, //!< (Channel 2) Center 26-tone RU bit known
+    HE_MU_FLAGS1_CH1_RUS_KNOWN = 0x0100,           //!< Channel 1 RUs known (which depends on BW)
+    HE_MU_FLAGS1_CH2_RUS_KNOWN = 0x0200,           //!< Channel 2 RUs known (which depends on BW)
+    HE_MU_FLAGS1_CH1_CENTER_26T_RU_KNOWN = 0x1000, //!< (Channel 1) Center 26-tone RU bit known
+    HE_MU_FLAGS1_CH1_CENTER_26T_RU = 0x2000,       //!< (Channel 1) Center 26-tone RU value
+    HE_MU_FLAGS1_SIGB_COMPRESSION_KNOWN = 0x4000,  //!< SIG-B Compression known
+    HE_MU_FLAGS1_NUM_SIGB_SYMBOLS_KNOWN = 0x8000,  //!< # of HE-SIG-B Symbols/MU-MIMO Users known
   };
 
   /**
@@ -411,14 +411,14 @@ public:
    */
   enum HeMuPerUserKnown
   {
-    HE_MU_PER_USER_POSITION_KNOWN              = 0x01, /**< User field position known */
-    HE_MU_PER_USER_STA_ID_KNOWN                = 0x02, /**< STA-ID known */
-    HE_MU_PER_USER_NSTS_KNOWN                  = 0x04, /**< NSTS known */
-    HE_MU_PER_USER_TX_BF_KNOWN                 = 0x08, /**< Tx Beamforming known */
-    HE_MU_PER_USER_SPATIAL_CONFIGURATION_KNOWN = 0x10, /**< Spatial Configuration known */
-    HE_MU_PER_USER_MCS_KNOWN                   = 0x20, /**< MCS known */
-    HE_MU_PER_USER_DCM_KNOWN                   = 0x40, /**< DCM known */
-    HE_MU_PER_USER_CODING_KNOWN                = 0x80, /**< Coding known */
+    HE_MU_PER_USER_POSITION_KNOWN = 0x01,              //!< User field position known
+    HE_MU_PER_USER_STA_ID_KNOWN = 0x02,                //!< STA-ID known
+    HE_MU_PER_USER_NSTS_KNOWN = 0x04,                  //!< NSTS known
+    HE_MU_PER_USER_TX_BF_KNOWN = 0x08,                 //!< Tx Beamforming known
+    HE_MU_PER_USER_SPATIAL_CONFIGURATION_KNOWN = 0x10, //!< Spatial Configuration known
+    HE_MU_PER_USER_MCS_KNOWN = 0x20,                   //!< MCS known
+    HE_MU_PER_USER_DCM_KNOWN = 0x40,                   //!< DCM known
+    HE_MU_PER_USER_CODING_KNOWN = 0x80,                //!< Coding known
   };
 
   /**

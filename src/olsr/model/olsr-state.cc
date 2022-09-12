@@ -21,9 +21,9 @@
  */
 
 ///
-/// \file	olsr-state.cc
-/// \brief	Implementation of all functions needed for manipulating the internal
-///		state of an OLSR node.
+/// \file olsr-state.cc
+/// \brief Implementation of all functions needed for manipulating the internal
+///        state of an OLSR node.
 ///
 
 #include "olsr-state.h"

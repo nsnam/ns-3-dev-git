@@ -645,7 +645,7 @@ PowerRateAdaptationTest::TestRrpaa ()
    * Rate Decrease or Power Increase limits (RD-PI)
    * Power Decrease limits (PD)
    *
-   * Mode	           EWND  MTL       ORI        RI-PD  RD-PI  PD
+   * Mode            EWND  MTL       ORI        RI-PD  RD-PI  PD
    *                                            succ   fails  succ fails
    * OfdmRate6Mbps   8     1         0.19861    7      8      2
    * OfdmRate9Mbps   11    0.397219  0.14556    10     5      7    2

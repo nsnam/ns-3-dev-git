@@ -67,12 +67,12 @@ void Conversions ()
   Length moonDistance (3.84402e8, Length::Unit::Meter);
 
   //Demonstrate conversion to various units
-  std::cout << "\nConversions: "
-            << "\nDistance to moon = " << moonDistance
-            << "\nIn Feet: " << moonDistance.As (Length::Unit::Foot)
-            << "\nIn Miles: " << moonDistance.As (Length::Unit::Mile)
-            << "\nIn Kilometers: " << moonDistance.As (Length::Unit::Kilometer)
-            << std::endl;
+  std::cout << "\n"
+            << "Conversions:\n"
+            << "Distance to moon = " << moonDistance << "\n"
+            << "In Feet: " << moonDistance.As (Length::Unit::Foot) << "\n"
+            << "In Miles: " << moonDistance.As (Length::Unit::Mile) << "\n"
+            << "In Kilometers: " << moonDistance.As (Length::Unit::Kilometer) << std::endl;
 }
 
 /**
@@ -88,19 +88,18 @@ void ArithmeticOperators ()
   Length oneMeter = Meters (1);
   Length twoMeter = Meters (2);
 
-  std::cout << "\nArithmetic Operations:"
-            << "\nAddition: " << oneMeter << " + " << twoMeter << " = "
-            << (oneMeter + twoMeter)
-            << "\nSubtraction: " << twoMeter << " - " << oneMeter << " = "
-            << (twoMeter - oneMeter)
-            << "\nMultiplication By Scalar: " << oneMeter << " * " << scale << " = "
-            << (oneMeter * scale)
-            << "\nDivision: " << oneMeter << " / " << twoMeter << " = "
-            << (oneMeter / twoMeter)
-            << "\nDivision By Scalar: " << oneMeter << " / " << scale << " = "
-            << (oneMeter / scale)
+  std::cout << "\n"
+            << "Arithmetic Operations:\n"
+            << "Addition: " << oneMeter << " + " << twoMeter << " = " << (oneMeter + twoMeter)
+            << "\n"
+            << "Subtraction: " << twoMeter << " - " << oneMeter << " = " << (twoMeter - oneMeter)
+            << "\n"
+            << "Multiplication By Scalar: " << oneMeter << " * " << scale << " = "
+            << (oneMeter * scale) << "\n"
+            << "Division: " << oneMeter << " / " << twoMeter << " = " << (oneMeter / twoMeter)
+            << "\n"
+            << "Division By Scalar: " << oneMeter << " / " << scale << " = " << (oneMeter / scale)
             << std::endl;
-
 }
 
 /**
@@ -114,28 +113,27 @@ void EqualityOperators ()
   Length twoMeter = Meters (2);
   Length threeMeter = Meters (3);
 
-  std::cout << "\nComparison Operations:" << std::boolalpha
-            << "\nEquality: " << oneMeter << " == " << oneMeter << " is "
-            << (oneMeter == oneMeter)
-            << "\nEquality: " << oneMeter << " == " << twoMeter << " is "
-            << (oneMeter == twoMeter)
-            << "\nInequality: " << oneMeter << " != " << oneMeter << " is "
-            << (oneMeter != oneMeter)
-            << "\nInequality: " << oneMeter << " != " << twoMeter << " is "
-            << (oneMeter != twoMeter)
-            << "\nLesser: "   << oneMeter << " < " << oneMeter << " is "
-            << (oneMeter < oneMeter)
-            << "\nLesser: "   << oneMeter << " < " << twoMeter << " is "
-            << (oneMeter < twoMeter)
-            << "\nLesser: "   << threeMeter << " < " << oneMeter << " is "
-            << (threeMeter < oneMeter)
-            << "\nGreater: "  << oneMeter << " > " << oneMeter << " is "
-            << (oneMeter > oneMeter)
-            << "\nGreater: "  << oneMeter << " > " << twoMeter << " is "
-            << (oneMeter > twoMeter)
-            << "\nGreater: "  << threeMeter << " > " << oneMeter << " is "
-            << (threeMeter > oneMeter)
-            << std::endl;
+  std::cout << "\n"
+            << "Comparison Operations:\n" << std::boolalpha
+            << "Equality: " << oneMeter << " == " << oneMeter << " is " << (oneMeter == oneMeter)
+            << "\n"
+            << "Equality: " << oneMeter << " == " << twoMeter << " is " << (oneMeter == twoMeter)
+            << "\n"
+            << "Inequality: " << oneMeter << " != " << oneMeter << " is " << (oneMeter != oneMeter)
+            << "\n"
+            << "Inequality: " << oneMeter << " != " << twoMeter << " is " << (oneMeter != twoMeter)
+            << "\n"
+            << "Lesser: " << oneMeter << " < " << oneMeter << " is " << (oneMeter < oneMeter)
+            << "\n"
+            << "Lesser: " << oneMeter << " < " << twoMeter << " is " << (oneMeter < twoMeter)
+            << "\n"
+            << "Lesser: " << threeMeter << " < " << oneMeter << " is " << (threeMeter < oneMeter)
+            << "\n"
+            << "Greater: " << oneMeter << " > " << oneMeter << " is " << (oneMeter > oneMeter)
+            << "\n"
+            << "Greater: " << oneMeter << " > " << twoMeter << " is " << (oneMeter > twoMeter)
+            << "\n"
+            << "Greater: " << threeMeter << " > " << oneMeter << " is " << (threeMeter > oneMeter) << std::endl;
 }
 
 /**

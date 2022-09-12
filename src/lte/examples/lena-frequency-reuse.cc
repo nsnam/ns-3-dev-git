@@ -344,10 +344,10 @@ int main (int argc, char *argv[])
   if (generateSpectrumTrace)
     {
       Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-      //position of Spectrum Analyzer
-//	  positionAlloc->Add (Vector (0.0, 0.0, 0.0));                              // eNB1
-//	  positionAlloc->Add (Vector (distance,  0.0, 0.0));                        // eNB2
-      positionAlloc->Add (Vector (distance * 0.5, distance * 0.866, 0.0));          // eNB3
+      // position of Spectrum Analyzer
+      // positionAlloc->Add (Vector (0.0, 0.0, 0.0));                      // eNB1
+      // positionAlloc->Add (Vector (distance,  0.0, 0.0));                // eNB2
+      positionAlloc->Add (Vector (distance * 0.5, distance * 0.866, 0.0)); // eNB3
 
       MobilityHelper mobility;
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");

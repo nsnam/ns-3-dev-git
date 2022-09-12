@@ -24,16 +24,16 @@
 #define NS3_VERSION_DEFINES_H_
 
 /**
-  * \file
-  * \ingroup buildversion
-  * Defines the macro values for printing the build version.
-  * These will be populated by the build system.
-  */
+ * \file
+ * \ingroup buildversion
+ * Defines the macro values for printing the build version.
+ * These will be populated by the build system.
+ */
 
 /**
-  * \ingroup buildversion
-  * @{
-  */
+ * \ingroup buildversion
+ * @{
+ */
 
 /**
  * The first tag found which matches the pattern ns-3*.

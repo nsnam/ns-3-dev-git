@@ -295,13 +295,13 @@ public:
    */
   enum PacketType
   {
-    PACKET_HOST = 1,   /**< Packet addressed oo us */
+    PACKET_HOST = 1,   //!< Packet addressed to us
     NS3_PACKET_HOST = PACKET_HOST,
-    PACKET_BROADCAST,   /**< Packet addressed to all */
+    PACKET_BROADCAST,   //!< Packet addressed to all
     NS3_PACKET_BROADCAST = PACKET_BROADCAST,
-    PACKET_MULTICAST,   /**< Packet addressed to multicast group */
+    PACKET_MULTICAST,   //!< Packet addressed to multicast group
     NS3_PACKET_MULTICAST = PACKET_MULTICAST,
-    PACKET_OTHERHOST,   /**< Packet addressed to someone else */
+    PACKET_OTHERHOST,   //!< Packet addressed to someone else
     NS3_PACKET_OTHERHOST = PACKET_OTHERHOST,
   };
 

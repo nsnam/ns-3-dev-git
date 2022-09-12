@@ -72,7 +72,7 @@ Encode (const std::string & source)
         case '\'': buffer.append ("&apos;");         break;
         // case '>':  buffer.append ("&gt;");           break;
 
-        case '<':  {
+        case '<':
           // Special case:
           // "...blah <file..." is not allowed
           // "...foo<bar..."  is allowed
@@ -86,7 +86,6 @@ Encode (const std::string & source)
             }
 
           break;
-        }
 
         default:   buffer.append (&source[pos], 1);  break;
         }

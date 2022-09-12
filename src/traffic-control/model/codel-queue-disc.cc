@@ -19,8 +19,8 @@
  * Based on ns2 simulation code presented by Kathie Nichols
  *
  * This port based on linux kernel code by
- * Authors:	Dave Täht <d@taht.net>
- *		Eric Dumazet <edumazet@google.com>
+ * Authors: Dave Täht <d@taht.net>
+ *          Eric Dumazet <edumazet@google.com>
  *
  * Ported to ns-3 by: Andrew McGregor <andrewmcgr@gmail.com>
 */

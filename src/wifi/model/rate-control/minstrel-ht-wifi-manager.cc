@@ -1257,7 +1257,7 @@ MinstrelHtWifiManager::FindRate (MinstrelHtWifiRemoteStation *station)
       station->m_sampleWait--;
     }
 
-  ///	Continue using the best rate.
+  /// Continue using the best rate.
 
   NS_LOG_DEBUG ("FindRate " << "maxTpRrate=" << station->m_maxTpRate);
   return station->m_maxTpRate;

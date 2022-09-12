@@ -118,10 +118,10 @@ public:
    *
    */
   enum Mode {
-    ILLEGAL,         /**< mode not set */
-    CONFIGURE_LOCAL, /**< ns-3 creates and configures tap device */
-    USE_LOCAL,       /**< ns-3 uses a pre-created tap, without configuring it */
-    USE_BRIDGE, /**< ns-3 uses a pre-created tap, and bridges to a bridging net device */
+    ILLEGAL,         //!< mode not set
+    CONFIGURE_LOCAL, //!< ns-3 creates and configures tap device
+    USE_LOCAL,       //!< ns-3 uses a pre-created tap, without configuring it
+    USE_BRIDGE,      //!< ns-3 uses a pre-created tap, and bridges to a bridging net device
   };
 
   TapBridge ();

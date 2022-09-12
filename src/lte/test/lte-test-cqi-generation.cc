@@ -126,7 +126,8 @@ LteCqiGenerationTestCase::DlScheduling (DlSchedulingCallbackInfo dlInfo)
   // need to allow for RRC connection establishment + CQI feedback reception
   if (Simulator::Now () > MilliSeconds (35))
     {
-//	  NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " << (uint32_t)m_dlMcs);
+      // NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " <<
+      // (uint32_t)m_dlMcs);
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)dlInfo.mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
 }
@@ -138,7 +139,8 @@ LteCqiGenerationTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, u
   // need to allow for RRC connection establishment + SRS transmission
   if (Simulator::Now () > MilliSeconds (50))
     {
-//	  NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " << (uint32_t)m_ulMcs);
+      // NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " <<
+      // (uint32_t)m_ulMcs);
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
     }
 }
@@ -259,7 +261,8 @@ LteCqiGenerationDlPowerControlTestCase::DlScheduling (DlSchedulingCallbackInfo d
   // need to allow for RRC connection establishment + CQI feedback reception
   if (Simulator::Now () > MilliSeconds (500))
     {
-//	  NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " << (uint32_t)m_dlMcs);
+      // NS_LOG_UNCOND("DL MSC: " << (uint32_t)mcsTb1 << " expected DL MCS: " <<
+      // (uint32_t)m_dlMcs);
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)dlInfo.mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
 }
@@ -271,7 +274,8 @@ LteCqiGenerationDlPowerControlTestCase::UlScheduling (uint32_t frameNo, uint32_t
   // need to allow for RRC connection establishment + SRS transmission
   if (Simulator::Now () > MilliSeconds (500))
     {
-//	  NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " << (uint32_t)m_ulMcs);
+      // NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " <<
+      // (uint32_t)m_ulMcs);
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
     }
 }

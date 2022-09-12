@@ -41,53 +41,53 @@ NS_LOG_COMPONENT_DEFINE ("VhtPhy");
 // clang-format off
 
 const PhyEntity::PpduFormats VhtPhy::m_vhtPpduFormats {
-  { WIFI_PREAMBLE_VHT_SU, { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
-                            WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
-                            WIFI_PPDU_FIELD_SIG_A,         //VHT-SIG-A
-                            WIFI_PPDU_FIELD_TRAINING,      //VHT-STF + VHT-LTFs
-                            WIFI_PPDU_FIELD_DATA } },
-  { WIFI_PREAMBLE_VHT_MU, { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
-                            WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
-                            WIFI_PPDU_FIELD_SIG_A,         //VHT-SIG-A
-                            WIFI_PPDU_FIELD_TRAINING,      //VHT-STF + VHT-LTFs
-                            WIFI_PPDU_FIELD_SIG_B,         //VHT-SIG-B
-                            WIFI_PPDU_FIELD_DATA } }
+    { WIFI_PREAMBLE_VHT_SU, { WIFI_PPDU_FIELD_PREAMBLE,      // L-STF + L-LTF
+                              WIFI_PPDU_FIELD_NON_HT_HEADER, // L-SIG
+                              WIFI_PPDU_FIELD_SIG_A,         // VHT-SIG-A
+                              WIFI_PPDU_FIELD_TRAINING,      // VHT-STF + VHT-LTFs
+                              WIFI_PPDU_FIELD_DATA } },
+    { WIFI_PREAMBLE_VHT_MU, { WIFI_PPDU_FIELD_PREAMBLE,      // L-STF + L-LTF
+                              WIFI_PPDU_FIELD_NON_HT_HEADER, // L-SIG
+                              WIFI_PPDU_FIELD_SIG_A,         // VHT-SIG-A
+                              WIFI_PPDU_FIELD_TRAINING,      // VHT-STF + VHT-LTFs
+                              WIFI_PPDU_FIELD_SIG_B,         // VHT-SIG-B
+                              WIFI_PPDU_FIELD_DATA } }
 };
 
 const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
-                 /* {BW,Nss,MCS} Nes */
-  { std::make_tuple ( 80, 7, 2),  3 },   //instead of 2
-  { std::make_tuple ( 80, 7, 7),  6 },   //instead of 4
-  { std::make_tuple ( 80, 7, 8),  6 },   //instead of 5
-  { std::make_tuple ( 80, 8, 7),  6 },   //instead of 5
-  { std::make_tuple (160, 4, 7),  6 },   //instead of 5
-  { std::make_tuple (160, 5, 8),  8 },   //instead of 7
-  { std::make_tuple (160, 6, 7),  8 },   //instead of 7
-  { std::make_tuple (160, 7, 3),  4 },   //instead of 3
-  { std::make_tuple (160, 7, 4),  6 },   //instead of 5
-  { std::make_tuple (160, 7, 5),  7 },   //instead of 6
-  { std::make_tuple (160, 7, 7),  9 },   //instead of 8
-  { std::make_tuple (160, 7, 8), 12 },   //instead of 9
-  { std::make_tuple (160, 7, 9), 12 }    //instead of 10
+                    /* {BW,Nss,MCS} Nes */
+    { std::make_tuple ( 80, 7, 2),  3 }, // instead of 2
+    { std::make_tuple ( 80, 7, 7),  6 }, // instead of 4
+    { std::make_tuple ( 80, 7, 8),  6 }, // instead of 5
+    { std::make_tuple ( 80, 8, 7),  6 }, // instead of 5
+    { std::make_tuple (160, 4, 7),  6 }, // instead of 5
+    { std::make_tuple (160, 5, 8),  8 }, // instead of 7
+    { std::make_tuple (160, 6, 7),  8 }, // instead of 7
+    { std::make_tuple (160, 7, 3),  4 }, // instead of 3
+    { std::make_tuple (160, 7, 4),  6 }, // instead of 5
+    { std::make_tuple (160, 7, 5),  7 }, // instead of 6
+    { std::make_tuple (160, 7, 7),  9 }, // instead of 8
+    { std::make_tuple (160, 7, 8), 12 }, // instead of 9
+    { std::make_tuple (160, 7, 9), 12 }, // instead of 10
 };
 
 /**
  * \brief map a given channel list type to the corresponding scaling factor in dBm
  */
 const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm {
-  {WIFI_CHANLIST_PRIMARY, 0.0},
-  {WIFI_CHANLIST_SECONDARY, 0.0},
-  {WIFI_CHANLIST_SECONDARY40, 3.0},
-  {WIFI_CHANLIST_SECONDARY80, 6.0}
+    {WIFI_CHANLIST_PRIMARY, 0.0},
+    {WIFI_CHANLIST_SECONDARY, 0.0},
+    {WIFI_CHANLIST_SECONDARY40, 3.0},
+    {WIFI_CHANLIST_SECONDARY80, 6.0},
 };
 
 /**
  * \brief map a given secondary channel width to its channel list type
  */
 const std::map<uint16_t, WifiChannelListType> secondaryChannels {
-  {20, WIFI_CHANLIST_SECONDARY},
-  {40, WIFI_CHANLIST_SECONDARY40},
-  {80, WIFI_CHANLIST_SECONDARY80}
+    {20, WIFI_CHANLIST_SECONDARY},
+    {40, WIFI_CHANLIST_SECONDARY40},
+    {80, WIFI_CHANLIST_SECONDARY80},
 };
 
 // clang-format on

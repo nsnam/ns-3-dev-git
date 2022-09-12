@@ -94,11 +94,12 @@ public:
    * Constructor
    * \param wpanMacType the header MAC type
    * \param seqNum the sequence number
+   *
+   * \internal
+   * Data, ACK, Control MAC Header must have frame control and sequence number.
+   * Beacon MAC Header must have frame control, sequence number, source PAN Id, source address.
    */
-  LrWpanMacHeader (enum LrWpanMacType wpanMacType,      // Data, ACK, Control MAC Header must have
-                   uint8_t seqNum);                     // frame control and sequence number.
-                                                        // Beacon MAC Header must have frame control,
-                                                        // sequence number, source PAN Id, source address.
+  LrWpanMacHeader (enum LrWpanMacType wpanMacType, uint8_t seqNum);
 
   ~LrWpanMacHeader (void);
 

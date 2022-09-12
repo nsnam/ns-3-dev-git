@@ -39,11 +39,11 @@ NS_LOG_COMPONENT_DEFINE ("HtPhy");
 // clang-format off
 
 const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
-  { WIFI_PREAMBLE_HT_MF, { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
-                           WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
-                           WIFI_PPDU_FIELD_HT_SIG,        //HT-SIG
-                           WIFI_PPDU_FIELD_TRAINING,      //HT-STF + HT-LTFs
-                           WIFI_PPDU_FIELD_DATA } }
+    { WIFI_PREAMBLE_HT_MF, { WIFI_PPDU_FIELD_PREAMBLE,      // L-STF + L-LTF
+                             WIFI_PPDU_FIELD_NON_HT_HEADER, // L-SIG
+                             WIFI_PPDU_FIELD_HT_SIG,        // HT-SIG
+                             WIFI_PPDU_FIELD_TRAINING,      // HT-STF + HT-LTFs
+                             WIFI_PPDU_FIELD_DATA } }
 };
 
 // clang-format on

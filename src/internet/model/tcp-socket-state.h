@@ -32,7 +32,7 @@ namespace ns3 {
  * In this data structure, basic information that should be passed between
  * socket and the congestion control algorithm are saved. Through the code,
  * it will be referred as Transmission Control Block (TCB), but there are some
- * differencies. In the RFCs, the TCB contains all the variables that defines
+ * differences. In the RFCs, the TCB contains all the variables that defines
  * a connection, while we preferred to maintain in this class only the values
  * that should be exchanged between socket and other parts, like congestion
  * control algorithms.
@@ -75,16 +75,15 @@ public:
    */
   typedef enum
   {
-    CA_OPEN,      /**< Normal state, no dubious events */
-    CA_DISORDER,  /**< In all the respects it is "Open",
-                    *  but requires a bit more attention. It is entered when
-                    *  we see some SACKs or dupacks. It is split of "Open" */
-    CA_CWR,       /**< cWnd was reduced due to some congestion notification
-                    *  event, such as ECN, ICMP source quench, local device
-                    *  congestion. */
-    CA_RECOVERY,  /**< CWND was reduced, we are fast-retransmitting. */
-    CA_LOSS,      /**< CWND was reduced due to RTO timeout or SACK reneging. */
-    CA_LAST_STATE /**< Used only in debug messages */
+    CA_OPEN,      //!< Normal state, no dubious events
+    CA_DISORDER,  //!< In all the respects it is "Open",
+                  //!< but requires a bit more attention. It is entered when we see some SACKs or
+                  //!< dupacks. It is split of "Open".
+    CA_CWR,       //!< cWnd was reduced due to some congestion notification event, such as ECN,
+                  //!< ICMP source quench, local device congestion.
+    CA_RECOVERY,  //!< CWND was reduced, we are fast-retransmitting.
+    CA_LOSS,      //!< CWND was reduced due to RTO timeout or SACK reneging.
+    CA_LAST_STATE //!< Used only in debug messages
   } TcpCongState_t;
 
   // Note: "not triggered" events are currently not triggered by the code.
@@ -93,14 +92,14 @@ public:
    */
   typedef enum
   {
-    CA_EVENT_TX_START,     /**< first transmit when no packets in flight */
-    CA_EVENT_CWND_RESTART, /**< congestion window restart. Not triggered */
-    CA_EVENT_COMPLETE_CWR, /**< end of congestion recovery */
-    CA_EVENT_LOSS,         /**< loss timeout */
-    CA_EVENT_ECN_NO_CE,    /**< ECT set, but not CE marked. Not triggered */
-    CA_EVENT_ECN_IS_CE,    /**< received CE marked IP packet. Not triggered */
-    CA_EVENT_DELAYED_ACK,  /**< Delayed ack is sent */
-    CA_EVENT_NON_DELAYED_ACK, /**< Non-delayed ack is sent */
+    CA_EVENT_TX_START,     //!< first transmit when no packets in flight
+    CA_EVENT_CWND_RESTART, //!< congestion window restart. Not triggered
+    CA_EVENT_COMPLETE_CWR, //!< end of congestion recovery
+    CA_EVENT_LOSS,         //!< loss timeout
+    CA_EVENT_ECN_NO_CE,    //!< ECT set, but not CE marked. Not triggered
+    CA_EVENT_ECN_IS_CE,    //!< received CE marked IP packet. Not triggered
+    CA_EVENT_DELAYED_ACK,  //!< Delayed ack is sent
+    CA_EVENT_NON_DELAYED_ACK, //!< Non-delayed ack is sent
   } TcpCAEvent_t;
 
   /**
@@ -142,13 +141,12 @@ public:
    */
   typedef enum
   {
-    ECN_DISABLED = 0, /**< ECN disabled traffic                                                                          */
-    ECN_IDLE,         /**< ECN is enabled  but currently there is no action pertaining to ECE or CWR to be taken         */
-    ECN_CE_RCVD,      /**< Last packet received had CE bit set in IP header                                              */
-    ECN_SENDING_ECE,  /**< Receiver sends an ACK with ECE bit set in TCP header                                          */
-    ECN_ECE_RCVD,     /**< Last ACK received had ECE bit set in TCP header                                               */
-    ECN_CWR_SENT      /**< Sender has reduced the congestion window, and sent a packet with CWR bit set in TCP header.
-                        *  This state is used for tracing.                                                               */
+    ECN_DISABLED = 0, //!< ECN disabled traffic
+    ECN_IDLE,         //!< ECN is enabled  but currently there is no action pertaining to ECE or CWR to be taken
+    ECN_CE_RCVD,      //!< Last packet received had CE bit set in IP header
+    ECN_SENDING_ECE,  //!< Receiver sends an ACK with ECE bit set in TCP header
+    ECN_ECE_RCVD,     //!< Last ACK received had ECE bit set in TCP header
+    ECN_CWR_SENT      //!< Sender has reduced the congestion window, and sent a packet with CWR bit set in TCP header. This state is used for tracing.
   } EcnState_t;
 
   /**

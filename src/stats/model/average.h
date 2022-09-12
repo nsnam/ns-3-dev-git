@@ -49,7 +49,7 @@ public:
    * Add new sample
    * \param x The sample
    */
-  void Update (T const & x)
+  void Update (const T& x)
   {
     // Give the variance calculator the next value.
     m_varianceCalculator.Update (x);

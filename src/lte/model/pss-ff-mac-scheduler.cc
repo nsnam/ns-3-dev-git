@@ -1062,9 +1062,14 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             {
               // select half number of UE
               if (ueSet1.size() + ueSet2.size() <=2 )
-                nMux = 1;
+                {
+                  nMux = 1;
+                }
               else
-                nMux = (int)((ueSet1.size() + ueSet2.size()) / 2) ; // TD scheduler only transfers half selected UE per RTT to TD scheduler
+                {
+                  // TD scheduler only transfers half selected UE per RTT to TD scheduler
+                  nMux = (int)((ueSet1.size() + ueSet2.size()) / 2);
+                }
             }
           for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it--)
            {

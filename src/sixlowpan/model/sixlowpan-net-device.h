@@ -76,11 +76,11 @@ public:
    */
   enum DropReason
   {
-    DROP_FRAGMENT_TIMEOUT = 1,    /**< Fragment timeout exceeded */
-    DROP_FRAGMENT_BUFFER_FULL,    /**< Fragment buffer size exceeded */
-    DROP_UNKNOWN_EXTENSION,       /**< Unsupported compression kind */
-    DROP_DISALLOWED_COMPRESSION,  /**< HC1 while in IPHC mode or viceversa */
-    DROP_SATETFUL_DECOMPRESSION_PROBLEM, /**< Decompression failed due to missing or expired context */
+    DROP_FRAGMENT_TIMEOUT = 1,    //!< Fragment timeout exceeded
+    DROP_FRAGMENT_BUFFER_FULL,    //!< Fragment buffer size exceeded
+    DROP_UNKNOWN_EXTENSION,       //!< Unsupported compression kind
+    DROP_DISALLOWED_COMPRESSION,  //!< HC1 while in IPHC mode or viceversa
+    DROP_SATETFUL_DECOMPRESSION_PROBLEM, //!< Decompression failed due to missing or expired context
   };
 
   /**

@@ -41,12 +41,12 @@ NS_LOG_COMPONENT_DEFINE ("DsssPhy");
 // clang-format off
 
 const PhyEntity::PpduFormats DsssPhy::m_dsssPpduFormats {
-  { WIFI_PREAMBLE_LONG,  { WIFI_PPDU_FIELD_PREAMBLE,      //PHY preamble
-                           WIFI_PPDU_FIELD_NON_HT_HEADER, //PHY header
-                           WIFI_PPDU_FIELD_DATA } },
-  { WIFI_PREAMBLE_SHORT, { WIFI_PPDU_FIELD_PREAMBLE,      //Short PHY preamble
-                           WIFI_PPDU_FIELD_NON_HT_HEADER, //Short PHY header
-                           WIFI_PPDU_FIELD_DATA } }
+    { WIFI_PREAMBLE_LONG,  { WIFI_PPDU_FIELD_PREAMBLE,      // PHY preamble
+                             WIFI_PPDU_FIELD_NON_HT_HEADER, // PHY header
+                             WIFI_PPDU_FIELD_DATA } },
+    { WIFI_PREAMBLE_SHORT, { WIFI_PPDU_FIELD_PREAMBLE,      // Short PHY preamble
+                             WIFI_PPDU_FIELD_NON_HT_HEADER, // Short PHY header
+                             WIFI_PPDU_FIELD_DATA } }
 };
 
 const PhyEntity::ModulationLookupTable DsssPhy::m_dsssModulationLookupTable {
