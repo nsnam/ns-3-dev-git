@@ -36,24 +36,67 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("WifiMpdu");
 
 WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header)
-    : m_packet(p),
-      m_header(header)
+    : m_header(header)
 {
+    auto& original = std::get<OriginalInfo>(m_instanceInfo);
+    original.m_packet = p;
+
     if (header.IsQosData() && header.IsQosAmsdu())
     {
-        m_msduList = MsduAggregator::Deaggregate(p->Copy());
+        original.m_msduList = MsduAggregator::Deaggregate(p->Copy());
     }
     m_inFlight = false;
 }
 
 WifiMpdu::~WifiMpdu()
 {
+    // Aliases can be queued (i.e., the original copy is queued) when destroyed
+    NS_ASSERT(std::holds_alternative<Ptr<WifiMpdu>>(m_instanceInfo) || !IsQueued());
+}
+
+bool
+WifiMpdu::IsOriginal() const
+{
+    return std::holds_alternative<OriginalInfo>(m_instanceInfo);
+}
+
+Ptr<const WifiMpdu>
+WifiMpdu::GetOriginal() const
+{
+    if (std::holds_alternative<OriginalInfo>(m_instanceInfo))
+    {
+        return this;
+    }
+    return std::get<ALIAS>(m_instanceInfo);
+}
+
+Ptr<WifiMpdu>
+WifiMpdu::CreateAlias(uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << +linkId);
+    NS_ABORT_MSG_IF(!std::holds_alternative<OriginalInfo>(m_instanceInfo),
+                    "This method can only be called on the original version of the MPDU");
+    NS_ABORT_MSG_IF(!IsQueued(),
+                    "This method can only be called if the MPDU is stored in a MAC queue");
+
+    auto alias = Ptr<WifiMpdu>(new WifiMpdu, false);
+
+    alias->m_header = m_header; // copy the MAC header
+    alias->m_instanceInfo = Ptr(const_cast<WifiMpdu*>(this));
+    NS_ASSERT(alias->m_instanceInfo.index() == ALIAS);
+
+    return alias;
 }
 
 Ptr<const Packet>
 WifiMpdu::GetPacket() const
 {
-    return m_packet;
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_packet;
+    }
+    const auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_packet;
 }
 
 const WifiMacHeader&
@@ -77,7 +120,7 @@ WifiMpdu::GetDestinationAddress() const
 uint32_t
 WifiMpdu::GetPacketSize() const
 {
-    return m_packet->GetSize();
+    return GetPacket()->GetSize();
 }
 
 uint32_t
@@ -95,7 +138,7 @@ WifiMpdu::IsFragment() const
 Ptr<Packet>
 WifiMpdu::GetProtocolDataUnit() const
 {
-    Ptr<Packet> mpdu = m_packet->Copy();
+    Ptr<Packet> mpdu = GetPacket()->Copy();
     mpdu->AddHeader(m_header);
     AddWifiMacTrailer(mpdu);
     return mpdu;
@@ -108,12 +151,16 @@ WifiMpdu::Aggregate(Ptr<const WifiMpdu> msdu)
     NS_LOG_FUNCTION(this << *msdu);
     NS_ABORT_MSG_IF(!msdu->GetHeader().IsQosData() || msdu->GetHeader().IsQosAmsdu(),
                     "Only QoS data frames that do not contain an A-MSDU can be aggregated");
+    NS_ABORT_MSG_IF(!std::holds_alternative<OriginalInfo>(m_instanceInfo),
+                    "This method can only be called on the original version of the MPDU");
 
-    if (m_msduList.empty())
+    auto& original = std::get<OriginalInfo>(m_instanceInfo);
+
+    if (original.m_msduList.empty())
     {
         // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
         Ptr<const WifiMpdu> firstMsdu = Create<const WifiMpdu>(*this);
-        m_packet = Create<Packet>();
+        original.m_packet = Create<Packet>();
         DoAggregate(firstMsdu);
 
         m_header.SetQosAmsdu();
@@ -159,16 +206,18 @@ WifiMpdu::DoAggregate(Ptr<const WifiMpdu> msdu)
                                                          : msdu->GetHeader().GetAddr4()));
     hdr.SetLength(static_cast<uint16_t>(msdu->GetPacket()->GetSize()));
 
-    m_msduList.emplace_back(msdu->GetPacket(), hdr);
+    auto& original = std::get<OriginalInfo>(m_instanceInfo);
+
+    original.m_msduList.push_back({msdu->GetPacket(), hdr});
 
     // build the A-MSDU
-    NS_ASSERT(m_packet);
-    Ptr<Packet> amsdu = m_packet->Copy();
+    NS_ASSERT(original.m_packet);
+    Ptr<Packet> amsdu = original.m_packet->Copy();
 
     // pad the previous A-MSDU subframe if the A-MSDU is not empty
-    if (m_packet->GetSize() > 0)
+    if (original.m_packet->GetSize() > 0)
     {
-        uint8_t padding = MsduAggregator::CalculatePadding(m_packet->GetSize());
+        uint8_t padding = MsduAggregator::CalculatePadding(original.m_packet->GetSize());
 
         if (padding)
         {
@@ -180,40 +229,58 @@ WifiMpdu::DoAggregate(Ptr<const WifiMpdu> msdu)
     Ptr<Packet> amsduSubframe = msdu->GetPacket()->Copy();
     amsduSubframe->AddHeader(hdr);
     amsdu->AddAtEnd(amsduSubframe);
-    m_packet = amsdu;
+    original.m_packet = amsdu;
 }
 
 bool
 WifiMpdu::IsQueued() const
 {
-    return m_queueIt.has_value();
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_queueIt.has_value();
+    }
+    const auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_queueIt.has_value();
 }
 
 void
 WifiMpdu::SetQueueIt(std::optional<Iterator> queueIt, WmqIteratorTag tag)
 {
-    m_queueIt = queueIt;
+    NS_ABORT_MSG_IF(!std::holds_alternative<OriginalInfo>(m_instanceInfo),
+                    "This method can only be called on the original version of the MPDU");
+
+    auto& original = std::get<OriginalInfo>(m_instanceInfo);
+    original.m_queueIt = queueIt;
 }
 
 WifiMpdu::Iterator
 WifiMpdu::GetQueueIt(WmqIteratorTag tag) const
 {
+    return GetQueueIt();
+}
+
+WifiMpdu::Iterator
+WifiMpdu::GetQueueIt() const
+{
     NS_ASSERT(IsQueued());
-    return m_queueIt.value();
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_queueIt.value();
+    }
+    auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_queueIt.value();
 }
 
 AcIndex
 WifiMpdu::GetQueueAc() const
 {
-    NS_ASSERT(IsQueued());
-    return (*m_queueIt)->ac;
+    return GetQueueIt()->ac;
 }
 
 Time
 WifiMpdu::GetExpiryTime() const
 {
-    NS_ASSERT(IsQueued());
-    return (*m_queueIt)->expiryTime;
+    return GetQueueIt()->expiryTime;
 }
 
 void
@@ -237,13 +304,23 @@ WifiMpdu::IsInFlight() const
 WifiMpdu::DeaggregatedMsdusCI
 WifiMpdu::begin() const
 {
-    return m_msduList.cbegin();
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_msduList.cbegin();
+    }
+    auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_msduList.cbegin();
 }
 
 WifiMpdu::DeaggregatedMsdusCI
 WifiMpdu::end() const
 {
-    return m_msduList.cend();
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_msduList.cend();
+    }
+    auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_msduList.cend();
 }
 
 void
@@ -274,7 +351,7 @@ WifiMpdu::Print(std::ostream& os) const
         os << ", residualLifetime=" << (GetExpiryTime() - Simulator::Now()).As(Time::US)
            << ", inflight=" << IsInFlight();
     }
-    os << ", packet=" << m_packet;
+    os << ", packet=" << GetPacket();
 }
 
 std::ostream&

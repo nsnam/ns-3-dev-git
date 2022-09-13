@@ -31,6 +31,7 @@
 
 #include <list>
 #include <optional>
+#include <variant>
 
 namespace ns3
 {
@@ -50,8 +51,10 @@ class WmqIteratorTag
 /**
  * \ingroup wifi
  *
- * WifiMpdu stores (const) packets along with their Wifi MAC headers
- * and the time when they were enqueued.
+ * WifiMpdu stores a (const) packet along with a MAC header. To support 802.11be
+ * Multi-Link Operation (MLO), a WifiMpdu variant, referred to as WifiMpdu alias,
+ * is added. A WifiMpdu alias stores its own MAC header and a pointer to the original
+ * copy of the WifiMpdu.
  */
 class WifiMpdu : public SimpleRefCount<WifiMpdu>
 {
@@ -64,6 +67,16 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header);
 
     virtual ~WifiMpdu();
+
+    /**
+     * \return whether this is the original version of the MPDU
+     */
+    bool IsOriginal() const;
+
+    /**
+     * \return the original version of this MPDU
+     */
+    Ptr<const WifiMpdu> GetOriginal() const;
 
     /**
      * \brief Get the packet stored in this item
@@ -197,6 +210,16 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     bool IsInFlight() const;
 
     /**
+     * Create an alias for this MPDU (which must be an original copy) for transmission
+     * on the link with the given ID. Aliases have their own copy of the MAC header and
+     * cannot be used to perform non-const operations on the frame body.
+     *
+     * \param linkId the ID of the given link
+     * \return an alias for this MPDU
+     */
+    Ptr<WifiMpdu> CreateAlias(uint8_t linkId) const;
+
+    /**
      * \brief Print the item contents.
      * \param os output stream in which the data should be printed.
      */
@@ -211,11 +234,39 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
      */
     void DoAggregate(Ptr<const WifiMpdu> msdu);
 
-    Ptr<const Packet> m_packet;        //!< The packet (MSDU or A-MSDU) contained in this queue item
-    WifiMacHeader m_header;            //!< Wifi MAC header associated with the packet
-    DeaggregatedMsdus m_msduList;      //!< The list of aggregated MSDUs included in this MPDU
-    std::optional<Iterator> m_queueIt; //!< Queue iterator pointing to this MPDU, if queued
-    bool m_inFlight;                   //!< whether the MPDU is in flight
+    /**
+     * \return the queue iterator stored by this object
+     */
+    Iterator GetQueueIt() const;
+
+    /**
+     * Private default constructor (used to construct aliases).
+     */
+    WifiMpdu() = default;
+
+    /**
+     * Information stored by both the original copy and the aliases
+     */
+    WifiMacHeader m_header; //!< Wifi MAC header associated with the packet
+    bool m_inFlight;        //!< whether the MPDU is in flight
+
+    /**
+     * Information stored by the original copy only.
+     */
+    struct OriginalInfo
+    {
+        Ptr<const Packet> m_packet;        //!< MSDU or A-MSDU contained in this queue item
+        DeaggregatedMsdus m_msduList;      //!< list of aggregated MSDUs included in this MPDU
+        std::optional<Iterator> m_queueIt; //!< Queue iterator pointing to this MPDU, if queued
+    };
+
+    /// Information stored by the original copy and an alias, respectively
+    using InstanceInfo = std::variant<OriginalInfo, Ptr<WifiMpdu>>;
+
+    InstanceInfo m_instanceInfo; //!< information associated with the instance type
+    static constexpr std::size_t ORIGINAL =
+        0;                                  //!< index of original copy in the InstanceInfo variant
+    static constexpr std::size_t ALIAS = 1; //!< index of an alias in the InstanceInfo variant
 };
 
 /**
