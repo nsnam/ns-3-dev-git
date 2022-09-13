@@ -127,6 +127,7 @@ WifiMacQueueContainer::DoExtractExpiredMpdus(ContainerQueue& queue) const
         lastExpiredIt->expired = true;
         // this MPDU is no longer queued
         lastExpiredIt->ac = AC_UNDEF;
+        lastExpiredIt->inflights.clear();
         lastExpiredIt->deleter(lastExpiredIt->mpdu);
 
         WifiContainerQueueId queueId = GetQueueId(lastExpiredIt->mpdu);

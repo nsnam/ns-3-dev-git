@@ -35,6 +35,7 @@ WifiMacQueueElem::WifiMacQueueElem(Ptr<WifiMpdu> item)
 WifiMacQueueElem::~WifiMacQueueElem()
 {
     deleter(mpdu);
+    inflights.clear();
 }
 
 } // namespace ns3
