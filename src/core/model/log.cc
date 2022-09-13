@@ -648,7 +648,7 @@ ParameterLogger::ParameterLogger (std::ostream &os)
 
 template<>
 ParameterLogger &
-ParameterLogger::operator<< <std::string> (const std::string param)
+ParameterLogger::operator<< <std::string> (const std::string& param)
 {
   if (m_first)
     {
@@ -662,9 +662,8 @@ ParameterLogger::operator<< <std::string> (const std::string param)
   return *this;
 }
 
-template<>
 ParameterLogger &
-ParameterLogger::operator<< <const char *> (const char * param)
+ParameterLogger::operator<< (const char * param)
 {
   (*this) << std::string (param);
   return *this;

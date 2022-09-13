@@ -25,6 +25,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <map>
+#include <type_traits>
 #include <vector>
 
 #include "node-printer.h"
@@ -461,12 +462,28 @@ public:
   /**
    * Write a function parameter on the output stream,
    * separating parameters after the first by `,` strings.
+   * Overload for arithmetic types (integral type or floating point type),
+   * enabling the parameter to be passed by value.
    *
    * \param [in] param The function parameter.
    * \return This ParameterLogger, so it's chainable.
    */
-  template<typename T>
+  template<typename T,
+           typename U = std::enable_if_t<std::is_arithmetic_v<T>>>
   ParameterLogger& operator<< (T param);
+
+  /**
+   * Write a function parameter on the output stream,
+   * separating parameters after the first by `,` strings.
+   * Overload for non-arithmetic types, enabling the parameter
+   * to be passed by reference.
+   *
+   * \param [in] param The function parameter.
+   * \return This ParameterLogger, so it's chainable.
+   */
+  template<typename T,
+           typename U = std::enable_if_t<!std::is_arithmetic_v<T>>>
+  ParameterLogger& operator<< (const T& param);
 
   /**
    * Overload for vectors, to print each element.
@@ -475,11 +492,18 @@ public:
    * \return This ParameterLogger, so it's chainable.
    */
   template<typename T>
-  ParameterLogger& operator<< (std::vector<T> vector);
+  ParameterLogger& operator<< (const std::vector<T>& vector);
 
+  /**
+   * Overload for C-strings.
+   *
+   * \param [in] param The C-string
+   * \return This ParameterLogger, so it's chainable.
+   */
+  ParameterLogger& operator<< (const char* param);
 };
 
-template<typename T>
+template<typename T, typename U>
 ParameterLogger&
 ParameterLogger::operator<< (T param)
 {
@@ -495,11 +519,27 @@ ParameterLogger::operator<< (T param)
   return *this;
 }
 
+template<typename T, typename U>
+ParameterLogger&
+ParameterLogger::operator<< (const T& param)
+{
+  if (m_first)
+    {
+      m_os << param;
+      m_first = false;
+    }
+  else
+    {
+      m_os << ", " << param;
+    }
+  return *this;
+}
+
 template<typename T>
 ParameterLogger&
-ParameterLogger::operator<< (std::vector<T> vector)
+ParameterLogger::operator<< (const std::vector<T>& vector)
 {
-  for (auto i : vector)
+  for (const auto& i : vector)
     {
       *this << i;
     }
@@ -513,16 +553,7 @@ ParameterLogger::operator<< (std::vector<T> vector)
  */
 template<>
 ParameterLogger &
-ParameterLogger::operator<< <std::string> (const std::string param);
-
-/**
- * Specialization for C-strings.
- * \param [in] param The function parameter.
- * \return This ParameterLogger, so it's chainable.
- */
-template<>
-ParameterLogger &
-ParameterLogger::operator<< <const char *> (const char * param);
+ParameterLogger::operator<< <std::string> (const std::string& param);
 
 /**
  * Specialization for int8_t.
@@ -531,7 +562,7 @@ ParameterLogger::operator<< <const char *> (const char * param);
  */
 template<>
 ParameterLogger &
-ParameterLogger::operator<< <int8_t> (int8_t param);
+ParameterLogger::operator<< <int8_t> (const int8_t param);
 
 /**
  * Specialization for uint8_t.
@@ -540,7 +571,7 @@ ParameterLogger::operator<< <int8_t> (int8_t param);
  */
 template<>
 ParameterLogger &
-ParameterLogger::operator<< <uint8_t> (uint8_t param);
+ParameterLogger::operator<< <uint8_t> (const uint8_t param);
 
 } // namespace ns3
 

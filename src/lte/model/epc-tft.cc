@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("EpcTft");
  * \param d EPC TFT direction
  * \return ostream
  */
-std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
+std::ostream& operator<< (std::ostream& os, const EpcTft::Direction& d)
 {
   switch (d)
   {
@@ -62,7 +62,7 @@ std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
  * \param f EPC TFT packet filter
  * \return ostream
  */
-std::ostream& operator<< (std::ostream& os, EpcTft::PacketFilter& f)
+std::ostream& operator<< (std::ostream& os, const EpcTft::PacketFilter& f)
 {
   os << " direction: " << f.direction
       << " remoteAddress: "  << f.remoteAddress
