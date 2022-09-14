@@ -68,29 +68,37 @@ stages:
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
-  variables:
-    COMPILER: g++
   before_script:
     - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache
       python
       boost gsl gtk3
+      clang
 
-per-commit-compile-debug:
+per-commit-clang-debug:
   extends: .base-per-commit-compile
   variables:
     MODE: debug
+    COMPILER: clang++
 
-per-commit-compile-default:
+per-commit-gcc-debug:
+  extends: .base-per-commit-compile
+  variables:
+    MODE: debug
+    COMPILER: g++
+
+per-commit-gcc-default:
   extends: .base-per-commit-compile
   variables:
     MODE: default
+    COMPILER: g++
 
-per-commit-compile-optimized:
+per-commit-gcc-optimized:
   extends: .base-per-commit-compile
   variables:
     MODE: optimized
+    COMPILER: g++
 
 # Weekly jobs for other distribution and compilers
 include:
