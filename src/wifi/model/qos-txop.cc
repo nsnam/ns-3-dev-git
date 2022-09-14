@@ -526,8 +526,16 @@ QosTxop::AssignSequenceNumber(Ptr<WifiMpdu> mpdu) const
 
     if (!mpdu->IsFragment() && !mpdu->GetHeader().IsRetry() && !mpdu->IsInFlight())
     {
-        uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor(&mpdu->GetHeader());
+        // in case of 11be MLDs, sequence numbers refer to the MLD address
+        auto origMpdu = m_queue->GetOriginal(mpdu);
+        uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor(&origMpdu->GetHeader());
         mpdu->GetHeader().SetSequenceNumber(sequence);
+        // if this is not the original copy of the MPDU, assign the sequence number to
+        // the original copy as well
+        if (!mpdu->IsOriginal())
+        {
+            origMpdu->GetHeader().SetSequenceNumber(sequence);
+        }
     }
 }
 

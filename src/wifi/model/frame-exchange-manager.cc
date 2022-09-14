@@ -877,6 +877,10 @@ FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& t
     else
     {
         NS_LOG_DEBUG("Missed Ack, retransmit MPDU");
+        if (mpdu->IsQueued()) // the MPDU may have been removed due to lifetime expiration
+        {
+            mpdu = m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu);
+        }
         mpdu->GetHeader().SetRetry();
         RetransmitMpduAfterMissedAck(mpdu);
         m_dcf->UpdateFailedCw(m_linkId);

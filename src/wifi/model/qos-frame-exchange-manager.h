@@ -92,6 +92,16 @@ class QosFrameExchangeManager : public FrameExchangeManager
                                            const WifiTxParameters& txParams,
                                            Time ppduDurationLimit) const;
 
+    /**
+     * Create an alias of the given MPDU for transmission by this Frame Exchange Manager.
+     * This is required by 11be MLDs to support translation of MAC addresses. For single
+     * link devices, the given MPDU is simply returned.
+     *
+     * \param mpdu the given MPDU
+     * \return the alias of the given MPDU for transmission on this link
+     */
+    virtual Ptr<WifiMpdu> CreateAlias(Ptr<WifiMpdu> mpdu) const;
+
   protected:
     void DoDispose() override;
 

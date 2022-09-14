@@ -29,6 +29,7 @@
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-mac-queue.h"
 
 #include <algorithm>
 #include <functional>
@@ -1102,7 +1103,7 @@ HeFrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector&
         {
             if (mpdu->IsQueued())
             {
-                mpdu->GetHeader().SetRetry();
+                m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu)->GetHeader().SetRetry();
             }
         }
     }

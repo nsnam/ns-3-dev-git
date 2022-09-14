@@ -301,7 +301,8 @@ void
 MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(*mpdu << +linkId);
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
+    // consider the MAC header of the original MPDU (makes a difference for data frames only)
+    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
     NS_ASSERT(hdr->IsData() || hdr->IsMgt());
 
     OriginatorRxStatus* originator = Lookup(hdr);

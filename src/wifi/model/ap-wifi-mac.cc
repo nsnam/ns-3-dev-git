@@ -1406,7 +1406,8 @@ void
 ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
+    // consider the MAC header of the original MPDU (makes a difference for data frames only)
+    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
     Ptr<const Packet> packet = mpdu->GetPacket();
     Mac48Address from = hdr->GetAddr2();
     if (hdr->IsData())

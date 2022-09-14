@@ -280,6 +280,7 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
         return false;
     }
 
+    mpdu = CreateAlias(mpdu);
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
@@ -310,6 +311,12 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
     SendMpduWithProtection(item, txParams);
 
     return true;
+}
+
+Ptr<WifiMpdu>
+QosFrameExchangeManager::CreateAlias(Ptr<WifiMpdu> mpdu) const
+{
+    return mpdu;
 }
 
 bool
