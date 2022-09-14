@@ -209,6 +209,10 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
 
       Ipv6Address solicited = Ipv6Address::MakeSolicitedAddress (iface.GetAddress ());
       m_addresses.push_back (std::make_pair (iface, solicited));
+      if (!m_addAddressCallback.IsNull ())
+        {
+          m_addAddressCallback(this, addr);
+        }
 
       if (!addr.IsAny () || !addr.IsLocalhost ())
         {
@@ -307,6 +311,10 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
         {
           Ipv6InterfaceAddress iface = it->first;
           m_addresses.erase (it);
+          if (!m_removeAddressCallback.IsNull ())
+            {
+              m_removeAddressCallback(this, iface);
+            }
           return iface;
         }
 
@@ -334,6 +342,10 @@ Ipv6Interface::RemoveAddress(Ipv6Address address)
         {
           Ipv6InterfaceAddress iface = it->first;
           m_addresses.erase(it);
+          if (!m_removeAddressCallback.IsNull ())
+            {
+              m_removeAddressCallback(this, iface);
+            }
           return iface;
         }
     }
@@ -521,6 +533,21 @@ Ptr<NdiscCache> Ipv6Interface::GetNdiscCache () const
   NS_LOG_FUNCTION (this);
   return m_ndCache;
 }
+
+void
+Ipv6Interface::RemoveAddressCallback (Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> removeAddressCallback)
+{
+  NS_LOG_FUNCTION (this << &removeAddressCallback);
+  m_removeAddressCallback = removeAddressCallback;
+}
+
+void
+Ipv6Interface::AddAddressCallback (Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> addAddressCallback)
+{
+  NS_LOG_FUNCTION (this << &addAddressCallback);
+  m_addAddressCallback = addAddressCallback;
+}
+
 
 } /* namespace ns3 */
 

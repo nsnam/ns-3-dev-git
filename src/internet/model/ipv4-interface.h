@@ -192,6 +192,25 @@ public:
    */
   Ipv4InterfaceAddress RemoveAddress (Ipv4Address address);
 
+  /**
+   * This callback is set when an address is removed from an interface with
+   * auto-generated Arp cache and it allow the neighbor cache helper to update
+   * neighbor's Arp cache
+   *
+   * \param removeAddressCallback Callback when remove an address.
+   */
+  void RemoveAddressCallback (Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> removeAddressCallback);
+
+  /**
+   * This callback is set when an address is added from an interface with
+   * auto-generated Arp cache and it allow the neighbor cache helper to update
+   * neighbor's Arp cache
+   *
+   * \param addAddressCallback Callback when remove an address.
+   */
+  void AddAddressCallback (Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> addAddressCallback);
+
+
 protected:
   virtual void DoDispose (void);
 
@@ -227,6 +246,9 @@ private:
   Ptr<NetDevice> m_device; //!< The associated NetDevice
   Ptr<TrafficControlLayer> m_tc; //!< The associated TrafficControlLayer
   Ptr<ArpCache> m_cache; //!< ARP cache
+  Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> m_removeAddressCallback; //!< remove address callback
+  Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> m_addAddressCallback; //!< add address callback
+
 };
 
 } // namespace ns3

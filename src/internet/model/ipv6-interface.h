@@ -275,6 +275,24 @@ public:
    */
   Ptr<NdiscCache> GetNdiscCache () const;
 
+  /**
+   * This callback is set when an address is removed from an interface with
+   * auto-generated Ndisc cache and it allow the neighbor cache helper to update
+   * neighbor's Ndisc cache
+   *
+   * \param removeAddressCallback Callback when remove an address.
+   */
+  void RemoveAddressCallback (Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> removeAddressCallback);
+
+  /**
+   * This callback is set when an address is added from an interface with
+   * auto-generated Ndisc cache and it allow the neighbor cache helper to update
+   * neighbor's Ndisc cache
+   *
+   * \param addAddressCallback Callback when remove an address.
+   */
+  void AddAddressCallback (Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> addAddressCallback);
+
 
 protected:
   /**
@@ -369,6 +387,10 @@ private:
    * Time between retransmission of NS.
    */
   uint16_t m_retransTimer;
+
+  Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> m_removeAddressCallback; //!< remove address callback
+
+  Callback<void, Ptr<Ipv6Interface>, Ipv6InterfaceAddress> m_addAddressCallback; //!< add address callback
 };
 
 } /* namespace ns3 */

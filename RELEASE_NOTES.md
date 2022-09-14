@@ -22,6 +22,7 @@ Release 3-dev
 - (lr-wpan) !997 - Adds MAC ACTIVE and PASSIVE scan support
 - (wifi) CCA has been reworked to report the channel type in the CCA-BUSY indication and the per-20 MHz CCA bitmap for 802.11ax.
 - (wifi) PPDUs are transmitted on the largest primary channel that is found to be idle (according to the CCA-BUSY indication provided by the PHY) when gaining a TXOP.
+- (internet) Add auto-generate ARP/NDISC cache, as the outcome of GSoC 2022 project.
 
 ### Bugs fixed
 

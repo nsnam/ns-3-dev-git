@@ -16,3 +16,12 @@ build_lib_example(
     ${libinternet}
     ${libnetwork}
 )
+
+build_lib_example(
+  NAME neighbor-cache-dynamic
+  SOURCE_FILES neighbor-cache-dynamic.cc
+  LIBRARIES_TO_LINK
+    ${libcsma}
+    ${libinternet}
+    ${libnetwork}
+)

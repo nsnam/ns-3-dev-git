@@ -310,6 +310,10 @@ Ipv4Interface::AddAddress (Ipv4InterfaceAddress addr)
 {
   NS_LOG_FUNCTION (this << addr);
   m_ifaddrs.push_back (addr);
+  if (!m_addAddressCallback.IsNull ())
+    {
+      m_addAddressCallback(this, addr);
+    }
   return true;
 }
 
@@ -353,6 +357,10 @@ Ipv4Interface::RemoveAddress (uint32_t index)
         {
           Ipv4InterfaceAddress addr = *i;
           m_ifaddrs.erase (i);
+          if (!m_removeAddressCallback.IsNull ())
+            {
+              m_removeAddressCallback(this, addr);
+            }
           return addr;
         }
       ++tmp;
@@ -380,10 +388,28 @@ Ipv4Interface::RemoveAddress(Ipv4Address address)
         {
           Ipv4InterfaceAddress ifAddr = *it;
           m_ifaddrs.erase(it);
+          if (!m_removeAddressCallback.IsNull ())
+            {
+              m_removeAddressCallback(this, ifAddr);
+            }
           return ifAddr;
         }
     }
   return Ipv4InterfaceAddress();
+}
+
+void
+Ipv4Interface::RemoveAddressCallback (Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> removeAddressCallback)
+{
+  NS_LOG_FUNCTION (this << &removeAddressCallback);
+  m_removeAddressCallback = removeAddressCallback;
+}
+
+void
+Ipv4Interface::AddAddressCallback (Callback<void, Ptr<Ipv4Interface>, Ipv4InterfaceAddress> addAddressCallback)
+{
+  NS_LOG_FUNCTION (this << &addAddressCallback);
+  m_addAddressCallback = addAddressCallback;
 }
 
 } // namespace ns3
