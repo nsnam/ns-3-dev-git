@@ -523,7 +523,7 @@ WifiTxVector::SetInactiveSubchannels (const std::vector<bool>& inactiveSubchanne
                    "Only HE (or later) authorized for preamble puncturing");
   NS_ABORT_MSG_IF (m_channelWidth < 80,
                    "Preamble puncturing only possible for transmission bandwidth of 80 MHz or larger");
-  NS_ABORT_MSG_IF (inactiveSubchannels.size () != (m_channelWidth / 20),
+  NS_ABORT_MSG_IF (!inactiveSubchannels.empty () && inactiveSubchannels.size () != (m_channelWidth / 20),
                    "The size of the inactive subchannnels bitmap should be equal to the number of 20 MHz subchannels");
   m_inactiveSubchannels = inactiveSubchannels;
 }
