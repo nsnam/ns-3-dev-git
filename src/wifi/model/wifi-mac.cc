@@ -31,8 +31,8 @@
 #include "wifi-net-device.h"
 
 #include "ns3/eht-configuration.h"
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/he-configuration.h"
-#include "ns3/he-frame-exchange-manager.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -791,7 +791,11 @@ WifiMac::SetupFrameExchangeManager(WifiStandard standard)
     NS_ABORT_MSG_IF(standard == WIFI_STANDARD_UNSPECIFIED, "Wifi standard not set");
     Ptr<FrameExchangeManager> feManager;
 
-    if (standard >= WIFI_STANDARD_80211ax)
+    if (standard >= WIFI_STANDARD_80211be)
+    {
+        feManager = CreateObject<EhtFrameExchangeManager>();
+    }
+    else if (standard >= WIFI_STANDARD_80211ax)
     {
         feManager = CreateObject<HeFrameExchangeManager>();
     }
