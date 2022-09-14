@@ -281,6 +281,15 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      */
     void WipeAllExpiredMpdus();
 
+    /**
+     * Unlike the GetOriginal() method of WifiMpdu, this method returns a non-const
+     * pointer to the original copy of the given MPDU.
+     *
+     * \param mpdu the given MPDU
+     * \return the original copy of the given MPDU
+     */
+    Ptr<WifiMpdu> GetOriginal(Ptr<WifiMpdu> mpdu);
+
   protected:
     using Queue<WifiMpdu, WifiMacQueueContainer>::GetContainer;
 

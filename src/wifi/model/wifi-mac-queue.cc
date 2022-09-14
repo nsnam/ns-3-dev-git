@@ -94,6 +94,12 @@ WifiMacQueue::GetIt(Ptr<const WifiMpdu> mpdu) const
     return mpdu->GetQueueIt(WmqIteratorTag());
 }
 
+Ptr<WifiMpdu>
+WifiMacQueue::GetOriginal(Ptr<WifiMpdu> mpdu)
+{
+    return GetIt(mpdu)->mpdu;
+}
+
 void
 WifiMacQueue::ExtractExpiredMpdus(const WifiContainerQueueId& queueId) const
 {
