@@ -529,22 +529,24 @@ Miscellaneous items
       pkt->RemoveHeader (header);
       ...
 
-- As explained in this `issue <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/732>`_,  the ns-3 smart pointer class ``Ptr`` should be used in boolean comparisons as follows:
-
+- As explained in this `issue <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/732>`_,  
+  the ns-3 smart pointer class ``Ptr`` should be used in boolean comparisons as follows:
   ::
-  for Ptr<> p, do not use:      use instead:
-  ========================      ===========================
-  if (p != 0)      {...}        if (p)      {...}
-  if (p != NULL)   {...}
-  if (p != nullptr {...}
+    for Ptr<> p, do not use:      use instead:
+    ========================      =================================
+    if (p != 0)      {...}        if (p)      {...}
+    if (p != NULL)   {...}
+    if (p != nullptr {...}
 
-  if (p == 0)      {...}        if (!p)     {...}
-  if (p == NULL)   {...}
-  if (p == nullptr {...}
+    if (p == 0)      {...}        if (!p)     {...}
+    if (p == NULL)   {...}
+    if (p == nullptr {...}
 
-  NS_ASSERT... (p != 0, ...)     NS_ASSERT... (p, ...)
-  NS_ABORT...  (p != 0, ...)     NS_ABORT...  (p, ...)
+    NS_ASSERT... (p != 0, ...)     NS_ASSERT... (p, ...)
+    NS_ABORT...  (p != 0, ...)     NS_ABORT...  (p, ...)
 
-  NS_ASSERT... (p == 0, ...)     NS_ASSERT... (!p, ...)
-  NS_ABORT...  (p == 0, ...)     NS_ABORT...  (!p, ...)
+    NS_ASSERT... (p == 0, ...)     NS_ASSERT... (!p, ...)
+    NS_ABORT...  (p == 0, ...)     NS_ABORT...  (!p, ...)
+
+    NS_TEST...   (p, 0, ...)       NS_TEST...   (p, nullptr, ...)
 
