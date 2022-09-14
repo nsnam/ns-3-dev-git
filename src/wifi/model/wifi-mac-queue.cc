@@ -248,7 +248,7 @@ WifiMacQueue::DequeueIfQueued(const std::list<Ptr<const WifiMpdu>>& mpdus)
         {
             auto it = GetIt(mpdu);
             NS_ASSERT(it->ac == m_ac);
-            NS_ASSERT(it->mpdu == mpdu);
+            NS_ASSERT(it->mpdu == mpdu->GetOriginal());
             iterators.emplace_back(it);
         }
     }
@@ -374,7 +374,7 @@ WifiMacQueue::Remove(Ptr<const WifiMpdu> mpdu)
     NS_ASSERT(mpdu && mpdu->IsQueued());
     auto it = GetIt(mpdu);
     NS_ASSERT(it->ac == m_ac);
-    NS_ASSERT(it->mpdu == mpdu);
+    NS_ASSERT(it->mpdu == mpdu->GetOriginal());
 
     return DoRemove(it);
 }
@@ -386,7 +386,7 @@ WifiMacQueue::Replace(Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem)
     NS_ASSERT(currentItem->IsQueued());
     auto currentIt = GetIt(currentItem);
     NS_ASSERT(currentIt->ac == m_ac);
-    NS_ASSERT(currentIt->mpdu == currentItem);
+    NS_ASSERT(currentIt->mpdu == currentItem->GetOriginal());
     NS_ASSERT(!newItem->IsQueued());
 
     Time expiryTime = currentIt->expiryTime;
@@ -425,12 +425,12 @@ WifiMacQueue::DoEnqueue(ConstIterator pos, Ptr<WifiMpdu> item)
     }
 
     auto queueId = WifiMacQueueContainer::GetQueueId(item);
-    if (pos != GetContainer().GetQueue(queueId).cend() && pos->mpdu == mpdu)
+    if (pos != GetContainer().GetQueue(queueId).cend() && mpdu && pos->mpdu == mpdu->GetOriginal())
     {
         // the element pointed to by pos must be dropped; update insert position
         pos = std::next(pos);
     }
-    if (mpdu != nullptr)
+    if (mpdu)
     {
         DoRemove(GetIt(mpdu));
     }

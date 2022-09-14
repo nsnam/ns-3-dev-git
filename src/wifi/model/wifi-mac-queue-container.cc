@@ -42,6 +42,7 @@ WifiMacQueueContainer::insert(const_iterator pos, Ptr<WifiMpdu> item)
 
     NS_ABORT_MSG_UNLESS(pos == m_queues[queueId].cend() || GetQueueId(pos->mpdu) == queueId,
                         "pos iterator does not point to the correct container queue");
+    NS_ABORT_MSG_IF(!item->IsOriginal(), "Only the original copy of an MPDU can be inserted");
 
     auto [it, ret] = m_nBytesPerQueue.insert({queueId, 0});
     it->second += item->GetSize();
