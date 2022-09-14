@@ -31,7 +31,7 @@ doxygen:
     - ./ns3 build assemble-introspected-command-line
 #    - mkdir -p public/doxygen
 # The following four lines were needed when ns-3 had warnings, and
-# it was necessary to have a filter to check only the files tocuhed by a MR.
+# it was necessary to have a filter to check only the files touched by a MR.
 #    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
 #    - git fetch ns-3-origin
 #    - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
@@ -54,7 +54,7 @@ doxygen:
     key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
-    when: 'always'
+    when: "always"
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
     COMPILER: g++

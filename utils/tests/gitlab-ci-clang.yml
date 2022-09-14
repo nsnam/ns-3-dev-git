@@ -30,7 +30,6 @@
     COMPILER: clang++-$CLANG
     LIBGSL: libgls23
 
-
 .weekly-build-clang-ubuntu22.04:
   image: ubuntu:22.04
   extends: .base-build
@@ -52,7 +51,6 @@
   variables:
     COMPILER: clang++-$CLANG
     LIBGSL: libgls27
-
 
 # CLANG 6
 weekly-build-clang-6-debug:
@@ -112,19 +110,19 @@ weekly-build-clang-11-optimized:
     MODE: optimized
 
 # CLANG 14
-weekly-build-clang-11-debug:
+weekly-build-clang-14-debug:
   extends: .weekly-build-clang-ubuntu22.04
   variables:
     CLANG: 14
     MODE: debug
 
-weekly-build-clang-11-default:
+weekly-build-clang-14-default:
   extends: .weekly-build-clang-ubuntu22.04
   variables:
     CLANG: 14
     MODE: default
 
-weekly-build-clang-11-optimized:
+weekly-build-clang-14-optimized:
   extends: .weekly-build-clang-ubuntu22.04
   variables:
     CLANG: 14

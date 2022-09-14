@@ -8,7 +8,6 @@
 # As per Gitlab documentation, extends supports multi-level inheritance,
 # however it is not recommended to use more than three levels.
 
-
 # Any scheduled pipeline should define a variable, named "RELEASE", that
 # indicates what this script is run for. Allowed values, for the moment,
 # are "daily" and "weekly" to denote a daily (or weekly) job.
@@ -18,13 +17,11 @@
 # documentation jobs each time that a commit is done. We use a different
 # configuration, still in definition. It will be in the documentation.
 
-
 stages:
   - coding-style
   - build
   - test
   - documentation
-
 
 ###################### BUILD STAGE #############################################
 
@@ -54,7 +51,7 @@ stages:
     key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
-    when: 'always'
+    when: "always"
   timeout: 12h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
@@ -71,10 +68,9 @@ stages:
   before_script:
     - pacman-key --init
     - pacman -Syu --noconfirm
-      base-devel cmake ninja ccache
+      base-devel gcc clang cmake ninja ccache
       python
       boost gsl gtk3
-      clang
 
 per-commit-clang-debug:
   extends: .base-per-commit-compile
