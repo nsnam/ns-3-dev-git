@@ -191,15 +191,14 @@ Coding style
 We ask that all contributors make their code conform to the
 coding standard which is outlined in :ref:`Coding style`.
 
-The project maintains a Python program called ``check-style.py`` found in
-the ``utils/`` directory.  This is a wrapper around the ``uncrustify``
-utility with configuration set to the conventions used by |ns3|, and
-can be used to quickly format new source code files proposed for the
-mainline.
+The project maintains a Python program called ``check-style-clang-format.py`` found in
+the ``utils/`` directory.  This is a wrapper around the ``clang-format``
+utility and can be used to quickly format new source code files proposed for the
+mainline. The |ns3| coding style conventions are defined in the corresponding
+``.clang-format`` file.
 
-Additionally, the project also maintains a Python program called
-``trim_trailing_whitespace.py``, found in the ``utils/`` directory.
-This program checks and trims trailing whitespace in text files, in order to
+In addition to formatting source code files with ``clang-format``, the Python program
+also checks trailing whitespace in text files and converts tabs to spaces, in order to
 comply with the |ns3| coding style.
 
 Creating a patch
