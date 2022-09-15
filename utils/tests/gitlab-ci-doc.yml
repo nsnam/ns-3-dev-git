@@ -26,7 +26,8 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d default
+# debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
+    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d debug
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
 #    - mkdir -p public/doxygen
