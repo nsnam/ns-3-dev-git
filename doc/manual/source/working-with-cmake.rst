@@ -1489,6 +1489,184 @@ on user options, checking for dependencies of enabled features,
 pre-compiling headers, filtering enabled/disabled modules and dependencies,
 and more.
 
+Executable macros
+=================
+
+Creating an executable in CMake requires a few different macro calls.
+Some of these calls are related to setting the target and built executable name,
+indicating which libraries that should be linked to the executable,
+where the executable should be placed after being built and installed.
+
+Note that if you are trying to add a new example to your module, you should
+look at the `build_lib_example`_ macro section.
+
+If you are trying to add a new example to ``~/ns-3-dev/examples``, you should
+look at the `build_example`_ macro section.
+
+While both of the previously mentioned macros are meant to be used for examples,
+in some cases additional utilities are required. Those utilities can be helpers,
+such as the ``raw-sock-creator`` in the ``fd-net-device`` module, or benchmark
+tools in the ``~/ns-3-dev/utils`` directory. In those cases, the `build_exec`_
+macro is recommended instead of direct CMake calls.
+
+.. _build_exec:
+
+Executable macros: build_exec
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``build_exec`` macro bundles a series of direct CMake calls into a single macro.
+The example below shows the creation of an executable named ``example``, that will
+later receive a version prefix (e.g. ``ns3.37-``) and a build type suffix
+(e.g. ``-debug``), resulting in an executable file named ``ns3.37-example-debug``.
+
+The list of source and header files can be passed in the ``SOURCE_FILES`` and
+``HEADER_FILES`` arguments, followed by the ``LIBRARIES_TO_LINK`` that will be linked
+to the executable.
+
+That executable will be saved by default to the ``CMAKE_RUNTIME_OUTPUT_DIRECTORY``
+(e.g. /ns-3-dev/build/bin). To change its destination, set ``EXECUTABLE_DIRECTORY_PATH``
+to the desired path. The path is relative to the ``CMAKE_OUTPUT_DIRECTORY``
+(e.g. /ns-3-dev/build).
+
+In case this executable should be installed, set ``INSTALL_DIRECTORY_PATH`` to the
+desired destination. In case this value is empty, the executable will not be installed.
+The path is relative to the ``CMAKE_INSTALL_PREFIX`` (e.g. /usr).
+
+To set custom compiler defines for that specific executable, defines can be passed
+to the ``DEFINITIONS`` argument.
+
+Finally, to ignore precompiled headers, include ``IGNORE_PCH`` to the list of parameters.
+You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ section.
+
+.. sourcecode:: cmake
+
+   build_exec(
+     # necessary
+     EXECNAME example                       # executable name = example (plus version prefix and build type suffix)
+     SOURCE_FILES example.cc example-complement.cc
+     HEADER_FILES example.h
+     LIBRARIES_TO_LINK ${libcore}           # links to core
+     EXECUTABLE_DIRECTORY_PATH scratch          # build/scratch
+     # optional
+     EXECNAME_PREFIX scratch_subdir_prefix_ # target name = scratch_subdir_prefix_example
+     INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_BIN}/   # e.g. /usr/bin/ns3.37-scratch_subdir_prefix_example-debug
+     DEFINITIONS -DHAVE_FEATURE=1           # defines for this specific target
+     IGNORE_PCH
+   )
+
+The same executable can be built by directly calling the following CMake macros:
+
+.. sourcecode:: cmake
+
+   set(target_prefix scratch_subdir_prefix_)
+   set(target_name example)
+   set(output_directory scratch)
+
+   # Creates a target named "example" (target_name) prefixed with "scratch_subdir_prefix_" (target_prefix)
+   # e.g. scratch_subdir_prefix_example
+   add_executable(${target_prefix}${target_name} example.cc example-complement.cc)
+   target_link_libraries(${target_prefix}${target_name} PUBLIC ${libcore})
+
+   # Create a variable with the target name prefixed with
+   # the version and suffixed with the build profile suffix
+   # e.g. ns3.37-scratch_subdir_prefix_example-debug
+   set(ns3-exec-outputname ns${NS3_VER}-${target_prefix}${target_name}${build_profile_suffix})
+
+   # Append the binary name to the executables list later written to the lock file,
+   # which is consumed by the ns3 script and test.py
+   set(ns3-execs "${output_directory}${ns3-exec-outputname};${ns3-execs}"
+      CACHE INTERNAL "list of c++ executables"
+   )
+   # Modify the target properties to change the binary name to ns3-exec-outputname contents
+   # and modify its output directory (e.g. scratch). The output directory is relative to the build directory.
+   set_target_properties(
+     ${target_prefix}${target_name}
+     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${output_directory}
+                RUNTIME_OUTPUT_NAME ${ns3-exec-outputname}
+   )
+   # Create a dependency between the target and the all-test-targets
+   # (used by ctest, coverage and doxygen targets)
+   add_dependencies(all-test-targets ${target_prefix}${target_name})
+
+   # Create a dependency between the target and the timeTraceReport
+   # (used by Clang TimeTrace to collect compilation statistics)
+   add_dependencies(timeTraceReport ${target_prefix}${target_name}) # target used to track compilation time
+
+   # Set target-specific compile definitions
+   target_compile_definitions(${target_prefix}${target_name} PUBLIC definitions)
+
+   # Check whether the target should reuse or not the precompiled headers
+   if(NOT ${IGNORE_PCH})
+       target_precompile_headers(
+             ${target_prefix}${target_name} REUSE_FROM stdlib_pch_exec
+          )
+   endif()
+
+
+.. _build_example:
+
+Executable macros: build_example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``build_example`` macro sets some of ``build_exec``'s arguments based on the current
+example directory (output directory) and adds the optional visualizer module as a dependency
+in case it is enabled. It also performs dependency checking on the libraries passed.
+
+In case one of the dependencies listed is not found, the example target will not be created.
+If you are trying to add an example or a dependency to an existing example and it is not
+listed by ``./ns3 show targets`` or your IDE, check if all its dependencies were found.
+
+.. sourcecode:: cmake
+
+   macro(build_example)
+     set(options IGNORE_PCH)
+     set(oneValueArgs NAME)
+     set(multiValueArgs SOURCE_FILES HEADER_FILES LIBRARIES_TO_LINK)
+     # Parse arguments
+     cmake_parse_arguments(
+       "EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
+     )
+     # Check if any of the LIBRARIES_TO_LINK is missing to prevent configuration errors
+     check_for_missing_libraries(
+       missing_dependencies "${EXAMPLE_LIBRARIES_TO_LINK}"
+     )
+
+     if(NOT missing_dependencies)
+      # Convert boolean into text to forward argument
+       if(${EXAMPLE_IGNORE_PCH})
+         set(IGNORE_PCH IGNORE_PCH)
+       endif()
+       # Create example library with sources and headers
+       # cmake-format: off
+       build_exec(
+         EXECNAME ${EXAMPLE_NAME}
+         SOURCE_FILES ${EXAMPLE_SOURCE_FILES}
+         HEADER_FILES ${EXAMPLE_HEADER_FILES}
+         LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
+         EXECUTABLE_DIRECTORY_PATH
+           ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/
+         ${IGNORE_PCH}
+       )
+     # cmake-format: on
+     endif()
+   endmacro()
+
+An example on how it is used can be found in ``~/ns-3-dev/examples/tutorial/CMakeLists.txt``:
+
+.. sourcecode:: cmake
+
+   build_example(
+     NAME first
+     SOURCE_FILES first.cc
+     LIBRARIES_TO_LINK
+       ${libcore}
+       ${libpoint-to-point}
+       ${libinternet}
+       ${libapplications}
+       # If visualizer is available, the macro will add the module to this list automatically
+     # build_exec's EXECUTABLE_DIRECTORY_PATH will be set to build/examples/tutorial/
+   )
+
 Module macros
 =============
 
@@ -1500,6 +1678,8 @@ for user scripts.
 
 These macros are responsible for easing the porting of modules from Waf to CMake.
 
+.. _build_lib:
+
 Module macros: build_lib
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1508,8 +1688,11 @@ block by block.
 
 The first block declares the arguments received by the macro (in CMake, the
 only difference is that a function has its own scope). Notice that there are
-different types of arguments. Options that can only be set to true/false
-(``IGNORE_PCH``).
+different types of arguments. Options that can only be set to ON/OFF.
+Options are OFF by default, and are set to ON if the option name is added to
+the arguments list (e.g. ``build_lib(... IGNORE_PCH)``).
+
+Note: You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ section.
 
 One value arguments that receive a single value
 (usually a string) and in this case used to receive the module name (``LIBNAME``).
@@ -1891,6 +2074,9 @@ We also print an additional message the folder just finished being processed if 
     endif()
   endfunction()
 
+
+.. _build_lib_example:
+
 Module macros: build_lib_example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1924,6 +2110,7 @@ If the visualizer module is not enabled, ``optional_visualizer_lib`` is empty.
 
 The example can also be linked to a single ns-3 shared library (``lib-ns3-monolib``) or
 a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` or ``NS3_STATIC=ON``.
+Note that both of these options are handled by the ``build_exec`` macro.
 
 .. sourcecode:: cmake
 
@@ -1931,55 +2118,34 @@ a single ns-3 static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` 
     # ...
     check_for_missing_libraries(missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}")
     if(NOT missing_dependencies)
-      # Create shared library with sources and headers
-      add_executable(
-        "${BLIB_EXAMPLE_NAME}" ${BLIB_EXAMPLE_SOURCE_FILES}
-                              ${BLIB_EXAMPLE_HEADER_FILES}
-      )
-
-      if(${NS3_STATIC})
-        target_link_libraries(
-          ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
-        )
-      elseif(${NS3_MONOLIB})
-        target_link_libraries(
-          ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
-          ${LIB_AS_NEEDED_POST}
-        )
-      else()
-        target_link_libraries(
-          ${BLIB_EXAMPLE_NAME} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_EXAMPLE_LIBNAME}}
-          ${BLIB_EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
-          ${LIB_AS_NEEDED_POST}
-        )
-      endif()
-      # ...
+       # Convert boolean into text to forward argument
+       if(${BLIB_EXAMPLE_IGNORE_PCH})
+         set(IGNORE_PCH IGNORE_PCH)
+       endif()
+       # Create executable with sources and headers
+       # cmake-format: off
+       build_exec(
+         EXECNAME ${BLIB_EXAMPLE_NAME}
+         SOURCE_FILES ${BLIB_EXAMPLE_SOURCE_FILES}
+         HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
+         LIBRARIES_TO_LINK
+           ${lib${BLIB_EXAMPLE_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
+           ${optional_visualizer_lib}
+         EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
+         ${IGNORE_PCH}
+       )
+       # cmake-format: on
     endif()
   endfunction()
+
+The `build_exec`_ macro will also set resulting folder where the example will end up
+after built (e.g. build/src/module/examples). It does that by forwarding the
+``EXECUTABLE_DIRECTORY_PATH`` to the macro ``set_runtime_outputdirectory``, which also
+adds the proper ns-3 version prefix and build type suffix to the executable.
 
 As with the module libraries, we can also reuse precompiled headers here to speed up
 the parsing step of compilation.
-
-Finally, we call another macro ``set_runtime_outputdirectory``, which indicates the
-resulting folder where the example will end up after built (e.g. build/src/module/examples)
-and adds the proper ns-3 version prefix and build type suffix to the executable.
-
-.. sourcecode:: cmake
-
-  function(build_lib_example)
-    # ...
-    if(NOT missing_dependencies)
-      # ...
-      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_EXAMPLE_IGNORE_PCH}))
-        target_precompile_headers(${BLIB_EXAMPLE_NAME} REUSE_FROM stdlib_pch_exec)
-      endif()
-
-      set_runtime_outputdirectory(
-        ${BLIB_EXAMPLE_NAME}
-        ${CMAKE_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
-      )
-    endif()
-  endfunction()
+You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ section.
 
 User options and header checking
 ================================
@@ -2398,6 +2564,9 @@ for each compilation unit (.cc file).
 Note: for ease of use, PCH is enabled by default if supported. It can be manually disabled
 by setting ``NS3_PRECOMPILE_HEADERS`` to ``OFF``.
 
+Setting up and adding new headers to the PCH
+++++++++++++++++++++++++++++++++++++++++++++
+
 When both CCache and PCH are used together, there is a set of settings that must be
 properly configured, otherwise timestamps built into the PCH can invalidate the CCache
 artifacts, forcing a new build of unmodified modules/programs.
@@ -2520,3 +2689,97 @@ then cleaning, configuring, building, and finally printing the CCache statistics
 If you have changed any compiler flag, the cache hit rate should be very low.
 Repeat the same commands once more.
 If the cache hit rate is at 100%, it means everything is working as it should.
+
+.. _PCH side-effects:
+
+Possible side-effects, fixes and IGNORE_PCH
++++++++++++++++++++++++++++++++++++++++++++
+
+Precompiled headers can cause symbol collisions due to includes reordering or unwanted includes,
+which can lead to attempts to redefine functions, macros, types or variables.
+An example of such side-effect is shown below.
+
+In order to exemplify how precompiled headers can cause issues, assume the following inclusion order from
+``ns-3-dev/src/aodv/model/aodv-routing-protocol.cc``:
+
+.. sourcecode:: cpp
+
+   ...
+   #define NS_LOG_APPEND_CONTEXT                                   \
+   if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
+
+   #include "aodv-routing-protocol.h"
+   #include "ns3/log.h"
+   ...
+
+The ``NS_LOG_APPEND_CONTEXT`` macro definition comes before the ``ns3/log.h`` inclusion,
+and that is the expected way of using ``NS_LOG_APPEND_CONTEXT``, since we have the following
+guards on ``ns3/log-macros-enabled.h``, which is included by ``ns3/logs.h`` when logs are enabled.
+
+.. sourcecode:: cpp
+
+   ...
+   #ifndef NS_LOG_APPEND_CONTEXT
+   #define NS_LOG_APPEND_CONTEXT
+   #endif /* NS_LOG_APPEND_CONTEXT */
+   ...
+
+By adding ``<ns3/logs.h>`` to the list of headers to precompile (``precompiled_header_libraries``)
+in ``ns-3-dev/build-support/macros-and-definitions.cmake``, the ``ns3/logs.h`` header will
+now be part of the PCH, which gets included before any parsing of the code is done.
+This means the equivalent inclusion order would be different than what was originally intended,
+as shown below:
+
+.. sourcecode:: cpp
+
+
+   #include "cmake_pch.hxx" // PCH includes ns3/log.h before defining NS_LOG_APPEND_CONTEXT below
+   ...
+   #define NS_LOG_APPEND_CONTEXT                                   \
+   if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
+
+   #include "aodv-routing-protocol.h"
+   #include "ns3/log.h" // isn't processed since ``NS3_LOG_H`` was already defined by the PCH
+   ...
+
+While trying to build with the redefined symbols in the debug build, where warnings are treated
+as errors, the build may fail with an error similar to the following from GCC 11.2:
+
+.. sourcecode:: console
+
+   FAILED: src/aodv/CMakeFiles/libaodv-obj.dir/model/aodv-routing-protocol.cc.o
+   ccache /usr/bin/c++ ... -DNS3_LOG_ENABLE -Wall -Werror -include /ns-3-dev/cmake-build-debug/CMakeFiles/stdlib_pch.dir/cmake_pch.hxx
+   /ns-3-dev/src/aodv/model/aodv-routing-protocol.cc:28: error: "NS_LOG_APPEND_CONTEXT" redefined [-Werror]
+      28 | #define NS_LOG_APPEND_CONTEXT                                   \
+         |
+   In file included from /ns-3-dev/src/core/model/log.h:32,
+                    from /ns-3-dev/src/core/model/fatal-error.h:29,
+                    from /ns-3-dev/build/include/ns3/assert.h:56,
+                    from /ns-3-dev/build/include/ns3/buffer.h:26,
+                    from /ns-3-dev/build/include/ns3/packet.h:24,
+                    from /ns-3-dev/cmake-build-debug/CMakeFiles/stdlib_pch.dir/cmake_pch.hxx:23,
+                    from <command-line>:
+   /ns-3-dev/src/core/model/log-macros-enabled.h:146: note: this is the location of the previous definition
+     146 | #define NS_LOG_APPEND_CONTEXT
+         |
+   cc1plus: all warnings being treated as errors
+
+One of the ways to fix this issue in particular is undefining ``NS_LOG_APPEND_CONTEXT`` before redefining it in
+``/ns-3-dev/src/aodv/model/aodv-routing-protocol.cc``.
+
+.. sourcecode:: cpp
+
+   #include "cmake_pch.hxx" // PCH includes ns3/log.h before defining NS_LOG_APPEND_CONTEXT below
+   ...
+   #undef NS_LOG_APPEND_CONTEXT // undefines symbol previously defined in the PCH
+   #define NS_LOG_APPEND_CONTEXT                                   \
+   if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
+
+   #include "aodv-routing-protocol.h"
+   #include "ns3/log.h" // isn't processed since ``NS3_LOG_H`` was already defined by the PCH
+   ...
+
+If the ``IGNORE_PCH`` option is set in the `build_lib`_, `build_lib_example`_, `build_exec`_ and the `build_example`_ macros,
+the PCH is not included in their, continuing to build as we normally would and serving as a workaround for the issue.
+This can be helpful when the same macro names, class names, global variables and others are redefined by different
+components.
