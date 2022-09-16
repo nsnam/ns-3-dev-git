@@ -215,9 +215,9 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.AddValue ("testNumber", "Run test 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14 or 15", aredTest);
   cmd.AddValue ("pathOut", "Path to save results from --writeForPlot/--writePcap/--writeFlowMonitor", pathOut);
-  cmd.AddValue ("writeForPlot", "<0/1> to write results for plot (gnuplot)", writeForPlot);
-  cmd.AddValue ("writePcap", "<0/1> to write results in pcapfile", writePcap);
-  cmd.AddValue ("writeFlowMonitor", "<0/1> to enable Flow Monitor and write their results", flowMonitor);
+  cmd.AddValue ("writeForPlot", "Write results for plot (gnuplot)", writeForPlot);
+  cmd.AddValue ("writePcap", "Write results in pcapfile", writePcap);
+  cmd.AddValue ("writeFlowMonitor", "Enable Flow Monitor and write their results", flowMonitor);
 
   cmd.Parse (argc, argv);
   if ((aredTest < 1) || (aredTest == 5) || (aredTest > 15))

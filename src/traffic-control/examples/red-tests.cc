@@ -292,9 +292,9 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.AddValue ("testNumber", "Run test 1, 3, 4 or 5", redTest);
   cmd.AddValue ("pathOut", "Path to save results from --writeForPlot/--writePcap/--writeFlowMonitor", pathOut);
-  cmd.AddValue ("writeForPlot", "<0/1> to write results for plot (gnuplot)", writeForPlot);
-  cmd.AddValue ("writePcap", "<0/1> to write results in pcapfile", writePcap);
-  cmd.AddValue ("writeFlowMonitor", "<0/1> to enable Flow Monitor and write their results", flowMonitor);
+  cmd.AddValue ("writeForPlot", "Write results for plot (gnuplot)", writeForPlot);
+  cmd.AddValue ("writePcap", "Write results in pcapfile", writePcap);
+  cmd.AddValue ("writeFlowMonitor", "Enable Flow Monitor and write their results", flowMonitor);
 
   cmd.Parse (argc, argv);
   if ( (redTest != 1) && (redTest != 3) && (redTest != 4) && (redTest != 5) )
