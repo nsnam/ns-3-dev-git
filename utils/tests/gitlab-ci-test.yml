@@ -26,7 +26,7 @@
     - ./ns3 build
     - ./test.py -n $VALGRIND_FLAG $FULLNESS
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
     when: "always"
