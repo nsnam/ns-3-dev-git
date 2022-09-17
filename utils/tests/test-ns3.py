@@ -1484,6 +1484,52 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             with open(version_cache_file, "r") as version:
                 self.assertNotEqual(version.read(), version_cache_contents)
 
+        # Reconfigure to clean leftovers before the next test
+        NS3ConfigureTestCase.cleaned_once = False
+
+    def test_19_FilterModuleExamplesAndTests(self):
+        """!
+        Test filtering in examples and tests from specific modules
+        @return None
+        """
+        # Try filtering enabled modules to core+network and their dependencies
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --enable-tests")
+        self.config_ok(return_code, stdout)
+
+        modules_before_filtering = get_enabled_modules()
+        programs_before_filtering = get_programs_list()
+
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"Unix Makefiles\" --filter-module-examples-and-tests='core;network'")
+        self.config_ok(return_code, stdout)
+
+        modules_after_filtering = get_enabled_modules()
+        programs_after_filtering = get_programs_list()
+
+        # At this point we should have the same number of modules
+        self.assertEqual(len(modules_after_filtering), len(modules_before_filtering))
+        # But less executables
+        self.assertLess(len(programs_after_filtering), len(programs_before_filtering))
+
+        # Try filtering in only core
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"Unix Makefiles\" --filter-module-examples-and-tests='core'")
+        self.config_ok(return_code, stdout)
+
+        # At this point we should have the same number of modules
+        self.assertEqual(len(get_enabled_modules()), len(modules_after_filtering))
+        # But less executables
+        self.assertLess(len(get_programs_list()), len(programs_after_filtering))
+
+        # Try cleaning the list of enabled modules to reset to the normal configuration.
+        return_code, stdout, stderr = run_ns3(
+            "configure -G \"Unix Makefiles\" --disable-examples --disable-tests --filter-module-examples-and-tests=''")
+        self.config_ok(return_code, stdout)
+
+        # At this point we should have the same amount of modules that we had when we started.
+        self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
+        self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
+
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
     """!
@@ -2655,8 +2701,8 @@ def main():
         keys = list(tests.keys())
 
         while not args.resume_from_test_name in keys[0] and len(tests) > 0:
-                suite._tests.remove(tests[keys[0]])
-                keys.pop(0)
+            suite._tests.remove(tests[keys[0]])
+            keys.pop(0)
 
     # Before running, check if ns3rc exists and save it
     ns3rc_script_bak = ns3rc_script + ".bak"

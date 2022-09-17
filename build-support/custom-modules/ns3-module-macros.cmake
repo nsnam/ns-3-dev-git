@@ -224,8 +224,17 @@ function(build_lib)
     )
   endif()
 
+  # Check if the module tests should be built
+  set(filtered_in ON)
+  if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+    set(filtered_in OFF)
+    if(${BLIB_LIBNAME} IN_LIST NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+      set(filtered_in ON)
+    endif()
+  endif()
+
   # Build tests if requested
-  if(${ENABLE_TESTS})
+  if(${ENABLE_TESTS} AND ${filtered_in})
     list(LENGTH BLIB_TEST_SOURCES test_source_len)
     if(${test_source_len} GREATER 0)
       # Create BLIB_LIBNAME of output library test of module
@@ -314,7 +323,17 @@ function(build_lib_example)
   check_for_missing_libraries(
     missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}"
   )
-  if(NOT missing_dependencies)
+
+  # Check if a module example should be built
+  set(filtered_in ON)
+  if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+    set(filtered_in OFF)
+    if(${BLIB_LIBNAME} IN_LIST NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+      set(filtered_in ON)
+    endif()
+  endif()
+
+  if((NOT missing_dependencies) AND ${filtered_in})
     # Convert boolean into text to forward argument
     if(${BLIB_EXAMPLE_IGNORE_PCH})
       set(IGNORE_PCH IGNORE_PCH)
@@ -326,7 +345,7 @@ function(build_lib_example)
       SOURCE_FILES ${BLIB_EXAMPLE_SOURCE_FILES}
       HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
       LIBRARIES_TO_LINK
-        ${lib${BLIB_EXAMPLE_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
+        ${lib${BLIB_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
         ${optional_visualizer_lib}
       EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
       ${IGNORE_PCH}

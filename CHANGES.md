@@ -57,7 +57,7 @@ Changes from ns-3.36 to ns-3.37
 * Added the `build_exec` macro to declare new executables.
 * Replaced Python-based .ns3rc with a CMake-based version.
 * Deprecated .ns3rc files will be updated to the new CMake-based format and a backup will be placed alongside it.
-
+* Added the `./ns3 configure --filter-module-examples-and-tests='module1;module2'` option, which can be used to filter out examples and tests that do not use the listed modules.
 
 ### Changed behavior
 

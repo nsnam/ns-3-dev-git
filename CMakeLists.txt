@@ -99,6 +99,14 @@ set(NS3_DISABLED_MODULES ""
     CACHE STRING "List of modules to disable (e.g. lte;wimax;wave)"
 )
 
+# Filter in the modules from which examples and tests will be built
+set(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS
+    ""
+    CACHE
+      STRING
+      "List of modules that should have their examples and tests built (e.g. lte;wifi)"
+)
+
 # Include macros used below
 include(build-support/macros-and-definitions.cmake)
 

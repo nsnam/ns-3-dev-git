@@ -1626,13 +1626,25 @@ listed by ``./ns3 show targets`` or your IDE, check if all its dependencies were
      cmake_parse_arguments(
        "EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
      )
+
+     # Filter examples out if they don't contain one of the filtered in modules
+     set(filtered_in ON)
+     if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+       set(filtered_in OFF)
+       foreach(filtered_module NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+         if(${filtered_module} IN_LIST EXAMPLE_LIBRARIES_TO_LINK)
+           set(filtered_in ON)
+         endif()
+       endforeach()
+     endif()
+
      # Check if any of the LIBRARIES_TO_LINK is missing to prevent configuration errors
      check_for_missing_libraries(
        missing_dependencies "${EXAMPLE_LIBRARIES_TO_LINK}"
      )
 
-     if(NOT missing_dependencies)
-      # Convert boolean into text to forward argument
+     if((NOT missing_dependencies) AND ${filtered_in})
+       # Convert boolean into text to forward argument
        if(${EXAMPLE_IGNORE_PCH})
          set(IGNORE_PCH IGNORE_PCH)
        endif()
@@ -1991,8 +2003,17 @@ The following block creates the test library for the module currently being proc
 
   function(build_lib)
     # ...
+    # Check if the module tests should be built
+    set(filtered_in ON)
+    if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+      set(filtered_in OFF)
+      if(${BLIB_LIBNAME} IN_LIST NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+        set(filtered_in ON)
+      endif()
+    endif()
+
     # Build tests if requested
-    if(${ENABLE_TESTS})
+    if(${ENABLE_TESTS} AND ${filtered_in})
       list(LENGTH BLIB_TEST_SOURCES test_source_len)
       if(${test_source_len} GREATER 0)
         # Create BLIB_LIBNAME of output library test of module
@@ -2117,7 +2138,17 @@ Note that both of these options are handled by the ``build_exec`` macro.
   function(build_lib_example)
     # ...
     check_for_missing_libraries(missing_dependencies "${BLIB_EXAMPLE_LIBRARIES_TO_LINK}")
-    if(NOT missing_dependencies)
+
+    # Check if a module example should be built
+    set(filtered_in ON)
+    if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+      set(filtered_in OFF)
+      if(${BLIB_LIBNAME} IN_LIST NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+        set(filtered_in ON)
+      endif()
+    endif()
+
+    if((NOT missing_dependencies) AND ${filtered_in})
        # Convert boolean into text to forward argument
        if(${BLIB_EXAMPLE_IGNORE_PCH})
          set(IGNORE_PCH IGNORE_PCH)

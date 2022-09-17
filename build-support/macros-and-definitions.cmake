@@ -1506,11 +1506,22 @@ macro(build_example)
     "EXAMPLE" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
   )
 
+  # Filter examples out if they don't contain one of the filtered in modules
+  set(filtered_in ON)
+  if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+    set(filtered_in OFF)
+    foreach(filtered_module NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
+      if(${filtered_module} IN_LIST EXAMPLE_LIBRARIES_TO_LINK)
+        set(filtered_in ON)
+      endif()
+    endforeach()
+  endif()
+
   check_for_missing_libraries(
     missing_dependencies "${EXAMPLE_LIBRARIES_TO_LINK}"
   )
 
-  if(NOT missing_dependencies)
+  if((NOT missing_dependencies) AND ${filtered_in})
     # Convert boolean into text to forward argument
     if(${EXAMPLE_IGNORE_PCH})
       set(IGNORE_PCH IGNORE_PCH)

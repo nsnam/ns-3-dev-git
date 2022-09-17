@@ -159,6 +159,9 @@ def parse_args(argv):
     parser_configure.add_argument('--disable-modules',
                                   help='List of modules not to build (e.g. lte;wimax)',
                                   action="store", type=str, default=None)
+    parser_configure.add_argument('--filter-module-examples-and-tests',
+                                  help='List of modules that should have their examples and tests built (e.g. lte;wifi)',
+                                  action="store", type=str, default=None)
     parser_configure.add_argument('--lcov-report',
                                   help=('Generate a code coverage report '
                                         '(use this option after configuring with --enable-gcov and running a program)'),
@@ -589,11 +592,14 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         cmake_args.append("-DCMAKE_INSTALL_PREFIX=%s" % args.prefix)
 
     # Process enabled/disabled modules
-    if args.enable_modules:
+    if args.enable_modules is not None:
         cmake_args.append("-DNS3_ENABLED_MODULES=%s" % args.enable_modules)
 
-    if args.disable_modules:
+    if args.disable_modules is not None:
         cmake_args.append("-DNS3_DISABLED_MODULES=%s" % args.disable_modules)
+
+    if args.filter_module_examples_and_tests is not None:
+        cmake_args.append("-DNS3_FILTER_MODULE_EXAMPLES_AND_TESTS=%s" % args.filter_module_examples_and_tests)
 
     # Try to set specified generator (will probably fail if there is an old cache)
     if args.G:
