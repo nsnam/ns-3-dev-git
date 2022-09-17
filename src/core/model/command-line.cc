@@ -77,7 +77,7 @@ Encode (const std::string & source)
           // Special case:
           // "...blah <file..." is not allowed
           // "...foo<bar..."  is allowed
-          if (buffer.back () == ' ')
+          if (buffer.empty () || buffer.back () == ' ')
             {
               buffer.append ("&lt;");
             }
