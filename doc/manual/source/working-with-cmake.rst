@@ -2714,7 +2714,7 @@ In order to exemplify how precompiled headers can cause issues, assume the follo
 
 The ``NS_LOG_APPEND_CONTEXT`` macro definition comes before the ``ns3/log.h`` inclusion,
 and that is the expected way of using ``NS_LOG_APPEND_CONTEXT``, since we have the following
-guards on ``ns3/log-macros-enabled.h``, which is included by ``ns3/logs.h`` when logs are enabled.
+guards on ``ns3/log-macros-enabled.h``, which is included by ``ns3/log.h`` when logs are enabled.
 
 .. sourcecode:: cpp
 
@@ -2724,8 +2724,8 @@ guards on ``ns3/log-macros-enabled.h``, which is included by ``ns3/logs.h`` when
    #endif /* NS_LOG_APPEND_CONTEXT */
    ...
 
-By adding ``<ns3/logs.h>`` to the list of headers to precompile (``precompiled_header_libraries``)
-in ``ns-3-dev/build-support/macros-and-definitions.cmake``, the ``ns3/logs.h`` header will
+By adding ``<ns3/log.h>`` to the list of headers to precompile (``precompiled_header_libraries``)
+in ``ns-3-dev/build-support/macros-and-definitions.cmake``, the ``ns3/log.h`` header will
 now be part of the PCH, which gets included before any parsing of the code is done.
 This means the equivalent inclusion order would be different than what was originally intended,
 as shown below:
@@ -2779,7 +2779,7 @@ One of the ways to fix this issue in particular is undefining ``NS_LOG_APPEND_CO
    #include "ns3/log.h" // isn't processed since ``NS3_LOG_H`` was already defined by the PCH
    ...
 
-If the ``IGNORE_PCH`` option is set in the `build_lib`_, `build_lib_example`_, `build_exec`_ and the `build_example`_ macros,
-the PCH is not included in their, continuing to build as we normally would and serving as a workaround for the issue.
-This can be helpful when the same macro names, class names, global variables and others are redefined by different
-components.
+If the ``IGNORE_PCH`` option is set in the `build_lib`_, `build_lib_example`_, `build_exec`_ and the `build_example`_
+macros, the PCH is not included in their targets, continuing to build as we normally would without the PCH.
+This is only a workaround for the issue, which can be helpful when the same macro names, class names,
+global variables and others are redefined by different components that can't be modified safely.
