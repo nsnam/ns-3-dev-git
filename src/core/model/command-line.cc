@@ -71,8 +71,24 @@ Encode (const std::string & source)
         case '&':  buffer.append ("&amp;");          break;
         case '\"': buffer.append ("&quot;");         break;
         case '\'': buffer.append ("&apos;");         break;
-        case '>':  buffer.append ("&gt;");           break;
-        case '<':  buffer.append ("&lt;");           break;
+        // case '>':  buffer.append ("&gt;");           break;
+
+        case '<':  {
+          // Special case:
+          // "...blah <file..." is not allowed
+          // "...foo<bar..."  is allowed
+          if (buffer.back () == ' ')
+            {
+              buffer.append ("&lt;");
+            }
+          else
+            {
+              buffer.append ("<");
+            }
+
+          break;
+        }
+
         default:   buffer.append (&source[pos], 1);  break;
         }
       /* *NS_CHECK_STYLE_ON* */
