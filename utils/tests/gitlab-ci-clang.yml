@@ -73,19 +73,19 @@ weekly-build-clang-6-optimized:
 
 # CLANG 10
 weekly-build-clang-10-debug:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-build-clang-ubuntu18.04
   variables:
     CLANG: 10
     MODE: debug
 
 weekly-build-clang-10-default:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-build-clang-ubuntu18.04
   variables:
     CLANG: 10
     MODE: default
 
 weekly-build-clang-10-optimized:
-  extends: .weekly-build-clang-ubuntu22.04
+  extends: .weekly-build-clang-ubuntu18.04
   variables:
     CLANG: 10
     MODE: optimized
