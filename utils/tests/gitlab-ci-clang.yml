@@ -17,7 +17,7 @@
       - $CLANG_BUILD_ENABLE == "True"
   before_script:
     - apt update
-    - apt upgrade
+    - apt upgrade -y
     - apt install -y
       clang-$CLANG cmake ninja-build ccache build-essential
       libboost-all-dev
