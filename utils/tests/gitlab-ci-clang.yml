@@ -28,7 +28,7 @@
       ssh
   variables:
     COMPILER: clang++-$CLANG
-    LIBGSL: libgls23
+    LIBGSL: libgsl23
 
 .weekly-build-clang-ubuntu22.04:
   image: ubuntu:22.04
@@ -39,7 +39,7 @@
       - $CLANG_BUILD_ENABLE == "True"
   before_script:
     - apt update
-    - apt upgrade
+    - apt upgrade -y
     - apt install -y
       clang-$CLANG cmake ninja-build ccache build-essential
       libboost-all-dev
@@ -50,7 +50,7 @@
       ssh
   variables:
     COMPILER: clang++-$CLANG
-    LIBGSL: libgls27
+    LIBGSL: libgsl27
 
 # CLANG 6
 weekly-build-clang-6-debug:
