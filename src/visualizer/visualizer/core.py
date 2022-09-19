@@ -24,30 +24,47 @@ import os
 import sys
 
 try:
+    import threading
+except ImportError:
+    import dummy_threading as threading
+
+try:
+    import pygraphviz
+except ImportError:
+    print("Pygraphviz is required by the visualizer module and could not be found")
+    exit(1)
+
+try:
+    import cairo
+except ImportError:
+    print("Pycairo is required by the visualizer module and could not be found")
+    exit(1)
+
+try:
     import gi
+except ImportError:
+    print("PyGObject is required by the visualizer module and could not be found")
+    exit(1)
+
+try:
+    import svgitem
+except ImportError:
+    svgitem = None
+
+try:
     gi.require_version('GooCanvas', '2.0')
     gi.require_version('Gtk', '3.0')
     gi.require_version('Gdk', '3.0')
+    gi.require_foreign("cairo")
     from gi.repository import GObject
     from gi.repository import GLib
-    import cairo
-    gi.require_foreign("cairo")
-    import pygraphviz
     from gi.repository import Gtk
     from gi.repository import Gdk
     from gi.repository import Pango
     from gi.repository import GooCanvas
-    import threading
     from . import hud
-
-    #import time
-    try:
-        import svgitem
-    except ImportError:
-        svgitem = None
 except ImportError as e:
     _import_error = e
-    import dummy_threading as threading
 else:
     _import_error = None
 
