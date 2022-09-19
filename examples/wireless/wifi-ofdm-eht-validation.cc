@@ -40,22 +40,25 @@ int main (int argc, char *argv[])
   std::ofstream yansfile ("yans-frame-success-rate-be.plt");
   std::ofstream nistfile ("nist-frame-success-rate-be.plt");
   std::ofstream tablefile ("table-frame-success-rate-be.plt");
-  std::vector <std::string> modes;
 
-  modes.push_back ("EhtMcs0");
-  modes.push_back ("EhtMcs1");
-  modes.push_back ("EhtMcs2");
-  modes.push_back ("EhtMcs3");
-  modes.push_back ("EhtMcs4");
-  modes.push_back ("EhtMcs5");
-  modes.push_back ("EhtMcs6");
-  modes.push_back ("EhtMcs7");
-  modes.push_back ("EhtMcs8");
-  modes.push_back ("EhtMcs9");
-  modes.push_back ("EhtMcs10");
-  modes.push_back ("EhtMcs11");
-  modes.push_back ("EhtMcs12");
-  modes.push_back ("EhtMcs13");
+  // clang-format off
+  std::vector <std::string> modes = {
+    "EhtMcs0",
+    "EhtMcs1",
+    "EhtMcs2",
+    "EhtMcs3",
+    "EhtMcs4",
+    "EhtMcs5",
+    "EhtMcs6",
+    "EhtMcs7",
+    "EhtMcs8",
+    "EhtMcs9",
+    "EhtMcs10",
+    "EhtMcs11",
+    "EhtMcs12",
+    "EhtMcs13",
+  };
+  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);

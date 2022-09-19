@@ -62,39 +62,42 @@ int main (int argc, char *argv[])
 {
   std::ofstream file ("80211n-mimo-throughput.plt");
 
-  std::vector <std::string> modes;
-  modes.push_back ("HtMcs0");
-  modes.push_back ("HtMcs1");
-  modes.push_back ("HtMcs2");
-  modes.push_back ("HtMcs3");
-  modes.push_back ("HtMcs4");
-  modes.push_back ("HtMcs5");
-  modes.push_back ("HtMcs6");
-  modes.push_back ("HtMcs7");
-  modes.push_back ("HtMcs8");
-  modes.push_back ("HtMcs9");
-  modes.push_back ("HtMcs10");
-  modes.push_back ("HtMcs11");
-  modes.push_back ("HtMcs12");
-  modes.push_back ("HtMcs13");
-  modes.push_back ("HtMcs14");
-  modes.push_back ("HtMcs15");
-  modes.push_back ("HtMcs16");
-  modes.push_back ("HtMcs17");
-  modes.push_back ("HtMcs18");
-  modes.push_back ("HtMcs19");
-  modes.push_back ("HtMcs20");
-  modes.push_back ("HtMcs21");
-  modes.push_back ("HtMcs22");
-  modes.push_back ("HtMcs23");
-  modes.push_back ("HtMcs24");
-  modes.push_back ("HtMcs25");
-  modes.push_back ("HtMcs26");
-  modes.push_back ("HtMcs27");
-  modes.push_back ("HtMcs28");
-  modes.push_back ("HtMcs29");
-  modes.push_back ("HtMcs30");
-  modes.push_back ("HtMcs31");
+  // clang-format off
+  std::vector <std::string> modes = {
+    "HtMcs0",
+    "HtMcs1",
+    "HtMcs2",
+    "HtMcs3",
+    "HtMcs4",
+    "HtMcs5",
+    "HtMcs6",
+    "HtMcs7",
+    "HtMcs8",
+    "HtMcs9",
+    "HtMcs10",
+    "HtMcs11",
+    "HtMcs12",
+    "HtMcs13",
+    "HtMcs14",
+    "HtMcs15",
+    "HtMcs16",
+    "HtMcs17",
+    "HtMcs18",
+    "HtMcs19",
+    "HtMcs20",
+    "HtMcs21",
+    "HtMcs22",
+    "HtMcs23",
+    "HtMcs24",
+    "HtMcs25",
+    "HtMcs26",
+    "HtMcs27",
+    "HtMcs28",
+    "HtMcs29",
+    "HtMcs30",
+    "HtMcs31",
+  };
+  // clang-format on
 
   bool udp = true;
   double simulationTime = 5; //seconds

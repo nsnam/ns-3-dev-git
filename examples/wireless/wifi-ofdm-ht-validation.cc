@@ -38,16 +38,19 @@ int main (int argc, char *argv[])
   std::ofstream yansfile ("yans-frame-success-rate-n.plt");
   std::ofstream nistfile ("nist-frame-success-rate-n.plt");
   std::ofstream tablefile ("table-frame-success-rate-n.plt");
-  std::vector <std::string> modes;
 
-  modes.push_back ("HtMcs0");
-  modes.push_back ("HtMcs1");
-  modes.push_back ("HtMcs2");
-  modes.push_back ("HtMcs3");
-  modes.push_back ("HtMcs4");
-  modes.push_back ("HtMcs5");
-  modes.push_back ("HtMcs6");
-  modes.push_back ("HtMcs7");
+  // clang-format off
+  std::vector <std::string> modes = {
+    "HtMcs0",
+    "HtMcs1",
+    "HtMcs2",
+    "HtMcs3",
+    "HtMcs4",
+    "HtMcs5",
+    "HtMcs6",
+    "HtMcs7",
+  };
+  // clang-format on
 
 
   CommandLine cmd (__FILE__);

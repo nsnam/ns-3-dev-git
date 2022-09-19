@@ -38,20 +38,23 @@ int main (int argc, char *argv[])
   std::ofstream yansfile ("yans-frame-success-rate-ax.plt");
   std::ofstream nistfile ("nist-frame-success-rate-ax.plt");
   std::ofstream tablefile ("table-frame-success-rate-ax.plt");
-  std::vector <std::string> modes;
 
-  modes.push_back ("HeMcs0");
-  modes.push_back ("HeMcs1");
-  modes.push_back ("HeMcs2");
-  modes.push_back ("HeMcs3");
-  modes.push_back ("HeMcs4");
-  modes.push_back ("HeMcs5");
-  modes.push_back ("HeMcs6");
-  modes.push_back ("HeMcs7");
-  modes.push_back ("HeMcs8");
-  modes.push_back ("HeMcs9");
-  modes.push_back ("HeMcs10");
-  modes.push_back ("HeMcs11");
+  // clang-format off
+  std::vector <std::string> modes = {
+    "HeMcs0",
+    "HeMcs1",
+    "HeMcs2",
+    "HeMcs3",
+    "HeMcs4",
+    "HeMcs5",
+    "HeMcs6",
+    "HeMcs7",
+    "HeMcs8",
+    "HeMcs9",
+    "HeMcs10",
+    "HeMcs11",
+  };
+  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);

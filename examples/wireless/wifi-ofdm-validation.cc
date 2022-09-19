@@ -40,16 +40,19 @@ int main (int argc, char *argv[])
   std::ofstream yansfile ("yans-frame-success-rate-ofdm.plt");
   std::ofstream nistfile ("nist-frame-success-rate-ofdm.plt");
   std::ofstream tablefile ("table-frame-success-rate-ofdm.plt");
-  std::vector <std::string> modes;
 
-  modes.push_back ("OfdmRate6Mbps");
-  modes.push_back ("OfdmRate9Mbps");
-  modes.push_back ("OfdmRate12Mbps");
-  modes.push_back ("OfdmRate18Mbps");
-  modes.push_back ("OfdmRate24Mbps");
-  modes.push_back ("OfdmRate36Mbps");
-  modes.push_back ("OfdmRate48Mbps");
-  modes.push_back ("OfdmRate54Mbps");
+  // clang-format off
+  std::vector <std::string> modes = {
+    "OfdmRate6Mbps",
+    "OfdmRate9Mbps",
+    "OfdmRate12Mbps",
+    "OfdmRate18Mbps",
+    "OfdmRate24Mbps",
+    "OfdmRate36Mbps",
+    "OfdmRate48Mbps",
+    "OfdmRate54Mbps",
+  };
+  // clang-format on
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
