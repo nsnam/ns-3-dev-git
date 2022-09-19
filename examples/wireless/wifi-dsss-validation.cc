@@ -111,4 +111,6 @@ set style line 8 linewidth 5\n\
 set style increment user"                                                                                                                                                                                                                                                                                                                                   );
   plot.GenerateOutput (file);
   file.close ();
+
+  return 0;
 }

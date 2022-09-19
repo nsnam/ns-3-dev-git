@@ -66,5 +66,7 @@ main (int argc, char *argv[])
       Ipv6Address ipv6address = Ipv6Address::MakeAutoconfiguredAddress (m_addresses[i], prefix2);
       NS_LOG_INFO ("address = " << ipv6address);
     }
+
+  return 0;
 }
 

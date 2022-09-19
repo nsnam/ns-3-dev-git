@@ -219,4 +219,6 @@ main (int argc, char *argv[])
       std::cerr << "Program internal checking failed; returning with error" << std::endl;
       return (1);
     }
+
+  return 0;
 }

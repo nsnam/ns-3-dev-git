@@ -246,6 +246,8 @@ main (int argc, char *argv[])
   double txp = 7.5;
 
   experiment.Run (nSinks, txp, CSVfileName);
+
+  return 0;
 }
 
 void

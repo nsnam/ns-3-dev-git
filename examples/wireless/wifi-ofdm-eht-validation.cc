@@ -138,4 +138,6 @@ set yrange [0:1]\n";
   tableplot.SetExtra (plotExtra.str ());
   tableplot.GenerateOutput (tablefile);
   tablefile.close ();
+
+  return 0;
 }

@@ -326,4 +326,6 @@ main (int argc, char *argv[])
   pacingRateStream.close ();
   ssThreshStream.close ();
   Simulator::Destroy ();
+
+  return 0;
 }

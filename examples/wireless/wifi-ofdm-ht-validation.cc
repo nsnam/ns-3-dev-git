@@ -152,4 +152,6 @@ set style increment user");
 
   tableplot.GenerateOutput (tablefile);
   tablefile.close ();
+
+  return 0;
 }

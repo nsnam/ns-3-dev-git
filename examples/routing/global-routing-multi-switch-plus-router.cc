@@ -807,4 +807,5 @@ main (int argc, char *argv[])
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 
+  return 0;
 }

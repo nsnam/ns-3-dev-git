@@ -1055,5 +1055,7 @@ main (int argc, char *argv[])
     {
       NS_FATAL_ERROR ("Validation failed");
     }
+
+  return 0;
 }
 

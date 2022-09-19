@@ -165,4 +165,6 @@ set yrange [0.0001:1]\n";
 
   plot.GenerateOutput (errormodelfile);
   errormodelfile.close ();
+
+  return 0;
 }

@@ -423,4 +423,6 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (stopTime));
   Simulator::Run ();
   Simulator::Destroy ();
+
+  return 0;
 }

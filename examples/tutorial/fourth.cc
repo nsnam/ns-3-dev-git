@@ -65,4 +65,6 @@ main (int argc, char *argv[])
   myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback (&IntTrace));
 
   myObject->m_myInt = 1234;
+
+  return 0;
 }
