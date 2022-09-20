@@ -61,6 +61,12 @@ if(APPLE)
   add_definitions(-D__APPLE__)
 endif()
 
+if(WIN32)
+  set(NS3_PRECOMPILE_HEADERS OFF
+      CACHE BOOL "Precompile module headers to speed up compilation" FORCE
+  )
+endif()
+
 set(cat_command cat)
 
 if(CMAKE_XCODE_BUILD_SYSTEM)
@@ -86,6 +92,13 @@ else()
         "${PROJECT_SOURCE_DIR}/${NS3_OUTPUT_DIRECTORY}"
     )
   endif()
+
+  # Transform backward slash into forward slash Not the best way to do it since
+  # \ is a scape thing and can be used before whitespaces
+  string(REPLACE "\\" "/" absolute_ns3_output_directory
+                 "${absolute_ns3_output_directory}"
+  )
+
   if(NOT (EXISTS ${absolute_ns3_output_directory}))
     message(
       STATUS
@@ -422,6 +435,8 @@ macro(process_options)
     else()
       set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
     endif()
+  else()
+    unset(CMAKE_CXX_CLANG_TIDY)
   endif()
 
   if(${NS3_CLANG_TIMETRACE})
@@ -680,6 +695,11 @@ macro(process_options)
               "Disable Brite, Click, Gtk, GSL, Mpi, Openflow and SQLite"
               " if you want a standalone static ns-3 library."
     )
+    if(WIN32)
+      message(FATAL_ERROR "Static builds are unsupported on Windows"
+                          "\nSocket libraries cannot be linked statically"
+      )
+    endif()
   else()
     find_package(LibXml2 QUIET)
     if(NOT ${LIBXML2_FOUND})
@@ -879,7 +899,7 @@ macro(process_options)
 
   # First we check for doxygen dependencies
   mark_as_advanced(DOXYGEN)
-  check_deps("" "doxygen;dot;dia" doxygen_docs_missing_deps)
+  check_deps("" "doxygen;dot;dia;python3" doxygen_docs_missing_deps)
   if(doxygen_docs_missing_deps)
     message(
       ${HIGHLIGHTED_STATUS}
@@ -951,7 +971,7 @@ macro(process_options)
 
     add_custom_target(
       update_doxygen_version
-      COMMAND ${PROJECT_SOURCE_DIR}/doc/ns3_html_theme/get_version.sh
+      COMMAND bash ${PROJECT_SOURCE_DIR}/doc/ns3_html_theme/get_version.sh
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     )
 
@@ -1005,12 +1025,40 @@ macro(process_options)
     add_custom_target(sphinx_contributing COMMAND ${sphinx_missing_msg})
   else()
     add_custom_target(sphinx COMMENT "Building sphinx documents")
+    mark_as_advanced(MAKE)
+    find_program(MAKE NAMES make mingw32-make)
+    if(${MAKE} STREQUAL "MAKE-NOTFOUND")
+      message(FATAL_ERROR "Make was not found but it is required by Sphinx docs")
+    elseif(${MAKE} MATCHES "mingw32-make")
+      # This is a super wild hack for MinGW
+      #
+      # For some reason make is shipped as mingw32-make instead of make, but
+      # tons of software rely on it being called make
+      #
+      # We could technically create an alias, using doskey make=mingw32-make,
+      # but we need to redefine that for every new shell or make registry
+      # changes to make it permanent
+      #
+      # Symlinking requires administrative permissions for some reason, so we
+      # just copy the entire thing
+      get_filename_component(make_directory ${MAKE} DIRECTORY)
+      get_filename_component(make_parent_directory ${make_directory} DIRECTORY)
+      if(NOT (EXISTS ${make_directory}/make.exe))
+        file(COPY ${MAKE} DESTINATION ${make_parent_directory})
+        file(RENAME ${make_parent_directory}/mingw32-make.exe
+             ${make_directory}/make.exe
+        )
+      endif()
+      set(MAKE ${make_directory}/make.exe)
+    else()
+
+    endif()
 
     function(sphinx_target targetname)
       # cmake-format: off
       add_custom_target(
         sphinx_${targetname}
-        COMMAND make SPHINXOPTS=-N -k html singlehtml latexpdf
+        COMMAND ${MAKE} SPHINXOPTS=-N -k html singlehtml latexpdf
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/${targetname}
       )
       # cmake-format: on
@@ -1126,7 +1174,7 @@ macro(process_options)
   set(PLATFORM_UNSUPPORTED_POST "features. Continuing without them.")
   # Remove from libs_to_build all incompatible libraries or the ones that
   # dependencies couldn't be installed
-  if(APPLE OR WSLv1)
+  if(APPLE OR WSLv1 OR WIN32)
     set(ENABLE_TAP OFF)
     set(ENABLE_EMU OFF)
     list(REMOVE_ITEM libs_to_build fd-net-device)
@@ -1174,7 +1222,9 @@ macro(process_options)
 
   set(PRECOMPILE_HEADERS_ENABLED OFF)
   if(${NS3_PRECOMPILE_HEADERS})
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
+    if(${NS3_CLANG_TIDY})
+      message(${HIGHLIGHTED_STATUS} "Clang-tidy is incompatible with precompiled headers. Continuing without them.")
+    elseif(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
       set(PRECOMPILE_HEADERS_ENABLED ON)
       message(STATUS "Precompiled headers were enabled")
     else()
@@ -1399,8 +1449,6 @@ endfunction()
 
 add_custom_target(copy_all_headers)
 function(copy_headers_before_building_lib libname outputdir headers visibility)
-  # cmake-format: off
-  set(batch_symlinks)
   foreach(header ${headers})
     # Copy header to output directory on changes -> too darn slow
     # configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/
@@ -1410,43 +1458,25 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
       header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
     )
 
+    # If output directory does not exist, create it
+    if(NOT (EXISTS ${outputdir}))
+      file(MAKE_DIRECTORY ${outputdir})
+    endif()
+
     # If header already exists, skip symlinking/stub header creation
     if(EXISTS ${outputdir}/${header_name})
       continue()
     endif()
 
-    # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a
-    # fallback
-    if(WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))
-      # Create a stub header in the output directory, including the real header
-      # inside their respective module
-
-      file(WRITE ${outputdir}/${header_name}
-           "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${header}\"\n"
-      )
-    else()
-      # Create a symlink in the output directory to the original header Calling
-      # execute_process for each symlink is too slow too, so we create a batch
-      # with all headers execute_process(COMMAND ${CMAKE_COMMAND} -E
-      # create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-      # ${outputdir}/${header_name})
-      set(batch_symlinks
-          ${batch_symlinks}
-          COMMAND
-          ${CMAKE_COMMAND}
-          -E
-          create_symlink
-          ${CMAKE_CURRENT_SOURCE_DIR}/${header}
-          ${outputdir}/${header_name}
-      )
-    endif()
+    # Create a stub header in the output directory, including the real header
+    # inside their respective module
+    get_filename_component(
+      ABSOLUTE_HEADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${header}" ABSOLUTE
+    )
+    file(WRITE ${outputdir}/${header_name}
+         "#include \"${ABSOLUTE_HEADER_PATH}\"\n"
+    )
   endforeach()
-
-  # Create all symlinks in a single call if there is a symlink to be done
-  if(batch_symlinks)
-    execute_process(${batch_symlinks})
-  endif()
-  # cmake-format: on
 endfunction(copy_headers_before_building_lib)
 
 function(remove_lib_prefix prefixed_library library)

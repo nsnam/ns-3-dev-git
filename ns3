@@ -129,6 +129,7 @@ def parse_args(argv):
                         "(which must call CommandLine::Parse(argc, argv))"
          ),
         ("build-version", "embedding git changes as a build version during build"),
+        ("clang-tidy", "clang-tidy static analysis"),
         ("dpdk", "the fd-net-device DPDK features"),
         ("examples", "the ns-3 examples"),
         ("gcov", "code coverage analysis"),
@@ -137,6 +138,7 @@ def parse_args(argv):
         ("logs", "the logs regardless of the compile mode"),
         ("monolib", "a single shared library with all ns-3 modules"),
         ("mpi", "the MPI support for distributed simulation"),
+        ("precompiled-headers", "precompiled headers"),
         ("python-bindings", "python bindings"),
         ("tests", "the ns-3 tests"),
         ("sanitizers", "address, memory leaks and undefined behavior sanitizers"),
@@ -548,6 +550,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
             cmake_args.append("-DNS3_NATIVE_OPTIMIZATIONS=%s" % on_off((args.build_profile == "optimized")))
 
     options = (("ASSERT", "asserts"),
+               ("CLANG_TIDY", "clang_tidy"),
                ("COVERAGE", "gcov"),
                ("DES_METRICS", "des_metrics"),
                ("DPDK", "dpdk"),
@@ -559,6 +562,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
                ("LOG", "logs"),
                ("MONOLIB", "monolib"),
                ("MPI", "mpi"),
+               ("PRECOMPILE_HEADERS", "precompiled_headers"),
                ("PYTHON_BINDINGS", "python_bindings"),
                ("SANITIZE", "sanitizers"),
                ("STATIC", "static"),
