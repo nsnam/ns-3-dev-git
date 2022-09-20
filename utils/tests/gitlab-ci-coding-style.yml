@@ -12,3 +12,15 @@ check-style-clang-format:
       clang-format-14
   script:
     - python3 utils/check-style-clang-format.py .
+
+clang-tidy:
+  stage: coding-style
+  image: ubuntu:latest
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      clang cmake
+      clang-tidy-14
+  script:
+    - ./ns3 configure --enable-examples --enable-tests --enable-clang-tidy
+    - run-clang-tidy-14 -p cmake-cache/ -quiet | grep -A 5 "error:"
