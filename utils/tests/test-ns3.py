@@ -1484,6 +1484,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             with open(version_cache_file, "r") as version:
                 self.assertNotEqual(version.read(), version_cache_contents)
 
+            # Remove version cache file if it exists
+            if os.path.exists(version_cache_file):
+                os.remove(version_cache_file)
+
         # Reconfigure to clean leftovers before the next test
         NS3ConfigureTestCase.cleaned_once = False
 
@@ -1529,6 +1533,86 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
         self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
+
+    def test_20_CheckFastLinkers(self):
+        """!
+        Check if fast linkers LLD and Mold are correctly found and configured
+        @return None
+        """
+
+        try:
+            from python_on_whales import docker
+            from python_on_whales.exceptions import DockerException
+        except ModuleNotFoundError:
+            self.skipTest("python-on-whales was not found")
+
+        run_ns3("clean")
+
+        # Import rootless docker settings from .bashrc
+        with open(os.path.expanduser("~/.bashrc"), "r") as f:
+            docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
+            for setting in docker_settings:
+                key, value = setting.split("=")
+                os.environ[key] = value
+            del docker_settings, setting, key, value
+
+        # Create Docker client instance and start it
+        with docker.run("gcc:12.1",  # Debian with minimum supported version of GCC for Mold
+                        interactive=True, detach=True,
+                        tty=False,
+                        volumes=[(ns3_path, "/ns-3-dev")],
+                        ) as container:
+            # Redefine the execute command of the container
+            def split_exec(self, cmd):
+                return self._execute(cmd.split(), workdir="/ns-3-dev")
+
+            container._execute = container.execute
+            container.execute = partial(split_exec, container)
+
+            # Install basic packages
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 ninja-build cmake g++ lld")
+
+            # Configure should detect and use lld
+            container.execute("./ns3 configure -G Ninja")
+
+            # Check if configuration properly detected lld
+            self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+            with open(os.path.join(ns3_path, "cmake-cache", "build.ninja"), "r") as f:
+                self.assertIn("-fuse-ld=lld", f.read())
+
+            # Try to build using the lld linker
+            try:
+                container.execute("./ns3 build core")
+            except Exception as e:
+                self.assertTrue(False, "Build with lld failed")
+
+            # Now add mold to the PATH
+            if not os.path.exists("./mold-1.4.2-x86_64-linux.tar.gz"):
+                container.execute(
+                    "wget https://github.com/rui314/mold/releases/download/v1.4.2/mold-1.4.2-x86_64-linux.tar.gz")
+            container.execute("tar xzfC mold-1.4.2-x86_64-linux.tar.gz /usr/local --strip-components=1")
+
+            # Configure should detect and use mold
+            run_ns3("clean")
+            container.execute("./ns3 configure -G Ninja")
+
+            # Check if configuration properly detected mold
+            self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake-cache", "build.ninja")))
+            with open(os.path.join(ns3_path, "cmake-cache", "build.ninja"), "r") as f:
+                self.assertIn("-fuse-ld=mold", f.read())
+
+            # Try to build using the lld linker
+            try:
+                container.execute("./ns3 build core")
+            except Exception as e:
+                self.assertTrue(False, "Build with mold failed")
+
+            # Delete mold leftovers
+            os.remove("./mold-1.4.2-x86_64-linux.tar.gz")
+
+        # Reconfigure to clean leftovers before the next test
+        NS3ConfigureTestCase.cleaned_once = False
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
