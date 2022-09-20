@@ -69,7 +69,7 @@ else:
     _import_error = None
 
 try:
-    import ipython_viewxxxxxxxxxx
+    from . import ipython_view
 except ImportError:
     ipython_view = None
 
