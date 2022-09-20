@@ -23,6 +23,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
+* 802.11be **Multi-link** discovery and setup
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -61,8 +62,10 @@ The implementation is modular and provides roughly three sublayers of models:
   this sublayer is sometimes called the **upper MAC** and consists of more
   software-oriented implementations vs. time-critical hardware implementations.
 
-Next, we provide an design overview of each layer, shown in
-Figure :ref:`wifi-architecture`.
+Next, we provide a design overview of each layer, shown in
+Figure :ref:`wifi-architecture`. For 802.11be Multi-Link Devices (MLDs),
+there as many instances of WifiPhy, FrameExchangeManager and ChannelAccessManager
+as the number of links.
 
 .. _wifi-architecture:
 

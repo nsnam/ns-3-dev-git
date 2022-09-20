@@ -24,6 +24,7 @@ Release 3-dev
 - (wifi) PPDUs are transmitted on the largest primary channel that is found to be idle (according to the CCA-BUSY indication provided by the PHY) when gaining a TXOP.
 - (internet) Add auto-generate ARP/NDISC cache, as the outcome of GSoC 2022 project.
 - (wifi) Add support for fragmentation of Information Elements.
+- (wifi) Implement 802.11be Multi-link discovery and setup
 
 ### Bugs fixed
 
