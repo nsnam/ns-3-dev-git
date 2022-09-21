@@ -340,7 +340,7 @@ LteFrStrictAlgorithm::InitializeUplinkRbgMaps ()
   NS_ASSERT_MSG (m_ulCommonSubBandwidth <= m_ulBandwidth,"UlCommonSubBandwidth higher than UlBandwidth");
   NS_ASSERT_MSG (m_ulEdgeSubBandOffset <= m_ulBandwidth,"UlEdgeSubBandOffset higher than UlBandwidth");
   NS_ASSERT_MSG (m_ulEdgeSubBandwidth <= m_ulBandwidth,"UlEdgeSubBandwidth higher than UlBandwidth");
-  NS_ASSERT_MSG ((m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset + m_ulEdgeSubBandwidth) <= m_dlBandwidth,
+  NS_ASSERT_MSG ((m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset + m_ulEdgeSubBandwidth) <= m_ulBandwidth,
                  "(UlCommonSubBandwidth+UlEdgeSubBandOffset+UlEdgeSubBandwidth) higher than UlBandwidth");
 
   for (uint8_t i = 0; i < m_ulCommonSubBandwidth; i++)
