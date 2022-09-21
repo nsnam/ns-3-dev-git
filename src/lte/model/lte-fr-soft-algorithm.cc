@@ -153,7 +153,7 @@ LteFrSoftAlgorithm::GetTypeId ()
                    MakeUintegerAccessor (&LteFrSoftAlgorithm::m_edgeSubBandThreshold),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CenterPowerOffset",
-                   "PdschConfigDedicated::Pa value for Edge Sub-band, default value dB0",
+                   "PdschConfigDedicated::Pa value for Center Sub-band, default value dB0",
                    UintegerValue (5),
                    MakeUintegerAccessor (&LteFrSoftAlgorithm::m_centerPowerOffset),
                    MakeUintegerChecker<uint8_t> ())

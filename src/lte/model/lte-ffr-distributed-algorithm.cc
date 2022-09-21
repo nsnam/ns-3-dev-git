@@ -79,7 +79,7 @@ LteFfrDistributedAlgorithm::GetTypeId ()
                    MakeUintegerAccessor (&LteFfrDistributedAlgorithm::m_rsrpDifferenceThreshold),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CenterPowerOffset",
-                   "PdschConfigDedicated::Pa value for Edge Sub-band, default value dB0",
+                   "PdschConfigDedicated::Pa value for Center Sub-band, default value dB0",
                    UintegerValue (5),
                    MakeUintegerAccessor (&LteFfrDistributedAlgorithm::m_centerPowerOffset),
                    MakeUintegerChecker<uint8_t> ())
