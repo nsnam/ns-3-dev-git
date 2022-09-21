@@ -32,7 +32,6 @@
 // #include "ns3/gtk-config-store.h"
 
 using namespace ns3;
-using std::vector;
 
 int
 main (int argc, char *argv[])
@@ -63,7 +62,7 @@ main (int argc, char *argv[])
   NodeContainer enbNodes;
   NodeContainer oneSectorNodes;
   NodeContainer threeSectorNodes;
-  vector < NodeContainer > ueNodes;
+  std::vector<NodeContainer> ueNodes;
 
   oneSectorNodes.Create (nEnb-3);
   threeSectorNodes.Create (3);
@@ -79,7 +78,7 @@ main (int argc, char *argv[])
     }
 
   MobilityHelper mobility;
-  vector<Vector> enbPosition;
+  std::vector<Vector> enbPosition;
   Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
   Ptr < Building > building;
   building = Create<Building> ();
@@ -165,7 +164,7 @@ main (int argc, char *argv[])
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
-  vector < NetDeviceContainer > ueDevs;
+  std::vector<NetDeviceContainer> ueDevs;
 
   // power setting in dBm for small cells
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20.0));
