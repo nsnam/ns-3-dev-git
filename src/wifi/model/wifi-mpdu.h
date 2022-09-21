@@ -31,6 +31,7 @@
 
 #include <list>
 #include <optional>
+#include <set>
 #include <variant>
 
 namespace ns3
@@ -193,6 +194,23 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
      * \return the MAC protocol data unit corresponding to this item.
      */
     Ptr<Packet> GetProtocolDataUnit() const;
+
+    /**
+     * Mark this MPDU as being in flight on the given link.
+     *
+     * \param linkId the ID of the given link
+     */
+    void SetInFlight(uint8_t linkId) const;
+    /**
+     * Mark this MPDU as not being in flight on the given link.
+     *
+     * \param linkId the ID of the given link
+     */
+    void ResetInFlight(uint8_t linkId) const;
+    /**
+     * \return the set of IDs of the links on which this MPDU is currently in flight
+     */
+    std::set<uint8_t> GetInFlight() const;
 
     /**
      * Mark this MPDU as being in flight (only used if Block Ack agreement established).

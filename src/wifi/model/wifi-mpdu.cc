@@ -284,6 +284,33 @@ WifiMpdu::GetExpiryTime() const
 }
 
 void
+WifiMpdu::SetInFlight(uint8_t linkId) const
+{
+    GetQueueIt()->inflights[linkId] = Ptr(const_cast<WifiMpdu*>(this));
+}
+
+void
+WifiMpdu::ResetInFlight(uint8_t linkId) const
+{
+    GetQueueIt()->inflights.erase(linkId);
+}
+
+std::set<uint8_t>
+WifiMpdu::GetInFlight() const
+{
+    if (!IsQueued())
+    {
+        return {};
+    }
+    std::set<uint8_t> linkIds;
+    for (const auto& [linkId, mpdu] : GetQueueIt()->inflights)
+    {
+        linkIds.insert(linkId);
+    }
+    return linkIds;
+}
+
+void
 WifiMpdu::SetInFlight()
 {
     m_inFlight = true;
