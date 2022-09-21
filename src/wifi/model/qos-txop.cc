@@ -646,6 +646,20 @@ QosTxop::GotDelBaFrame(const MgtDelBaHeader* delBaHdr, Mac48Address recipient)
 }
 
 void
+QosTxop::NotifyAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
+{
+    NS_LOG_FUNCTION(this << recipient << tid);
+
+    m_baManager->NotifyAgreementNoReply(recipient, tid);
+    // the recipient has been "unblocked" and transmissions can resume using normal
+    // acknowledgment, hence start access (if needed) on all the links
+    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    {
+        StartAccessIfNeeded(linkId);
+    }
+}
+
+void
 QosTxop::CompleteMpduTx(Ptr<WifiMpdu> mpdu)
 {
     NS_ASSERT(mpdu->GetHeader().IsQosData());

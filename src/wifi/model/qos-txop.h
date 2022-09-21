@@ -198,6 +198,14 @@ class QosTxop : public Txop
      */
     void GotDelBaFrame(const MgtDelBaHeader* delBaHdr, Mac48Address recipient);
     /**
+     * Take action upon notification of ADDBA_REQUEST frame being discarded
+     * (likely due to exceeded max retry limit).
+     *
+     * \param recipient the intended recipient of the ADDBA_REQUEST frame
+     * \param tid the TID
+     */
+    void NotifyAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
+    /**
      * Callback when ADDBA response is not received after timeout.
      *
      * \param recipient MAC address of recipient

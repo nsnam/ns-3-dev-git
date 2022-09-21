@@ -696,8 +696,8 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
                                                           OriginatorBlockAckAgreement::PENDING))
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");
-                GetBaManager(tid)->NotifyAgreementNoReply(mpdu->GetHeader().GetAddr1(), tid);
                 Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
+                qosTxop->NotifyAgreementNoReply(mpdu->GetHeader().GetAddr1(), tid);
                 Simulator::Schedule(qosTxop->GetFailedAddBaTimeout(),
                                     &QosTxop::ResetBa,
                                     qosTxop,
