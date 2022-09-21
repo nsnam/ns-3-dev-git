@@ -966,6 +966,11 @@ HtFrameExchangeManager::NotifyTxToEdca(Ptr<const WifiPsdu> psdu) const
                 edca->CompleteMpduTx(mpdu);
             }
         }
+
+        if (mpdu->IsQueued())
+        {
+            mpdu->SetInFlight(m_linkId);
+        }
     }
 }
 

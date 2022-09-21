@@ -1104,6 +1104,7 @@ HeFrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector&
             if (mpdu->IsQueued())
             {
                 m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu)->GetHeader().SetRetry();
+                mpdu->ResetInFlight(m_linkId);
             }
         }
     }

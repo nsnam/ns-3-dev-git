@@ -45,7 +45,6 @@ WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header)
     {
         original.m_msduList = MsduAggregator::Deaggregate(p->Copy());
     }
-    m_inFlight = false;
 }
 
 WifiMpdu::~WifiMpdu()
@@ -310,22 +309,10 @@ WifiMpdu::GetInFlight() const
     return linkIds;
 }
 
-void
-WifiMpdu::SetInFlight()
-{
-    m_inFlight = true;
-}
-
-void
-WifiMpdu::ResetInFlight()
-{
-    m_inFlight = false;
-}
-
 bool
 WifiMpdu::IsInFlight() const
 {
-    return m_inFlight;
+    return IsQueued() && !GetQueueIt()->inflights.empty();
 }
 
 WifiMpdu::DeaggregatedMsdusCI

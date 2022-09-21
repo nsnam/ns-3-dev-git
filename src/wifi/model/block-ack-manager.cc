@@ -278,7 +278,6 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
     }
     agreementIt->second.second.insert(it.base(), mpdu);
     agreementIt->second.first.NotifyTransmittedMpdu(mpdu);
-    mpdu->SetInFlight();
 }
 
 Ptr<const WifiMpdu>
@@ -363,12 +362,13 @@ BlockAckManager::SetBlockAckThreshold(uint8_t nPackets)
 }
 
 BlockAckManager::PacketQueueI
-BlockAckManager::HandleInFlightMpdu(PacketQueueI mpduIt,
+BlockAckManager::HandleInFlightMpdu(uint8_t linkId,
+                                    PacketQueueI mpduIt,
                                     MpduStatus status,
                                     const AgreementsI& it,
                                     const Time& now)
 {
-    NS_LOG_FUNCTION(this << **mpduIt << +static_cast<uint8_t>(status));
+    NS_LOG_FUNCTION(this << linkId << **mpduIt << +static_cast<uint8_t>(status));
 
     if (!(*mpduIt)->IsQueued())
     {
@@ -423,7 +423,7 @@ BlockAckManager::HandleInFlightMpdu(PacketQueueI mpduIt,
 
     NS_ASSERT(status == TO_RETRANSMIT);
     (*mpduIt)->GetHeader().SetRetry();
-    (*mpduIt)->ResetInFlight(); // no longer in flight; will be if retransmitted
+    (*mpduIt)->ResetInFlight(linkId); // no longer in flight; will be if retransmitted
 
     return it->second.second.erase(mpduIt);
 }
@@ -449,7 +449,7 @@ BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
         if ((*queueIt)->GetHeader().GetSequenceNumber() == mpdu->GetHeader().GetSequenceNumber())
         {
             m_queue->DequeueIfQueued({*queueIt});
-            HandleInFlightMpdu(queueIt, ACKNOWLEDGED, it, Simulator::Now());
+            HandleInFlightMpdu(linkId, queueIt, ACKNOWLEDGED, it, Simulator::Now());
             break;
         }
     }
@@ -474,7 +474,7 @@ BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
     {
         if ((*queueIt)->GetHeader().GetSequenceNumber() == mpdu->GetHeader().GetSequenceNumber())
         {
-            HandleInFlightMpdu(queueIt, TO_RETRANSMIT, it, Simulator::Now());
+            HandleInFlightMpdu(linkId, queueIt, TO_RETRANSMIT, it, Simulator::Now());
             break;
         }
     }
@@ -539,7 +539,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
                     m_txOkCallback(*queueIt);
                 }
                 acked.emplace_back(*queueIt);
-                queueIt = HandleInFlightMpdu(queueIt, ACKNOWLEDGED, it, now);
+                queueIt = HandleInFlightMpdu(linkId, queueIt, ACKNOWLEDGED, it, now);
             }
             else
             {
@@ -558,7 +558,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
             {
                 m_txFailedCallback(*queueIt);
             }
-            queueIt = HandleInFlightMpdu(queueIt, TO_RETRANSMIT, it, now);
+            queueIt = HandleInFlightMpdu(linkId, queueIt, TO_RETRANSMIT, it, now);
         }
     }
     return {nSuccessfulMpdus, nFailedMpdus};
@@ -577,7 +577,7 @@ BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, ui
         // re-inserted if retransmitted)
         for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
         {
-            mpduIt = HandleInFlightMpdu(mpduIt, TO_RETRANSMIT, it, now);
+            mpduIt = HandleInFlightMpdu(linkId, mpduIt, TO_RETRANSMIT, it, now);
         }
     }
 }
@@ -827,7 +827,7 @@ BlockAckManager::NeedBarRetransmission(uint8_t tid, Mac48Address recipient)
         for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
         {
             // remove MPDU if old or with expired lifetime
-            mpduIt = HandleInFlightMpdu(mpduIt, STAY_INFLIGHT, it, now);
+            mpduIt = HandleInFlightMpdu(SINGLE_LINK_OP_ID, mpduIt, STAY_INFLIGHT, it, now);
 
             if (mpduIt != it->second.second.begin())
             {

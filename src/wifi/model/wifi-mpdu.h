@@ -211,19 +211,8 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
      * \return the set of IDs of the links on which this MPDU is currently in flight
      */
     std::set<uint8_t> GetInFlight() const;
-
     /**
-     * Mark this MPDU as being in flight (only used if Block Ack agreement established).
-     */
-    void SetInFlight();
-    /**
-     * Mark this MPDU as not being in flight (only used if Block Ack agreement established).
-     */
-    void ResetInFlight();
-    /**
-     * Return true if this MPDU is in flight, false otherwise.
-     *
-     * \return true if this MPDU is in flight, false otherwise
+     * \return true if this MPDU is in flight on any link, false otherwise
      */
     bool IsInFlight() const;
 
@@ -266,7 +255,6 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
      * Information stored by both the original copy and the aliases
      */
     WifiMacHeader m_header; //!< Wifi MAC header associated with the packet
-    bool m_inFlight;        //!< whether the MPDU is in flight
 
     /**
      * Information stored by the original copy only.

@@ -487,13 +487,15 @@ class BlockAckManager : public Object
      * queues (independently of the status) if the MPDU is not stored in the EDCA
      * queue, is an old packet or its lifetime expired.
      *
+     * \param linkId the ID of the link on which the MPDU has been transmitted
      * \param mpduIt an iterator pointing to the MPDU in the queue of in flight MPDUs
      * \param status the status of the in flight MPDU
      * \param it iterator pointing to the Block Ack agreement
      * \param now the current time
      * \return an iterator pointing to the next MPDU in the queue of in flight MPDUs
      */
-    PacketQueueI HandleInFlightMpdu(PacketQueueI mpduIt,
+    PacketQueueI HandleInFlightMpdu(uint8_t linkId,
+                                    PacketQueueI mpduIt,
                                     MpduStatus status,
                                     const AgreementsI& it,
                                     const Time& now);

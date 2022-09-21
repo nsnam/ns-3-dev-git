@@ -497,6 +497,11 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
 {
     NS_LOG_FUNCTION(this << *mpdu << txVector);
 
+    if (mpdu->IsQueued())
+    {
+        mpdu->SetInFlight(m_linkId);
+    }
+
     m_phy->Send(Create<WifiPsdu>(mpdu, false), txVector);
 }
 
@@ -880,6 +885,7 @@ FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& t
         if (mpdu->IsQueued()) // the MPDU may have been removed due to lifetime expiration
         {
             mpdu = m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu);
+            mpdu->ResetInFlight(m_linkId);
         }
         mpdu->GetHeader().SetRetry();
         RetransmitMpduAfterMissedAck(mpdu);
