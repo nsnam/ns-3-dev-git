@@ -176,24 +176,27 @@ class BlockAckManager : public Object
                                uint8_t tid = 8,
                                Mac48Address recipient = Mac48Address::GetBroadcast());
     /**
-     * Invoked upon receipt of an Ack frame after the transmission of a QoS data frame
-     * sent under an established block ack agreement. Remove the acknowledged frame
-     * from the outstanding packets and update the starting sequence number of the
+     * Invoked upon receipt of an Ack frame on the given link after the transmission of a
+     * QoS data frame sent under an established block ack agreement. Remove the acknowledged
+     * frame from the outstanding packets and update the starting sequence number of the
      * transmit window, if needed.
      *
+     * \param linkId the ID of the given link
      * \param mpdu The acknowledged MPDU.
      */
-    void NotifyGotAck(Ptr<const WifiMpdu> mpdu);
+    void NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu);
     /**
-     * Invoked upon missed reception of an Ack frame after the transmission of a
-     * QoS data frame sent under an established block ack agreement. Remove the
-     * acknowledged frame from the outstanding packets and insert it in the
+     * Invoked upon missed reception of an Ack frame on the given link after the
+     * transmission of a QoS data frame sent under an established block ack agreement.
+     * Remove the acknowledged frame from the outstanding packets and insert it in the
      * retransmission queue.
      *
+     * \param linkId the ID of the given link
      * \param mpdu The unacknowledged MPDU.
      */
-    void NotifyMissedAck(Ptr<WifiMpdu> mpdu);
+    void NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu);
     /**
+     * \param linkId the ID of the given link
      * \param blockAck The received BlockAck frame.
      * \param recipient Sender of BlockAck frame.
      * \param tids the set of TIDs the acknowledged MPDUs belong to
@@ -202,26 +205,28 @@ class BlockAckManager : public Object
      * \return a pair of values indicating the number of successfully received MPDUs
      *         and the number of failed MPDUs
      *
-     * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
-     * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
+     * Invoked upon receipt of a BlockAck frame on the given link. Typically, this function
+     * is called by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
      * with Ack Policy set to Block Ack, were correctly received by the recipient.
      * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
      * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
      * using All-ack context.
      */
-    std::pair<uint16_t, uint16_t> NotifyGotBlockAck(const CtrlBAckResponseHeader& blockAck,
+    std::pair<uint16_t, uint16_t> NotifyGotBlockAck(uint8_t linkId,
+                                                    const CtrlBAckResponseHeader& blockAck,
                                                     Mac48Address recipient,
                                                     const std::set<uint8_t>& tids,
                                                     size_t index = 0);
     /**
+     * \param linkId the ID of the given link
      * \param recipient Sender of the expected BlockAck frame.
      * \param tid Traffic ID.
      *
-     * Invoked upon missed reception of a block ack frame. Typically, this function, is called
-     * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
-     * with ack policy set to Block Ack, should be placed in the retransmission queue.
+     * Invoked upon missed reception of a block ack frame on the given link. Typically, this
+     * function is called by ns3::QosTxop object. Performs a check on which MPDUs, previously
+     * sent with ack policy set to Block Ack, should be placed in the retransmission queue.
      */
-    void NotifyMissedBlockAck(Mac48Address recipient, uint8_t tid);
+    void NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, uint8_t tid);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid Traffic ID.

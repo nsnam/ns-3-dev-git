@@ -429,9 +429,9 @@ BlockAckManager::HandleInFlightMpdu(PacketQueueI mpduIt,
 }
 
 void
-BlockAckManager::NotifyGotAck(Ptr<const WifiMpdu> mpdu)
+BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << *mpdu);
+    NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
     Mac48Address recipient = mpdu->GetHeader().GetAddr1();
@@ -456,9 +456,9 @@ BlockAckManager::NotifyGotAck(Ptr<const WifiMpdu> mpdu)
 }
 
 void
-BlockAckManager::NotifyMissedAck(Ptr<WifiMpdu> mpdu)
+BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << *mpdu);
+    NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
     Mac48Address recipient = mpdu->GetHeader().GetAddr1();
@@ -481,12 +481,13 @@ BlockAckManager::NotifyMissedAck(Ptr<WifiMpdu> mpdu)
 }
 
 std::pair<uint16_t, uint16_t>
-BlockAckManager::NotifyGotBlockAck(const CtrlBAckResponseHeader& blockAck,
+BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
+                                   const CtrlBAckResponseHeader& blockAck,
                                    Mac48Address recipient,
                                    const std::set<uint8_t>& tids,
                                    size_t index)
 {
-    NS_LOG_FUNCTION(this << blockAck << recipient << index);
+    NS_LOG_FUNCTION(this << linkId << blockAck << recipient << index);
     uint16_t nSuccessfulMpdus = 0;
     uint16_t nFailedMpdus = 0;
 
@@ -564,9 +565,9 @@ BlockAckManager::NotifyGotBlockAck(const CtrlBAckResponseHeader& blockAck,
 }
 
 void
-BlockAckManager::NotifyMissedBlockAck(Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, Mac48Address recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << linkId << recipient << +tid);
     if (ExistsAgreementInState(recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
     {
         AgreementsI it = m_agreements.find(std::make_pair(recipient, tid));

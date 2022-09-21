@@ -595,7 +595,7 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
         if (edca->GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(), tid))
         {
             // notify the BA manager that the MPDU was acknowledged
-            edca->GetBaManager()->NotifyGotAck(mpdu);
+            edca->GetBaManager()->NotifyGotAck(m_linkId, mpdu);
         }
     }
     else if (mpdu->GetHeader().IsAction())
@@ -722,7 +722,7 @@ HtFrameExchangeManager::RetransmitMpduAfterMissedAck(Ptr<WifiMpdu> mpdu) const
         if (edca->GetBaAgreementEstablished(mpdu->GetHeader().GetAddr1(), tid))
         {
             // notify the BA manager that the MPDU was not acknowledged
-            edca->GetBaManager()->NotifyMissedAck(mpdu);
+            edca->GetBaManager()->NotifyMissedAck(m_linkId, mpdu);
             return;
         }
     }
@@ -1293,7 +1293,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
         else
         {
             NS_LOG_DEBUG("Missed Block Ack, retransmit data frames");
-            GetBaManager(tid)->NotifyMissedBlockAck(recipient, tid);
+            GetBaManager(tid)->NotifyMissedBlockAck(m_linkId, recipient, tid);
             resetCw = false;
         }
     }
@@ -1408,7 +1408,7 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             mpdu->GetPacket()->PeekHeader(blockAck);
             uint8_t tid = blockAck.GetTidInfo();
             std::pair<uint16_t, uint16_t> ret =
-                GetBaManager(tid)->NotifyGotBlockAck(blockAck, hdr.GetAddr2(), {tid});
+                GetBaManager(tid)->NotifyGotBlockAck(m_linkId, blockAck, hdr.GetAddr2(), {tid});
             GetWifiRemoteStationManager()->ReportAmpduTxStatus(hdr.GetAddr2(),
                                                                ret.first,
                                                                ret.second,

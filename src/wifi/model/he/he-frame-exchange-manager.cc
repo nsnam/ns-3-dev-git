@@ -1756,7 +1756,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             mpdu->GetPacket()->PeekHeader(blockAck);
             uint8_t tid = blockAck.GetTidInfo();
             std::pair<uint16_t, uint16_t> ret =
-                GetBaManager(tid)->NotifyGotBlockAck(blockAck, hdr.GetAddr2(), {tid});
+                GetBaManager(tid)->NotifyGotBlockAck(m_linkId, blockAck, hdr.GetAddr2(), {tid});
             GetWifiRemoteStationManager()->ReportAmpduTxStatus(hdr.GetAddr2(),
                                                                ret.first,
                                                                ret.second,
@@ -1821,7 +1821,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 {
                     // Acknowledgment context
                     NS_ABORT_IF(m_psduMap.empty() || m_psduMap.begin()->first != staId);
-                    GetBaManager(tid)->NotifyGotAck(*m_psduMap.at(staId)->begin());
+                    GetBaManager(tid)->NotifyGotAck(m_linkId, *m_psduMap.at(staId)->begin());
                 }
                 else
                 {
@@ -1837,7 +1837,8 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                     }
 
                     std::pair<uint16_t, uint16_t> ret =
-                        GetBaManager(tid)->NotifyGotBlockAck(blockAck,
+                        GetBaManager(tid)->NotifyGotBlockAck(m_linkId,
+                                                             blockAck,
                                                              hdr.GetAddr2(),
                                                              {tid},
                                                              index);
