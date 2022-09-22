@@ -547,6 +547,7 @@ private:
   typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
 
   // Inherited from Object.
+  virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
   /**

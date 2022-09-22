@@ -30,7 +30,6 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/pointer.h>
 #include <ns3/boolean.h>
-#include <ns3/mobility-model.h>
 #include <ns3/packet.h>
 
 
@@ -133,12 +132,6 @@ LrWpanNetDevice::CompleteConfig (void)
   m_mac->SetMcpsDataIndicationCallback (MakeCallback (&LrWpanNetDevice::McpsDataIndication, this));
   m_csmaca->SetMac (m_mac);
 
-  Ptr<MobilityModel> mobility = m_node->GetObject<MobilityModel> ();
-  if (!mobility)
-    {
-      NS_LOG_WARN ("LrWpanNetDevice: no Mobility found on the node, probably it's not a good idea.");
-    }
-  m_phy->SetMobility (mobility);
   Ptr<LrWpanErrorModel> model = CreateObject<LrWpanErrorModel> ();
   m_phy->SetErrorModel (model);
   m_phy->SetDevice (this);
