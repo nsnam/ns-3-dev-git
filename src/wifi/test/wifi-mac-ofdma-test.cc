@@ -560,11 +560,11 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
 {
   CtrlTriggerHeader trigger;
   CtrlBAckResponseHeader blockAck;
-  Time tEnd,                           // TX end for a frame
-       tStart,                         // TX start fot the next frame
-       tolerance = NanoSeconds (500),  // due to propagation delay
-       ifs = (m_txopLimit > 0 ? sifs : sifs + aifsn * slotTime),
-       navEnd;
+  Time tEnd;                           // TX end for a frame
+  Time tStart;                         // TX start fot the next frame
+  Time tolerance = NanoSeconds (500);  // due to propagation delay
+  Time ifs = (m_txopLimit > 0 ? sifs : sifs + aifsn * slotTime);
+  Time navEnd;
 
   /*
    *                                                  |--------------NAV------------------>|

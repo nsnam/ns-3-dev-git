@@ -322,13 +322,13 @@ WifiTxopTest::DoRun (void)
 void
 WifiTxopTest::CheckResults (void)
 {
-  Time tEnd,                           // TX end for a frame
-       tStart,                         // TX start fot the next frame
-       txopStart,                      // TXOP start time
-       tolerance = NanoSeconds (50),   // due to propagation delay
-       sifs = DynamicCast<WifiNetDevice> (m_apDevices.Get (0))->GetPhy ()->GetSifs (),
-       slot = DynamicCast<WifiNetDevice> (m_apDevices.Get (0))->GetPhy ()->GetSlot (),
-       navEnd;
+  Time tEnd;                         // TX end for a frame
+  Time tStart;                       // TX start fot the next frame
+  Time txopStart;                    // TXOP start time
+  Time tolerance = NanoSeconds (50); // due to propagation delay
+  Time sifs = DynamicCast<WifiNetDevice> (m_apDevices.Get (0))->GetPhy ()->GetSifs ();
+  Time slot = DynamicCast<WifiNetDevice> (m_apDevices.Get (0))->GetPhy ()->GetSlot ();
+  Time navEnd;
 
   // lambda to round Duration/ID (in microseconds) up to the next higher integer
   auto RoundDurationId = [] (Time t)
