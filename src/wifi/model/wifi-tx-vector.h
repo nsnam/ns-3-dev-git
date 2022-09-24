@@ -27,6 +27,7 @@
 #include "ns3/he-ru.h"
 
 #include <list>
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -66,6 +67,19 @@ using ContentChannelAllocation = std::vector<std::vector<uint16_t>>;
 
 /// 8 bit RU_ALLOCATION per 20 MHz
 using RuAllocation = std::vector<uint8_t>;
+
+/**
+ * \ingroup wifi
+ * Enum for the different values for CENTER_26_TONE_RU
+ */
+enum Center26ToneRuIndication : uint8_t
+{
+    CENTER_26_TONE_RU_UNALLOCATED = 0,
+    CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED,          /* also used if BW == 80 MHz */
+    CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED,         /* unused if BW < 160 MHz */
+    CENTER_26_TONE_RU_LOW_AND_HIGH_80_MHZ_ALLOCATED, /* unused if BW < 160 MHz */
+    CENTER_26_TONE_RU_INDICATION_MAX                 /* last value */
+};
 
 /**
  * This class mimics the TXVECTOR which is to be
@@ -448,13 +462,13 @@ class WifiTxVector
     WifiMode GetSigBMode() const;
 
     /**
-     * Set RU Allocation of SIG-B common field
+     * Set RU_ALLOCATION field
      * \param ruAlloc 8 bit RU_ALLOCATION per 20 MHz
      */
     void SetRuAllocation(const RuAllocation& ruAlloc);
 
     /**
-     * Get RU Allocation of SIG-B
+     * Get RU_ALLOCATION field
      * \return 8 bit RU_ALLOCATION per 20 MHz
      */
     const RuAllocation& GetRuAllocation() const;
@@ -465,6 +479,20 @@ class WifiTxVector
      * \return content channel allocation
      */
     ContentChannelAllocation GetContentChannelAllocation() const;
+
+    /**
+     * Set CENTER_26_TONE_RU field
+     * \param center26ToneRuIndication the CENTER_26_TONE_RU field
+     */
+    void SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication);
+
+    /**
+     * Get CENTER_26_TONE_RU field
+     * This field is present if format is HE_MU and
+     * when channel width is set to 80 MHz or larger.
+     * \return the CENTER_26_TONE_RU field if present
+     */
+    std::optional<Center26ToneRuIndication> GetCenter26ToneRuIndication() const;
 
     /**
      * Set the EHT_PPDU_TYPE parameter
@@ -479,12 +507,23 @@ class WifiTxVector
 
   private:
     /**
-     * Derive the RU allocation from the TXVECTOR for which its RU allocation has not been set yet.
-     * This is valid only for allocations of RUs of the same size.
+     * Derive the RU_ALLOCATION field from the TXVECTOR
+     * for which its RU_ALLOCATION field has not been set yet,
+     * based on the content of per-user information.
+     * This is valid only for allocations of RUs of the same size per 20 MHz subchannel.
      *
-     * \return the RU allocation
+     * \return 8 bit RU_ALLOCATION per 20 MHz
      */
     RuAllocation DeriveRuAllocation() const;
+
+    /**
+     * Derive the CENTER_26_TONE_RU field from the TXVECTOR
+     * for which its CENTER_26_TONE_RU has not been set yet,
+     * based on the content of per-user information.
+     *
+     * \return the CENTER_26_TONE_RU field
+     */
+    Center26ToneRuIndication DeriveCenter26ToneRuIndication() const;
 
     WifiMode m_mode;          /**< The DATARATE parameter in Table 15-4.
                               It is the value that will be passed
@@ -519,7 +558,13 @@ class WifiTxVector
 
     mutable RuAllocation m_ruAllocation; /**< RU allocations that are going to be carried
                                               in SIG-B common field per Table 27-1 IEEE */
-    uint8_t m_ehtPpduType;               /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3 */
+
+    mutable std::optional<Center26ToneRuIndication>
+        m_center26ToneRuIndication; /**< CENTER_26_TONE_RU field when format is HE_MU and
+                                         when channel width is set to 80 MHz or larger  (Table 27-1
+                                       802.11ax-2021)*/
+
+    uint8_t m_ehtPpduType; /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3 */
 };
 
 /**

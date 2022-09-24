@@ -48,6 +48,7 @@ WifiTxVector::WifiTxVector()
       m_modeInitialized(false),
       m_inactiveSubchannels(),
       m_ruAllocation(),
+      m_center26ToneRuIndication(std::nullopt),
       m_ehtPpduType(1) // SU transmission by default
 {
 }
@@ -83,6 +84,7 @@ WifiTxVector::WifiTxVector(WifiMode mode,
       m_modeInitialized(true),
       m_inactiveSubchannels(),
       m_ruAllocation(),
+      m_center26ToneRuIndication(std::nullopt),
       m_ehtPpduType(1) // SU transmission by default
 {
 }
@@ -106,6 +108,7 @@ WifiTxVector::WifiTxVector(const WifiTxVector& txVector)
       m_inactiveSubchannels(txVector.m_inactiveSubchannels),
       m_sigBMcs(txVector.m_sigBMcs),
       m_ruAllocation(txVector.m_ruAllocation),
+      m_center26ToneRuIndication(txVector.m_center26ToneRuIndication),
       m_ehtPpduType(txVector.m_ehtPpduType)
 {
     m_muUserInfos.clear();
@@ -596,6 +599,30 @@ WifiTxVector::GetInactiveSubchannels() const
     return m_inactiveSubchannels;
 }
 
+void
+WifiTxVector::SetCenter26ToneRuIndication(Center26ToneRuIndication center26ToneRuIndication)
+{
+    if (IsDlMu())
+    {
+        NS_ASSERT(center26ToneRuIndication == DeriveCenter26ToneRuIndication());
+    }
+    m_center26ToneRuIndication = center26ToneRuIndication;
+}
+
+std::optional<Center26ToneRuIndication>
+WifiTxVector::GetCenter26ToneRuIndication() const
+{
+    if (!IsDlMu() || (m_channelWidth < 80))
+    {
+        return std::nullopt;
+    }
+    if (!m_center26ToneRuIndication.has_value())
+    {
+        m_center26ToneRuIndication.emplace(DeriveCenter26ToneRuIndication());
+    }
+    return m_center26ToneRuIndication;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const WifiTxVector& v)
 {
@@ -768,6 +795,23 @@ WifiTxVector::DeriveRuAllocation() const
         }
     }
     return ruAllocations;
+}
+
+Center26ToneRuIndication
+WifiTxVector::DeriveCenter26ToneRuIndication() const
+{
+    uint8_t center26ToneRuIndication{0};
+    for (const auto& userInfo : m_muUserInfos)
+    {
+        if ((userInfo.second.ru.GetRuType() == HeRu::RU_26_TONE) &&
+            (userInfo.second.ru.GetIndex() == 19))
+        {
+            center26ToneRuIndication |= (userInfo.second.ru.GetPrimary80MHz())
+                                            ? CENTER_26_TONE_RU_LOW_80_MHZ_ALLOCATED
+                                            : CENTER_26_TONE_RU_HIGH_80_MHZ_ALLOCATED;
+        }
+    }
+    return static_cast<Center26ToneRuIndication>(center26ToneRuIndication);
 }
 
 } // namespace ns3
