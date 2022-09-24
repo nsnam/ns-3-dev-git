@@ -43,4 +43,5 @@ build_exec(
                model/tap-encode-decode.cc
   EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/
   INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_LIBEXECDIR}/ns3
+  STANDALONE
 )

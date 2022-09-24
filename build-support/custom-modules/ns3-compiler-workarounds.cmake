@@ -70,6 +70,3 @@ check_cxx_source_compiles(
   "
   FILESYSTEM_LIBRARY_IS_LINKED
 )
-if(NOT FILESYSTEM_LIBRARY_IS_LINKED)
-  link_libraries(-lstdc++fs)
-endif()

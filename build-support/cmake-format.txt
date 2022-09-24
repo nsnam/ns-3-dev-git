@@ -1,6 +1,6 @@
 additional_commands:
     build_exec:
-        flags: [IGNORE_PCH]
+        flags: [IGNORE_PCH, STANDALONE]
         kwargs:
             EXECNAME : '1'
             EXECNAME_PREFIX : '1'

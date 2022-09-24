@@ -1535,6 +1535,13 @@ The path is relative to the ``CMAKE_INSTALL_PREFIX`` (e.g. /usr).
 To set custom compiler defines for that specific executable, defines can be passed
 to the ``DEFINITIONS`` argument.
 
+Add the ``STANDALONE`` option to prevent linking the ns-3 static library
+(``NS3_STATIC``) and single shared library (``NS3_MONOLIB``) to the executable.
+This may be necessary in case the executable redefine symbols which are part
+of the ns-3 library. This is the case for the fd-net-device creators and the tap-creator,
+which include the source file ``encode-decode.cc``, which is also part of fd-net-device module
+and tap-bridge module, respectively.
+
 Finally, to ignore precompiled headers, include ``IGNORE_PCH`` to the list of parameters.
 You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ section.
 
@@ -1551,6 +1558,7 @@ You can find more information about ``IGNORE_PCH`` at the `PCH side-effects`_ se
      EXECNAME_PREFIX scratch_subdir_prefix_ # target name = scratch_subdir_prefix_example
      INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_BIN}/   # e.g. /usr/bin/ns3.37-scratch_subdir_prefix_example-debug
      DEFINITIONS -DHAVE_FEATURE=1           # defines for this specific target
+     [STANDALONE]                           # set in case you don't want the executable to be linked to ns3-static/ns3-monolib
      IGNORE_PCH
    )
 
