@@ -66,7 +66,7 @@ if(${NS3_STATIC})
   endif()
 endif()
 
-# Build the lib-ns3-static (ns3.x-monolib-buildtype.dll/.dylib/.so) with all
+# Build the lib-ns3 (ns3.x-monolib-buildtype.dll/.dylib/.so) with all
 # sublibraries
 if(${NS3_MONOLIB})
   add_library(
@@ -74,7 +74,10 @@ if(${NS3_MONOLIB})
                               "${lib-ns3-static-objs}"
   )
   set_target_properties(
-    ${lib-ns3-monolib} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE
+    ${lib-ns3-monolib}
+    PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE
+               RUNTIME_OUTPUT_DIRECTORY
+               ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} # set output directory for DLLs
   )
   target_link_libraries(
     ${lib-ns3-monolib} ${LIB_AS_NEEDED_PRE} ${ns3-external-libs}

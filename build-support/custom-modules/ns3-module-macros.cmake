@@ -120,6 +120,9 @@ function(build_lib)
     PROPERTIES
       PUBLIC_HEADER
       "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} # set output
+                                                                 # directory for
+                                                                 # DLLs
   )
 
   if(${NS3_CLANG_TIMETRACE})
@@ -243,31 +246,39 @@ function(build_lib)
     if(${test_source_len} GREATER 0)
       # Create BLIB_LIBNAME of output library test of module
       set(test${BLIB_LIBNAME} lib${BLIB_LIBNAME}-test CACHE INTERNAL "")
-      set(ns3-libs-tests "${test${BLIB_LIBNAME}};${ns3-libs-tests}"
-          CACHE INTERNAL "list of test libraries"
-      )
 
-      # Create shared library containing tests of the module
-      add_library(${test${BLIB_LIBNAME}} SHARED "${BLIB_TEST_SOURCES}")
-
-      # Link test library to the module library
-      if(${NS3_MONOLIB})
-        target_link_libraries(
-          ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
-          ${LIB_AS_NEEDED_POST}
+      # Create shared library containing tests of the module on UNIX and just
+      # the object file that will be part of test-runner on Windows
+      if(WIN32)
+        set(ns3-libs-tests
+            "$<TARGET_OBJECTS:${test${BLIB_LIBNAME}}>;${ns3-libs-tests}"
+            CACHE INTERNAL "list of test libraries"
         )
+        add_library(${test${BLIB_LIBNAME}} OBJECT "${BLIB_TEST_SOURCES}")
       else()
-        target_link_libraries(
-          ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}}
-          "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
+        set(ns3-libs-tests "${test${BLIB_LIBNAME}};${ns3-libs-tests}"
+            CACHE INTERNAL "list of test libraries"
+        )
+        add_library(${test${BLIB_LIBNAME}} SHARED "${BLIB_TEST_SOURCES}")
+
+        # Link test library to the module library
+        if(${NS3_MONOLIB})
+          target_link_libraries(
+            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
+            ${LIB_AS_NEEDED_POST}
+          )
+        else()
+          target_link_libraries(
+            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}}
+            "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
+          )
+        endif()
+        set_target_properties(
+          ${test${BLIB_LIBNAME}}
+          PROPERTIES OUTPUT_NAME
+                     ns${NS3_VER}-${BLIB_LIBNAME}-test${build_profile_suffix}
         )
       endif()
-      set_target_properties(
-        ${test${BLIB_LIBNAME}}
-        PROPERTIES OUTPUT_NAME
-                   ns${NS3_VER}-${BLIB_LIBNAME}-test${build_profile_suffix}
-      )
-
       target_compile_definitions(
         ${test${BLIB_LIBNAME}} PRIVATE NS_TEST_SOURCEDIR="${FOLDER}/test"
       )
@@ -295,6 +306,7 @@ function(build_lib)
     EXPORT ns3ExportTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ns3"
   )
   if(${NS3_VERBOSE})

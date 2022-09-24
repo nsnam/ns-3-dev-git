@@ -152,10 +152,24 @@ function(ns3_cmake_package)
 endfunction()
 
 # You will need administrative privileges to run this
+# cmake-format: off
+if(WIN32)
+  add_custom_target(
+    uninstall
+    COMMAND
+      powershell -Command \" Remove-Item \\"${CMAKE_INSTALL_FULL_LIBDIR}/libns3*\\" -Recurse \" &&
+      powershell -Command \" Remove-Item \\"${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig/ns3-*\\" -Recurse \" &&
+      powershell -Command \" Remove-Item \\"${CMAKE_INSTALL_FULL_LIBDIR}/cmake/ns3\\" -Recurse \" &&
+      powershell -Command \" Remove-Item \\"${CMAKE_INSTALL_FULL_INCLUDEDIR}/ns3\\" -Recurse \"
+  )
+else()
 add_custom_target(
   uninstall
   COMMAND
-    rm `ls ${CMAKE_INSTALL_FULL_LIBDIR}/libns3*` && rm -R
-    ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/ns3 && rm -R
-    ${CMAKE_INSTALL_FULL_INCLUDEDIR}/ns3
+    rm `ls ${CMAKE_INSTALL_FULL_LIBDIR}/libns3*` &&
+    rm `ls ${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig/ns3-*` &&
+    rm -R ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/ns3 &&
+    rm -R ${CMAKE_INSTALL_FULL_INCLUDEDIR}/ns3
 )
+endif()
+# cmake-format: on
