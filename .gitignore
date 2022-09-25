@@ -30,6 +30,7 @@ coverity
 TAGS
 
 .lock-ns3_*
+.ns3rc
 
 build-dir/
 build/
