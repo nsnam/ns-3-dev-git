@@ -67,13 +67,12 @@
 #endif
 
 /**
- * \def SYSTEM_PATH_SEP
  * System-specific path separator used between directory names.
  */
 #if defined(__WIN32__)
-#define SYSTEM_PATH_SEP "\\"
+constexpr auto SYSTEM_PATH_SEP = "\\";
 #else
-#define SYSTEM_PATH_SEP "/"
+constexpr auto SYSTEM_PATH_SEP = "/";
 #endif
 
 /**
