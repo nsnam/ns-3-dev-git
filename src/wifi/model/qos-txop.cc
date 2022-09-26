@@ -90,6 +90,12 @@ QosTxop::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&QosTxop::m_baManager),
                           MakePointerChecker<BlockAckManager>())
+            .AddAttribute("NMaxInflights",
+                          "The maximum number of links (in the range 1-15) on which an MPDU can be "
+                          "simultaneously in-flight.",
+                          UintegerValue(1),
+                          MakeUintegerAccessor(&QosTxop::m_nMaxInflights),
+                          MakeUintegerChecker<uint8_t>(1, 15))
             .AddTraceSource("TxopTrace",
                             "Trace source for TXOP start and duration times",
                             MakeTraceSourceAccessor(&QosTxop::m_txopTrace),
@@ -397,57 +403,77 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<W
             auto oldItem = item;
             item = peek();
             m_queue->Remove(oldItem);
+            continue;
         }
-        else if (item->IsInFlight())
+
+        if (auto linkIds = item->GetInFlight(); !linkIds.empty()) // MPDU is in-flight
         {
+            // if the MPDU is not already in-flight on the link for which we are requesting an
+            // MPDU and the number of links on which the MPDU is in-flight is less than the
+            // maximum number, then we can transmit this MPDU
+            if (linkIds.count(linkId) == 0 && linkIds.size() < m_nMaxInflights)
+            {
+                break;
+            }
+
+            // if no BA agreement, we cannot have multiple MPDUs in-flight
+            if (item->GetHeader().IsQosData() &&
+                !GetBaAgreementEstablished(item->GetHeader().GetAddr1(),
+                                           item->GetHeader().GetQosTid()))
+            {
+                NS_LOG_DEBUG("No BA agreement and an MPDU is already in-flight");
+                return nullptr;
+            }
+
             NS_LOG_DEBUG("Skipping in flight MPDU: " << *item);
             item = peek();
+            continue;
         }
-        else if (item->GetHeader().HasData() &&
-                 !m_mac->CanForwardPacketsTo(item->GetHeader().GetAddr1()))
+
+        if (item->GetHeader().HasData() &&
+            !m_mac->CanForwardPacketsTo(item->GetHeader().GetAddr1()))
         {
             NS_LOG_DEBUG("Skipping frame that cannot be forwarded: " << *item);
             item = peek();
+            continue;
         }
-        else
-        {
-            break;
-        }
+        break;
     }
-    if (item)
+
+    if (!item)
     {
-        NS_ASSERT(!item->IsInFlight());
-        WifiMacHeader& hdr = item->GetHeader();
-
-        // peek the next sequence number and check if it is within the transmit window
-        // in case of QoS data frame
-        uint16_t sequence =
-            (hdr.IsRetry() ? hdr.GetSequenceNumber() : m_txMiddle->PeekNextSequenceNumberFor(&hdr));
-        if (hdr.IsQosData())
-        {
-            Mac48Address recipient = hdr.GetAddr1();
-            uint8_t tid = hdr.GetQosTid();
-
-            if (GetBaAgreementEstablished(recipient, tid) &&
-                !IsInWindow(sequence,
-                            GetBaStartingSequence(recipient, tid),
-                            GetBaBufferSize(recipient, tid)))
-            {
-                NS_LOG_DEBUG("Packet beyond the end of the current transmit window");
-                return nullptr;
-            }
-        }
-
-        // Assign a sequence number if this is not a fragment nor a retransmission
-        if (!item->IsFragment() && !hdr.IsRetry())
-        {
-            hdr.SetSequenceNumber(sequence);
-        }
-        NS_LOG_DEBUG("Packet peeked from EDCA queue: " << *item);
-        return item;
+        return nullptr;
     }
 
-    return nullptr;
+    WifiMacHeader& hdr = item->GetHeader();
+
+    // peek the next sequence number and check if it is within the transmit window
+    // in case of QoS data frame
+    uint16_t sequence = (hdr.IsRetry() || item->IsInFlight())
+                            ? hdr.GetSequenceNumber()
+                            : m_txMiddle->PeekNextSequenceNumberFor(&hdr);
+    if (hdr.IsQosData())
+    {
+        Mac48Address recipient = hdr.GetAddr1();
+        uint8_t tid = hdr.GetQosTid();
+
+        if (GetBaAgreementEstablished(recipient, tid) &&
+            !IsInWindow(sequence,
+                        GetBaStartingSequence(recipient, tid),
+                        GetBaBufferSize(recipient, tid)))
+        {
+            NS_LOG_DEBUG("Packet beyond the end of the current transmit window");
+            return nullptr;
+        }
+    }
+
+    // Assign a sequence number if this is not a fragment nor a retransmission nor an in-flight MPDU
+    if (!item->IsFragment() && !hdr.IsRetry() && !item->IsInFlight())
+    {
+        hdr.SetSequenceNumber(sequence);
+    }
+    NS_LOG_DEBUG("Packet peeked from EDCA queue: " << *item);
+    return item;
 }
 
 Ptr<WifiMpdu>

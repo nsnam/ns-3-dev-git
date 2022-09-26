@@ -513,6 +513,9 @@ class QosTxop : public Txop
     Time m_failedAddBaTimeout;            //!< timeout after failed BA agreement
     bool m_useExplicitBarAfterMissedBlockAck; //!< flag whether explicit BlockAckRequest should be
                                               //!< sent upon missed BlockAck Response
+    uint8_t m_nMaxInflights;                  //!< the maximum number of links on which
+                                              //!< an MPDU can be in-flight at the same
+                                              //!< time
 
     /// TracedCallback for TXOP trace typedef
     typedef TracedCallback<Time /* start time */, Time /* duration */, uint8_t /* link ID*/>
