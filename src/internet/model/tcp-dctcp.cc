@@ -226,7 +226,8 @@ TcpDctcp::CeState1to0 (Ptr<TcpSocketState> tcb)
   m_priorRcvNxt = tcb->m_rxBuffer->NextRxSequence ();
   m_ceState = false;
 
-  if (tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD || tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
+  if (tcb->m_ecnState.Get () == TcpSocketState::ECN_CE_RCVD ||
+      tcb->m_ecnState.Get () == TcpSocketState::ECN_SENDING_ECE)
     {
       tcb->m_ecnState = TcpSocketState::ECN_IDLE;
     }
