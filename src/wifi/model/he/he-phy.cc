@@ -321,6 +321,9 @@ HePhy::GetSymbolDuration(const WifiTxVector& txVector) const
 void
 HePhy::SetTrigVector(const WifiTxVector& trigVector, Time validity)
 {
+    NS_LOG_FUNCTION(this << trigVector << validity);
+    NS_ASSERT_MSG(trigVector.GetGuardInterval() > 800,
+                  "Invalid guard interval " << trigVector.GetGuardInterval());
     m_trigVector = trigVector;
     m_trigVectorExpirationTime = Simulator::Now() + validity;
     NS_LOG_FUNCTION(this << m_trigVector << m_trigVectorExpirationTime.As(Time::US));

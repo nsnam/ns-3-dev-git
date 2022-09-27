@@ -2109,7 +2109,7 @@ TestUlOfdmaPpduUid::SendTbPpdu()
     WifiTxVector txVector1 = WifiTxVector(HePhy::GetHeMcs7(),
                                           0,
                                           WIFI_PREAMBLE_HE_TB,
-                                          800,
+                                          1600,
                                           1,
                                           1,
                                           0,
@@ -2329,7 +2329,7 @@ TestMultipleHeTbPreambles::TestMultipleHeTbPreambles()
       m_trigVector(HePhy::GetHeMcs7(),
                    0,
                    WIFI_PREAMBLE_HE_TB,
-                   800,
+                   1600,
                    1,
                    1,
                    0,
@@ -2394,7 +2394,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                          0,
                                          WIFI_PREAMBLE_HE_TB,
-                                         800,
+                                         1600,
                                          1,
                                          1,
                                          0,
@@ -3271,7 +3271,7 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                          0,
                                          WIFI_PREAMBLE_HE_TB,
-                                         800,
+                                         1600,
                                          1,
                                          1,
                                          0,
@@ -3328,7 +3328,7 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
     WifiTxVector txVector(HePhy::GetHeMcs7(),
                           0,
                           WIFI_PREAMBLE_HE_TB,
-                          800,
+                          1600,
                           1,
                           1,
                           0,
@@ -4755,25 +4755,25 @@ TestUlOfdmaPhyTransmission::DoRun()
 {
     m_frequency = 5180;
     m_channelWidth = 20;
-    m_expectedPpduDuration = NanoSeconds(279200);
+    m_expectedPpduDuration = NanoSeconds(292800);
     NS_LOG_DEBUG("Run UL OFDMA PHY transmission test for " << m_channelWidth << " MHz");
     RunOne();
 
     m_frequency = 5190;
     m_channelWidth = 40;
-    m_expectedPpduDuration = NanoSeconds(156800);
+    m_expectedPpduDuration = NanoSeconds(163200);
     NS_LOG_DEBUG("Run UL OFDMA PHY transmission test for " << m_channelWidth << " MHz");
     RunOne();
 
     m_frequency = 5210;
     m_channelWidth = 80;
-    m_expectedPpduDuration = NanoSeconds(102400);
+    m_expectedPpduDuration = NanoSeconds(105600);
     NS_LOG_DEBUG("Run UL OFDMA PHY transmission test for " << m_channelWidth << " MHz");
     RunOne();
 
     m_frequency = 5250;
     m_channelWidth = 160;
-    m_expectedPpduDuration = NanoSeconds(75200);
+    m_expectedPpduDuration = NanoSeconds(76800);
     NS_LOG_DEBUG("Run UL OFDMA PHY transmission test for " << m_channelWidth << " MHz");
     RunOne();
 
@@ -4924,7 +4924,7 @@ TestPhyPaddingExclusion::SendHeTbPpdu(uint16_t txStaId,
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                          0,
                                          WIFI_PREAMBLE_HE_TB,
-                                         800,
+                                         1600,
                                          1,
                                          1,
                                          0,
@@ -5223,7 +5223,7 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
     WifiTxVector trigVector(HePhy::GetHeMcs7(),
                             0,
                             WIFI_PREAMBLE_HE_TB,
-                            800,
+                            1600,
                             1,
                             1,
                             0,
@@ -5248,9 +5248,9 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
 void
 TestPhyPaddingExclusion::DoRun()
 {
-    Time expectedPpduDuration = NanoSeconds(279200);
+    Time expectedPpduDuration = NanoSeconds(292800);
     Time ppduWithPaddingDuration =
-        expectedPpduDuration + 10 * NanoSeconds(12800 + 800 /* GI */); // add 10 extra OFDM symbols
+        expectedPpduDuration + 10 * NanoSeconds(12800 + 1600 /* GI */); // add 10 extra OFDM symbols
 
     Simulator::Schedule(Seconds(0.0), &TestPhyPaddingExclusion::Reset, this);
 
