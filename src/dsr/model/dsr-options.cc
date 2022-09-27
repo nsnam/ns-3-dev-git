@@ -684,8 +684,9 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
               bool addRoute = false;
               if (numberAddress > 0)
                 {
-                  DsrRouteCacheEntry toSource (/*IP_VECTOR=*/ m_finalRoute, /*dst=*/
-                                                              dst, /*expire time=*/ ActiveRouteTimeout);
+                  DsrRouteCacheEntry toSource (/*ip=*/ m_finalRoute,
+                                               /*dst=*/ dst,
+                                               /*exp=*/ ActiveRouteTimeout);
                   if (dsr->IsLinkCache ())
                     {
                       addRoute = dsr->AddRoute_Link (m_finalRoute, ipv4Address);
@@ -789,7 +790,9 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
               NS_LOG_DEBUG ("This is the route save in route cache");
               PrintVector (saveRoute);
 
-              DsrRouteCacheEntry toSource (/*IP_VECTOR=*/ saveRoute, /*dst=*/ dst, /*expire time=*/ ActiveRouteTimeout);
+              DsrRouteCacheEntry toSource (/*ip=*/ saveRoute,
+                                           /*dst=*/ dst,
+                                           /*exp=*/ ActiveRouteTimeout);
               NS_ASSERT (saveRoute.front () == ipv4Address);
               // Add the route entry in the route cache
               if (dsr->IsLinkCache ())
@@ -1036,7 +1039,9 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
        * The route looks like:
        * \\ "srcAddress" + "intermediate node address" + "targetAddress"
        */
-      DsrRouteCacheEntry toDestination (/*IP_VECTOR=*/ nodeList, /*dst=*/ dst, /*expire time=*/ ActiveRouteTimeout);
+      DsrRouteCacheEntry toDestination (/*ip=*/ nodeList,
+                                        /*dst=*/ dst,
+                                        /*exp=*/ ActiveRouteTimeout);
       NS_ASSERT (nodeList.front () == ipv4Address);
       bool addRoute = false;
       if (dsr->IsLinkCache ())
@@ -1103,7 +1108,9 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
         {
           Ipv4Address dst = cutRoute.back ();
           NS_LOG_DEBUG ("The route destination after cut " << dst);
-          DsrRouteCacheEntry toDestination (/*IP_VECTOR=*/ cutRoute, /*dst=*/ dst, /*expire time=*/ ActiveRouteTimeout);
+          DsrRouteCacheEntry toDestination (/*ip=*/ cutRoute,
+                                            /*dst=*/ dst,
+                                            /*exp=*/ ActiveRouteTimeout);
           NS_ASSERT (cutRoute.front () == ipv4Address);
           bool addRoute = false;
           if (dsr->IsLinkCache ())

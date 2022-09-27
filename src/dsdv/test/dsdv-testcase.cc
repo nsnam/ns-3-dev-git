@@ -138,35 +138,42 @@ DsdvTableTestCase::DoRun ()
   Ptr<NetDevice> dev;
   {
     dsdv::RoutingTableEntry rEntry1 (
-      /*device=*/ dev, /*dst=*/
-      Ipv4Address ("10.1.1.4"), /*seqno=*/ 2,
+      /*dev=*/ dev,
+      /*dst=*/ Ipv4Address ("10.1.1.4"),
+      /*seqNo=*/ 2,
       /*iface=*/ Ipv4InterfaceAddress (Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0")),
-      /*hops=*/ 2, /*next hop=*/
-      Ipv4Address ("10.1.1.2"),
+      /*hops=*/ 2,
+      /*nextHop=*/ Ipv4Address ("10.1.1.2"),
       /*lifetime=*/ Seconds (10));
     NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rEntry1),true,"add route");
+
     dsdv::RoutingTableEntry rEntry2 (
-      /*device=*/ dev, /*dst=*/
-      Ipv4Address ("10.1.1.2"), /*seqno=*/ 4,
+      /*dev=*/ dev,
+      /*dst=*/ Ipv4Address ("10.1.1.2"),
+      /*seqNo=*/ 4,
       /*iface=*/ Ipv4InterfaceAddress (Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0")),
-      /*hops=*/ 1, /*next hop=*/
-      Ipv4Address ("10.1.1.2"),
+      /*hops=*/ 1,
+      /*nextHop=*/ Ipv4Address ("10.1.1.2"),
       /*lifetime=*/ Seconds (10));
     NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rEntry2),true,"add route");
+
     dsdv::RoutingTableEntry rEntry3 (
-      /*device=*/ dev, /*dst=*/
-      Ipv4Address ("10.1.1.3"), /*seqno=*/ 4,
+      /*dev=*/ dev,
+      /*dst=*/ Ipv4Address ("10.1.1.3"),
+      /*seqNo=*/ 4,
       /*iface=*/ Ipv4InterfaceAddress (Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0")),
-      /*hops=*/ 1, /*next hop=*/
-      Ipv4Address ("10.1.1.3"),
+      /*hops=*/ 1,
+      /*nextHop=*/ Ipv4Address ("10.1.1.3"),
       /*lifetime=*/ Seconds (10));
     NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rEntry3),true,"add route");
+
     dsdv::RoutingTableEntry rEntry4 (
-      /*device=*/ dev, /*dst=*/
-      Ipv4Address ("10.1.1.255"), /*seqno=*/ 0,
+      /*dev=*/ dev,
+      /*dst=*/ Ipv4Address ("10.1.1.255"),
+      /*seqNo=*/ 0,
       /*iface=*/ Ipv4InterfaceAddress (Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0")),
-      /*hops=*/ 0, /*next hop=*/
-      Ipv4Address ("10.1.1.255"),
+      /*hops=*/ 0,
+      /*nextHop=*/ Ipv4Address ("10.1.1.255"),
       /*lifetime=*/ Seconds (10));
     NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rEntry4),true,"add route");
   }

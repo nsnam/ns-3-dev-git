@@ -973,9 +973,14 @@ void DsrRouting::CheckSendBuffer ()
               cleanP->AddHeader (dsrRoutingHeader);
               Ptr<const Packet> mtP = cleanP->Copy ();
               // Put the data packet in the maintenance queue for data packet retransmission
-              DsrMaintainBuffEntry newEntry (/*Packet=*/ mtP, /*Ipv4Address=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                                      /*source=*/ m_mainAddress, /*destination=*/ destination, /*ackId=*/ 0,
-                                                      /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+              DsrMaintainBuffEntry newEntry (/*packet=*/ mtP,
+                                             /*ourAddress=*/ m_mainAddress,
+                                             /*nextHop=*/ nextHop,
+                                             /*src=*/ m_mainAddress,
+                                             /*dst=*/ destination,
+                                             /*ackId=*/ 0,
+                                             /*segsLeft=*/ nodeList.size () - 2,
+                                             /*expire=*/ m_maxMaintainTime);
               bool result = m_maintainBuffer.Enqueue (newEntry); // Enqueue the packet the the maintenance buffer
               if (result)
                 {
@@ -1213,9 +1218,14 @@ DsrRouting::PacketNewRoute (Ptr<Packet> packet,
       Ptr<const Packet> mtP = cleanP->Copy ();
       SetRoute (nextHop, m_mainAddress);
       // Put the data packet in the maintenance queue for data packet retransmission
-      DsrMaintainBuffEntry newEntry (/*Packet=*/ mtP, /*Ipv4Address=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                              /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                              /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+      DsrMaintainBuffEntry newEntry (/*packet=*/ mtP,
+                                     /*ourAddress=*/ m_mainAddress,
+                                     /*nextHop=*/ nextHop,
+                                     /*src=*/ source,
+                                     /*dst=*/ destination,
+                                     /*ackId=*/ 0,
+                                     /*segsLeft=*/ nodeList.size () - 2,
+                                     /*expire=*/ m_maxMaintainTime);
       bool result = m_maintainBuffer.Enqueue (newEntry);     // Enqueue the packet the the maintenance buffer
 
       if (result)
@@ -1503,9 +1513,14 @@ DsrRouting::Send (Ptr<Packet> packet,
           Ptr<const Packet> mtP = cleanP->Copy ();
           NS_LOG_DEBUG ("maintain packet size " << cleanP->GetSize ());
           // Put the data packet in the maintenance queue for data packet retransmission
-          DsrMaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                                  /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                                  /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+          DsrMaintainBuffEntry newEntry (/*packet=*/ mtP,
+                                         /*ourAddress=*/ m_mainAddress,
+                                         /*nextHop=*/ nextHop,
+                                         /*src=*/ source,
+                                         /*dst=*/ destination,
+                                         /*ackId=*/ 0,
+                                         /*segsLeft=*/ nodeList.size () - 2,
+                                         /*expire=*/ m_maxMaintainTime);
           bool result = m_maintainBuffer.Enqueue (newEntry);       // Enqueue the packet the the maintenance buffer
           if (result)
             {
@@ -1791,9 +1806,14 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
 
           Ptr<const Packet> mtP = p->Copy ();
           // Put the data packet in the maintenance queue for data packet retransmission
-          DsrMaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                      /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                      /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+          DsrMaintainBuffEntry newEntry (/*packet=*/ mtP,
+                                         /*ourAddress=*/ m_mainAddress,
+                                         /*nextHop=*/ nextHop,
+                                         /*src=*/ source,
+                                         /*dst=*/ destination,
+                                         /*ackId=*/ 0,
+                                         /*segsLeft=*/ nodeList.size () - 2,
+                                         /*expire=*/ m_maxMaintainTime);
           bool result = m_maintainBuffer.Enqueue (newEntry);       // Enqueue the packet the the maintenance buffer
 
           if (result)
@@ -2040,9 +2060,14 @@ DsrRouting::CallCancelPacketTimer (uint16_t ackId, Ipv4Header const& ipv4Header,
    * The reason is ack header doesn't have the original packet copy
    */
   Ptr<Packet> mainP = Create<Packet> ();
-  DsrMaintainBuffEntry newEntry (/*Packet=*/ mainP, /*ourAddress=*/ sender, /*nextHop=*/ receiver,
-                                          /*source=*/ realSrc, /*destination=*/ realDst, /*ackId=*/ ackId,
-                                          /*SegsLeft=*/ 0, /*expire time=*/ Simulator::Now ());
+  DsrMaintainBuffEntry newEntry (/*packet=*/ mainP,
+                                 /*ourAddress=*/ sender,
+                                 /*nextHop=*/ receiver,
+                                 /*src=*/ realSrc,
+                                 /*dst=*/ realDst,
+                                 /*ackId=*/ ackId,
+                                 /*segsLeft=*/ 0,
+                                 /*expire=*/ Simulator::Now ());
   CancelNetworkPacketTimer (newEntry);  // Only need to cancel network packet timer
 }
 
@@ -2687,9 +2712,14 @@ DsrRouting::ForwardPacket (Ptr<const Packet> packet,
 
   Ptr<const Packet> mtP = p->Copy ();
 
-  DsrMaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                              /*source=*/ source, /*destination=*/ targetAddress, /*ackId=*/ m_ackId,
-                              /*SegsLeft=*/ sourceRoute.GetSegmentsLeft (), /*expire time=*/ m_maxMaintainTime);
+  DsrMaintainBuffEntry newEntry (/*packet=*/ mtP,
+                                 /*ourAddress=*/ m_mainAddress,
+                                 /*nextHop=*/ nextHop,
+                                 /*src=*/ source,
+                                 /*dst=*/ targetAddress,
+                                 /*ackId=*/ m_ackId,
+                                 /*segsLeft=*/ sourceRoute.GetSegmentsLeft (),
+                                 /*expire=*/ m_maxMaintainTime);
   bool result = m_maintainBuffer.Enqueue (newEntry);
 
   if (result)

@@ -45,14 +45,14 @@ RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev,
                                       uint32_t hops,
                                       Ipv4Address nextHop,
                                       Time lifetime,
-                                      Time SettlingTime,
+                                      Time settlingTime,
                                       bool areChanged)
   : m_seqNo (seqNo),
     m_hops (hops),
     m_lifeTime (lifetime),
     m_iface (iface),
     m_flag (VALID),
-    m_settlingTime (SettlingTime),
+    m_settlingTime (settlingTime),
     m_entriesChanged (areChanged)
 {
   m_ipv4Route = Create<Ipv4Route> ();

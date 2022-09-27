@@ -215,26 +215,31 @@ public:
   /**
    * Construct a DsrMaintainBuffEntry with the given parameters
    *
-   * \param pa packet
-   * \param us our IPv4 address
-   * \param n next hop IPv4 address
-   * \param s IPv4 address of the source
+   * \param packet packet
+   * \param ourAddress our IPv4 address
+   * \param nextHop next hop IPv4 address
+   * \param src IPv4 address of the source
    * \param dst IPv4 address of the destination
    * \param ackId ACK ID
-   * \param segs number of segments left
-   * \param exp expiration time
+   * \param segsLeft number of segments left
+   * \param expire expiration time
    */
-  DsrMaintainBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address us = Ipv4Address (),
-                        Ipv4Address n = Ipv4Address (), Ipv4Address s = Ipv4Address (), Ipv4Address dst = Ipv4Address (),
-                        uint16_t ackId = 0, uint8_t segs = 0, Time exp = Simulator::Now ())
-    : m_packet (pa),
-      m_ourAdd (us),
-      m_nextHop (n),
-      m_src (s),
+  DsrMaintainBuffEntry (Ptr<const Packet> packet = nullptr,
+                        Ipv4Address ourAddress = Ipv4Address (),
+                        Ipv4Address nextHop = Ipv4Address (),
+                        Ipv4Address src = Ipv4Address (),
+                        Ipv4Address dst = Ipv4Address (),
+                        uint16_t ackId = 0,
+                        uint8_t segsLeft = 0,
+                        Time expire = Simulator::Now ())
+    : m_packet (packet),
+      m_ourAdd (ourAddress),
+      m_nextHop (nextHop),
+      m_src (src),
       m_dst (dst),
       m_ackId (ackId),
-      m_segsLeft (segs),
-      m_expire (exp + Simulator::Now ())
+      m_segsLeft (segsLeft),
+      m_expire (expire + Simulator::Now ())
   {
   }
 

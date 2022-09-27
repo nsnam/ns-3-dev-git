@@ -620,15 +620,15 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
             {
               NS_LOG_DEBUG ("Received New Route!");
               RoutingTableEntry newEntry (
-                /*device=*/ dev, /*dst=*/
-                dsdvHeader.GetDst (), /*seqno=*/
-                dsdvHeader.GetDstSeqno (),
+                /*dev=*/ dev,
+                /*dst=*/ dsdvHeader.GetDst (),
+                /*seqNo=*/ dsdvHeader.GetDstSeqno (),
                 /*iface=*/ m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
-                /*hops=*/ dsdvHeader.GetHopCount (), /*next hop=*/
-                sender, /*lifetime=*/
-                Simulator::Now (), /*settlingTime*/
-                m_settlingTime, /*entries changed*/
-                true);
+                /*hops=*/ dsdvHeader.GetHopCount (),
+                /*nextHop=*/ sender,
+                /*lifetime=*/ Simulator::Now (),
+                /*settlingTime=*/ m_settlingTime,
+                /*changedEntries=*/ true);
               newEntry.SetFlag (VALID);
               m_routingTable.AddRoute (newEntry);
               NS_LOG_DEBUG ("New Route added to both tables");
@@ -967,12 +967,12 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   NS_ASSERT (m_lo);
   // Remember lo route
   RoutingTableEntry rt (
-    /*device=*/ m_lo,  /*dst=*/
-    Ipv4Address::GetLoopback (), /*seqno=*/
-    0,
+    /*dev=*/ m_lo,
+    /*dst=*/ Ipv4Address::GetLoopback (),
+    /*seqNo=*/ 0,
     /*iface=*/ Ipv4InterfaceAddress (Ipv4Address::GetLoopback (),Ipv4Mask ("255.0.0.0")),
-    /*hops=*/ 0,  /*next hop=*/
-    Ipv4Address::GetLoopback (),
+    /*hops=*/ 0,
+    /*nextHop=*/ Ipv4Address::GetLoopback (),
     /*lifetime=*/ Simulator::GetMaximumSimulationTime ());
   rt.SetFlag (INVALID);
   rt.SetEntriesChanged (false);
@@ -1002,8 +1002,13 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   m_socketAddresses.insert (std::make_pair (socket,iface));
   // Add local broadcast record to the routing table
   Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
-  RoutingTableEntry rt (/*device=*/ dev, /*dst=*/ iface.GetBroadcast (), /*seqno=*/ 0,/*iface=*/ iface,/*hops=*/ 0,
-                                    /*next hop=*/ iface.GetBroadcast (), /*lifetime=*/ Simulator::GetMaximumSimulationTime ());
+  RoutingTableEntry rt (/*dev=*/ dev,
+                        /*dst=*/ iface.GetBroadcast (),
+                        /*seqNo=*/ 0,
+                        /*iface=*/ iface,
+                        /*hops=*/ 0,
+                        /*nextHop=*/ iface.GetBroadcast (),
+                        /*lifetime=*/ Simulator::GetMaximumSimulationTime ());
   m_routingTable.AddRoute (rt);
   if (m_mainAddress == Ipv4Address ())
     {
@@ -1058,8 +1063,13 @@ RoutingProtocol::NotifyAddAddress (uint32_t i,
       socket->SetAllowBroadcast (true);
       m_socketAddresses.insert (std::make_pair (socket,iface));
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
-      RoutingTableEntry rt (/*device=*/ dev, /*dst=*/ iface.GetBroadcast (),/*seqno=*/ 0, /*iface=*/ iface,/*hops=*/ 0,
-                                        /*next hop=*/ iface.GetBroadcast (), /*lifetime=*/ Simulator::GetMaximumSimulationTime ());
+      RoutingTableEntry rt (/*dev=*/ dev,
+                            /*dst=*/ iface.GetBroadcast (),
+                            /*seqNo=*/ 0,
+                            /*iface=*/ iface,
+                            /*hops=*/ 0,
+                            /*nextHop=*/ iface.GetBroadcast (),
+                            /*lifetime=*/ Simulator::GetMaximumSimulationTime ());
       m_routingTable.AddRoute (rt);
     }
 }
