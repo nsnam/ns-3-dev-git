@@ -89,10 +89,10 @@ void ArithmeticOperators ()
   Length twoMeter = Meters (2);
 
   std::cout << "\nArithmetic Operations:"
-            << "\nAddition: " << oneMeter << " + " << oneMeter << " = "
-            << (oneMeter + oneMeter)
-            << "\nSubtraction: " << oneMeter << " - " << oneMeter << " = "
-            << (oneMeter - oneMeter)
+            << "\nAddition: " << oneMeter << " + " << twoMeter << " = "
+            << (oneMeter + twoMeter)
+            << "\nSubtraction: " << twoMeter << " - " << oneMeter << " = "
+            << (twoMeter - oneMeter)
             << "\nMultiplication By Scalar: " << oneMeter << " * " << scale << " = "
             << (oneMeter * scale)
             << "\nDivision: " << oneMeter << " / " << twoMeter << " = "
