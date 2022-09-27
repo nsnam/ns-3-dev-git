@@ -2941,8 +2941,6 @@ class TestUlOfdmaPhyTransmission : public TestCase
         CHANNEL_WIDTH,
         UL_LENGTH,
         AID,
-        RU_TYPE,
-        MCS
     };
 
     TestUlOfdmaPhyTransmission();
@@ -3343,19 +3341,19 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
     HeRu::RuType ruType = HeRu::RU_106_TONE;
     if (channelWidth == 20)
     {
-        ruType = (error == RU_TYPE ? HeRu::RU_52_TONE : HeRu::RU_106_TONE);
+        ruType = HeRu::RU_106_TONE;
     }
     else if (channelWidth == 40)
     {
-        ruType = (error == RU_TYPE ? HeRu::RU_106_TONE : HeRu::RU_242_TONE);
+        ruType = HeRu::RU_242_TONE;
     }
     else if (channelWidth == 80)
     {
-        ruType = (error == RU_TYPE ? HeRu::RU_242_TONE : HeRu::RU_484_TONE);
+        ruType = HeRu::RU_484_TONE;
     }
     else if (channelWidth == 160)
     {
-        ruType = (error == RU_TYPE ? HeRu::RU_484_TONE : HeRu::RU_996_TONE);
+        ruType = HeRu::RU_996_TONE;
     }
     else
     {
@@ -3367,12 +3365,12 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
 
     HeRu::RuSpec ru1(ruType, 1, true);
     txVector.SetRu(ru1, aid1);
-    txVector.SetMode((error == MCS ? HePhy::GetHeMcs5() : HePhy::GetHeMcs7()), aid1);
+    txVector.SetMode(HePhy::GetHeMcs7(), aid1);
     txVector.SetNss(1, aid1);
 
     HeRu::RuSpec ru2(ruType, (channelWidth == 160 ? 1 : 2), (channelWidth == 160 ? false : true));
     txVector.SetRu(ru2, aid2);
-    txVector.SetMode((error == MCS ? HePhy::GetHeMcs5() : HePhy::GetHeMcs7()), aid2);
+    txVector.SetMode(HePhy::GetHeMcs7(), aid2);
     txVector.SetNss(1, aid2);
 
     uint16_t length;
@@ -4266,48 +4264,6 @@ TestUlOfdmaPhyTransmission::RunOne()
                  Seconds(0),
                  WifiPhyState::CCA_BUSY,
                  AID);
-    delay += Seconds(1.0);
-
-    //---------------------------------------------------------------------------
-    // Verify that HE TB PPDUs with RU type differing from TRIGVECTOR are discarded
-    Simulator::Schedule(delay,
-                        &TestUlOfdmaPhyTransmission::LogScenario,
-                        this,
-                        "Dropping of HE TB PPDUs with RU type differing from TRIGVECTOR");
-    ScheduleTest(delay,
-                 true,
-                 WifiPhyState::IDLE,
-                 0,
-                 0,
-                 0, // PSDU from STA 1 is not received (no TRIGVECTOR)
-                 0,
-                 0,
-                 0, // PSDU from STA 2 is not received (no TRIGVECTOR)
-                 true,
-                 Seconds(0),
-                 WifiPhyState::CCA_BUSY,
-                 RU_TYPE);
-    delay += Seconds(1.0);
-
-    //---------------------------------------------------------------------------
-    // Verify that HE TB PPDUs with MCS differing from TRIGVECTOR are discarded
-    Simulator::Schedule(delay,
-                        &TestUlOfdmaPhyTransmission::LogScenario,
-                        this,
-                        "Dropping of HE TB PPDUs with MCS differing from TRIGVECTOR");
-    ScheduleTest(delay,
-                 true,
-                 WifiPhyState::IDLE,
-                 0,
-                 0,
-                 0, // PSDU from STA 1 is not received (no TRIGVECTOR)
-                 0,
-                 0,
-                 0, // PSDU from STA 2 is not received (no TRIGVECTOR)
-                 true,
-                 Seconds(0),
-                 WifiPhyState::CCA_BUSY,
-                 MCS);
     delay += Seconds(1.0);
 
     //---------------------------------------------------------------------------
