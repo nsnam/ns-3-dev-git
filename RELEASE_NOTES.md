@@ -42,6 +42,7 @@ Release 3-dev
 - (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
 - (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
 - (wifi) Fix the TID of QoS Null frames in response to BSRP TF
+- (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
 
 Release 3.36.1
 --------------
