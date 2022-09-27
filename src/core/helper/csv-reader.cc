@@ -180,8 +180,8 @@ CsvReader::GetValueAs (std::string input, signed char& value) const
   std::int16_t tempOutput = 0;
   tempStream >> tempOutput;
 
-  if (tempOutput >= std::numeric_limits<byte_type>::min ()
-      || tempOutput <= std::numeric_limits<byte_type>::max () )
+  if (tempOutput >= std::numeric_limits<byte_type>::min () &&
+      tempOutput <= std::numeric_limits<byte_type>::max () )
     {
       value = static_cast<byte_type> (tempOutput);
     }
@@ -240,8 +240,6 @@ CsvReader::GetValueAs (std::string input, std::string& value) const
 bool
 CsvReader::GetValueAs (std::string input, unsigned char& value) const
 {
-  NS_LOG_FUNCTION (this << input);
-
   typedef unsigned char byte_type;
 
   NS_LOG_FUNCTION (this << input);
@@ -251,8 +249,8 @@ CsvReader::GetValueAs (std::string input, unsigned char& value) const
   std::uint16_t tempOutput = 0;
   tempStream >> tempOutput;
 
-  if (tempOutput >= std::numeric_limits<byte_type>::min ()
-      || tempOutput <= std::numeric_limits<byte_type>::max () )
+  if (tempOutput >= std::numeric_limits<byte_type>::min () &&
+      tempOutput <= std::numeric_limits<byte_type>::max () )
     {
       value = static_cast<byte_type> (tempOutput);
     }
