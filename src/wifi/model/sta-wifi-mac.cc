@@ -714,6 +714,25 @@ StaWifiMac::IsWaitAssocResp() const
     return m_state == WAIT_ASSOC_RESP;
 }
 
+std::set<uint8_t>
+StaWifiMac::GetSetupLinkIds() const
+{
+    if (!IsAssociated())
+    {
+        return {};
+    }
+
+    std::set<uint8_t> linkIds;
+    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    {
+        if (GetLink(linkId).bssid)
+        {
+            linkIds.insert(linkId);
+        }
+    }
+    return linkIds;
+}
+
 bool
 StaWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
@@ -826,7 +845,12 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             NotifyRxDrop(packet);
             return;
         }
-        if (hdr->GetAddr2() != GetBssid(0)) // TODO use appropriate linkId
+        std::set<Mac48Address> apAddresses; // link addresses of AP
+        for (auto id : GetSetupLinkIds())
+        {
+            apAddresses.insert(GetBssid(id));
+        }
+        if (apAddresses.count(mpdu->GetHeader().GetAddr2()) == 0)
         {
             NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
             NotifyRxDrop(packet);
@@ -836,7 +860,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             if (hdr->IsQosAmsdu())
             {
-                NS_ASSERT(hdr->GetAddr3() == GetBssid(0)); // TODO use appropriate linkId
+                NS_ASSERT(apAddresses.count(mpdu->GetHeader().GetAddr3()) != 0);
                 DeaggregateAmsduAndForward(mpdu);
                 packet = nullptr;
             }
