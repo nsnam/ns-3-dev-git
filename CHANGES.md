@@ -48,6 +48,7 @@ Changes from ns-3.36 to ns-3.37
 * The **Assoc** and **DeAssoc** trace sources of `StaWifiMac` provide the AP MLD address in case (de)association takes place between a non-AP MLD and an AP MLD.
 * Adds support for **LrWpanMac** devices association.
 * Pan Id compression is now possible in **LrWpanMac** when transmitting data frames. i.e. When src and dst pan ID are the same, only one PanId is used, making the MAC header 2 bytes smaller. See IEEE 802.15.4-2006 (7.5.6.1).
+* Add O2I Low/High Building Penetration Losses in 3GPP propagation loss model (`ThreeGppPropagationLossModel`) according to **3GPP TR 38.901 7.4.3.1**. Currently, UMa, UMi and RMa scenarios are supported.
 
 ### Changes to build system
 
@@ -66,6 +67,7 @@ Changes from ns-3.36 to ns-3.37
 
 * Lr-wpan: **LrWpanPhy** now change to TRX_OFF after a CSMA-CA failure when the RxOnWhenIdle flag is set to false in the **LrWpanMac**.
 * The **Channel** attribute of `WifiNetDevice` is deprecated because it became ambiguous with the introduction of multiple links per device. The **Channel** attribute of `WifiPhy` can be used instead.
+* The O2I Low/High Building Penetration Losses will add losses in the pathloss calculation when buildings are present and a UE results to be in O2I state. In order to not consider these losses, they can be disabled by setting BuildingPenetrationLossesEnabled to false.
 
 Changes from ns-3.36 to ns-3.36.1
 ---------------------------------

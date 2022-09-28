@@ -599,10 +599,33 @@ environments, i.e., indoor, outdoor urban and rural, for frequencies between
   * Path loss and shadowing models (3GPP TR 38.901, Sec. 7.4.1)
   * Autocorrelation of shadow fading (3GPP TR 38.901, Sec. 7.4.4)
   * `Channel condition models <propagation.html#threegppchannelconditionmodel>`_ (3GPP TR 38.901, Sec. 7.4.2)
+  * O2I Low/High Building penetration losses (3GPP TR 38.901, Sec. 7.4.3.1).
+    The Low/High Building penetration losses can be enabled for UEs that are in
+    O2I channel condition state.
+    For determining the O2O/O2I state in ns-3 there are two possible scenario setups:
+    1) ns-3 buildings and :cpp:class:`BuildingsChannelConditionModel` are used.
+    Then the O2I condition is calculated based on the buildings in the scenario.
+    In this case losses are considered by default, however there is the option
+    to disable them by setting the :cpp:class:`ThreeGppPropagationLossModel`
+    attribute BuildingPenetrationLossesEnabled to false.
+    2) ns-3 buildings are not used, instead one of the 3GPP stochastic channel condition
+    models is used, such as: :cpp:class:`ThreeGppRmaChannelConditionModel`,
+    :cpp:class:`ThreeGppUmaChannelConditionModel`, :cpp:class:`ThreeGppUmiStreetCanyonChannelConditionModel`.
+    These models are extended to calculate the O2O/O2I state probabilistically.
+    Additionally, it is possible to configure to calculate O2I condition
+    deterministically based on the UE height. In both cases, the O2O/O2I is updated
+    at the same time as LOS/nLOS, i.e. with the same periodicity.
+    For other 3GPP channel condition models in ns-3 there are no O2I losses because
+    both TX and RX, are either indoor or outdoor, such as in the case of indoor or
+    V2V scenarios.
+    For this case, to consider O2I Low/High Losses, the attribute of the
+    :cpp:class:`ChannelCondition` O2iThreshold (that indicates the ratio between
+    O2O and O2I states) must be set to a value different from 0. Possible values
+    are from 0 to 1, with 1 corresponding to 100% O2I conditions.
 
 *To be implemented:*
 
-  * O2I penetration loss (3GPP TR 38.901, Sec. 7.4.3)
+  * O2I Car penetration losses (3GPP TR 38.901, Sec. 7.4.3.2).
   * Spatial consistent update of the channel states (3GPP TR 38.901 Sec. 7.6.3.3)
 
 **Configuration**

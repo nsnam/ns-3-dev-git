@@ -90,7 +90,7 @@ public:
    * Constructor for the ChannelCondition class
    * \param losCondition the LOS condition value
    * \param o2iCondition the O2I condition value (by default is set to O2O)
-   * \param o2iLowHighCondition the O2I Low-High Penetration loss condition value (by default is set to LOW)
+   * \param o2iLowHighCondition the O2I Low-High Building Penetration loss condition value (by default is set to LOW)
    */
   ChannelCondition (LosConditionValue losCondition,
                     O2iConditionValue o2iCondition = O2O,
@@ -135,7 +135,7 @@ public:
 
   /**
    * Get the O2iLowHighConditionValue contaning the information about the O2I
-   * penetration losses (low or high)
+   * building penetration losses (low or high)
    *
    * \return the O2iLowHighConditionValue
    */
@@ -143,7 +143,7 @@ public:
 
   /**
    * Set the O2iLowHighConditionValue contaning the information about the O2I
-   * penetration losses (low or high)
+   * building penetration losses (low or high)
    *
    * \param o2iLowHighCondition the O2iLowHighConditionValue
    */
@@ -207,7 +207,7 @@ public:
 private:
   LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel
   O2iConditionValue m_o2iCondition; //!< contains the information about the O2I state of the channel
-  O2iLowHighConditionValue m_o2iLowHighCondition; //!< contains the information about the O2I low-high penetration losses
+  O2iLowHighConditionValue m_o2iLowHighCondition; //!< contains the information about the O2I low-high building penetration losses
 
   /**
    * Prints a LosConditionValue to output
@@ -497,7 +497,6 @@ protected:
 
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
 
-
 private:
   /**
   * This method computes the channel condition based on a probabilistic model
@@ -518,9 +517,8 @@ private:
    */
   virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const = 0;
 
-  // TODO make this purely abstract function and all child classes should implement this
   /**
-   * Compute the O2I Penetration Loss
+   * Determines whether the channel condition is O2I or O2O
    *
    * \param a tx mobility model
    * \param b rx mobility model
@@ -558,7 +556,7 @@ private:
   Time m_updatePeriod; //!< the update period for the channel condition
 
   double m_o2iThreshold {0}; //!< the threshold for determing what is the ratio of channels with O2I
-  double m_o2iLowLossThreshold {0}; //!< the threshold for determing what is the ratio of low - high O2I penetration losses
+  double m_o2iLowLossThreshold {0}; //!< the threshold for determing what is the ratio of low - high O2I building penetration losses
   double m_linkO2iConditionToAntennaHeight {false}; //!< the indicator that determines whether the O2I/O2O condition is determined based on the UE height
   Ptr<UniformRandomVariable> m_uniformVarO2i; //!< uniform random variable that is used for the generation of the O2i conditions
   Ptr<UniformRandomVariable> m_uniformO2iLowHighLossVar; //!< a uniform random variable for the calculation of the low/high losses, see TR38.901 Table 7.4.3-2

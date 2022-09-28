@@ -254,7 +254,7 @@ ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss (Ptr<MobilityModel> a,
       // 10 m for RMa. 2D−in d shall be UT-specifically generated.
       double distance2dIn = GetO2iDistance2dIn ();
 
-      // calculate material penetration losses, see TR38.901 Table 7.4.3-1
+      // calculate material penetration losses, see TR 38.901 Table 7.4.3-1
       lGlass = 2 + 0.2 * m_frequency / 1e9; // m_frequency is operation frequency in Hz
       lConcrete = 5 + 4 * m_frequency / 1e9;
 
@@ -325,7 +325,7 @@ ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss (Ptr<MobilityModel> a,
       // 10 m for RMa. 2D−in d shall be UT-specifically generated.
       double distance2dIn = GetO2iDistance2dIn ();
 
-      // calculate material penetration losses, see TR38.901 Table 7.4.3-1
+      // calculate material penetration losses, see TR 38.901 Table 7.4.3-1
       lIIRGlass = 23 + 0.3 * m_frequency / 1e9;
       lConcrete = 5 + 4 * m_frequency / 1e9;
 
@@ -428,7 +428,12 @@ ThreeGppPropagationLossModel::DoAssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this);
 
   m_normRandomVariable->SetStream (stream);
-  return 1;
+  m_randomO2iVar1->SetStream (stream + 1);
+  m_randomO2iVar2->SetStream (stream + 2);
+  m_normalO2iLowLossVar->SetStream (stream + 3);
+  m_normalO2iHighLossVar->SetStream (stream + 4);
+
+  return 5;
 }
 
 double
@@ -512,8 +517,8 @@ ThreeGppRmaPropagationLossModel::~ThreeGppRmaPropagationLossModel ()
 double
 ThreeGppRmaPropagationLossModel::GetO2iDistance2dIn () const
 {
-  // distance2dIn is minimum of two independently generated uniformly distributed variables between 0 and 25 m for UMa and
-  // UMi-Street Canyon, and between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
+  // distance2dIn is minimum of two independently generated uniformly distributed variables
+  // between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
   return std::min ( m_randomO2iVar1->GetValue (0, 10), m_randomO2iVar2->GetValue (0, 10));
 }
 
@@ -811,8 +816,8 @@ ThreeGppUmaPropagationLossModel::GetLossLos (double distance2D, double distance3
 double
 ThreeGppUmaPropagationLossModel::GetO2iDistance2dIn () const
 {
-  // distance2dIn is minimum of two independently generated uniformly distributed variables between 0 and 25 m for UMa and
-  // UMi-Street Canyon, and between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
+  // distance2dIn is minimum of two independently generated uniformly distributed variables
+  // between 0 and 25 m for UMa and UMi-Street Canyon. 2D−in d shall be UT-specifically generated.
   return std::min ( m_randomO2iVar1->GetValue (0, 25), m_randomO2iVar2->GetValue (0, 25));
 }
 
@@ -960,8 +965,8 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetBpDistance (double hUt, double h
 double
 ThreeGppUmiStreetCanyonPropagationLossModel::GetO2iDistance2dIn () const
 {
-  // distance2dIn is minimum of two independently generated uniformly distributed variables between 0 and 25 m for UMa and
-  // UMi-Street Canyon, and between 0 and 10 m for RMa. 2D−in d shall be UT-specifically generated.
+  // distance2dIn is minimum of two independently generated uniformly distributed variables
+  // between 0 and 25 m for UMa and UMi-Street Canyon. 2D−in d shall be UT-specifically generated.
   return std::min ( m_randomO2iVar1->GetValue (0, 25), m_randomO2iVar2->GetValue (0, 25));
 }
 

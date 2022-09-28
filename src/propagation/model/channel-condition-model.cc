@@ -393,9 +393,6 @@ ChannelCondition::O2iConditionValue
 ThreeGppChannelConditionModel::ComputeO2i ([[maybe_unused]] Ptr<const MobilityModel> a,
                                            [[maybe_unused]] Ptr<const MobilityModel> b) const
 {
-  // TODO this code should be changed to determine based on a and b positions,
-  // whether they are indoor or outdoor the o2i condition
-  // currently we just parametrize it
   double o2iProb = m_uniformVarO2i->GetValue (0, 1);
 
   if (m_linkO2iConditionToAntennaHeight)
@@ -411,7 +408,6 @@ ThreeGppChannelConditionModel::ComputeO2i ([[maybe_unused]] Ptr<const MobilityMo
     }
   else
     {
-      // TODO another thing to be done is to allow more states, not only O2i and O2o
       if (o2iProb < m_o2iThreshold)
         {
           NS_LOG_INFO ("Return O2i condition ....");
@@ -496,7 +492,10 @@ int64_t
 ThreeGppChannelConditionModel::AssignStreams (int64_t stream)
 {
   m_uniformVar->SetStream (stream);
-  return 1;
+  m_uniformVarO2i->SetStream (stream + 1);
+  m_uniformO2iLowHighLossVar->SetStream (stream + 2);
+
+  return 3;
 }
 
 double

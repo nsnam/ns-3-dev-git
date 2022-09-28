@@ -71,10 +71,14 @@ private:
    *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
    *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon, and between 0 and 10 m
    *        for RMa.
-   *        According to 3GPP R38.091 this 2D−in distance shall be UT-specifically
-   *        generated. 2D−in distance is used for the low penetration losses
-   *        calculation according to 3GPP TR38.091 7.4.3.
-   * \return the distance in m
+   *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+   *        generated. 2D−in distance is used for the O2I penetration losses
+   *        calculation according to 3GPP TR 38.901 7.4.3.
+   *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+   *
+   *        TODO O2I car penetration loss (TR 38.901 7.4.3.2) not considered
+   *
+   * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
    */
   virtual double GetO2iDistance2dIn () const override;
 

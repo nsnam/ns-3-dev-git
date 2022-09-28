@@ -74,14 +74,13 @@ ThreeGppV2vUrbanPropagationLossModel::GetLossLos (double /* distance2D */, doubl
   return loss;
 }
 
-
-
 double
 ThreeGppV2vUrbanPropagationLossModel::GetO2iDistance2dIn () const
 {
+  // TODO O2I car penetration loss (TR 38.901 7.4.3.2) not considered
+  NS_LOG_WARN ("O2I car penetration loss not yet implemented");
   return 0;
-};
-
+}
 
 double
 ThreeGppV2vUrbanPropagationLossModel::GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const
