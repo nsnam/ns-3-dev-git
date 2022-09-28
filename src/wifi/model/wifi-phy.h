@@ -1132,6 +1132,7 @@ class WifiPhy : public Object
     virtual WifiSpectrumBand GetBand(uint16_t bandWidth, uint8_t bandIndex = 0);
 
   protected:
+    void DoInitialize() override;
     void DoDispose() override;
 
     /**
