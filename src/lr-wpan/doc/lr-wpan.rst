@@ -169,9 +169,9 @@ In LR-WPAN, association is used to join or leave PANs. All devices in LR-WPAN mu
 
 Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
 
-.. _fig-assocSequence:
+.. _fig-lr-wpan-assocSequence:
 
-.. figure:: figures/assocSequence.*
+.. figure:: figures/lr-wpan-assocSequence.*
 
 Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
 
