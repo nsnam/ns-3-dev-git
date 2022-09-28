@@ -348,7 +348,7 @@ SOURCEFIGS = \
 	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \
 	$(SRC)/traffic-control/doc/figures/overlapped.jpeg \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
-        $(SRC)/lr-wpan/doc/lr-wpan-assocSequence.dia \
+	$(SRC)/lr-wpan/doc/lr-wpan-assocSequence.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-phy.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
@@ -447,7 +447,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \
-        $(FIGURES)/lr-wpan-assocSequence.eps \
+	$(FIGURES)/lr-wpan-assocSequence.eps \
 	$(FIGURES)/802-15-4-ber.eps \
 	$(FIGURES)/802-15-4-per-sens.eps \
 	$(FIGURES)/802-15-4-psr-distance.eps \
