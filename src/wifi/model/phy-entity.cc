@@ -1301,7 +1301,6 @@ PhyEntity::Transmit(Time txDuration,
     txParams->duration = txDuration;
     txParams->psd = txPowerSpectrum;
     txParams->ppdu = ppdu;
-    txParams->txCenterFreq = GetCenterFrequencyForChannelWidth(txVector);
     NS_LOG_DEBUG("Starting " << type << " with power " << WToDbm(txPowerWatts) << " dBm on channel "
                              << +m_wifiPhy->GetChannelNumber() << " for "
                              << txParams->duration.As(Time::MS));
