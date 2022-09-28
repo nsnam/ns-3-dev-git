@@ -116,6 +116,16 @@ class ApWifiMac : public WifiMac
     uint16_t GetAssociationId(Mac48Address addr, uint8_t linkId) const;
 
     /**
+     * Get the ID of a link (if any) that has been setup with the station having the given MAC
+     * address. The address can be either a link address or an MLD address. In the former case,
+     * the returned ID is the ID of the link connecting the AP to the STA with the given address.
+     *
+     * \param address the given MAC address
+     * \return the ID of a link (if any) that has been setup with the given station
+     */
+    std::optional<uint8_t> IsAssociated(const Mac48Address& address) const;
+
+    /**
      * Return the value of the Queue Size subfield of the last QoS Data or QoS Null
      * frame received from the station with the given MAC address and belonging to
      * the given TID.

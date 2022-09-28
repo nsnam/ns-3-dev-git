@@ -1456,6 +1456,20 @@ ApWifiMac::TxFailed(WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
     }
 }
 
+std::optional<uint8_t>
+ApWifiMac::IsAssociated(const Mac48Address& address) const
+{
+    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    {
+        if (GetWifiRemoteStationManager(linkId)->IsAssociated(address))
+        {
+            return linkId;
+        }
+    }
+    NS_LOG_DEBUG(address << " is not associated");
+    return std::nullopt;
+}
+
 void
 ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
