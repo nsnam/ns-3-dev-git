@@ -193,7 +193,7 @@ HePpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 HePpdu::Copy() const
 {
-    return ns3::Copy(Ptr(this));
+    return Ptr<WifiPpdu>(new HePpdu(*this));
 }
 
 WifiPpduType

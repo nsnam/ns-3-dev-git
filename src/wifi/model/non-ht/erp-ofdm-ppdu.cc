@@ -58,7 +58,7 @@ ErpOfdmPpdu::DoGetTxVector() const
 Ptr<WifiPpdu>
 ErpOfdmPpdu::Copy() const
 {
-    return Create<ErpOfdmPpdu>(GetPsdu(), GetTxVector(), m_txCenterFreq, m_band, m_uid);
+    return Ptr<WifiPpdu>(new ErpOfdmPpdu(*this));
 }
 
 } // namespace ns3

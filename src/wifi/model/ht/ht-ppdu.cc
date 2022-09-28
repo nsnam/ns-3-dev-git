@@ -95,7 +95,7 @@ HtPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 HtPpdu::Copy() const
 {
-    return Create<HtPpdu>(GetPsdu(), GetTxVector(), m_txCenterFreq, GetTxDuration(), m_band, m_uid);
+    return Ptr<WifiPpdu>(new HtPpdu(*this));
 }
 
 HtPpdu::HtSigHeader::HtSigHeader()

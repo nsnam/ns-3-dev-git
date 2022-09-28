@@ -107,12 +107,7 @@ VhtPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 VhtPpdu::Copy() const
 {
-    return Create<VhtPpdu>(GetPsdu(),
-                           GetTxVector(),
-                           m_txCenterFreq,
-                           GetTxDuration(),
-                           m_band,
-                           m_uid);
+    return Ptr<WifiPpdu>(new VhtPpdu(*this));
 }
 
 WifiPpduType

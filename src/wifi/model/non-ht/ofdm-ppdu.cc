@@ -78,7 +78,7 @@ OfdmPpdu::GetTxDuration() const
 Ptr<WifiPpdu>
 OfdmPpdu::Copy() const
 {
-    return Create<OfdmPpdu>(GetPsdu(), GetTxVector(), m_txCenterFreq, m_band, m_uid);
+    return Ptr<WifiPpdu>(new OfdmPpdu(*this));
 }
 
 OfdmPpdu::LSigHeader::LSigHeader()
