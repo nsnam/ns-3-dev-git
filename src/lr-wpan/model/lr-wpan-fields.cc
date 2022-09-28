@@ -274,10 +274,10 @@ GtsFields::Serialize (Buffer::Iterator i) const
 
       for (int j = 0; j < m_gtsSpecDescCount; j++)
         {
-          WriteTo (i,m_gtsList[j].m_gtsDescDevShortAddr);
+          WriteTo (i, m_gtsList[j].m_gtsDescDevShortAddr);
 
-          gtsDescStartAndLenght = m_gtsList[j].m_gtsDescStartSlot & (0x0F);
-          gtsDescStartAndLenght = (m_gtsList[j].m_gtsDescLength << 4) & (0x0F);
+          gtsDescStartAndLenght = (m_gtsList[j].m_gtsDescStartSlot & 0x0F) | // GTS descriptor bits 16-19
+                                  (m_gtsList[j].m_gtsDescLength & 0xF0);     // GTS descriptor bits 20-23
 
           i.WriteU8 (gtsDescStartAndLenght);
         }
