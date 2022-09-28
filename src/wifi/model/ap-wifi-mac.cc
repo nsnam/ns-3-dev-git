@@ -30,6 +30,7 @@
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
 #include "reduced-neighbor-report.h"
+#include "wifi-mac-queue-scheduler.h"
 #include "wifi-mac-queue.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
@@ -1014,23 +1015,20 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     return assoc;
 }
 
-void
-ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t linkId)
+ApWifiMac::LinkIdStaAddrMap
+ApWifiMac::GetLinkIdStaAddrMap(MgtAssocResponseHeader& assoc,
+                               const Mac48Address& to,
+                               uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << to << +linkId);
-
     // find all the links to setup (i.e., those for which status code is success)
-    std::list<std::reference_wrapper<MgtAssocResponseHeader>> assocResponses;
     std::map<uint8_t /* link ID */, Mac48Address> linkIdStaAddrMap;
 
     if (assoc.GetStatusCode().IsSuccess())
     {
-        assocResponses.push_back(std::ref(assoc));
         linkIdStaAddrMap[linkId] = to;
     }
 
-    const auto& mle = assoc.GetMultiLinkElement();
-    if (mle.has_value())
+    if (const auto& mle = assoc.GetMultiLinkElement())
     {
         const auto staMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(to);
         NS_ABORT_MSG_IF(!staMldAddress.has_value(),
@@ -1041,7 +1039,6 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t
             if (perStaProfile.HasAssocResponse() &&
                 perStaProfile.GetAssocResponse().GetStatusCode().IsSuccess())
             {
-                assocResponses.emplace_back(perStaProfile.GetAssocResponse());
                 uint8_t otherLinkId = perStaProfile.GetLinkId();
                 auto staAddress = GetWifiRemoteStationManager(otherLinkId)
                                       ->GetAffiliatedStaAddress(*staMldAddress);
@@ -1055,7 +1052,13 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t
         }
     }
 
-    if (assocResponses.empty())
+    return linkIdStaAddrMap;
+}
+
+void
+ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdStaAddrMap)
+{
+    if (linkIdStaAddrMap.empty())
     {
         // no link to setup, nothing to do
         return;
@@ -1162,9 +1165,21 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t
     // Element must not contain the AID field. We set the AID field in such
     // Association Responses anyway, in order to ease future implementation of
     // the inheritance mechanism.
-    for (auto& assocResp : assocResponses)
+    if (assoc.GetStatusCode().IsSuccess())
     {
-        assocResp.get().SetAssociationId(aid);
+        assoc.SetAssociationId(aid);
+    }
+    if (const auto& mle = assoc.GetMultiLinkElement())
+    {
+        for (std::size_t idx = 0; idx < mle->GetNPerStaProfileSubelements(); idx++)
+        {
+            if (const auto& perStaProfile = mle->GetPerStaProfile(idx);
+                perStaProfile.HasAssocResponse() &&
+                perStaProfile.GetAssocResponse().GetStatusCode().IsSuccess())
+            {
+                perStaProfile.GetAssocResponse().SetAssociationId(aid);
+            }
+        }
     }
 }
 
@@ -1194,7 +1209,13 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
         assoc.SetMultiLinkElement(GetMultiLinkElement(linkId, hdr.GetType(), to));
     }
 
-    SetAid(assoc, to, linkId);
+    auto linkIdStaAddrMap = GetLinkIdStaAddrMap(assoc, to, linkId);
+    SetAid(assoc, linkIdStaAddrMap);
+
+    if (GetNLinks() > 1)
+    {
+        ConfigQueueScheduler(linkIdStaAddrMap, to, linkId);
+    }
 
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(assoc);
@@ -1217,6 +1238,39 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
     else
     {
         GetVOQueue()->Queue(packet, hdr);
+    }
+}
+
+void
+ApWifiMac::ConfigQueueScheduler(const LinkIdStaAddrMap& linkIdStaAddrMap,
+                                const Mac48Address& to,
+                                uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << to << +linkId);
+
+    // get a list of the IDs of the links to setup
+    std::list<uint8_t> linkIds;
+    std::transform(linkIdStaAddrMap.cbegin(),
+                   linkIdStaAddrMap.cend(),
+                   std::back_inserter(linkIds),
+                   [](auto&& linkIdStaAddrPair) { return linkIdStaAddrPair.first; });
+
+    // get the MLD address of the STA, if affiliated with a non-AP MLD, or the STA address
+    auto staAddr = to;
+    if (auto mldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(to))
+    {
+        staAddr = *mldAddr;
+    }
+
+    // configure the queue scheduler to only use the links that have been setup for
+    // transmissions to this station
+    for (const auto& [acIndex, wifiAc] : wifiAcList)
+    {
+        for (auto tid : {wifiAc.GetLowTid(), wifiAc.GetHighTid()})
+        {
+            WifiContainerQueueId queueId(WIFI_QOSDATA_UNICAST_QUEUE, staAddr, tid);
+            m_scheduler->SetLinkIds(acIndex, queueId, linkIds);
+        }
     }
 }
 

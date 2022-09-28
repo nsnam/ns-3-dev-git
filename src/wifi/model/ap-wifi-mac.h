@@ -278,9 +278,10 @@ class ApWifiMac : public WifiMac
      * \return the Association Response frame
      */
     MgtAssocResponseHeader GetAssocResp(Mac48Address to, uint8_t linkId);
+    /// Map of (link ID, remote STA address) of the links to setup
+    using LinkIdStaAddrMap = std::map<uint8_t, Mac48Address>;
     /**
-     * Set the AID field of the given Association Response frame, which is going
-     * to be sent to the STA with the given address on the given link. In case of
+     * Set the AID field of the given Association Response frame. In case of
      * multi-link setup, the selected AID value must be assigned to all the STAs
      * corresponding to the setup links. The AID value is selected among the AID
      * values that are possibly already assigned to the STAs affiliated with the
@@ -288,10 +289,34 @@ class ApWifiMac : public WifiMac
      * a new AID value is selected.
      *
      * \param assoc the given Association Response frame
-     * \param to the address of the STA receiving the Association Response frame
-     * \param linkId the ID of the given link
+     * \param linkIdStaAddrMap a map of (link ID, remote STA address) of the links to setup
      */
-    void SetAid(MgtAssocResponseHeader& assoc, const Mac48Address& to, uint8_t linkId);
+    void SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdStaAddrMap);
+    /**
+     * Get a map of (link ID, remote STA address) of the links to setup. Information
+     * is taken from the given Association Response that is sent over the given link
+     * to the given station.
+     *
+     * \param assoc the given Association Response frame
+     * \param to the Receiver Address (RA) of the Association Response frame
+     * \param linkId the ID of the link on which the Association Response frame is sent
+     * \return a map of (link ID, remote STA address) of the links to setup
+     */
+    LinkIdStaAddrMap GetLinkIdStaAddrMap(MgtAssocResponseHeader& assoc,
+                                         const Mac48Address& to,
+                                         uint8_t linkId);
+    /**
+     * Configure the queue scheduler so that frames stored in the container queues associated
+     * with the station which we are sending an Association Response frame to are only transmitted
+     * on the setup links.
+     *
+     * \param linkIdStaAddrMap a map of (link ID, remote STA address) of the links to setup
+     * \param to the Receiver Address (RA) of the Association Response frame
+     * \param linkId the ID of the link on which the Association Response frame is being sent
+     */
+    void ConfigQueueScheduler(const LinkIdStaAddrMap& linkIdStaAddrMap,
+                              const Mac48Address& to,
+                              uint8_t linkId);
     /**
      * Forward an association or a reassociation response packet to the DCF/EDCA.
      *
