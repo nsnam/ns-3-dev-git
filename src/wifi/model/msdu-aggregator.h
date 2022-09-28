@@ -55,8 +55,15 @@ class MsduAggregator : public Object
      */
     static TypeId GetTypeId();
 
-    MsduAggregator();
-    ~MsduAggregator() override;
+    MsduAggregator() = default;
+    ~MsduAggregator() override = default;
+
+    /**
+     * Set the ID of the link this MSDU aggregator is associated with.
+     *
+     * \param linkId the ID of the link this MSDU aggregator is associated with
+     */
+    void SetLinkId(uint8_t linkId);
 
     /**
      * Compute the size of the A-MSDU resulting from the aggregation of an MSDU of
@@ -148,6 +155,7 @@ class MsduAggregator : public Object
   private:
     Ptr<WifiMac> m_mac;                  //!< the MAC of this station
     Ptr<HtFrameExchangeManager> m_htFem; //!< the HT Frame Exchange Manager of this station
+    uint8_t m_linkId{0};                 //!< ID of the link this object is connected to
 };
 
 } // namespace ns3

@@ -56,14 +56,6 @@ MpduAggregator::GetTypeId()
     return tid;
 }
 
-MpduAggregator::MpduAggregator()
-{
-}
-
-MpduAggregator::~MpduAggregator()
-{
-}
-
 void
 MpduAggregator::DoDispose()
 {
@@ -76,6 +68,13 @@ MpduAggregator::SetWifiMac(const Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
     m_mac = mac;
+}
+
+void
+MpduAggregator::SetLinkId(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << +linkId);
+    m_linkId = linkId;
 }
 
 void
@@ -137,7 +136,7 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
         return 0;
     }
 
-    Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager();
+    Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager(m_linkId);
     NS_ASSERT(stationManager);
 
     // Retrieve the Capabilities elements advertised by the recipient
@@ -228,7 +227,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
             mpduList.push_back(nextMpdu);
 
             // If allowed by the BA agreement, get the next MPDU
-            auto peekedMpdu = qosTxop->PeekNextMpdu(SINGLE_LINK_OP_ID, tid, recipient, nextMpdu);
+            auto peekedMpdu = qosTxop->PeekNextMpdu(m_linkId, tid, recipient, nextMpdu);
             nextMpdu = nullptr;
 
             if (peekedMpdu)
@@ -242,11 +241,8 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                 // and duration limit are met. Note that the returned MPDU differs from
                 // the peeked MPDU if A-MSDU aggregation is enabled.
                 NS_LOG_DEBUG("Trying to aggregate another MPDU");
-                nextMpdu = qosTxop->GetNextMpdu(SINGLE_LINK_OP_ID,
-                                                peekedMpdu,
-                                                txParams,
-                                                availableTime,
-                                                false);
+                nextMpdu =
+                    qosTxop->GetNextMpdu(m_linkId, peekedMpdu, txParams, availableTime, false);
             }
         }
 
