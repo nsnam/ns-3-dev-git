@@ -363,7 +363,7 @@ ApWifiMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to, u
 bool
 ApWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
-    return (to.IsGroup() || GetWifiRemoteStationManager()->IsAssociated(to));
+    return (to.IsGroup() || IsAssociated(to));
 }
 
 void
@@ -1480,9 +1480,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     Mac48Address from = hdr->GetAddr2();
     if (hdr->IsData())
     {
-        Mac48Address bssid = hdr->GetAddr1();
-        if (!hdr->IsFromDs() && hdr->IsToDs() && bssid == GetAddress() &&
-            GetWifiRemoteStationManager()->IsAssociated(from))
+        std::optional<uint8_t> apLinkId;
+        if (!hdr->IsFromDs() && hdr->IsToDs() &&
+            (apLinkId = IsAssociated(mpdu->GetHeader().GetAddr2())) &&
+            mpdu->GetHeader().GetAddr1() == GetFrameExchangeManager(*apLinkId)->GetAddress())
         {
             Mac48Address to = hdr->GetAddr3();
             if (to == GetAddress())
@@ -1499,15 +1500,15 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     }
                     else
                     {
-                        ForwardUp(packet, from, bssid);
+                        ForwardUp(packet, from, GetAddress());
                     }
                 }
                 else if (hdr->HasData())
                 {
-                    ForwardUp(packet, from, bssid);
+                    ForwardUp(packet, from, GetAddress());
                 }
             }
-            else if (to.IsGroup() || GetWifiRemoteStationManager()->IsAssociated(to))
+            else if (to.IsGroup() || IsAssociated(to))
             {
                 NS_LOG_DEBUG("forwarding frame from=" << from << ", to=" << to);
                 Ptr<Packet> copy = packet->Copy();
