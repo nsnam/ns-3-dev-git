@@ -221,36 +221,30 @@ DualStackTestCase::SetUpSim ()
   source2 = sockFactory1->CreateSocket ();
   source3 = sockFactory1->CreateSocket ();
   source4 = sockFactory1->CreateSocket ();
-
-  return;
 }
 
 void
 DualStackTestCase::ServerHandleConnectionCreated1 (Ptr<Socket> s, const Address & addr)
 {
   receivedAddr1 = addr;
-  return;
 }
 
 void
 DualStackTestCase::ServerHandleConnectionCreated2 (Ptr<Socket> s, const Address & addr)
 {
   receivedAddr2 = addr;
-  return;
 }
 
 void
 DualStackTestCase::ServerHandleConnectionCreated3 (Ptr<Socket> s, const Address & addr)
 {
   receivedAddr3 = addr;
-  return;
 }
 
 void
 DualStackTestCase::ServerHandleConnectionCreated4 (Ptr<Socket> s, const Address & addr)
 {
   receivedAddr4 = addr;
-  return;
 }
 
 

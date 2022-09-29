@@ -661,8 +661,6 @@ void Ipv6ExtensionFragment::HandleTimeout (void)
   Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
   NS_LOG_DEBUG ("Scheduling later HandleTimeout at " << (now + difference).GetSeconds ());
   m_timeoutEvent = Simulator::Schedule (difference, &Ipv6ExtensionFragment::HandleTimeout, this);
-
-  return;
 }
 
 
@@ -770,7 +768,6 @@ void Ipv6ExtensionFragment::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t 
 {
   NS_LOG_FUNCTION (this);
   m_timeoutIter = iter;
-  return;
 }
 
 Ipv6ExtensionFragment::FragmentsTimeoutsListI_t Ipv6ExtensionFragment::Fragments::GetTimeoutIter ()

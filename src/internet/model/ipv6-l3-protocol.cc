@@ -1335,7 +1335,6 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<const NetDevice> idev, Ptr<Ipv6Mult
       rtentry->SetGateway (Ipv6Address::GetAny ());
       rtentry->SetOutputDevice (GetNetDevice (interfaceId));
       SendRealOut (rtentry, packet, h);
-      continue;
     }
 }
 

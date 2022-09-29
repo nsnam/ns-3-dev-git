@@ -74,7 +74,6 @@ PbbTestCase::PbbTestCase (std::string name, Ptr<PbbPacket> packet,
 
 PbbTestCase::~PbbTestCase (void)
 {
-  return;
 }
 
 void

@@ -3110,7 +3110,6 @@ DsrRouting::RouteRequestTimerExpire (Ptr<Packet> packet, std::vector<Ipv4Address
       NS_LOG_DEBUG ("Check the route request entry " << source << " " << dst);
       ScheduleRreqRetry (packet, address, false, requestId, protocol);
     }
-  return;
 }
 
 void

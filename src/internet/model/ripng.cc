@@ -754,7 +754,6 @@ void RipNg::Receive (Ptr<Socket> socket)
     {
       NS_LOG_LOGIC ("Ignoring message with unknown command: " << int (hdr.GetCommand ()));
     }
-  return;
 }
 
 void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, uint16_t senderPort, uint32_t incomingInterface, uint8_t hopLimit)

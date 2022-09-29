@@ -187,8 +187,6 @@ TrickleTimer::Enable ()
 
   Time timerExpitation = m_uniRand->GetValue (0.5, 1) * m_currentInterval;
   m_timerExpiration = Simulator::Schedule (timerExpitation, &TrickleTimer::TimerExpire, this);
-
-  return;
 }
 
 void
@@ -223,8 +221,6 @@ TrickleTimer::Reset ()
 
   Time timerExpitation = m_uniRand->GetValue (0.5, 1) * m_currentInterval;
   m_timerExpiration = Simulator::Schedule (timerExpitation, &TrickleTimer::TimerExpire, this);
-
-  return;
 }
 
 void

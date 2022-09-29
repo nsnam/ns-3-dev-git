@@ -2160,7 +2160,6 @@ AnimationInterface::SetOutputFile (const std::string& fn, bool routing)
       m_f = f;
       m_outputFileName = fn;
     }
-  return;
 }
 
 void

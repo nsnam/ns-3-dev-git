@@ -263,7 +263,6 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses
           ++i;
         }
     }
-  return;
 }
 
 void

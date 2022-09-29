@@ -188,7 +188,6 @@ DsrErrorBuffer::Drop (DsrErrorBuffEntry en, std::string reason)
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetDestination ());
 //  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),
 //     Socket::ERROR_NOROUTETOHOST);
-  return;
 }
 
 void
@@ -197,7 +196,6 @@ DsrErrorBuffer::DropLink (DsrErrorBuffEntry en, std::string reason)
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetSource () << " " << en.GetNextHop ());
 //  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),
 //     Socket::ERROR_NOROUTETOHOST);
-  return;
 }
 }  // namespace dsr
 }  // namespace ns3

@@ -293,7 +293,6 @@ Ipv6AddressGeneratorImpl::Init (
     {
       m_netTable[index].addr[j] = interfaceIdBits[j];
     }
-  return;
 }
 
 Ipv6Address

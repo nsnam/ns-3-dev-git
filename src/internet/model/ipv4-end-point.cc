@@ -97,7 +97,6 @@ Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (this << netdevice);
   m_boundnetdevice = netdevice;
-  return;
 }
 
 Ptr<NetDevice>

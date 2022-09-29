@@ -344,7 +344,6 @@ Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
       NS_ASSERT_MSG (found, "Socket cannot be bound to a NetDevice not existing on the Node");
     }
   m_boundnetdevice = netdevice;
-  return;
 }
 
 Ptr<NetDevice>

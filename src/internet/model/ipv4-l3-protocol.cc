@@ -264,7 +264,6 @@ Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
           return;
         }
     }
-  return;
 }
 /*
  * This method is called by AggregateObject and completes the aggregation
@@ -1048,7 +1047,6 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
 
       m_multicastForwardTrace (ipHeader, packet, interface);
       SendRealOut (rtentry, packet, ipHeader);
-      continue;
     }
 }
 
@@ -1519,8 +1517,6 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Head
 
     }
   while (moreFragment);
-
-  return;
 }
 
 bool
@@ -1705,7 +1701,6 @@ void
 Ipv4L3Protocol::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t iter)
 {
   m_timeoutIter = iter;
-  return;
 }
 
 Ipv4L3Protocol::FragmentsTimeoutsListI_t
@@ -1879,8 +1874,6 @@ Ipv4L3Protocol::HandleTimeout (void)
 
   Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
   m_timeoutEvent = Simulator::Schedule (difference, &Ipv4L3Protocol::HandleTimeout, this);
-
-  return;
 }
 
 } // namespace ns3

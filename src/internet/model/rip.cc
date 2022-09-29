@@ -783,7 +783,6 @@ void Rip::Receive (Ptr<Socket> socket)
     {
       NS_LOG_LOGIC ("Ignoring message with unknown command: " << int (hdr.GetCommand ()));
     }
-  return;
 }
 
 void Rip::HandleRequests (RipHeader requestHdr, Ipv4Address senderAddress, uint16_t senderPort, uint32_t incomingInterface, uint8_t hopLimit)

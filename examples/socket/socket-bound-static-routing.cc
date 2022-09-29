@@ -177,13 +177,11 @@ void SendStuff (Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port)
   Ptr<Packet> p = Create<Packet> ();
   p->AddPaddingAtEnd (100);
   sock->SendTo (p, 0, InetSocketAddress (dstaddr,port));
-  return;
 }
 
 void BindSock (Ptr<Socket> sock, Ptr<NetDevice> netdev)
 {
   sock->BindToNetDevice (netdev);
-  return;
 }
 
 void

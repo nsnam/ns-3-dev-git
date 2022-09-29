@@ -152,7 +152,6 @@ TdMtFfMacScheduler::DoCschedCellConfigReq (const struct FfMacCschedSapProvider::
   FfMacCschedSapUser::CschedUeConfigCnfParameters cnf;
   cnf.m_result = SUCCESS;
   m_cschedSapUser->CschedUeConfigCnf (cnf);
-  return;
 }
 
 void
@@ -191,7 +190,6 @@ TdMtFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::Cs
     {
       (*it).second = params.m_transmissionMode;
     }
-  return;
 }
 
 void
@@ -210,8 +208,6 @@ TdMtFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Cs
           m_flowStatsUl.insert (params.m_rnti);
         }
     }
-
-  return;
 }
 
 void
@@ -236,7 +232,6 @@ TdMtFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::C
             }
         }
     }
-  return;
 }
 
 void
@@ -275,8 +270,6 @@ TdMtFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::C
     {
       m_nextRntiUl = 0;
     }
-
-  return;
 }
 
 
@@ -300,8 +293,6 @@ TdMtFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider::S
     {
       (*it).second = params;
     }
-
-  return;
 }
 
 void
@@ -309,7 +300,6 @@ TdMtFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("method not implemented");
-  return;
 }
 
 void
@@ -317,7 +307,6 @@ TdMtFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::S
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("method not implemented");
-  return;
 }
 
 int
@@ -1076,9 +1065,6 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
   ret.m_nrOfPdcchOfdmSymbols = 1;   /// \todo check correct value according the DCIs txed
 
   m_schedSapUser->SchedDlConfigInd (ret);
-
-
-  return;
 }
 
 void
@@ -1087,8 +1073,6 @@ TdMtFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::Sc
   NS_LOG_FUNCTION (this);
 
   m_rachList = params.m_rachList;
-
-  return;
 }
 
 void
@@ -1147,8 +1131,6 @@ TdMtFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sch
           NS_LOG_ERROR (this << " CQI type unknown");
         }
     }
-
-  return;
 }
 
 
@@ -1540,22 +1522,18 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
 
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
   m_schedSapUser->SchedUlConfigInd (ret);
-
-  return;
 }
 
 void
 TdMtFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 void
 TdMtFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 void
@@ -1598,8 +1576,6 @@ TdMtFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider:
             }
         }
     }
-
-  return;
 }
 
 void
@@ -1745,7 +1721,6 @@ TdMtFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sch
     default:
       NS_FATAL_ERROR ("Unknown type of UL-CQI");
     }
-  return;
 }
 
 void
@@ -1796,8 +1771,6 @@ TdMtFfMacScheduler::RefreshDlCqiMaps (void)
           itA30++;
         }
     }
-
-  return;
 }
 
 
@@ -1827,8 +1800,6 @@ TdMtFfMacScheduler::RefreshUlCqiMaps (void)
           itUl++;
         }
     }
-
-  return;
 }
 
 void

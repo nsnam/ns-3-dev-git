@@ -251,7 +251,6 @@ LrWpanHelper::AssociateToPan (NetDeviceContainer c, uint16_t panId)
           id++;
         }
     }
-  return;
 }
 
 void
@@ -308,7 +307,6 @@ LrWpanHelper::AssociateToBeaconPan (NetDeviceContainer c, uint16_t panId, Mac16A
           id++;
         }
     }
-  return;
 }
 
 /**

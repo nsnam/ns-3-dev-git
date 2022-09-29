@@ -192,7 +192,6 @@ main (int argc, char *argv[])
 void BindSock (Ptr<Socket> sock, Ptr<NetDevice> netdev)
 {
   sock->BindToNetDevice (netdev);
-  return;
 }
 
 void StartFlow (Ptr<Socket> localSocket,

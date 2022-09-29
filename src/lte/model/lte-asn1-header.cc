@@ -418,7 +418,6 @@ void Asn1Header::SerializeInteger (int n, int nmin, int nmax) const
 void Asn1Header::SerializeNull () const
 {
   // Clause 18 ITU-T X.691
-  return;
 }
 
 void Asn1Header::FinalizeSerialization () const

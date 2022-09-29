@@ -732,8 +732,6 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo (const struct FfMacSchedSapProvider::
 
       m_ulRbAvailableforUe.insert ( std::pair<uint16_t, std::vector<bool> > (rnti, ulRbAvailableMap ) );
     }
-
-  return;
 }
 
 void

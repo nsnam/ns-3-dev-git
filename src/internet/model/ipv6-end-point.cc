@@ -82,7 +82,6 @@ uint16_t Ipv6EndPoint::GetPeerPort ()
 void Ipv6EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   m_boundnetdevice = netdevice;
-  return;
 }
 
 Ptr<NetDevice> Ipv6EndPoint::GetBoundNetDevice (void)

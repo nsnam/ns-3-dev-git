@@ -1025,7 +1025,6 @@ DsrRouteCache::Purge ()
           m_sortedRoutes.erase (itmp);
         }
     }
-  return;
 }
 
 void

@@ -270,7 +270,6 @@ Ipv4AddressGeneratorImpl::Init (
 
   NS_ABORT_MSG_UNLESS (addrBits <= m_netTable[index].addrMax, "Ipv4AddressGeneratorImpl::Init(): Address overflow");
   m_netTable[index].addr = addrBits;
-  return;
 }
 
 Ipv4Address

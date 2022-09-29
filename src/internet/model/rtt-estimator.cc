@@ -212,7 +212,6 @@ RttMeanDeviation::FloatingPointUpdate (Time m)
   // RTTVAR <- (1 - beta) * RTTVAR + beta * |SRTT - R'|
   Time difference = Abs (err) - m_estimatedVariation;
   m_estimatedVariation += difference * m_beta;
-  return;
 }
 
 void
@@ -232,7 +231,6 @@ RttMeanDeviation::IntegerUpdate (Time m, uint32_t rttShift, uint32_t variationSh
   int64_t rttvar = m_estimatedVariation.GetInteger () << variationShift;
   rttvar += delta;
   m_estimatedVariation = Time::From (rttvar >> variationShift);
-  return;
 }
 
 void

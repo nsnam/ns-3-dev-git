@@ -987,8 +987,6 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
     {
       m_endPoint6->BindToNetDevice (netdevice);
     }
-
-  return;
 }
 
 /* Clean up after Bind. Set up callback functions in the end-point. */

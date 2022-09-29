@@ -1297,7 +1297,6 @@ void SixLowPanIphc::SetSrcInlinePart (uint8_t srcInlinePart[16], uint8_t size)
   NS_ASSERT_MSG (size <= 16,  "Src inline part too large");
 
   memcpy (m_srcInlinePart, srcInlinePart, size);
-  return;
 }
 
 void SixLowPanIphc::SetM (bool mField)
@@ -1343,7 +1342,6 @@ void SixLowPanIphc::SetDstInlinePart (uint8_t dstInlinePart[16], uint8_t size)
   NS_ASSERT_MSG (size <= 16,  "Dst inline part too large");
 
   memcpy (m_dstInlinePart, dstInlinePart, size);
-  return;
 }
 
 void SixLowPanIphc::SetSrcContextId (uint8_t srcContextId)

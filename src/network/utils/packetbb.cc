@@ -63,7 +63,6 @@ NS_OBJECT_ENSURE_REGISTERED (PbbPacket);
 PbbTlvBlock::PbbTlvBlock (void)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 PbbTlvBlock::~PbbTlvBlock (void)
@@ -304,7 +303,6 @@ PbbTlvBlock::operator!= (const PbbTlvBlock &other) const
 PbbAddressTlvBlock::PbbAddressTlvBlock (void)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 PbbAddressTlvBlock::~PbbAddressTlvBlock (void)

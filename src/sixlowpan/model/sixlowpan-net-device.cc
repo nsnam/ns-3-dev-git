@@ -377,8 +377,6 @@ void SixLowPanNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort,
     }
 
   m_rxCallback (this, copyPkt, Ipv6L3Protocol::PROT_NUMBER, realSrc);
-
-  return;
 }
 
 void SixLowPanNetDevice::SetIfIndex (const uint32_t index)
@@ -2315,8 +2313,6 @@ void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
         }
     }
   while (moreFrag);
-
-  return;
 }
 
 bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &src, Address const &dst, bool isFirst)
@@ -2576,7 +2572,6 @@ void
 SixLowPanNetDevice::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t iter)
 {
   m_timeoutIter = iter;
-  return;
 }
 
 SixLowPanNetDevice::FragmentsTimeoutsListI_t
@@ -2646,8 +2641,6 @@ void SixLowPanNetDevice::HandleTimeout (void)
 
   Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
   m_timeoutEvent = Simulator::Schedule (difference, &SixLowPanNetDevice::HandleTimeout, this);
-
-  return;
 }
 
 void SixLowPanNetDevice::AddContext (uint8_t contextId, Ipv6Prefix contextPrefix, bool compressionAllowed, Time validLifetime)
@@ -2670,8 +2663,6 @@ void SixLowPanNetDevice::AddContext (uint8_t contextId, Ipv6Prefix contextPrefix
   m_contextTable[contextId].contextPrefix = contextPrefix;
   m_contextTable[contextId].compressionAllowed = compressionAllowed;
   m_contextTable[contextId].validLifetime = Simulator::Now () + validLifetime;
-
-  return;
 }
 
 bool SixLowPanNetDevice::GetContext (uint8_t contextId, Ipv6Prefix& contextPrefix, bool& compressionAllowed, Time& validLifetime)
@@ -2714,7 +2705,6 @@ void SixLowPanNetDevice::RenewContext (uint8_t contextId, Time validLifetime)
     }
   m_contextTable[contextId].compressionAllowed = true;
   m_contextTable[contextId].validLifetime = Simulator::Now () + validLifetime;
-  return;
 }
 
 
@@ -2734,7 +2724,6 @@ void SixLowPanNetDevice::InvalidateContext (uint8_t contextId)
       return;
     }
   m_contextTable[contextId].compressionAllowed = false;
-  return;
 }
 
 void SixLowPanNetDevice::RemoveContext (uint8_t contextId)
@@ -2754,7 +2743,6 @@ void SixLowPanNetDevice::RemoveContext (uint8_t contextId)
     }
 
   m_contextTable.erase (contextId);
-  return;
 }
 
 bool SixLowPanNetDevice::FindUnicastCompressionContext (Ipv6Address address, uint8_t& contextId)

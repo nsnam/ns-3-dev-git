@@ -499,8 +499,6 @@ SimpleNetDevice::FinishTransmission (Ptr<Packet> packet)
   m_channel->Send (packet, proto, dst, src, this);
 
   StartTransmission ();
-
-  return;
 }
 
 Ptr<Node>

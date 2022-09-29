@@ -153,7 +153,6 @@ FdBetFfMacScheduler::DoCschedCellConfigReq (const struct FfMacCschedSapProvider:
   FfMacCschedSapUser::CschedUeConfigCnfParameters cnf;
   cnf.m_result = SUCCESS;
   m_cschedSapUser->CschedUeConfigCnf (cnf);
-  return;
 }
 
 void
@@ -192,7 +191,6 @@ FdBetFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::C
     {
       (*it).second = params.m_transmissionMode;
     }
-  return;
 }
 
 void
@@ -221,8 +219,6 @@ FdBetFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::C
           m_flowStatsUl.insert (std::pair<uint16_t, fdbetsFlowPerf_t> (params.m_rnti, flowStatsUl));
         }
     }
-
-  return;
 }
 
 void
@@ -247,7 +243,6 @@ FdBetFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::
             }
         }
     }
-  return;
 }
 
 void
@@ -286,8 +281,6 @@ FdBetFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::
     {
       m_nextRntiUl = 0;
     }
-
-  return;
 }
 
 
@@ -311,8 +304,6 @@ FdBetFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider::
     {
       (*it).second = params;
     }
-
-  return;
 }
 
 void
@@ -320,7 +311,6 @@ FdBetFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvide
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("method not implemented");
-  return;
 }
 
 void
@@ -328,7 +318,6 @@ FdBetFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("method not implemented");
-  return;
 }
 
 int
@@ -1185,9 +1174,6 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
     }
 
   m_schedSapUser->SchedDlConfigInd (ret);
-
-
-  return;
 }
 
 void
@@ -1196,8 +1182,6 @@ FdBetFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::S
   NS_LOG_FUNCTION (this);
 
   m_rachList = params.m_rachList;
-
-  return;
 }
 
 void
@@ -1256,8 +1240,6 @@ FdBetFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sc
           NS_LOG_ERROR (this << " CQI type unknown");
         }
     }
-
-  return;
 }
 
 
@@ -1672,22 +1654,18 @@ FdBetFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sc
     }
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
   m_schedSapUser->SchedUlConfigInd (ret);
-
-  return;
 }
 
 void
 FdBetFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 void
 FdBetFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  return;
 }
 
 void
@@ -1730,8 +1708,6 @@ FdBetFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider
             }
         }
     }
-
-  return;
 }
 
 void
@@ -1877,7 +1853,6 @@ FdBetFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sc
     default:
       NS_FATAL_ERROR ("Unknown type of UL-CQI");
     }
-  return;
 }
 
 void
@@ -1928,8 +1903,6 @@ FdBetFfMacScheduler::RefreshDlCqiMaps (void)
           itA30++;
         }
     }
-
-  return;
 }
 
 
@@ -1959,8 +1932,6 @@ FdBetFfMacScheduler::RefreshUlCqiMaps (void)
           itUl++;
         }
     }
-
-  return;
 }
 
 void
@@ -2037,7 +2008,6 @@ FdBetFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
     {
       NS_LOG_ERROR (this << " Does not find BSR report info of UE " << rnti);
     }
-
 }
 
 void

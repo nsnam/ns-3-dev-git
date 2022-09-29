@@ -1651,7 +1651,6 @@ TestUlOfdmaPpduUid::ResetPpduUid (void)
 {
   NS_LOG_FUNCTION (this);
   m_phyAp->SetPpduUid (0); //one is enough since it's a global attribute
-  return;
 }
 
 void

@@ -991,8 +991,6 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
             }
         }
     }
-
-  return;
 }
 
 void

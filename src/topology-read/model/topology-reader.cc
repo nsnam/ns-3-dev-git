@@ -96,7 +96,6 @@ void
 TopologyReader::AddLink (Link link)
 {
   m_linksList.push_back (link);
-  return;
 }
 
 
