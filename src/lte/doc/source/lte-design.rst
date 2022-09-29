@@ -1303,7 +1303,7 @@ where :math:`m_{GBR}^j(t)` is calculated as follows:
 
 .. math::
 
-	m_{GBR}^j(t)=\frac{GBR^j}{\overline{R^j}(t)}=\frac{GBR^j}{(1-\alpha)\cdot\overline{R^j}(t-1)+\alpha \cdot r^j(t)} \;,
+   m_{GBR}^j(t)=\frac{GBR^j}{\overline{R^j}(t)}=\frac{GBR^j}{(1-\alpha)\cdot\overline{R^j}(t-1)+\alpha \cdot r^j(t)} \;,
 
 where :math:`GBR^j` is the bit rate specified in EPS bearer of the
 flow :math:`j`, :math:`\overline{R^j}(t)` is the past averaged throughput that is calculated with a

@@ -168,17 +168,17 @@ This is defined in the ``node.cc`` file as follows::
         .SetGroupName ("Network")
         .AddConstructor<Node> ()
         .AddAttribute ("DeviceList",
-	               "The list of devices associated to this Node.",
+                       "The list of devices associated to this Node.",
                        ObjectVectorValue (),
                        MakeObjectVectorAccessor (&Node::m_devices),
                        MakeObjectVectorChecker<NetDevice> ())
         .AddAttribute ("ApplicationList",
-	               "The list of applications associated to this Node.",
+                       "The list of applications associated to this Node.",
                        ObjectVectorValue (),
                        MakeObjectVectorAccessor (&Node::m_applications),
                        MakeObjectVectorChecker<Application> ())
         .AddAttribute ("Id",
-	               "The id (unique integer) of this Node.",
+                       "The id (unique integer) of this Node.",
                        TypeId::ATTR_GET, // allow only getting it.
                        UintegerValue (0),
                        MakeUintegerAccessor (&Node::m_id),

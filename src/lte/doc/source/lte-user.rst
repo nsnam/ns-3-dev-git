@@ -1774,9 +1774,9 @@ private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equ
    lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandwidth", UintegerValue (6));
    lteHelper->SetFfrAlgorithmAttribute ("RsrqThreshold", UintegerValue (20));
    lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
    lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
    lteHelper->SetFfrAlgorithmAttribute ("CenterAreaTpc", UintegerValue (1));
    lteHelper->SetFfrAlgorithmAttribute ("EdgeAreaTpc", UintegerValue (2));
    NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
@@ -1816,9 +1816,9 @@ equals ``LteEnbPhy::TxPower``, power in edge area equals ``LteEnbPhy::TxPower + 
    lteHelper->SetFfrAlgorithmAttribute ("AllowCenterUeUseEdgeSubBand", BooleanValue (false));
    lteHelper->SetFfrAlgorithmAttribute ("RsrqThreshold", UintegerValue (20));
    lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
    lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
-		         UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
    NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
 
 
@@ -1870,11 +1870,11 @@ Power in center area equals ``LteEnbPhy::TxPower - 3dB``, power in medium area e
    lteHelper->SetFfrAlgorithmAttribute ("CenterRsrqThreshold", UintegerValue (28));
    lteHelper->SetFfrAlgorithmAttribute ("EdgeRsrqThreshold", UintegerValue (18));
    lteHelper->SetFfrAlgorithmAttribute ("CenterAreaPowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
    lteHelper->SetFfrAlgorithmAttribute ("MediumAreaPowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
    lteHelper->SetFfrAlgorithmAttribute ("EdgeAreaPowerOffset",
-			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+                                        UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
    NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
 
 
@@ -1925,9 +1925,9 @@ power in edge area equals ``LteEnbPhy::TxPower + 0dB``::
    lteHelper->SetFfrAlgorithmAttribute("DlCqiThreshold", UintegerValue (10));
    lteHelper->SetFfrAlgorithmAttribute("UlCqiThreshold", UintegerValue (10));
    lteHelper->SetFfrAlgorithmAttribute("CenterAreaPowerOffset",
-		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB_6));
+                                       UintegerValue (LteRrcSap::PdschConfigDedicated::dB_6));
    lteHelper->SetFfrAlgorithmAttribute("EdgeAreaPowerOffset",
-		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+                                       UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
    lteHelper->SetFfrAlgorithmAttribute("UlSubBandOffset", UintegerValue (0));
    lteHelper->SetFfrAlgorithmAttribute("UlReuse3SubBandwidth", UintegerValue (4));
    lteHelper->SetFfrAlgorithmAttribute("UlReuse1SubBandwidth", UintegerValue (4));
@@ -1975,9 +1975,9 @@ Power in center area equals ``LteEnbPhy::TxPower - 0dB``, power in edge area equ
   lteHelper->SetFfrAlgorithmAttribute ("RsrpDifferenceThreshold", UintegerValue (5));
   lteHelper->SetFfrAlgorithmAttribute ("EdgeRbNum", UintegerValue (6));
   lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
-		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+                                       UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
   lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
-		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+                                       UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
 
 
 Automatic configuration

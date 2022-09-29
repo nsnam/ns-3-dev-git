@@ -1961,12 +1961,12 @@ If we run the experiment, enabling the logging, we can see the following:
    gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
    (gdb) run
 
-   0.00s TcpZeroWindowTestSuite:Tx(): 0.00	SENDER TX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) size 36
-   0.05s TcpZeroWindowTestSuite:Rx(): 0.05	RECEIVER RX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) ns3::TcpOptionEnd(EOL) size 0
-   0.05s TcpZeroWindowTestSuite:Tx(): 0.05	RECEIVER TX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) size 36
-   0.10s TcpZeroWindowTestSuite:Rx(): 0.10	SENDER RX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) ns3::TcpOptionEnd(EOL) size 0
-   0.10s TcpZeroWindowTestSuite:Tx(): 0.10	SENDER TX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) size 32
-   0.15s TcpZeroWindowTestSuite:Rx(): 0.15	RECEIVER RX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) ns3::TcpOptionEnd(EOL) size 0
+   0.00s TcpZeroWindowTestSuite:Tx(): 0.00  SENDER TX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) size 36
+   0.05s TcpZeroWindowTestSuite:Rx(): 0.05  RECEIVER RX 49153 > 4477 [SYN] Seq=0 Ack=0 Win=32768 ns3::TcpOptionWinScale(2) ns3::TcpOptionTS(0;0) ns3::TcpOptionEnd(EOL) size 0
+   0.05s TcpZeroWindowTestSuite:Tx(): 0.05  RECEIVER TX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) size 36
+   0.10s TcpZeroWindowTestSuite:Rx(): 0.10  SENDER RX 4477 > 49153 [SYN|ACK] Seq=0 Ack=1 Win=0 ns3::TcpOptionWinScale(0) ns3::TcpOptionTS(50;0) ns3::TcpOptionEnd(EOL) size 0
+   0.10s TcpZeroWindowTestSuite:Tx(): 0.10  SENDER TX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) size 32
+   0.15s TcpZeroWindowTestSuite:Rx(): 0.15  RECEIVER RX 49153 > 4477 [ACK] Seq=1 Ack=1 Win=32768 ns3::TcpOptionTS(100;50) ns3::TcpOptionEnd(EOL) size 0
    (...)
 
 The output is cut to show the threeway handshake. As we can see from the headers,

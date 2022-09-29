@@ -225,7 +225,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
   |                                      |                                    |
   |   .. sourcecode:: bash               | .. sourcecode:: bash               |
   |                                      |                                    |
-  |      $ ls                            |    $ ls		              |
+  |      $ ls                            |    $ ls                            |
   +--------------------------------------+------------------------------------+
 
 * Shorthand Notations:

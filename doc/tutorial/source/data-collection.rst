@@ -395,8 +395,8 @@ same timestamped data, such as follows:
 
 ::
 
-  Time (Seconds) = 9.312e+00	Packet Byte Count = 596
-  Time (Seconds) = 9.312e+00	Packet Byte Count = 564
+  Time (Seconds) = 9.312e+00    Packet Byte Count = 596
+  Time (Seconds) = 9.312e+00    Packet Byte Count = 564
 
 Two files are provided, one for node "0" and one for node "1" as can
 be seen in the filenames.  Let's look at the code piece-by-piece:

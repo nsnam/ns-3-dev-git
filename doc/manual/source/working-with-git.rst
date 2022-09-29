@@ -413,7 +413,7 @@ Recall its commit hash of ``9df8ef4`` from above.
 
   $ git reset 9df8ef4 VERSION
   Unstaged changes after reset:
-  M	VERSION
+  M VERSION
   $ sed -i 's/3.34/3-dev/g' VERSION
   $ cat VERSION
   3-dev
@@ -525,8 +525,8 @@ And we can then do::
 Which leaves us with::
 
   Unstaged changes after reset:
-  M	VERSION
-  M	a
+  M VERSION
+  M a
 
 We can next hand-edit these files to restore them to original state, so that::
 

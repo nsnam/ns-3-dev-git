@@ -373,16 +373,16 @@ Only the first 10 lines of this file are shown here for brevity.
 
 .. sourcecode:: text
 
-  Time (Seconds) = 1.000e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.004e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.004e+00	Packet Byte Count = 576
-  Time (Seconds) = 1.009e+00	Packet Byte Count = 576
-  Time (Seconds) = 1.009e+00	Packet Byte Count = 576
-  Time (Seconds) = 1.015e+00	Packet Byte Count = 512
-  Time (Seconds) = 1.017e+00	Packet Byte Count = 576
-  Time (Seconds) = 1.017e+00	Packet Byte Count = 544
-  Time (Seconds) = 1.025e+00	Packet Byte Count = 576
-  Time (Seconds) = 1.025e+00	Packet Byte Count = 544
+  Time (Seconds) = 1.000e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.004e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.004e+00    Packet Byte Count = 576
+  Time (Seconds) = 1.009e+00    Packet Byte Count = 576
+  Time (Seconds) = 1.009e+00    Packet Byte Count = 576
+  Time (Seconds) = 1.015e+00    Packet Byte Count = 512
+  Time (Seconds) = 1.017e+00    Packet Byte Count = 576
+  Time (Seconds) = 1.017e+00    Packet Byte Count = 544
+  Time (Seconds) = 1.025e+00    Packet Byte Count = 576
+  Time (Seconds) = 1.025e+00    Packet Byte Count = 544
 
   ...
 
@@ -394,16 +394,16 @@ file are shown here for brevity.
 
 .. sourcecode:: text
 
-  Time (Seconds) = 1.002e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.007e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.013e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.020e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.028e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.036e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.045e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.053e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.061e+00	Packet Byte Count = 40
-  Time (Seconds) = 1.069e+00	Packet Byte Count = 40
+  Time (Seconds) = 1.002e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.007e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.013e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.020e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.028e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.036e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.045e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.053e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.061e+00    Packet Byte Count = 40
+  Time (Seconds) = 1.069e+00    Packet Byte Count = 40
 
   ...
 

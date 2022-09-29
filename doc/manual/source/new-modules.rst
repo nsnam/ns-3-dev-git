@@ -81,19 +81,19 @@ and ``.rst`` files.  The complete module with skeleton files looks like this:
     src/
       new-module/
         doc/
-	  new-module.rst
-	examples/
-	  new-module-example.cc
-	  CMakeLists.txt
-	helper/
-	  new-module-helper.cc
-	  new-module-helper.h
-	model/
-	  new-module.cc
-	  new-module.h
-	test/
-	  new-module-test-suite.cc
-	CMakeLists.txt
+      new-module.rst
+    examples/
+      new-module-example.cc
+      CMakeLists.txt
+    helper/
+      new-module-helper.cc
+      new-module-helper.h
+    model/
+      new-module.cc
+      new-module.h
+    test/
+      new-module-test-suite.cc
+    CMakeLists.txt
 
 (If required the ``bindings/`` directory listed in
 :ref:`Step-0 <Step-0>` will be created automatically during

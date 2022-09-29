@@ -2294,8 +2294,8 @@ or your favorite file viewer.
   1.01528 1072    1608
   1.02167 1608    2144
   ...
-  9.69256 5149	  5204
-  9.89311 5204	  5259
+  9.69256 5149    5204
+  9.89311 5204    5259
 
 You have a tab separated file with a timestamp, an old congestion
 window and a new congestion window suitable for directly importing

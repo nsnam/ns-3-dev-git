@@ -328,17 +328,17 @@ created using the example.
 
 ::
 
-  Time = -5.000e+00	Value = 25
-  Time = -4.000e+00	Value = 16
-  Time = -3.000e+00	Value = 9
-  Time = -2.000e+00	Value = 4
-  Time = -1.000e+00	Value = 1
-  Time = 0.000e+00	Value = 0
-  Time = 1.000e+00	Value = 1
-  Time = 2.000e+00	Value = 4
-  Time = 3.000e+00	Value = 9
-  Time = 4.000e+00	Value = 16
-  Time = 5.000e+00	Value = 25
+  Time = -5.000e+00  Value = 25
+  Time = -4.000e+00  Value = 16
+  Time = -3.000e+00  Value = 9
+  Time = -2.000e+00  Value = 4
+  Time = -1.000e+00  Value = 1
+  Time = 0.000e+00   Value = 0
+  Time = 1.000e+00   Value = 1
+  Time = 2.000e+00   Value = 4
+  Time = 3.000e+00   Value = 9
+  Time = 4.000e+00   Value = 16
+  Time = 5.000e+00   Value = 25
 
 This code from the example shows how to construct the
 FileAggregator as was discussed above.

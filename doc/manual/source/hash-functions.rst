@@ -19,19 +19,21 @@ add (or provide at run time) alternative hash function implementations.
 Basic Usage
 ***********
 
-The simplest way to get a hash value of a data buffer or string is just::
+The simplest way to get a hash value of a data buffer or string is just
+
+.. sourcecode:: cpp
 
   #include "ns3/hash.h"
 
   using namespace ns3;
 
-  char * buffer = ...
-  size_t buffer_size = ...
+  char* buffer = ...;
+  size_t buffer_size = ...;
 
-  uint32_t  buffer_hash = Hash32 ( buffer, buffer_size);
+  uint32_t buffer_hash = Hash32(buffer, buffer_size);
 
   std::string s;
-  uint32_t  string_hash = Hash32 (s);
+  uint32_t string_hash = Hash32(s);
 
 Equivalent functions are defined for 64-bit hash values.
 
@@ -43,31 +45,35 @@ as if they had been joined together.  (For example, you might want
 the hash of a packet stream, but not want to assemble a single buffer
 with the combined contents of all the packets.)
 
-This is almost as straight-forward as the first example::
+This is almost as straight-forward as the first example
+
+.. sourcecode:: cpp
 
   #include "ns3/hash.h"
 
   using namespace ns3;
 
-  char * buffer;
+  char* buffer;
   size_t buffer_size;
 
   Hasher hasher;  // Use default hash function
 
   for (<every buffer>)
-    {
-	buffer = get_next_buffer ();
-	hasher (buffer, buffer_size);
-    }
-  uint32_t combined_hash = hasher.GetHash32 ();
+  {
+      buffer = get_next_buffer();
+      hasher(buffer, buffer_size);
+  }
+  uint32_t combined_hash = hasher.GetHash32();
 
 By default ``Hasher`` preserves internal state to enable incremental
 hashing.  If you want to reuse a ``Hasher`` object (for example
 because it's configured with a non-default hash function), but don't
 want to add to the previously computed hash, you need to ``clear()``
-first::
+first
 
-  hasher.clear ().GetHash32 (buffer, buffer_size);
+.. sourcecode:: cpp
+
+  hasher.clear().GetHash32(buffer, buffer_size);
 
 This reinitializes the internal state before hashing the buffer.
 
@@ -76,9 +82,11 @@ Using an Alternative Hash Function
 **********************************
 
 The default hash function is murmur3_.  FNV1a_ is also available.  To specify
-the hash function explicitly, use this constructor::
+the hash function explicitly, use this constructor
 
-  Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
+.. sourcecode:: cpp
+
+  Hasher hasher = Hasher(Create<Hash::Function::Fnv1a>());
 
 
 Adding New Hash Function Implementations
@@ -95,16 +103,19 @@ To add the hash function ``foo``, follow the ``hash-murmur3.h``/``.cc`` pattern:
 
 
 If your hash function is a single function, e.g. ``hashf``, you don't
-even need to create a new class derived from HashImplementation::
+even need to create a new class derived from HashImplementation
 
-  Hasher hasher =
-    Hasher ( Create<Hash::Function::Hash32> (&hashf) );
+.. sourcecode:: cpp
+
+  Hasher hasher = Hasher(Create<Hash::Function::Hash32>(&hashf));
 
 For this to compile, your ``hashf`` has to match one of the function pointer
-signatures::
+signatures
 
-  typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
-  typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
+.. sourcecode:: cpp
+
+  typedef uint32_t (*Hash32Function_ptr) (const char*, const size_t);
+  typedef uint64_t (*Hash64Function_ptr) (const char*, const size_t);
 
 
 Sources for Hash Functions

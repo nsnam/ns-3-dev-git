@@ -182,14 +182,14 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
   WifiMacHelper mac;
 
   mac.SetType ("ns3::StaWifiMac",
-	       "Ssid", SsidValue (ssid),
-	       "ActiveProbing", BooleanValue (false));
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
 
   mac.SetType ("ns3::ApWifiMac",
-	       "Ssid", SsidValue (ssid));
+               "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
@@ -908,7 +908,7 @@ Each node is equipped with 802.11b Wi-Fi device::
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
                                   "Exponent", DoubleValue (3.0),
-				  "ReferenceLoss", DoubleValue (40.0459));
+                                  "ReferenceLoss", DoubleValue (40.0459));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control

@@ -125,9 +125,9 @@ Implementation modification
 ===========================
 
 * The DsrFsHeader has added 3 fields: message type, source id, destination id, and these changes only for post-processing
-	1. Message type is used to identify the data packet from control packet
-	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the Ipv4Header is not carrying the real source and destination ip address as needed
-	3. destination id is for same reason of above
+  1. Message type is used to identify the data packet from control packet
+  2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the Ipv4Header is not carrying the real source and destination ip address as needed
+  3. destination id is for same reason of above
 * Route Reply header is not word-aligned in DSR RFC, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
 

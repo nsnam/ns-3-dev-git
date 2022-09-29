@@ -93,22 +93,22 @@ Command-line Arguments
     to be ascii, giving the relative event times in ns.
 
     Program Options:
-	--all:     use all schedulers [false]
-	--cal:     use CalendarSheduler [false]
-	--calrev:  reverse ordering in the CalendarScheduler [false]
-	--heap:    use HeapScheduler [false]
-	--list:    use ListSheduler [false]
-	--map:     use MapScheduler (default) [true]
-	--pri:     use PriorityQueue [false]
-	--debug:   enable debugging output [false]
-	--pop:     event population size (default 1E5) [100000]
-	--total:   total number of events to run (default 1E6) [1000000]
-	--runs:    number of runs (default 1) [1]
-	--file:    file of relative event times
-	--prec:    printed output precision [6]
+    --all:     use all schedulers [false]
+    --cal:     use CalendarSheduler [false]
+    --calrev:  reverse ordering in the CalendarScheduler [false]
+    --heap:    use HeapScheduler [false]
+    --list:    use ListSheduler [false]
+    --map:     use MapScheduler (default) [true]
+    --pri:     use PriorityQueue [false]
+    --debug:   enable debugging output [false]
+    --pop:     event population size (default 1E5) [100000]
+    --total:   total number of events to run (default 1E6) [1000000]
+    --runs:    number of runs (default 1) [1]
+    --file:    file of relative event times
+    --prec:    printed output precision [6]
 
     General Arguments:
-	...
+    ...
 
 You can change the Scheduler being benchmarked by passing
 the appropriate flags, for example if you want to
@@ -143,7 +143,7 @@ It will show something like this depending upon the scheduler being benchmarked:
 
     ns3::MapScheduler (default)
     Run #       Initialization:                     Simulation:
-		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
+    Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
     prime       0.01        1e+06       1e-06       5.51        1.81488e+06 5.51e-07
     0           0           inf         0           6.25        1.6e+06     6.25e-07
@@ -170,7 +170,7 @@ And the output would look something like this::
 
     ns3::CalendarScheduler: insertion order: normal
     Run #       Initialization:                     Simulation:
-		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
+    Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
     prime       0.01        1e+06       1e-06       8.14        1.2285e+06  8.14e-07
     0           0.01        1e+06       1e-06       17.14       583431      1.714e-06
