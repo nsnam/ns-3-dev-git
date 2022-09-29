@@ -12,13 +12,13 @@
     - pacman --noconfirm -U https://www.nsnam.org/wp-content/uploads/2022/dia-0.97.3-9-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
-#    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
-#    - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-7/policy.xml
+    # - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
+    # - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-7/policy.xml
   image: archlinux
   timeout: 2h
-#  artifacts:
-#    paths:
-#      - public
+  # artifacts:
+  #   paths:
+  #     - public
 
 doxygen:
   extends: .doc
@@ -26,23 +26,23 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-# debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
+    # debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d debug
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
-#    - mkdir -p public/doxygen
-# The following four lines were needed when ns-3 had warnings, and
-# it was necessary to have a filter to check only the files touched by a MR.
-#    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
-#    - git fetch ns-3-origin
-#    - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
-#    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
+    # - mkdir -p public/doxygen
+    # The following four lines were needed when ns-3 had warnings, and
+    # it was necessary to have a filter to check only the files touched by a MR.
+    # - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
+    # - git fetch ns-3-origin
+    # - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
+    # - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
     - doc/doxygen.warnings.report.sh
-# Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
+    # Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
     - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h
     - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-command-line.h
-#    - doxygen doc/doxygen.conf
-#    - mv doc/html/ public/doxygen
+    # - doxygen doc/doxygen.conf
+    # - mv doc/html/ public/doxygen
   cache:
     # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
@@ -63,42 +63,42 @@ doxygen:
     paths:
       - doc/doxygen.warnings.log
     when: always
-#  tags:
-#    - nsnam
-#    - linux
+  # tags:
+  #   - nsnam
+  #   - linux
 
 manual:
   extends: .doc
   script:
-#    - mkdir -p public/manual
+    # - mkdir -p public/manual
     - cd doc/manual
     - make html
     - make latexpdf
-#    - mv build/html ../../public/manual
-#    - mv build/latex/ns-3-manual.pdf ../../public/
+    # - mv build/html ../../public/manual
+    # - mv build/latex/ns-3-manual.pdf ../../public/
   only:
     - master
 
 tutorial:
   extends: .doc
   script:
-#    - mkdir -p public/manual
+    # - mkdir -p public/manual
     - cd doc/tutorial
     - make html
     - make latexpdf
-#    - mv build/html ../../public/manual
-#    - mv build/latex/ns-3-tutorial.pdf ../../public/
+    # - mv build/html ../../public/manual
+    # - mv build/latex/ns-3-tutorial.pdf ../../public/
   only:
     - master
 
 models:
   extends: .doc
   script:
-#    - mkdir -p public/models
+    # - mkdir -p public/models
     - cd doc/models
     - make html
     - make latexpdf
-#    - mv build/html ../../public/models
-#    - mv build/latex/ns-3-model-library.pdf ../../public
+    # - mv build/html ../../public/models
+    # - mv build/latex/ns-3-model-library.pdf ../../public
   only:
     - master
