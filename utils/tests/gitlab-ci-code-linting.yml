@@ -1,9 +1,9 @@
-# ns-3 CI/CD script with the coding-style stage
+# ns-3 CI/CD script with the code-linting stage
 #
-# Contains jobs to check the coding style of the codebase.
+# Contains jobs to check the ns-3 coding style and perform lint checking.
 
 check-style-clang-format:
-  stage: coding-style
+  stage: code-linting
   image: ubuntu:latest
   before_script:
     - apt update
@@ -14,7 +14,7 @@ check-style-clang-format:
     - python3 utils/check-style-clang-format.py .
 
 clang-tidy:
-  stage: coding-style
+  stage: code-linting
   image: ubuntu:latest
   before_script:
     - apt update

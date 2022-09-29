@@ -20,7 +20,7 @@
 stages:
   - build
   - test
-  - coding-style
+  - code-linting
   - documentation
 
 ###################### BUILD STAGE #############################################
@@ -104,6 +104,6 @@ include:
   - "utils/tests/gitlab-ci-gcc.yml"
   - "utils/tests/gitlab-ci-clang.yml"
   - "utils/tests/gitlab-ci-test.yml"
-  - "utils/tests/gitlab-ci-coding-style.yml"
+  - "utils/tests/gitlab-ci-code-linting.yml"
   - "utils/tests/gitlab-ci-doc.yml"
   - "utils/tests/gitlab-ci-cppyy.yml"
