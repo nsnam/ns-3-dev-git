@@ -181,7 +181,6 @@ LrWpanCsmaCa::GetUnitBackoffPeriod (void) const
   return m_aUnitBackoffPeriod;
 }
 
-
 Time
 LrWpanCsmaCa::GetTimeToNextSlot (void) const
 {
@@ -239,7 +238,6 @@ LrWpanCsmaCa::GetTimeToNextSlot (void) const
 
 }
 
-
 void
 LrWpanCsmaCa::Start ()
 {
@@ -290,8 +288,6 @@ LrWpanCsmaCa::Cancel ()
   m_mac->GetPhy ()->CcaCancel ();
 }
 
-
-
 void
 LrWpanCsmaCa::RandomBackoffDelay ()
 {
@@ -336,7 +332,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
                                                     << timeLeftInCap.As (Time::S) << ")");
 
 
-      if (randomBackoff > timeLeftInCap)
+      if (randomBackoff >= timeLeftInCap)
         {
           uint64_t usedBackoffs = (double)(timeLeftInCap.GetSeconds () *  symbolRate) / m_aUnitBackoffPeriod;
           m_randomBackoffPeriodsLeft -= usedBackoffs;
@@ -350,7 +346,6 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 
     }
 }
-
 
 Time
 LrWpanCsmaCa::GetTimeLeftInCap ()
@@ -385,7 +380,6 @@ LrWpanCsmaCa::GetTimeLeftInCap ()
 
   return (endCapTime - currentTime);
 }
-
 
 void
 LrWpanCsmaCa::CanProceed ()
@@ -547,14 +541,12 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
     }
 }
 
-
 void
 LrWpanCsmaCa::SetLrWpanMacTransCostCallback (LrWpanMacTransCostCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_lrWpanMacTransCostCallback = c;
 }
-
 
 void
 LrWpanCsmaCa::SetLrWpanMacStateCallback (LrWpanMacStateCallback c)
@@ -568,7 +560,6 @@ LrWpanCsmaCa::SetBatteryLifeExtension (bool batteryLifeExtension)
 {
   m_macBattLifeExt = batteryLifeExtension;
 }
-
 
 int64_t
 LrWpanCsmaCa::AssignStreams (int64_t stream)

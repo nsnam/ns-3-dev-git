@@ -223,20 +223,35 @@ LrWpanMac::DoDispose ()
   if (m_csmaCa)
     {
       m_csmaCa->Dispose ();
-      m_csmaCa = 0;
+      m_csmaCa = nullptr;
     }
   m_txPkt = nullptr;
+
   for (uint32_t i = 0; i < m_txQueue.size (); i++)
     {
-      m_txQueue[i]->txQPkt = 0;
+      m_txQueue[i]->txQPkt = nullptr;
       delete m_txQueue[i];
     }
   m_txQueue.clear ();
-  m_phy = 0;
-  m_mcpsDataIndicationCallback = MakeNullCallback< void, McpsDataIndicationParams, Ptr<Packet> > ();
-  m_mlmeAssociateIndicationCallback = MakeNullCallback <void, MlmeAssociateIndicationParams> ();
-  m_mlmeCommStatusIndicationCallback = MakeNullCallback <void, MlmeCommStatusIndicationParams> ();
-  m_mcpsDataConfirmCallback = MakeNullCallback< void, McpsDataConfirmParams > ();
+
+  for (uint32_t i = 0; i < m_indTxQueue.size (); i++)
+    {
+      m_indTxQueue[i]->txQPkt = nullptr;
+      m_indTxQueue[i].release ();
+    }
+  m_indTxQueue.clear ();
+
+  m_phy = nullptr;
+  m_mcpsDataConfirmCallback = MakeNullCallback<void, McpsDataConfirmParams> ();
+  m_mcpsDataIndicationCallback = MakeNullCallback<void, McpsDataIndicationParams, Ptr<Packet> > ();
+  m_mlmeStartConfirmCallback = MakeNullCallback<void, MlmeStartConfirmParams> ();
+  m_mlmeBeaconNotifyIndicationCallback = MakeNullCallback<void, MlmeBeaconNotifyIndicationParams, Ptr<Packet> > ();
+  m_mlmeSyncLossIndicationCallback = MakeNullCallback<void, MlmeSyncLossIndicationParams> ();
+  m_mlmePollConfirmCallback = MakeNullCallback<void, MlmePollConfirmParams> ();
+  m_mlmeScanConfirmCallback = MakeNullCallback<void, MlmeScanConfirmParams> ();
+  m_mlmeAssociateConfirmCallback = MakeNullCallback<void, MlmeAssociateConfirmParams> ();
+  m_mlmeAssociateIndicationCallback = MakeNullCallback<void, MlmeAssociateIndicationParams> ();
+  m_mlmeCommStatusIndicationCallback = MakeNullCallback<void, MlmeCommStatusIndicationParams> ();
 
   m_beaconEvent.Cancel ();
 
@@ -271,14 +286,14 @@ LrWpanMac::SetRxOnWhenIdle (bool rxOnWhenIdle)
 void
 LrWpanMac::SetShortAddress (Mac16Address address)
 {
-  //NS_LOG_FUNCTION (this << address);
+  NS_LOG_FUNCTION (this << address);
   m_shortAddress = address;
 }
 
 void
 LrWpanMac::SetExtendedAddress (Mac64Address address)
 {
-  //NS_LOG_FUNCTION (this << address);
+  NS_LOG_FUNCTION (this << address);
   m_selfExt = address;
 }
 
@@ -1039,7 +1054,7 @@ LrWpanMac::SendAssocResponseCommand (Ptr<Packet> rxDataReqPkt)
     {
       TxQueueElement *txQElement = new TxQueueElement;
       txQElement->txQPkt = indTxQElement->txQPkt;
-      m_txQueue.push_back (txQElement);
+      m_txQueue.emplace_back (txQElement);
     }
   else
     {
@@ -2448,11 +2463,12 @@ LrWpanMac::DequeueInd (Mac64Address dst, IndTxQueueElement * entry)
 {
   PurgeInd ();
 
-  for (uint32_t i = 0; i < m_indTxQueue.size (); i++)
+  for (auto iter = m_indTxQueue.begin (); iter != m_indTxQueue.end (); iter ++)
     {
-      if (m_indTxQueue[i]->dstExtAddress == dst)
+      if ((*iter)->dstExtAddress == dst)
         {
-          *entry = *m_indTxQueue[i];
+          *entry = **iter;
+          m_indTxQueue.erase (iter);
           return true;
         }
     }

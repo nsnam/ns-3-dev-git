@@ -864,6 +864,12 @@ private:
   double m_rxSensitivity;
 
   /**
+   * Indicates if the reception of frame has been canceled.
+   */
+  bool m_isRxCanceled;
+
+
+  /**
    * The accumulated signals currently received by the transceiver, including
    * the signal of a possibly received packet, as well as all signals
    * considered noise.
@@ -910,13 +916,6 @@ private:
    * Scheduler event of a currently running data transmission request.
    */
   EventId m_pdDataRequest;
-
-  /**
-   * Scheduler event for a currently running data reception. It makes possible to
-   * cancel the reception of a packet in case a packet with higher priority needs to
-   * be transmitted (i.e. Beacon or ACK ).
-   */
-  EventId m_rxEvent;
 
   /**
    * Uniform random variable stream.

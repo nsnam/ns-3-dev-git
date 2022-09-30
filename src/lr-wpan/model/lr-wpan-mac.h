@@ -1875,7 +1875,7 @@ private:
   std::deque<TxQueueElement*> m_txQueue;
 
   /**
-   * The indirect transmit queue used by the MAC pending messages.
+   * The indirect transmit queue used by the MAC pending messages (a.k.a. The pending transaction list).
    */
   std::deque<std::unique_ptr <IndTxQueueElement> > m_indTxQueue;
 

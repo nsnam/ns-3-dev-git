@@ -143,7 +143,7 @@ LrWpanPhy::LrWpanPhy (void)
   m_random->SetAttribute ("Min", DoubleValue (0.0));
   m_random->SetAttribute ("Max", DoubleValue (1.0));
 
-
+  m_isRxCanceled = false;
   ChangeTrxState (IEEE_802_15_4_PHY_TRX_OFF);
 }
 
@@ -160,13 +160,23 @@ LrWpanPhy::DoDispose (void)
   m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
   m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
 
-  m_mobility = 0;
-  m_device = 0;
-  m_channel = 0;
-  m_txPsd = 0;
-  m_noise = 0;
-  m_signal = 0;
-  m_errorModel = 0;
+  m_mobility = nullptr;
+  m_device = nullptr;
+  m_channel = nullptr;
+  m_antenna = nullptr;
+  m_txPsd = nullptr;
+  m_noise = nullptr;
+  m_signal = nullptr;
+  m_errorModel = nullptr;
+  m_currentRxPacket.first = nullptr;
+  m_currentTxPacket.first = nullptr;
+
+  m_ccaRequest.Cancel ();
+  m_edRequest.Cancel ();
+  m_setTRXState.Cancel ();
+  m_pdDataRequest.Cancel ();
+
+  m_random = nullptr;
   m_pdDataIndicationCallback = MakeNullCallback< void, uint32_t, Ptr<Packet>, uint8_t > ();
   m_pdDataConfirmCallback = MakeNullCallback< void, LrWpanPhyEnumeration > ();
   m_plmeCcaConfirmCallback = MakeNullCallback< void, LrWpanPhyEnumeration > ();
@@ -258,7 +268,6 @@ void
 LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
   NS_LOG_FUNCTION (this << spectrumRxParams);
-  LrWpanSpectrumValueHelper psdHelper;
 
   if (!m_edRequest.IsExpired ())
     {
@@ -285,7 +294,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
             }
         }
 
-      m_rxEvent = Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
+      Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
       return;
     }
 
@@ -371,7 +380,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   // Always call EndRx to update the interference.
   // We keep track of this event, and if necessary cancel this event when a TX of a packet.
 
-  m_rxEvent = Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
+  Simulator::Schedule (spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
 }
 
 void
@@ -477,25 +486,36 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
       Ptr<LrWpanSpectrumSignalParameters> none = 0;
       m_currentRxPacket = std::make_pair (none, true);
 
-      // We may be waiting to apply a pending state change.
-      if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
+      if (!m_isRxCanceled)
         {
-          // Only change the state immediately, if the transceiver is not already
-          // switching the state.
-          if (!m_setTRXState.IsRunning ())
+          // We may be waiting to apply a pending state change.
+          if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
             {
-              NS_LOG_LOGIC ("Apply pending state change to " << m_trxStatePending);
-              ChangeTrxState (m_trxStatePending);
-              m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
-              if (!m_plmeSetTRXStateConfirmCallback.IsNull ())
+              // Only change the state immediately, if the transceiver is not already
+              // switching the state.
+              if (!m_setTRXState.IsRunning ())
                 {
-                  m_plmeSetTRXStateConfirmCallback (IEEE_802_15_4_PHY_SUCCESS);
+                  NS_LOG_LOGIC ("Apply pending state change to " << m_trxStatePending);
+                  ChangeTrxState (m_trxStatePending);
+                  m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
+                  if (!m_plmeSetTRXStateConfirmCallback.IsNull ())
+                    {
+                      m_plmeSetTRXStateConfirmCallback (IEEE_802_15_4_PHY_SUCCESS);
+                    }
                 }
+            }
+          else
+            {
+              ChangeTrxState (IEEE_802_15_4_PHY_RX_ON);
             }
         }
       else
         {
-          ChangeTrxState (IEEE_802_15_4_PHY_RX_ON);
+          // A TX event was forced during the reception of the frame.
+          // There is no need to change the PHY state after handling the signal,
+          // because the Forced TX already changed the PHY state.
+          // Return flag to default state
+          m_isRxCanceled = false;
         }
     }
 }
@@ -756,11 +776,12 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
         {
           if (m_currentRxPacket.first)
             {
-              //terminate reception if needed
-              //incomplete reception -- force packet discard
+              // TX_ON is being forced during a reception (For example, when a ACK or Beacon is issued)
+              // The current RX frame is marked as incomplete and the reception as canceled
+              // EndRx () will handle the rest accordingly
               NS_LOG_DEBUG ("force TX_ON, terminate reception");
               m_currentRxPacket.second = true;
-              m_rxEvent.Cancel();
+              m_isRxCanceled = true;
             }
 
           // If CCA is in progress, cancel CCA and return BUSY.
@@ -775,7 +796,7 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
 
           m_trxStatePending = IEEE_802_15_4_PHY_TX_ON;
 
-          // Delay for turnaround time
+          // Delay for turnaround time (BUSY_RX|RX_ON ---> TX_ON)
           Time setTime = Seconds ( (double) aTurnaroundTime / GetDataOrSymbolRate (false));
           m_setTRXState = Simulator::Schedule (setTime, &LrWpanPhy::EndSetTRXState, this);
           return;
@@ -811,11 +832,12 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
         {
           NS_LOG_DEBUG ("force TRX_OFF, SUCCESS");
           if (m_currentRxPacket.first)
-            {   //terminate reception if needed
-                //incomplete reception -- force packet discard
+            {
+              // Terminate reception
+              // Mark the packet as incomplete and reception as canceled.
               NS_LOG_DEBUG ("force TRX_OFF, terminate reception");
               m_currentRxPacket.second = true;
-              m_rxEvent.Cancel();
+              m_isRxCanceled = true;
             }
           if (m_trxState == IEEE_802_15_4_PHY_BUSY_TX)
             {
