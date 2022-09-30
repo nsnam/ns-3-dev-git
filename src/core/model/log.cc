@@ -642,23 +642,29 @@ NodePrinter LogGetNodePrinter (void)
 
 
 ParameterLogger::ParameterLogger (std::ostream &os)
-  : m_first (true),
-    m_os (os)
+  : m_os (os)
 {}
+
+
+void
+ParameterLogger::CommaRest()
+{
+  if (m_first)
+    {
+      m_first = false;
+    }
+  else
+    {
+      m_os << ", ";
+    }
+}
 
 template<>
 ParameterLogger &
 ParameterLogger::operator<< <std::string> (const std::string& param)
 {
-  if (m_first)
-    {
-      m_os << "\"" << param << "\"";
-      m_first = false;
-    }
-  else
-    {
-      m_os << ", \"" << param << "\"";
-    }
+  CommaRest();
+  m_os << "\"" << param << "\"";
   return *this;
 }
 
@@ -673,15 +679,7 @@ template<>
 ParameterLogger &
 ParameterLogger::operator<< <int8_t> (const int8_t param)
 {
-  if (m_first)
-    {
-      m_os << static_cast<int16_t> (param);
-      m_first = false;
-    }
-  else
-    {
-      m_os << ", " << static_cast<int16_t> (param);
-    }
+  (*this) << static_cast<int16_t> (param);
   return *this;
 }
 
@@ -689,15 +687,7 @@ template<>
 ParameterLogger &
 ParameterLogger::operator<< <uint8_t> (const uint8_t param)
 {
-  if (m_first)
-    {
-      m_os << static_cast<uint16_t> (param);
-      m_first = false;
-    }
-  else
-    {
-      m_os << ", " << static_cast<uint16_t> (param);
-    }
+  (*this) << static_cast<uint16_t> (param);
   return *this;
 }
 

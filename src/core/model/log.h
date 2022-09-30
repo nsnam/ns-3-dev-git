@@ -448,9 +448,6 @@ LogComponent & GetLogComponent (const std::string name);
  */
 class ParameterLogger
 {
-  bool m_first;        //!< First argument flag, doesn't get `, `.
-  std::ostream &m_os;  //!< Underlying output stream.
-
 public:
   /**
    * Constructor.
@@ -501,21 +498,23 @@ public:
    * \return This ParameterLogger, so it's chainable.
    */
   ParameterLogger& operator<< (const char* param);
+
+private:
+
+  /** Add `, ` before every parameter after the first. */
+  void CommaRest();
+
+  bool m_first{true};  //!< First argument flag, doesn't get `, `.
+  std::ostream &m_os;  //!< Underlying output stream.
+
 };
 
 template<typename T, typename U>
 ParameterLogger&
 ParameterLogger::operator<< (T param)
 {
-  if (m_first)
-    {
-      m_os << param;
-      m_first = false;
-    }
-  else
-    {
-      m_os << ", " << param;
-    }
+  CommaRest();
+  m_os << param;
   return *this;
 }
 
@@ -523,17 +522,11 @@ template<typename T, typename U>
 ParameterLogger&
 ParameterLogger::operator<< (const T& param)
 {
-  if (m_first)
-    {
-      m_os << param;
-      m_first = false;
-    }
-  else
-    {
-      m_os << ", " << param;
-    }
+  CommaRest();
+  m_os << param;
   return *this;
 }
+
 
 template<typename T>
 ParameterLogger&
