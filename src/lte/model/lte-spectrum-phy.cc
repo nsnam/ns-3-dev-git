@@ -1295,25 +1295,15 @@ void
 LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
 {
   NS_LOG_FUNCTION (this << " txmode " << (uint16_t)txMode << " gain " << gain);
-  // convert to linear
-  gain = std::pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < txMode)
+  if (txMode > 0)
     {
-      m_txModeGain.resize (txMode);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i == txMode - 1)
+      // convert to linear
+      double gainLin = std::pow (10.0, (gain / 10.0));
+      if (m_txModeGain.size () < txMode)
         {
-          m_txModeGain.push_back (gain);
+          m_txModeGain.resize (txMode);
         }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
+      m_txModeGain.at (txMode - 1) = gainLin;
     }
 }
 
