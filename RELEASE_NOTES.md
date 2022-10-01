@@ -45,6 +45,7 @@ Release 3-dev
 - (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
 - (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 - (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
+- #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
 
 Release 3.36.1
 --------------
