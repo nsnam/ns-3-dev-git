@@ -604,7 +604,7 @@ private:
    */
   static inline struct Resolution * PeekResolution (void)
   {
-    static struct Time::Resolution resolution = SetDefaultNsResolution ();
+    static struct Time::Resolution& resolution{SetDefaultNsResolution()};
     return &resolution;
   }
   /**
@@ -623,7 +623,7 @@ private:
    *
    * \return The Resolution object for the default resolution.
    */
-  static struct Resolution SetDefaultNsResolution (void);
+  static struct Resolution& SetDefaultNsResolution (void);
   /**
    *  Set the current Resolution.
    *

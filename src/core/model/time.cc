@@ -199,11 +199,11 @@ Time::Time (const std::string& s)
 }
 
 // static
-struct Time::Resolution
+struct Time::Resolution&
 Time::SetDefaultNsResolution (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  struct Resolution resolution;
+  static struct Resolution resolution;
   SetResolution (Time::NS, &resolution, false);
   return resolution;
 }
