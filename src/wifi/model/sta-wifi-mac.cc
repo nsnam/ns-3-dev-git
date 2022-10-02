@@ -644,6 +644,7 @@ StaWifiMac::Disassociated (uint8_t linkId)
 
   // disable the given link
   link.apLinkId = std::nullopt;
+  link.bssid = std::nullopt;
   link.phy->SetOffMode ();
 
   for (uint8_t id = 0; id < GetNLinks (); id++)
