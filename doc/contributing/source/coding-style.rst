@@ -154,6 +154,138 @@ For quick-reference, the most used commands are listed below:
   # Individual file
   /path/to/utils/check-style-clang-format.py [--fix] [--no-formatting] [--no-whitespace] [--no-tabs] absolute_or_relative/path/to/file
 
+
+Clang-tidy
+**********
+
+The |ns3| project uses `clang-tidy <https://clang.llvm.org/extra/clang-tidy/>`_
+to statically analyze (lint) C++ code and help developers write better code.
+Clang-tidy can be easily integrated with modern IDEs or run manually on the command-line.
+
+Clang-tidy installation
+=======================
+
+Clang-format can be installed using your OS's package manager. Please note that you
+should install one of the supported versions of clang-format, which are listed in the
+following section.
+
+Minimum clang-tidy version
+==========================
+
+Since clang-tidy is a linter that analyzes code and outputs errors found during
+the analysis, developers can use different versions of clang-tidy on the workflow.
+Newer versions of clang-tidy might produce better results than older versions.
+Therefore, it is recommended to use the latest version available.
+
+To ensure consistency among developers, |ns3| defines a minimum version of clang-tidy,
+whose warnings must not be ignored. Therefore, developers should, at least, scan their
+code with the minimum version of clang-tidy.
+
+The minimum version is clang-tidy-14.
+
+Integration with IDEs
+=====================
+
+Clang-tidy automatically integrates with modern IDEs (e.g., VS Code) that read the
+``.clang-tidy`` file and automatically checks the code of the currently open file.
+
+Please refer to the documentation of your IDE for more information.
+Some examples of IDE integration are provided in
+`clang-tidy documentation <https://clang.llvm.org/extra/clang-tidy/Integrations.html>`_
+
+Manual usage in the terminal
+============================
+
+In order to use clang-tidy on the terminal, |ns3| must first be configured by running
+the following command on the terminal:
+
+.. sourcecode:: console
+
+  ./ns3 configure --enable-clang-tidy
+
+Then, clang-tidy can be manually run on the terminal by applying the following commands
+in the |ns3| root directory:
+
+.. sourcecode:: console
+
+  # Analyze (and fix) single file with clang-tidy
+  clang-tidy -p cmake-cache/ [--fix] [--format-style=file] [--quiet] $FILE
+
+  # Analyze (and fix) multiple files in parallel
+  run-clang-tidy -p cmake-cache/ [-fix] [-format] [-quiet] $FILE1 $FILE2 ...
+
+  # Analyze (and fix) the entire ns-3 codebase in parallel
+  run-clang-tidy -p cmake-cache/ [-fix] [-format] [-quiet]
+
+Please note that clang-tidy only analyzes implementation files (i.e., ``*.cc`` files).
+Header files are analyzed when they are included by implementation files, using the
+``#include "..."`` directive.
+
+Integration with CMake
+======================
+
+CMake provides native integration for clang-tidy. This allows CMake to simultaneously
+build |ns3| and scan the codebase with clang-tidy. To enable this process, please
+use the following commands on the |ns3| root directory:
+
+.. sourcecode:: console
+
+  ./ns3 configure --enable-clang-tidy
+  ./ns3 build
+
+Please note that enabling clang-tidy scanning will add time to the build process
+(in the order of minutes).
+
+Disable analysis in specific lines
+==================================
+
+To disable clang-tidy analysis of a particular rule in a specific function,
+specific clang-tidy comments have to be added to the corresponding function.
+Please refer to the `official clang-tidy documentation <https://clang.llvm.org/extra/clang-tidy/#suppressing-undesired-diagnostics>`_
+for more information.
+
+To disable ``modernize-use-override`` checking on ``func()`` only, use one of the
+following two "special comment" syntaxes:
+
+.. sourcecode:: cpp
+
+  //
+  // Syntax 1: Comment above the function
+  //
+
+  // NOLINTNEXTLINE(modernize-use-override)
+  void func();
+
+  //
+  // Syntax 2: Trailing comment
+  //
+
+  void func(); // NOLINT(modernize-use-override)
+
+To disable ``modernize-use-override`` checking on a block of code, use the
+following "special comment" syntax:
+
+.. sourcecode:: cpp
+
+  // NOLINTBEGIN(modernize-use-override)
+  void func1();
+  void func2();
+  // NOLINTEND(modernize-use-override)
+
+
+To disable all clang-tidy checks on a block of code, use the following
+"special comment" syntax:
+
+.. sourcecode:: cpp
+
+  // NOLINTBEGIN
+  void func1();
+  void func2();
+  // NOLINTEND
+
+To exclude the whole file from being formatted, surround the whole file with the
+special comments.
+
 Source code formatting
 **********************
 
@@ -804,6 +936,40 @@ The omission is preferred to commenting out unused parameters, such as:
       ...
   }
 
+
+Unnecessary else after return
+=============================
+
+In order to increase readability and avoid deep code nests, consider not adding
+an ``else`` block if the ``if`` block breaks the control flow (i.e., when using
+``return``, ``break``, ``continue``, etc.).
+
+For instance, the following code:
+
+.. sourcecode:: cpp
+
+  if (n < 0)
+  {
+      return false;
+  }
+  else
+  {
+      n += 3;
+      return n;
+  }
+
+can be rewritten as:
+
+.. sourcecode:: cpp
+
+  if (n < 0)
+  {
+      return n;
+  }
+
+  n += 3;
+  return n;
+
 Smart pointer boolean comparisons
 =================================
 
@@ -905,3 +1071,77 @@ Miscellaneous items
   using the ``using`` directive; i.e., avoid ``using namespace std;``.
 
 - Do not use the C++ ``goto`` statement.
+
+Clang-tidy rules
+================
+
+Please refer to the ``.clang-tidy`` file in the |ns3| root directory for the full list
+of rules that should be observed while developing code.
+
+- Explicitly mark inherited functions with the ``override`` specifier.
+
+- Prefer to use ``.emplace_back()`` over ``.push_back()`` to optimize performance.
+
+- When creating STL smart pointers, prefer to use ``std::make_shared`` or
+  ``std::make_unique``, instead of creating the pointer with ``new``:
+
+  .. sourcecode:: cpp
+
+    auto node = std::make_shared<Node>();           // OK
+    auto node = std::shared_ptr<Node>(new Node());  // Avoid
+
+- When looping through containers, prefer to use range-based for loops rather than
+  index-based loops:
+
+  .. sourcecode:: cpp
+
+    std::vector<int> myVector = {1, 2, 3};
+
+    for (const auto& v : myVector) { ... }             // Prefer
+    for (int i = 0; i < myVector.size(); i++) { ... }  // Avoid
+
+- When looping through containers, prefer to use const-ref syntax over copying
+  elements:
+
+  .. sourcecode:: cpp
+
+    std::vector<int> myVector = {1, 2, 3};
+
+    for (const auto& v : myVector) { ... }  // OK
+    for (auto v : myVector) { ... }         // Avoid
+
+- When initializing ``std::vector`` containers with known size, reserve memory to
+  store all items, before pushing them in a loop.
+
+  .. sourcecode:: cpp
+
+    int N_ITEMS = 5;
+    std::vector<int> myVector;
+    myVector.reserve(N_ITEMS); // Reserve memory required to store all items
+    for (int i = 0; i < N_ITEMS; i++)
+    {
+        myVector.emplace_back(i);
+    }
+
+- Prefer to initialize STL containers (e.g., ``std::vector``, ``std::map``, etc.)
+  directly with lists, instead of pushing elements one-by-one.
+
+  .. sourcecode:: cpp
+
+    // OK
+    std::vector<int> myVector = {1, 2, 3};
+
+    // Avoid
+    std::vector<int> myVector;
+    myVector.reserve(3);
+    myVector.emplace_back(1);
+    myVector.emplace_back(2);
+    myVector.emplace_back(3);
+
+- Avoid unnecessary calls to the functions ``.c_str()`` and ``.data()`` of
+  ``std::string``.
+
+- Avoid declaring trivial destructors, to optimize performance.
+
+- Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
+  evaluated at compile-time.
