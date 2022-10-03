@@ -161,7 +161,7 @@ LteFrStrictAlgorithm::GetTypeId ()
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CenterPowerOffset",
                    "PdschConfigDedicated::Pa value for Center Sub-band, default value dB0",
-                   UintegerValue (5),
+                   UintegerValue (LteRrcSap::PdschConfigDedicated::dB0),
                    MakeUintegerAccessor (&LteFrStrictAlgorithm::m_centerAreaPowerOffset),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("EdgePowerOffset",
