@@ -342,21 +342,47 @@ ApWifiMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to, u
         hdr.SetNoOrder(); // explicitly set to 0 for the time being since HT control field is not
                           // yet implemented (set it to 1 when implemented)
     }
-    hdr.SetAddr1(to);
-    hdr.SetAddr2(GetAddress());
-    hdr.SetAddr3(from);
-    hdr.SetDsFrom();
-    hdr.SetDsNotTo();
 
-    if (GetQosSupported())
+    std::list<Mac48Address> addr2Set;
+    if (to.IsGroup())
     {
-        // Sanity check that the TID is valid
-        NS_ASSERT(tid < 8);
-        GetQosTxop(tid)->Queue(packet, hdr);
+        // broadcast frames are transmitted on all the links
+        for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+        {
+            addr2Set.push_back(GetFrameExchangeManager(linkId)->GetAddress());
+        }
     }
     else
     {
-        GetTxop()->Queue(packet, hdr);
+        // the Transmitter Address (TA) is the MLD address only for non-broadcast data frames
+        // exchanged between two MLDs
+        addr2Set = {GetAddress()};
+        auto linkId = IsAssociated(to);
+        NS_ASSERT_MSG(linkId, "Station " << to << "is not associated, cannot send it a frame");
+        if (GetNLinks() == 1 || !GetWifiRemoteStationManager(*linkId)->GetMldAddress(to))
+        {
+            addr2Set = {GetFrameExchangeManager(*linkId)->GetAddress()};
+        }
+    }
+
+    for (const auto& addr2 : addr2Set)
+    {
+        hdr.SetAddr1(to);
+        hdr.SetAddr2(addr2);
+        hdr.SetAddr3(from);
+        hdr.SetDsFrom();
+        hdr.SetDsNotTo();
+
+        if (GetQosSupported())
+        {
+            // Sanity check that the TID is valid
+            NS_ASSERT(tid < 8);
+            GetQosTxop(tid)->Queue(packet, hdr);
+        }
+        else
+        {
+            GetTxop()->Queue(packet, hdr);
+        }
     }
 }
 
