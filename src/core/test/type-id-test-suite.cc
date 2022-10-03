@@ -81,7 +81,7 @@ UniqueTypeIdTestCase::DoRun (void)
   // Use same custom hasher as TypeId
   ns3::Hasher hasher = ns3::Hasher ( Create<Hash::Function::Murmur3> () );
 
-  uint32_t nids = TypeId::GetRegisteredN ();
+  uint16_t nids = TypeId::GetRegisteredN ();
 
   std::cout << suite << "UniqueTypeIdTestCase: nids: " << nids << std::endl;
   std::cout << suite << "TypeId list:" << std::endl;
@@ -392,7 +392,7 @@ LookupTimeTestCase::DoRun (void)
   std::cout << suite << std::endl;
   std::cout << suite << GetName () << std::endl;
 
-  uint32_t nids = TypeId::GetRegisteredN ();
+  uint16_t nids = TypeId::GetRegisteredN ();
 
   int start = clock ();
   for (uint32_t j = 0; j < REPETITIONS; ++j)

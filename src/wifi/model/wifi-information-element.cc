@@ -202,13 +202,13 @@ WifiInformationElement::DoDeserialize (Buffer::Iterator i, uint16_t length)
 
   // Loop invariant:
   // - i points to the first byte of the fragment to copy (current fragment)
-  // - bufferIt points to the first location of the destionation buffer to write
+  // - bufferIt points to the first location of the destination buffer to write
   // - there is room in the destination buffer to write the current fragment
   // - count is the size in bytes of the current fragment
   // - length is the number of bytes written into the destination buffer
   while (true)
     {
-      for (uint8_t index = 0; index < count; index++)
+      for (uint16_t index = 0; index < count; index++)
         {
           bufferIt.WriteU8 (i.ReadU8 ());
         }

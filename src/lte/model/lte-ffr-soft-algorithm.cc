@@ -330,14 +330,13 @@ LteFfrSoftAlgorithm::InitializeDownlinkRbgMaps ()
   NS_ASSERT_MSG ((m_dlCommonSubBandwidth + m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) <= m_dlBandwidth,
                  "(DlCommonSubBandwidth + DlEdgeSubBandOffset+DlEdgeSubBandwidth) higher than DlBandwidth");
 
-  for (uint8_t i = 0;
-       i < m_dlCommonSubBandwidth / rbgSize; i++)
+  for (int i = 0; i < m_dlCommonSubBandwidth / rbgSize; i++)
     {
       m_dlMediumRbgMap[i] = true;
       m_dlCenterRbgMap[i] = false;
     }
 
-  for (uint8_t i = (m_dlCommonSubBandwidth + m_dlEdgeSubBandOffset) / rbgSize;
+  for (int i = (m_dlCommonSubBandwidth + m_dlEdgeSubBandOffset) / rbgSize;
        i < (m_dlCommonSubBandwidth + m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) / rbgSize; i++)
     {
       m_dlEdgeRbgMap[i] = true;
@@ -374,7 +373,7 @@ LteFfrSoftAlgorithm::InitializeUplinkRbgMaps ()
       m_ulCenterRbgMap[i] = false;
     }
 
-  for (uint8_t i = (m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset);
+  for (int i = (m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset);
        i < (m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset + m_ulEdgeSubBandwidth); i++)
     {
       m_ulEdgeRbgMap[i] = true;
@@ -583,7 +582,7 @@ LteFfrSoftAlgorithm::DoGetMinContinuousUlBandwidth ()
   uint8_t mediumSubBandwidth = 0;
   uint8_t edgeSubBandwidth = 0;
 
-  for (uint8_t i = 0; i < m_ulCenterRbgMap.size (); i++)
+  for (std::size_t i = 0; i < m_ulCenterRbgMap.size (); i++)
     {
       if ( m_ulCenterRbgMap[i] == true)
         {
@@ -591,7 +590,7 @@ LteFfrSoftAlgorithm::DoGetMinContinuousUlBandwidth ()
         }
     }
 
-  for (uint8_t i = 0; i < m_ulMediumRbgMap.size (); i++)
+  for (std::size_t i = 0; i < m_ulMediumRbgMap.size (); i++)
     {
       if ( m_ulMediumRbgMap[i] == true)
         {
@@ -599,7 +598,7 @@ LteFfrSoftAlgorithm::DoGetMinContinuousUlBandwidth ()
         }
     }
 
-  for (uint8_t i = 0; i < m_ulEdgeRbgMap.size (); i++)
+  for (std::size_t i = 0; i < m_ulEdgeRbgMap.size (); i++)
     {
       if ( m_ulEdgeRbgMap[i] == true)
         {

@@ -1056,106 +1056,106 @@ MultiStaCtrlBAckResponseHeaderTest::DoRun (void)
   blockAck.SetTidInfo (tid5, 4);
   blockAck.SetStartingSequence (startSeq5, 4);
   // 1st byte of the bitmap: 01010101
-  for (uint16_t i = startSeq5; i < startSeq5 + 8; i+=2)
+  for (int i = startSeq5; i < startSeq5 + 8; i+=2)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 2nd byte of the bitmap: 10101010
-  for (uint16_t i = startSeq5 + 9; i < startSeq5 + 16; i+=2)
+  for (int i = startSeq5 + 9; i < startSeq5 + 16; i+=2)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 3rd byte of the bitmap: 00000000
   // 4th byte of the bitmap: 11111111
-  for (uint16_t i = startSeq5 + 24; i < startSeq5 + 32; i++)
+  for (int i = startSeq5 + 24; i < startSeq5 + 32; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 5th byte of the bitmap: 00001111
-  for (uint16_t i = startSeq5 + 32; i < startSeq5 + 36; i++)
+  for (int i = startSeq5 + 32; i < startSeq5 + 36; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 6th byte of the bitmap: 11110000
-  for (uint16_t i = startSeq5 + 44; i < startSeq5 + 48; i++)
+  for (int i = startSeq5 + 44; i < startSeq5 + 48; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 7th byte of the bitmap: 00000000
   // 8th byte of the bitmap: 11111111
-  for (uint16_t i = startSeq5 + 56; i < startSeq5 + 64; i++)
+  for (int i = startSeq5 + 56; i < startSeq5 + 64; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 9th byte of the bitmap: 00000000
   // 10th byte of the bitmap: 11111111
-  for (uint16_t i = startSeq5 + 72; i < startSeq5 + 80; i++)
+  for (int i = startSeq5 + 72; i < startSeq5 + 80; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 11th byte of the bitmap: 00000000
   // 12th byte of the bitmap: 11111111
-  for (uint16_t i = startSeq5 + 88; i < startSeq5 + 96; i++)
+  for (int i = startSeq5 + 88; i < startSeq5 + 96; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 13th byte of the bitmap: 00000000
   // 14th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 104) % 4096; i < (startSeq5 + 112) % 4096; i++)
+  for (int i = (startSeq5 + 104) % 4096; i < (startSeq5 + 112) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 15th byte of the bitmap: 00000000
   // 16th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 120) % 4096; i < (startSeq5 + 128) % 4096; i++)
+  for (int i = (startSeq5 + 120) % 4096; i < (startSeq5 + 128) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 17th byte of the bitmap: 00000000
   // 18th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 136) % 4096; i < (startSeq5 + 144) % 4096; i++)
+  for (int i = (startSeq5 + 136) % 4096; i < (startSeq5 + 144) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 19th byte of the bitmap: 00000000
   // 20th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 152) % 4096; i < (startSeq5 + 160) % 4096; i++)
+  for (int i = (startSeq5 + 152) % 4096; i < (startSeq5 + 160) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 21th byte of the bitmap: 00000000
   // 22th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 168) % 4096; i < (startSeq5 + 176) % 4096; i++)
+  for (int i = (startSeq5 + 168) % 4096; i < (startSeq5 + 176) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 23th byte of the bitmap: 00000000
   // 24th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 184) % 4096; i < (startSeq5 + 192) % 4096; i++)
+  for (int i = (startSeq5 + 184) % 4096; i < (startSeq5 + 192) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 25th byte of the bitmap: 00000000
   // 26th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 200) % 4096; i < (startSeq5 + 208) % 4096; i++)
+  for (int i = (startSeq5 + 200) % 4096; i < (startSeq5 + 208) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 27th byte of the bitmap: 00000000
   // 28th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 216) % 4096; i < (startSeq5 + 224) % 4096; i++)
+  for (int i = (startSeq5 + 216) % 4096; i < (startSeq5 + 224) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 29th byte of the bitmap: 00000000
   // 30th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 232) % 4096; i < (startSeq5 + 240) % 4096; i++)
+  for (int i = (startSeq5 + 232) % 4096; i < (startSeq5 + 240) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }
   // 31th byte of the bitmap: 00000000
   // 32th byte of the bitmap: 11111111
-  for (uint16_t i = (startSeq5 + 248) % 4096; i < (startSeq5 + 256) % 4096; i++)
+  for (int i = (startSeq5 + 248) % 4096; i < (startSeq5 + 256) % 4096; i++)
     {
       blockAck.SetReceivedPacket (i, 4);
     }

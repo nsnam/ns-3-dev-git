@@ -991,7 +991,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address,
 {
   NS_LOG_FUNCTION (this << address << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr << dataTxVector);
   NS_ASSERT (!address.IsGroup ());
-  for (uint8_t i = 0; i < nFailedMpdus; i++)
+  for (uint16_t i = 0; i < nFailedMpdus; i++)
     {
       m_macTxDataFailed (address);
     }

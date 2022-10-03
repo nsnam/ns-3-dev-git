@@ -854,12 +854,12 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
     {
       cqi = m_amc->CreateCqiFeedbacks (newSinr, m_dlBandwidth);
 
-      int nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
-      int nbSubChannels = cqi.size ();
+      auto nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
+      auto nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
       int activeSubChannels = 0;
       // average the CQIs of the different RBs
-      for (int i = 0; i < nbSubChannels; i++)
+      for (std::size_t i = 0; i < nbSubChannels; i++)
         {
           if (cqi.at (i) != -1)
             {
@@ -873,7 +873,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
       NS_ASSERT_MSG (nLayer > 0, " nLayer negative");
       NS_ASSERT_MSG (nLayer < 3, " nLayer limit is 2s");
-      for (int i = 0; i < nLayer; i++)
+      for (uint8_t i = 0; i < nLayer; i++)
         {
           if (activeSubChannels > 0)
             {
@@ -892,14 +892,14 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   else if (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriodicity)
     {
       cqi = m_amc->CreateCqiFeedbacks (newSinr, GetRbgSize ());
-      int nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
-      int nbSubChannels = cqi.size ();
+      auto nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
+      auto nbSubChannels = cqi.size ();
       int rbgSize = GetRbgSize ();
       double cqiSum = 0.0;
       int cqiNum = 0;
       SbMeasResult_s rbgMeas;
       //NS_LOG_DEBUG (this << " Create A30 CQI feedback, RBG " << rbgSize << " cqiNum " << nbSubChannels << " band "  << (uint16_t)m_dlBandwidth);
-      for (int i = 0; i < nbSubChannels; i++)
+      for (std::size_t i = 0; i < nbSubChannels; i++)
         {
           if (cqi.at (i) != -1)
             {
@@ -913,7 +913,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
               //NS_LOG_DEBUG (this << " RBG CQI "  << (uint16_t) cqiSum / rbgSize);
               HigherLayerSelected_s hlCqi;
               hlCqi.m_sbPmi = 0; // not yet used
-              for (int i = 0; i < nLayer; i++)
+              for (uint8_t i = 0; i < nLayer; i++)
                 {
                   hlCqi.m_sbCqi.push_back ((uint16_t) cqiSum / rbgSize);
                 }
@@ -1076,7 +1076,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
 
           // send TB info to LteSpectrumPhy
           NS_LOG_DEBUG (this << " UE " << m_rnti << " DL-DCI " << dci.m_rnti << " bitmap "  << dci.m_rbBitmap);
-          for (uint8_t i = 0; i < dci.m_tbsSize.size (); i++)
+          for (std::size_t i = 0; i < dci.m_tbsSize.size (); i++)
             {
               m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_ndi.at (i), dci.m_tbsSize.at (i), dci.m_mcs.at (i), dlRb, i, dci.m_harqProcess, dci.m_rv.at (i), true /* DL */);
             }
@@ -1339,7 +1339,7 @@ LteUePhy::SendSrs ()
   NS_ASSERT (m_cellId > 0);
   // set the current tx power spectral density (full bandwidth)
   std::vector <int> dlRb;
-  for (uint8_t i = 0; i < m_ulBandwidth; i++)
+  for (uint16_t i = 0; i < m_ulBandwidth; i++)
     {
       dlRb.push_back (i);
     }

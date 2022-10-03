@@ -775,7 +775,7 @@ LteEnbPhy::SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList)
   NS_LOG_FUNCTION (this << " eNB " << m_cellId << " start tx ctrl frame");
   // set the current tx power spectral density (full bandwidth)
   std::vector <int> dlRb;
-  for (uint8_t i = 0; i < m_dlBandwidth; i++)
+  for (uint16_t i = 0; i < m_dlBandwidth; i++)
     {
       dlRb.push_back (i);
     }

@@ -84,7 +84,7 @@ QueueDiscFactory::CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDis
     }
 
   // create and add the queue disc classes
-  for (uint16_t i = 0; i < m_queueDiscClassesFactory.size (); i++)
+  for (std::size_t i = 0; i < m_queueDiscClassesFactory.size (); i++)
     {
       // the class ID is given by the index i of the vector
       NS_ABORT_MSG_IF (m_classIdChildHandleMap.find (i) == m_classIdChildHandleMap.end (),
@@ -234,7 +234,7 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
       Ptr<NetDeviceQueueInterface> ndqi = d->GetObject<NetDeviceQueueInterface> ();
       NS_ABORT_MSG_IF (!ndqi, "A NetDeviceQueueInterface object has not been"
                               "aggregated to the NetDevice");
-      for (uint8_t i = 0; i < ndqi->GetNTxQueues (); i++)
+      for (std::size_t i = 0; i < ndqi->GetNTxQueues (); i++)
         {
           Ptr<QueueLimits> ql = m_queueLimitsFactory.Create<QueueLimits> ();
           ndqi->GetTxQueue (i)->SetQueueLimits (ql);
@@ -269,7 +269,7 @@ TrafficControlHelper::Uninstall (Ptr<NetDevice> d)
   // if a queue disc has been installed on the device, a netdevice queue interface
   // must have been aggregated to the device
   NS_ASSERT (ndqi);
-  for (uint8_t i = 0; i < ndqi->GetNTxQueues (); i++)
+  for (std::size_t i = 0; i < ndqi->GetNTxQueues (); i++)
     {
       ndqi->GetTxQueue (i)->SetQueueLimits (0);
     }

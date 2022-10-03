@@ -156,7 +156,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
     {
       for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
         {
-          for (uint8_t i = 0; i < (channelWidth / bw); ++i)
+          for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
               m_interference->AddBand (GetBand (bw, i));
             }
@@ -174,9 +174,9 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
         {
           for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
             {
-              for (uint8_t i = 0; i < (channelWidth / bw); ++i)
+              for (uint32_t i = 0; i < (channelWidth / bw); ++i)
                 {
-                  for (unsigned int type = 0; type < 7; type++)
+                  for (uint32_t type = 0; type < 7; type++)
                     {
                       HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
                       std::size_t nRus = HeRu::GetNRus (bw, ruType);
@@ -280,9 +280,10 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_LOG_DEBUG ("Signal power received after antenna gain for " << channelWidth << " MHz channel: " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
     }
 
-  for (uint16_t bw = 160; bw > 20; bw = bw / 2) //20 MHz is handled apart since the totalRxPowerW is computed through it
+  // 20 MHz is handled apart since the totalRxPowerW is computed through it
+  for (uint16_t bw = 160; bw > 20; bw = bw / 2)
     {
-      for (uint8_t i = 0; i < (channelWidth / bw); i++)
+      for (uint32_t i = 0; i < (channelWidth / bw); i++)
         {
           NS_ASSERT (channelWidth >= bw);
           WifiSpectrumBand filteredBand = GetBand (bw, i);
@@ -295,7 +296,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     }
 
 
-  for (uint8_t i = 0; i < (channelWidth / 20); i++)
+  for (uint32_t i = 0; i < (channelWidth / 20); i++)
     {
       WifiSpectrumBand filteredBand = GetBand (20, i);
       double rxPowerPerBandW = WifiSpectrumValueHelper::GetBandPowerW (receivedSignalPsd, filteredBand);

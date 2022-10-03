@@ -186,7 +186,7 @@ UeManager::DoInitialize ()
   m_physicalConfigDedicated.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
 
 
-  for (uint8_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
+  for (uint16_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
     {
       m_rrc->m_cmacSapProvider.at (i)->AddUe (m_rnti);
       m_rrc->m_cphySapProvider.at (i)->AddUe (m_rnti);
@@ -1136,7 +1136,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
           LteEnbCmacSapProvider::UeConfig req;
           req.m_rnti = m_rnti;
           req.m_transmissionMode = m_physicalConfigDedicated.antennaInfo.transmissionMode;
-          for (uint8_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
+          for (uint16_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
             {
               m_rrc->m_cmacSapProvider.at (i)->UeUpdateConfigurationReq (req);
 
@@ -1725,7 +1725,7 @@ LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>
   NS_ABORT_MSG_IF (m_numberOfComponentCarriers != m_componentCarrierPhyConf.size (), " Number of component carriers "
                                                   "are not equal to the number of he component carrier configuration provided");
 
-  for (uint8_t i = 1; i < m_numberOfComponentCarriers; i++)
+  for (uint16_t i = 1; i < m_numberOfComponentCarriers; i++)
     {
       m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
       m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this, i));
@@ -1745,7 +1745,7 @@ void
 LteEnbRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  for ( uint8_t i = 0; i < m_numberOfComponentCarriers ; i++)
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       delete m_cphySapUser[i];
       delete m_cmacSapUser[i];
@@ -2254,7 +2254,7 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
   std::vector<uint8_t> measIds;
 
   // create measurement identities, linking reporting configuration to all objects
-  for (uint8_t componentCarrier = 0; componentCarrier < m_numberOfComponentCarriers; componentCarrier++)
+  for (uint16_t componentCarrier = 0; componentCarrier < m_numberOfComponentCarriers; componentCarrier++)
     {
       LteRrcSap::MeasIdToAddMod measIdToAddMod;
 
@@ -2949,7 +2949,7 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
   // fire trace upon connection release
   m_connectionReleaseTrace (imsi, ComponentCarrierToCellId (it->second->GetComponentCarrierId ()), rnti);
   m_ueMap.erase (it);
-  for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       m_cmacSapProvider.at (i)->RemoveUe (rnti);
       m_cphySapProvider.at (i)->RemoveUe (rnti);
@@ -3018,7 +3018,7 @@ void
 LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
 {
   NS_LOG_FUNCTION (this << csgId << csgIndication);
-  for (uint8_t componentCarrierId = 0; componentCarrierId < m_sib1.size (); componentCarrierId++)
+  for (std::size_t componentCarrierId = 0; componentCarrierId < m_sib1.size (); componentCarrierId++)
     {
       m_sib1.at (componentCarrierId).cellAccessRelatedInfo.csgIdentity = csgId;
       m_sib1.at (componentCarrierId).cellAccessRelatedInfo.csgIndication = csgIndication;

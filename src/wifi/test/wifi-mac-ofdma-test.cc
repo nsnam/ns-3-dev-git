@@ -648,7 +648,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[1].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    uint8_t staId;
+    uint16_t staId;
     for (staId = 0; staId < m_nStations; staId++)
       {
         if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
@@ -675,7 +675,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[2].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    uint8_t staId;
+    uint16_t staId;
     for (staId = 0; staId < m_nStations; staId++)
       {
         if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
@@ -700,7 +700,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[3].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    uint8_t staId;
+    uint16_t staId;
     for (staId = 0; staId < m_nStations; staId++)
       {
         if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())
@@ -725,7 +725,7 @@ OfdmaAckSequenceTest::CheckResults (Time sifs, Time slotTime, uint8_t aifsn)
   {
     const WifiMacHeader& hdr = m_txPsdus[4].psduMap.begin ()->second->GetHeader (0);
     NS_TEST_EXPECT_MSG_EQ (hdr.GetType (), WIFI_MAC_QOSDATA_NULL, "Expected a QoS Null frame");
-    uint8_t staId;
+    uint16_t staId;
     for (staId = 0; staId < m_nStations; staId++)
       {
         if (DynamicCast<WifiNetDevice> (m_staDevices.Get (staId))->GetAddress () == hdr.GetAddr2 ())

@@ -566,7 +566,7 @@ SpectrumWifiPhyFilterTest::RunOne (void)
   m_ruBands.clear ();
   for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
     {
-      for (uint8_t i = 0; i < (m_rxChannelWidth / bw); ++i)
+      for (uint16_t i = 0; i < (m_rxChannelWidth / bw); ++i)
         {
           for (unsigned int type = 0; type < 7; type++)
             {

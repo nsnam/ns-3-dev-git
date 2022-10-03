@@ -307,13 +307,13 @@ LteFrStrictAlgorithm::InitializeDownlinkRbgMaps ()
   NS_ASSERT_MSG ((m_dlCommonSubBandwidth + m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) <= m_dlBandwidth,
                  "(DlCommonSubBandwidth+DlEdgeSubBandOffset+DlEdgeSubBandwidth) higher than DlBandwidth");
 
-  for (uint8_t i = 0; i < m_dlCommonSubBandwidth / rbgSize; i++)
+  for (int i = 0; i < m_dlCommonSubBandwidth / rbgSize; i++)
     {
       m_dlRbgMap[i] = false;
 
     }
 
-  for (uint8_t i = m_dlCommonSubBandwidth / rbgSize + m_dlEdgeSubBandOffset / rbgSize;
+  for (int i = m_dlCommonSubBandwidth / rbgSize + m_dlEdgeSubBandOffset / rbgSize;
        i < (m_dlCommonSubBandwidth / rbgSize + m_dlEdgeSubBandOffset / rbgSize
             + m_dlEdgeSubBandwidth / rbgSize); i++)
     {
@@ -349,7 +349,7 @@ LteFrStrictAlgorithm::InitializeUplinkRbgMaps ()
 
     }
 
-  for (uint8_t i = m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset;
+  for (int i = m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset;
        i < (m_ulCommonSubBandwidth + m_ulEdgeSubBandOffset
             + m_ulEdgeSubBandwidth); i++)
     {

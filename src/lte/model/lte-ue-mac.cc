@@ -259,7 +259,7 @@ LteUeMac::LteUeMac ()
 {
   NS_LOG_FUNCTION (this);
   m_miUlHarqProcessesPacket.resize (HARQ_PERIOD);
-  for (uint8_t i = 0; i < m_miUlHarqProcessesPacket.size (); i++)
+  for (std::size_t i = 0; i < m_miUlHarqProcessesPacket.size (); i++)
     {
       Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
       m_miUlHarqProcessesPacket.at (i) = pb;
@@ -874,7 +874,7 @@ LteUeMac::RefreshHarqProcessesPacketBuffer (void)
 {
   NS_LOG_FUNCTION (this);
 
-  for (uint16_t i = 0; i < m_miUlHarqProcessesPacketTimer.size (); i++)
+  for (std::size_t i = 0; i < m_miUlHarqProcessesPacketTimer.size (); i++)
     {
       if (m_miUlHarqProcessesPacketTimer.at (i) == 0)
         {

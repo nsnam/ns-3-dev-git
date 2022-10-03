@@ -360,7 +360,7 @@ BufferTest::DoRun (void)
   uint8_t *cBuf = (uint8_t*) malloc ( sizeBuffer );
   uint32_t copyLen = buffer.CopyData (cBuf, sizeBuffer);
   NS_TEST_ASSERT_MSG_EQ (copyLen, sizeBuffer, "CopyData return bad size");
-  for (uint8_t i=0; i < sizeBuffer ; i++ )
+  for (uint32_t i = 0; i < sizeBuffer; i++)
     {
       NS_TEST_ASSERT_MSG_EQ ( cBuf [i], *(((const uint8_t*)ct.c_str ()) + i), "Bad buffer copied data");
       NS_TEST_ASSERT_MSG_EQ ( evilBuffer [i], cBuf [i] , "Bad buffer peeked");

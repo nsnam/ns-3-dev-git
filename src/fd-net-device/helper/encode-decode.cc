@@ -47,7 +47,7 @@ BufferToString (uint8_t *buffer, uint32_t len)
   // Loop through the buffer, separating the two-digit-wide hex bytes
   // with a colon.
   //
-  for (uint8_t i = 0; i < len; i++)
+  for (uint32_t i = 0; i < len; i++)
     {
       oss << ":" << std::setw (2) << (uint32_t)buffer[i];
     }

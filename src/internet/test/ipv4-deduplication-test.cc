@@ -633,7 +633,7 @@ Ipv4DeduplicationPerformanceTest::DoRun (void)
       m_txPackets.push_back (0);
     }
 
-  for (uint8_t i = 0; i<nodes.GetN (); i++)
+  for (uint32_t i = 0; i<nodes.GetN (); i++)
     {
       Simulator::ScheduleWithContext (m_sockets[i]->GetNode ()->GetId (),
                                       Seconds (4+jitter->GetValue ()),

@@ -167,7 +167,7 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppRmaPropagationLossModel> lossModel = CreateObject<ThreeGppRmaPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -326,7 +326,7 @@ ThreeGppUmaPropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppUmaPropagationLossModel> lossModel = CreateObject<ThreeGppUmaPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -479,7 +479,7 @@ ThreeGppUmiPropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppUmiStreetCanyonPropagationLossModel> lossModel = CreateObject<ThreeGppUmiStreetCanyonPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -638,7 +638,7 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppIndoorOfficePropagationLossModel> lossModel = CreateObject<ThreeGppIndoorOfficePropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -793,7 +793,7 @@ ThreeGppV2vUrbanPropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppPropagationLossModel> lossModel = CreateObject<ThreeGppV2vUrbanPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -948,7 +948,7 @@ ThreeGppV2vHighwayPropagationLossModelTestCase::DoRun (void)
   Ptr<ThreeGppPropagationLossModel> lossModel = CreateObject<ThreeGppV2vHighwayPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
 
-  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+  for (std::size_t i = 0; i < m_testVectors.GetN (); i++)
     {
       TestVector testVector = m_testVectors.Get (i);
 
@@ -1180,7 +1180,7 @@ ThreeGppShadowingTestCase::DoRun (void)
 
   uint16_t numSamples = 250;
 
-  for (uint16_t tvIndex = 0; tvIndex < m_testVectors.GetN (); tvIndex++)
+  for (std::size_t tvIndex = 0; tvIndex < m_testVectors.GetN (); tvIndex++)
     {
       TestVector tv = m_testVectors.Get (tvIndex);
 
@@ -1212,7 +1212,7 @@ ThreeGppShadowingTestCase::DoRun (void)
 
       // perform the null hypothesis test for the LOS case
       // positions from (0, 50) to (99, 50) are LOS
-      for (uint16_t i = 0; i < mean_vector.size () / 2; i++)
+      for (std::size_t i = 0; i < mean_vector.size () / 2; i++)
         {
           double z = (mean_vector.at (i) - true_mean.at (i)) / (tv.m_shadowingStdLos / std::sqrt (mean_vector.size () / 2));
           NS_TEST_EXPECT_MSG_EQ_TOL (z, 0.0, 1.96, "Null hypothesis test (LOS case) for the shadowing component rejected");
@@ -1220,7 +1220,7 @@ ThreeGppShadowingTestCase::DoRun (void)
 
       // perform the null hypothesis test for the NLOS case
       // positions from (100, 50) to (199, 50) are NLOS
-      for (uint16_t i = mean_vector.size () / 2; i < mean_vector.size (); i++)
+      for (std::size_t i = mean_vector.size () / 2; i < mean_vector.size (); i++)
         {
           double z = (mean_vector.at (i) - true_mean.at (i)) / (tv.m_shadowingStdNlos / std::sqrt (mean_vector.size () / 2));
           NS_TEST_EXPECT_MSG_EQ_TOL (z, 0.0, 1.96, "Null hypothesis test (NLOS case) for the shadowing component rejected");

@@ -128,7 +128,7 @@ uint16_t
 LteSpectrumValueHelper::GetDownlinkCarrierBand (uint32_t nDl)
 {
   NS_LOG_FUNCTION (nDl);
-  for (uint16_t i = 0; i < NUM_EUTRA_BANDS; ++i)
+  for (uint32_t i = 0; i < NUM_EUTRA_BANDS; ++i)
     {
       if (g_eutraChannelNumbers[i].rangeNdl1 <= nDl &&
           g_eutraChannelNumbers[i].rangeNdl2 >= nDl)
@@ -145,7 +145,7 @@ uint16_t
 LteSpectrumValueHelper::GetUplinkCarrierBand (uint32_t nUl)
 {
   NS_LOG_FUNCTION (nUl);
-  for (uint16_t i = 0; i < NUM_EUTRA_BANDS; ++i)
+  for (uint32_t i = 0; i < NUM_EUTRA_BANDS; ++i)
     {
       if (g_eutraChannelNumbers[i].rangeNul1 <= nUl &&
           g_eutraChannelNumbers[i].rangeNul2 >= nUl)
@@ -263,7 +263,7 @@ LteSpectrumValueHelper::GetSpectrumModel (uint32_t earfcn, uint16_t txBandwidthC
 
       double f = fc - (txBandwidthConfiguration * 180e3 / 2.0);
       Bands rbs;
-      for (uint8_t numrb = 0; numrb < txBandwidthConfiguration; ++numrb)
+      for (uint16_t numrb = 0; numrb < txBandwidthConfiguration; ++numrb)
         {
           BandInfo rb;
           rb.fl = f;

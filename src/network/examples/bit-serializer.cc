@@ -62,7 +62,7 @@ int main ()
   std::vector<uint8_t> result = testBitSerializer1.GetBytes ();
 
   std::cout << "Result:    ";
-  for (uint8_t i = 0; i < result.size (); i++)
+  for (std::size_t i = 0; i < result.size (); i++)
     {
       std::cout << std::hex << int(result[i]) << " ";
     }
@@ -93,7 +93,7 @@ int main ()
   result = testBitSerializer2.GetBytes ();
 
   std::cout << "Result:    ";
-  for (uint8_t i = 0; i < result.size (); i++)
+  for (std::size_t i = 0; i < result.size (); i++)
     {
       std::cout << std::hex << int(result[i]) << " ";
     }

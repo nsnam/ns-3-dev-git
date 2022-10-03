@@ -530,7 +530,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetErrorRateModel (std::string type, Args&&... args)
 {
-  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_phy.size (); linkId++)
     {
       SetErrorRateModel (linkId, type, std::forward<Args> (args)...);
     }
@@ -548,7 +548,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetFrameCaptureModel (std::string type, Args&&... args)
 {
-  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_phy.size (); linkId++)
     {
       SetFrameCaptureModel (linkId, type, std::forward<Args> (args)...);
     }
@@ -566,7 +566,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetPreambleDetectionModel (std::string type, Args&&... args)
 {
-  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_phy.size (); linkId++)
     {
       SetPreambleDetectionModel (linkId, type, std::forward<Args> (args)...);
     }

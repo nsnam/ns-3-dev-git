@@ -590,7 +590,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // --- UPLINK ---
   // Send UL-CQI info to the scheduler
-  for (uint16_t i = 0; i < m_ulCqiReceived.size (); i++)
+  for (std::size_t i = 0; i < m_ulCqiReceived.size (); i++)
     {
       if (subframeNo > 1)
         {
@@ -1089,25 +1089,25 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
   std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
   LteMacSapUser::TxOpportunityParameters txOpParams;
 
-  for (unsigned int i = 0; i < ind.m_buildDataList.size (); i++)
+  for (std::size_t i = 0; i < ind.m_buildDataList.size (); i++)
     {
-      for (uint16_t layer = 0; layer < ind.m_buildDataList.at (i).m_dci.m_ndi.size (); layer++)
+      for (std::size_t layer = 0; layer < ind.m_buildDataList.at (i).m_dci.m_ndi.size (); layer++)
         {
           if (ind.m_buildDataList.at (i).m_dci.m_ndi.at (layer) == 1)
             {
               // new data -> force emptying correspondent harq pkt buffer
               std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it = m_miDlHarqProcessesPackets.find (ind.m_buildDataList.at (i).m_rnti);
               NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
-              for (uint16_t lcId = 0; lcId < (*it).second.size (); lcId++)
+              for (std::size_t lcId = 0; lcId < (*it).second.size (); lcId++)
                 {
                   Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
                   (*it).second.at (lcId).at (ind.m_buildDataList.at (i).m_dci.m_harqProcess) = pb;
                 }
             }
         }
-      for (unsigned int j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
+      for (std::size_t j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
         {
-          for (uint16_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at (j).size (); k++)
+          for (std::size_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at (j).size (); k++)
             {
               if (ind.m_buildDataList.at (i).m_dci.m_ndi.at (k) == 1)
                 {
@@ -1317,7 +1317,7 @@ LteEnbMac::DoDlInfoListElementHarqFeeback (DlInfoListElement_s params)
   // Update HARQ buffer
   std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it =  m_miDlHarqProcessesPackets.find (params.m_rnti);
   NS_ASSERT (it != m_miDlHarqProcessesPackets.end ());
-  for (uint8_t layer = 0; layer < params.m_harqStatus.size (); layer++)
+  for (std::size_t layer = 0; layer < params.m_harqStatus.size (); layer++)
     {
       if (params.m_harqStatus.at (layer) == DlInfoListElement_s::ACK)
         {

@@ -680,7 +680,7 @@ MultiLinkSetupTest::CheckMlSetup (void)
 void
 MultiLinkSetupTest::CheckDisabledLinks (void)
 {
-  for (uint8_t linkId = 0; linkId < m_staChannels.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_staChannels.size (); linkId++)
     {
       auto it = std::find_if (m_setupLinks.begin (), m_setupLinks.end (),
                               [&linkId](auto&& link){ return link.first == linkId; });

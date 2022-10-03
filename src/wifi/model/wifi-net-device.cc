@@ -213,7 +213,7 @@ WifiNetDevice::CompleteConfig (void)
   m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
-  for (uint8_t linkId = 0; linkId < m_stationManagers.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_stationManagers.size (); linkId++)
     {
       m_stationManagers.at (linkId)->SetupPhy (m_phys.at (linkId));
       m_stationManagers.at (linkId)->SetupMac (m_mac);

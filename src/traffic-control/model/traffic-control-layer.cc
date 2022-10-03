@@ -163,7 +163,7 @@ TrafficControlLayer::ScanDevices (void)
 
           if (ndqi)
             {
-              for (uint16_t i = 0; i < ndqi->GetNTxQueues (); i++)
+              for (std::size_t i = 0; i < ndqi->GetNTxQueues (); i++)
                 {
                   Ptr<QueueDisc> qd;
 
@@ -270,7 +270,7 @@ TrafficControlLayer::DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device)
   if (ndqi)
     {
       // remove configured callbacks, if any
-      for (uint16_t i = 0; i < ndqi->GetNTxQueues (); i++)
+      for (std::size_t i = 0; i < ndqi->GetNTxQueues (); i++)
         {
           ndqi->GetTxQueue (i)->SetWakeCallback (MakeNullCallback <void> ());
         }

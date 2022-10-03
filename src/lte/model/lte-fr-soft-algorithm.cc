@@ -297,7 +297,7 @@ LteFrSoftAlgorithm::InitializeDownlinkRbgMaps ()
   NS_ASSERT_MSG ((m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) <= m_dlBandwidth,
                  "(DlEdgeSubBandOffset+DlEdgeSubBandwidth) higher than DlBandwidth");
 
-  for (uint8_t i = m_dlEdgeSubBandOffset / rbgSize;
+  for (int i = m_dlEdgeSubBandOffset / rbgSize;
        i < (m_dlEdgeSubBandOffset + m_dlEdgeSubBandwidth) / rbgSize; i++)
     {
       m_dlEdgeRbgMap[i] = true;

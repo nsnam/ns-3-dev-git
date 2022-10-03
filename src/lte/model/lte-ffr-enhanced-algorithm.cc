@@ -339,7 +339,7 @@ LteFfrEnhancedAlgorithm::InitializeDownlinkRbgMaps ()
   NS_ASSERT_MSG (m_dlSubBandOffset + m_dlReuse3SubBandwidth + m_dlReuse1SubBandwidth <= m_dlBandwidth,
                  "DlSubBandOffset + DlReuse3SubBandwidth + DlReuse1SubBandwidth  higher than DlBandwidth");
 
-  for (uint8_t i = 0; i < m_dlReuse3SubBandwidth / rbgSize; i++)
+  for (int i = 0; i < m_dlReuse3SubBandwidth / rbgSize; i++)
     {
       int offset = m_dlSubBandOffset / rbgSize;
       uint8_t index = offset + i;
@@ -348,7 +348,7 @@ LteFfrEnhancedAlgorithm::InitializeDownlinkRbgMaps ()
       m_dlRbgMap[index] = false;
     }
 
-  for (uint8_t i = 0; i < m_dlReuse1SubBandwidth / rbgSize; i++)
+  for (int i = 0; i < m_dlReuse1SubBandwidth / rbgSize; i++)
     {
       int offset = (m_dlSubBandOffset + m_dlReuse3SubBandwidth) / rbgSize;
       uint8_t index = offset + i;
@@ -358,7 +358,7 @@ LteFfrEnhancedAlgorithm::InitializeDownlinkRbgMaps ()
       m_dlRbgMap[index] = false;
     }
 
-  for (uint8_t i = 0; i < m_dlReuse3SubBandwidth / rbgSize; i++)
+  for (int i = 0; i < m_dlReuse3SubBandwidth / rbgSize; i++)
     {
       uint8_t offset = (m_dlReuse3SubBandwidth + m_dlReuse1SubBandwidth) / rbgSize;
 

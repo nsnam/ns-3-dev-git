@@ -565,7 +565,7 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
       // evaluate R_eff and MI_eff
       uint16_t codeBitsSum = 0;
       double miSum = 0.0;
-      for (uint16_t i = 0; i < miHistory.size (); i++)
+      for (std::size_t i = 0; i < miHistory.size (); i++)
         {
           NS_LOG_DEBUG (" Sum MI " << miHistory.at (i).m_mi << " Ci " << miHistory.at (i).m_codeBits);
           codeBitsSum += miHistory.at (i).m_codeBits;

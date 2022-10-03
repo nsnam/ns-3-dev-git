@@ -62,7 +62,7 @@ static void ScanConfirm (MlmeScanConfirmParams params)
       std::cout << Simulator::Now ().As (Time::S) << "| Scan status SUCCESSFUL\n";
       std::cout << "Results for Energy Scan:" <<
         "\nPage: " << params.m_chPage << "\n";
-      for (uint8_t i = 0; i < params.m_energyDetList.size (); i++)
+      for (std::size_t i = 0; i < params.m_energyDetList.size (); i++)
         {
           std::cout << "Channel " << static_cast<uint32_t> (i + 11) << ": " << +params.m_energyDetList[i] << "\n";
         }

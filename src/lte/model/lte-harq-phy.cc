@@ -73,7 +73,7 @@ LteHarqPhy::GetAccumulatedMiDl (uint8_t harqProcId, uint8_t layer)
   NS_LOG_FUNCTION (this << (uint32_t)harqProcId << (uint16_t)layer);
   HarqProcessInfoList_t list = m_miDlHarqProcessesInfoMap.at (layer).at (harqProcId);
   double mi = 0.0;
-  for (uint8_t i = 0; i < list.size (); i++)
+  for (std::size_t i = 0; i < list.size (); i++)
     {
       mi += list.at (i).m_mi;
     }
@@ -98,7 +98,7 @@ LteHarqPhy::GetAccumulatedMiUl (uint16_t rnti)
   NS_ASSERT_MSG (it!=m_miUlHarqProcessesInfoMap.end (), " Does not find MI for RNTI");
   HarqProcessInfoList_t list = (*it).second.at (0);
   double mi = 0.0;
-  for (uint8_t i = 0; i < list.size (); i++)
+  for (std::size_t i = 0; i < list.size (); i++)
     {
       mi += list.at (i).m_mi;
     }
@@ -148,7 +148,7 @@ void
 LteHarqPhy::ResetDlHarqProcessStatus (uint8_t id)
 {
   NS_LOG_FUNCTION (this << (uint16_t) id);
-  for (uint8_t i = 0; i < m_miDlHarqProcessesInfoMap.size (); i++)
+  for (std::size_t i = 0; i < m_miDlHarqProcessesInfoMap.size (); i++)
     {
       m_miDlHarqProcessesInfoMap.at (i).at (id).clear ();
     }
@@ -184,7 +184,7 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBy
 
 //       move current status back at the end to maintain full history
       HarqProcessInfoList_t list = (*it).second.at (0);
-      for (uint8_t i = 0; i < list.size (); i++)
+      for (std::size_t i = 0; i < list.size (); i++)
         {
           (*it).second.at (7).push_back (list.at (i));
         }

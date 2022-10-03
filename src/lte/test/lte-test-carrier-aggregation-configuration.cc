@@ -288,7 +288,7 @@ CarrierAggregationConfigTestCase::DoRun ()
 
   // Install Mobility Model
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint16_t i = 0; i < totalNumberOfNodes; i++)
+  for (uint32_t i = 0; i < totalNumberOfNodes; i++)
     {
       positionAlloc->Add (Vector (2 * i, 0, 0));
     }

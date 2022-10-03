@@ -892,7 +892,7 @@ WifiPrimaryChannelsTest::CheckReceivedMuPpdus (std::set<uint8_t> txBss, uint16_t
           // There was a transmission in this BSS.
           // [DL] Due to AID filtering, only stations that are addressed by the MU PPDU do hear the frame
           // [UL] The AP hears a TB PPDU sent by all and only the solicited stations
-          for (uint8_t sta = 0; sta < nRus; sta++)
+          for (std::size_t sta = 0; sta < nRus; sta++)
             {
               NS_TEST_EXPECT_MSG_EQ (m_received[bss].test (sta), true,
                                      (isDlMu ? "A DL MU PPDU transmitted to" : "An HE TB PPDU transmitted by")
@@ -911,7 +911,7 @@ WifiPrimaryChannelsTest::CheckReceivedMuPpdus (std::set<uint8_t> txBss, uint16_t
             }
           // [DL] Only the addressed stations actually processed the frames
           // [UL] The AP processed the frames sent by all and only the addressed stations
-          for (uint8_t sta = 0; sta < nRus; sta++)
+          for (std::size_t sta = 0; sta < nRus; sta++)
             {
               NS_TEST_EXPECT_MSG_EQ (m_processed[bss].test (sta), true,
                                      (isDlMu ? "A DL MU PPDU transmitted to" : "An HE TB PPDU transmitted by")
@@ -958,7 +958,7 @@ WifiPrimaryChannelsTest::CheckReceivedMuPpdus (std::set<uint8_t> txBss, uint16_t
           else
             {
               // [DL] Stations having the same AID of the stations addressed by the MU PPDU received the frame
-              for (uint8_t sta = 0; sta < nRus; sta++)
+              for (std::size_t sta = 0; sta < nRus; sta++)
                 {
                   NS_TEST_EXPECT_MSG_EQ (m_received[bss].test (sta), true,
                                          (isDlMu ? "A DL MU PPDU transmitted to" : "An HE TB PPDU transmitted by")

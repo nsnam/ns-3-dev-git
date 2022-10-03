@@ -400,7 +400,7 @@ RrComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuffer
     {
       params.retxQueueSize /= numberOfCarriersForUe;
       params.txQueueSize /= numberOfCarriersForUe;
-      for ( uint16_t i = 0;  i < numberOfCarriersForUe ; i++)
+      for (uint32_t i = 0; i < numberOfCarriersForUe; i++)
         {
           NS_ASSERT_MSG (m_macSapProvidersMap.find(i)!=m_macSapProvidersMap.end(), "Mac sap provider does not exist.");
           m_macSapProvidersMap.at (i)->ReportBufferStatus(params);
@@ -445,7 +445,7 @@ RrComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t com
           newBsr.m_macCeValue.m_bufferStatus.at(i) = BufferSizeLevelBsr::BufferSize2BsrId (bufferSize/numberOfCarriersForUe);
         }
       // notify MAC of each component carrier that is enabled for this UE
-      for ( uint16_t i = 0;  i < numberOfCarriersForUe ; i++)
+      for (uint32_t i = 0; i < numberOfCarriersForUe; i++)
         {
           NS_ASSERT_MSG (m_ccmMacSapProviderMap.find(i)!=m_ccmMacSapProviderMap.end(), "Mac sap provider does not exist.");
           m_ccmMacSapProviderMap.find(i)->second->ReportMacCeToScheduler(newBsr);

@@ -2956,7 +2956,7 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
                    "RSRQ " << +measResults.measResultPCell.rsrqResult << " (" << servingMeasIt->second.rsrq << " dB)");
 
       measResults.haveMeasResultServFreqList = false;
-      for (uint8_t componentCarrierId = 1; componentCarrierId < m_numberOfComponentCarriers; componentCarrierId++)
+      for (uint16_t componentCarrierId = 1; componentCarrierId < m_numberOfComponentCarriers; componentCarrierId++)
         {
           const uint16_t cellId = m_cphySapProvider.at (componentCarrierId)->GetCellId ();
           auto measValuesIt = m_storedMeasValues.find (cellId);

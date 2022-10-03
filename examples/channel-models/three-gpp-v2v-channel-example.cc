@@ -321,7 +321,7 @@ main (int argc, char *argv[])
   // create the tx power spectral density
   Bands rbs;
   double freqSubBand = frequency;
-  for (uint16_t n = 0; n < numRb; ++n)
+  for (uint32_t n = 0; n < numRb; ++n)
     {
       BandInfo rb;
       rb.fl = freqSubBand;

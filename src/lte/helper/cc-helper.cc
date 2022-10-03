@@ -180,7 +180,7 @@ CcHelper::EquallySpacedCcs ()
   // Convert bandwidth from RBs to kHz
   uint32_t maxBandwidthKhz = LteSpectrumValueHelper::GetChannelBandwidth(maxBandwidthRb) / 1e3;
 
-  for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       // Make sure we stay within the same band.
       if (LteSpectrumValueHelper::GetUplinkCarrierBand (ulEarfcn) !=

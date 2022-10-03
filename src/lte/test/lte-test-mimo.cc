@@ -234,7 +234,7 @@ LenaMimoTestCase::DoRun (void)
 
   NS_LOG_INFO (m_schedulerType << " MIMO test:");
   double sampleTime = 0.199999; // at 0.2 RlcStats are reset
-  for (uint8_t j = 0; j < m_estThrDl.size (); j ++)
+  for (std::size_t j = 0; j < m_estThrDl.size (); j ++)
     {
       NS_LOG_INFO ("\t test with user at distance " << m_dist << " time " << sampleTime);
       // get the imsi
@@ -249,7 +249,7 @@ LenaMimoTestCase::DoRun (void)
   Simulator::Destroy ();
 
   NS_LOG_INFO ("Check consistency");
-    for (uint8_t i = 0; i < m_estThrDl.size (); i++)
+    for (std::size_t i = 0; i < m_estThrDl.size (); i++)
       {
         NS_LOG_INFO ("interval " << i + 1 << ": bytes rxed " << (double)m_dlDataRxed.at (i) << " ref " << m_estThrDl.at (i));
         NS_TEST_ASSERT_MSG_EQ_TOL ((double)m_dlDataRxed.at (i) , m_estThrDl.at (i), m_estThrDl.at (i) * tolerance, " Unfair Throughput!");

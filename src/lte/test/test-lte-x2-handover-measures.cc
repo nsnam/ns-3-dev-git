@@ -300,7 +300,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   // Install Mobility Model in eNBs
   // eNBs are located along a line in the X axis
   Ptr<ListPositionAllocator> enbPositionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint16_t i = 0; i < m_nEnbs; i++)
+  for (uint32_t i = 0; i < m_nEnbs; i++)
     {
       Vector enbPosition (distance * (i + 1), 0, 0);
       enbPositionAlloc->Add (enbPosition);
@@ -315,7 +315,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   MobilityHelper ueMobility;
   ueMobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
   ueMobility.Install (ueNodes);
-  for (uint16_t i = 0; i < m_nUes; i++)
+  for (uint32_t i = 0; i < m_nUes; i++)
     {
       ueNodes.Get (i)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
       ueNodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));

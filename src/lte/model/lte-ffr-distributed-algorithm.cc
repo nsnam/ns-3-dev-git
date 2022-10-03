@@ -573,7 +573,7 @@ LteFfrDistributedAlgorithm::Calculate ()
               continue;
             }
 
-          for (uint8_t i = 0; i < rbgNum; i++)
+          for (uint16_t i = 0; i < rbgNum; i++)
             {
               metricA[i] += cellIt->second * rntpIt->second[i];
             }

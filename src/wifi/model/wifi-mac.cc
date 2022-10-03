@@ -859,7 +859,7 @@ WifiMac::GetNLinks (void) const
 std::optional<uint8_t>
 WifiMac::GetLinkIdByAddress (const Mac48Address& address) const
 {
-  for (uint8_t ret = 0; ret < m_links.size (); ++ret)
+  for (std::size_t ret = 0; ret < m_links.size (); ++ret)
     {
       if (m_links[ret]->feManager->GetAddress () == address)
         {

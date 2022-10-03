@@ -217,7 +217,7 @@ void
 Txop::SetMinCws (std::vector<uint32_t> minCws)
 {
   NS_ABORT_IF (minCws.size () != m_links.size ());
-  for (uint8_t linkId = 0; linkId < minCws.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < minCws.size (); linkId++)
     {
       SetMinCw (minCws[linkId], linkId);
     }
@@ -246,7 +246,7 @@ void
 Txop::SetMaxCws (std::vector<uint32_t> maxCws)
 {
   NS_ABORT_IF (maxCws.size () != m_links.size ());
-  for (uint8_t linkId = 0; linkId < maxCws.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < maxCws.size (); linkId++)
     {
       SetMaxCw (maxCws[linkId], linkId);
     }
@@ -343,7 +343,7 @@ void
 Txop::SetAifsns (std::vector<uint8_t> aifsns)
 {
   NS_ABORT_IF (aifsns.size () != m_links.size ());
-  for (uint8_t linkId = 0; linkId < aifsns.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < aifsns.size (); linkId++)
     {
       SetAifsn (aifsns[linkId], linkId);
     }
@@ -368,7 +368,7 @@ Txop::SetTxopLimits (const std::vector<Time>& txopLimits)
   NS_ABORT_MSG_IF (txopLimits.size () != m_links.size (),
                    "The size of the given vector (" << txopLimits.size () <<
                    ") does not match the number of links (" << m_links.size () << ")");
-  for (uint8_t linkId = 0; linkId < txopLimits.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < txopLimits.size (); linkId++)
     {
       SetTxopLimit (txopLimits[linkId], linkId);
     }
@@ -392,7 +392,7 @@ std::vector<uint32_t>
 Txop::GetMinCws (void) const
 {
   std::vector<uint32_t> ret;
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       ret.push_back (GetMinCw (linkId));
     }
@@ -415,7 +415,7 @@ std::vector<uint32_t>
 Txop::GetMaxCws (void) const
 {
   std::vector<uint32_t> ret;
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       ret.push_back (GetMaxCw (linkId));
     }
@@ -438,7 +438,7 @@ std::vector<uint8_t>
 Txop::GetAifsns (void) const
 {
   std::vector<uint8_t> ret;
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       ret.push_back (GetAifsn (linkId));
     }
@@ -461,7 +461,7 @@ std::vector<Time>
 Txop::GetTxopLimits (void) const
 {
   std::vector<Time> ret;
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       ret.push_back (GetTxopLimit (linkId));
     }
@@ -535,7 +535,7 @@ void
 Txop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       ResetCw (linkId);
       GenerateBackoff (linkId);
@@ -617,7 +617,7 @@ void
 Txop::NotifyOn ()
 {
   NS_LOG_FUNCTION (this);
-  for (uint8_t linkId = 0; linkId < m_links.size (); linkId++)
+  for (std::size_t linkId = 0; linkId < m_links.size (); linkId++)
     {
       StartAccessIfNeeded (linkId);
     }
