@@ -3090,7 +3090,7 @@ TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhySta
   Simulator::Schedule (delay - MilliSeconds (10), &TestUlOfdmaPhyTransmission::SendHeSuPpdu, this, 0, 50, ++uid, 0);
   if (!solicited)
     {
-      // UID of TB PPDUs will be different than the one of the preceding frame
+      // UID of TB PPDUs will be different than the one of the preceeding frame
       ++uid;
     }
   else
@@ -3488,7 +3488,7 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                        "Reception of solicited HE TB PPDU only on RU 2");
   //Check that STA3 will correctly set its state to CCA_BUSY if in measurement channel or IDLE otherwise
   Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), &TestUlOfdmaPhyTransmission::CheckPhyState, this, m_phySta3,
-                       (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY); //PHY should move to CCA_BUSY instead of IDLE if HE TB PPDU on primary channel;
+                       (m_channelWidth >= 40) ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY); //PHY should move to CCA_BUSY instead of IDLE if HE TB PPDU on primary channel
   ScheduleTest (delay, true,
                 WifiPhyState::IDLE,
                 0, 0, 0,    //No transmission scheduled for STA 1
