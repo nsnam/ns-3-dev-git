@@ -2106,6 +2106,7 @@ TestUlOfdmaPpduUid::SendTbPpdu()
 {
     WifiConstPsduMap psdus1;
     WifiConstPsduMap psdus2;
+
     WifiTxVector txVector1 = WifiTxVector(HePhy::GetHeMcs7(),
                                           0,
                                           WIFI_PREAMBLE_HE_TB,
@@ -2117,12 +2118,16 @@ TestUlOfdmaPpduUid::SendTbPpdu()
                                           false,
                                           false);
     WifiTxVector txVector2 = txVector1;
+    WifiTxVector trigVector = txVector2;
 
     uint16_t rxStaId1 = 1;
     HeRu::RuSpec ru1(HeRu::RU_106_TONE, 1, false);
     txVector1.SetRu(ru1, rxStaId1);
     txVector1.SetMode(HePhy::GetHeMcs7(), rxStaId1);
     txVector1.SetNss(1, rxStaId1);
+    trigVector.SetRu(ru1, rxStaId1);
+    trigVector.SetMode(HePhy::GetHeMcs7(), rxStaId1);
+    trigVector.SetNss(1, rxStaId1);
 
     Ptr<Packet> pkt1 = Create<Packet>(1000);
     WifiMacHeader hdr1;
@@ -2138,6 +2143,9 @@ TestUlOfdmaPpduUid::SendTbPpdu()
     txVector2.SetRu(ru2, rxStaId2);
     txVector2.SetMode(HePhy::GetHeMcs9(), rxStaId2);
     txVector2.SetNss(1, rxStaId2);
+    trigVector.SetRu(ru2, rxStaId2);
+    trigVector.SetMode(HePhy::GetHeMcs9(), rxStaId2);
+    trigVector.SetNss(1, rxStaId2);
 
     Ptr<Packet> pkt2 = Create<Packet>(1500);
     WifiMacHeader hdr2;
@@ -2164,6 +2172,9 @@ TestUlOfdmaPpduUid::SendTbPpdu()
     txVector2.SetLength(
         HePhy::ConvertHeTbPpduDurationToLSigLength(txDuration, txVector2, m_phySta2->GetPhyBand())
             .first);
+
+    auto hePhyAp = DynamicCast<HePhy>(m_phyAp->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    hePhyAp->SetTrigVector(trigVector, txDuration);
 
     m_phySta1->Send(psdus1, txVector1);
     m_phySta2->Send(psdus2, txVector2);
