@@ -747,7 +747,6 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
       m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
       m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
       //for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by StartReceiveOfdmaPayload
-      NS_ASSERT (isAp);
       NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty ());
       for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
         {
