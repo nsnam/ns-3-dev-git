@@ -287,7 +287,6 @@ HePhy::ConvertLSigLengthToHeTbPpduDuration(uint16_t length,
 Time
 HePhy::CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const
 {
-    NS_ABORT_IF(!txVector.IsUlMu() || (txVector.GetModulationClass() < WIFI_MOD_CLASS_HE));
     Time duration = GetDuration(WIFI_PPDU_FIELD_PREAMBLE, txVector) +
                     GetDuration(WIFI_PPDU_FIELD_NON_HT_HEADER, txVector) +
                     GetDuration(WIFI_PPDU_FIELD_SIG_A, txVector);
@@ -297,7 +296,6 @@ HePhy::CalculateNonOfdmaDurationForHeTb(const WifiTxVector& txVector) const
 Time
 HePhy::CalculateNonOfdmaDurationForHeMu(const WifiTxVector& txVector) const
 {
-    NS_ABORT_IF(!txVector.IsDlMu() || (txVector.GetModulationClass() < WIFI_MOD_CLASS_HE));
     Time duration = GetDuration(WIFI_PPDU_FIELD_PREAMBLE, txVector) +
                     GetDuration(WIFI_PPDU_FIELD_NON_HT_HEADER, txVector) +
                     GetDuration(WIFI_PPDU_FIELD_SIG_A, txVector) +
