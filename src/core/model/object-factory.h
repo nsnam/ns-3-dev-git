@@ -74,7 +74,6 @@ public:
    * \param [in] tid The TypeId of the object to instantiate.
    */
   void SetTypeId (TypeId tid);
-  void SetTypeId (const char *tid);
   void SetTypeId (std::string tid);
   /**@}*/
 

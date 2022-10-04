@@ -48,12 +48,6 @@ ObjectFactory::SetTypeId (std::string tid)
   NS_LOG_FUNCTION (this << tid);
   m_tid = TypeId::LookupByName (tid);
 }
-void
-ObjectFactory::SetTypeId (const char *tid)
-{
-  NS_LOG_FUNCTION (this << tid);
-  m_tid = TypeId::LookupByName (tid);
-}
 bool
 ObjectFactory::IsTypeIdSet (void) const
 {
