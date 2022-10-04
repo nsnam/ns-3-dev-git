@@ -178,11 +178,13 @@ Ipv4RawSocketImpl::Connect (const Address &address)
   if (!InetSocketAddress::IsMatchingType (address))
     {
       m_err = Socket::ERROR_INVAL;
+      NotifyConnectionFailed ();
       return -1;
     }
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (address);
   m_dst = ad.GetIpv4 ();
   SetIpTos (ad.GetTos ());
+  NotifyConnectionSucceeded ();
 
   return 0;
 }

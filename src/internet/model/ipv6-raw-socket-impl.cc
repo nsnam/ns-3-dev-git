@@ -184,10 +184,12 @@ int Ipv6RawSocketImpl::Connect (const Address& address)
   if (!Inet6SocketAddress::IsMatchingType (address))
     {
       m_err = Socket::ERROR_INVAL;
+      NotifyConnectionFailed ();
       return -1;
     }
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (address);
   m_dst = ad.GetIpv6 ();
+  NotifyConnectionSucceeded ();
 
   return 0;
 }
