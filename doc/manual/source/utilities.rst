@@ -131,40 +131,52 @@ To run it, simply open the terminal and type
 
 .. sourcecode::
 
-    $ ./ns3 run bench-scheduler
+    $ ./ns3 run bench-scheduler -- --runs=5
 
 It will show something like this depending upon the scheduler being benchmarked::
 
     bench-scheduler:  Benchmark the simulator scheduler
       Event population size:        100000
       Total events per run:         1000000
-      Number of runs per scheduler: 1
+      Number of runs per scheduler: 5
       Event time distribution:      default exponential
 
-    ns3::MapScheduler
+    ns3::MapScheduler (default)
     Run #       Initialization:                     Simulation:
 		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
-    (prime)     0.09        1.11111e+06 9e-07       0.98        1.02041e+06 9.8e-07
-    0           0.04        2.5e+06     4e-07       0.98        1.02041e+06 9.8e-07
+    prime       0.01        1e+06       1e-06       5.51        1.81488e+06 5.51e-07
+    0           0           inf         0           6.25        1.6e+06     6.25e-07
+    1           0           inf         0           6.52        1.53374e+06 6.52e-07
+    2           0.01        1e+06       1e-06       7.28        1.37363e+06 7.28e-07
+    3           0           inf         0           7.72        1.29534e+06 7.72e-07
+    4           0.01        1e+06       1e-06       8.16        1.22549e+06 8.16e-07
+    average     0.004       nan         4e-07       7.186       1.40564e+06 7.186e-07
+    stdev       0.00489898  nan         4.89898e-07 0.715866    141302      7.15866e-08
 
 Suppose we had to benchmark `CalendarScheduler` instead, we would have written
 
 .. sourcecode::
 
-    $ ./ns3 run "bench-scheduler --cal"
+    $ ./ns3 run bench-scheduler -- --runs=5 --cal"
 
 And the output would look something like this::
 
     bench-scheduler:  Benchmark the simulator scheduler
-      Event population size:        100000
-      Total events per run:         1000000
-      Number of runs per scheduler: 1
+      Event population size:        10000
+      Total events per run:         10000000
+      Number of runs per scheduler: 5
       Event time distribution:      default exponential
 
     ns3::CalendarScheduler: insertion order: normal
     Run #       Initialization:                     Simulation:
 		Time (s)    Rate (ev/s) Per (s/ev)  Time (s)    Rate (ev/s) Per (s/ev)
     ----------- ----------- ----------- ----------- ----------- ----------- -----------
-    (prime)     0.3         333333      3e-06       12.77       78308.5     1.277e-05
-    0           0.29        344828      2.9e-06     13.66       73206.4     1.366e-05
+    prime       0.01        1e+06       1e-06       8.14        1.2285e+06  8.14e-07
+    0           0.01        1e+06       1e-06       17.14       583431      1.714e-06
+    1           0.02        500000      2e-06       23.33       428633      2.333e-06
+    2           0.02        500000      2e-06       33.2        301205      3.32e-06
+    3           0.03        333333      3e-06       42.98       232666      4.298e-06
+    4           0.05        200000      5e-06       57.1        175131      5.71e-06
+    average     0.026       506667      2.6e-06     34.75       344213      3.475e-06
+    stdev       0.0135647   271129      1.35647e-06 14.214      146446      1.4214e-06
