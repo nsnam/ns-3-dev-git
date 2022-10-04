@@ -200,22 +200,27 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
           NS_FATAL_ERROR ("Failed to bind socket");
         }
 
-      m_socket->Connect (m_peer);
-      m_socket->SetAllowBroadcast (true);
-      m_socket->ShutdownRecv ();
-
       m_socket->SetConnectCallback (
         MakeCallback (&OnOffApplication::ConnectionSucceeded, this),
         MakeCallback (&OnOffApplication::ConnectionFailed, this));
+
+      m_socket->Connect (m_peer);
+      m_socket->SetAllowBroadcast (true);
+      m_socket->ShutdownRecv ();
     }
   m_cbrRateFailSafe = m_cbrRate;
 
-  // Insure no pending event
+  // Ensure no pending event
   CancelEvents ();
-  // If we are not yet connected, there is nothing to do here
-  // The ConnectionComplete upcall will start timers at that time
-  //if (!m_connected) return;
-  ScheduleStartEvent ();
+
+  // If we are not yet connected, there is nothing to do here,
+  // the ConnectionComplete upcall will start timers at that time.
+  // If we are already connected, CancelEvents did remove the events,
+  // so we have to start them again.
+  if (m_connected)
+    {
+      ScheduleStartEvent ();
+    }
 }
 
 void OnOffApplication::StopApplication () // Called at time specified by Stop
@@ -387,6 +392,8 @@ void OnOffApplication::SendPacket ()
 void OnOffApplication::ConnectionSucceeded (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
+
+  ScheduleStartEvent ();
   m_connected = true;
 }
 
