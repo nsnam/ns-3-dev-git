@@ -31,10 +31,10 @@ using namespace ns3;
 
 CommandLine& GetCommandLine(std::string filename, int& nCsma, bool& verbose)
 {
-	static CommandLine cmd = CommandLine(filename);
-	cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma);
-	cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
-	return cmd;
+    static CommandLine cmd = CommandLine(filename);
+    cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma);
+    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+    return cmd;
 }
 """)
 from ctypes import c_int, c_bool
@@ -47,8 +47,8 @@ nCsma = nCsma.value
 verbose = verbose.value
 
 if verbose == "True":
-	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
-	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
+    ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
+    ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 nCsma = 1 if nCsma == 0 else nCsma
 
 p2pNodes = ns.network.NodeContainer()

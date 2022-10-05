@@ -50,12 +50,12 @@ nWifi = int(nWifi)
 # allocator's configuration; the grid layout will exceed the
 # bounding box if more than 18 nodes are provided.
 if nWifi > 18:
-	print ("nWifi should be 18 or less; otherwise grid layout exceeds the bounding box")
-	sys.exit(1)
+    print("nWifi should be 18 or less; otherwise grid layout exceeds the bounding box")
+    sys.exit(1)
 
 if verbose == "True":
-	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
-	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
+    ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
+    ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
 p2pNodes = ns.network.NodeContainer()
 p2pNodes.Create(2)
@@ -96,9 +96,9 @@ mac.SetType("ns3::ApWifiMac","Ssid", ns.wifi.SsidValue (ssid))
 apDevices = wifi.Install(phy, mac, wifiApNode)
 
 mobility = ns.mobility.MobilityHelper()
-mobility.SetPositionAllocator ("ns3::GridPositionAllocator", "MinX", ns.core.DoubleValue(0.0),
-								"MinY", ns.core.DoubleValue (0.0), "DeltaX", ns.core.DoubleValue(5.0), "DeltaY", ns.core.DoubleValue(10.0),
-                                 "GridWidth", ns.core.UintegerValue(3), "LayoutType", ns.core.StringValue("RowFirst"))
+mobility.SetPositionAllocator("ns3::GridPositionAllocator", "MinX", ns.core.DoubleValue(0.0),
+                              "MinY", ns.core.DoubleValue (0.0), "DeltaX", ns.core.DoubleValue(5.0), "DeltaY", ns.core.DoubleValue(10.0),
+                              "GridWidth", ns.core.UintegerValue(3), "LayoutType", ns.core.StringValue("RowFirst"))
 
 mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle (-50, 50, -50, 50)))
 mobility.Install(wifiStaNodes)
@@ -142,10 +142,10 @@ ns.internet.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
 ns.core.Simulator.Stop(ns.core.Seconds(10.0))
 
 if tracing == "True":
-	phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)
-	pointToPoint.EnablePcapAll ("third")
-	phy.EnablePcap ("third", apDevices.Get (0))
-	csma.EnablePcap ("third", csmaDevices.Get (0), True)
+    phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)
+    pointToPoint.EnablePcapAll ("third")
+    phy.EnablePcap ("third", apDevices.Get (0))
+    csma.EnablePcap ("third", csmaDevices.Get (0), True)
 
 ns.core.Simulator.Run()
 ns.core.Simulator.Destroy()

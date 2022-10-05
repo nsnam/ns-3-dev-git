@@ -29,11 +29,11 @@ using namespace ns3;
 
 CommandLine& GetCommandLine(std::string filename, int& NumNodesSide, bool& Plot, std::string Results)
 {
-	static CommandLine cmd = CommandLine(filename);
+    static CommandLine cmd = CommandLine(filename);
     cmd.AddValue("NumNodesSide", "Grid side number of nodes (total number of nodes will be this number squared)", NumNodesSide);
     cmd.AddValue("Results", "Write XML results to file", Results);
     cmd.AddValue("Plot", "Plot the results using the matplotlib python module", Plot);
-	return cmd;
+    return cmd;
 }
 """)
 
