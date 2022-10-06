@@ -153,7 +153,9 @@ int main (int argc, char *argv[])
   float stopTime = startTime + simDuration;
 
   // Create nodes
-  NodeContainer n1, n2, n3;
+  NodeContainer n1;
+  NodeContainer n2;
+  NodeContainer n3;
   n1.Create (1);
   n2.Create (1);
   n3.Create (1);
@@ -269,7 +271,9 @@ int main (int argc, char *argv[])
   // Flows configuration
   // Bidirectional TCP streams with ping like flent tcp_bidirectional test.
   uint16_t port = 7;
-  ApplicationContainer uploadApp, downloadApp, sourceApps;
+  ApplicationContainer uploadApp;
+  ApplicationContainer downloadApp;
+  ApplicationContainer sourceApps;
   // Configure and install upload flow
   Address addUp (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper sinkHelperUp ("ns3::TcpSocketFactory", addUp);

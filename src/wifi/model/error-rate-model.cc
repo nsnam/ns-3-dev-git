@@ -39,7 +39,9 @@ double
 ErrorRateModel::CalculateSnr (const WifiTxVector& txVector, double ber) const
 {
   //This is a very simple binary search.
-  double low, high, precision;
+  double low;
+  double high;
+  double precision;
   low = 1e-25;
   high = 1e25;
   precision = 2e-12;

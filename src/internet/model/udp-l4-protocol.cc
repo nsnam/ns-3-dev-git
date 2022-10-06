@@ -268,7 +268,8 @@ UdpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
 {
   NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo
                         << payloadSource << payloadDestination);
-  uint16_t src, dst;
+  uint16_t src;
+  uint16_t dst;
   src = payload[0] << 8;
   src |= payload[1];
   dst = payload[2] << 8;
@@ -295,7 +296,8 @@ UdpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
 {
   NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo
                         << payloadSource << payloadDestination);
-  uint16_t src, dst;
+  uint16_t src;
+  uint16_t dst;
   src = payload[0] << 8;
   src |= payload[1];
   dst = payload[2] << 8;

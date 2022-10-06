@@ -82,7 +82,12 @@ SNRToBlockErrorRateManager::LoadTraces ()
 {
   std::ifstream traceFile;
   ClearRecords ();
-  double snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2;
+  double snrValue;
+  double bitErrorRate;
+  double burstErrorRate;
+  double sigma2;
+  double I1;
+  double I2;
 
   for (int i = 0; i < 7; i++)
     {
@@ -116,7 +121,12 @@ SNRToBlockErrorRateManager::LoadTraces ()
 void
 SNRToBlockErrorRateManager::LoadDefaultTraces ()
 {
-  double snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2;
+  double snrValue;
+  double bitErrorRate;
+  double burstErrorRate;
+  double sigma2;
+  double I1;
+  double I2;
   ClearRecords ();
   for (unsigned int j = 0; j < sizeof(modulation0[0]) / sizeof(double); j++)
     {
@@ -236,7 +246,12 @@ SNRToBlockErrorRateManager::LoadDefaultTraces ()
 void
 SNRToBlockErrorRateManager::ReLoadTraces ()
 {
-  double snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2;
+  double snrValue;
+  double bitErrorRate;
+  double burstErrorRate;
+  double sigma2;
+  double I1;
+  double I2;
 
   ClearRecords ();
 

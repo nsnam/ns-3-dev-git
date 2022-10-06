@@ -257,7 +257,8 @@ FqCobaltQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  uint32_t flowHash, h;
+  uint32_t flowHash;
+  uint32_t h;
 
   if (GetNPacketFilters () == 0)
     {
@@ -495,7 +496,8 @@ FqCobaltQueueDisc::FqCobaltDrop ()
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t maxBacklog = 0, index = 0;
+  uint32_t maxBacklog = 0;
+  uint32_t index = 0;
   Ptr<QueueDisc> qd;
 
   /* Queue is full! Find the fat flow and drop packet(s) from it */
@@ -511,7 +513,9 @@ FqCobaltQueueDisc::FqCobaltDrop ()
     }
 
   /* Our goal is to drop half of this fat flow backlog */
-  uint32_t len = 0, count = 0, threshold = maxBacklog >> 1;
+  uint32_t len = 0;
+  uint32_t count = 0;
+  uint32_t threshold = maxBacklog >> 1;
   qd = GetQueueDiscClass (index)->GetQueueDisc ();
   Ptr<QueueDiscItem> item;
 

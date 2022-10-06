@@ -118,7 +118,8 @@ WifiMsduAggregatorThroughputTest::DoRun ()
 
   Ipv4AddressHelper address;
   address.SetBase ("192.168.0.0", "255.255.255.0");
-  Ipv4InterfaceContainer staNodeInterface, apNodeInterface;
+  Ipv4InterfaceContainer staNodeInterface;
+  Ipv4InterfaceContainer apNodeInterface;
   staNodeInterface = address.Assign (staDev);
   apNodeInterface = address.Assign (apDev);
 

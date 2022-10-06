@@ -60,8 +60,15 @@ UanNoiseModelDefault::GetTypeId ()
 double
 UanNoiseModelDefault::GetNoiseDbHz (double fKhz) const
 {
-  double turb, wind, ship, thermal;
-  double turbDb, windDb, shipDb, thermalDb, noiseDb;
+  double turb;
+  double wind;
+  double ship;
+  double thermal;
+  double turbDb;
+  double windDb;
+  double shipDb;
+  double thermalDb;
+  double noiseDb;
 
   turbDb = 17.0 - 30.0 * std::log10 (fKhz);
   turb = std::pow (10.0, turbDb * 0.1);

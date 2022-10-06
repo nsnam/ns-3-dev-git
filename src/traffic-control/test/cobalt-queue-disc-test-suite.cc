@@ -153,7 +153,12 @@ CobaltQueueDiscBasicEnqueueDequeue::DoRun ()
                          true, "Verify that we can actually set the attribute MaxSize");
   queue->Initialize ();
 
-  Ptr<Packet> p1, p2, p3, p4, p5, p6;
+  Ptr<Packet> p1;
+  Ptr<Packet> p2;
+  Ptr<Packet> p3;
+  Ptr<Packet> p4;
+  Ptr<Packet> p5;
+  Ptr<Packet> p6;
   p1 = Create<Packet> (pktSize);
   p2 = Create<Packet> (pktSize);
   p3 = Create<Packet> (pktSize);

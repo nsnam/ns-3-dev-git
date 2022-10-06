@@ -99,7 +99,10 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
       *os << "Destination                    Next Hop                   Flag Met Ref Use If" << std::endl;
       for (uint32_t j = 0; j < GetNRoutes (); j++)
         {
-          std::ostringstream dest, gw, mask, flags;
+          std::ostringstream dest;
+          std::ostringstream gw;
+          std::ostringstream mask;
+          std::ostringstream flags;
           Ipv6RoutingTableEntry route = GetRoute (j);
           dest << route.GetDest () << "/" << int(route.GetDestNetworkPrefix ().GetPrefixLength ());
           *os << std::setw (31) << dest.str ();

@@ -195,7 +195,10 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
         }
       else
         {
-          double a = 0.0, b = 0.0, previousSnr = 0.0, nextSnr = 0.0;
+          double a = 0.0;
+          double b = 0.0;
+          double previousSnr = 0.0;
+          double nextSnr = 0.0;
           for (auto i = itVector.cbegin (); i != itVector.cend (); ++i)
             {
               if (i->first < roundedSnr)

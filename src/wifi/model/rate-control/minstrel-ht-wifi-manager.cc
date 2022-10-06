@@ -1413,12 +1413,16 @@ MinstrelHtWifiManager::SetBestProbabilityRate (MinstrelHtWifiRemoteStation *stat
 {
   GroupInfo *group;
   MinstrelHtRateInfo rate;
-  uint8_t tmpGroupId, tmpRateId;
-  double tmpTh, tmpProb;
-  uint8_t groupId, rateId;
+  uint8_t tmpGroupId;
+  uint8_t tmpRateId;
+  double tmpTh;
+  double tmpProb;
+  uint8_t groupId;
+  uint8_t rateId;
   double currentTh;
   // maximum group probability (GP) variables
-  uint8_t maxGPGroupId, maxGPRateId;
+  uint8_t maxGPGroupId;
+  uint8_t maxGPRateId;
   double maxGPTh;
 
   groupId = GetGroupId (index);
@@ -1472,12 +1476,18 @@ MinstrelHtWifiManager::SetBestProbabilityRate (MinstrelHtWifiRemoteStation *stat
 void
 MinstrelHtWifiManager::SetBestStationThRates (MinstrelHtWifiRemoteStation *station, uint16_t index)
 {
-  uint8_t groupId, rateId;
-  double th, prob;
-  uint8_t maxTpGroupId, maxTpRateId;
-  uint8_t maxTp2GroupId, maxTp2RateId;
-  double maxTpTh, maxTpProb;
-  double maxTp2Th, maxTp2Prob;
+  uint8_t groupId;
+  uint8_t rateId;
+  double th;
+  double prob;
+  uint8_t maxTpGroupId;
+  uint8_t maxTpRateId;
+  uint8_t maxTp2GroupId;
+  uint8_t maxTp2RateId;
+  double maxTpTh;
+  double maxTpProb;
+  double maxTp2Th;
+  double maxTp2Prob;
 
   groupId = GetGroupId (index);
   rateId = GetRateId (index);
@@ -1680,7 +1690,9 @@ MinstrelHtWifiManager::CalculateRetransmits (MinstrelHtWifiRemoteStation *statio
 
   uint32_t cw = 15;                     // Is an approximation.
   uint32_t cwMax = 1023;
-  Time cwTime, txTime, dataTxTime;
+  Time cwTime;
+  Time txTime;
+  Time dataTxTime;
   Time slotTime = GetPhy ()->GetSlot ();
   Time ackTime = GetPhy ()->GetSifs () + GetPhy ()->GetBlockAckTxTime ();
 
@@ -1723,7 +1735,9 @@ MinstrelHtWifiManager::CalculateRetransmits (MinstrelHtWifiRemoteStation *statio
 double
 MinstrelHtWifiManager::CalculateEwmsd (double oldEwmsd, double currentProb, double ewmaProb, double weight)
 {
-  double diff, incr, tmp;
+  double diff;
+  double incr;
+  double tmp;
 
   /* calculate exponential weighted moving variance */
   diff = currentProb - ewmaProb;

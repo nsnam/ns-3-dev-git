@@ -235,7 +235,9 @@ operator << (std::ostream &os, const Rectangle &rectangle)
 std::istream &
 operator >> (std::istream &is, Rectangle &rectangle)
 {
-  char c1, c2, c3;
+  char c1;
+  char c2;
+  char c3;
   is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
   if (c1 != '|' ||
       c2 != '|' ||

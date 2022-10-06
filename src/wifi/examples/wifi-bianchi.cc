@@ -1447,7 +1447,8 @@ int main (int argc, char *argv[])
 
   Experiment experiment;
   WifiMacHelper wifiMac;
-  double averageThroughput, throughputArray[trials];
+  double averageThroughput;
+  double throughputArray[trials];
   for (uint32_t n = nMinStas; n <= nMaxStas; n += nStepSize)
     {
       averageThroughput = 0;

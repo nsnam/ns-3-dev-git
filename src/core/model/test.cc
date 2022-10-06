@@ -45,7 +45,8 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
 {
   NS_LOG_FUNCTION (x1 << x2 << epsilon);
   int exponent;
-  double delta, difference;
+  double delta;
+  double difference;
 
   //
   // Find exponent of largest absolute value

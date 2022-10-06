@@ -140,7 +140,8 @@ int main (int argc, char *argv [])
   Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize", QueueSizeValue (QueueSize ("1p")));
   Config::SetDefault (queueDisc + "::MaxSize", QueueSizeValue (QueueSize ("100p")));
 
-  NodeContainer sender, receiver;
+  NodeContainer sender;
+  NodeContainer receiver;
   NodeContainer routers;
   sender.Create (1);
   receiver.Create (1);

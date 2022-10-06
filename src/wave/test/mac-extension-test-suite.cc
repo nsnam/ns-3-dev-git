@@ -446,7 +446,8 @@ ChannelRoutingTestCase::DoRun ()
     NetDeviceContainer devices = TestCaseHelper::CreatWaveDevice (1);
     m_sender = DynamicCast<WaveNetDevice> (devices.Get (0));
 
-    bool ipv6 = true, ipv4 = false;
+    bool ipv6 = true;
+    bool ipv4 = false;
     Simulator::Schedule (Seconds (0.1), &ChannelRoutingTestCase::SendIp, this, false, ipv6);
     Simulator::Schedule (Seconds (0.1), &ChannelRoutingTestCase::SendIp, this, false, ipv4);
 

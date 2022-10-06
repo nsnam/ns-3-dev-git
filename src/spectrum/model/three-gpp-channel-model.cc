@@ -1208,7 +1208,8 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
   channelParams->m_o2iCondition = channelCondition->GetO2iCondition ();
 
   //Step 4: Generate large scale parameters. All LSPS are uncorrelated.
-  DoubleVector LSPsIndep, LSPs;
+  DoubleVector LSPsIndep;
+  DoubleVector LSPs;
   uint8_t paramNum = 6;
   if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
@@ -1231,7 +1232,12 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
     }
 
   // NOTE the shadowing is generated in the propagation loss model
-  double DS, ASD, ASA, ZSA, ZSD, kFactor = 0;
+  double DS;
+  double ASD;
+  double ASA;
+  double ZSA;
+  double ZSD;
+  double kFactor = 0;
   if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       kFactor = LSPs[1] * table3gpp->m_sigK + table3gpp->m_uK;
@@ -1446,7 +1452,10 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
       cTheta *= (1.3086 + 0.0339 * kFactor - 0.0077 * pow (kFactor, 2) + 2e-4 * pow (kFactor, 3)); //(7.5-15)
     }
 
-  DoubleVector clusterAoa, clusterAod, clusterZoa, clusterZod;
+  DoubleVector clusterAoa;
+  DoubleVector clusterAod;
+  DoubleVector clusterZoa;
+  DoubleVector clusterZod;
   for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
       double logCalc = -1 * log (clusterPowerForAngles[cIndex] / powerMax);
@@ -1639,7 +1648,8 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
   channelParams->m_clusterPhase = clusterPhase;
   channelParams->m_crossPolarizationPowerRatios = crossPolarizationPowerRatios;
 
-  uint8_t cluster1st = 0, cluster2nd = 0; // first and second strongest cluster;
+  uint8_t cluster1st = 0;
+  uint8_t cluster2nd = 0; // first and second strongest cluster;
   double maxPower = 0;
   for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
@@ -1684,7 +1694,8 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
     }
   else
     {
-      double min, max;
+      double min;
+      double max;
       if (cluster1st < cluster2nd)
         {
           min = cluster1st;
@@ -1741,7 +1752,8 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
   // By default, m_vScatt is set to 0, so there is no additional Doppler
   // contribution.
 
-  DoubleVector dopplerTermAlpha, dopplerTermD;
+  DoubleVector dopplerTermAlpha;
+  DoubleVector dopplerTermD;
 
   // 2 or 4 is added to account for additional subrays for the 1st and 2nd clusters, if there is only one cluster then would be added 2 more subrays (see creation of Husn channel matrix)
   uint8_t updatedClusterNumber = (channelParams->m_reducedClusterNumber == 1) ? channelParams->m_reducedClusterNumber + 2 : channelParams->m_reducedClusterNumber + 4;
@@ -1887,7 +1899,10 @@ ThreeGppChannelModel::GetNewChannel (Ptr<const ThreeGppChannelParams> channelPar
                                                        + cos (rayZodRadian[nIndex][mIndex]) * sLoc.z);
                       // NOTE Doppler is computed in the CalcBeamformingGain function and is simplified to only account for the center angle of each cluster.
 
-                      double rxFieldPatternPhi, rxFieldPatternTheta, txFieldPatternPhi, txFieldPatternTheta;
+                      double rxFieldPatternPhi;
+                      double rxFieldPatternTheta;
+                      double txFieldPatternPhi;
+                      double txFieldPatternTheta;
                       std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (channelParams->m_rayAoaRadian[nIndex][mIndex], channelParams->m_rayZoaRadian[nIndex][mIndex]));
                       std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (channelParams->m_rayAodRadian[nIndex][mIndex], channelParams->m_rayZodRadian[nIndex][mIndex]));
                       NS_ASSERT (4 <= initialPhase.size ());
@@ -1922,7 +1937,10 @@ ThreeGppChannelModel::GetNewChannel (Ptr<const ThreeGppChannelParams> channelPar
                                                        + sin (rayZodRadian[nIndex][mIndex]) * sin (rayAodRadian[nIndex][mIndex]) * sLoc.y
                                                        + cos (rayZodRadian[nIndex][mIndex]) * sLoc.z);
 
-                      double rxFieldPatternPhi, rxFieldPatternTheta, txFieldPatternPhi, txFieldPatternTheta;
+                      double rxFieldPatternPhi;
+                      double rxFieldPatternTheta;
+                      double txFieldPatternPhi;
+                      double txFieldPatternTheta;
                       std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (rayAoaRadian[nIndex][mIndex], rayZoaRadian[nIndex][mIndex]));
                       std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (rayAodRadian[nIndex][mIndex], rayZodRadian[nIndex][mIndex]));
 
@@ -1973,7 +1991,10 @@ ThreeGppChannelModel::GetNewChannel (Ptr<const ThreeGppChannelParams> channelPar
                                                + sin (sAngle.GetInclination ()) * sin (sAngle.GetAzimuth ()) * sLoc.y
                                                + cos (sAngle.GetInclination ()) * sLoc.z);
 
-              double rxFieldPatternPhi, rxFieldPatternTheta, txFieldPatternPhi, txFieldPatternTheta;
+              double rxFieldPatternPhi;
+              double rxFieldPatternTheta;
+              double txFieldPatternPhi;
+              double txFieldPatternTheta;
               std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (uAngle.GetAzimuth (), uAngle.GetInclination ()));
               std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (sAngle.GetAzimuth (), sAngle.GetInclination ()));
 
@@ -2198,7 +2219,10 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage (const Ptr<ThreeGppChannelModel:
               double A2 = clusterAOA[cInd] - (phiK - xK / 2); //(7.6-25)
               double Z1 = clusterZOA[cInd] - (thetaK + yK / 2); //(7.6-26)
               double Z2 = clusterZOA[cInd] - (thetaK - yK / 2); //(7.6-27)
-              int signA1, signA2, signZ1, signZ2;
+              int signA1;
+              int signA2;
+              int signZ1;
+              int signZ2;
               //draw sign for the above parameters according to table 7.6.4.1-3 Description of signs
               if (xK / 2 < clusterAOA[cInd] - phiK && clusterAOA[cInd] - phiK <= xK)
                 {

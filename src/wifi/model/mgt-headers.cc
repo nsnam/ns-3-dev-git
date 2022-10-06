@@ -831,7 +831,8 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator tmp, i = start;
+  Buffer::Iterator tmp;
+  Buffer::Iterator i = start;
   m_timestamp = i.ReadLsbtohU64 ();
   m_beaconInterval = i.ReadLsbtohU16 ();
   m_beaconInterval *= 1024;
@@ -1190,7 +1191,8 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator tmp, i = start;
+  Buffer::Iterator tmp;
+  Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
   m_listenInterval = i.ReadLsbtohU16 ();
   i = m_ssid.Deserialize (i);
@@ -1529,7 +1531,8 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator tmp, i = start;
+  Buffer::Iterator tmp;
+  Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
   m_listenInterval = i.ReadLsbtohU16 ();
   ReadFrom (i, m_currentApAddr);
@@ -2027,7 +2030,8 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator tmp, i = start;
+  Buffer::Iterator tmp;
+  Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
   i = m_code.Deserialize (i);
   m_aid = i.ReadLsbtohU16 ();

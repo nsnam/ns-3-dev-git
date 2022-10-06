@@ -489,7 +489,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           // Status tag of the new and remaining segments
           // Note: This is the only place where a PDU is segmented and
           // therefore its status can change
-          LteRlcSduStatusTag oldTag, newTag;
+          LteRlcSduStatusTag oldTag;
+          LteRlcSduStatusTag newTag;
           firstSegment->RemovePacketTag (oldTag);
           newSegment->RemovePacketTag (newTag);
           if (oldTag.GetStatus () == LteRlcSduStatusTag::FULL_SDU)

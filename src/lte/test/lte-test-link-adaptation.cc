@@ -141,7 +141,8 @@ LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (std::string name, double s
     m_loss (loss),
     m_mcsIndex (mcsIndex)
 {
-  std::ostringstream sstream1, sstream2;
+  std::ostringstream sstream1;
+  std::ostringstream sstream2;
   sstream1 << " snr=" << snrDb
            << " mcs=" << mcsIndex;
 

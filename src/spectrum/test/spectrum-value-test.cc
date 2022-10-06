@@ -123,7 +123,16 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
 
   Ptr<SpectrumModel> f = Create<SpectrumModel> (freqs);
 
-  SpectrumValue v1 (f), v2 (f), v3 (f), v4 (f), v5 (f), v6 (f), v7 (f), v8 (f), v9 (f), v10 (f);
+  SpectrumValue v1 (f);
+  SpectrumValue v2 (f);
+  SpectrumValue v3 (f);
+  SpectrumValue v4 (f);
+  SpectrumValue v5 (f);
+  SpectrumValue v6 (f);
+  SpectrumValue v7 (f);
+  SpectrumValue v8 (f);
+  SpectrumValue v9 (f);
+  SpectrumValue v10 (f);
 
   double doubleValue;
 
@@ -190,7 +199,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   v10[3] = -0.794244913190;
   v10[4] =  0.878579343459;
 
-  SpectrumValue tv3 (f), tv4 (f), tv5 (f), tv6 (f);
+  SpectrumValue tv3 (f);
+  SpectrumValue tv4 (f);
+  SpectrumValue tv5 (f);
+  SpectrumValue tv6 (f);
 
   tv3 = v1 + v2;
   tv4 = v1 - v2;
@@ -222,7 +234,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 *= v2"), TestCase::QUICK);
   AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 div= v2"), TestCase::QUICK);
 
-  SpectrumValue tv7a (f), tv8a (f), tv9a (f), tv10a (f);
+  SpectrumValue tv7a (f);
+  SpectrumValue tv8a (f);
+  SpectrumValue tv9a (f);
+  SpectrumValue tv10a (f);
   tv7a = v1 + doubleValue;
   tv8a = v1 - doubleValue;
   tv9a = v1 * doubleValue;
@@ -232,7 +247,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   AddTestCase (new SpectrumValueTestCase (tv9a, v9, "tv9a = v1 * doubleValue"), TestCase::QUICK);
   AddTestCase (new SpectrumValueTestCase (tv10a, v10, "tv10a = v1 div doubleValue"), TestCase::QUICK);
 
-  SpectrumValue tv7b (f), tv8b (f), tv9b (f), tv10b (f);
+  SpectrumValue tv7b (f);
+  SpectrumValue tv8b (f);
+  SpectrumValue tv9b (f);
+  SpectrumValue tv10b (f);
   tv7b =  doubleValue + v1;
   tv8b =  doubleValue - v1;
   tv9b =  doubleValue * v1;
@@ -246,8 +264,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
 
 
 
-  SpectrumValue v1ls3 (f), v1rs3 (f);
-  SpectrumValue tv1ls3 (f), tv1rs3 (f);
+  SpectrumValue v1ls3 (f);
+  SpectrumValue v1rs3 (f);
+  SpectrumValue tv1ls3 (f);
+  SpectrumValue tv1rs3 (f);
 
   v1ls3[0] = v1[3];
   v1ls3[1] = v1[4];

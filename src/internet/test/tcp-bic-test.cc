@@ -131,7 +131,9 @@ TcpBicIncrementTest::Update (Ptr<TcpSocketState> tcb)
   uint32_t segCwnd = tcb->m_cWnd / tcb->m_segmentSize;
   Ptr<TcpBic> cong = CreateObject <TcpBic> ();
   cong->m_lastMaxCwnd = m_lastMaxCwnd;
-  UintegerValue lowWindow, bsCoeff, wMax;
+  UintegerValue lowWindow;
+  UintegerValue bsCoeff;
+  UintegerValue wMax;
   UintegerValue smoothPart;
   cong->GetAttribute ("LowWnd", lowWindow);
   cong->GetAttribute ("BinarySearchCoefficient", bsCoeff);
@@ -268,7 +270,8 @@ TcpBicDecrementTest::ExecuteTest ()
   cong->GetAttribute ("Beta", beta);
   cong->GetAttribute ("LowWnd", lowWindow);
 
-  uint32_t lastMaxCwnd, ssThresh;
+  uint32_t lastMaxCwnd;
+  uint32_t ssThresh;
 
   if (segCwnd < m_lastMaxCwnd && m_fastConvergence.Get ())
     {

@@ -294,7 +294,10 @@ int main (int argc, char *argv[])
   rxS2R2Bytes.reserve (20);
   rxS3R1Bytes.reserve (10);
 
-  NodeContainer S1, S2, S3, R2;
+  NodeContainer S1;
+  NodeContainer S2;
+  NodeContainer S3;
+  NodeContainer R2;
   Ptr<Node> T1 = CreateObject<Node> ();
   Ptr<Node> T2 = CreateObject<Node> ();
   Ptr<Node> R1 = CreateObject<Node> ();

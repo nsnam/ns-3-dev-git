@@ -145,7 +145,14 @@ RedQueueDiscTestCase::RunRedTest (QueueSizeUnit mode)
       queue->SetMaxSize (QueueSize (mode, qSize * modeSize));
     }
 
-  Ptr<Packet> p1, p2, p3, p4, p5, p6, p7, p8;
+  Ptr<Packet> p1;
+  Ptr<Packet> p2;
+  Ptr<Packet> p3;
+  Ptr<Packet> p4;
+  Ptr<Packet> p5;
+  Ptr<Packet> p6;
+  Ptr<Packet> p7;
+  Ptr<Packet> p8;
   p1 = Create<Packet> (pktSize);
   p2 = Create<Packet> (pktSize);
   p3 = Create<Packet> (pktSize);

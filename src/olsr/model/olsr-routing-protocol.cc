@@ -1140,7 +1140,8 @@ RoutingProtocol::RoutingTableComputation  ()
           const TopologyTuple &topology_tuple = *it;
           NS_LOG_LOGIC ("Looking at topology tuple: " << topology_tuple);
 
-          RoutingTableEntry destAddrEntry, lastAddrEntry;
+          RoutingTableEntry destAddrEntry;
+          RoutingTableEntry lastAddrEntry;
           bool have_destAddrEntry = Lookup (topology_tuple.destAddr, destAddrEntry);
           bool have_lastAddrEntry = Lookup (topology_tuple.lastAddr, lastAddrEntry);
           if (!have_destAddrEntry && have_lastAddrEntry && lastAddrEntry.distance == h)
@@ -1188,7 +1189,8 @@ RoutingProtocol::RoutingTableComputation  ()
        it != ifaceAssocSet.end (); it++)
     {
       IfaceAssocTuple const &tuple = *it;
-      RoutingTableEntry entry1, entry2;
+      RoutingTableEntry entry1;
+      RoutingTableEntry entry2;
       bool have_entry1 = Lookup (tuple.mainAddr, entry1);
       bool have_entry2 = Lookup (tuple.ifaceAddr, entry2);
       if (have_entry1 && !have_entry2)
@@ -1733,7 +1735,8 @@ RoutingProtocol::SendHello  ()
           continue;
         }
 
-      uint8_t link_type, nb_type = 0xff;
+      uint8_t link_type;
+      uint8_t nb_type = 0xff;
 
       // Establishes link type
       if (link_tuple->symTime >= now)
@@ -2885,7 +2888,8 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
 {
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId () << " " << header.GetDestination () << " " << oif);
   Ptr<Ipv4Route> rtentry;
-  RoutingTableEntry entry1, entry2;
+  RoutingTableEntry entry1;
+  RoutingTableEntry entry2;
   bool found = false;
 
   if (Lookup (header.GetDestination (), entry1) != 0)
@@ -3001,7 +3005,8 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
   NS_LOG_LOGIC ("Forward packet");
   // Forwarding
   Ptr<Ipv4Route> rtentry;
-  RoutingTableEntry entry1, entry2;
+  RoutingTableEntry entry1;
+  RoutingTableEntry entry2;
   if (Lookup (header.GetDestination (), entry1))
     {
       bool foundSendEntry = FindSendEntry (entry1, entry2);

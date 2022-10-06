@@ -48,7 +48,8 @@ namespace olsr {
 uint8_t
 SecondsToEmf (double seconds)
 {
-  int a, b = 0;
+  int a;
+  int b = 0;
 
   NS_ASSERT_MSG (seconds >= OLSR_C, "SecondsToEmf - Can not convert a value less than OLSR_C");
 

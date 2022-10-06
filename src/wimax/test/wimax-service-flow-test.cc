@@ -74,7 +74,8 @@ Ns3WimaxSfCreationTestCase::DoRun ()
 
   WimaxHelper wimax;
 
-  NetDeviceContainer ssDevs, bsDevs;
+  NetDeviceContainer ssDevs;
+  NetDeviceContainer bsDevs;
 
   ssDevs = wimax.Install (ssNodes,
                           WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,

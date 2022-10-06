@@ -78,7 +78,8 @@ public:
      */
     bool IsReverse (uint32_t aAntennaId, uint32_t bAntennaId) const
     {
-      uint32_t sAntennaId, uAntennaId;
+      uint32_t sAntennaId;
+      uint32_t uAntennaId;
       std::tie (sAntennaId, uAntennaId) = m_antennaPair;
       NS_ASSERT_MSG ((sAntennaId == aAntennaId && uAntennaId == bAntennaId) || (sAntennaId == bAntennaId && uAntennaId == aAntennaId),
                       "This channel matrix does not represent the channel among the antenna arrays for which are provided IDs.");

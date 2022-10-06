@@ -88,7 +88,8 @@ UanPhyCalcSinrDual::CalcSinrDb (Ptr<Packet> pkt,
       if (std::abs ( (double) it->GetTxMode ().GetCenterFreqHz () - (double) mode.GetCenterFreqHz ())
           < (double)(it->GetTxMode ().GetBandwidthHz () / 2 + mode.GetBandwidthHz () / 2) - 0.5)
         {
-          UanHeaderCommon ch, ch2;
+          UanHeaderCommon ch;
+          UanHeaderCommon ch2;
           if (pkt)
             {
               pkt->PeekHeader (ch);

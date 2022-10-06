@@ -580,7 +580,8 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
   for (; packetSize > 0; packetSize = packetSize - 12)
     {
       count = 0;
-      DsdvHeader dsdvHeader, tempDsdvHeader;
+      DsdvHeader dsdvHeader;
+      DsdvHeader tempDsdvHeader;
       packet->RemoveHeader (dsdvHeader);
       NS_LOG_DEBUG ("Processing new update for " << dsdvHeader.GetDst ());
       /*Verifying if the packets sent by me were returned back to me. If yes, discarding them!*/
@@ -611,7 +612,8 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
       NS_LOG_DEBUG ("Received a DSDV packet from "
                     << sender << " to " << receiver << ". Details are: Destination: " << dsdvHeader.GetDst () << ", Seq No: "
                     << dsdvHeader.GetDstSeqno () << ", HopCount: " << dsdvHeader.GetHopCount ());
-      RoutingTableEntry fwdTableEntry, advTableEntry;
+      RoutingTableEntry fwdTableEntry;
+      RoutingTableEntry advTableEntry;
       EventId event;
       bool permanentTableVerifier = m_routingTable.LookupRoute (dsdvHeader.GetDst (),fwdTableEntry);
       if (permanentTableVerifier == false)
@@ -884,7 +886,8 @@ RoutingProtocol::SendTriggeredUpdate ()
 void
 RoutingProtocol::SendPeriodicUpdate ()
 {
-  std::map<Ipv4Address, RoutingTableEntry> removedAddresses, allRoutes;
+  std::map<Ipv4Address, RoutingTableEntry> removedAddresses;
+  std::map<Ipv4Address, RoutingTableEntry> allRoutes;
   m_routingTable.Purge (removedAddresses);
   MergeTriggerPeriodicUpdates ();
   m_routingTable.GetListOfAllRoutes (allRoutes);

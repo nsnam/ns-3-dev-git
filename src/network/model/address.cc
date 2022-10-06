@@ -252,7 +252,8 @@ std::istream& operator>> (std::istream& is, Address & address)
 {
   std::string v;
   is >> v;
-  std::string::size_type firstDash, secondDash;
+  std::string::size_type firstDash;
+  std::string::size_type secondDash;
   firstDash = v.find ("-");
   secondDash = v.find ("-", firstDash+1);
   std::string type = v.substr (0, firstDash-0);

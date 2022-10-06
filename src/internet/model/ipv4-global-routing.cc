@@ -418,7 +418,10 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
       *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
       for (uint32_t j = 0; j < GetNRoutes (); j++)
         {
-          std::ostringstream dest, gw, mask, flags;
+          std::ostringstream dest;
+          std::ostringstream gw;
+          std::ostringstream mask;
+          std::ostringstream flags;
           Ipv4RoutingTableEntry route = GetRoute (j);
           dest << route.GetDest ();
           *os << std::setw (16) << dest.str ();

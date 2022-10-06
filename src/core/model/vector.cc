@@ -134,7 +134,8 @@ std::ostream &operator << (std::ostream &os, const Vector3D &vector)
 }
 std::istream &operator >> (std::istream &is, Vector3D &vector)
 {
-  char c1, c2;
+  char c1;
+  char c2;
   is >> vector.x >> c1 >> vector.y >> c2 >> vector.z;
   if (c1 != ':'
       || c2 != ':')

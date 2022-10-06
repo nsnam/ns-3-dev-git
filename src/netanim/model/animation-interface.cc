@@ -590,7 +590,8 @@ const std::vector<std::string>
 AnimationInterface::GetElementsFromContext (const std::string& context) const
 {
   std::vector <std::string> elements;
-  std::size_t pos1 = 0, pos2;
+  std::size_t pos1 = 0;
+  std::size_t pos2;
   while (pos1 != context.npos)
     {
       pos1 = context.find ("/",pos1);

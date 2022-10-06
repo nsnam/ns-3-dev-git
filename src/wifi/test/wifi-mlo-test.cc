@@ -380,7 +380,8 @@ MultiLinkSetupTest::DoRun ()
      {WIFI_PHY_BAND_5GHZ, CreateObject<MultiModelSpectrumChannel> ()},
      {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel> ()}};
 
-  SpectrumWifiPhyHelper staPhyHelper, apPhyHelper;
+  SpectrumWifiPhyHelper staPhyHelper;
+  SpectrumWifiPhyHelper apPhyHelper;
   SetChannels (staPhyHelper, m_staChannels, channelMap);
   SetChannels (apPhyHelper, m_apChannels, channelMap);
 

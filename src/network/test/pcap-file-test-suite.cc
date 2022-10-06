@@ -873,7 +873,11 @@ RecordHeaderTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Open (" << m_testFilename <<
                          ", \"std::ios::in\") of existing good file returns error");
 
-  uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
+  uint32_t tsSec;
+  uint32_t tsUsec;
+  uint32_t inclLen;
+  uint32_t origLen;
+  uint32_t readLen;
 
   f.Read (bufferIn, sizeof(bufferIn), tsSec, tsUsec, inclLen, origLen, readLen);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Read() of known good packet returns error");
@@ -1094,7 +1098,11 @@ ReadFileTestCase::DoRun ()
   // duplicated in the structure above.
   //
   uint8_t data[N_PACKET_BYTES];
-  uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
+  uint32_t tsSec;
+  uint32_t tsUsec;
+  uint32_t inclLen;
+  uint32_t origLen;
+  uint32_t readLen;
 
   for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
     {
@@ -1146,7 +1154,9 @@ DiffTestCase::DoRun ()
   // Check that PcapDiff(file, file) is false
   //
   std::string filename = CreateDataDirFilename ("known.pcap");
-  uint32_t sec (0), usec (0), packets (0);
+  uint32_t sec (0);
+  uint32_t usec (0);
+  uint32_t packets (0);
   bool diff = PcapFile::Diff (filename, filename, sec, usec, packets);
   NS_TEST_EXPECT_MSG_EQ (diff, false, "PcapDiff(file, file) must always be false");
 

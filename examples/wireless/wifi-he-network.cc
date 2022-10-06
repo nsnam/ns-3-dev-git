@@ -173,7 +173,8 @@ int main (int argc, char *argv[])
               NodeContainer wifiApNode;
               wifiApNode.Create (1);
 
-              NetDeviceContainer apDevice, staDevices;
+              NetDeviceContainer apDevice;
+              NetDeviceContainer staDevices;
               WifiMacHelper mac;
               WifiHelper wifi;
               std::string channelStr ("{0, " + std::to_string (channelWidth) + ", ");

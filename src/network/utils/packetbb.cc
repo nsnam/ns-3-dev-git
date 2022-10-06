@@ -279,7 +279,8 @@ PbbTlvBlock::operator== (const PbbTlvBlock &other) const
       return false;
     }
 
-  ConstIterator ti, oi;
+  ConstIterator ti;
+  ConstIterator oi;
   for (ti = Begin (), oi = other.Begin ();
        ti != End () && oi != other.End ();
        ti++, oi++)
@@ -519,7 +520,8 @@ PbbAddressTlvBlock::operator== (const PbbAddressTlvBlock &other) const
       return false;
     }
 
-  ConstIterator it, ot;
+  ConstIterator it;
+  ConstIterator ot;
   for (it = Begin (), ot = other.Begin ();
        it != End () && ot != other.End ();
        it++, ot++)
@@ -1001,7 +1003,8 @@ PbbPacket::operator== (const PbbPacket &other) const
       return false;
     }
 
-  ConstMessageIterator tmi, omi;
+  ConstMessageIterator tmi;
+  ConstMessageIterator omi;
   for (tmi = MessageBegin (), omi = other.MessageBegin ();
        tmi != MessageEnd () && omi != other.MessageEnd ();
        tmi++, omi++)
@@ -1702,7 +1705,8 @@ PbbMessage::operator== (const PbbMessage &other) const
       return false;
     }
 
-  ConstAddressBlockIterator tai, oai;
+  ConstAddressBlockIterator tai;
+  ConstAddressBlockIterator oai;
   for (tai = AddressBlockBegin (), oai = other.AddressBlockBegin ();
        tai != AddressBlockEnd () && oai != other.AddressBlockEnd ();
        tai++, oai++)
@@ -2411,7 +2415,8 @@ PbbAddressBlock::operator== (const PbbAddressBlock &other) const
       return false;
     }
 
-  ConstAddressIterator tai, oai;
+  ConstAddressIterator tai;
+  ConstAddressIterator oai;
   for (tai = AddressBegin (), oai = other.AddressBegin ();
        tai != AddressEnd () && oai != other.AddressEnd ();
        tai++, oai++)
@@ -2427,7 +2432,8 @@ PbbAddressBlock::operator== (const PbbAddressBlock &other) const
       return false;
     }
 
-  ConstPrefixIterator tpi, opi;
+  ConstPrefixIterator tpi;
+  ConstPrefixIterator opi;
   for (tpi = PrefixBegin (), opi = other.PrefixBegin ();
        tpi != PrefixEnd () && opi != other.PrefixEnd ();
        tpi++, opi++)

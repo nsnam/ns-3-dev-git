@@ -403,7 +403,8 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
   ev->SetAttribute ("Mean", DoubleValue (m_expMean));
   ev->SetAttribute ("Bound", DoubleValue (m_totalTime));
 
-  double start = 0.0, stop;
+  double start = 0.0;
+  double stop;
   uint32_t destIndex;
 
   for (uint32_t i = 0; i < c.GetN (); i++)
@@ -585,7 +586,15 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       //GenerateNeighbors(NodeContainer, uint32_t sender)
       //Note: these senders are hand-picked in order to ensure good coverage
       //you might have to change these values for other grids
-      NodeContainer c1, c2, c3, c4, c5, c6, c7, c8, c9;
+      NodeContainer c1;
+      NodeContainer c2;
+      NodeContainer c3;
+      NodeContainer c4;
+      NodeContainer c5;
+      NodeContainer c6;
+      NodeContainer c7;
+      NodeContainer c8;
+      NodeContainer c9;
 
       c1 = GenerateNeighbors (c, 22);
       c2 = GenerateNeighbors (c, 24);

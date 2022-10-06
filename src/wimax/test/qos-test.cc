@@ -73,7 +73,8 @@ Ns3WimaxSchedulingTestCase::DoRunOnce (WimaxHelper::SchedulerType scheduler)
   ssNodes.Create (2);
   bsNodes.Create (1);
   WimaxHelper wimax;
-  NetDeviceContainer ssDevs, bsDevs;
+  NetDeviceContainer ssDevs;
+  NetDeviceContainer bsDevs;
   ssDevs = wimax.Install (ssNodes,
                           WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
                           WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
@@ -202,7 +203,8 @@ Ns3WimaxSFTypeTestCase::DoRunOnce (ServiceFlow::SchedulingType schedulingType)
   ssNodes.Create (2);
   bsNodes.Create (1);
   WimaxHelper wimax;
-  NetDeviceContainer ssDevs, bsDevs;
+  NetDeviceContainer ssDevs;
+  NetDeviceContainer bsDevs;
   ssDevs = wimax.Install (ssNodes,
                           WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,
                           WimaxHelper::SIMPLE_PHY_TYPE_OFDM,

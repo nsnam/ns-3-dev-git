@@ -171,7 +171,8 @@ RocketfuelTopologyReader::GenerateFromMapsFile (const std::vector<std::string> &
 
       // Then split list
       std::regex split_regex ("[ |\t]");
-      std::sregex_token_iterator first{temp.begin (), temp.end (), split_regex, -1}, last;
+      std::sregex_token_iterator first{temp.begin (), temp.end (), split_regex, -1};
+      std::sregex_token_iterator last;
       neigh_list = std::vector<std::string>{first, last};
     }
   if (num_neigh != neigh_list.size ())

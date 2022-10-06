@@ -265,7 +265,8 @@ ThreeGppSpectrumPropagationLossModel::GetLongTerm (Ptr<const MatrixBasedChannelM
 
   // check if the channel matrix was generated considering a as the s-node and
   // b as the u-node or viceversa
-  PhasedArrayModel::ComplexVector sW, uW;
+  PhasedArrayModel::ComplexVector sW;
+  PhasedArrayModel::ComplexVector uW;
   if (!channelMatrix->IsReverse (aPhasedArrayModel->GetId (), bPhasedArrayModel->GetId ()))
   {
     sW = aPhasedArrayModel->GetBeamformingVector ();

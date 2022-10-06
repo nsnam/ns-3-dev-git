@@ -1017,7 +1017,9 @@ NixVectorRouting<T>::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::U
       *os << "OutputDevice" << std::endl;
       for (typename IpRouteMap_t::const_iterator it = m_ipRouteCache.begin (); it != m_ipRouteCache.end (); it++)
         {
-          std::ostringstream dest, gw, src;
+          std::ostringstream dest;
+          std::ostringstream gw;
+          std::ostringstream src;
           dest << it->second->GetDestination ();
           *os << std::setw (30) << dest.str ();
           gw << it->second->GetGateway ();
@@ -1301,7 +1303,8 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
 
       if (source == destNode)
         {
-          std::ostringstream addr, node;
+          std::ostringstream addr;
+          std::ostringstream node;
           addr << dest;
           node << "(Node " << destNode->GetId () << ")";
           *os << std::setw (25) << addr.str ();
@@ -1342,7 +1345,10 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
               sourceIPAddr = ip->GetAddress (interfaceIndex, 0).GetAddress ();
             }
 
-          std::ostringstream currAddr, currNode, nextAddr, nextNode;
+          std::ostringstream currAddr;
+          std::ostringstream currNode;
+          std::ostringstream nextAddr;
+          std::ostringstream nextNode;
           currAddr << sourceIPAddr;
           currNode << "(Node " << curr->GetId () << ")";
           *os << std::setw (25) << currAddr.str ();

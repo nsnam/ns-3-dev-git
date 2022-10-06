@@ -85,7 +85,8 @@ AsciiFile::Diff (std::string const & f1,
                  std::string const & f2,
                  uint64_t & lineNumber)
 {
-  AsciiFile ascii1, ascii2;
+  AsciiFile ascii1;
+  AsciiFile ascii2;
   ascii1.Open (f1, std::ios::in);
   ascii2.Open (f2, std::ios::in);
   bool bad = ascii1.Fail () || ascii2.Fail ();

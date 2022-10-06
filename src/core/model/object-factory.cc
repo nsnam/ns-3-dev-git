@@ -121,7 +121,8 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 {
   std::string v;
   is >> v;
-  std::string::size_type lbracket, rbracket;
+  std::string::size_type lbracket;
+  std::string::size_type rbracket;
   lbracket = v.find ("[");
   rbracket = v.find ("]");
   if (lbracket == std::string::npos && rbracket == std::string::npos)

@@ -759,7 +759,8 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, ssize_t len)
   // device.  What should come back is a packet with the Ethernet header
   // (and possibly an LLC header as well) stripped off.
   //
-  Address src, dst;
+  Address src;
+  Address dst;
   uint16_t type;
 
   NS_LOG_LOGIC ("Received packet from tap device");

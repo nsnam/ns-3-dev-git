@@ -679,7 +679,8 @@ ConfigImpl::Set (std::string path, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (this << path << &value);
 
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   container.Set (leaf, value);
@@ -689,7 +690,8 @@ ConfigImpl::SetFailSafe (std::string path, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (this << path << &value);
 
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   return container.SetFailSafe (leaf, value);
@@ -698,7 +700,8 @@ bool
 ConfigImpl::ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   return container.ConnectWithoutContextFailSafe (leaf, cb);
@@ -707,7 +710,8 @@ void
 ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   if (container.GetN () == 0)
@@ -724,7 +728,8 @@ ConfigImpl::ConnectFailSafe (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
 
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   return container.ConnectFailSafe (leaf, cb);
@@ -734,7 +739,8 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
 
-  std::string root, leaf;
+  std::string root;
+  std::string leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
   if (container.GetN () == 0)

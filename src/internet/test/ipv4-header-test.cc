@@ -161,7 +161,8 @@ Ipv4HeaderTest::DoRun ()
   Ptr<Node> rxNode = CreateObject<Node> ();
   internet.Install (rxNode);
 
-  Ptr<SimpleNetDevice> rxDev1, rxDev2;
+  Ptr<SimpleNetDevice> rxDev1;
+  Ptr<SimpleNetDevice> rxDev2;
   { // first interface
     rxDev1 = CreateObject<SimpleNetDevice> ();
     rxDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));

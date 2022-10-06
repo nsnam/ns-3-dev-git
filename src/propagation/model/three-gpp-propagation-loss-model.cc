@@ -1070,7 +1070,8 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetUtAndBsHeights (double za, doubl
 {
   NS_LOG_FUNCTION (this);
   // TR 38.901 specifies hBS = 10 m and 1.5 <= hUT <= 22.5
-  double hBs, hUt;
+  double hBs;
+  double hUt;
   if (za == 10.0)
     {
       // node A is the BS and node B is the UT

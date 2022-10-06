@@ -607,7 +607,8 @@ RrcConnectionReconfigurationTestCase::DoRun ()
   msg.measConfig.reportConfigToAddModList.push_back (reportConfigToAddMod);
 
   // Set measIdToAddModList
-  LteRrcSap::MeasIdToAddMod measIdToAddMod,measIdToAddMod2;
+  LteRrcSap::MeasIdToAddMod measIdToAddMod;
+  LteRrcSap::MeasIdToAddMod measIdToAddMod2;
   measIdToAddMod.measId = 7;
   measIdToAddMod.measObjectId = 6;
   measIdToAddMod.reportConfigId = 5;

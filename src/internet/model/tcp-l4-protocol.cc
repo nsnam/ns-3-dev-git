@@ -319,7 +319,8 @@ TcpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
 {
   NS_LOG_FUNCTION (this << icmpSource << (uint16_t) icmpTtl << (uint16_t) icmpType << (uint16_t) icmpCode << icmpInfo
                         << payloadSource << payloadDestination);
-  uint16_t src, dst;
+  uint16_t src;
+  uint16_t dst;
   src = payload[0] << 8;
   src |= payload[1];
   dst = payload[2] << 8;
@@ -346,7 +347,8 @@ TcpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
 {
   NS_LOG_FUNCTION (this << icmpSource << (uint16_t) icmpTtl << (uint16_t) icmpType << (uint16_t) icmpCode << icmpInfo
                         << payloadSource << payloadDestination);
-  uint16_t src, dst;
+  uint16_t src;
+  uint16_t dst;
   src = payload[0] << 8;
   src |= payload[1];
   dst = payload[2] << 8;
@@ -464,7 +466,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
           NS_LOG_LOGIC ("  No Ipv4 endpoints matched on TcpL4Protocol, trying Ipv6 " << this);
           Ptr<Ipv6Interface> fakeInterface;
           Ipv6Header ipv6Header;
-          Ipv6Address src, dst;
+          Ipv6Address src;
+          Ipv6Address dst;
 
           src = Ipv6Address::MakeIpv4MappedAddress (incomingIpHeader.GetSource ());
           dst = Ipv6Address::MakeIpv4MappedAddress (incomingIpHeader.GetDestination ());

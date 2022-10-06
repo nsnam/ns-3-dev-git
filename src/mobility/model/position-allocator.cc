@@ -89,7 +89,9 @@ ListPositionAllocator::Add (const std::string filePath,
           continue;
         }
 
-      double x, y, z;
+      double x;
+      double y;
+      double z;
       bool ok = csv.GetValue (0, x);
       NS_LOG_INFO ("read x: " << x << (ok ? " ok" : " FAIL"));
       NS_ASSERT_MSG (ok, "failed reading x");
@@ -268,7 +270,8 @@ GridPositionAllocator::GetLayoutType () const
 Vector
 GridPositionAllocator::GetNext () const
 {
-  double x = 0.0, y = 0.0;
+  double x = 0.0;
+  double y = 0.0;
   switch (m_layoutType)
     {
       case ROW_FIRST:
@@ -593,7 +596,8 @@ UniformDiscPositionAllocator::SetZ (double z)
 Vector
 UniformDiscPositionAllocator::GetNext () const
 {
-  double x,y;
+  double x;
+  double y;
   do
     {
       x = m_rv->GetValue (-m_rho, m_rho);

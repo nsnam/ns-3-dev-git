@@ -615,8 +615,8 @@ RrMultiUserScheduler::TrySendingDlMuPpdu ()
                   // candidate station to check if the MPDU meets the size and time limits.
                   // An RU of the computed size is tentatively assigned to the candidate
                   // station, so that the TX duration can be correctly computed.
-                  WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth),
-                               txVectorCopy = m_txParams.m_txVector;
+                  WifiTxVector suTxVector = GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader (), m_allowedWidth);
+                  WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
                   m_txParams.m_txVector.SetHeMuUserInfo (staIt->aid,
                                                          {{currRuType, 1, false},

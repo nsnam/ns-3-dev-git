@@ -138,7 +138,8 @@ WrapToPi (double a)
 std::ostream&
 operator<< (std::ostream& os, const Angles& a)
 {
-  double azim, incl;
+  double azim;
+  double incl;
   std::string unit;
 
   if (a.m_printDeg)

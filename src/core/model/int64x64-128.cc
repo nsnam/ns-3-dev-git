@@ -63,7 +63,8 @@ output_sign (const int128_t sa,
 void
 int64x64_t::Mul (const int64x64_t & o)
 {
-  uint128_t a, b;
+  uint128_t a;
+  uint128_t b;
   bool negative = output_sign (_v, o._v, a, b);
   uint128_t result = Umul (a, b);
   _v = negative ? -result : result;
@@ -78,8 +79,11 @@ int64x64_t::Umul (const uint128_t a, const uint128_t b)
   uint128_t bH = (b >> 64) & HP_MASK_LO;
 
   uint128_t result;
-  uint128_t hiPart, loPart, midPart;
-  uint128_t res1, res2;
+  uint128_t hiPart;
+  uint128_t loPart;
+  uint128_t midPart;
+  uint128_t res1;
+  uint128_t res2;
 
   // Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
   //             2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
@@ -112,7 +116,8 @@ int64x64_t::Umul (const uint128_t a, const uint128_t b)
 void
 int64x64_t::Div (const int64x64_t & o)
 {
-  uint128_t a, b;
+  uint128_t a;
+  uint128_t b;
   bool negative = output_sign (_v, o._v, a, b);
   int128_t result = Udiv (a, b);
   _v = negative ? -result : result;
@@ -200,8 +205,13 @@ int64x64_t::MulByInvert (const int64x64_t & o)
 uint128_t
 int64x64_t::UmulByInvert (const uint128_t a, const uint128_t b)
 {
-  uint128_t result, ah, bh, al, bl;
-  uint128_t hi, mid;
+  uint128_t result;
+  uint128_t ah;
+  uint128_t bh;
+  uint128_t al;
+  uint128_t bl;
+  uint128_t hi;
+  uint128_t mid;
   ah = a >> 64;
   bh = b >> 64;
   al = a & HP_MASK_LO;

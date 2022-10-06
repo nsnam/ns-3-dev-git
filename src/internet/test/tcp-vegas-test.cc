@@ -155,7 +155,9 @@ TcpVegasTest::IncreaseWindow (Ptr<TcpVegas> cong)
   diff = segCwnd - expectedCwnd;
 
   // Get the alpha,beta, and gamma attributes
-  UintegerValue alpha, beta, gamma;
+  UintegerValue alpha;
+  UintegerValue beta;
+  UintegerValue gamma;
   cong->GetAttribute ("Alpha", alpha);
   cong->GetAttribute ("Beta", beta);
   cong->GetAttribute ("Gamma", gamma);

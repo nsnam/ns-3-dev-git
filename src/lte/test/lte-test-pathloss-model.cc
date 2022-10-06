@@ -179,7 +179,8 @@ m_snrDb (snrDb),
 m_distance (dist),
 m_mcsIndex (mcsIndex)
 {
-  std::ostringstream sstream1, sstream2;
+  std::ostringstream sstream1;
+  std::ostringstream sstream2;
   sstream1 << " snr=" << snrDb
   << " mcs=" << mcsIndex << " distance=" << dist;
 

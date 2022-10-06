@@ -126,13 +126,15 @@ int main (int argc, char *argv[])
   Ipv4AddressHelper address;
 
   address.SetBase ("192.168.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer staNodeInterfaces, apNodeInterface;
+  Ipv4InterfaceContainer staNodeInterfaces;
+  Ipv4InterfaceContainer apNodeInterface;
 
   staNodeInterfaces = address.Assign (staDevices);
   apNodeInterface = address.Assign (apDevice);
 
   // Setting applications
-  ApplicationContainer sourceApplications, sinkApplications;
+  ApplicationContainer sourceApplications;
+  ApplicationContainer sinkApplications;
   std::vector<uint8_t> tosValues = {0x70, 0x28, 0xb8, 0xc0}; //AC_BE, AC_BK, AC_VI, AC_VO
   uint32_t portNumber = 9;
   for (uint32_t index = 0; index < nWifi; ++index)

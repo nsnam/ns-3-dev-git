@@ -221,7 +221,9 @@ RawTextConfigLoad::Default ()
   NS_LOG_FUNCTION (this);
   m_is->clear ();
   m_is->seekg (0);
-  std::string type, name, value;
+  std::string type;
+  std::string name;
+  std::string value;
   for (std::string line; std::getline (*m_is, line);)
     {
       if (!ParseLine (line, type, name, value))
@@ -246,7 +248,9 @@ RawTextConfigLoad::Global ()
   NS_LOG_FUNCTION (this);
   m_is->clear ();
   m_is->seekg (0);
-  std::string type, name, value;
+  std::string type;
+  std::string name;
+  std::string value;
   for (std::string line; std::getline (*m_is, line);)
     {
       if (!ParseLine (line, type, name, value))
@@ -271,7 +275,9 @@ RawTextConfigLoad::Attributes ()
   NS_LOG_FUNCTION (this);
   m_is->clear ();
   m_is->seekg (0);
-  std::string type, name, value;
+  std::string type;
+  std::string name;
+  std::string value;
   for (std::string line; std::getline (*m_is, line);)
     {
       if (!ParseLine (line, type, name, value))

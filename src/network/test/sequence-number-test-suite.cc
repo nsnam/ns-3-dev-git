@@ -129,7 +129,8 @@ void SequenceNumberTestCase::DoRun ()
 #define SEQ_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ (bool(a), true, "foo")
 
   {
-    SequenceNumber32 num1 (3), num2 (5);
+    SequenceNumber32 num1 (3);
+    SequenceNumber32 num2 (5);
     uint32_t value;
 
     value = (num1 + num2).GetValue ();
@@ -153,7 +154,9 @@ void SequenceNumberTestCase::DoRun ()
   }
 
   {
-    SequenceNumber16 num1 (60900), num2 (5), num3 (10000);
+    SequenceNumber16 num1 (60900);
+    SequenceNumber16 num2 (5);
+    SequenceNumber16 num3 (10000);
 
     SEQ_TEST_ASSERT (num1 == num1);
 

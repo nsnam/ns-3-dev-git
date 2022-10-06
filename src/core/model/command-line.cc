@@ -247,7 +247,8 @@ CommandLine::HandleOption (const std::string & param) const
     }
   // find any value following '='
   cur = arg.find ("=");
-  std::string name, value;
+  std::string name;
+  std::string value;
   if (cur == std::string::npos)
     {
       name = arg;

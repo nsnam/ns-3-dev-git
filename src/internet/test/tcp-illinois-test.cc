@@ -318,7 +318,8 @@ TcpIllinoisTest::CalculateBeta (Ptr<TcpIllinois> cong, double da, double dm)
   DoubleValue betaMax;
   cong->GetAttribute ("BetaMax", betaMax);
 
-  double d2, d3;
+  double d2;
+  double d3;
   d2 = dm / 10;
   d3 = (8 * dm) / 10;
 

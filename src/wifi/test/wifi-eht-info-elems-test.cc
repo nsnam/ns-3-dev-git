@@ -281,7 +281,9 @@ ReducedNeighborReportTest::GetReducedNeighborReport (PhyOpChannelIt channel2_4It
 void
 ReducedNeighborReportTest::DoRun ()
 {
-  PhyOpChannelIt channel2_4It, channel5It, channel6It;
+  PhyOpChannelIt channel2_4It;
+  PhyOpChannelIt channel5It;
+  PhyOpChannelIt channel6It;
   channel2_4It = channel5It = channel6It = WifiPhyOperatingChannel::m_frequencyChannels.cbegin ();
 
   // Test all available frequency channels

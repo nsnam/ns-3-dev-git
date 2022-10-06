@@ -530,7 +530,8 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
                 uint32_t snapLen)
 {
   NS_LOG_FUNCTION (f1 << f2 << sec << usec << snapLen);
-  PcapFile pcap1, pcap2;
+  PcapFile pcap1;
+  PcapFile pcap2;
   pcap1.Open (f1, std::ios::in);
   pcap2.Open (f2, std::ios::in);
   bool bad = pcap1.Fail () || pcap2.Fail ();

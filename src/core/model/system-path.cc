@@ -250,7 +250,8 @@ Split (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> retval;
-  std::string::size_type current = 0, next = 0;
+  std::string::size_type current = 0;
+  std::string::size_type next = 0;
   next = path.find (SYSTEM_PATH_SEP, current);
   while (next != std::string::npos)
     {

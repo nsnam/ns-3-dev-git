@@ -391,8 +391,10 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
       while ( it1 != m_extensionBits.end () &&
               it2 != m_lengthIndicators.end () )
         {
-          uint16_t oddLi, evenLi;
-          uint8_t oddE, evenE;
+          uint16_t oddLi;
+          uint16_t evenLi;
+          uint8_t oddE;
+          uint8_t evenE;
 
           oddE = *it1;
           oddLi = *it2;
@@ -535,8 +537,10 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
           return GetSerializedSize ();
         }
 
-      uint16_t oddLi, evenLi;
-      uint8_t oddE, evenE;
+      uint16_t oddLi;
+      uint16_t evenLi;
+      uint8_t oddE;
+      uint8_t evenE;
       bool moreLiFields = (extensionBit == E_LI_FIELDS_FOLLOWS);
 
       while (moreLiFields)

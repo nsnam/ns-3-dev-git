@@ -46,7 +46,10 @@ DropTailQueueTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", StringValue ("3p")), true,
                          "Verify that we can actually set the attribute");
 
-  Ptr<Packet> p1, p2, p3, p4;
+  Ptr<Packet> p1;
+  Ptr<Packet> p2;
+  Ptr<Packet> p3;
+  Ptr<Packet> p4;
   p1 = Create<Packet> ();
   p2 = Create<Packet> ();
   p3 = Create<Packet> ();

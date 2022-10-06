@@ -351,7 +351,8 @@ DhcpHeader::Serialize (Buffer::Iterator start) const
 
 uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
 {
-  uint32_t len, clen = start.GetSize ();
+  uint32_t len;
+  uint32_t clen = start.GetSize ();
   if (clen < 240)
     {
       NS_LOG_WARN ("Malformed Packet");

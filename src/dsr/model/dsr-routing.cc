@@ -534,7 +534,8 @@ std::vector<std::string>
 DsrRouting::GetElementsFromContext (std::string context)
 {
   std::vector <std::string> elements;
-  size_t pos1 = 0, pos2;
+  size_t pos1 = 0;
+  size_t pos2;
   while (pos1 != context.npos)
     {
       pos1 = context.find ("/",pos1);

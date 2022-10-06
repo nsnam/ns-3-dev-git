@@ -291,7 +291,8 @@ void BulkSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("BulkSendApplication Connection succeeded");
   m_connected = true;
-  Address from, to;
+  Address from;
+  Address to;
   socket->GetSockName (from);
   socket->GetPeerName (to);
   SendData (from, to);
@@ -309,7 +310,8 @@ void BulkSendApplication::DataSend (Ptr<Socket> socket, uint32_t)
 
   if (m_connected)
     { // Only send new data if the connection has completed
-      Address from, to;
+      Address from;
+      Address to;
       socket->GetSockName (from);
       socket->GetPeerName (to);
       SendData (from, to);

@@ -229,7 +229,11 @@ operator << (std::ostream &os, const Box &box)
 std::istream &
 operator >> (std::istream &is, Box &box)
 {
-  char c1, c2, c3, c4, c5;
+  char c1;
+  char c2;
+  char c3;
+  char c4;
+  char c5;
   is >> box.xMin >> c1 >> box.xMax >> c2 >> box.yMin >> c3 >> box.yMax >> c4 >> box.zMin >> c5 >> box.zMax;
   if (c1 != '|' ||
       c2 != '|' ||

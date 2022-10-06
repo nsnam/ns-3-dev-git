@@ -139,7 +139,8 @@ Ipv4ForwardingTest::DoRun ()
   Ptr<Node> fwNode = CreateObject<Node> ();
 
   internet.Install (fwNode);
-  Ptr<SimpleNetDevice> fwDev1, fwDev2;
+  Ptr<SimpleNetDevice> fwDev1;
+  Ptr<SimpleNetDevice> fwDev2;
   { // first interface
     fwDev1 = CreateObject<SimpleNetDevice> ();
     fwDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));

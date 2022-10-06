@@ -332,7 +332,8 @@ void OnOffApplication::SendPacket ()
     }
   else if (m_enableSeqTsSizeHeader)
     {
-      Address from, to;
+      Address from;
+      Address to;
       m_socket->GetSockName (from);
       m_socket->GetPeerName (to);
       SeqTsSizeHeader header;

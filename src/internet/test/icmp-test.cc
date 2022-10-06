@@ -310,7 +310,9 @@ IcmpTimeExceedTestCase::ReceivePkt (Ptr<Socket> socket)
 void
 IcmpTimeExceedTestCase::DoRun ()
 {
-  NodeContainer n, n0n1,n1n2;
+  NodeContainer n;
+  NodeContainer n0n1;
+  NodeContainer n1n2;
   n.Create (3);
   n0n1.Add (n.Get (0));
   n0n1.Add (n.Get (1));
@@ -603,7 +605,9 @@ IcmpV6TimeExceedTestCase::ReceivePkt (Ptr <Socket> socket)
 void
 IcmpV6TimeExceedTestCase::DoRun ()
 {
-  NodeContainer n, n0n1,n1n2;
+  NodeContainer n;
+  NodeContainer n0n1;
+  NodeContainer n1n2;
   n.Create (3);
   n0n1.Add (n.Get (0));
   n0n1.Add (n.Get (1));

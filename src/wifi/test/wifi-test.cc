@@ -1939,7 +1939,8 @@ StaWifiMacScanningTestCase::Setup (bool nearestApBeaconGeneration, bool staActiv
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager");
 
   WifiMacHelper mac;
-  NetDeviceContainer apDevice, apDeviceNearest;
+  NetDeviceContainer apDevice;
+  NetDeviceContainer apDeviceNearest;
   mac.SetType ("ns3::ApWifiMac",
                "BeaconGeneration", BooleanValue (true));
   apDevice = wifi.Install (phy, mac, apNodes);
@@ -2191,7 +2192,8 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 200;
 
-  NodeContainer wifiApNode, wifiStaNode;
+  NodeContainer wifiApNode;
+  NodeContainer wifiStaNode;
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
@@ -2416,7 +2418,8 @@ Issue40TestCase::RunOne (bool useAmpdu)
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 100;
 
-  NodeContainer wifiApNode, wifiStaNode;
+  NodeContainer wifiApNode;
+  NodeContainer wifiStaNode;
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
@@ -2580,7 +2583,8 @@ Issue169TestCase::DoRun ()
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 100;
 
-  NodeContainer wifiApNode, wifiStaNode;
+  NodeContainer wifiApNode;
+  NodeContainer wifiStaNode;
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
@@ -2729,7 +2733,8 @@ IdealRateManagerChannelWidthTest::DoRun ()
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 100;
 
-  NodeContainer wifiApNode, wifiStaNode;
+  NodeContainer wifiApNode;
+  NodeContainer wifiStaNode;
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
@@ -2909,7 +2914,8 @@ IdealRateManagerMimoTest::DoRun ()
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 100;
 
-  NodeContainer wifiApNode, wifiStaNode;
+  NodeContainer wifiApNode;
+  NodeContainer wifiStaNode;
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 

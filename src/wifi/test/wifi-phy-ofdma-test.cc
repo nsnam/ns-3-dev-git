@@ -3421,7 +3421,9 @@ TestUlOfdmaPhyTransmission::RunOne ()
   //Another HE TB PPDU arrives at AP on the same RU as STA 1 during PSDU reception
   Simulator::Schedule (delay + MicroSeconds (50), &TestUlOfdmaPhyTransmission::SendHeTbPpdu, this, 3, 1, 1002, 1, 0, false);
   //Expected figures from STA 2
-  uint32_t succ, fail, bytes;
+  uint32_t succ;
+  uint32_t fail;
+  uint32_t bytes;
   if (m_channelWidth > 20)
     {
       //One PSDU of 1001 bytes should have been successfully received from STA 2 (since interference from STA 3 on distinct 20 MHz channel)

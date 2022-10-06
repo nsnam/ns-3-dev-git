@@ -211,7 +211,8 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
    * rate control kernel module used in the madwifi driver.
    */
 
-  int dir = 0, enough;
+  int dir = 0;
+  int enough;
   uint8_t nrate;
   enough = (station->m_tx_ok + station->m_tx_err >= 10);
 

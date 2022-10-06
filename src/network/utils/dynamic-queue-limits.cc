@@ -102,8 +102,12 @@ void
 DynamicQueueLimits::Completed (uint32_t count)
 {
   NS_LOG_FUNCTION (this << count);
-  uint32_t inprogress, prevInprogress, limit;
-  uint32_t ovlimit, completed, numQueued;
+  uint32_t inprogress;
+  uint32_t prevInprogress;
+  uint32_t limit;
+  uint32_t ovlimit;
+  uint32_t completed;
+  uint32_t numQueued;
   bool allPrevCompleted;
 
   numQueued = m_numQueued;
@@ -154,7 +158,8 @@ DynamicQueueLimits::Completed (uint32_t count)
       * minimum amount of slack found over several iterations of the
       * completion routine.
       */
-      uint32_t slack, slackLastObjs;
+      uint32_t slack;
+      uint32_t slackLastObjs;
 
      /*
       * Slack is the maximum of

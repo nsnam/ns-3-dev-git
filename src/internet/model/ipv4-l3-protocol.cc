@@ -1804,7 +1804,8 @@ Ipv4L3Protocol::UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header)
 
   // place a new entry, on collision the existing entry iterator is returned
   DupMap_t::iterator iter;
-  bool inserted, isDup;
+  bool inserted;
+  bool isDup;
   std::tie (iter, inserted) = m_dups.emplace (key, Seconds (0));
   isDup = !inserted && iter->second > Simulator::Now ();
 

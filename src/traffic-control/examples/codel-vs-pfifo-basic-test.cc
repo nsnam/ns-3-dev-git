@@ -186,7 +186,8 @@ int main (int argc, char *argv[])
   // and the channels between the source/sink and the gateway
   Ipv4InterfaceContainer sinkInterface;
 
-  NetDeviceContainer devicesAccessLink, devicesBottleneckLink;
+  NetDeviceContainer devicesAccessLink;
+  NetDeviceContainer devicesBottleneckLink;
 
   devicesAccessLink = accessLink.Install (source.Get (0), gateway.Get (0));
   tchPfifoFastAccess.Install (devicesAccessLink);

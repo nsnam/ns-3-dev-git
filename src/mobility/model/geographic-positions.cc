@@ -114,7 +114,8 @@ GeographicPositions::CartesianToGeographicCoordinates (Vector pos, EarthSpheroid
       e = EARTH_WGS84_ECCENTRICITY;
     }
 
-  Vector lla, tmp;
+  Vector lla;
+  Vector tmp;
   lla.y = atan2 (pos.y, pos.x); // longitude (rad), in +/- pi
 
   double e2 = e * e;

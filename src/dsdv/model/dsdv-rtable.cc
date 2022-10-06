@@ -204,7 +204,11 @@ RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit /*= T
 
   *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
 
-  std::ostringstream dest, gw, iface, ltime, stime;
+  std::ostringstream dest;
+  std::ostringstream gw;
+  std::ostringstream iface;
+  std::ostringstream ltime;
+  std::ostringstream stime;
   dest << m_ipv4Route->GetDestination ();
   gw << m_ipv4Route->GetGateway ();
   iface << m_iface.GetLocal ();

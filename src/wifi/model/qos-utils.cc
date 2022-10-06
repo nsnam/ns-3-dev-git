@@ -252,7 +252,8 @@ GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
 uint8_t
 SelectQueueByDSField (Ptr<QueueItem> item)
 {
-  uint8_t dscp, priority = 0;
+  uint8_t dscp;
+  uint8_t priority = 0;
   if (item->GetUint8Value (QueueItem::IP_DSFIELD, dscp))
     {
       // if the QoS map element is implemented, it should be used here

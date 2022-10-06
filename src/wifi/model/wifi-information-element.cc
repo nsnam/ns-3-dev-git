@@ -250,7 +250,8 @@ WifiInformationElement::operator== (WifiInformationElement const & a) const
 
   uint32_t ieSize = GetInformationFieldSize ();
 
-  Buffer myIe, hisIe;
+  Buffer myIe;
+  Buffer hisIe;
   myIe.AddAtEnd (ieSize);
   hisIe.AddAtEnd (ieSize);
 

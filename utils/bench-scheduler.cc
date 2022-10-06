@@ -131,7 +131,8 @@ Bench::Result
 Bench::Run ()
 {
   SystemWallClockMs timer;
-  double init, simu;
+  double init;
+  double simu;
 
   DEB ("initializing");
   m_count = 0;
@@ -362,7 +363,8 @@ BenchSuite::Log () const
 
   for ( ; n < m_results.size (); ++n)
     {
-      double deltaPre, deltaPost;
+      double deltaPre;
+      double deltaPost;
       const auto & run = m_results[n];
       uint64_t count = n + 1;
 

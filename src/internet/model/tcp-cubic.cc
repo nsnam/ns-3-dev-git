@@ -216,7 +216,9 @@ TcpCubic::Update (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this);
   Time t;
-  uint32_t delta, bicTarget, cnt = 0;
+  uint32_t delta;
+  uint32_t bicTarget;
+  uint32_t cnt = 0;
   double offs;
   uint32_t segCwnd = tcb->GetCwndInSegments ();
 

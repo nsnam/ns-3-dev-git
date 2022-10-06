@@ -2016,7 +2016,8 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
 Buffer::Iterator
 RrcAsn1Header::DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator)
 {
-  int thresholdEutraChoice, range;
+  int thresholdEutraChoice;
+  int range;
   bIterator = DeserializeChoice (2, false, &thresholdEutraChoice, bIterator);
 
   switch (thresholdEutraChoice)

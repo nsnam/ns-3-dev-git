@@ -485,7 +485,8 @@ TcpBbr::AckAggregationCwnd ()
 void
 TcpBbr::UpdateAckAggregation (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs)
 {
-  uint32_t expectedAcked, extraAck;
+  uint32_t expectedAcked;
+  uint32_t extraAck;
   uint32_t epochProp;
 
   if (!m_extraAckedGain || rs.m_ackedSacked <= 0 || rs.m_delivered < 0)

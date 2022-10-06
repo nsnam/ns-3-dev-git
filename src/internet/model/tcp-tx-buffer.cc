@@ -1477,7 +1477,8 @@ operator<< (std::ostream& os, const TcpTxBuffer& tcpTxBuf)
   TcpTxBuffer::PacketList::const_iterator it;
   std::stringstream ss;
   SequenceNumber32 beginOfCurrentPacket = tcpTxBuf.m_firstByteSeq;
-  uint32_t sentSize = 0, appSize = 0;
+  uint32_t sentSize = 0;
+  uint32_t appSize = 0;
 
   Ptr<const Packet> p;
   for (it = tcpTxBuf.m_sentList.begin (); it != tcpTxBuf.m_sentList.end (); ++it)

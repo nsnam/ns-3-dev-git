@@ -830,7 +830,11 @@ LogNormalRandomVariable::GetSigma () const
 double
 LogNormalRandomVariable::GetValue (double mu, double sigma)
 {
-  double v1, v2, r2, normal, x;
+  double v1;
+  double v2;
+  double r2;
+  double normal;
+  double x;
 
   NS_LOG_FUNCTION (this << mu << sigma);
 
@@ -953,7 +957,9 @@ GammaRandomVariable::GetValue (double alpha, double beta)
       return GetValue (1.0 + alpha, beta) * std::pow (u, 1.0 / alpha);
     }
 
-  double x, v, u;
+  double x;
+  double v;
+  double u;
   double d = alpha - 1.0 / 3.0;
   double c = (1.0 / 3.0) / std::sqrt (d);
 
@@ -1327,7 +1333,8 @@ ZipfRandomVariable::GetValue (uint32_t n, double alpha)
       u = (1 - u);
     }
 
-  double sum_prob = 0,zipf_value = 0;
+  double sum_prob = 0;
+  double zipf_value = 0;
   for (uint32_t i = 1; i <= m_n; i++)
     {
       sum_prob += m_c / std::pow ((double)i,m_alpha);
@@ -1395,8 +1402,10 @@ ZetaRandomVariable::GetValue (double alpha)
   NS_LOG_FUNCTION (this << alpha);
   m_b = std::pow (2.0, alpha - 1.0);
 
-  double u, v;
-  double X, T;
+  double u;
+  double v;
+  double X;
+  double T;
   double test;
 
   do

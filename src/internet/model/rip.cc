@@ -513,7 +513,10 @@ void Rip::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) c
 
           if (status == RipRoutingTableEntry::RIP_VALID)
             {
-              std::ostringstream dest, gw, mask, flags;
+              std::ostringstream dest;
+              std::ostringstream gw;
+              std::ostringstream mask;
+              std::ostringstream flags;
               dest << route->GetDest ();
               *os << std::setw (16) << dest.str ();
               gw << route->GetGateway ();

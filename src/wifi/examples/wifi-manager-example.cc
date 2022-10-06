@@ -571,7 +571,9 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (rateDataset);
   gnuplot.AddDataset (actualDataset);
 
-  std::ostringstream xMinStr, xMaxStr, yMaxStr;
+  std::ostringstream xMinStr;
+  std::ostringstream xMaxStr;
+  std::ostringstream yMaxStr;
   std::string xRangeStr ("set xrange [");
   xMinStr << clientSelectedStandard.m_xMin;
   xRangeStr.append (xMinStr.str ());

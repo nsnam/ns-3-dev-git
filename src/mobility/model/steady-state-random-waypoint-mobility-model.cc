@@ -183,7 +183,10 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate ()
     }
   else // node initially moving
     {
-      double x1, x2, y1, y2;
+      double x1;
+      double x2;
+      double y1;
+      double y2;
       x1 = x2 = y1 = y2 = 0;
       double r = 0;
       double u1 = 1;

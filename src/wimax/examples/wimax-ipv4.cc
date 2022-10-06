@@ -67,7 +67,9 @@ NS_LOG_COMPONENT_DEFINE ("wimaxIpV4Simulation");
 int main (int argc, char *argv[])
 {
   // default values
-  int nbSS = 4, duration = 7, schedType = 0;
+  int nbSS = 4;
+  int duration = 7;
+  int schedType = 0;
   bool verbose = false;
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
   LogComponentEnable ("UdpClient", LOG_LEVEL_INFO);
@@ -104,7 +106,8 @@ int main (int argc, char *argv[])
 
   WimaxHelper wimax;
 
-  NetDeviceContainer ssDevs, bsDevs;
+  NetDeviceContainer ssDevs;
+  NetDeviceContainer bsDevs;
 
   ssDevs = wimax.Install (ssNodes,
                           WimaxHelper::DEVICE_TYPE_SUBSCRIBER_STATION,

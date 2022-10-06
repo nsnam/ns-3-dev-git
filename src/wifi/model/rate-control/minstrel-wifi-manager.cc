@@ -640,7 +640,8 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   NS_LOG_DEBUG ("Attempt/success reset to 0");
 
   uint32_t max_tp = 0;
-  uint8_t index_max_tp = 0, index_max_tp2 = 0;
+  uint8_t index_max_tp = 0;
+  uint8_t index_max_tp2 = 0;
 
   //go find max throughput, second maximum throughput, high probability of success
   NS_LOG_DEBUG ("Finding the maximum throughput, second maximum throughput, and highest probability");

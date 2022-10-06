@@ -197,7 +197,8 @@ TcpHeaderWithRFC793OptionTestCase::DoRun ()
 void
 TcpHeaderWithRFC793OptionTestCase::CheckCorrectDeserialize ()
 {
-  TcpHeader source, destination;
+  TcpHeader source;
+  TcpHeader destination;
   TcpOptionNOP temp;
   Buffer buffer;
   buffer.AddAtStart (40);
@@ -220,7 +221,10 @@ void
 TcpHeaderWithRFC793OptionTestCase::CheckNoPadding ()
 {
   {
-    TcpOptionNOP oNop1, oNop2, oNop3, oNop4;
+    TcpOptionNOP oNop1;
+    TcpOptionNOP oNop2;
+    TcpOptionNOP oNop3;
+    TcpOptionNOP oNop4;
     TcpHeader header;
     Buffer buffer;
 
@@ -317,7 +321,8 @@ TcpHeaderWithRFC793OptionTestCase::OneOptionAtTime ()
   {
     TcpOptionMSS oMSS;
     oMSS.SetMSS (50);
-    TcpHeader header, dest;
+    TcpHeader header;
+    TcpHeader dest;
     Buffer buffer;
 
     NS_TEST_ASSERT_MSG_EQ (header.GetLength (), 5, "TcpHeader without option is"
@@ -378,7 +383,8 @@ TcpHeaderFlagsToString::TcpHeaderFlagsToString (std::string name)
 void
 TcpHeaderFlagsToString::DoRun ()
 {
-  std::string str, target;
+  std::string str;
+  std::string target;
   str = TcpHeader::FlagsToString (0x0);
   target = "";
   NS_TEST_ASSERT_MSG_EQ (str, target, "str " << str <<  " does not equal target " << target);

@@ -489,7 +489,10 @@ void RipNg::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit)
 
           if (status == RipNgRoutingTableEntry::RIPNG_VALID)
             {
-              std::ostringstream dest, gw, mask, flags;
+              std::ostringstream dest;
+              std::ostringstream gw;
+              std::ostringstream mask;
+              std::ostringstream flags;
 
               dest << route->GetDest () << "/" << int(route->GetDestNetworkPrefix ().GetPrefixLength ());
               *os << std::setw (31) << dest.str ();

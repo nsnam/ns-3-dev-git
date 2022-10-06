@@ -75,7 +75,8 @@ int main (int argc, char *argv[])
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
-  NodeContainer ueNodes1, ueNodes2;
+  NodeContainer ueNodes1;
+  NodeContainer ueNodes2;
   enbNodes.Create (2);
   ueNodes1.Create (numUes);
   ueNodes2.Create (numUes);

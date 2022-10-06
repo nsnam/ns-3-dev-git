@@ -303,7 +303,8 @@ TcpIllinois::CalculateBeta (double da, double dm)
 {
   NS_LOG_FUNCTION (this << da << dm);
 
-  double d2, d3;
+  double d2;
+  double d3;
 
   d2 = dm / 10;
   d3 = (8 * dm) / 10;

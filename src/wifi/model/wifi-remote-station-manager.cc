@@ -1126,7 +1126,8 @@ WifiRemoteStationManager::NeedRetransmission (Ptr<const WifiMpdu> mpdu)
   NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
   AcIndex ac = QosUtilsMapTidToAc ((mpdu->GetHeader ().IsQosData ()) ? mpdu->GetHeader ().GetQosTid () : 0);
   bool longMpdu = (mpdu->GetSize () > m_rtsCtsThreshold);
-  uint32_t retryCount, maxRetryCount;
+  uint32_t retryCount;
+  uint32_t maxRetryCount;
   if (longMpdu)
     {
       retryCount = m_slrc[ac];

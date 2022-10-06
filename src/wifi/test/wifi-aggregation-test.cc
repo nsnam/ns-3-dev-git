@@ -215,7 +215,8 @@ AmpduAggregationTest::DoRun ()
    */
   Ptr<const Packet> pkt1 = Create<Packet> (1500);
   Ptr<const Packet> pkt2 = Create<Packet> (1500);
-  WifiMacHeader hdr1, hdr2;
+  WifiMacHeader hdr1;
+  WifiMacHeader hdr2;
 
   hdr1.SetAddr1 (Mac48Address ("00:00:00:00:00:02"));
   hdr1.SetAddr2 (Mac48Address ("00:00:00:00:00:01"));

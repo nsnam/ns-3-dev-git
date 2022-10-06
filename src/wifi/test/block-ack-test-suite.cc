@@ -109,7 +109,8 @@ void
 PacketBufferingCaseA::DoRun ()
 {
   std::list<uint16_t> m_buffer;
-  std::list<uint16_t>::iterator i,j;
+  std::list<uint16_t>::iterator i;
+  std::list<uint16_t>::iterator j;
   m_buffer.push_back (0);
   m_buffer.push_back (16);
   m_buffer.push_back (56000);
@@ -207,7 +208,8 @@ void
 PacketBufferingCaseB::DoRun ()
 {
   std::list<uint16_t> m_buffer;
-  std::list<uint16_t>::iterator i,j;
+  std::list<uint16_t>::iterator i;
+  std::list<uint16_t>::iterator j;
   m_buffer.push_back (256);
   m_buffer.push_back (64000);
   m_buffer.push_back (16);

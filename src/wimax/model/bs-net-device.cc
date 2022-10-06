@@ -880,8 +880,12 @@ BaseStationNetDevice::DoReceive (Ptr<Packet> packet)
 void
 BaseStationNetDevice::CreateMapMessages ()
 {
-  Ptr<Packet> dlmap, ulmap;
-  bool sendDcd = false, sendUcd = false, updateDcd = false, updateUcd = false;
+  Ptr<Packet> dlmap;
+  Ptr<Packet> ulmap;
+  bool sendDcd = false;
+  bool sendUcd = false;
+  bool updateDcd = false;
+  bool updateUcd = false;
 
   uint16_t currentNrSsRegistered = m_ssManager->GetNRegisteredSSs ();
 
@@ -924,7 +928,8 @@ BaseStationNetDevice::CreateMapMessages ()
 void
 BaseStationNetDevice::CreateDescriptorMessages (bool sendDcd, bool sendUcd)
 {
-  Ptr<Packet> dcd, ucd;
+  Ptr<Packet> dcd;
+  Ptr<Packet> ucd;
 
   if (sendDcd)
     {

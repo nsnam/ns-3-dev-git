@@ -122,7 +122,14 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
   WifiMacHelper mac;
 
-  NetDeviceContainer staDeviceA, staDeviceB, staDeviceC, staDeviceD, apDeviceA, apDeviceB, apDeviceC, apDeviceD;
+  NetDeviceContainer staDeviceA;
+  NetDeviceContainer staDeviceB;
+  NetDeviceContainer staDeviceC;
+  NetDeviceContainer staDeviceD;
+  NetDeviceContainer apDeviceA;
+  NetDeviceContainer apDeviceB;
+  NetDeviceContainer apDeviceC;
+  NetDeviceContainer apDeviceD;
   Ssid ssid;
 
   //Network A

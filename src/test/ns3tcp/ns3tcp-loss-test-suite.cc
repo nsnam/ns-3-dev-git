@@ -233,7 +233,11 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string, Ptr<const Packet> packet, Ptr<Ipv4>, 
       // file and see if it still does the right thing.
       //
       uint8_t expectedBuffer[PCAP_SNAPLEN];
-      uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
+      uint32_t tsSec;
+      uint32_t tsUsec;
+      uint32_t inclLen;
+      uint32_t origLen;
+      uint32_t readLen;
       m_pcapFile.Read (expectedBuffer, sizeof(expectedBuffer), tsSec, tsUsec, inclLen, origLen, readLen);
 
       NS_LOG_INFO ("read " << readLen << " bytes");
@@ -243,7 +247,8 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string, Ptr<const Packet> packet, Ptr<Ipv4>, 
 
       int result = memcmp (actual, expectedBuffer, readLen);
 
-      TcpHeader expectedHeader, receivedHeader;
+      TcpHeader expectedHeader;
+      TcpHeader receivedHeader;
       Ptr<Packet> expected = Create<Packet> (expectedBuffer, readLen);
 
       expected->RemoveHeader (expectedHeader);

@@ -151,7 +151,9 @@ int main (int argc, char *argv[])
     }
 
   // Create nodes
-  NodeContainer leftNodes, rightNodes, routers;
+  NodeContainer leftNodes;
+  NodeContainer rightNodes;
+  NodeContainer routers;
   routers.Create (2);
   leftNodes.Create (1);
   rightNodes.Create (1);
