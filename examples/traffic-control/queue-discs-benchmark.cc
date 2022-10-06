@@ -179,37 +179,37 @@ int main (int argc, char *argv[])
   // Bottleneck link traffic control configuration
   TrafficControlHelper tchBottleneck;
 
-  if (queueDiscType.compare ("PfifoFast") == 0)
+  if (queueDiscType == "PfifoFast")
     {
       tchBottleneck.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "MaxSize",
                                       QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
     }
-  else if (queueDiscType.compare ("ARED") == 0)
+  else if (queueDiscType == "ARED")
     {
       tchBottleneck.SetRootQueueDisc ("ns3::RedQueueDisc");
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::MaxSize",
                           QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
     }
-  else if (queueDiscType.compare ("CoDel") == 0)
+  else if (queueDiscType == "CoDel")
     {
       tchBottleneck.SetRootQueueDisc ("ns3::CoDelQueueDisc");
       Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize",
                           QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
     }
-  else if (queueDiscType.compare ("FqCoDel") == 0)
+  else if (queueDiscType == "FqCoDel")
     {
       tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
       Config::SetDefault ("ns3::FqCoDelQueueDisc::MaxSize",
                           QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
     }
-  else if (queueDiscType.compare ("PIE") == 0)
+  else if (queueDiscType == "PIE")
     {
       tchBottleneck.SetRootQueueDisc ("ns3::PieQueueDisc");
       Config::SetDefault ("ns3::PieQueueDisc::MaxSize",
                           QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
     }
-  else if (queueDiscType.compare ("prio") == 0)
+  else if (queueDiscType == "prio")
     {
       uint16_t handle = tchBottleneck.SetRootQueueDisc ("ns3::PrioQueueDisc", "Priomap",
                                                         StringValue ("0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"));

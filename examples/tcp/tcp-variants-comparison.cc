@@ -407,7 +407,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName (recovery)));
   // Select TCP variant
-  if (transport_prot.compare ("ns3::TcpWestwoodPlus") == 0)
+  if (transport_prot == "ns3::TcpWestwoodPlus")
     {
       // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpWestwood::GetTypeId ()));
@@ -486,11 +486,11 @@ int main (int argc, char *argv[])
       Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
       devices = UnReLink.Install (gateways.Get (0), sinks.Get (i));
-      if (queue_disc_type.compare ("ns3::PfifoFastQueueDisc") == 0)
+      if (queue_disc_type == "ns3::PfifoFastQueueDisc")
         {
           tchPfifo.Install (devices);
         }
-      else if (queue_disc_type.compare ("ns3::CoDelQueueDisc") == 0)
+      else if (queue_disc_type == "ns3::CoDelQueueDisc")
         {
           tchCoDel.Install (devices);
         }

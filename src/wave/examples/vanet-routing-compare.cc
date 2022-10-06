@@ -1028,7 +1028,7 @@ void
 ConfigStoreHelper::SaveConfig (std::string configFilename)
 {
   // only save if a non-empty filename has been specified
-  if (configFilename.compare ("") != 0)
+  if (configFilename != "")
     {
       // Output config store to txt format
       Config::SetDefault ("ns3::ConfigStore::Filename", StringValue (configFilename));

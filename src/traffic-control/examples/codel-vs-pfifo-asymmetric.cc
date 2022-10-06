@@ -91,7 +91,7 @@ static void
 TraceCwnd (std::string cwndTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (cwndTrFileName.compare ("") == 0)
+  if (cwndTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for cwnd provided");
       return;
@@ -124,7 +124,7 @@ static void
 TraceSojourn (std::string sojournTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (sojournTrFileName.compare ("") == 0)
+  if (sojournTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for sojourn provided");
       return;
@@ -158,7 +158,7 @@ static void
 TraceQueueLength (std::string queueLengthTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (queueLengthTrFileName.compare ("") == 0)
+  if (queueLengthTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for queue length provided");
       return;
@@ -191,7 +191,7 @@ static void
 TraceEveryDrop (std::string everyDropTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (everyDropTrFileName.compare ("") == 0)
+  if (everyDropTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for every drop event provided");
       return;
@@ -234,7 +234,7 @@ static void
 TraceDroppingState (std::string dropStateTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (dropStateTrFileName.compare ("") == 0)
+  if (dropStateTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for dropping state provided");
       return;
@@ -424,11 +424,11 @@ int main (int argc, char *argv[])
 
   tchPfifo.Install (serverCmtsDev);
   tchPfifo.Install (cmtsWanDev);
-  if (routerWanQueueDiscType.compare ("PfifoFast") == 0)
+  if (routerWanQueueDiscType == "PfifoFast")
     {
       tchPfifo.Install (routerWanDev);
     }
-  else if (routerWanQueueDiscType.compare ("CoDel") == 0)
+  else if (routerWanQueueDiscType == "CoDel")
     {
       tchCoDel.Install (routerWanDev);
     }
@@ -493,7 +493,7 @@ int main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (0.00001), &TraceCwnd, cwndTrFileName);
   TraceEveryDrop (everyDropTrFileName);
-  if (routerWanQueueDiscType.compare ("CoDel") == 0)
+  if (routerWanQueueDiscType == "CoDel")
     {
       TraceSojourn (sojournTrFileName);
       TraceQueueLength (queueLengthTrFileName);

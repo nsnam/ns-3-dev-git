@@ -98,7 +98,7 @@ EnergySource::FindDeviceEnergyModels (std::string name)
   DeviceEnergyModelContainer::Iterator i;
   for (i = m_models.Begin (); i != m_models.End (); i++)
     {
-      if ((*i)->GetInstanceTypeId ().GetName ().compare (name) == 0)
+      if ((*i)->GetInstanceTypeId ().GetName () == name)
         {
           container.Add (*i);
         }

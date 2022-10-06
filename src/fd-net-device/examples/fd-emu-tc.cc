@@ -238,11 +238,11 @@ main (int argc, char *argv[])
   // Bottleneck link side
   TrafficControlHelper tch1;
 
-  if (queueDiscType.compare ("PfifoFast") == 0)
+  if (queueDiscType == "PfifoFast")
     {
       tch1.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "MaxSize", StringValue ("1000p"));
     }
-  else if (queueDiscType.compare ("ARED") == 0)
+  else if (queueDiscType == "ARED")
     {
       tch1.SetRootQueueDisc ("ns3::RedQueueDisc");
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
@@ -253,15 +253,15 @@ main (int argc, char *argv[])
       Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (83333));
       Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (250000));
     }
-  else if (queueDiscType.compare ("CoDel") == 0)
+  else if (queueDiscType == "CoDel")
     {
       tch1.SetRootQueueDisc ("ns3::CoDelQueueDisc");
     }
-  else if (queueDiscType.compare ("FqCoDel") == 0)
+  else if (queueDiscType == "FqCoDel")
     {
       tch1.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
     }
-  else if (queueDiscType.compare ("PIE") == 0)
+  else if (queueDiscType == "PIE")
     {
       tch1.SetRootQueueDisc ("ns3::PieQueueDisc");
       Config::SetDefault ("ns3::PieQueueDisc::MaxSize",

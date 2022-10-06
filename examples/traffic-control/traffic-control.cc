@@ -112,7 +112,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("transportProt", "Transport protocol to use: Tcp, Udp", transportProt);
   cmd.Parse (argc, argv);
 
-  if (transportProt.compare ("Tcp") == 0)
+  if (transportProt == "Tcp")
     {
       socketType = "ns3::TcpSocketFactory";
     }

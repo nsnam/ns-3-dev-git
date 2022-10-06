@@ -347,7 +347,7 @@ Ns3TcpLossTestCase::DoRun ()
 
   std::ostringstream tcpModel;
   tcpModel << "ns3::Tcp" << m_tcpModel;
-  if (m_tcpModel.compare ("WestwoodPlus") == 0)
+  if (m_tcpModel == "WestwoodPlus")
     {
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType",
                           TypeIdValue (TcpWestwood::GetTypeId ()));

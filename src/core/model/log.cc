@@ -366,7 +366,7 @@ LogComponentEnable (char const *name, enum LogLevel level)
        i != components->end ();
        i++)
     {
-      if (i->first.compare (name) == 0)
+      if (i->first == name)
         {
           i->second->Enable (level);
           return;
@@ -401,7 +401,7 @@ LogComponentDisable (char const *name, enum LogLevel level)
        i != components->end ();
        i++)
     {
-      if (i->first.compare (name) == 0)
+      if (i->first == name)
         {
           i->second->Disable (level);
           break;
@@ -510,7 +510,7 @@ static bool ComponentExists (std::string componentName)
        i != components->end ();
        i++)
     {
-      if (i->first.compare (name) == 0)
+      if (i->first == name)
         {
           return true;
         }

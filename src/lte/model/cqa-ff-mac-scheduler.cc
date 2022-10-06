@@ -1439,11 +1439,11 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                   hol = 1;
                 }
 
-              if ( m_CqaMetric.compare ("CqaFf") == 0)
+              if ( m_CqaMetric == "CqaFf")
                 {
                   metric = coita_metric*tbr_weight*hol;
                 }
-              else if (m_CqaMetric.compare ("CqaPf") == 0)
+              else if (m_CqaMetric == "CqaPf")
                 {
                   metric = tbr_weight*pf_weight*hol;
                 }

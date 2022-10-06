@@ -69,7 +69,7 @@ WifiRadioEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
   NS_ASSERT (source);
   // check if device is WifiNetDevice
   std::string deviceName = device->GetInstanceTypeId ().GetName ();
-  if (deviceName.compare ("ns3::WifiNetDevice") != 0)
+  if (deviceName != "ns3::WifiNetDevice")
     {
       NS_FATAL_ERROR ("NetDevice type is not WifiNetDevice!");
     }

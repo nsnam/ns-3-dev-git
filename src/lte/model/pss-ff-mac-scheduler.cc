@@ -1105,7 +1105,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
            } // end of m_flowStatsDl
 
 
-          if ( m_fdSchedulerType.compare("CoItA") == 0)
+          if ( m_fdSchedulerType == "CoItA")
             {
               // FD scheduler: Carrier over Interference to Average (CoItA)
               std::map < uint16_t, uint8_t > sbCqiSum;
@@ -1270,7 +1270,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }// end of CoIta
 
 
-          if ( m_fdSchedulerType.compare("PFsch") == 0)
+          if ( m_fdSchedulerType == "PFsch")
             {
               // FD scheduler: Proportional Fair scheduled (PFsch)
               for (int i = 0; i < rbgNum; i++)

@@ -93,7 +93,7 @@ main (int argc, char *argv[])
 
   tcpVariant = std::string ("ns3::") + tcpVariant;
   // Select TCP variant
-  if (tcpVariant.compare ("ns3::TcpWestwoodPlus") == 0)
+  if (tcpVariant == "ns3::TcpWestwoodPlus")
     {
       // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpWestwood::GetTypeId ()));

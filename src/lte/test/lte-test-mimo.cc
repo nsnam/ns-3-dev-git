@@ -202,7 +202,7 @@ LenaMimoTestCase::DoRun ()
   enbNetDev->GetCcMap()[0]->GetAttribute ("FfMacScheduler", ptrval);
   Ptr<PfFfMacScheduler> pfsched;
   Ptr<RrFfMacScheduler> rrsched;
-  if (m_schedulerType.compare ("ns3::RrFfMacScheduler") == 0)
+  if (m_schedulerType == "ns3::RrFfMacScheduler")
     {
       rrsched = ptrval.Get<RrFfMacScheduler> ();
       if (!rrsched)
@@ -212,7 +212,7 @@ LenaMimoTestCase::DoRun ()
       Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
       Simulator::Schedule (Seconds (0.4), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 2);
     }
-  else if (m_schedulerType.compare ("ns3::PfFfMacScheduler") == 0)
+  else if (m_schedulerType == "ns3::PfFfMacScheduler")
     {
       pfsched = ptrval.Get<PfFfMacScheduler> ();
       if (!pfsched)

@@ -204,7 +204,7 @@ QueueDisc::Stats::Print (std::ostream &os) const
   while (itp != nDroppedPacketsBeforeEnqueue.end () &&
          itb != nDroppedBytesBeforeEnqueue.end ())
     {
-      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      NS_ASSERT (itp->first == itb->first);
       os << std::endl << "  " << itp->first << ": "
          << itp->second << " / " << itb->second;
       itp++;
@@ -221,7 +221,7 @@ QueueDisc::Stats::Print (std::ostream &os) const
   while (itp != nDroppedPacketsAfterDequeue.end () &&
          itb != nDroppedBytesAfterDequeue.end ())
     {
-      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      NS_ASSERT (itp->first == itb->first);
       os << std::endl << "  " << itp->first << ": "
          << itp->second << " / " << itb->second;
       itp++;
@@ -241,7 +241,7 @@ QueueDisc::Stats::Print (std::ostream &os) const
   while (itp != nMarkedPackets.end () &&
          itb != nMarkedBytes.end ())
     {
-      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      NS_ASSERT (itp->first == itb->first);
       os << std::endl << "  " << itp->first << ": "
          << itp->second << " / " << itb->second;
       itp++;

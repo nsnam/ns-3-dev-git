@@ -113,7 +113,7 @@ public:
 template <typename... Ts>
  void NqosWaveMacHelper::SetType (std::string type, Ts&&... args)
 {
-  if (type.compare ("ns3::OcbWifiMac") != 0)
+  if (type != "ns3::OcbWifiMac")
     {
       NS_FATAL_ERROR ("QosWaveMacHelper shall set OcbWifiMac");
     }
@@ -123,7 +123,7 @@ template <typename... Ts>
 template <typename... Ts>
 void QosWaveMacHelper::SetType (std::string type, Ts&&... args)
 {
-  if (type.compare ("ns3::OcbWifiMac") != 0)
+  if (type != "ns3::OcbWifiMac")
     {
       NS_FATAL_ERROR ("QosWaveMacHelper shall set OcbWifiMac");
     }

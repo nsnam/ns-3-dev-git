@@ -335,11 +335,11 @@ TcpGeneralTest::CreateReceiverSocket (Ptr<Node> node)
 void
 TcpGeneralTest::QueueDropCb ( std::string context, Ptr<const Packet> p)
 {
-  if (context.compare ("SENDER") == 0)
+  if (context == "SENDER")
     {
       QueueDrop (SENDER);
     }
-  else if (context.compare ("RECEIVER") == 0)
+  else if (context == "RECEIVER")
     {
       QueueDrop (RECEIVER);
     }
@@ -352,11 +352,11 @@ TcpGeneralTest::QueueDropCb ( std::string context, Ptr<const Packet> p)
 void
 TcpGeneralTest::PhyDropCb (std::string context, [[maybe_unused]] Ptr<const Packet> p)
 {
-  if (context.compare ("SENDER") == 0)
+  if (context == "SENDER")
     {
       PhyDrop (SENDER);
     }
-  else if (context.compare ("RECEIVER") == 0)
+  else if (context == "RECEIVER")
     {
       PhyDrop (RECEIVER);
     }

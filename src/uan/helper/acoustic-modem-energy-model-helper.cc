@@ -62,7 +62,7 @@ AcousticModemEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
   NS_ASSERT (source);
   // check if device is UanNetDevice
   std::string deviceName = device->GetInstanceTypeId ().GetName ();
-  if (deviceName.compare ("ns3::UanNetDevice") != 0)
+  if (deviceName != "ns3::UanNetDevice")
     {
       NS_FATAL_ERROR ("NetDevice type is not UanNetDevice!");
     }

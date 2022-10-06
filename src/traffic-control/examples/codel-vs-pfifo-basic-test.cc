@@ -78,7 +78,7 @@ static void
 TraceCwnd (std::string cwndTrFileName)
 {
   AsciiTraceHelper ascii;
-  if (cwndTrFileName.compare ("") == 0)
+  if (cwndTrFileName == "")
     {
       NS_LOG_DEBUG ("No trace file for cwnd provided");
       return;
@@ -196,11 +196,11 @@ int main (int argc, char *argv[])
   devicesBottleneckLink = bottleneckLink.Install (gateway.Get (0), sink.Get (0));
   address.NewNetwork ();
 
-  if (queueDiscType.compare ("PfifoFast") == 0)
+  if (queueDiscType == "PfifoFast")
     {
       tchPfifo.Install (devicesBottleneckLink);
     }
-  else if (queueDiscType.compare ("CoDel") == 0)
+  else if (queueDiscType == "CoDel")
     {
       tchCoDel.Install (devicesBottleneckLink);
     }

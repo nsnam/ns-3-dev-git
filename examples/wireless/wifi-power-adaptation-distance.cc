@@ -538,9 +538,9 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (statistics.GetDatafile ());
   gnuplot.GenerateOutput (outfile);
 
-  if (manager.compare ("ns3::ParfWifiManager") == 0
-      || manager.compare ("ns3::AparfWifiManager") == 0
-      || manager.compare ("ns3::RrpaaWifiManager") == 0)
+  if (manager == "ns3::ParfWifiManager"
+      || manager == "ns3::AparfWifiManager"
+      || manager == "ns3::RrpaaWifiManager")
     {
       std::ofstream outfile2 (("power-" + outputFileName + ".plt").c_str ());
       gnuplot = Gnuplot (("power-" + outputFileName + ".eps").c_str (), "Average Transmit Power");
