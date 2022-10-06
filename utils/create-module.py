@@ -38,13 +38,12 @@ MODEL_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil
 
 #include "{MODULE}.h"
 
-namespace ns3 {{
+namespace ns3
+{{
 
 /* ... */
 
-
 }}
-
 '''
 
 
@@ -53,14 +52,14 @@ MODEL_H_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil;
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
-namespace ns3 {{
+namespace ns3
+{{
 
 /* ... */
 
 }}
 
 #endif /* {INCLUDE_GUARD} */
-
 '''
 
 
@@ -69,13 +68,12 @@ HELPER_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:ni
 
 #include "{MODULE}-helper.h"
 
-namespace ns3 {{
+namespace ns3
+{{
 
 /* ... */
 
-
 }}
-
 '''
 
 
@@ -86,14 +84,14 @@ HELPER_H_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil
 
 #include "ns3/{MODULE}.h"
 
-namespace ns3 {{
+namespace ns3
+{{
 
 /* ... */
 
 }}
 
 #endif /* {INCLUDE_GUARD} */
-
 '''
 
 
@@ -113,25 +111,22 @@ EXAMPLE_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:n
 
 using namespace ns3;
 
-
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {{
-  bool verbose = true;
+    bool verbose = true;
 
-  CommandLine cmd (__FILE__);
-  cmd.AddValue ("verbose", "Tell application to log if true", verbose);
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("verbose", "Tell application to log if true", verbose);
 
-  cmd.Parse (argc,argv);
+    cmd.Parse(argc, argv);
 
-  /* ... */
+    /* ... */
 
-  Simulator::Run ();
-  Simulator::Destroy ();
-  return 0;
+    Simulator::Run();
+    Simulator::Destroy();
+    return 0;
 }}
-
-
 '''
 
 
@@ -150,23 +145,23 @@ using namespace ns3;
 // This is an example TestCase.
 class {CAPITALIZED}TestCase1 : public TestCase
 {{
-public:
-  {CAPITALIZED}TestCase1 ();
-  virtual ~{CAPITALIZED}TestCase1 ();
+  public:
+    {CAPITALIZED}TestCase1();
+    virtual ~{CAPITALIZED}TestCase1();
 
-private:
-  virtual void DoRun (void);
+  private:
+    void DoRun() override;
 }};
 
 // Add some help text to this case to describe what it is intended to test
-{CAPITALIZED}TestCase1::{CAPITALIZED}TestCase1 ()
-  : TestCase ("{CAPITALIZED} test case (does nothing)")
+{CAPITALIZED}TestCase1::{CAPITALIZED}TestCase1()
+    : TestCase("{CAPITALIZED} test case (does nothing)")
 {{
 }}
 
 // This destructor does nothing but we include it as a reminder that
 // the test case should clean up after itself
-{CAPITALIZED}TestCase1::~{CAPITALIZED}TestCase1 ()
+{CAPITALIZED}TestCase1::~{CAPITALIZED}TestCase1()
 {{
 }}
 
@@ -175,12 +170,12 @@ private:
 // TestCase must implement
 //
 void
-{CAPITALIZED}TestCase1::DoRun (void)
+{CAPITALIZED}TestCase1::DoRun()
 {{
-  // A wide variety of test macros are available in src/core/test.h
-  NS_TEST_ASSERT_MSG_EQ (true, true, "true doesn\'t equal true for some reason");
-  // Use this one for floating point comparisons
-  NS_TEST_ASSERT_MSG_EQ_TOL (0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
+    // A wide variety of test macros are available in src/core/test.h
+    NS_TEST_ASSERT_MSG_EQ(true, true, "true doesn\'t equal true for some reason");
+    // Use this one for floating point comparisons
+    NS_TEST_ASSERT_MSG_EQ_TOL(0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
 }}
 
 // The TestSuite class names the TestSuite, identifies what type of TestSuite,
@@ -189,20 +184,19 @@ void
 //
 class {CAPITALIZED}TestSuite : public TestSuite
 {{
-public:
-  {CAPITALIZED}TestSuite ();
+  public:
+    {CAPITALIZED}TestSuite();
 }};
 
-{CAPITALIZED}TestSuite::{CAPITALIZED}TestSuite ()
-  : TestSuite ("{MODULE}", UNIT)
+{CAPITALIZED}TestSuite::{CAPITALIZED}TestSuite()
+    : TestSuite("{MODULE}", UNIT)
 {{
-  // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
-  AddTestCase (new {CAPITALIZED}TestCase1, TestCase::QUICK);
+    // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
+    AddTestCase(new {CAPITALIZED}TestCase1, TestCase::QUICK);
 }}
 
 // Do not forget to allocate an instance of this TestSuite
 static {CAPITALIZED}TestSuite s{COMPOUND}TestSuite;
-
 '''
 
 
