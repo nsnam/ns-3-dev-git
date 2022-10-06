@@ -411,16 +411,25 @@ bool
 AttributeContainerValue<A, C>::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   auto acchecker = DynamicCast<const AttributeContainerChecker> (checker);
-  if (!acchecker) return false;
+  if (!acchecker)
+    {
+      return false;
+    }
 
   std::istringstream iss (value); // copies value
   while (std::getline (iss, value, m_sep))
     {
       auto avalue = acchecker->GetItemChecker ()->CreateValidValue (StringValue (value));
-      if (!avalue) return false;
+      if (!avalue)
+        {
+          return false;
+        }
 
       auto attr = DynamicCast <A> (avalue);
-      if (!attr) return false;
+      if (!attr)
+        {
+          return false;
+        }
 
       // TODO(jared): make insertion more generic?
       m_container.push_back (attr);
@@ -436,7 +445,10 @@ AttributeContainerValue<A, C>::SerializeToString (Ptr<const AttributeChecker> ch
   bool first = true;
   for (auto attr: *this)
     {
-      if (!first) oss << m_sep;
+      if (!first)
+        {
+          oss << m_sep;
+        }
       oss << attr->SerializeToString (checker);
       first = false;
     }
@@ -448,8 +460,10 @@ typename AttributeContainerValue<A, C>::result_type
 AttributeContainerValue<A, C>::Get () const
 {
   result_type c;
-  for (const value_type& a: *this)
-    c.insert (c.end (), a->Get ());
+  for (const value_type& a : *this)
+    {
+      c.insert (c.end (), a->Get ());
+    }
   return c;
 }
 

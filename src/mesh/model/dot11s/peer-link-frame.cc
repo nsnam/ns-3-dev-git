@@ -83,7 +83,10 @@ PeerLinkOpenStart::GetSerializedSize () const
   uint32_t size =0; //Peering protocol
   size += 2; //capability
   size += m_rates.GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
   size += m_meshId.GetInformationFieldSize () + 2;
   size += m_config.GetInformationFieldSize () + 2;
   return size;
@@ -95,7 +98,10 @@ PeerLinkOpenStart::Serialize (Buffer::Iterator start) const
 
   i.WriteHtolsbU16 (m_capability);
   i = m_rates.Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
   i = m_meshId.Serialize (i);
   i = m_config.Serialize (i);
 }
@@ -262,7 +268,10 @@ PeerLinkConfirmStart::GetSerializedSize () const
   size += 2; //capability
   size += 2; //AID of remote peer
   size += m_rates.GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
   size += m_config.GetInformationFieldSize () + 2;
   return size;
 }
@@ -274,7 +283,10 @@ PeerLinkConfirmStart::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_capability);
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
   i = m_config.Serialize (i);
 }
 uint32_t

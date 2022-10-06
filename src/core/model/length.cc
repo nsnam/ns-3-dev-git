@@ -714,8 +714,10 @@ ParseLengthString (const std::string& input)
     }
 
     //skip any whitespace between value and symbol
-    while (pos < input.size () && std::isspace(input[pos]))
+    while (pos < input.size () && std::isspace (input[pos]))
+    {
         ++pos;
+    }
 
     if (pos < input.size ())
     {

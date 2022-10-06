@@ -97,7 +97,9 @@ UanMacAloha::Enqueue (Ptr<Packet> packet, uint16_t protocolNumber, const Address
       return true;
     }
   else
-    return false;
+    {
+      return false;
+    }
 }
 
 void

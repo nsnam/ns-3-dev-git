@@ -544,7 +544,10 @@ Ipv4L3Protocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) const
     {
       for (uint32_t j = 0; j < GetNInterfaces (); j++)
         {
-          if (j == uint32_t (iif)) continue;
+        if (j == uint32_t (iif))
+          {
+              continue;
+          }
           for (uint32_t i = 0; i < GetNAddresses (j); i++)
             {
               Ipv4InterfaceAddress iaddr = GetAddress (j, i);
@@ -962,9 +965,7 @@ Ipv4L3Protocol::BuildHeader (
 }
 
 void
-Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
-                             Ptr<Packet> packet,
-                             Ipv4Header const &ipHeader)
+Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route, Ptr<Packet> packet, const Ipv4Header& ipHeader)
 {
   NS_LOG_FUNCTION (this << route << packet << &ipHeader);
   if (!route)
@@ -1090,7 +1091,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
 }
 
 void
-Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
+Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, const Ipv4Header& ip, uint32_t iif)
 {
   NS_LOG_FUNCTION (this << packet << &ip << iif);
   Ptr<Packet> p = packet->Copy (); // need to pass a non-const packet up
@@ -1264,8 +1265,14 @@ Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
       for (uint32_t j = 0; j < GetNAddresses (i); j++)
         {
           iaddr = GetAddress (i, j);
-          if (iaddr.IsSecondary ()) continue;
-          if (iaddr.GetScope () > scope) continue;
+          if (iaddr.IsSecondary ())
+            {
+              continue;
+            }
+          if (iaddr.GetScope () > scope)
+            {
+              continue;
+            }
           if (dst.CombineMask (iaddr.GetMask ())  == iaddr.GetLocal ().CombineMask (iaddr.GetMask ()) )
             {
               return iaddr.GetLocal ();
@@ -1288,7 +1295,10 @@ Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
       for (uint32_t j = 0; j < GetNAddresses (i); j++)
         {
           iaddr = GetAddress (i, j);
-          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.IsSecondary ())
+            {
+              continue;
+            }
           if (iaddr.GetScope () != Ipv4InterfaceAddress::LINK
               && iaddr.GetScope () <= scope)
             {

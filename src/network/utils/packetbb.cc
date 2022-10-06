@@ -986,7 +986,9 @@ PbbPacket::operator== (const PbbPacket &other) const
   if (HasSequenceNumber ())
     {
       if (GetSequenceNumber () != other.GetSequenceNumber ())
-        return false;
+        {
+          return false;
+        }
     }
 
   if (m_tlvList != other.m_tlvList)

@@ -399,7 +399,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // element length is the maximum length
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, sub01Size - 2);  // subelement 1 Length
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + sub01Size, TestWifiSubElement ().ElementId ());
@@ -429,7 +432,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // maximum length for first element fragment
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, sub01Size - 2);  // subelement 1 Length
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + sub01Size, TestWifiSubElement ().ElementId ());
@@ -465,7 +471,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // maximum length for first element fragment
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, sub01Size - 2);  // subelement 1 Length
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + sub01Size, TestWifiSubElement ().ElementId ());
@@ -501,7 +510,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // maximum length for first element fragment
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, sub01Size - 2);  // subelement 1 Length
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + sub01Size, TestWifiSubElement ().ElementId ());
@@ -536,7 +548,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // maximum length for first element fragment
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, sub01Size - 2);  // subelement 1 Length
     CheckSerializedByte (buffer, 2 + 255, IE_FRAGMENT);  // Fragment ID
@@ -564,7 +579,10 @@ WifiIeFragmentationTest::DoRun ()
   {
     Buffer buffer = SerializeIntoBuffer (testIe);
     CheckSerializedByte (buffer, 1, 255);  // maximum length for first element fragment
-    if (m_extended) CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+    if (m_extended)
+      {
+        CheckSerializedByte (buffer, 2, testIe.ElementIdExt ());
+      }
     CheckSerializedByte (buffer, (m_extended ? 3 : 2), TestWifiSubElement ().ElementId ());
     CheckSerializedByte (buffer, (m_extended ? 3 : 2) + 1, 255);  // first subelement fragment Length
     CheckSerializedByte (buffer, 2 + 255, IE_FRAGMENT);  // Fragment ID for second element fragment

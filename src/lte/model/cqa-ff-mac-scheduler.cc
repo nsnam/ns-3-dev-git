@@ -1096,8 +1096,10 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
 
       std::map <LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itRlcBufferReq = m_rlcBufferReq.find (itLogicalChannels->first);
-      if (itRlcBufferReq==m_rlcBufferReq.end ())
-        continue;
+      if (itRlcBufferReq == m_rlcBufferReq.end ())
+        {
+          continue;
+        }
 
       int group = -1;
       int delay = 0;
@@ -1337,7 +1339,9 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               itStats = m_flowStatsDl.find (flowId.m_rnti);
               double tbr_weight = (*itStats).second.targetThroughput / (*itStats).second.lastAveragedThroughput;
               if (tbr_weight < 1.0)
-                tbr_weight = 1.0;
+                {
+                  tbr_weight = 1.0;
+                }
 
               if (itRntiCQIsMap != m_a30CqiRxed.end ())
                 {
@@ -1346,10 +1350,14 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       try
                         {
                           int val = (itRntiCQIsMap->second.m_higherLayerSelected.at (*it).m_sbCqi.at (0));
-                          if (val==0)
-                            val=1;                                             //if no info, use minimum
+                          if (val == 0)
+                            {
+                              val = 1; // if no info, use minimum
+                            }
                           if (*it == currentRB)
-                            cqi_value = val;
+                            {
+                              cqi_value = val;
+                            }
                           coita_sum+=val;
 
                         }
@@ -1378,7 +1386,9 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                     {
                       qos_rb_and_CQI_assigned_to_lc e = itRBG->second;
                       if (e.cqi_value_for_lc < worstCQIAmongRBGsAllocatedForThisUser)
-                        worstCQIAmongRBGsAllocatedForThisUser=e.cqi_value_for_lc;
+                        {
+                          worstCQIAmongRBGsAllocatedForThisUser = e.cqi_value_for_lc;
+                        }
                     }
 
                   if (cqi_value < worstCQIAmongRBGsAllocatedForThisUser)
@@ -1424,8 +1434,10 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
               int hol = UEtoHOL.find (flowId)->second;
 
-              if (hol==0)
-                hol=1;
+              if (hol == 0)
+                {
+                  hol = 1;
+                }
 
               if ( m_CqaMetric.compare ("CqaFf") == 0)
                 {
@@ -1509,8 +1521,10 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       newDci.m_rnti = (*itMap).first;
       newDci.m_harqProcess = UpdateHarqProcessId ((*itMap).first);
       uint16_t lcActives = LcActivePerFlow (itMap->first);
-      if (lcActives==0)           // if there is still no buffer report information on any flow
-        lcActives = 1;
+      if (lcActives == 0)
+        { // if there is still no buffer report information on any flow
+          lcActives = 1;
+        }
       // NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " rbg " << lcActives);
       uint16_t RgbPerRnti = (*itMap).second.size ();
       double doubleRBgPerRnti = RgbPerRnti;

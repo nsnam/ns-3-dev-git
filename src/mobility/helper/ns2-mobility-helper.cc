@@ -225,7 +225,11 @@ Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
   : m_filename (filename)
 {
   std::ifstream file (m_filename.c_str (), std::ios::in);
-  if (!(file.is_open ())) NS_FATAL_ERROR("Could not open trace file " << m_filename.c_str() << " for reading, aborting here \n");
+  if (!(file.is_open ()))
+    {
+      NS_FATAL_ERROR ("Could not open trace file " << m_filename.c_str ()
+                                                   << " for reading, aborting here \n");
+    }
 }
 
 Ptr<ConstantVelocityMobilityModel>

@@ -204,7 +204,10 @@ UanPdp::SumTapsFromMaxC (Time delay, Time duration) const
       NS_ASSERT_MSG (GetNTaps () == 1, "Attempted to sum taps over time interval in "
                      "UanPdp with resolution 0 and multiple taps");
 
-      if (delay.IsZero ()) return m_taps[0].GetAmp ();
+      if (delay.IsZero ())
+        {
+          return m_taps[0].GetAmp ();
+        }
       return std::complex<double> (0.0, 0.0);
     }
 
@@ -237,7 +240,10 @@ UanPdp::SumTapsFromMaxNc (Time delay, Time duration) const
       NS_ASSERT_MSG (GetNTaps () == 1, "Attempted to sum taps over time interval in "
                      "UanPdp with resolution 0 and multiple taps");
 
-      if (delay.IsZero ()) return std::abs (m_taps[0].GetAmp ());
+      if (delay.IsZero ())
+        {
+          return std::abs (m_taps[0].GetAmp ());
+        }
       return 0;
     }
 

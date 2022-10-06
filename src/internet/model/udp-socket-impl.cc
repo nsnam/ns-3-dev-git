@@ -585,12 +585,16 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
           Ipv4InterfaceAddress iaddr = ipv4->GetAddress (i, 0);
           Ipv4Address addri = iaddr.GetLocal ();
           if (addri == Ipv4Address ("127.0.0.1"))
-            continue;
+            {
+              continue;
+            }
           // Check if interface-bound socket
           if (m_boundnetdevice)
             {
               if (ipv4->GetNetDevice (i) != m_boundnetdevice)
-                continue;
+                {
+                  continue;
+                }
             }
           NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest);
           m_udp->Send (p->Copy (), addri, dest,

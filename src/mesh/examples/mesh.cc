@@ -265,7 +265,9 @@ MeshTest::CreateNodes ()
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
   if (m_pcap)
-    wifiPhy.EnablePcapAll (std::string ("mp"));
+    {
+      wifiPhy.EnablePcapAll (std::string ("mp"));
+    }
   if (m_ascii)
     {
       AsciiTraceHelper ascii;

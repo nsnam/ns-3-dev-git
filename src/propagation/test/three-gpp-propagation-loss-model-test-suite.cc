@@ -1094,9 +1094,23 @@ ThreeGppShadowingTestCase::RunTest (uint16_t testNum, std::string propagationLos
   for (int i = 0; i < 200; i++)
     {
       if (i % 2 == 0)
-        Simulator::Schedule (MilliSeconds (1000 * i), &ThreeGppShadowingTestCase::EvaluateLoss, this, a, b, testNum);
+        {
+          Simulator::Schedule (MilliSeconds (1000 * i),
+                               &ThreeGppShadowingTestCase::EvaluateLoss,
+                               this,
+                               a,
+                               b,
+                               testNum);
+        }
       else
-        Simulator::Schedule (MilliSeconds (1000 * i), &ThreeGppShadowingTestCase::EvaluateLoss, this, b, a, testNum);
+        {
+          Simulator::Schedule (MilliSeconds (1000 * i),
+                               &ThreeGppShadowingTestCase::EvaluateLoss,
+                               this,
+                               b,
+                               a,
+                               testNum);
+        }
     }
 
   Simulator::Run ();

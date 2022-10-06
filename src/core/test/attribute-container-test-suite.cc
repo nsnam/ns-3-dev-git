@@ -164,7 +164,10 @@ operator << (std::ostream &os, const AttributeContainerObject &obj)
   bool first = true;
   for (auto d: obj.m_doublelist)
     {
-      if (!first) os << ", ";
+      if (!first)
+        {
+          os << ", ";
+        }
       os << d;
       first = false;
     }
@@ -474,7 +477,10 @@ AttributeContainerSetGetTestCase::DoRun ()
     // could possibly make custom assignment operator to make assignment statement work
     std::map<std::string, int> mapstrint;
     auto lst = value.Get ();
-    for (auto l: lst) mapstrint[l.first] = l.second;
+    for (auto l : lst)
+      {
+        mapstrint[l.first] = l.second;
+      }
 
     NS_TEST_ASSERT_MSG_EQ (map.size (), mapstrint.size (), "mapstrint wrong size");
     auto iter = map.begin ();

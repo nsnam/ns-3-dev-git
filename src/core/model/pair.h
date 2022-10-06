@@ -282,8 +282,10 @@ PairValue<A, B>::Copy () const
   auto p = Create <PairValue <A, B> > ();
   // deep copy if non-null
   if (m_value.first)
-    p->m_value = std::make_pair (DynamicCast<A> (m_value.first->Copy ()),
-                                 DynamicCast<B> (m_value.second->Copy ()));
+    {
+      p->m_value = std::make_pair (DynamicCast<A> (m_value.first->Copy ()),
+                                   DynamicCast<B> (m_value.second->Copy ()));
+    }
   return p;
 }
 
@@ -292,22 +294,37 @@ bool
 PairValue<A, B>::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   auto pchecker = DynamicCast<const PairChecker> (checker);
-  if (!pchecker) return false;
+  if (!pchecker)
+    {
+      return false;
+    }
 
   std::istringstream iss (value);  // copies value
   iss >> value;
   auto first = pchecker->GetCheckers ().first->CreateValidValue (StringValue (value));
-  if (!first) return false;
+  if (!first)
+    {
+      return false;
+    }
 
   auto firstattr = DynamicCast <A> (first);
-  if (!firstattr) return false;
+  if (!firstattr)
+    {
+      return false;
+    }
 
   iss >> value;
   auto second = pchecker->GetCheckers ().second->CreateValidValue (StringValue (value));
-  if (!second) return false;
+  if (!second)
+    {
+      return false;
+    }
 
   auto secondattr = DynamicCast <B> (second);
-  if (!secondattr) return false;
+  if (!secondattr)
+    {
+      return false;
+    }
 
   m_value = std::make_pair (firstattr, secondattr);
   return true;

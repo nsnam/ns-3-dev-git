@@ -68,16 +68,20 @@ void modify ()
   static uint32_t index = 0;
   index++;
   if (index == 3)
-    index = 0;
+    {
+      index = 0;
+    }
   struct rgb color = colors[index];
   for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
-    pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b);
+    {
+      pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b);
+    }
 
-
-  if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
-    // will run endlessly
-    Simulator::Schedule (Seconds (1), modify);
-
+  if (Simulator::Now ().GetSeconds () < 10)
+    { // This is important or the simulation
+      // will run endlessly
+      Simulator::Schedule (Seconds (1), modify);
+    }
 }
 
 int main (int argc, char *argv[])

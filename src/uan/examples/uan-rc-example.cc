@@ -107,11 +107,14 @@ Experiment::CreateMode (uint32_t kass,
   uint32_t rate = m_totalRate/(m_numRates+1)* (kass);
   uint32_t bw = kass * m_totalRate / (m_numRates+1);
   uint32_t fcmode;
-  if(upperblock)
-    fcmode = (m_totalRate - bw)/2 + fc;
+  if (upperblock)
+    {
+      fcmode = (m_totalRate - bw) / 2 + fc;
+    }
   else
-    fcmode = (uint32_t)((-((double) m_totalRate ) + (double) bw)/2.0 + (double) fc);
-
+    {
+      fcmode = (uint32_t)((-((double)m_totalRate) + (double)bw) / 2.0 + (double)fc);
+    }
 
   uint32_t phyrate = m_totalRate;
 

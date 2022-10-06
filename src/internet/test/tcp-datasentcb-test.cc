@@ -79,7 +79,9 @@ TcpSocketHalfAck::ReceivedData (Ptr<Packet> packet, const TcpHeader &tcpHeader)
   Ptr<Packet> halved = packet->Copy ();
 
   if (times % 2 == 0)
-    halved->RemoveAtEnd (packet->GetSize () / 2);
+    {
+      halved->RemoveAtEnd (packet->GetSize () / 2);
+    }
 
   times++;
 

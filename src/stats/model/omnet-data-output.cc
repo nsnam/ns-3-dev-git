@@ -75,18 +75,26 @@ inline bool isNumeric (const std::string& s) {
   for (std::string::const_iterator it = s.begin (); it != s.end (); it++)
     {
       if ((*it == '.') && (decimalPtSeen))
-        return false;
+        {
+          return false;
+        }
       else if (*it == '.')
-        decimalPtSeen = true;
+        {
+          decimalPtSeen = true;
+        }
       else if ((*it == 'e') && exponentSeen)
-        return false;
+        {
+          return false;
+        }
       else if (*it == 'e')
         {
           exponentSeen = true;
           decimalPtSeen = false;
         }
       else if (*it == '-' && it != s.begin () && last != 'e')
-        return false;
+        {
+          return false;
+        }
 
       last = *it;
     }
@@ -162,24 +170,42 @@ OmnetDataOutput::OmnetOutputCallback::OutputStatistic (std::string context,
   NS_LOG_FUNCTION (this << context << name << statSum);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "statistic " << context << " " << name << std::endl;
   if (!isNaN (statSum->getCount ()))
-    (*m_scalar) << "field count " << statSum->getCount () << std::endl;
+    {
+      (*m_scalar) << "field count " << statSum->getCount () << std::endl;
+    }
   if (!isNaN (statSum->getSum ()))
-    (*m_scalar) << "field sum " << statSum->getSum () << std::endl;
+    {
+      (*m_scalar) << "field sum " << statSum->getSum () << std::endl;
+    }
   if (!isNaN (statSum->getMean ()))
-    (*m_scalar) << "field mean " << statSum->getMean () << std::endl;
+    {
+      (*m_scalar) << "field mean " << statSum->getMean () << std::endl;
+    }
   if (!isNaN (statSum->getMin ()))
-    (*m_scalar) << "field min " << statSum->getMin () << std::endl;
+    {
+      (*m_scalar) << "field min " << statSum->getMin () << std::endl;
+    }
   if (!isNaN (statSum->getMax ()))
-    (*m_scalar) << "field max " << statSum->getMax () << std::endl;
+    {
+      (*m_scalar) << "field max " << statSum->getMax () << std::endl;
+    }
   if (!isNaN (statSum->getSqrSum ()))
-    (*m_scalar) << "field sqrsum " << statSum->getSqrSum () << std::endl;
+    {
+      (*m_scalar) << "field sqrsum " << statSum->getSqrSum () << std::endl;
+    }
   if (!isNaN (statSum->getStddev ()))
-    (*m_scalar) << "field stddev " << statSum->getStddev () << std::endl;
+    {
+      (*m_scalar) << "field stddev " << statSum->getStddev () << std::endl;
+    }
 }
 
 void
@@ -190,9 +216,13 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
   NS_LOG_FUNCTION (this << context << name << val);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
@@ -205,9 +235,13 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
   NS_LOG_FUNCTION (this << context << name << val);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
@@ -220,9 +254,13 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
   NS_LOG_FUNCTION (this << context << name << val);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
@@ -235,9 +273,13 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
   NS_LOG_FUNCTION (this << context << name << val);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
@@ -250,9 +292,13 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
   NS_LOG_FUNCTION (this << context << name << val);
 
   if (context == "")
-    context = ".";
+    {
+      context = ".";
+    }
   if (name == "")
-    name = "\"\"";
+    {
+      name = "\"\"";
+    }
   (*m_scalar) << "scalar " << context << " " << name << " " << val.GetTimeStep () << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }

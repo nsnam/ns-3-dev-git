@@ -1115,7 +1115,10 @@ PacketTagListTest::DoRun ()
     const int nIterations = 100;
     for (int i = 0; i < nIterations; ++i) {
       int now = AddRemoveTime ();
-      if (now < flm) flm = now;
+      if (now < flm)
+        {
+          flm = now;
+        }
     }
     std::cout << GetName () << "min add+remove time: "
               << std::setw (8) << flm        << " ticks"
@@ -1137,7 +1140,10 @@ PacketTagListTest::DoRun ()
         case 1:  now = RemoveTime (ref, t1);  break;
 	}  // switch
 
-	if (now < rmn[j]) rmn[j] = now;
+        if (now < rmn[j])
+        {
+          rmn[j] = now;
+        }
       } // for tag j
     } // for iteration i
     for (int j = tagLast; j > 0; --j) {

@@ -84,15 +84,25 @@ void
 UanHeaderCommon::SetProtocolNumber (uint16_t protocolNumber)
 {
   if (protocolNumber == 0)
-    m_uanProtocolBits.m_protocolNumber = 0;
+    {
+      m_uanProtocolBits.m_protocolNumber = 0;
+    }
   else if (protocolNumber == IPV4_PROT_NUMBER)
-    m_uanProtocolBits.m_protocolNumber = 1;
+    {
+      m_uanProtocolBits.m_protocolNumber = 1;
+    }
   else if (protocolNumber == ARP_PROT_NUMBER)
-    m_uanProtocolBits.m_protocolNumber = 2;
+    {
+      m_uanProtocolBits.m_protocolNumber = 2;
+    }
   else if (protocolNumber == IPV6_PROT_NUMBER)
-    m_uanProtocolBits.m_protocolNumber = 3;
+    {
+      m_uanProtocolBits.m_protocolNumber = 3;
+    }
   else
-    NS_ASSERT_MSG (false, "UanHeaderCommon::SetProtocolNumber(): Protocol not supported");
+    {
+      NS_ASSERT_MSG (false, "UanHeaderCommon::SetProtocolNumber(): Protocol not supported");
+    }
 }
 
 Mac8Address
@@ -115,11 +125,17 @@ uint16_t
 UanHeaderCommon::GetProtocolNumber () const
 {
   if (m_uanProtocolBits.m_protocolNumber == 1)
-    return IPV4_PROT_NUMBER;
+    {
+      return IPV4_PROT_NUMBER;
+    }
   if (m_uanProtocolBits.m_protocolNumber == 2)
-    return ARP_PROT_NUMBER;
+    {
+      return ARP_PROT_NUMBER;
+    }
   if (m_uanProtocolBits.m_protocolNumber == 3)
-    return IPV6_PROT_NUMBER;
+    {
+      return IPV6_PROT_NUMBER;
+    }
   return 0;
 }
 

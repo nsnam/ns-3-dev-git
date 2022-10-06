@@ -308,9 +308,18 @@ ReducedNeighborReportTest::DoRun ()
       TestHeaderSerialization (GetReducedNeighborReport (channel2_4It, channel5It, channel6It));
 
       // advance all channel iterators
-      if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend ()) channel2_4It++;
-      if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend ()) channel5It++;
-      if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend ()) channel6It++;
+      if (channel2_4It != WifiPhyOperatingChannel::m_frequencyChannels.cend ())
+        {
+          channel2_4It++;
+        }
+      if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend ())
+        {
+          channel5It++;
+        }
+      if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend ())
+        {
+          channel6It++;
+        }
     }
 }
 

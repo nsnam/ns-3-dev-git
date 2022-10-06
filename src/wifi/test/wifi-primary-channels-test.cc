@@ -1084,7 +1084,10 @@ Wifi20MHzChannelIndicesTest::RunOne (uint8_t primary20,
                     {
                       std::stringstream ss;
                       ss << "{";
-                      for (const auto& index : s) ss << +index << " ";
+                      for (const auto& index : s)
+                        {
+                          ss << +index << " ";
+                        }
                       ss << "}";
                       return ss.str ();
                     };

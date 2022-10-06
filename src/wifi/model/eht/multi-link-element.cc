@@ -259,7 +259,10 @@ MultiLinkElement::SetMediumSyncDelayTimer (Time delay)
   delayUs /= 32;
 
   auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo;
-  if (!mediumSyncDelayInfo.has_value ()) mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo {};
+  if (!mediumSyncDelayInfo.has_value ())
+    {
+      mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
   mediumSyncDelayInfo.value ().mediumSyncDuration = (delayUs & 0xff);
 }
 
@@ -276,7 +279,10 @@ MultiLinkElement::SetMediumSyncOfdmEdThreshold (int8_t threshold)
   uint8_t value = 72 + threshold;
 
   auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo;
-  if (!mediumSyncDelayInfo.has_value ()) mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo {};
+  if (!mediumSyncDelayInfo.has_value ())
+    {
+      mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
   mediumSyncDelayInfo.value ().mediumSyncOfdmEdThreshold = value;
 }
 
@@ -293,7 +299,10 @@ MultiLinkElement::SetMediumSyncMaxNTxops (uint8_t nTxops)
   nTxops--;
 
   auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT> (m_commonInfo).m_mediumSyncDelayInfo;
-  if (!mediumSyncDelayInfo.has_value ()) mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo {};
+  if (!mediumSyncDelayInfo.has_value ())
+    {
+      mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
   mediumSyncDelayInfo.value ().mediumSyncMaxNTxops = (nTxops & 0x0f);
 }
 
@@ -570,7 +579,10 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField (Buffer::
 
   // TODO add other subfields of the STA Info field
 
-  if (count >= length) return count;
+  if (count >= length)
+    {
+      return count;
+    }
 
   if (m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST)
     {

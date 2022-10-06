@@ -77,13 +77,17 @@ public:
     p (new T*[x]), m_xMax (x)
   {
     for (size_t i = 0; i < m_xMax; i++)
-      p[i] = new T[y];
+      {
+        p[i] = new T[y];
+      }
   }
 
   ~Array2D ()
   {
     for (size_t i = 0; i < m_xMax; i++)
-      delete[] p[i];
+      {
+        delete[] p[i];
+      }
     delete[] p;
     p = nullptr;
   }
@@ -119,7 +123,9 @@ public:
   Array3D (const size_t x, const size_t y, const size_t z) : p (new Array2D<T>*[x]), m_xMax (x)
   {
     for (size_t i = 0; i < m_xMax; i++)
-      p[i] = new Array2D<T> (y, z);
+      {
+        p[i] = new Array2D<T> (y, z);
+      }
   }
 
   ~Array3D ()

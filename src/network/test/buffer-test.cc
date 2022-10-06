@@ -60,7 +60,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
 {
   bool success = true;
   uint8_t *expected = array;
-  uint8_t const*got;
+  const uint8_t* got;
   got = b.PeekData ();
   for (uint32_t j = 0; j < n; j++)
     {
@@ -304,7 +304,9 @@ BufferTest::DoRun ()
     {
       Buffer::Iterator iter = inputBuffer.Begin ();
       for (uint32_t i = 0; i < actualSize; i++)
-        iter.WriteU8 (static_cast<uint8_t> (bytesRng->GetValue ()));
+        {
+          iter.WriteU8 (static_cast<uint8_t> (bytesRng->GetValue ()));
+        }
     }
 
     outputBuffer.AddAtEnd (chunkSize);
@@ -355,7 +357,7 @@ BufferTest::DoRun ()
   i.Write ((const uint8_t*)ct.c_str (), ct.size ());
   uint32_t sizeBuffer = buffer.GetSize ();
   NS_TEST_ASSERT_MSG_EQ (sizeBuffer, ct.size(), "Buffer bad size");
-  uint8_t const* evilBuffer = buffer.PeekData ();
+  const uint8_t* evilBuffer = buffer.PeekData ();
   NS_TEST_ASSERT_MSG_NE( evilBuffer, 0, "Buffer PeekData failed");
   uint8_t *cBuf = (uint8_t*) malloc ( sizeBuffer );
   uint32_t copyLen = buffer.CopyData (cBuf, sizeBuffer);

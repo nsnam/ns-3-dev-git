@@ -346,9 +346,14 @@ PeerManagementProtocol::GetPeerLinks () const
   for (PeerLinksMap::const_iterator iface = m_peerLinks.begin (); iface != m_peerLinks.end (); ++iface)
     {
       for (PeerLinksOnInterface::const_iterator i = iface->second.begin ();
-           i != iface->second.end (); i++)
-        if ((*i)->LinkIsEstab ())
-          links.push_back (*i);
+           i != iface->second.end ();
+           i++)
+        {
+          if ((*i)->LinkIsEstab ())
+            {
+              links.push_back (*i);
+            }
+        }
     }
   return links;
 }

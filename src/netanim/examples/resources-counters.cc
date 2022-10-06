@@ -75,21 +75,31 @@ void modify ()
   pAnim->UpdateNodeImage (3, currentResourceId);
   size *= 1.1;
   if (size > 20)
-    size = 1;
+    {
+      size = 1;
+    }
   pAnim->UpdateNodeSize (3, 10, 10);
   if (currentResourceId == resourceId1)
-    currentResourceId = resourceId2;
+    {
+      currentResourceId = resourceId2;
+    }
   else
-    currentResourceId = resourceId1;
+    {
+      currentResourceId = resourceId1;
+    }
 
   // Every update change the color for node 4
   static uint32_t index = 0;
   index++;
   if (index == 3)
-    index = 0;
+    {
+      index = 0;
+    }
   struct rgb color = colors[index];
   for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
-    pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b);
+    {
+      pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b);
+    }
 
   // Update Node Counter for node 0 and node 5, use some random number between 0 to 1000 for value
   Ptr <UniformRandomVariable> rv = CreateObject<UniformRandomVariable> ();
@@ -100,10 +110,11 @@ void modify ()
   pAnim->UpdateNodeCounter (nodeCounterIdDouble1, 5, rv->GetValue (100.0, 200.0));
   pAnim->UpdateNodeCounter (nodeCounterIdDouble2, 5, rv->GetValue (300.0, 400.0));
 
-  if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
-    // will run endlessly
-    Simulator::Schedule (Seconds (0.1), modify);
-
+  if (Simulator::Now ().GetSeconds () < 10)
+    { // This is important or the simulation
+      // will run endlessly
+      Simulator::Schedule (Seconds (0.1), modify);
+    }
 }
 
 int main (int argc, char *argv[])

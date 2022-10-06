@@ -300,7 +300,9 @@ LenaTdMtFfMacSchedulerTestCase::DoRun ()
            NS_TEST_ASSERT_MSG_EQ_TOL (0, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
         }
       else
-        NS_TEST_ASSERT_MSG_EQ_TOL (throughput, 0, 0, " Unfair Throughput!");
+        {
+           NS_TEST_ASSERT_MSG_EQ_TOL (throughput, 0, 0, " Unfair Throughput!");
+        }
     }
 
   /**

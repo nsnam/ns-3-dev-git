@@ -278,7 +278,9 @@ Ptr<T> Ipv6RoutingHelper::GetRouting (Ptr<Ipv6RoutingProtocol> protocol)
               int16_t priority;
               ret = GetRouting<T> (lrp->GetRoutingProtocol (i, priority)); // potential recursion, if inside ListRouting is ListRouting
               if (ret)
-                break;
+                {
+                  break;
+                }
             }
         }
     }

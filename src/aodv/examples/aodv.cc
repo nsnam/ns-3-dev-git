@@ -105,7 +105,9 @@ int main (int argc, char **argv)
 {
   AodvExample test;
   if (!test.Configure (argc, argv))
-    NS_FATAL_ERROR ("Configuration failed. Aborted.");
+    {
+      NS_FATAL_ERROR ("Configuration failed. Aborted.");
+    }
 
   test.Run ();
   test.Report (std::cout);

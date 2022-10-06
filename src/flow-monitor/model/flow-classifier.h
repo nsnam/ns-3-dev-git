@@ -85,7 +85,10 @@ protected:
 inline void
 FlowClassifier::Indent (std::ostream &os, uint16_t level) const
 {
-  for (uint16_t __xpto = 0; __xpto < level; __xpto++) os << ' ';
+  for (uint16_t __xpto = 0; __xpto < level; __xpto++)
+    {
+      os << ' ';
+    }
 }
 
 

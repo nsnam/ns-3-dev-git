@@ -398,7 +398,10 @@ TvSpectrumTransmitterHelper::GenerateRegionalTransmitterIndices (const double st
     {
       double element = startFrequencies[i];
       //add all non-zero frequencies to vector (0 means unused channel)
-      if (element != 0) startFreqVector.push_back(element);
+      if (element != 0)
+        {
+          startFreqVector.push_back (element);
+        }
     }
 
   //randomly generate number of transmitters to create based on density

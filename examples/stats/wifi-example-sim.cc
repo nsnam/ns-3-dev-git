@@ -315,7 +315,9 @@ int main (int argc, char *argv[]) {
   // Finally, have that writer interrogate the DataCollector and save
   // the results.
   if (output)
-    output->Output (data);
+    {
+      output->Output (data);
+    }
 
   // Free any memory here at the end of this example.
   Simulator::Destroy ();

@@ -1059,11 +1059,15 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       std::vector <uint16_t> tempMap;
       for (int i = 0; i < rbgNum; i++)
         {
-          if ( rbgMap.at (i) == true) // this RBG is allocated in RACH procedure
-            continue;
+          if (rbgMap.at (i) == true)
+            { // this RBG is allocated in RACH procedure
+              continue;
+            }
 
           if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*itMax).first)) == false)
-            continue;
+            {
+              continue;
+            }
 
           tempMap.push_back (i);
           rbgMap.at (i) = true;
@@ -1238,10 +1242,14 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
         {
           (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
           (*itMax).second.tokenPoolSize = 0;
-          if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
-            bankSize = 0;
+          if (bankSize <= (bytesTxed - (*itMax).second.tokenPoolSize))
+            {
+              bankSize = 0;
+            }
           else
-            bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+            {
+              bankSize = bankSize - (bytesTxed - (*itMax).second.tokenPoolSize);
+            }
         }
 
 

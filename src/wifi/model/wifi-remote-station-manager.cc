@@ -324,7 +324,10 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
   auto state = LookupState (address);
   for (const auto& i : state->m_operationalRateSet)
     {
-      if (i == mode) return;  // already in
+      if (i == mode)
+        {
+          return; // already in
+        }
     }
   if ((mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
     {
@@ -387,7 +390,10 @@ WifiRemoteStationManager::AddSupportedMcs (Mac48Address address, WifiMode mcs)
   auto state = LookupState (address);
   for (const auto& i : state->m_operationalMcsSet)
     {
-      if (i == mcs) return;  //already in
+      if (i == mcs)
+        {
+          return; // already in
+        }
     }
   state->m_operationalMcsSet.push_back (mcs);
 }

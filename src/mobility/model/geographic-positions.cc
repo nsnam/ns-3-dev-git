@@ -147,7 +147,10 @@ GeographicPositions::CartesianToGeographicCoordinates (Vector pos, EarthSpheroid
       lla.x = -180 - lla.x;
       lla.y += lla.y < 0 ? 180 : -180;
     }
-  if (lla.y == 180.0) lla.y = -180;
+  if (lla.y == 180.0)
+    {
+      lla.y = -180;
+    }
 
   // make sure lat/lon in the right range to double check canonicalization
   // and conversion routine
@@ -226,7 +229,9 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
       //flip / mirror point if it has phi in quadrant II or III (wasn't
       //resolved correctly by arcsin) across longitude 0
       if (phi > (M_PI_2) && phi <= (3 * M_PI_2))
-        intermedLong = -intermedLong;
+        {
+          intermedLong = -intermedLong;
+        }
 
       // shift longitude to be referenced to origin
       double randPointLongitude = intermedLong + originLongitudeRadians;

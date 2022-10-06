@@ -73,7 +73,9 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
       m_rowDevices.push_back (rowDevices);
 
       if (y > 0)
-        m_colDevices.push_back (colDevices);
+        {
+          m_colDevices.push_back (colDevices);
+        }
     }
 }
 

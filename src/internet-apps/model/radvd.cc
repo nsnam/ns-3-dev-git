@@ -273,7 +273,9 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
       if (config->IsInitialRtrAdv ())
         {
           if (delay > MAX_INITIAL_RTR_ADVERT_INTERVAL)
-            delay = MAX_INITIAL_RTR_ADVERT_INTERVAL;
+            {
+              delay = MAX_INITIAL_RTR_ADVERT_INTERVAL;
+            }
         }
 
       NS_LOG_INFO ("Reschedule in " << delay << " milliseconds");

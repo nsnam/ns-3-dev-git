@@ -155,7 +155,10 @@ GaussMarkovMobilityModel::DoWalk (Time delayLeft)
   nextPosition.x += speed.x * delayLeft.GetSeconds ();
   nextPosition.y += speed.y * delayLeft.GetSeconds ();
   nextPosition.z += speed.z * delayLeft.GetSeconds ();
-  if (delayLeft.GetSeconds () < 0.0) delayLeft = Seconds (1.0);
+  if (delayLeft.GetSeconds () < 0.0)
+    {
+      delayLeft = Seconds (1.0);
+    }
 
   // Make sure that the position by the next time step is still within the boundary.
   // If out of bounds, then alter the velocity vector and average direction to keep the position in bounds

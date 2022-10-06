@@ -301,7 +301,7 @@ void
 InterferenceHelper::AppendEvent (Ptr<Event> event, bool isStartOfdmaRxing)
 {
   NS_LOG_FUNCTION (this << event << isStartOfdmaRxing);
-  for (auto const& it : event->GetRxPowerWPerBand ())
+  for (const auto& it : event->GetRxPowerWPerBand ())
     {
       WifiSpectrumBand band = it.first;
       auto niIt = m_niChangesPerBand.find (band);
@@ -338,7 +338,7 @@ InterferenceHelper::UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBa
 {
   NS_LOG_FUNCTION (this << event);
   //This is called for UL MU events, in order to scale power as long as UL MU PPDUs arrive
-  for (auto const& it : rxPower)
+  for (const auto& it : rxPower)
     {
       WifiSpectrumBand band = it.first;
       auto niIt = m_niChangesPerBand.find (band);
@@ -395,7 +395,10 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChangesPerB
     }
   it = niIt->second.find (event->GetStartTime ());
   NS_ASSERT (it != niIt->second.end ());
-  for (; it != niIt->second.end () && it->second.GetEvent () != event; ++it);
+  for (; it != niIt->second.end () && it->second.GetEvent () != event; ++it)
+    {
+      ;
+    }
   NiChanges ni;
   ni.emplace (event->GetStartTime (), NiChange (0, event));
   while (++it != niIt->second.end () && it->second.GetEvent () != event)

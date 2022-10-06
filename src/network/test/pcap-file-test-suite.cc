@@ -521,37 +521,58 @@ FileHeaderTestCase::DoRun ()
 
   size_t result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() magic number");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 0xa1b2c3d4, "Magic number written incorrectly");
 
   result = std::fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version major");
-  if (bigEndian) val16 = Swap (val16);
+  if (bigEndian)
+    {
+      val16 = Swap (val16);
+    }
   NS_TEST_ASSERT_MSG_EQ (val16, 2, "Version major written incorrectly");
 
   result = std::fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version minor");
-  if (bigEndian) val16 = Swap (val16);
+  if (bigEndian)
+    {
+      val16 = Swap (val16);
+    }
   NS_TEST_ASSERT_MSG_EQ (val16, 4, "Version minor written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() time zone correction");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 7, "Version minor written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() sig figs");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 0, "Sig figs written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() snap length");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 5678, "Snap length written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() data link type");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 1234, "Data length type written incorrectly");
 
   std::fclose (p);
@@ -797,22 +818,34 @@ RecordHeaderTestCase::DoRun ()
 
   size_t result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() seconds timestamp");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 1234, "Seconds timestamp written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() microseconds timestamp");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 5678, "Microseconds timestamp written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() included length");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 43, "Included length written incorrectly");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() actual length");
-  if (bigEndian) val32 = Swap (val32);
+  if (bigEndian)
+    {
+      val32 = Swap (val32);
+    }
   NS_TEST_ASSERT_MSG_EQ (val32, 128, "Actual length written incorrectly");
 
   //
@@ -1065,7 +1098,7 @@ ReadFileTestCase::DoRun ()
 
   for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
     {
-      PacketEntry const & p = knownPackets[i];
+      const PacketEntry& p = knownPackets[i];
 
       f.Read (data, sizeof(data), tsSec, tsUsec, inclLen, origLen, readLen);
       NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Read() of known good pcap file returns error");
@@ -1130,9 +1163,9 @@ DiffTestCase::DoRun ()
 
   for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
     {
-      PacketEntry const & p = knownPackets[i];
+      const PacketEntry& p = knownPackets[i];
 
-      f.Write (p.tsSec, p.tsUsec, (uint8_t const *)p.data, p.origLen);
+      f.Write (p.tsSec, p.tsUsec, (const uint8_t*)p.data, p.origLen);
       NS_TEST_EXPECT_MSG_EQ (f.Fail (), false, "Write must not fail");
     }
   f.Close ();

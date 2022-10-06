@@ -920,7 +920,9 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it++)
             {
               if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
-                continue;
+                {
+                  continue;
+                }
 
               std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).first);
               if ((itRnti != rntiAllocated.end ())||(!HarqProcessAvailability ((*it).first)))

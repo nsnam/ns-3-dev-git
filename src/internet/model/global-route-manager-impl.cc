@@ -159,7 +159,10 @@ SPFVertex::~SPFVertex ()
       // p is removed from the children list when p is deleted
       SPFVertex* p = m_children.front ();
       // 'p' == 0, this child is already deleted by its other parent
-      if (p == nullptr) continue;
+      if (p == nullptr)
+        {
+          continue;
+        }
       NS_LOG_LOGIC ("Parent vertex-" << m_vertexId << " deleting its child vertex-" << p->GetVertexId ());
       delete p;
       p = nullptr;
@@ -884,8 +887,11 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                             w->GetDistanceFromRoot ());
             }
           else
-            NS_ASSERT_MSG (0, "SPFNexthopCalculation never "
-                           << "return false, but it does now!");
+            {
+              NS_ASSERT_MSG (0,
+                             "SPFNexthopCalculation never "
+                                 << "return false, but it does now!");
+            }
         }
       else if (w_lsa->GetStatus () == GlobalRoutingLSA::LSA_SPF_CANDIDATE)
         {
@@ -2197,7 +2203,10 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
     {
       SPFVertex* parent;
       // check if all parents of vertex v
-      if ((parent = v->GetParent (i++)) == nullptr) break;
+      if ((parent = v->GetParent (i++)) == nullptr)
+        {
+          break;
+        }
       parent->AddChild (v);
     }
 }

@@ -1056,8 +1056,10 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
           // select UE set for frequency domain scheduler
           uint32_t nMux;
-          if ( m_nMux > 0)
-            nMux = m_nMux;
+          if (m_nMux > 0)
+            {
+              nMux = m_nMux;
+            }
           else
             {
               // select half number of UE
@@ -1083,7 +1085,9 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                }
 
              if (nMux == 0)
-               break;
+               {
+                 break;
+               }
 
              for (itSet = ueSet2.begin (); itSet != ueSet2.end () && nMux != 0; itSet++)
                {
@@ -1094,7 +1098,9 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                }
 
              if (nMux == 0)
-               break;
+               {
+                 break;
+               }
 
            } // end of m_flowStatsDl
 
@@ -1162,19 +1168,25 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               for (int i = 0; i < rbgNum; i++)
                 {
                   if (rbgMap.at (i) == true)
-                    continue;
+                    {
+                      continue;
+                    }
 
                   std::map <uint16_t, pssFlowPerf_t>::iterator itMax = tdUeSet.end ();
                   double metricMax = 0.0;
                   for (it = tdUeSet.begin (); it != tdUeSet.end (); it++)
                     {
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
-                        continue;
+                        {
+                          continue;
+                        }
 
                       // calculate PF weight
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
-                        weight = 1.0;
+                        {
+                          weight = 1.0;
+                        }
 
                       std::map < uint16_t, uint8_t>::iterator itSbCqiSum;
                       itSbCqiSum = sbCqiSum.find((*it).first);
@@ -1229,9 +1241,13 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
                       double metric = 0.0;
                       if (colMetric != 0)
-                        metric= weight * colMetric;
+                        {
+                          metric = weight * colMetric;
+                        }
                       else
-                        metric = 1;
+                        {
+                          metric = 1;
+                        }
 
                       if (metric > metricMax )
                         {
@@ -1260,18 +1276,24 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               for (int i = 0; i < rbgNum; i++)
                 {
                   if (rbgMap.at (i) == true)
-                    continue;
+                    {
+                      continue;
+                    }
 
                   std::map <uint16_t, pssFlowPerf_t>::iterator itMax = tdUeSet.end ();
                   double metricMax = 0.0;
                   for (it = tdUeSet.begin (); it != tdUeSet.end (); it++)
                     {
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
-                        continue;
+                        {
+                          continue;
+                        }
                       // calculate PF weight
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
-                        weight = 1.0;
+                        {
+                          weight = 1.0;
+                        }
 
                       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
                       itCqi = m_a30CqiRxed.find ((*it).first);

@@ -69,11 +69,14 @@ TimeMinMaxAvgTotalCalculator::Update (const Time i)
           m_total += i;
 
           if (i < m_min)
-            m_min = i;
+            {
+              m_min = i;
+            }
 
           if (i > m_max)
-            m_max = i;
-
+            {
+              m_max = i;
+            }
         } else {
           m_min = i;
           m_max = i;

@@ -212,7 +212,10 @@ V4Ping::Send ()
   // be too surprised when you see that this is a little endian convention.
   //
   uint8_t* data = new uint8_t[m_size];
-  for (uint32_t i = 0; i < m_size; ++i) data[i] = 0;
+  for (uint32_t i = 0; i < m_size; ++i)
+    {
+      data[i] = 0;
+    }
   NS_ASSERT (m_size >= 16);
 
   uint32_t tmp = GetNode ()->GetId ();
@@ -287,9 +290,10 @@ V4Ping::StopApplication ()
          << "time " << (Simulator::Now () - m_started).As (Time::MS) << "\n";
 
       if (m_avgRtt.Count () > 0)
-        os << "rtt min/avg/max/mdev = " << m_avgRtt.Min () << "/" << m_avgRtt.Avg () << "/"
-           << m_avgRtt.Max () << "/" << m_avgRtt.Stddev ()
-           << " ms\n";
+        {
+          os << "rtt min/avg/max/mdev = " << m_avgRtt.Min () << "/" << m_avgRtt.Avg () << "/"
+             << m_avgRtt.Max () << "/" << m_avgRtt.Stddev () << " ms\n";
+        }
       std::cout << os.str ();
     }
 }

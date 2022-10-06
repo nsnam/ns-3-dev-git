@@ -160,12 +160,17 @@ private:
  * \return the ouput stream.
  */
 template <typename T>
-std::ostream & operator<< (std::ostream & os, Average<T> const & x)
+std::ostream&
+operator<< (std::ostream& os, const Average<T>& x)
 {
   if (x.Count () != 0)
-    os << x.Avg () << " (" << x.Stddev () << ") [" << x.Min () << ", " << x.Max () << "]";
+    {
+      os << x.Avg () << " (" << x.Stddev () << ") [" << x.Min () << ", " << x.Max () << "]";
+    }
   else
-    os << "NA";  // not available
+    {
+      os << "NA"; // not available
+    }
   return os;
 }
 }

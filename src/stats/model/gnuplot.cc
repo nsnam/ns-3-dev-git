@@ -121,7 +121,9 @@ GnuplotDataset::GnuplotDataset (const GnuplotDataset& original)
 GnuplotDataset::~GnuplotDataset()
 {
   if (--m_data->m_references == 0)
-    delete m_data;
+    {
+      delete m_data;
+    }
 }
 
 GnuplotDataset& GnuplotDataset::operator= (const GnuplotDataset& original)
@@ -129,7 +131,9 @@ GnuplotDataset& GnuplotDataset::operator= (const GnuplotDataset& original)
   if (this != &original)
     {
       if (--m_data->m_references == 0)
-        delete m_data;
+        {
+          delete m_data;
+        }
 
       m_data = original.m_data;
       ++m_data->m_references;
@@ -216,7 +220,9 @@ Gnuplot2dDataset::Data2d::PrintExpression (std::ostream &os,
     }
 
   if (m_title.size ())
-    os << " title \"" << m_title << "\"";
+    {
+      os << " title \"" << m_title << "\"";
+    }
 
   switch (m_style) {
     case LINES:
@@ -274,7 +280,9 @@ Gnuplot2dDataset::Data2d::PrintExpression (std::ostream &os,
     }
 
   if (m_extra.size ())
-    os << " " << m_extra;
+    {
+      os << " " << m_extra;
+    }
 }
 
 void
@@ -459,10 +467,14 @@ Gnuplot2dFunction::Function2d::PrintExpression (std::ostream &os,
   os << m_function;
 
   if (m_title.size ())
-    os << " title \"" << m_title << "\"";
+    {
+      os << " title \"" << m_title << "\"";
+    }
 
   if (m_extra.size ())
-    os << " " << m_extra;
+    {
+      os << " " << m_extra;
+    }
 }
 
 void
@@ -540,13 +552,19 @@ Gnuplot3dDataset::Data3d::PrintExpression (std::ostream &os,
   os << "\"-\" ";
 
   if (m_style.size ())
-    os << " " << m_style;
+    {
+      os << " " << m_style;
+    }
 
   if (m_title.size ())
-    os << " title \"" << m_title << "\"";
+    {
+      os << " title \"" << m_title << "\"";
+    }
 
   if (m_extra.size ())
-    os << " " << m_extra;
+    {
+      os << " " << m_extra;
+    }
 }
 
 void
@@ -661,10 +679,14 @@ Gnuplot3dFunction::Function3d::PrintExpression (std::ostream &os,
   os << m_function;
 
   if (m_title.size ())
-    os << " title \"" << m_title << "\"";
+    {
+      os << " title \"" << m_title << "\"";
+    }
 
   if (m_extra.size ())
-    os << " " << m_extra;
+    {
+      os << " " << m_extra;
+    }
 }
 
 void
@@ -710,7 +732,10 @@ void Gnuplot::SetOutputFilename (const std::string& outputFilename)
 std::string Gnuplot::DetectTerminal (const std::string& filename)
 {
   std::string::size_type dotpos = filename.rfind ('.');
-  if (dotpos == std::string::npos) return "";
+  if (dotpos == std::string::npos)
+    {
+      return "";
+    }
 
   if (filename.substr (dotpos) == ".png") {
       return "png";
@@ -777,25 +802,39 @@ Gnuplot::GenerateOutput (std::ostream &osControl,
                          std::string dataFileName)
 {
   if (m_terminal.size ())
-    osControl << "set terminal " << m_terminal << std::endl;
+    {
+      osControl << "set terminal " << m_terminal << std::endl;
+    }
 
   if (m_outputFilename.size ())
-    osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
+    {
+      osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
+    }
 
   if (m_title.size ())
-    osControl << "set title \"" << m_title << "\"" << std::endl;
+    {
+      osControl << "set title \"" << m_title << "\"" << std::endl;
+    }
 
   if (m_xLegend.size ())
-    osControl << "set xlabel \"" << m_xLegend << "\"" << std::endl;
+    {
+      osControl << "set xlabel \"" << m_xLegend << "\"" << std::endl;
+    }
 
   if (m_yLegend.size ())
-    osControl << "set ylabel \"" << m_yLegend << "\"" << std::endl;
+    {
+      osControl << "set ylabel \"" << m_yLegend << "\"" << std::endl;
+    }
 
   if (m_extra.size ())
-    osControl << m_extra << std::endl;
+    {
+      osControl << m_extra << std::endl;
+    }
 
   if (m_datasets.empty ())
-    return;
+    {
+      return;
+    }
 
   // Determine the GetCommand() values of all datasets included. Check that all
   // are equal and print the command.
@@ -876,9 +915,13 @@ Gnuplot&
 GnuplotCollection::GetPlot (unsigned int id)
 {
   if (id >= m_plots.size ())
-    throw(std::range_error ("Gnuplot id is out of range"));
+    {
+      throw (std::range_error ("Gnuplot id is out of range"));
+    }
   else
-    return m_plots[id];
+    {
+      return m_plots[id];
+    }
 }
 
 void
@@ -888,10 +931,14 @@ GnuplotCollection::GenerateOutput (std::ostream &os)
   // single output file is being generated.
 
   if (m_terminal.size ())
-    os << "set terminal " << m_terminal << std::endl;
+    {
+      os << "set terminal " << m_terminal << std::endl;
+    }
 
   if (m_outputFilename.size ())
-    os << "set output \"" << m_outputFilename << "\"" << std::endl;
+    {
+      os << "set output \"" << m_outputFilename << "\"" << std::endl;
+    }
 
   for (Plots::iterator i = m_plots.begin (); i != m_plots.end (); ++i)
     {
@@ -907,10 +954,14 @@ std::string dataFileName)
   // separate output and date files are being generated.
 
   if (m_terminal.size ())
-    osControl << "set terminal " << m_terminal << std::endl;
+    {
+      osControl << "set terminal " << m_terminal << std::endl;
+    }
 
   if (m_outputFilename.size ())
-    osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
+    {
+      osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
+    }
 
   for (Plots::iterator i = m_plots.begin (); i != m_plots.end (); ++i)
     {

@@ -98,7 +98,9 @@ TestCarrierAggregationSuite::TestCarrierAggregationSuite ()
         }
 
       if (abort)
-        return;
+        {
+          return;
+        }
 
       AddTestCase (new CarrierAggregationTestCase (1,0, 100, 100, 1), TestCase::QUICK);
       AddTestCase (new CarrierAggregationTestCase (3,0, 100, 100, 1), TestCase::QUICK);
@@ -422,7 +424,9 @@ CarrierAggregationTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (testUplinkShare, true , " Uplink traffic not split equally between carriers");
 
   if (s_writeResults)
-     WriteResultToFile ();
+   {
+      WriteResultToFile ();
+   }
 
   Simulator::Destroy ();
 }

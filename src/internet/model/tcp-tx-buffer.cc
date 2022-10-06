@@ -1198,7 +1198,9 @@ TcpTxBuffer::IsLostRFC (const SequenceNumber32 &seq, const PacketList::const_ite
       if (beginOfCurrentPacket >= m_highestSack.second)
         {
           if (item->m_lost && !item->m_retrans)
-            return true;
+            {
+              return true;
+            }
 
           NS_LOG_INFO ("seq=" << seq << " is not lost because there are no sacked segment ahead");
           return false;
@@ -1462,15 +1464,15 @@ TcpTxBuffer::ConsistencyCheck () const
                  " stored retrans: " << m_retrans);
 }
 
-std::ostream &
-operator<< (std::ostream & os, TcpTxItem const & item)
+std::ostream&
+operator<< (std::ostream& os, const TcpTxItem& item)
 {
   item.Print (os);
   return os;
 }
 
-std::ostream &
-operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
+std::ostream&
+operator<< (std::ostream& os, const TcpTxBuffer& tcpTxBuf)
 {
   TcpTxBuffer::PacketList::const_iterator it;
   std::stringstream ss;

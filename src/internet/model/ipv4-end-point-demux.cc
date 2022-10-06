@@ -285,7 +285,9 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 
           // if no match here, keep looking
           if (!localAddressIsSubnetAny)
-            continue;
+            {
+              continue;
+            }
         }
 
       bool remotePortMatchesExact = endP->GetPeerPort () == sport;
@@ -296,9 +298,13 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
       // If remote does not match either with exact or wildcard,
       // skip this one
       if (!(remotePortMatchesExact || remotePortMatchesWildCard))
-        continue;
+        {
+          continue;
+        }
       if (!(remoteAddressMatchesExact || remoteAddressMatchesWildCard))
-        continue;
+        {
+          continue;
+        }
 
       bool localAddressMatchesWildCard = localAddressIsAny || localAddressIsSubnetAny;
 
@@ -326,10 +332,22 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 
   // Here we find the most exact match
   EndPoints retval;
-  if (!retval4.empty ()) retval = retval4;
-  else if (!retval3.empty ()) retval = retval3;
-  else if (!retval2.empty ()) retval = retval2;
-  else retval = retval1;
+  if (!retval4.empty ())
+    {
+      retval = retval4;
+    }
+  else if (!retval3.empty ())
+    {
+      retval = retval3;
+    }
+  else if (!retval2.empty ())
+    {
+      retval = retval2;
+    }
+  else
+    {
+      retval = retval1;
+    }
 
   NS_ABORT_MSG_IF (retval.size () > 1, "Too many endpoints - perhaps you created too many sockets without binding them to different NetDevices.");
   return retval;  // might be empty if no matches

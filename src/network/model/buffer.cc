@@ -255,8 +255,8 @@ Buffer::Initialize (uint32_t zeroSize)
   NS_ASSERT (CheckInternalState ());
 }
 
-Buffer &
-Buffer::operator = (Buffer const&o)
+Buffer&
+Buffer::operator= (const Buffer& o)
 {
   NS_ASSERT (CheckInternalState ());
   if (m_data != o.m_data)
@@ -705,8 +705,7 @@ Buffer::TransformIntoRealBuffer () const
   NS_ASSERT (CheckInternalState ());
 }
 
-
-uint8_t const*
+const uint8_t*
 Buffer::PeekData () const
 {
   NS_LOG_FUNCTION (this);
@@ -783,9 +782,8 @@ Buffer::CopyData (uint8_t *buffer, uint32_t size) const
  *            The buffer iterator below.
  ******************************************************/
 
-
 uint32_t
-Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
+Buffer::Iterator::GetDistanceFrom (const Iterator& o) const
 {
   NS_LOG_FUNCTION (this << &o);
   NS_ASSERT (m_data == o.m_data);
@@ -950,8 +948,9 @@ Buffer::Iterator::WriteHtonU64 (uint64_t data)
   WriteU8 ((data >> 8) & 0xff);
   WriteU8 ((data >> 0) & 0xff);
 }
+
 void
-Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
+Buffer::Iterator::Write (const uint8_t* buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this << &buffer << size);
   NS_ASSERT_MSG (CheckNoZero (m_current, size),
@@ -1144,14 +1143,20 @@ Buffer::Iterator::CalculateIpChecksum (uint16_t size, uint32_t initialChecksum)
   /* see RFC 1071 to understand this code. */
   uint32_t sum = initialChecksum;
 
-  for (int j = 0; j < size/2; j++)
-    sum += ReadU16 ();
+  for (int j = 0; j < size / 2; j++)
+    {
+      sum += ReadU16 ();
+    }
 
   if (size & 1)
-    sum += ReadU8 ();
+    {
+      sum += ReadU8 ();
+    }
 
   while (sum >> 16)
-    sum = (sum & 0xffff) + (sum >> 16);
+    {
+      sum = (sum & 0xffff) + (sum >> 16);
+    }
   return ~sum;
 }
 

@@ -1172,7 +1172,10 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
       GetWifiRemoteStationManager (linkId)->SetShortPreambleEnabled (isShortPreambleEnabled);
       GetWifiRemoteStationManager (linkId)->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
 
-      if (!GetQosSupported ()) return;
+      if (!GetQosSupported ())
+        {
+          return;
+        }
       /* QoS station */
       bool qosSupported = false;
       const auto& edcaParameters = frame.GetEdcaParameterSet ();
@@ -1187,7 +1190,10 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
         }
       GetWifiRemoteStationManager (linkId)->SetQosSupport (apAddr, qosSupported);
 
-      if (!GetHtSupported ()) return;
+      if (!GetHtSupported ())
+        {
+          return;
+        }
       /* HT station */
       if (const auto& htCapabilities = frame.GetHtCapabilities (); htCapabilities.has_value ())
         {
@@ -1223,7 +1229,10 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
             }
         }
 
-      if (!GetHeSupported ()) return;
+      if (!GetHeSupported ())
+        {
+          return;
+        }
       /* HE station */
       const auto& heCapabilities = frame.GetHeCapabilities ();
       if (heCapabilities.has_value () && heCapabilities->GetSupportedMcsAndNss () != 0)
@@ -1255,7 +1264,10 @@ StaWifiMac::UpdateApInfo (const MgtFrameType& frame, const Mac48Address& apAddr,
                               muEdcaParameters->GetMuAifsn (AC_VO), muEdcaParameters->GetMuEdcaTimer (AC_VO));
         }
 
-      if (!GetEhtSupported ()) return;
+      if (!GetEhtSupported ())
+        {
+          return;
+        }
       /* EHT station */
       const auto& ehtCapabilities = frame.GetEhtCapabilities ();
       //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer

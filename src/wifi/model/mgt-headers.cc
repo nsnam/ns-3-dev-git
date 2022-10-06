@@ -168,12 +168,30 @@ MgtProbeRequestHeader::GetSerializedSize () const
   uint32_t size = 0;
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
-  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
-  if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
-  if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
-  if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      size += m_extendedCapability->GetSerializedSize ();
+    }
+  if (m_htCapability.has_value ())
+    {
+      size += m_htCapability->GetSerializedSize ();
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      size += m_vhtCapability->GetSerializedSize ();
+    }
+  if (m_heCapability.has_value ())
+    {
+      size += m_heCapability->GetSerializedSize ();
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      size += m_ehtCapability->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -199,11 +217,26 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", ";
-  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
-  if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
-  if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
-  if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
+  if (m_extendedCapability.has_value ())
+    {
+      os << "Extended Capabilities=" << *m_extendedCapability << " , ";
+    }
+  if (m_htCapability.has_value ())
+    {
+      os << "HT Capabilities=" << *m_htCapability << " , ";
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      os << "VHT Capabilities=" << *m_vhtCapability << " , ";
+    }
+  if (m_heCapability.has_value ())
+    {
+      os << "HE Capabilities=" << *m_heCapability << " , ";
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      os << "EHT Capabilities=" << *m_ehtCapability;
+    }
 }
 
 void
@@ -212,12 +245,30 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
-  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
-  if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
-  if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
-  if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      i = m_extendedCapability->Serialize (i);
+    }
+  if (m_htCapability.has_value ())
+    {
+      i = m_htCapability->Serialize (i);
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      i = m_vhtCapability->Serialize (i);
+    }
+  if (m_heCapability.has_value ())
+    {
+      i = m_heCapability->Serialize (i);
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      i = m_ehtCapability->Serialize (i);
+    }
 }
 
 uint32_t
@@ -600,21 +651,66 @@ MgtProbeResponseHeader::GetSerializedSize () const
   size += m_capability.GetSerializedSize ();
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  if (m_dsssParameterSet.has_value ()) size += m_dsssParameterSet->GetSerializedSize ();
-  if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
-  if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
-  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
-  if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
-  if (m_htOperation.has_value ()) size += m_htOperation->GetSerializedSize ();
-  if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
-  if (m_vhtOperation.has_value ()) size += m_vhtOperation->GetSerializedSize ();
-  if (m_reducedNeighborReport.has_value ()) size += m_reducedNeighborReport->GetSerializedSize ();
-  if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
-  if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
-  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
-  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
+  if (m_dsssParameterSet.has_value ())
+    {
+      size += m_dsssParameterSet->GetSerializedSize ();
+    }
+  if (m_erpInformation.has_value ())
+    {
+      size += m_erpInformation->GetSerializedSize ();
+    }
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
+  if (m_edcaParameterSet.has_value ())
+    {
+      size += m_edcaParameterSet->GetSerializedSize ();
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      size += m_extendedCapability->GetSerializedSize ();
+    }
+  if (m_htCapability.has_value ())
+    {
+      size += m_htCapability->GetSerializedSize ();
+    }
+  if (m_htOperation.has_value ())
+    {
+      size += m_htOperation->GetSerializedSize ();
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      size += m_vhtCapability->GetSerializedSize ();
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      size += m_vhtOperation->GetSerializedSize ();
+    }
+  if (m_reducedNeighborReport.has_value ())
+    {
+      size += m_reducedNeighborReport->GetSerializedSize ();
+    }
+  if (m_heCapability.has_value ())
+    {
+      size += m_heCapability->GetSerializedSize ();
+    }
+  if (m_heOperation.has_value ())
+    {
+      size += m_heOperation->GetSerializedSize ();
+    }
+  if (m_muEdcaParameterSet.has_value ())
+    {
+      size += m_muEdcaParameterSet->GetSerializedSize ();
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      size += m_multiLinkElement->GetSerializedSize ();
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      size += m_ehtCapability->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -623,15 +719,42 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", ";
-  if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
-  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
-  if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
-  if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
-  if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
-  if (m_vhtOperation.has_value ()) os << "VHT Operation=" << *m_vhtOperation << " , ";
-  if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  if (m_heOperation.has_value ()) os << "HE Operation=" << *m_heOperation << " , ";
-  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
+  if (m_erpInformation.has_value ())
+    {
+      os << "ERP information=" << *m_erpInformation << ", ";
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      os << "Extended Capabilities=" << *m_extendedCapability << " , ";
+    }
+  if (m_htCapability.has_value ())
+    {
+      os << "HT Capabilities=" << *m_htCapability << " , ";
+    }
+  if (m_htOperation.has_value ())
+    {
+      os << "HT Operation=" << *m_htOperation << " , ";
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      os << "VHT Capabilities=" << *m_vhtCapability << " , ";
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      os << "VHT Operation=" << *m_vhtOperation << " , ";
+    }
+  if (m_heCapability.has_value ())
+    {
+      os << "HE Capabilities=" << *m_heCapability << " , ";
+    }
+  if (m_heOperation.has_value ())
+    {
+      os << "HE Operation=" << *m_heOperation << " , ";
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      os << "EHT Capabilities=" << *m_ehtCapability;
+    }
 }
 
 void
@@ -643,21 +766,66 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  if (m_dsssParameterSet.has_value ()) i = m_dsssParameterSet->Serialize (i);
-  if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
-  if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
-  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
-  if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
-  if (m_htOperation.has_value ()) i = m_htOperation->Serialize (i);
-  if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
-  if (m_vhtOperation.has_value ()) i = m_vhtOperation->Serialize (i);
-  if (m_reducedNeighborReport.has_value ()) i = m_reducedNeighborReport->Serialize (i);
-  if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
-  if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
-  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
-  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
+  if (m_dsssParameterSet.has_value ())
+    {
+      i = m_dsssParameterSet->Serialize (i);
+    }
+  if (m_erpInformation.has_value ())
+    {
+      i = m_erpInformation->Serialize (i);
+    }
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
+  if (m_edcaParameterSet.has_value ())
+    {
+      i = m_edcaParameterSet->Serialize (i);
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      i = m_extendedCapability->Serialize (i);
+    }
+  if (m_htCapability.has_value ())
+    {
+      i = m_htCapability->Serialize (i);
+    }
+  if (m_htOperation.has_value ())
+    {
+      i = m_htOperation->Serialize (i);
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      i = m_vhtCapability->Serialize (i);
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      i = m_vhtOperation->Serialize (i);
+    }
+  if (m_reducedNeighborReport.has_value ())
+    {
+      i = m_reducedNeighborReport->Serialize (i);
+    }
+  if (m_heCapability.has_value ())
+    {
+      i = m_heCapability->Serialize (i);
+    }
+  if (m_heOperation.has_value ())
+    {
+      i = m_heOperation->Serialize (i);
+    }
+  if (m_muEdcaParameterSet.has_value ())
+    {
+      i = m_muEdcaParameterSet->Serialize (i);
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      i = m_multiLinkElement->Serialize (i);
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      i = m_ehtCapability->Serialize (i);
+    }
 }
 
 uint32_t
@@ -923,13 +1091,34 @@ MgtAssocRequestHeader::GetSerializedSize () const
   size += 2;
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
-  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
-  if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
-  if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
-  if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
-  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      size += m_extendedCapability->GetSerializedSize ();
+    }
+  if (m_htCapability.has_value ())
+    {
+      size += m_htCapability->GetSerializedSize ();
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      size += m_vhtCapability->GetSerializedSize ();
+    }
+  if (m_heCapability.has_value ())
+    {
+      size += m_heCapability->GetSerializedSize ();
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      size += m_multiLinkElement->GetSerializedSize ();
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      size += m_ehtCapability->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -938,11 +1127,26 @@ MgtAssocRequestHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", ";
-  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
-  if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
-  if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
-  if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
+  if (m_extendedCapability.has_value ())
+    {
+      os << "Extended Capabilities=" << *m_extendedCapability << " , ";
+    }
+  if (m_htCapability.has_value ())
+    {
+      os << "HT Capabilities=" << *m_htCapability << " , ";
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      os << "VHT Capabilities=" << *m_vhtCapability << " , ";
+    }
+  if (m_heCapability.has_value ())
+    {
+      os << "HE Capabilities=" << *m_heCapability << " , ";
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      os << "EHT Capabilities=" << *m_ehtCapability;
+    }
 }
 
 void
@@ -953,13 +1157,34 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtolsbU16 (m_listenInterval);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
-  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
-  if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
-  if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
-  if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
-  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      i = m_extendedCapability->Serialize (i);
+    }
+  if (m_htCapability.has_value ())
+    {
+      i = m_htCapability->Serialize (i);
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      i = m_vhtCapability->Serialize (i);
+    }
+  if (m_heCapability.has_value ())
+    {
+      i = m_heCapability->Serialize (i);
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      i = m_multiLinkElement->Serialize (i);
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      i = m_ehtCapability->Serialize (i);
+    }
 }
 
 uint32_t
@@ -1203,13 +1428,34 @@ MgtReassocRequestHeader::GetSerializedSize () const
   size += 6; //current AP address
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
-  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
-  if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
-  if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
-  if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
-  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      size += m_extendedCapability->GetSerializedSize ();
+    }
+  if (m_htCapability.has_value ())
+    {
+      size += m_htCapability->GetSerializedSize ();
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      size += m_vhtCapability->GetSerializedSize ();
+    }
+  if (m_heCapability.has_value ())
+    {
+      size += m_heCapability->GetSerializedSize ();
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      size += m_multiLinkElement->GetSerializedSize ();
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      size += m_ehtCapability->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -1219,11 +1465,26 @@ MgtReassocRequestHeader::Print (std::ostream &os) const
   os << "current AP address=" << m_currentApAddr << ", "
      << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", ";
-  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
-  if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
-  if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
-  if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
+  if (m_extendedCapability.has_value ())
+    {
+      os << "Extended Capabilities=" << *m_extendedCapability << " , ";
+    }
+  if (m_htCapability.has_value ())
+    {
+      os << "HT Capabilities=" << *m_htCapability << " , ";
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      os << "VHT Capabilities=" << *m_vhtCapability << " , ";
+    }
+  if (m_heCapability.has_value ())
+    {
+      os << "HE Capabilities=" << *m_heCapability << " , ";
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      os << "EHT Capabilities=" << *m_ehtCapability;
+    }
 }
 
 void
@@ -1235,13 +1496,34 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   WriteTo (i, m_currentApAddr);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
-  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
-  if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
-  if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
-  if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
-  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      i = m_extendedCapability->Serialize (i);
+    }
+  if (m_htCapability.has_value ())
+    {
+      i = m_htCapability->Serialize (i);
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      i = m_vhtCapability->Serialize (i);
+    }
+  if (m_heCapability.has_value ())
+    {
+      i = m_heCapability->Serialize (i);
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      i = m_multiLinkElement->Serialize (i);
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      i = m_ehtCapability->Serialize (i);
+    }
 }
 
 uint32_t
@@ -1581,19 +1863,58 @@ MgtAssocResponseHeader::GetSerializedSize () const
   size += m_code.GetSerializedSize ();
   size += 2; //aid
   size += m_rates.GetSerializedSize ();
-  if (m_erpInformation.has_value ()) size += m_erpInformation->GetSerializedSize ();
-  if (m_rates.GetNRates () > 8) size += m_rates.extended->GetSerializedSize ();
-  if (m_edcaParameterSet.has_value ()) size += m_edcaParameterSet->GetSerializedSize ();
-  if (m_extendedCapability.has_value ()) size += m_extendedCapability->GetSerializedSize ();
-  if (m_htCapability.has_value ()) size += m_htCapability->GetSerializedSize ();
-  if (m_htOperation.has_value ()) size += m_htOperation->GetSerializedSize ();
-  if (m_vhtCapability.has_value ()) size += m_vhtCapability->GetSerializedSize ();
-  if (m_vhtOperation.has_value ()) size += m_vhtOperation->GetSerializedSize ();
-  if (m_heCapability.has_value ()) size += m_heCapability->GetSerializedSize ();
-  if (m_heOperation.has_value ()) size += m_heOperation->GetSerializedSize ();
-  if (m_muEdcaParameterSet.has_value ()) size += m_muEdcaParameterSet->GetSerializedSize ();
-  if (m_multiLinkElement.has_value ()) size += m_multiLinkElement->GetSerializedSize ();
-  if (m_ehtCapability.has_value ()) size += m_ehtCapability->GetSerializedSize ();
+  if (m_erpInformation.has_value ())
+    {
+      size += m_erpInformation->GetSerializedSize ();
+    }
+  if (m_rates.GetNRates () > 8)
+    {
+      size += m_rates.extended->GetSerializedSize ();
+    }
+  if (m_edcaParameterSet.has_value ())
+    {
+      size += m_edcaParameterSet->GetSerializedSize ();
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      size += m_extendedCapability->GetSerializedSize ();
+    }
+  if (m_htCapability.has_value ())
+    {
+      size += m_htCapability->GetSerializedSize ();
+    }
+  if (m_htOperation.has_value ())
+    {
+      size += m_htOperation->GetSerializedSize ();
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      size += m_vhtCapability->GetSerializedSize ();
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      size += m_vhtOperation->GetSerializedSize ();
+    }
+  if (m_heCapability.has_value ())
+    {
+      size += m_heCapability->GetSerializedSize ();
+    }
+  if (m_heOperation.has_value ())
+    {
+      size += m_heOperation->GetSerializedSize ();
+    }
+  if (m_muEdcaParameterSet.has_value ())
+    {
+      size += m_muEdcaParameterSet->GetSerializedSize ();
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      size += m_multiLinkElement->GetSerializedSize ();
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      size += m_ehtCapability->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -1603,15 +1924,42 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
   os << "status code=" << m_code << ", "
      << "aid=" << m_aid << ", "
      << "rates=" << m_rates << ", ";
-  if (m_erpInformation.has_value ()) os << "ERP information=" << *m_erpInformation << ", ";
-  if (m_extendedCapability.has_value ()) os << "Extended Capabilities=" << *m_extendedCapability << " , ";
-  if (m_htCapability.has_value ()) os << "HT Capabilities=" << *m_htCapability << " , ";
-  if (m_htOperation.has_value ()) os << "HT Operation=" << *m_htOperation << " , ";
-  if (m_vhtCapability.has_value ()) os << "VHT Capabilities=" << *m_vhtCapability << " , ";
-  if (m_vhtOperation.has_value ()) os << "VHT Operation=" << *m_vhtOperation << " , ";
-  if (m_heCapability.has_value ()) os << "HE Capabilities=" << *m_heCapability << " , ";
-  if (m_heOperation.has_value ()) os << "HE Operation=" << *m_heOperation << " , ";
-  if (m_ehtCapability.has_value ()) os << "EHT Capabilities=" << *m_ehtCapability;
+  if (m_erpInformation.has_value ())
+    {
+      os << "ERP information=" << *m_erpInformation << ", ";
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      os << "Extended Capabilities=" << *m_extendedCapability << " , ";
+    }
+  if (m_htCapability.has_value ())
+    {
+      os << "HT Capabilities=" << *m_htCapability << " , ";
+    }
+  if (m_htOperation.has_value ())
+    {
+      os << "HT Operation=" << *m_htOperation << " , ";
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      os << "VHT Capabilities=" << *m_vhtCapability << " , ";
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      os << "VHT Operation=" << *m_vhtOperation << " , ";
+    }
+  if (m_heCapability.has_value ())
+    {
+      os << "HE Capabilities=" << *m_heCapability << " , ";
+    }
+  if (m_heOperation.has_value ())
+    {
+      os << "HE Operation=" << *m_heOperation << " , ";
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      os << "EHT Capabilities=" << *m_ehtCapability;
+    }
 }
 
 void
@@ -1622,19 +1970,58 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_code.Serialize (i);
   i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
-  if (m_erpInformation.has_value ()) i = m_erpInformation->Serialize (i);
-  if (m_rates.GetNRates () > 8) i = m_rates.extended->Serialize (i);
-  if (m_edcaParameterSet.has_value ()) i = m_edcaParameterSet->Serialize (i);
-  if (m_extendedCapability.has_value ()) i = m_extendedCapability->Serialize (i);
-  if (m_htCapability.has_value ()) i = m_htCapability->Serialize (i);
-  if (m_htOperation.has_value ()) i = m_htOperation->Serialize (i);
-  if (m_vhtCapability.has_value ()) i = m_vhtCapability->Serialize (i);
-  if (m_vhtOperation.has_value ()) i = m_vhtOperation->Serialize (i);
-  if (m_heCapability.has_value ()) i = m_heCapability->Serialize (i);
-  if (m_heOperation.has_value ()) i = m_heOperation->Serialize (i);
-  if (m_muEdcaParameterSet.has_value ()) i = m_muEdcaParameterSet->Serialize (i);
-  if (m_multiLinkElement.has_value ()) i = m_multiLinkElement->Serialize (i);
-  if (m_ehtCapability.has_value ()) i = m_ehtCapability->Serialize (i);
+  if (m_erpInformation.has_value ())
+    {
+      i = m_erpInformation->Serialize (i);
+    }
+  if (m_rates.GetNRates () > 8)
+    {
+      i = m_rates.extended->Serialize (i);
+    }
+  if (m_edcaParameterSet.has_value ())
+    {
+      i = m_edcaParameterSet->Serialize (i);
+    }
+  if (m_extendedCapability.has_value ())
+    {
+      i = m_extendedCapability->Serialize (i);
+    }
+  if (m_htCapability.has_value ())
+    {
+      i = m_htCapability->Serialize (i);
+    }
+  if (m_htOperation.has_value ())
+    {
+      i = m_htOperation->Serialize (i);
+    }
+  if (m_vhtCapability.has_value ())
+    {
+      i = m_vhtCapability->Serialize (i);
+    }
+  if (m_vhtOperation.has_value ())
+    {
+      i = m_vhtOperation->Serialize (i);
+    }
+  if (m_heCapability.has_value ())
+    {
+      i = m_heCapability->Serialize (i);
+    }
+  if (m_heOperation.has_value ())
+    {
+      i = m_heOperation->Serialize (i);
+    }
+  if (m_muEdcaParameterSet.has_value ())
+    {
+      i = m_muEdcaParameterSet->Serialize (i);
+    }
+  if (m_multiLinkElement.has_value ())
+    {
+      i = m_multiLinkElement->Serialize (i);
+    }
+  if (m_ehtCapability.has_value ())
+    {
+      i = m_ehtCapability->Serialize (i);
+    }
 }
 
 uint32_t

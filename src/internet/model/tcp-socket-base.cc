@@ -3575,7 +3575,7 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 // when the three-way handshake completed. This cancels retransmission timer
 // and advances Tx window
 void
-TcpSocketBase::NewAck (SequenceNumber32 const& ack, bool resetRTO)
+TcpSocketBase::NewAck (const SequenceNumber32& ack, bool resetRTO)
 {
   NS_LOG_FUNCTION (this << ack);
 
@@ -4488,7 +4488,10 @@ TcpSocketBase::UpdatePacingRate ()
 
   // Similar to Linux, do not update pacing rate here if the
   // congestion control implements TcpCongestionOps::CongControl ()
-  if (m_congestionControl->HasCongControl () || !m_tcb->m_pacing) return;
+  if (m_congestionControl->HasCongControl () || !m_tcb->m_pacing)
+    {
+      return;
+    }
 
   double factor;
   if (m_tcb->m_cWnd < m_tcb->m_ssThresh/2)

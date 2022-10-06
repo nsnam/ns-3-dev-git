@@ -50,9 +50,13 @@ protected:
   void NormalClose (SocketWho who) override
   {
     if (who == SENDER)
-      m_sendClose = true;
+      {
+        m_sendClose = true;
+      }
     else
-      m_recvClose = true;
+      {
+        m_recvClose = true;
+      }
   }
 
   /**
