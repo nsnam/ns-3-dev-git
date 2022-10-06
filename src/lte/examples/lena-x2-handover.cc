@@ -163,6 +163,14 @@ NotifyHandoverEndOkEnb (std::string context,
             << std::endl;
 }
 
+/**
+ * Handover failure notification
+ *
+ * \param context The context.
+ * \param imsi The IMSI of the connected terminal.
+ * \param cellid The Cell ID.
+ * \param rnti The RNTI.
+ */
 void
 NotifyHandoverFailure (std::string context,
                         uint64_t imsi,
