@@ -55,12 +55,12 @@ public:
   TcpDctcpCodePointsTest (uint8_t testCase, const std::string &desc);
 
 protected:
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
-  void ConfigureProperties ();
-  void ConfigureEnvironment ();
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
+  void ConfigureProperties () override;
+  void ConfigureEnvironment () override;
 
 private:
   uint32_t m_senderSent;      //!< Number of packets sent by the sender
@@ -221,9 +221,9 @@ public:
    */
   void SetTestCase (uint8_t testCase);
 protected:
-  virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
-  virtual void ReTxTimeout ();
-  Ptr<TcpSocketBase> Fork ();
+  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck) override;
+  void ReTxTimeout () override;
+  Ptr<TcpSocketBase> Fork () override;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (TcpDctcpCongestedRouter);
@@ -535,7 +535,7 @@ public:
                      SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /** \brief Execute the test
    */
   void ExecuteTest ();

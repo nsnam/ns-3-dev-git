@@ -130,11 +130,11 @@ public:
   void ClearTimingElement ();
 
   // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual uint16_t GetInformationFieldSize () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length);
-  virtual void Print (std::ostream& os) const;
+  WifiInformationElementId ElementId () const override;
+  uint16_t GetInformationFieldSize () const override;
+  void SerializeInformationField (Buffer::Iterator i) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length) override;
+  void Print (std::ostream& os) const override;
 
   /**
    * equality operator
@@ -142,7 +142,7 @@ public:
    * \param a lhs
    * \returns true if equal
    */
-  bool operator== (WifiInformationElement const & a) const;
+  bool operator== (WifiInformationElement const & a) const override;
 private:
   // Converters:
   /**

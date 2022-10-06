@@ -32,7 +32,7 @@ class TutorialApp : public Application
 {
 public:
   TutorialApp ();
-  virtual ~TutorialApp ();
+  ~TutorialApp () override;
 
   /**
    * Register this type.
@@ -51,8 +51,8 @@ public:
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /// Schedule a new transmission.
   void ScheduleTx ();

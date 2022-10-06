@@ -83,7 +83,7 @@ public:
 
   BulkSendApplication ();
 
-  virtual ~BulkSendApplication ();
+  ~BulkSendApplication () override;
 
   /**
    * \brief Set the upper bound for the total number of bytes to send.
@@ -107,11 +107,11 @@ public:
   Ptr<Socket> GetSocket () const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
   // inherited from Application base class.
-  virtual void StartApplication ();    // Called at time specified by Start
-  virtual void StopApplication ();     // Called at time specified by Stop
+  void StartApplication () override;    // Called at time specified by Start
+  void StopApplication () override;     // Called at time specified by Stop
 
   /**
    * \brief Send data until the L4 transmission buffer is full.

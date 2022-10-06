@@ -137,7 +137,7 @@ public:
    */
   static TypeId GetTypeId ();
   ChannelScheduler ();
-  virtual ~ChannelScheduler ();
+  ~ChannelScheduler () override;
 
   /**
    * \param device enable channel scheduler associated with WaveNetDevice
@@ -196,8 +196,8 @@ public:
   bool StopSch (uint32_t channelNumber);
 
 protected:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   /**
      * \param channelNumber the specific channel

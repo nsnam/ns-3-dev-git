@@ -60,7 +60,7 @@ public:
   static TypeId GetTypeId ();
 
   Ipv4Interface ();
-  virtual ~Ipv4Interface();
+  ~Ipv4Interface() override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   Ipv4Interface (const Ipv4Interface &) = delete;
@@ -212,7 +212,7 @@ public:
 
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

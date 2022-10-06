@@ -52,7 +52,7 @@ public:
   {
   public:
     HeSigHeader ();
-    virtual ~HeSigHeader ();
+    ~HeSigHeader () override;
 
     /**
      * \brief Get the type ID.
@@ -191,7 +191,7 @@ public:
   /**
    * Destructor for HePpdu.
    */
-  virtual ~HePpdu ();
+  ~HePpdu () override;
 
   Time GetTxDuration () const override;
   Ptr<WifiPpdu> Copy () const override;

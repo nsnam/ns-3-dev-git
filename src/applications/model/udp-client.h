@@ -51,7 +51,7 @@ public:
 
   UdpClient ();
 
-  virtual ~UdpClient ();
+  ~UdpClient () override;
 
   /**
    * \brief set the remote address and port
@@ -71,12 +71,12 @@ public:
   uint64_t GetTotalTx () const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Send a packet

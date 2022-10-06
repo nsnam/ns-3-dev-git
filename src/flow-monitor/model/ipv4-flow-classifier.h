@@ -88,7 +88,7 @@ public:
   /// \returns the vector of DSCP values
   std::vector<std::pair<Ipv4Header::DscpType, uint32_t> > GetDscpCounts (FlowId flowId) const;
 
-  virtual void SerializeToXmlStream (std::ostream &os, uint16_t indent) const;
+  void SerializeToXmlStream (std::ostream &os, uint16_t indent) const override;
 
 private:
 

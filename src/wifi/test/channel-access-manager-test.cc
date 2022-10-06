@@ -1253,7 +1253,7 @@ class LargestIdlePrimaryChannelTest : public TestCase
 {
 public:
   LargestIdlePrimaryChannelTest ();
-  virtual ~LargestIdlePrimaryChannelTest () = default;
+  ~LargestIdlePrimaryChannelTest () override = default;
 
 private:
   void DoRun () override;

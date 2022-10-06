@@ -162,7 +162,7 @@ public:
    * \param arpAliveTimeout     ARP alive timeout, this is used to check that ARP and routing do not interfere
    */
   ChainRegressionTest (const char * const prefix, Time time = Seconds (10), uint32_t size = 5, Time arpAliveTimeout = Seconds (120));
-  ~ChainRegressionTest ();
+  ~ChainRegressionTest () override;
 
 private:
   /// \internal It is important to have pointers here
@@ -190,7 +190,7 @@ private:
   /// Compare traces with reference ones
   void CheckResults ();
   /// Go
-  void DoRun ();
+  void DoRun () override;
   /// Send one ping
   void SendPing ();
 };

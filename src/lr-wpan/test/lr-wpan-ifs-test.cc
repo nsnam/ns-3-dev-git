@@ -48,7 +48,7 @@ class LrWpanDataIfsTestCase : public TestCase
 {
 public:
   LrWpanDataIfsTestCase ();
-  virtual ~LrWpanDataIfsTestCase ();
+  ~LrWpanDataIfsTestCase () override;
 
 private:
   /**
@@ -103,7 +103,7 @@ private:
 
 
 
-  virtual void DoRun ();
+  void DoRun () override;
   Time m_lastTxTime; //!< The time of the last transmitted packet
   Time m_ackRxTime; //!< The time of the received acknowledgment.
   Time m_endIfs; //!< The time where the Interframe Space ended.

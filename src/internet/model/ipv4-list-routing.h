@@ -51,7 +51,7 @@ public:
   static TypeId GetTypeId ();
 
   Ipv4ListRouting ();
-  virtual ~Ipv4ListRouting ();
+  ~Ipv4ListRouting () override;
 
   /**
    * \brief Register a new routing protocol to be used in this IPv4 stack
@@ -79,21 +79,21 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (uint32_t index, int16_t& priority) const;
 
   // Below are from Ipv4RoutingProtocol
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr) override;
 
-  virtual bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
+  bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                           LocalDeliverCallback lcb, ErrorCallback ecb);
-  virtual void NotifyInterfaceUp (uint32_t interface);
-  virtual void NotifyInterfaceDown (uint32_t interface);
-  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
-  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
-  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+                           LocalDeliverCallback lcb, ErrorCallback ecb) override;
+  void NotifyInterfaceUp (uint32_t interface) override;
+  void NotifyInterfaceDown (uint32_t interface) override;
+  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) override;
+  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) override;
+  void SetIpv4 (Ptr<Ipv4> ipv4) override;
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const override;
 
 protected:
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
 private:
   /**
    * \brief Container identifying an IPv4 Routing Protocol entry in the list.

@@ -57,7 +57,7 @@ public:
   /**
    * Destructor for EHT PHY
    */
-  virtual ~EhtPhy ();
+  ~EhtPhy () override;
 
   const PpduFormats& GetPpduFormats () const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;

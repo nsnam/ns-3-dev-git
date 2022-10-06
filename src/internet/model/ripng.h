@@ -92,7 +92,7 @@ public:
    */
   RipNgRoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface);
 
-  virtual ~RipNgRoutingTableEntry ();
+  ~RipNgRoutingTableEntry () override;
 
   /**
    * \brief Set the route tag
@@ -176,7 +176,7 @@ class RipNg : public Ipv6RoutingProtocol
 public:
   // /< C-tor
   RipNg ();
-  virtual ~RipNg ();
+  ~RipNg () override;
 
   /**
    * \brief Get the type ID
@@ -186,20 +186,20 @@ public:
 
   // From Ipv6RoutingProtocol
   Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif,
-                              Socket::SocketErrno &sockerr);
+                              Socket::SocketErrno &sockerr) override;
   bool RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                   LocalDeliverCallback lcb, ErrorCallback ecb);
-  virtual void NotifyInterfaceUp (uint32_t interface);
-  virtual void NotifyInterfaceDown (uint32_t interface);
-  virtual void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address);
-  virtual void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address);
-  virtual void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop,
-                               uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop,
-                                  uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-  virtual void SetIpv6 (Ptr<Ipv6> ipv6);
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+                   LocalDeliverCallback lcb, ErrorCallback ecb) override;
+  void NotifyInterfaceUp (uint32_t interface) override;
+  void NotifyInterfaceDown (uint32_t interface) override;
+  void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) override;
+  void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) override;
+  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop,
+                               uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) override;
+  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop,
+                                  uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) override;
+  void SetIpv6 (Ptr<Ipv6> ipv6) override;
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const override;
 
   /**
    * Split Horizon strategy type. See \RFC{2080}.
@@ -261,12 +261,12 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Start protocol operation
    */
-  void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   /// Container for the network routes - pair RipNgRoutingTableEntry *, EventId (update event)

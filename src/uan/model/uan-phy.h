@@ -95,7 +95,7 @@ public:
   }
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanPhyCalcSinr
 
@@ -130,7 +130,7 @@ public:
   virtual void Clear ();
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanPhyPer
 

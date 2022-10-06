@@ -63,7 +63,7 @@ public:
   static TypeId GetTypeId ();
 
   NetDeviceQueue ();
-  virtual ~NetDeviceQueue();
+  ~NetDeviceQueue() override;
 
   /**
    * Called by the device to start this device transmission queue.
@@ -240,7 +240,7 @@ public:
    * \brief Constructor
    */
   NetDeviceQueueInterface ();
-  virtual ~NetDeviceQueueInterface ();
+  ~NetDeviceQueueInterface () override;
 
   /**
    * \brief Get the i-th transmission queue of the device.
@@ -303,11 +303,11 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Notify that an object was aggregated
    */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
 
 private:
   ObjectFactory m_txQueues;   //!< Device transmission queues TypeId

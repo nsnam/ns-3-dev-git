@@ -52,7 +52,7 @@ public:
    * \param bs base station device
    */
   BSScheduler (Ptr<BaseStationNetDevice> bs);
-  ~BSScheduler ();
+  ~BSScheduler () override;
 
   /**
    * \brief Get the type ID.

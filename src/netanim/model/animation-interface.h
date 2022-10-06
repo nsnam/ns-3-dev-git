@@ -1488,35 +1488,35 @@ public:
    * \returns Type Id
    *
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Get Serialized Size
    * \returns Serialized Size (i.e size of uint64_t)
    *
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize function
    * \param i Tag Buffer
    *
    */
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   /**
    * \brief Deserialize function
    * \param i Tag Buffer
    *
    */
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   /**
    * \brief Print tag info
    * \param os Reference of ostream object
    *
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Set global Uid in tag

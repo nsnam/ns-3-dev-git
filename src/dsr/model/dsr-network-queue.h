@@ -192,7 +192,7 @@ public:
    * \param maxDelay Maximum entry lifetime in the queue
    */
   DsrNetworkQueue (uint32_t maxLen, Time maxDelay);
-  ~DsrNetworkQueue ();
+  ~DsrNetworkQueue () override;
 
   /**
    * Find the packet entry with a given next hop

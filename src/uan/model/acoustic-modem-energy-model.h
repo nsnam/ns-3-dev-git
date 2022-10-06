@@ -70,7 +70,7 @@ public:
   /** Constructor. */
   AcousticModemEnergyModel ();
   /** Dummy destructor, see DoDispose */
-  virtual ~AcousticModemEnergyModel ();
+  ~AcousticModemEnergyModel () override;
 
   /**
    * Sets pointer to node.
@@ -87,8 +87,8 @@ public:
   virtual Ptr<Node> GetNode () const;
 
   // Inherited methods.
-  virtual void SetEnergySource (Ptr<EnergySource> source);
-  virtual double GetTotalEnergyConsumption () const;
+  void SetEnergySource (Ptr<EnergySource> source) override;
+  double GetTotalEnergyConsumption () const override;
 
   /**
    * Get the transmission power of the modem.
@@ -172,33 +172,33 @@ public:
    *
    * \param newState New state the modem is in.
    */
-  virtual void ChangeState (int newState);
+  void ChangeState (int newState) override;
 
   /**
    * \brief Handles energy depletion.
    */
-  virtual void HandleEnergyDepletion ();
+  void HandleEnergyDepletion () override;
 
   /**
    * \brief Handles energy recharged.
    */
-  virtual void HandleEnergyRecharged ();
+  void HandleEnergyRecharged () override;
 
   /**
    * \brief Handles energy changed.
    *
    * Not implemented
    */
-  virtual void HandleEnergyChanged ();
+  void HandleEnergyChanged () override;
 
 
 private:
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \return Current draw of device, at current state.
    */
-  virtual double DoGetCurrentA () const;
+  double DoGetCurrentA () const override;
 
   /**
    * \param destState Modem state to switch to.

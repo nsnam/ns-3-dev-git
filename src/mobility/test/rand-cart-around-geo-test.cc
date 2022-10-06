@@ -80,10 +80,10 @@ public:
                              int numPoints,
                              double maxDistFromOrigin,
                              Ptr<UniformRandomVariable> uniRand);
-  virtual ~RandCartAroundGeoTestCase ();
+  ~RandCartAroundGeoTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * name function
    * \param originLatitude the origin latitude

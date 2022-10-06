@@ -47,7 +47,7 @@ class SpectrumInterference : public Object
 {
 public:
   SpectrumInterference ();
-  virtual ~SpectrumInterference ();
+  ~SpectrumInterference () override;
 
   /**
    * Register this type.
@@ -109,7 +109,7 @@ public:
 
 
 protected:
-  void DoDispose ();
+  void DoDispose () override;
 
 private:
 

@@ -45,7 +45,7 @@ class TestEmptyOptionField : public TestCase
 public:
   TestEmptyOptionField () : TestCase ("TestEmptyOptionField") {}
 
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ipv6ExtensionDestinationHeader header;
     NS_TEST_EXPECT_MSG_EQ (header.GetSerializedSize () % 8, 0, "length of extension header is not a multiple of 8");
@@ -81,12 +81,12 @@ class OptionWithoutAlignmentHeader : public Ipv6OptionHeader
 public:
   static const uint8_t TYPE = 42; //!< Option type.
 
-  virtual uint32_t GetSerializedSize () const
+  uint32_t GetSerializedSize () const override
   {
     return 4;
   }
 
-  virtual void Serialize (Buffer::Iterator start) const
+  void Serialize (Buffer::Iterator start) const override
   {
     start.WriteU8 (TYPE);
     start.WriteU8 (GetSerializedSize ()-2);
@@ -106,7 +106,7 @@ class TestOptionWithoutAlignment : public TestCase
 public:
   TestOptionWithoutAlignment () : TestCase ("TestOptionWithoutAlignment") {}
 
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ipv6ExtensionDestinationHeader header;
     OptionWithoutAlignmentHeader optionHeader;
@@ -151,19 +151,19 @@ class OptionWithAlignmentHeader : public Ipv6OptionHeader
 public:
   static const uint8_t TYPE = 73; //!< Option Type.
 
-  virtual uint32_t GetSerializedSize () const
+  uint32_t GetSerializedSize () const override
   {
     return 4;
   }
 
-  virtual void Serialize (Buffer::Iterator start) const
+  void Serialize (Buffer::Iterator start) const override
   {
     start.WriteU8 (TYPE);
     start.WriteU8 (GetSerializedSize ()-2);
     start.WriteU16 (0);
   }
 
-  virtual Alignment GetAlignment () const
+  Alignment GetAlignment () const override
   {
     return (Alignment){ 4,0};
   }
@@ -181,7 +181,7 @@ class TestOptionWithAlignment : public TestCase
 public:
   TestOptionWithAlignment () : TestCase ("TestOptionWithAlignment") {}
 
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ipv6ExtensionDestinationHeader header;
     OptionWithAlignmentHeader optionHeader;
@@ -230,7 +230,7 @@ class TestFulfilledAlignment : public TestCase
 public:
   TestFulfilledAlignment () : TestCase ("TestCorrectAlignment") {}
 
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ipv6ExtensionDestinationHeader header;
     Ipv6OptionJumbogramHeader jumboHeader; //has an alignment of 4n+2

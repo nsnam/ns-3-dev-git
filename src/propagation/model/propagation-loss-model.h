@@ -62,7 +62,7 @@ public:
   static TypeId GetTypeId ();
 
   PropagationLossModel ();
-  virtual ~PropagationLossModel ();
+  ~PropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   PropagationLossModel (const PropagationLossModel &) = delete;
@@ -158,7 +158,7 @@ public:
   static TypeId GetTypeId ();
 
   RandomPropagationLossModel ();
-  virtual ~RandomPropagationLossModel ();
+  ~RandomPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   RandomPropagationLossModel (const RandomPropagationLossModel &) = delete;
@@ -665,7 +665,7 @@ public:
   static TypeId GetTypeId ();
 
   FixedRssLossModel ();
-  virtual ~FixedRssLossModel ();
+  ~FixedRssLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   FixedRssLossModel (const FixedRssLossModel &) = delete;
@@ -705,7 +705,7 @@ public:
   static TypeId GetTypeId ();
 
   MatrixPropagationLossModel ();
-  virtual ~MatrixPropagationLossModel ();
+  ~MatrixPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   MatrixPropagationLossModel (const MatrixPropagationLossModel &) = delete;

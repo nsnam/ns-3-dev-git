@@ -61,7 +61,7 @@ public:
   static const uint16_t PROT_NUMBER; //!< ARP protocol number (0x0806)
 
   ArpL3Protocol ();
-  virtual ~ArpL3Protocol ();
+  ~ArpL3Protocol () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   ArpL3Protocol (const ArpL3Protocol &) = delete;
@@ -124,12 +124,12 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
    */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
 private:
   typedef std::list<Ptr<ArpCache> > CacheList; //!< container of the ARP caches
 

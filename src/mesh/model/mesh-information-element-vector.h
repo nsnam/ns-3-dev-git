@@ -32,15 +32,15 @@ class MeshInformationElementVector : public WifiInformationElementVector
 {
 public:
   MeshInformationElementVector ();
-  ~MeshInformationElementVector ();
+  ~MeshInformationElementVector () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  uint32_t DeserializeSingleIe (Buffer::Iterator start) override;
 };
 
 }

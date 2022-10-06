@@ -94,7 +94,7 @@ public:
    * \brief Create a Wimax helper in an empty state.
    */
   WimaxHelper ();
-  ~WimaxHelper ();
+  ~WimaxHelper () override;
   /**
    *  \brief Enable ascii trace output on the indicated net device for a given connection
    *  \param oss The output stream object to use when logging ascii traces.
@@ -305,7 +305,7 @@ private:
    * \param explicitFilename Treat the prefix as an explicit filename if true
    * \param promiscuous If true capture all possible packets available at the device.
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous);
+  void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous) override;
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
@@ -318,10 +318,10 @@ private:
    * \param nd Net device for which you want to enable tracing.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+  void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,
                                     Ptr<NetDevice> nd,
-                                    bool explicitFilename);
+                                    bool explicitFilename) override;
 
   Ptr<WimaxChannel> m_channel; ///< wifi channel
 };

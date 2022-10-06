@@ -62,7 +62,7 @@ public:
                const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief TCP Veno additive increase formula.

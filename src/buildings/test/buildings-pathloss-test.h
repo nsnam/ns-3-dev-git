@@ -64,10 +64,10 @@ public:
    * \param name Test name
    */
   BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, EnvironmentType env, CitySize city, double refValue, std::string name);
-  virtual ~BuildingsPathlossTestCase ();
+  ~BuildingsPathlossTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Create a mobility model based on its index
    * \param index MobilityModel index

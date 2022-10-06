@@ -41,10 +41,10 @@ class Ns3WimaxCsParamTlvTestCase : public TestCase
 {
 public:
   Ns3WimaxCsParamTlvTestCase ();
-  virtual ~Ns3WimaxCsParamTlvTestCase ();
+  ~Ns3WimaxCsParamTlvTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -138,10 +138,10 @@ class Ns3WimaxSfTlvTestCase : public TestCase
 {
 public:
   Ns3WimaxSfTlvTestCase ();
-  virtual ~Ns3WimaxSfTlvTestCase ();
+  ~Ns3WimaxSfTlvTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

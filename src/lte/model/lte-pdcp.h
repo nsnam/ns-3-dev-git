@@ -42,13 +42,13 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
   friend class LtePdcpSpecificLtePdcpSapProvider<LtePdcp>;
 public:
   LtePdcp ();
-  virtual ~LtePdcp ();
+  ~LtePdcp () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    *

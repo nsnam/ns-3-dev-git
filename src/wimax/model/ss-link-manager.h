@@ -52,8 +52,8 @@ public:
    * \param ss subscriber station device
    */
   SSLinkManager (Ptr<SubscriberStationNetDevice> ss);
-  ~SSLinkManager ();
-  void DoDispose ();
+  ~SSLinkManager () override;
+  void DoDispose () override;
 
   /**
    * Set BS EIRP

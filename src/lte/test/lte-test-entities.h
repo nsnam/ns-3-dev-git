@@ -57,8 +57,8 @@ class LteTestRrc : public Object
     static TypeId GetTypeId ();
 
     LteTestRrc ();
-    virtual ~LteTestRrc ();
-    virtual void DoDispose ();
+    ~LteTestRrc () override;
+    void DoDispose () override;
 
 
     /**
@@ -186,8 +186,8 @@ class LteTestPdcp : public Object
     static TypeId GetTypeId ();
 
     LteTestPdcp ();
-    virtual ~LteTestPdcp ();
-    virtual void DoDispose ();
+    ~LteTestPdcp () override;
+    void DoDispose () override;
 
 
     /**
@@ -254,8 +254,8 @@ class LteTestMac : public Object
     static TypeId GetTypeId ();
 
     LteTestMac ();
-    virtual ~LteTestMac ();
-    virtual void DoDispose ();
+    ~LteTestMac () override;
+    void DoDispose () override;
 
     /**
     * \brief Set the device function
@@ -420,10 +420,10 @@ class EpcTestRrc : public Object
 
 public:
   EpcTestRrc ();
-  virtual ~EpcTestRrc ();
+  ~EpcTestRrc () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

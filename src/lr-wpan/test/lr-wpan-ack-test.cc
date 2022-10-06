@@ -99,7 +99,7 @@ public:
   void DataConfirmDev1 (McpsDataConfirmParams params);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   std::string m_prefix; //!< Filename prefix
   Time m_requestTime; //!< Request time.

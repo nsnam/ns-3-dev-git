@@ -44,7 +44,7 @@ public:
    */
   static TypeId GetTypeId ();
   SimpleDeviceEnergyModel ();
-  virtual ~SimpleDeviceEnergyModel ();
+  ~SimpleDeviceEnergyModel () override;
 
   /**
    * \brief Sets pointer to node.
@@ -71,21 +71,21 @@ public:
    *
    * Implements DeviceEnergyModel::SetEnergySource.
    */
-  virtual void SetEnergySource (Ptr<EnergySource> source);
+  void SetEnergySource (Ptr<EnergySource> source) override;
 
   /**
    * \returns Total energy consumption of the vehicle.
    *
    * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
    */
-  virtual double GetTotalEnergyConsumption () const;
+  double GetTotalEnergyConsumption () const override;
 
   /**
    * \param newState New state the device is in.
    *
    * Not implemented
    */
-  virtual void ChangeState (int newState)
+  void ChangeState (int newState) override
   {
   }
 
@@ -94,7 +94,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyDepletion ()
+  void HandleEnergyDepletion () override
   {
   }
 
@@ -103,7 +103,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyRecharged ()
+  void HandleEnergyRecharged () override
   {
   }
 
@@ -112,7 +112,7 @@ public:
    *
    * Not implemented
    */
-  virtual void HandleEnergyChanged ()
+  void HandleEnergyChanged () override
   {
   }
 
@@ -123,14 +123,14 @@ public:
    */
   void SetCurrentA (double current);
 private:
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \returns Current draw of device, at current state.
    *
    * Implements DeviceEnergyModel::GetCurrentA.
    */
-  virtual double DoGetCurrentA () const;
+  double DoGetCurrentA () const override;
 
   Time m_lastUpdateTime;        //!< Last update time
   double m_actualCurrentA;      //!< actual curred (in Ampere)

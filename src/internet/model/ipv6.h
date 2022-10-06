@@ -95,7 +95,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6 ();
+  ~Ipv6 () override;
 
   /**
    * \brief Register a new routing protocol to be used by this IPv6 stack

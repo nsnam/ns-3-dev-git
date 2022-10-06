@@ -77,7 +77,7 @@ public:
    *
    * Destructor
    */
-  virtual ~CobaltQueueDisc ();
+  ~CobaltQueueDisc () override;
 
   /**
    * \brief Get the target queue delay
@@ -134,18 +134,18 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual Ptr<const QueueDiscItem> DoPeek ();
-  virtual bool CheckConfig ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  Ptr<const QueueDiscItem> DoPeek () override;
+  bool CheckConfig () override;
 
   /**
     * \brief Initialize the queue parameters.
     */
-  virtual void InitializeParams ();
+  void InitializeParams () override;
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method

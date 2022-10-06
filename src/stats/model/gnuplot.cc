@@ -176,13 +176,13 @@ struct Gnuplot2dDataset::Data2d : public GnuplotDataset::Data
    */
   Data2d(const std::string& title);
 
-  virtual std::string GetCommand () const;
-  virtual void PrintExpression (std::ostream &os,
+  std::string GetCommand () const override;
+  void PrintExpression (std::ostream &os,
                                 bool generateOneOutputFile,
                                 unsigned int dataFileDatasetIndex,
-                                std::string &dataFileName) const;
-  virtual void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const;
-  virtual bool IsEmpty () const;
+                                std::string &dataFileName) const override;
+  void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const override;
+  bool IsEmpty () const override;
 };
 
 Gnuplot2dDataset::Data2d::Data2d(const std::string& title)
@@ -429,13 +429,13 @@ struct Gnuplot2dFunction::Function2d : public GnuplotDataset::Data
    */
   Function2d(const std::string& title, const std::string& function);
 
-  virtual std::string GetCommand () const;
-  virtual void PrintExpression (std::ostream &os,
+  std::string GetCommand () const override;
+  void PrintExpression (std::ostream &os,
                                 bool generateOneOutputFile,
                                 unsigned int dataFileDatasetIndex,
-                                std::string &dataFileName) const;
-  virtual void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const;
-  virtual bool IsEmpty () const;
+                                std::string &dataFileName) const override;
+  void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const override;
+  bool IsEmpty () const override;
 };
 
 Gnuplot2dFunction::Function2d::Function2d(const std::string& title, const std::string& function)
@@ -510,13 +510,13 @@ struct Gnuplot3dDataset::Data3d : public GnuplotDataset::Data
    */
   Data3d(const std::string& title);
 
-  virtual std::string GetCommand () const;
-  virtual void PrintExpression (std::ostream &os,
+  std::string GetCommand () const override;
+  void PrintExpression (std::ostream &os,
                                 bool generateOneOutputFile,
                                 unsigned int dataFileDatasetIndex,
-                                std::string &dataFileName) const;
-  virtual void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const;
-  virtual bool IsEmpty () const;
+                                std::string &dataFileName) const override;
+  void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const override;
+  bool IsEmpty () const override;
 };
 
 Gnuplot3dDataset::Data3d::Data3d(const std::string& title)
@@ -631,13 +631,13 @@ struct Gnuplot3dFunction::Function3d : public GnuplotDataset::Data
    */
   Function3d(const std::string& title, const std::string& function);
 
-  virtual std::string GetCommand () const;
-  virtual void PrintExpression (std::ostream &os,
+  std::string GetCommand () const override;
+  void PrintExpression (std::ostream &os,
                                 bool generateOneOutputFile,
                                 unsigned int dataFileDatasetIndex,
-                                std::string &dataFileName) const;
-  virtual void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const;
-  virtual bool IsEmpty () const;
+                                std::string &dataFileName) const override;
+  void PrintDataFile (std::ostream &os, bool generateOneOutputFile) const override;
+  bool IsEmpty () const override;
 };
 
 Gnuplot3dFunction::Function3d::Function3d(const std::string& title, const std::string& function)

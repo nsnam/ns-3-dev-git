@@ -126,8 +126,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRoutingTestSuite");
 class LinkTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   LinkTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -210,8 +210,8 @@ LinkTest::DoRun ()
 class LanTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   LanTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -291,8 +291,8 @@ LanTest::DoRun ()
 class TwoLinkTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   TwoLinkTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -410,8 +410,8 @@ TwoLinkTest::DoRun ()
 class TwoLanTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   TwoLanTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -510,8 +510,8 @@ TwoLanTest::DoRun ()
 class BridgeTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   BridgeTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -682,8 +682,8 @@ BridgeTest::DoRun ()
 class TwoBridgeTest : public TestCase
 {
 public:
-  virtual void DoSetup ();
-  virtual void DoRun ();
+  void DoSetup () override;
+  void DoRun () override;
   TwoBridgeTest ();
 private:
   NodeContainer m_nodes; //!< Nodes used in the test.
@@ -833,7 +833,7 @@ class Ipv4DynamicGlobalRoutingTestCase : public TestCase
 {
 public:
   Ipv4DynamicGlobalRoutingTestCase ();
-  virtual ~Ipv4DynamicGlobalRoutingTestCase ();
+  ~Ipv4DynamicGlobalRoutingTestCase () override;
 
 private:
   /**
@@ -853,7 +853,7 @@ private:
    * \param socket The input socket.
    */
   void HandleRead (Ptr<Socket> socket);
-  virtual void DoRun ();
+  void DoRun () override;
 
   uint16_t m_count; //!< Number of packets received.
   std::vector<std::pair<Ptr<Socket>, bool> > m_sendSocks; //!< Sending sockets.
@@ -1097,7 +1097,7 @@ class Ipv4GlobalRoutingSlash32TestCase : public TestCase
 {
 public:
   Ipv4GlobalRoutingSlash32TestCase ();
-  virtual ~Ipv4GlobalRoutingSlash32TestCase ();
+  ~Ipv4GlobalRoutingSlash32TestCase () override;
 
   Ptr<Packet> m_receivedPacket; //!< number of received packets
 
@@ -1120,7 +1120,7 @@ public:
   void SendData (Ptr<Socket> socket, std::string to);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 // Add some help text to this case to describe what it is intended to test

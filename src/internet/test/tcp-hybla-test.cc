@@ -49,7 +49,7 @@ public:
                          const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Tracks TCP Hybla rho parameter changes.

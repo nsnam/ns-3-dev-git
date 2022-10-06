@@ -44,7 +44,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~PhasedArrayModel ();
+  ~PhasedArrayModel () override;
 
 
   /**

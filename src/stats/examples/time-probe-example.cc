@@ -60,7 +60,7 @@ public:
   static TypeId GetTypeId ();
   Emitter ();
 private:
-  void DoInitialize ();
+  void DoInitialize () override;
   /// Generate data.
   void Emit ();
 

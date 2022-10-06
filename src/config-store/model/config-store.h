@@ -83,10 +83,10 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   ConfigStore ();
-  ~ConfigStore ();
+  ~ConfigStore () override;
 
   /**
    * Set the mode of operation

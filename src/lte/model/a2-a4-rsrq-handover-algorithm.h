@@ -83,7 +83,7 @@ public:
   /// Creates an A2-A4-RSRQ handover algorithm instance.
   A2A4RsrqHandoverAlgorithm ();
 
-  virtual ~A2A4RsrqHandoverAlgorithm ();
+  ~A2A4RsrqHandoverAlgorithm () override;
 
   /**
    * \brief Get the type ID.
@@ -92,19 +92,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from LteHandoverAlgorithm
-  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
-  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
+  void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s) override;
+  LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider () override;
 
   /// let the forwarder class access the protected and private members
   friend class MemberLteHandoverManagementSapProvider<A2A4RsrqHandoverAlgorithm>;
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   // inherited from LteHandoverAlgorithm as a Handover Management SAP implementation
-  void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+  void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) override;
 
 private:
   /**

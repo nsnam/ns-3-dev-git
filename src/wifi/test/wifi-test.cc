@@ -614,7 +614,7 @@ class Bug730TestCase : public TestCase
 {
 public:
   Bug730TestCase ();
-  virtual ~Bug730TestCase ();
+  ~Bug730TestCase () override;
 
   void DoRun () override;
 
@@ -751,7 +751,7 @@ class QosFragmentationTestCase : public TestCase
 {
 public:
   QosFragmentationTestCase ();
-  virtual ~QosFragmentationTestCase ();
+  ~QosFragmentationTestCase () override;
 
   void DoRun () override;
 
@@ -1340,7 +1340,7 @@ class Bug2222TestCase : public TestCase
 {
 public:
   Bug2222TestCase ();
-  virtual ~Bug2222TestCase ();
+  ~Bug2222TestCase () override;
 
   void DoRun () override;
 
@@ -1477,7 +1477,7 @@ class Bug2843TestCase : public TestCase
 {
 public:
   Bug2843TestCase ();
-  virtual ~Bug2843TestCase ();
+  ~Bug2843TestCase () override;
   void DoRun () override;
 
 private:
@@ -1652,7 +1652,7 @@ class Bug2831TestCase : public TestCase
 {
 public:
   Bug2831TestCase ();
-  virtual ~Bug2831TestCase ();
+  ~Bug2831TestCase () override;
   void DoRun () override;
 
 private:
@@ -1855,7 +1855,7 @@ class StaWifiMacScanningTestCase : public TestCase
 {
 public:
   StaWifiMacScanningTestCase ();
-  virtual ~StaWifiMacScanningTestCase ();
+  ~StaWifiMacScanningTestCase () override;
   void DoRun () override;
 
 private:
@@ -2047,7 +2047,7 @@ class Bug2470TestCase : public TestCase
 {
 public:
   Bug2470TestCase ();
-  virtual ~Bug2470TestCase ();
+  ~Bug2470TestCase () override;
   void DoRun () override;
 
 private:
@@ -2335,7 +2335,7 @@ class Issue40TestCase : public TestCase
 {
 public:
   Issue40TestCase ();
-  virtual ~Issue40TestCase ();
+  ~Issue40TestCase () override;
   void DoRun () override;
 
 private:
@@ -2519,7 +2519,7 @@ class Issue169TestCase : public TestCase
 {
 public:
   Issue169TestCase ();
-  virtual ~Issue169TestCase ();
+  ~Issue169TestCase () override;
   void DoRun () override;
 
 private:
@@ -2649,7 +2649,7 @@ class IdealRateManagerChannelWidthTest : public TestCase
 {
 public:
   IdealRateManagerChannelWidthTest ();
-  virtual ~IdealRateManagerChannelWidthTest ();
+  ~IdealRateManagerChannelWidthTest () override;
   void DoRun () override;
 
 private:
@@ -2803,7 +2803,7 @@ class IdealRateManagerMimoTest : public TestCase
 {
 public:
   IdealRateManagerMimoTest ();
-  virtual ~IdealRateManagerMimoTest ();
+  ~IdealRateManagerMimoTest () override;
   void DoRun () override;
 
 private:

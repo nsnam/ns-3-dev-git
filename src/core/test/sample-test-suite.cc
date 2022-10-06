@@ -89,10 +89,10 @@ public:
   /** Constructor. */
   SampleTestCase1 ();
   /** Destructor. */
-  virtual ~SampleTestCase1 ();
+  ~SampleTestCase1 () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 /** Add some help text to this case to describe what it is intended to test. */

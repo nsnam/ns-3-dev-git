@@ -48,7 +48,7 @@ class SpectrumPhy  : public Object
 
 public:
   SpectrumPhy ();
-  virtual ~SpectrumPhy ();
+  ~SpectrumPhy () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   SpectrumPhy (SpectrumPhy const &) = delete;

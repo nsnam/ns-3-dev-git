@@ -38,10 +38,10 @@ class OneIntegerAverageTestCase : public TestCase
 {
 public:
   OneIntegerAverageTestCase ();
-  virtual ~OneIntegerAverageTestCase ();
+  ~OneIntegerAverageTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OneIntegerAverageTestCase::OneIntegerAverageTestCase ()
@@ -106,10 +106,10 @@ class FiveIntegersAverageTestCase : public TestCase
 {
 public:
   FiveIntegersAverageTestCase ();
-  virtual ~FiveIntegersAverageTestCase ();
+  ~FiveIntegersAverageTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FiveIntegersAverageTestCase::FiveIntegersAverageTestCase ()
@@ -176,10 +176,10 @@ class FiveDoublesAverageTestCase : public TestCase
 {
 public:
   FiveDoublesAverageTestCase ();
-  virtual ~FiveDoublesAverageTestCase ();
+  ~FiveDoublesAverageTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FiveDoublesAverageTestCase::FiveDoublesAverageTestCase ()

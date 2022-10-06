@@ -46,14 +46,14 @@ public:
    */
   static TypeId GetTypeId ();
   OhBuildingsPropagationLossModel ();
-  ~OhBuildingsPropagationLossModel ();
+  ~OhBuildingsPropagationLossModel () override;
 
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
    * \returns the propagation loss (in dBm)
    */
-  virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
 private:
 

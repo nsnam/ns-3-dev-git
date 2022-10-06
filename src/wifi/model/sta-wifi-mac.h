@@ -153,7 +153,7 @@ public:
   static TypeId GetTypeId ();
 
   StaWifiMac ();
-  virtual ~StaWifiMac ();
+  ~StaWifiMac () override;
 
   /**
    * \param packet the packet to send.
@@ -229,7 +229,7 @@ protected:
   struct StaLinkEntity : public WifiMac::LinkEntity
   {
     /// Destructor (a virtual method is needed to make this struct polymorphic)
-    virtual ~StaLinkEntity ();
+    ~StaLinkEntity () override;
 
     bool sendAssocReq;                      //!< whether this link is used to send the
                                             //!< Association Request frame

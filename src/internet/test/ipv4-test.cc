@@ -42,8 +42,8 @@ class Ipv4L3ProtocolTestCase : public TestCase
 {
 public:
   Ipv4L3ProtocolTestCase ();
-  virtual ~Ipv4L3ProtocolTestCase ();
-  virtual void  DoRun ();
+  ~Ipv4L3ProtocolTestCase () override;
+  void  DoRun () override;
 
 };
 

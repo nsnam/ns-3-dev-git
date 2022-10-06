@@ -358,7 +358,7 @@ public:
 class EpcX2SapProvider : public EpcX2Sap
 {
 public:
-  virtual ~EpcX2SapProvider ();
+  ~EpcX2SapProvider () override;
 
   //
   // Service primitives
@@ -427,7 +427,7 @@ public:
 class EpcX2SapUser : public EpcX2Sap
 {
 public:
-  virtual ~EpcX2SapUser ();
+  ~EpcX2SapUser () override;
 
   /*
    * Service primitives
@@ -513,55 +513,55 @@ public:
    * Send handover request function
    * \param params the hadnover request parameters
    */
-  virtual void SendHandoverRequest (HandoverRequestParams params);
+  void SendHandoverRequest (HandoverRequestParams params) override;
 
   /**
    * Send handover request ack function
    * \param params the handover request ack pararameters
    */
-  virtual void SendHandoverRequestAck (HandoverRequestAckParams params);
+  void SendHandoverRequestAck (HandoverRequestAckParams params) override;
 
   /**
    * Send handover preparation failure function
    * \param params the handover preparation failure parameters
    */
-  virtual void SendHandoverPreparationFailure (HandoverPreparationFailureParams params);
+  void SendHandoverPreparationFailure (HandoverPreparationFailureParams params) override;
 
   /**
    * Send SN status transfer function
    * \param params the SN status transfer parameters
    */
-  virtual void SendSnStatusTransfer (SnStatusTransferParams params);
+  void SendSnStatusTransfer (SnStatusTransferParams params) override;
 
   /**
    * Send UE context release function
    * \param params the UE context release parameters
    */
-  virtual void SendUeContextRelease (UeContextReleaseParams params);
+  void SendUeContextRelease (UeContextReleaseParams params) override;
 
   /**
    * Send load information function
    * \param params the load information parameters
    */
-  virtual void SendLoadInformation (LoadInformationParams params);
+  void SendLoadInformation (LoadInformationParams params) override;
 
   /**
    * Send resource status update function
    * \param params the resource status update parameters
    */
-  virtual void SendResourceStatusUpdate (ResourceStatusUpdateParams params);
+  void SendResourceStatusUpdate (ResourceStatusUpdateParams params) override;
 
   /**
    * Send UE data function
    * \param params the UE data parameters
    */
-  virtual void SendUeData (UeDataParams params);
+  void SendUeData (UeDataParams params) override;
 
   /**
    * \brief Send handover Cancel to the target eNB
    * \param params the handover cancel parameters
    */
-  virtual void SendHandoverCancel (HandoverCancelParams params);
+  void SendHandoverCancel (HandoverCancelParams params) override;
 
 private:
   EpcX2SpecificEpcX2SapProvider ();
@@ -664,56 +664,56 @@ public:
    * Receive handover request function
    * \param params the receive handover request parameters
    */
-  virtual void RecvHandoverRequest (HandoverRequestParams params);
+  void RecvHandoverRequest (HandoverRequestParams params) override;
 
   /**
    * Receive handover request ack function
    * \param params the receive handover request ack parameters
    */
-  virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
+  void RecvHandoverRequestAck (HandoverRequestAckParams params) override;
 
   /**
    * Receive handover preparation failure function
    * \param params the receive handover preparation failure parameters
    */
-  virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params);
+  void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params) override;
 
   /**
    * Receive SN status transfer function
    * \param params the SN status transfer parameters
    */
-  virtual void RecvSnStatusTransfer (SnStatusTransferParams params);
+  void RecvSnStatusTransfer (SnStatusTransferParams params) override;
 
   /**
    * Receive UE context release function
    * \param params the UE context release parameters
    */
-  virtual void RecvUeContextRelease (UeContextReleaseParams params);
+  void RecvUeContextRelease (UeContextReleaseParams params) override;
 
   /**
    * Receive load information function
    * \param params the load information parameters
    */
-  virtual void RecvLoadInformation (LoadInformationParams params);
+  void RecvLoadInformation (LoadInformationParams params) override;
 
   /**
    * Receive resource status update function
    * \param params the receive resource status update
    */
-  virtual void RecvResourceStatusUpdate (ResourceStatusUpdateParams params);
+  void RecvResourceStatusUpdate (ResourceStatusUpdateParams params) override;
 
   /**
    * Receive UE data function
    * \param params the UE data parameters
    */
-  virtual void RecvUeData (UeDataParams params);
+  void RecvUeData (UeDataParams params) override;
 
   /**
    * Receive handover cancel function
    * \param params the receive handover cancel parameters
    *
    */
-  virtual void RecvHandoverCancel (HandoverCancelParams params);
+  void RecvHandoverCancel (HandoverCancelParams params) override;
 
 private:
   EpcX2SpecificEpcX2SapUser ();

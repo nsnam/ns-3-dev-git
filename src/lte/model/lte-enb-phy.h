@@ -64,7 +64,7 @@ public:
    */
   LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
-  virtual ~LteEnbPhy ();
+  ~LteEnbPhy () override;
 
   /**
    * \brief Get the type ID.
@@ -72,8 +72,8 @@ public:
    */
   static TypeId GetTypeId ();
   // inherited from Object
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
 
   /**
@@ -189,7 +189,7 @@ public:
    * \brief Create the PSD for TX
    * \returns the PSD
    */
-  virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
+  Ptr<SpectrumValue> CreateTxPowerSpectralDensity () override;
 
   /**
    * \brief Create the PSD for TX with power allocation for each RB
@@ -279,10 +279,10 @@ public:
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgList);
 
   // inherited from LtePhy
-  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
-  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
-  virtual void ReportInterference (const SpectrumValue& interf);
-  virtual void ReportRsReceivedPower (const SpectrumValue& power);
+  void GenerateCtrlCqiReport (const SpectrumValue& sinr) override;
+  void GenerateDataCqiReport (const SpectrumValue& sinr) override;
+  void ReportInterference (const SpectrumValue& interf) override;
+  void ReportRsReceivedPower (const SpectrumValue& power) override;
 
 
 
@@ -385,7 +385,7 @@ private:
   void DoSetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
 
   // LteEnbPhySapProvider forwarded methods
-  void DoSendMacPdu (Ptr<Packet> p);
+  void DoSendMacPdu (Ptr<Packet> p) override;
   /**
    * Send LTE Control Message function
    *

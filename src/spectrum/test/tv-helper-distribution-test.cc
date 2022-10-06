@@ -55,10 +55,10 @@ public:
    * \param maxNumTransmitters maximum number of transmitters.
    */
   TvHelperDistributionTestCase (uint32_t maxNumTransmitters);
-  virtual ~TvHelperDistributionTestCase ();
+  ~TvHelperDistributionTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Build the test name
    * \param maxNumTransmitters maximum number of transmitters.

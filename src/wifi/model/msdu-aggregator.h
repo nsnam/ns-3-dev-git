@@ -54,7 +54,7 @@ public:
   static TypeId GetTypeId ();
 
   MsduAggregator ();
-  virtual ~MsduAggregator ();
+  ~MsduAggregator () override;
 
   /**
    * Compute the size of the A-MSDU resulting from the aggregation of an MSDU of

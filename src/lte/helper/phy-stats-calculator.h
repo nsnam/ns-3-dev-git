@@ -65,7 +65,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~PhyStatsCalculator ();
+  ~PhyStatsCalculator () override;
 
   // Inherited from ns3::Object
   /**

@@ -33,7 +33,7 @@ class AmpduSubframeHeader : public Header
 {
 public:
   AmpduSubframeHeader ();
-  virtual ~AmpduSubframeHeader ();
+  ~AmpduSubframeHeader () override;
 
   /**
    * \brief Get the type ID.

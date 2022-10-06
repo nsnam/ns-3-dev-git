@@ -37,7 +37,7 @@ class LollipopCounterTest : public TestCase
 {
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   LollipopCounterTest ();
 
 };

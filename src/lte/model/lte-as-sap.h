@@ -153,12 +153,12 @@ public:
   MemberLteAsSapProvider (C* owner);
 
   // inherited from LteAsSapProvider
-  virtual void SetCsgWhiteList (uint32_t csgId);
-  virtual void StartCellSelection (uint32_t dlEarfcn);
-  virtual void ForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn);
-  virtual void Connect ();
-  virtual void SendData (Ptr<Packet> packet, uint8_t bid);
-  virtual void Disconnect ();
+  void SetCsgWhiteList (uint32_t csgId) override;
+  void StartCellSelection (uint32_t dlEarfcn) override;
+  void ForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn) override;
+  void Connect () override;
+  void SendData (Ptr<Packet> packet, uint8_t bid) override;
+  void Disconnect () override;
 
 private:
   MemberLteAsSapProvider ();
@@ -236,10 +236,10 @@ public:
   MemberLteAsSapUser (C* owner);
 
   // inherited from LteAsSapUser
-  virtual void NotifyConnectionSuccessful ();
-  virtual void NotifyConnectionFailed ();
-  virtual void RecvData (Ptr<Packet> packet);
-  virtual void NotifyConnectionReleased ();
+  void NotifyConnectionSuccessful () override;
+  void NotifyConnectionFailed () override;
+  void RecvData (Ptr<Packet> packet) override;
+  void NotifyConnectionReleased () override;
 
 private:
   MemberLteAsSapUser ();

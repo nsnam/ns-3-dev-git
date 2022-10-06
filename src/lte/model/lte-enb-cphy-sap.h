@@ -154,17 +154,17 @@ public:
   MemberLteEnbCphySapProvider (C* owner);
 
   // inherited from LteEnbCphySapProvider
-  virtual void SetCellId (uint16_t cellId);
-  virtual void SetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth);
-  virtual void SetEarfcn (uint32_t ulEarfcn, uint32_t dlEarfcn);
-  virtual void AddUe (uint16_t rnti);
-  virtual void RemoveUe (uint16_t rnti);
-  virtual void SetPa (uint16_t rnti, double pa);
-  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi);
-  virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
-  virtual void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
-  virtual int8_t GetReferenceSignalPower ();
+  void SetCellId (uint16_t cellId) override;
+  void SetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth) override;
+  void SetEarfcn (uint32_t ulEarfcn, uint32_t dlEarfcn) override;
+  void AddUe (uint16_t rnti) override;
+  void RemoveUe (uint16_t rnti) override;
+  void SetPa (uint16_t rnti, double pa) override;
+  void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) override;
+  void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) override;
+  void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) override;
+  void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1) override;
+  int8_t GetReferenceSignalPower () override;
 
 private:
   MemberLteEnbCphySapProvider ();

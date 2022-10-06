@@ -94,8 +94,8 @@ public:
   virtual void UnBlackList (Ptr<SimpleNetDevice> from, Ptr<SimpleNetDevice> to);
 
   // inherited from ns3::Channel
-  virtual std::size_t GetNDevices () const;
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  std::size_t GetNDevices () const override;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
 private:
   Time m_delay; //!< The assigned speed-of-light delay of the channel

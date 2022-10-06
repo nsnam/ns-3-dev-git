@@ -57,7 +57,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ping6 ();
+  ~Ping6 () override;
 
   /**
    * \brief Set the local address.
@@ -89,18 +89,18 @@ protected:
   /**
    * \brief Dispose this object;
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**
    * \brief Start the application.
    */
-  virtual void StartApplication ();
+  void StartApplication () override;
 
   /**
    * \brief Stop the application.
    */
-  virtual void StopApplication ();
+  void StopApplication () override;
 
   /**
    * \brief Schedule sending a packet.

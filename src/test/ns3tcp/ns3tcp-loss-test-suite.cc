@@ -77,14 +77,14 @@ public:
    * \param testCase Testcase number.
    */
   Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase);
-  virtual ~Ns3TcpLossTestCase ()
+  ~Ns3TcpLossTestCase () override
   {
   }
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   Ptr<OutputStreamWrapper> m_osw; //!< The output stream.
   std::string m_pcapFilename;     //!< The PCAP filename.

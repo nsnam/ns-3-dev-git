@@ -79,8 +79,8 @@ public:
   void SetExpectedSegmentSize (uint16_t seg) { m_segmentSize = seg; };
 
 protected:
-  virtual Ptr<TcpSocketBase> Fork ();
-  virtual uint16_t AdvertisedWindowSize (bool scale = true) const;
+  Ptr<TcpSocketBase> Fork () override;
+  uint16_t AdvertisedWindowSize (bool scale = true) const override;
 
 private:
   uint16_t OldAdvertisedWindowSize (bool scale = true) const;
@@ -227,11 +227,11 @@ public:
   }
 
 protected:
-  virtual bool ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHeader,
-                           uint32_t packetSize);
+  bool ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader &tcpHeader,
+                           uint32_t packetSize) override;
 
 private:
-  virtual void DoReset () { };
+  void DoReset () override { };
   double m_dropRatio; //!< Drop ratio
   Ptr<UniformRandomVariable> m_prng; //!< Random variable
 };
@@ -290,9 +290,9 @@ public:
   TcpAdvertisedWindowTest (const std::string &desc, uint32_t size, uint32_t packets, double lossRatio);
 
 protected:
-  virtual void ConfigureEnvironment ();
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  void ConfigureEnvironment () override;
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
 
 private:
   /** \brief Callback called for the update of the awnd
@@ -371,10 +371,10 @@ public:
                           std::vector<uint32_t> &toDrop);
 
 protected:
-  virtual void ConfigureEnvironment ();
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  void ConfigureEnvironment () override;
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
 
 private:
   /** \brief Callback called for the update of the awnd

@@ -111,7 +111,7 @@ public:
 class DataCalculator : public Object {
 public:
   DataCalculator();
-  virtual ~DataCalculator();
+  ~DataCalculator() override;
 
   /**
    * Register this type.
@@ -177,7 +177,7 @@ protected:
   std::string m_key;      //!< Key value
   std::string m_context;  //!< Context value
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   EventId m_startEvent; //!< Start event

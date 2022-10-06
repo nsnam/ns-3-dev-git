@@ -49,15 +49,15 @@ public:
    * \param addr the address
    */
   FifoQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
-  virtual ~FifoQueueDiscTestItem ();
+  ~FifoQueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   FifoQueueDiscTestItem () = delete;
   FifoQueueDiscTestItem (const FifoQueueDiscTestItem &) = delete;
   FifoQueueDiscTestItem & operator = (const FifoQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  void AddHeader () override;
+  bool Mark () override;
 };
 
 FifoQueueDiscTestItem::FifoQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -90,7 +90,7 @@ class FifoQueueDiscTestCase : public TestCase
 {
 public:
   FifoQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Run test function

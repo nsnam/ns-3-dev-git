@@ -45,7 +45,7 @@ class GridBuildingAllocator : public Object
 {
 public:
   GridBuildingAllocator ();
-  virtual ~GridBuildingAllocator ();
+  ~GridBuildingAllocator () override;
 
   /**
    * \brief Get the type ID.

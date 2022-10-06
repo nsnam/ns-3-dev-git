@@ -55,7 +55,7 @@ public:
   RocketfuelTopologyReaderWeightsTest ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RocketfuelTopologyReaderWeightsTest::RocketfuelTopologyReaderWeightsTest ()
@@ -99,7 +99,7 @@ public:
   RocketfuelTopologyReaderMapsTest ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RocketfuelTopologyReaderMapsTest::RocketfuelTopologyReaderMapsTest ()

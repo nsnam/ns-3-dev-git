@@ -38,14 +38,14 @@ class MeshHeader : public Header
 {
 public:
   MeshHeader ();
-  ~MeshHeader ();
+  ~MeshHeader () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
 
   /**
    * Set extended address 4
@@ -113,9 +113,9 @@ public:
    */
   uint8_t GetAddressExt () const;
 
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_meshFlags; ///< mesh flags
   uint8_t m_meshTtl; ///< mesh TTL

@@ -122,7 +122,7 @@ public:
   /** Constructor. */
   NamesPriv ();
   /** Destructor. */
-  ~NamesPriv ();
+  ~NamesPriv () override;
 
   // Doxygen \copydoc bug: won't copy these docs, so we repeat them.
 

@@ -70,10 +70,10 @@ public:
    */
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc, uint8_t componentCarrierId);
 
-  virtual uint16_t AllocateTemporaryCellRnti ();
-  virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
-  virtual void RrcConfigurationUpdateInd (UeConfig params);
-  virtual bool IsRandomAccessCompleted (uint16_t rnti);
+  uint16_t AllocateTemporaryCellRnti () override;
+  void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success) override;
+  void RrcConfigurationUpdateInd (UeConfig params) override;
+  bool IsRandomAccessCompleted (uint16_t rnti) override;
 
 private:
   LteEnbRrc* m_rrc; ///< the RRC

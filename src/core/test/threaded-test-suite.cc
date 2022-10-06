@@ -111,9 +111,9 @@ public:
   std::list<std::thread> m_threadlist; //!< Thread list.
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 ThreadedSimulatorEventsTestCase::ThreadedSimulatorEventsTestCase (ObjectFactory schedulerFactory, const std::string &simulatorType, unsigned int threads)

@@ -77,10 +77,10 @@ public:
    */
   LteEnbAntennaTestCase (double orientationDegrees, double beamwidthDegrees, double x, double y, double antennaGainDb);
   LteEnbAntennaTestCase ();
-  virtual ~LteEnbAntennaTestCase ();
+  ~LteEnbAntennaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   double m_orientationDegrees; ///< antenna orientation in degrees
   double m_beamwidthDegrees; ///< antenna beamwidth in degrees

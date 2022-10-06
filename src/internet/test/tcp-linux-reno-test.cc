@@ -65,19 +65,19 @@ public:
                       TypeId& congControl, const std::string &desc);
 
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  void QueueDrop (SocketWho who);
-  void PhyDrop (SocketWho who);
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void QueueDrop (SocketWho who) override;
+  void PhyDrop (SocketWho who) override;
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
-  virtual void DoTeardown ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
+  void DoTeardown () override;
 
   bool   m_initial;             //!< First cycle flag.
 
 private:
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
   uint32_t m_segmentSize;       //!< Segment size.
   uint32_t m_packetSize;        //!< Packet size.
   uint32_t m_packets;           //!< Packet counter.
@@ -225,17 +225,17 @@ public:
                              TypeId& congControl, const std::string &desc);
 
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void QueueDrop (SocketWho who);
-  virtual void PhyDrop (SocketWho who);
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void QueueDrop (SocketWho who) override;
+  void PhyDrop (SocketWho who) override;
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
-  virtual void DoTeardown ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
+  void DoTeardown () override;
 
 private:
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
   uint32_t m_segmentSize;       //!< Segment size.
   uint32_t m_packetSize;        //!< Size of the packets used in socket writes.
   uint32_t m_packets;           //!< Number of packets to send to the socket.

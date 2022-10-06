@@ -56,8 +56,8 @@ public:
    * \param device base station device
    */
   BsServiceFlowManager (Ptr<BaseStationNetDevice> device);
-  ~BsServiceFlowManager ();
-  void DoDispose ();
+  ~BsServiceFlowManager () override;
+  void DoDispose () override;
   /**
    * Register this type.
    * \return The TypeId.

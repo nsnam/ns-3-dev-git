@@ -53,7 +53,7 @@ class TrickleTimerTestCase : public TestCase
 public:
   /** Constructor. */
   TrickleTimerTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Function to invoke when TrickleTimer expires.
    */

@@ -98,13 +98,13 @@ public:
    */
   TcpBic (const TcpBic &sock);
 
-  virtual std::string GetName () const;
-  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb,
-                               uint32_t segmentsAcked);
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  std::string GetName () const override;
+  void IncreaseWindow (Ptr<TcpSocketState> tcb,
+                               uint32_t segmentsAcked) override;
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
 
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
   /**

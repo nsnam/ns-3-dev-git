@@ -53,7 +53,7 @@ public:
                        const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Update the TCP socket state.
@@ -212,7 +212,7 @@ public:
                        const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Execute the test.

@@ -1313,14 +1313,14 @@ public:
   MemberLteUeRrcSapUser (C* owner);
 
   // inherited from LteUeRrcSapUser
-  virtual void Setup (SetupParameters params);
-  virtual void SendRrcConnectionRequest (RrcConnectionRequest msg);
-  virtual void SendRrcConnectionSetupCompleted (RrcConnectionSetupCompleted msg);
-  virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg);
-  virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg);
-  virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg);
-  virtual void SendMeasurementReport (MeasurementReport msg);
-  virtual void SendIdealUeContextRemoveRequest (uint16_t rnti);
+  void Setup (SetupParameters params) override;
+  void SendRrcConnectionRequest (RrcConnectionRequest msg) override;
+  void SendRrcConnectionSetupCompleted (RrcConnectionSetupCompleted msg) override;
+  void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg) override;
+  void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg) override;
+  void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg) override;
+  void SendMeasurementReport (MeasurementReport msg) override;
+  void SendIdealUeContextRemoveRequest (uint16_t rnti) override;
 
 private:
   MemberLteUeRrcSapUser ();
@@ -1411,14 +1411,14 @@ public:
   MemberLteUeRrcSapProvider (C* owner);
 
   // methods inherited from LteUeRrcSapProvider go here
-  virtual void CompleteSetup (CompleteSetupParameters params);
-  virtual void RecvSystemInformation (SystemInformation msg);
-  virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg);
-  virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg);
-  virtual void RecvRrcConnectionReestablishment (RrcConnectionReestablishment msg);
-  virtual void RecvRrcConnectionReestablishmentReject (RrcConnectionReestablishmentReject msg);
-  virtual void RecvRrcConnectionRelease (RrcConnectionRelease msg);
-  virtual void RecvRrcConnectionReject (RrcConnectionReject msg);
+  void CompleteSetup (CompleteSetupParameters params) override;
+  void RecvSystemInformation (SystemInformation msg) override;
+  void RecvRrcConnectionSetup (RrcConnectionSetup msg) override;
+  void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg) override;
+  void RecvRrcConnectionReestablishment (RrcConnectionReestablishment msg) override;
+  void RecvRrcConnectionReestablishmentReject (RrcConnectionReestablishmentReject msg) override;
+  void RecvRrcConnectionRelease (RrcConnectionRelease msg) override;
+  void RecvRrcConnectionReject (RrcConnectionReject msg) override;
 
 private:
   MemberLteUeRrcSapProvider ();
@@ -1511,19 +1511,19 @@ public:
 
   // inherited from LteEnbRrcSapUser
 
-  virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
-  virtual void RemoveUe (uint16_t rnti);
-  virtual void SendSystemInformation (uint16_t cellId, SystemInformation msg);
-  virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
-  virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
-  virtual void SendRrcConnectionReestablishment (uint16_t rnti, RrcConnectionReestablishment msg);
-  virtual void SendRrcConnectionReestablishmentReject (uint16_t rnti, RrcConnectionReestablishmentReject msg);
-  virtual void SendRrcConnectionRelease (uint16_t rnti, RrcConnectionRelease msg);
-  virtual void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg);
-  virtual Ptr<Packet> EncodeHandoverPreparationInformation (HandoverPreparationInfo msg);
-  virtual HandoverPreparationInfo DecodeHandoverPreparationInformation (Ptr<Packet> p);
-  virtual Ptr<Packet> EncodeHandoverCommand (RrcConnectionReconfiguration msg);
-  virtual RrcConnectionReconfiguration DecodeHandoverCommand (Ptr<Packet> p);
+  void SetupUe (uint16_t rnti, SetupUeParameters params) override;
+  void RemoveUe (uint16_t rnti) override;
+  void SendSystemInformation (uint16_t cellId, SystemInformation msg) override;
+  void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg) override;
+  void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg) override;
+  void SendRrcConnectionReestablishment (uint16_t rnti, RrcConnectionReestablishment msg) override;
+  void SendRrcConnectionReestablishmentReject (uint16_t rnti, RrcConnectionReestablishmentReject msg) override;
+  void SendRrcConnectionRelease (uint16_t rnti, RrcConnectionRelease msg) override;
+  void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg) override;
+  Ptr<Packet> EncodeHandoverPreparationInformation (HandoverPreparationInfo msg) override;
+  HandoverPreparationInfo DecodeHandoverPreparationInformation (Ptr<Packet> p) override;
+  Ptr<Packet> EncodeHandoverCommand (RrcConnectionReconfiguration msg) override;
+  RrcConnectionReconfiguration DecodeHandoverCommand (Ptr<Packet> p) override;
 
 private:
   MemberLteEnbRrcSapUser ();
@@ -1651,14 +1651,14 @@ public:
 
   // methods inherited from LteEnbRrcSapProvider go here
 
-  virtual void CompleteSetupUe (uint16_t rnti, CompleteSetupUeParameters params);
-  virtual void RecvRrcConnectionRequest (uint16_t rnti, RrcConnectionRequest msg);
-  virtual void RecvRrcConnectionSetupCompleted (uint16_t rnti, RrcConnectionSetupCompleted msg);
-  virtual void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg);
-  virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg);
-  virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg);
-  virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg);
-  virtual void RecvIdealUeContextRemoveRequest (uint16_t rnti);
+  void CompleteSetupUe (uint16_t rnti, CompleteSetupUeParameters params) override;
+  void RecvRrcConnectionRequest (uint16_t rnti, RrcConnectionRequest msg) override;
+  void RecvRrcConnectionSetupCompleted (uint16_t rnti, RrcConnectionSetupCompleted msg) override;
+  void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg) override;
+  void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg) override;
+  void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg) override;
+  void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) override;
+  void RecvIdealUeContextRemoveRequest (uint16_t rnti) override;
 
 private:
   MemberLteEnbRrcSapProvider ();

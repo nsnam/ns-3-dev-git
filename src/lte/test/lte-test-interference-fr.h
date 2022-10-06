@@ -64,10 +64,10 @@ public:
    * \param ulSinr the UL SINR
    */
   LteInterferenceHardFrTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr);
-  virtual ~LteInterferenceHardFrTestCase ();
+  ~LteInterferenceHardFrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   double m_d1; ///< distance between UE and ENB
   double m_d2; ///< distance between UE and other ENB
@@ -98,10 +98,10 @@ public:
   LteInterferenceStrictFrTestCase (std::string name, double d1, double d2,
                                    double commonDlSinr, double commonUlSinr, double edgeDlSinr, double edgeUlSinr,
                                    uint32_t rspqThreshold);
-  virtual ~LteInterferenceStrictFrTestCase ();
+  ~LteInterferenceStrictFrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   double m_d1; ///< distance between UE and ENB
   double m_d2; ///< distance between UE and other ENB

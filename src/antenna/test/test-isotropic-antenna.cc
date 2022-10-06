@@ -51,7 +51,7 @@ public:
 
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Angles m_a; //!< Antenna angle
   double m_expectedGain;  //!< Expected gain

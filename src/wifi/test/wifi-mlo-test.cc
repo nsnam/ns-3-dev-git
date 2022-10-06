@@ -70,10 +70,10 @@ public:
    * Constructor
    */
   GetRnrLinkInfoTest ();
-  virtual ~GetRnrLinkInfoTest () = default;
+  ~GetRnrLinkInfoTest () override = default;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 GetRnrLinkInfoTest::GetRnrLinkInfoTest ()
@@ -196,7 +196,7 @@ public:
                       std::initializer_list<std::string> apChannels,
                       std::initializer_list<std::pair<uint8_t, uint8_t>> setupLinks,
                       std::initializer_list<uint8_t> fixedPhyBands = {});
-  virtual ~MultiLinkSetupTest ();
+  ~MultiLinkSetupTest () override;
 
 private:
   /**
@@ -262,7 +262,7 @@ private:
    */
   void CheckAssocResponse (Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   /// Information about transmitted frames
   struct FrameInfo

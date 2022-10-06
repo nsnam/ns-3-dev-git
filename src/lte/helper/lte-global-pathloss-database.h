@@ -87,7 +87,7 @@ class DownlinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
 {
 public:
   // inherited from LteGlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb);
+  void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb) override;
 };
 
 /**
@@ -98,7 +98,7 @@ class UplinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
 {
 public:
   // inherited from LteGlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb);
+  void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb) override;
 };
 
 

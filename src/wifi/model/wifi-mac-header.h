@@ -125,7 +125,7 @@ public:
    * \param type the MAC header type
    */
   WifiMacHeader (WifiMacType type);
-  virtual ~WifiMacHeader ();
+  ~WifiMacHeader () override;
 
   /**
    * \brief Get the type ID.

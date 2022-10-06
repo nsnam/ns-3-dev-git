@@ -138,7 +138,7 @@ class OfdmDownlinkFramePrefix : public Header
 {
 public:
   OfdmDownlinkFramePrefix ();
-  ~OfdmDownlinkFramePrefix ();
+  ~OfdmDownlinkFramePrefix () override;
 
   /**
    * Register this type.
@@ -203,10 +203,10 @@ public:
    * \returns the name
    */
   std::string GetName () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   Mac48Address m_baseStationId; ///< base station ID
   uint32_t m_frameNumber; ///< shall actually be only 4 LSB of the same field in OFDM DCD Channel Encodings

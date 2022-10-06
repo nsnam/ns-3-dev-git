@@ -58,7 +58,7 @@ public:
    * \param pifsRecovery whether PIFS recovery is used after failure of a non-initial frame
    */
   WifiTxopTest (bool pifsRecovery);
-  virtual ~WifiTxopTest ();
+  ~WifiTxopTest () override;
 
   /**
    * Function to trace packets received by the server application

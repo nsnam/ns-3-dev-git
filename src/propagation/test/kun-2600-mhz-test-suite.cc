@@ -52,10 +52,10 @@ public:
    * \param name TestCase name
    */
   Kun2600MhzPropagationLossModelTestCase (double dist, double hb, double hm, double refValue, std::string name);
-  virtual ~Kun2600MhzPropagationLossModelTestCase ();
+  ~Kun2600MhzPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Create a MobilityModel

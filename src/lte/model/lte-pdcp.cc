@@ -42,7 +42,7 @@ public:
   LtePdcpSpecificLteRlcSapUser (LtePdcp* pdcp);
 
   // Interface provided to lower RLC entity (implemented from LteRlcSapUser)
-  virtual void ReceivePdcpPdu (Ptr<Packet> p);
+  void ReceivePdcpPdu (Ptr<Packet> p) override;
 
 private:
   LtePdcpSpecificLteRlcSapUser ();

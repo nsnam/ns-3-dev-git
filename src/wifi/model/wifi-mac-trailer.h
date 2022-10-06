@@ -39,18 +39,18 @@ class WifiMacTrailer : public Trailer
 {
 public:
   WifiMacTrailer ();
-  virtual ~WifiMacTrailer ();
+  ~WifiMacTrailer () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 } //namespace ns3

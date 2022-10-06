@@ -49,7 +49,7 @@ public:
   static TypeId GetTypeId ();
 
   Kun2600MhzPropagationLossModel ();
-  virtual ~Kun2600MhzPropagationLossModel ();
+  ~Kun2600MhzPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   Kun2600MhzPropagationLossModel (const Kun2600MhzPropagationLossModel &) = delete;

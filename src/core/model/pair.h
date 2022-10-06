@@ -74,9 +74,9 @@ public:
   PairValue (const result_type &value); // "import" constructor
 
   // Inherited
-  Ptr<AttributeValue> Copy () const;
-  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
-  std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  Ptr<AttributeValue> Copy () const override;
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
 
   /**
    * Get the stored value as a std::pair.
@@ -184,8 +184,8 @@ public:
    * \param secondchecker The AttributeChecker for second.
    */
   PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
-  void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
-  typename ns3::PairChecker::checker_pair_type GetCheckers () const;
+  void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker) override;
+  typename ns3::PairChecker::checker_pair_type GetCheckers () const override;
 
 private:
   /** The first checker. */

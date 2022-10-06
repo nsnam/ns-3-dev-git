@@ -55,8 +55,8 @@ public:
   PieQueueDiscTestItem (const PieQueueDiscTestItem &) = delete;
   PieQueueDiscTestItem & operator = (const PieQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  void AddHeader () override;
+  bool Mark () override;
 
   // ** Variables for testing m_isCapDropAdjustment
   double m_maxDropProbDiff = 0.0;   //!< Maximum difference between two consecutive drop probability values
@@ -110,7 +110,7 @@ class PieQueueDiscTestCase : public TestCase
 {
 public:
   PieQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Enqueue function

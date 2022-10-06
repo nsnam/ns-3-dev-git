@@ -56,7 +56,7 @@ class LteUePowerControl : public Object
 public:
 
   LteUePowerControl ();
-  virtual ~LteUePowerControl ();
+  ~LteUePowerControl () override;
 
   /**
    * \brief Get the type ID.
@@ -64,8 +64,8 @@ public:
    */
   static TypeId GetTypeId ();
   // inherited from Object
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   /**
    * \brief Set PC maximum function

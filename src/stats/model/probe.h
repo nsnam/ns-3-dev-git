@@ -45,12 +45,12 @@ public:
    */
   static TypeId GetTypeId ();
   Probe ();
-  virtual ~Probe ();
+  ~Probe () override;
 
   /**
    * \return true if Probe is currently enabled
    */
-  virtual bool IsEnabled () const;
+  bool IsEnabled () const override;
 
   /**
    * \brief connect to a trace source attribute provided by a given object

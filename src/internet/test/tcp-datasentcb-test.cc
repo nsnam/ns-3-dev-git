@@ -47,8 +47,8 @@ public:
   }
 
 protected:
-  virtual Ptr<TcpSocketBase> Fork ();
-  virtual void ReceivedData (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+  Ptr<TcpSocketBase> Fork () override;
+  void ReceivedData (Ptr<Packet> packet, const TcpHeader& tcpHeader) override;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketHalfAck);
@@ -117,11 +117,11 @@ public:
   { }
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
 
-  virtual void DataSent (uint32_t size, SocketWho who);
-  virtual void ConfigureEnvironment ();
-  virtual void FinalChecks ();
+  void DataSent (uint32_t size, SocketWho who) override;
+  void ConfigureEnvironment () override;
+  void FinalChecks () override;
 
 private:
   uint32_t m_pktSize;      //!< Packet size.

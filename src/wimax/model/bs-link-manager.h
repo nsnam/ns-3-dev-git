@@ -51,7 +51,7 @@ public:
    * \param bs base station device
    */
   BSLinkManager (Ptr<BaseStationNetDevice> bs);
-  ~BSLinkManager ();
+  ~BSLinkManager () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   BSLinkManager (const BSLinkManager &) = delete;

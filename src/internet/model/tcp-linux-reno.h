@@ -53,14 +53,14 @@ public:
    */
   TcpLinuxReno (const TcpLinuxReno& sock);
 
-  ~TcpLinuxReno ();
+  ~TcpLinuxReno () override;
 
-  std::string GetName () const;
+  std::string GetName () const override;
 
-  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
-  virtual Ptr<TcpCongestionOps> Fork ();
+  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
   /**

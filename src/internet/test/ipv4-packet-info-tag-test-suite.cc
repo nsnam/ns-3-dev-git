@@ -64,7 +64,7 @@ class Ipv4PacketInfoTagTest : public TestCase
 public:
   Ipv4PacketInfoTagTest ();
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Receive callback.

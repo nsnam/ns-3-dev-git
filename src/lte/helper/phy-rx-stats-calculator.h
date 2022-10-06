@@ -58,7 +58,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~PhyRxStatsCalculator ();
+  ~PhyRxStatsCalculator () override;
 
   // Inherited from ns3::Object
   /**

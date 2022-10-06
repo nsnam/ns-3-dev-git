@@ -35,7 +35,7 @@ class OlsrEmfTestCase : public TestCase
 {
 public:
   OlsrEmfTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OlsrEmfTestCase::OlsrEmfTestCase ()
@@ -65,7 +65,7 @@ class OlsrMidTestCase : public TestCase
 {
 public:
   OlsrMidTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OlsrMidTestCase::OlsrMidTestCase ()
@@ -178,7 +178,7 @@ class OlsrHelloTestCase : public TestCase
 {
 public:
   OlsrHelloTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OlsrHelloTestCase::OlsrHelloTestCase ()
@@ -245,7 +245,7 @@ class OlsrTcTestCase : public TestCase
 {
 public:
   OlsrTcTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OlsrTcTestCase::OlsrTcTestCase ()
@@ -290,7 +290,7 @@ class OlsrHnaTestCase : public TestCase
 {
 public:
   OlsrHnaTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OlsrHnaTestCase::OlsrHnaTestCase ()

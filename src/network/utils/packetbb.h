@@ -399,7 +399,7 @@ public:
   typedef std::list< Ptr<PbbMessage> >::const_iterator ConstMessageIterator;
 
   PbbPacket ();
-  ~PbbPacket ();
+  ~PbbPacket () override;
 
   /**
    * \return the version of PacketBB that constructed this packet.
@@ -630,18 +630,18 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \return The size (in bytes) needed to serialize this packet.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serializes this packet into the specified buffer.
    * \param start a reference to the point in a buffer to begin serializing.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserializes a packet from the specified buffer.
@@ -651,13 +651,13 @@ public:
    * If this returns a number smaller than the total number of bytes in the
    * buffer, there was an error.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Pretty-prints the contents of this block.
    * \param os a stream object to print to.
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Equality operator for PbbPacket
@@ -1137,13 +1137,13 @@ protected:
    *
    * \returns Address length (IPV4 3 or IPV6 15)
    */
-  virtual PbbAddressLength GetAddressLength () const;
+  PbbAddressLength GetAddressLength () const override;
 
-  virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
-  virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
-  virtual void PrintOriginatorAddress (std::ostream &os) const;
+  void SerializeOriginatorAddress (Buffer::Iterator &start) const override;
+  Address DeserializeOriginatorAddress (Buffer::Iterator &start) const override;
+  void PrintOriginatorAddress (std::ostream &os) const override;
 
-  virtual Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
+  Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const override;
 };
 
 /**
@@ -1164,13 +1164,13 @@ protected:
    *
    * \returns Address length (IPV4 3 or IPV6 15)
    */
-  virtual PbbAddressLength GetAddressLength () const;
+  PbbAddressLength GetAddressLength () const override;
 
-  virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
-  virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
-  virtual void PrintOriginatorAddress (std::ostream &os) const;
+  void SerializeOriginatorAddress (Buffer::Iterator &start) const override;
+  Address DeserializeOriginatorAddress (Buffer::Iterator &start) const override;
+  void PrintOriginatorAddress (std::ostream &os) const override;
 
-  virtual Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
+  Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const override;
 };
 
 /**
@@ -1616,17 +1616,17 @@ class PbbAddressBlockIpv4 : public PbbAddressBlock
 {
 public:
   PbbAddressBlockIpv4 ();
-  virtual ~PbbAddressBlockIpv4 ();
+  ~PbbAddressBlockIpv4 () override;
 
 protected:
   /**
    * \brief Returns address length
    * \returns Address length
    */
-  virtual uint8_t GetAddressLength () const;
-  virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
-  virtual Address DeserializeAddress (uint8_t *buffer) const;
-  virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
+  uint8_t GetAddressLength () const override;
+  void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const override;
+  Address DeserializeAddress (uint8_t *buffer) const override;
+  void PrintAddress (std::ostream &os, ConstAddressIterator iter) const override;
 };
 
 /**
@@ -1638,17 +1638,17 @@ class PbbAddressBlockIpv6 : public PbbAddressBlock
 {
 public:
   PbbAddressBlockIpv6 ();
-  virtual ~PbbAddressBlockIpv6 ();
+  ~PbbAddressBlockIpv6 () override;
 
 protected:
   /**
    * \brief Returns address length
    * \returns Address length
    */
-  virtual uint8_t GetAddressLength () const;
-  virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
-  virtual Address DeserializeAddress (uint8_t *buffer) const;
-  virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
+  uint8_t GetAddressLength () const override;
+  void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const override;
+  Address DeserializeAddress (uint8_t *buffer) const override;
+  void PrintAddress (std::ostream &os, ConstAddressIterator iter) const override;
 };
 
 /**

@@ -40,7 +40,7 @@ class TcpSocketFactoryImpl : public TcpSocketFactory
 {
 public:
   TcpSocketFactoryImpl ();
-  virtual ~TcpSocketFactoryImpl ();
+  ~TcpSocketFactoryImpl () override;
 
   /**
    * \brief Set the associated TCP L4 protocol.
@@ -48,10 +48,10 @@ public:
    */
   void SetTcp (Ptr<TcpL4Protocol> tcp);
 
-  virtual Ptr<Socket> CreateSocket ();
+  Ptr<Socket> CreateSocket () override;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
   Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };

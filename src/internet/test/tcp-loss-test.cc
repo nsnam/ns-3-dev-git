@@ -65,14 +65,14 @@ public:
   TcpLargeTransferLossTest (uint32_t firstLoss, uint32_t secondLoss, uint32_t lastSegment, const std::string& desc);
 
 protected:
-  void ConfigureProperties ();
-  void ConfigureEnvironment ();
-  void FinalChecks ();
-  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void ConfigureProperties () override;
+  void ConfigureEnvironment () override;
+  void FinalChecks () override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
   void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
-                       const TcpSocketState::TcpCongState_t newValue);
-  Ptr<ErrorModel> CreateReceiverErrorModel ();
+                       const TcpSocketState::TcpCongState_t newValue) override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
 private:
   uint32_t m_firstLoss;             //!< First segment loss
   uint32_t m_secondLoss;            //!< Second segment loss

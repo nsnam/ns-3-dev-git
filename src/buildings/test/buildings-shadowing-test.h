@@ -65,10 +65,10 @@ public:
    * \param name Test name
    */
   BuildingsShadowingTestCase (uint16_t m1, uint16_t m2, double refValue, double sigmaRef, std::string name);
-  virtual ~BuildingsShadowingTestCase ();
+  ~BuildingsShadowingTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Create a mobility model based on its index
    * \param index MobilityModel index

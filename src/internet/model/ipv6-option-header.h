@@ -60,7 +60,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -70,7 +70,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionHeader ();
+  ~Ipv6OptionHeader () override;
 
   /**
    * \brief Set the type of the option.
@@ -100,26 +100,26 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Get the Alignment requirement of this option header
@@ -165,7 +165,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -175,32 +175,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionPad1Header ();
+  ~Ipv6OptionPad1Header () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 /**
@@ -221,7 +221,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -232,32 +232,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionPadnHeader ();
+  ~Ipv6OptionPadnHeader () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 /**
@@ -278,7 +278,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -288,7 +288,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionJumbogramHeader ();
+  ~Ipv6OptionJumbogramHeader () override;
 
   /**
    * \brief Set the data length.
@@ -306,32 +306,32 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Get the Alignment requirement of this option header
    * \return The required alignment
    */
-  virtual Alignment GetAlignment () const;
+  Alignment GetAlignment () const override;
 
 private:
   /**
@@ -358,7 +358,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -368,7 +368,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionRouterAlertHeader ();
+  ~Ipv6OptionRouterAlertHeader () override;
 
   /**
    * \brief Set the field "value".
@@ -386,32 +386,32 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Get the Alignment requirement of this option header
    * \return The required alignment
    */
-  virtual Alignment GetAlignment () const;
+  Alignment GetAlignment () const override;
 
 private:
   /**

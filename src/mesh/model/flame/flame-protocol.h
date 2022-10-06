@@ -73,11 +73,11 @@ public:
    */
   static  TypeId  GetTypeId ();
   // Inherited from Tag
-  TypeId  GetInstanceTypeId () const;
-  uint32_t GetSerializedSize () const;
-  void  Serialize (TagBuffer i) const;
-  void  Deserialize (TagBuffer i);
-  void  Print (std::ostream &os) const;
+  TypeId  GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void  Serialize (TagBuffer i) const override;
+  void  Deserialize (TagBuffer i) override;
+  void  Print (std::ostream &os) const override;
 
 };
 
@@ -95,13 +95,13 @@ public:
   static TypeId GetTypeId ();
 
   FlameProtocol ();
-  ~FlameProtocol ();
+  ~FlameProtocol () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   FlameProtocol (const FlameProtocol &) = delete;
   FlameProtocol &operator= (const FlameProtocol &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Route request, inherited from MeshL2RoutingProtocol
@@ -115,7 +115,7 @@ public:
    * \returns if route exists
    */
   bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
-                     Ptr<const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply);
+                     Ptr<const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply) override;
   /**
    * Cleanup flame headers!
    *
@@ -127,7 +127,7 @@ public:
    * \returns if the route removed
    */
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-                           const Mac48Address destination, Ptr<Packet> packet, uint16_t& protocolType);
+                           const Mac48Address destination, Ptr<Packet> packet, uint16_t& protocolType) override;
   /**
    * \brief Install FLAME on given mesh point.
    * \param mp the MeshPointDevice

@@ -34,7 +34,7 @@ class IeRann : public WifiInformationElement
 {
 public:
   IeRann ();
-  virtual ~IeRann ();
+  ~IeRann () override;
   /**
    * Set flags field
    * \param flags the flags value to set
@@ -106,11 +106,11 @@ public:
   void IncrementMetric (uint32_t metric);
 
   // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length);
-  virtual uint16_t GetInformationFieldSize () const;
-  virtual void Print (std::ostream &os) const;
+  WifiInformationElementId ElementId () const override;
+  void SerializeInformationField (Buffer::Iterator i) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+  uint16_t GetInformationFieldSize () const override;
+  void Print (std::ostream &os) const override;
 
 private:
   uint8_t m_flags; ///< flags

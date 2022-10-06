@@ -134,7 +134,7 @@ public:
   {
   }
   /// Empty
-  virtual ~Ns2MobilityHelperTest ()
+  ~Ns2MobilityHelperTest () override
   {
   }
   /**
@@ -258,19 +258,19 @@ private:
     NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (vel, ref.vel, tol), true, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
   }
 
-  void DoSetup ()
+  void DoSetup () override
   {
     CreateNodes ();
   }
 
-  void DoTeardown ()
+  void DoTeardown () override
   {
     Names::Clear ();
     Simulator::Destroy ();
   }
 
   /// Go
-  void DoRun ()
+  void DoRun () override
   {
     NS_TEST_ASSERT_MSG_EQ (m_trace.empty (), false, "Need trace");
     NS_TEST_ASSERT_MSG_EQ (m_reference.empty (), false, "Need reference");

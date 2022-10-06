@@ -48,7 +48,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual ~QueueLimits ();
+  ~QueueLimits () override;
 
   /**
    * \brief Reset queue limits state

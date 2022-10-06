@@ -41,11 +41,11 @@ class BasicTracedCallbackTestCase : public TestCase
 {
 public:
   BasicTracedCallbackTestCase ();
-  virtual ~BasicTracedCallbackTestCase ()
+  ~BasicTracedCallbackTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * First callback.

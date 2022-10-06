@@ -125,7 +125,7 @@ public:
    */
   static TypeId GetTypeId ();
   VsaManager ();
-  virtual ~VsaManager ();
+  ~VsaManager () override;
 
   /**
    * \param device WaveNetDevice associated with VsaManager
@@ -155,8 +155,8 @@ public:
    */
   void RemoveByOrganizationIdentifier (const OrganizationIdentifier &oi);
 private:
-  void DoDispose ();
-  void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
 
   /**
    * \param mac the MAC entity which receives VSA frame

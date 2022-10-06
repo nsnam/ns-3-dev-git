@@ -122,7 +122,7 @@ public:
   static TypeId GetTypeId ();
 
   ErrorModel ();
-  virtual ~ErrorModel ();
+  ~ErrorModel () override;
 
   /**
    * Note:  Depending on the error model, this function may or may not
@@ -189,7 +189,7 @@ public:
   static TypeId GetTypeId ();
 
   RateErrorModel ();
-  virtual ~RateErrorModel ();
+  ~RateErrorModel () override;
 
   /**
    * Error unit. The error model can be packet, Byte or bit based.
@@ -235,7 +235,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
+  bool DoCorrupt (Ptr<Packet> p) override;
   /**
    * Corrupt a packet (packet unit).
    * \param p the packet to corrupt
@@ -254,7 +254,7 @@ private:
    * \returns true if the packet is corrupted
    */
   virtual bool DoCorruptBit (Ptr<Packet> p);
-  virtual void DoReset ();
+  void DoReset () override;
 
   enum ErrorUnit m_unit; //!< Error rate unit
   double m_rate; //!< Error rate
@@ -305,7 +305,7 @@ public:
   static TypeId GetTypeId ();
 
   BurstErrorModel ();
-  virtual ~BurstErrorModel ();
+  ~BurstErrorModel () override;
 
   /**
    * \returns the error rate being applied by the model
@@ -337,8 +337,8 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
-  virtual void DoReset ();
+  bool DoCorrupt (Ptr<Packet> p) override;
+  void DoReset () override;
 
   double m_burstRate;                         //!< the burst error event
   Ptr<RandomVariableStream> m_burstStart;     //!< the error decision variable
@@ -385,7 +385,7 @@ public:
    */
   static TypeId GetTypeId ();
   ListErrorModel ();
-  virtual ~ListErrorModel ();
+  ~ListErrorModel () override;
 
   /**
    * \return a copy of the underlying list
@@ -399,8 +399,8 @@ public:
   void SetList (const std::list<uint32_t> &packetlist);
 
 private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
-  virtual void DoReset ();
+  bool DoCorrupt (Ptr<Packet> p) override;
+  void DoReset () override;
 
   /// Typedef: packet Uid list
   typedef std::list<uint32_t> PacketList;
@@ -432,7 +432,7 @@ public:
    */
   static TypeId GetTypeId ();
   ReceiveListErrorModel ();
-  virtual ~ReceiveListErrorModel ();
+  ~ReceiveListErrorModel () override;
 
   /**
    * \return a copy of the underlying list
@@ -446,8 +446,8 @@ public:
   void SetList (const std::list<uint32_t> &packetlist);
 
 private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
-  virtual void DoReset ();
+  bool DoCorrupt (Ptr<Packet> p) override;
+  void DoReset () override;
 
   /// Typedef: packet sequence number list
   typedef std::list<uint32_t> PacketList;
@@ -472,11 +472,11 @@ public:
   static TypeId GetTypeId ();
 
   BinaryErrorModel ();
-  virtual ~BinaryErrorModel ();
+  ~BinaryErrorModel () override;
 
 private:
-  virtual bool DoCorrupt (Ptr<Packet> p);
-  virtual void DoReset ();
+  bool DoCorrupt (Ptr<Packet> p) override;
+  void DoReset () override;
 
   uint8_t m_counter; //!< internal state counter.
 

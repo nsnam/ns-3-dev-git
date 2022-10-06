@@ -79,7 +79,7 @@ public:
   /**
    * Destructor for HE PHY
    */
-  virtual ~HePhy ();
+  ~HePhy () override;
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   WifiMode GetSigAMode () const override;

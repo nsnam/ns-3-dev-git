@@ -37,7 +37,7 @@ class HtConfiguration : public Object
 {
 public:
   HtConfiguration ();
-  virtual ~HtConfiguration ();
+  ~HtConfiguration () override;
 
   /**
    * \brief Get the type ID.

@@ -66,7 +66,7 @@ public:
    */
   GnuplotAggregator (const std::string &outputFileNameWithoutExtension);
 
-  virtual ~GnuplotAggregator ();
+  ~GnuplotAggregator () override;
 
   // Below are hooked to connectors exporting data
   // They are not overloaded since it confuses the compiler when made

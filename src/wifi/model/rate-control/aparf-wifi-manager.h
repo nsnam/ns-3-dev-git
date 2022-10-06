@@ -51,7 +51,7 @@ public:
    */
   static TypeId GetTypeId ();
   AparfWifiManager ();
-  virtual ~AparfWifiManager ();
+  ~AparfWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
 

@@ -98,7 +98,7 @@ class NixVectorRoutingTest : public TestCase
   void SendData (Time delay, Ptr<Socket> socket, Ipv6Address to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   NixVectorRoutingTest ();
 
   /**

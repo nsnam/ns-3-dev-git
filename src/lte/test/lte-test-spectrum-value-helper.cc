@@ -49,14 +49,14 @@ public:
    * \param fcs the expected spectrum model
    */
   LteSpectrumModelTestCase (const char* str, uint16_t earfcn, uint8_t bw, std::vector<double> fcs);
-  virtual ~LteSpectrumModelTestCase ();
+  ~LteSpectrumModelTestCase () override;
 
 protected:
   Ptr<SpectrumModel> m_actual; ///< actual spectrum model
   Ptr<SpectrumModel> m_expected; ///< expected spectrum model
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteSpectrumModelTestCase::LteSpectrumModelTestCase (const char* str, uint16_t earfcn, uint8_t bw, std::vector<double> fcs)
@@ -101,14 +101,14 @@ public:
    * \param expected executed spectrum value
    */
   LteNoisePsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double noiseFigureDb, SpectrumValue& expected);
-  virtual ~LteNoisePsdTestCase ();
+  ~LteNoisePsdTestCase () override;
 
 protected:
   Ptr<SpectrumValue> m_actual; ///< actual spectrum value
   Ptr<SpectrumValue> m_expected; ///< expected spectrum value
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteNoisePsdTestCase::LteNoisePsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double noiseFigureDb, SpectrumValue& expected)
@@ -155,14 +155,14 @@ public:
    * \param expected executed spectrum value
    */
   LteTxPsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double txPowerDbm, std::vector<int> activeRbs, SpectrumValue& expected);
-  virtual ~LteTxPsdTestCase ();
+  ~LteTxPsdTestCase () override;
 
 protected:
   Ptr<SpectrumValue> m_actual; ///< actual spectrum value
   Ptr<SpectrumValue> m_expected; ///< expected spectrum value
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteTxPsdTestCase::LteTxPsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double txPowerDbm, std::vector<int> activeRbs, SpectrumValue& expected)

@@ -54,7 +54,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~NoBackhaulEpcHelper ();
+  ~NoBackhaulEpcHelper () override;
 
   // inherited from Object
   /**

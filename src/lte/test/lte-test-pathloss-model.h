@@ -66,7 +66,7 @@ class LtePathlossModelSystemTestCase : public TestCase
    */
     LtePathlossModelSystemTestCase (std::string name, double snrDb, double dist, uint16_t mcsIndex);
     LtePathlossModelSystemTestCase ();
-    virtual ~LtePathlossModelSystemTestCase ();
+    ~LtePathlossModelSystemTestCase () override;
 
   /**
    * \brief DL scheduling function
@@ -75,7 +75,7 @@ class LtePathlossModelSystemTestCase : public TestCase
     void DlScheduling (DlSchedulingCallbackInfo dlInfo);
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
     double m_snrDb; ///< the SNR in dB
     double m_distance; ///< the distance

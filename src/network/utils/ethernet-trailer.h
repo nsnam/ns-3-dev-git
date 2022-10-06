@@ -95,11 +95,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator end) const;
-  virtual uint32_t Deserialize (Buffer::Iterator end);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator end) const override;
+  uint32_t Deserialize (Buffer::Iterator end) override;
 private:
   /**
    * Enabled FCS calculations. If false, m_fcs is set to 0 and CheckFcs

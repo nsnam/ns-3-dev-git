@@ -128,7 +128,7 @@ public:
 			  std::string hex);
 
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
   SequenceNumber10 m_ackSn; ///< ack sequence number
   std::list<SequenceNumber10> m_nackSnList; ///< list of nack sequence numbers

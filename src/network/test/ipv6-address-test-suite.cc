@@ -29,10 +29,10 @@ class Ipv6AddressTestCase : public TestCase
 {
 public:
   Ipv6AddressTestCase ();
-  virtual ~Ipv6AddressTestCase ();
+  ~Ipv6AddressTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Ipv6AddressTestCase::Ipv6AddressTestCase ()

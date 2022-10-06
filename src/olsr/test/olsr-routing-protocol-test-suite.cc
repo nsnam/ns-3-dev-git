@@ -57,8 +57,8 @@ class OlsrMprTestCase : public TestCase
 {
 public:
   OlsrMprTestCase ();
-  ~OlsrMprTestCase ();
-  virtual void DoRun ();
+  ~OlsrMprTestCase () override;
+  void DoRun () override;
 };
 
 

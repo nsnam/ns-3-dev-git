@@ -49,13 +49,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~BuildingsChannelConditionModelTestCase ();
+  ~BuildingsChannelConditionModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test

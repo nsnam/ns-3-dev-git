@@ -94,7 +94,7 @@ public:
    * Interface implemented from LteRlcSapProvider
    * \param params the TransmitPdcpPduParameters
    */
-  virtual void TransmitPdcpPdu (TransmitPdcpPduParameters params);
+  void TransmitPdcpPdu (TransmitPdcpPduParameters params) override;
 
 private:
   LteRlcSpecificLteRlcSapProvider ();
@@ -132,7 +132,7 @@ public:
   LteRlcSpecificLteRlcSapUser (C* pdcp);
 
   // Interface implemented from LteRlcSapUser
-  virtual void ReceivePdcpPdu (Ptr<Packet> p);
+  void ReceivePdcpPdu (Ptr<Packet> p) override;
 
 private:
   LteRlcSpecificLteRlcSapUser ();

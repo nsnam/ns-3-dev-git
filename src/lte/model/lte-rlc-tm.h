@@ -40,32 +40,32 @@ class LteRlcTm : public LteRlc
 {
 public:
   LteRlcTm ();
-  virtual ~LteRlcTm ();
+  ~LteRlcTm () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * RLC SAP
    *
    * \param p packet
    */
-  virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
+  void DoTransmitPdcpPdu (Ptr<Packet> p) override;
 
   /**
    * MAC SAP
    *
    * \param txOpParams the LteMacSapUser::TxOpportunityParameters
    */
-  virtual void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
+  void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams) override;
   /**
    * Notify HARQ deliver failure
    */
-  virtual void DoNotifyHarqDeliveryFailure ();
-  virtual void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
+  void DoNotifyHarqDeliveryFailure () override;
+  void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams) override;
 
 private:
   /// Expire RBS timer function

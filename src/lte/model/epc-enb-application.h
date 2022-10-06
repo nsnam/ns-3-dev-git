@@ -62,7 +62,7 @@ public:
    */
   static TypeId GetTypeId ();
 protected:
-  void DoDispose ();
+  void DoDispose () override;
 
 public:
 
@@ -91,7 +91,7 @@ public:
    * Destructor
    *
    */
-  virtual ~EpcEnbApplication ();
+  ~EpcEnbApplication () override;
 
 
   /**

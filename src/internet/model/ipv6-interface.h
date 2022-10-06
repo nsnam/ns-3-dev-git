@@ -65,7 +65,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6Interface ();
+  ~Ipv6Interface () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   Ipv6Interface (const Ipv6Interface &) = delete;
@@ -298,7 +298,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

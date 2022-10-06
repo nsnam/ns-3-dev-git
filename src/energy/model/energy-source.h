@@ -92,7 +92,7 @@ public:
    */
   static TypeId GetTypeId ();
   EnergySource ();
-  virtual ~EnergySource ();
+  ~EnergySource () override;
 
   /**
    * \returns Supply voltage of the energy source.
@@ -197,7 +197,7 @@ private:
    *
    * Defined in ns3::Object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

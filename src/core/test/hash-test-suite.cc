@@ -57,7 +57,7 @@ public:
    */
   HashTestCase (const std::string name);
   /** Destructor. */
-  virtual ~HashTestCase ();
+  ~HashTestCase () override;
 
 protected:
   /**
@@ -85,7 +85,7 @@ private:
    * \param [in] hash the hash value
    */
   void Check ( const std::string hashName, const int bits, const uint64_t hash);
-  virtual void DoRun ();
+  void DoRun () override;
 
 };  // class HashTestCase
 
@@ -157,10 +157,10 @@ public:
   /** Constructor. */
   DefaultHashTestCase ();
   /** Destructor. */
-  virtual ~DefaultHashTestCase ();
+  ~DefaultHashTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 DefaultHashTestCase::DefaultHashTestCase ()
@@ -193,10 +193,10 @@ public:
   /** Constructor. */
   Fnv1aTestCase ();
   /** Destructor. */
-  virtual ~Fnv1aTestCase ();
+  ~Fnv1aTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Fnv1aTestCase::Fnv1aTestCase ()
@@ -228,10 +228,10 @@ public:
   /** Constructor. */
   Murmur3TestCase ();
   /** Destructor. */
-  virtual ~Murmur3TestCase ();
+  ~Murmur3TestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Murmur3TestCase::Murmur3TestCase ()
@@ -316,10 +316,10 @@ public:
   /** Constructor. */
   Hash32FunctionPtrTestCase ();
   /** Destructor. */
-  virtual ~Hash32FunctionPtrTestCase ();
+  ~Hash32FunctionPtrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Hash32FunctionPtrTestCase::Hash32FunctionPtrTestCase ()
@@ -347,10 +347,10 @@ public:
   /** Constructor. */
   Hash64FunctionPtrTestCase ();
   /** Destructor. */
-  virtual ~Hash64FunctionPtrTestCase ();
+  ~Hash64FunctionPtrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Hash64FunctionPtrTestCase::Hash64FunctionPtrTestCase ()
@@ -378,10 +378,10 @@ public:
   /** Constructor. */
   IncrementalTestCase ();
   /** Destructor. */
-  virtual ~IncrementalTestCase ();
+  ~IncrementalTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Complute the hash test function
    * \param name the hash name

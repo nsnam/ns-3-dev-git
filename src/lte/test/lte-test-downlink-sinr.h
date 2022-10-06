@@ -64,10 +64,10 @@ public:
    * \param name the name of the test
    */
   LteDownlinkDataSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-  virtual ~LteDownlinkDataSinrTestCase ();
+  ~LteDownlinkDataSinrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Ptr<SpectrumValue> m_sv; ///< the spectrum value
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model
@@ -98,10 +98,10 @@ class LteDownlinkCtrlSinrTestCase : public TestCase
    * \param name the name of the test
    */
     LteDownlinkCtrlSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-    virtual ~LteDownlinkCtrlSinrTestCase ();
+    ~LteDownlinkCtrlSinrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Ptr<SpectrumValue> m_sv; ///< the spectrum value
   Ptr<const SpectrumModel> m_sm; ///< the spectrum model

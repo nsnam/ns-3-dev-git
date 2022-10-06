@@ -44,7 +44,7 @@ public:
    */
   static TypeId GetTypeId ();
   NodeListPriv ();
-  ~NodeListPriv ();
+  ~NodeListPriv () override;
 
   /**
    * \param node node to add
@@ -99,7 +99,7 @@ private:
   /**
    * \brief Dispose the nodes in the list
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   std::vector<Ptr<Node> > m_nodes; //!< node objects container
 };

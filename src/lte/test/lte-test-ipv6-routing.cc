@@ -61,7 +61,7 @@ class LteIpv6RoutingTestCase : public TestCase
 {
 public:
   LteIpv6RoutingTestCase ();
-  virtual ~LteIpv6RoutingTestCase ();
+  ~LteIpv6RoutingTestCase () override;
 
   /**
    * \brief Initialize testing parameters.
@@ -97,7 +97,7 @@ public:
   void TunToPgw (Ptr<Packet> p);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6InterfaceContainer m_ueIpIface; //!< IPv6 interface container for ue
   Ipv6Address m_remoteHostAddr; //!< remote host address
   std::list<uint64_t> m_pgwUidRxFrmEnb; //!< list of uids of packets received at pgw from enb

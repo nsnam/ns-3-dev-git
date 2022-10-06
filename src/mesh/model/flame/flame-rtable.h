@@ -86,13 +86,13 @@ public:
   static TypeId GetTypeId ();
 
   FlameRtable ();
-  ~FlameRtable ();
+  ~FlameRtable () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   FlameRtable (const FlameRtable &) = delete;
   FlameRtable &operator= (const FlameRtable &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Add path

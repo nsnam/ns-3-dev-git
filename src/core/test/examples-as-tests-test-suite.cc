@@ -56,7 +56,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~CommandLineExampleTestCase();
+  ~CommandLineExampleTestCase() override;
 
   /**
   * Override this function to filter the version string from
@@ -66,7 +66,7 @@ public:
   *
   * \returns The string of post-processing commands.
   */
-  virtual std::string GetPostProcessingCommand () const;
+  std::string GetPostProcessingCommand () const override;
 };
 
 CommandLineExampleTestCase::CommandLineExampleTestCase ()

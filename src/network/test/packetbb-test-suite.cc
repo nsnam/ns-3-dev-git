@@ -47,10 +47,10 @@ public:
    */
   PbbTestCase (std::string name, Ptr<PbbPacket> packet,
                uint8_t * buffer, uint32_t size);
-  virtual ~PbbTestCase ();
+  ~PbbTestCase () override;
 
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /// Serialization

@@ -58,13 +58,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vBuildingsChCondModelTestCase ();
+  ~ThreeGppV2vBuildingsChCondModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -194,13 +194,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vUrbanLosNlosvChCondModelTestCase ();
+  ~ThreeGppV2vUrbanLosNlosvChCondModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -345,13 +345,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vHighwayLosNlosvChCondModelTestCase ();
+  ~ThreeGppV2vHighwayLosNlosvChCondModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Evaluates the channel condition between two nodes by calling the method

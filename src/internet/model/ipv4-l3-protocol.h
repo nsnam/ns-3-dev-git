@@ -88,7 +88,7 @@ public:
   static const uint16_t PROT_NUMBER; //!< Protocol number (0x0800)
 
   Ipv4L3Protocol();
-  virtual ~Ipv4L3Protocol ();
+  ~Ipv4L3Protocol () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   Ipv4L3Protocol (const Ipv4L3Protocol &) = delete;
@@ -117,22 +117,22 @@ public:
 
   // functions defined in base class Ipv4
 
-  void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
-  Ptr<Ipv4RoutingProtocol> GetRoutingProtocol () const;
+  void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol) override;
+  Ptr<Ipv4RoutingProtocol> GetRoutingProtocol () const override;
 
-  Ptr<Socket> CreateRawSocket ();
-  void DeleteRawSocket (Ptr<Socket> socket);
+  Ptr<Socket> CreateRawSocket () override;
+  void DeleteRawSocket (Ptr<Socket> socket) override;
 
-  virtual void Insert (Ptr<IpL4Protocol> protocol);
-  virtual void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
+  void Insert (Ptr<IpL4Protocol> protocol) override;
+  void Insert (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) override;
 
-  virtual void Remove (Ptr<IpL4Protocol> protocol);
-  virtual void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex);
+  void Remove (Ptr<IpL4Protocol> protocol) override;
+  void Remove (Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex) override;
 
-  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
-  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const;
+  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const override;
+  Ptr<IpL4Protocol> GetProtocol (int protocolNumber, int32_t interfaceIndex) const override;
 
-  virtual Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
+  Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest) override;
 
   /**
    * \param ttl default ttl to use
@@ -169,7 +169,7 @@ public:
    * down the stack to the MAC and PHY layers.
    */
   void Send (Ptr<Packet> packet, Ipv4Address source,
-             Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+             Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) override;
   /**
    * \param packet packet to send
    * \param ipHeader IP Header
@@ -178,41 +178,41 @@ public:
    * Higher-level layers call this method to send a packet with IPv4 Header
    * (Intend to be used with IpHeaderInclude attribute.)
    */
-  void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route);
+  void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route) override;
 
-  uint32_t AddInterface (Ptr<NetDevice> device);
+  uint32_t AddInterface (Ptr<NetDevice> device) override;
   /**
    * \brief Get an interface.
    * \param i interface index
    * \return IPv4 interface pointer
    */
   Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
-  uint32_t GetNInterfaces () const;
+  uint32_t GetNInterfaces () const override;
 
-  int32_t GetInterfaceForAddress (Ipv4Address addr) const;
-  int32_t GetInterfaceForPrefix (Ipv4Address addr, Ipv4Mask mask) const;
-  int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const;
-  bool IsDestinationAddress (Ipv4Address address, uint32_t iif) const;
+  int32_t GetInterfaceForAddress (Ipv4Address addr) const override;
+  int32_t GetInterfaceForPrefix (Ipv4Address addr, Ipv4Mask mask) const override;
+  int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const override;
+  bool IsDestinationAddress (Ipv4Address address, uint32_t iif) const override;
 
-  bool AddAddress (uint32_t i, Ipv4InterfaceAddress address);
-  Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
-  uint32_t GetNAddresses (uint32_t interface) const;
-  bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
-  bool RemoveAddress (uint32_t interface, Ipv4Address address);
+  bool AddAddress (uint32_t i, Ipv4InterfaceAddress address) override;
+  Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const override;
+  uint32_t GetNAddresses (uint32_t interface) const override;
+  bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex) override;
+  bool RemoveAddress (uint32_t interface, Ipv4Address address) override;
   Ipv4Address SelectSourceAddress (Ptr<const NetDevice> device,
-                                   Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
+                                   Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope) override;
 
 
-  void SetMetric (uint32_t i, uint16_t metric);
-  uint16_t GetMetric (uint32_t i) const;
-  uint16_t GetMtu (uint32_t i) const;
-  bool IsUp (uint32_t i) const;
-  void SetUp (uint32_t i);
-  void SetDown (uint32_t i);
-  bool IsForwarding (uint32_t i) const;
-  void SetForwarding (uint32_t i, bool val);
+  void SetMetric (uint32_t i, uint16_t metric) override;
+  uint16_t GetMetric (uint32_t i) const override;
+  uint16_t GetMtu (uint32_t i) const override;
+  bool IsUp (uint32_t i) const override;
+  void SetUp (uint32_t i) override;
+  void SetDown (uint32_t i) override;
+  bool IsForwarding (uint32_t i) const override;
+  void SetForwarding (uint32_t i, bool val) override;
 
-  Ptr<NetDevice> GetNetDevice (uint32_t i);
+  Ptr<NetDevice> GetNetDevice (uint32_t i) override;
 
   /**
    * \brief Check if an IPv4 address is unicast according to the node.
@@ -266,12 +266,12 @@ public:
 
 protected:
 
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
    */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
 private:
   /**
    * \brief Ipv4L3ProtocolTestCase test case.
@@ -280,10 +280,10 @@ private:
   friend class ::Ipv4L3ProtocolTestCase;
 
   // class Ipv4 attributes
-  virtual void SetIpForward (bool forward);
-  virtual bool GetIpForward () const;
-  virtual void SetWeakEsModel (bool model);
-  virtual bool GetWeakEsModel () const;
+  void SetIpForward (bool forward) override;
+  bool GetIpForward () const override;
+  void SetWeakEsModel (bool model) override;
+  bool GetWeakEsModel () const override;
 
   /**
    * \brief Decrease the identification value for a dropped or recursed packet

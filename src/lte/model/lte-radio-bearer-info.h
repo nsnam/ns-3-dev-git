@@ -41,7 +41,7 @@ class LteRadioBearerInfo : public Object
 
 public:
   LteRadioBearerInfo ();
-  virtual ~LteRadioBearerInfo ();
+  ~LteRadioBearerInfo () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

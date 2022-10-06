@@ -82,7 +82,7 @@ public:
    */
   static TypeId GetTypeId ();
   Ipv4 ();
-  virtual ~Ipv4 ();
+  ~Ipv4 () override;
 
   /**
    * \brief Register a new routing protocol to be used by this Ipv4 stack

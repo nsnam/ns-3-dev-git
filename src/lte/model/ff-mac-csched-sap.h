@@ -453,11 +453,11 @@ public:
   MemberCschedSapProvider (C* scheduler);
 
   // inherited from FfMacCschedSapProvider
-  virtual void CschedCellConfigReq (const struct CschedCellConfigReqParameters& params);
-  virtual void CschedUeConfigReq (const struct CschedUeConfigReqParameters& params);
-  virtual void CschedLcConfigReq (const struct CschedLcConfigReqParameters& params);
-  virtual void CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params);
-  virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params);
+  void CschedCellConfigReq (const struct CschedCellConfigReqParameters& params) override;
+  void CschedUeConfigReq (const struct CschedUeConfigReqParameters& params) override;
+  void CschedLcConfigReq (const struct CschedLcConfigReqParameters& params) override;
+  void CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params) override;
+  void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params) override;
 
 private:
   MemberCschedSapProvider ();

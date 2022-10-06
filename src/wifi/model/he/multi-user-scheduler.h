@@ -55,7 +55,7 @@ public:
    */
   static TypeId GetTypeId ();
   MultiUserScheduler ();
-  virtual ~MultiUserScheduler ();
+  ~MultiUserScheduler () override;
 
   /// Enumeration of the possible transmission formats
   enum TxFormat

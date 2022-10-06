@@ -40,21 +40,21 @@ public:
    * \param protocol flame protocol object
    */
   FlameProtocolMac (Ptr<FlameProtocol> protocol);
-  ~FlameProtocolMac ();
+  ~FlameProtocolMac () override;
 
   // Inherited from MAC plugin
   /**
    * Set parent of this instance
    * \param parent pointer to the parent MeshWifiInterfaceMac
    */
-  void SetParent (Ptr<MeshWifiInterfaceMac> parent);
+  void SetParent (Ptr<MeshWifiInterfaceMac> parent) override;
   /**
    * Receive and process a packet; packets are given a FlameTag packet tag
    * \param packet the packet received
    * \param header the header
    * \returns true if successful
    */
-  bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
+  bool Receive (Ptr<Packet> packet, const WifiMacHeader & header) override;
   /**
    * Process an outgoing frame.  Remove the FlameTag and increment stats
    * counters.
@@ -64,18 +64,18 @@ public:
    * \param to the MAC address of the receiver
    * \returns true if successful
    */
-  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
+  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) override;
   /**
    * Update beacon is empty, because FLAME does not know anything about beacons
    * \param beacon the beacon
    */
-  void UpdateBeacon (MeshWifiBeacon & beacon) const {};
+  void UpdateBeacon (MeshWifiBeacon & beacon) const override {};
   /**
    * AssignStreams is empty, because this model doesn't use random variables
    * \param stream
    * \returns 0 (no streams used)
    */
-  int64_t AssignStreams (int64_t stream) { return 0; }
+  int64_t AssignStreams (int64_t stream) override { return 0; }
 
   /**
    * Get channel ID function

@@ -53,11 +53,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer buf) const;
-  virtual void Deserialize (TagBuffer buf);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer buf) const override;
+  void Deserialize (TagBuffer buf) override;
+  void Print (std::ostream &os) const override;
   Ipv4FlowProbeTag ();
   /**
    * \brief Consructor

@@ -101,7 +101,7 @@ public:
   /**
    * Destroy the InternetStackHelper
    */
-  virtual ~InternetStackHelper();
+  ~InternetStackHelper() override;
 
   /**
    * \brief Copy constructor
@@ -231,10 +231,10 @@ private:
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapIpv4Internal (std::string prefix,
+  void EnablePcapIpv4Internal (std::string prefix,
                                        Ptr<Ipv4> ipv4,
                                        uint32_t interface,
-                                       bool explicitFilename);
+                                       bool explicitFilename) override;
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
@@ -246,11 +246,11 @@ private:
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream,
+  void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream,
                                         std::string prefix,
                                         Ptr<Ipv4> ipv4,
                                         uint32_t interface,
-                                        bool explicitFilename);
+                                        bool explicitFilename) override;
 
   /**
    * @brief Enable pcap output the indicated Ipv6 and interface pair.
@@ -260,10 +260,10 @@ private:
    * @param interface Interface ID on the Ipv6 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapIpv6Internal (std::string prefix,
+  void EnablePcapIpv6Internal (std::string prefix,
                                        Ptr<Ipv6> ipv6,
                                        uint32_t interface,
-                                       bool explicitFilename);
+                                       bool explicitFilename) override;
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
@@ -275,11 +275,11 @@ private:
    * @param interface Interface ID on the Ipv6 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream,
+  void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream,
                                         std::string prefix,
                                         Ptr<Ipv6> ipv6,
                                         uint32_t interface,
-                                        bool explicitFilename);
+                                        bool explicitFilename) override;
 
   /**
    * \brief Initialize the helper to its default values

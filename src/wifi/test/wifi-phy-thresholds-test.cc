@@ -58,7 +58,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~WifiPhyThresholdsTest ();
+  ~WifiPhyThresholdsTest () override;
 
 protected:
   /**
@@ -263,8 +263,8 @@ class WifiPhyThresholdsWeakWifiSignalTest : public WifiPhyThresholdsTest
 {
 public:
   WifiPhyThresholdsWeakWifiSignalTest ();
-  virtual ~WifiPhyThresholdsWeakWifiSignalTest ();
-  virtual void DoRun ();
+  ~WifiPhyThresholdsWeakWifiSignalTest () override;
+  void DoRun () override;
 };
 
 WifiPhyThresholdsWeakWifiSignalTest::WifiPhyThresholdsWeakWifiSignalTest ()
@@ -303,8 +303,8 @@ class WifiPhyThresholdsWeakForeignSignalTest : public WifiPhyThresholdsTest
 {
 public:
   WifiPhyThresholdsWeakForeignSignalTest ();
-  virtual ~WifiPhyThresholdsWeakForeignSignalTest ();
-  virtual void DoRun ();
+  ~WifiPhyThresholdsWeakForeignSignalTest () override;
+  void DoRun () override;
 };
 
 WifiPhyThresholdsWeakForeignSignalTest::WifiPhyThresholdsWeakForeignSignalTest ()
@@ -343,8 +343,8 @@ class WifiPhyThresholdsStrongWifiSignalTest : public WifiPhyThresholdsTest
 {
 public:
   WifiPhyThresholdsStrongWifiSignalTest ();
-  virtual ~WifiPhyThresholdsStrongWifiSignalTest ();
-  virtual void DoRun ();
+  ~WifiPhyThresholdsStrongWifiSignalTest () override;
+  void DoRun () override;
 };
 
 WifiPhyThresholdsStrongWifiSignalTest::WifiPhyThresholdsStrongWifiSignalTest ()
@@ -387,8 +387,8 @@ class WifiPhyThresholdsStrongForeignSignalTest : public WifiPhyThresholdsTest
 {
 public:
   WifiPhyThresholdsStrongForeignSignalTest ();
-  virtual ~WifiPhyThresholdsStrongForeignSignalTest ();
-  virtual void DoRun ();
+  ~WifiPhyThresholdsStrongForeignSignalTest () override;
+  void DoRun () override;
 };
 
 WifiPhyThresholdsStrongForeignSignalTest::WifiPhyThresholdsStrongForeignSignalTest ()

@@ -63,10 +63,10 @@ public:
                     uint32_t maxSndBufferSize, std::string name);
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
 
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
 
   Configuration m_configuration;  //!< Test configuration.
   uint32_t m_maxRcvBufferSize;    //!< Maximum receiver buffer size.

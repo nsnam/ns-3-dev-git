@@ -89,7 +89,7 @@ public:
   RandomRoomPositionAllocatorTestCase ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -173,7 +173,7 @@ public:
   SameRoomPositionAllocatorTestCase ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

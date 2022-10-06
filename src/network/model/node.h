@@ -68,7 +68,7 @@ public:
    */
   Node(uint32_t systemId);
 
-  virtual ~Node();
+  ~Node() override;
 
   /**
    * \returns the unique id of this node.
@@ -216,8 +216,8 @@ protected:
    * and must chain up to it by calling Node::DoDispose at the
    * end of their own DoDispose method.
    */
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
 private:
 
   /**

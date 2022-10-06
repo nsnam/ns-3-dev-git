@@ -72,7 +72,7 @@ public:
   LteFrTestCase (std::string name,
                  uint32_t userNum,uint16_t dlBandwidth,uint16_t ulBandwidth,
                  std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
-  virtual ~LteFrTestCase ();
+  ~LteFrTestCase () override;
 
   /**
    * DL data receive start function
@@ -86,7 +86,7 @@ public:
   void UlDataRxStart (Ptr<const SpectrumValue> spectrumValue);
 
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
   uint32_t m_userNum; ///< the number of UE nodes
   uint16_t m_dlBandwidth; ///< the DL bandwidth
@@ -131,10 +131,10 @@ public:
                      uint8_t dlSubBandOffset, uint16_t dlSubBandwidth,
                      uint8_t ulSubBandOffset, uint16_t ulSubBandwidth,
                      std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
-  virtual ~LteHardFrTestCase ();
+  ~LteHardFrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   std::string m_schedulerType; ///< the scheduler type
 
@@ -178,10 +178,10 @@ public:
                        uint16_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint16_t dlEdgeSubBandwidth,
                        uint16_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint16_t ulEdgeSubBandwidth,
                        std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
-  virtual ~LteStrictFrTestCase ();
+  ~LteStrictFrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   std::string m_schedulerType; ///< scheduler type
 
@@ -213,7 +213,7 @@ public:
    * \param schedulerType the scheduler type
    */
   LteFrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteFrAreaTestCase ();
+  ~LteFrAreaTestCase () override;
 
   /**
    * DL data receive start function
@@ -265,7 +265,7 @@ public:
   void SetUlExpectedValues (double expectedPower, std::vector<bool> expectedDlRb);
 
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
   std::string m_schedulerType; ///< the scheduler type
 
@@ -303,10 +303,10 @@ public:
    * \param schedulerType the scheduler type
    */
   LteStrictFrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteStrictFrAreaTestCase ();
+  ~LteStrictFrAreaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 /**
@@ -325,10 +325,10 @@ public:
    * \param schedulerType the scheduler type
    */
   LteSoftFrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteSoftFrAreaTestCase ();
+  ~LteSoftFrAreaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -348,10 +348,10 @@ public:
    * \param schedulerType the scheduler type
    */
   LteSoftFfrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteSoftFfrAreaTestCase ();
+  ~LteSoftFfrAreaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -371,10 +371,10 @@ public:
    * \param schedulerType the scheduler type
    */
   LteEnhancedFfrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteEnhancedFfrAreaTestCase ();
+  ~LteEnhancedFfrAreaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -394,10 +394,10 @@ public:
    * \param schedulerType the scheduler type
    */
   LteDistributedFfrAreaTestCase (std::string name, std::string schedulerType);
-  virtual ~LteDistributedFfrAreaTestCase ();
+  ~LteDistributedFfrAreaTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

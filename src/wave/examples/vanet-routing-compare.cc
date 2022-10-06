@@ -385,7 +385,7 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~RoutingHelper ();
+  ~RoutingHelper () override;
 
   /**
    * \brief Installs routing functionality on nodes and their
@@ -725,7 +725,7 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~WifiPhyStats ();
+  ~WifiPhyStats () override;
 
   /**
    * \brief Returns the number of bytes that have been transmitted
@@ -1057,54 +1057,54 @@ protected:
   /**
    * \brief Sets default attribute values
    */
-  virtual void SetDefaultAttributeValues ();
+  void SetDefaultAttributeValues () override;
 
   /**
    * \brief Process command line arguments
    * \param argc program arguments count
    * \param argv program arguments
    */
-  virtual void ParseCommandLineArguments (int argc, char **argv);
+  void ParseCommandLineArguments (int argc, char **argv) override;
 
   /**
    * \brief Configure nodes
    */
-  virtual void ConfigureNodes ();
+  void ConfigureNodes () override;
 
   /**
    * \brief Configure channels
    */
-  virtual void ConfigureChannels ();
+  void ConfigureChannels () override;
 
   /**
    * \brief Configure devices
    */
-  virtual void ConfigureDevices ();
+  void ConfigureDevices () override;
 
   /**
    * \brief Configure mobility
    */
-  virtual void ConfigureMobility ();
+  void ConfigureMobility () override;
 
   /**
    * \brief Configure applications
    */
-  virtual void ConfigureApplications ();
+  void ConfigureApplications () override;
 
   /**
    * \brief Configure tracing
    */
-  virtual void ConfigureTracing ();
+  void ConfigureTracing () override;
 
   /**
    * \brief Run the simulation
    */
-  virtual void RunSimulation ();
+  void RunSimulation () override;
 
   /**
    * \brief Process outputs
    */
-  virtual void ProcessOutputs ();
+  void ProcessOutputs () override;
 
 private:
   /**

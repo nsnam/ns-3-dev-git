@@ -54,10 +54,10 @@ public:
    * \param name TestCase name
    */
   OkumuraHataPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name);
-  virtual ~OkumuraHataPropagationLossModelTestCase ();
+  ~OkumuraHataPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Create a MobilityModel

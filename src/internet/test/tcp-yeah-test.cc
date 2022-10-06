@@ -64,7 +64,7 @@ public:
                         const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Increases the TCP window.
    * \param cong The congestion control.
@@ -250,7 +250,7 @@ public:
                         const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Calculate the Slow Start threshold.
    * \param cong The TCP state.

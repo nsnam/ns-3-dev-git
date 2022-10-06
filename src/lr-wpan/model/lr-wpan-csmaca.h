@@ -67,7 +67,7 @@ public:
    * Default constructor.
    */
   LrWpanCsmaCa ();
-  virtual ~LrWpanCsmaCa ();
+  ~LrWpanCsmaCa () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   LrWpanCsmaCa (const LrWpanCsmaCa &) = delete;
@@ -258,7 +258,7 @@ public:
   bool GetBatteryLifeExtension ();
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    *  \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
    *  \return the time left in the CAP

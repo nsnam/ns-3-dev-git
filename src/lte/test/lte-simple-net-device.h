@@ -55,17 +55,17 @@ public:
    */
   LteSimpleNetDevice (Ptr<Node> node);
 
-  virtual ~LteSimpleNetDevice ();
-  virtual void DoDispose ();
+  ~LteSimpleNetDevice () override;
+  void DoDispose () override;
 
 
   // inherited from NetDevice
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 };
 

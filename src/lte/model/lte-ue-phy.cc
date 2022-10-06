@@ -85,10 +85,10 @@ public:
   UeMemberLteUePhySapProvider (LteUePhy* phy);
 
   // inherited from LtePhySapProvider
-  virtual void SendMacPdu (Ptr<Packet> p);
-  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti);
-  virtual void NotifyConnectionSuccessful ();
+  void SendMacPdu (Ptr<Packet> p) override;
+  void SendLteControlMessage (Ptr<LteControlMessage> msg) override;
+  void SendRachPreamble (uint32_t prachId, uint32_t raRnti) override;
+  void NotifyConnectionSuccessful () override;
 
 private:
   LteUePhy* m_phy; ///< the Phy

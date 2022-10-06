@@ -60,12 +60,12 @@ public:
   void PktsAckedCalled (uint32_t segmentsAcked);
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
 
-  virtual void ConfigureEnvironment ();
+  void ConfigureEnvironment () override;
 
-  void FinalChecks ();
+  void FinalChecks () override;
 
 private:
   uint32_t m_segmentsAcked;    //!< Contains the number of times PktsAcked is called
@@ -104,7 +104,7 @@ public:
   }
 
   void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                  const Time& rtt)
+                  const Time& rtt) override
   {
     m_test (segmentsAcked);
   }

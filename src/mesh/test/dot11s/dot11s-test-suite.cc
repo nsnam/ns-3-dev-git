@@ -47,7 +47,7 @@ struct MeshHeaderTest : public TestCase
     TestCase ("Dot11sMeshHeader roundtrip serialization")
   {
   }
-  void DoRun ();
+  void DoRun () override;
 };
 
 void
@@ -104,7 +104,7 @@ class HwmpRtableTest : public TestCase
 {
 public:
   HwmpRtableTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /// Test Add apth and lookup path;
@@ -227,7 +227,7 @@ struct PeerLinkFrameStartTest : public TestCase
     TestCase ("PeerLinkFrames (open, confirm, close) unit tests")
   {
   }
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 void

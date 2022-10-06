@@ -53,7 +53,7 @@ public:
   {
   public:
     VhtSigHeader ();
-    virtual ~VhtSigHeader ();
+    ~VhtSigHeader () override;
 
     /**
      * \brief Get the type ID.
@@ -165,7 +165,7 @@ public:
   /**
    * Destructor for VhtPpdu.
    */
-  virtual ~VhtPpdu ();
+  ~VhtPpdu () override;
 
   Time GetTxDuration () const override;
   Ptr<WifiPpdu> Copy () const override;

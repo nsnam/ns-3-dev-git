@@ -88,7 +88,7 @@ public:
   static TypeId GetTypeId ();
 
   BlockAckManager ();
-  ~BlockAckManager ();
+  ~BlockAckManager () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   BlockAckManager (const BlockAckManager &) = delete;

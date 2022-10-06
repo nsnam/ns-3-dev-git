@@ -50,15 +50,15 @@ public:
    * \param ecnCapable ECN capable
    */
   CobaltQueueDiscTestItem (Ptr<Packet> p, const Address & addr,uint16_t protocol, bool ecnCapable);
-  virtual ~CobaltQueueDiscTestItem ();
+  ~CobaltQueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   CobaltQueueDiscTestItem () = delete;
   CobaltQueueDiscTestItem (const CobaltQueueDiscTestItem &) = delete;
   CobaltQueueDiscTestItem & operator = (const CobaltQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  void AddHeader () override;
+  bool Mark () override;
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -104,7 +104,7 @@ public:
    * \param mode the mode
    */
   CobaltQueueDiscBasicEnqueueDequeue (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Queue test size function
@@ -225,7 +225,7 @@ class CobaltQueueDiscDropTest : public TestCase
 {
 public:
   CobaltQueueDiscDropTest ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue function
    * \param queue the queue disc
@@ -342,7 +342,7 @@ public:
    * \param mode the mode
    */
   CobaltQueueDiscMarkTest (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**
@@ -657,10 +657,10 @@ public:
    * \param mode the queue size unit mode
    */
   CobaltQueueDiscCeThresholdTest (QueueSizeUnit mode);
-  virtual ~CobaltQueueDiscCeThresholdTest ();
+  ~CobaltQueueDiscCeThresholdTest () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Enqueue function
    * \param queue the queue disc
@@ -827,10 +827,10 @@ public:
    * \param mode the queue size unit mode
    */
   CobaltQueueDiscEnhancedBlueTest (QueueSizeUnit mode);
-  virtual ~CobaltQueueDiscEnhancedBlueTest ();
+  ~CobaltQueueDiscEnhancedBlueTest () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue function
    * \param queue the queue disc

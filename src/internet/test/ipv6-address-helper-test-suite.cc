@@ -38,11 +38,11 @@ class IpAddressHelperTestCasev6 : public TestCase
 {
 public:
   IpAddressHelperTestCasev6 ();
-  virtual ~IpAddressHelperTestCasev6 ();
+  ~IpAddressHelperTestCasev6 () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 IpAddressHelperTestCasev6::IpAddressHelperTestCasev6 ()

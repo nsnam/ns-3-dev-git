@@ -51,15 +51,15 @@ public:
    * \param addr the address
    */
   TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
-  virtual ~TbfQueueDiscTestItem ();
+  ~TbfQueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   TbfQueueDiscTestItem () = delete;
   TbfQueueDiscTestItem (const TbfQueueDiscTestItem &) = delete;
   TbfQueueDiscTestItem & operator = (const TbfQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  void AddHeader () override;
+  bool Mark () override;
 };
 
 TbfQueueDiscTestItem::TbfQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -92,7 +92,7 @@ class TbfQueueDiscTestCase : public TestCase
 {
 public:
   TbfQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Enqueue function

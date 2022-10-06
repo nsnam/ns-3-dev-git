@@ -140,7 +140,7 @@ public:
   /**
    * Destructor, closes the trace file.
    */
-  ~DesMetrics ();
+  ~DesMetrics () override;
 
 private:
 

@@ -58,7 +58,7 @@ class PairObject : public Object
 {
 public:
   PairObject ();
-  virtual ~PairObject ();
+  ~PairObject () override;
 
   /**
    * \brief Get the type ID.
@@ -128,10 +128,10 @@ class PairValueTestCase : public TestCase
 {
 public:
   PairValueTestCase ();
-  virtual ~PairValueTestCase () {}
+  ~PairValueTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 PairValueTestCase::PairValueTestCase ()
@@ -173,7 +173,7 @@ class PairValueSettingsTestCase : public TestCase
 public:
   PairValueSettingsTestCase ();
 
-  void DoRun ();
+  void DoRun () override;
 };
 
 PairValueSettingsTestCase::PairValueSettingsTestCase ()

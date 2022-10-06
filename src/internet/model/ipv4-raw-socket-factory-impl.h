@@ -34,7 +34,7 @@ namespace ns3 {
 class Ipv4RawSocketFactoryImpl : public Ipv4RawSocketFactory
 {
 public:
-  virtual Ptr<Socket> CreateSocket ();
+  Ptr<Socket> CreateSocket () override;
 };
 
 

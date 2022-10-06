@@ -66,7 +66,7 @@ public:
    * \param ulMcs the UL MCS
    */
   LteInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs);
-  virtual ~LteInterferenceTestCase ();
+  ~LteInterferenceTestCase () override;
 
   /**
    * DL scheduling function
@@ -86,7 +86,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 
   double m_d1; ///< distance between UE and ENB

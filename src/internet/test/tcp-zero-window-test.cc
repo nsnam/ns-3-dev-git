@@ -44,17 +44,17 @@ public:
 
 protected:
   //virtual void ReceivePacket (Ptr<Socket> socket);
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
 
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
-                             const TcpHeader& h, SocketWho who);
-  void NormalClose (SocketWho who);
-  void FinalChecks ();
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void ProcessedAck (const Ptr<const TcpSocketState> tcb,
+                             const TcpHeader& h, SocketWho who) override;
+  void NormalClose (SocketWho who) override;
+  void FinalChecks () override;
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
 
   /**
    * \brief Increase the receiver buffer size.

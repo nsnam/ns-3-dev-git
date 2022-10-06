@@ -39,14 +39,14 @@ class SteadyStateRandomWaypointTest : public TestCase
 public:
   SteadyStateRandomWaypointTest ()
     : TestCase ("Check steady-state rwp mobility model velocity and position distributions") {}
-  virtual ~SteadyStateRandomWaypointTest () {}
+  ~SteadyStateRandomWaypointTest () override {}
 
 private:
   std::vector<Ptr<MobilityModel> > mobilityStack; ///< modility model
   double count; ///< count
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
   /// Distribution compare function
   void DistribCompare ();
 };

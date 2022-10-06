@@ -52,7 +52,7 @@ public:
    */
   static TypeId GetTypeId ();
   IdealWifiManager ();
-  virtual ~IdealWifiManager ();
+  ~IdealWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
 

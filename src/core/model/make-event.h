@@ -377,11 +377,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj)
       : m_obj (obj),
         m_function (function)
     {}
-    virtual ~EventMemberImpl0 ()
+    ~EventMemberImpl0 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)();
     }
@@ -407,11 +407,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1)
     {}
 
   protected:
-    virtual ~EventMemberImpl1 ()
+    ~EventMemberImpl1 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1);
     }
@@ -438,11 +438,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
     {}
 
   protected:
-    virtual ~EventMemberImpl2 ()
+    ~EventMemberImpl2 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2);
     }
@@ -471,11 +471,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
     {}
 
   protected:
-    virtual ~EventMemberImpl3 ()
+    ~EventMemberImpl3 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3);
     }
@@ -506,11 +506,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4)
     {}
 
   protected:
-    virtual ~EventMemberImpl4 ()
+    ~EventMemberImpl4 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -544,11 +544,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
     {}
 
   protected:
-    virtual ~EventMemberImpl5 ()
+    ~EventMemberImpl5 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -584,11 +584,11 @@ EventImpl * MakeEvent (MEM mem_ptr, OBJ obj,
     {}
 
   protected:
-    virtual ~EventMemberImpl6 ()
+    ~EventMemberImpl6 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
@@ -620,11 +620,11 @@ EventImpl * MakeEvent (void (*f)(U1), T1 a1)
     {}
 
   protected:
-    virtual ~EventFunctionImpl1 ()
+    ~EventFunctionImpl1 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1);
     }
@@ -651,11 +651,11 @@ EventImpl * MakeEvent (void (*f)(U1,U2), T1 a1, T2 a2)
     {}
 
   protected:
-    virtual ~EventFunctionImpl2 ()
+    ~EventFunctionImpl2 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1, m_a2);
     }
@@ -685,11 +685,11 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3), T1 a1, T2 a2, T3 a3)
     {}
 
   protected:
-    virtual ~EventFunctionImpl3 ()
+    ~EventFunctionImpl3 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1, m_a2, m_a3);
     }
@@ -721,11 +721,11 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
     {}
 
   protected:
-    virtual ~EventFunctionImpl4 ()
+    ~EventFunctionImpl4 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -759,11 +759,11 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
     {}
 
   protected:
-    virtual ~EventFunctionImpl5 ()
+    ~EventFunctionImpl5 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -799,11 +799,11 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5,U6), T1 a1, T2 a2, T3 a3, T4 a4,
     {}
 
   protected:
-    virtual ~EventFunctionImpl6 ()
+    ~EventFunctionImpl6 () override
     {}
 
   private:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
@@ -828,11 +828,11 @@ public:
       : m_function (function)
     {
     }
-    virtual ~EventImplFunctional ()
+    ~EventImplFunctional () override
     {
     }
 private:
-    virtual void Notify ()
+    void Notify () override
     {
       m_function();
     }

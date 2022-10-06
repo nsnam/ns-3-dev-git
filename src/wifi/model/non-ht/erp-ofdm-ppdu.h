@@ -58,7 +58,7 @@ public:
   /**
    * Destructor for ErpOfdmPpdu.
    */
-  virtual ~ErpOfdmPpdu ();
+  ~ErpOfdmPpdu () override;
 
   Ptr<WifiPpdu> Copy () const override;
 

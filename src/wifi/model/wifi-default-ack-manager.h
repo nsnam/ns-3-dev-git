@@ -44,11 +44,11 @@ public:
   static TypeId GetTypeId ();
 
   WifiDefaultAckManager ();
-  virtual ~WifiDefaultAckManager ();
+  ~WifiDefaultAckManager () override;
 
-  virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
+  std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                           const WifiTxParameters& txParams) override;
-  virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
+  std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                                 const WifiTxParameters& txParams) override;
 
   /**

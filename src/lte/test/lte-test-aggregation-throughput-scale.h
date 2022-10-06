@@ -53,13 +53,13 @@ public:
    */
   LteAggregationThroughputScaleTestCase (std::string name);
 
-  virtual ~LteAggregationThroughputScaleTestCase ();
+  ~LteAggregationThroughputScaleTestCase () override;
 
 private:
   /**
    * \brief Setup the simulation, run it, and verify the result.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Get throughput function

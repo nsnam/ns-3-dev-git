@@ -41,7 +41,7 @@ public:
   static TypeId GetTypeId ();
 
   ThresholdPreambleDetectionModel ();
-  ~ThresholdPreambleDetectionModel ();
+  ~ThresholdPreambleDetectionModel () override;
 
   /**
    * This method returns whether the preamble detection was successful.

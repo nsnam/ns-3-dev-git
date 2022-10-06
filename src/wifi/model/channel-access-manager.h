@@ -55,7 +55,7 @@ class ChannelAccessManager : public Object
 {
 public:
   ChannelAccessManager ();
-  virtual ~ChannelAccessManager ();
+  ~ChannelAccessManager () override;
 
   /**
    * Set up listener for PHY events.

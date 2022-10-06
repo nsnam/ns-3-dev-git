@@ -53,7 +53,7 @@ public:
   GetTypeId ();
 
   DhcpClient ();
-  virtual ~DhcpClient ();
+  ~DhcpClient () override;
 
   /**
    * \brief Constructor
@@ -90,7 +90,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /// client states
@@ -106,12 +106,12 @@ private:
   /*
    * \brief Starts the DHCP client application
    */
-  virtual void StartApplication ();
+  void StartApplication () override;
 
   /*
    * \brief Stops the DHCP client application
    */
-  virtual void StopApplication ();
+  void StopApplication () override;
 
   /**
    * \brief Handles changes in LinkState

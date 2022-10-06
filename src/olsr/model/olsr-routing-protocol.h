@@ -94,7 +94,7 @@ public:
   static TypeId GetTypeId ();
 
   RoutingProtocol ();
-  virtual ~RoutingProtocol ();
+  ~RoutingProtocol () override;
 
   /**
    * \brief Set the OLSR main address to the first address on the indicated interface.
@@ -236,8 +236,8 @@ public:
   Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation () const;
 
 protected:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_table; //!< Data structure for the routing table.
@@ -339,32 +339,32 @@ private:
 
 public:
   // From Ipv4RoutingProtocol
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p,
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p,
                                       const Ipv4Header &header,
                                       Ptr<NetDevice> oif,
-                                      Socket::SocketErrno &sockerr);
-  virtual bool RouteInput (Ptr<const Packet> p,
+                                      Socket::SocketErrno &sockerr) override;
+  bool RouteInput (Ptr<const Packet> p,
                            const Ipv4Header &header,
                            Ptr<const NetDevice> idev,
                            UnicastForwardCallback ucb,
                            MulticastForwardCallback mcb,
                            LocalDeliverCallback lcb,
-                           ErrorCallback ecb);
-  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+                           ErrorCallback ecb) override;
+  void SetIpv4 (Ptr<Ipv4> ipv4) override;
 
   /**
    * \returns the ipv4 object this routing protocol is associated with
    */
   NS_DEPRECATED_3_34
   virtual Ptr<Ipv4> GetIpv4 () const;
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const override;
 
 
 private:
-  virtual void NotifyInterfaceUp (uint32_t interface);
-  virtual void NotifyInterfaceDown (uint32_t interface);
-  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
-  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  void NotifyInterfaceUp (uint32_t interface) override;
+  void NotifyInterfaceDown (uint32_t interface) override;
+  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) override;
+  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) override;
 
   /**
    * Send an OLSR message.

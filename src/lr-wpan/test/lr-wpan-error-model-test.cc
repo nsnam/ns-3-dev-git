@@ -47,7 +47,7 @@ class LrWpanErrorDistanceTestCase : public TestCase
 {
 public:
   LrWpanErrorDistanceTestCase ();
-  virtual ~LrWpanErrorDistanceTestCase ();
+  ~LrWpanErrorDistanceTestCase () override;
 
   /**
    * \brief Get the number of received packets.
@@ -59,7 +59,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Function to be called when a packet is received.
@@ -80,10 +80,10 @@ class LrWpanErrorModelTestCase : public TestCase
 {
 public:
   LrWpanErrorModelTestCase ();
-  virtual ~LrWpanErrorModelTestCase ();
+  ~LrWpanErrorModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LrWpanErrorDistanceTestCase::LrWpanErrorDistanceTestCase ()

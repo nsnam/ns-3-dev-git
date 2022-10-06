@@ -60,7 +60,7 @@ public:
    */
   TcpLp (const TcpLp& sock);
 
-  virtual ~TcpLp ();
+  ~TcpLp () override;
 
   /**
    * \brief Timing information on received ACK
@@ -72,12 +72,12 @@ public:
    * \param segmentsAcked count of segments acked
    * \param rtt last rtt
    */
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt);
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                          const Time& rtt) override;
 
-  virtual std::string GetName () const;
+  std::string GetName () const override;
 
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
   /**
@@ -86,7 +86,7 @@ protected:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments acked
    */
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
 private:
   /**

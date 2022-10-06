@@ -53,7 +53,7 @@ public:
   static const uint8_t PROT_NUMBER; //!< ICMP protocol number (0x1)
 
   Icmpv4L4Protocol ();
-  virtual ~Icmpv4L4Protocol ();
+  ~Icmpv4L4Protocol () override;
 
   /**
    * \brief Set the node the protocol is associated with.
@@ -71,7 +71,7 @@ public:
    * Get the protocol number
    * \returns the protocol number
    */
-  virtual int GetProtocolNumber () const;
+  int GetProtocolNumber () const override;
 
   /**
    * \brief Receive method.
@@ -80,9 +80,9 @@ public:
    * \param incomingInterface the interface from which the packet is coming
    * \returns the receive status
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
-                                               Ptr<Ipv4Interface> incomingInterface);
+                                               Ptr<Ipv4Interface> incomingInterface) override;
 
   /**
    * \brief Receive method.
@@ -91,9 +91,9 @@ public:
    * \param incomingInterface the interface from which the packet is coming
    * \returns the receive status
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv6Header const &header,
-                                               Ptr<Ipv6Interface> incomingInterface);
+                                               Ptr<Ipv6Interface> incomingInterface) override;
 
   /**
    * \brief Send a Destination Unreachable - Fragmentation needed ICMP error
@@ -119,17 +119,17 @@ public:
   void SendDestUnreachPort (Ipv4Header header, Ptr<const Packet> orgData);
 
   // From IpL4Protocol
-  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
-  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  void SetDownTarget (IpL4Protocol::DownTargetCallback cb) override;
+  void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb) override;
   // From IpL4Protocol
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
+  IpL4Protocol::DownTargetCallback GetDownTarget () const override;
+  IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const override;
 protected:
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
    * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
    */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
 private:
   /**
    * \brief Handles an incoming ICMP Echo packet
@@ -207,7 +207,7 @@ private:
                 uint32_t info, Ipv4Header ipHeader,
                 const uint8_t payload[8]);
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   Ptr<Node> m_node; //!< the node this protocol is associated with
   IpL4Protocol::DownTargetCallback m_downTarget; //!< callback to Ipv4::Send

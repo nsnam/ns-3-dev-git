@@ -49,7 +49,7 @@ class HwmpTag : public Tag
 {
 public:
   HwmpTag ();
-  ~HwmpTag ();
+  ~HwmpTag () override;
   /**
    * Set address
    * \param retransmitter the MAC address of the retransmitter
@@ -98,11 +98,11 @@ public:
    * \return the object TypeId
    */
   static  TypeId  GetTypeId ();
-  virtual TypeId  GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void  Serialize (TagBuffer i) const;
-  virtual void  Deserialize (TagBuffer i);
-  virtual void  Print (std::ostream &os) const;
+  TypeId  GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void  Serialize (TagBuffer i) const override;
+  void  Deserialize (TagBuffer i) override;
+  void  Print (std::ostream &os) const override;
 private:
   Mac48Address m_address; ///< address
   uint8_t  m_ttl; ///< TTL

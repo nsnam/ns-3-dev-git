@@ -220,14 +220,14 @@ public:
    * \param imsi the IMSI
    * \param ecgi
    */
-  virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi);
+  void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi) override;
   /**
    * ERAB Release Indiation function
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
    * \param erabToBeReleaseIndication
    */
-  virtual void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication );
+  void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication ) override;
 
   /**
    * Initial context setup response
@@ -235,7 +235,7 @@ public:
    * \param enbUeS1Id in practice, we use the RNTI
    * \param erabSetupList
    */
-  virtual void InitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabSetupItem> erabSetupList);
+  void InitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabSetupItem> erabSetupList) override;
   /**
    * Path switch request
    * \param enbUeS1Id in practice, we use the RNTI
@@ -243,7 +243,7 @@ public:
    * \param cgi
    * \param erabToBeSwitchedInDownlinkList
    */
-  virtual void PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList);
+  void PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList) override;
 
 private:
   MemberEpcS1apSapMme ();
@@ -314,7 +314,7 @@ public:
    * \param enbUeS1Id in practice, we use the RNTI
    * \param erabToBeSetupList
    */
-  virtual void InitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeSetupItem> erabToBeSetupList);
+  void InitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeSetupItem> erabToBeSetupList) override;
   /**
    * Path switch request acknowledge function
    * \param enbUeS1Id in practice, we use the RNTI
@@ -322,7 +322,7 @@ public:
    * \param cgi
    * \param erabToBeSwitchedInUplinkList
    */
-  virtual void PathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
+  void PathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList) override;
 
 private:
   MemberEpcS1apSapEnb ();

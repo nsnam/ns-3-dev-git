@@ -86,7 +86,7 @@ public:
     return tid;
   }
 
-  TypeId  GetInstanceTypeId () const
+  TypeId  GetInstanceTypeId () const override
   {
     return GetTypeId ();
   }
@@ -109,22 +109,22 @@ public:
     m_oif = oif;
   }
 
-  uint32_t GetSerializedSize () const
+  uint32_t GetSerializedSize () const override
   {
     return sizeof(int32_t);
   }
 
-  void  Serialize (TagBuffer i) const
+  void  Serialize (TagBuffer i) const override
   {
     i.WriteU32 (m_oif);
   }
 
-  void  Deserialize (TagBuffer i)
+  void  Deserialize (TagBuffer i) override
   {
     m_oif = i.ReadU32 ();
   }
 
-  void  Print (std::ostream &os) const
+  void  Print (std::ostream &os) const override
   {
     os << "DeferredRouteOutputTag: output interface = " << m_oif;
   }

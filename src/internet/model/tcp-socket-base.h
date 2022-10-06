@@ -228,7 +228,7 @@ public:
    * \brief Get the instance TypeId
    * \return the instance TypeId
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief TcpGeneralTest friend class (for tests).
@@ -247,7 +247,7 @@ public:
    * \param sock the original Tcp Socket
    */
   TcpSocketBase (const TcpSocketBase& sock);
-  virtual ~TcpSocketBase ();
+  ~TcpSocketBase () override;
 
   // Set associated Node, TcpL4Protocol, RttEstimator to this socket
 
@@ -573,26 +573,26 @@ public:
   void SetPaceInitialWindow (bool paceWindow);
 
   // Necessary implementations of null functions from ns3::Socket
-  virtual enum SocketErrno GetErrno () const;    // returns m_errno
-  virtual enum SocketType GetSocketType () const; // returns socket type
-  virtual Ptr<Node> GetNode () const;            // returns m_node
-  virtual int Bind ();    // Bind a socket by setting up endpoint in TcpL4Protocol
-  virtual int Bind6 ();    // Bind a socket by setting up endpoint in TcpL4Protocol
-  virtual int Bind (const Address &address);         // ... endpoint of specific addr or port
-  virtual int Connect (const Address &address);      // Setup endpoint and call ProcessAction() to connect
-  virtual int Listen ();  // Verify the socket is in a correct state and call ProcessAction() to listen
-  virtual int Close ();   // Close by app: Kill socket upon tx buffer emptied
-  virtual int ShutdownSend ();    // Assert the m_shutdownSend flag to prevent send to network
-  virtual int ShutdownRecv ();    // Assert the m_shutdownRecv flag to prevent forward to app
-  virtual int Send (Ptr<Packet> p, uint32_t flags);  // Call by app to send data to network
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress); // Same as Send(), toAddress is insignificant
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags); // Return a packet to be forwarded to app
-  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress); // ... and write the remote address at fromAddress
-  virtual uint32_t GetTxAvailable () const; // Available Tx buffer size
-  virtual uint32_t GetRxAvailable () const; // Available-to-read data size, i.e. value of m_rxAvailable
-  virtual int GetSockName (Address &address) const; // Return local addr:port in address
-  virtual int GetPeerName (Address &address) const;
-  virtual void BindToNetDevice (Ptr<NetDevice> netdevice); // NetDevice with my m_endPoint
+  enum SocketErrno GetErrno () const override;    // returns m_errno
+  enum SocketType GetSocketType () const override; // returns socket type
+  Ptr<Node> GetNode () const override;            // returns m_node
+  int Bind () override;    // Bind a socket by setting up endpoint in TcpL4Protocol
+  int Bind6 () override;    // Bind a socket by setting up endpoint in TcpL4Protocol
+  int Bind (const Address &address) override;         // ... endpoint of specific addr or port
+  int Connect (const Address &address) override;      // Setup endpoint and call ProcessAction() to connect
+  int Listen () override;  // Verify the socket is in a correct state and call ProcessAction() to listen
+  int Close () override;   // Close by app: Kill socket upon tx buffer emptied
+  int ShutdownSend () override;    // Assert the m_shutdownSend flag to prevent send to network
+  int ShutdownRecv () override;    // Assert the m_shutdownRecv flag to prevent forward to app
+  int Send (Ptr<Packet> p, uint32_t flags) override;  // Call by app to send data to network
+  int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress) override; // Same as Send(), toAddress is insignificant
+  Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) override; // Return a packet to be forwarded to app
+  Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress) override; // ... and write the remote address at fromAddress
+  uint32_t GetTxAvailable () const override; // Available Tx buffer size
+  uint32_t GetRxAvailable () const override; // Available-to-read data size, i.e. value of m_rxAvailable
+  int GetSockName (Address &address) const override; // Return local addr:port in address
+  int GetPeerName (Address &address) const override;
+  void BindToNetDevice (Ptr<NetDevice> netdevice) override; // NetDevice with my m_endPoint
 
   /**
    * TracedCallback signature for tcp packet transmission or reception events.
@@ -608,32 +608,32 @@ protected:
   // Implementing ns3::TcpSocket -- Attribute get/set
   // inherited, no need to doc
 
-  virtual void     SetSndBufSize (uint32_t size);
-  virtual uint32_t GetSndBufSize () const;
-  virtual void     SetRcvBufSize (uint32_t size);
-  virtual uint32_t GetRcvBufSize () const;
-  virtual void     SetSegSize (uint32_t size);
-  virtual uint32_t GetSegSize () const;
-  virtual void     SetInitialSSThresh (uint32_t threshold);
-  virtual uint32_t GetInitialSSThresh () const;
-  virtual void     SetInitialCwnd (uint32_t cwnd);
-  virtual uint32_t GetInitialCwnd () const;
-  virtual void     SetConnTimeout (Time timeout);
-  virtual Time     GetConnTimeout () const;
-  virtual void     SetSynRetries (uint32_t count);
-  virtual uint32_t GetSynRetries () const;
-  virtual void     SetDataRetries (uint32_t retries);
-  virtual uint32_t GetDataRetries () const;
-  virtual void     SetDelAckTimeout (Time timeout);
-  virtual Time     GetDelAckTimeout () const;
-  virtual void     SetDelAckMaxCount (uint32_t count);
-  virtual uint32_t GetDelAckMaxCount () const;
-  virtual void     SetTcpNoDelay (bool noDelay);
-  virtual bool     GetTcpNoDelay () const;
-  virtual void     SetPersistTimeout (Time timeout);
-  virtual Time     GetPersistTimeout () const;
-  virtual bool     SetAllowBroadcast (bool allowBroadcast);
-  virtual bool     GetAllowBroadcast () const;
+  void     SetSndBufSize (uint32_t size) override;
+  uint32_t GetSndBufSize () const override;
+  void     SetRcvBufSize (uint32_t size) override;
+  uint32_t GetRcvBufSize () const override;
+  void     SetSegSize (uint32_t size) override;
+  uint32_t GetSegSize () const override;
+  void     SetInitialSSThresh (uint32_t threshold) override;
+  uint32_t GetInitialSSThresh () const override;
+  void     SetInitialCwnd (uint32_t cwnd) override;
+  uint32_t GetInitialCwnd () const override;
+  void     SetConnTimeout (Time timeout) override;
+  Time     GetConnTimeout () const override;
+  void     SetSynRetries (uint32_t count) override;
+  uint32_t GetSynRetries () const override;
+  void     SetDataRetries (uint32_t retries) override;
+  uint32_t GetDataRetries () const override;
+  void     SetDelAckTimeout (Time timeout) override;
+  Time     GetDelAckTimeout () const override;
+  void     SetDelAckMaxCount (uint32_t count) override;
+  uint32_t GetDelAckMaxCount () const override;
+  void     SetTcpNoDelay (bool noDelay) override;
+  bool     GetTcpNoDelay () const override;
+  void     SetPersistTimeout (Time timeout) override;
+  Time     GetPersistTimeout () const override;
+  bool     SetAllowBroadcast (bool allowBroadcast) override;
+  bool     GetAllowBroadcast () const override;
 
 
 

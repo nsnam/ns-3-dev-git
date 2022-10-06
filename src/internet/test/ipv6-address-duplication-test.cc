@@ -54,7 +54,7 @@ using namespace ns3;
 class Ipv6DadTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6DadTest ();
 };
 

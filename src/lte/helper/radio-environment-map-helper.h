@@ -48,10 +48,10 @@ class RadioEnvironmentMapHelper : public Object
 public:
 
   RadioEnvironmentMapHelper ();
-  virtual ~RadioEnvironmentMapHelper ();
+  ~RadioEnvironmentMapHelper () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    *  Register this type.
    *  \return The object TypeId.

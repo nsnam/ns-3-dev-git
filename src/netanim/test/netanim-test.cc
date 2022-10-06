@@ -55,10 +55,10 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual
-  ~AbstractAnimationInterfaceTestCase ();
-  virtual void
-  DoRun ();
+  
+  ~AbstractAnimationInterfaceTestCase () override;
+  void
+  DoRun () override;
 
 protected:
 
@@ -127,11 +127,11 @@ public:
 
 private:
 
-  virtual void
-  PrepareNetwork ();
+  void
+  PrepareNetwork () override;
 
-  virtual void
-  CheckLogic ();
+  void
+  CheckLogic () override;
 
 };
 
@@ -200,11 +200,11 @@ public:
 
 private:
 
-  virtual void
-  PrepareNetwork ();
+  void
+  PrepareNetwork () override;
 
-  virtual void
-  CheckLogic ();
+  void
+  CheckLogic () override;
 
   Ptr<BasicEnergySource> m_energySource; ///< energy source
   Ptr<SimpleDeviceEnergyModel> m_energyModel; ///< energy model

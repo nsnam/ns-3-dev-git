@@ -54,7 +54,7 @@ public:
    * \param nLinks the number of links to configure (>1 only for 11be devices)
    */
   WifiPhyHelper (uint8_t nLinks = 1);
-  virtual ~WifiPhyHelper ();
+  ~WifiPhyHelper () override;
 
   /**
    * \param node the node on which the PHY object(s) will reside
@@ -286,7 +286,7 @@ private:
    * \param promiscuous If true capture all possible packets available at the device.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapInternal (std::string prefix,
+  void EnablePcapInternal (std::string prefix,
                                    Ptr<NetDevice> nd,
                                    bool promiscuous,
                                    bool explicitFilename) override;
@@ -302,7 +302,7 @@ private:
    * \param nd Net device for which you want to enable tracing.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+  void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,
                                     Ptr<NetDevice> nd,
                                     bool explicitFilename) override;

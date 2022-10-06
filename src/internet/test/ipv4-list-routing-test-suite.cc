@@ -31,16 +31,16 @@ using namespace ns3;
  */
 class Ipv4ARouting : public Ipv4RoutingProtocol {
 public:
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr) override  { return 0; }
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false; }
-  void NotifyInterfaceUp (uint32_t interface) {}
-  void NotifyInterfaceDown (uint32_t interface) {}
-  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
-  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
-  void SetIpv4 (Ptr<Ipv4> ipv4) {}
-  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {}
+                    LocalDeliverCallback lcb, ErrorCallback ecb) override { return false; }
+  void NotifyInterfaceUp (uint32_t interface) override {}
+  void NotifyInterfaceDown (uint32_t interface) override {}
+  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) override {}
+  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) override {}
+  void SetIpv4 (Ptr<Ipv4> ipv4) override {}
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const override {}
 };
 
 /**
@@ -51,16 +51,16 @@ public:
  */
 class Ipv4BRouting : public Ipv4RoutingProtocol {
 public:
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr) override  { return 0; }
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false; }
-  void NotifyInterfaceUp (uint32_t interface) {}
-  void NotifyInterfaceDown (uint32_t interface) {}
-  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
-  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
-  void SetIpv4 (Ptr<Ipv4> ipv4) {}
-  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const {}
+                    LocalDeliverCallback lcb, ErrorCallback ecb) override { return false; }
+  void NotifyInterfaceUp (uint32_t interface) override {}
+  void NotifyInterfaceDown (uint32_t interface) override {}
+  void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) override {}
+  void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) override {}
+  void SetIpv4 (Ptr<Ipv4> ipv4) override {}
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const override {}
 };
 
 /**
@@ -73,7 +73,7 @@ class Ipv4ListRoutingNegativeTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingNegativeTestCase();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
@@ -107,7 +107,7 @@ class Ipv4ListRoutingPositiveTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingPositiveTestCase();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()

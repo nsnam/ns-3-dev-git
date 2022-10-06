@@ -49,24 +49,24 @@ public:
    */
   TcpFastRetrTest (TypeId congControl, uint32_t seqToKill, const std::string &msg);
 
-  virtual Ptr<ErrorModel> CreateSenderErrorModel ();
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  Ptr<ErrorModel> CreateSenderErrorModel () override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
 
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
 
 protected:
-  virtual void RcvAck      (const Ptr<const TcpSocketState> tcb,
-                            const TcpHeader& h, SocketWho who);
-  virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
-                             const TcpHeader& h, SocketWho who);
+  void RcvAck      (const Ptr<const TcpSocketState> tcb,
+                            const TcpHeader& h, SocketWho who) override;
+  void ProcessedAck (const Ptr<const TcpSocketState> tcb,
+                             const TcpHeader& h, SocketWho who) override;
 
-  virtual void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
-                               const TcpSocketState::TcpCongState_t newValue);
+  void CongStateTrace (const TcpSocketState::TcpCongState_t oldValue,
+                               const TcpSocketState::TcpCongState_t newValue) override;
 
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
 
-  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
 
   /**
    * \brief Check if the packet being dropped is the right one.
@@ -75,10 +75,10 @@ protected:
    * \param p The packet.
    */
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
-  virtual void FinalChecks ();
+  void FinalChecks () override;
 
-  virtual void ConfigureProperties ();
-  virtual void ConfigureEnvironment ();
+  void ConfigureProperties () override;
+  void ConfigureEnvironment () override;
 
   bool m_pktDropped;      //!< The packet has been dropped.
   bool m_pktWasDropped;   //!< The packet was dropped (according to the receiver).

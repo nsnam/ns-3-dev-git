@@ -49,7 +49,7 @@ public:
   static TypeId GetTypeId ();
   Emitter ();
 private:
-  void DoInitialize ();
+  void DoInitialize () override;
   /// Counts how many time this function is called.
   void Count ();
 

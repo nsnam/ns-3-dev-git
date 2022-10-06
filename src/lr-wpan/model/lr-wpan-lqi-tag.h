@@ -44,7 +44,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * Create a LrWpanLqiTag with the default LQI 0.
@@ -57,10 +57,10 @@ public:
    */
   LrWpanLqiTag (uint8_t lqi);
 
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
+  void Print (std::ostream &os) const override;
 
   /**
    * Set the LQI to the given value.

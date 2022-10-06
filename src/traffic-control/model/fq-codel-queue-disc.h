@@ -47,7 +47,7 @@ public:
    */
   FqCoDelFlow ();
 
-  virtual ~FqCoDelFlow ();
+  ~FqCoDelFlow () override;
 
   /**
    * \enum FlowStatus
@@ -121,7 +121,7 @@ public:
    */
   FqCoDelQueueDisc ();
 
-  virtual ~FqCoDelQueueDisc ();
+  ~FqCoDelQueueDisc () override;
 
    /**
     * \brief Set the quantum value.
@@ -142,10 +142,10 @@ public:
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";        //!< Overlimit dropped packets
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 
   /**
    * \brief Drop a packet from the head of the queue with the largest current byte count

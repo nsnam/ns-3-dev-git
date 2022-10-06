@@ -35,12 +35,12 @@ class BasicEnergySourceHelper : public EnergySourceHelper
 {
 public:
   BasicEnergySourceHelper ();
-  ~BasicEnergySourceHelper ();
+  ~BasicEnergySourceHelper () override;
 
-  void Set (std::string name, const AttributeValue &v);
+  void Set (std::string name, const AttributeValue &v) override;
 
 private:
-  virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const;
+  Ptr<EnergySource> DoInstall (Ptr<Node> node) const override;
 
 private:
   ObjectFactory m_basicEnergySource; //!< Energy source factory

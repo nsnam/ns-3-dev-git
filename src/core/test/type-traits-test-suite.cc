@@ -42,11 +42,11 @@ public:
   /** Constructor. */
   TypeTraitsTestCase ();
   /** Destructor. */
-  virtual ~TypeTraitsTestCase ()
+  ~TypeTraitsTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 TypeTraitsTestCase::TypeTraitsTestCase ()

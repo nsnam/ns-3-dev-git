@@ -61,7 +61,7 @@ public:
    */
   static TypeId GetTypeId ();
   JakesProcess ();
-  virtual ~JakesProcess();
+  ~JakesProcess() override;
 
   /**
    * Get the channel complex gain
@@ -81,7 +81,7 @@ public:
   void SetPropagationLossModel (Ptr<const PropagationLossModel> model);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

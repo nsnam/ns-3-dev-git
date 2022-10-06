@@ -49,10 +49,10 @@ class BulkSendBasicTestCase : public TestCase
 {
 public:
   BulkSendBasicTestCase ();
-  virtual ~BulkSendBasicTestCase ();
+  ~BulkSendBasicTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Record a packet successfully sent
    * \param p the packet
@@ -145,10 +145,10 @@ class BulkSendSeqTsSizeTestCase : public TestCase
 {
 public:
   BulkSendSeqTsSizeTestCase ();
-  virtual ~BulkSendSeqTsSizeTestCase ();
+  ~BulkSendSeqTsSizeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Record a packet successfully sent
    * \param p the packet

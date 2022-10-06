@@ -51,7 +51,7 @@ public:
    * \param schedulerFactory Scheduler factory.
    */
   SimulatorEventsTestCase (ObjectFactory schedulerFactory);
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Test Event.
    * \param value Event parameter.
@@ -234,7 +234,7 @@ public:
   /** @} */
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Function used for scheduling.

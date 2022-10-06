@@ -43,7 +43,7 @@ public:
   /**
    * Destroy a NqosWaveMacHelper.
    */
-  virtual ~NqosWaveMacHelper ();
+  ~NqosWaveMacHelper () override;
   /**
    * Create a mac helper in a default working state.
    * i.e., this is an ocb mac by default.
@@ -81,7 +81,7 @@ public:
   /**
    * Destroy a QosWaveMacHelper
    */
-  virtual ~QosWaveMacHelper ();
+  ~QosWaveMacHelper () override;
 
   /**
    * Create a mac helper in a default working state.

@@ -50,8 +50,8 @@ public:
    */
   static TypeId GetTypeId ();
   ConnectionManager ();
-  ~ConnectionManager ();
-  void DoDispose ();
+  ~ConnectionManager () override;
+  void DoDispose () override;
   /**
    * Set CID factory
    * \param cidFactory the CID factory

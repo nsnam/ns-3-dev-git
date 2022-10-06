@@ -52,7 +52,7 @@ public:
 
   EnergyHarvester ();
 
-  virtual ~EnergyHarvester ();
+  ~EnergyHarvester () override;
 
   /**
    * \brief Sets pointer to node containing this EnergyHarvester.
@@ -99,7 +99,7 @@ private:
    *
    * Defined in ns3::Object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * This method is called by the GetPower method and it needs to be implemented by the

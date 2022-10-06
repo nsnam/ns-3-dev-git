@@ -55,8 +55,8 @@ public:
 
   ComponentCarrierEnb ();
 
-  virtual ~ComponentCarrierEnb ();
-  virtual void DoDispose ();
+  ~ComponentCarrierEnb () override;
+  void DoDispose () override;
 
   /**
    * \return a pointer to the physical layer.
@@ -103,7 +103,7 @@ public:
 
 protected:
 
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier

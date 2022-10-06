@@ -50,8 +50,8 @@ public:
    * \param priority the packet priority
    */
   PrioQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint8_t priority);
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  void AddHeader () override;
+  bool Mark () override;
 };
 
 PrioQueueDiscTestItem::PrioQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint8_t priority)
@@ -89,7 +89,7 @@ public:
    * \param cls whether this filter is able to classify a PrioQueueDiscTestItem
    */
   PrioQueueDiscTestFilter (bool cls);
-  virtual ~PrioQueueDiscTestFilter ();
+  ~PrioQueueDiscTestFilter () override;
   /**
    * \brief Set the value returned by DoClassify
    *
@@ -98,8 +98,8 @@ public:
   void SetReturnValue (int32_t ret);
 
 private:
-  virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
-  virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
+  int32_t DoClassify (Ptr<QueueDiscItem> item) const override;
 
   bool m_cls;     //!< whether this filter is able to classify a PrioQueueDiscTestItem
   int32_t m_ret;  //!< the value that DoClassify returns if m_cls is true
@@ -144,7 +144,7 @@ class PrioQueueDiscTestCase : public TestCase
 {
 public:
   PrioQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 PrioQueueDiscTestCase::PrioQueueDiscTestCase ()

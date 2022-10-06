@@ -44,7 +44,7 @@ public:
   static TypeId GetTypeId ();
 
   SimpleFrameCaptureModel ();
-  ~SimpleFrameCaptureModel ();
+  ~SimpleFrameCaptureModel () override;
 
   /**
    * Sets the frame capture margin (dB).

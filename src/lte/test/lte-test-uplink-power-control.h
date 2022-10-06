@@ -65,7 +65,7 @@ public:
    * \param name the reference name
    */
   LteUplinkPowerControlTestCase (std::string name);
-  virtual ~LteUplinkPowerControlTestCase ();
+  ~LteUplinkPowerControlTestCase () override;
 
   /**
    * Teleport UE funcction
@@ -117,7 +117,7 @@ public:
   void SrsTxPowerTrace (uint16_t cellId, uint16_t rnti, double txPower);
 
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Ptr<MobilityModel> m_ueMobility; ///< UE mobility model
   Time m_teleportTime; ///< teleport time
@@ -147,10 +147,10 @@ public:
    * \param name the reference name
    */
   LteUplinkOpenLoopPowerControlTestCase (std::string name);
-  virtual ~LteUplinkOpenLoopPowerControlTestCase ();
+  ~LteUplinkOpenLoopPowerControlTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 /**
@@ -168,10 +168,10 @@ public:
    * \param name the reference name
    */
   LteUplinkClosedLoopPowerControlAbsoluteModeTestCase (std::string name);
-  virtual ~LteUplinkClosedLoopPowerControlAbsoluteModeTestCase ();
+  ~LteUplinkClosedLoopPowerControlAbsoluteModeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 /**
@@ -189,10 +189,10 @@ public:
    * \param name the reference name
    */
   LteUplinkClosedLoopPowerControlAccumulatedModeTestCase (std::string name);
-  virtual ~LteUplinkClosedLoopPowerControlAccumulatedModeTestCase ();
+  ~LteUplinkClosedLoopPowerControlAccumulatedModeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 #endif /* LTE_TEST_UPLINK_POWER_CONTROL_H */

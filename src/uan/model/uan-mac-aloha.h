@@ -46,7 +46,7 @@ public:
   /** Default constructor */
   UanMacAloha ();
   /** Dummy destructor, see DoDispose. */
-  virtual ~UanMacAloha ();
+  ~UanMacAloha () override;
   /**
    * Register this type.
    * \return The TypeId.
@@ -55,11 +55,11 @@ public:
 
 
   // Inherited methods
-  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
-  virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear ();
-  int64_t AssignStreams (int64_t stream);
+  bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest) override;
+  void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb) override;
+  void AttachPhy (Ptr<UanPhy> phy) override;
+  void Clear () override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   /** PHY layer attached to this MAC. */
@@ -86,7 +86,7 @@ private:
    */
   void RxPacketError (Ptr<Packet> pkt, double sinr);
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanMacAloha
 

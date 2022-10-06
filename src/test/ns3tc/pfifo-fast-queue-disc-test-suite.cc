@@ -40,10 +40,10 @@ class PfifoFastQueueDiscTosPrioritization : public TestCase
 {
 public:
   PfifoFastQueueDiscTosPrioritization ();
-  virtual ~PfifoFastQueueDiscTosPrioritization ();
+  ~PfifoFastQueueDiscTosPrioritization () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet and checks that it's added to the proper band.
    *
@@ -126,10 +126,10 @@ class PfifoFastQueueDiscDscpPrioritization : public TestCase
 {
 public:
   PfifoFastQueueDiscDscpPrioritization ();
-  virtual ~PfifoFastQueueDiscDscpPrioritization ();
+  ~PfifoFastQueueDiscDscpPrioritization () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet and checks that it's added to the proper band.
    *
@@ -217,10 +217,10 @@ class PfifoFastQueueDiscOverflow : public TestCase
 {
 public:
   PfifoFastQueueDiscOverflow ();
-  virtual ~PfifoFastQueueDiscOverflow ();
+  ~PfifoFastQueueDiscOverflow () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    *
@@ -299,10 +299,10 @@ class PfifoFastQueueDiscNoPriority : public TestCase
 {
 public:
   PfifoFastQueueDiscNoPriority ();
-  virtual ~PfifoFastQueueDiscNoPriority ();
+  ~PfifoFastQueueDiscNoPriority () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 PfifoFastQueueDiscNoPriority::PfifoFastQueueDiscNoPriority ()

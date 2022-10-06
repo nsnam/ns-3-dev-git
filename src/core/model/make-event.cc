@@ -43,11 +43,11 @@ EventImpl * MakeEvent (void (*f)())
     EventFunctionImpl0 (F function)
       : m_function (function)
     {}
-    virtual ~EventFunctionImpl0 ()
+    ~EventFunctionImpl0 () override
     {}
 
   protected:
-    virtual void Notify ()
+    void Notify () override
     {
       (*m_function)();
     }

@@ -50,7 +50,7 @@ public:
    */
   static TypeId GetTypeId ();
   CaraWifiManager ();
-  virtual ~CaraWifiManager ();
+  ~CaraWifiManager () override;
 
 
 private:

@@ -77,7 +77,7 @@ public:
    */
   static TypeId GetTypeId ();
   ChannelCoordinator ();
-  virtual ~ChannelCoordinator ();
+  ~ChannelCoordinator () override;
 
   /**
    * \return the default control channel interval for multi-channel operation (50 milliseconds).
@@ -204,8 +204,8 @@ public:
   void UnregisterAllListeners ();
 
 private:
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
 
   /**
    * start to make channel coordination events

@@ -101,7 +101,7 @@ class SixlowpanIphcStatefulImplTest : public TestCase
   NetDeviceContainer m_sixDevices; //!< SixLowPanNetDevice container
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   SixlowpanIphcStatefulImplTest ();
 };
 

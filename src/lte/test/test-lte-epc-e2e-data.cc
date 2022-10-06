@@ -115,10 +115,10 @@ public:
    * \param v the ENB test data
    */
   LteEpcE2eDataTestCase (std::string name, std::vector<EnbTestData> v);
-  virtual ~LteEpcE2eDataTestCase ();
+  ~LteEpcE2eDataTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   std::vector<EnbTestData> m_enbTestData; ///< the ENB test data
 };
 

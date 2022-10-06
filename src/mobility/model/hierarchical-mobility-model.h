@@ -100,11 +100,11 @@ public:
   void SetParent (Ptr<MobilityModel> model);
 
 private:
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual void DoInitialize ();
-  virtual int64_t DoAssignStreams (int64_t);
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  void DoInitialize () override;
+  int64_t DoAssignStreams (int64_t) override;
 
   /**
    * Callback for when parent mobility model course change occurs

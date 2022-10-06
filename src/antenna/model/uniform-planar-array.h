@@ -47,7 +47,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~UniformPlanarArray ();
+  ~UniformPlanarArray () override;
 
   /**
    * \brief Get the type ID.

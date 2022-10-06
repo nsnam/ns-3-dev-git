@@ -175,7 +175,7 @@ public:
    * \param [in] val Generic AttributeValue, to upcast to \pname{U}.
    * \returns true if the member was set successfully.
    */
-  virtual bool Set (ObjectBase * object, const AttributeValue & val) const
+  bool Set (ObjectBase * object, const AttributeValue & val) const override
   {
     const U *value = dynamic_cast<const U *> (&val);
     if (value == 0)
@@ -202,7 +202,7 @@ public:
    * \param [out] val Generic AttributeValue, to upcast to \pname{U}.
    * \returns true if the member value could be retrieved successfully
    */
-  virtual bool Get (const ObjectBase * object, AttributeValue &val) const
+  bool Get (const ObjectBase * object, AttributeValue &val) const override
   {
     U *value = dynamic_cast<U *> (&val);
     if (value == 0)
@@ -271,7 +271,7 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
     {}
 
   private:
-    virtual bool DoSet (T *object, const V *v) const
+    bool DoSet (T *object, const V *v) const override
     {
       typename AccessorTrait<U>::Result tmp;
       bool ok = v->GetAccessor (tmp);
@@ -282,16 +282,16 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
       (object->*m_memberVariable) = tmp;
       return true;
     }
-    virtual bool DoGet (const T *object, V *v) const
+    bool DoGet (const T *object, V *v) const override
     {
       v->Set (object->*m_memberVariable);
       return true;
     }
-    virtual bool HasGetter () const
+    bool HasGetter () const override
     {
       return true;
     }
-    virtual bool HasSetter () const
+    bool HasSetter () const override
     {
       return true;
     }
@@ -333,20 +333,20 @@ DoMakeAccessorHelperOne (U (T::*getter)() const)
     {}
 
   private:
-    virtual bool DoSet ([[maybe_unused]] T *object, [[maybe_unused]] const V *v) const
+    bool DoSet ([[maybe_unused]] T *object, [[maybe_unused]] const V *v) const override
     {
       return false;
     }
-    virtual bool DoGet (const T *object, V *v) const
+    bool DoGet (const T *object, V *v) const override
     {
       v->Set ((object->*m_getter)());
       return true;
     }
-    virtual bool HasGetter () const
+    bool HasGetter () const override
     {
       return true;
     }
-    virtual bool HasSetter () const
+    bool HasSetter () const override
     {
       return false;
     }
@@ -388,7 +388,7 @@ DoMakeAccessorHelperOne (void (T::*setter)(U))
     {}
 
   private:
-    virtual bool DoSet (T *object, const V *v) const
+    bool DoSet (T *object, const V *v) const override
     {
       typename AccessorTrait<U>::Result tmp;
       bool ok = v->GetAccessor (tmp);
@@ -399,15 +399,15 @@ DoMakeAccessorHelperOne (void (T::*setter)(U))
       (object->*m_setter)(tmp);
       return true;
     }
-    virtual bool DoGet ([[maybe_unused]] const T *object, [[maybe_unused]] V *v) const
+    bool DoGet ([[maybe_unused]] const T *object, [[maybe_unused]] V *v) const override
     {
       return false;
     }
-    virtual bool HasGetter () const
+    bool HasGetter () const override
     {
       return false;
     }
-    virtual bool HasSetter () const
+    bool HasSetter () const override
     {
       return true;
     }
@@ -460,7 +460,7 @@ DoMakeAccessorHelperTwo (void (T::*setter)(U),
     {}
 
   private:
-    virtual bool DoSet (T *object, const W *v) const
+    bool DoSet (T *object, const W *v) const override
     {
       typename AccessorTrait<U>::Result tmp;
       bool ok = v->GetAccessor (tmp);
@@ -471,16 +471,16 @@ DoMakeAccessorHelperTwo (void (T::*setter)(U),
       (object->*m_setter)(tmp);
       return true;
     }
-    virtual bool DoGet (const T *object, W *v) const
+    bool DoGet (const T *object, W *v) const override
     {
       v->Set ((object->*m_getter)());
       return true;
     }
-    virtual bool HasGetter () const
+    bool HasGetter () const override
     {
       return true;
     }
-    virtual bool HasSetter () const
+    bool HasSetter () const override
     {
       return true;
     }
@@ -548,7 +548,7 @@ DoMakeAccessorHelperTwo (bool (T::*setter)(U),
     {}
 
   private:
-    virtual bool DoSet (T *object, const W *v) const
+    bool DoSet (T *object, const W *v) const override
     {
       typename AccessorTrait<U>::Result tmp;
       bool ok = v->GetAccessor (tmp);
@@ -559,16 +559,16 @@ DoMakeAccessorHelperTwo (bool (T::*setter)(U),
       ok = (object->*m_setter)(tmp);
       return ok;
     }
-    virtual bool DoGet (const T *object, W *v) const
+    bool DoGet (const T *object, W *v) const override
     {
       v->Set ((object->*m_getter)());
       return true;
     }
-    virtual bool HasGetter () const
+    bool HasGetter () const override
     {
       return true;
     }
-    virtual bool HasSetter () const
+    bool HasSetter () const override
     {
       return true;
     }

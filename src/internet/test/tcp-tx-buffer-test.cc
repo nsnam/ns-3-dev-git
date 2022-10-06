@@ -39,8 +39,8 @@ public:
   TcpTxBufferTestCase ();
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /** \brief Test if a segment is really set as lost */
   void TestIsLost ();

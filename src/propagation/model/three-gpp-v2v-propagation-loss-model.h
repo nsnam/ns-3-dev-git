@@ -47,7 +47,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vUrbanPropagationLossModel () override;
+  ~ThreeGppV2vUrbanPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   ThreeGppV2vUrbanPropagationLossModel (const ThreeGppV2vUrbanPropagationLossModel &) = delete;
@@ -63,7 +63,7 @@ private:
    * \param hBs the height of the BS in meters
    * \return pathloss value in dB
    */
-  virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+  double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
 
   /**
    * \brief Returns the minimum of the two independently generated distances
@@ -80,7 +80,7 @@ private:
    *
    * \return Returns 02i 2D distance (in meters) used to calculate low/high losses.
    */
-  virtual double GetO2iDistance2dIn () const override;
+  double GetO2iDistance2dIn () const override;
 
 
   /**
@@ -92,7 +92,7 @@ private:
    * \param hBs the height of the BS in meters
    * \return pathloss value in dB
    */
-  virtual double GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const override;
+  double GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const override;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -103,7 +103,7 @@ private:
    * \param hBs the height of the BS in meters
    * \return pathloss value in dB
    */
-  virtual double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const override;
+  double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const override;
 
   /**
    * \brief Computes the additional loss due to an obstruction caused by a vehicle
@@ -121,16 +121,16 @@ private:
    * \param cond the LOS/NLOS channel condition
    * \return shadowing std in dB
    */
-  virtual double GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const override;
+  double GetShadowingStd (Ptr<MobilityModel> a, Ptr<MobilityModel> b, ChannelCondition::LosConditionValue cond) const override;
 
   /**
    * \brief Returns the shadow fading correlation distance
    * \param cond the LOS/NLOS channel condition
    * \return shadowing correlation distance in meters
    */
-  virtual double GetShadowingCorrelationDistance (ChannelCondition::LosConditionValue cond) const override;
+  double GetShadowingCorrelationDistance (ChannelCondition::LosConditionValue cond) const override;
 
-  virtual int64_t DoAssignStreams (int64_t stream) override;
+  int64_t DoAssignStreams (int64_t stream) override;
 
   double m_percType3Vehicles; //!< percentage of Type 3 vehicles in the scenario (i.e., trucks)
   Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
@@ -160,7 +160,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vHighwayPropagationLossModel () override;
+  ~ThreeGppV2vHighwayPropagationLossModel () override;
 
 private:
   /**
@@ -172,7 +172,7 @@ private:
    * \param hBs the height of the BS in meters
    * \return pathloss value in dB
    */
-  virtual double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
+  double GetLossLos (double distance2D, double distance3D, double hUt, double hBs) const override;
 };
 
 } // namespace ns3

@@ -66,7 +66,7 @@ public:
    * \param type message type
    */
   ManagementMessageType (uint8_t type);
-  virtual ~ManagementMessageType ();
+  ~ManagementMessageType () override;
   /**
    * Set type field
    * \param type the type
@@ -85,11 +85,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_type; ///< type
 };
@@ -122,7 +122,7 @@ class RngRsp : public Header
 {
 public:
   RngRsp ();
-  virtual ~RngRsp ();
+  ~RngRsp () override;
   /**
    * \brief set the  Tx timing offset adjustment (signed 32-bit).
    * \param timingAdjust The time required to advance SS transmission so frames
@@ -271,11 +271,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_reserved; ///< changed as per the amendment 802.16e-2005
 
@@ -374,7 +374,7 @@ class DsaReq : public Header
 {
 public:
   DsaReq ();
-  ~DsaReq ();
+  ~DsaReq () override;
   /**
    * Constructor
    *
@@ -426,11 +426,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   uint16_t m_transactionId; ///< transaction ID
@@ -475,7 +475,7 @@ class DsaRsp : public Header
 {
 public:
   DsaRsp ();
-  ~DsaRsp ();
+  ~DsaRsp () override;
 
   /**
    * \brief set the transaction ID
@@ -533,11 +533,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint16_t m_transactionId; ///< transaction ID
   uint8_t m_confirmationCode; ///< confirmation code
@@ -574,7 +574,7 @@ class DsaAck : public Header
 
 public:
   DsaAck ();
-  ~DsaAck ();
+  ~DsaAck () override;
 
   /**
    * Set transaction ID field
@@ -608,11 +608,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint16_t m_transactionId; ///< transaction ID
   uint8_t m_confirmationCode; ///< confirmation code
@@ -643,7 +643,7 @@ class RngReq : public Header
 {
 public:
   RngReq ();
-  virtual ~RngReq ();
+  ~RngReq () override;
 
   /**
    * Set request DL burst profile field
@@ -687,13 +687,13 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
   /// Print debug function
   void PrintDebug () const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_reserved; ///< changed as per the amendment 802.16e-2005
 

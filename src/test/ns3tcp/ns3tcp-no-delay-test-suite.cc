@@ -53,10 +53,10 @@ public:
    * \param noDelay Enable or disable TCP no delay option.
    */
   Ns3TcpNoDelayTestCase (bool noDelay);
-  virtual ~Ns3TcpNoDelayTestCase () {}
+  ~Ns3TcpNoDelayTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   bool m_noDelay;       //!< Enable or disable TCP no delay option.
   bool m_writeResults;  //!< True if write PCAP files.
 

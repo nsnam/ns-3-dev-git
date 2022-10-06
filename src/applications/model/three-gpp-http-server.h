@@ -150,11 +150,11 @@ public:
 
 protected:
   // Inherited from Object base class
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   // Inherited from Application base class
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
 private:
   // SOCKET CALLBACK METHODS

@@ -44,7 +44,7 @@ public:
   static TypeId GetTypeId ();
 
   DataCollectionObject ();
-  virtual ~DataCollectionObject ();
+  ~DataCollectionObject () override;
 
   /// Set the status of an individual object.
   void Enable ();

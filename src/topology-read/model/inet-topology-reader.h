@@ -59,7 +59,7 @@ public:
   static TypeId GetTypeId ();
 
   InetTopologyReader ();
-  virtual ~InetTopologyReader ();
+  ~InetTopologyReader () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   InetTopologyReader (const InetTopologyReader &) = delete;
@@ -77,7 +77,7 @@ public:
    *
    * \return The container of the nodes created (or empty container if there was an error)
    */
-  virtual NodeContainer Read ();
+  NodeContainer Read () override;
 
   // end class InetTopologyReader
 };

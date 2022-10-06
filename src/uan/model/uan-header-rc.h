@@ -52,7 +52,7 @@ public:
    */
   UanHeaderRcData (uint8_t frameNum, Time propDelay);
   /** Destructor */
-  virtual ~UanHeaderRcData ();
+  ~UanHeaderRcData () override;
 
   /**
    * Register this type.
@@ -95,11 +95,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 
 private:
   uint8_t m_frameNo;  //!< Data frame number.
@@ -131,7 +131,7 @@ public:
    */
   UanHeaderRcRts (uint8_t frameNo, uint8_t retryNo, uint8_t noFrames, uint16_t length, Time ts);
   /** Destructor */
-  virtual ~UanHeaderRcRts ();
+  ~UanHeaderRcRts () override;
 
   /**
    * Register this type.
@@ -213,11 +213,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 
 private:
   uint8_t m_frameNo;   //!< Reservation frame number.
@@ -250,7 +250,7 @@ public:
    */
   UanHeaderRcCtsGlobal (Time wt, Time ts, uint16_t rate, uint16_t retryRate);
   /** Destructor */
-  ~UanHeaderRcCtsGlobal ();
+  ~UanHeaderRcCtsGlobal () override;
 
   /**
    * Register this type.
@@ -317,11 +317,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 
 private:
   Time m_timeStampTx;    //!< Timestamp.
@@ -356,7 +356,7 @@ public:
    */
   UanHeaderRcCts (uint8_t frameNo, uint8_t retryNo, Time rtsTs, Time delay, Mac8Address addr);
   /** Destructor */
-  virtual ~UanHeaderRcCts ();
+  ~UanHeaderRcCts () override;
 
   /**
    * Register this type.
@@ -435,11 +435,11 @@ public:
   void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 
 private:
   uint8_t m_frameNo;     //!< Reservation frame number being cleared.
@@ -461,7 +461,7 @@ public:
   /** Default constructor */
   UanHeaderRcAck ();
   /** Destructor */
-  virtual ~UanHeaderRcAck ();
+  ~UanHeaderRcAck () override;
 
   /**
    * Register this type.
@@ -502,11 +502,11 @@ public:
   uint8_t GetNoNacks () const;
 
   // Inherrited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 
 private:
   uint8_t m_frameNo;                 //!< Next frame number.

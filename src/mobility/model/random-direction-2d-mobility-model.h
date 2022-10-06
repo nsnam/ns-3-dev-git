@@ -69,12 +69,12 @@ private:
    * Sets a new random direction and calls SetDirectionAndSpeed
    */
   void DoInitializePrivate ();
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual int64_t DoAssignStreams (int64_t);
+  void DoDispose () override;
+  void DoInitialize () override;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  int64_t DoAssignStreams (int64_t) override;
 
   Ptr<UniformRandomVariable> m_direction; //!< rv to control direction
   Rectangle m_bounds; //!< the 2D bounding area

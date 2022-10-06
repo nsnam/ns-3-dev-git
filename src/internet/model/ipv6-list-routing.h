@@ -56,7 +56,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ListRouting ();
+  ~Ipv6ListRouting () override;
 
   /**
    * \brief Register a new routing protocol to be used in this IPv4 stack
@@ -86,25 +86,25 @@ public:
   virtual Ptr<Ipv6RoutingProtocol> GetRoutingProtocol (uint32_t index, int16_t& priority) const;
 
   // Below are from Ipv6RoutingProtocol
-  virtual Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr) override;
 
-  virtual bool RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
+  bool RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                           LocalDeliverCallback lcb, ErrorCallback ecb);
-  virtual void NotifyInterfaceUp (uint32_t interface);
-  virtual void NotifyInterfaceDown (uint32_t interface);
-  virtual void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address);
-  virtual void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address);
-  virtual void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-  virtual void SetIpv6 (Ptr<Ipv6> ipv6);
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+                           LocalDeliverCallback lcb, ErrorCallback ecb) override;
+  void NotifyInterfaceUp (uint32_t interface) override;
+  void NotifyInterfaceDown (uint32_t interface) override;
+  void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) override;
+  void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) override;
+  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) override;
+  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) override;
+  void SetIpv6 (Ptr<Ipv6> ipv6) override;
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const override;
 
 protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

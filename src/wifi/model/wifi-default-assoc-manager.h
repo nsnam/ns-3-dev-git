@@ -42,7 +42,7 @@ public:
    */
   static TypeId GetTypeId ();
   WifiDefaultAssocManager ();
-  virtual ~WifiDefaultAssocManager ();
+  ~WifiDefaultAssocManager () override;
 
   void NotifyChannelSwitched (uint8_t linkId) override;
   bool Compare (const StaWifiMac::ApInfo& lhs, const StaWifiMac::ApInfo& rhs) const override;

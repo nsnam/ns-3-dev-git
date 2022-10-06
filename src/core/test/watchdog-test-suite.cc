@@ -42,7 +42,7 @@ class WatchdogTestCase : public TestCase
 public:
   /** Constructor. */
   WatchdogTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Function to invoke when Watchdog expires.
    * \param arg The argument passed.

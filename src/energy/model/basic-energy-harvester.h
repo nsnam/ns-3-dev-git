@@ -65,7 +65,7 @@ public:
    */
   BasicEnergyHarvester (Time updateInterval);
 
-  virtual ~BasicEnergyHarvester ();
+  ~BasicEnergyHarvester () override;
 
   /**
    * \param updateInterval Energy harvesting update interval.
@@ -94,10 +94,10 @@ public:
 
 private:
   /// Defined in ns3::Object
-  void DoInitialize ();
+  void DoInitialize () override;
 
   /// Defined in ns3::Object
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Calculates harvested Power.
@@ -108,7 +108,7 @@ private:
    * \returns m_harvestedPower The power currently provided by the Basic Energy Harvester.
    * Implements DoGetPower defined in EnergyHarvester.
    */
-  virtual double DoGetPower () const;
+  double DoGetPower () const override;
 
   /**
    * This function is called every m_energyHarvestingUpdateInterval in order to

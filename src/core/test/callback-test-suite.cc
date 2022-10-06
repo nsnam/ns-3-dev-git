@@ -42,7 +42,7 @@ class BasicCallbackTestCase : public TestCase
 {
 public:
   BasicCallbackTestCase ();
-  virtual ~BasicCallbackTestCase ()
+  ~BasicCallbackTestCase () override
   {}
 
   /**
@@ -82,8 +82,8 @@ public:
   }
 
 private:
-  virtual void DoRun ();
-  virtual void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
 
   bool m_test1; //!< true if Target1 has been called, false otherwise.
   bool m_test2; //!< true if Target2 has been called, false otherwise.
@@ -228,7 +228,7 @@ class MakeCallbackTestCase : public TestCase
 {
 public:
   MakeCallbackTestCase ();
-  virtual ~MakeCallbackTestCase ()
+  ~MakeCallbackTestCase () override
   {}
 
   /**
@@ -268,8 +268,8 @@ public:
   }
 
 private:
-  virtual void DoRun ();
-  virtual void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
 
   bool m_test1; //!< true if Target1 has been called, false otherwise.
   bool m_test2; //!< true if Target2 has been called, false otherwise.
@@ -407,7 +407,7 @@ class MakeBoundCallbackTestCase : public TestCase
 {
 public:
   MakeBoundCallbackTestCase ();
-  virtual ~MakeBoundCallbackTestCase ()
+  ~MakeBoundCallbackTestCase () override
   {}
 
   /**
@@ -424,8 +424,8 @@ public:
   }
 
 private:
-  virtual void DoRun ();
-  virtual void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
 };
 
 /**
@@ -721,7 +721,7 @@ class CallbackEqualityTestCase : public TestCase
 {
 public:
   CallbackEqualityTestCase ();
-  virtual ~CallbackEqualityTestCase () {}
+  ~CallbackEqualityTestCase () override {}
 
   /**
    * Member function used to test equality of callbacks.
@@ -736,8 +736,8 @@ public:
   }
 
 private:
-  virtual void DoRun ();
-  virtual void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
 };
 
 /**
@@ -874,7 +874,7 @@ class NullifyCallbackTestCase : public TestCase
 {
 public:
   NullifyCallbackTestCase ();
-  virtual ~NullifyCallbackTestCase ()
+  ~NullifyCallbackTestCase () override
   {}
 
   /**
@@ -886,8 +886,8 @@ public:
   }
 
 private:
-  virtual void DoRun ();
-  virtual void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
 
   bool m_test1; //!< true if Target1 has been called, false otherwise.
 };
@@ -930,7 +930,7 @@ class MakeCallbackTemplatesTestCase : public TestCase
 {
 public:
   MakeCallbackTemplatesTestCase ();
-  virtual ~MakeCallbackTemplatesTestCase ()
+  ~MakeCallbackTemplatesTestCase () override
   {}
 
   /**
@@ -942,7 +942,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   bool m_test1; //!< true if Target1 has been called, false otherwise.
 };

@@ -77,7 +77,7 @@ public:
    */
   Txop (Ptr<WifiMacQueue> queue);
 
-  virtual ~Txop ();
+  ~Txop () override;
 
   /**
    * \brief Get the type ID.

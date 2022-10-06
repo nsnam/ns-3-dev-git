@@ -57,8 +57,8 @@ public:
   TcpHeaderGetSetTestCase (std::string name);
 protected:
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
 };
 
@@ -162,8 +162,8 @@ public:
   TcpHeaderWithRFC793OptionTestCase (std::string name);
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * \brief Check an header with only one kind of option.
@@ -367,7 +367,7 @@ public:
   TcpHeaderFlagsToString (std::string name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 TcpHeaderFlagsToString::TcpHeaderFlagsToString (std::string name)

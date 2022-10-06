@@ -58,7 +58,7 @@ public:
    */
   static TypeId GetTypeId ();
 protected:
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 private:
   /**
    * Get next position, begin moving towards it, schedule future pause event
@@ -68,10 +68,10 @@ private:
    * Begin current pause event, schedule future walk event
    */
   void DoInitializePrivate ();
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual int64_t DoAssignStreams (int64_t);
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  int64_t DoAssignStreams (int64_t) override;
 
   ConstantVelocityHelper m_helper; //!< helper for velocity computations
   Ptr<PositionAllocator> m_position; //!< pointer to position allocator

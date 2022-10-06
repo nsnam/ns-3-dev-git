@@ -41,7 +41,7 @@ public:
    */
   static TypeId GetTypeId ();
   ConstantRateWifiManager ();
-  virtual ~ConstantRateWifiManager ();
+  ~ConstantRateWifiManager () override;
 
 
 private:

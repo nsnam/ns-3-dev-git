@@ -56,7 +56,7 @@ class WifiErrorRateModelsTestCaseDsss : public TestCase
 {
 public:
   WifiErrorRateModelsTestCaseDsss ();
-  virtual ~WifiErrorRateModelsTestCaseDsss ();
+  ~WifiErrorRateModelsTestCaseDsss () override;
 
 private:
   void DoRun () override;
@@ -165,7 +165,7 @@ class WifiErrorRateModelsTestCaseNist : public TestCase
 {
 public:
   WifiErrorRateModelsTestCaseNist ();
-  virtual ~WifiErrorRateModelsTestCaseNist ();
+  ~WifiErrorRateModelsTestCaseNist () override;
 
 private:
   void DoRun () override;
@@ -315,7 +315,7 @@ class WifiErrorRateModelsTestCaseMimo : public TestCase
 {
 public:
   WifiErrorRateModelsTestCaseMimo ();
-  virtual ~WifiErrorRateModelsTestCaseMimo ();
+  ~WifiErrorRateModelsTestCaseMimo () override;
 
 private:
   void DoRun () override;
@@ -1460,7 +1460,7 @@ public:
    * \param size the number of bytes to use for the test
    */
   TableBasedErrorRateTestCase (const std::string &testName, WifiMode mode, uint32_t size);
-  virtual ~TableBasedErrorRateTestCase ();
+  ~TableBasedErrorRateTestCase () override;
 
 private:
   void DoRun () override;

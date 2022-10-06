@@ -55,10 +55,10 @@ public:
    * \param name TestCase name
    */
   ItuR1411NlosOverRooftopPropagationLossModelTestCase (double freq, double dist, double hb, double hm, EnvironmentType env, CitySize city, double refValue, std::string name);
-  virtual ~ItuR1411NlosOverRooftopPropagationLossModelTestCase ();
+  ~ItuR1411NlosOverRooftopPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Create a MobilityModel

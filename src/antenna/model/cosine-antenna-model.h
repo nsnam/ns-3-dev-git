@@ -57,7 +57,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from AntennaModel
-  virtual double GetGainDb (Angles a);
+  double GetGainDb (Angles a) override;
 
   /**
    * Get the vertical 3 dB beamwidth of the cosine antenna model.

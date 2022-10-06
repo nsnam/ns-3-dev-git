@@ -71,7 +71,7 @@ public:
    * \param tracesPath trace path
    */
   SimpleOfdmWimaxPhy (char * tracesPath);
-  ~SimpleOfdmWimaxPhy ();
+  ~SimpleOfdmWimaxPhy () override;
   /**
    * \brief if called with true it will enable the loss model
    * \param loss set to true to enable the loss model
@@ -87,7 +87,7 @@ public:
     * Attach the physical layer to a channel.
     * \param channel the channel to which the physical layer will be attached
     */
-  void DoAttach (Ptr<WimaxChannel> channel);
+  void DoAttach (Ptr<WimaxChannel> channel) override;
   /**
    * \brief set the callback function to call when a burst is received
    * \param callback the receive callback function
@@ -105,12 +105,12 @@ public:
    * \param params parameters
    * \see SendParams
    */
-  void Send (SendParams *params);
+  void Send (SendParams *params) override;
   /**
    * \brief returns the type this physical layer
    * \return always  WimaxPhy::simpleOfdmWimaxPhy;
    */
-  WimaxPhy::PhyType GetPhyType () const;
+  WimaxPhy::PhyType GetPhyType () const override;
   /**
    * \brief start the reception of a fec block
    * \param burstSize the burst size
@@ -208,7 +208,7 @@ public:
   * \param stream first stream index to use
   * \return the number of stream indices assigned by this model
   */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   /**
@@ -217,21 +217,21 @@ private:
    * \param modulationType the modulation type
    * \returns the transmission time
    */
-  Time DoGetTransmissionTime (uint32_t size, WimaxPhy::ModulationType modulationType) const;
+  Time DoGetTransmissionTime (uint32_t size, WimaxPhy::ModulationType modulationType) const override;
   /**
    * Get number of symbols
    * \param size the size
    * \param modulationType the modulation type
    * \returns the number of symbols
    */
-  uint64_t DoGetNrSymbols (uint32_t size, WimaxPhy::ModulationType modulationType) const;
+  uint64_t DoGetNrSymbols (uint32_t size, WimaxPhy::ModulationType modulationType) const override;
   /**
    * Get number of bytes
    * \param symbols the symbols
    * \param modulationType the modulation type
    * \returns the number of bytes
    */
-  uint64_t DoGetNrBytes (uint32_t symbols, WimaxPhy::ModulationType modulationType) const;
+  uint64_t DoGetNrBytes (uint32_t symbols, WimaxPhy::ModulationType modulationType) const override;
   /**
    * Convert burst to bits
    * \param burst the packet burst
@@ -280,7 +280,7 @@ private:
    * \returns the number of blocks
    */
   uint16_t GetNrBlocks (uint32_t burstSize, WimaxPhy::ModulationType modulationType) const;
-  void DoDispose ();
+  void DoDispose () override;
   /// End send
   void EndSend ();
   /**
@@ -323,7 +323,7 @@ private:
    */
   Time GetBlockTransmissionTime (WimaxPhy::ModulationType modulationType) const;
   /// Set data rates
-  void DoSetDataRates ();
+  void DoSetDataRates () override;
   /// Initialize simple OFDM WIMAX Phy
   void InitSimpleOfdmWimaxPhy ();
 
@@ -345,35 +345,35 @@ private:
    * \param modulationType the modulation type
    * \returns the data rate
    */
-  uint32_t DoGetDataRate (WimaxPhy::ModulationType modulationType) const;
+  uint32_t DoGetDataRate (WimaxPhy::ModulationType modulationType) const override;
   /**
    * Get TTG
    * \returns the TTG
    */
-  uint16_t DoGetTtg () const;
+  uint16_t DoGetTtg () const override;
   /**
    * Get RTG
    * \returns the RTG
    */
-  uint16_t DoGetRtg () const;
+  uint16_t DoGetRtg () const override;
   /**
    * Get frame duration code
    * \returns the frame duration code
    */
-  uint8_t DoGetFrameDurationCode () const;
+  uint8_t DoGetFrameDurationCode () const override;
   /**
    * Get frame duration
    * \param frameDurationCode the frame duration code
    * \returns the frame duration
    */
-  Time DoGetFrameDuration (uint8_t frameDurationCode) const;
+  Time DoGetFrameDuration (uint8_t frameDurationCode) const override;
   /// Set Phy parameters
-  void DoSetPhyParameters ();
+  void DoSetPhyParameters () override;
   /**
    * Get NFFT
    * \returns the NFFT
    */
-  uint16_t DoGetNfft () const;
+  uint16_t DoGetNfft () const override;
   /**
    * Set NFFT
    * \param nfft the NFFT
@@ -383,17 +383,17 @@ private:
    * Get sampling factor
    * \returns the sampling factor
    */
-  double DoGetSamplingFactor () const;
+  double DoGetSamplingFactor () const override;
   /**
    * Get sampling frequency
    * \returns the sampling frequency
    */
-  double DoGetSamplingFrequency () const;
+  double DoGetSamplingFrequency () const override;
   /**
    * Get G value
    * \returns the G value
    */
-  double DoGetGValue () const;
+  double DoGetGValue () const override;
   /**
    * Set G value
    * \param g the G value

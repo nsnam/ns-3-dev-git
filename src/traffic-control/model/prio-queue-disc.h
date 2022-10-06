@@ -59,7 +59,7 @@ public:
    */
   PrioQueueDisc ();
 
-  virtual ~PrioQueueDisc();
+  ~PrioQueueDisc() override;
 
   /**
    * Set the band (class) assigned to packets with specified priority.
@@ -78,11 +78,11 @@ public:
   uint16_t GetBandForPriority (uint8_t prio) const;
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual Ptr<const QueueDiscItem> DoPeek ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  Ptr<const QueueDiscItem> DoPeek () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 
   Priomap m_prio2band;    //!< Priority to band mapping
 };

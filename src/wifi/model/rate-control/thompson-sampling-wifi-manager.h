@@ -45,7 +45,7 @@ public:
    */
   static TypeId GetTypeId ();
   ThompsonSamplingWifiManager ();
-  virtual ~ThompsonSamplingWifiManager ();
+  ~ThompsonSamplingWifiManager () override;
 
   int64_t AssignStreams (int64_t stream) override;
 

@@ -53,7 +53,7 @@ public:
    */
   RipHelper (const RipHelper &o);
 
-  virtual ~RipHelper ();
+  ~RipHelper () override;
 
   // Delete assignment operator to avoid misuse
   RipHelper &operator= (const RipHelper &) = delete;
@@ -64,7 +64,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  RipHelper* Copy () const;
+  RipHelper* Copy () const override;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -72,7 +72,7 @@ public:
    *
    * This method will be called by ns3::InternetStackHelper::Install
    */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const override;
 
   /**
    * \param name the name of the attribute to set

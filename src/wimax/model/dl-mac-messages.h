@@ -133,7 +133,7 @@ class OfdmDcdChannelEncodings : public DcdChannelEncodings
 {
 public:
   OfdmDcdChannelEncodings ();
-  ~OfdmDcdChannelEncodings ();
+  ~OfdmDcdChannelEncodings () override;
 
   /**
    * Set channel number field
@@ -210,13 +210,13 @@ private:
    * \param start the iterator
    * \returns the updated iterator
    */
-  virtual Buffer::Iterator DoWrite (Buffer::Iterator start) const;
+  Buffer::Iterator DoWrite (Buffer::Iterator start) const override;
   /**
    * Read item
    * \param start the iterator
    * \returns the updated iterator
    */
-  virtual Buffer::Iterator DoRead (Buffer::Iterator start);
+  Buffer::Iterator DoRead (Buffer::Iterator start) override;
 
   uint8_t m_channelNr; ///< channel number
   uint8_t m_ttg; ///< TTG
@@ -356,7 +356,7 @@ class Dcd : public Header
 {
 public:
   Dcd ();
-  virtual ~Dcd ();
+  ~Dcd () override;
 
   /**
    * Set configuration change count field
@@ -410,11 +410,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_reserved; ///< changed as per the amendment 802.16e-2005
   uint8_t m_configurationChangeCount; ///< configuration change count
@@ -542,7 +542,7 @@ class DlMap : public Header
 {
 public:
   DlMap ();
-  virtual ~DlMap ();
+  ~DlMap () override;
 
   /**
    * Set DCD count field
@@ -586,11 +586,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_dcdCount; ///< DCD count
   Mac48Address m_baseStationId; ///< base station ID

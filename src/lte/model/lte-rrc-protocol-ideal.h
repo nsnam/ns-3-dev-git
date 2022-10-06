@@ -53,10 +53,10 @@ class LteUeRrcProtocolIdeal : public Object
 public:
 
   LteUeRrcProtocolIdeal ();
-  virtual ~LteUeRrcProtocolIdeal ();
+  ~LteUeRrcProtocolIdeal () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -167,10 +167,10 @@ class LteEnbRrcProtocolIdeal : public Object
 public:
 
   LteEnbRrcProtocolIdeal ();
-  virtual ~LteEnbRrcProtocolIdeal ();
+  ~LteEnbRrcProtocolIdeal () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

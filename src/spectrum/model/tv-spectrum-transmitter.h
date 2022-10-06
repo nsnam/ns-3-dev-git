@@ -58,7 +58,7 @@ public:
   };
 
   TvSpectrumTransmitter ();
-  virtual ~TvSpectrumTransmitter ();
+  ~TvSpectrumTransmitter () override;
 
   /**
    * Register this type.
@@ -67,15 +67,15 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from SpectrumPhy
-  void SetChannel (Ptr<SpectrumChannel> c);
-  void SetMobility (Ptr<MobilityModel> m);
-  void SetDevice (Ptr<NetDevice> d);
-  Ptr<MobilityModel> GetMobility () const;
-  Ptr<NetDevice> GetDevice () const;
+  void SetChannel (Ptr<SpectrumChannel> c) override;
+  void SetMobility (Ptr<MobilityModel> m) override;
+  void SetDevice (Ptr<NetDevice> d) override;
+  Ptr<MobilityModel> GetMobility () const override;
+  Ptr<NetDevice> GetDevice () const override;
   // device does not use Rx but these pure virtual methods must be implemented
-  Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<Object> GetAntenna () const;
-  void StartRx (Ptr<SpectrumSignalParameters> params);
+  Ptr<const SpectrumModel> GetRxSpectrumModel () const override;
+  Ptr<Object> GetAntenna () const override;
+  void StartRx (Ptr<SpectrumSignalParameters> params) override;
 
   /**
    * Get the spectrum channel

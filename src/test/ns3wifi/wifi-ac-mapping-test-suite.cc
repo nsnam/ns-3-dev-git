@@ -57,7 +57,7 @@ public:
    * \param expectedQueue the expected queue disc index
    */
   WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**

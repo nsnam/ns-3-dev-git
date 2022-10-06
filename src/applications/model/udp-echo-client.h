@@ -47,7 +47,7 @@ public:
 
   UdpEchoClient ();
 
-  virtual ~UdpEchoClient ();
+  ~UdpEchoClient () override;
 
   /**
    * \brief set the remote address and port
@@ -131,12 +131,12 @@ public:
   void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Schedule the next packet transmission

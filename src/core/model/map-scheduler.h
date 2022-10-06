@@ -71,14 +71,14 @@ public:
   /** Constructor. */
   MapScheduler ();
   /** Destructor. */
-  virtual ~MapScheduler ();
+  ~MapScheduler () override;
 
   // Inherited
-  virtual void Insert (const Scheduler::Event &ev);
-  virtual bool IsEmpty () const;
-  virtual Scheduler::Event PeekNext () const;
-  virtual Scheduler::Event RemoveNext ();
-  virtual void Remove (const Scheduler::Event &ev);
+  void Insert (const Scheduler::Event &ev) override;
+  bool IsEmpty () const override;
+  Scheduler::Event PeekNext () const override;
+  Scheduler::Event RemoveNext () override;
+  void Remove (const Scheduler::Event &ev) override;
 
 private:
   /** Event list type: a Map from EventKey to EventImpl. */

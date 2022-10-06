@@ -387,7 +387,7 @@ public:
   static TypeId GetTypeId ();
 
   DsrRouteCache ();
-  virtual ~DsrRouteCache ();
+  ~DsrRouteCache () override;
 
   // Delete assignment operator to avoid misuse
   DsrRouteCache & operator = (DsrRouteCache const &) = delete;

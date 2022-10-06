@@ -81,14 +81,14 @@ public:
   /** Constructor. */
   HeapScheduler ();
   /** Destructor. */
-  virtual ~HeapScheduler ();
+  ~HeapScheduler () override;
 
   // Inherited
-  virtual void Insert (const Scheduler::Event &ev);
-  virtual bool IsEmpty () const;
-  virtual Scheduler::Event PeekNext () const;
-  virtual Scheduler::Event RemoveNext ();
-  virtual void Remove (const Scheduler::Event &ev);
+  void Insert (const Scheduler::Event &ev) override;
+  bool IsEmpty () const override;
+  Scheduler::Event PeekNext () const override;
+  Scheduler::Event RemoveNext () override;
+  void Remove (const Scheduler::Event &ev) override;
 
 private:
   /** Event list type:  vector of Events, managed as a heap. */

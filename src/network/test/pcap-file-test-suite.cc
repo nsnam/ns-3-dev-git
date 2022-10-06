@@ -88,12 +88,12 @@ class WriteModeCreateTestCase : public TestCase
 {
 public:
   WriteModeCreateTestCase ();
-  virtual ~WriteModeCreateTestCase ();
+  ~WriteModeCreateTestCase () override;
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_testFilename; //!< File name
 };
@@ -206,12 +206,12 @@ class ReadModeCreateTestCase : public TestCase
 {
 public:
   ReadModeCreateTestCase ();
-  virtual ~ReadModeCreateTestCase ();
+  ~ReadModeCreateTestCase () override;
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_testFilename; //!< File name
 };
@@ -428,12 +428,12 @@ class FileHeaderTestCase : public TestCase
 {
 public:
   FileHeaderTestCase ();
-  virtual ~FileHeaderTestCase ();
+  ~FileHeaderTestCase () override;
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_testFilename; //!< File name
 };
@@ -672,12 +672,12 @@ class RecordHeaderTestCase : public TestCase
 {
 public:
   RecordHeaderTestCase ();
-  virtual ~RecordHeaderTestCase ();
+  ~RecordHeaderTestCase () override;
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_testFilename; //!< File name
 };
@@ -981,12 +981,12 @@ class ReadFileTestCase : public TestCase
 {
 public:
   ReadFileTestCase ();
-  virtual ~ReadFileTestCase ();
+  ~ReadFileTestCase () override;
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_testFilename; //!< File name
 };
@@ -1098,7 +1098,7 @@ public:
   DiffTestCase ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 DiffTestCase::DiffTestCase ()

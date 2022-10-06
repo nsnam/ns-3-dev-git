@@ -44,7 +44,7 @@ public:
    */
   static TypeId GetTypeId ();
   BuildingListPriv ();
-  ~BuildingListPriv ();
+  ~BuildingListPriv () override;
 
   /**
    * Add a Building to the list.
@@ -84,7 +84,7 @@ public:
   static Ptr<BuildingListPriv> Get ();
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * Get the Singleton instance of BuildingListPriv (or create one)
    * \return the BuildingListPriv instance

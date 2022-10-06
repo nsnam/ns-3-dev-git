@@ -48,12 +48,12 @@ private:
   /**
    * \brief setup function for TimeSimpleTestCase.
    */
-  virtual void DoSetup ();
+  void DoSetup () override;
 
   /**
    * \brief Runs the Simple Time test case.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Tests the Time Operations.
@@ -63,7 +63,7 @@ private:
   /**
    * \brief Does the tear down for TimeSimpleTestCase.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   /**
    * Helper function to handle boilerplate code for multiplication tests
@@ -345,17 +345,17 @@ private:
   /**
    * \brief DoSetup for TimeWithSignTestCase.
    */
-  virtual void DoSetup ();
+  void DoSetup () override;
 
   /**
    * \brief DoRun for TimeWithSignTestCase.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief DoTeardown for TimeWithSignTestCase.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 };
 
 TimeWithSignTestCase::TimeWithSignTestCase ()
@@ -417,7 +417,7 @@ private:
   /**
    * \brief DoRun for TimeInputOutputTestCase.
    */
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Check roundtrip from/to string.
    * \param str Time input check.

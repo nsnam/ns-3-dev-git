@@ -58,7 +58,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~EpcHelper ();
+  ~EpcHelper () override;
 
   // inherited from Object
   /**
@@ -66,7 +66,7 @@ public:
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 
   /**

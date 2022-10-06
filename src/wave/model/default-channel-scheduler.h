@@ -38,17 +38,17 @@ public:
    */
   static TypeId GetTypeId ();
   DefaultChannelScheduler ();
-  virtual ~DefaultChannelScheduler ();
+  ~DefaultChannelScheduler () override;
 
   /**
    * \param device enable channel scheduler associated with WaveNetDevice
    */
-  virtual void SetWaveNetDevice (Ptr<WaveNetDevice> device);
+  void SetWaveNetDevice (Ptr<WaveNetDevice> device) override;
   /**
    * \param channelNumber the specified channel number
    * \return  the type of current assigned channel access for the specific channel.
    */
-  virtual enum ChannelAccess GetAssignedAccessType (uint32_t channelNumber) const;
+  enum ChannelAccess GetAssignedAccessType (uint32_t channelNumber) const override;
 
   /**
    * Notify CCH slot start
@@ -67,8 +67,8 @@ public:
    */
   void NotifyGuardSlotStart (Time duration, bool cchi);
 private:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
   /**
    * \param channelNumber the specific channel
    * \param immediate indicate whether channel switch to channel
@@ -76,7 +76,7 @@ private:
    *
    * This method will assign alternating access for SCHs and CCH.
    */
-  virtual bool AssignAlternatingAccess (uint32_t channelNumber, bool immediate);
+  bool AssignAlternatingAccess (uint32_t channelNumber, bool immediate) override;
   /**
    * \param channelNumber the specific channel
    * \param immediate indicate whether channel switch to channel
@@ -84,7 +84,7 @@ private:
    *
    * This method will assign continuous SCH access CCH.
    */
-  virtual bool AssignContinuousAccess (uint32_t channelNumber, bool immediate);
+  bool AssignContinuousAccess (uint32_t channelNumber, bool immediate) override;
   /**
    * \param channelNumber the specific channel
    * \param extends extension duration
@@ -93,18 +93,18 @@ private:
    *
    * This method will assign extended SCH access for SCHs.
    */
-  virtual bool AssignExtendedAccess (uint32_t channelNumber, uint32_t extends, bool immediate);
+  bool AssignExtendedAccess (uint32_t channelNumber, uint32_t extends, bool immediate) override;
   /**
    * This method will assign default CCH access for CCH.
    * \return whether the channel access is assigned successfully
    */
-  virtual bool AssignDefaultCchAccess ();
+  bool AssignDefaultCchAccess () override;
   /**
    * \param channelNumber indicating for which channel should release
    * the assigned channel access resource.
    * \return whether the channel access is released successfully
    */
-  virtual bool ReleaseAccess (uint32_t channelNumber);
+  bool ReleaseAccess (uint32_t channelNumber) override;
   /**
    * \param curChannelNumber switch from MAC activity for current channel
    * \param nextChannelNumber switch to MAC activity for next channel

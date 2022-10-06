@@ -48,8 +48,8 @@ public:
 
   ComponentCarrierUe ();
 
-  virtual ~ComponentCarrierUe ();
-  virtual void DoDispose ();
+  ~ComponentCarrierUe () override;
+  void DoDispose () override;
 
 
   /**
@@ -76,7 +76,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
 

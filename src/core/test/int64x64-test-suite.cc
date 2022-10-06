@@ -120,7 +120,7 @@ class Int64x64HiLoTestCase : public TestCase
 {
 public:
   Int64x64HiLoTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the high and low parts for correctness.
    * \param hi The high part of the int64x64_t.
@@ -199,7 +199,7 @@ class Int64x64IntRoundTestCase : public TestCase
 {
 public:
   Int64x64IntRoundTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 value for correctness.
    * \param value The int64x64_t value.
@@ -272,7 +272,7 @@ class Int64x64InputTestCase : public TestCase
 {
 public:
   Int64x64InputTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the iont64x64 for correctness.
    * \param str String representation of a number.
@@ -360,7 +360,7 @@ class Int64x64InputOutputTestCase : public TestCase
 {
 public:
   Int64x64InputOutputTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the iont64x64 for correctness.
    * \param str String representation of a number.
@@ -451,7 +451,7 @@ class Int64x64ArithmeticTestCase : public TestCase
 {
 public:
   Int64x64ArithmeticTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 for correctness.
    * \param test The test number.
@@ -600,7 +600,7 @@ class Int64x64Bug455TestCase : public TestCase
 {
 public:
   Int64x64Bug455TestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 for correctness.
    * \param result The actual value.
@@ -671,7 +671,7 @@ class Int64x64Bug863TestCase : public TestCase
 {
 public:
   Int64x64Bug863TestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 for correctness.
    * \param result The actual value.
@@ -743,7 +743,7 @@ class Int64x64Bug1786TestCase : public TestCase
 {
 public:
   Int64x64Bug1786TestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 for correctness.
    * \param low The actual low value.
@@ -891,7 +891,7 @@ class Int64x64CompareTestCase : public TestCase
 {
 public:
   Int64x64CompareTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Check the int64x64 for correctness.
@@ -1009,7 +1009,7 @@ class Int64x64InvertTestCase : public TestCase
 {
 public:
   Int64x64InvertTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the int64x64 for correctness.
    * \param factor The factor used to invert the number.
@@ -1134,7 +1134,7 @@ class Int64x64DoubleTestCase : public TestCase
 {
 public:
   Int64x64DoubleTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Check the int64x64 for correctness.
@@ -1550,7 +1550,7 @@ class Int64x64ImplTestCase : public TestCase
 {
 public:
   Int64x64ImplTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 Int64x64ImplTestCase::Int64x64ImplTestCase ()

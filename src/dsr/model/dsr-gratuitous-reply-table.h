@@ -79,7 +79,7 @@ public:
   static TypeId GetTypeId ();
 
   DsrGraReply ();
-  virtual ~DsrGraReply ();
+  ~DsrGraReply () override;
 
   /// Set the gratuitous reply table size
   /// \param g The gratuitous reply table size

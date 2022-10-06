@@ -45,7 +45,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual ~Trailer ();
+  ~Trailer () override;
   /**
    * \returns the expected size of the trailer.
    *
@@ -81,7 +81,7 @@ public:
    * data shall be written. This method is thus expected to call
    * Buffer::Iterator::Prev prior to actually reading any data.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator end) = 0;
+  uint32_t Deserialize (Buffer::Iterator end) override = 0;
   /**
    * \param start an iterator which points to the start of the buffer
    *        where the trailer should be read from.
@@ -99,7 +99,7 @@ public:
    * This variant should be provided by any variable-sized trailer subclass
    * (i.e. if GetSerializedSize () does not return a constant).
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start, Buffer::Iterator end);
+  uint32_t Deserialize (Buffer::Iterator start, Buffer::Iterator end) override;
   /**
    * \param os output stream
    * This method is used by Packet::Print to print the
@@ -112,7 +112,7 @@ public:
    * separated by whitespace.
    * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */
-  virtual void Print (std::ostream &os) const = 0;
+  void Print (std::ostream &os) const override = 0;
 };
 
 /**

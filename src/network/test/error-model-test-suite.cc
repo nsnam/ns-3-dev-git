@@ -83,10 +83,10 @@ class ErrorModelSimple : public TestCase
 {
 public:
   ErrorModelSimple ();
-  virtual ~ErrorModelSimple ();
+  ~ErrorModelSimple () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Receive form a NetDevice
    * \param nd The NetDevice.
@@ -180,10 +180,10 @@ class BurstErrorModelSimple : public TestCase
 {
 public:
   BurstErrorModelSimple ();
-  virtual ~BurstErrorModelSimple ();
+  ~BurstErrorModelSimple () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Receive form a NetDevice
    * \param nd The NetDevice.

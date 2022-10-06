@@ -75,8 +75,8 @@ public:
   static TypeId GetTypeId ();
 
   LteEnbMac ();
-  virtual ~LteEnbMac ();
-  virtual void DoDispose ();
+  ~LteEnbMac () override;
+  void DoDispose () override;
 
   /**
    * \brief Set the component carrier ID

@@ -67,7 +67,7 @@ class LteHandoverAlgorithm : public Object
 {
 public:
   LteHandoverAlgorithm ();
-  virtual ~LteHandoverAlgorithm ();
+  ~LteHandoverAlgorithm () override;
 
   /**
    * \brief Get the type ID.
@@ -93,7 +93,7 @@ public:
 protected:
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   // HANDOVER MANAGEMENT SAP PROVIDER IMPLEMENTATION
 

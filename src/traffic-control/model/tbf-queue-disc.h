@@ -67,7 +67,7 @@ public:
    *
    * Destructor
    */
-  virtual ~TbfQueueDisc ();
+  ~TbfQueueDisc () override;
 
   /**
     * \brief Set the size of the first bucket in bytes.
@@ -143,14 +143,14 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 
   /* parameters for the TBF Queue Disc */
   uint32_t m_burst;      //!< Size of first bucket in bytes

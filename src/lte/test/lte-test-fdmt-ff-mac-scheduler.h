@@ -55,7 +55,7 @@ public:
    * \param errorModelEnabled error model enabled?
    */
   LenaFdMtFfMacSchedulerTestCase (uint16_t nUser, double dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
-  virtual ~LenaFdMtFfMacSchedulerTestCase ();
+  ~LenaFdMtFfMacSchedulerTestCase () override;
 
 private:
   /**
@@ -66,7 +66,7 @@ private:
    * \returns name string
    */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   double m_dist; ///< distance between the nodes
   double m_thrRefDl; ///< DL throughput reference

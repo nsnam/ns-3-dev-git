@@ -41,7 +41,7 @@ class SrsCqiRntiVsp : public VendorSpecificValue
    * \param rnti the RNTI
    */
   SrsCqiRntiVsp (uint16_t rnti);
-  virtual ~SrsCqiRntiVsp ();
+  ~SrsCqiRntiVsp () override;
 
   /**
    * \brief Get RNTI function

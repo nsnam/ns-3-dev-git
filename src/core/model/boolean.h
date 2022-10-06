@@ -54,9 +54,9 @@ public:
    */
   operator bool () const;
 
-  virtual Ptr<AttributeValue> Copy () const;
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+  Ptr<AttributeValue> Copy () const override;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
 
 private:
   bool m_value;

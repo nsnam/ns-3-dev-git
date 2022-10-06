@@ -63,12 +63,12 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6PmtuCache ();
+  ~Ipv6PmtuCache () override;
 
   /**
    * \brief Dispose object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Gets the known Path MTU for the specific destination

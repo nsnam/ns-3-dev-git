@@ -47,7 +47,7 @@ class PeerManagementProtocolRegressionTest : public TestCase
 {
 public:
   PeerManagementProtocolRegressionTest ();
-  ~PeerManagementProtocolRegressionTest ();
+  ~PeerManagementProtocolRegressionTest () override;
 
 private:
   /// \internal It is important to have pointers here
@@ -61,7 +61,7 @@ private:
   void CreateDevices ();
   /// Check results function
   void CheckResults ();
-  void DoRun ();
+  void DoRun () override;
 };
 #endif /* PMP_REGRESSION_H */
 

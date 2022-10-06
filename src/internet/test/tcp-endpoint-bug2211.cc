@@ -75,7 +75,7 @@ public:
    * \param socket The receiving socket.
    */
   void HandleConnect (Ptr<Socket> socket);
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   bool m_v6; //!< True to use IPv6.
 };

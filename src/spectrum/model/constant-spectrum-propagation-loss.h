@@ -34,7 +34,7 @@ class ConstantSpectrumPropagationLossModel : public SpectrumPropagationLossModel
 {
 public:
   ConstantSpectrumPropagationLossModel ();
-  ~ConstantSpectrumPropagationLossModel ();
+  ~ConstantSpectrumPropagationLossModel () override;
 
   /**
    * \brief Get the type ID.
@@ -42,9 +42,9 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
+  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                            Ptr<const MobilityModel> a,
-                                                           Ptr<const MobilityModel> b) const;
+                                                           Ptr<const MobilityModel> b) const override;
   /**
    * Set the propagation loss
    * \param lossDb the propagation loss [dB]

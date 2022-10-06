@@ -40,10 +40,10 @@ class Ns3WimaxNetworkEntryTestCase : public TestCase
 {
 public:
   Ns3WimaxNetworkEntryTestCase ();
-  virtual ~Ns3WimaxNetworkEntryTestCase ();
+  ~Ns3WimaxNetworkEntryTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -101,10 +101,10 @@ class Ns3WimaxManagementConnectionsTestCase : public TestCase
 {
 public:
   Ns3WimaxManagementConnectionsTestCase ();
-  virtual ~Ns3WimaxManagementConnectionsTestCase ();
+  ~Ns3WimaxManagementConnectionsTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

@@ -56,7 +56,7 @@ public:
                       SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /** \brief Execute the test
    */
   void ExecuteTest ();
@@ -145,7 +145,7 @@ public:
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /** \brief Execute the test
    */
   void ExecuteTest ();
@@ -238,7 +238,7 @@ public:
                           SequenceNumber32 lastAckedSeq, Time rtt, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /** \brief Execute the test
    */
   void ExecuteTest ();

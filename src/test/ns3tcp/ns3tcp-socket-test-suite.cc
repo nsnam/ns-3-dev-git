@@ -50,10 +50,10 @@ class Ns3TcpSocketTestCaseP2P : public TestCase
 {
 public:
   Ns3TcpSocketTestCaseP2P ();
-  virtual ~Ns3TcpSocketTestCaseP2P () {}
+  ~Ns3TcpSocketTestCaseP2P () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   bool m_writeResults;  //!< True if write PCAP files.
 
   /**
@@ -167,10 +167,10 @@ class Ns3TcpSocketTestCaseCsma : public TestCase
 {
 public:
   Ns3TcpSocketTestCaseCsma ();
-  virtual ~Ns3TcpSocketTestCaseCsma () {}
+  ~Ns3TcpSocketTestCaseCsma () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   bool m_writeResults;  //!< True if write PCAP files.
 
   /**

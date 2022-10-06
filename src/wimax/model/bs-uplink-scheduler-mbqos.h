@@ -76,7 +76,7 @@ public:
    * \param time the time
    */
   UplinkSchedulerMBQoS (Time time);
-  ~UplinkSchedulerMBQoS ();
+  ~UplinkSchedulerMBQoS () override;
 
   /**
    * \brief Get the type ID.
@@ -88,7 +88,7 @@ public:
    * Get uplink allocations
    * \returns std::list<OfdmUlMapIe>
    */
-  std::list<OfdmUlMapIe> GetUplinkAllocations () const;
+  std::list<OfdmUlMapIe> GetUplinkAllocations () const override;
 
   /**
    * Determines if channel descriptors sent in the current frame are
@@ -98,12 +98,12 @@ public:
    * \param sendDcd send DCD if true
    * \param sendUcd send UCD if true
    */
-  void GetChannelDescriptorsToUpdate (bool &updateDcd, bool &updateUcd, bool &sendDcd, bool &sendUcd);
+  void GetChannelDescriptorsToUpdate (bool &updateDcd, bool &updateUcd, bool &sendDcd, bool &sendUcd) override;
   /**
    * Calculate allocation start time
    * \returns the allocation start time
    */
-  uint32_t CalculateAllocationStartTime ();
+  uint32_t CalculateAllocationStartTime () override;
   /**
    * Add uplink allocation
    * \param ulMapIe the UL map IE
@@ -114,12 +114,12 @@ public:
   void AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
                             const uint32_t &allocationSize,
                             uint32_t &symbolsToAllocation,
-                            uint32_t &availableSymbols);
+                            uint32_t &availableSymbols) override;
 
   /**
    * Schedule function
    */
-  void Schedule ();
+  void Schedule () override;
   /**
    * Service unsolicited grants
    * \param ssRecord the SS record
@@ -134,7 +134,7 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Service bandwidth requests
    * \param ssRecord the SS record
@@ -149,7 +149,7 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Service bandwidth requests
    * \param serviceFlow the service flow
@@ -165,19 +165,19 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Allocate initial ranging interval
    * \param symbolsToAllocation the symbols to allocation
    * \param availableSymbols the available symbols
    */
-  void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols);
+  void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols) override;
   /**
    * Setup service flow
    * \param ssRecord the SS record
    * \param serviceFlow the service flow
    */
-  void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow);
+  void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow) override;
 
   /**
    * \param availableSymbols available symbols in the uplink frame
@@ -224,7 +224,7 @@ public:
    */
   Ptr<UlJob> DequeueJob (UlJob::JobPriority priority);
 
-  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
+  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr) override;
 
   /**
    * \param serviceFlow Service flow of connection
@@ -237,7 +237,7 @@ public:
   /**
    * This method is called once to initialize window.
    */
-  void InitOnce ();
+  void InitOnce () override;
 
   /**
    * \param jobs List of jobs
@@ -259,7 +259,7 @@ public:
    * Set requested bandwidth
    * \param sfr the service flow record
    */
-  void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
+  void OnSetRequestedBandwidth (ServiceFlowRecord *sfr) override;
 
   /**
    * \param ssRecord Subscriber station record

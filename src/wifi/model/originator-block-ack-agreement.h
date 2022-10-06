@@ -71,7 +71,7 @@ public:
    * \param tid Traffic ID
    */
   OriginatorBlockAckAgreement (Mac48Address recipient, uint8_t tid);
-  ~OriginatorBlockAckAgreement ();
+  ~OriginatorBlockAckAgreement () override;
   /**
   * Represents the state for this agreement.
   *

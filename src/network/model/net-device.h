@@ -100,7 +100,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual ~NetDevice();
+  ~NetDevice() override;
 
   /**
    * \param index ifIndex of the device

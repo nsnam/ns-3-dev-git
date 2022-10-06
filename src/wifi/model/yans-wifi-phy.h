@@ -54,7 +54,7 @@ public:
   static TypeId GetTypeId ();
 
   YansWifiPhy ();
-  virtual ~YansWifiPhy ();
+  ~YansWifiPhy () override;
 
   void SetInterferenceHelper (const Ptr<InterferenceHelper> helper) override;
   void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;

@@ -66,7 +66,7 @@ public:
    * \param name reference name
    */
   SpectrumWifiPhyBasicTest (std::string name);
-  virtual ~SpectrumWifiPhyBasicTest ();
+  ~SpectrumWifiPhyBasicTest () override;
 
 protected:
   void DoSetup () override;
@@ -231,7 +231,7 @@ public:
       m_notifyMaybeCcaBusyStart (0)
   {
   }
-  virtual ~TestPhyListener ()
+  ~TestPhyListener () override
   {
   }
   void NotifyRxStart (Time duration) override
@@ -290,7 +290,7 @@ class SpectrumWifiPhyListenerTest : public SpectrumWifiPhyBasicTest
 {
 public:
   SpectrumWifiPhyListenerTest ();
-  virtual ~SpectrumWifiPhyListenerTest ();
+  ~SpectrumWifiPhyListenerTest () override;
 private:
   void DoSetup () override;
   void DoRun () override;
@@ -346,7 +346,7 @@ public:
    * \param name reference name
    */
   SpectrumWifiPhyFilterTest (std::string name);
-  virtual ~SpectrumWifiPhyFilterTest ();
+  ~SpectrumWifiPhyFilterTest () override;
 
 private:
   void DoSetup () override;

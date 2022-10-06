@@ -37,7 +37,7 @@ class EhtConfiguration : public Object
 {
 public:
   EhtConfiguration ();
-  virtual ~EhtConfiguration ();
+  ~EhtConfiguration () override;
 
   /**
    * \brief Get the type ID.

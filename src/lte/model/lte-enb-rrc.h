@@ -111,12 +111,12 @@ public:
    */
   UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId);
 
-  virtual ~UeManager ();
+  ~UeManager () override;
 
   // inherited from Object
 protected:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 public:
   /**
    * \brief Get the type ID.
@@ -685,12 +685,12 @@ public:
   /**
    * Destructor
    */
-  virtual ~LteEnbRrc ();
+  ~LteEnbRrc () override;
 
 
   // inherited from Object
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 public:
   /**
    * \brief Get the type ID.

@@ -59,7 +59,7 @@ public:
   class Entry;
 
   ArpCache ();
-  ~ArpCache ();
+  ~ArpCache () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   ArpCache (ArpCache const &) = delete;
@@ -326,7 +326,7 @@ private:
    */
   typedef std::map<Ipv4Address, ArpCache::Entry *>::iterator CacheI;
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   Ptr<NetDevice> m_device; //!< NetDevice associated with the cache
   Ptr<Ipv4Interface> m_interface; //!< Ipv4Interface associated with the cache

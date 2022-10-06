@@ -70,13 +70,13 @@ public:
   static TypeId GetTypeId ();
 
   HwmpProtocol ();
-  ~HwmpProtocol ();
+  ~HwmpProtocol () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   HwmpProtocol (const HwmpProtocol &) = delete;
   HwmpProtocol &operator= (const HwmpProtocol &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief structure of unreachable destination - address and sequence number
@@ -99,7 +99,7 @@ public:
    * \returns true if route exists
    */
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-                     Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+                     Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply) override;
   /**
    * Clean HWMP packet tag from packet; only the packet parameter is used
    *
@@ -111,7 +111,7 @@ public:
    * \returns true if successful
    */
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-                           const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
+                           const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType) override;
   /**
    * \brief Install HWMP on given mesh point.
    * \param mp the MeshPointDevice
@@ -175,7 +175,7 @@ private:
   /// allow HwmpProtocolMac class friend access
   friend class HwmpProtocolMac;
 
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
   /**
    * \brief Structure of path error: IePerr and list of receivers:

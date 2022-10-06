@@ -81,7 +81,7 @@ public:
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * UE handover start callback function

@@ -49,7 +49,7 @@ typedef std::list<std::pair<std::string, std::string> > MetadataList;
 class DataCollector : public Object {
 public:
   DataCollector();
-  virtual ~DataCollector();
+  ~DataCollector() override;
 
   /**
    * Register this type.
@@ -143,7 +143,7 @@ public:
   DataCalculatorList::iterator DataCalculatorEnd ();
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   std::string m_experimentLabel; //!< Experiment label

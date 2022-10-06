@@ -40,7 +40,7 @@ class UdpSocketFactoryImpl : public UdpSocketFactory
 {
 public:
   UdpSocketFactoryImpl ();
-  virtual ~UdpSocketFactoryImpl ();
+  ~UdpSocketFactoryImpl () override;
 
   /**
    * \brief Set the associated UDP L4 protocol.
@@ -54,10 +54,10 @@ public:
    *
    * \return smart pointer to Socket
    */
-  virtual Ptr<Socket> CreateSocket ();
+  Ptr<Socket> CreateSocket () override;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
   Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
 };

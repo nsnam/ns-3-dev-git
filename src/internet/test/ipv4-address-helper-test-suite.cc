@@ -34,8 +34,8 @@ class NetworkAllocatorHelperTestCase : public TestCase
 public:
   NetworkAllocatorHelperTestCase ();
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 NetworkAllocatorHelperTestCase::NetworkAllocatorHelperTestCase ()
@@ -86,8 +86,8 @@ class AddressAllocatorHelperTestCase : public TestCase
 public:
   AddressAllocatorHelperTestCase ();
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 AddressAllocatorHelperTestCase::AddressAllocatorHelperTestCase ()
@@ -138,8 +138,8 @@ class ResetAllocatorHelperTestCase : public TestCase
 {
 public:
   ResetAllocatorHelperTestCase ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 ResetAllocatorHelperTestCase::ResetAllocatorHelperTestCase ()
@@ -207,11 +207,11 @@ class IpAddressHelperTestCasev4 : public TestCase
 {
 public:
   IpAddressHelperTestCasev4 ();
-  virtual ~IpAddressHelperTestCasev4 ();
+  ~IpAddressHelperTestCasev4 () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 IpAddressHelperTestCasev4::IpAddressHelperTestCasev4 ()

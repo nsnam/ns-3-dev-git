@@ -42,10 +42,10 @@ class Ns3WimaxSfCreationTestCase : public TestCase
 {
 public:
   Ns3WimaxSfCreationTestCase ();
-  virtual ~Ns3WimaxSfCreationTestCase ();
+  ~Ns3WimaxSfCreationTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

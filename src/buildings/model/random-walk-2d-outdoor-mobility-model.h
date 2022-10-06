@@ -110,12 +110,12 @@ private:
    */
   Vector CalculateIntersectionFromOutside (const Vector &current, const Vector &next, const Box boundaries) const;
 
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual int64_t DoAssignStreams (int64_t);
+  void DoDispose () override;
+  void DoInitialize () override;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  int64_t DoAssignStreams (int64_t) override;
 
   ConstantVelocityHelper m_helper; //!< helper for this object
   EventId m_event; //!< stored event ID

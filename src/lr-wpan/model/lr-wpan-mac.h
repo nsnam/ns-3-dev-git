@@ -713,7 +713,7 @@ public:
    * Default constructor.
    */
   LrWpanMac ();
-  virtual ~LrWpanMac ();
+  ~LrWpanMac () override;
 
   /**
    * Check if the receiver will be enabled when the MAC is idle.
@@ -1393,8 +1393,8 @@ public:
 
 protected:
   // Inherited from Object.
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
 private:
 

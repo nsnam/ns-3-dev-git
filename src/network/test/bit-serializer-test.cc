@@ -35,7 +35,7 @@ using namespace ns3;
 class BitSerializerTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   BitSerializerTest ();
 };
 
@@ -77,7 +77,7 @@ void BitSerializerTest::DoRun ()
 class BitDeserializerTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   BitDeserializerTest ();
 };
 

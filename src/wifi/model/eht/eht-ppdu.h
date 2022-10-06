@@ -59,7 +59,7 @@ public:
   /**
    * Destructor for EhtPpdu.
    */
-  virtual ~EhtPpdu ();
+  ~EhtPpdu () override;
 
   WifiPpduType GetType () const override;
   Ptr<WifiPpdu> Copy () const override;

@@ -174,7 +174,7 @@ public:
   /** Default constructor */
   UanMacRc ();
   /** Dummy destructor, DoDispose. */
-  virtual ~UanMacRc ();
+  ~UanMacRc () override;
 
   /**
    * Register this type.
@@ -183,11 +183,11 @@ public:
   static TypeId GetTypeId ();
 
   // Inherited methods
-  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
-  virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear ();
-  int64_t AssignStreams (int64_t stream);
+  bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest) override;
+  void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb) override;
+  void AttachPhy (Ptr<UanPhy> phy) override;
+  void Clear () override;
+  int64_t AssignStreams (int64_t stream) override;
 
   /**
    *  TracedCallback signature for dequeue of a packet.
@@ -312,7 +312,7 @@ private:
   Ptr<ExponentialRandomVariable> m_ev;
 
 protected:
-  void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanMacRc
 

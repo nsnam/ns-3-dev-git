@@ -58,7 +58,7 @@ class LteFfrAlgorithm : public Object
 {
 public:
   LteFfrAlgorithm ();
-  virtual ~LteFfrAlgorithm ();
+  ~LteFfrAlgorithm () override;
 
   /**
    * \brief Get the type ID.
@@ -129,7 +129,7 @@ public:
 protected:
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Automatic FR reconfiguration

@@ -79,7 +79,7 @@ class TestInterBssConstantObssPdAlgo : public TestCase
 {
 public:
   TestInterBssConstantObssPdAlgo ();
-  ~TestInterBssConstantObssPdAlgo ();
+  ~TestInterBssConstantObssPdAlgo () override;
 
   void DoRun () override;
 

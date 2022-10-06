@@ -122,7 +122,7 @@ public:
   BuildingsHelperOneTestCase (PositionInBuilding pib, BuildingData bd);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   PositionInBuilding m_pib; //!< Position in the building
   BuildingData m_bd; //!< Building data

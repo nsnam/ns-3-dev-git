@@ -49,7 +49,7 @@ public:
    * \param bs base station device
    */
   UplinkSchedulerSimple (Ptr<BaseStationNetDevice> bs);
-  ~UplinkSchedulerSimple ();
+  ~UplinkSchedulerSimple () override;
 
   /**
    * \brief Get the type ID.
@@ -57,7 +57,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  std::list<OfdmUlMapIe> GetUplinkAllocations () const;
+  std::list<OfdmUlMapIe> GetUplinkAllocations () const override;
 
   /**
    * \brief Determines if channel descriptors sent in the current frame are
@@ -69,13 +69,13 @@ public:
    * \param [out] sendUcd UCD must be updated
    *
    */
-  void GetChannelDescriptorsToUpdate (bool& updateDcd, bool& updateUcd, bool& sendDcd, bool& sendUcd);
-  uint32_t CalculateAllocationStartTime ();
+  void GetChannelDescriptorsToUpdate (bool& updateDcd, bool& updateUcd, bool& sendDcd, bool& sendUcd) override;
+  uint32_t CalculateAllocationStartTime () override;
   void AddUplinkAllocation (OfdmUlMapIe &ulMapIe,
                             const uint32_t &allocationSize,
                             uint32_t &symbolsToAllocation,
-                            uint32_t &availableSymbols);
-  void Schedule ();
+                            uint32_t &availableSymbols) override;
+  void Schedule () override;
   /**
    * Service Unsolicited Grants function
    * \param ssRecord Subscriber station record
@@ -90,7 +90,7 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Service Bandwidth Requests function
    * \param ssRecord Subscriber station record
@@ -105,7 +105,7 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Service bandwidth requests function
    * \param serviceFlow the service flow
@@ -121,35 +121,35 @@ public:
                                  OfdmUlMapIe &ulMapIe,
                                  const WimaxPhy::ModulationType modulationType,
                                  uint32_t &symbolsToAllocation,
-                                 uint32_t &availableSymbols);
+                                 uint32_t &availableSymbols) override;
   /**
    * Allocate Initial Ranging Interval function
    *
    * \param symbolsToAllocation symbols to allocation for UpLink Subframe
    * \param availableSymbols available symbols for rtPS flows
    */
-  void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols);
+  void AllocateInitialRangingInterval (uint32_t &symbolsToAllocation, uint32_t &availableSymbols) override;
   /**
    * Setup service flow function
    * \param ssRecord Subscriber station record
    * \param serviceFlow the service flow
    */
-  void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow);
+  void SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *serviceFlow) override;
 
   /**
    * Process bandwidth requet function
    * \param bwRequestHdr the bandwidth request header
    */
-  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
+  void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr) override;
 
   /// Init once function
-  void InitOnce ();
+  void InitOnce () override;
 
   /**
    * Set requested bandwidth function
    * \param sfr the service flow record
    */
-  void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
+  void OnSetRequestedBandwidth (ServiceFlowRecord *sfr) override;
 
 private:
   std::list<OfdmUlMapIe> m_uplinkAllocations; ///< uplink allocations

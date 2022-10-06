@@ -66,7 +66,7 @@ public:
    */
   static TypeId GetTypeId ();
   Application ();
-  virtual ~Application ();
+  ~Application () override;
 
   /**
    * \brief Specify application start time
@@ -142,8 +142,8 @@ private:
    */
   virtual void StopApplication ();
 protected:
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
 
   Ptr<Node>       m_node;   //!< The node that this application is installed on
   Time m_startTime;         //!< The simulation time that the application will start

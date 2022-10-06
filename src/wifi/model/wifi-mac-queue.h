@@ -78,7 +78,7 @@ public:
    */
   WifiMacQueue (AcIndex ac = AC_UNDEF);
 
-  ~WifiMacQueue ();
+  ~WifiMacQueue () override;
 
   /// allow the usage of iterators and const iterators
   using Queue<WifiMpdu, WifiMacQueueContainer>::ConstIterator;

@@ -85,13 +85,13 @@ public:
    */
   static TypeId GetTypeId ();
   Icmpv4Header ();
-  virtual ~Icmpv4Header ();
+  ~Icmpv4Header () override;
 
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 private:
   uint8_t m_type; //!< ICMP type
@@ -151,12 +151,12 @@ public:
    */
   static TypeId GetTypeId ();
   Icmpv4Echo ();
-  virtual ~Icmpv4Echo ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  ~Icmpv4Echo () override;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 private:
   uint16_t m_identifier; //!< identifier
   uint16_t m_sequence;   //!< sequence number
@@ -190,7 +190,7 @@ public:
    */
   static TypeId GetTypeId ();
   Icmpv4DestinationUnreachable ();
-  virtual ~Icmpv4DestinationUnreachable ();
+  ~Icmpv4DestinationUnreachable () override;
 
   /**
    * \brief Set the next hop MTU
@@ -226,11 +226,11 @@ public:
   Ipv4Header GetHeader () const;
 
 private:
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 private:
   uint16_t m_nextHopMtu; //!< next hop MTU
   Ipv4Header m_header;   //!< carried IPv4 header
@@ -283,12 +283,12 @@ public:
    */
   static TypeId GetTypeId ();
   Icmpv4TimeExceeded ();
-  virtual ~Icmpv4TimeExceeded ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  ~Icmpv4TimeExceeded () override;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 private:
   Ipv4Header m_header;   //!< carried IPv4 header

@@ -77,7 +77,7 @@ public:
    * \param staId the ID of the STA to which this PHY belongs to
    */
   OfdmaTestHePhy (uint16_t staId);
-  virtual ~OfdmaTestHePhy ();
+  ~OfdmaTestHePhy () override;
 
   /**
    * Return the STA ID that has been assigned to the station this PHY belongs to.
@@ -142,7 +142,7 @@ public:
    * \param staId the ID of the STA to which this PHY belongs to
    */
   OfdmaSpectrumWifiPhy (uint16_t staId);
-  virtual ~OfdmaSpectrumWifiPhy ();
+  ~OfdmaSpectrumWifiPhy () override;
 
   void DoInitialize () override;
   void DoDispose () override;
@@ -301,7 +301,7 @@ class TestDlOfdmaPhyTransmission : public TestCase
 {
 public:
   TestDlOfdmaPhyTransmission ();
-  virtual ~TestDlOfdmaPhyTransmission ();
+  ~TestDlOfdmaPhyTransmission () override;
 
 private:
   void DoSetup () override;
@@ -1467,7 +1467,7 @@ class TestUlOfdmaPpduUid : public TestCase
 {
 public:
   TestUlOfdmaPpduUid ();
-  virtual ~TestUlOfdmaPpduUid ();
+  ~TestUlOfdmaPpduUid () override;
 
 private:
   void DoSetup () override;
@@ -1850,7 +1850,7 @@ class TestMultipleHeTbPreambles : public TestCase
 {
 public:
   TestMultipleHeTbPreambles ();
-  virtual ~TestMultipleHeTbPreambles ();
+  ~TestMultipleHeTbPreambles () override;
 
 private:
   void DoSetup () override;
@@ -2323,7 +2323,7 @@ public:
   };
 
   TestUlOfdmaPhyTransmission ();
-  virtual ~TestUlOfdmaPhyTransmission ();
+  ~TestUlOfdmaPhyTransmission () override;
 
 private:
   void DoSetup () override;
@@ -3625,7 +3625,7 @@ class TestPhyPaddingExclusion : public TestCase
 {
 public:
   TestPhyPaddingExclusion ();
-  virtual ~TestPhyPaddingExclusion ();
+  ~TestPhyPaddingExclusion () override;
 
 private:
   void DoSetup () override;
@@ -4096,7 +4096,7 @@ class TestUlOfdmaPowerControl : public TestCase
 {
 public:
   TestUlOfdmaPowerControl ();
-  virtual ~TestUlOfdmaPowerControl ();
+  ~TestUlOfdmaPowerControl () override;
 
 private:
   void DoSetup () override;

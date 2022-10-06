@@ -43,7 +43,7 @@ public:
    * @returns the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * This method is used by Packet::AddHeader to store the header into the byte
@@ -52,7 +52,7 @@ public:
    *
    * @returns The expected size of the header.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * This method is used by Packet::AddHeader to store the header into the byte
@@ -62,7 +62,7 @@ public:
    * @param start An iterator which points to where the header should
    *              be written.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * This method is used by Packet::RemoveHeader to re-create a header from the
@@ -73,7 +73,7 @@ public:
    *              written.
    * @returns The number of bytes read.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * This method is used by Packet::Print to print the content of the header as
@@ -88,7 +88,7 @@ public:
    *
    * @param os The output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * @brief Set the Time Synchronization Function Timer (TSFT) value.  Valid for

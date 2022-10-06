@@ -83,31 +83,31 @@ struct DeferredRouteOutputTag : public Tag
   }
 
   TypeId
-  GetInstanceTypeId () const
+  GetInstanceTypeId () const override
   {
     return GetTypeId ();
   }
 
   uint32_t
-  GetSerializedSize () const
+  GetSerializedSize () const override
   {
     return sizeof(int32_t);
   }
 
   void
-  Serialize (TagBuffer i) const
+  Serialize (TagBuffer i) const override
   {
     i.WriteU32 (oif);
   }
 
   void
-  Deserialize (TagBuffer i)
+  Deserialize (TagBuffer i) override
   {
     oif = i.ReadU32 ();
   }
 
   void
-  Print (std::ostream &os) const
+  Print (std::ostream &os) const override
   {
     os << "DeferredRouteOutputTag: output interface = " << oif;
   }

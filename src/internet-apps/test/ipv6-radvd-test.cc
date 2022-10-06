@@ -48,10 +48,10 @@ class RadvdTestCase : public TestCase
 {
 public:
   RadvdTestCase ();
-  virtual ~RadvdTestCase ();
+  ~RadvdTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Checks the addresses on the selected NetDevices.

@@ -74,7 +74,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~LengthTestCase () = default;
+  ~LengthTestCase () override = default;
 
 protected:
   /**
@@ -315,7 +315,7 @@ private:
   void TestModReturnsNonZero ();
   /** @} */
 
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 void
@@ -1485,7 +1485,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~LengthValueTestCase ()
+  ~LengthValueTestCase () override
   {}
 
 private:
@@ -1503,7 +1503,7 @@ private:
             :   m_length ()
         {}
 
-        virtual ~TestObject ()
+        ~TestObject () override
         {}
 
     private:
@@ -1537,7 +1537,7 @@ private:
     void TestSetAttributeUsingStringValue ();
 
     // Inherited function
-    virtual void DoRun ();
+    void DoRun () override;
 };
 
 TypeId

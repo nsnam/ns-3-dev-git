@@ -43,7 +43,7 @@ public:
    * \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Building type enum
@@ -88,7 +88,7 @@ public:
    * Destructor
    *
    */
-  virtual ~Building ();
+  ~Building () override;
 
   /**
    * \return the unique id of this Building. This unique id happens to

@@ -71,14 +71,14 @@ public:
                                 uint8_t sourceComponentCarrier,
                                 uint8_t targetComponentCarrier);
 
-  virtual ~LtePrimaryCellChangeTestCase ();
+  ~LtePrimaryCellChangeTestCase () override;
 
 private:
   /**
    * \brief Setup the simulation according to the configuration set by the
    *        class constructor, run it, and verify the result.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief State transition callback function

@@ -59,10 +59,10 @@ public:
    * destructor
    *
    */
-  virtual ~SpectrumChannel ();
+  ~SpectrumChannel () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Get the type ID.

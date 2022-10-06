@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId ();
 
   UdpSocket ();
-  virtual ~UdpSocket ();
+  ~UdpSocket () override;
 
   /**
    * \brief Corresponds to socket option MCAST_JOIN_GROUP

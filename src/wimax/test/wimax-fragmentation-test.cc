@@ -40,10 +40,10 @@ class Ns3WimaxFragmentationTestCase : public TestCase
 {
 public:
   Ns3WimaxFragmentationTestCase ();
-  virtual ~Ns3WimaxFragmentationTestCase ();
+  ~Ns3WimaxFragmentationTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

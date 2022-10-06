@@ -47,10 +47,10 @@ class Ns3WimaxSimpleOFDMTestCase : public TestCase
 {
 public:
   Ns3WimaxSimpleOFDMTestCase ();
-  virtual ~Ns3WimaxSimpleOFDMTestCase ();
+  ~Ns3WimaxSimpleOFDMTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Run once function
    * \param FrameDuration the frame duration
@@ -129,10 +129,10 @@ class Ns3WimaxSNRtoBLERTestCase : public TestCase
 {
 public:
   Ns3WimaxSNRtoBLERTestCase ();
-  virtual ~Ns3WimaxSNRtoBLERTestCase ();
+  ~Ns3WimaxSNRtoBLERTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Run once function
    * \param modulationType the modulation type

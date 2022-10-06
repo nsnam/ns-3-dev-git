@@ -54,20 +54,20 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   typedef std::pair<SequenceNumber32, SequenceNumber32> SackBlock; //!< SACK block definition
   typedef std::list<SackBlock> SackList;                           //!< SACK list definition
 
   TcpOptionSack ();
-  virtual ~TcpOptionSack ();
+  ~TcpOptionSack () override;
 
-  virtual void Print (std::ostream &os) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
-  virtual uint8_t GetKind () const;
-  virtual uint32_t GetSerializedSize () const;
+  uint8_t GetKind () const override;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Add a SACK block

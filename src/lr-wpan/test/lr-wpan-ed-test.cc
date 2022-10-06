@@ -48,7 +48,7 @@ public:
   LrWpanEdTestCase ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Function called when PlmeEdConfirm is hit.

@@ -58,7 +58,7 @@ public:
   /**
    * Destructor
    */
-  ~ThreeGppSpectrumPropagationLossModel ();
+  ~ThreeGppSpectrumPropagationLossModel () override;
 
   void DoDispose () override;
 

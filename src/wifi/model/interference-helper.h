@@ -134,7 +134,7 @@ class InterferenceHelper : public Object
 {
 public:
   InterferenceHelper ();
-  virtual ~InterferenceHelper ();
+  ~InterferenceHelper () override;
 
   /**
    * \brief Get the type ID.

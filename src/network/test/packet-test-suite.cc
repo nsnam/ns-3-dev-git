@@ -100,20 +100,20 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const {
+  TypeId GetInstanceTypeId () const override {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize () const {
+  uint32_t GetSerializedSize () const override {
     return N + sizeof(m_data);
   }
-  virtual void Serialize (TagBuffer buf) const {
+  void Serialize (TagBuffer buf) const override {
     buf.WriteU8 (m_data);
     for (uint32_t i = 0; i < N; ++i)
       {
         buf.WriteU8 (N);
       }
   }
-  virtual void Deserialize (TagBuffer buf) {
+  void Deserialize (TagBuffer buf) override {
     m_data = buf.ReadU8 ();
     for (uint32_t i = 0; i < N; ++i)
       {
@@ -124,7 +124,7 @@ public:
           }
       }
   }
-  virtual void Print (std::ostream &os) const {
+  void Print (std::ostream &os) const override {
     os << N << "(" << m_data << ")";
   }
   ATestTag ()
@@ -173,20 +173,20 @@ public:
       ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const {
+  TypeId GetInstanceTypeId () const override {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize () const {
+  uint32_t GetSerializedSize () const override {
     return (uint32_t) m_size;
   }
-  virtual void Serialize (TagBuffer buf) const {
+  void Serialize (TagBuffer buf) const override {
     buf.WriteU8 (m_size);
     for (uint8_t i = 0; i < (m_size - 1); ++i)
       {
         buf.WriteU8 (m_data[i]);
       }
   }
-  virtual void Deserialize (TagBuffer buf) {
+  void Deserialize (TagBuffer buf) override {
     m_size = buf.ReadU8 ();
     for (uint8_t i = 0; i < (m_size - 1); ++i)
       {
@@ -194,7 +194,7 @@ public:
         m_data.push_back (v);
       }
   }
-  virtual void Print (std::ostream &os) const {
+  void Print (std::ostream &os) const override {
     os << "(" << (uint16_t) m_size << ")";
   }
 private:
@@ -258,19 +258,19 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const {
+  TypeId GetInstanceTypeId () const override {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize () const {
+  uint32_t GetSerializedSize () const override {
     return N;
   }
-  virtual void Serialize (Buffer::Iterator iter) const {
+  void Serialize (Buffer::Iterator iter) const override {
     for (uint32_t i = 0; i < N; ++i)
       {
         iter.WriteU8 (N);
       }
   }
-  virtual uint32_t Deserialize (Buffer::Iterator iter) {
+  uint32_t Deserialize (Buffer::Iterator iter) override {
     for (uint32_t i = 0; i < N; ++i)
       {
         uint8_t v = iter.ReadU8 ();
@@ -281,7 +281,7 @@ public:
       }
     return N;
   }
-  virtual void Print (std::ostream &os) const {
+  void Print (std::ostream &os) const override {
   }
   ATestHeader ()
     : ATestHeaderBase () {}
@@ -344,20 +344,20 @@ public:
     ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const {
+  TypeId GetInstanceTypeId () const override {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize () const {
+  uint32_t GetSerializedSize () const override {
     return N;
   }
-  virtual void Serialize (Buffer::Iterator iter) const {
+  void Serialize (Buffer::Iterator iter) const override {
     iter.Prev (N);
     for (uint32_t i = 0; i < N; ++i)
       {
         iter.WriteU8 (N);
       }
   }
-  virtual uint32_t Deserialize (Buffer::Iterator iter) {
+  uint32_t Deserialize (Buffer::Iterator iter) override {
     iter.Prev (N);
     for (uint32_t i = 0; i < N; ++i)
       {
@@ -369,7 +369,7 @@ public:
       }
     return N;
   }
-  virtual void Print (std::ostream &os) const {
+  void Print (std::ostream &os) const override {
   }
   ATestTrailer ()
     : ATestTrailerBase () {}
@@ -437,7 +437,7 @@ class PacketTest : public TestCase
 {
 public:
   PacketTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Checks the packet
@@ -867,9 +867,9 @@ class PacketTagListTest : public TestCase
 {
 public:
   PacketTagListTest ();
-  virtual ~PacketTagListTest ();
+  ~PacketTagListTest () override;
 private:
-  void DoRun ();
+  void DoRun () override;
   /**
    * Checks against a reference PacketTagList
    * \param ref Reference

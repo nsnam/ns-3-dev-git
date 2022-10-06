@@ -36,29 +36,29 @@ class LteRlcUm : public LteRlc
 {
 public:
   LteRlcUm ();
-  virtual ~LteRlcUm ();
+  ~LteRlcUm () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * RLC SAP
    *
    * \param p packet
    */
-  virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
+  void DoTransmitPdcpPdu (Ptr<Packet> p) override;
 
   /**
    * MAC SAP
    *
    * \param txOpParams the LteMacSapUser::TxOpportunityParameters
    */
-  virtual void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
-  virtual void DoNotifyHarqDeliveryFailure ();
-  virtual void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
+  void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams) override;
+  void DoNotifyHarqDeliveryFailure () override;
+  void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams) override;
 
 private:
   /// Expire reordering timer

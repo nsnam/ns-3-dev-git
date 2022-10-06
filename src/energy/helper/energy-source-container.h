@@ -57,7 +57,7 @@ public:
    * Creates an empty EnergySourceContainer.
    */
   EnergySourceContainer ();
-  ~EnergySourceContainer ();
+  ~EnergySourceContainer () override;
 
   /**
    * \param source Pointer to an EnergySource.
@@ -170,12 +170,12 @@ public:
   void Add (std::string sourceName);
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Calls Object::Start () for all EnergySource objects.
    */
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   std::vector< Ptr<EnergySource> > m_sources; //!< Energy source container

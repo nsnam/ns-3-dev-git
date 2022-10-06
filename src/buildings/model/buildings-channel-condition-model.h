@@ -55,7 +55,7 @@ public:
   /**
    * Destructor for the BuildingsChannelConditionModel class
    */
-  virtual ~BuildingsChannelConditionModel () override;
+  ~BuildingsChannelConditionModel () override;
 
   /**
    * Computes the condition of the channel between a and b.
@@ -64,7 +64,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * If this model uses objects of type RandomVariableStream,
@@ -75,7 +75,7 @@ public:
    * \param stream
    * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream) override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   /**

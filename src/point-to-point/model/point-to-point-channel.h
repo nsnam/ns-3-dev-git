@@ -84,7 +84,7 @@ public:
    * \brief Get number of devices on this channel
    * \returns number of devices on this channel
    */
-  virtual std::size_t GetNDevices () const;
+  std::size_t GetNDevices () const override;
 
   /**
    * \brief Get PointToPointNetDevice corresponding to index i on this channel
@@ -98,7 +98,7 @@ public:
    * \param i Index number of the device requested
    * \returns Ptr to NetDevice requested
    */
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
 protected:
   /**

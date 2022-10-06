@@ -54,7 +54,7 @@ public:
    */
   static TypeId GetTypeId ();
   ArfWifiManager ();
-  virtual ~ArfWifiManager ();
+  ~ArfWifiManager () override;
 
 
 private:

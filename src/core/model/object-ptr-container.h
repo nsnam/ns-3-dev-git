@@ -82,7 +82,7 @@ public:
    *
    * \returns A copy of this container.
    */
-  virtual Ptr<AttributeValue> Copy () const;
+  Ptr<AttributeValue> Copy () const override;
   /**
    * Serialize each of the Object pointers to a string.
    *
@@ -91,7 +91,7 @@ public:
    * \param [in] checker The checker to use (currently not used.)
    * \returns The string form of the Objects.
    */
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
   /**
    * Deserialize from a string. (Not implemented; raises a fatal error.)
    *
@@ -99,7 +99,7 @@ public:
    * \param [in] checker The checker to use.
    * \returns \c true.
    */
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
 
 private:
   /** ObjectPtrContainerAccessor::Get() needs access. */
@@ -177,31 +177,31 @@ template <typename T>
 class ObjectPtrContainerChecker : public ns3::ObjectPtrContainerChecker
 {
 public:
-  virtual TypeId GetItemTypeId () const
+  TypeId GetItemTypeId () const override
   {
     return T::GetTypeId ();
   }
-  virtual bool Check (const AttributeValue &value) const
+  bool Check (const AttributeValue &value) const override
   {
     return dynamic_cast<const ObjectPtrContainerValue *> (&value) != 0;
   }
-  virtual std::string GetValueTypeName () const
+  std::string GetValueTypeName () const override
   {
     return "ns3::ObjectPtrContainerValue";
   }
-  virtual bool HasUnderlyingTypeInformation () const
+  bool HasUnderlyingTypeInformation () const override
   {
     return true;
   }
-  virtual std::string GetUnderlyingTypeInformation () const
+  std::string GetUnderlyingTypeInformation () const override
   {
     return "ns3::Ptr< " + T::GetTypeId ().GetName () + " >";
   }
-  virtual Ptr<AttributeValue> Create () const
+  Ptr<AttributeValue> Create () const override
   {
     return ns3::Create<ObjectPtrContainerValue> ();
   }
-  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+  bool Copy (const AttributeValue &source, AttributeValue &destination) const override
   {
     const ObjectPtrContainerValue *src = dynamic_cast<const ObjectPtrContainerValue *> (&source);
     ObjectPtrContainerValue *dst = dynamic_cast<ObjectPtrContainerValue *> (&destination);
@@ -224,10 +224,10 @@ public:
 class ObjectPtrContainerAccessor : public AttributeAccessor
 {
 public:
-  virtual bool Set (ObjectBase * object, const AttributeValue &value) const;
-  virtual bool Get (const ObjectBase * object, AttributeValue &value) const;
-  virtual bool HasGetter () const;
-  virtual bool HasSetter () const;
+  bool Set (ObjectBase * object, const AttributeValue &value) const override;
+  bool Get (const ObjectBase * object, AttributeValue &value) const override;
+  bool HasGetter () const override;
+  bool HasSetter () const override;
 
 private:
   /**
@@ -256,7 +256,7 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
 {
   struct MemberGetters : public ObjectPtrContainerAccessor
   {
-    virtual bool DoGetN (const ObjectBase *object, std::size_t *n) const
+    bool DoGetN (const ObjectBase *object, std::size_t *n) const override
     {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
@@ -266,7 +266,7 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
       *n = (obj->*m_getN)();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, std::size_t i, std::size_t *index) const
+    Ptr<Object> DoGet (const ObjectBase *object, std::size_t i, std::size_t *index) const override
     {
       const T *obj = static_cast<const T *> (object);
       *index = i;

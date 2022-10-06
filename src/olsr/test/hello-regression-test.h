@@ -53,13 +53,13 @@ class HelloRegressionTest : public TestCase
 {
 public:
   HelloRegressionTest ();
-  ~HelloRegressionTest ();
+  ~HelloRegressionTest () override;
 private:
   /// Total simulation time
   const Time m_time;
   /// Create & configure test network
   void CreateNodes ();
-  void DoRun ();
+  void DoRun () override;
 
   /**
    * Receive raw data on node A

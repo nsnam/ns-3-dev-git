@@ -72,10 +72,10 @@ public:
    * destructor
    *
    */
-  virtual ~FfMacScheduler ();
+  ~FfMacScheduler () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

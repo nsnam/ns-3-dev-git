@@ -105,10 +105,10 @@ public:
    * \param v list of eNodeB downlink test data information
    */
   EpcS1uDlTestCase (std::string name, std::vector<EnbDlTestData> v);
-  virtual ~EpcS1uDlTestCase ();
+  ~EpcS1uDlTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   std::vector<EnbDlTestData> m_enbDlTestData; ///< ENB DL test data
 };
 

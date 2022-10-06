@@ -46,7 +46,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~LteStatsCalculator ();
+  ~LteStatsCalculator () override;
 
   /**
    *  Register this type.

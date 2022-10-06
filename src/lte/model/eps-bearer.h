@@ -97,7 +97,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual TypeId GetInstanceTypeId () const override;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * QoS Class Indicator. See 3GPP 23.203 Section 6.1.7.2 for standard values.
@@ -161,7 +161,7 @@ public:
   /**
     * \brief Deconstructor
     */
-  virtual ~EpsBearer () { }
+  ~EpsBearer () override { }
 
   /**
    * \brief SetRelease

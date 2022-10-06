@@ -40,7 +40,7 @@ public:
   /** Constructor. */
   PtrExample ();
   /** Destructor. */
-  ~PtrExample ();
+  ~PtrExample () override;
   /** Example class method. */
   void Method ();
 };

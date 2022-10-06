@@ -53,8 +53,8 @@ public:
   RedQueueDiscTestItem (const RedQueueDiscTestItem &) = delete;
   RedQueueDiscTestItem & operator = (const RedQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark();
+  void AddHeader () override;
+  bool Mark() override;
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -91,7 +91,7 @@ class RedQueueDiscTestCase : public TestCase
 {
 public:
   RedQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Enqueue function

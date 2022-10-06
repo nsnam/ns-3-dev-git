@@ -53,7 +53,7 @@ public:
    * \param type MAC header type
    */
   MacHeaderType (uint8_t type);
-  virtual ~MacHeaderType ();
+  ~MacHeaderType () override;
   /**
    * Set type field
    * \param type the type
@@ -75,11 +75,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_type; ///< MAC header type
 };
@@ -109,7 +109,7 @@ class GenericMacHeader : public Header
 {
 public:
   GenericMacHeader ();
-  ~GenericMacHeader ();
+  ~GenericMacHeader () override;
 
   /**
    * Set EC field
@@ -202,11 +202,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
   /**
    * Check HCS
    * \returns true if HCS is validated
@@ -258,7 +258,7 @@ public:
   };
 
   BandwidthRequestHeader ();
-  ~BandwidthRequestHeader ();
+  ~BandwidthRequestHeader () override;
 
   /**
    * Set HT field
@@ -332,11 +332,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
   /**
    * Check HCS
    * \returns true if HCS is validated
@@ -377,7 +377,7 @@ class GrantManagementSubheader : public Header
 {
 public:
   GrantManagementSubheader ();
-  ~GrantManagementSubheader ();
+  ~GrantManagementSubheader () override;
 
   /**
    * Set SI field
@@ -421,11 +421,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   // size of the Grant Management Subheader shall actually be 2 bytes
@@ -458,7 +458,7 @@ class FragmentationSubheader : public Header
 {
 public:
   FragmentationSubheader ();
-  ~FragmentationSubheader ();
+  ~FragmentationSubheader () override;
 
   /**
    * Set FC field
@@ -492,11 +492,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   uint8_t m_fc;  ///< Fragment Control

@@ -45,7 +45,7 @@ public:
    * Constructor
    */
   BasicMultiLinkElementTest ();
-  virtual ~BasicMultiLinkElementTest ();
+  ~BasicMultiLinkElementTest () override;
 
   /**
    * Get a Multi-Link Element including the given Common Info field and the
@@ -59,7 +59,7 @@ public:
                                         std::vector<MultiLinkElement::PerStaProfileSubelement> subelements);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   WifiMacType m_frameType;     //!< the type of frame possibly included in the MLE
 };
@@ -177,7 +177,7 @@ public:
    * Constructor
    */
   ReducedNeighborReportTest ();
-  virtual ~ReducedNeighborReportTest ();
+  ~ReducedNeighborReportTest () override;
 
   /// typedef for const iterator on the set of available channels
   using PhyOpChannelIt = WifiPhyOperatingChannel::ConstIterator;
@@ -195,7 +195,7 @@ public:
                                                   PhyOpChannelIt channel6It);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ReducedNeighborReportTest::ReducedNeighborReportTest ()

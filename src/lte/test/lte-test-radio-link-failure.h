@@ -76,7 +76,7 @@ public:
                                std::vector<Vector> uePositionList, std::vector<Vector> enbPositionList,
                                Vector ueJumpAwayPosition, std::vector<Time> checkConnectedList);
 
-  virtual ~LteRadioLinkFailureTestCase ();
+  ~LteRadioLinkFailureTestCase () override;
 
 private:
   /**
@@ -91,7 +91,7 @@ private:
    * \brief Setup the simulation according to the configuration set by the
    *        class constructor, run it, and verify the result.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Check connected function

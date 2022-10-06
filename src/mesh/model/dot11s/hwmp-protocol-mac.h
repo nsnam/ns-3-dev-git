@@ -50,15 +50,15 @@ public:
    * \param protocol pointer to HWMP protocol instance
    */
   HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol);
-  ~HwmpProtocolMac ();
+  ~HwmpProtocolMac () override;
 
   // Inherited from MAC plugin
-  void SetParent (Ptr<MeshWifiInterfaceMac> parent);
-  bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
-  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
+  void SetParent (Ptr<MeshWifiInterfaceMac> parent) override;
+  bool Receive (Ptr<Packet> packet, const WifiMacHeader & header) override;
+  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) override;
   // Update beacon is empty, because HWMP does not know anything about beacons
-  void UpdateBeacon (MeshWifiBeacon & beacon) const {};
-  int64_t AssignStreams (int64_t stream);
+  void UpdateBeacon (MeshWifiBeacon & beacon) const override {};
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   /// allow HwmpProtocol class friend access

@@ -64,10 +64,10 @@ public:
    * \param name the reference name
    */
   LteUplinkDataSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
-  virtual ~LteUplinkDataSinrTestCase ();
+  ~LteUplinkDataSinrTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
   Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2
@@ -99,7 +99,7 @@ class LteUplinkSrsSinrTestCase : public TestCase
    * \param name the reference name
    */
     LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
-    virtual ~LteUplinkSrsSinrTestCase ();
+    ~LteUplinkSrsSinrTestCase () override;
 
   /**
    * Callback to be connected to an LteChunkProcessor to collect the reported SINR
@@ -109,7 +109,7 @@ class LteUplinkSrsSinrTestCase : public TestCase
   void ReportSinr (const SpectrumValue& sinr);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Ptr<SpectrumValue> m_sv1; ///< the spectrum value #1
   Ptr<SpectrumValue> m_sv2; ///< the spectrum value #2

@@ -50,13 +50,13 @@ public:
    * \param device WIMAX device
    */
   BurstProfileManager (Ptr<WimaxNetDevice> device);
-  ~BurstProfileManager ();
+  ~BurstProfileManager () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   BurstProfileManager (const BurstProfileManager &) = delete;
   BurstProfileManager &operator= (const BurstProfileManager &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
   /**
    * \returns the number of available burst profile
    */

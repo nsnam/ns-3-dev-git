@@ -71,7 +71,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  uint32_t  GetHash32  (const char * buffer, const std::size_t size);
+  uint32_t  GetHash32  (const char * buffer, const std::size_t size) override;
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -86,11 +86,11 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  uint64_t  GetHash64  (const char * buffer, const std::size_t size);
+  uint64_t  GetHash64  (const char * buffer, const std::size_t size) override;
   /**
    * Restore initial state
    */
-  virtual void clear ();
+  void clear () override;
 
 private:
   /**

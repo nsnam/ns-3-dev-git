@@ -50,7 +50,7 @@ public:
   /** Default constructor */
   UanMacCw ();
   /** Dummy destructor, DoDispose. */
-  virtual ~UanMacCw ();
+  ~UanMacCw () override;
   /**
    * Register this type.
    * \return The TypeId.
@@ -83,20 +83,20 @@ public:
   virtual Time GetSlotTime ();
 
   // Inherited methods from UanMac
-  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
-  virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual void Clear ();
-  int64_t AssignStreams (int64_t stream);
+  bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest) override;
+  void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb) override;
+  void AttachPhy (Ptr<UanPhy> phy) override;
+  void Clear () override;
+  int64_t AssignStreams (int64_t stream) override;
 
   // Inherited methods from UanPhyListener
-  virtual void NotifyRxStart ();
-  virtual void NotifyRxEndOk ();
-  virtual void NotifyRxEndError ();
-  virtual void NotifyCcaStart ();
-  virtual void NotifyCcaEnd ();
-  virtual void NotifyTxStart (Time duration);
-  virtual void NotifyTxEnd ();
+  void NotifyRxStart () override;
+  void NotifyRxEndOk () override;
+  void NotifyRxEndError () override;
+  void NotifyCcaStart () override;
+  void NotifyCcaEnd () override;
+  void NotifyTxStart (Time duration) override;
+  void NotifyTxEnd () override;
 
   /**
    *  TracedCallback signature for enqueue/dequeue of a packet.
@@ -178,7 +178,7 @@ private:
   void EndTx ();
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanMacCw
 

@@ -50,7 +50,7 @@ public:
                    cache (Seconds (10))
   {
   }
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /// Timeout test function #1

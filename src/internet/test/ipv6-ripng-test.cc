@@ -70,7 +70,7 @@ class Ipv6RipngTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6RipngTest ();
 
   /**
@@ -293,7 +293,7 @@ class Ipv6RipngCountToInfinityTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6RipngCountToInfinityTest ();
 
   /**
@@ -506,7 +506,7 @@ class Ipv6RipngSplitHorizonStrategyTest : public TestCase
   RipNg::SplitHorizonType_e m_detectedStrategy; //!< Strategy detected.
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Constructor.
    * \param strategy The SplitHorizon strategy.

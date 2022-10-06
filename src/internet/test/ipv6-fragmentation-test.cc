@@ -83,11 +83,11 @@ public:
     static TypeId tid = TypeId ("ns3::IPv6TestTag").SetParent<Tag> ().AddConstructor<IPv6TestTag> ();
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const { return GetTypeId (); }
-  virtual uint32_t GetSerializedSize () const { return sizeof (token); }
-  virtual void Serialize (TagBuffer buffer) const { buffer.WriteU64 (token); }
-  virtual void Deserialize (TagBuffer buffer) { token = buffer.ReadU64 (); }
-  virtual void Print (std::ostream &os) const { os << "token=" << token; }
+  TypeId GetInstanceTypeId () const override { return GetTypeId (); }
+  uint32_t GetSerializedSize () const override { return sizeof (token); }
+  void Serialize (TagBuffer buffer) const override { buffer.WriteU64 (token); }
+  void Deserialize (TagBuffer buffer) override { token = buffer.ReadU64 (); }
+  void Print (std::ostream &os) const override { os << "token=" << token; }
   /**
    * \brief Set the token.
    * \param token The token.
@@ -123,9 +123,9 @@ class Ipv6FragmentationTest : public TestCase
   uint8_t m_icmpCode;     //!< ICMP code.
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6FragmentationTest ();
-  ~Ipv6FragmentationTest ();
+  ~Ipv6FragmentationTest () override;
 
   // server part
 

@@ -53,13 +53,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppRmaPropagationLossModelTestCase ();
+  ~ThreeGppRmaPropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -212,13 +212,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppUmaPropagationLossModelTestCase ();
+  ~ThreeGppUmaPropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -371,13 +371,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppUmiPropagationLossModelTestCase ();
+  ~ThreeGppUmiPropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -524,13 +524,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppIndoorOfficePropagationLossModelTestCase ();
+  ~ThreeGppIndoorOfficePropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -693,13 +693,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vUrbanPropagationLossModelTestCase ();
+  ~ThreeGppV2vUrbanPropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -848,13 +848,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppV2vHighwayPropagationLossModelTestCase ();
+  ~ThreeGppV2vHighwayPropagationLossModelTestCase () override;
 
 private:
   /**
    * Build the simulation scenario and run the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Struct containing the parameters for each test
@@ -984,10 +984,10 @@ class ThreeGppShadowingTestCase : public TestCase
 {
 public:
   ThreeGppShadowingTestCase ();
-  virtual ~ThreeGppShadowingTestCase ();
+  ~ThreeGppShadowingTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Run the experiment

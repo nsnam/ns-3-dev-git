@@ -46,7 +46,7 @@ public:
    * Construct a TapFdNetDeviceHelper.
    */
   TapFdNetDeviceHelper ();
-  virtual ~TapFdNetDeviceHelper ()
+  ~TapFdNetDeviceHelper () override
   {
   }
 
@@ -101,20 +101,20 @@ protected:
    * \param node The node to install the device in
    * \returns A container holding the added net device.
    */
-  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
+  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const override;
 
   /**
    * Sets a file descriptor on the FileDescriptorNetDevice.
    * \param device the device to install the file descriptor in
    */
-  virtual void SetFileDescriptor (Ptr<FdNetDevice> device) const;
+  void SetFileDescriptor (Ptr<FdNetDevice> device) const override;
 
   /**
    * Call out to a separate process running as suid root in order to create a
    * TAP device and obtain the file descriptor associated to it.
    * \returns The file descriptor associated with the TAP device.
    */
-  virtual int CreateFileDescriptor () const;
+  int CreateFileDescriptor () const override;
 
   /**
    * The TAP device flag IFF_NO_PI.

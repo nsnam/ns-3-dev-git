@@ -126,7 +126,7 @@ public:
   MemberLteHandoverManagementSapProvider () = delete;
 
   // inherited from LteHandoverManagementSapProvider
-  virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+  void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) override;
 
 private:
   C* m_owner; ///< the owner class
@@ -170,8 +170,8 @@ public:
   MemberLteHandoverManagementSapUser () = delete;
 
   // inherited from LteHandoverManagementSapUser
-  virtual std::vector<uint8_t> AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
-  virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
+  std::vector<uint8_t> AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig) override;
+  void TriggerHandover (uint16_t rnti, uint16_t targetCellId) override;
 
 private:
   C* m_owner; ///< the owner class

@@ -48,10 +48,10 @@ public:
   /** Constructor. */
   ManyUniformRandomVariablesOneGetValueCallTestCase ();
   /** Destructor. */
-  virtual ~ManyUniformRandomVariablesOneGetValueCallTestCase ();
+  ~ManyUniformRandomVariablesOneGetValueCallTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ManyUniformRandomVariablesOneGetValueCallTestCase::ManyUniformRandomVariablesOneGetValueCallTestCase ()

@@ -57,7 +57,7 @@ public:
    */
   static TypeId GetTypeId ();
   FrameExchangeManager ();
-  virtual ~FrameExchangeManager ();
+  ~FrameExchangeManager () override;
 
   /**
    * typedef for a callback to invoke when an MPDU is dropped.

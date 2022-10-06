@@ -96,7 +96,7 @@ public:
    * Create a path with no waypoints at location (0,0,0).
    */
   WaypointMobilityModel ();
-  virtual ~WaypointMobilityModel ();
+  ~WaypointMobilityModel () override;
 
   /**
    * \param waypoint waypoint to append to the object path.
@@ -142,22 +142,22 @@ private:
    *
    * Subclasses must override this method.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get current position.
    * \return A vector with the current position of the node.
    */
-  virtual Vector DoGetPosition () const;
+  Vector DoGetPosition () const override;
   /**
    * \brief Sets a new position for the node
    * \param position A vector to be added as the new position
    */
-  virtual void DoSetPosition (const Vector &position);
+  void DoSetPosition (const Vector &position) override;
   /**
    * \brief Returns the current velocity of a node
    * \return The velocity vector of a node.
    */
-  virtual Vector DoGetVelocity () const;
+  Vector DoGetVelocity () const override;
 
 protected:
   /**

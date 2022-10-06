@@ -48,7 +48,7 @@ public:
   /// \param classifier the Ipv4FlowClassifier this probe is associated with
   /// \param node the Node this probe is associated with
   Ipv6FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv6FlowClassifier> classifier, Ptr<Node> node);
-  virtual ~Ipv6FlowProbe ();
+  ~Ipv6FlowProbe () override;
 
   /// Register this type.
   /// \return The TypeId.
@@ -89,7 +89,7 @@ public:
 
 protected:
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /// Log a packet being sent

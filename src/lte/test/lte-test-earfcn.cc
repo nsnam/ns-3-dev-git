@@ -48,14 +48,14 @@ public:
    * \param f frequency
    */
   LteEarfcnTestCase (const char* str, uint32_t earfcn, double f);
-  virtual ~LteEarfcnTestCase ();
+  ~LteEarfcnTestCase () override;
 
 protected:
   uint32_t m_earfcn; ///< the EARFCN
   double m_f; ///< the frequency
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteEarfcnTestCase::LteEarfcnTestCase (const char* str, uint32_t earfcn, double f)
@@ -99,7 +99,7 @@ public:
   LteEarfcnDlTestCase (const char* str, uint32_t earfcn, double f);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint32_t earfcn, double f)
@@ -140,7 +140,7 @@ public:
   LteEarfcnUlTestCase (const char* str, uint32_t earfcn, double f);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LteEarfcnUlTestCase::LteEarfcnUlTestCase (const char* str, uint32_t earfcn, double f)

@@ -56,7 +56,7 @@ public:
   */
   static TypeId GetTypeId ();
   V4TraceRoute ();
-  virtual ~V4TraceRoute ();
+  ~V4TraceRoute () override;
   /**
    * \brief Prints the application traced routes into a given OutputStream.
    * \param stream the output stream
@@ -64,9 +64,9 @@ public:
   void Print (Ptr<OutputStreamWrapper> stream);
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
-  virtual void DoDispose ();
+  void StartApplication () override;
+  void StopApplication () override;
+  void DoDispose () override;
   /**
    * \brief Return the application ID in the node.
    * \returns the application id

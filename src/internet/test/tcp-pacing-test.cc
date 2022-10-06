@@ -110,22 +110,22 @@ public:
                  const TypeId& congControl, const std::string &desc);
 
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void RttTrace (Time oldTime, Time newTime);
-  virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
-  virtual void QueueDrop (SocketWho who);
-  virtual void PhyDrop (SocketWho who);
-  virtual void NormalClose (SocketWho who);
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void RttTrace (Time oldTime, Time newTime) override;
+  void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue) override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who) override;
+  void QueueDrop (SocketWho who) override;
+  void PhyDrop (SocketWho who) override;
+  void NormalClose (SocketWho who) override;
 
   /**
    * \brief Update the expected interval at which next packet will be sent
    */
   virtual void UpdateExpectedInterval ();
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
 
 private:
   uint32_t m_segmentSize;             //!< Segment size

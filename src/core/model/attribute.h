@@ -239,14 +239,14 @@ private:
   /**
    * \returns a deep copy of this class, wrapped into an Attribute object.
    */
-  virtual Ptr<AttributeValue> Copy () const;
+  Ptr<AttributeValue> Copy () const override;
   /**
    * \param [in] checker The checker associated to the attribute
    * \returns a string representation of this value.
    *
    * In the EmptyAttributeValue case, the string returned will be simply ""
    */
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
   /**
    * \param [in] value A string representation of the value
    * \param [in] checker A pointer to the checker associated to the attribute.
@@ -255,7 +255,7 @@ private:
    *
    * In the trivial case of EmptyAttributeValue, this should always return true
    */
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
 };
 
 /**
@@ -267,11 +267,11 @@ class EmptyAttributeAccessor : public AttributeAccessor
 {
 public:
   EmptyAttributeAccessor ();
-  ~EmptyAttributeAccessor ();
-  virtual bool Set (ObjectBase * object, const AttributeValue &value) const;
-  virtual bool Get (const ObjectBase * object, AttributeValue &attribute) const;
-  virtual bool HasGetter () const;
-  virtual bool HasSetter () const;
+  ~EmptyAttributeAccessor () override;
+  bool Set (ObjectBase * object, const AttributeValue &value) const override;
+  bool Get (const ObjectBase * object, AttributeValue &attribute) const override;
+  bool HasGetter () const override;
+  bool HasSetter () const override;
 };
 
 /**
@@ -297,13 +297,13 @@ class EmptyAttributeChecker : public AttributeChecker
 {
 public:
   EmptyAttributeChecker ();
-  ~EmptyAttributeChecker ();
-  virtual bool Check (const AttributeValue &value) const;
-  virtual std::string GetValueTypeName () const;
-  virtual bool HasUnderlyingTypeInformation () const;
-  virtual std::string GetUnderlyingTypeInformation () const;
-  virtual Ptr<AttributeValue> Create () const;
-  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const;
+  ~EmptyAttributeChecker () override;
+  bool Check (const AttributeValue &value) const override;
+  std::string GetValueTypeName () const override;
+  bool HasUnderlyingTypeInformation () const override;
+  std::string GetUnderlyingTypeInformation () const override;
+  Ptr<AttributeValue> Create () const override;
+  bool Copy (const AttributeValue &source, AttributeValue &destination) const override;
 };
 
 /**

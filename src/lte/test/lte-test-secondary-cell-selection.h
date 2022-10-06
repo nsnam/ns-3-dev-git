@@ -67,14 +67,14 @@ public:
    */
   LteSecondaryCellSelectionTestCase (std::string name, bool isIdealRrc, uint64_t rngRun, uint8_t numberOfComponentCarriers);
 
-  virtual ~LteSecondaryCellSelectionTestCase ();
+  ~LteSecondaryCellSelectionTestCase () override;
 
 private:
   /**
    * \brief Setup the simulation according to the configuration set by the
    *        class constructor, run it, and verify the result.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief State transition callback function

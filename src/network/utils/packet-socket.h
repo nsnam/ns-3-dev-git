@@ -100,7 +100,7 @@ public:
   static TypeId GetTypeId ();
 
   PacketSocket ();
-  virtual ~PacketSocket ();
+  ~PacketSocket () override;
 
   /**
    * \brief Set the associated node.
@@ -108,9 +108,9 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  virtual enum SocketErrno GetErrno () const;
-  virtual enum SocketType GetSocketType () const;
-  virtual Ptr<Node> GetNode () const;
+  enum SocketErrno GetErrno () const override;
+  enum SocketType GetSocketType () const override;
+  Ptr<Node> GetNode () const override;
   /**
    * \brief Bind the socket to the NetDevice and register the protocol handler.
    *
@@ -118,7 +118,7 @@ public:
    *
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind ();
+  int Bind () override;
   /**
    * \brief Bind the socket to the NetDevice and register the protocol handler.
    *
@@ -126,7 +126,7 @@ public:
    *
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind6 ();
+  int Bind6 () override;
   /**
    * \brief Bind the socket to the NetDevice and register the
    *        protocol handler specified in the address.
@@ -134,23 +134,23 @@ public:
    * \param address the packet socket address
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind (const Address & address);
-  virtual int Close ();
-  virtual int ShutdownSend ();
-  virtual int ShutdownRecv ();
-  virtual int Connect (const Address &address);
-  virtual int Listen ();
-  virtual uint32_t GetTxAvailable () const;
-  virtual int Send (Ptr<Packet> p, uint32_t flags);
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
-  virtual uint32_t GetRxAvailable () const;
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
-  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
-                                Address &fromAddress);
-  virtual int GetSockName (Address &address) const;
-  virtual int GetPeerName (Address &address) const;
-  virtual bool SetAllowBroadcast (bool allowBroadcast);
-  virtual bool GetAllowBroadcast () const;
+  int Bind (const Address & address) override;
+  int Close () override;
+  int ShutdownSend () override;
+  int ShutdownRecv () override;
+  int Connect (const Address &address) override;
+  int Listen () override;
+  uint32_t GetTxAvailable () const override;
+  int Send (Ptr<Packet> p, uint32_t flags) override;
+  int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress) override;
+  uint32_t GetRxAvailable () const override;
+  Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) override;
+  Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+                                Address &fromAddress) override;
+  int GetSockName (Address &address) const override;
+  int GetPeerName (Address &address) const override;
+  bool SetAllowBroadcast (bool allowBroadcast) override;
+  bool GetAllowBroadcast () const override;
 
 private:
   /**
@@ -180,7 +180,7 @@ private:
    * \returns The minimum MTU
    */
   uint32_t GetMinMtu (PacketSocketAddress ad) const;
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief States of the socket
@@ -249,11 +249,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
+  void Print (std::ostream &os) const override;
 
 private:
   NetDevice::PacketType m_packetType; //!< Packet type
@@ -284,11 +284,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
+  void Print (std::ostream &os) const override;
 
 private:
   std::string m_deviceName; //!< Device name

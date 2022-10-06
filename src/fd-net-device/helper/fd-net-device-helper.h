@@ -50,7 +50,7 @@ public:
    * Construct a FdNetDeviceHelper.
    */
   FdNetDeviceHelper ();
-  virtual ~FdNetDeviceHelper ()
+  ~FdNetDeviceHelper () override
   {
   }
 
@@ -119,7 +119,7 @@ private:
    * \param promiscuous If true capture all possible packets available at the device.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename);
+  void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename) override;
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
@@ -132,10 +132,10 @@ private:
    * \param nd Net device for which you want to enable tracing.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+  void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,
                                     Ptr<NetDevice> nd,
-                                    bool explicitFilename);
+                                    bool explicitFilename) override;
 
   ObjectFactory m_deviceFactory;  //!< factory for the NetDevices
 };

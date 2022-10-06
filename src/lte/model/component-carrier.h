@@ -47,8 +47,8 @@ public:
 
   ComponentCarrier ();
 
-  virtual ~ComponentCarrier ();
-  virtual void DoDispose ();
+  ~ComponentCarrier () override;
+  void DoDispose () override;
 
   /**
    * \return the uplink bandwidth in RBs
@@ -183,7 +183,7 @@ public:
   /**
    * \brief ~ComponentCarrierBaseStation
    */
-  virtual ~ComponentCarrierBaseStation () override;
+  ~ComponentCarrierBaseStation () override;
 
   /**
    * Get cell identifier

@@ -143,7 +143,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
   FlowMonitor ();
 
   /// Add a FlowClassifier to be used by the flow monitor.
@@ -261,8 +261,8 @@ public:
 
 protected:
 
-  virtual void NotifyConstructionCompleted ();
-  virtual void DoDispose ();
+  void NotifyConstructionCompleted () override;
+  void DoDispose () override;
 
 private:
 

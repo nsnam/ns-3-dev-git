@@ -66,7 +66,7 @@ public:
    */
   static TypeId GetTypeId ();
   TestMultiUserScheduler ();
-  virtual ~TestMultiUserScheduler ();
+  ~TestMultiUserScheduler () override;
 
 private:
   // Implementation of pure virtual methods of MultiUserScheduler class
@@ -371,7 +371,7 @@ public:
   OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::Method dlType, uint32_t maxAmpduSize,
                         uint16_t txopLimit, uint16_t nPktsPerSta,
                         MuEdcaParameterSet muEdcaParameterSet);
-  virtual ~OfdmaAckSequenceTest ();
+  ~OfdmaAckSequenceTest () override;
 
   /**
    * Function to trace packets received by the server application

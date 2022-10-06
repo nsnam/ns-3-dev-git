@@ -57,7 +57,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Constructor that binds the tap device to the callback methods.
@@ -73,7 +73,7 @@ public:
                      const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket);
 
   /** Destructor */
-  virtual ~EpcPgwApplication ();
+  ~EpcPgwApplication () override;
 
   /**
    * Method to be assigned to the callback of the SGi TUN VirtualNetDevice.

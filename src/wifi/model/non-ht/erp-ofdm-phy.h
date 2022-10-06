@@ -52,7 +52,7 @@ public:
   /**
    * Destructor for ERP-OFDM PHY
    */
-  virtual ~ErpOfdmPhy ();
+  ~ErpOfdmPhy () override;
 
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
   uint32_t GetMaxPsduSize () const override;

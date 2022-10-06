@@ -268,11 +268,11 @@ MakeTimerImpl (IntToType<0>, FN fn)
     FnTimerImplZero (FN fn)
       : m_fn (fn)
     {}
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn ();
     }
@@ -298,15 +298,15 @@ MakeTimerImpl (IntToType<1>, FN fn)
     FnTimerImplOne (FN fn)
       : m_fn (fn)
     {}
-    virtual void SetArguments (T1Parameter a1)
+    void SetArguments (T1Parameter a1) override
     {
       m_a1 = a1;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn, m_a1);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn (m_a1);
     }
@@ -336,16 +336,16 @@ MakeTimerImpl (IntToType<2>, FN fn)
     FnTimerImplTwo (FN fn)
       : m_fn (fn)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2)
+    void SetArguments (T1Parameter a1, T2Parameter a2) override
     {
       m_a1 = a1;
       m_a2 = a2;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn (m_a1, m_a2);
     }
@@ -379,17 +379,17 @@ MakeTimerImpl (IntToType<3>, FN fn)
     FnTimerImplThree (FN fn)
       : m_fn (fn)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) override
     {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn (m_a1, m_a2, m_a3);
     }
@@ -427,18 +427,18 @@ MakeTimerImpl (IntToType<4>, FN fn)
     FnTimerImplFour (FN fn)
       : m_fn (fn)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) override
     {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn (m_a1, m_a2, m_a3, m_a4);
     }
@@ -480,7 +480,7 @@ MakeTimerImpl (IntToType<5>, FN fn)
     FnTimerImplFive (FN fn)
       : m_fn (fn)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5) override
     {
       m_a1 = a1;
       m_a2 = a2;
@@ -488,11 +488,11 @@ MakeTimerImpl (IntToType<5>, FN fn)
       m_a4 = a4;
       m_a5 = a5;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       m_fn (m_a1, m_a2, m_a3, m_a4, m_a5);
     }
@@ -636,11 +636,11 @@ MakeTimerImpl (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)();
     }
@@ -668,15 +668,15 @@ MakeTimerImpl (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual void SetArguments (T1Parameter a1)
+    void SetArguments (T1Parameter a1) override
     {
       m_a1 = a1;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1);
     }
@@ -708,16 +708,16 @@ MakeTimerImpl (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2)
+    void SetArguments (T1Parameter a1, T2Parameter a2) override
     {
       m_a1 = a1;
       m_a2 = a2;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2);
     }
@@ -753,17 +753,17 @@ MakeTimerImpl (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) override
     {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3);
     }
@@ -803,18 +803,18 @@ MakeTimerImpl (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) override
     {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4);
     }
@@ -858,7 +858,7 @@ MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
       : m_memPtr (memPtr),
         m_objPtr (objPtr)
     {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5)
+    void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5) override
     {
       m_a1 = a1;
       m_a2 = a2;
@@ -866,11 +866,11 @@ MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
       m_a4 = a4;
       m_a5 = a5;
     }
-    virtual EventId Schedule (const Time &delay)
+    EventId Schedule (const Time &delay) override
     {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke ()
+    void Invoke () override
     {
       (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }

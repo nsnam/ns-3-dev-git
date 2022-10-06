@@ -42,7 +42,7 @@ public:
   static TypeId GetTypeId ();
 
   AdhocWifiMac ();
-  virtual ~AdhocWifiMac ();
+  ~AdhocWifiMac () override;
 
   void SetLinkUpCallback (Callback<void> linkUp) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;

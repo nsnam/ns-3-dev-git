@@ -56,9 +56,9 @@ public:
    * \brief Constructor
    */
   WifiChannelSwitchingTest ();
-  virtual ~WifiChannelSwitchingTest ();
+  ~WifiChannelSwitchingTest () override;
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Callback invoked when a station associates with an AP. Tracks the number of

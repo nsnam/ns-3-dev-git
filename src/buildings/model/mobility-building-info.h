@@ -133,7 +133,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 
 

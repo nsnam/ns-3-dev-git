@@ -111,7 +111,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~DsrRouting ();
+  ~DsrRouting () override;
   /**
    * \brief Get the node.
    * \return the node
@@ -281,7 +281,7 @@ public:
    * \brief Get the dsr protocol number.
    * \return protocol number
    */
-  int GetProtocolNumber () const;
+  int GetProtocolNumber () const override;
   /**
    * \brief The send buffer timer expire.
    */
@@ -622,9 +622,9 @@ public:
    * Called from lower-level layers to send the packet up
    * in the stack.
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
-                                               Ptr<Ipv4Interface> incomingInterface);
+                                               Ptr<Ipv4Interface> incomingInterface) override;
 
   /**
    * \param p packet to forward up
@@ -635,14 +635,14 @@ public:
    * Called from lower-level layers to send the packet up
    * in the stack.  Not implemented (IPv6).
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv6Header const &header,
-                                               Ptr<Ipv6Interface> incomingInterface);
+                                               Ptr<Ipv6Interface> incomingInterface) override;
 
-  void SetDownTarget (IpL4Protocol::DownTargetCallback callback);
-  void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback);
-  IpL4Protocol::DownTargetCallback GetDownTarget () const;
-  IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
+  void SetDownTarget (IpL4Protocol::DownTargetCallback callback) override;
+  void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback) override;
+  IpL4Protocol::DownTargetCallback GetDownTarget () const override;
+  IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const override;
   /**
    * \brief Process method
    * Called from Ipv4L3Protocol::Receive.
@@ -707,11 +707,11 @@ protected:
  *    * This function will notify other components connected to the node that a new stack member is now connected
  *       * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
  *          */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
   /**
    * \brief Drop trace callback.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * The trace for drop, receive and send data packets
    */

@@ -73,7 +73,7 @@ public:
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
 
   // inherited from PropagationLossModel
-  virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
 protected:
   /**
@@ -152,7 +152,7 @@ protected:
   double m_shadowingSigmaIndoor;
   Ptr<NormalRandomVariable> m_randVariable; //!< Random variable
 
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
 };
 
 }

@@ -58,10 +58,10 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~TcpDctcp ();
+  ~TcpDctcp () override;
 
   // Documented in base class
-  virtual std::string GetName () const;
+  std::string GetName () const override;
 
   /**
    * \brief Set configuration required by congestion control algorithm,
@@ -71,7 +71,7 @@ public:
    *
    * \param tcb internal congestion state
    */
-  virtual void Init (Ptr<TcpSocketState> tcb);
+  void Init (Ptr<TcpSocketState> tcb) override;
 
   /**
    * TracedCallback signature for DCTCP update of congestion state
@@ -83,13 +83,13 @@ public:
   typedef void (* CongestionEstimateTracedCallback)(uint32_t bytesAcked, uint32_t bytesMarked, double alpha);
 
   // Documented in base class
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
-  virtual Ptr<TcpCongestionOps> Fork ();
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time &rtt);
-  virtual void CwndEvent (Ptr<TcpSocketState> tcb,
-                          const TcpSocketState::TcpCAEvent_t event);
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
+  Ptr<TcpCongestionOps> Fork () override;
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                          const Time &rtt) override;
+  void CwndEvent (Ptr<TcpSocketState> tcb,
+                          const TcpSocketState::TcpCAEvent_t event) override;
 private:
   /**
    * \brief Changes state of m_ceState to true

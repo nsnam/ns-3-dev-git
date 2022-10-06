@@ -56,7 +56,7 @@ public:
   static TypeId GetTypeId ();
 
   OrbisTopologyReader ();
-  virtual ~OrbisTopologyReader ();
+  ~OrbisTopologyReader () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   OrbisTopologyReader (const OrbisTopologyReader &) = delete;
@@ -72,7 +72,7 @@ public:
    *
    * \return The container of the nodes created (or empty container if there was an error)
    */
-  virtual NodeContainer Read ();
+  NodeContainer Read () override;
 
   // end class OrbisTopologyReader
 };

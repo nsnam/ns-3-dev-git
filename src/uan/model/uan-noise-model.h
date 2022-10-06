@@ -50,7 +50,7 @@ public:
   /** Clear all pointer references. */
   virtual void Clear ();
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanNoiseModel
 

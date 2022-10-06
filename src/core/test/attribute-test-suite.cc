@@ -294,7 +294,7 @@ public:
   {
   }
 
-  virtual ~AttributeObjectTest ()
+  ~AttributeObjectTest () override
   {}
 
   /// Add an object to the first vector.
@@ -476,10 +476,10 @@ public:
    * \param description The TestCase description.
    */
   AttributeTestCase (std::string description);
-  virtual ~AttributeTestCase ();
+  ~AttributeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check the attribute path and value.
    * \param p The object to test.
@@ -981,7 +981,7 @@ public:
    * \param description The TestCase description.
    */
   RandomVariableStreamAttributeTestCase (std::string description);
-  virtual ~RandomVariableStreamAttributeTestCase ()
+  ~RandomVariableStreamAttributeTestCase () override
   {}
 
   /**
@@ -997,7 +997,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /// Callback used in the test.
   Callback<void,int8_t> m_cbValue;
@@ -1055,11 +1055,11 @@ public:
    * \param description The TestCase description.
    */
   ObjectVectorAttributeTestCase (std::string description);
-  virtual ~ObjectVectorAttributeTestCase ()
+  ~ObjectVectorAttributeTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase (std::string description)
@@ -1126,11 +1126,11 @@ public:
    * \param description The TestCase description.
    */
   ObjectMapAttributeTestCase (std::string description);
-  virtual ~ObjectMapAttributeTestCase ()
+  ~ObjectMapAttributeTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ObjectMapAttributeTestCase::ObjectMapAttributeTestCase (std::string description)
@@ -1198,11 +1198,11 @@ public:
    * \param description The TestCase description.
    */
   IntegerTraceSourceAttributeTestCase (std::string description);
-  virtual ~IntegerTraceSourceAttributeTestCase ()
+  ~IntegerTraceSourceAttributeTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase (std::string description)
@@ -1296,11 +1296,11 @@ public:
    * \param description The TestCase description.
    */
   IntegerTraceSourceTestCase (std::string description);
-  virtual ~IntegerTraceSourceTestCase ()
+  ~IntegerTraceSourceTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Notify the call of source 1.
@@ -1382,11 +1382,11 @@ public:
    * \param description The TestCase description.
    */
   TracedCallbackTestCase (std::string description);
-  virtual ~TracedCallbackTestCase ()
+  ~TracedCallbackTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Notify the call of source 2.
@@ -1471,11 +1471,11 @@ public:
    * \param description The TestCase description.
    */
   PointerAttributeTestCase (std::string description);
-  virtual ~PointerAttributeTestCase ()
+  ~PointerAttributeTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Notify the call of source 2.
@@ -1597,7 +1597,7 @@ public:
    * \param description The TestCase description.
    */
   CallbackValueTestCase (std::string description);
-  virtual ~CallbackValueTestCase ()
+  ~CallbackValueTestCase () override
   {}
 
   /**
@@ -1613,7 +1613,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   Callback<void,int8_t> m_cbValue; //!< The callback
 

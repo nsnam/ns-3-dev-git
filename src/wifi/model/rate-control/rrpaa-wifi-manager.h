@@ -80,7 +80,7 @@ public:
    */
   static TypeId GetTypeId ();
   RrpaaWifiManager ();
-  virtual ~RrpaaWifiManager ();
+  ~RrpaaWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
   void SetupMac (const Ptr<WifiMac> mac) override;

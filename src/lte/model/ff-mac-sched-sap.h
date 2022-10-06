@@ -350,17 +350,17 @@ public:
   MemberSchedSapProvider (C* scheduler);
 
   // inherited from FfMacSchedSapProvider
-  virtual void SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params);
-  virtual void SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params);
-  virtual void SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params);
-  virtual void SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params);
-  virtual void SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params);
-  virtual void SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params);
-  virtual void SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params);
-  virtual void SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params);
-  virtual void SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params);
-  virtual void SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params);
-  virtual void SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params);
+  void SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params) override;
+  void SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params) override;
+  void SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params) override;
+  void SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params) override;
+  void SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params) override;
+  void SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params) override;
+  void SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params) override;
+  void SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params) override;
+  void SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params) override;
+  void SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params) override;
+  void SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params) override;
 
 
 private:

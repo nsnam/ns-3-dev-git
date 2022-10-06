@@ -48,7 +48,7 @@ public:
   static TypeId GetTypeId ();
 
   LteAmc ();
-  virtual ~LteAmc();
+  ~LteAmc() override;
 
   /// Types of AMC model.
   enum AmcModel

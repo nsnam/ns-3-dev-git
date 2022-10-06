@@ -85,7 +85,7 @@ class PacketBufferingCaseA : public TestCase
 {
 public:
   PacketBufferingCaseA ();
-  virtual ~PacketBufferingCaseA ();
+  ~PacketBufferingCaseA () override;
 private:
   void DoRun () override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
@@ -182,7 +182,7 @@ class PacketBufferingCaseB : public TestCase
 {
 public:
   PacketBufferingCaseB ();
-  virtual ~PacketBufferingCaseB ();
+  ~PacketBufferingCaseB () override;
 private:
   void DoRun () override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
@@ -663,7 +663,7 @@ public:
    * \param ssn the Starting Sequence Number used to initialize WinStartB
    */
   BlockAckRecipientBufferTest (uint16_t ssn);
-  virtual ~BlockAckRecipientBufferTest ();
+  ~BlockAckRecipientBufferTest () override;
 
   void DoRun () override;
 
@@ -882,7 +882,7 @@ class MultiStaCtrlBAckResponseHeaderTest : public TestCase
 public:
   MultiStaCtrlBAckResponseHeaderTest ();
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 MultiStaCtrlBAckResponseHeaderTest::MultiStaCtrlBAckResponseHeaderTest ()
@@ -1367,7 +1367,7 @@ public:
    * \param txop true for non-null TXOP limit
    */
   BlockAckAggregationDisabledTest (bool txop);
-  virtual ~BlockAckAggregationDisabledTest ();
+  ~BlockAckAggregationDisabledTest () override;
 
   void DoRun () override;
 

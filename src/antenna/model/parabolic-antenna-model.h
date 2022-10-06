@@ -54,7 +54,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from AntennaModel
-  virtual double GetGainDb (Angles a);
+  double GetGainDb (Angles a) override;
 
 
   // attribute getters/setters

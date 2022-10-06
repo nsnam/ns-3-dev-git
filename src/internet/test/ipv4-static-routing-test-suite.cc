@@ -48,7 +48,7 @@ class Ipv4StaticRoutingSlash32TestCase : public TestCase
 {
 public:
   Ipv4StaticRoutingSlash32TestCase ();
-  virtual ~Ipv4StaticRoutingSlash32TestCase ();
+  ~Ipv4StaticRoutingSlash32TestCase () override;
 
   Ptr<Packet> m_receivedPacket; //!< Received packet
 
@@ -72,7 +72,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 // Add some help text to this case to describe what it is intended to test

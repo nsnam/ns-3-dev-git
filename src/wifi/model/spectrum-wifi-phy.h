@@ -64,7 +64,7 @@ public:
   static TypeId GetTypeId ();
 
   SpectrumWifiPhy ();
-  virtual ~SpectrumWifiPhy ();
+  ~SpectrumWifiPhy () override;
 
   // Implementation of pure virtual method.
   void StartTx (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector) override;

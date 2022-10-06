@@ -48,7 +48,7 @@ class DhcpTestCase : public TestCase
 {
 public:
   DhcpTestCase ();
-  virtual ~DhcpTestCase ();
+  ~DhcpTestCase () override;
   /**
    * Triggered by an address lease on a client.
    * \param context The test name.
@@ -56,7 +56,7 @@ public:
    */
   void LeaseObtained (std::string context, const Ipv4Address& newAddress);
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv4Address m_leasedAddress[3]; //!< Address given to the nodes
 };
 

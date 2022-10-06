@@ -47,10 +47,10 @@ public:
   /** Constructor. */
   OneUniformRandomVariableManyGetValueCallsTestCase ();
   /** Destructor. */
-  virtual ~OneUniformRandomVariableManyGetValueCallsTestCase ();
+  ~OneUniformRandomVariableManyGetValueCallsTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OneUniformRandomVariableManyGetValueCallsTestCase::OneUniformRandomVariableManyGetValueCallsTestCase ()

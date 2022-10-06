@@ -63,7 +63,7 @@ public:
   static TypeId GetTypeId ();
 
   WifiNetDevice ();
-  virtual ~WifiNetDevice ();
+  ~WifiNetDevice () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   WifiNetDevice (const WifiNetDevice &o) = delete;

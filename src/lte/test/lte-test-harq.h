@@ -51,10 +51,10 @@ public:
    * \param thrRef the throughput reference
    */
   LenaHarqTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double amcBer, double thrRef);
-  virtual ~LenaHarqTestCase ();
+  ~LenaHarqTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Build name string function
    *

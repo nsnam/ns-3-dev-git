@@ -57,10 +57,10 @@ public:
 private:
 
   // inherited from PropagationLossModel
-  virtual double DoCalcRxPower (double txPowerDbm,
+  double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+                                Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
 
   double m_frequency; ///< frequency in MHz
 

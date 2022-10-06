@@ -57,10 +57,10 @@ public:
                             double channelBandwidth,
                             double basePsd,
                             TvSpectrumTransmitter::TvType tvType);
-  virtual ~TvSpectrumTransmitterTestCase ();
+  ~TvSpectrumTransmitterTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Build the test name
    * \param tvType TV type.

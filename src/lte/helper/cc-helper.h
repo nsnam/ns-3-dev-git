@@ -58,14 +58,14 @@ class CcHelper : public Object
 {
 public:
   CcHelper ();
-  virtual ~CcHelper ();
+  ~CcHelper () override;
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
   * Create single CC.
@@ -166,7 +166,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   /**

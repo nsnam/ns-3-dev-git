@@ -176,11 +176,11 @@ public:
   MemberEpcEnbS1SapProvider (C* owner);
 
   // inherited from EpcEnbS1SapProvider
-  virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
-  virtual void DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId);
+  void InitialUeMessage (uint64_t imsi, uint16_t rnti) override;
+  void DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId) override;
 
-  virtual void PathSwitchRequest (PathSwitchRequestParameters params);
-  virtual void UeContextRelease (uint16_t rnti);
+  void PathSwitchRequest (PathSwitchRequestParameters params) override;
+  void UeContextRelease (uint16_t rnti) override;
 
 private:
   MemberEpcEnbS1SapProvider ();
@@ -240,9 +240,9 @@ public:
   MemberEpcEnbS1SapUser (C* owner);
 
   // inherited from EpcEnbS1SapUser
-  virtual void InitialContextSetupRequest (InitialContextSetupRequestParameters params);
-  virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params);
-  virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params);
+  void InitialContextSetupRequest (InitialContextSetupRequestParameters params) override;
+  void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params) override;
+  void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params) override;
 
 private:
   MemberEpcEnbS1SapUser ();

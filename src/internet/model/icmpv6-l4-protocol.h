@@ -57,7 +57,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief ICMPv6 protocol number (58).
@@ -108,7 +108,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Icmpv6L4Protocol ();
+  ~Icmpv6L4Protocol () override;
 
   /**
    * \brief Set the node.
@@ -127,13 +127,13 @@ public:
    * by setting the node in the ICMPv6 stack and adding ICMPv6 factory to
    * IPv6 stack connected to the node.
    */
-  virtual void NotifyNewAggregate ();
+  void NotifyNewAggregate () override;
 
   /**
    * \brief Get the protocol number.
    * \return protocol number
    */
-  virtual int GetProtocolNumber () const;
+  int GetProtocolNumber () const override;
 
   /**
    * \brief Get the version of the protocol.
@@ -299,9 +299,9 @@ public:
    * \param interface the interface from which the packet is coming
    * \returns the receive status
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
-                                               Ptr<Ipv4Interface> interface);
+                                               Ptr<Ipv4Interface> interface) override;
 
   /**
    * \brief Receive method.
@@ -310,9 +310,9 @@ public:
    * \param interface the interface from which the packet is coming
    * \returns the receive status
    */
-  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+  enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv6Header const &header,
-                                               Ptr<Ipv6Interface> interface);
+                                               Ptr<Ipv6Interface> interface) override;
 
   /**
    * \brief Function called when DAD timeout.
@@ -390,7 +390,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   typedef std::list<Ptr<NdiscCache> > CacheList; //!< container of NdiscCaches
 
@@ -521,11 +521,11 @@ protected:
   Ptr<NdiscCache> FindCache (Ptr<NetDevice> device);
 
   // From IpL4Protocol
-  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
-  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  void SetDownTarget (IpL4Protocol::DownTargetCallback cb) override;
+  void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb) override;
   // From IpL4Protocol
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
+  IpL4Protocol::DownTargetCallback GetDownTarget () const override;
+  IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const override;
 
   /**
    * \brief Always do DAD ?

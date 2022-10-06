@@ -130,13 +130,13 @@ public:
   void SetUpdateRttHistoryCb (UpdateRttCallback cb);
 
 protected:
-  virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
-  virtual void ReTxTimeout ();
-  virtual Ptr<TcpSocketBase> Fork ();
-  virtual void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader,
-                             const Address& fromAddress, const Address& toAddress);
-  virtual void UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
-                                 bool isRetransmission);
+  void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader) override;
+  void ReTxTimeout () override;
+  Ptr<TcpSocketBase> Fork () override;
+  void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader,
+                             const Address& fromAddress, const Address& toAddress) override;
+  void UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
+                                 bool isRetransmission) override;
 
 private:
   AckManagementCb m_rcvAckCb;       //!< Receive ACK callback.
@@ -204,8 +204,8 @@ public:
   }
 
 protected:
-  virtual void SendEmptyPacket (uint8_t flags);
-  Ptr<TcpSocketBase> Fork ();
+  void SendEmptyPacket (uint8_t flags) override;
+  Ptr<TcpSocketBase> Fork () override;
 
   uint32_t m_bytesToAck;            //!< Number of bytes to be ACKed.
   uint32_t m_bytesLeftToBeAcked;    //!< Number of bytes to be ACKed left.
@@ -265,7 +265,7 @@ public:
    * \param desc description of the test
    */
   TcpGeneralTest (const std::string &desc);
-  ~TcpGeneralTest ();
+  ~TcpGeneralTest () override;
 
   /**
    * \brief Used as parameter of methods, specifies on what node
@@ -370,7 +370,7 @@ protected:
    *
    * \see ConfigureEnvironment
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Change the configuration of the environment
@@ -385,7 +385,7 @@ protected:
   /**
    * \brief Teardown the TCP test
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   /**
    * \brief Scheduled at 0.0, SENDER starts the connection to RECEIVER

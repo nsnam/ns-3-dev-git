@@ -57,7 +57,7 @@ public:
    */
   static TypeId GetTypeId ();
   HeFrameExchangeManager ();
-  virtual ~HeFrameExchangeManager ();
+  ~HeFrameExchangeManager () override;
 
   uint16_t GetSupportedBaBufferSize () const override;
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;

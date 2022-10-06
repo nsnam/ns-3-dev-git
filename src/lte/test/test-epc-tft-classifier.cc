@@ -74,7 +74,7 @@ public:
                             uint32_t tftId,
                             bool useIpv6);
 
-  virtual ~EpcTftClassifierTestCase ();
+  ~EpcTftClassifierTestCase () override;
 
 private:
 
@@ -110,7 +110,7 @@ private:
                                       uint32_t tftId,
                                       bool useIpv6);
 
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 

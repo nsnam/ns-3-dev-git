@@ -46,10 +46,10 @@ class MobilityTraceTestCase : public TestCase
 {
 public:
   MobilityTraceTestCase ();
-  virtual ~MobilityTraceTestCase ();
+  ~MobilityTraceTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 MobilityTraceTestCase::MobilityTraceTestCase ()

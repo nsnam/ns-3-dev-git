@@ -61,7 +61,7 @@ public:
 
   PacketSocketClient ();
 
-  virtual ~PacketSocketClient ();
+  ~PacketSocketClient () override;
 
   /**
    * \brief set the remote address and protocol to be used
@@ -76,12 +76,12 @@ public:
   uint8_t GetPriority () const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Manually set the socket priority

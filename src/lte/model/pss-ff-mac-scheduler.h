@@ -90,10 +90,10 @@ public:
   /**
    * Destructor
    */
-  virtual ~PssFfMacScheduler ();
+  ~PssFfMacScheduler () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -101,14 +101,14 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from FfMacScheduler
-  virtual void SetFfMacCschedSapUser (FfMacCschedSapUser* s);
-  virtual void SetFfMacSchedSapUser (FfMacSchedSapUser* s);
-  virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider ();
-  virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider ();
+  void SetFfMacCschedSapUser (FfMacCschedSapUser* s) override;
+  void SetFfMacSchedSapUser (FfMacSchedSapUser* s) override;
+  FfMacCschedSapProvider* GetFfMacCschedSapProvider () override;
+  FfMacSchedSapProvider* GetFfMacSchedSapProvider () override;
 
   // FFR SAPs
-  virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
-  virtual LteFfrSapUser* GetLteFfrSapUser ();
+  void SetLteFfrSapProvider (LteFfrSapProvider* s) override;
+  LteFfrSapUser* GetLteFfrSapUser () override;
 
   /// allow MemberCschedSapProvider<PssFfMacScheduler> class friend access
   friend class MemberCschedSapProvider<PssFfMacScheduler>;

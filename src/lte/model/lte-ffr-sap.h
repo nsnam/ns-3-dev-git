@@ -163,15 +163,15 @@ public:
   MemberLteFfrSapProvider () = delete;
 
   // inherited from LteFfrSapProvider
-  virtual std::vector <bool> GetAvailableDlRbg ();
-  virtual bool IsDlRbgAvailableForUe (int i, uint16_t rnti);
-  virtual std::vector <bool> GetAvailableUlRbg ();
-  virtual bool IsUlRbgAvailableForUe (int i, uint16_t rnti);
-  virtual void ReportDlCqiInfo (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params);
-  virtual void ReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
-  virtual void ReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap );
-  virtual uint8_t GetTpc (uint16_t rnti);
-  virtual uint16_t GetMinContinuousUlBandwidth ();
+  std::vector <bool> GetAvailableDlRbg () override;
+  bool IsDlRbgAvailableForUe (int i, uint16_t rnti) override;
+  std::vector <bool> GetAvailableUlRbg () override;
+  bool IsUlRbgAvailableForUe (int i, uint16_t rnti) override;
+  void ReportDlCqiInfo (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) override;
+  void ReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) override;
+  void ReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap ) override;
+  uint8_t GetTpc (uint16_t rnti) override;
+  uint16_t GetMinContinuousUlBandwidth () override;
 private:
   C* m_owner; ///< the owner class
 

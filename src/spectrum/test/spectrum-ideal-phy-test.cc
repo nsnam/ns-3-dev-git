@@ -83,10 +83,10 @@ public:
 			    uint64_t phyRate,
 			    bool rateIsAchievable,
 			    std::string channelType);
-  virtual ~SpectrumIdealPhyTestCase ();
+  ~SpectrumIdealPhyTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Get the test name
    * \param channelType Channel type

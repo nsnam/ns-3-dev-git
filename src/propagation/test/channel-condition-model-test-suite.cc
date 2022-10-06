@@ -50,13 +50,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppChannelConditionModelTestCase ();
+  ~ThreeGppChannelConditionModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Evaluates the channel condition between two nodes by calling the method

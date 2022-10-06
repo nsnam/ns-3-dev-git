@@ -64,7 +64,7 @@ public:
    */
   LteCqiGenerationTestCase (std::string name, bool usePdcchForCqiGeneration,
                             uint16_t dlMcs, uint16_t ulMcs);
-  virtual ~LteCqiGenerationTestCase ();
+  ~LteCqiGenerationTestCase () override;
 
   /**
    * \brief DL Scheduling function
@@ -84,7 +84,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   bool m_usePdschForCqiGeneration; ///< use PDCCH for CQI generation
   uint16_t m_dlMcs; ///< the DL MCS
@@ -114,7 +114,7 @@ public:
    */
   LteCqiGenerationDlPowerControlTestCase (std::string name, uint8_t cell0Pa, uint8_t cell1Pa,
                                           uint16_t dlMcs, uint16_t ulMcs);
-  virtual ~LteCqiGenerationDlPowerControlTestCase ();
+  ~LteCqiGenerationDlPowerControlTestCase () override;
 
   /**
    * \brief DL Scheduling function
@@ -134,7 +134,7 @@ public:
                      uint8_t mcs, uint16_t sizeTb);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   uint8_t m_cell0Pa; ///< cell #0 PA
   uint8_t m_cell1Pa; ///< cell #1 PA

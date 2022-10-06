@@ -66,7 +66,7 @@ class SixlowpanIphcImplTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   SixlowpanIphcImplTest ();
 
   /**

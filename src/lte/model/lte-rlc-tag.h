@@ -41,7 +41,7 @@ public:
    * \return the object TypeId
    */
   static TypeId  GetTypeId ();
-  virtual TypeId  GetInstanceTypeId () const;
+  TypeId  GetInstanceTypeId () const override;
 
   /**
    * Create an empty RLC tag
@@ -53,10 +53,10 @@ public:
    */
   RlcTag (Time senderTimestamp);
 
-  virtual void  Serialize (TagBuffer i) const;
-  virtual void  Deserialize (TagBuffer i);
-  virtual uint32_t  GetSerializedSize () const;
-  virtual void Print (std::ostream &os) const;
+  void  Serialize (TagBuffer i) const override;
+  void  Deserialize (TagBuffer i) override;
+  uint32_t  GetSerializedSize () const override;
+  void Print (std::ostream &os) const override;
 
   /**
    * Get the instant when the RLC delivers the PDU to the MAC SAP provider

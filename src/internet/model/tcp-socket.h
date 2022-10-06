@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId ();
 
   TcpSocket ();
-  virtual ~TcpSocket ();
+  ~TcpSocket () override;
 
   /**
    * \ingroup tcp

@@ -42,7 +42,7 @@ namespace ns3 {
 class TimeMinMaxAvgTotalCalculator : public DataCalculator {
 public:
   TimeMinMaxAvgTotalCalculator();
-  virtual ~TimeMinMaxAvgTotalCalculator();
+  ~TimeMinMaxAvgTotalCalculator() override;
 
   /**
    * Register this type.
@@ -60,10 +60,10 @@ public:
    * Outputs data based on the provided callback
    * \param callback
    */
-  virtual void Output (DataOutputCallback &callback) const;
+  void Output (DataOutputCallback &callback) const override;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   uint32_t m_count; //!< Count value of TimeMinMaxAvgTotalCalculator
   Time m_total;     //!< Total value of TimeMinMaxAvgTotalCalculator

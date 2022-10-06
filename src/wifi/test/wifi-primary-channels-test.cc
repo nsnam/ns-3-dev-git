@@ -68,7 +68,7 @@ public:
    * \param useDistinctBssColors whether to set distinct BSS colors to BSSes
    */
   WifiPrimaryChannelsTest (uint16_t channelWidth, bool useDistinctBssColors);
-  virtual ~WifiPrimaryChannelsTest ();
+  ~WifiPrimaryChannelsTest () override;
 
   /**
    * Callback invoked when PHY receives a PSDU to transmit. Used to print
@@ -1044,7 +1044,7 @@ public:
    * Constructor
    */
   Wifi20MHzChannelIndicesTest ();
-  virtual ~Wifi20MHzChannelIndicesTest () = default;
+  ~Wifi20MHzChannelIndicesTest () override = default;
 
   /**
    * Check that the indices of the 20 MHz channels included in all the primary

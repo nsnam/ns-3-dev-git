@@ -60,7 +60,7 @@ public:
    */
   LteLinkAdaptationTestCase (std::string name, double snrDb, double loss, uint16_t mcsIndex);
   LteLinkAdaptationTestCase ();
-  virtual ~LteLinkAdaptationTestCase ();
+  ~LteLinkAdaptationTestCase () override;
 
   /**
    * \brief DL scheduling function
@@ -69,7 +69,7 @@ public:
   void DlScheduling (DlSchedulingCallbackInfo dlInfo);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   double m_snrDb; ///< the SNR in dB
   double m_loss; ///< the loss

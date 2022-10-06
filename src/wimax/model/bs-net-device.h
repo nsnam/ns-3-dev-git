@@ -93,7 +93,7 @@ public:
                         Ptr<WimaxPhy> phy,
                         Ptr<UplinkScheduler> uplinkScheduler,
                         Ptr<BSScheduler> bsScheduler);
-  ~BaseStationNetDevice ();
+  ~BaseStationNetDevice () override;
   /**
    * \param initialRangInterval Time between initial ranging regions assigned by the BS
    */
@@ -250,11 +250,11 @@ public:
   /**
    * \brief Start device
    */
-  void Start ();
+  void Start () override;
   /**
    * \brief Stop device
    */
-  void Stop ();
+  void Stop () override;
   /**
    * \brief Enqueue a packet into a connection queue
    * \param packet the packet to be enqueued
@@ -262,7 +262,7 @@ public:
    * \param connection the connection to be used
    * \return true if successful
    */
-  bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, Ptr<WimaxConnection> connection);
+  bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, Ptr<WimaxConnection> connection) override;
   /**
    * \param cid connection ID
    * \returns a pointer to the connection
@@ -288,7 +288,7 @@ public:
    */
   void SetServiceFlowManager (Ptr<BsServiceFlowManager> sfm);
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Start frame function
    */
@@ -321,12 +321,12 @@ private:
    * \param protocolNumber protocol number
    * \returns true if successful
    */
-  bool DoSend (Ptr<Packet> packet, const Mac48Address& source, const Mac48Address& dest, uint16_t protocolNumber);
+  bool DoSend (Ptr<Packet> packet, const Mac48Address& source, const Mac48Address& dest, uint16_t protocolNumber) override;
   /**
    * \brief Receive packet
    * \param packet to send
    */
-  void DoReceive (Ptr<Packet> packet);
+  void DoReceive (Ptr<Packet> packet) override;
   /**
    * \brief creates the MAC management messages DL-MAP and UL-MAP
    */

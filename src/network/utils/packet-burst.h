@@ -41,7 +41,7 @@ public:
    */
   static TypeId GetTypeId ();
   PacketBurst ();
-  virtual ~PacketBurst ();
+  ~PacketBurst () override;
   /**
    * \return a copy the packetBurst
    */
@@ -84,7 +84,7 @@ public:
 
 
 private:
-  void DoDispose ();
+  void DoDispose () override;
   std::list<Ptr<Packet> > m_packets; //!< the list of packets in the burst
 };
 } // namespace ns3

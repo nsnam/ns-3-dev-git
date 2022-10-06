@@ -135,7 +135,7 @@ public:
   static TypeId GetTypeId ();
 
   WifiRemoteStationManager ();
-  virtual ~WifiRemoteStationManager ();
+  ~WifiRemoteStationManager () override;
 
   /// ProtectionMode enumeration
   enum ProtectionMode
@@ -1016,7 +1016,7 @@ public:
 
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * Return whether mode associated with the specified station at the specified index.
    *

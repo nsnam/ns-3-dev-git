@@ -62,10 +62,10 @@ class LteRlcUmE2eTestCase : public TestCase
    */
     LteRlcUmE2eTestCase (std::string name, uint32_t seed, double losses);
     LteRlcUmE2eTestCase ();
-    virtual ~LteRlcUmE2eTestCase ();
+    ~LteRlcUmE2eTestCase () override;
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
     /**
      * DL drop event

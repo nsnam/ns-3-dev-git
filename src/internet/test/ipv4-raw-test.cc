@@ -88,7 +88,7 @@ class Ipv4RawSocketImplTest : public TestCase
   void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv4RawSocketImplTest ();
 
   /**

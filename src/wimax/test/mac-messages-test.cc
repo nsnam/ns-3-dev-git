@@ -40,10 +40,10 @@ class DsaRequestTestCase : public TestCase
 {
 public:
   DsaRequestTestCase ();
-  virtual ~DsaRequestTestCase ();
+  ~DsaRequestTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

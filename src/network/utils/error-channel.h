@@ -47,14 +47,14 @@ public:
   ErrorChannel ();
 
   // inherited from ns3::SimpleChannel
-  virtual void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
-                     Ptr<SimpleNetDevice> sender);
+  void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
+                     Ptr<SimpleNetDevice> sender) override;
 
-  virtual void Add (Ptr<SimpleNetDevice> device);
+  void Add (Ptr<SimpleNetDevice> device) override;
 
   // inherited from ns3::Channel
-  virtual std::size_t GetNDevices () const;
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  std::size_t GetNDevices () const override;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
   /**
    * \brief Set the delay for the odd packets (even ones are not delayed)

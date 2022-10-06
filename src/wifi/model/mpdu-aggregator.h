@@ -57,7 +57,7 @@ public:
   static TypeId GetTypeId ();
 
   MpduAggregator ();
-  virtual ~MpduAggregator ();
+  ~MpduAggregator () override;
 
   /**
    * Aggregate an MPDU to an A-MPDU.

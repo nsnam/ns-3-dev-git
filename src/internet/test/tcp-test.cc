@@ -78,8 +78,8 @@ public:
                uint32_t serverReadSize,
                bool useIpv6);
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * \brief Setup the test (IPv4 version).

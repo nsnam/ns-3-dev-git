@@ -65,13 +65,13 @@ public:
    * \param device WIMAX device
    */
   BandwidthManager (Ptr<WimaxNetDevice> device);
-  ~BandwidthManager ();
+  ~BandwidthManager () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   BandwidthManager (const BandwidthManager &) = delete;
   BandwidthManager &operator= (const BandwidthManager &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Calculate allocation size function

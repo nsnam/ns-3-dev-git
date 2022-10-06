@@ -52,7 +52,7 @@ public:
    */
   static TypeId GetTypeId ();
   OnoeWifiManager ();
-  virtual ~OnoeWifiManager ();
+  ~OnoeWifiManager () override;
 
 
 private:

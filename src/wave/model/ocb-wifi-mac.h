@@ -55,7 +55,7 @@ public:
    */
   static TypeId GetTypeId ();
   OcbWifiMac ();
-  virtual ~OcbWifiMac ();
+  ~OcbWifiMac () override;
   /**
    * \param vsc management packet to send.
    * \param peer the address to which the packet should be sent.
@@ -112,7 +112,7 @@ public:
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */
-  virtual void SetLinkUpCallback (Callback<void> linkUp);
+  void SetLinkUpCallback (Callback<void> linkUp) override;
   /**
    * \param linkDown the callback to invoke when the link becomes down.
    */
@@ -125,8 +125,8 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to);
-  virtual bool CanForwardPacketsTo (Mac48Address to) const;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
   /**
     * \param cwmin the min contention window
     * \param cwmax the max contention window
@@ -182,12 +182,12 @@ public:
   void SetWifiPhy (Ptr<WifiPhy> phy);
 
   // Inherited from base class
-  virtual void ConfigureStandard (enum WifiStandard standard);
+  void ConfigureStandard (enum WifiStandard standard) override;
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
-  virtual void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId);
-  virtual std::optional<uint8_t> GetLinkIdByAddress (const Mac48Address& address) const;
+  void Receive (Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+  std::optional<uint8_t> GetLinkIdByAddress (const Mac48Address& address) const override;
 
   VendorSpecificContentManager m_vscManager; ///< VSC manager
 };

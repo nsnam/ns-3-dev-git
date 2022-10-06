@@ -75,7 +75,7 @@ public:
    */
   CoDelQueueDisc ();
 
-  virtual ~CoDelQueueDisc ();
+  ~CoDelQueueDisc () override;
 
   /**
    * \brief Get the target queue delay
@@ -114,7 +114,7 @@ private:
    * \param item The item to be added
    * \returns True if the packet can be added, False if the packet is dropped due to full queue
    */
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
 
   /**
    * \brief Remove a packet from queue based on the current state
@@ -125,9 +125,9 @@ private:
    *
    * \returns The packet that is examined
    */
-  virtual Ptr<QueueDiscItem> DoDequeue ();
+  Ptr<QueueDiscItem> DoDequeue () override;
 
-  virtual bool CheckConfig ();
+  bool CheckConfig () override;
 
   /**
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
@@ -199,7 +199,7 @@ private:
    */
   uint32_t Time2CoDel (Time t);
 
-  virtual void InitializeParams ();
+  void InitializeParams () override;
 
   bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
   bool m_useL4s;                          //!< True if L4S is used (ECT1 packets are marked at CE threshold)

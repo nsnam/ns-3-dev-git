@@ -42,7 +42,7 @@ public:
    */
   static TypeId GetTypeId ();
   ChannelListPriv ();
-  ~ChannelListPriv ();
+  ~ChannelListPriv () override;
 
   /**
    * \param channel channel to add
@@ -96,7 +96,7 @@ private:
   /**
    * \brief Dispose the channels in the list
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   std::vector<Ptr<Channel> > m_channels; //!< channel objects container
 };

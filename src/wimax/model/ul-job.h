@@ -55,7 +55,7 @@ public:
     HIGH
   };
   UlJob ();
-  virtual ~UlJob ();
+  ~UlJob () override;
   /**
    * Get SS record
    * \returns the SS record

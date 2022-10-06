@@ -55,17 +55,17 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   TcpOptionWinScale ();
-  virtual ~TcpOptionWinScale ();
+  ~TcpOptionWinScale () override;
 
-  virtual void Print (std::ostream &os) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
-  virtual uint8_t GetKind () const;
-  virtual uint32_t GetSerializedSize () const;
+  uint8_t GetKind () const override;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Get the scale value (uint8_t)

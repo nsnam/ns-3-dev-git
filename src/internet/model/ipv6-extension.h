@@ -69,7 +69,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6Extension ();
+  ~Ipv6Extension () override;
 
   /**
    * \brief Set the node.
@@ -188,22 +188,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionHopByHop ();
+  ~Ipv6ExtensionHopByHop () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 /**
@@ -233,22 +233,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionDestination ();
+  ~Ipv6ExtensionDestination () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 /**
@@ -278,22 +278,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionFragment ();
+  ~Ipv6ExtensionFragment () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 
   /**
    * \brief Pair of a packet and an Ipv6 header.
@@ -314,7 +314,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
@@ -498,13 +498,13 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionRouting ();
+  ~Ipv6ExtensionRouting () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
   /**
    * \brief Get the type of routing.
@@ -512,14 +512,14 @@ public:
    */
   virtual uint8_t GetTypeRouting () const;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 /**
@@ -544,7 +544,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionRoutingDemux ();
+  ~Ipv6ExtensionRoutingDemux () override;
 
   /**
    * \brief Set the node.
@@ -575,7 +575,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**
@@ -621,22 +621,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionLooseRouting ();
+  ~Ipv6ExtensionLooseRouting () override;
 
   /**
    * \brief Get the type of routing.
    * \return type of routing
    */
-  virtual uint8_t GetTypeRouting () const;
+  uint8_t GetTypeRouting () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 /**
@@ -666,22 +666,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionESP ();
+  ~Ipv6ExtensionESP () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 /**
@@ -711,22 +711,22 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6ExtensionAH ();
+  ~Ipv6ExtensionAH () override;
 
   /**
    * \brief Get the extension number.
    * \return extension number
    */
-  virtual uint8_t GetExtensionNumber () const;
+  uint8_t GetExtensionNumber () const override;
 
-  virtual uint8_t Process (Ptr<Packet>& packet,
+  uint8_t Process (Ptr<Packet>& packet,
                            uint8_t offset,
                            Ipv6Header const& ipv6Header,
                            Ipv6Address dst,
                            uint8_t *nextHeader,
                            bool& stopProcessing,
                            bool& isDropped,
-                           Ipv6L3Protocol::DropReason& dropReason);
+                           Ipv6L3Protocol::DropReason& dropReason) override;
 };
 
 } /* namespace ns3 */

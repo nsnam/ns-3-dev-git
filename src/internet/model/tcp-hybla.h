@@ -63,17 +63,17 @@ public:
    */
   TcpHybla (const TcpHybla& sock);
 
-  virtual ~TcpHybla () override;
+  ~TcpHybla () override;
 
   // Inherited
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
                           const Time& rtt) override;
-  virtual std::string GetName () const override;
-  virtual Ptr<TcpCongestionOps> Fork () override;
+  std::string GetName () const override;
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
-  virtual uint32_t SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+  uint32_t SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+  void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
 private:
   TracedValue<double> m_rho;         //!< Rho parameter

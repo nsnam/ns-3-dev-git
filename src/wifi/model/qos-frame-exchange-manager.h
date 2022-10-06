@@ -42,7 +42,7 @@ public:
    */
   static TypeId GetTypeId ();
   QosFrameExchangeManager ();
-  virtual ~QosFrameExchangeManager ();
+  ~QosFrameExchangeManager () override;
 
   bool StartTransmission (Ptr<Txop> edca, uint16_t allowedWidth) override;
 

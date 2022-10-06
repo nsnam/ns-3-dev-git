@@ -86,7 +86,7 @@ class Ipv6PacketInfoTagTest : public TestCase
 public:
   Ipv6PacketInfoTagTest ();
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Receive callback.
    * \param socket Receiving socket.

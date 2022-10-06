@@ -56,7 +56,7 @@ public:
   {
   public:
     LSigHeader ();
-    virtual ~LSigHeader ();
+    ~LSigHeader () override;
 
     /**
      * \brief Get the type ID.
@@ -119,7 +119,7 @@ public:
   /**
    * Destructor for OfdmPpdu.
    */
-  virtual ~OfdmPpdu ();
+  ~OfdmPpdu () override;
 
   Time GetTxDuration () const override;
   Ptr<WifiPpdu> Copy () const override;

@@ -732,7 +732,7 @@ public:
   bool WithdrawRoute (Ipv4Address network, Ipv4Mask networkMask);
 
 private:
-  virtual ~GlobalRouter ();
+  ~GlobalRouter () override;
 
   /**
    * \brief Clear list of LSAs
@@ -881,7 +881,7 @@ private:
   void MarkBridgeAsVisited (Ptr<BridgeNetDevice> device) const;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 };
 
 } // namespace ns3

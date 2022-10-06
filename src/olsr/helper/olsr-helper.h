@@ -63,7 +63,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  OlsrHelper* Copy () const;
+  OlsrHelper* Copy () const override;
 
   /**
     * \param node the node for which an exception is to be defined
@@ -79,7 +79,7 @@ public:
    *
    * This method will be called by ns3::InternetStackHelper::Install
    */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const override;
 
   /**
    * \param name the name of the attribute to set

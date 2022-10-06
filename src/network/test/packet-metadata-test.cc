@@ -105,11 +105,11 @@ public:
    * \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 template <int N>
@@ -243,11 +243,11 @@ public:
    * \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 template <int N>
@@ -319,7 +319,7 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 class PacketMetadataTest : public TestCase {
 public:
   PacketMetadataTest ();
-  virtual ~PacketMetadataTest ();
+  ~PacketMetadataTest () override;
   /**
    * Checks the packet header and trailer history
    * \param p The packet
@@ -327,7 +327,7 @@ public:
    * \param ... The variable arguments
    */
   void CheckHistory (Ptr<Packet> p, uint32_t n, ...);
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Adds an header to the packet

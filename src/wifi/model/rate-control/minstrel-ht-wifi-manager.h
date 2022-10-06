@@ -228,7 +228,7 @@ public:
    */
   static TypeId GetTypeId ();
   MinstrelHtWifiManager ();
-  virtual ~MinstrelHtWifiManager ();
+  ~MinstrelHtWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
   void SetupMac (const Ptr<WifiMac> mac) override;

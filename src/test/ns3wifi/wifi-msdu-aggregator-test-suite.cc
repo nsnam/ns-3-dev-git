@@ -44,7 +44,7 @@ class WifiMsduAggregatorThroughputTest : public TestCase
 {
 public:
   WifiMsduAggregatorThroughputTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   bool m_writeResults; //!< flag whether to generate pcap

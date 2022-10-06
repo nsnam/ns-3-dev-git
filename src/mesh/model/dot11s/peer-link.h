@@ -52,13 +52,13 @@ public:
   static TypeId GetTypeId ();
   /// C-tor create empty link
   PeerLink ();
-  ~PeerLink ();
+  ~PeerLink () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   PeerLink (const PeerLink &) = delete;
   PeerLink &operator= (const PeerLink &) = delete;
 
-  void DoDispose ();
+  void DoDispose () override;
   /// Peer Link state:
   enum  PeerState {
     IDLE,

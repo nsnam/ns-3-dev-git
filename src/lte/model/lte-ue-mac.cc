@@ -60,15 +60,15 @@ public:
   UeMemberLteUeCmacSapProvider (LteUeMac* mac);
 
   // inherited from LteUeCmacSapProvider
-  virtual void ConfigureRach (RachConfig rc);
-  virtual void StartContentionBasedRandomAccessProcedure ();
-  virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask);
-  virtual void SetRnti (uint16_t rnti);
-  virtual void AddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
-  virtual void RemoveLc (uint8_t lcId);
-  virtual void Reset ();
-  virtual void NotifyConnectionSuccessful ();
-  virtual void SetImsi (uint64_t imsi);
+  void ConfigureRach (RachConfig rc) override;
+  void StartContentionBasedRandomAccessProcedure () override;
+  void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask) override;
+  void SetRnti (uint16_t rnti) override;
+  void AddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu) override;
+  void RemoveLc (uint8_t lcId) override;
+  void Reset () override;
+  void NotifyConnectionSuccessful () override;
+  void SetImsi (uint64_t imsi) override;
 
 private:
   LteUeMac* m_mac; ///< the UE MAC
@@ -147,8 +147,8 @@ public:
   UeMemberLteMacSapProvider (LteUeMac* mac);
 
   // inherited from LteMacSapProvider
-  virtual void TransmitPdu (TransmitPduParameters params);
-  virtual void ReportBufferStatus (ReportBufferStatusParameters params);
+  void TransmitPdu (TransmitPduParameters params) override;
+  void ReportBufferStatus (ReportBufferStatusParameters params) override;
 
 private:
   LteUeMac* m_mac; ///< the UE MAC
@@ -189,9 +189,9 @@ public:
   UeMemberLteUePhySapUser (LteUeMac* mac);
 
   // inherited from LtePhySapUser
-  virtual void ReceivePhyPdu (Ptr<Packet> p);
-  virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
+  void ReceivePhyPdu (Ptr<Packet> p) override;
+  void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) override;
+  void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) override;
 
 private:
   LteUeMac* m_mac; ///< the UE MAC

@@ -52,7 +52,7 @@ public:
    * \param bs base station device
    */
   BSSchedulerSimple (Ptr<BaseStationNetDevice> bs);
-  ~BSSchedulerSimple ();
+  ~BSSchedulerSimple () override;
 
   /**
    * \brief Get the type ID.
@@ -66,7 +66,7 @@ public:
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
-  GetDownlinkBursts () const;
+  GetDownlinkBursts () const override;
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
@@ -76,18 +76,18 @@ public:
    * \param burst the downlink burst to add to the downlink sub frame
    */
   void AddDownlinkBurst (Ptr<const WimaxConnection> connection, uint8_t diuc,
-                         WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst);
+                         WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst) override;
 
   /**
    * \brief the scheduling function for the downlink subframe.
    */
-  void Schedule ();
+  void Schedule () override;
   /**
    * \brief Selects a connection from the list of connections having packets to be sent .
    * \param connection will point to a connection that have packets to be sent
    * \returns false if no connection has packets to be sent, true otherwise
    */
-  bool SelectConnection (Ptr<WimaxConnection> &connection);
+  bool SelectConnection (Ptr<WimaxConnection> &connection) override;
   /**
    * \brief Creates a downlink UGS burst
    * \param serviceFlow the service flow of the burst
@@ -96,7 +96,7 @@ public:
    * \returns a Burst (list of packets)
    */
   Ptr<PacketBurst> CreateUgsBurst (ServiceFlow *serviceFlow,
-                                   WimaxPhy::ModulationType modulationType, uint32_t availableSymbols);
+                                   WimaxPhy::ModulationType modulationType, uint32_t availableSymbols) override;
 
 private:
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts; ///< down link bursts

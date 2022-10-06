@@ -90,7 +90,7 @@ public:
    * \param phy the wimax phy
    */
   SubscriberStationNetDevice (Ptr<Node> node, Ptr<WimaxPhy> phy);
-  ~SubscriberStationNetDevice ();
+  ~SubscriberStationNetDevice () override;
 
   /**
    * \brief initializes the net device and sets the parameters to the default values
@@ -261,7 +261,7 @@ public:
    * \param connection the connection to be used
    * \returns true if successful
    */
-  bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, Ptr<WimaxConnection> connection);
+  bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType, Ptr<WimaxConnection> connection) override;
   /**
    * \brief Sends a burst on the uplink frame
    * \param uiuc theOfdmUlBurstProfile
@@ -277,11 +277,11 @@ public:
   /**
    * \brief Start the device
    */
-  void Start ();
+  void Start () override;
   /**
    * \brief Stop the device
    */
-  void Stop ();
+  void Stop () override;
 
   /**
    * \brief adds a new service flow
@@ -370,7 +370,7 @@ private:
    */
   static Time GetDefaultLostDlMapInterval ();
 
-  void DoDispose ();
+  void DoDispose () override;
   /**
    * Send a packet
    * \param packet the packet to send
@@ -379,12 +379,12 @@ private:
    * \param protocolNumber the protocol number
    * \returns true if successful
    */
-  bool DoSend (Ptr<Packet> packet, const Mac48Address &source, const Mac48Address &dest, uint16_t protocolNumber);
+  bool DoSend (Ptr<Packet> packet, const Mac48Address &source, const Mac48Address &dest, uint16_t protocolNumber) override;
   /**
    * Receive a packet
    * \param packet the packet received
    */
-  void DoReceive (Ptr<Packet> packet);
+  void DoReceive (Ptr<Packet> packet) override;
 
   /**
    * Process DL map

@@ -79,7 +79,7 @@ public:
   static TypeId GetTypeId ();
   PacketSink ();
 
-  virtual ~PacketSink ();
+  ~PacketSink () override;
 
   /**
    * \return the total bytes received in this sink app
@@ -108,11 +108,11 @@ public:
                                    const SeqTsSizeHeader &header);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
   // inherited from Application base class.
-  virtual void StartApplication ();    // Called at time specified by Start
-  virtual void StopApplication ();     // Called at time specified by Stop
+  void StartApplication () override;    // Called at time specified by Start
+  void StopApplication () override;     // Called at time specified by Stop
 
   /**
    * \brief Handle a packet received by the application

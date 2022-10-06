@@ -80,7 +80,7 @@ public:
    *
    */
   UdpTraceClient (Ipv4Address ip, uint16_t port, char *traceFile);
-  ~UdpTraceClient ();
+  ~UdpTraceClient () override;
 
   /**
    * \brief set the remote address and port
@@ -122,7 +122,7 @@ public:
   void SetTraceLoop (bool traceLoop);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**
@@ -134,8 +134,8 @@ private:
    * \brief Load the default trace
    */
   void LoadDefaultTrace ();
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Send a packet

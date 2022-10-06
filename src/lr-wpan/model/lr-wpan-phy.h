@@ -274,12 +274,12 @@ public:
    * Default constructor.
    */
   LrWpanPhy ();
-  virtual ~LrWpanPhy ();
+  ~LrWpanPhy () override;
 
   // inherited from SpectrumPhy
-  void SetMobility (Ptr<MobilityModel> m);
-  Ptr<MobilityModel> GetMobility () const;
-  void SetChannel (Ptr<SpectrumChannel> c);
+  void SetMobility (Ptr<MobilityModel> m) override;
+  Ptr<MobilityModel> GetMobility () const override;
+  void SetChannel (Ptr<SpectrumChannel> c) override;
 
   /**
    * Get the currently attached channel.
@@ -287,8 +287,8 @@ public:
    * \return the channel
    */
   Ptr<SpectrumChannel> GetChannel ();
-  void SetDevice (Ptr<NetDevice> d);
-  Ptr<NetDevice> GetDevice () const;
+  void SetDevice (Ptr<NetDevice> d) override;
+  Ptr<NetDevice> GetDevice () const override;
 
   /**
    * Set the attached antenna.
@@ -296,8 +296,8 @@ public:
    * \param a the antenna
    */
   void SetAntenna (Ptr<AntennaModel> a);
-  Ptr<Object> GetAntenna () const;
-  virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  Ptr<Object> GetAntenna () const override;
+  Ptr<const SpectrumModel> GetRxSpectrumModel () const override;
 
   /**
    * Set the Power Spectral Density of outgoing signals in W/Hz.
@@ -334,7 +334,7 @@ public:
     *
     * @param params the SpectrumSignalParameters associated with the incoming waveform
     */
-  virtual void StartRx (Ptr<SpectrumSignalParameters> params);
+  void StartRx (Ptr<SpectrumSignalParameters> params) override;
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.1.1
@@ -547,8 +547,8 @@ private:
   typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
 
   // Inherited from Object.
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   /**
    * Change the PHY state to the given new state, firing the state change trace.

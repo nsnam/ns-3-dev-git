@@ -69,7 +69,7 @@ class TestThresholdPreambleDetectionWithoutFrameCapture : public TestCase
 {
 public:
   TestThresholdPreambleDetectionWithoutFrameCapture ();
-  virtual ~TestThresholdPreambleDetectionWithoutFrameCapture ();
+  ~TestThresholdPreambleDetectionWithoutFrameCapture () override;
 
 protected:
   void DoSetup () override;
@@ -437,7 +437,7 @@ class TestThresholdPreambleDetectionWithFrameCapture : public TestCase
 {
 public:
   TestThresholdPreambleDetectionWithFrameCapture ();
-  virtual ~TestThresholdPreambleDetectionWithFrameCapture ();
+  ~TestThresholdPreambleDetectionWithFrameCapture () override;
 
 protected:
   void DoSetup () override;
@@ -946,7 +946,7 @@ class TestSimpleFrameCaptureModel : public TestCase
 {
 public:
   TestSimpleFrameCaptureModel ();
-  virtual ~TestSimpleFrameCaptureModel ();
+  ~TestSimpleFrameCaptureModel () override;
 
 protected:
   void DoSetup () override;
@@ -1200,7 +1200,7 @@ class TestPhyHeadersReception : public TestCase
 {
 public:
   TestPhyHeadersReception ();
-  virtual ~TestPhyHeadersReception ();
+  ~TestPhyHeadersReception () override;
 
 protected:
   void DoSetup () override;
@@ -1450,7 +1450,7 @@ class TestAmpduReception : public TestCase
 {
 public:
   TestAmpduReception ();
-  virtual ~TestAmpduReception ();
+  ~TestAmpduReception () override;
 
 protected:
   void DoSetup () override;
@@ -2386,7 +2386,7 @@ public:
    * Constructor
    */
   TestUnsupportedModulationReception ();
-  virtual ~TestUnsupportedModulationReception ();
+  ~TestUnsupportedModulationReception () override;
 
   /**
    * Callback invoked when PHY drops an incoming packet

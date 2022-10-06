@@ -56,8 +56,8 @@ public:
   /** Constructor. */
   EventGarbageCollectorTestCase ();
   /** Destructor. */
-  virtual ~EventGarbageCollectorTestCase ();
-  virtual void DoRun ();
+  ~EventGarbageCollectorTestCase () override;
+  void DoRun () override;
 };
 
 EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()

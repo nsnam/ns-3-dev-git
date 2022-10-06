@@ -40,7 +40,7 @@ public:
    * \param name test name
    */
   DataRateTestCase (std::string name);
-  virtual ~DataRateTestCase ();
+  ~DataRateTestCase () override;
 
   /**
    * Checks if two time values are equal
@@ -58,7 +58,7 @@ public:
   void CheckDataRateEqual (DataRate d1, DataRate d2, const std::string msg);
 
 protected:
-  virtual void DoRun () = 0;
+  void DoRun () override = 0;
 };
 
 DataRateTestCase::DataRateTestCase (std::string name) : TestCase (name)
@@ -105,7 +105,7 @@ public:
   void SingleTest (std::string rate, size_t nBits, Time correctTime);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 DataRateTestCase1::DataRateTestCase1 ()
@@ -194,7 +194,7 @@ public:
   void MultiplicationDoubleTest (std::string rate1, double factor, std::string rate2);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 DataRateTestCase2::DataRateTestCase2 ()

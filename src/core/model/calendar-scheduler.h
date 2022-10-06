@@ -101,14 +101,14 @@ public:
   /** Constructor. */
   CalendarScheduler ();
   /** Destructor. */
-  virtual ~CalendarScheduler ();
+  ~CalendarScheduler () override;
 
   // Inherited
-  virtual void Insert (const Scheduler::Event &ev);
-  virtual bool IsEmpty () const;
-  virtual Scheduler::Event PeekNext () const;
-  virtual Scheduler::Event RemoveNext ();
-  virtual void Remove (const Scheduler::Event &ev);
+  void Insert (const Scheduler::Event &ev) override;
+  bool IsEmpty () const override;
+  Scheduler::Event PeekNext () const override;
+  Scheduler::Event RemoveNext () override;
+  void Remove (const Scheduler::Event &ev) override;
 
 private:
   /** Double the number of buckets if necessary. */

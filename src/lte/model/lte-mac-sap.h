@@ -198,8 +198,8 @@ public:
   EnbMacMemberLteMacSapProvider (C* mac);
 
   // inherited from LteMacSapProvider
-  virtual void TransmitPdu (TransmitPduParameters params);
-  virtual void ReportBufferStatus (ReportBufferStatusParameters params);
+  void TransmitPdu (TransmitPduParameters params) override;
+  void ReportBufferStatus (ReportBufferStatusParameters params) override;
 
 private:
   C* m_mac; ///< the MAC class

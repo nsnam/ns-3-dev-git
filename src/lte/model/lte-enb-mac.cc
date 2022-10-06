@@ -67,15 +67,15 @@ public:
   EnbMacMemberLteEnbCmacSapProvider (LteEnbMac* mac);
 
   // inherited from LteEnbCmacSapProvider
-  virtual void ConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth);
-  virtual void AddUe (uint16_t rnti);
-  virtual void RemoveUe (uint16_t rnti);
-  virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
-  virtual void ReconfigureLc (LcInfo lcinfo);
-  virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
-  virtual void UeUpdateConfigurationReq (UeConfig params);
-  virtual RachConfig GetRachConfig ();
-  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti);
+  void ConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth) override;
+  void AddUe (uint16_t rnti) override;
+  void RemoveUe (uint16_t rnti) override;
+  void AddLc (LcInfo lcinfo, LteMacSapUser* msu) override;
+  void ReconfigureLc (LcInfo lcinfo) override;
+  void ReleaseLc (uint16_t rnti, uint8_t lcid) override;
+  void UeUpdateConfigurationReq (UeConfig params) override;
+  RachConfig GetRachConfig () override;
+  AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti) override;
 
 
 private:
@@ -155,8 +155,8 @@ public:
   EnbMacMemberFfMacSchedSapUser (LteEnbMac* mac);
 
 
-  virtual void SchedDlConfigInd (const struct SchedDlConfigIndParameters& params);
-  virtual void SchedUlConfigInd (const struct SchedUlConfigIndParameters& params);
+  void SchedDlConfigInd (const struct SchedDlConfigIndParameters& params) override;
+  void SchedUlConfigInd (const struct SchedUlConfigIndParameters& params) override;
 private:
   LteEnbMac* m_mac; ///< the MAC
 };
@@ -194,13 +194,13 @@ public:
    */
   EnbMacMemberFfMacCschedSapUser (LteEnbMac* mac);
 
-  virtual void CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params);
-  virtual void CschedUeConfigCnf (const struct CschedUeConfigCnfParameters& params);
-  virtual void CschedLcConfigCnf (const struct CschedLcConfigCnfParameters& params);
-  virtual void CschedLcReleaseCnf (const struct CschedLcReleaseCnfParameters& params);
-  virtual void CschedUeReleaseCnf (const struct CschedUeReleaseCnfParameters& params);
-  virtual void CschedUeConfigUpdateInd (const struct CschedUeConfigUpdateIndParameters& params);
-  virtual void CschedCellConfigUpdateInd (const struct CschedCellConfigUpdateIndParameters& params);
+  void CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params) override;
+  void CschedUeConfigCnf (const struct CschedUeConfigCnfParameters& params) override;
+  void CschedLcConfigCnf (const struct CschedLcConfigCnfParameters& params) override;
+  void CschedLcReleaseCnf (const struct CschedLcReleaseCnfParameters& params) override;
+  void CschedUeReleaseCnf (const struct CschedUeReleaseCnfParameters& params) override;
+  void CschedUeConfigUpdateInd (const struct CschedUeConfigUpdateIndParameters& params) override;
+  void CschedCellConfigUpdateInd (const struct CschedCellConfigUpdateIndParameters& params) override;
 
 private:
   LteEnbMac* m_mac; ///< the MAC
@@ -268,13 +268,13 @@ public:
   EnbMacMemberLteEnbPhySapUser (LteEnbMac* mac);
 
   // inherited from LteEnbPhySapUser
-  virtual void ReceivePhyPdu (Ptr<Packet> p);
-  virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual void ReceiveRachPreamble (uint32_t prachId);
-  virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
-  virtual void UlInfoListElementHarqFeeback (UlInfoListElement_s params);
-  virtual void DlInfoListElementHarqFeeback (DlInfoListElement_s params);
+  void ReceivePhyPdu (Ptr<Packet> p) override;
+  void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) override;
+  void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) override;
+  void ReceiveRachPreamble (uint32_t prachId) override;
+  void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) override;
+  void UlInfoListElementHarqFeeback (UlInfoListElement_s params) override;
+  void DlInfoListElementHarqFeeback (DlInfoListElement_s params) override;
 
 private:
   LteEnbMac* m_mac; ///< the MAC

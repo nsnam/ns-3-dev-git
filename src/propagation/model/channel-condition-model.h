@@ -99,7 +99,7 @@ public:
   /**
    * Destructor for the ChannelCondition class
    */
-  virtual ~ChannelCondition ();
+  ~ChannelCondition () override;
 
   /**
    * Get the LosConditionValue contaning the information about the LOS/NLOS
@@ -246,7 +246,7 @@ public:
   /**
    * Destructor for the ChannelConditionModel class
    */
-  virtual ~ChannelConditionModel ();
+  ~ChannelConditionModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   ChannelConditionModel (const ChannelConditionModel &) = delete;
@@ -296,7 +296,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~AlwaysLosChannelConditionModel ();
+  ~AlwaysLosChannelConditionModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   AlwaysLosChannelConditionModel (const AlwaysLosChannelConditionModel &) = delete;
@@ -309,7 +309,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b, that will be always LoS
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -320,7 +320,7 @@ public:
    * \param stream the offset used to set the stream numbers
    * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream) override;
+  int64_t AssignStreams (int64_t stream) override;
 };
 
 /**
@@ -346,7 +346,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~NeverLosChannelConditionModel ();
+  ~NeverLosChannelConditionModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   NeverLosChannelConditionModel (const NeverLosChannelConditionModel &) = delete;
@@ -359,7 +359,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b, that will be always non-LoS
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -370,7 +370,7 @@ public:
    * \param stream the offset used to set the stream numbers
    * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream) override;
+  int64_t AssignStreams (int64_t stream) override;
 };
 
 /**
@@ -396,7 +396,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~NeverLosVehicleChannelConditionModel ();
+  ~NeverLosVehicleChannelConditionModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   NeverLosVehicleChannelConditionModel (const NeverLosVehicleChannelConditionModel &) = delete;
@@ -409,7 +409,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b, that will be always NLOSv
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -420,7 +420,7 @@ public:
    * \param stream the offset used to set the stream numbers
    * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream) override;
+  int64_t AssignStreams (int64_t stream) override;
 };
 
 /**
@@ -447,7 +447,7 @@ public:
   /**
    * Destructor for the ThreeGppRmaChannelConditionModel class
    */
-  virtual ~ThreeGppChannelConditionModel () override;
+  ~ThreeGppChannelConditionModel () override;
 
   /**
    * \brief Retrieve the condition of the channel between a and b.
@@ -460,7 +460,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * If this  model uses objects of type RandomVariableStream,
@@ -471,10 +471,10 @@ public:
    * \param stream the offset used to set the stream numbers
    * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream) override;
+  int64_t AssignStreams (int64_t stream) override;
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
   /**
    * Determine the density of vehicles in a V2V scenario.
@@ -589,7 +589,7 @@ public:
   /**
    * Destructor for the ThreeGppRmaChannelConditionModel class
    */
-  virtual ~ThreeGppRmaChannelConditionModel () override;
+  ~ThreeGppRmaChannelConditionModel () override;
 
 private:
   /**
@@ -600,7 +600,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };
 
 /**
@@ -629,7 +629,7 @@ public:
   /**
    * Destructor for the ThreeGppUmaChannelConditionModel class
    */
-  virtual ~ThreeGppUmaChannelConditionModel () override;
+  ~ThreeGppUmaChannelConditionModel () override;
 
 private:
   /**
@@ -640,7 +640,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };
 
 /**
@@ -669,7 +669,7 @@ public:
   /**
    * Destructor for the ThreeGppUmiStreetCanyonChannelConditionModel class
    */
-  virtual ~ThreeGppUmiStreetCanyonChannelConditionModel () override;
+  ~ThreeGppUmiStreetCanyonChannelConditionModel () override;
 
 private:
   /**
@@ -680,7 +680,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };
 
 /**
@@ -709,7 +709,7 @@ public:
   /**
    * Destructor for the ThreeGppIndoorMixedOfficeChannelConditionModel class
    */
-  virtual ~ThreeGppIndoorMixedOfficeChannelConditionModel () override;
+  ~ThreeGppIndoorMixedOfficeChannelConditionModel () override;
 
 private:
   /**
@@ -720,7 +720,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };
 
 /**
@@ -749,7 +749,7 @@ public:
   /**
    * Destructor for the ThreeGppIndoorOpenOfficeChannelConditionModel class
    */
-  virtual ~ThreeGppIndoorOpenOfficeChannelConditionModel () override;
+  ~ThreeGppIndoorOpenOfficeChannelConditionModel () override;
 
 private:
   /**
@@ -760,7 +760,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };
 
 } // end ns3 namespace

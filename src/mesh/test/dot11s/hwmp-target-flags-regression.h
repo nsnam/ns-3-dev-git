@@ -71,9 +71,9 @@ class HwmpDoRfRegressionTest : public TestCase
 {
 public:
   HwmpDoRfRegressionTest ();
-  virtual ~HwmpDoRfRegressionTest();
+  ~HwmpDoRfRegressionTest() override;
 
-  virtual void DoRun ();
+  void DoRun () override;
   /// Check results function
   void CheckResults ();
 

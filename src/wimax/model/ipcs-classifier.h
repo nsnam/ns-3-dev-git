@@ -45,7 +45,7 @@ public:
    */
   static TypeId GetTypeId ();
   IpcsClassifier ();
-  ~IpcsClassifier ();
+  ~IpcsClassifier () override;
   /**
    * \brief classify a packet in a service flow
    * \param packet the packet to classify

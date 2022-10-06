@@ -51,7 +51,7 @@ public:
    * create a pinger applications
    */
   V4Ping ();
-  virtual ~V4Ping ();
+  ~V4Ping () override;
 
 private:
   /**
@@ -72,9 +72,9 @@ private:
   void Read32 (const uint8_t *buffer, uint32_t &data);
 
   // inherited from Application base class.
-  virtual void StartApplication ();
-  virtual void StopApplication ();
-  virtual void DoDispose ();
+  void StartApplication () override;
+  void StopApplication () override;
+  void DoDispose () override;
   /**
    * \brief Return the application ID in the node.
    * \returns the application id

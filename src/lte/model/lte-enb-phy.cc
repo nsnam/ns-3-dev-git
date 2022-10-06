@@ -82,9 +82,9 @@ public:
   EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy);
 
   // inherited from LteEnbPhySapProvider
-  virtual void SendMacPdu (Ptr<Packet> p);
-  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual uint8_t GetMacChTtiDelay ();
+  void SendMacPdu (Ptr<Packet> p) override;
+  void SendLteControlMessage (Ptr<LteControlMessage> msg) override;
+  uint8_t GetMacChTtiDelay () override;
   /**
    * Set bandwidth function
    *

@@ -49,28 +49,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the prefix.
@@ -169,28 +169,28 @@ public:
    * \brief Return the instance type identifier.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Commands to be used in Rip headers

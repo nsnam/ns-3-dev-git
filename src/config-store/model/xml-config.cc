@@ -113,10 +113,10 @@ public:
     }
 
 private:
-    virtual void StartVisitTypeId (std::string name) {
+    void StartVisitTypeId (std::string name) override {
       m_typeid = name;
     }
-    virtual void DoVisitAttribute (std::string name, std::string defaultValue) {
+    void DoVisitAttribute (std::string name, std::string defaultValue) override {
       TypeId tid = TypeId::LookupByName (m_typeid);
       ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
       for (std::size_t i = 0; i < tid.GetAttributeN (); i++)
@@ -191,7 +191,7 @@ public:
     }
 
   private:
-    virtual void DoVisitAttribute (Ptr<Object> object, std::string name) {
+    void DoVisitAttribute (Ptr<Object> object, std::string name) override {
       TypeId tid = object->GetInstanceTypeId ();
       ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
       for (std::size_t i = 0; i < tid.GetAttributeN (); i++)

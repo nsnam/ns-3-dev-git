@@ -166,7 +166,7 @@ public:
    */
   static TypeId GetTypeId ();
   WaveNetDevice ();
-  virtual ~WaveNetDevice ();
+  ~WaveNetDevice () override;
 
   /**
    * \param channelNumber the specific channel
@@ -190,11 +190,11 @@ public:
    * \param index the index of PHY entity
    * \return corresponding PHY entity
    */
-  Ptr<WifiPhy> GetPhy (uint8_t index) const;
+  Ptr<WifiPhy> GetPhy (uint8_t index) const override;
   /**
    * \return all inserted PHY entities.
    */
-  const std::vector<Ptr<WifiPhy>>& GetPhys () const;
+  const std::vector<Ptr<WifiPhy>>& GetPhys () const override;
 
   /**
    * \param channelScheduler the channel scheduler for multiple channel operation
@@ -325,30 +325,30 @@ public:
    * send IP-based packets, however high layers can also send packets
    * in other types except IP-based packets in CCH.
    */
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
   // inherited from NetDevice base class.
-  virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex () const;
-  virtual Ptr<Channel> GetChannel () const;
-  virtual void SetAddress (Address address);
-  virtual Address GetAddress () const;
-  virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu () const;
-  virtual bool IsLinkUp () const;
-  virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast () const;
-  virtual Address GetBroadcast () const;
-  virtual bool IsMulticast () const;
-  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual bool IsPointToPoint () const;
-  virtual bool IsBridge () const;
-  virtual bool NeedsArp () const;
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom () const;
+  void SetIfIndex (const uint32_t index) override;
+  uint32_t GetIfIndex () const override;
+  Ptr<Channel> GetChannel () const override;
+  void SetAddress (Address address) override;
+  Address GetAddress () const override;
+  bool SetMtu (const uint16_t mtu) override;
+  uint16_t GetMtu () const override;
+  bool IsLinkUp () const override;
+  void AddLinkChangeCallback (Callback<void> callback) override;
+  bool IsBroadcast () const override;
+  Address GetBroadcast () const override;
+  bool IsMulticast () const override;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
+  bool IsPointToPoint () const override;
+  bool IsBridge () const override;
+  bool NeedsArp () const override;
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
+  Address GetMulticast (Ipv6Address addr) const override;
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
+  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
+  bool SupportsSendFrom () const override;
 
 private:
   /// This value conforms to the 802.11 specification
@@ -359,8 +359,8 @@ private:
   /// IP v6 Protocol number
   static const uint16_t IPv6_PROT_NUMBER = 0x86DD;
 
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
+  void DoDispose () override;
+  void DoInitialize () override;
   /**
    * \param channelNumber the specific channel
    * \return whether this channel is valid and available for use

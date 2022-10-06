@@ -69,7 +69,7 @@ class Ipv6ForwardingTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6ForwardingTest ();
 
   /**

@@ -55,7 +55,7 @@ class AttributeContainerObject : public Object
 {
 public:
   AttributeContainerObject ();
-  virtual ~AttributeContainerObject ();
+  ~AttributeContainerObject () override;
 
   /**
    * Reverses the list of doubles.
@@ -196,10 +196,10 @@ class AttributeContainerTestCase : public TestCase
 {
 public:
   AttributeContainerTestCase ();
-  virtual ~AttributeContainerTestCase () {}
+  ~AttributeContainerTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 AttributeContainerTestCase::AttributeContainerTestCase ()
@@ -302,10 +302,10 @@ class AttributeContainerSerializationTestCase : public TestCase
 {
 public:
   AttributeContainerSerializationTestCase ();
-  virtual ~AttributeContainerSerializationTestCase () {}
+  ~AttributeContainerSerializationTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 AttributeContainerSerializationTestCase::AttributeContainerSerializationTestCase ()
@@ -392,10 +392,10 @@ class AttributeContainerSetGetTestCase : public TestCase
 {
 public:
   AttributeContainerSetGetTestCase ();
-  virtual ~AttributeContainerSetGetTestCase () {}
+  ~AttributeContainerSetGetTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 AttributeContainerSetGetTestCase::AttributeContainerSetGetTestCase ()

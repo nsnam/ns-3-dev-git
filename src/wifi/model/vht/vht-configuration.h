@@ -39,7 +39,7 @@ class VhtConfiguration : public Object
 {
 public:
   VhtConfiguration ();
-  virtual ~VhtConfiguration ();
+  ~VhtConfiguration () override;
 
   /**
    * \brief Get the type ID.

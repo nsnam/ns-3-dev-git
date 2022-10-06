@@ -84,7 +84,7 @@ public:
    */
   QosTxop (AcIndex ac = AC_UNDEF);
 
-  virtual ~QosTxop ();
+  ~QosTxop () override;
 
   bool IsQosTxop () const override;
   bool HasFramesToTransmit (uint8_t linkId) override;
@@ -449,7 +449,7 @@ protected:
   struct QosLinkEntity : public Txop::LinkEntity
   {
     /// Destructor (a virtual method is needed to make this struct polymorphic)
-    virtual ~QosLinkEntity () = default;
+    ~QosLinkEntity () override = default;
 
     Time startTxop {0};                         //!< the start TXOP time
     Time txopDuration {0};                      //!< the duration of a TXOP

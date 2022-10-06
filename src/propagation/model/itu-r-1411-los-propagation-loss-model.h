@@ -51,7 +51,7 @@ public:
   static TypeId GetTypeId ();
 
   ItuR1411LosPropagationLossModel ();
-  virtual ~ItuR1411LosPropagationLossModel ();
+  ~ItuR1411LosPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   ItuR1411LosPropagationLossModel (const ItuR1411LosPropagationLossModel &) = delete;

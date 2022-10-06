@@ -80,7 +80,7 @@ class LteEnbComponentCarrierManager : public Object
 public:
 
   LteEnbComponentCarrierManager ();
-  virtual ~LteEnbComponentCarrierManager ();
+  ~LteEnbComponentCarrierManager () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -155,7 +155,7 @@ public:
 protected:
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Implementation of ReportUeMeas.

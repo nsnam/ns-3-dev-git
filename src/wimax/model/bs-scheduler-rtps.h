@@ -65,7 +65,7 @@ public:
    * \param bs base station device
    */
   BSSchedulerRtps (Ptr<BaseStationNetDevice> bs);
-  ~BSSchedulerRtps ();
+  ~BSSchedulerRtps () override;
 
   /**
    * \brief Get the type ID.
@@ -79,7 +79,7 @@ public:
    * \returns  all the downlink bursts scheduled for the next downlink sub-frame
    */
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > >*
-  GetDownlinkBursts () const;
+  GetDownlinkBursts () const override;
 
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
@@ -90,11 +90,11 @@ public:
    * \param burst the downlink burst to add to the downlink sub frame
    */
   void AddDownlinkBurst (Ptr<const WimaxConnection> connection, uint8_t diuc,
-                         WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst);
+                         WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst) override;
   /**
    * \brief Schedule function.
    */
-  void Schedule ();
+  void Schedule () override;
   /**
    * \brief Check for IR and Broadcast connections that have packets to transmit.
    * \param connection will point to a initial ranging or broadcast connection
@@ -144,7 +144,7 @@ public:
    * \param connection will point to a connection that has packets to be sent
    * \returns false if no connection has packets to be sent, true otherwise
    */
-  bool SelectConnection (Ptr<WimaxConnection> &connection);
+  bool SelectConnection (Ptr<WimaxConnection> &connection) override;
 
   /**
    * \brief schedules the broadcast connections
@@ -211,7 +211,7 @@ public:
    * \returns a Burst (list of packets)
    */
   Ptr<PacketBurst> CreateUgsBurst (ServiceFlow *serviceFlow,
-                                   WimaxPhy::ModulationType modulationType, uint32_t availableSymbols);
+                                   WimaxPhy::ModulationType modulationType, uint32_t availableSymbols) override;
 
 private:
   std::list<std::pair<OfdmDlMapIe*, Ptr<PacketBurst> > > *m_downlinkBursts; ///< down link bursts

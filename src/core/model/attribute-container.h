@@ -96,12 +96,12 @@ public:
   AttributeContainerValue (const ITER begin, const ITER end);
 
   /** Destructor. */
-  ~AttributeContainerValue ();
+  ~AttributeContainerValue () override;
 
   // Inherited
-  Ptr<AttributeValue> Copy () const;
-  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
-  std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  Ptr<AttributeValue> Copy () const override;
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
 
   // defacto pure virtuals to integrate with built-in accessor code
   /**
@@ -294,8 +294,8 @@ public:
    * \param itemchecker The AttributeChecker.
    */
   explicit AttributeContainerChecker (Ptr<const AttributeChecker> itemchecker);
-  void SetItemChecker (Ptr<const AttributeChecker> itemchecker);
-  Ptr<const AttributeChecker> GetItemChecker () const;
+  void SetItemChecker (Ptr<const AttributeChecker> itemchecker) override;
+  Ptr<const AttributeChecker> GetItemChecker () const override;
 
 private:
   Ptr<const AttributeChecker> m_itemchecker; //!< The AttributeChecker

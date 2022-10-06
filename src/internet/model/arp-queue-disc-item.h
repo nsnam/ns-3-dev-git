@@ -45,7 +45,7 @@ public:
   ArpQueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, const ArpHeader & header);
 
   /** Destructor. */
-  virtual ~ArpQueueDiscItem ();
+  ~ArpQueueDiscItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   ArpQueueDiscItem () = delete;
@@ -55,7 +55,7 @@ public:
   /**
    * \return the correct packet size (header plus payload).
    */
-  virtual uint32_t GetSize () const;
+  uint32_t GetSize () const override;
 
   /**
    * \return the header stored in this item..
@@ -65,19 +65,19 @@ public:
   /**
    * \brief Add the header to the packet
    */
-  virtual void AddHeader ();
+  void AddHeader () override;
 
   /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Inherited from the base class, but we cannot mark ARP packets
    * \return false
    */
-  virtual bool Mark ();
+  bool Mark () override;
 
   /**
    * \brief Computes the hash of the packet's 5-tuple
@@ -85,7 +85,7 @@ public:
    * \param perturbation hash perturbation value
    * \return the hash of the packet's 5-tuple
    */
-  virtual uint32_t Hash (uint32_t perturbation) const;
+  uint32_t Hash (uint32_t perturbation) const override;
 
 private:
   ArpHeader m_header;  //!< The ARP header.

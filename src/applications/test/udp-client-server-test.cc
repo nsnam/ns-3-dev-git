@@ -53,10 +53,10 @@ class UdpClientServerTestCase : public TestCase
 {
 public:
   UdpClientServerTestCase ();
-  virtual ~UdpClientServerTestCase ();
+  ~UdpClientServerTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -127,10 +127,10 @@ class UdpTraceClientServerTestCase : public TestCase
 {
 public:
   UdpTraceClientServerTestCase ();
-  virtual ~UdpTraceClientServerTestCase ();
+  ~UdpTraceClientServerTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -196,10 +196,10 @@ class PacketLossCounterTestCase : public TestCase
 {
 public:
   PacketLossCounterTestCase ();
-  virtual ~PacketLossCounterTestCase ();
+  ~PacketLossCounterTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -271,10 +271,10 @@ class UdpEchoClientSetFillTestCase : public TestCase
 {
 public:
   UdpEchoClientSetFillTestCase ();
-  virtual ~UdpEchoClientSetFillTestCase ();
+  ~UdpEchoClientSetFillTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

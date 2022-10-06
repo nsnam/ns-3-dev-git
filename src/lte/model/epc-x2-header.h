@@ -34,18 +34,18 @@ class EpcX2Header : public Header
 {
 public:
   EpcX2Header ();
-  virtual ~EpcX2Header ();
+  ~EpcX2Header () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -115,18 +115,18 @@ class EpcX2HandoverRequestHeader : public Header
 {
 public:
   EpcX2HandoverRequestHeader ();
-  virtual ~EpcX2HandoverRequestHeader ();
+  ~EpcX2HandoverRequestHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -237,18 +237,18 @@ class EpcX2HandoverRequestAckHeader : public Header
 {
 public:
   EpcX2HandoverRequestAckHeader ();
-  virtual ~EpcX2HandoverRequestAckHeader ();
+  ~EpcX2HandoverRequestAckHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -324,18 +324,18 @@ class EpcX2HandoverPreparationFailureHeader : public Header
 {
 public:
   EpcX2HandoverPreparationFailureHeader ();
-  virtual ~EpcX2HandoverPreparationFailureHeader ();
+  ~EpcX2HandoverPreparationFailureHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -399,18 +399,18 @@ class EpcX2SnStatusTransferHeader : public Header
 {
 public:
   EpcX2SnStatusTransferHeader ();
-  virtual ~EpcX2SnStatusTransferHeader ();
+  ~EpcX2SnStatusTransferHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -473,18 +473,18 @@ class EpcX2UeContextReleaseHeader : public Header
 {
 public:
   EpcX2UeContextReleaseHeader ();
-  virtual ~EpcX2UeContextReleaseHeader ();
+  ~EpcX2UeContextReleaseHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -536,18 +536,18 @@ class EpcX2LoadInformationHeader : public Header
 {
 public:
   EpcX2LoadInformationHeader ();
-  virtual ~EpcX2LoadInformationHeader ();
+  ~EpcX2LoadInformationHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -587,18 +587,18 @@ class EpcX2ResourceStatusUpdateHeader : public Header
 {
 public:
   EpcX2ResourceStatusUpdateHeader ();
-  virtual ~EpcX2ResourceStatusUpdateHeader ();
+  ~EpcX2ResourceStatusUpdateHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
 
   /**
@@ -661,18 +661,18 @@ class EpcX2HandoverCancelHeader : public Header
 {
 public:
   EpcX2HandoverCancelHeader ();
-  virtual ~EpcX2HandoverCancelHeader ();
+  ~EpcX2HandoverCancelHeader () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get old ENB UE X2 AP ID function

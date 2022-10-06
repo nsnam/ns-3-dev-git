@@ -70,7 +70,7 @@ public:
   /**
    * \brief Destructor.
    */
-  ~NdiscCache ();
+  ~NdiscCache () override;
 
   // Delete default and copy constructor, and assignment operator to avoid misuse
   NdiscCache (NdiscCache const &) = delete;
@@ -452,7 +452,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Neighbor Discovery Cache container

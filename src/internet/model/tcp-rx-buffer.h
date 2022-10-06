@@ -83,7 +83,7 @@ public:
    * \param n initial Sequence number to be received
    */
   TcpRxBuffer (uint32_t n = 0);
-  virtual ~TcpRxBuffer ();
+  ~TcpRxBuffer () override;
 
   // Accessors
   /**

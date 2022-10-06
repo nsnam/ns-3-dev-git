@@ -59,13 +59,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppChannelMatrixComputationTest ();
+  ~ThreeGppChannelMatrixComputationTest () override;
 
 private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Compute the Frobenius norm of the channel matrix and stores it in m_normVector
@@ -227,13 +227,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppChannelMatrixUpdateTest ();
+  ~ThreeGppChannelMatrixUpdateTest () override;
 
 private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * This method is used to schedule the channel matrix computation at different
@@ -388,13 +388,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~ThreeGppSpectrumPropagationLossModelTest ();
+  ~ThreeGppSpectrumPropagationLossModelTest () override;
 
 private:
   /**
    * Build the test scenario
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Points the beam of thisDevice towards otherDevice

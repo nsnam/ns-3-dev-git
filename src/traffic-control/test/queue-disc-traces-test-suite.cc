@@ -44,9 +44,9 @@ public:
    * \param addr the address
    */
   qdTestItem (Ptr<Packet> p, const Address & addr);
-  virtual ~qdTestItem ();
-  virtual void AddHeader ();
-  virtual bool Mark ();
+  ~qdTestItem () override;
+  void AddHeader () override;
+  bool Mark () override;
 };
 
 qdTestItem::qdTestItem (Ptr<Packet> p, const Address & addr)
@@ -83,11 +83,11 @@ public:
    * Constructor
    */
   TestChildQueueDisc ();
-  virtual ~TestChildQueueDisc ();
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  ~TestChildQueueDisc () override;
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 
   // Reasons for dropping packets
   static constexpr const char* BEFORE_ENQUEUE = "Before enqueue";  //!< Drop before enqueue
@@ -155,11 +155,11 @@ public:
    * Constructor
    */
   TestParentQueueDisc ();
-  virtual ~TestParentQueueDisc ();
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  ~TestParentQueueDisc () override;
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 };
 
 TestParentQueueDisc::TestParentQueueDisc ()
@@ -326,7 +326,7 @@ class QueueDiscTracesTestCase : public TestCase
 {
 public:
   QueueDiscTracesTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Check that queued packets/bytes are consistent with what is expected

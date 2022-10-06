@@ -66,7 +66,7 @@ public:
   /**
    * \brief PieQueueDisc Destructor
    */
-  virtual ~PieQueueDisc ();
+  ~PieQueueDisc () override;
 
   /**
    * \brief Burst types
@@ -104,18 +104,18 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   friend class::PieQueueDiscTestCase;         // Test code
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual bool CheckConfig ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  bool CheckConfig () override;
 
   /**
    * \brief Initialize the queue parameters.
    */
-  virtual void InitializeParams ();
+  void InitializeParams () override;
 
   /**
    * \brief Check if a packet needs to be dropped due to probability drop

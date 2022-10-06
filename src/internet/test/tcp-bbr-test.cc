@@ -45,7 +45,7 @@ public:
   TcpBbrPacingEnableTest (bool pacing, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Execute the test.
    */
@@ -95,7 +95,7 @@ public:
   TcpBbrCheckGainValuesTest (TcpBbr::BbrMode_t state, double highGain, const std::string &name);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * \brief Execute the test.
    */

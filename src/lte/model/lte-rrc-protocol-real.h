@@ -61,10 +61,10 @@ class LteUeRrcProtocolReal : public Object
 
 public:
   LteUeRrcProtocolReal ();
-  virtual ~LteUeRrcProtocolReal ();
+  ~LteUeRrcProtocolReal () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -194,10 +194,10 @@ class LteEnbRrcProtocolReal : public Object
 
 public:
   LteEnbRrcProtocolReal ();
-  virtual ~LteEnbRrcProtocolReal ();
+  ~LteEnbRrcProtocolReal () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -377,7 +377,7 @@ public:
   RealProtocolRlcSapUser (LteEnbRrcProtocolReal* pdcp, uint16_t rnti);
 
   // Interface implemented from LteRlcSapUser
-  virtual void ReceivePdcpPdu (Ptr<Packet> p);
+  void ReceivePdcpPdu (Ptr<Packet> p) override;
 
 private:
   RealProtocolRlcSapUser ();

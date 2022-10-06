@@ -66,7 +66,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual ~IpL4Protocol ();
+  ~IpL4Protocol () override;
 
   /**
    * \brief Returns the protocol number of this protocol.

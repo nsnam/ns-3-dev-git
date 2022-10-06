@@ -42,7 +42,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual ~PropagationDelayModel ();
+  ~PropagationDelayModel () override;
   /**
    * \param a the source
    * \param b the destination
@@ -93,7 +93,7 @@ public:
    * Use the default parameters from PropagationDelayRandomDistribution.
    */
   RandomPropagationDelayModel ();
-  virtual ~RandomPropagationDelayModel ();
+  ~RandomPropagationDelayModel () override;
   Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 private:
   int64_t DoAssignStreams (int64_t stream) override;

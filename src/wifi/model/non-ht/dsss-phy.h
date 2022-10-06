@@ -52,7 +52,7 @@ public:
   /**
    * Destructor for HR/DSSS PHY
    */
-  virtual ~DsssPhy ();
+  ~DsssPhy () override;
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   const PpduFormats & GetPpduFormats () const override;

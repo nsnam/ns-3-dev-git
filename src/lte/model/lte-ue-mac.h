@@ -58,8 +58,8 @@ public:
   static TypeId GetTypeId ();
 
   LteUeMac ();
-  virtual ~LteUeMac ();
-  virtual void DoDispose ();
+  ~LteUeMac () override;
+  void DoDispose () override;
 
   /**
    * \brief TracedCallback signature for RA response timeout events

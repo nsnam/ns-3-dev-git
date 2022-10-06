@@ -134,7 +134,7 @@ class OfdmUcdChannelEncodings : public UcdChannelEncodings
 {
 public:
   OfdmUcdChannelEncodings ();
-  ~OfdmUcdChannelEncodings ();
+  ~OfdmUcdChannelEncodings () override;
 
   /**
    * Set SB channel reguest region full parameters
@@ -169,13 +169,13 @@ private:
    * \param start the iterator
    * \returns the updated iterator
    */
-  virtual Buffer::Iterator DoWrite (Buffer::Iterator start) const;
+  Buffer::Iterator DoWrite (Buffer::Iterator start) const override;
   /**
    * Read item
    * \param start the iterator
    * \returns the updated iterator
    */
-  virtual Buffer::Iterator DoRead (Buffer::Iterator start);
+  Buffer::Iterator DoRead (Buffer::Iterator start) override;
 
   uint8_t m_sbchnlReqRegionFullParams; ///< SB channel request region full parameters
   uint8_t m_sbchnlFocContCodes; ///< SB channel for control codes
@@ -318,7 +318,7 @@ class Ucd : public Header
 {
 public:
   Ucd ();
-  virtual ~Ucd ();
+  ~Ucd () override;
 
   /**
    * Set configuration change count
@@ -412,11 +412,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_configurationChangeCount; ///< configuration change count
   uint8_t m_rangingBackoffStart; ///< ranging backoff start
@@ -574,7 +574,7 @@ class UlMap : public Header
 {
 public:
   UlMap ();
-  virtual ~UlMap ();
+  ~UlMap () override;
 
   /**
    * Set UCD count
@@ -618,11 +618,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   uint8_t m_reserved; ///< changed as per the amendment 802.16e-2005
 

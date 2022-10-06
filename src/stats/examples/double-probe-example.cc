@@ -45,7 +45,7 @@ public:
   static TypeId GetTypeId ();
   Emitter ();
 private:
-  void DoInitialize ();
+  void DoInitialize () override;
 
   /// Generate data - actually this function is not traced.
   void Emit ();

@@ -48,7 +48,7 @@ public:
   typedef Callback<void, double> UpdateTxCurrentCallback;
 
   WifiRadioEnergyModelPhyListener ();
-  virtual ~WifiRadioEnergyModelPhyListener ();
+  ~WifiRadioEnergyModelPhyListener () override;
 
   /**
    * \brief Sets the change state callback. Used by helper class.
@@ -167,7 +167,7 @@ public:
    */
   static TypeId GetTypeId ();
   WifiRadioEnergyModel ();
-  virtual ~WifiRadioEnergyModel ();
+  ~WifiRadioEnergyModel () override;
 
   /**
    * \brief Sets pointer to EnergySouce installed on node.
@@ -176,14 +176,14 @@ public:
    *
    * Implements DeviceEnergyModel::SetEnergySource.
    */
-  void SetEnergySource (const Ptr<EnergySource> source);
+  void SetEnergySource (const Ptr<EnergySource> source) override;
 
   /**
    * \returns Total energy consumption of the wifi device in watts.
    *
    * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
    */
-  double GetTotalEnergyConsumption () const;
+  double GetTotalEnergyConsumption () const override;
 
   // Setter & getters for state power consumption.
   /**
@@ -298,7 +298,7 @@ public:
    *
    * Implements DeviceEnergyModel::ChangeState.
    */
-  void ChangeState (int newState);
+  void ChangeState (int newState) override;
 
   /**
    * \param state the wifi state
@@ -312,21 +312,21 @@ public:
    *
    * Implements DeviceEnergyModel::HandleEnergyDepletion
    */
-  void HandleEnergyDepletion ();
+  void HandleEnergyDepletion () override;
 
   /**
    * \brief Handles energy recharged.
    *
    * Implements DeviceEnergyModel::HandleEnergyRecharged
    */
-  void HandleEnergyRecharged ();
+  void HandleEnergyRecharged () override;
 
   /**
    * \brief Handles energy changed.
    *
    * Implements DeviceEnergyModel::HandleEnergyChanged
    */
-  void HandleEnergyChanged ();
+  void HandleEnergyChanged () override;
 
   /**
    * \returns Pointer to the PHY listener.
@@ -335,7 +335,7 @@ public:
 
 
 private:
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \param state the wifi state
@@ -348,7 +348,7 @@ private:
    *
    * Implements DeviceEnergyModel::GetCurrentA.
    */
-  double DoGetCurrentA () const;
+  double DoGetCurrentA () const override;
 
   /**
    * \param state New state the radio device is currently in.

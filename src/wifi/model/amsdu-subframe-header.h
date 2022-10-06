@@ -34,7 +34,7 @@ class AmsduSubframeHeader : public Header
 {
 public:
   AmsduSubframeHeader ();
-  virtual ~AmsduSubframeHeader ();
+  ~AmsduSubframeHeader () override;
 
   /**
    * \brief Get the type ID.

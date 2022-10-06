@@ -45,7 +45,7 @@ public:
    * speed (0,0,0).
    */
   ConstantVelocityMobilityModel ();
-  virtual ~ConstantVelocityMobilityModel ();
+  ~ConstantVelocityMobilityModel () override;
 
   /**
    * \param speed the new speed to set.
@@ -55,9 +55,9 @@ public:
    */
   void SetVelocity (const Vector &speed);
 private:
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
   ConstantVelocityHelper m_helper;  //!< helper object for this model
 };
 

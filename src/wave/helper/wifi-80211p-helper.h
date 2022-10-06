@@ -41,7 +41,7 @@ class Wifi80211pHelper : public WifiHelper
 {
 public:
   Wifi80211pHelper ();
-  virtual ~Wifi80211pHelper ();
+  ~Wifi80211pHelper () override;
 
   /**
    * \returns a new Wifi80211pHelper in a default state
@@ -58,7 +58,7 @@ public:
    * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
    * The default 802.11p standard uses 10MHz.
    */
-  virtual void SetStandard (enum WifiStandard standard);
+  void SetStandard (enum WifiStandard standard) override;
 
   /**
    * \param phy the PHY helper to create PHY objects
@@ -66,7 +66,7 @@ public:
    * \param c the set of nodes on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  virtual NetDeviceContainer Install (const WifiPhyHelper &phy, const WifiMacHelper &macHelper,NodeContainer c) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phy, const WifiMacHelper &macHelper,NodeContainer c) const override;
 
   /**
    * Helper to enable all WifiNetDevice log components with one statement

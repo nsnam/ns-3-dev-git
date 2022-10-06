@@ -62,7 +62,7 @@ public:
   static TypeId GetTypeId ();
   SteadyStateRandomWaypointMobilityModel ();
 protected:
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 private:
   /**
    * Configure random variables based on attributes; calculate the steady
@@ -84,10 +84,10 @@ private:
    * Start a motion period and schedule the ending of the motion
    */
   void BeginWalk ();
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual int64_t DoAssignStreams (int64_t);
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  int64_t DoAssignStreams (int64_t) override;
 
   ConstantVelocityHelper m_helper; //!< helper for velocity computations
   double m_maxSpeed; //!< maximum speed value (m/s)

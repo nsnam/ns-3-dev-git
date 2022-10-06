@@ -81,7 +81,7 @@ private:
    * \returns the name string
    */
   static std::string BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, std::string schedulerType, bool admitHo, bool useIdealRrc);
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check connected function
    * \param ueDevice the UE device

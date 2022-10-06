@@ -49,7 +49,7 @@ public:
    */
   static TypeId GetTypeId ();
   WifiAckManager ();
-  virtual ~WifiAckManager ();
+  ~WifiAckManager () override;
 
   /**
    * Set the MAC which is using this Acknowledgment Manager

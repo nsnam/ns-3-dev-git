@@ -68,7 +68,7 @@ public:
    */
   static TypeId GetTypeId ();
   ChannelManager ();
-  virtual ~ChannelManager ();
+  ~ChannelManager () override;
 
   /**
    * \return the channel number of WAVE CCH.
@@ -133,7 +133,7 @@ public:
   uint32_t GetManagementPowerLevel (uint32_t channelNumber);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /// 1609.4-2010 Annex H

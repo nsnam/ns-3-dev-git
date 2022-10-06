@@ -57,7 +57,7 @@ public:
    */
   static TypeId GetTypeId ();
   HtFrameExchangeManager ();
-  virtual ~HtFrameExchangeManager ();
+  ~HtFrameExchangeManager () override;
 
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
   void SetWifiMac (const Ptr<WifiMac> mac) override;

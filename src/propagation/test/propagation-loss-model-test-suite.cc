@@ -50,10 +50,10 @@ class FriisPropagationLossModelTestCase : public TestCase
 {
 public:
   FriisPropagationLossModelTestCase ();
-  virtual ~FriisPropagationLossModelTestCase ();
+  ~FriisPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /// Test vector
   typedef struct {
@@ -155,10 +155,10 @@ class TwoRayGroundPropagationLossModelTestCase : public TestCase
 {
 public:
   TwoRayGroundPropagationLossModelTestCase ();
-  virtual ~TwoRayGroundPropagationLossModelTestCase ();
+  ~TwoRayGroundPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /// Test vector
   typedef struct {
@@ -290,10 +290,10 @@ class LogDistancePropagationLossModelTestCase : public TestCase
 {
 public:
   LogDistancePropagationLossModelTestCase ();
-  virtual ~LogDistancePropagationLossModelTestCase ();
+  ~LogDistancePropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /// Test vector
   typedef struct {
@@ -384,10 +384,10 @@ class MatrixPropagationLossModelTestCase : public TestCase
 {
 public:
   MatrixPropagationLossModelTestCase ();
-  virtual ~MatrixPropagationLossModelTestCase ();
+  ~MatrixPropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 MatrixPropagationLossModelTestCase::MatrixPropagationLossModelTestCase ()
@@ -437,10 +437,10 @@ class RangePropagationLossModelTestCase : public TestCase
 {
 public:
   RangePropagationLossModelTestCase ();
-  virtual ~RangePropagationLossModelTestCase ();
+  ~RangePropagationLossModelTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RangePropagationLossModelTestCase::RangePropagationLossModelTestCase ()

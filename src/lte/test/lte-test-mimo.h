@@ -53,10 +53,10 @@ public:
    * \param useIdealRrc true if use ideal RRC
    */
   LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType, bool useIdealRrc);
-  virtual ~LenaMimoTestCase ();
+  ~LenaMimoTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Get RLC buffer sample

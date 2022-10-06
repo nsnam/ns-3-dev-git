@@ -57,7 +57,7 @@ public:
    */
   static TypeId GetTypeId ();
   ApplicationPacketProbe ();
-  virtual ~ApplicationPacketProbe ();
+  ~ApplicationPacketProbe () override;
 
   /**
    * \brief Set a probe value
@@ -83,7 +83,7 @@ public:
    * \param obj ns3::Object to connect to
    * \return true if the trace source was successfully connected
    */
-  virtual bool ConnectByObject (std::string traceSource, Ptr<Object> obj);
+  bool ConnectByObject (std::string traceSource, Ptr<Object> obj) override;
 
   /**
    * \brief connect to a trace source provided by a config path
@@ -93,7 +93,7 @@ public:
    * Note, if an invalid path is provided, the probe will not be connected
    * to anything.
    */
-  virtual void ConnectByPath (std::string path);
+  void ConnectByPath (std::string path) override;
 
 private:
   /**

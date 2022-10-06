@@ -44,12 +44,12 @@ public:
    */
   DropTailQueue ();
 
-  virtual ~DropTailQueue ();
+  ~DropTailQueue () override;
 
-  virtual bool Enqueue (Ptr<Item> item);
-  virtual Ptr<Item> Dequeue ();
-  virtual Ptr<Item> Remove ();
-  virtual Ptr<const Item> Peek () const;
+  bool Enqueue (Ptr<Item> item) override;
+  Ptr<Item> Dequeue () override;
+  Ptr<Item> Remove () override;
+  Ptr<const Item> Peek () const override;
 
 private:
   using Queue<Item>::GetContainer;

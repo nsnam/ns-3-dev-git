@@ -43,10 +43,10 @@ class Ns3WimaxSchedulingTestCase : public TestCase
 {
 public:
   Ns3WimaxSchedulingTestCase ();
-  virtual ~Ns3WimaxSchedulingTestCase ();
+  ~Ns3WimaxSchedulingTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Run once function
    * \param scheduler the wimax scheduler type
@@ -172,10 +172,10 @@ class Ns3WimaxSFTypeTestCase : public TestCase
 {
 public:
   Ns3WimaxSFTypeTestCase ();
-  virtual ~Ns3WimaxSFTypeTestCase ();
+  ~Ns3WimaxSFTypeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Run once function
    * \param schedulingType the scheduling type

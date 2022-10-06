@@ -48,47 +48,47 @@ public:
     : m_cam (cam)
   {
   }
-  virtual ~PhyListener ()
+  ~PhyListener () override
   {
   }
-  void NotifyRxStart (Time duration)
+  void NotifyRxStart (Time duration) override
   {
     m_cam->NotifyRxStartNow (duration);
   }
-  void NotifyRxEndOk ()
+  void NotifyRxEndOk () override
   {
     m_cam->NotifyRxEndOkNow ();
   }
-  void NotifyRxEndError ()
+  void NotifyRxEndError () override
   {
     m_cam->NotifyRxEndErrorNow ();
   }
-  void NotifyTxStart (Time duration, double txPowerDbm)
+  void NotifyTxStart (Time duration, double txPowerDbm) override
   {
     m_cam->NotifyTxStartNow (duration);
   }
   void NotifyCcaBusyStart (Time duration, WifiChannelListType channelType,
-                           const std::vector<Time>& per20MhzDurations)
+                           const std::vector<Time>& per20MhzDurations) override
   {
     m_cam->NotifyCcaBusyStartNow (duration, channelType, per20MhzDurations);
   }
-  void NotifySwitchingStart (Time duration)
+  void NotifySwitchingStart (Time duration) override
   {
     m_cam->NotifySwitchingStartNow (duration);
   }
-  void NotifySleep ()
+  void NotifySleep () override
   {
     m_cam->NotifySleepNow ();
   }
-  void NotifyOff ()
+  void NotifyOff () override
   {
     m_cam->NotifyOffNow ();
   }
-  void NotifyWakeup ()
+  void NotifyWakeup () override
   {
     m_cam->NotifyWakeupNow ();
   }
-  void NotifyOn ()
+  void NotifyOn () override
   {
     m_cam->NotifyOnNow ();
   }

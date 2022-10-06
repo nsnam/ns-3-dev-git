@@ -45,11 +45,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
 
   /**
    * Set the source address
@@ -84,7 +84,7 @@ public:
    */
   uint16_t GetProto () const;
 
-  void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
 private:
   Mac48Address m_src; //!< source address

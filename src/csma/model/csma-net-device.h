@@ -86,7 +86,7 @@ public:
    *
    * This is the destructor for a CsmaNetDevice.
    */
-  virtual ~CsmaNetDevice ();
+  ~CsmaNetDevice () override;
 
   /**
    * Set the interframe gap used to separate packets.  The interframe gap
@@ -214,18 +214,18 @@ public:
   //
   // The following methods are inherited from NetDevice base class.
   //
-  virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex () const;
-  virtual Ptr<Channel> GetChannel () const;
-  virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu () const;
-  virtual void SetAddress (Address address);
-  virtual Address GetAddress () const;
-  virtual bool IsLinkUp () const;
-  virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast () const;
-  virtual Address GetBroadcast () const;
-  virtual bool IsMulticast () const;
+  void SetIfIndex (const uint32_t index) override;
+  uint32_t GetIfIndex () const override;
+  Ptr<Channel> GetChannel () const override;
+  bool SetMtu (const uint16_t mtu) override;
+  uint16_t GetMtu () const override;
+  void SetAddress (Address address) override;
+  Address GetAddress () const override;
+  bool IsLinkUp () const override;
+  void AddLinkChangeCallback (Callback<void> callback) override;
+  bool IsBroadcast () const override;
+  Address GetBroadcast () const override;
+  bool IsMulticast () const override;
 
   /**
    * \brief Make and return a MAC multicast address using the provided
@@ -249,19 +249,19 @@ public:
    * \see Mac48Address
    * \see Address
    */
-  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
 
   /**
    * Is this a point to point link?
    * \returns false.
    */
-  virtual bool IsPointToPoint () const;
+  bool IsPointToPoint () const override;
 
   /**
    * Is this a bridge?
    * \returns false.
    */
-  virtual bool IsBridge () const;
+  bool IsBridge () const override;
 
   /**
    * Start sending a packet down the channel.
@@ -270,8 +270,8 @@ public:
    * \param protocolNumber protocol number
    * \return true if successful, false otherwise (drop, ...)
    */
-  virtual bool Send (Ptr<Packet> packet, const Address& dest,
-                     uint16_t protocolNumber);
+  bool Send (Ptr<Packet> packet, const Address& dest,
+                     uint16_t protocolNumber) override;
 
   /**
    * Start sending a packet down the channel, with MAC spoofing
@@ -281,22 +281,22 @@ public:
    * \param protocolNumber protocol number
    * \return true if successful, false otherwise (drop, ...)
    */
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest,
-                         uint16_t protocolNumber);
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest,
+                         uint16_t protocolNumber) override;
 
   /**
    * Get the node to which this device is attached.
    *
    * \returns Ptr to the Node to which the device is attached.
    */
-  virtual Ptr<Node> GetNode () const;
+  Ptr<Node> GetNode () const override;
 
   /**
    * Set the node to which this device is being attached.
    *
    * \param node Ptr to the Node to which the device is being attached.
    */
-  virtual void SetNode (Ptr<Node> node);
+  void SetNode (Ptr<Node> node) override;
 
   /**
    * Does this device need to use the address resolution protocol?
@@ -304,7 +304,7 @@ public:
    * \returns True if the encapsulation mode is set to a value that requires
    * ARP (IP_ARP or LLC).
    */
-  virtual bool NeedsArp () const;
+  bool NeedsArp () const override;
 
   /**
    * Set the callback to be used to notify higher layers when a packet has been
@@ -312,7 +312,7 @@ public:
    *
    * \param cb The callback.
    */
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
 
   /**
    * \brief Get the MAC multicast address corresponding
@@ -321,11 +321,11 @@ public:
    * \return the MAC multicast address
    * \warning Calling this method is invalid if IsMulticast returns not true.
    */
-  virtual Address GetMulticast (Ipv6Address addr) const;
+  Address GetMulticast (Ipv6Address addr) const override;
 
 
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom () const;
+  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
+  bool SupportsSendFrom () const override;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -342,7 +342,7 @@ protected:
    * Perform any object release functionality required to break reference
    * cycles in reference counted objects held by the device.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Adds the necessary headers and trailers to a packet of data in order to

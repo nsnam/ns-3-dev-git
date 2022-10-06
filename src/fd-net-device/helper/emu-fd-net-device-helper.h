@@ -44,7 +44,7 @@ public:
    * Construct a EmuFdNetDeviceHelper.
    */
   EmuFdNetDeviceHelper ();
-  virtual ~EmuFdNetDeviceHelper ()
+  ~EmuFdNetDeviceHelper () override
   {}
 
   /**
@@ -76,7 +76,7 @@ protected:
    * \param node The node to install the device in
    * \returns A container holding the added net device.
    */
-  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
+  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const override;
 
   /**
    * Sets a file descriptor on the FileDescriptorNetDevice.

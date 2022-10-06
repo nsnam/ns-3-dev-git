@@ -76,11 +76,11 @@ public:
    */
   static  TypeId   GetTypeId ();
   // Inherited from header:
-  virtual TypeId   GetInstanceTypeId () const;
-  virtual void     Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void     Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId   GetInstanceTypeId () const override;
+  void     Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void     Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   uint16_t m_capability; ///< capability
@@ -140,11 +140,11 @@ public:
    */
   static  TypeId   GetTypeId ();
   // Inherited from header:
-  virtual TypeId   GetInstanceTypeId () const;
-  virtual void     Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void     Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId   GetInstanceTypeId () const override;
+  void     Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void     Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   IeMeshId m_meshId; ///< mesh ID
@@ -205,11 +205,11 @@ public:
    */
   static  TypeId   GetTypeId ();
   // Inherited from header:
-  virtual TypeId   GetInstanceTypeId () const;
-  virtual void     Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void     Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId   GetInstanceTypeId () const override;
+  void     Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void     Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   uint16_t m_capability; ///< capability

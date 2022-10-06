@@ -65,7 +65,7 @@ public:
   FileAggregator (const std::string &outputFileName,
                   enum FileType fileType = SPACE_SEPARATED);
 
-  virtual ~FileAggregator ();
+  ~FileAggregator () override;
 
   /**
    * \param fileType file type specifies the separator to use in

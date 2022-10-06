@@ -41,12 +41,12 @@ public:
    * Create a position located at coordinates (0,0,0)
    */
   ConstantPositionMobilityModel ();
-  virtual ~ConstantPositionMobilityModel ();
+  ~ConstantPositionMobilityModel () override;
 
 private:
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
 
   Vector m_position; //!< the constant position
 };

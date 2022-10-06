@@ -278,7 +278,7 @@ private:
    */
   void UpdateEmbeddedObjectMuAndSigma ();
 
-  void DoInitialize ();   // overridden from base class
+  void DoInitialize () override;   // overridden from base class
 
   /**
    * Random variable for determining MTU size (in bytes).

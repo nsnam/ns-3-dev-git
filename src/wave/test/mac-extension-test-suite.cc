@@ -50,7 +50,7 @@ class ChannelCoordinationTestCase : public TestCase
 {
 public:
   ChannelCoordinationTestCase ();
-  virtual ~ChannelCoordinationTestCase ();
+  ~ChannelCoordinationTestCase () override;
 
   // below three methods are used in CoordinationTestListener
   /**
@@ -77,7 +77,7 @@ private:
    * \param guardi the guard
    */
   void TestIntervalAfter (bool cchi, bool schi, bool guardi);
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<ChannelCoordinator> m_coordinator; ///< coordinator
 
 };
@@ -100,18 +100,18 @@ public:
     : m_coordinatorTest (coordinatorTest)
   {
   }
-  virtual ~CoordinationTestListener ()
+  ~CoordinationTestListener () override
   {
   }
-  virtual void NotifyCchSlotStart (Time duration)
+  void NotifyCchSlotStart (Time duration) override
   {
     m_coordinatorTest->NotifyCchStartNow (duration);
   }
-  virtual void NotifySchSlotStart (Time duration)
+  void NotifySchSlotStart (Time duration) override
   {
     m_coordinatorTest->NotifySchStartNow (duration);
   }
-  virtual void NotifyGuardSlotStart (Time duration, bool cchi)
+  void NotifyGuardSlotStart (Time duration, bool cchi) override
   {
     m_coordinatorTest->NotifyGuardStartNow (duration, cchi);
   }
@@ -313,7 +313,7 @@ class ChannelRoutingTestCase : public TestCase
 {
 public:
   ChannelRoutingTestCase ();
-  virtual ~ChannelRoutingTestCase ();
+  ~ChannelRoutingTestCase () override;
 
   /**
    * Send IP-based packets
@@ -336,7 +336,7 @@ public:
   void SendWsa (bool shouldSucceed, const VsaInfo &vsaInfo);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Receive function
    * \param dev the device
@@ -535,7 +535,7 @@ class ChannelAccessTestCase : public TestCase
 {
 public:
   ChannelAccessTestCase ();
-  virtual ~ChannelAccessTestCase ();
+  ~ChannelAccessTestCase () override;
 private:
   /**
    * Test continuous function
@@ -590,7 +590,7 @@ private:
    */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   NetDeviceContainer m_devices; ///< the devices
   Ptr<WaveNetDevice>  m_sender; ///< sender
@@ -1023,9 +1023,9 @@ class AnnexC_TestCase : public TestCase
 {
 public:
   AnnexC_TestCase ();
-  virtual ~AnnexC_TestCase ();
+  ~AnnexC_TestCase () override;
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Send packet function

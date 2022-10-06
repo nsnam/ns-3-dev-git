@@ -43,14 +43,14 @@ class LteInterference : public Object
 {
 public:
   LteInterference ();
-  virtual ~LteInterference ();
+  ~LteInterference () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Add a LteChunkProcessor that will use the time-vs-frequency SINR

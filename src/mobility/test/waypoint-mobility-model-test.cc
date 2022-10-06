@@ -46,7 +46,7 @@ public:
       lazyNotify (lazy)
   {
   }
-  virtual ~WaypointMobilityModelNotifyTest ()
+  ~WaypointMobilityModelNotifyTest () override
   {
   }
 
@@ -57,8 +57,8 @@ private:
   std::deque<Waypoint> waypoints; ///< waypoints
   bool lazyNotify; ///< lazy notify?
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
   /// Force updates
   void ForceUpdates ();
   /**
@@ -174,7 +174,7 @@ public:
     : TestCase ("Check Waypoint Mobility Model waypoint add")
   {
   }
-  virtual ~WaypointMobilityModelAddWaypointTest ()
+  ~WaypointMobilityModelAddWaypointTest () override
   {
   }
 
@@ -184,8 +184,8 @@ private:
   uint32_t m_waypointCounter; ///< waypoint counter
   Waypoint m_nextWaypoint; ///< next waypoint
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
   /**
    * Course change calback
    * \param model the mobility model

@@ -55,11 +55,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 private:
   /**
    * Get type name function
@@ -169,25 +169,25 @@ public:
       ;
     return tid;
   }
-  virtual TypeId GetInstanceTypeId () const {
+  TypeId GetInstanceTypeId () const override {
     return GetTypeId ();
   }
-  virtual uint32_t GetSerializedSize () const {
+  uint32_t GetSerializedSize () const override {
     return N;
   }
-  virtual void Serialize (TagBuffer buf) const {
+  void Serialize (TagBuffer buf) const override {
     for (uint32_t i = 0; i < N; ++i)
       {
         buf.WriteU8 (N);
       }
   }
-  virtual void Deserialize (TagBuffer buf) {
+  void Deserialize (TagBuffer buf) override {
     for (uint32_t i = 0; i < N; ++i)
       {
         buf.ReadU8 ();
       }
   }
-  virtual void Print (std::ostream &os) const {
+  void Print (std::ostream &os) const override {
     os << "N=" << N;
   }
   BenchTag ()

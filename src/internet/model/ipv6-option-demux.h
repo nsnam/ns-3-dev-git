@@ -53,7 +53,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6OptionDemux ();
+  ~Ipv6OptionDemux () override;
 
   /**
    * \brief Set the node.
@@ -84,7 +84,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

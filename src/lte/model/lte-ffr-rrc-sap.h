@@ -153,10 +153,10 @@ public:
   MemberLteFfrRrcSapProvider () = delete;
 
   // inherited from LteHandoverManagementSapProvider
-  virtual void SetCellId (uint16_t cellId );
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-  virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
-  virtual void RecvLoadInformation (EpcX2Sap::LoadInformationParams params);
+  void SetCellId (uint16_t cellId ) override;
+  void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) override;
+  void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults) override;
+  void RecvLoadInformation (EpcX2Sap::LoadInformationParams params) override;
 
 private:
   C* m_owner; ///< the owner class
@@ -218,11 +218,11 @@ public:
   MemberLteFfrRrcSapUser () = delete;
 
   // inherited from LteFfrRrcSapUser
-  virtual uint8_t AddUeMeasReportConfigForFfr (LteRrcSap::ReportConfigEutra reportConfig);
+  uint8_t AddUeMeasReportConfigForFfr (LteRrcSap::ReportConfigEutra reportConfig) override;
 
-  virtual void SetPdschConfigDedicated (uint16_t rnti, LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
+  void SetPdschConfigDedicated (uint16_t rnti, LteRrcSap::PdschConfigDedicated pdschConfigDedicated) override;
 
-  virtual void  SendLoadInformation (EpcX2Sap::LoadInformationParams params);
+  void  SendLoadInformation (EpcX2Sap::LoadInformationParams params) override;
 private:
   C* m_owner; ///< the owner class
 

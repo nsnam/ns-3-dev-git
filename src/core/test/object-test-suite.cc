@@ -89,7 +89,7 @@ public:
   {}
 
 protected:
-  virtual void DoDispose ()
+  void DoDispose () override
   {
     BaseA::DoDispose ();
   }
@@ -145,7 +145,7 @@ public:
   {}
 
 protected:
-  virtual void DoDispose ()
+  void DoDispose () override
   {
     BaseB::DoDispose ();
   }
@@ -173,10 +173,10 @@ public:
   /** Constructor. */
   CreateObjectTestCase ();
   /** Destructor. */
-  virtual ~CreateObjectTestCase ();
+  ~CreateObjectTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 CreateObjectTestCase::CreateObjectTestCase ()
@@ -240,10 +240,10 @@ public:
   /** Constructor. */
   AggregateObjectTestCase ();
   /** Destructor. */
-  virtual ~AggregateObjectTestCase ();
+  ~AggregateObjectTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 AggregateObjectTestCase::AggregateObjectTestCase ()
@@ -412,10 +412,10 @@ public:
   /** Constructor. */
   ObjectFactoryTestCase ();
   /** Destructor. */
-  virtual ~ObjectFactoryTestCase ();
+  ~ObjectFactoryTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ObjectFactoryTestCase::ObjectFactoryTestCase ()

@@ -49,14 +49,14 @@ class LteSimpleHelper : public Object
 {
 public:
   LteSimpleHelper ();
-  virtual ~LteSimpleHelper ();
+  ~LteSimpleHelper () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 
   /**
@@ -123,7 +123,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   /**

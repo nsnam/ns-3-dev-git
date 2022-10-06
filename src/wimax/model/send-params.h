@@ -75,7 +75,7 @@ public:
    * \param direction the direction
    */
   OfdmSendParams (Ptr<PacketBurst> burst, uint8_t modulationType, uint8_t direction);
-  ~OfdmSendParams ();
+  ~OfdmSendParams () override;
   /**
    * \return the packet burst
    */

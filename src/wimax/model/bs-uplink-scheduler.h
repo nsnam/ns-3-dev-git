@@ -49,7 +49,7 @@ public:
    * \param bs base station device
    */
   UplinkScheduler (Ptr<BaseStationNetDevice> bs);
-  virtual ~UplinkScheduler ();
+  ~UplinkScheduler () override;
 
   /**
    * \brief Get the type ID.

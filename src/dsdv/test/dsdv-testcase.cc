@@ -63,9 +63,9 @@ class DsdvHeaderTestCase : public TestCase
 {
 public:
   DsdvHeaderTestCase ();
-  ~DsdvHeaderTestCase ();
-  virtual void
-  DoRun ();
+  ~DsdvHeaderTestCase () override;
+  void
+  DoRun () override;
 };
 DsdvHeaderTestCase::DsdvHeaderTestCase ()
   : TestCase ("Verifying the DSDV header")
@@ -119,9 +119,9 @@ class DsdvTableTestCase : public TestCase
 {
 public:
   DsdvTableTestCase ();
-  ~DsdvTableTestCase ();
-  virtual void
-  DoRun ();
+  ~DsdvTableTestCase () override;
+  void
+  DoRun () override;
 };
 
 DsdvTableTestCase::DsdvTableTestCase ()

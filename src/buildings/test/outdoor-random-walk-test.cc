@@ -44,10 +44,10 @@ class OutdoorRandomWalkTestCase : public TestCase
 {
 public:
   OutdoorRandomWalkTestCase ();
-  virtual ~OutdoorRandomWalkTestCase ();
+  ~OutdoorRandomWalkTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Check that the position is the expected one

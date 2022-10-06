@@ -49,8 +49,8 @@ public:
   SimpleUeCcmMacSapProvider (SimpleUeComponentCarrierManager* mac);
 
   // inherited from LteMacSapProvider
-  virtual void TransmitPdu (LteMacSapProvider::TransmitPduParameters params);
-  virtual void ReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
+  void TransmitPdu (LteMacSapProvider::TransmitPduParameters params) override;
+  void ReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params) override;
 
 private:
   SimpleUeComponentCarrierManager* m_mac; ///< the component carrier manager
@@ -90,9 +90,9 @@ public:
   SimpleUeCcmMacSapUser  (SimpleUeComponentCarrierManager* mac);
 
   // inherited from LteMacSapUser
-  virtual void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
-  virtual void ReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
-  virtual void NotifyHarqDeliveryFailure ();
+  void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams) override;
+  void ReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams) override;
+  void NotifyHarqDeliveryFailure () override;
 
 
 private:

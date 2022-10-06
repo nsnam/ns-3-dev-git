@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId ();
 
   TimeSeriesAdaptor ();
-  virtual ~TimeSeriesAdaptor ();
+  ~TimeSeriesAdaptor () override;
 
   /**
    * \brief Trace sink for receiving data from double valued trace

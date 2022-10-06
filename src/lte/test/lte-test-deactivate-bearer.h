@@ -36,7 +36,7 @@ public:
    * \param useIdealRrc whether to use ideal RRC
    */
   LenaDeactivateBearerTestCase (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled, bool useIdealRrc);
-  virtual ~LenaDeactivateBearerTestCase ();
+  ~LenaDeactivateBearerTestCase () override;
 
 private:
   /**
@@ -47,7 +47,7 @@ private:
    * \returns name string
    */
   static std::string BuildNameString (uint16_t nUser, std::vector<uint16_t> dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   std::vector<uint16_t> m_dist; ///< distance between the nodes
   std::vector<uint16_t> m_packetSize;  ///< packet size in bytes

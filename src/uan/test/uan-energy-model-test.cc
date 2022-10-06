@@ -56,7 +56,7 @@ class AcousticModemEnergyTestCase : public TestCase
 {
 public:
   AcousticModemEnergyTestCase ();
-  ~AcousticModemEnergyTestCase ();
+  ~AcousticModemEnergyTestCase () override;
 
   /**
    * Receive packet function
@@ -73,7 +73,7 @@ public:
    */
   void SendOnePacket (Ptr<Node> node);
 
-  void DoRun ();
+  void DoRun () override;
 
   double m_simTime; ///< simulation time
   uint32_t m_bytesRx; ///< bytes received
@@ -225,7 +225,7 @@ class AcousticModemEnergyDepletionTestCase : public TestCase
 {
 public:
   AcousticModemEnergyDepletionTestCase ();
-  ~AcousticModemEnergyDepletionTestCase ();
+  ~AcousticModemEnergyDepletionTestCase () override;
 
   /// Depletion handler function
   void DepletionHandler ();
@@ -235,7 +235,7 @@ public:
    */
   void SendOnePacket (Ptr<Node> node);
 
-  void DoRun ();
+  void DoRun () override;
 
   double m_simTime; ///< Simulation time
   uint32_t m_callbackCount; ///< callback count

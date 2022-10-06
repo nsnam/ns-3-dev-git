@@ -80,7 +80,7 @@ class Ipv4HeaderTest : public TestCase
   void SendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp, Ipv4Header::EcnType ecn);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv4HeaderTest ();
 
   /**

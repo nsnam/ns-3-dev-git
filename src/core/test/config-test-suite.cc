@@ -200,7 +200,7 @@ public:
   DerivedConfigTestObject ()
   {}
   /** Destructor */
-  virtual ~DerivedConfigTestObject ()
+  ~DerivedConfigTestObject () override
   {}
 };
 
@@ -229,7 +229,7 @@ public:
   BaseConfigObject () : m_x (15)
   {}
   /** Destructor. */
-  virtual ~BaseConfigObject ()
+  ~BaseConfigObject () override
   {}
 
 private:
@@ -265,7 +265,7 @@ public:
   DerivedConfigObject ()
   {}
   /** Destructor. */
-  virtual ~DerivedConfigObject ()
+  ~DerivedConfigObject () override
   {}
 };
 
@@ -289,11 +289,11 @@ public:
   /** Constructor. */
   RootNamespaceConfigTestCase ();
   /** Destructor. */
-  virtual ~RootNamespaceConfigTestCase ()
+  ~RootNamespaceConfigTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
@@ -350,11 +350,11 @@ public:
   /** Constructor. */
   UnderRootNamespaceConfigTestCase ();
   /** Destructor. */
-  virtual ~UnderRootNamespaceConfigTestCase ()
+  ~UnderRootNamespaceConfigTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
@@ -462,11 +462,11 @@ public:
   /** Constructor. */
   ObjectVectorConfigTestCase ();
   /** Destructor. */
-  virtual ~ObjectVectorConfigTestCase ()
+  ~ObjectVectorConfigTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
@@ -619,7 +619,7 @@ public:
   /** Constructor. */
   ObjectVectorTraceConfigTestCase ();
   /** Destructor. */
-  virtual ~ObjectVectorTraceConfigTestCase ()
+  ~ObjectVectorTraceConfigTestCase () override
   {}
 
   /**
@@ -644,7 +644,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   int16_t m_newValue; //!< Flag to detect tracing result.
   std::string m_path; //!< The context path.
@@ -791,11 +791,11 @@ public:
   /** Constructor. */
   SearchAttributesOfParentObjectsTestCase ();
   /** Destructor. */
-  virtual ~SearchAttributesOfParentObjectsTestCase ()
+  ~SearchAttributesOfParentObjectsTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

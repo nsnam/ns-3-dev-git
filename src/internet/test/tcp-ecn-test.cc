@@ -62,11 +62,11 @@ public:
   TcpEcnTest (uint32_t testcase, const std::string &desc);
 
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  void ConfigureProperties ();
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  void ConfigureProperties () override;
 
 private:
   uint32_t m_cwndChangeCount;     //!< Number of times the congestion window did change
@@ -123,9 +123,9 @@ public:
   void SetTestCase (uint8_t testCase);
 
 protected:
-  virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
-  virtual void ReTxTimeout ();
-  Ptr<TcpSocketBase> Fork ();
+  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck) override;
+  void ReTxTimeout () override;
+  Ptr<TcpSocketBase> Fork () override;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketCongestedRouter);

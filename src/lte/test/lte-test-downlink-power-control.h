@@ -78,10 +78,10 @@ public:
                                                 uint16_t earfcn, uint16_t bw, double powerTx,
                                                 std::map<int, double> powerTxMap, std::vector <int> activeRbs,
                                                 SpectrumValue& expected);
-  virtual ~LteDownlinkPowerControlSpectrumValueTestCase ();
+  ~LteDownlinkPowerControlSpectrumValueTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<SpectrumValue> m_actual; ///< actual Tx Power Spectral Density
   Ptr<SpectrumValue> m_expected; ///< expected Tx Power Spectral Density
 
@@ -106,10 +106,10 @@ public:
  * \param name the reference name
  */
   LteDownlinkPowerControlTestCase (bool changePower, uint8_t pa, std::string name);
-  virtual ~LteDownlinkPowerControlTestCase ();
+  ~LteDownlinkPowerControlTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   bool m_changePdschConfigDedicated; ///< PDSCH config dedicated change
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< PDSCH config dedicated
@@ -135,7 +135,7 @@ public:
    * \param name the reference name
    */
   LteDownlinkPowerControlRrcConnectionReconfigurationTestCase (bool useIdealRrc, std::string name);
-  virtual ~LteDownlinkPowerControlRrcConnectionReconfigurationTestCase ();
+  ~LteDownlinkPowerControlRrcConnectionReconfigurationTestCase () override;
 
   /**
    * \brief Connection Reconfiguration ENB
@@ -165,7 +165,7 @@ public:
    */
   void ChangePdschConfigDedicated (uint16_t rnti, uint8_t pa);
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   bool m_useIdealRrc; ///< use ideal RRC?
 
   bool m_changePdschConfigDedicatedTriggered; ///< change PDSCH config dedicated triggered?

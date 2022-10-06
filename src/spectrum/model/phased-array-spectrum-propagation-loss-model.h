@@ -46,7 +46,7 @@ class PhasedArraySpectrumPropagationLossModel : public Object
 {
 public:
   PhasedArraySpectrumPropagationLossModel ();
-  virtual ~PhasedArraySpectrumPropagationLossModel ();
+  ~PhasedArraySpectrumPropagationLossModel () override;
 
   /**
    * \brief Get the type ID.
@@ -80,7 +80,7 @@ public:
                                                  Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 
 private:

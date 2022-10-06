@@ -54,7 +54,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Constructor that binds callback methods of sockets.
@@ -68,7 +68,7 @@ public:
                      const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket);
 
   /** Destructor */
-  virtual ~EpcSgwApplication ();
+  ~EpcSgwApplication () override;
 
 
   /**

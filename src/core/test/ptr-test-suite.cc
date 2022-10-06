@@ -79,7 +79,7 @@ public:
    * The object being tracked will also be destroyed,
    * by calling DestroyNotify()
    */
-  ~NoCount ();
+  ~NoCount () override;
   /** Noop function. */
   void Nothing () const;
 
@@ -101,7 +101,7 @@ public:
   void DestroyNotify ();
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Test that \pname{p} is a valid object, by calling a member function.
    * \param [in] p The object pointer to test.

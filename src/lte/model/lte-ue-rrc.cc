@@ -60,9 +60,9 @@ public:
    */
   UeMemberLteUeCmacSapUser (LteUeRrc* rrc);
 
-  virtual void SetTemporaryCellRnti (uint16_t rnti);
-  virtual void NotifyRandomAccessSuccessful ();
-  virtual void NotifyRandomAccessFailed ();
+  void SetTemporaryCellRnti (uint16_t rnti) override;
+  void NotifyRandomAccessSuccessful () override;
+  void NotifyRandomAccessFailed () override;
 
 private:
   LteUeRrc* m_rrc; ///< the RRC class

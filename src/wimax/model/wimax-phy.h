@@ -81,7 +81,7 @@ public:
    */
   static TypeId GetTypeId ();
   WimaxPhy ();
-  virtual ~WimaxPhy ();
+  ~WimaxPhy () override;
   /**
    * Attach the physical layer to a channel.
    * \param channel the channel to which the physical layer will be attached
@@ -351,7 +351,7 @@ public:
    * \brief computes the Physical parameters and store them
    */
   void SetPhyParameters ();
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * Get the mobility model of the device
    * \return the mobility model of the device

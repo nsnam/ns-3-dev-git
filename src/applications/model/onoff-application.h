@@ -103,7 +103,7 @@ public:
 
   OnOffApplication ();
 
-  virtual ~OnOffApplication();
+  ~OnOffApplication() override;
 
   /**
    * \brief Set the total number of bytes to send.
@@ -131,11 +131,11 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 private:
   // inherited from Application base class.
-  virtual void StartApplication ();    // Called at time specified by Start
-  virtual void StopApplication ();     // Called at time specified by Stop
+  void StartApplication () override;    // Called at time specified by Start
+  void StopApplication () override;     // Called at time specified by Stop
 
   //helpers
   /**

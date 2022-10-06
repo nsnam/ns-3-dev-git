@@ -56,7 +56,7 @@ public:
   static TypeId GetTypeId ();
 
   Ipv4FqCobaltTestPacketFilter ();
-  virtual ~Ipv4FqCobaltTestPacketFilter ();
+  ~Ipv4FqCobaltTestPacketFilter () override;
 
 private:
   /**
@@ -64,14 +64,14 @@ private:
    * \param item The item to classify (unused).
    * \return a pre-set hash value.
    */
-  virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+  int32_t DoClassify (Ptr<QueueDiscItem> item) const override;
 
   /**
    * Check the protocol.
    * \param item The item to check (unused).
    * \return true.
    */
-  virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
+  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
 };
 
 TypeId
@@ -114,10 +114,10 @@ class FqCobaltQueueDiscNoSuitableFilter : public TestCase
 {
 public:
   FqCobaltQueueDiscNoSuitableFilter ();
-  virtual ~FqCobaltQueueDiscNoSuitableFilter ();
+  ~FqCobaltQueueDiscNoSuitableFilter () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FqCobaltQueueDiscNoSuitableFilter::FqCobaltQueueDiscNoSuitableFilter ()
@@ -167,10 +167,10 @@ class FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
 {
 public:
   FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit ();
-  virtual ~FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit ();
+  ~FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -243,10 +243,10 @@ class FqCobaltQueueDiscDeficit : public TestCase
 {
 public:
   FqCobaltQueueDiscDeficit ();
-  virtual ~FqCobaltQueueDiscDeficit ();
+  ~FqCobaltQueueDiscDeficit () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -392,10 +392,10 @@ class FqCobaltQueueDiscTCPFlowsSeparation : public TestCase
 {
 public:
   FqCobaltQueueDiscTCPFlowsSeparation ();
-  virtual ~FqCobaltQueueDiscTCPFlowsSeparation ();
+  ~FqCobaltQueueDiscTCPFlowsSeparation () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -486,10 +486,10 @@ class FqCobaltQueueDiscUDPFlowsSeparation : public TestCase
 {
 public:
   FqCobaltQueueDiscUDPFlowsSeparation ();
-  virtual ~FqCobaltQueueDiscUDPFlowsSeparation ();
+  ~FqCobaltQueueDiscUDPFlowsSeparation () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue the queue disc
@@ -594,10 +594,10 @@ class FqCobaltQueueDiscEcnMarking : public TestCase
 {
 public:
   FqCobaltQueueDiscEcnMarking ();
-  virtual ~FqCobaltQueueDiscEcnMarking ();
+  ~FqCobaltQueueDiscEcnMarking () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.
@@ -916,9 +916,9 @@ class FqCobaltQueueDiscSetLinearProbing : public TestCase
 {
 public:
   FqCobaltQueueDiscSetLinearProbing ();
-  virtual ~FqCobaltQueueDiscSetLinearProbing ();
+  ~FqCobaltQueueDiscSetLinearProbing () override;
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -1032,10 +1032,10 @@ class FqCobaltQueueDiscL4sMode : public TestCase
 {
 public:
   FqCobaltQueueDiscL4sMode ();
-  virtual ~FqCobaltQueueDiscL4sMode ();
+  ~FqCobaltQueueDiscL4sMode () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.

@@ -40,7 +40,7 @@ class WifiInformationElementVector : public Header
 {
 public:
   WifiInformationElementVector ();
-  virtual ~WifiInformationElementVector ();
+  ~WifiInformationElementVector () override;
 
   /**
    * \brief Get the type ID.

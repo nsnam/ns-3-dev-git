@@ -103,14 +103,14 @@ class LteHelper : public Object
 {
 public:
   LteHelper ();
-  virtual ~LteHelper ();
+  ~LteHelper () override;
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Set the EpcHelper to be used to setup the EPC network in
@@ -676,7 +676,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
 

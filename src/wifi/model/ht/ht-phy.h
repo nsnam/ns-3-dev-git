@@ -61,7 +61,7 @@ public:
   /**
    * Destructor for HT PHY
    */
-  virtual ~HtPhy ();
+  ~HtPhy () override;
 
   WifiMode GetMcs (uint8_t index) const override;
   bool IsMcsSupported (uint8_t index) const override;

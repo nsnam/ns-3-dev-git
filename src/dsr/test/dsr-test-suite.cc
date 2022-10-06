@@ -70,9 +70,9 @@ class DsrFsHeaderTest : public TestCase
 {
 public:
   DsrFsHeaderTest ();
-  ~DsrFsHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrFsHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrFsHeaderTest::DsrFsHeaderTest ()
   : TestCase ("DSR Fixed size Header")
@@ -108,9 +108,9 @@ class DsrRreqHeaderTest : public TestCase
 {
 public:
   DsrRreqHeaderTest ();
-  ~DsrRreqHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrRreqHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrRreqHeaderTest::DsrRreqHeaderTest ()
   : TestCase ("DSR RREQ")
@@ -161,9 +161,9 @@ class DsrRrepHeaderTest : public TestCase
 {
 public:
   DsrRrepHeaderTest ();
-  ~DsrRrepHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrRrepHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrRrepHeaderTest::DsrRrepHeaderTest ()
   : TestCase ("DSR RREP")
@@ -210,9 +210,9 @@ class DsrSRHeaderTest : public TestCase
 {
 public:
   DsrSRHeaderTest ();
-  ~DsrSRHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrSRHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrSRHeaderTest::DsrSRHeaderTest ()
   : TestCase ("DSR Source Route")
@@ -264,9 +264,9 @@ class DsrRerrHeaderTest : public TestCase
 {
 public:
   DsrRerrHeaderTest ();
-  ~DsrRerrHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrRerrHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrRerrHeaderTest::DsrRerrHeaderTest ()
   : TestCase ("DSR RERR")
@@ -309,9 +309,9 @@ class DsrAckReqHeaderTest : public TestCase
 {
 public:
   DsrAckReqHeaderTest ();
-  ~DsrAckReqHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrAckReqHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrAckReqHeaderTest::DsrAckReqHeaderTest ()
   : TestCase ("DSR Ack Req")
@@ -351,9 +351,9 @@ class DsrAckHeaderTest : public TestCase
 {
 public:
   DsrAckHeaderTest ();
-  ~DsrAckHeaderTest ();
-  virtual void
-  DoRun ();
+  ~DsrAckHeaderTest () override;
+  void
+  DoRun () override;
 };
 DsrAckHeaderTest::DsrAckHeaderTest ()
   : TestCase ("DSR ACK")
@@ -397,9 +397,9 @@ class DsrCacheEntryTest : public TestCase
 {
 public:
   DsrCacheEntryTest ();
-  ~DsrCacheEntryTest ();
-  virtual void
-  DoRun ();
+  ~DsrCacheEntryTest () override;
+  void
+  DoRun () override;
 };
 DsrCacheEntryTest::DsrCacheEntryTest ()
   : TestCase ("DSR ACK")
@@ -461,9 +461,9 @@ class DsrSendBuffTest : public TestCase
 {
 public:
   DsrSendBuffTest ();
-  ~DsrSendBuffTest ();
-  virtual void
-  DoRun ();
+  ~DsrSendBuffTest () override;
+  void
+  DoRun () override;
   /// Check size limit function
   void CheckSizeLimit ();
   /// Check timeout function
@@ -563,9 +563,9 @@ class DsrRreqTableTest : public TestCase
 {
 public:
   DsrRreqTableTest ();
-  ~DsrRreqTableTest ();
-  virtual void
-  DoRun ();
+  ~DsrRreqTableTest () override;
+  void
+  DoRun () override;
 };
 DsrRreqTableTest::DsrRreqTableTest ()
   : TestCase ("DSR RreqTable")

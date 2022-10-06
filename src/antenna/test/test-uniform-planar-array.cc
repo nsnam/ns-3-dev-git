@@ -76,7 +76,7 @@ private:
   /**
    * Run the test
    */
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Compute the gain of the antenna array
    * \param a the antenna array

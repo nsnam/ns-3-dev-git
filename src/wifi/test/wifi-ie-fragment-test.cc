@@ -325,7 +325,7 @@ public:
    * \param extended whether this IE includes an Element ID Extension field
    */
   WifiIeFragmentationTest  (bool extended);
-  virtual ~WifiIeFragmentationTest  () = default;
+  ~WifiIeFragmentationTest  () override = default;
 
   /**
    * Serialize the given element in a buffer.
@@ -345,7 +345,7 @@ public:
   void CheckSerializedByte (const Buffer& buffer, uint32_t position, uint8_t value);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   bool m_extended;     //!< whether the IE includes an Element ID Extension field
 };

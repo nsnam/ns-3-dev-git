@@ -41,7 +41,7 @@ public:
    * speed (0,0,0).
    */
   ConstantAccelerationMobilityModel ();
-  virtual ~ConstantAccelerationMobilityModel ();
+  ~ConstantAccelerationMobilityModel () override;
   /**
    * Set the model's velocity and acceleration
    * \param velocity the velocity (m/s)
@@ -50,9 +50,9 @@ public:
   void SetVelocityAndAcceleration (const Vector &velocity, const Vector &acceleration);
 
 private:
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
 
   Time m_baseTime;  //!< the base time
   Vector m_basePosition; //!< the base position

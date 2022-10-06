@@ -47,20 +47,20 @@ public:
   /**
    * Destroy a Dot11sStack() installer helper.
    */
-  ~Dot11sStack ();
+  ~Dot11sStack () override;
 
   /**
    * Break any reference cycles in the installer helper.  Required for ns-3
    * Object support.
    */
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Install an 802.11s stack.
    * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
    * \return true if successful
    */
-  bool InstallStack (Ptr<MeshPointDevice> mp);
+  bool InstallStack (Ptr<MeshPointDevice> mp) override;
 
   /**
    * \brief Iterate through the referenced devices and protocols and print
@@ -68,13 +68,13 @@ public:
    * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
    * \param os The output stream
    */
-  void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
+  void Report (const Ptr<MeshPointDevice> mp, std::ostream&) override;
 
   /**
    * \brief Reset the statistics on the referenced devices and protocols.
    * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
    */
-  void ResetStats (const Ptr<MeshPointDevice> mp);
+  void ResetStats (const Ptr<MeshPointDevice> mp) override;
 private:
   Mac48Address m_root; ///< root
 };

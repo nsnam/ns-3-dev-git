@@ -750,7 +750,7 @@ class PreservePacketsInAmpdus : public TestCase
 {
 public:
   PreservePacketsInAmpdus ();
-  virtual ~PreservePacketsInAmpdus ();
+  ~PreservePacketsInAmpdus () override;
 
   void DoRun () override;
 

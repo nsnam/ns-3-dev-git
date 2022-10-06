@@ -36,10 +36,10 @@ class LrWpanSpectrumValueHelperTestCase : public TestCase
 {
 public:
   LrWpanSpectrumValueHelperTestCase ();
-  virtual ~LrWpanSpectrumValueHelperTestCase ();
+  ~LrWpanSpectrumValueHelperTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LrWpanSpectrumValueHelperTestCase::LrWpanSpectrumValueHelperTestCase ()

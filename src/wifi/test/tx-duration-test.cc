@@ -45,7 +45,7 @@ class TxDurationTest : public TestCase
 {
 public:
   TxDurationTest ();
-  virtual ~TxDurationTest ();
+  ~TxDurationTest () override;
   void DoRun () override;
 
 
@@ -572,7 +572,7 @@ class HeSigBDurationTest : public TestCase
 {
 public:
   HeSigBDurationTest ();
-  virtual ~HeSigBDurationTest ();
+  ~HeSigBDurationTest () override;
   void DoRun () override;
 
 private:
@@ -692,7 +692,7 @@ class PhyHeaderSectionsTest : public TestCase
 {
 public:
   PhyHeaderSectionsTest ();
-  virtual ~PhyHeaderSectionsTest ();
+  ~PhyHeaderSectionsTest () override;
   void DoRun () override;
 
 

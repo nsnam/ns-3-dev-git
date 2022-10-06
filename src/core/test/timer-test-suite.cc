@@ -67,7 +67,7 @@ class TimerStateTestCase : public TestCase
 {
 public:
   TimerStateTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 TimerStateTestCase::TimerStateTestCase ()
@@ -116,8 +116,8 @@ class TimerTemplateTestCase : public TestCase
 {
 public:
   TimerTemplateTestCase ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /// Member function with one int parameter.
   void bazi (int) {};

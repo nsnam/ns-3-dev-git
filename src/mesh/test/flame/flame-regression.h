@@ -66,9 +66,9 @@ class FlameRegressionTest : public TestCase
 {
 public:
   FlameRegressionTest ();
-  virtual ~FlameRegressionTest();
+  ~FlameRegressionTest() override;
 
-  virtual void DoRun ();
+  void DoRun () override;
   /// Check results function
   void CheckResults ();
 

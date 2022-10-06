@@ -90,7 +90,7 @@ public:
    */
   static TypeId GetTypeId ();
   WimaxNetDevice ();
-  virtual ~WimaxNetDevice ();
+  ~WimaxNetDevice () override;
   /**
    * Set transmission/receive transition gap
    * \param ttg transmit/receive transition gap
@@ -292,12 +292,12 @@ public:
    * Set interface index
    * \param index the index
    */
-  virtual void SetIfIndex (const uint32_t index);
+  void SetIfIndex (const uint32_t index) override;
   /**
    * Get interface index
    * \returns the interface index
    */
-  virtual uint32_t GetIfIndex () const;
+  uint32_t GetIfIndex () const override;
   /**
    * Get the channel (this method is redundant with GetChannel())
    * \returns the channel used by the phy layer
@@ -307,33 +307,33 @@ public:
    * Get the channel
    * \returns the channel
    */
-  virtual Ptr<Channel> GetChannel () const;
+  Ptr<Channel> GetChannel () const override;
   /**
    * Set address of the device
    * \param address the address
    */
-  virtual void SetAddress (Address address);
+  void SetAddress (Address address) override;
   /**
    * Get address of the device
    * \returns the address
    */
-  virtual Address GetAddress () const;
+  Address GetAddress () const override;
   /**
    * Set MTU value for the device
    * \param mtu the MTU
    * \returns true if successful
    */
-  virtual bool SetMtu (const uint16_t mtu);
+  bool SetMtu (const uint16_t mtu) override;
   /**
    * Get MTU of the device
    * \returns the MTU
    */
-  virtual uint16_t GetMtu () const;
+  uint16_t GetMtu () const override;
   /**
    * Check if link is up
    * \return true if the link is up
    */
-  virtual bool IsLinkUp () const;
+  bool IsLinkUp () const override;
   /**
    * Set link change callback function
    * \param callback the callback function
@@ -343,17 +343,17 @@ public:
    * Check if broadcast enabled
    * \returns true if broadcast
    */
-  virtual bool IsBroadcast () const;
+  bool IsBroadcast () const override;
   /**
    * Get broadcast address
    * \returns the address
    */
-  virtual Address GetBroadcast () const;
+  Address GetBroadcast () const override;
   /**
    * Check if multicast enabled
    * \returns true if multicast
    */
-  virtual bool IsMulticast () const;
+  bool IsMulticast () const override;
   /**
    * Get multicast address
    * \returns the multicast address
@@ -369,7 +369,7 @@ public:
    * Check if device is a point-to-point device
    * \returns true if point to point
    */
-  virtual bool IsPointToPoint () const;
+  bool IsPointToPoint () const override;
   /**
    * Send function
    * \param packet the packet
@@ -377,32 +377,32 @@ public:
    * \param protocolNumber the protocol number
    * \returns true if successful
    */
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
   /**
    * Set node pointer
    * \param node the node pointer
    */
-  virtual void SetNode (Ptr<Node> node);
+  void SetNode (Ptr<Node> node) override;
   /**
    * Get node pointer
    * \returns the node pointer
    */
-  virtual Ptr<Node> GetNode () const;
+  Ptr<Node> GetNode () const override;
   /**
    * Check if device needs ARP
    * \returns true if ARP required
    */
-  virtual bool NeedsArp () const;
+  bool NeedsArp () const override;
   /**
    * Set receive callback function
    * \param cb the receive callback function
    */
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
   /**
    * Add link change callback function
    * \param callback the link change callback function
    */
-  virtual void AddLinkChangeCallback (Callback<void> callback);
+  void AddLinkChangeCallback (Callback<void> callback) override;
   /**
    * Send a packet
    * \param packet the packet
@@ -411,12 +411,12 @@ public:
    * \param protocolNumber the protocol number
    * \returns true if successful
    */
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
   /**
    * Set promiscious receive callback function
    * \param cb the promiscious mode callback
    */
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
   /**
    * Get promiscious receive callback function
    * \returns the promiscious mode callback
@@ -426,7 +426,7 @@ public:
    * Check if device supports the SendFrom method
    * \returns true if SendFrom is supported
    */
-  virtual bool SupportsSendFrom () const;
+  bool SupportsSendFrom () const override;
 
   /**
    * TracedCallback signature for packet and Mac48Address.
@@ -457,10 +457,10 @@ public:
    */
   TracedCallback<Ptr<const Packet>, const Mac48Address &> m_traceTx;
 
-  virtual void DoDispose ();
-  virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual bool IsBridge () const;
+  void DoDispose () override;
+  Address GetMulticast (Ipv6Address addr) const override;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
+  bool IsBridge () const override;
 
   /**
    * Check if device is promiscious

@@ -45,7 +45,7 @@ public:
   /**
    * Destroy an AcousticModemEnergy Helper.
    */
-  ~AcousticModemEnergyModelHelper ();
+  ~AcousticModemEnergyModelHelper () override;
 
   /**
    * Sets an attribute of the underlying energy model object.
@@ -53,7 +53,7 @@ public:
    * \param name The name of the attribute to set.
    * \param v The value of the attribute.
    */
-  void Set (std::string name, const AttributeValue &v);
+  void Set (std::string name, const AttributeValue &v) override;
 
   /**
    * Sets the callback to be invoked when energy is depleted.
@@ -72,8 +72,8 @@ private:
    * \param source Pointer to EnergySource installed on node.
    * \return The energy model.
    */
-  virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
-                                            Ptr<EnergySource> source) const;
+  Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
+                                            Ptr<EnergySource> source) const override;
 
 private:
   /** Energy model factory. */

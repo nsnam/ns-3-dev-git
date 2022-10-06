@@ -48,7 +48,7 @@ public:
   /**
    * \brief Destroy an Ipv6 Ipv6ListRoutingHelper.
    */
-  virtual ~Ipv6ListRoutingHelper ();
+  ~Ipv6ListRoutingHelper () override;
 
   /**
    * \brief Construct an Ipv6ListRoutingHelper from another previously
@@ -66,7 +66,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  Ipv6ListRoutingHelper* Copy () const;
+  Ipv6ListRoutingHelper* Copy () const override;
 
   /**
    * \param routing a routing helper
@@ -85,7 +85,7 @@ public:
    *
    * This method will be called by ns3::InternetStackHelper::Install
    */
-  virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const override;
 private:
   /**
    * \brief Container for pairs of Ipv6RoutingHelper pointer / priority.

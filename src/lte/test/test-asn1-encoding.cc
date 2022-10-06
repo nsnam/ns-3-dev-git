@@ -121,7 +121,7 @@ public:
    * \param s the reference name
    */
   RrcHeaderTestCase (std::string s);
-  virtual void DoRun () = 0;
+  void DoRun () override = 0;
   /**
    * \brief Create radio resource config dedicated
    * \returns LteRrcSap::RadioResourceConfigDedicated
@@ -301,7 +301,7 @@ class RrcConnectionRequestTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionRequestTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRequest")
@@ -353,7 +353,7 @@ class RrcConnectionSetupTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionSetupTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupTestCase")
@@ -407,7 +407,7 @@ class RrcConnectionSetupCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionSetupCompleteTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupCompleteTestCase")
@@ -458,7 +458,7 @@ class RrcConnectionReconfigurationCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReconfigurationCompleteTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationCompleteTestCase ()
@@ -510,7 +510,7 @@ class RrcConnectionReconfigurationTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReconfigurationTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
@@ -720,7 +720,7 @@ class HandoverPreparationInfoTestCase : public RrcHeaderTestCase
 {
 public:
   HandoverPreparationInfoTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderTestCase ("Testing HandoverPreparationInfoTestCase")
@@ -799,7 +799,7 @@ class RrcConnectionReestablishmentRequestTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentRequestTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentRequestTestCase")
@@ -854,7 +854,7 @@ class RrcConnectionReestablishmentTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentTestCase")
@@ -907,7 +907,7 @@ class RrcConnectionReestablishmentCompleteTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionReestablishmentCompleteTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentCompleteTestCase")
@@ -958,7 +958,7 @@ class RrcConnectionRejectTestCase : public RrcHeaderTestCase
 {
 public:
   RrcConnectionRejectTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRejectTestCase")
@@ -1009,7 +1009,7 @@ class MeasurementReportTestCase : public RrcHeaderTestCase
 {
 public:
   MeasurementReportTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Testing MeasurementReportTestCase")

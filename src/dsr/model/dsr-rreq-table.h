@@ -206,7 +206,7 @@ public:
   static TypeId GetTypeId ();
 
   DsrRreqTable ();
-  virtual ~DsrRreqTable ();
+  ~DsrRreqTable () override;
 
   /**
    * Set the initial discovert hop limit

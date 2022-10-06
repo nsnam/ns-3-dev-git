@@ -98,7 +98,7 @@ class IcmpEchoReplyTestCase : public TestCase
 {
 public:
   IcmpEchoReplyTestCase ();
-  virtual ~IcmpEchoReplyTestCase ();
+  ~IcmpEchoReplyTestCase () override;
 
   /**
    * Send data
@@ -113,7 +113,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -230,7 +230,7 @@ class IcmpTimeExceedTestCase : public TestCase
 {
 public:
   IcmpTimeExceedTestCase ();
-  virtual ~IcmpTimeExceedTestCase ();
+  ~IcmpTimeExceedTestCase () override;
 
   /**
    * Send data
@@ -245,7 +245,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -374,7 +374,7 @@ class IcmpV6EchoReplyTestCase : public TestCase
 {
 public:
   IcmpV6EchoReplyTestCase ();
-  virtual ~IcmpV6EchoReplyTestCase ();
+  ~IcmpV6EchoReplyTestCase () override;
 
   /**
    * Send data
@@ -389,7 +389,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };
@@ -515,7 +515,7 @@ class IcmpV6TimeExceedTestCase : public TestCase
 {
 public:
   IcmpV6TimeExceedTestCase ();
-  virtual ~IcmpV6TimeExceedTestCase ();
+  ~IcmpV6TimeExceedTestCase () override;
 
   /**
    * Send data
@@ -530,7 +530,7 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   Ptr<Packet> m_receivedPacket; //!< received packet
 
 };

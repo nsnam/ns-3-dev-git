@@ -37,10 +37,10 @@ class LrWpanPlmeAndPdInterfaceTestCase : public TestCase
 {
 public:
   LrWpanPlmeAndPdInterfaceTestCase ();
-  virtual ~LrWpanPlmeAndPdInterfaceTestCase ();
+  ~LrWpanPlmeAndPdInterfaceTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Receives a PdData indication

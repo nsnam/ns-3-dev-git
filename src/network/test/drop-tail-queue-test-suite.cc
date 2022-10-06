@@ -32,7 +32,7 @@ class DropTailQueueTestCase : public TestCase
 {
 public:
   DropTailQueueTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 DropTailQueueTestCase::DropTailQueueTestCase ()

@@ -55,13 +55,13 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /** Constructor */
   EpcMmeApplication ();
 
   /** Destructor */
-  virtual ~EpcMmeApplication ();
+  ~EpcMmeApplication () override;
 
   /**
    *

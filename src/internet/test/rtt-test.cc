@@ -39,8 +39,8 @@ public:
   RttEstimatorTestCase ();
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * \brief Check RTT values.

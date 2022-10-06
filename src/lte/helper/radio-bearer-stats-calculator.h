@@ -84,8 +84,8 @@ public:
   /**
    * Class destructor
    */
-  virtual
-  ~RadioBearerStatsCalculator ();
+  
+  ~RadioBearerStatsCalculator () override;
 
   // Inherited from ns3::Object
   /**
@@ -93,7 +93,7 @@ public:
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Get the name of the file where the uplink statistics will be stored.

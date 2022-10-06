@@ -45,7 +45,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  virtual ~SpectrumErrorModel ();
+  ~SpectrumErrorModel () override;
 
   /**
    * Start a packet reception
@@ -79,7 +79,7 @@ public:
 class ShannonSpectrumErrorModel : public SpectrumErrorModel
 {
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 public:
   /**
@@ -88,9 +88,9 @@ public:
    */
   static TypeId GetTypeId ();
   // inherited from SpectrumErrorModel
-  void StartRx (Ptr<const Packet> p);
-  void EvaluateChunk (const SpectrumValue& sinr, Time duration);
-  bool IsRxCorrect ();
+  void StartRx (Ptr<const Packet> p) override;
+  void EvaluateChunk (const SpectrumValue& sinr, Time duration) override;
+  bool IsRxCorrect () override;
 
 private:
   uint32_t m_bytes;             //!< Length of the packet being received

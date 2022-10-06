@@ -100,14 +100,14 @@ public:
    * \brief Get the type ID for the instance
    * \return the instance TypeId
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor
    */
   TrafficControlLayer ();
 
-  virtual ~TrafficControlLayer ();
+  ~TrafficControlLayer () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   TrafficControlLayer (TrafficControlLayer const &) = delete;
@@ -202,9 +202,9 @@ public:
 
 protected:
 
-  virtual void DoDispose ();
-  virtual void DoInitialize ();
-  virtual void NotifyNewAggregate ();
+  void DoDispose () override;
+  void DoInitialize () override;
+  void NotifyNewAggregate () override;
 
 private:
   /**

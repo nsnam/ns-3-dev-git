@@ -46,11 +46,11 @@ public:
   static TypeId GetTypeId ();
 
   WifiDefaultProtectionManager ();
-  virtual ~WifiDefaultProtectionManager ();
+  ~WifiDefaultProtectionManager () override;
 
-  virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
+  std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMpdu> mpdu,
                                                       const WifiTxParameters& txParams) override;
-  virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
+  std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMpdu> msdu,
                                                             const WifiTxParameters& txParams) override;
 
 protected:

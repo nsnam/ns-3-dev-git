@@ -46,7 +46,7 @@ class GlobalRouteManagerImplTestCase : public TestCase
 {
 public:
   GlobalRouteManagerImplTestCase();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()

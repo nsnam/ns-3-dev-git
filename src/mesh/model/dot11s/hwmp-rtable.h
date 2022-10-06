@@ -83,8 +83,8 @@ public:
    */
   static TypeId GetTypeId ();
   HwmpRtable ();
-  ~HwmpRtable ();
-  void DoDispose ();
+  ~HwmpRtable () override;
+  void DoDispose () override;
 
   /// \name Add/delete paths
   ///@{

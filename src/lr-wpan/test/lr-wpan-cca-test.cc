@@ -93,7 +93,7 @@ private:
    */
   static void PhyRxDrop (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, Ptr<const Packet> packet);
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   LrWpanPhyEnumeration m_status; //!< PHY status.
 

@@ -55,10 +55,10 @@ class UniqueTypeIdTestCase : public TestCase
 {
 public:
   UniqueTypeIdTestCase ();
-  virtual ~UniqueTypeIdTestCase ();
+  ~UniqueTypeIdTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   enum
   {
     HashChainFlag = 0x80000000
@@ -135,10 +135,10 @@ class CollisionTestCase : public TestCase
 {
 public:
   CollisionTestCase ();
-  virtual ~CollisionTestCase ();
+  ~CollisionTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   enum
   {
     HashChainFlag = 0x80000000
@@ -228,7 +228,7 @@ public:
     : m_attr (0)
   {
   }
-  virtual ~DeprecatedAttribute ()
+  ~DeprecatedAttribute () override
   {}
 
   /**
@@ -298,10 +298,10 @@ class DeprecatedAttributeTestCase : public TestCase
 {
 public:
   DeprecatedAttributeTestCase ();
-  virtual ~DeprecatedAttributeTestCase ();
+  ~DeprecatedAttributeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -361,11 +361,11 @@ class LookupTimeTestCase : public TestCase
 {
 public:
   LookupTimeTestCase ();
-  virtual ~LookupTimeTestCase ();
+  ~LookupTimeTestCase () override;
 
 private:
-  void DoRun ();
-  void DoSetup ();
+  void DoRun () override;
+  void DoSetup () override;
   /**
    * Report the performance test results.
    * \param how How the TypeId is searched (name or hash).

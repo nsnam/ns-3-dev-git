@@ -104,7 +104,7 @@ public:
   /**
    * \brief Destroy a CsmaChannel
    */
-  virtual ~CsmaChannel ();
+  ~CsmaChannel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   CsmaChannel (const CsmaChannel &) = delete;
@@ -260,7 +260,7 @@ public:
    * \return Returns the total number of devices including devices
    * that have been detached from the channel.
    */
-  virtual std::size_t GetNDevices () const;
+  std::size_t GetNDevices () const override;
 
   /**
    * \return Get a NetDevice pointer to a connected network device.
@@ -269,7 +269,7 @@ public:
    * \return Returns the pointer to the net device that is associated
    * with deviceId i.
    */
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
   /**
    * \return Get a CsmaNetDevice pointer to a connected network device.

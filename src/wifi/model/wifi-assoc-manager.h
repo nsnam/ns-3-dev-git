@@ -82,7 +82,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual ~WifiAssocManager ();
+  ~WifiAssocManager () override;
 
   /**
    * Set the pointer to the STA wifi MAC.

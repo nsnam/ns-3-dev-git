@@ -55,7 +55,7 @@ public:
    * \param type CID type
    */
   WimaxConnection (Cid cid, enum Cid::Type type);
-  ~WimaxConnection ();
+  ~WimaxConnection () override;
 
   /**
    * Get CID function
@@ -146,7 +146,7 @@ public:
   void ClearFragmentsQueue ();
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   Cid m_cid; ///< CID
   enum Cid::Type m_cidType; ///< CID type

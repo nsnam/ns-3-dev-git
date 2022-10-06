@@ -43,7 +43,7 @@ public:
    */
   static TypeId GetTypeId ();
   SSManager ();
-  ~SSManager ();
+  ~SSManager () override;
   /**
    * Create SS record
    * \param macAddress the MAC address

@@ -62,7 +62,7 @@ public:
   static TypeId GetTypeId ();
 
   Ipv4FqPieTestPacketFilter ();
-  virtual ~Ipv4FqPieTestPacketFilter ();
+  ~Ipv4FqPieTestPacketFilter () override;
 
 private:
   /**
@@ -70,14 +70,14 @@ private:
    * \param item The item to classify (unused).
    * \return a pre-set hash value.
    */
-  virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const;
+  int32_t DoClassify (Ptr<QueueDiscItem> item) const override;
 
   /**
    * Check the protocol.
    * \param item The item to check (unused).
    * \return true.
    */
-  virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
+  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
 };
 
 TypeId
@@ -118,10 +118,10 @@ class FqPieQueueDiscNoSuitableFilter : public TestCase
 {
 public:
   FqPieQueueDiscNoSuitableFilter ();
-  virtual ~FqPieQueueDiscNoSuitableFilter ();
+  ~FqPieQueueDiscNoSuitableFilter () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FqPieQueueDiscNoSuitableFilter::FqPieQueueDiscNoSuitableFilter ()
@@ -169,10 +169,10 @@ class FqPieQueueDiscIPFlowsSeparationAndPacketLimit : public TestCase
 {
 public:
   FqPieQueueDiscIPFlowsSeparationAndPacketLimit ();
-  virtual ~FqPieQueueDiscIPFlowsSeparationAndPacketLimit ();
+  ~FqPieQueueDiscIPFlowsSeparationAndPacketLimit () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue the queue disc
@@ -243,10 +243,10 @@ class FqPieQueueDiscDeficit : public TestCase
 {
 public:
   FqPieQueueDiscDeficit ();
-  virtual ~FqPieQueueDiscDeficit ();
+  ~FqPieQueueDiscDeficit () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -390,10 +390,10 @@ class FqPieQueueDiscTCPFlowsSeparation : public TestCase
 {
 public:
   FqPieQueueDiscTCPFlowsSeparation ();
-  virtual ~FqPieQueueDiscTCPFlowsSeparation ();
+  ~FqPieQueueDiscTCPFlowsSeparation () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -482,10 +482,10 @@ class FqPieQueueDiscUDPFlowsSeparation : public TestCase
 {
 public:
   FqPieQueueDiscUDPFlowsSeparation ();
-  virtual ~FqPieQueueDiscUDPFlowsSeparation ();
+  ~FqPieQueueDiscUDPFlowsSeparation () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -596,10 +596,10 @@ class FqPieQueueDiscSetLinearProbing : public TestCase
 {
 public:
   FqPieQueueDiscSetLinearProbing ();
-  virtual ~FqPieQueueDiscSetLinearProbing ();
+  ~FqPieQueueDiscSetLinearProbing () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue a packet.
    * \param queue The queue disc.
@@ -710,10 +710,10 @@ class FqPieQueueDiscL4sMode : public TestCase
 {
 public:
   FqPieQueueDiscL4sMode ();
-  virtual ~FqPieQueueDiscL4sMode ();
+  ~FqPieQueueDiscL4sMode () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Enqueue the given number of packets.
    * \param queue The queue disc.

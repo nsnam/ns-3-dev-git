@@ -63,18 +63,18 @@ public:
    * \param sock the object to copy
    */
   TcpHtcp (const TcpHtcp& sock);
-  virtual ~TcpHtcp ();
-  virtual std::string GetName () const;
-  virtual Ptr<TcpCongestionOps> Fork ();
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  ~TcpHtcp () override;
+  std::string GetName () const override;
+  Ptr<TcpCongestionOps> Fork () override;
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
 
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time &rtt);
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                          const Time &rtt) override;
 
 protected:
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb,
-                                    uint32_t segmentsAcked);
+  void CongestionAvoidance (Ptr<TcpSocketState> tcb,
+                                    uint32_t segmentsAcked) override;
 
 private:
   /**

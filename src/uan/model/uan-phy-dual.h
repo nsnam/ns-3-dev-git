@@ -44,7 +44,7 @@ public:
   /** Constructor */
   UanPhyCalcSinrDual ();
   /** Destructor */
-  virtual ~UanPhyCalcSinrDual ();
+  ~UanPhyCalcSinrDual () override;
 
   /**
    * Register this type.
@@ -52,14 +52,14 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual double CalcSinrDb (Ptr<Packet> pkt,
+  double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
                              double rxPowerDb,
                              double ambNoiseDb,
                              UanTxMode mode,
                              UanPdp pdp,
                              const UanTransducer::ArrivalList &arrivalList
-                             ) const;
+                             ) const override;
 
 };  // class UanPhyCalcSinrDual
 
@@ -84,7 +84,7 @@ public:
   /** Constructor */
   UanPhyDual ();
   /** Dummy destructor \see DoDispose */
-  virtual ~UanPhyDual ();
+  ~UanPhyDual () override;
 
   /**
    * Register this type.
@@ -93,10 +93,10 @@ public:
   static TypeId GetTypeId ();
 
   // Inherited methods:
-  virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback);
-  virtual void EnergyDepletionHandler ();
-  virtual void EnergyRechargeHandler ();
-  virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
+  void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback) override;
+  void EnergyDepletionHandler () override;
+  void EnergyRechargeHandler () override;
+  void SendPacket (Ptr<Packet> pkt, uint32_t modeNum) override;
 
   /**
    * Register a UanPhyListener to be notified of common UanPhy events.
@@ -107,40 +107,40 @@ public:
    * messages as underneath there are two generic phys here.
    * Each will notify of state changes independently.
    */
-  virtual void RegisterListener (UanPhyListener *listener);
-  virtual void StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
-  virtual void SetReceiveOkCallback (RxOkCallback cb);
-  virtual void SetReceiveErrorCallback (RxErrCallback cb);
-  virtual void SetTxPowerDb (double txpwr);
-  virtual void SetRxThresholdDb (double thresh);
-  virtual void SetCcaThresholdDb (double thresh);
-  virtual double GetTxPowerDb ();
-  virtual double GetRxThresholdDb ();
-  virtual double GetCcaThresholdDb ();
-  virtual bool IsStateSleep ();
-  virtual bool IsStateIdle ();
-  virtual bool IsStateBusy ();
-  virtual bool IsStateRx ();
-  virtual bool IsStateTx ();
-  virtual bool IsStateCcaBusy ();
-  virtual Ptr<UanChannel> GetChannel () const;
-  virtual Ptr<UanNetDevice> GetDevice () const;
-  virtual void SetChannel (Ptr<UanChannel> channel);
-  virtual void SetDevice (Ptr<UanNetDevice> device);
-  virtual void SetMac (Ptr<UanMac> mac);
-  virtual void NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
-  virtual void NotifyIntChange ();
-  virtual void SetTransducer (Ptr<UanTransducer> trans);
-  virtual Ptr<UanTransducer> GetTransducer ();
-  virtual uint32_t GetNModes ();
-  virtual UanTxMode GetMode (uint32_t n);
-  virtual void Clear ();
-  virtual void SetSleepMode ([[maybe_unused]] bool sleep)
+  void RegisterListener (UanPhyListener *listener) override;
+  void StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp) override;
+  void SetReceiveOkCallback (RxOkCallback cb) override;
+  void SetReceiveErrorCallback (RxErrCallback cb) override;
+  void SetTxPowerDb (double txpwr) override;
+  void SetRxThresholdDb (double thresh) override;
+  void SetCcaThresholdDb (double thresh) override;
+  double GetTxPowerDb () override;
+  double GetRxThresholdDb () override;
+  double GetCcaThresholdDb () override;
+  bool IsStateSleep () override;
+  bool IsStateIdle () override;
+  bool IsStateBusy () override;
+  bool IsStateRx () override;
+  bool IsStateTx () override;
+  bool IsStateCcaBusy () override;
+  Ptr<UanChannel> GetChannel () const override;
+  Ptr<UanNetDevice> GetDevice () const override;
+  void SetChannel (Ptr<UanChannel> channel) override;
+  void SetDevice (Ptr<UanNetDevice> device) override;
+  void SetMac (Ptr<UanMac> mac) override;
+  void NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode) override;
+  void NotifyIntChange () override;
+  void SetTransducer (Ptr<UanTransducer> trans) override;
+  Ptr<UanTransducer> GetTransducer () override;
+  uint32_t GetNModes () override;
+  UanTxMode GetMode (uint32_t n) override;
+  void Clear () override;
+  void SetSleepMode ([[maybe_unused]] bool sleep) override
   {
     /// \todo This method has to be implemented
   }
-  int64_t AssignStreams (int64_t stream);
-  Ptr<Packet> GetPacketRx () const;
+  int64_t AssignStreams (int64_t stream) override;
+  Ptr<Packet> GetPacketRx () const override;
 
 
   /** \copydoc UanPhy::IsStateIdle */
@@ -272,7 +272,7 @@ private:
   void RxErrFromSubPhy (Ptr<Packet> pkt, double sinr);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanPhyDual
 

@@ -66,7 +66,7 @@ public:
     return tid;
   }
 
-  TypeId GetInstanceTypeId () const
+  TypeId GetInstanceTypeId () const override
   {
     return GetTypeId ();
   }
@@ -101,8 +101,8 @@ class SequenceNumberTestCase : public TestCase
 public:
 
   SequenceNumberTestCase ();
-  virtual ~SequenceNumberTestCase ();
-  virtual void DoRun ();
+  ~SequenceNumberTestCase () override;
+  void DoRun () override;
 };
 
 SequenceNumberTestCase::SequenceNumberTestCase ()

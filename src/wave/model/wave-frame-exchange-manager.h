@@ -53,10 +53,10 @@ public:
    */
   static TypeId GetTypeId ();
   WaveFrameExchangeManager ();
-  virtual ~WaveFrameExchangeManager ();
+  ~WaveFrameExchangeManager () override;
 
   // Overridden from FrameExchangeManager
-  virtual bool StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth);
+  bool StartTransmission (Ptr<Txop> dcf, uint16_t allowedWidth) override;
 
   /**
    * \param device WaveNetDevice associated with WaveFrameExchangeManager
@@ -65,7 +65,7 @@ public:
 
 protected:
   // Overridden from FrameExchangeManager
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

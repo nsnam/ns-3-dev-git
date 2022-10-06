@@ -39,7 +39,7 @@ s */
 class DataOutputInterface : public Object {
 public:
   DataOutputInterface();
-  virtual ~DataOutputInterface();
+  ~DataOutputInterface() override;
 
   /**
    * Register this type.
@@ -65,7 +65,7 @@ public:
   std::string GetFilePrefix () const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   std::string m_filePrefix; //!< File prefix for the DataOutputInterface
 

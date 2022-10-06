@@ -48,7 +48,7 @@ public:
    */
   static TypeId GetTypeId ();
   RrMultiUserScheduler ();
-  virtual ~RrMultiUserScheduler ();
+  ~RrMultiUserScheduler () override;
 
 protected:
   void DoDispose () override;

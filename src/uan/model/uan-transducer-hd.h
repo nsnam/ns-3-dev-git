@@ -39,7 +39,7 @@ public:
   /** Constructor */
   UanTransducerHd ();
   /** Dummy destructor, see DoDispose */
-  virtual ~UanTransducerHd ();
+  ~UanTransducerHd () override;
 
   /**
    * Register this type.
@@ -48,20 +48,20 @@ public:
   static TypeId GetTypeId ();
 
   // inherited methods
-  virtual State GetState () const;
-  virtual bool IsRx () const;
-  virtual bool IsTx () const;
-  virtual const ArrivalList &GetArrivalList () const;
-  virtual double ApplyRxGainDb (double rxPowerDb, UanTxMode mode);
-  virtual void SetRxGainDb (double gainDb);
-  virtual double GetRxGainDb ();
-  virtual void Receive (Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
-  virtual void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
-  virtual void SetChannel (Ptr<UanChannel> chan);
-  virtual Ptr<UanChannel> GetChannel () const;
-  virtual void AddPhy (Ptr<UanPhy>);
-  virtual const UanPhyList &GetPhyList () const;
-  virtual void Clear ();
+  State GetState () const override;
+  bool IsRx () const override;
+  bool IsTx () const override;
+  const ArrivalList &GetArrivalList () const override;
+  double ApplyRxGainDb (double rxPowerDb, UanTxMode mode) override;
+  void SetRxGainDb (double gainDb) override;
+  double GetRxGainDb () override;
+  void Receive (Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp) override;
+  void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode) override;
+  void SetChannel (Ptr<UanChannel> chan) override;
+  Ptr<UanChannel> GetChannel () const override;
+  void AddPhy (Ptr<UanPhy>) override;
+  const UanPhyList &GetPhyList () const override;
+  void Clear () override;
 
 private:
   State m_state;              //!< Transducer state.
@@ -82,7 +82,7 @@ private:
   /** Handle end of transmission event. */
   void EndTx ();
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 };  // class UanTransducerHd
 

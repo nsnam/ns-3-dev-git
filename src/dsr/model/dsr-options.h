@@ -86,7 +86,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~DsrOptions ();
+  ~DsrOptions () override;
   /**
     * \brief Get the option number.
     * \return option number
@@ -289,10 +289,10 @@ public:
   static TypeId GetTypeId ();
 
   DsrOptionPad1 ();
-  virtual ~DsrOptionPad1 ();
+  ~DsrOptionPad1 () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 };
 
 /**
@@ -314,10 +314,10 @@ public:
   static TypeId GetTypeId ();
 
   DsrOptionPadn ();
-  virtual ~DsrOptionPadn ();
+  ~DsrOptionPadn () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 };
 
 /**
@@ -341,7 +341,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
   /**
    * \brief Constructor.
    */
@@ -349,10 +349,10 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~DsrOptionRreq ();
+  ~DsrOptionRreq () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 
 private:
   /**
@@ -386,13 +386,13 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   DsrOptionRrep ();
-  virtual ~DsrOptionRrep ();
+  ~DsrOptionRrep () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 
 private:
   /**
@@ -426,13 +426,13 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   DsrOptionSR ();
-  virtual ~DsrOptionSR ();
+  ~DsrOptionSR () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 
 private:
   /**
@@ -462,13 +462,13 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   DsrOptionRerr ();
-  virtual ~DsrOptionRerr ();
+  ~DsrOptionRerr () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
   /**
    * \brief Do Send error message
    *
@@ -513,13 +513,13 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   DsrOptionAckReq ();
-  virtual ~DsrOptionAckReq ();
+  ~DsrOptionAckReq () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 
 private:
   /**
@@ -553,13 +553,13 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   DsrOptionAck ();
-  virtual ~DsrOptionAck ();
+  ~DsrOptionAck () override;
 
-  virtual uint8_t GetOptionNumber () const;
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
+  uint8_t GetOptionNumber () const override;
+  uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) override;
 
 private:
   /**

@@ -88,7 +88,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
   /**
    * \brief Constructor.
    */
@@ -96,7 +96,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~DsrFsHeader ();
+  ~DsrFsHeader () override;
   /**
    * \brief Set the "Next header" field.
    * \param protocol the next header number
@@ -151,23 +151,23 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   /**
@@ -286,7 +286,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
   /**
    * \brief Constructor.
    */
@@ -294,28 +294,28 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~DsrRoutingHeader ();
+  ~DsrRoutingHeader () override;
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 static inline std::ostream & operator<< (std::ostream& os, const DsrRoutingHeader & dsr)

@@ -48,10 +48,10 @@ public:
   /**
    * Destructor
    */
-  virtual ~EpcUeNas ();
+  ~EpcUeNas () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

@@ -54,7 +54,7 @@ public:
   };
 
   TupleObject ();
-  virtual ~TupleObject ();
+  ~TupleObject () override;
 
   /**
    * \brief Get the type ID.
@@ -158,10 +158,10 @@ class TupleValueTestCase : public TestCase
 {
 public:
   TupleValueTestCase ();
-  virtual ~TupleValueTestCase () {}
+  ~TupleValueTestCase () override {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 TupleValueTestCase::TupleValueTestCase ()

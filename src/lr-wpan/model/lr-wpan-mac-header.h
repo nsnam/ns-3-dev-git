@@ -101,7 +101,7 @@ public:
    */
   LrWpanMacHeader (enum LrWpanMacType wpanMacType, uint8_t seqNum);
 
-  ~LrWpanMacHeader ();
+  ~LrWpanMacHeader () override;
 
   /**
    * Get the header type
@@ -391,12 +391,12 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:

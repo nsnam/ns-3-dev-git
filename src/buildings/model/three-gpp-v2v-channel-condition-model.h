@@ -64,7 +64,7 @@ public:
   /**
    * Destructor for the ThreeGppV2vUrbanChannelConditionModel class
    */
-  virtual ~ThreeGppV2vUrbanChannelConditionModel () override;
+  ~ThreeGppV2vUrbanChannelConditionModel () override;
 
 private:
   /**
@@ -75,7 +75,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * Compute the NLOS probability. It determines the presence of obstructions
@@ -86,7 +86,7 @@ private:
    * \param b rx mobility model
    * \return the NLOS probability
    */
-  virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   Ptr<BuildingsChannelConditionModel> m_buildingsCcm; //!< used to determine the obstructions due to buildings
 };
@@ -126,7 +126,7 @@ public:
   /**
    * Destructor for the ThreeGppV2vHighwayChannelConditionModel class
    */
-  virtual ~ThreeGppV2vHighwayChannelConditionModel () override;
+  ~ThreeGppV2vHighwayChannelConditionModel () override;
 
 private:
   /**
@@ -137,7 +137,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * Compute the NLOS probability. It determines the presence of obstructions
@@ -148,7 +148,7 @@ private:
    * \param b rx mobility model
    * \return the NLOS probability
    */
-  virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * \brief The callback which is hooked to a method to compute channel condition.

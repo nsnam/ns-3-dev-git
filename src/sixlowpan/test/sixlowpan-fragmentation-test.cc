@@ -64,9 +64,9 @@ class SixlowpanFragmentationTest : public TestCase
   uint8_t m_icmpCode;   //!< ICMP code.
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   SixlowpanFragmentationTest ();
-  ~SixlowpanFragmentationTest ();
+  ~SixlowpanFragmentationTest () override;
 
   // server part
 

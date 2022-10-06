@@ -59,7 +59,7 @@ public:
   static TypeId GetTypeId ();
 
   QueueBase ();
-  virtual ~QueueBase ();
+  ~QueueBase () override;
 
   /**
    * \brief Append the item type to the provided type ID if the latter does not
@@ -273,7 +273,7 @@ public:
   static TypeId GetTypeId ();
 
   Queue ();
-  virtual ~Queue ();
+  ~Queue () override;
 
   /**
    * Place an item into the Queue (each subclass defines the position)

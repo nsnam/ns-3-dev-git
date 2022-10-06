@@ -324,24 +324,24 @@ public:
   MemberLteUeCphySapProvider (C* owner);
 
   // inherited from LteUeCphySapProvider
-  virtual void Reset ();
-  virtual void StartCellSearch (uint32_t dlEarfcn);
-  virtual void SynchronizeWithEnb (uint16_t cellId);
-  virtual void SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn);
-  virtual uint16_t GetCellId ();
-  virtual uint32_t GetDlEarfcn ();
-  virtual void SetDlBandwidth (uint16_t dlBandwidth);
-  virtual void ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth);
-  virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower);
-  virtual void SetRnti (uint16_t rnti);
-  virtual void SetTransmissionMode (uint8_t txMode);
-  virtual void SetSrsConfigurationIndex (uint16_t srcCi);
-  virtual void SetPa (double pa);
-  virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient);
-  virtual void ResetPhyAfterRlf ();
-  virtual void ResetRlfParams ();
-  virtual void StartInSnycDetection ();
-  virtual void SetImsi (uint64_t imsi);
+  void Reset () override;
+  void StartCellSearch (uint32_t dlEarfcn) override;
+  void SynchronizeWithEnb (uint16_t cellId) override;
+  void SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn) override;
+  uint16_t GetCellId () override;
+  uint32_t GetDlEarfcn () override;
+  void SetDlBandwidth (uint16_t dlBandwidth) override;
+  void ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth) override;
+  void ConfigureReferenceSignalPower (int8_t referenceSignalPower) override;
+  void SetRnti (uint16_t rnti) override;
+  void SetTransmissionMode (uint8_t txMode) override;
+  void SetSrsConfigurationIndex (uint16_t srcCi) override;
+  void SetPa (double pa) override;
+  void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient) override;
+  void ResetPhyAfterRlf () override;
+  void ResetRlfParams () override;
+  void StartInSnycDetection () override;
+  void SetImsi (uint64_t imsi) override;
 
 private:
   MemberLteUeCphySapProvider ();
@@ -501,14 +501,14 @@ public:
   MemberLteUeCphySapUser (C* owner);
 
   // methods inherited from LteUeCphySapUser go here
-  virtual void RecvMasterInformationBlock (uint16_t cellId,
-                                           LteRrcSap::MasterInformationBlock mib);
-  virtual void RecvSystemInformationBlockType1 (uint16_t cellId,
-                                                LteRrcSap::SystemInformationBlockType1 sib1);
-  virtual void ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
-  virtual void NotifyOutOfSync ();
-  virtual void NotifyInSync ();
-  virtual void ResetSyncIndicationCounter ();
+  void RecvMasterInformationBlock (uint16_t cellId,
+                                           LteRrcSap::MasterInformationBlock mib) override;
+  void RecvSystemInformationBlockType1 (uint16_t cellId,
+                                                LteRrcSap::SystemInformationBlockType1 sib1) override;
+  void ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params) override;
+  void NotifyOutOfSync () override;
+  void NotifyInSync () override;
+  void ResetSyncIndicationCounter () override;
 
 private:
   MemberLteUeCphySapUser ();

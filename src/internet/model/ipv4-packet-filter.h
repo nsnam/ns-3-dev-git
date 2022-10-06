@@ -44,11 +44,11 @@ public:
   static TypeId GetTypeId ();
 
   Ipv4PacketFilter ();
-  virtual ~Ipv4PacketFilter ();
+  ~Ipv4PacketFilter () override;
 
 private:
-  virtual bool CheckProtocol (Ptr<QueueDiscItem> item) const;
-  virtual int32_t DoClassify (Ptr<QueueDiscItem> item) const = 0;
+  bool CheckProtocol (Ptr<QueueDiscItem> item) const override;
+  int32_t DoClassify (Ptr<QueueDiscItem> item) const override = 0;
 };
 
 } // namespace ns3

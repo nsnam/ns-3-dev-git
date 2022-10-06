@@ -63,9 +63,9 @@ public:
    * \brief Constructor
    */
   Issue211Test ();
-  virtual ~Issue211Test ();
+  ~Issue211Test () override;
 
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**

@@ -58,7 +58,7 @@ public:
 
 
   AntennaModel ();
-  virtual ~AntennaModel ();
+  ~AntennaModel () override;
 
   /**
    * \brief Get the type ID.

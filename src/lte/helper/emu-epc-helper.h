@@ -49,7 +49,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~EmuEpcHelper ();
+  ~EmuEpcHelper () override;
 
   // inherited from Object
   /**
@@ -57,12 +57,12 @@ public:
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  virtual void DoDispose ();
+  TypeId GetInstanceTypeId () const override;
+  void DoDispose () override;
 
   // inherited from EpcHelper
-  virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds);
-  virtual void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
+  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds) override;
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2) override;
 
 private:
 

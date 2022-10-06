@@ -34,7 +34,7 @@ class SocketWriter : public Application
 {
 public:
   SocketWriter ();
-  virtual ~SocketWriter ();
+  ~SocketWriter () override;
   /**
    * Register this type.
    * \return The TypeId.
@@ -62,8 +62,8 @@ public:
   void Close ();
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
   Address m_peer;         //!< Peer's address.
   Ptr<Node> m_node;       //!< Node pointer
   Ptr<Socket> m_socket;   //!< Socket.

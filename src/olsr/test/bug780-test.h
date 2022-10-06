@@ -40,13 +40,13 @@ class Bug780Test : public TestCase
 {
 public:
   Bug780Test ();
-  ~Bug780Test ();
+  ~Bug780Test () override;
 private:
   /// Total simulation time
   const Time m_time;
   /// Create & configure test network
   void CreateNodes ();
-  void DoRun ();
+  void DoRun () override;
   /// Send one ping
   void SendPing ();
   /**

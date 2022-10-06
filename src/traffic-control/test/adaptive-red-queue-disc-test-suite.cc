@@ -51,15 +51,15 @@ public:
    * \param addr address
    */
   AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
-  virtual ~AredQueueDiscTestItem ();
+  ~AredQueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   AredQueueDiscTestItem () = delete;
   AredQueueDiscTestItem (const AredQueueDiscTestItem &) = delete;
   AredQueueDiscTestItem & operator = (const AredQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark();
+  void AddHeader () override;
+  bool Mark() override;
 };
 
 AredQueueDiscTestItem::AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
@@ -92,7 +92,7 @@ class AredQueueDiscTestCase : public TestCase
 {
 public:
   AredQueueDiscTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Enqueue function

@@ -454,9 +454,9 @@ private:
   {
   public:
     // Inherited
-    virtual bool Parse (const std::string value);
-    bool HasDefault () const;
-    std::string GetDefault () const;
+    bool Parse (const std::string value) override;
+    bool HasDefault () const override;
+    std::string GetDefault () const override;
 
     T *m_valuePtr;            /**< Pointer to the POD location */
     std::string m_default;    /**< String representation of default value */
@@ -470,9 +470,9 @@ private:
   {
   public:
     // Inherited
-    bool Parse (const std::string value);
-    bool HasDefault () const;
-    std::string GetDefault () const;
+    bool Parse (const std::string value) override;
+    bool HasDefault () const override;
+    std::string GetDefault () const override;
 
     std::string m_value;     /**< The argument value. */
   };  // class StringItem
@@ -485,8 +485,8 @@ private:
   {
   public:
     // Inherited
-    bool HasDefault () const;
-    std::string GetDefault () const;
+    bool HasDefault () const override;
+    std::string GetDefault () const override;
 
     /**
      * Parse from a string.
@@ -494,7 +494,7 @@ private:
      * \param [in] value The string representation
      * \return \c true if parsing the value succeeded
      */
-    virtual bool Parse (const std::string value);
+    bool Parse (const std::string value) override;
     ns3::Callback<bool, std::string> m_callback;  /**< The Callback */
     std::string m_default;  /**< The default value, as a string, if it exists. */
   };  // class CallbackItem

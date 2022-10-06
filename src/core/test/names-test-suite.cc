@@ -104,11 +104,11 @@ public:
   /** Constructor. */
   BasicAddTestCase ();
   /** Destructor. */
-  virtual ~BasicAddTestCase ();
+  ~BasicAddTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 BasicAddTestCase::BasicAddTestCase ()
@@ -169,11 +169,11 @@ public:
   /** Constructor. */
   StringContextAddTestCase ();
   /** Destructor. */
-  virtual ~StringContextAddTestCase ();
+  ~StringContextAddTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 StringContextAddTestCase::StringContextAddTestCase ()
@@ -234,11 +234,11 @@ public:
   /** Constructor. */
   FullyQualifiedAddTestCase ();
   /** Destructor. */
-  virtual ~FullyQualifiedAddTestCase ();
+  ~FullyQualifiedAddTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 FullyQualifiedAddTestCase::FullyQualifiedAddTestCase ()
@@ -303,11 +303,11 @@ public:
   /** Constructor. */
   RelativeAddTestCase ();
   /** Destructor. */
-  virtual ~RelativeAddTestCase ();
+  ~RelativeAddTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 RelativeAddTestCase::RelativeAddTestCase ()
@@ -369,11 +369,11 @@ public:
   /** Constructor. */
   BasicRenameTestCase ();
   /** Destructor. */
-  virtual ~BasicRenameTestCase ();
+  ~BasicRenameTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 BasicRenameTestCase::BasicRenameTestCase ()
@@ -431,11 +431,11 @@ public:
   /** Constructor. */
   StringContextRenameTestCase ();
   /** Destructor. */
-  virtual ~StringContextRenameTestCase ();
+  ~StringContextRenameTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 StringContextRenameTestCase::StringContextRenameTestCase ()
@@ -493,11 +493,11 @@ public:
   /** Constructor. */
   FullyQualifiedRenameTestCase ();
   /** Destructor. */
-  virtual ~FullyQualifiedRenameTestCase ();
+  ~FullyQualifiedRenameTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase ()
@@ -555,11 +555,11 @@ public:
   /** Constructor. */
   RelativeRenameTestCase ();
   /** Destructor. */
-  virtual ~RelativeRenameTestCase ();
+  ~RelativeRenameTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 RelativeRenameTestCase::RelativeRenameTestCase ()
@@ -617,11 +617,11 @@ public:
   /** Constructor. */
   FindPathTestCase ();
   /** Destructor. */
-  virtual ~FindPathTestCase ();
+  ~FindPathTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 FindPathTestCase::FindPathTestCase ()
@@ -672,11 +672,11 @@ public:
   /** Constructor. */
   BasicFindTestCase ();
   /** Destructor. */
-  virtual ~BasicFindTestCase ();
+  ~BasicFindTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 BasicFindTestCase::BasicFindTestCase ()
@@ -736,11 +736,11 @@ public:
   /** Constructor. */
   StringContextFindTestCase ();
   /** Destructor. */
-  virtual ~StringContextFindTestCase ();
+  ~StringContextFindTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 StringContextFindTestCase::StringContextFindTestCase ()
@@ -800,11 +800,11 @@ public:
   /** Constructor. */
   FullyQualifiedFindTestCase ();
   /** Destructor. */
-  virtual ~FullyQualifiedFindTestCase ();
+  ~FullyQualifiedFindTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 FullyQualifiedFindTestCase::FullyQualifiedFindTestCase ()
@@ -864,11 +864,11 @@ public:
   /** Constructor. */
   RelativeFindTestCase ();
   /** Destructor. */
-  virtual ~RelativeFindTestCase ();
+  ~RelativeFindTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 RelativeFindTestCase::RelativeFindTestCase ()
@@ -925,11 +925,11 @@ public:
   /** Constructor. */
   AlternateFindTestCase ();
   /** Destructor. */
-  virtual ~AlternateFindTestCase ();
+  ~AlternateFindTestCase () override;
 
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 AlternateFindTestCase::AlternateFindTestCase ()

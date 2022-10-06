@@ -93,7 +93,7 @@ class DlDciLteControlMessage : public LteControlMessage
 {
 public:
   DlDciLteControlMessage ();
-  virtual ~DlDciLteControlMessage ();
+  ~DlDciLteControlMessage () override;
 
   /**
   * \brief add a DCI into the message
@@ -123,7 +123,7 @@ class UlDciLteControlMessage : public LteControlMessage
 {
 public:
   UlDciLteControlMessage ();
-  virtual ~UlDciLteControlMessage ();
+  ~UlDciLteControlMessage () override;
 
   /**
   * \brief add a DCI into the message
@@ -153,7 +153,7 @@ class DlCqiLteControlMessage : public LteControlMessage
 {
 public:
   DlCqiLteControlMessage ();
-  virtual ~DlCqiLteControlMessage ();
+  ~DlCqiLteControlMessage () override;
 
   /**
   * \brief add a DL-CQI feedback record into the message.
@@ -183,7 +183,7 @@ class BsrLteControlMessage : public LteControlMessage
 {
 public:
   BsrLteControlMessage ();
-  virtual ~BsrLteControlMessage ();
+  ~BsrLteControlMessage () override;
 
   /**
   * \brief add a BSR feedback record into the message.
@@ -214,7 +214,7 @@ class DlHarqFeedbackLteControlMessage : public LteControlMessage
 {
 public:
   DlHarqFeedbackLteControlMessage ();
-  virtual ~DlHarqFeedbackLteControlMessage ();
+  ~DlHarqFeedbackLteControlMessage () override;
 
   /**
   * \brief add a DL HARQ feedback record into the message.

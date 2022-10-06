@@ -31,7 +31,7 @@ public:
   {
     m_var = CreateObject<ExponentialRandomVariable> ();
   }
-  virtual ~SampleEmitter ()
+  ~SampleEmitter () override
   {
   }
   /// Start emission of data.
@@ -93,10 +93,10 @@ class ProbeTestCase1 : public TestCase
 {
 public:
   ProbeTestCase1 ();
-  virtual ~ProbeTestCase1 ();
+  ~ProbeTestCase1 () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Trace sink.

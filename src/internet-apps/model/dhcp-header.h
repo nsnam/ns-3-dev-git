@@ -98,7 +98,7 @@ public:
   /**
    * \brief Destructor
    */
-  ~DhcpHeader ();
+  ~DhcpHeader () override;
 
   /// BOOTP options
   enum Options
@@ -287,11 +287,11 @@ public:
   void ResetOpt ();
 
 private:
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   uint8_t m_op;                          //!< The DHCP Message type
   uint8_t m_bootp;                       //!< The BOOTP Message type

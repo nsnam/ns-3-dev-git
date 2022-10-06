@@ -148,7 +148,7 @@ public:
       : m_begin (begin),
         m_end (end)
     {}
-    virtual Ptr<Object> Get (uint32_t i) const {
+    Ptr<Object> Get (uint32_t i) const override {
       T iterator = m_begin;
       iterator += i;
       if (iterator >= m_end)

@@ -50,17 +50,17 @@ public:
   TcpRttEstimationTest (const std::string &desc, bool enableTs, uint32_t pktCount);
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
 
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void UpdatedRttHistory (const SequenceNumber32 & seq, uint32_t sz,
-                                  bool isRetransmission, SocketWho who);
-  virtual void RttTrace (Time oldTime, Time newTime);
-  void FinalChecks ();
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void UpdatedRttHistory (const SequenceNumber32 & seq, uint32_t sz,
+                                  bool isRetransmission, SocketWho who) override;
+  void RttTrace (Time oldTime, Time newTime) override;
+  void FinalChecks () override;
 
-  virtual void ConfigureEnvironment ();
+  void ConfigureEnvironment () override;
 
 private:
   bool m_enableTs;      //!< Enable TimeStamp option
@@ -206,7 +206,7 @@ public:
                                 uint32_t pktCount, std::vector<uint32_t> toDrop);
 
 protected:
-  Ptr<ErrorModel> CreateReceiverErrorModel ();
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
 
 private:
   std::vector<uint32_t> m_toDrop; //!< Packets to drop.

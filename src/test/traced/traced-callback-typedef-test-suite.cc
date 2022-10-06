@@ -65,7 +65,7 @@ class TracedCallbackTypedefTestCase : public TestCase
 {
 public:
   TracedCallbackTypedefTestCase ();
-  virtual ~TracedCallbackTypedefTestCase ()
+  ~TracedCallbackTypedefTestCase () override
   {
   }
 
@@ -85,7 +85,7 @@ private:
   template <typename... Ts>
   class Checker;
 
-  virtual void DoRun ();
+  void DoRun () override;
 
 };  // TracedCallbackTypedefTestCase
 
@@ -282,7 +282,7 @@ class TracedCallbackTypedefTestCase::Checker : public Object
   TracedCallback<Ts...> m_cb;
 public:
   Checker  () {};
-  virtual ~Checker () {};
+  ~Checker () override {};
 
   /// Arguments of the TracedCallback.
   std::tuple<typename TypeTraits<Ts>::BaseType...> m_items;

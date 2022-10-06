@@ -112,8 +112,8 @@ private:
                                       Address &assignedAddress);
 
   // Inherited from TestCase base class.
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * \internal

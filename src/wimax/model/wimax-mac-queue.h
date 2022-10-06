@@ -50,7 +50,7 @@ public:
    * \param maxSize maximum size of queue
    */
   WimaxMacQueue (uint32_t maxSize);
-  ~WimaxMacQueue ();
+  ~WimaxMacQueue () override;
   /**
    * \brief set the maximum queue size
    * \param maxSize the max queue size

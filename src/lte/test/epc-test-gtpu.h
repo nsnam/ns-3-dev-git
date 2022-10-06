@@ -54,10 +54,10 @@ class EpsGtpuHeaderTestCase : public TestCase
 {
 public:
   EpsGtpuHeaderTestCase ();
-  virtual ~EpsGtpuHeaderTestCase ();
+  ~EpsGtpuHeaderTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 

@@ -99,12 +99,12 @@ public:
   SixLowPanNetDevice & operator = (SixLowPanNetDevice const &) = delete;
 
   // inherited from NetDevice base class
-  virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex () const;
-  virtual Ptr<Channel> GetChannel () const;
-  virtual void SetAddress (Address address);
-  virtual Address GetAddress () const;
-  virtual bool SetMtu (const uint16_t mtu);
+  void SetIfIndex (const uint32_t index) override;
+  uint32_t GetIfIndex () const override;
+  Ptr<Channel> GetChannel () const override;
+  void SetAddress (Address address) override;
+  Address GetAddress () const override;
+  bool SetMtu (const uint16_t mtu) override;
 
   /**
    * \brief Returns the link-layer MTU for this interface.
@@ -113,24 +113,24 @@ public:
    *
    * \return The link-level MTU in bytes for this interface.
    */
-  virtual uint16_t GetMtu () const;
-  virtual bool IsLinkUp () const;
-  virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast () const;
-  virtual Address GetBroadcast () const;
-  virtual bool IsMulticast () const;
-  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual bool IsPointToPoint () const;
-  virtual bool IsBridge () const;
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode () const;
-  virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp () const;
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom () const;
-  virtual Address GetMulticast (Ipv6Address addr) const;
+  uint16_t GetMtu () const override;
+  bool IsLinkUp () const override;
+  void AddLinkChangeCallback (Callback<void> callback) override;
+  bool IsBroadcast () const override;
+  Address GetBroadcast () const override;
+  bool IsMulticast () const override;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
+  bool IsPointToPoint () const override;
+  bool IsBridge () const override;
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
+  Ptr<Node> GetNode () const override;
+  void SetNode (Ptr<Node> node) override;
+  bool NeedsArp () const override;
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
+  void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb) override;
+  bool SupportsSendFrom () const override;
+  Address GetMulticast (Ipv6Address addr) const override;
 
   /**
    * \brief Returns a smart pointer to the underlying NetDevice.
@@ -241,7 +241,7 @@ public:
   void RemoveContext (uint8_t contextId);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

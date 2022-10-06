@@ -57,7 +57,7 @@ public:
   static TypeId GetTypeId ();
 
   WifiPhy ();
-  virtual ~WifiPhy ();
+  ~WifiPhy () override;
 
   /**
    * Return the WifiPhyStateHelper of this PHY
@@ -1087,7 +1087,7 @@ public:
   virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Reset data upon end of TX or RX

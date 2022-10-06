@@ -48,7 +48,7 @@ public:
    *
    * \return a pointer to the created socket
    */
-  virtual Ptr<Socket> CreateSocket ();
+  Ptr<Socket> CreateSocket () override;
 };
 
 } // namespace ns3

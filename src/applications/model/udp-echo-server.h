@@ -50,15 +50,15 @@ public:
    */
   static TypeId GetTypeId ();
   UdpEchoServer ();
-  virtual ~UdpEchoServer ();
+  ~UdpEchoServer () override;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Handle a packet reception.

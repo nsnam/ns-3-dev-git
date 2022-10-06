@@ -114,11 +114,11 @@ public:
   MemberLteUeCcmRrcSapProvider (C* owner);
 
   // inherited from LteUeCcmRrcSapProvider
-  virtual std::vector<uint16_t> RemoveLc (uint8_t lcid);
-  virtual void Reset ();
-  virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
-  virtual void NotifyConnectionReconfigurationMsg ();
-  virtual LteMacSapUser* ConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  std::vector<uint16_t> RemoveLc (uint8_t lcid) override;
+  void Reset () override;
+  std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu) override;
+  void NotifyConnectionReconfigurationMsg () override;
+  LteMacSapUser* ConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu) override;
 
 private:
   C* m_owner; ///< the owner class
@@ -204,8 +204,8 @@ public:
      */
     MemberLteUeCcmRrcSapUser (C* owner);
     //inherited from LteUeCcmRrcSapUser
-    virtual void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList);
-    virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
+    void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList) override;
+    void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers) override;
 
   private:
   C* m_owner; ///< the owner class

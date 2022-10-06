@@ -81,7 +81,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  NixVectorHelper<T>* Copy () const;
+  NixVectorHelper<T>* Copy () const override;
 
   /**
   * \param node the node on which the routing protocol will run
@@ -89,7 +89,7 @@ public:
   *
   * This method will be called by ns3::InternetStackHelper::Install
   */
-  virtual Ptr<IpRoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<IpRoutingProtocol> Create (Ptr<Node> node) const override;
 
   /**
    * \brief prints the routing path for a source and destination at a particular time.

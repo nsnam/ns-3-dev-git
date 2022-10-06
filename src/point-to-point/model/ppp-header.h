@@ -57,7 +57,7 @@ public:
   /**
    * \brief Destroy a PPP header.
    */
-  virtual ~PppHeader ();
+  ~PppHeader () override;
 
   /**
    * \brief Get the TypeId
@@ -71,13 +71,13 @@ public:
    *
    * \return The TypeId for this instance
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
 
-  virtual void Print (std::ostream &os) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize () const;
+  void Print (std::ostream &os) const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Set the protocol type carried by this PPP packet

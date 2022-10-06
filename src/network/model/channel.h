@@ -50,7 +50,7 @@ public:
   static TypeId GetTypeId ();
 
   Channel ();
-  virtual ~Channel ();
+  ~Channel () override;
 
   /**
    * \returns the unique id of this channel

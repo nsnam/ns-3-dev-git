@@ -96,11 +96,11 @@ private:
    * \param timeLeft time until Start method is called again
    */
   void DoWalk (Time timeLeft);
-  virtual void DoDispose ();
-  virtual Vector DoGetPosition () const;
-  virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetVelocity () const;
-  virtual int64_t DoAssignStreams (int64_t);
+  void DoDispose () override;
+  Vector DoGetPosition () const override;
+  void DoSetPosition (const Vector &position) override;
+  Vector DoGetVelocity () const override;
+  int64_t DoAssignStreams (int64_t) override;
   ConstantVelocityHelper m_helper; //!< constant velocity helper
   Time m_timeStep; //!< duraiton after which direction and speed should change
   double m_alpha; //!< tunable constant in the model

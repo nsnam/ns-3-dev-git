@@ -53,7 +53,7 @@ public:
    * \param ss subscriber station device
    */
   SSScheduler (Ptr<SubscriberStationNetDevice> ss);
-  ~SSScheduler ();
+  ~SSScheduler () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   SSScheduler (const SSScheduler &) = delete;
@@ -81,7 +81,7 @@ public:
                              MacHeaderType::HeaderType packetType, Ptr<WimaxConnection> &connection);
 
 
-  void DoDispose ();
+  void DoDispose () override;
 private:
   /**
    * Select connection

@@ -148,7 +148,7 @@ class Ipv4DeduplicationTest : public TestCase
   std::map<std::string, uint32_t> m_dropCountMap; //!< map of received packets (node name, counter)
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Constructor
@@ -549,7 +549,7 @@ class Ipv4DeduplicationPerformanceTest : public TestCase
 {
   public:
     Ipv4DeduplicationPerformanceTest ();
-    virtual void DoRun ();
+    void DoRun () override;
   private:
     std::vector <Ptr<Socket> > m_sockets; //!< sockets in use
     std::vector <uint8_t> m_txPackets;  //!< transmitted packets for each socket

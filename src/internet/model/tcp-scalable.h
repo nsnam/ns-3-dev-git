@@ -80,9 +80,9 @@ public:
    * \param sock the object to copy
    */
   TcpScalable (const TcpScalable& sock);
-  virtual ~TcpScalable ();
+  ~TcpScalable () override;
 
-  virtual std::string GetName () const;
+  std::string GetName () const override;
 
   /**
    * \brief Get slow start threshold following Scalable principle (Equation 2)
@@ -92,10 +92,10 @@ public:
    *
    * \return the slow start threshold value
    */
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
 
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
   /**
@@ -104,8 +104,8 @@ protected:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments acked
    */
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb,
-                                    uint32_t segmentsAcked);
+  void CongestionAvoidance (Ptr<TcpSocketState> tcb,
+                                    uint32_t segmentsAcked) override;
 
 private:
   uint32_t m_ackCnt;               //!< Number of received ACK

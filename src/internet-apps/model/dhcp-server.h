@@ -52,7 +52,7 @@ public:
   static TypeId GetTypeId ();
 
   DhcpServer ();
-  virtual ~DhcpServer ();
+  ~DhcpServer () override;
 
   /**
    * \brief Add a static entry to the pool.
@@ -64,7 +64,7 @@ public:
 
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   static const int PORT = 67;                       //!< Port number of DHCP server
@@ -99,12 +99,12 @@ private:
   /**
    * \brief Starts the DHCP Server application
    */
-  virtual void StartApplication ();
+  void StartApplication () override;
 
   /**
    * \brief Stops the DHCP client application
    */
-  virtual void StopApplication ();
+  void StopApplication () override;
 
   Ptr<Socket> m_socket;                  //!< The socket bound to port 67
   Ipv4Address m_poolAddress;             //!< The network address available to the server

@@ -110,7 +110,7 @@ public:
    */
   static TypeId GetTypeId ();
   AthstatsWifiTraceSink ();
-  virtual ~AthstatsWifiTraceSink ();
+  ~AthstatsWifiTraceSink () override;
 
   /**
    * function to be called when the net device transmits a packet

@@ -69,7 +69,7 @@ class UdpSocketLoopbackTest : public TestCase
 {
 public:
   UdpSocketLoopbackTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Receive a packet.
@@ -121,7 +121,7 @@ class Udp6SocketLoopbackTest : public TestCase
 {
 public:
   Udp6SocketLoopbackTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Receive a packet.
@@ -214,7 +214,7 @@ class UdpSocketImplTest : public TestCase
   void SendData (Ptr<Socket> socket);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   UdpSocketImplTest ();
 
   /**
@@ -503,7 +503,7 @@ class Udp6SocketImplTest : public TestCase
   void SendDataTo (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Udp6SocketImplTest ();
 
   /**

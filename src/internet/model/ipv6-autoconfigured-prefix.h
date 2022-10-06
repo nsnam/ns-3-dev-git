@@ -57,7 +57,7 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6AutoconfiguredPrefix ();
+  ~Ipv6AutoconfiguredPrefix () override;
 
   /**
    * \brief Set the default gateway router.

@@ -173,28 +173,28 @@ public:
    * \return Instance type ID.
    */
 
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the "Hop limit" field (TTL).
@@ -384,28 +384,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the datagram size.
@@ -465,28 +465,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the datagram size.
@@ -559,28 +559,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 };
 
@@ -673,28 +673,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the TF (Traffic Class, Flow Label) compression.
@@ -984,28 +984,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Get the NhcDispatch type.
@@ -1122,28 +1122,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Get the NhcDispatch type.
@@ -1246,28 +1246,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the "Sequence Number" field.
@@ -1313,28 +1313,28 @@ public:
    * \brief Return the instance type identifier.
    * \return Instance type ID.
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual void Print (std::ostream& os) const;
+  void Print (std::ostream& os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return Size.
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param [in] start Buffer iterator.
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param [in] start Buffer iterator.
    * \return Size of the packet.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * \brief Set the "Hops Left" field.

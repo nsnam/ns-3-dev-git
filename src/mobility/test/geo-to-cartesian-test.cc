@@ -514,10 +514,10 @@ public:
                           double altitude,
                           GeographicPositions::EarthSpheroidType sphType,
                           int i);
-  virtual ~GeoToCartesianTestCase ();
+  ~GeoToCartesianTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Name function
@@ -677,10 +677,10 @@ public:
                           double altitude,
                           GeographicPositions::EarthSpheroidType sphType,
                           int i);
-  virtual ~CartesianToGeoTestCase ();
+  ~CartesianToGeoTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Name function

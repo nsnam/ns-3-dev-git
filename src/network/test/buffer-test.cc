@@ -46,7 +46,7 @@ private:
    */
   void EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   BufferTest ();
 };
 

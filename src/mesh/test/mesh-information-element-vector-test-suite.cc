@@ -51,7 +51,7 @@ struct MeshInformationElementVectorBist : public TestCase
     TestCase ("Serialization test for all mesh information elements")
   {
   };
-  void DoRun ();
+  void DoRun () override;
 };
 
 void

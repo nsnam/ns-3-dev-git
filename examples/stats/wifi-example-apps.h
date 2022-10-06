@@ -44,14 +44,14 @@ public:
    */
   static TypeId GetTypeId ();
   Sender();
-  virtual ~Sender();
+  ~Sender() override;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * Send a packet.
@@ -87,7 +87,7 @@ public:
    */
   static TypeId GetTypeId ();
   Receiver();
-  virtual ~Receiver();
+  ~Receiver() override;
 
   /**
    * Set the counter calculator for received packets.
@@ -102,11 +102,11 @@ public:
   void SetDelayTracker (Ptr<TimeMinMaxAvgTotalCalculator> delay);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * Receive a packet.
@@ -138,11 +138,11 @@ public:
    * \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
 
   /**
    * Set the timestamp.
@@ -155,7 +155,7 @@ public:
    */
   Time GetTimestamp () const;
 
-  void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
 private:
   Time m_timestamp; //!< Timestamp.

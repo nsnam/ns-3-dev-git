@@ -41,10 +41,10 @@ class LrWpanPacketTestCase : public TestCase
 {
 public:
   LrWpanPacketTestCase ();
-  virtual ~LrWpanPacketTestCase ();
+  ~LrWpanPacketTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 LrWpanPacketTestCase::LrWpanPacketTestCase ()

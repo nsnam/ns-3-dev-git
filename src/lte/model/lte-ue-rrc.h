@@ -131,13 +131,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~LteUeRrc ();
+  ~LteUeRrc () override;
 
 
   // inherited from Object
 private:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 public:
   /**
    * \brief Get the type ID.

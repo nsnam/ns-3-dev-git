@@ -141,9 +141,9 @@ public:
   /** Constructor. */
   Object ();
   /** Destructor. */
-  virtual ~Object ();
+  ~Object () override;
 
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * Get a pointer to the requested aggregated Object.  If the type of object

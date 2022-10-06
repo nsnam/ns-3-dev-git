@@ -48,7 +48,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext () const;
+  Vector GetNext () const override;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -58,7 +58,7 @@ public:
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
 
@@ -95,7 +95,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext () const;
+  Vector GetNext () const override;
 
   /**
    * \brief Set the random variable stream object that generates x-positions
@@ -121,7 +121,7 @@ public:
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
@@ -149,7 +149,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext () const;
+  Vector GetNext () const override;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -159,7 +159,7 @@ public:
   * \param stream first stream index to use
   * \return the number of stream indices assigned by this model
   */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
 
@@ -204,7 +204,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from PositionAllocator
-  virtual Vector GetNext () const;
+  Vector GetNext () const override;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -214,7 +214,7 @@ public:
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t);
+  int64_t AssignStreams (int64_t) override;
 
 private:
 
@@ -252,7 +252,7 @@ public:
    */
   static TypeId GetTypeId ();
   // inherited from PositionAllocator
-  virtual Vector GetNext () const;
+  Vector GetNext () const override;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -262,7 +262,7 @@ public:
    * \param stream first stream index to use
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t);
+  int64_t AssignStreams (int64_t) override;
 
 private:
 

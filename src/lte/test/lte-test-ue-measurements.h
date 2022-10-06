@@ -81,7 +81,7 @@ public:
    * \param rsrqDbUe2 RSRQ in dBm UE 2
    */
   LteUeMeasurementsTestCase (std::string name, double d1, double d2, double rsrpDbmUe1, double rsrpDbmUe2, double rsrqDbUe1, double rsrqDbUe2);
-  virtual ~LteUeMeasurementsTestCase ();
+  ~LteUeMeasurementsTestCase () override;
 
   /**
    * Report UE measurements function
@@ -103,7 +103,7 @@ public:
   void RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas);
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   double m_d1; ///< distance between UE and ENB node pair
   double m_d2; ///< distance between UE and other ENB node
@@ -167,7 +167,7 @@ public:
                                        std::vector<Time> expectedTime,
                                        std::vector<uint8_t> expectedRsrp);
 
-  virtual ~LteUeMeasurementsPiecewiseTestCase1 ();
+  ~LteUeMeasurementsPiecewiseTestCase1 () override;
 
   /**
    * \brief Triggers when eNodeB receives measurement report from UE, then
@@ -196,13 +196,13 @@ private:
    *        `RecvMeasurementReportCallback` function to the
    *        `LteUeRrc::RecvMeasurementReport` trace source.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Runs at the end of the simulation, verifying that all expected
    *        measurement reports have been examined.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   /// Teleport very near function
   void TeleportVeryNear ();
@@ -306,7 +306,7 @@ public:
                                        std::vector<Time> expectedTime,
                                        std::vector<uint8_t> expectedRsrp);
 
-  virtual ~LteUeMeasurementsPiecewiseTestCase2 ();
+  ~LteUeMeasurementsPiecewiseTestCase2 () override;
 
   /**
    * \brief Triggers when eNodeB receives measurement report from UE, then
@@ -335,13 +335,13 @@ private:
    *        `RecvMeasurementReportCallback` function to the
    *        `LteUeRrc::RecvMeasurementReport` trace source.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Runs at the end of the simulation, verifying that all expected
    *        measurement reports have been examined.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   /// Teleport very near function
   void TeleportVeryNear ();
@@ -459,7 +459,7 @@ public:
                                        LteRrcSap::ReportConfigEutra config,
                                        std::vector<Time> expectedTime);
 
-  virtual ~LteUeMeasurementsPiecewiseTestCase3 ();
+  ~LteUeMeasurementsPiecewiseTestCase3 () override;
 
   /**
    * \brief Triggers when eNodeB receives measurement report from UE, then
@@ -488,13 +488,13 @@ private:
    *        `RecvMeasurementReportCallback` function to the
    *        `LteUeRrc::RecvMeasurementReport` trace source.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Runs at the end of the simulation, verifying that all expected
    *        measurement reports have been examined.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
 
   /// Teleport the eNb near function
@@ -586,7 +586,7 @@ public:
                                      std::vector<uint8_t> expectedRsrp,
                                      Time duration);
 
-  virtual ~LteUeMeasurementsHandoverTestCase ();
+  ~LteUeMeasurementsHandoverTestCase () override;
 
   /**
    * \brief Triggers when either one of the eNodeBs receives measurement report
@@ -615,13 +615,13 @@ private:
    *        `RecvMeasurementReportCallback` function to the
    *        `LteUeRrc::RecvMeasurementReport` trace source.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Runs at the end of the simulation, verifying that all expected
    *        measurement reports have been examined.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   /**
    * \brief The list of active report triggering configuration for the source

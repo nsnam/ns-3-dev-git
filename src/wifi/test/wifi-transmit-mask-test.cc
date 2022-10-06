@@ -68,7 +68,7 @@ public:
                               const IndexPowerVect& maskRefs,
                               double tolerance, std::size_t precision,
                               const std::vector<bool>& puncturedSubchannels = std::vector<bool>{});
-  virtual ~WifiOfdmMaskSlopesTestCase () = default;
+  ~WifiOfdmMaskSlopesTestCase () override = default;
 
 private:
   void DoSetup () override;

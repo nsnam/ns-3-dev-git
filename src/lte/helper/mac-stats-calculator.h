@@ -56,7 +56,7 @@ public:
   /**
    * Destructor
    */
-  virtual ~MacStatsCalculator ();
+  ~MacStatsCalculator () override;
 
   // Inherited from ns3::Object
   /**

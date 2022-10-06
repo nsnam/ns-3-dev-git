@@ -96,7 +96,7 @@ public:
    *
    * Destructor
    */
-  virtual ~RedQueueDisc ();
+  ~RedQueueDisc () override;
 
   /**
    * \brief Used in Feng's Adaptive RED
@@ -203,13 +203,13 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual Ptr<const QueueDiscItem> DoPeek ();
-  virtual bool CheckConfig ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  Ptr<const QueueDiscItem> DoPeek () override;
+  bool CheckConfig () override;
 
   /**
    * \brief Initialize the queue parameters.
@@ -219,7 +219,7 @@ private:
    * This should be fixed, but it would require some extra parameters,
    * and didn't seem worth the trouble...
    */
-  virtual void InitializeParams ();
+  void InitializeParams () override;
   /**
    * \brief Compute the average queue size
    * \param nQueued number of queued packets

@@ -36,12 +36,12 @@ class RawTextConfigSave : public FileConfig
 {
 public:
   RawTextConfigSave (); //!< default constructor
-  virtual ~RawTextConfigSave (); //!< destructor
+  ~RawTextConfigSave () override; //!< destructor
   // Inherited
-  virtual void SetFilename (std::string filename);
-  virtual void Default ();
-  virtual void Global ();
-  virtual void Attributes ();
+  void SetFilename (std::string filename) override;
+  void Default () override;
+  void Global () override;
+  void Attributes () override;
 private:
   /// Config store output stream
   std::ofstream *m_os;
@@ -56,12 +56,12 @@ class RawTextConfigLoad : public FileConfig
 {
 public:
   RawTextConfigLoad (); //!< default constructor
-  virtual ~RawTextConfigLoad (); //!< destructor
+  ~RawTextConfigLoad () override; //!< destructor
   // Inherited
-  virtual void SetFilename (std::string filename);
-  virtual void Default ();
-  virtual void Global ();
-  virtual void Attributes ();
+  void SetFilename (std::string filename) override;
+  void Default () override;
+  void Global () override;
+  void Attributes () override;
 private:
   /**
    * Parse (potentially multi-) line configs into type, name, and values.

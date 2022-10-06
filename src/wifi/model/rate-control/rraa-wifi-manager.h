@@ -65,7 +65,7 @@ public:
   static TypeId GetTypeId ();
 
   RraaWifiManager ();
-  virtual ~RraaWifiManager ();
+  ~RraaWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
   void SetupMac (const Ptr<WifiMac> mac) override;

@@ -39,7 +39,7 @@ struct FlameHeaderTest : public TestCase
     TestCase ("FlameHeader roundtrip serialization")
   {
   }
-  void DoRun ();
+  void DoRun () override;
 };
 
 void
@@ -70,7 +70,7 @@ class FlameRtableTest : public TestCase
 {
 public:
   FlameRtableTest ();
-  void DoRun ();
+  void DoRun () override;
 
 private:
   /// Test Add apth and lookup path;

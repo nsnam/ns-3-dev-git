@@ -63,9 +63,9 @@ class HwmpProactiveRegressionTest : public TestCase
 {
 public:
   HwmpProactiveRegressionTest ();
-  virtual ~HwmpProactiveRegressionTest();
+  ~HwmpProactiveRegressionTest() override;
 
-  virtual void DoRun ();
+  void DoRun () override;
   /// Check results function
   void CheckResults ();
 

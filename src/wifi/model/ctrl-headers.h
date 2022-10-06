@@ -49,7 +49,7 @@ class CtrlBAckRequestHeader : public Header
 {
 public:
   CtrlBAckRequestHeader ();
-  ~CtrlBAckRequestHeader ();
+  ~CtrlBAckRequestHeader () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -202,17 +202,17 @@ class CtrlBAckResponseHeader : public Header
 {
 public:
   CtrlBAckResponseHeader ();
-  ~CtrlBAckResponseHeader ();
+  ~CtrlBAckResponseHeader () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Enable or disable HT immediate Ack.
@@ -902,7 +902,7 @@ public:
    * \param txVector the TX vector used to build this Trigger Frame
    */
   CtrlTriggerHeader (TriggerFrameType type, const WifiTxVector& txVector);
-  ~CtrlTriggerHeader ();
+  ~CtrlTriggerHeader () override;
   /**
    * Copy assignment operator.
    *
@@ -918,11 +918,11 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Set the Trigger frame type.

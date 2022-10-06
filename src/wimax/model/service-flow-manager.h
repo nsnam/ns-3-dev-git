@@ -56,8 +56,8 @@ public:
   static TypeId GetTypeId ();
 
   ServiceFlowManager ();
-  ~ServiceFlowManager ();
-  void DoDispose ();
+  ~ServiceFlowManager () override;
+  void DoDispose () override;
 
   /**
    * Add service flow function

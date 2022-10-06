@@ -77,14 +77,14 @@ public:
    * \param testCase Testcase number.
    */
   Ns3TcpStateTestCase (uint32_t testCase);
-  virtual ~Ns3TcpStateTestCase ()
+  ~Ns3TcpStateTestCase () override
   {
   }
 
 private:
-  virtual void DoSetup ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoSetup () override;
+  void DoRun () override;
+  void DoTeardown () override;
 
   std::string m_pcapFilename;     //!< The PCAP filename.
   PcapFile m_pcapFile;            //!< The PCAP ffile.

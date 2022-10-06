@@ -58,7 +58,7 @@ public:
    * \param bss0Width width (MHz) of the transmission in BSS 0 started when BSS 1 is transmitting
    */
   WifiUseAvailBwTest (std::initializer_list<std::string> channelStr, uint16_t bss0Width);
-  virtual ~WifiUseAvailBwTest ();
+  ~WifiUseAvailBwTest () override;
 
   /**
    * Function to trace packets received by the server application in the given BSS

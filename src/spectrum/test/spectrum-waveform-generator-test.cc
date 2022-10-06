@@ -44,10 +44,10 @@ public:
    * \param stop stop time (seconds)
    */
   WaveformGeneratorTestCase (double period, double dutyCycle, double stop);
-  virtual ~WaveformGeneratorTestCase ();
+  ~WaveformGeneratorTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Trace if the waveform is active

@@ -47,7 +47,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual ~Header ();
+  ~Header () override;
 
   using Chunk::Deserialize;
   /**
@@ -87,7 +87,7 @@ public:
    * has additional statements to remove the header bytes from the
    * underlying buffer and associated metadata.
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
+  uint32_t Deserialize (Buffer::Iterator start) override = 0;
   /**
    * \param os output stream
    * This method is used by Packet::Print to print the
@@ -100,7 +100,7 @@ public:
    * separated by whitespace.
    * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */
-  virtual void Print (std::ostream &os) const = 0;
+  void Print (std::ostream &os) const override = 0;
 };
 
 

@@ -52,7 +52,7 @@ class LteUeComponentCarrierManager : public Object
 
 public:
   LteUeComponentCarrierManager ();
-  virtual ~LteUeComponentCarrierManager ();
+  ~LteUeComponentCarrierManager () override;
 
   /**
    * \brief Get the type ID.
@@ -99,7 +99,7 @@ public:
 protected:
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   LteUeCcmRrcSapUser* m_ccmRrcSapUser;//!< Interface to the UE RRC instance.
   LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; //!< Receive API calls from the UE RRC instance.

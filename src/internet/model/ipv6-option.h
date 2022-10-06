@@ -55,7 +55,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6Option ();
+  ~Ipv6Option () override;
 
   /**
    * \brief Set the node.
@@ -115,13 +115,13 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6OptionPad1 ();
+  ~Ipv6OptionPad1 () override;
 
   /**
    * \brief Get the option number.
    * \return option number
    */
-  virtual uint8_t GetOptionNumber () const;
+  uint8_t GetOptionNumber () const override;
 
   /**
    * \brief Process method
@@ -133,7 +133,7 @@ public:
    * \param isDropped if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) override;
 };
 
 /**
@@ -163,13 +163,13 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6OptionPadn ();
+  ~Ipv6OptionPadn () override;
 
   /**
    * \brief Get the option number.
    * \return option number
    */
-  virtual uint8_t GetOptionNumber () const;
+  uint8_t GetOptionNumber () const override;
 
   /**
    * \brief Process method
@@ -181,7 +181,7 @@ public:
    * \param isDropped if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) override;
 };
 
 /**
@@ -211,13 +211,13 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6OptionJumbogram ();
+  ~Ipv6OptionJumbogram () override;
 
   /**
    * \brief Get the option number.
    * \return option number
    */
-  virtual uint8_t GetOptionNumber () const;
+  uint8_t GetOptionNumber () const override;
 
   /**
    * \brief Process method
@@ -228,7 +228,7 @@ public:
    * \param isDropped if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) override;
 };
 
 /**
@@ -258,13 +258,13 @@ public:
   /**
    * \brief Destructor.
    */
-  ~Ipv6OptionRouterAlert ();
+  ~Ipv6OptionRouterAlert () override;
 
   /**
    * \brief Get the option number.
    * \return option number
    */
-  virtual uint8_t GetOptionNumber () const;
+  uint8_t GetOptionNumber () const override;
 
   /**
    * \brief Process method
@@ -276,7 +276,7 @@ public:
    * \param isDropped if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) override;
 };
 
 } /* namespace ns3 */

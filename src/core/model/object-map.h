@@ -81,7 +81,7 @@ MakeObjectMapAccessor (U T::*memberVector)
 {
   struct MemberStdContainer : public ObjectPtrContainerAccessor
   {
-    virtual bool DoGetN (const ObjectBase *object, std::size_t *n) const
+    bool DoGetN (const ObjectBase *object, std::size_t *n) const override
     {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
@@ -91,7 +91,7 @@ MakeObjectMapAccessor (U T::*memberVector)
       *n = (obj->*m_memberVector).size ();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, std::size_t i, std::size_t *index) const
+    Ptr<Object> DoGet (const ObjectBase *object, std::size_t i, std::size_t *index) const override
     {
       const T *obj = static_cast<const T *> (object);
       typename U::const_iterator begin = (obj->*m_memberVector).begin ();

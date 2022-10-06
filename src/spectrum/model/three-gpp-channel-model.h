@@ -56,7 +56,7 @@ public:
   /**
    * Destructor
    */
-  ~ThreeGppChannelModel ();
+  ~ThreeGppChannelModel () override;
 
   void DoDispose () override;
 

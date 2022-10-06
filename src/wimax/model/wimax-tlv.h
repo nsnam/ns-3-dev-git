@@ -103,17 +103,17 @@ public:
    */
   Tlv (uint8_t type, uint64_t length, const TlvValue & value);
   Tlv ();
-  ~Tlv ();
+  ~Tlv () override;
   /**
    * Register this type.
    * \return the TypeId.
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
   /**
    * Get size of length field
    * \returns the size of length field
@@ -177,10 +177,10 @@ public:
    */
   U8TlvValue (uint8_t value);
   U8TlvValue ();
-  ~U8TlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen);
+  ~U8TlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen) override;
   /**
    * Deserialize from a buffer
    * \param start the iterator
@@ -196,7 +196,7 @@ public:
    * Copy
    * \returns a U8 TLV value
    */
-  U8TlvValue * Copy () const;
+  U8TlvValue * Copy () const override;
 private:
   uint8_t  m_value; ///< value
 };
@@ -216,10 +216,10 @@ public:
    */
   U16TlvValue (uint16_t value);
   U16TlvValue ();
-  ~U16TlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen);
+  ~U16TlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start,uint64_t valueLen) override;
   /**
    * Deserialize from a buffer
    * \param start the iterator
@@ -235,7 +235,7 @@ public:
    * Copy
    * \returns the U16 TLV value
    */
-  virtual U16TlvValue * Copy () const;
+  U16TlvValue * Copy () const override;
 private:
   uint16_t  m_value; ///< value
 };
@@ -255,11 +255,11 @@ public:
    */
   U32TlvValue (uint32_t value);
   U32TlvValue ();
-  ~U32TlvValue ();
+  ~U32TlvValue () override;
 
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLen);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLen) override;
   /**
    * Deserialize from a buffer
    * \param start the iterator
@@ -275,7 +275,7 @@ public:
    * Copy
    * \returns the U32 TLV Value
    */
-  virtual U32TlvValue * Copy () const;
+  U32TlvValue * Copy () const override;
 private:
   uint32_t  m_value; ///< value
 };
@@ -292,10 +292,10 @@ public:
   /// TLV vector iterator typedef
   typedef std::vector<Tlv*>::const_iterator Iterator;
   VectorTlvValue ();
-  ~VectorTlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) = 0;
+  ~VectorTlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override = 0;
   /**
    * Begin iterator
    * \returns the beginning element
@@ -315,7 +315,7 @@ public:
    * Copy
    * \returns the vector TLV value
    */
-  virtual VectorTlvValue * Copy () const = 0;
+  VectorTlvValue * Copy () const override = 0;
 private:
   std::vector<Tlv*>  * m_tlvList; ///< tlv list
 };
@@ -363,8 +363,8 @@ public:
     IPV4_CS_Parameters = 100
   };
   SfVectorTlvValue ();
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual SfVectorTlvValue * Copy () const;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
+  SfVectorTlvValue * Copy () const override;
 
 };
 // ==============================================================================
@@ -383,8 +383,8 @@ public:
     Packet_Classification_Rule = 3,
   };
   CsParamVectorTlvValue ();
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual CsParamVectorTlvValue * Copy () const;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
+  CsParamVectorTlvValue * Copy () const override;
 private:
 };
 
@@ -410,8 +410,8 @@ public:
     Index = 14,
   };
   ClassificationRuleVectorTlvValue ();
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
-  virtual ClassificationRuleVectorTlvValue * Copy () const;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
+  ClassificationRuleVectorTlvValue * Copy () const override;
 private:
 };
 
@@ -432,10 +432,10 @@ public:
    * \param mask the mask
    */
   TosTlvValue (uint8_t low, uint8_t high, uint8_t mask);
-  ~TosTlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
+  ~TosTlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
   /**
    * Get low part
    * \returns the low part
@@ -455,7 +455,7 @@ public:
    * Copy
    * \returns the TOS TLV value
    */
-  virtual TosTlvValue * Copy () const;
+  TosTlvValue * Copy () const override;
 private:
   uint8_t m_low; ///< low
   uint8_t m_high; ///< high
@@ -479,10 +479,10 @@ public:
   /// PortRange vector iterator typedef
   typedef std::vector<struct PortRange>::const_iterator Iterator;
   PortRangeTlvValue ();
-  ~PortRangeTlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
+  ~PortRangeTlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
   /**
    * Add a range
    * \param portLow the low port of the range
@@ -503,7 +503,7 @@ public:
    * Copy
    * \returns the port range tlv value
    */
-  virtual PortRangeTlvValue * Copy () const;
+  PortRangeTlvValue * Copy () const override;
 private:
   std::vector<struct PortRange> * m_portRange; ///< port range
 };
@@ -517,12 +517,12 @@ class ProtocolTlvValue : public TlvValue
 {
 public:
   ProtocolTlvValue ();
-  ~ProtocolTlvValue ();
+  ~ProtocolTlvValue () override;
   /// Iterator typedef
   typedef std::vector<uint8_t>::const_iterator Iterator;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
   /**
    * Add protocol number
    * \param protocol the protocol number
@@ -542,7 +542,7 @@ public:
    * Copy
    * \returns the protocol tlv value
    */
-  virtual ProtocolTlvValue * Copy () const;
+  ProtocolTlvValue * Copy () const override;
 private:
   std::vector<uint8_t> * m_protocol; ///< protocol
 };
@@ -565,10 +565,10 @@ public:
   /// IPv4 address vector iterator typedef
   typedef std::vector<struct ipv4Addr>::const_iterator Iterator;
   Ipv4AddressTlvValue ();
-  ~Ipv4AddressTlvValue ();
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength);
+  ~Ipv4AddressTlvValue () override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLength) override;
   /**
    * Add IPv4 address and mask
    * \param address the IPv4 address
@@ -585,7 +585,7 @@ public:
    * \returns the ending element
    */
   Iterator End () const;
-  virtual Ipv4AddressTlvValue * Copy () const;
+  Ipv4AddressTlvValue * Copy () const override;
 private:
   std::vector<struct ipv4Addr> * m_ipv4Addr; ///< ipv4 addr
 };

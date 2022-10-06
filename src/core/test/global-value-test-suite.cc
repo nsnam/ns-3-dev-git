@@ -49,11 +49,11 @@ public:
   /** Constructor. */
   GlobalValueTestCase ();
   /** Destructor. */
-  virtual ~GlobalValueTestCase ()
+  ~GlobalValueTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 GlobalValueTestCase::GlobalValueTestCase ()

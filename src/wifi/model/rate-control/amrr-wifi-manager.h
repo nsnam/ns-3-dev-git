@@ -51,7 +51,7 @@ public:
   static TypeId GetTypeId ();
 
   AmrrWifiManager ();
-  virtual ~AmrrWifiManager ();
+  ~AmrrWifiManager () override;
 
 
 private:

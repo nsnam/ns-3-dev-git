@@ -36,12 +36,12 @@ class BasicEnergyHarvesterHelper : public EnergyHarvesterHelper
 {
 public:
   BasicEnergyHarvesterHelper ();
-  ~BasicEnergyHarvesterHelper ();
+  ~BasicEnergyHarvesterHelper () override;
 
-  void Set (std::string name, const AttributeValue &v);
+  void Set (std::string name, const AttributeValue &v) override;
 
 private:
-  virtual Ptr<EnergyHarvester> DoInstall (Ptr<EnergySource> source) const;
+  Ptr<EnergyHarvester> DoInstall (Ptr<EnergySource> source) const override;
 
 private:
   ObjectFactory m_basicEnergyHarvester; //!< Energy source factory

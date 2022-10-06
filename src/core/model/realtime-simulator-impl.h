@@ -87,28 +87,28 @@ public:
   /** Constructor. */
   RealtimeSimulatorImpl ();
   /** Destructor. */
-  ~RealtimeSimulatorImpl ();
+  ~RealtimeSimulatorImpl () override;
 
   // Inherited from SimulatorImpl
-  virtual void Destroy ();
-  virtual bool IsFinished () const;
-  virtual void Stop ();
-  virtual void Stop (const Time &delay);
-  virtual EventId Schedule (const Time &delay, EventImpl *event);
-  virtual void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event);
-  virtual EventId ScheduleNow (EventImpl *event);
-  virtual EventId ScheduleDestroy (EventImpl *event);
-  virtual void Remove (const EventId &ev);
-  virtual void Cancel (const EventId &ev);
-  virtual bool IsExpired (const EventId &ev) const;
-  virtual void Run ();
-  virtual Time Now () const;
-  virtual Time GetDelayLeft (const EventId &id) const;
-  virtual Time GetMaximumSimulationTime () const;
-  virtual void SetScheduler (ObjectFactory schedulerFactory);
-  virtual uint32_t GetSystemId () const;
-  virtual uint32_t GetContext () const;
-  virtual uint64_t GetEventCount () const;
+  void Destroy () override;
+  bool IsFinished () const override;
+  void Stop () override;
+  void Stop (const Time &delay) override;
+  EventId Schedule (const Time &delay, EventImpl *event) override;
+  void ScheduleWithContext (uint32_t context, const Time &delay, EventImpl *event) override;
+  EventId ScheduleNow (EventImpl *event) override;
+  EventId ScheduleDestroy (EventImpl *event) override;
+  void Remove (const EventId &ev) override;
+  void Cancel (const EventId &ev) override;
+  bool IsExpired (const EventId &ev) const override;
+  void Run () override;
+  Time Now () const override;
+  Time GetDelayLeft (const EventId &id) const override;
+  Time GetMaximumSimulationTime () const override;
+  void SetScheduler (ObjectFactory schedulerFactory) override;
+  uint32_t GetSystemId () const override;
+  uint32_t GetContext () const override;
+  uint64_t GetEventCount () const override;
 
   /** \copydoc ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
   void ScheduleRealtimeWithContext (uint32_t context, const Time &delay, EventImpl *event);
@@ -184,7 +184,7 @@ private:
   /** Process the next event. */
   void ProcessOneEvent ();
   /** Destructor implementation. */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /** Container type for events to be run at destroy time. */
   typedef std::list<EventId> DestroyEvents;

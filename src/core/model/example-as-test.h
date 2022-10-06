@@ -72,7 +72,7 @@ public:
                      const std::string args = "");
 
   /** Destructor. */
-  virtual ~ExampleAsTestCase ();
+  ~ExampleAsTestCase () override;
 
   /**
    * Customization point for more complicated patterns
@@ -94,7 +94,7 @@ public:
   virtual std::string GetPostProcessingCommand () const;
 
   // Inherited
-  virtual void DoRun ();
+  void DoRun () override;
 
 protected:
   std::string m_program;  /**< The program to run. */

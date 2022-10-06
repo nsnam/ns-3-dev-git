@@ -172,7 +172,7 @@ public:
    * \param [in] other CallbackComponentBase Ptr
    * \return \c true if we are equal
    */
-  bool IsEqual (std::shared_ptr<const CallbackComponentBase> other) const
+  bool IsEqual (std::shared_ptr<const CallbackComponentBase> other) const override
   {
     auto p = std::dynamic_pointer_cast<const CallbackComponent<T>> (other);
 
@@ -218,7 +218,7 @@ public:
    * \param [in] other CallbackParam Ptr
    * \return \c true if we are equal
    */
-  bool IsEqual (std::shared_ptr<const CallbackComponentBase> other) const
+  bool IsEqual (std::shared_ptr<const CallbackComponentBase> other) const override
   {
     return false;
   }
@@ -273,7 +273,7 @@ public:
     return m_func (uargs...);
   }
 
-  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const
+  bool IsEqual (Ptr<const CallbackImplBase> other) const override
   {
     CallbackImpl<R,UArgs...> const *otherDerived =
       dynamic_cast<CallbackImpl<R,UArgs...> const *> (PeekPointer (other));
@@ -310,7 +310,7 @@ public:
     return true;
   }
 
-  virtual std::string GetTypeid () const
+  std::string GetTypeid () const override
   {
     return DoGetTypeid ();
   }
@@ -758,20 +758,20 @@ public:
    */
   CallbackValue (const CallbackBase &base);
   /** Destructor */
-  virtual ~CallbackValue ();
+  ~CallbackValue () override;
   /** \param [in] base The CallbackBase to use */
   void Set (CallbackBase base);
   /* Documented by print-introspected-doxygen.cc */
   template <typename T>
   bool GetAccessor (T &value) const;
   /** \return A copy of this CallBack */
-  virtual Ptr<AttributeValue> Copy () const;
+  Ptr<AttributeValue> Copy () const override;
   /**
    * Serialize to string
    * \param [in] checker The checker to validate with
    * \return Serialized form of this Callback.
    */
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
   /**
    * Deserialize from string (not implemented)
    *
@@ -779,7 +779,7 @@ public:
    * \param [in] checker Checker to validate with
    * \return \c true if successful
    */
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
 
 private:
   /* Documented by print-introspected-doxygen.cc */

@@ -35,7 +35,7 @@ class IePerr : public WifiInformationElement
 {
 public:
   IePerr ();
-  ~IePerr ();
+  ~IePerr () override;
   /**
    * Get number of destination function
    * \returns the number of destinations
@@ -65,11 +65,11 @@ public:
   void ResetPerr ();
 
   // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length);
-  virtual void Print (std::ostream& os) const;
-  virtual uint16_t GetInformationFieldSize () const;
+  WifiInformationElementId ElementId () const override;
+  void SerializeInformationField (Buffer::Iterator i) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+  void Print (std::ostream& os) const override;
+  uint16_t GetInformationFieldSize () const override;
 
 private:
   std::vector<HwmpProtocol::FailedDestination> m_addressUnits; ///< address units

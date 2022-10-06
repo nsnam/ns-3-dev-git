@@ -46,7 +46,7 @@ public:
   static TypeId GetTypeId ();
 
   PcapFileWrapper ();
-  ~PcapFileWrapper ();
+  ~PcapFileWrapper () override;
 
 
   /**

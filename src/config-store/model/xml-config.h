@@ -37,12 +37,12 @@ class XmlConfigSave : public FileConfig
 {
 public:
   XmlConfigSave ();
-  virtual ~XmlConfigSave ();
+  ~XmlConfigSave () override;
 
-  virtual void SetFilename (std::string filename);
-  virtual void Default ();
-  virtual void Global ();
-  virtual void Attributes ();
+  void SetFilename (std::string filename) override;
+  void Default () override;
+  void Global () override;
+  void Attributes () override;
 private:
   xmlTextWriterPtr m_writer; ///< XML writer
 };
@@ -55,12 +55,12 @@ class XmlConfigLoad : public FileConfig
 {
 public:
   XmlConfigLoad ();
-  virtual ~XmlConfigLoad ();
+  ~XmlConfigLoad () override;
 
-  virtual void SetFilename (std::string filename);
-  virtual void Default ();
-  virtual void Global ();
-  virtual void Attributes ();
+  void SetFilename (std::string filename) override;
+  void Default () override;
+  void Global () override;
+  void Attributes () override;
 private:
   std::string m_filename; ///< the file name
 };

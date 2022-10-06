@@ -40,7 +40,7 @@ public:
    */
   static TypeId GetTypeId ();
   VhtFrameExchangeManager ();
-  virtual ~VhtFrameExchangeManager ();
+  ~VhtFrameExchangeManager () override;
 
 protected:
   Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const override;

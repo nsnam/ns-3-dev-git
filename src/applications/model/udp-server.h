@@ -54,7 +54,7 @@ public:
    */
   static TypeId GetTypeId ();
   UdpServer ();
-  virtual ~UdpServer ();
+  ~UdpServer () override;
   /**
    * \brief Returns the number of lost packets
    * \return the number of lost packets
@@ -81,12 +81,12 @@ public:
    */
   void SetPacketWindowSize (uint16_t size);
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Handle a packet reception.

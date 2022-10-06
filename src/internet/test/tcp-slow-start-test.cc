@@ -61,14 +61,14 @@ public:
                           const std::string &desc);
 
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who);
-  void QueueDrop (SocketWho who);
-  void PhyDrop (SocketWho who);
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who) override;
+  void Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who) override;
+  void QueueDrop (SocketWho who) override;
+  void PhyDrop (SocketWho who) override;
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
 
   uint32_t m_ackedBytes;        //!< ACKed bytes.
   uint32_t m_sentBytes;         //!< Sent bytes.
@@ -234,7 +234,7 @@ public:
                             const std::string &desc);
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
+  Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node) override;
 };
 
 TcpSlowStartAttackerTest::TcpSlowStartAttackerTest (uint32_t segmentSize,

@@ -42,9 +42,9 @@ class BasicEnergyHarvesterTestCase : public TestCase
 {
 public:
 	BasicEnergyHarvesterTestCase ();
-  ~BasicEnergyHarvesterTestCase ();
+  ~BasicEnergyHarvesterTestCase () override;
 
-  void DoRun ();
+  void DoRun () override;
 
   double m_timeS;     //!< Time, in seconds
   double m_tolerance; //!< Tolerance for energy estimation

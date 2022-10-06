@@ -71,7 +71,7 @@ class Ipv4RipTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv4RipTest ();
 
   /**
@@ -293,7 +293,7 @@ class Ipv4RipCountToInfinityTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv4RipCountToInfinityTest ();
 
   /**
@@ -508,7 +508,7 @@ class Ipv4RipSplitHorizonStrategyTest : public TestCase
   Rip::SplitHorizonType_e m_detectedStrategy; //!< Strategy detected.
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Constructor.

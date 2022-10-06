@@ -47,11 +47,11 @@ class BuildProfileTestCase : public TestCase
 {
 public:
   BuildProfileTestCase ();
-  virtual ~BuildProfileTestCase ()
+  ~BuildProfileTestCase () override
   {}
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 BuildProfileTestCase::BuildProfileTestCase ()

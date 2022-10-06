@@ -48,7 +48,7 @@ public:
    */
   static TypeId GetTypeId ();
   WifiProtectionManager ();
-  virtual ~WifiProtectionManager ();
+  ~WifiProtectionManager () override;
 
   /**
    * Set the MAC which is using this Protection Manager
@@ -90,7 +90,7 @@ public:
                                                             const WifiTxParameters& txParams) = 0;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \return the remote station manager operating on our link

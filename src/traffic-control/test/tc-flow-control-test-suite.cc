@@ -54,15 +54,15 @@ public:
    * \param p the packet stored in this item
    */
   QueueDiscTestItem (Ptr<Packet> p);
-  virtual ~QueueDiscTestItem ();
+  ~QueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   QueueDiscTestItem () = delete;
   QueueDiscTestItem (const QueueDiscTestItem &) = delete;
   QueueDiscTestItem & operator = (const QueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark();
+  void AddHeader () override;
+  bool Mark() override;
 };
 
 QueueDiscTestItem::QueueDiscTestItem (Ptr<Packet> p)
@@ -102,9 +102,9 @@ public:
    * \param totalTxPackets the total number of packets to transmit
    */
   TcFlowControlTestCase (QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets);
-  virtual ~TcFlowControlTestCase ();
+  ~TcFlowControlTestCase () override;
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Instruct a node to send a specified number of packets
    * \param n the node

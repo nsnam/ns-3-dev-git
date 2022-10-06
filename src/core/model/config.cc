@@ -758,7 +758,7 @@ public:
       : Resolver (path)
     {
     }
-    virtual void DoOne (Ptr<Object> object, std::string path)
+    void DoOne (Ptr<Object> object, std::string path) override
     {
       m_objects.push_back (object);
       m_contexts.push_back (path);

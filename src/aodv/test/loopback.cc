@@ -76,7 +76,7 @@ class LoopbackTestCase : public TestCase
 
 public:
   LoopbackTestCase ();
-  void DoRun ();
+  void DoRun () override;
 };
 
 LoopbackTestCase::LoopbackTestCase ()

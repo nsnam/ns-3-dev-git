@@ -48,7 +48,7 @@ public:
    * \param socket The receiving socket.
    */
   void HandleConnectionFailed (Ptr<Socket> socket);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   bool m_connectionFailed{false}; //!< Connection failure indicator

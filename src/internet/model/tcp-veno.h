@@ -87,9 +87,9 @@ public:
    * \param sock the object to copy
    */
   TcpVeno (const TcpVeno& sock);
-  virtual ~TcpVeno ();
+  ~TcpVeno () override;
 
-  virtual std::string GetName () const;
+  std::string GetName () const override;
 
   /**
    * \brief Perform RTT sampling needed to execute Veno algorithm
@@ -106,8 +106,8 @@ public:
    * \param rtt last RTT
    *
    */
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt);
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                          const Time& rtt) override;
 
   /**
    * \brief Enable/disable Veno depending on the congestion state
@@ -117,8 +117,8 @@ public:
    * \param tcb internal congestion state
    * \param newState new congestion state to which the TCP is going to switch
    */
-  virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState);
+  void CongestionStateSet (Ptr<TcpSocketState> tcb,
+                                   const TcpSocketState::TcpCongState_t newState) override;
 
   /**
    * \brief Adjust cwnd following Veno additive increase algorithm
@@ -126,7 +126,7 @@ public:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments ACKed
    */
-  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
   /**
    * \brief Get slow start threshold during Veno multiplicative-decrease phase
@@ -136,10 +136,10 @@ public:
    *
    * \return the slow start threshold value
    */
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
 
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
 private:

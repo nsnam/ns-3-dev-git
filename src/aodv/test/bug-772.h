@@ -49,7 +49,7 @@ public:
    * \param time                Simulation time
    */
   Bug772ChainTest (const char * const prefix, const char * const proto, Time time, uint32_t size);
-  ~Bug772ChainTest ();
+  ~Bug772ChainTest () override;
 
 private:
   /// \internal It is important to have pointers here
@@ -75,7 +75,7 @@ private:
   /// Compare traces with reference ones
   void CheckResults ();
   /// Go
-  void DoRun ();
+  void DoRun () override;
   /**
    * Receive data function
    * \param socket the socket to receive from

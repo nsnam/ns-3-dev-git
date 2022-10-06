@@ -52,7 +52,7 @@ public:
   static TypeId GetTypeId ();
 
   OkumuraHataPropagationLossModel ();
-  virtual ~OkumuraHataPropagationLossModel ();
+  ~OkumuraHataPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   OkumuraHataPropagationLossModel (const OkumuraHataPropagationLossModel &) = delete;

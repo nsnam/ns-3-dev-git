@@ -82,7 +82,7 @@ public:
    */
   LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
-  virtual ~LteUePhy ();
+  ~LteUePhy () override;
 
   /**
    * \brief Get the type ID.
@@ -90,8 +90,8 @@ public:
    */
   static TypeId GetTypeId ();
   // inherited from Object
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   /**
    * \brief Get the PHY SAP provider
@@ -183,7 +183,7 @@ public:
    *
    * \return the pointer to the PSD
    */
-  virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
+  Ptr<SpectrumValue> CreateTxPowerSpectralDensity () override;
 
   /**
    * \brief Set a list of sub channels to use in TX
@@ -223,22 +223,22 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
-  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  void GenerateCtrlCqiReport (const SpectrumValue& sinr) override;
+  void GenerateDataCqiReport (const SpectrumValue& sinr) override;
   /**
    * \brief Create the mixed CQI report
    *
    * \param sinr SINR values vector
    */
   virtual void GenerateMixedCqiReport (const SpectrumValue& sinr);
-  virtual void ReportInterference (const SpectrumValue& interf);
+  void ReportInterference (const SpectrumValue& interf) override;
   /**
    * \brief Create the mixed CQI report
    *
    * \param interf interference values vector
    */
   virtual void ReportDataInterference (const SpectrumValue& interf);
-  virtual void ReportRsReceivedPower (const SpectrumValue& power);
+  void ReportRsReceivedPower (const SpectrumValue& power) override;
 
   // callbacks for LteSpectrumPhy
   /**
@@ -641,7 +641,7 @@ private:
   double ComputeAvgSinr (const SpectrumValue& sinr);
 
   // UE PHY SAP methods
-  virtual void DoSendMacPdu (Ptr<Packet> p);
+  void DoSendMacPdu (Ptr<Packet> p) override;
   /**
    * \brief Send LTE control message function
    *

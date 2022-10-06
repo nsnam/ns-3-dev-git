@@ -44,7 +44,7 @@ class SpectrumPropagationLossModel : public Object
 {
 public:
   SpectrumPropagationLossModel ();
-  virtual ~SpectrumPropagationLossModel ();
+  ~SpectrumPropagationLossModel () override;
 
   /**
    * \brief Get the type ID.
@@ -74,7 +74,7 @@ public:
                                                  Ptr<const MobilityModel> b) const;
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 
 private:

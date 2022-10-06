@@ -79,14 +79,14 @@ public:
   /**
    * \brief Destructor
    */
-  virtual ~TcpLedbat ();
+  ~TcpLedbat () override;
 
   /**
    * \brief Get the name of the TCP flavour
    *
    * \return The name of the TCP
    */
-  virtual std::string GetName () const;
+  std::string GetName () const override;
 
   /**
    * \brief Get information from the acked packet
@@ -95,11 +95,11 @@ public:
    * \param segmentsAcked count of segments ACKed
    * \param rtt The estimated rtt
    */
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt);
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
+                          const Time& rtt) override;
 
   // Inherited
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
   /**
    * \brief Adjust cwnd following LEDBAT algorithm
@@ -107,7 +107,7 @@ public:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments ACKed
    */
-  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
   /**
    * \brief Change the Slow Start Capability
@@ -123,7 +123,7 @@ protected:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments ACKed
    */
-  virtual void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  void CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
 
 private:
   /**

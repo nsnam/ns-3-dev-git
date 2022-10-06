@@ -60,7 +60,7 @@ public:
   /** Constructor. */
   Synchronizer ();
   /** Destructor. */
-  virtual ~Synchronizer ();
+  ~Synchronizer () override;
 
   /**
    * @brief Return true if this synchronizer is actually synchronizing to a

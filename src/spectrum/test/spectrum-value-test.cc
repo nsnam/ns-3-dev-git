@@ -49,8 +49,8 @@ public:
    * \param name test name
    */
   SpectrumValueTestCase (SpectrumValue a, SpectrumValue b, std::string name);
-  virtual ~SpectrumValueTestCase ();
-  virtual void DoRun ();
+  ~SpectrumValueTestCase () override;
+  void DoRun () override;
 
 private:
   /**

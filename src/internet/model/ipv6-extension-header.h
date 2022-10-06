@@ -50,7 +50,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -60,7 +60,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionHeader ();
+  ~Ipv6ExtensionHeader () override;
 
   /**
    * \brief Set the "Next header" field.
@@ -90,26 +90,26 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 protected:
   /**
@@ -232,7 +232,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -242,32 +242,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionHopByHopHeader ();
+  ~Ipv6ExtensionHopByHopHeader () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 /**
@@ -288,7 +288,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -298,32 +298,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionDestinationHeader ();
+  ~Ipv6ExtensionDestinationHeader () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 /**
@@ -344,7 +344,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -354,7 +354,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionFragmentHeader ();
+  ~Ipv6ExtensionFragmentHeader () override;
 
   /**
    * \brief Set the "Offset" field.
@@ -396,26 +396,26 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   /**
@@ -447,7 +447,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -457,7 +457,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionRoutingHeader ();
+  ~Ipv6ExtensionRoutingHeader () override;
 
   /**
    * \brief Set the "Type of Routing" field.
@@ -487,26 +487,26 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   /**
@@ -538,7 +538,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -548,7 +548,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionLooseRoutingHeader ();
+  ~Ipv6ExtensionLooseRoutingHeader () override;
 
   /**
    * \brief Set the number of routers' address.
@@ -586,26 +586,26 @@ public:
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   /**
@@ -637,7 +637,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -647,32 +647,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionESPHeader ();
+  ~Ipv6ExtensionESPHeader () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 /**
@@ -693,7 +693,7 @@ public:
    * \brief Get the instance type ID.
    * \return instance type ID
    */
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Constructor.
@@ -703,32 +703,32 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ExtensionAHHeader ();
+  ~Ipv6ExtensionAHHeader () override;
 
   /**
    * \brief Print some information about the packet.
    * \param os output stream
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Get the serialized size of the packet.
    * \return size
    */
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   /**
    * \brief Serialize the packet.
    * \param start Buffer iterator
    */
-  virtual void Serialize (Buffer::Iterator start) const;
+  void Serialize (Buffer::Iterator start) const override;
 
   /**
    * \brief Deserialize the packet.
    * \param start Buffer iterator
    * \return size of the packet
    */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t Deserialize (Buffer::Iterator start) override;
 };
 
 } // namespace ns3

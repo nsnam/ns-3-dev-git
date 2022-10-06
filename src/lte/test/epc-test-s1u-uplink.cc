@@ -83,7 +83,7 @@ public:
    */
   EpsBearerTagUdpClient (uint16_t rnti, uint8_t bid);
 
-  virtual ~EpsBearerTagUdpClient ();
+  ~EpsBearerTagUdpClient () override;
 
   /**
    * \brief set the remote address and port
@@ -93,11 +93,11 @@ public:
   void SetRemote (Ipv4Address ip, uint16_t port);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Schedule transmit function
@@ -318,10 +318,10 @@ public:
    * \param v the list of UE lists
    */
   EpcS1uUlTestCase (std::string name, std::vector<EnbUlTestData> v);
-  virtual ~EpcS1uUlTestCase ();
+  ~EpcS1uUlTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   std::vector<EnbUlTestData> m_enbUlTestData; ///< ENB UL test data
 };
 

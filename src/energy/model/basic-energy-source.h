@@ -43,40 +43,40 @@ public:
    */
   static TypeId GetTypeId ();
   BasicEnergySource ();
-  virtual ~BasicEnergySource ();
+  ~BasicEnergySource () override;
 
   /**
    * \return Initial energy stored in energy source, in Joules.
    *
    * Implements GetInitialEnergy.
    */
-  virtual double GetInitialEnergy () const;
+  double GetInitialEnergy () const override;
 
   /**
    * \returns Supply voltage at the energy source.
    *
    * Implements GetSupplyVoltage.
    */
-  virtual double GetSupplyVoltage () const;
+  double GetSupplyVoltage () const override;
 
   /**
    * \return Remaining energy in energy source, in Joules
    *
    * Implements GetRemainingEnergy.
    */
-  virtual double GetRemainingEnergy ();
+  double GetRemainingEnergy () override;
 
   /**
    * \returns Energy fraction.
    *
    * Implements GetEnergyFraction.
    */
-  virtual double GetEnergyFraction ();
+  double GetEnergyFraction () override;
 
   /**
    * Implements UpdateEnergySource.
    */
-  virtual void UpdateEnergySource ();
+  void UpdateEnergySource () override;
 
   /**
    * \param initialEnergyJ Initial energy, in Joules
@@ -109,10 +109,10 @@ public:
 
 private:
   /// Defined in ns3::Object
-  void DoInitialize ();
+  void DoInitialize () override;
 
   /// Defined in ns3::Object
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Handles the remaining energy going to zero event. This function notifies

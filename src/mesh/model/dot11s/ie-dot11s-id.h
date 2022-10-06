@@ -63,11 +63,11 @@ public:
   char *PeekString () const;
 
   // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length);
-  virtual void Print (std::ostream& os) const;
-  virtual uint16_t GetInformationFieldSize () const;
+  WifiInformationElementId ElementId () const override;
+  void SerializeInformationField (Buffer::Iterator i) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator start, uint16_t length) override;
+  void Print (std::ostream& os) const override;
+  uint16_t GetInformationFieldSize () const override;
 
 private:
   uint8_t m_meshId[33]; ///< mesh ID

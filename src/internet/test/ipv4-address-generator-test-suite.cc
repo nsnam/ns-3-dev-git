@@ -32,8 +32,8 @@ class NetworkNumberAllocatorTestCase : public TestCase
 {
 public:
   NetworkNumberAllocatorTestCase ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 NetworkNumberAllocatorTestCase::NetworkNumberAllocatorTestCase ()
@@ -89,8 +89,8 @@ class AddressAllocatorTestCase : public TestCase
 public:
   AddressAllocatorTestCase ();
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 AddressAllocatorTestCase::AddressAllocatorTestCase ()
@@ -143,8 +143,8 @@ class NetworkAndAddressTestCase : public TestCase
 {
 public:
   NetworkAndAddressTestCase ();
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 NetworkAndAddressTestCase::NetworkAndAddressTestCase ()
@@ -213,8 +213,8 @@ class ExampleAddressGeneratorTestCase : public TestCase
 public:
   ExampleAddressGeneratorTestCase ();
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 ExampleAddressGeneratorTestCase::ExampleAddressGeneratorTestCase ()
@@ -271,8 +271,8 @@ class AddressCollisionTestCase : public TestCase
 public:
   AddressCollisionTestCase ();
 private:
-  void DoRun ();
-  void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 };
 
 AddressCollisionTestCase::AddressCollisionTestCase ()

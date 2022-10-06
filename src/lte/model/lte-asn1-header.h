@@ -37,21 +37,21 @@ class Asn1Header : public Header
 {
 public:
   Asn1Header ();
-  virtual ~Asn1Header ();
+  ~Asn1Header () override;
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator bIterator) const;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator bIterator) const override;
 
   // Inherited from ns3::Header base class
   // Pure virtual methods, to be implemented in child classes
-  virtual uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
-  virtual void Print (std::ostream &os) const = 0;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override = 0;
+  void Print (std::ostream &os) const override = 0;
 
   /**
    * This function serializes class attributes to m_serializationResult

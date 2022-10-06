@@ -103,7 +103,7 @@ public:
   LtePdcpSpecificLtePdcpSapProvider (C* pdcp);
 
   // Interface implemented from LtePdcpSapProvider
-  virtual void TransmitPdcpSdu (TransmitPdcpSduParameters params);
+  void TransmitPdcpSdu (TransmitPdcpSduParameters params) override;
 
 private:
   LtePdcpSpecificLtePdcpSapProvider ();
@@ -141,7 +141,7 @@ public:
   LtePdcpSpecificLtePdcpSapUser (C* rrc);
 
   // Interface implemented from LtePdcpSapUser
-  virtual void ReceivePdcpSdu (ReceivePdcpSduParameters params);
+  void ReceivePdcpSdu (ReceivePdcpSduParameters params) override;
 
 private:
   LtePdcpSpecificLtePdcpSapUser ();

@@ -55,9 +55,9 @@ public:
    */
   RttEstimator (const RttEstimator& r);
 
-  virtual ~RttEstimator();
+  ~RttEstimator() override;
 
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Add a new measurement to the estimator. Pure virtual function.
@@ -136,20 +136,20 @@ public:
    */
   RttMeanDeviation (const RttMeanDeviation& r);
 
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   /**
    * \brief Add a new measurement to the estimator.
    * \param measure the new RTT measure.
    */
-  void Measurement (Time measure);
+  void Measurement (Time measure) override;
 
-  Ptr<RttEstimator> Copy () const;
+  Ptr<RttEstimator> Copy () const override;
 
   /**
    * \brief Resets the estimator.
    */
-  void Reset ();
+  void Reset () override;
 
 private:
   /**

@@ -100,7 +100,7 @@ public:
   }
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Build name string function

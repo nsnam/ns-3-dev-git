@@ -55,27 +55,27 @@ protected:
    * \brief Create a receiver error model.
    * \returns The receiver error model.
    */
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
   /**
    * \brief Receive a packet.
    * \param p The packet.
    * \param h The TCP header.
    * \param who Who the socket belongs to (sender or receiver).
    */
-  virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
   /**
    * \brief Transmit a packet.
    * \param p The packet.
    * \param h The TCP header.
    * \param who Who the socket belongs to (sender or receiver).
    */
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
   /**
    * \brief Track the bytes in flight.
    * \param oldValue previous value.
    * \param newValue actual value.
    */
-  virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
+  void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue) override;
 
   /**
    * \brief Called when a packet is dropped.
@@ -88,14 +88,14 @@ protected:
   /**
    * \brief Configure the test.
    */
-  void ConfigureEnvironment ();
+  void ConfigureEnvironment () override;
 
   /**
    * \brief Do the checks before the RTO expires.
    * \param tcb The TcpSocketState.
    * \param who The socket.
    */
-  void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
 
   /**
    * \brief Update when RTO expires
@@ -107,7 +107,7 @@ protected:
   /**
    * \brief Do the final checks.
    */
-  void FinalChecks ();
+  void FinalChecks () override;
 
 private:
   uint32_t m_guessedBytesInFlight;  //!< Guessed bytes in flight.

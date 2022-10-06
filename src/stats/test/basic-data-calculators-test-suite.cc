@@ -37,10 +37,10 @@ class OneIntegerTestCase : public TestCase
 {
 public:
   OneIntegerTestCase ();
-  virtual ~OneIntegerTestCase ();
+  ~OneIntegerTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 OneIntegerTestCase::OneIntegerTestCase ()
@@ -109,10 +109,10 @@ class FiveIntegersTestCase : public TestCase
 {
 public:
   FiveIntegersTestCase ();
-  virtual ~FiveIntegersTestCase ();
+  ~FiveIntegersTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FiveIntegersTestCase::FiveIntegersTestCase ()
@@ -181,10 +181,10 @@ class FiveDoublesTestCase : public TestCase
 {
 public:
   FiveDoublesTestCase ();
-  virtual ~FiveDoublesTestCase ();
+  ~FiveDoublesTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 FiveDoublesTestCase::FiveDoublesTestCase ()

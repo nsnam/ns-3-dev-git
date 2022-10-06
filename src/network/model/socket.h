@@ -73,7 +73,7 @@ public:
   static TypeId GetTypeId ();
 
   Socket ();
-  virtual ~Socket ();
+  ~Socket () override;
 
   /**
    * \enum SocketErrno
@@ -1051,7 +1051,7 @@ protected:
   void NotifyDataRecv ();
 
   // inherited function, no doc necessary
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Checks if the socket has a specific IPv6 Tclass set
@@ -1139,19 +1139,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
 private:
   uint8_t m_ttl; //!< the ttl carried by the tag
@@ -1187,19 +1187,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
 private:
   uint8_t m_hopLimit; //!< the Hop Limit carried by the tag
@@ -1238,19 +1238,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 private:
   bool m_dontFragment; //!< DF bit value for outgoing packets.
 };
@@ -1285,19 +1285,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 private:
   uint8_t m_ipTos;  //!< the TOS carried by the tag
 };
@@ -1331,19 +1331,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 private:
   uint8_t m_priority;  //!< the priority carried by the tag
 };
@@ -1378,19 +1378,19 @@ public:
   static TypeId GetTypeId ();
 
   // inherited function, no need to doc.
-  virtual TypeId GetInstanceTypeId () const;
+  TypeId GetInstanceTypeId () const override;
 
   // inherited function, no need to doc.
-  virtual uint32_t GetSerializedSize () const;
+  uint32_t GetSerializedSize () const override;
 
   // inherited function, no need to doc.
-  virtual void Serialize (TagBuffer i) const;
+  void Serialize (TagBuffer i) const override;
 
   // inherited function, no need to doc.
-  virtual void Deserialize (TagBuffer i);
+  void Deserialize (TagBuffer i) override;
 
   // inherited function, no need to doc.
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 private:
   uint8_t m_ipv6Tclass; //!< the Tclass carried by the tag
 };

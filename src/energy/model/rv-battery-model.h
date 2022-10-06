@@ -56,28 +56,28 @@ public:
    */
   static TypeId GetTypeId ();
   RvBatteryModel ();
-  virtual ~RvBatteryModel ();
+  ~RvBatteryModel () override;
 
   /**
    * \return Initial energy stored (theoretical capacity) in the battery, in Joules.
    *
    * Implements GetInitialEnergy.
    */
-  virtual double GetInitialEnergy () const;
+  double GetInitialEnergy () const override;
 
   /**
    * \returns Supply voltage at the energy source.
    *
    * Implements GetSupplyVoltage.
    */
-  virtual double GetSupplyVoltage () const;
+  double GetSupplyVoltage () const override;
 
   /**
    * \return Remaining energy in energy source, in Joules
    *
    * Implements GetRemainingEnergy.
    */
-  virtual double GetRemainingEnergy ();
+  double GetRemainingEnergy () override;
 
   /**
    * \returns Energy fraction.
@@ -85,13 +85,13 @@ public:
    * Implements GetEnergyFraction. For the RV battery model, energy fraction is
    * equivalent to battery level.
    */
-  virtual double GetEnergyFraction ();
+  double GetEnergyFraction () override;
 
   /**
    * Implements UpdateEnergySource. This function samples the total load (total
    * current) from all devices to discharge the battery.
    */
-  virtual void UpdateEnergySource ();
+  void UpdateEnergySource () override;
 
   /**
    * \param interval Energy update interval.
@@ -179,10 +179,10 @@ public:
 
 private:
   /// Defined in ns3::Object
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
   /// Defined in ns3::Object
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Handles the remaining energy going to zero event. This function notifies

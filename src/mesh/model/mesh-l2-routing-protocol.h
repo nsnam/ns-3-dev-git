@@ -50,7 +50,7 @@ public:
    */
   static TypeId GetTypeId ();
   /// virtual D-tor for subclasses
-  virtual ~MeshL2RoutingProtocol ();
+  ~MeshL2RoutingProtocol () override;
   /**
    * Callback to be invoked when route discovery  procedure is completed.
    *

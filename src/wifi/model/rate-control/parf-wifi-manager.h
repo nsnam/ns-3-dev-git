@@ -49,7 +49,7 @@ public:
    */
   static TypeId GetTypeId ();
   ParfWifiManager ();
-  virtual ~ParfWifiManager ();
+  ~ParfWifiManager () override;
 
   void SetupPhy (const Ptr<WifiPhy> phy) override;
 

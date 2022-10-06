@@ -46,7 +46,7 @@ public:
   /**
    * \brief Run the test
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
 

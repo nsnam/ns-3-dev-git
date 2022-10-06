@@ -103,27 +103,27 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
    */
   struct SimpleAttributeChecker : public BASE
   {
-    virtual bool Check (const AttributeValue &value) const
+    bool Check (const AttributeValue &value) const override
     {
       return dynamic_cast<const T *> (&value) != 0;
     }
-    virtual std::string GetValueTypeName () const
+    std::string GetValueTypeName () const override
     {
       return m_type;
     }
-    virtual bool HasUnderlyingTypeInformation () const
+    bool HasUnderlyingTypeInformation () const override
     {
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation () const
+    std::string GetUnderlyingTypeInformation () const override
     {
       return m_underlying;
     }
-    virtual Ptr<AttributeValue> Create () const
+    Ptr<AttributeValue> Create () const override
     {
       return ns3::Create<T> ();
     }
-    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+    bool Copy (const AttributeValue &source, AttributeValue &destination) const override
     {
       const T *src = dynamic_cast<const T *> (&source);
       T *dst = dynamic_cast<T *> (&destination);

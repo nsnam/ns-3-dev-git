@@ -54,10 +54,10 @@ public:
    * \param errorModelEnabled if true the error model is enabled
    */
   LenaRrFfMacSchedulerTestCase (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
-  virtual ~LenaRrFfMacSchedulerTestCase ();
+  ~LenaRrFfMacSchedulerTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Builds the test name string based on provided parameter values
    * \param nUser the number of UE nodes

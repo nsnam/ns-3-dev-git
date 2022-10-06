@@ -58,13 +58,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~V2vUrbanProbChCondModelTestCase ();
+  ~V2vUrbanProbChCondModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Evaluates the channel condition between two nodes by calling the method
@@ -250,13 +250,13 @@ public:
   /**
    * Destructor
    */
-  virtual ~V2vHighwayProbChCondModelTestCase ();
+  ~V2vHighwayProbChCondModelTestCase () override;
 
 private:
   /**
    * Builds the simulation scenario and perform the tests
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Evaluates the channel condition between two nodes by calling the method

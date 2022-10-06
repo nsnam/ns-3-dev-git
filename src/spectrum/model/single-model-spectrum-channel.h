@@ -50,20 +50,20 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from SpectrumChannel
-  virtual void RemoveRx (Ptr<SpectrumPhy> phy);
-  virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void StartTx (Ptr<SpectrumSignalParameters> params);
+  void RemoveRx (Ptr<SpectrumPhy> phy) override;
+  void AddRx (Ptr<SpectrumPhy> phy) override;
+  void StartTx (Ptr<SpectrumSignalParameters> params) override;
 
 
   // inherited from Channel
-  virtual std::size_t GetNDevices () const;
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  std::size_t GetNDevices () const override;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
   /// Container: SpectrumPhy objects
   typedef std::vector<Ptr<SpectrumPhy> > PhyList;
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Used internally to reschedule transmission after the propagation delay.

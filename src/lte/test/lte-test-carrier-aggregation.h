@@ -59,7 +59,7 @@ public:
    * \param numberOfComponentCarriers number of component carriers to be used in test configuration
    */
   CarrierAggregationTestCase (uint16_t nUser, uint16_t dist, uint32_t dlbandwidth, uint32_t ulBandwidth, uint32_t numberOfComponentCarriers);
-  virtual ~CarrierAggregationTestCase ();
+  ~CarrierAggregationTestCase () override;
   /**
    * DL Scheduling function that is used in this test as callback function of DL scheduling trace
    * \param dlInfo the DL scheduling callback info
@@ -81,7 +81,7 @@ public:
 
 private:
 
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Builds the test name string based on provided parameter values
    * \param nUser number of users

@@ -71,7 +71,7 @@ public:
   static TypeId GetTypeId ();
   VirtualNetDevice ();
 
-  virtual ~VirtualNetDevice ();
+  ~VirtualNetDevice () override;
 
   /**
    * \brief Set the user callback to be called when a L2 packet is to be transmitted
@@ -107,7 +107,7 @@ public:
    * \param mtu MTU value to set
    * \return whether the MTU value was within legal bounds
    */
-  bool SetMtu (const uint16_t mtu);
+  bool SetMtu (const uint16_t mtu) override;
 
 
   /**
@@ -127,33 +127,33 @@ public:
 
 
   // inherited from NetDevice base class.
-  virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex () const;
-  virtual Ptr<Channel> GetChannel () const;
-  virtual void SetAddress (Address address);
-  virtual Address GetAddress () const;
-  virtual uint16_t GetMtu () const;
-  virtual bool IsLinkUp () const;
-  virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast () const;
-  virtual Address GetBroadcast () const;
-  virtual bool IsMulticast () const;
-  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-  virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual bool IsPointToPoint () const;
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual Ptr<Node> GetNode () const;
-  virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp () const;
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
-  virtual bool SupportsSendFrom () const;
-  virtual bool IsBridge () const;
+  void SetIfIndex (const uint32_t index) override;
+  uint32_t GetIfIndex () const override;
+  Ptr<Channel> GetChannel () const override;
+  void SetAddress (Address address) override;
+  Address GetAddress () const override;
+  uint16_t GetMtu () const override;
+  bool IsLinkUp () const override;
+  void AddLinkChangeCallback (Callback<void> callback) override;
+  bool IsBroadcast () const override;
+  Address GetBroadcast () const override;
+  bool IsMulticast () const override;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
+  Address GetMulticast (Ipv6Address addr) const override;
+  bool IsPointToPoint () const override;
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
+  Ptr<Node> GetNode () const override;
+  void SetNode (Ptr<Node> node) override;
+  bool NeedsArp () const override;
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
+  void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb) override;
+  bool SupportsSendFrom () const override;
+  bool IsBridge () const override;
 
 protected:
 
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 

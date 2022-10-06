@@ -43,7 +43,7 @@ public:
   /// Creates a No-op CCS algorithm instance.
   SimpleUeComponentCarrierManager ();
 
-  virtual ~SimpleUeComponentCarrierManager ();
+  ~SimpleUeComponentCarrierManager () override;
 
   /**
    * \brief Get the type ID.
@@ -52,7 +52,7 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from LteComponentCarrierManager
-  virtual LteMacSapProvider* GetLteMacSapProvider ();
+  LteMacSapProvider* GetLteMacSapProvider () override;
 
 
 
@@ -68,8 +68,8 @@ public:
 protected:
 
   // inherited from Object
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
   // inherited from LteCcsAlgorithm as a Component Carrier Management SAP implementation
   /**
    * \brief Report Ue Measure function

@@ -114,7 +114,7 @@ private:
                                       bool useUdp, std::string schedulerType,
                                       std::string handoverAlgorithmType, bool admitHo,
                                       bool useIdealRrc);
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Check connected function
    * \param ueDevice the UE device

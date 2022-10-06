@@ -54,7 +54,7 @@ public:
   /**
    * Destructor for the ProbabilisticV2vUrbanChannelConditionModel class
    */
-  virtual ~ProbabilisticV2vUrbanChannelConditionModel () override;
+  ~ProbabilisticV2vUrbanChannelConditionModel () override;
 
 private:
   /**
@@ -64,7 +64,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * Compute the NLOS probability
@@ -73,7 +73,7 @@ private:
    * \param b rx mobility model
    * \return the NLOS probability
    */
-  virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   enum VehicleDensity m_densityUrban {VehicleDensity::INVALID}; //!< vehicle density
 };
@@ -106,7 +106,7 @@ public:
   /**
    * Destructor for the ProbabilisticV2vHighwayChannelConditionModel class
    */
-  virtual ~ProbabilisticV2vHighwayChannelConditionModel () override;
+  ~ProbabilisticV2vHighwayChannelConditionModel () override;
 
 private:
   /**
@@ -116,7 +116,7 @@ private:
    * \param b rx mobility model
    * \return the LOS probability
    */
-  virtual double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
    * Compute the NLOS probability
@@ -125,7 +125,7 @@ private:
    * \param b rx mobility model
    * \return the NLOS probability
    */
-  virtual double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+  double ComputePnlos (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   enum VehicleDensity m_densityHighway {VehicleDensity::INVALID}; //!< vehicle density
 };

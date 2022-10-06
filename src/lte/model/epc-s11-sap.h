@@ -274,9 +274,9 @@ public:
   MemberEpcS11SapMme (C* owner);
 
   // inherited from EpcS11SapMme
-  virtual void CreateSessionResponse (CreateSessionResponseMessage msg);
-  virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg);
-  virtual void DeleteBearerRequest (DeleteBearerRequestMessage msg);
+  void CreateSessionResponse (CreateSessionResponseMessage msg) override;
+  void ModifyBearerResponse (ModifyBearerResponseMessage msg) override;
+  void DeleteBearerRequest (DeleteBearerRequestMessage msg) override;
 
 private:
   MemberEpcS11SapMme ();
@@ -338,10 +338,10 @@ public:
   MemberEpcS11SapSgw (C* owner);
 
   // inherited from EpcS11SapSgw
-  virtual void CreateSessionRequest (CreateSessionRequestMessage msg);
-  virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg);
-  virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg);
-  virtual void DeleteBearerResponse (DeleteBearerResponseMessage msg);
+  void CreateSessionRequest (CreateSessionRequestMessage msg) override;
+  void ModifyBearerRequest (ModifyBearerRequestMessage msg) override;
+  void DeleteBearerCommand (DeleteBearerCommandMessage msg) override;
+  void DeleteBearerResponse (DeleteBearerResponseMessage msg) override;
 
 private:
   MemberEpcS11SapSgw ();

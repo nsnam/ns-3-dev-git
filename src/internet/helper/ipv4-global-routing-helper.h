@@ -55,7 +55,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  Ipv4GlobalRoutingHelper* Copy () const;
+  Ipv4GlobalRoutingHelper* Copy () const override;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -63,7 +63,7 @@ public:
    *
    * This method will be called by ns3::InternetStackHelper::Install
    */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const override;
 
   /**
    * \brief Build a routing database and initialize the routing tables of

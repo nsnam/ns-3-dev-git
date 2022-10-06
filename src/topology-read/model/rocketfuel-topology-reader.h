@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId ();
 
   RocketfuelTopologyReader ();
-  virtual ~RocketfuelTopologyReader ();
+  ~RocketfuelTopologyReader () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   RocketfuelTopologyReader (const RocketfuelTopologyReader &) = delete;
@@ -71,7 +71,7 @@ public:
    *
    * \return The container of the nodes created (or empty container if there was an error)
    */
-  virtual NodeContainer Read ();
+  NodeContainer Read () override;
 
 private:
   /**

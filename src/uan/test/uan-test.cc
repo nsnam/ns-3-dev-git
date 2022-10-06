@@ -45,7 +45,7 @@ class UanTest : public TestCase
 public:
   UanTest ();
 
-  virtual void DoRun ();
+  void DoRun () override;
 private:
   /**
    * Create node function

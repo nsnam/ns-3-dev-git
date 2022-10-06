@@ -43,7 +43,7 @@ class TestRxOffWhenIdleAfterCsmaFailure : public TestCase
 {
 public:
   TestRxOffWhenIdleAfterCsmaFailure ();
-  virtual ~TestRxOffWhenIdleAfterCsmaFailure ();
+  ~TestRxOffWhenIdleAfterCsmaFailure () override;
 
 private:
 
@@ -75,7 +75,7 @@ private:
    */
   void StateChangeNotificationDev2 (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState);
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   LrWpanPhyEnumeration m_dev0State; //!< Stores the PHY state of device 0 [00:01]
 
@@ -276,7 +276,7 @@ class TestActiveScanPanDescriptors : public TestCase
 {
 public:
   TestActiveScanPanDescriptors ();
-  virtual ~TestActiveScanPanDescriptors ();
+  ~TestActiveScanPanDescriptors () override;
 
 private:
 
@@ -287,7 +287,7 @@ private:
    */
   void ScanConfirm (MlmeScanConfirmParams params);
 
-  virtual void DoRun ();
+  void DoRun () override;
 
   std::vector <PanDescriptor> m_panDescriptorList; //!< The list of PAN descriptors accumulated during the scan
 

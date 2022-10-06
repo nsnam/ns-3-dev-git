@@ -77,7 +77,7 @@ public:
   /** Constructor. */
   WallClockSynchronizer ();
   /** Destructor. */
-  virtual ~WallClockSynchronizer ();
+  ~WallClockSynchronizer () override;
 
   /** Conversion constant between &mu;s and ns. */
   static const uint64_t US_PER_NS = (uint64_t)1000;
@@ -127,15 +127,15 @@ protected:
   bool SleepWait (uint64_t ns);
 
   // Inherited from Synchronizer
-  virtual void DoSetOrigin (uint64_t ns);
-  virtual bool DoRealtime ();
-  virtual uint64_t DoGetCurrentRealtime ();
-  virtual bool DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay);
-  virtual void DoSignal ();
-  virtual void DoSetCondition (bool cond);
-  virtual int64_t DoGetDrift (uint64_t ns);
-  virtual void DoEventStart ();
-  virtual uint64_t DoEventEnd ();
+  void DoSetOrigin (uint64_t ns) override;
+  bool DoRealtime () override;
+  uint64_t DoGetCurrentRealtime () override;
+  bool DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay) override;
+  void DoSignal () override;
+  void DoSetCondition (bool cond) override;
+  int64_t DoGetDrift (uint64_t ns) override;
+  void DoEventStart () override;
+  uint64_t DoEventEnd () override;
 
   /**
    * @brief Compute a correction to the nominal delay to account for

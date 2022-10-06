@@ -77,7 +77,7 @@ class Ipv6RawSocketImplTest : public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   Ipv6RawSocketImplTest ();
 
   /**

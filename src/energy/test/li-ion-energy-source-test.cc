@@ -39,9 +39,9 @@ class LiIonEnergyTestCase : public TestCase
 {
 public:
   LiIonEnergyTestCase ();
-  ~LiIonEnergyTestCase ();
+  ~LiIonEnergyTestCase () override;
 
-  void DoRun ();
+  void DoRun () override;
 
   Ptr<Node> m_node; //!< Node to aggreagte the source to.
 };

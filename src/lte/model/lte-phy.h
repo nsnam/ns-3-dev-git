@@ -65,7 +65,7 @@ public:
    */
   LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
-  virtual ~LtePhy ();
+  ~LtePhy () override;
 
   /**
    * \brief Get the type ID.
@@ -122,7 +122,7 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity () = 0;
 
-  void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \param tti transmission time interval

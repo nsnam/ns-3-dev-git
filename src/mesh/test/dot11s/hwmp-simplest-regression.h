@@ -74,9 +74,9 @@ class HwmpSimplestRegressionTest : public TestCase
 {
 public:
   HwmpSimplestRegressionTest ();
-  virtual ~HwmpSimplestRegressionTest();
+  ~HwmpSimplestRegressionTest() override;
 
-  virtual void DoRun ();
+  void DoRun () override;
   /// Check results function
   void CheckResults ();
 

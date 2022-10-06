@@ -63,8 +63,8 @@ class DualStackTestCase : public TestCase
 public:
   DualStackTestCase ();
 private:
-  virtual void DoRun ();
-  virtual void DoTeardown ();
+  void DoRun () override;
+  void DoTeardown () override;
 
   /**
    * \brief Setup the test.

@@ -103,7 +103,7 @@ class IePreq : public WifiInformationElement
 {
 public:
   IePreq ();
-  ~IePreq ();
+  ~IePreq () override;
   /**
    * Add a destination address unit: flags, destination and sequence
    * number
@@ -254,11 +254,11 @@ public:
   bool IsFull () const;
 
   // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length);
-  virtual uint16_t GetInformationFieldSize () const;
-  virtual void Print (std::ostream& os) const;
+  WifiInformationElementId ElementId () const override;
+  void SerializeInformationField (Buffer::Iterator i) const override;
+  uint16_t DeserializeInformationField (Buffer::Iterator i, uint16_t length) override;
+  uint16_t GetInformationFieldSize () const override;
+  void Print (std::ostream& os) const override;
 
 private:
   /**

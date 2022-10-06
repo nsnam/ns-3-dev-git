@@ -43,8 +43,8 @@ class Ipv6L3ProtocolTestCase : public TestCase
 public:
   Ipv6L3ProtocolTestCase ();
 
-  virtual ~Ipv6L3ProtocolTestCase ();
-  virtual void DoRun ();
+  ~Ipv6L3ProtocolTestCase () override;
+  void DoRun () override;
 };
 
 Ipv6L3ProtocolTestCase::Ipv6L3ProtocolTestCase () :

@@ -42,14 +42,14 @@ public:
    */
   static TypeId GetTypeId ();
   JakesPropagationLossModel ();
-  virtual ~JakesPropagationLossModel ();
+  ~JakesPropagationLossModel () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   JakesPropagationLossModel (const JakesPropagationLossModel &) = delete;
   JakesPropagationLossModel & operator = (const JakesPropagationLossModel &) = delete;
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
 private:
   friend class JakesProcess;

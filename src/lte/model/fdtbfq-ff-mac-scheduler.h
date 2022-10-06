@@ -93,10 +93,10 @@ public:
   /**
    * Destructor
    */
-  virtual ~FdTbfqFfMacScheduler ();
+  ~FdTbfqFfMacScheduler () override;
 
   // inherited from Object
-  virtual void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -108,34 +108,34 @@ public:
    * Set FF MAC Csched SAP user function
    * \param s the FF MAC Csched SAP user
    */
-  virtual void SetFfMacCschedSapUser (FfMacCschedSapUser* s);
+  void SetFfMacCschedSapUser (FfMacCschedSapUser* s) override;
   /**
    * Set FF MAC sched SAP user function
    * \param s the FF MAC sched SAP user
    */
-  virtual void SetFfMacSchedSapUser (FfMacSchedSapUser* s);
+  void SetFfMacSchedSapUser (FfMacSchedSapUser* s) override;
   /**
    * Get FF MAC CSched SAP provider function
    * \returns the FF MAC CSched SAP provider
    */
-  virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider ();
+  FfMacCschedSapProvider* GetFfMacCschedSapProvider () override;
   /**
    * Get FF MAC sched SAP provider function
    * \returns the FF MAC Sched SAP Provider
    */
-  virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider ();
+  FfMacSchedSapProvider* GetFfMacSchedSapProvider () override;
 
   // FFR SAPs
   /**
    * Set FFR SAP provider function
    * \param s the FFR SAP provider
    */
-  virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
+  void SetLteFfrSapProvider (LteFfrSapProvider* s) override;
   /**
    * Get FFR SAP user function
    * \returns the FFR SAP User
    */
-  virtual LteFfrSapUser* GetLteFfrSapUser ();
+  LteFfrSapUser* GetLteFfrSapUser () override;
 
   /// allow MemberCschedSapProvider<FdTbfqFfMacScheduler> class friend access
   friend class MemberCschedSapProvider<FdTbfqFfMacScheduler>;

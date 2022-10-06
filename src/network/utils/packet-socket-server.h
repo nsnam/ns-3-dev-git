@@ -55,7 +55,7 @@ public:
 
   PacketSocketServer ();
 
-  virtual ~PacketSocketServer ();
+  ~PacketSocketServer () override;
 
   /**
    * \brief set the local address and protocol to be used
@@ -64,12 +64,12 @@ public:
   void SetLocal (PacketSocketAddress addr);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
 
-  virtual void StartApplication ();
-  virtual void StopApplication ();
+  void StartApplication () override;
+  void StopApplication () override;
 
   /**
    * \brief Handle a packet received by the application

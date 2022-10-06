@@ -82,11 +82,11 @@ public:
   void SetTsEchoReply (Time ts);
 
   // Inherited
-  virtual TypeId GetInstanceTypeId () const override;
-  virtual void Print (std::ostream &os) const override;
-  virtual uint32_t GetSerializedSize () const override;
-  virtual void Serialize (Buffer::Iterator start) const override;
-  virtual uint32_t Deserialize (Buffer::Iterator start) override;
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 private:
   uint32_t m_seq; //!< Sequence number

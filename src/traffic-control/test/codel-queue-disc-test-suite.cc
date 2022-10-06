@@ -70,15 +70,15 @@ public:
    * \param ecnCapable ECN capable
    */
   CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
-  virtual ~CodelQueueDiscTestItem ();
+  ~CodelQueueDiscTestItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   CodelQueueDiscTestItem () = delete;
   CodelQueueDiscTestItem (const CodelQueueDiscTestItem &) = delete;
   CodelQueueDiscTestItem & operator = (const CodelQueueDiscTestItem &) = delete;
 
-  virtual void AddHeader ();
-  virtual bool Mark();
+  void AddHeader () override;
+  bool Mark() override;
 
 private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
@@ -124,7 +124,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicEnqueueDequeue (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   QueueSizeUnit m_mode; ///< mode
@@ -244,7 +244,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicOverflow (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**
@@ -323,7 +323,7 @@ class CoDelQueueDiscNewtonStepTest : public TestCase
 {
 public:
   CoDelQueueDiscNewtonStepTest ();
-  virtual void DoRun ();
+  void DoRun () override;
 };
 
 CoDelQueueDiscNewtonStepTest::CoDelQueueDiscNewtonStepTest ()
@@ -361,7 +361,7 @@ class CoDelQueueDiscControlLawTest : public TestCase
 {
 public:
   CoDelQueueDiscControlLawTest ();
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Codel control law function
    * \param t
@@ -422,7 +422,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicDrop (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**
@@ -591,7 +591,7 @@ public:
    * \param mode the mode
    */
   CoDelQueueDiscBasicMark (QueueSizeUnit mode);
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /**

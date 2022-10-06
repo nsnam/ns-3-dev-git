@@ -44,7 +44,7 @@ public:
   /**
    * Destroy a RadioEnergy Helper
    */
-  ~WifiRadioEnergyModelHelper ();
+  ~WifiRadioEnergyModelHelper () override;
 
   /**
    * \param name the name of the attribute to set
@@ -86,7 +86,7 @@ private:
    *
    * Implements DeviceEnergyModel::Install.
    */
-  virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
+  Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
                                             Ptr<EnergySource> source) const override;
 
 private:

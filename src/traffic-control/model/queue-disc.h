@@ -55,7 +55,7 @@ public:
   static TypeId GetTypeId ();
 
   QueueDiscClass ();
-  virtual ~QueueDiscClass ();
+  ~QueueDiscClass () override;
 
   /**
    * \brief Get the queue disc attached to this class
@@ -73,7 +73,7 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   Ptr<QueueDisc> m_queueDisc;        //!< Queue disc attached to this class
@@ -286,7 +286,7 @@ public:
    */
   QueueDisc (QueueDiscSizePolicy policy, QueueSizeUnit unit);
 
-  virtual ~QueueDisc ();
+  ~QueueDisc () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   QueueDisc (const QueueDisc &) = delete;
@@ -525,7 +525,7 @@ protected:
   /**
    * \brief Dispose of the object
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Check whether the configuration is correct and initialize parameters
@@ -536,7 +536,7 @@ protected:
    * \sa QueueDisc::InitializeParams
    * \sa QueueDisc::CheckConfig
    */
-  void DoInitialize ();
+  void DoInitialize () override;
 
   /**
    *  \brief Perform the actions required when the queue disc is notified of

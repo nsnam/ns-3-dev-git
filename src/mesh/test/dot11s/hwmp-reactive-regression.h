@@ -74,9 +74,9 @@ class HwmpReactiveRegressionTest : public TestCase
 {
 public:
   HwmpReactiveRegressionTest ();
-  virtual ~HwmpReactiveRegressionTest();
+  ~HwmpReactiveRegressionTest() override;
 
-  virtual void DoRun ();
+  void DoRun () override;
   /// Check results function
   void CheckResults ();
 private:

@@ -78,7 +78,7 @@ public:
 class LteCcmMacSapUser : public LteMacSapUser
 {
 public:
-  virtual ~LteCcmMacSapUser ();
+  ~LteCcmMacSapUser () override;
   /**
    * \brief When the Primary Component carrier receive a buffer status report
    *  it is sent to the CCM.
@@ -122,8 +122,8 @@ public:
    */
   MemberLteCcmMacSapProvider (C* owner);
   // inherited from LteCcmRrcSapProvider
-  virtual void ReportMacCeToScheduler (MacCeListElement_s bsr) override;
-  virtual void ReportSrToScheduler (uint16_t rnti) override;
+  void ReportMacCeToScheduler (MacCeListElement_s bsr) override;
+  void ReportSrToScheduler (uint16_t rnti) override;
 
 private:
   C* m_owner; ///< the owner class
@@ -159,13 +159,13 @@ public:
    */
   MemberLteCcmMacSapUser (C* owner);
   // inherited from LteCcmRrcSapUser
-  virtual void UlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId);
-  virtual void UlReceiveSr (uint16_t rnti, uint8_t componentCarrierId);
-  virtual void NotifyPrbOccupancy (double prbOccupancy, uint8_t componentCarrierId);
+  void UlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId) override;
+  void UlReceiveSr (uint16_t rnti, uint8_t componentCarrierId) override;
+  void NotifyPrbOccupancy (double prbOccupancy, uint8_t componentCarrierId) override;
   // inherited from LteMacSapUser
-  virtual void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
-  virtual void ReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
-  virtual void NotifyHarqDeliveryFailure ();
+  void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams) override;
+  void ReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams) override;
+  void NotifyHarqDeliveryFailure () override;
 
 
 private:

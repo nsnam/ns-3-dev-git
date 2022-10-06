@@ -73,7 +73,7 @@ public:
   static TypeId GetTypeId ();
 
   Ipv6RawSocketImpl ();
-  virtual ~Ipv6RawSocketImpl ();
+  ~Ipv6RawSocketImpl () override;
 
   /**
    * \brief Set the node associated with this socket.
@@ -81,35 +81,35 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
-  virtual enum Socket::SocketErrno GetErrno () const;
+  enum Socket::SocketErrno GetErrno () const override;
 
   /**
    * \brief Get socket type (NS3_SOCK_RAW)
    * \return socket type
    */
-  virtual enum Socket::SocketType GetSocketType () const;
+  enum Socket::SocketType GetSocketType () const override;
 
-  virtual Ptr<Node> GetNode () const;
+  Ptr<Node> GetNode () const override;
 
-  virtual int Bind (const Address& address);
-  virtual int Bind ();
-  virtual int Bind6 ();
+  int Bind (const Address& address) override;
+  int Bind () override;
+  int Bind6 () override;
 
-  virtual int GetSockName (Address& address) const;
-  virtual int GetPeerName (Address& address) const;
+  int GetSockName (Address& address) const override;
+  int GetPeerName (Address& address) const override;
 
-  virtual int Close ();
-  virtual int ShutdownSend ();
-  virtual int ShutdownRecv ();
-  virtual int Connect (const Address& address);
-  virtual int Listen ();
-  virtual uint32_t GetTxAvailable () const;
-  virtual uint32_t GetRxAvailable () const;
-  virtual int Send (Ptr<Packet> p, uint32_t flags);
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address& toAddress);
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
-  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress);
-  virtual void Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilterMode filterMode, std::vector<Ipv6Address> sourceAddresses);
+  int Close () override;
+  int ShutdownSend () override;
+  int ShutdownRecv () override;
+  int Connect (const Address& address) override;
+  int Listen () override;
+  uint32_t GetTxAvailable () const override;
+  uint32_t GetRxAvailable () const override;
+  int Send (Ptr<Packet> p, uint32_t flags) override;
+  int SendTo (Ptr<Packet> p, uint32_t flags, const Address& toAddress) override;
+  Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) override;
+  Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress) override;
+  void Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilterMode filterMode, std::vector<Ipv6Address> sourceAddresses) override;
 
   /**
    * \brief Set protocol field.
@@ -126,8 +126,8 @@ public:
    */
   bool ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice> device);
 
-  virtual bool SetAllowBroadcast (bool allowBroadcast);
-  virtual bool GetAllowBroadcast () const;
+  bool SetAllowBroadcast (bool allowBroadcast) override;
+  bool GetAllowBroadcast () const override;
 
   /**
    * \brief Clean the ICMPv6 filter structure
@@ -180,7 +180,7 @@ private:
   /**
    * \brief Dispose object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Last error number.

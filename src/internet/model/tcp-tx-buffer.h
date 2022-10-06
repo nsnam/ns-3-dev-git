@@ -132,7 +132,7 @@ public:
    * \param n initial Sequence number to be transmitted
    */
   TcpTxBuffer (uint32_t n = 0);
-  virtual ~TcpTxBuffer ();
+  ~TcpTxBuffer () override;
 
   // Accessors
 

@@ -42,15 +42,15 @@ public:
     : m_scheduler (scheduler)
   {
   }
-  virtual void NotifyCchSlotStart (Time duration)
+  void NotifyCchSlotStart (Time duration) override
   {
     m_scheduler->NotifyCchSlotStart (duration);
   }
-  virtual void NotifySchSlotStart (Time duration)
+  void NotifySchSlotStart (Time duration) override
   {
     m_scheduler->NotifySchSlotStart (duration);
   }
-  virtual void NotifyGuardSlotStart (Time duration, bool cchi)
+  void NotifyGuardSlotStart (Time duration, bool cchi) override
   {
     m_scheduler->NotifyGuardSlotStart (duration, cchi);
   }

@@ -80,12 +80,12 @@ private:
   /**
    * \brief Run a simulation.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Verify that handover has occurred during the simulation.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   bool m_useIdealRrc; ///< whether LTE is configured to use ideal RRC
   uint8_t m_numberOfComponentCarriers; ///< Number of component carriers

@@ -50,7 +50,7 @@ class PeerManagementProtocol : public Object
 {
 public:
   PeerManagementProtocol ();
-  ~PeerManagementProtocol ();
+  ~PeerManagementProtocol () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   PeerManagementProtocol (const PeerManagementProtocol &) = delete;
@@ -61,7 +61,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
-  void DoDispose ();
+  void DoDispose () override;
   /**
    * \brief Install PMP on given mesh point.
    * \param mp the MeshPointDevice to install onto
@@ -237,7 +237,7 @@ public:
 
 
 private:
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
   // Private structures
   /// Keeps information about beacon of peer station: beacon interval, association ID, last time we have received a beacon

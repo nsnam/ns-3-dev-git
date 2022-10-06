@@ -57,7 +57,7 @@ public:
    * \param errorModelEnabled if true the error model is enabled
    */
   LenaTdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval, bool  errorModelEnabled);
-  virtual ~LenaTdTbfqFfMacSchedulerTestCase1 ();
+  ~LenaTdTbfqFfMacSchedulerTestCase1 () override;
 
 private:
   /**
@@ -67,7 +67,7 @@ private:
    * \returns the name string
    */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   double m_dist; ///< the distance between nodes
   uint16_t m_packetSize;  ///< the packet size in bytes
@@ -97,7 +97,7 @@ public:
    * \param errorModelEnabled if true the error model is enabled
    */
   LenaTdTbfqFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> estThrTdTbfqDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled);
-  virtual ~LenaTdTbfqFfMacSchedulerTestCase2 ();
+  ~LenaTdTbfqFfMacSchedulerTestCase2 () override;
 
 private:
   /**
@@ -107,7 +107,7 @@ private:
    * \returns the name string
    */
   static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   std::vector<double> m_dist; ///< the distance between nodes
   std::vector<uint16_t> m_packetSize;  ///< the packet size in bytes

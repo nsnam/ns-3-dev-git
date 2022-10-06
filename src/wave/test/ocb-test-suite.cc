@@ -84,9 +84,9 @@ class OcbWifiMacTestCase : public TestCase
 {
 public:
   OcbWifiMacTestCase ();
-  virtual ~OcbWifiMacTestCase ();
+  ~OcbWifiMacTestCase () override;
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * MAC associate function

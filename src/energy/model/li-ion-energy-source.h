@@ -78,14 +78,14 @@ public:
    */
   static TypeId GetTypeId ();
   LiIonEnergySource ();
-  virtual ~LiIonEnergySource ();
+  ~LiIonEnergySource () override;
 
   /**
    * \return Initial energy stored in energy source, in Joules.
    *
    * Implements GetInitialEnergy.
    */
-  virtual double GetInitialEnergy () const;
+  double GetInitialEnergy () const override;
 
   /**
    * \param initialEnergyJ Initial energy, in Joules
@@ -100,7 +100,7 @@ public:
    *
    * Implements GetSupplyVoltage.
    */
-  virtual double GetSupplyVoltage () const;
+  double GetSupplyVoltage () const override;
 
   /**
    * \param supplyVoltageV Initial Supply voltage at the energy source, in Volts.
@@ -115,14 +115,14 @@ public:
    *
    * Implements GetRemainingEnergy.
    */
-  virtual double GetRemainingEnergy ();
+  double GetRemainingEnergy () override;
 
   /**
    * \returns Energy fraction.
    *
    * Implements GetEnergyFraction.
    */
-  virtual double GetEnergyFraction ();
+  double GetEnergyFraction () override;
 
   /**
    * \param energyJ Amount of energy (in Joules) to decrease from energy source.
@@ -141,7 +141,7 @@ public:
   /**
    * Implements UpdateEnergySource.
    */
-  virtual void UpdateEnergySource ();
+  void UpdateEnergySource () override;
 
   /**
    * \param interval Energy update interval.
@@ -155,8 +155,8 @@ public:
    */
   Time GetEnergyUpdateInterval () const;
 private:
-  void DoInitialize ();
-  void DoDispose ();
+  void DoInitialize () override;
+  void DoDispose () override;
 
   /**
    * Handles the remaining energy going to zero event. This function notifies

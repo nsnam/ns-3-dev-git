@@ -41,7 +41,7 @@ public:
    */
   static TypeId GetTypeId ();
   PositionAllocator ();
-  virtual ~PositionAllocator ();
+  ~PositionAllocator () override;
   /**
    * \return the next chosen position.
    *
@@ -110,8 +110,8 @@ public:
    * \return the number of positions stored
    */
   uint32_t GetSize () const;
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   std::vector<Vector> m_positions;  //!< vector of positions
@@ -208,8 +208,8 @@ public:
   enum LayoutType GetLayoutType () const;
 
 
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   mutable uint32_t m_current; //!< currently position
@@ -235,7 +235,7 @@ public:
    */
   static TypeId GetTypeId ();
   RandomRectanglePositionAllocator ();
-  virtual ~RandomRectanglePositionAllocator ();
+  ~RandomRectanglePositionAllocator () override;
 
   /**
    * \brief Set the random variable stream object that generates x-positions
@@ -252,8 +252,8 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
@@ -274,7 +274,7 @@ public:
    */
   static TypeId GetTypeId ();
   RandomBoxPositionAllocator ();
-  virtual ~RandomBoxPositionAllocator ();
+  ~RandomBoxPositionAllocator () override;
 
   /**
    * \brief Set the random variable stream object that generates x-positions
@@ -292,8 +292,8 @@ public:
    */
   void SetZ (Ptr<RandomVariableStream> z);
 
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
@@ -323,7 +323,7 @@ public:
    */
   static TypeId GetTypeId ();
   RandomDiscPositionAllocator ();
-  virtual ~RandomDiscPositionAllocator ();
+  ~RandomDiscPositionAllocator () override;
 
   /**
    * \brief Set the random variable that generates position angle, in radians.
@@ -348,8 +348,8 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   Ptr<RandomVariableStream> m_theta; //!< pointer to theta's random variable stream
@@ -386,7 +386,7 @@ public:
    */
   static TypeId GetTypeId ();
   UniformDiscPositionAllocator ();
-  virtual ~UniformDiscPositionAllocator ();
+  ~UniformDiscPositionAllocator () override;
 
   /**
    * \param rho the value of the radius of the disc
@@ -408,8 +408,8 @@ public:
    */
   void SetZ (double z);
 
-  virtual Vector GetNext () const;
-  virtual int64_t AssignStreams (int64_t stream);
+  Vector GetNext () const override;
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   Ptr<UniformRandomVariable> m_rv;  //!< pointer to uniform random variable

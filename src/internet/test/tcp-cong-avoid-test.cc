@@ -68,18 +68,18 @@ public:
                                  uint32_t packets, const TypeId& congControl,
                                  const std::string &desc);
 protected:
-  virtual void CWndTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void QueueDrop (SocketWho who);
-  virtual void PhyDrop (SocketWho who);
-  virtual void NormalClose (SocketWho who);
+  void CWndTrace (uint32_t oldValue, uint32_t newValue) override;
+  void QueueDrop (SocketWho who) override;
+  void PhyDrop (SocketWho who) override;
+  void NormalClose (SocketWho who) override;
   /**
    * \brief Called each RTT (1.0 sec in the testing environment) and check
    * that the overall increment in this RTT is less or equal than 1 MSS
    */
   void Check ();
 
-  virtual void ConfigureEnvironment ();
-  virtual void ConfigureProperties ();
+  void ConfigureEnvironment () override;
+  void ConfigureProperties () override;
 
 private:
   uint32_t m_segmentSize; //!< Segment size.

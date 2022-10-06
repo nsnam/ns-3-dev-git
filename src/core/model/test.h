@@ -1217,7 +1217,7 @@ public:
 
 private:
   // Inherited
-  virtual void DoRun ();
+  void DoRun () override;
 
   TestSuite::Type m_type;               //!< Type of this TestSuite
 };

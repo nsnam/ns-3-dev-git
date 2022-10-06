@@ -71,7 +71,7 @@ public:
   /**
    * Destructor for OFDM PHY
    */
-  virtual ~OfdmPhy ();
+  ~OfdmPhy () override;
 
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   const PpduFormats & GetPpduFormats () const override;

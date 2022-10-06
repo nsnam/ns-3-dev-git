@@ -60,9 +60,9 @@ protected:
    */
   static TypeId GetTypeId ();
   // Inherited from Asn1Header
-  virtual TypeId GetInstanceTypeId () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
-  virtual void PreSerialize () const = 0;
+  TypeId GetInstanceTypeId () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override = 0;
+  void PreSerialize () const override = 0;
 
 
   // Auxiliary functions
@@ -364,7 +364,7 @@ protected:
    * This function prints the object, for debugging purposes.
    * @param os The output stream to use (i.e. std::cout)
    */
-  void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
   /**
    * This function prints RadioResourceConfigDedicated IE, for debugging purposes.
    * @param os The output stream to use (i.e. std::cout)
@@ -385,12 +385,12 @@ class RrcUlDcchMessage : public RrcAsn1Header
 {
 public:
   RrcUlDcchMessage ();
-  ~RrcUlDcchMessage ();
+  ~RrcUlDcchMessage () override;
 
   // Inherited from RrcAsn1Header
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
-  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
+  void PreSerialize () const override;
 
 protected:
   /**
@@ -416,12 +416,12 @@ class RrcDlDcchMessage : public RrcAsn1Header
 {
 public:
   RrcDlDcchMessage ();
-  ~RrcDlDcchMessage ();
+  ~RrcDlDcchMessage () override;
 
   // Inherited from RrcAsn1Header
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
-  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
+  void PreSerialize () const override;
 
 protected:
   /**
@@ -447,12 +447,12 @@ class RrcUlCcchMessage : public RrcAsn1Header
 {
 public:
   RrcUlCcchMessage ();
-  ~RrcUlCcchMessage ();
+  ~RrcUlCcchMessage () override;
 
   // Inherited from RrcAsn1Header
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
-  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
+  void PreSerialize () const override;
 
 protected:
   /**
@@ -478,12 +478,12 @@ class RrcDlCcchMessage : public RrcAsn1Header
 {
 public:
   RrcDlCcchMessage ();
-  ~RrcDlCcchMessage ();
+  ~RrcDlCcchMessage () override;
 
   // Inherited from RrcAsn1Header
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
-  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
+  void PreSerialize () const override;
 
 protected:
   /**
@@ -508,7 +508,7 @@ class RrcConnectionRequestHeader : public RrcUlCcchMessage
 {
 public:
   RrcConnectionRequestHeader ();
-  ~RrcConnectionRequestHeader ();
+  ~RrcConnectionRequestHeader () override;
 
   /**
    * \brief Get the type ID.
@@ -516,9 +516,9 @@ public:
    */
   static TypeId GetTypeId ();
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
    * Receives a RrcConnectionRequest IE and stores the contents into the class attributes
@@ -563,12 +563,12 @@ class RrcConnectionSetupHeader : public RrcDlCcchMessage
 {
 public:
   RrcConnectionSetupHeader ();
-  ~RrcConnectionSetupHeader ();
+  ~RrcConnectionSetupHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionSetup IE and stores the contents into the class attributes
@@ -636,12 +636,12 @@ class RrcConnectionSetupCompleteHeader : public RrcUlDcchMessage
 {
 public:
   RrcConnectionSetupCompleteHeader ();
-  ~RrcConnectionSetupCompleteHeader ();
+  ~RrcConnectionSetupCompleteHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionSetupCompleted IE and stores the contents into the class attributes
@@ -673,12 +673,12 @@ class RrcConnectionReconfigurationCompleteHeader : public RrcUlDcchMessage
 {
 public:
   RrcConnectionReconfigurationCompleteHeader ();
-  ~RrcConnectionReconfigurationCompleteHeader ();
+  ~RrcConnectionReconfigurationCompleteHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReconfigurationCompleted IE and stores the contents into the class attributes
@@ -710,12 +710,12 @@ class RrcConnectionReconfigurationHeader : public RrcDlDcchMessage
 {
 public:
   RrcConnectionReconfigurationHeader ();
-  ~RrcConnectionReconfigurationHeader ();
+  ~RrcConnectionReconfigurationHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReconfiguration IE and stores the contents into the class attributes
@@ -840,9 +840,9 @@ public:
   HandoverPreparationInfoHeader ();
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a HandoverPreparationInfo IE and stores the contents into the class attributes
@@ -873,12 +873,12 @@ class RrcConnectionReestablishmentRequestHeader : public RrcUlCcchMessage
 {
 public:
   RrcConnectionReestablishmentRequestHeader ();
-  ~RrcConnectionReestablishmentRequestHeader ();
+  ~RrcConnectionReestablishmentRequestHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReestablishmentRequest IE and stores the contents into the class attributes
@@ -916,12 +916,12 @@ class RrcConnectionReestablishmentHeader : public RrcDlCcchMessage
 {
 public:
   RrcConnectionReestablishmentHeader ();
-  ~RrcConnectionReestablishmentHeader ();
+  ~RrcConnectionReestablishmentHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReestablishment IE and stores the contents into the class attributes
@@ -961,9 +961,9 @@ public:
   RrcConnectionReestablishmentCompleteHeader ();
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReestablishmentComplete IE and stores the contents into the class attributes
@@ -994,12 +994,12 @@ class RrcConnectionReestablishmentRejectHeader : public RrcDlCcchMessage
 {
 public:
   RrcConnectionReestablishmentRejectHeader ();
-  ~RrcConnectionReestablishmentRejectHeader ();
+  ~RrcConnectionReestablishmentRejectHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReestablishmentReject IE and stores the contents into the class attributes
@@ -1024,12 +1024,12 @@ class RrcConnectionReleaseHeader : public RrcDlDcchMessage
 {
 public:
   RrcConnectionReleaseHeader ();
-  ~RrcConnectionReleaseHeader ();
+  ~RrcConnectionReleaseHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionRelease IE and stores the contents into the class attributes
@@ -1054,12 +1054,12 @@ class RrcConnectionRejectHeader : public RrcDlCcchMessage
 {
 public:
   RrcConnectionRejectHeader ();
-  ~RrcConnectionRejectHeader ();
+  ~RrcConnectionRejectHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a RrcConnectionReject IE and stores the contents into the class attributes
@@ -1084,12 +1084,12 @@ class MeasurementReportHeader : public RrcUlDcchMessage
 {
 public:
   MeasurementReportHeader ();
-  ~MeasurementReportHeader ();
+  ~MeasurementReportHeader () override;
 
   // Inherited from RrcAsn1Header
-  void PreSerialize () const;
-  uint32_t Deserialize (Buffer::Iterator bIterator);
-  void Print (std::ostream &os) const;
+  void PreSerialize () const override;
+  uint32_t Deserialize (Buffer::Iterator bIterator) override;
+  void Print (std::ostream &os) const override;
 
   /**
   * Receives a MeasurementReport IE and stores the contents into the class attributes

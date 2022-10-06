@@ -53,7 +53,7 @@ public:
   RecipientBlockAckAgreement (Mac48Address originator, bool amsduSupported, uint8_t tid,
                               uint16_t bufferSize, uint16_t timeout, uint16_t startingSeq,
                               bool htSupported);
-  ~RecipientBlockAckAgreement ();
+  ~RecipientBlockAckAgreement () override;
 
   /**
    * Set the MAC RX Middle to use.

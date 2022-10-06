@@ -45,20 +45,20 @@ public:
    */
   MqQueueDisc ();
 
-  virtual ~MqQueueDisc();
+  ~MqQueueDisc() override;
 
  /**
    * \brief Return the wake mode adopted by this queue disc.
    * \return the wake mode adopted by this queue disc.
    */
-  WakeMode GetWakeMode () const;
+  WakeMode GetWakeMode () const override;
 
 private:
-  virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
-  virtual Ptr<QueueDiscItem> DoDequeue ();
-  virtual Ptr<const QueueDiscItem> DoPeek ();
-  virtual bool CheckConfig ();
-  virtual void InitializeParams ();
+  bool DoEnqueue (Ptr<QueueDiscItem> item) override;
+  Ptr<QueueDiscItem> DoDequeue () override;
+  Ptr<const QueueDiscItem> DoPeek () override;
+  bool CheckConfig () override;
+  void InitializeParams () override;
 };
 
 } // namespace ns3

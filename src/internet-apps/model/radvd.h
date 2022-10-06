@@ -61,7 +61,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~Radvd ();
+  ~Radvd () override;
 
   /**
    * \brief Default value for maximum delay of RA (ms)
@@ -100,7 +100,7 @@ protected:
   /**
    * \brief Dispose the instance.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 private:
   /// Container: Ptr to RadvdInterface
@@ -127,12 +127,12 @@ private:
   /**
    * \brief Start the application.
    */
-  virtual void StartApplication ();
+  void StartApplication () override;
 
   /**
    * \brief Stop the application.
    */
-  virtual void StopApplication ();
+  void StopApplication () override;
 
   /**
    * \brief Send a packet.

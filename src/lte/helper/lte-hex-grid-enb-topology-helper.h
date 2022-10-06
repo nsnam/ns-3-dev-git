@@ -37,14 +37,14 @@ class LteHexGridEnbTopologyHelper : public Object
 {
 public:
   LteHexGridEnbTopologyHelper ();
-  virtual ~LteHexGridEnbTopologyHelper ();
+  ~LteHexGridEnbTopologyHelper () override;
 
   /**
    *  Register this type.
    *  \return The object TypeId.
    */
   static TypeId GetTypeId ();
-  virtual void DoDispose ();
+  void DoDispose () override;
 
 
   /**

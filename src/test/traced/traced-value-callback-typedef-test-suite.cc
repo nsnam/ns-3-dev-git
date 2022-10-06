@@ -128,7 +128,7 @@ class TracedValueCallbackTestCase : public TestCase
 {
 public:
   TracedValueCallbackTestCase ();
-  virtual ~TracedValueCallbackTestCase () {}
+  ~TracedValueCallbackTestCase () override {}
 
 private:
 
@@ -224,7 +224,7 @@ private:
 
   }  // CheckType<>()
 
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

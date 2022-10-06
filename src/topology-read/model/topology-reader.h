@@ -147,7 +147,7 @@ private:
   static TypeId GetTypeId ();
 
   TopologyReader ();
-  virtual ~TopologyReader ();
+  ~TopologyReader () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   TopologyReader (const TopologyReader &) = delete;

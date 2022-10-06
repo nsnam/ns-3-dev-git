@@ -108,7 +108,7 @@ class DynamicNeighborCacheTest : public TestCase
   void RemoveIpv6Address (Ptr<Ipv6Interface> ipv6Interface, uint32_t index);
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
 
   DynamicNeighborCacheTest ();
 
@@ -504,7 +504,7 @@ DynamicNeighborCacheTest::DoRun ()
 class ChannelTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   ChannelTest ();
 
 private:
@@ -591,7 +591,7 @@ ChannelTest::DoRun ()
 class NetDeviceContainerTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   NetDeviceContainerTest ();
 
 private:
@@ -678,7 +678,7 @@ NetDeviceContainerTest::DoRun ()
 class InterfaceContainerTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   InterfaceContainerTest ();
 
 private:
@@ -767,7 +767,7 @@ InterfaceContainerTest::DoRun ()
 class FlushTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   FlushTest ();
 
 private:
@@ -872,7 +872,7 @@ FlushTest::DoRun ()
 class DuplicateTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   DuplicateTest ();
 
 private:
@@ -970,7 +970,7 @@ DuplicateTest::DoRun ()
 class DynamicPartialTest : public TestCase
 {
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   DynamicPartialTest ();
 
   /**

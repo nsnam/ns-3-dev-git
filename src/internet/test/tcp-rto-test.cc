@@ -53,15 +53,15 @@ public:
 
 protected:
 
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
-  virtual void RcvAck      (const Ptr<const TcpSocketState> tcb,
-                            const TcpHeader& h, SocketWho who);
-  virtual void ProcessedAck (const Ptr<const TcpSocketState> tcb,
-                             const TcpHeader& h, SocketWho who);
-  virtual void FinalChecks ();
-  virtual void ConfigureProperties ();
-  virtual void ConfigureEnvironment ();
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
+  void RcvAck      (const Ptr<const TcpSocketState> tcb,
+                            const TcpHeader& h, SocketWho who) override;
+  void ProcessedAck (const Ptr<const TcpSocketState> tcb,
+                             const TcpHeader& h, SocketWho who) override;
+  void FinalChecks () override;
+  void ConfigureProperties () override;
+  void ConfigureEnvironment () override;
 
 private:
   bool m_afterRTOExpired;      //!< True if RTO is expired.
@@ -191,14 +191,14 @@ public:
 
 protected:
 
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
-  virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void SsThreshTrace (uint32_t oldValue, uint32_t newValue);
-  virtual void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
-  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
+  void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue) override;
+  void SsThreshTrace (uint32_t oldValue, uint32_t newValue) override;
+  void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
+  void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
 
-  virtual void ConfigureEnvironment ();
+  void ConfigureEnvironment () override;
 
   /**
    * \brief Called when a packet has been dropped.
@@ -330,14 +330,14 @@ public:
   TcpTimeRtoTest (const TypeId &congControl, const std::string &msg);
 
 protected:
-  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
-  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
-  virtual void ErrorClose  (SocketWho who);
-  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
-  virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
-  virtual void FinalChecks ();
+  Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node) override;
+  Ptr<ErrorModel> CreateReceiverErrorModel () override;
+  void ErrorClose  (SocketWho who) override;
+  void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who) override;
+  void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who) override;
+  void FinalChecks () override;
 
-  virtual void ConfigureEnvironment ();
+  void ConfigureEnvironment () override;
 
   /**
    * \brief Called when a packet has been dropped.

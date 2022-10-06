@@ -69,11 +69,11 @@ class NoneFileConfig : public FileConfig
 {
 public:
   NoneFileConfig ();
-  virtual ~NoneFileConfig ();
-  virtual void SetFilename (std::string filename);
-  virtual void Default ();
-  virtual void Global ();
-  virtual void Attributes ();
+  ~NoneFileConfig () override;
+  void SetFilename (std::string filename) override;
+  void Default () override;
+  void Global () override;
+  void Attributes () override;
 };
 
 } // namespace ns3

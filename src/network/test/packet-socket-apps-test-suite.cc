@@ -44,7 +44,7 @@ class PacketSocketAppsTest : public TestCase
   uint32_t m_receivedPacketNumber;  //!< Number of received packets
 
 public:
-  virtual void DoRun ();
+  void DoRun () override;
   PacketSocketAppsTest ();
 
   /**

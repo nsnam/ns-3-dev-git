@@ -97,7 +97,7 @@ public:
   static TypeId GetTypeId ();
 
   WifiMac ();
-  virtual ~WifiMac ();
+  ~WifiMac () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   WifiMac (const WifiMac &) = delete;

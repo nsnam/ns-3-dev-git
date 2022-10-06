@@ -85,9 +85,9 @@ public:
   template <typename T>
   bool GetAccessor (Ptr<T> &value) const;
 
-  virtual Ptr<AttributeValue> Copy () const;
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+  Ptr<AttributeValue> Copy () const override;
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const override;
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) override;
 
 private:
   Ptr<Object> m_value;
@@ -129,7 +129,7 @@ namespace internal {
 template <typename T>
 class PointerChecker : public ns3::PointerChecker
 {
-  virtual bool Check (const AttributeValue &val) const
+  bool Check (const AttributeValue &val) const override
   {
     const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
     if (value == 0)
@@ -147,24 +147,24 @@ class PointerChecker : public ns3::PointerChecker
       }
     return true;
   }
-  virtual std::string GetValueTypeName () const
+  std::string GetValueTypeName () const override
   {
     return "ns3::PointerValue";
   }
-  virtual bool HasUnderlyingTypeInformation () const
+  bool HasUnderlyingTypeInformation () const override
   {
     return true;
   }
-  virtual std::string GetUnderlyingTypeInformation () const
+  std::string GetUnderlyingTypeInformation () const override
   {
     TypeId tid = T::GetTypeId ();
     return "ns3::Ptr< " + tid.GetName () + " >";
   }
-  virtual Ptr<AttributeValue> Create () const
+  Ptr<AttributeValue> Create () const override
   {
     return ns3::Create<PointerValue> ();
   }
-  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+  bool Copy (const AttributeValue &source, AttributeValue &destination) const override
   {
     const PointerValue *src = dynamic_cast<const PointerValue *> (&source);
     PointerValue *dst = dynamic_cast<PointerValue *> (&destination);
@@ -175,7 +175,7 @@ class PointerChecker : public ns3::PointerChecker
     *dst = *src;
     return true;
   }
-  virtual TypeId GetPointeeTypeId () const
+  TypeId GetPointeeTypeId () const override
   {
     return T::GetTypeId ();
   }

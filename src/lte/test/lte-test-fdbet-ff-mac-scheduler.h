@@ -55,7 +55,7 @@ public:
    * \param errorModelEnabled error model enabled?
    */
   LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUser, double dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
-  virtual ~LenaFdBetFfMacSchedulerTestCase1 ();
+  ~LenaFdBetFfMacSchedulerTestCase1 () override;
 
 private:
   /**
@@ -66,7 +66,7 @@ private:
    * \returns name string
    */
   static std::string BuildNameString (uint16_t nUser, double dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   double m_dist; ///< distance between the nodes
   double m_thrRefDl; ///< DL throughput reference
@@ -95,7 +95,7 @@ public:
    * \param errorModelEnabled error model enabled?
    */
   LenaFdBetFfMacSchedulerTestCase2 (std::vector<double> dist, std::vector<uint32_t> achievableRateDl, std::vector<uint32_t> estThrFdBetUl, bool errorModelEnabled);
-  virtual ~LenaFdBetFfMacSchedulerTestCase2 ();
+  ~LenaFdBetFfMacSchedulerTestCase2 () override;
 
 private:
   /**
@@ -106,7 +106,7 @@ private:
    * \returns name string
    */
   static std::string BuildNameString (uint16_t nUser, std::vector<double> dist);
-  virtual void DoRun ();
+  void DoRun () override;
   uint16_t m_nUser; ///< number of UE nodes
   std::vector<double> m_dist; ///< distance between the nodes
   std::vector<uint32_t> m_achievableRateDl; ///< DL achievable rate

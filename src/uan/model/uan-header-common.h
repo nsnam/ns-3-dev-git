@@ -77,7 +77,7 @@ public:
    */
   UanHeaderCommon (const Mac8Address src, const Mac8Address dest, uint8_t type, uint8_t protocolNumber);
   /** Destructor */
-  virtual ~UanHeaderCommon ();
+  ~UanHeaderCommon () override;
 
   /**
    * Register this type.
@@ -138,11 +138,11 @@ public:
   uint16_t GetProtocolNumber () const;
 
   // Inherited methods
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual void Print (std::ostream &os) const;
-  virtual TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
+  void Print (std::ostream &os) const override;
+  TypeId GetInstanceTypeId () const override;
 private:
   Mac8Address m_dest;  //!< The destination address.
   Mac8Address m_src;   //!< The source address.

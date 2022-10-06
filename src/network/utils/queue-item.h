@@ -140,7 +140,7 @@ public:
    */
   QueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
 
-  virtual ~QueueDiscItem ();
+  ~QueueDiscItem () override;
 
   // Delete default constructor, copy constructor and assignment operator to avoid misuse
   QueueDiscItem () = delete;
@@ -196,7 +196,7 @@ public:
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */
-  virtual void Print (std::ostream &os) const;
+  void Print (std::ostream &os) const override;
 
   /**
    * \brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion Notification

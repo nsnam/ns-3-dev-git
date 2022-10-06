@@ -44,9 +44,9 @@ public:
   LteRlcSpecificLteMacSapUser (LteRlc* rlc);
 
   // Interface implemented from LteMacSapUser
-  virtual void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters params);
-  virtual void NotifyHarqDeliveryFailure ();
-  virtual void ReceivePdu (LteMacSapUser::ReceivePduParameters params);
+  void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters params) override;
+  void NotifyHarqDeliveryFailure () override;
+  void ReceivePdu (LteMacSapUser::ReceivePduParameters params) override;
 
 private:
   LteRlcSpecificLteMacSapUser ();

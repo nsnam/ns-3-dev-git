@@ -136,11 +136,11 @@ public:
    */
   Hash32 (Hash32Function_ptr hp) : m_fp (hp)
   { }
-  uint32_t GetHash32 (const char * buffer, const std::size_t size)
+  uint32_t GetHash32 (const char * buffer, const std::size_t size) override
   {
     return (*m_fp)(buffer, size);
   }
-  void clear ()
+  void clear () override
   { }
 
 private:
@@ -163,11 +163,11 @@ public:
    */
   Hash64 (Hash64Function_ptr hp) : m_fp (hp)
   { }
-  uint64_t GetHash64 (const char * buffer, const std::size_t size)
+  uint64_t GetHash64 (const char * buffer, const std::size_t size) override
   {
     return (*m_fp)(buffer, size);
   }
-  uint32_t GetHash32 (const char * buffer, const std::size_t size)
+  uint32_t GetHash32 (const char * buffer, const std::size_t size) override
   {
     uint32_t hash32;
     uint64_t hash64 = GetHash64 (buffer, size);
@@ -175,7 +175,7 @@ public:
     memcpy (&hash32, &hash64, sizeof (hash32));
     return hash32;
   }
-  void clear ()
+  void clear () override
   { }
 
 private:

@@ -68,7 +68,7 @@ public:
   static TypeId GetTypeId ();
 
   ApWifiMac ();
-  virtual ~ApWifiMac ();
+  ~ApWifiMac () override;
 
   void SetLinkUpCallback (Callback<void> linkUp) override;
   bool CanForwardPacketsTo (Mac48Address to) const override;
@@ -160,7 +160,7 @@ protected:
   struct ApLinkEntity : public WifiMac::LinkEntity
   {
     /// Destructor (a virtual method is needed to make this struct polymorphic)
-    virtual ~ApLinkEntity ();
+    ~ApLinkEntity () override;
 
     EventId beaconEvent;                      //!< Event to generate one beacon
     std::map<uint16_t, Mac48Address> staList; //!< Map of all stations currently associated

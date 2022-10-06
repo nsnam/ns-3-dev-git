@@ -185,7 +185,7 @@ public:
   };
 
   /** Destructor. */
-  virtual ~Scheduler () = 0;
+  ~Scheduler () override = 0;
 
   /**
    * Insert a new Event in the schedule.

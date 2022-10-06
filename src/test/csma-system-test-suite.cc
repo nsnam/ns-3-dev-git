@@ -60,10 +60,10 @@ class CsmaBridgeTestCase : public TestCase
 {
 public:
   CsmaBridgeTestCase ();
-  virtual ~CsmaBridgeTestCase ();
+  ~CsmaBridgeTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received.
@@ -175,10 +175,10 @@ class CsmaBroadcastTestCase : public TestCase
 {
 public:
   CsmaBroadcastTestCase ();
-  virtual ~CsmaBroadcastTestCase ();
+  ~CsmaBroadcastTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received by a node.
@@ -314,10 +314,10 @@ class CsmaMulticastTestCase : public TestCase
 {
 public:
   CsmaMulticastTestCase ();
-  virtual ~CsmaMulticastTestCase ();
+  ~CsmaMulticastTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received by a node.
@@ -491,10 +491,10 @@ class CsmaOneSubnetTestCase : public TestCase
 {
 public:
   CsmaOneSubnetTestCase ();
-  virtual ~CsmaOneSubnetTestCase ();
+  ~CsmaOneSubnetTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received by a node.
@@ -637,10 +637,10 @@ class CsmaPacketSocketTestCase : public TestCase
 {
 public:
   CsmaPacketSocketTestCase ();
-  virtual ~CsmaPacketSocketTestCase ();
+  ~CsmaPacketSocketTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Sink called when a packet is received by a node.
    * \param path Sink path.
@@ -760,10 +760,10 @@ class CsmaPingTestCase : public TestCase
 {
 public:
   CsmaPingTestCase ();
-  virtual ~CsmaPingTestCase ();
+  ~CsmaPingTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Sink called when a packet is received by a node.
    * \param p Received packet (unused).
@@ -903,10 +903,10 @@ class CsmaRawIpSocketTestCase : public TestCase
 {
 public:
   CsmaRawIpSocketTestCase ();
-  virtual ~CsmaRawIpSocketTestCase ();
+  ~CsmaRawIpSocketTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received by a node.
@@ -1018,10 +1018,10 @@ class CsmaStarTestCase : public TestCase
 {
 public:
   CsmaStarTestCase ();
-  virtual ~CsmaStarTestCase ();
+  ~CsmaStarTestCase () override;
 
 private:
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * Sink called when a packet is received by a node.

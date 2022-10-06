@@ -58,7 +58,7 @@ public:
    * Creates an empty EnergyHarvesterContainer.
    */
   EnergyHarvesterContainer ();
-  ~EnergyHarvesterContainer ();
+  ~EnergyHarvesterContainer () override;
 
   /**
    * \param harvester Pointer to an EnergyHarvester.
@@ -177,12 +177,12 @@ public:
   void Clear ();
 
 private:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * \brief Calls Object::Initialize () for all EnergySource objects.
    */
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
 private:
   std::vector< Ptr<EnergyHarvester> > m_harvesters; //!< Harvester container

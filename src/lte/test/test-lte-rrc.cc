@@ -64,7 +64,7 @@ public:
 
 protected:
 
-  virtual void DoRun ();
+  void DoRun () override;
   uint32_t m_nUes; ///< number of UEs in the test
 
   /**
@@ -564,7 +564,7 @@ public:
   LteRrcConnectionEstablishmentErrorTestCase (Time jumpAwayTime,
                                               std::string description = "");
 protected:
-  virtual void DoRun ();
+  void DoRun () override;
 
 private:
   /// Jump away function

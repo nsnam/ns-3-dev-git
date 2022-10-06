@@ -32,7 +32,7 @@ class HistogramTestCase : public ns3::TestCase {
 private:
 public:
   HistogramTestCase ();
-  virtual void DoRun ();
+  void DoRun () override;
 
 
 };

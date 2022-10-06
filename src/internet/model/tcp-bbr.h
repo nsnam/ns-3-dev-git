@@ -101,18 +101,18 @@ public:
    */
   virtual void SetStream (uint32_t stream);
 
-  virtual std::string GetName () const;
-  virtual bool HasCongControl () const;
-  virtual void CongControl (Ptr<TcpSocketState> tcb,
+  std::string GetName () const override;
+  bool HasCongControl () const override;
+  void CongControl (Ptr<TcpSocketState> tcb,
                             const TcpRateOps::TcpRateConnection &rc,
-                            const TcpRateOps::TcpRateSample &rs);
-  virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState);
-  virtual void CwndEvent (Ptr<TcpSocketState> tcb,
-                          const TcpSocketState::TcpCAEvent_t event);
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
-  virtual Ptr<TcpCongestionOps> Fork ();
+                            const TcpRateOps::TcpRateSample &rs) override;
+  void CongestionStateSet (Ptr<TcpSocketState> tcb,
+                                   const TcpSocketState::TcpCongState_t newState) override;
+  void CwndEvent (Ptr<TcpSocketState> tcb,
+                          const TcpSocketState::TcpCAEvent_t event) override;
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
+  Ptr<TcpCongestionOps> Fork () override;
 
 protected:
   /**

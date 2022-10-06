@@ -59,7 +59,7 @@ public:
    */
   TcpPrrRecovery (const TcpPrrRecovery& sock);
 
-  virtual ~TcpPrrRecovery () override;
+  ~TcpPrrRecovery () override;
 
   /**
    * \brief Reduction Bound variant (CRB or SSRB)
@@ -72,16 +72,16 @@ public:
 
   std::string GetName () const override;
 
-  virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+  void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
                               uint32_t unAckDataCount, uint32_t deliveredBytes) override;
 
-  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) override;
+  void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) override;
 
-  virtual void ExitRecovery (Ptr<TcpSocketState> tcb) override;
+  void ExitRecovery (Ptr<TcpSocketState> tcb) override;
 
-  virtual void UpdateBytesSent (uint32_t bytesSent) override;
+  void UpdateBytesSent (uint32_t bytesSent) override;
 
-  virtual Ptr<TcpRecoveryOps> Fork () override;
+  Ptr<TcpRecoveryOps> Fork () override;
 
 private:
   uint32_t m_prrDelivered                   {0};    //!< total bytes delivered during recovery phase

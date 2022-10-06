@@ -61,7 +61,7 @@ public:
    */
   CommandLineTestCaseBase (std::string description);
   /** Destructor */
-  virtual ~CommandLineTestCaseBase ()
+  ~CommandLineTestCaseBase () override
   {}
 
   /**
@@ -126,12 +126,12 @@ public:
   /** Constructor */
   CommandLineBooleanTestCase ();
   /** Destructor */
-  virtual ~CommandLineBooleanTestCase ()
+  ~CommandLineBooleanTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -178,12 +178,12 @@ public:
   /** Constructor */
   CommandLineUint8tTestCase ();
   /** Destructor */
-  virtual ~CommandLineUint8tTestCase ()
+  ~CommandLineUint8tTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -213,12 +213,12 @@ public:
   /** Constructor */
   CommandLineIntTestCase ();
   /** Destructor */
-  virtual ~CommandLineIntTestCase ()
+  ~CommandLineIntTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -255,12 +255,12 @@ public:
   /** Constructor */
   CommandLineUnsignedIntTestCase ();
   /** Destructor */
-  virtual ~CommandLineUnsignedIntTestCase ()
+  ~CommandLineUnsignedIntTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -294,12 +294,12 @@ public:
   /** Constructor */
   CommandLineStringTestCase ();
   /** Destructor */
-  virtual ~CommandLineStringTestCase ()
+  ~CommandLineStringTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -333,12 +333,12 @@ public:
   /** Constructor */
   CommandLineOrderTestCase ();
   /** Destructor */
-  virtual ~CommandLineOrderTestCase ()
+  ~CommandLineOrderTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -369,12 +369,12 @@ public:
   /** Constructor */
   CommandLineInvalidTestCase ();
   /** Destructor */
-  virtual ~CommandLineInvalidTestCase ()
+  ~CommandLineInvalidTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 
@@ -405,12 +405,12 @@ public:
   /** Constructor */
   CommandLineNonOptionTestCase ();
   /** Destructor */
-  virtual ~CommandLineNonOptionTestCase ()
+  ~CommandLineNonOptionTestCase () override
   {}
 
 private:
   /** Run the test */
-  virtual void DoRun ();
+  void DoRun () override;
 
 };
 

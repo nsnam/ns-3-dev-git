@@ -54,7 +54,7 @@ public:
   {
   public:
     DsssSigHeader ();
-    virtual ~DsssSigHeader ();
+    ~DsssSigHeader () override;
 
     /**
      * \brief Get the type ID.
@@ -112,7 +112,7 @@ public:
   /**
    * Destructor for DsssPpdu.
    */
-  virtual ~DsssPpdu ();
+  ~DsssPpdu () override;
 
   Time GetTxDuration () const override;
   Ptr<WifiPpdu> Copy () const override;

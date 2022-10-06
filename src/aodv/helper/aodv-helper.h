@@ -43,7 +43,7 @@ public:
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  AodvHelper* Copy () const;
+  AodvHelper* Copy () const override;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -53,7 +53,7 @@ public:
    *
    * \todo support installing AODV on the subset of all available IP interfaces
    */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
+  Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const override;
   /**
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set.

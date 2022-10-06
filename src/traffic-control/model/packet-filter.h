@@ -40,7 +40,7 @@ public:
   static TypeId GetTypeId ();
 
   PacketFilter ();
-  virtual ~PacketFilter ();
+  ~PacketFilter () override;
 
   /**
    * Standard value used by packet filters to indicate that no match was possible.

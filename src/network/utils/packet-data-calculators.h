@@ -37,7 +37,7 @@ namespace ns3 {
 class PacketCounterCalculator : public CounterCalculator<uint32_t> {
 public:
   PacketCounterCalculator();
-  virtual ~PacketCounterCalculator();
+  ~PacketCounterCalculator() override;
 
   /**
    * Register this type.
@@ -68,7 +68,7 @@ protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   // end class PacketCounterCalculator
 };
@@ -85,7 +85,7 @@ class PacketSizeMinMaxAvgTotalCalculator :
 {
 public:
   PacketSizeMinMaxAvgTotalCalculator();
-  virtual ~PacketSizeMinMaxAvgTotalCalculator();
+  ~PacketSizeMinMaxAvgTotalCalculator() override;
 
   /**
    * Register this type.
@@ -112,7 +112,7 @@ public:
                     Mac48Address realto);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   // end class PacketSizeMinMaxAvgTotalCalculator
 };

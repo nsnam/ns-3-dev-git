@@ -78,7 +78,7 @@ public:
    * \param sock the object to copy
    */
   TcpWestwood (const TcpWestwood& sock);
-  virtual ~TcpWestwood ();
+  ~TcpWestwood () override;
 
   /**
    * \brief Protocol variant (Westwood or Westwood+)
@@ -98,13 +98,13 @@ public:
     TUSTIN
   };
 
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight) override;
 
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t packetsAcked,
-                          const Time& rtt);
+  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t packetsAcked,
+                          const Time& rtt) override;
 
-  virtual Ptr<TcpCongestionOps> Fork ();
+  Ptr<TcpCongestionOps> Fork () override;
 
 private:
   /**

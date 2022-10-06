@@ -45,7 +45,7 @@ public:
    */
   static TypeId GetTypeId ();
   MobilityModel ();
-  virtual ~MobilityModel () = 0;
+  ~MobilityModel () override = 0;
 
   /**
    * \return the current position

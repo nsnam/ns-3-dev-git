@@ -45,7 +45,7 @@ class TraceFadingLossModel : public SpectrumPropagationLossModel
 {
 public:
   TraceFadingLossModel ();
-  virtual ~TraceFadingLossModel ();
+  ~TraceFadingLossModel () override;
 
   /**
    * \brief Get the type ID.
@@ -53,7 +53,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  virtual void DoInitialize ();
+  void DoInitialize () override;
 
   /**
    * \brief The couple of mobility node that form a fading channel realization
@@ -81,7 +81,7 @@ private:
    */
   Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumSignalParameters> params,
                                                    Ptr<const MobilityModel> a,
-                                                   Ptr<const MobilityModel> b) const;
+                                                   Ptr<const MobilityModel> b) const override;
 
   /**
   * \brief Get the value for a particular sub channel and a given speed

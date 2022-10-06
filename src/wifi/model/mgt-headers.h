@@ -53,7 +53,7 @@ class MgtAssocRequestHeader : public Header
 {
 public:
   MgtAssocRequestHeader ();
-  ~MgtAssocRequestHeader ();
+  ~MgtAssocRequestHeader () override;
 
   /**
    * Set the Service Set Identifier (SSID).
@@ -248,7 +248,7 @@ class MgtReassocRequestHeader : public Header
 {
 public:
   MgtReassocRequestHeader ();
-  ~MgtReassocRequestHeader ();
+  ~MgtReassocRequestHeader () override;
 
   /**
    * Set the Service Set Identifier (SSID).
@@ -419,11 +419,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -449,7 +449,7 @@ class MgtAssocResponseHeader : public Header
 {
 public:
   MgtAssocResponseHeader ();
-  ~MgtAssocResponseHeader ();
+  ~MgtAssocResponseHeader () override;
 
   /**
    * Return the status code.
@@ -706,11 +706,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -740,7 +740,7 @@ private:
 class MgtProbeRequestHeader : public Header
 {
 public:
-  ~MgtProbeRequestHeader ();
+  ~MgtProbeRequestHeader () override;
 
   /**
    * Set the Service Set Identifier (SSID).
@@ -866,11 +866,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -892,7 +892,7 @@ class MgtProbeResponseHeader : public Header
 {
 public:
   MgtProbeResponseHeader ();
-  ~MgtProbeResponseHeader ();
+  ~MgtProbeResponseHeader () override;
 
   /**
    * Return the Service Set Identifier (SSID).
@@ -1192,11 +1192,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -1253,7 +1253,7 @@ class WifiActionHeader : public Header
 {
 public:
   WifiActionHeader ();
-  ~WifiActionHeader ();
+  ~WifiActionHeader () override;
 
   /*
    * Compatible with table 8-38 IEEE 802.11, Part11, (Year 2012)
@@ -1451,11 +1451,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -1490,11 +1490,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Enable delayed BlockAck.
@@ -1622,11 +1622,11 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Enable delayed BlockAck.
@@ -1744,11 +1744,11 @@ public:
    */
   static TypeId GetTypeId ();
 
-  TypeId GetInstanceTypeId () const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId () const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize () const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
   /**
    * Check if the initiator bit in the DELBA is set.

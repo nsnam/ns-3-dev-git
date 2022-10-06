@@ -109,7 +109,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~RandomVariableStream ();
+  ~RandomVariableStream () override;
 
   // Delete copy constructor and assignment operator to avoid misuse
   RandomVariableStream (const RandomVariableStream &) = delete;
@@ -270,13 +270,13 @@ public:
    * \return A floating point random value.
    * \note The upper limit is excluded from the output range.
   */
-  virtual double GetValue ();
+  double GetValue () override;
   /**
    * \brief Get the next random value as an integer drawn from the distribution.
    * \return  An integer random value.
    * \note The upper limit is included in the output range.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The lower bound on values that can be returned by this RNG stream. */
@@ -333,9 +333,9 @@ public:
 
   // Inherited from RandomVariableStream
   /* \note This RNG always returns the same value. */
-  virtual double GetValue ();
+  double GetValue () override;
   /* \note This RNG always returns the same value. */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The constant value returned by this RNG stream. */
@@ -421,8 +421,8 @@ public:
   uint32_t GetConsecutive () const;
 
   // Inherited from RandomVariableStream
-  virtual double GetValue ();
-  virtual uint32_t GetInteger ();
+  double GetValue () override;
+  uint32_t GetInteger () override;
 
 private:
   /** The first value of the sequence. */
@@ -567,8 +567,8 @@ public:
   uint32_t GetInteger (uint32_t mean, uint32_t bound);
 
   // Inherited from RandomVariableStream
-  virtual double GetValue ();
-  virtual uint32_t GetInteger ();
+  double GetValue () override;
+  uint32_t GetInteger () override;
 
 private:
   /** The mean value of the unbounded exponential distribution. */
@@ -741,7 +741,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a Pareto distribution with the current mean, shape, and upper bound.
@@ -766,7 +766,7 @@ public:
    *
    * which now involves the distance \f$u\f$ is from 1 in the denominator.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The scale parameter for the Pareto distribution returned by this RNG stream. */
@@ -948,7 +948,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a Weibull distribution with the current scale, shape, and upper bound.
@@ -972,7 +972,7 @@ public:
    *
    * which now involves the log of the distance \f$u\f$ is from 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The scale parameter for the Weibull distribution returned by this RNG stream. */
@@ -1170,7 +1170,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a normal distribution with the current mean, variance, and bound.
@@ -1205,7 +1205,7 @@ public:
    *
    * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The mean value for the normal distribution returned by this RNG stream. */
@@ -1404,7 +1404,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a log-normal distribution with the current mu and sigma.
@@ -1437,7 +1437,7 @@ public:
    *
    * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The mu value for the log-normal distribution returned by this RNG stream. */
@@ -1553,7 +1553,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a gamma distribution with the current alpha and beta.
@@ -1566,7 +1566,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /**
@@ -1732,7 +1732,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from an Erlang distribution with the current k and lambda.
@@ -1745,7 +1745,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /**
@@ -1964,7 +1964,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a triangular distribution with the current mean, min, and max.
@@ -2001,7 +2001,7 @@ public:
    *
    * which now involves the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The mean value for the triangular distribution returned by this RNG stream. */
@@ -2147,7 +2147,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a Zipf distribution with the current n and alpha.
@@ -2160,7 +2160,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The n value for the Zipf distribution returned by this RNG stream. */
@@ -2279,7 +2279,7 @@ public:
    * rules don't work well with overloads split between parent and child
    * classes.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns a random unsigned integer from a zeta distribution with the current alpha.
@@ -2292,7 +2292,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** The alpha value for the zeta distribution returned by this RNG stream. */
@@ -2348,7 +2348,7 @@ public:
    * sequence of values.
    */
   DeterministicRandomVariable ();
-  virtual ~DeterministicRandomVariable ();
+  ~DeterministicRandomVariable () override;
 
   /**
    * \brief Sets the array of values that holds the predetermined sequence.
@@ -2364,13 +2364,13 @@ public:
    * \brief Returns the next value in the sequence.
    * \return The floating point next value in the sequence.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns the next value in the sequence.
    * \return The integer next value in the sequence.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
 private:
   /** Size of the array of values. */
@@ -2499,7 +2499,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual double GetValue ();
+  double GetValue () override;
 
   /**
    * \brief Returns the next value in the empirical distribution.
@@ -2514,7 +2514,7 @@ public:
    * The value returned in the antithetic case, \f$x'\f$, uses (1-u),
    * which is the distance \f$u\f$ is from the 1.
    */
-  virtual uint32_t GetInteger ();
+  uint32_t GetInteger () override;
 
   /**
    * \brief Returns the next value in the empirical distribution using

@@ -39,7 +39,7 @@ struct NeighborTest : public TestCase
                     neighbor (0)
   {
   }
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Handler test function
    * \param addr the IPv4 address of the neighbor
@@ -120,7 +120,7 @@ struct TypeHeaderTest : public TestCase
   TypeHeaderTest () : TestCase ("AODV TypeHeader")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     TypeHeader h (AODVTYPE_RREQ);
     NS_TEST_EXPECT_MSG_EQ (h.IsValid (), true, "Default header is valid");
@@ -146,7 +146,7 @@ struct RreqHeaderTest : public TestCase
   RreqHeaderTest () : TestCase ("AODV RREQ")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     RreqHeader h (/*flags*/ 0, /*reserved*/ 0, /*hopCount*/ 6, /*requestID*/ 1, /*dst*/ Ipv4Address ("1.2.3.4"),
                             /*dstSeqNo*/ 40, /*origin*/ Ipv4Address ("4.3.2.1"), /*originSeqNo*/ 10);
@@ -199,7 +199,7 @@ struct RrepHeaderTest : public TestCase
   RrepHeaderTest () : TestCase ("AODV RREP")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     RrepHeader h (/*prefixSize*/ 0, /*hopCount*/ 12, /*dst*/ Ipv4Address ("1.2.3.4"), /*dstSeqNo*/ 2,
                                  /*origin*/ Ipv4Address ("4.3.2.1"), /*lifetime*/ Seconds (3));
@@ -251,7 +251,7 @@ struct RrepAckHeaderTest : public TestCase
   RrepAckHeaderTest () : TestCase ("AODV RREP-ACK")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     RrepAckHeader h;
     Ptr<Packet> p = Create<Packet> ();
@@ -274,7 +274,7 @@ struct RerrHeaderTest : public TestCase
   RerrHeaderTest () : TestCase ("AODV RERR")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     RerrHeader h;
     h.SetNoDelete (true);
@@ -343,7 +343,7 @@ struct QueueEntryTest : public TestCase
   void Error2 (Ptr<const Packet> p, const Ipv4Header & h, Socket::SocketErrno e)
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ptr<const Packet> packet = Create<Packet> ();
     Ipv4Header h;
@@ -380,7 +380,7 @@ struct AodvRqueueTest : public TestCase
                       q (64, Seconds (30))
   {
   }
-  virtual void DoRun ();
+  void DoRun () override;
   /**
    * Unicast test function
    * \param route the IPv4 route
@@ -506,7 +506,7 @@ struct AodvRtableEntryTest : public TestCase
   AodvRtableEntryTest () : TestCase ("RtableEntry")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     Ptr<NetDevice> dev;
     Ipv4InterfaceAddress iface;
@@ -592,7 +592,7 @@ struct AodvRtableTest : public TestCase
   AodvRtableTest () : TestCase ("Rtable")
   {
   }
-  virtual void DoRun ()
+  void DoRun () override
   {
     RoutingTable rtable (Seconds (2));
     NS_TEST_EXPECT_MSG_EQ (rtable.GetBadLinkLifetime (), Seconds (2), "trivial");

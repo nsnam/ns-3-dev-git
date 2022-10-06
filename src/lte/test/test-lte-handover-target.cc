@@ -92,7 +92,7 @@ public:
                              uint16_t sourceCellId, uint16_t targetCellId,
                              std::string handoverAlgorithmType);
 
-  virtual ~LteHandoverTargetTestCase ();
+  ~LteHandoverTargetTestCase () override;
 
   /**
    * \brief Triggers when an eNodeB starts a handover and then verifies that
@@ -122,13 +122,13 @@ private:
    * \brief Run a simulation of a micro-cell network using the parameters
    *        provided to the constructor function.
    */
-  virtual void DoRun ();
+  void DoRun () override;
 
   /**
    * \brief Called at the end of simulation and verifies that a handover has
    *        occurred in the simulation.
    */
-  virtual void DoTeardown ();
+  void DoTeardown () override;
 
   // simulation parameters
   Vector m_uePosition; ///< UE positions

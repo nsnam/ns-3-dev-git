@@ -116,18 +116,18 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from SpectrumChannel
-  virtual void RemoveRx (Ptr<SpectrumPhy> phy);
-  virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void StartTx (Ptr<SpectrumSignalParameters> params);
+  void RemoveRx (Ptr<SpectrumPhy> phy) override;
+  void AddRx (Ptr<SpectrumPhy> phy) override;
+  void StartTx (Ptr<SpectrumSignalParameters> params) override;
 
 
   // inherited from Channel
-  virtual std::size_t GetNDevices () const;
-  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  std::size_t GetNDevices () const override;
+  Ptr<NetDevice> GetDevice (std::size_t i) const override;
 
 
 protected:
-  void DoDispose ();
+  void DoDispose () override;
 
 private:
   /**

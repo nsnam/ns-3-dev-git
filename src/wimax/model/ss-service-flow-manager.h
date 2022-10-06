@@ -57,8 +57,8 @@ public:
    * \param device the device to which the service flow manager will be attached
    */
   SsServiceFlowManager (Ptr<SubscriberStationNetDevice> device);
-  ~SsServiceFlowManager ();
-  void DoDispose ();
+  ~SsServiceFlowManager () override;
+  void DoDispose () override;
 
   /**
    * Register this type.

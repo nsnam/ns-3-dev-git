@@ -52,7 +52,7 @@ public:
   static TypeId GetTypeId ();
 
   YansWifiChannel ();
-  virtual ~YansWifiChannel ();
+  ~YansWifiChannel () override;
 
   std::size_t GetNDevices () const override;
   Ptr<NetDevice> GetDevice (std::size_t i) const override;

@@ -40,7 +40,7 @@ class MinMaxAvgTotalCalculator : public DataCalculator,
                                  public StatisticalSummary {
 public:
   MinMaxAvgTotalCalculator();
-  virtual ~MinMaxAvgTotalCalculator();
+  ~MinMaxAvgTotalCalculator() override;
 
   /**
    * Register this type.
@@ -62,54 +62,54 @@ public:
    * Outputs the data based on the provided callback
    * \param callback
    */
-  virtual void Output (DataOutputCallback &callback) const;
+  void Output (DataOutputCallback &callback) const override;
 
   /**
    * Returns the count
    * \return Count
    */
-  long getCount () const { return m_count; }
+  long getCount () const override { return m_count; }
   /**
    * Returns the sum
    * \return Total
    */
-  double getSum () const { return m_total; }
+  double getSum () const override { return m_total; }
   /**
    * Returns the minimum value
    * \return Min
    */
-  double getMin () const { return m_min; }
+  double getMin () const override { return m_min; }
   /**
    * Returns the maximum value
    * \return Max
    */
-  double getMax () const { return m_max; }
+  double getMax () const override { return m_max; }
   /**
    * Returns the mean value
    * \return Mean
    */
-  double getMean () const { return m_meanCurr; }
+  double getMean () const override { return m_meanCurr; }
   /**
    * Returns the standard deviation
    * \return Standard deviation
    */
-  double getStddev () const { return std::sqrt (m_varianceCurr); }
+  double getStddev () const override { return std::sqrt (m_varianceCurr); }
   /**
    * Returns the current variance
    * \return Variance
    */
-  double getVariance () const { return m_varianceCurr; }
+  double getVariance () const override { return m_varianceCurr; }
   /**
    * Returns the sum of squares
    * \return Sum of squares
    */
-  double getSqrSum () const { return m_squareTotal; }
+  double getSqrSum () const override { return m_squareTotal; }
 
 protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   uint32_t m_count;      //!< Count value of MinMaxAvgTotalCalculator
 
@@ -271,7 +271,7 @@ template <typename T  = uint32_t>
 class CounterCalculator : public DataCalculator {
 public:
   CounterCalculator();
-  virtual ~CounterCalculator();
+  ~CounterCalculator() override;
 
   /**
    * Register this type.
@@ -299,13 +299,13 @@ public:
    * Outputs the data based on the provided callback
    * \param callback
    */
-  virtual void Output (DataOutputCallback &callback) const;
+  void Output (DataOutputCallback &callback) const override;
 
 protected:
   /**
    * Dispose of this Object.
    */
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   T m_count; //!< Count value of CounterCalculator
 

@@ -67,7 +67,7 @@ class LteRlcAmTransmitterTestCase : public TestCase
      */
     LteRlcAmTransmitterTestCase (std::string name);
     LteRlcAmTransmitterTestCase ();
-    virtual ~LteRlcAmTransmitterTestCase ();
+    ~LteRlcAmTransmitterTestCase () override;
 
     /**
      * Check data received function
@@ -78,7 +78,7 @@ class LteRlcAmTransmitterTestCase : public TestCase
     void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
 
   protected:
-    virtual void DoRun ();
+    void DoRun () override;
 
     Ptr<LteTestPdcp> txPdcp; ///< the transmit PDCP
     Ptr<LteRlc> txRlc; ///< the RLC
@@ -111,10 +111,10 @@ class LteRlcAmTransmitterOneSduTestCase : public LteRlcAmTransmitterTestCase
      */
     LteRlcAmTransmitterOneSduTestCase (std::string name);
     LteRlcAmTransmitterOneSduTestCase ();
-    virtual ~LteRlcAmTransmitterOneSduTestCase ();
+    ~LteRlcAmTransmitterOneSduTestCase () override;
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
 };
 
@@ -135,10 +135,10 @@ class LteRlcAmTransmitterSegmentationTestCase : public LteRlcAmTransmitterTestCa
      */
     LteRlcAmTransmitterSegmentationTestCase (std::string name);
     LteRlcAmTransmitterSegmentationTestCase ();
-    virtual ~LteRlcAmTransmitterSegmentationTestCase ();
+    ~LteRlcAmTransmitterSegmentationTestCase () override;
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
 };
 
@@ -159,10 +159,10 @@ class LteRlcAmTransmitterConcatenationTestCase : public LteRlcAmTransmitterTestC
      */
     LteRlcAmTransmitterConcatenationTestCase (std::string name);
     LteRlcAmTransmitterConcatenationTestCase ();
-    virtual ~LteRlcAmTransmitterConcatenationTestCase ();
+    ~LteRlcAmTransmitterConcatenationTestCase () override;
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
 };
 
@@ -183,10 +183,10 @@ class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitter
      */
     LteRlcAmTransmitterReportBufferStatusTestCase (std::string name);
     LteRlcAmTransmitterReportBufferStatusTestCase ();
-    virtual ~LteRlcAmTransmitterReportBufferStatusTestCase ();
+    ~LteRlcAmTransmitterReportBufferStatusTestCase () override;
 
   private:
-    virtual void DoRun ();
+    void DoRun () override;
 
 };
 

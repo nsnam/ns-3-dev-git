@@ -46,7 +46,7 @@ public:
   /**
    * Destructor for MatrixBasedChannelModel
    */
-  virtual ~MatrixBasedChannelModel ();
+  ~MatrixBasedChannelModel () override;
 
   typedef std::vector<double> DoubleVector; //!< type definition for vectors of doubles
   typedef std::vector<DoubleVector> Double2DVector; //!< type definition for matrices of doubles

@@ -56,7 +56,7 @@ public:
    */
   static TypeId GetTypeId ();
   DeviceEnergyModel ();
-  virtual ~DeviceEnergyModel ();
+  ~DeviceEnergyModel () override;
 
   /**
    * \param source Pointer to energy source installed on node.
